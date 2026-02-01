@@ -34,23 +34,21 @@
 - [x] 010-install-playwright-config - Install and configure Playwright for E2E testing (M)
 - [x] 011-install-angular-testing-library - Install Angular Testing Library (S)
 - [x] 012-create-testing-utilities-library - Create shared testing utilities library (M)
+- [x] 013-add-e2e-tests-landing - Add basic E2E tests for landing app (M)
+- [x] 014-add-unit-tests-api - Add retroactive unit tests for API app (M)
+- [x] 015-add-component-tests-landing - Add retroactive component tests for landing app (M)
+- [x] 016-configure-test-coverage - Configure test coverage reporting (S)
 
 ## Pending Tasks
 
 ### Epic: TDD Infrastructure (epic-tdd-infrastructure)
-- [ ] 013-add-e2e-tests-landing - Add basic E2E tests for landing app (M) - depends on 010
-- [ ] 014-add-unit-tests-api - Add retroactive unit tests for API app (M) - depends on 012
-- [ ] 015-add-component-tests-landing - Add retroactive component tests for landing app (M) - depends on 011, 012
-- [ ] 016-configure-test-coverage - Configure test coverage reporting (S) - depends on 014, 015
 - [ ] 017-setup-test-scripts - Set up comprehensive test scripts (S) - depends on 010-016
 - [ ] 018-document-tdd-workflow - Document TDD workflow with practical examples (M) - depends on 010-017
 - [ ] 019-verify-tdd-infrastructure - Verify TDD infrastructure end-to-end (S) - depends on 010-018
 
 ## Up Next
 
-- **013-add-e2e-tests-landing** - Depends on 010 ✅, ready to start
-- **014-add-unit-tests-api** - Depends on 012 ✅, ready to start
-- **015-add-component-tests-landing** - Depends on 011 ✅, 012 ✅, ready to start
+- **017-setup-test-scripts** - Depends on 010-016 ✅, ready to start
 
 ## Notes
 
