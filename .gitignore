@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Nx
+.nx
+dist
+tmp
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+coverage
+
+.angular
