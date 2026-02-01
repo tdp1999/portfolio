@@ -30,3 +30,15 @@ pnpm-debug.log*
 coverage
 
 .angular
+
+# Test artifacts
+playwright-report
+test-results
+
+# Generated files
+graph.json
+output.html
+static
+
+# Local configuration
+.claude/settings.local.json
