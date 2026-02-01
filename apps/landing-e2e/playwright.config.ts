@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright configuration for E2E testing
+ * Playwright E2E configuration for landing app
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './apps/landing/e2e',
+  testDir: './src',
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -46,5 +46,6 @@ export default defineConfig({
     command: 'pnpm nx serve landing',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });

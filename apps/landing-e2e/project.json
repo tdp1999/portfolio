@@ -1,0 +1,30 @@
+{
+  "name": "landing-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/landing-e2e/src",
+  "implicitDependencies": ["landing"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/landing-e2e/playwright.config.ts"
+      }
+    },
+    "e2e-headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/landing-e2e/playwright.config.ts --headed"
+      }
+    },
+    "e2e-ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/landing-e2e/playwright.config.ts --ui"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
