@@ -18,7 +18,8 @@
       "@portfolio/types": ["libs/types/src/index.ts"],
       "@portfolio/utils": ["libs/utils/src/index.ts"],
       "@portfolio/ui": ["libs/ui/src/index.ts"],
-      "@portfolio/api-client": ["libs/api-client/src/index.ts"]
+      "@portfolio/api-client": ["libs/api-client/src/index.ts"],
+      "@portfolio/shared/testing": ["libs/shared/testing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

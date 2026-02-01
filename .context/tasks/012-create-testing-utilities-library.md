@@ -1,6 +1,6 @@
 # Task: Create Shared Testing Utilities Library
 
-## Status: pending
+## Status: completed
 
 ## Goal
 Generate a shared testing library (`libs/shared/testing`) with mock factories, test helpers, and reusable utilities.
@@ -9,15 +9,15 @@ Generate a shared testing library (`libs/shared/testing`) with mock factories, t
 This library will be used across all apps and libraries for consistent testing patterns. It should include mock factories for domain entities (Project, Experience, BlogPost) and helpers for common test scenarios.
 
 ## Acceptance Criteria
-- [ ] Library generated with `pnpm nx g @nx/js:library testing --directory=libs/shared --unitTestRunner=jest`
-- [ ] Library structure includes:
+- [x] Library generated with `pnpm nx g @nx/js:library testing --directory=libs/shared --unitTestRunner=jest`
+- [x] Library structure includes:
   - `src/factories/` directory with at least 3 mock factories (Project, Experience, BlogPost)
-  - `src/mocks/` directory with API client mock
+  - `src/mocks/` directory with HTTP mock helpers
   - `src/helpers/` directory with common test helpers
   - Public API exported via `index.ts`
-- [ ] Mock factories follow builder pattern (accept `Partial<T>` overrides)
-- [ ] Library can be imported as `@portfolio/shared/testing`
-- [ ] Library has its own passing tests
+- [x] Mock factories follow builder pattern (accept `Partial<T>` overrides)
+- [x] Library can be imported as `@portfolio/shared/testing`
+- [x] Library has its own passing tests (16 tests)
 
 ## Technical Notes
 - Use Nx generator to scaffold library structure
@@ -48,3 +48,12 @@ This library will be used across all apps and libraries for consistent testing p
 ## Complexity: M
 
 ## Progress Log
+
+### 2026-02-01
+- Added domain entity types (Project, Experience, BlogPost) to types library
+- Generated shared library with Nx
+- Created factories: createMockProject, createMockExperience, createMockBlogPost (with bulk creators)
+- Created HTTP mock helpers with common error responses
+- Created test utils: wait, createDeferred, generateTestId, createTestDate, expectToThrow
+- All 16 tests passing
+- Library importable as `@portfolio/shared/testing`

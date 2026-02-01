@@ -2,7 +2,7 @@
 
 ## Current Status
 
-**Phase:** Project Setup
+**Phase:** TDD Infrastructure Setup
 **Started:** 2026-01-30
 
 ## Completed
@@ -32,12 +32,12 @@
 - [x] 008-configure-eslint-prettier - Configure ESLint and Prettier (S)
 - [x] 009-verify-builds-and-ssr - Verify all builds and SSR (S)
 - [x] 010-install-playwright-config - Install and configure Playwright for E2E testing (M)
+- [x] 011-install-angular-testing-library - Install Angular Testing Library (S)
+- [x] 012-create-testing-utilities-library - Create shared testing utilities library (M)
 
 ## Pending Tasks
 
 ### Epic: TDD Infrastructure (epic-tdd-infrastructure)
-- [ ] 011-install-angular-testing-library - Install Angular Testing Library (S)
-- [ ] 012-create-testing-utilities-library - Create shared testing utilities library (M) - depends on 004
 - [ ] 013-add-e2e-tests-landing - Add basic E2E tests for landing app (M) - depends on 010
 - [ ] 014-add-unit-tests-api - Add retroactive unit tests for API app (M) - depends on 012
 - [ ] 015-add-component-tests-landing - Add retroactive component tests for landing app (M) - depends on 011, 012
@@ -48,8 +48,9 @@
 
 ## Up Next
 
-- Start TDD Infrastructure setup with task 010 or 011 (can run in parallel)
-- Task 010 and 011 have no dependencies and can be started immediately
+- **013-add-e2e-tests-landing** - Depends on 010 ✅, ready to start
+- **014-add-unit-tests-api** - Depends on 012 ✅, ready to start
+- **015-add-component-tests-landing** - Depends on 011 ✅, 012 ✅, ready to start
 
 ## Notes
 

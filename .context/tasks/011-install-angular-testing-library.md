@@ -1,6 +1,6 @@
 # Task: Install Angular Testing Library
 
-## Status: pending
+## Status: completed
 
 ## Goal
 Install and configure Angular Testing Library for component testing with better testing practices than default Angular TestBed.
@@ -9,12 +9,12 @@ Install and configure Angular Testing Library for component testing with better 
 Angular Testing Library provides a more user-centric approach to component testing, focusing on testing behavior rather than implementation details. This aligns with TDD principles in the patterns.md file.
 
 ## Acceptance Criteria
-- [ ] `@testing-library/angular` installed as dev dependency
-- [ ] `@angular/cdk/testing` installed as dev dependency (for Angular-specific utilities)
-- [ ] `jest-extended` installed as dev dependency (optional but useful matchers)
-- [ ] Jest configuration updated if needed to work with Testing Library
-- [ ] Example component test created using Testing Library in `apps/landing/src/app/app.component.spec.ts`
-- [ ] Test can be run with `pnpm nx test landing`
+- [x] `@testing-library/angular` installed as dev dependency
+- [x] `@angular/cdk/testing` installed as dev dependency (for Angular-specific utilities)
+- [x] `jest-extended` installed as dev dependency (optional but useful matchers)
+- [x] Jest configuration updated if needed to work with Testing Library
+- [x] Example component test created using Testing Library in `apps/landing/src/app/app.spec.ts`
+- [x] Test can be run with `pnpm nx test landing`
 
 ## Technical Notes
 - Use `pnpm add -D @testing-library/angular @angular/cdk/testing jest-extended`
@@ -33,3 +33,10 @@ Angular Testing Library provides a more user-centric approach to component testi
 ## Complexity: S
 
 ## Progress Log
+
+### 2026-02-01
+- Installed `@testing-library/angular`, `@testing-library/dom`, `@testing-library/jest-dom`, `jest-extended`
+- Installed `@angular/cdk` for Angular testing utilities
+- Updated `apps/landing/src/app/app.spec.ts` with Testing Library approach
+- Added `testPathIgnorePatterns` to jest.config.cts to exclude e2e folder
+- All 3 tests passing with `pnpm nx test landing`
