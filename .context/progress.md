@@ -31,15 +31,25 @@
 - [x] 007-generate-api-client-library - Generate API client library (S)
 - [x] 008-configure-eslint-prettier - Configure ESLint and Prettier (S)
 - [x] 009-verify-builds-and-ssr - Verify all builds and SSR (S)
+- [x] 010-install-playwright-config - Install and configure Playwright for E2E testing (M)
 
 ## Pending Tasks
 
-- None - Epic complete!
+### Epic: TDD Infrastructure (epic-tdd-infrastructure)
+- [ ] 011-install-angular-testing-library - Install Angular Testing Library (S)
+- [ ] 012-create-testing-utilities-library - Create shared testing utilities library (M) - depends on 004
+- [ ] 013-add-e2e-tests-landing - Add basic E2E tests for landing app (M) - depends on 010
+- [ ] 014-add-unit-tests-api - Add retroactive unit tests for API app (M) - depends on 012
+- [ ] 015-add-component-tests-landing - Add retroactive component tests for landing app (M) - depends on 011, 012
+- [ ] 016-configure-test-coverage - Configure test coverage reporting (S) - depends on 014, 015
+- [ ] 017-setup-test-scripts - Set up comprehensive test scripts (S) - depends on 010-016
+- [ ] 018-document-tdd-workflow - Document TDD workflow with practical examples (M) - depends on 010-017
+- [ ] 019-verify-tdd-infrastructure - Verify TDD infrastructure end-to-end (S) - depends on 010-018
 
 ## Up Next
 
-- Break down TDD Infrastructure epic (/breakdown epic-tdd-infrastructure.md)
-- OR start building features
+- Start TDD Infrastructure setup with task 010 or 011 (can run in parallel)
+- Task 010 and 011 have no dependencies and can be started immediately
 
 ## Notes
 
