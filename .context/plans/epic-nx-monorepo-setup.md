@@ -1,20 +1,24 @@
 # Epic: Nx Monorepo Setup
 
 ## Summary
+
 Initialize an Nx monorepo workspace with pnpm, containing two applications (Angular 20 landing page with SSR, NestJS REST API) and four shared libraries (ui, types, api-client, utils). This establishes the foundational project structure defined in patterns.md.
 
 ## Why
+
 - Enables code sharing between landing page and future dashboard app
 - Provides consistent tooling, linting, and build processes
 - Supports incremental builds and affected commands for efficient development
 - Establishes the architectural foundation before feature development begins
 
 ## Target Users
+
 - Developer (you) working on the portfolio project
 
 ## Scope
 
 ### In Scope
+
 - Nx workspace initialization with pnpm
 - Angular 20 landing app with SSR/SSG configured
 - NestJS REST API app
@@ -23,6 +27,7 @@ Initialize an Nx monorepo workspace with pnpm, containing two applications (Angu
 - Basic workspace structure matching patterns.md
 
 ### Out of Scope
+
 - Dashboard app (separate epic)
 - Actual feature implementation
 - CI/CD pipeline setup
@@ -47,17 +52,20 @@ Initialize an Nx monorepo workspace with pnpm, containing two applications (Angu
 ## Technical Considerations
 
 ### Architecture
+
 - Follows monorepo structure from patterns.md
 - Apps in `apps/` folder (landing, api)
 - Libraries in `libs/` folder (ui, types, api-client, utils)
 - Nx manages dependencies and build order
 
 ### Dependencies
+
 - Node.js 20+ (for Angular 20 compatibility)
 - pnpm installed globally
 - Nx CLI
 
 ### Nx Configuration
+
 ```
 workspace/
 ├── apps/
@@ -76,6 +84,7 @@ workspace/
 ```
 
 ### Library Import Paths
+
 - `@portfolio/types`
 - `@portfolio/ui`
 - `@portfolio/api-client`
@@ -84,15 +93,18 @@ workspace/
 ## Risks & Warnings
 
 ⚠️ **Angular SSR Complexity**
+
 - SSR configuration can be tricky with third-party libraries
 - Some browser APIs (window, document) unavailable during SSR
 - Mitigation: Use Angular's `isPlatformBrowser` check or `afterNextRender` when needed
 
 ⚠️ **Nx Version Compatibility**
+
 - Nx, Angular, and NestJS versions must be compatible
 - Mitigation: Use Nx's recommended versions via generators
 
 ⚠️ **Library Dependencies**
+
 - UI library depends on Angular, can't be used in NestJS
 - api-client depends on Angular HttpClient
 - types and utils should remain framework-agnostic
@@ -101,11 +113,13 @@ workspace/
 ## Alternatives Considered
 
 ### Turborepo
+
 - **Pros:** Simpler configuration, faster adoption
 - **Cons:** Less integrated tooling for Angular/NestJS, fewer generators
 - **Why not chosen:** Nx has first-class support for Angular and NestJS
 
 ### Separate Repositories
+
 - **Pros:** Simpler per-project setup
 - **Cons:** Code duplication, harder to share types and components
 - **Why not chosen:** Monorepo is explicitly chosen in patterns.md
@@ -123,15 +137,19 @@ workspace/
 - [ ] Import paths like `@portfolio/types` resolve correctly
 
 ## Estimated Complexity
+
 M (Medium)
 
 **Reasoning:** Standard Nx workspace setup using official generators. SSR adds some complexity but Angular 20 has mature SSR support. No custom configurations beyond defaults.
 
 ## Status
+
 in-progress
 
 ## Breakdown
+
 Broken down into tasks 001-009 on 2025-01-31
 
 ## Created
+
 2025-01-31

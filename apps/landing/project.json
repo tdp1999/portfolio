@@ -8,9 +8,7 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/landing",
         "browser": "apps/landing/src/main.ts",
@@ -22,9 +20,7 @@
             "input": "apps/landing/public"
           }
         ],
-        "styles": [
-          "apps/landing/src/styles.scss"
-        ],
+        "styles": ["apps/landing/src/styles.scss"],
         "server": "apps/landing/src/main.server.ts",
         "ssr": {
           "entry": "apps/landing/src/server.ts"
@@ -73,9 +69,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/landing/jest.config.cts",
         "tsConfig": "apps/landing/tsconfig.spec.json"
