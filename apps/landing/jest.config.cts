@@ -19,4 +19,23 @@ module.exports = {
     'jest-preset-angular/build/serializers/ng-snapshot',
     'jest-preset-angular/build/serializers/html-comment',
   ],
+  // Coverage collection - only include actual component files
+  collectCoverageFrom: [
+    'src/app/**/*.{js,ts}',
+    '!src/**/*.spec.{js,ts}',
+    '!src/**/*.config*.{js,ts}',
+    '!src/**/*.routes*.{js,ts}',
+    '!src/test-setup.ts',
+    '!src/**/index.ts',
+  ],
+  // Coverage thresholds for components - 70% target (pragmatic initial threshold)
+  // Only measuring src/app/ directory which contains actual components
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
 };
