@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "start": "nx serve landing",
     "dev:landing": "nx serve landing",
     "dev:api": "nx serve api",
     "dev": "nx run-many -t serve --projects=landing,api --parallel=2",
