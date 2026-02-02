@@ -32,10 +32,11 @@
 
 ### ADR-005: Tailwind CSS for Styling
 
-**Status:** Accepted
+**Status:** Superseded by ADR-007
 **Context:** Styling approach for consistent design
 **Decision:** Tailwind CSS 4.x with custom theme for dark/light modes
 **Consequences:** Utility-first approach, easy theming, consistent across apps
+**Note:** Decision superseded - project uses SCSS instead (see ADR-007)
 
 ### ADR-006: Test-Driven Development (TDD) Approach
 
@@ -88,3 +89,51 @@
 
 - Existing generated code (landing app, API app) will have tests added retroactively for critical paths
 - Future tasks should allocate time for writing tests first
+
+---
+
+### ADR-007: Standardize Styling to SCSS
+
+**Status:** Accepted
+**Date:** 2026-02-02
+
+**Context:** The Angular landing app was generated with SCSS support (`inlineStyleLanguage: "scss"`) and uses `.scss` files for global and component styles. However, some generated library files (in `libs/ui/`, `libs/api-client/`) still use `.css` extensions, creating inconsistency in the styling approach across the project.
+
+**Decision:** Standardize all styling to use SCSS exclusively across the entire project:
+
+- All component styles use `.scss` extension
+- All global styles use `.scss` extension
+- All library projects configured with `inlineStyleLanguage: "scss"`
+- Convert existing `.css` stub files to `.scss`
+- SCSS features (variables, nesting, mixins) available but not required initially
+- BEM naming convention for CSS classes (`.component-name__element--modifier`)
+
+**Rationale:**
+
+- **Consistency:** Uniform styling approach across all apps and libraries
+- **Future-ready:** Enables SCSS features (variables, mixins, nesting) when needed for theming or design system
+- **Angular best practice:** SCSS is the Angular community standard and default in modern Angular CLI
+- **Zero migration cost:** Angular landing app already uses SCSS, only library stubs need conversion
+- **Gradual adoption:** Can start with plain CSS syntax in `.scss` files, adopt SCSS features incrementally
+
+**Alternatives Considered:**
+
+- **Plain CSS everywhere:** Rejected - loses Angular tooling benefits and SCSS features for future theming
+- **CSS Modules:** Rejected - not standard in Angular ecosystem
+- **Tailwind CSS:** Initial plan (ADR-005) but project already generated with SCSS, no Tailwind installed
+- **Styled Components/CSS-in-JS:** Rejected - not idiomatic in Angular, adds complexity
+
+**Consequences:**
+
+- Convert stub `.css` files to `.scss` in libraries:
+  - `libs/ui/src/lib/ui/ui.css` → `ui.scss`
+  - `libs/api-client/src/lib/api-client/api-client.css` → `api-client.scss`
+- Library project configurations should specify `inlineStyleLanguage: "scss"` if they have components
+- Future components automatically generated with `.scss` extension
+- Design system can leverage SCSS variables for theming when implemented
+- No impact on bundle size - SCSS compiles to standard CSS
+
+**Impact on Existing Work:**
+
+- Minimal impact - only affects empty stub files in libraries
+- Future styling patterns documented in `.context/patterns.md`

@@ -138,7 +138,57 @@ Monorepo structure with two applications sharing common packages:
 - **Boundaries:** Site-wide configuration
 - **Managed by:** Dashboard settings feature
 
+### Architecture Changelog
+
+#### [2026-02-02] Standardize Styling to SCSS
+- **Changed:** Styling approach for shared libraries
+- **From:** Mixed CSS and SCSS files across project
+- **To:** SCSS exclusively for all styling
+- **Reason:** Consistency across project - Angular landing app already uses SCSS, extending to all libraries
+- **Impact:**
+  - `libs/ui/` - Convert `.css` to `.scss`
+  - `libs/api-client/` - Convert `.css` to `.scss`
+  - Library project configurations may need `inlineStyleLanguage: "scss"`
+  - Future component styles will use `.scss` extension
+- **Decision:** See decisions.md [2026-02-02]
+
 ## Code Patterns
+
+### Styling Patterns
+
+#### SCSS Organization
+- **Style Language:** SCSS (Sass) for all components and global styles
+- **File Extensions:** `.scss` exclusively (no `.css` files in source)
+- **Naming:** Component styles follow component name (e.g., `button.component.scss`)
+
+#### SCSS Structure
+```scss
+// Component styles use SCSS features
+.component-name {
+  // Variables
+  $component-spacing: 1rem;
+
+  // Nesting
+  &__element {
+    padding: $component-spacing;
+
+    &--modifier {
+      color: blue;
+    }
+  }
+
+  // Media queries
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+```
+
+#### Future SCSS Architecture (To be implemented)
+- **Variables:** Global design tokens (colors, spacing, typography)
+- **Mixins:** Reusable style patterns (breakpoints, flexbox utilities)
+- **Themes:** SCSS variable-based theming system
+- **Organization:** To be defined when implementing design system
 
 ### API Layer Pattern (Stage 1)
 
@@ -184,7 +234,9 @@ feature/
 
 ### Files
 
-- Components: `PascalCase.tsx` (e.g., `ProjectCard.tsx`)
+- Components: `PascalCase.ts` (e.g., `ProjectCard.component.ts`)
+- Component Styles: `PascalCase.scss` matching component (e.g., `ProjectCard.component.scss`)
+- Global Styles: `kebab-case.scss` (e.g., `styles.scss`, `theme-variables.scss`)
 - Hooks: `camelCase.ts` with `use` prefix (e.g., `useProjects.ts`)
 - Utilities: `camelCase.ts` (e.g., `formatDate.ts`)
 - Types: `PascalCase.ts` or `types.ts`
@@ -196,7 +248,8 @@ feature/
 - Types: `PascalCase`
 - Functions: `camelCase`
 - Constants: `SCREAMING_SNAKE_CASE`
-- CSS classes: `kebab-case` or framework convention
+- CSS classes: `kebab-case` with BEM for components (`.component-name__element--modifier`)
+- SCSS variables: `$kebab-case` (e.g., `$primary-color`, `$base-spacing`)
 
 ## File Organization
 
