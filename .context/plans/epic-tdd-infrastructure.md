@@ -291,9 +291,10 @@ export const createMockApiClient = (): jest.Mocked<ApiClient> => ({
 
 ## Status
 
-in-progress
+completed
 
 **Broken down into tasks 010-019 on 2026-02-01**
+**All tasks completed on 2026-02-01**
 
 ## Created
 

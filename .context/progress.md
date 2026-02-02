@@ -2,60 +2,81 @@
 
 ## Current Status
 
-**Phase:** TDD Infrastructure Setup
+**Phase:** Design System Implementation
 **Started:** 2026-01-30
 
-## Completed
+## Folder Structure
+
+- `.context/tasks/` - Active tasks (pending, in-progress, blocked)
+- `.context/tasks-done/` - Archived completed tasks (19 tasks)
+
+## Completed Milestones
 
 - [x] Vision defined (.context/vision.md)
 - [x] Vision updated with TDD approach (2026-02-01)
 - [x] Architecture patterns defined (.context/patterns.md)
 - [x] Patterns updated with testing patterns (2026-02-01)
 - [x] Tech stack selected (.project-init.md)
-- [x] First epic created (epic-nx-monorepo-setup.md)
-- [x] Epic broken down into tasks
-- [x] Second epic created (epic-tdd-infrastructure.md)
 
 ## Completed Epics
 
-- [x] Nx monorepo setup (epic-nx-monorepo-setup) - Completed 2026-02-01
-- [x] TDD Infrastructure (epic-tdd-infrastructure) - Completed 2026-02-01
+- [x] **Nx Monorepo Setup** (epic-nx-monorepo-setup) - Completed 2026-02-01
+  - Tasks 001-009 → archived in `tasks-done/`
+- [x] **TDD Infrastructure** (epic-tdd-infrastructure) - Completed 2026-02-01
+  - Tasks 010-019 → archived in `tasks-done/`
 
-## Completed Tasks
+## In Progress
 
-- [x] 001-init-nx-workspace - Initialize Nx workspace with pnpm (S)
-- [x] 002-generate-angular-landing - Generate Angular 20 landing app with SSR (M)
-- [x] 003-generate-nestjs-api - Generate NestJS API application (S)
-- [x] 004-generate-types-library - Generate types shared library (S)
-- [x] 005-generate-utils-library - Generate utils shared library (S)
-- [x] 006-generate-ui-library - Generate UI shared library (S)
-- [x] 007-generate-api-client-library - Generate API client library (S)
-- [x] 008-configure-eslint-prettier - Configure ESLint and Prettier (S)
-- [x] 009-verify-builds-and-ssr - Verify all builds and SSR (S)
-- [x] 010-install-playwright-config - Install and configure Playwright for E2E testing (M)
-- [x] 011-install-angular-testing-library - Install Angular Testing Library (S)
-- [x] 012-create-testing-utilities-library - Create shared testing utilities library (M)
-- [x] 013-add-e2e-tests-landing - Add basic E2E tests for landing app (M)
-- [x] 014-add-unit-tests-api - Add retroactive unit tests for API app (M)
-- [x] 015-add-component-tests-landing - Add retroactive component tests for landing app (M)
-- [x] 016-configure-test-coverage - Configure test coverage reporting (S)
-- [x] 017-setup-test-scripts - Set up comprehensive test scripts (S)
-- [x] 018-document-tdd-workflow - Document TDD workflow with practical examples (M)
-- [x] 019-verify-tdd-infrastructure - Verify TDD infrastructure end-to-end (S)
+### Epic: Design System (epic-design-system) - broken-down
 
-## Pending Tasks
+**Phase 1: Tailwind + Token Foundation**
+- [ ] 020-install-tailwind-v4 - Install Tailwind CSS v4 and configure base setup (M)
+- [ ] 021-define-color-tokens - Define HSL-based color tokens in Tailwind @theme (M)
+- [ ] 022-define-typography-tokens - Define typography tokens and base styles (M)
+- [ ] 023-define-dark-mode-tokens - Define dark mode token overrides (S)
+- [ ] 024-verify-phase1-tailwind - Verify Phase 1 Tailwind token foundation (S)
 
-### Epic: TDD Infrastructure (epic-tdd-infrastructure)
-✅ Epic completed!
+**Phase 2: Angular Material Integration**
+- [ ] 025-install-angular-material - Install Angular Material v21 and configure theme (M)
+- [ ] 026-verify-material-integration - Verify Angular Material integration (S)
+
+**Phase 3: Icon System**
+- [ ] 027-create-icon-provider-architecture - Create icon provider interface and DI system (M)
+- [ ] 028-implement-lucide-provider - Implement Lucide icon provider (M)
+- [ ] 029-create-icon-component - Create main icon component (M)
+- [ ] 030-verify-icon-system - Verify icon system in landing app (S)
+
+**Phase 4: Base Components + Examples**
+- [ ] 031-create-button-component - Create Button component with variants (M)
+- [ ] 032-create-card-component - Create Card component (S)
+- [ ] 033-create-input-component - Create Input component with forms integration (M)
+- [ ] 034-create-badge-component - Create Badge component (S)
+- [ ] 035-create-link-component - Create Link component/directive (S)
+- [ ] 036-create-layout-utilities - Create Container and Section layout components (S)
+- [ ] 037-create-hero-example - Create hero section example (M)
+- [ ] 038-create-card-grid-example - Create card grid example (M)
+- [ ] 039-verify-phase4-components - Verify Phase 4 components and examples (S)
+
+**Finalization**
+- [ ] 040-document-design-system - Document design system patterns (M)
+- [ ] 041-cleanup-stub-files - Clean up UI library stub files (S)
 
 ## Up Next
 
-TDD infrastructure is complete. Ready for new epics or feature development.
+Start with task **020-install-tailwind-v4** (no dependencies, foundation for all other tasks).
+
+## Statistics
+
+| Status | Count |
+|--------|-------|
+| Done (archived) | 19 |
+| In Progress | 0 |
+| Pending | 22 |
+| Blocked | 0 |
+| **Total** | **41** |
 
 ## Notes
 
 - Stage 1 uses mock JSON data
 - Dashboard and landing page share packages
-- Tasks 002-007 can run in parallel after 001
-- Task 008 depends on apps being generated
-- Task 009 is final verification
+- Completed tasks archived to `tasks-done/` folder
