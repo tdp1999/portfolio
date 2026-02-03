@@ -20,6 +20,19 @@ Note: ADR-007 standardized the project on SCSS, but the Design System epic expli
 - [ ] Basic Tailwind utility (e.g., `bg-gray-100`) renders in landing app
 - [ ] No build errors or warnings
 
+## Verification Commands
+```bash
+# Type check (delegated to build-validator subagent)
+npx nx affected -t typecheck
+
+# Build landing app
+pnpm build:landing
+
+# Visual verification (manual or via playwright-skill)
+pnpm dev:landing
+# → Check that bg-gray-100 class renders correctly
+```
+
 ## Technical Notes
 - Tailwind v4 uses CSS-first config with `@theme` directive (not tailwind.config.js)
 - File structure to create:

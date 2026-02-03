@@ -267,14 +267,7 @@ feature/
 
 ## Testing Patterns
 
-### Test-Driven Development (TDD) Workflow
-
-```
-Red → Green → Refactor
-1. Write failing test
-2. Write minimal code to pass
-3. Refactor while keeping tests green
-```
+> For TDD workflow, coverage targets, and subagent usage, see `testing-guide.md`
 
 ### Test Structure (AAA Pattern)
 

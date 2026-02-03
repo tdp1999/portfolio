@@ -30,15 +30,13 @@ See `.context/patterns.md` for detailed architecture patterns and module structu
 ## Test-Driven Development (TDD)
 
 Follow Red → Green → Refactor workflow. Write tests BEFORE implementation.
+**Delegate all test execution to the test-runner subagent** (runs affected tests only).
 
-See `.context/testing-guide.md` for full TDD workflow, coverage targets, and testing patterns.
+See `.context/testing-guide.md` for full TDD workflow, coverage targets, and patterns.
 
 ## Code Patterns
 
-- **File Naming:** `PascalCase.tsx` (components), `*.spec.ts` (tests), `camelCase.ts` (hooks/utils)
-- **Exports:** Prefer named exports, re-export from feature `index.ts`
-
-See `.context/patterns.md` for complete code patterns and naming conventions.
+See `.context/patterns.md` for file naming, exports, and all code conventions.
 
 ## Key Decisions
 

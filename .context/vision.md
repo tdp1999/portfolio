@@ -1,3 +1,7 @@
+---
+auto_validation: enabled
+---
+
 # Vision
 
 ## Summary
@@ -63,67 +67,15 @@ Full product (implementing complete vision)
 
 **Approach:** Pragmatic TDD - write tests for critical paths first
 
-**Coverage Targets:**
+> **Full TDD details in `.context/testing-guide.md`** (single source of truth)
 
-- Business logic: 80-90%
-- API endpoints: 90%+
-- Complex components: 70-80%
-- Simple UI components: Optional
-
-**Testing Stack:**
-
-- **Unit/Integration:** Jest (already configured in workspace)
-- **Component Testing:** Angular Testing Library / Testing Library
-- **E2E Testing:** Playwright (headless mode by default, headed mode for debugging)
-- **API Testing:** Supertest for NestJS endpoints
-- **Test Execution:** test-runner subagent handles running tests and validation
-
-**TDD Workflow:**
-
-1. Write failing test for new feature/fix
-2. Implement minimal code to pass the test
-3. **Use test-runner subagent to validate** (automated test execution)
-4. Refactor while keeping tests green
-5. Commit with tests included
-
-**Agent Responsibilities:**
-
-- **Main Agent:** Writes code, writes tests, configures tools
-- **Test-Runner Subagent:** Executes test suites, validates code, reports results
-
-**Test Organization:**
-
-```
-apps/landing/
-├── src/
-│   └── features/
-│       └── home/
-│           ├── components/
-│           │   ├── Hero.tsx
-│           │   └── Hero.spec.ts        # Co-located with component
-│           └── hooks/
-│               ├── useProjects.ts
-│               └── useProjects.spec.ts
-
-apps/api/
-├── src/
-│   └── app/
-│       ├── projects/
-│       │   ├── projects.controller.ts
-│       │   ├── projects.controller.spec.ts
-│       │   ├── projects.service.ts
-│       │   └── projects.service.spec.ts
-│       └── e2e/
-│           └── projects.e2e-spec.ts    # E2E tests
-
-libs/shared/
-└── utils/
-    ├── formatDate.ts
-    └── formatDate.spec.ts              # Library unit tests
-```
+**Key Points:**
+- Red → Green → Refactor workflow
+- All test execution delegated to **test-runner subagent** (runs affected tests only)
+- **build-validator subagent** for type checking and builds
+- Coverage: 80-90% business logic, 90%+ API endpoints, 70-80% complex components
 
 **Critical Paths Requiring Tests:**
-
 - All API endpoints (GET, POST, PUT, DELETE)
 - Authentication and authorization logic
 - Data validation and transformation
