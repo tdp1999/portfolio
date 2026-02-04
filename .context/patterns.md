@@ -43,43 +43,54 @@ Monorepo structure with two applications sharing common packages:
 ```
 /
 ├── apps/
-│   ├── landing/          # Public portfolio site
-│   │   ├── features/
-│   │   │   ├── home/
-│   │   │   ├── experience/
-│   │   │   ├── projects/
-│   │   │   ├── blog/
-│   │   │   └── contact/
-│   │   ├── components/   # App-specific components
-│   │   └── lib/          # App-specific utilities
+│   ├── landing/          # Public portfolio site (Angular SSR)
+│   ├── landing-e2e/      # Playwright E2E tests
+│   ├── api/              # NestJS backend API
+│   └── api-e2e/          # API integration tests
+│
+├── libs/
+│   ├── shared/           # Global shared (FE + BE)
+│   │   ├── types/        # @portfolio/shared/types
+│   │   ├── utils/        # @portfolio/shared/utils
+│   │   └── testing/      # @portfolio/shared/testing
 │   │
-│   └── dashboard/        # Internal admin panel
-│       ├── features/
-│       │   ├── auth/
-│       │   ├── content/
-│       │   ├── projects/
-│       │   ├── blog/
-│       │   └── settings/
-│       ├── components/
-│       └── lib/
-│
-├── packages/
-│   ├── ui/               # Shared UI components
-│   ├── types/            # Shared TypeScript types
-│   ├── api-client/       # API client for both apps
-│   └── utils/            # Shared utilities
-│
-├── services/
-│   └── api/              # Backend API service
-│       ├── controllers/
-│       ├── services/
-│       ├── repositories/
-│       ├── models/
-│       └── middleware/
+│   └── landing/          # Landing app scope
+│       ├── shared/
+│       │   ├── data-access/  # @portfolio/landing/shared/data-access
+│       │   ├── ui/           # @portfolio/landing/shared/ui
+│       │   └── util/         # @portfolio/landing/shared/util
+│       │
+│       ├── feature-projects/     # Future feature libs
+│       ├── feature-skills/
+│       └── feature-experience/
 │
 └── data/
     └── mock/             # Stage 1: Mock JSON data
 ```
+
+### Library Scoping & Module Boundaries
+
+Libraries are organized by scope with ESLint `@nx/enforce-module-boundaries` enforcement.
+
+#### Tag System
+
+| Scope | Tags | Import Path |
+|-------|------|-------------|
+| Global shared | `scope:shared`, `type:{name}` | `@portfolio/shared/{name}` |
+| Landing shared | `scope:landing`, `type:shared-{type}` | `@portfolio/landing/shared/{type}` |
+| Landing feature | `scope:landing`, `type:feature` | `@portfolio/landing/feature-{name}` |
+
+#### Dependency Rules
+
+```
+Features → Landing Shared → Global Shared
+```
+
+- Features cannot import other features directly
+- `scope:shared` cannot import `scope:landing`
+- `type:shared-data-access` cannot import `type:shared-ui`
+
+Use `/ng-lib` skill to generate new libraries with correct tags.
 
 ### Modules
 
@@ -103,14 +114,16 @@ Monorepo structure with two applications sharing common packages:
 | blog     | Blog post editor and management             |
 | settings | Site settings, resume uploads, theme config |
 
-#### Shared Packages
+#### Shared Libraries
 
-| Package    | Responsibility                                       |
-| ---------- | ---------------------------------------------------- |
-| ui         | Reusable UI components (buttons, cards, forms, etc.) |
-| types      | TypeScript interfaces and types                      |
-| api-client | HTTP client, API endpoints, response types           |
-| utils      | Date formatting, i18n helpers, validation            |
+| Library | Import Path | Responsibility |
+| ------- | ----------- | -------------- |
+| shared/types | `@portfolio/shared/types` | TypeScript interfaces shared across FE+BE |
+| shared/utils | `@portfolio/shared/utils` | Utilities shared across FE+BE |
+| shared/testing | `@portfolio/shared/testing` | Test factories and mocks |
+| landing/shared/data-access | `@portfolio/landing/shared/data-access` | API services, state management |
+| landing/shared/ui | `@portfolio/landing/shared/ui` | Landing-specific UI components |
+| landing/shared/util | `@portfolio/landing/shared/util` | Landing-specific utilities |
 
 ### Domains
 

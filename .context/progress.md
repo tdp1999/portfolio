@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (20 tasks)
+- `.context/tasks-done/` - Archived completed tasks (21 tasks)
 
 ## Completed Milestones
 
@@ -118,6 +118,14 @@
 
 ## Completed Tasks (Recent)
 
+- [x] **065-restructure-libs-architecture** - Restructure libs with scoped architecture (L) - Completed 2026-02-04
+  - Implemented nested library structure: `libs/shared/*`, `libs/landing/shared/*`
+  - Created `ng-lib` skill for generating Angular libraries
+  - Configured ESLint module boundaries with scope/type tags
+  - Migrated types/utils to `libs/shared/`, deleted stub ui/api-client
+  - Created landing shared libs: data-access, ui, util
+  - All 66 tests passing
+
 - [x] **042-create-ddl-page** - Design Definition Language showcase page (S) - Completed 2026-02-03
   - Created DDL route at `/ddl` with lazy loading
   - Implemented component with buttons and UI elements showcase
@@ -135,13 +143,13 @@ Both tracks can proceed in parallel if desired.
 
 | Status | Count |
 |--------|-------|
-| Done (archived) | 20 |
+| Done (archived) | 21 |
 | In Progress | 0 |
 | Pending (Design System) | 22 |
 | Pending (DB Foundation) | 6 |
 | Pending (DB User Module) | 8 |
 | Pending (DB Tag Module) | 8 |
-| **Total Created** | **64** |
+| **Total Created** | **65** |
 
 ## Notes
 
