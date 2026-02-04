@@ -1,4 +1,4 @@
-import { BlogPost } from '@portfolio/types';
+import { BlogPost } from '@portfolio/shared/types';
 
 /**
  * Creates a mock BlogPost entity for testing
@@ -26,10 +26,7 @@ export function createMockBlogPost(overrides?: Partial<BlogPost>): BlogPost {
  * @param count - Number of blog posts to create
  * @param overrides - Partial BlogPost properties to apply to all
  */
-export function createMockBlogPosts(
-  count: number,
-  overrides?: Partial<BlogPost>
-): BlogPost[] {
+export function createMockBlogPosts(count: number, overrides?: Partial<BlogPost>): BlogPost[] {
   return Array.from({ length: count }, (_, i) =>
     createMockBlogPost({
       id: String(i + 1),

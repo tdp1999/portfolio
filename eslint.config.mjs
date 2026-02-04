@@ -16,6 +16,32 @@ export default [
           enforceBuildableLibDependency: true,
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
+            // Global shared - can only depend on other shared
+            {
+              sourceTag: 'scope:shared',
+              onlyDependOnLibsWithTags: ['scope:shared'],
+            },
+            // Landing scope - can depend on shared and landing
+            {
+              sourceTag: 'scope:landing',
+              onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
+            },
+            // API scope - can depend on shared and api
+            {
+              sourceTag: 'scope:api',
+              onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+            },
+            // Features cannot depend on other features
+            {
+              sourceTag: 'type:feature',
+              notDependOnLibsWithTags: ['type:feature'],
+            },
+            // Data-access cannot depend on UI (unidirectional)
+            {
+              sourceTag: 'type:shared-data-access',
+              notDependOnLibsWithTags: ['type:shared-ui', 'type:feature'],
+            },
+            // Fallback for untagged libs (temporary during migration)
             {
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],

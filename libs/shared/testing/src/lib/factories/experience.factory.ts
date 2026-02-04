@@ -1,12 +1,10 @@
-import { Experience } from '@portfolio/types';
+import { Experience } from '@portfolio/shared/types';
 
 /**
  * Creates a mock Experience entity for testing
  * @param overrides - Partial Experience properties to override defaults
  */
-export function createMockExperience(
-  overrides?: Partial<Experience>
-): Experience {
+export function createMockExperience(overrides?: Partial<Experience>): Experience {
   const now = new Date();
   return {
     id: '1',

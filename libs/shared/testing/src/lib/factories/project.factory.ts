@@ -1,4 +1,4 @@
-import { Project } from '@portfolio/types';
+import { Project } from '@portfolio/shared/types';
 
 /**
  * Creates a mock Project entity for testing
@@ -26,10 +26,7 @@ export function createMockProject(overrides?: Partial<Project>): Project {
  * @param count - Number of projects to create
  * @param overrides - Partial Project properties to apply to all
  */
-export function createMockProjects(
-  count: number,
-  overrides?: Partial<Project>
-): Project[] {
+export function createMockProjects(count: number, overrides?: Partial<Project>): Project[] {
   return Array.from({ length: count }, (_, i) =>
     createMockProject({
       id: String(i + 1),
