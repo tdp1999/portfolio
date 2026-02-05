@@ -12,17 +12,17 @@ Phase 1 of Design System epic. Typography system includes:
 - Base element styles: h1-h6, p, code in @layer base
 
 ## Acceptance Criteria
-- [ ] `libs/ui/src/styles/tokens/typography.css` contains @theme typography definitions
+- [ ] `libs/landing/shared/ui/src/styles/tokens/typography.scss` contains @theme typography definitions
 - [ ] Font families defined: --font-sans (Inter), --font-mono (JetBrains Mono)
 - [ ] Fluid type scale defined: --text-xs through --text-5xl using clamp()
-- [ ] `libs/ui/src/styles/base/typography.css` contains @layer base element styles
+- [ ] `libs/landing/shared/ui/src/styles/base/typography.scss` contains @layer base element styles
 - [ ] h1-h6 styled with appropriate font sizes and weights
 - [ ] Tailwind utilities work: `font-sans`, `font-mono`, `text-xl`, etc.
 - [ ] Typography scales smoothly between viewport sizes
 
 ## Technical Notes
-```css
-/* typography.css tokens */
+```scss
+/* typography.scss tokens */
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -34,7 +34,7 @@ Phase 1 of Design System epic. Typography system includes:
   /* ... */
 }
 
-/* base/typography.css */
+/* base/typography.scss */
 @layer base {
   h1 { @apply text-5xl font-semibold leading-tight tracking-tight; }
   /* ... */
@@ -44,9 +44,9 @@ Phase 1 of Design System epic. Typography system includes:
 Note: May need to add @fontsource/jetbrains-mono if not already included with Inter.
 
 ## Files to Touch
-- `libs/ui/src/styles/tokens/typography.css` (populate)
-- `libs/ui/src/styles/base/typography.css` (populate)
-- `libs/ui/src/styles/index.css` (ensure imports)
+- `libs/landing/shared/ui/src/styles/tokens/typography.scss` (populate)
+- `libs/landing/shared/ui/src/styles/base/typography.scss` (populate)
+- `libs/landing/shared/ui/src/styles/index.scss` (ensure imports)
 - `package.json` (if @fontsource/jetbrains-mono needed)
 
 ## Dependencies
