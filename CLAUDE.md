@@ -58,6 +58,18 @@ See `.context/patterns.md` for file naming, exports, and all code conventions.
 - Use `nx affected` commands to only run tasks on changed projects
 - Use `pnpm graph` to visualize project dependencies
 
+## UI Development Preferences
+
+- **Always use SCSS files** for styles (`.scss` extension), never create `.css` files
+  - Rationale: SCSS is a superset of CSS and can contain CSS syntax, but provides additional features when needed
+  - This applies to all new style files and future style-related tasks
+- **Prefer Tailwind CSS utility classes over custom CSS styling**
+  - Use Tailwind classes in templates for styling when possible
+  - Only write custom SCSS when Tailwind utilities are insufficient or for complex component-specific styles
+- **Use Playwright skill for UI validation** instead of building or running non-template tests
+  - Visual verification is more effective for HTML/template/UI changes
+  - Use `playwright-skill` to validate rendering, layout, and visual aspects
+
 ## Context Files
 
 The `.context/` directory contains project documentation:
