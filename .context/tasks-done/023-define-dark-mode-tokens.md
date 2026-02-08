@@ -1,6 +1,6 @@
 # Task: Define Dark Mode Token Overrides
 
-## Status: pending
+## Status: completed
 
 ## Goal
 Create dark mode CSS token overrides that activate when `.dark` class is present on the root element.
@@ -15,13 +15,13 @@ Note: `darkMode: 'class'` is configured in `tailwind.config.js`.
 Note: Phase 5 (future) will add runtime toggle UI. For now, dark mode can be tested by manually adding `.dark` class in DevTools.
 
 ## Acceptance Criteria
-- [ ] `libs/landing/shared/ui/src/styles/themes/dark.scss` contains `.dark` class overrides
-- [ ] Background/surface colors inverted (light -> dark gray hex values)
-- [ ] Text colors inverted (dark -> light gray hex values)
-- [ ] Primary accent shifted for dark mode visibility (500 -> 400)
-- [ ] Border colors adjusted for dark mode contrast
-- [ ] Adding `.dark` to `<html>` in DevTools shows correct dark theme
-- [ ] All semantic tokens have dark mode equivalents
+- [x] `libs/landing/shared/ui/src/styles/themes/dark.scss` contains `.dark` class overrides
+- [x] Background/surface colors inverted (light -> dark gray hex values)
+- [x] Text colors inverted (dark -> light gray hex values)
+- [x] Primary accent shifted for dark mode visibility (500 -> 400)
+- [x] Border colors adjusted for dark mode contrast
+- [x] Adding `.dark` to `<html>` in DevTools shows correct dark theme
+- [x] All semantic tokens have dark mode equivalents
 
 ## Technical Notes
 ```scss
@@ -55,3 +55,4 @@ Test by adding class to html element: `document.documentElement.classList.add('d
 ## Complexity: S
 
 ## Progress Log
+- [2026-02-08] Completed — dark mode tokens implemented with interactive toggle on /ddl

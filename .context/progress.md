@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (19 tasks)
+- `.context/tasks-done/` - Archived completed tasks (24 tasks)
 
 ## Completed Milestones
 
@@ -30,23 +30,27 @@
 ### Epic: Design System (epic-design-system) - broken-down
 
 **Phase 1: Tailwind + Token Foundation**
-- [ ] 020-install-tailwind-v3 - Install Tailwind CSS v3 and configure base setup (M)
-- [ ] 021-define-color-tokens - Define HSL-based color tokens (M)
-- [ ] 022-define-typography-tokens - Define typography tokens and base styles (M)
-- [ ] 023-define-dark-mode-tokens - Define dark mode token overrides (S)
+
+- [x] 020-install-tailwind-v3 - Install Tailwind CSS v3 and configure base setup (M)
+- [x] 021-define-color-tokens - Define HSL-based color tokens (M)
+- [x] 022-define-typography-tokens - Define typography tokens and base styles (M)
+- [x] 023-define-dark-mode-tokens - Define dark mode token overrides (S)
 - [ ] 024-verify-phase1-tailwind - Verify Phase 1 Tailwind token foundation (S)
 
 **Phase 2: Angular Material Integration**
+
 - [ ] 025-install-angular-material - Install Angular Material v21 and configure theme (M)
 - [ ] 026-verify-material-integration - Verify Angular Material integration (S)
 
 **Phase 3: Icon System**
+
 - [ ] 027-create-icon-provider-architecture - Create icon provider interface and DI system (M)
 - [ ] 028-implement-lucide-provider - Implement Lucide icon provider (M)
 - [ ] 029-create-icon-component - Create main icon component (M)
 - [ ] 030-verify-icon-system - Verify icon system in landing app (S)
 
 **Phase 4: Base Components + Examples**
+
 - [ ] 031-create-button-component - Create Button component with variants (M)
 - [ ] 032-create-card-component - Create Card component (S)
 - [ ] 033-create-input-component - Create Input component with forms integration (M)
@@ -58,6 +62,7 @@
 - [ ] 039-verify-phase4-components - Verify Phase 4 components and examples (S)
 
 **Finalization**
+
 - [ ] 040-document-design-system - Document design system patterns (M)
 - [ ] 041-cleanup-stub-files - Clean up UI library stub files (S)
 
@@ -68,6 +73,7 @@
 > **Approach:** Sequential module development. Complete one module fully before starting the next.
 
 #### Sprint 1: Foundation (6 tasks)
+
 - [ ] 043-setup-prisma-supabase - Setup Prisma and Supabase connection (S)
 - [ ] 044-create-prisma-service - Create PrismaService for NestJS (S)
 - [ ] 045-create-value-objects - Create shared value objects (S)
@@ -78,6 +84,7 @@
 **Milestone:** Can connect to DB, generate types, CQRS bus ready
 
 #### Sprint 2: User Module - Complete (8 tasks)
+
 - [ ] 049-user-prisma-schema - User Prisma schema + migration (S)
 - [ ] 050-user-domain-entity - User domain entity + tests (M)
 - [ ] 051-user-repository - User repository + mapper (M)
@@ -90,6 +97,7 @@
 **Milestone:** First complete module with full vertical slice
 
 #### Sprint 3: Tag Module - Complete (8 tasks)
+
 - [ ] 057-tag-prisma-schema - Tag Prisma schema + migration (S)
 - [ ] 058-tag-domain-entity - Tag domain entity + tests (S)
 - [ ] 059-tag-repository - Tag repository + mapper (M)
@@ -102,6 +110,7 @@
 **Milestone:** First content module, pattern established for reuse
 
 #### Future Sprints (to be broken down when ready)
+
 - Sprint 4: Category Module (similar to Tag)
 - Sprint 5: Skill Module (with self-reference)
 - Sprint 6: Media Module
@@ -134,23 +143,23 @@
 
 ## Up Next
 
-**Next Design System Task:** **020-install-tailwind-v3** - Install Tailwind CSS v3 and configure base setup
+**Next Design System Task:** **024-verify-phase1-tailwind** - Verify Phase 1 Tailwind token foundation
 **Alternative Track:** Start Database with **043-setup-prisma-supabase**
 
 Both tracks can proceed in parallel if desired.
 
 ## Statistics
 
-| Status | Count |
-|--------|-------|
-| Done (archived) | 19 |
-| Done (Design System) | 0 |
-| In Progress | 0 |
-| Pending (Design System) | 22 |
-| Pending (DB Foundation) | 6 |
-| Pending (DB User Module) | 8 |
-| Pending (DB Tag Module) | 8 |
-| **Total Created** | **63** |
+| Status                   | Count  |
+| ------------------------ | ------ |
+| Done (archived)          | 24     |
+| Done (Design System)     | 3      |
+| In Progress              | 0      |
+| Pending (Design System)  | 22     |
+| Pending (DB Foundation)  | 6      |
+| Pending (DB User Module) | 8      |
+| Pending (DB Tag Module)  | 8      |
+| **Total Created**        | **63** |
 
 ## Notes
 
