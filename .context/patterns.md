@@ -151,6 +151,47 @@ Use `/ng-lib` skill to generate new libraries with correct tags.
 - **Boundaries:** Site-wide configuration
 - **Managed by:** Dashboard settings feature
 
+### Angular Material Integration
+
+#### When to Use Material vs Custom Components
+- **Use Material** for: form controls (inputs, selects, checkboxes), data tables, dialogs/overlays, date pickers, progress indicators, snackbars
+- **Use custom components** for: hero sections, project cards, navigation, marketing layouts — anything highly design-specific
+
+#### Theme Token Override Pattern
+Material M3 tokens are overridden in `libs/landing/shared/ui/src/styles/material/overrides.scss` via `mat.theme-overrides()`:
+
+```scss
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark;
+
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: 'Inter',
+    density: 0,
+  ));
+
+  @include mat.theme-overrides((
+    primary: var(--color-primary),
+    on-primary: var(--color-text-on-primary),
+    surface: var(--color-surface),
+    on-surface: var(--color-text),
+  ));
+}
+```
+
+#### Dark Mode Behavior
+- Buttons respond correctly to `.dark` class on `<html>` — primary color shifts to lighter shade
+- `mat-card` uses its own M3 surface elevation token (not fully overridden) — card stays light in dark mode
+- To fully dark-theme cards, add explicit dark override: `.dark { @include mat.theme-overrides((surface: var(--color-surface))) }`
+
+#### Avoiding Tailwind/Material Conflicts
+- Material components use `::ng-deep` encapsulation — Tailwind utilities applied **inside** Material components may be overridden
+- Prefer `mat.theme-overrides()` for styling Material internals rather than utility classes
+- No z-index conflicts observed — CDK overlay container sits above content correctly
+- Tailwind `rounded-*`, `shadow-*` etc. should NOT be applied directly to `mat-button` or `mat-card` — use wrapping divs instead
+
 ### Architecture Changelog
 
 #### [2026-02-02] Standardize Styling to SCSS

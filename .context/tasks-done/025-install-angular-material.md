@@ -1,6 +1,6 @@
 # Task: Install Angular Material v21 and Configure Theme
 
-## Status: pending
+## Status: done
 
 ## Goal
 Install Angular Material v21 and integrate it with the custom design system tokens.
@@ -9,13 +9,13 @@ Install Angular Material v21 and integrate it with the custom design system toke
 Phase 2 of Design System epic. Angular Material provides robust, accessible components. This task installs Material and configures it to use our semantic color tokens via `mat.theme-overrides()`.
 
 ## Acceptance Criteria
-- [ ] @angular/material v21 installed via `ng add @angular/material`
-- [ ] Custom theme option selected during installation (not prebuilt)
-- [ ] Material overrides SCSS file created at `libs/landing/shared/ui/src/styles/material/overrides.scss`
-- [ ] Material theme configured to use semantic tokens (--color-primary, etc.)
-- [ ] Basic Material component renders correctly (mat-button with custom colors)
-- [ ] Material components respond to `.dark` class
-- [ ] No style conflicts between Tailwind utilities and Material
+- [x] @angular/material v21 installed via `ng add @angular/material`
+- [x] Custom theme option selected during installation (not prebuilt)
+- [x] Material overrides SCSS file created at `libs/landing/shared/ui/src/styles/material/overrides.scss`
+- [x] Material theme configured to use semantic tokens (--color-primary, etc.)
+- [x] Basic Material component renders correctly (mat-button with custom colors)
+- [x] Material components respond to `.dark` class
+- [x] No style conflicts between Tailwind utilities and Material
 
 ## Technical Notes
 ```scss
@@ -60,3 +60,4 @@ Note: SCSS can import other SCSS files, so `index.scss` can import `./material/o
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-08] Started and completed. @angular/material v21.1.3 installed, custom M3 theme configured with semantic token overrides, 5 mat-buttons verified on /ddl, dark mode works.
