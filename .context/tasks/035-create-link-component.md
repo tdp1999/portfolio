@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the Link component/directive for styled navigation links.
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Link provides consistent styling for navigation and text links, integrating with Angular Router.
 
 ## Acceptance Criteria
+
 - [ ] LinkComponent or LinkDirective created
 - [ ] Uses semantic tokens (text-primary, hover:text-primary-hover)
 - [ ] Underline appears on hover (underline-offset-2)
@@ -20,16 +23,18 @@ Phase 4 of Design System epic - Base Components. Link provides consistent stylin
 - [ ] Unit tests with >70% coverage
 
 ## Technical Notes
+
 Two approaches possible:
 
 **Option A: Directive (recommended for flexibility)**
+
 ```typescript
 // libs/ui/src/components/link/link.directive.ts
 @Directive({
   selector: '[libLink]',
   standalone: true,
   host: {
-    'class': 'link',
+    class: 'link',
   },
 })
 export class LinkDirective {
@@ -38,6 +43,7 @@ export class LinkDirective {
 ```
 
 **Option B: Component**
+
 ```typescript
 @Component({
   selector: 'lib-link',
@@ -53,6 +59,7 @@ export class LinkDirective {
 ```
 
 Styles:
+
 ```scss
 .link {
   @apply text-primary transition-colors duration-150;
@@ -65,12 +72,14 @@ Styles:
 ```
 
 Usage:
+
 ```html
 <a libLink routerLink="/projects">View Projects</a>
 <a libLink href="https://github.com" [external]="true">GitHub</a>
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/link/link.directive.ts` (create)
 - `libs/ui/src/components/link/link.directive.scss` (create)
 - `libs/ui/src/components/link/link.directive.spec.ts` (create)
@@ -78,6 +87,7 @@ Usage:
 - `libs/ui/src/index.ts` (export)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: S

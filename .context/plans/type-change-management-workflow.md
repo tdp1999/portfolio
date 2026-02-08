@@ -3,6 +3,7 @@
 ## Problem Statement
 
 When type definitions in `libs/types` are changed, added, or deleted, developers must manually update corresponding mock factories in `libs/shared/testing`. This manual process is:
+
 - Time-consuming and error-prone
 - Breaks type safety if factories get out of sync
 - Requires remembering to update tests, exports, and validation
@@ -10,6 +11,7 @@ When type definitions in `libs/types` are changed, added, or deleted, developers
 ## Solution Overview
 
 Create an automated workflow using a custom Nx generator that:
+
 1. Analyzes type definitions using TypeScript Compiler API
 2. Automatically generates/updates/deletes mock factories
 3. Validates changes across the entire monorepo
@@ -26,12 +28,14 @@ Create an automated workflow using a custom Nx generator that:
 ### Custom Nx Generator at `tools/generators/sync-types/`
 
 **Flow:**
+
 ```
 Developer edits types → Run `pnpm sync-types` → Generator analyzes types →
 Updates/creates factories → Runs tests → Type-checks consumers → Reports status
 ```
 
 **Components:**
+
 1. **Type Analyzer** - Parse TypeScript AST, extract interfaces, detect changes
 2. **Factory Generator** - Generate code matching existing factory patterns
 3. **Test Generator** - Generate test files for factories
@@ -56,6 +60,7 @@ git commit -m "feat(types): add new field"
 ## Implementation Breakdown
 
 ### Phase 1: Core Generator Setup
+
 **Goal:** Basic infrastructure and simple type analysis
 
 - [ ] Create Nx generator file structure at `tools/generators/sync-types/`
@@ -66,6 +71,7 @@ git commit -m "feat(types): add new field"
 - [ ] Verify generated code matches existing pattern
 
 **Files to create:**
+
 - `tools/generators/sync-types/index.ts`
 - `tools/generators/sync-types/type-analyzer.ts`
 - `tools/generators/sync-types/factory-generator.ts`
@@ -73,6 +79,7 @@ git commit -m "feat(types): add new field"
 - `tools/generators/sync-types/schema.d.ts`
 
 ### Phase 2: Complete Type Analysis
+
 **Goal:** Handle all TypeScript features used in the project
 
 - [ ] Handle inheritance (`extends BaseEntity`)
@@ -83,9 +90,11 @@ git commit -m "feat(types): add new field"
 - [ ] Test with all existing types (Project, Experience, BlogPost)
 
 **Files to update:**
+
 - `tools/generators/sync-types/type-analyzer.ts`
 
 ### Phase 3: Test Generation
+
 **Goal:** Auto-generate test files matching existing patterns
 
 - [ ] Generate test files matching existing pattern
@@ -96,9 +105,11 @@ git commit -m "feat(types): add new field"
 - [ ] Verify all existing tests still pass
 
 **Files to create:**
+
 - `tools/generators/sync-types/test-generator.ts`
 
 ### Phase 4: Validation & Polish
+
 **Goal:** Production-ready with full validation
 
 - [ ] Implement validation flow (run factory tests)
@@ -110,14 +121,17 @@ git commit -m "feat(types): add new field"
 - [ ] Register generator in `nx.json`
 
 **Files to create:**
+
 - `tools/generators/sync-types/validators.ts`
 
 **Files to modify:**
+
 - `package.json`
 - `nx.json`
 - `.gitignore` (optional)
 
 ### Phase 5: Documentation & Testing
+
 **Goal:** Complete documentation and verified workflow
 
 - [ ] Update CLAUDE.md with new workflow
@@ -160,16 +174,17 @@ export function createMock{Entities}(
 
 ### Default Value Rules
 
-| Type | Default Value | Example |
-|------|---------------|---------|
-| `string` | `'Mock {PropName}'` | `title: 'Mock Title'` |
-| `number` | `0` | `views: 0` |
-| `boolean` | `false` | `published: false` |
-| `Date` | `now` | `createdAt: now` |
-| `string[]` | `['TypeScript']` | `technologies: ['TypeScript']` |
-| Union `'a' \| 'b'` | first value | `status: 'draft'` |
+| Type               | Default Value       | Example                        |
+| ------------------ | ------------------- | ------------------------------ |
+| `string`           | `'Mock {PropName}'` | `title: 'Mock Title'`          |
+| `number`           | `0`                 | `views: 0`                     |
+| `boolean`          | `false`             | `published: false`             |
+| `Date`             | `now`               | `createdAt: now`               |
+| `string[]`         | `['TypeScript']`    | `technologies: ['TypeScript']` |
+| Union `'a' \| 'b'` | first value         | `status: 'draft'`              |
 
 **Special properties:**
+
 - `id` → `'1'` for single, `'1', '2', '3'...` for plural
 - `createdAt`/`updatedAt` → `now`
 
@@ -185,6 +200,7 @@ export function createMock{Entities}(
 ## Verification Scenarios
 
 ### Test 1: Add New Type
+
 ```typescript
 // Add to libs/types/src/lib/types.ts
 export interface Skill extends BaseEntity {
@@ -192,6 +208,7 @@ export interface Skill extends BaseEntity {
   level: number;
 }
 ```
+
 - Run `pnpm sync-types`
 - Verify factory created at `libs/shared/testing/src/lib/factories/skill.factory.ts`
 - Verify test created at `skill.factory.spec.ts`
@@ -199,25 +216,30 @@ export interface Skill extends BaseEntity {
 - Run `nx test shared-testing` → pass
 
 ### Test 2: Modify Existing Type
+
 ```typescript
 // Add to Project interface
 priority?: number;
 ```
+
 - Run `pnpm sync-types`
 - Verify `project.factory.ts` includes `priority: 0`
 - Run `nx test shared-testing` → pass
 
 ### Test 3: Delete Type
+
 - Remove `BlogPost` from types.ts
 - Run `pnpm sync-types`
 - Verify `blog-post.factory.ts` and test deleted
 - Verify export removed from index.ts
 
 ### Test 4: Breaking Change Detection
+
 ```typescript
 // Change Project.title from string to number
 title: number;
 ```
+
 - Run `pnpm sync-types`
 - Should fail type-check with clear error
 
@@ -251,12 +273,12 @@ pnpm sync-types --type=Project
 
 ## Risks & Mitigation
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                               | Mitigation                                   |
+| ---------------------------------- | -------------------------------------------- |
 | Generator bugs create invalid code | Extensive testing, dry-run mode, code review |
-| Complex types not handled | Clear docs on manual factory creation |
-| Windows path issues | Use `path.join()`, test on Windows |
-| Merge conflicts | Use Prettier for deterministic formatting |
+| Complex types not handled          | Clear docs on manual factory creation        |
+| Windows path issues                | Use `path.join()`, test on Windows           |
+| Merge conflicts                    | Use Prettier for deterministic formatting    |
 
 ## Dependencies
 

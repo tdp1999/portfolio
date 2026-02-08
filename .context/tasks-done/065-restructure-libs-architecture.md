@@ -3,15 +3,19 @@
 ## Status: completed
 
 ## Goal
+
 Implement nested library structure with scope tags and ESLint module boundary enforcement for clean separation of concerns.
 
 ## Context
+
 Current libs structure mixes global shared and app-specific libraries. Need to implement scoped architecture:
+
 - `libs/shared/*` - Global shared (FE + BE)
 - `libs/landing/shared/*` - Landing-specific shared resources
 - `libs/landing/feature-*` - Landing feature modules
 
 ## Acceptance Criteria
+
 - [x] Global shared libs reorganized under `libs/shared/`
 - [x] Landing shared libs created: `data-access`, `ui`, `util`
 - [x] Module boundary tags configured in ESLint
@@ -23,6 +27,7 @@ Current libs structure mixes global shared and app-specific libraries. Need to i
 ## Technical Notes
 
 ### Target Structure
+
 ```
 libs/
 ├── shared/                    # Global (FE + BE)
@@ -42,13 +47,15 @@ libs/
 ```
 
 ### Tag System
-| Scope | Tags |
-|-------|------|
-| Global shared | `scope:shared`, `type:{name}` |
-| Landing shared | `scope:landing`, `type:shared-{type}` |
-| Landing feature | `scope:landing`, `type:feature` |
+
+| Scope           | Tags                                  |
+| --------------- | ------------------------------------- |
+| Global shared   | `scope:shared`, `type:{name}`         |
+| Landing shared  | `scope:landing`, `type:shared-{type}` |
+| Landing feature | `scope:landing`, `type:feature`       |
 
 ### Import Paths
+
 ```typescript
 // Global
 import { Project } from '@portfolio/shared/types';
@@ -63,14 +70,17 @@ import { ProjectsComponent } from '@portfolio/landing/feature-projects';
 ```
 
 ### ESLint Module Boundaries
+
 See `.claude/skills/ng-lib/references/module-boundaries.md` for full configuration.
 
 Key rules:
+
 - Features → Landing Shared → Global Shared (dependency direction)
 - Features cannot import other features
 - `scope:shared` cannot import `scope:landing`
 
 ## Files to Touch
+
 - `eslint.config.mjs` (module boundary rules)
 - `tsconfig.base.json` (path aliases)
 - `libs/types/project.json` (move + retag)
@@ -80,6 +90,7 @@ Key rules:
 - New libs via `nx g @nx/angular:library`
 
 ## Subtasks
+
 1. Update ESLint with module boundary rules
 2. Move `libs/types` → `libs/shared/types` with proper tags
 3. Move `libs/utils` → `libs/shared/utils` with proper tags
@@ -91,11 +102,13 @@ Key rules:
 9. Verify with `pnpm lint` and `nx graph`
 
 ## Dependencies
+
 None
 
 ## Complexity: L
 
 ## Progress Log
+
 - [2026-02-04] Task completed:
   - Created `ng-lib` skill at `.claude/skills/ng-lib/`
   - Updated ESLint with module boundary rules (scope:shared, scope:landing, scope:api)

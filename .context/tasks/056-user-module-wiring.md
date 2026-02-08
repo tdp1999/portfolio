@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Wire all User components into NestJS module and verify end-to-end.
 
 ## Context
+
 Final task for User module. Ensures all pieces work together.
 
 ## Acceptance Criteria
+
 - [ ] `UserModule` created with all providers
 - [ ] Repository registered with DI token
 - [ ] All command/query handlers registered
@@ -18,6 +21,7 @@ Final task for User module. Ensures all pieces work together.
 - [ ] All User module tests pass
 
 ## Technical Notes
+
 ```typescript
 @Module({
   imports: [CqrsModule],
@@ -41,11 +45,13 @@ export class UserModule {}
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/user/user.module.ts
 - apps/api/src/modules/user/index.ts
 - apps/api/src/app.module.ts
 
 ## Dependencies
+
 - 055-user-controller
 
 ## Complexity: S

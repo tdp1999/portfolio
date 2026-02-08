@@ -3,12 +3,15 @@
 ## Status: completed
 
 ## Goal
+
 Write end-to-end tests for landing app covering critical user flows: home page loads, navigation works, theme toggle.
 
 ## Context
+
 These are retroactive tests for the existing landing app. They verify that the basic structure and navigation work correctly. This establishes E2E testing patterns for future features.
 
 ## Acceptance Criteria
+
 - [x] Separate `landing-e2e` app created following Nx best practices ✅
 - [x] At least 3 E2E test files created in `apps/landing-e2e/src/`:
   - `home.spec.ts` - Home page loads and displays key sections ✅
@@ -22,6 +25,7 @@ These are retroactive tests for the existing landing app. They verify that the b
 - [x] Implicit dependency on `landing` app configured ✅
 
 ## Technical Notes
+
 - Start dev server before running E2E tests (or configure Playwright to do it)
 - Use `page.goto()`, `page.locator()`, `expect().toBeVisible()` patterns
 - Example test:
@@ -35,6 +39,7 @@ These are retroactive tests for the existing landing app. They verify that the b
 - Reference `.context/patterns.md` for Testing Patterns
 
 ## Files Created/Modified
+
 - `apps/landing-e2e/` (new app directory)
 - `apps/landing-e2e/project.json` (new)
 - `apps/landing-e2e/playwright.config.ts` (new - only config needed)
@@ -49,6 +54,7 @@ These are retroactive tests for the existing landing app. They verify that the b
 - `package.json` (updated test scripts, removed redundant playwright script)
 
 ## Dependencies
+
 - Task 010 (Playwright installed and configured)
 
 ## Complexity: M
@@ -56,6 +62,7 @@ These are retroactive tests for the existing landing app. They verify that the b
 ## Progress Log
 
 ### 2026-02-01
+
 - Created separate `landing-e2e` app following Nx best practices (E2E tests should be in separate app)
 - Created `apps/landing-e2e/src/home.spec.ts` with 7 tests covering:
   - Welcome heading display

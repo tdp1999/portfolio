@@ -1,7 +1,8 @@
 /* Base Typography Styles */
 
 @layer base {
-  html, body {
+  html,
+  body {
     background-color: var(--color-background);
   }
 
@@ -37,7 +38,9 @@
     @apply text-base leading-relaxed;
   }
 
-  code, kbd, samp {
+  code,
+  kbd,
+  samp {
     @apply font-mono text-sm;
   }
 

@@ -13,11 +13,11 @@ Generate Angular libraries following project conventions with proper scoping and
 
 ## Quick Reference
 
-| Scope | Directory Pattern | Tags | Import Path |
-|-------|------------------|------|-------------|
-| Global shared | `libs/shared/{name}` | `scope:shared`, `type:{name}` | `@portfolio/shared/{name}` |
-| Landing shared | `libs/landing/shared/{type}` | `scope:landing`, `type:shared-{type}` | `@portfolio/landing/shared/{type}` |
-| Landing feature | `libs/landing/feature-{name}` | `scope:landing`, `type:feature` | `@portfolio/landing/feature-{name}` |
+| Scope           | Directory Pattern             | Tags                                  | Import Path                         |
+| --------------- | ----------------------------- | ------------------------------------- | ----------------------------------- |
+| Global shared   | `libs/shared/{name}`          | `scope:shared`, `type:{name}`         | `@portfolio/shared/{name}`          |
+| Landing shared  | `libs/landing/shared/{type}`  | `scope:landing`, `type:shared-{type}` | `@portfolio/landing/shared/{type}`  |
+| Landing feature | `libs/landing/feature-{name}` | `scope:landing`, `type:feature`       | `@portfolio/landing/feature-{name}` |
 
 ## Workflow
 
@@ -30,6 +30,7 @@ Generate Angular libraries following project conventions with proper scoping and
 ## Interactive Questions
 
 Ask user:
+
 1. "What is the library name?" (e.g., `projects`, `data-access`, `ui`)
 2. "What is the library's purpose?" (helps classify scope)
 3. "Which scope?" - Offer options based on purpose:
@@ -53,6 +54,7 @@ standalone: true
 ### Computed Options by Scope
 
 **Global Shared** (`libs/shared/{name}`):
+
 ```bash
 nx g @nx/angular:library {name} \
   --directory=libs/shared/{name} \
@@ -64,6 +66,7 @@ nx g @nx/angular:library {name} \
 ```
 
 **Landing Shared** (`libs/landing/shared/{type}`):
+
 ```bash
 nx g @nx/angular:library {type} \
   --directory=libs/landing/shared/{type} \
@@ -75,6 +78,7 @@ nx g @nx/angular:library {type} \
 ```
 
 **Landing Feature** (`libs/landing/feature-{name}`):
+
 ```bash
 nx g @nx/angular:library feature-{name} \
   --directory=libs/landing/feature-{name} \
@@ -88,6 +92,7 @@ nx g @nx/angular:library feature-{name} \
 ## Post-Generation
 
 After generating, remind user to:
+
 1. Update `tsconfig.base.json` paths if not auto-added
 2. Verify tags in `project.json`
 3. Run `pnpm lint` to verify module boundaries

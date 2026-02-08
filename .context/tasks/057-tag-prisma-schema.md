@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Define Tag model in Prisma schema with User relation for audit fields.
 
 ## Context
+
 Tag is the simplest content entity - perfect for establishing the full module pattern.
 
 ## Acceptance Criteria
+
 - [ ] Tag model in schema.prisma with all 6 fields
 - [ ] Foreign key relations to User (createdById, updatedById)
 - [ ] Unique constraints on name and slug
@@ -16,7 +19,9 @@ Tag is the simplest content entity - perfect for establishing the full module pa
 - [ ] Prisma types generated
 
 ## Technical Notes
+
 Fields:
+
 - id (UUID v7, PK)
 - name (unique)
 - slug (unique)
@@ -38,10 +43,12 @@ model Tag {
 ```
 
 ## Files to Touch
+
 - apps/api/prisma/schema.prisma
 - apps/api/prisma/migrations/
 
 ## Dependencies
+
 - 056-user-module-wiring (User must exist for FK)
 
 ## Complexity: S

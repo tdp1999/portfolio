@@ -38,12 +38,9 @@ export function createMockHttpError(
  */
 export const httpErrors = {
   notFound: () => createMockHttpError(404, 'Not Found', 'Resource not found'),
-  unauthorized: () =>
-    createMockHttpError(401, 'Unauthorized', 'Authentication required'),
-  forbidden: () =>
-    createMockHttpError(403, 'Forbidden', 'Access denied'),
+  unauthorized: () => createMockHttpError(401, 'Unauthorized', 'Authentication required'),
+  forbidden: () => createMockHttpError(403, 'Forbidden', 'Access denied'),
   serverError: () =>
     createMockHttpError(500, 'Internal Server Error', 'An unexpected error occurred'),
-  badRequest: (message = 'Invalid request') =>
-    createMockHttpError(400, 'Bad Request', message),
+  badRequest: (message = 'Invalid request') => createMockHttpError(400, 'Bad Request', message),
 };

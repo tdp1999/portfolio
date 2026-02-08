@@ -7,6 +7,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 1. Functional Requirements
 
 **Core Entities & Use Cases:**
+
 - What are the primary business entities? (e.g., Users, Projects, Blog Posts, Contact Messages, Skills, Experience, Testimonials)
 - Is this purely a portfolio showcase, or will it have interactive features (comments, likes, contact forms, analytics)?
 - Will there be an admin interface for content management?
@@ -17,6 +18,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 2. Data Characteristics
 
 **Volume & Growth:**
+
 - Expected number of portfolio items/projects to display?
 - Will you store media (images, videos) metadata or actual files?
 - Do you anticipate user-generated content (comments, messages)?
@@ -27,6 +29,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 3. Access Patterns
 
 **Read vs. Write:**
+
 - Portfolio sites are typically read-heavy. Confirm this assumption?
 - What are the most frequent queries? (e.g., "get all projects by category", "get latest blog posts", "search by skill/tag")
 - Any complex queries like full-text search, filtering by multiple criteria, or aggregations?
@@ -37,6 +40,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 4. Performance & Consistency
 
 **Latency & Throughput:**
+
 - Target response time for API calls? (e.g., <100ms, <500ms)
 - Expected concurrent users? (portfolio sites typically low, but spikes possible)
 - Strong consistency required, or is eventual consistency acceptable for some data?
@@ -47,6 +51,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 5. Compliance & Security
 
 **Regulations & Data Protection:**
+
 - Will you collect PII (emails, names from contact forms)?
 - GDPR compliance needed? (EU visitors)
 - Data retention policies? (how long to keep contact messages, analytics)
@@ -58,6 +63,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 6. Integration & Future-Proofing
 
 **External Systems:**
+
 - Sync with GitHub API for project data?
 - Integration with CMS (headless CMS like Strapi, Sanity)?
 - Analytics integration (custom vs. third-party)?
@@ -70,6 +76,7 @@ This questionnaire will help design a robust, scalable, and extendable database 
 ## 7. Technical Constraints
 
 **Given your current stack (NestJS, Angular, Nx):**
+
 - Database preference? (PostgreSQL, MongoDB, SQLite for simplicity)
 - ORM preference? (Prisma, TypeORM, Drizzle, MikroORM)
 - Hosting environment? (Vercel, Railway, self-hosted, cloud provider)

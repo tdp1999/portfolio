@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create REST controller for Tag CRUD operations.
 
 ## Context
+
 Full REST API for tags. Public read, authenticated write.
 
 ## Acceptance Criteria
+
 - [ ] `TagController` with route prefix `/api/tags`
 - [ ] `GET /` - List all tags (public)
 - [ ] `GET /:id` - Get tag by ID (public)
@@ -21,12 +24,13 @@ Full REST API for tags. Public read, authenticated write.
 - [ ] Unit tests for controller
 
 ## Technical Notes
+
 ```typescript
 @Controller('tags')
 export class TagController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
+    private readonly queryBus: QueryBus
   ) {}
 
   @Get()
@@ -36,9 +40,7 @@ export class TagController {
 
   @Post()
   async create(@Body() dto: CreateTagDto, @CurrentUser() user: User) {
-    const id = await this.commandBus.execute(
-      new CreateTagCommand(user.id, dto)
-    );
+    const id = await this.commandBus.execute(new CreateTagCommand(user.id, dto));
     return { id };
   }
 
@@ -49,10 +51,12 @@ export class TagController {
 Note: `@CurrentUser()` decorator will come from auth (placeholder for now).
 
 ## Files to Touch
+
 - apps/api/src/modules/tag/presentation/tag.controller.ts
 - apps/api/src/modules/tag/presentation/tag.controller.spec.ts
 
 ## Dependencies
+
 - 061-tag-commands
 - 062-tag-queries
 

@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create CQRS commands for User write operations.
 
 ## Context
+
 Commands handle create/update operations through CommandBus.
 
 ## Acceptance Criteria
+
 - [ ] `CreateUserCommand` + `CreateUserHandler`
 - [ ] `UpdateUserCommand` + `UpdateUserHandler`
 - [ ] `UpdateLastLoginCommand` + handler
@@ -16,11 +19,12 @@ Commands handle create/update operations through CommandBus.
 - [ ] Unit tests for each handler
 
 ## Technical Notes
+
 ```typescript
 export class CreateUserCommand extends BaseCommand {
   constructor(
     userId: string, // Who is creating (or system)
-    readonly data: CreateUserDto,
+    readonly data: CreateUserDto
   ) {
     super(userId);
   }
@@ -30,7 +34,7 @@ export class CreateUserCommand extends BaseCommand {
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     @Inject(USER_REPOSITORY)
-    private readonly repo: IUserRepository,
+    private readonly repo: IUserRepository
   ) {}
 
   async execute(command: CreateUserCommand): Promise<string> {
@@ -41,11 +45,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 ```
 
 ## Files to Touch
-- apps/api/src/modules/user/application/commands/*.command.ts
-- apps/api/src/modules/user/application/commands/handlers/*.handler.ts
+
+- apps/api/src/modules/user/application/commands/\*.command.ts
+- apps/api/src/modules/user/application/commands/handlers/\*.handler.ts
 - Test files
 
 ## Dependencies
+
 - 051-user-repository
 - 052-user-dtos
 - 047-setup-cqrs-base

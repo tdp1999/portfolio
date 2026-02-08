@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Update `.context/patterns.md` with comprehensive design system documentation.
 
 ## Context
+
 Final task of Design System epic. Documentation ensures future development follows established patterns and makes the design system usable.
 
 ## Acceptance Criteria
+
 - [ ] Design System section added to `.context/patterns.md`
 - [ ] Three-layer token architecture explained
 - [ ] Color token usage documented with examples
@@ -20,14 +23,16 @@ Final task of Design System epic. Documentation ensures future development follo
 - [ ] BEM naming convention examples
 
 ## Technical Notes
+
 Documentation structure to add:
 
-```markdown
+````markdown
 ## Design System
 
 ### Token Architecture
 
 Three-layer system following industry best practices:
+
 1. **Primitive Tokens (Layer 1):** Raw values - Tailwind defaults + custom HSL palette
 2. **Semantic Tokens (Layer 2):** Contextual mappings - --color-primary, --color-surface
 3. **Component Tokens (Layer 3):** Component-specific - defined in component SCSS
@@ -43,6 +48,7 @@ Three-layer system following industry best practices:
 <!-- Direct accent access when needed -->
 <div class="bg-accent-100 text-accent-700">Light accent container</div>
 ```
+````
 
 ### Typography Usage
 
@@ -67,6 +73,7 @@ Available sizes: sm (16px), md (20px), lg (24px), xl (32px)
 ### Dark Mode
 
 Add `.dark` class to `<html>` to activate dark mode:
+
 ```javascript
 document.documentElement.classList.add('dark');
 ```
@@ -77,6 +84,7 @@ document.documentElement.classList.add('dark');
 - SCSS for Angular Material mixins
 - Component styles use @apply with Tailwind classes
 - BEM naming for custom CSS classes
+
 ```
 
 ## Files to Touch
@@ -89,3 +97,4 @@ document.documentElement.classList.add('dark');
 ## Complexity: M
 
 ## Progress Log
+```

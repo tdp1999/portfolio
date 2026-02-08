@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create Zod validation schemas for User operations.
 
 ## Context
+
 DTOs validate incoming requests and provide TypeScript types.
 
 ## Acceptance Criteria
+
 - [ ] `CreateUserSchema` with validation rules
 - [ ] `UpdateUserSchema` for profile updates
 - [ ] `LoginSchema` for authentication
@@ -16,6 +19,7 @@ DTOs validate incoming requests and provide TypeScript types.
 - [ ] Unit tests for validation edge cases
 
 ## Technical Notes
+
 ```typescript
 export const CreateUserSchema = z.object({
   email: z.string().email(),
@@ -27,10 +31,12 @@ export type CreateUserDto = z.infer<typeof CreateUserSchema>;
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/user/application/user.dto.ts
 - apps/api/src/modules/user/application/user.dto.spec.ts
 
 ## Dependencies
+
 - 050-user-domain-entity
 
 ## Complexity: S

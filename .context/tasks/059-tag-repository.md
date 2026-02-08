@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create Tag repository port, implementation, and mapper.
 
 ## Context
+
 Data access layer for Tag. Pattern will be reused across modules.
 
 ## Acceptance Criteria
+
 - [ ] `ITagRepository` port interface
 - [ ] `TagRepository` implementation using Prisma
 - [ ] `TagMapper.toDomain()` and `toPrisma()` methods
@@ -17,6 +20,7 @@ Data access layer for Tag. Pattern will be reused across modules.
 - [ ] Integration tests for repository
 
 ## Technical Notes
+
 ```typescript
 export type ITagRepository = {
   add(tag: Tag): Promise<string>;
@@ -31,6 +35,7 @@ export const TAG_REPOSITORY = Symbol('TAG_REPOSITORY');
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/tag/application/ports/tag.repository.port.ts
 - apps/api/src/modules/tag/application/tag.token.ts
 - apps/api/src/modules/tag/infrastructure/repositories/tag.repository.ts
@@ -38,6 +43,7 @@ export const TAG_REPOSITORY = Symbol('TAG_REPOSITORY');
 - Test files
 
 ## Dependencies
+
 - 058-tag-domain-entity
 
 ## Complexity: M

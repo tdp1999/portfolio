@@ -6,6 +6,7 @@
 ## Test-Driven Development (TDD)
 
 ### Workflow
+
 ```
 Red → Green → Refactor
 1. Write failing test for feature/fix
@@ -16,42 +17,49 @@ Red → Green → Refactor
 ```
 
 ### Coverage Targets
-| Area | Target | Notes |
-|------|--------|-------|
-| Business logic (services) | 80-90% | Core application logic |
-| API endpoints | 90%+ | All routes tested |
-| Complex components | 70-80% | Interactive UI |
-| Utilities | 90%+ | Pure functions |
-| Simple UI components | Optional | Focus on E2E instead |
+
+| Area                      | Target   | Notes                  |
+| ------------------------- | -------- | ---------------------- |
+| Business logic (services) | 80-90%   | Core application logic |
+| API endpoints             | 90%+     | All routes tested      |
+| Complex components        | 70-80%   | Interactive UI         |
+| Utilities                 | 90%+     | Pure functions         |
+| Simple UI components      | Optional | Focus on E2E instead   |
 
 ### Test Organization
+
 - **Co-located tests:** `.spec.ts` files next to source files
 - **AAA Pattern:** Arrange → Act → Assert
 - **One assertion per test:** Keep tests focused
 - **Descriptive names:** `it('should return 404 when project not found')`
 
 ### Testing Stack
-| Type | Tool | Notes |
-|------|------|-------|
-| Unit/Integration | Jest | Configured in workspace |
-| Component Testing | Angular Testing Library | For Angular components |
-| E2E | Playwright | playwright-skill plugin available |
-| API Testing | Supertest | For NestJS endpoints |
+
+| Type              | Tool                    | Notes                             |
+| ----------------- | ----------------------- | --------------------------------- |
+| Unit/Integration  | Jest                    | Configured in workspace           |
+| Component Testing | Angular Testing Library | For Angular components            |
+| E2E               | Playwright              | playwright-skill plugin available |
+| API Testing       | Supertest               | For NestJS endpoints              |
 
 ## Automated Testing with Subagents
 
 ### test-runner subagent
+
 - **Runs:** Tests for AFFECTED code only (uses `nx affected`)
 - **Triggers:** Automatically after significant code changes when `auto_validation: enabled`
 - **Output:** Pass/fail status with specific error locations
 
 ### build-validator subagent
+
 - **Runs:** TypeScript type-check and build for AFFECTED projects
 - **Triggers:** Automatically after feature completion when `auto_validation: enabled`
 - **Output:** Type errors and build issues with file:line references
 
 ### Enabling Auto-Validation
+
 Add frontmatter to `.context/vision.md`:
+
 ```yaml
 ---
 auto_validation: enabled
@@ -59,7 +67,9 @@ auto_validation: enabled
 ```
 
 ### Post-Edit Hook
+
 A post-edit hook in `.claude/settings.json` runs type-check after file edits:
+
 ```json
 {
   "hooks": {
@@ -80,6 +90,7 @@ A post-edit hook in `.claude/settings.json` runs type-check after file edits:
 ## Test Patterns
 
 See `patterns.md` for detailed code patterns:
+
 - AAA (Arrange-Act-Assert) structure
 - API endpoint testing pattern
 - Component testing pattern

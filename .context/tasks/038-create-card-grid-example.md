@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build an example card grid section demonstrating Card and Badge components in a responsive layout.
 
 ## Context
+
 Phase 4 of Design System epic - Examples. This validates card and grid patterns for project showcases and blog listings.
 
 ## Acceptance Criteria
+
 - [ ] CardGridExampleComponent created in landing app
 - [ ] Uses Card, Badge, Container, Section components
 - [ ] Uses Tailwind grid utilities (grid, grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-8)
@@ -19,18 +22,13 @@ Phase 4 of Design System epic - Examples. This validates card and grid patterns 
 - [ ] Component is temporary for validation
 
 ## Technical Notes
+
 ```typescript
 // apps/landing/src/app/examples/card-grid-example.component.ts
 @Component({
   selector: 'app-card-grid-example',
   standalone: true,
-  imports: [
-    CardComponent,
-    BadgeComponent,
-    ContainerComponent,
-    SectionComponent,
-    IconComponent,
-  ],
+  imports: [CardComponent, BadgeComponent, ContainerComponent, SectionComponent, IconComponent],
   template: `
     <lib-section>
       <lib-container [wide]="true">
@@ -85,12 +83,14 @@ export class CardGridExampleComponent {
 Note: May need to add additional icons to Lucide provider (shopping-cart, check-square, bar-chart).
 
 ## Files to Touch
+
 - `apps/landing/src/app/examples/card-grid-example.component.ts` (create)
 - `apps/landing/src/app/app.component.html` (add example)
 - `apps/landing/src/app/app.component.ts` (import example)
 - `libs/ui/src/components/icon/providers/lucide.provider.ts` (add icons if needed)
 
 ## Dependencies
+
 - 032-create-card-component
 - 034-create-badge-component
 - 036-create-layout-utilities

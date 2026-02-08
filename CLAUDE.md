@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Nx monorepo for a professional portfolio website with:
+
 - **Angular 21 landing app** (SSR/SSG public site)
 - **NestJS API** (backend service)
 - **Shared libraries** (types, utils, ui, api-client)
@@ -58,6 +59,20 @@ See `.context/patterns.md` for file naming, exports, and all code conventions.
 - Use `nx affected` commands to only run tasks on changed projects
 - Use `pnpm graph` to visualize project dependencies
 
+## Formatting Rules
+
+- **Run `npx prettier --write <file>` on each modified file** after completing any task, before committing. Never run the global `pnpm format` (it formats the entire project).
+- **Multi-line HTML/template elements:** If an element's content does not fit on a single line, the opening tag and closing tag must each be on their own separate lines. Never place a closing tag on the same line as sibling content just to avoid adding a line.
+
+  ```html
+  <!-- WRONG -->
+  </mat-card></div>
+
+  <!-- CORRECT -->
+  </mat-card>
+  </div>
+  ```
+
 ## UI Development Preferences
 
 - **Always use SCSS files** for styles (`.scss` extension), never create `.css` files
@@ -76,6 +91,7 @@ See `.context/patterns.md` for file naming, exports, and all code conventions.
 ## Context Files
 
 The `.context/` directory contains project documentation:
+
 - `vision.md` - Project goals and philosophy
 - `patterns.md` - Architecture and code patterns
 - `testing-guide.md` - TDD workflow and patterns

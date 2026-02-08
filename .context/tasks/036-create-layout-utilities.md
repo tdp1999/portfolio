@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build layout utility components for consistent page structure (Container for max-width, Section for vertical spacing).
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Layout utilities ensure consistent spacing and responsive behavior across pages.
 
 ## Acceptance Criteria
+
 - [ ] ContainerComponent created with selector `lib-container`
 - [ ] Container has max-width constraint and horizontal padding
 - [ ] Optional `wide` prop for wider content (max-w-6xl vs max-w-4xl)
@@ -20,6 +23,7 @@ Phase 4 of Design System epic - Base Components. Layout utilities ensure consist
 - [ ] Unit tests for both components
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/container/container.component.ts
 @Component({
@@ -55,6 +59,7 @@ export class SectionComponent {}
 ```
 
 Styles:
+
 ```scss
 // container.component.scss
 .container {
@@ -72,6 +77,7 @@ Styles:
 ```
 
 Usage:
+
 ```html
 <lib-section>
   <lib-container>
@@ -88,6 +94,7 @@ Usage:
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/container/container.component.ts` (create)
 - `libs/ui/src/components/container/container.component.scss` (create)
 - `libs/ui/src/components/container/container.component.spec.ts` (create)
@@ -99,6 +106,7 @@ Usage:
 - `libs/ui/src/index.ts` (export both)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: S

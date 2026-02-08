@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the icon provider interface and injection token system that allows build-time icon set switching.
 
 ## Context
+
 Phase 3 of Design System epic. The icon system uses a provider pattern allowing different icon libraries (Lucide, Material Symbols, Heroicons) to be swapped at build time. Initially only Lucide is implemented.
 
 ## Acceptance Criteria
+
 - [ ] IconProvider interface defined with `getIcon(name: string)` method
 - [ ] ICON_PROVIDER injection token created
 - [ ] `provideIcons(provider: IconProvider)` helper function created
@@ -17,6 +20,7 @@ Phase 3 of Design System epic. The icon system uses a provider pattern allowing 
 - [ ] Unit tests for provider injection mechanism
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/icon/icon-provider.interface.ts
 import { Type } from '@angular/core';
@@ -43,6 +47,7 @@ export function provideIcons(provider: IconProvider): Provider {
 ```
 
 File structure:
+
 ```
 libs/ui/src/components/icon/
 ├── icon-provider.interface.ts
@@ -54,6 +59,7 @@ libs/ui/src/components/icon/
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/icon/icon-provider.interface.ts` (create)
 - `libs/ui/src/components/icon/icon-provider.token.ts` (create)
 - `libs/ui/src/components/icon/provide-icons.ts` (create)
@@ -61,6 +67,7 @@ libs/ui/src/components/icon/
 - `libs/ui/src/components/icon/icon-provider.interface.spec.ts` (create)
 
 ## Dependencies
+
 - 026-verify-material-integration (Phase 2 complete)
 
 ## Complexity: M

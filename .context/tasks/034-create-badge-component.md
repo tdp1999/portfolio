@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the Badge component for tags, labels, and status indicators.
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Badge is used for technology tags, status indicators, and category labels.
 
 ## Acceptance Criteria
+
 - [ ] BadgeComponent created with selector `lib-badge`
 - [ ] Color variants: `primary` (default), `success`, `warning`, `error`
 - [ ] Uses semantic tokens (bg-primary-container, text-primary, etc.)
@@ -18,6 +21,7 @@ Phase 4 of Design System epic - Base Components. Badge is used for technology ta
 - [ ] Unit tests with >70% coverage
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/badge/badge.component.ts
 @Component({
@@ -40,6 +44,7 @@ export class BadgeComponent {
 ```
 
 Styles:
+
 ```scss
 .badge {
   @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
@@ -72,6 +77,7 @@ Styles:
 ```
 
 Usage:
+
 ```html
 <lib-badge>TypeScript</lib-badge>
 <lib-badge color="success">Published</lib-badge>
@@ -80,6 +86,7 @@ Usage:
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/badge/badge.component.ts` (create)
 - `libs/ui/src/components/badge/badge.component.scss` (create)
 - `libs/ui/src/components/badge/badge.component.spec.ts` (create)
@@ -87,6 +94,7 @@ Usage:
 - `libs/ui/src/index.ts` (export)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: S

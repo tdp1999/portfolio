@@ -74,11 +74,11 @@ Libraries are organized by scope with ESLint `@nx/enforce-module-boundaries` enf
 
 #### Tag System
 
-| Scope | Tags | Import Path |
-|-------|------|-------------|
-| Global shared | `scope:shared`, `type:{name}` | `@portfolio/shared/{name}` |
-| Landing shared | `scope:landing`, `type:shared-{type}` | `@portfolio/landing/shared/{type}` |
-| Landing feature | `scope:landing`, `type:feature` | `@portfolio/landing/feature-{name}` |
+| Scope           | Tags                                  | Import Path                         |
+| --------------- | ------------------------------------- | ----------------------------------- |
+| Global shared   | `scope:shared`, `type:{name}`         | `@portfolio/shared/{name}`          |
+| Landing shared  | `scope:landing`, `type:shared-{type}` | `@portfolio/landing/shared/{type}`  |
+| Landing feature | `scope:landing`, `type:feature`       | `@portfolio/landing/feature-{name}` |
 
 #### Dependency Rules
 
@@ -116,14 +116,14 @@ Use `/ng-lib` skill to generate new libraries with correct tags.
 
 #### Shared Libraries
 
-| Library | Import Path | Responsibility |
-| ------- | ----------- | -------------- |
-| shared/types | `@portfolio/shared/types` | TypeScript interfaces shared across FE+BE |
-| shared/utils | `@portfolio/shared/utils` | Utilities shared across FE+BE |
-| shared/testing | `@portfolio/shared/testing` | Test factories and mocks |
-| landing/shared/data-access | `@portfolio/landing/shared/data-access` | API services, state management |
-| landing/shared/ui | `@portfolio/landing/shared/ui` | Landing-specific UI components |
-| landing/shared/util | `@portfolio/landing/shared/util` | Landing-specific utilities |
+| Library                    | Import Path                             | Responsibility                            |
+| -------------------------- | --------------------------------------- | ----------------------------------------- |
+| shared/types               | `@portfolio/shared/types`               | TypeScript interfaces shared across FE+BE |
+| shared/utils               | `@portfolio/shared/utils`               | Utilities shared across FE+BE             |
+| shared/testing             | `@portfolio/shared/testing`             | Test factories and mocks                  |
+| landing/shared/data-access | `@portfolio/landing/shared/data-access` | API services, state management            |
+| landing/shared/ui          | `@portfolio/landing/shared/ui`          | Landing-specific UI components            |
+| landing/shared/util        | `@portfolio/landing/shared/util`        | Landing-specific utilities                |
 
 ### Domains
 
@@ -154,10 +154,12 @@ Use `/ng-lib` skill to generate new libraries with correct tags.
 ### Angular Material Integration
 
 #### When to Use Material vs Custom Components
+
 - **Use Material** for: form controls (inputs, selects, checkboxes), data tables, dialogs/overlays, date pickers, progress indicators, snackbars
 - **Use custom components** for: hero sections, project cards, navigation, marketing layouts — anything highly design-specific
 
 #### Theme Token Override Pattern
+
 Material M3 tokens are overridden in `libs/landing/shared/ui/src/styles/material/overrides.scss` via `mat.theme-overrides()`:
 
 ```scss
@@ -166,27 +168,33 @@ Material M3 tokens are overridden in `libs/landing/shared/ui/src/styles/material
 html {
   color-scheme: light dark;
 
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: 'Inter',
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: 'Inter',
+      density: 0,
+    )
+  );
 
-  @include mat.theme-overrides((
-    primary: var(--color-primary),
-    on-primary: var(--color-text-on-primary),
-    surface: var(--color-surface),
-    on-surface: var(--color-text),
-  ));
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-text-on-primary),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+    )
+  );
 }
 ```
 
 #### Dark Mode Behavior
+
 - Buttons respond correctly to `.dark` class on `<html>` — primary color shifts to lighter shade
 - `mat-card` uses its own M3 surface elevation token (not fully overridden) — card stays light in dark mode
 - To fully dark-theme cards, add explicit dark override: `.dark { @include mat.theme-overrides((surface: var(--color-surface))) }`
 
 #### Avoiding Tailwind/Material Conflicts
+
 - Material components use `::ng-deep` encapsulation — Tailwind utilities applied **inside** Material components may be overridden
 - Prefer `mat.theme-overrides()` for styling Material internals rather than utility classes
 - No z-index conflicts observed — CDK overlay container sits above content correctly
@@ -195,6 +203,7 @@ html {
 ### Architecture Changelog
 
 #### [2026-02-02] Standardize Styling to SCSS
+
 - **Changed:** Styling approach for shared libraries
 - **From:** Mixed CSS and SCSS files across project
 - **To:** SCSS exclusively for all styling
@@ -211,11 +220,13 @@ html {
 ### Styling Patterns
 
 #### SCSS Organization
+
 - **Style Language:** SCSS (Sass) for all components and global styles
 - **File Extensions:** `.scss` exclusively (no `.css` files in source)
 - **Naming:** Component styles follow component name (e.g., `button.component.scss`)
 
 #### SCSS Structure
+
 ```scss
 // Component styles use SCSS features
 .component-name {
@@ -239,6 +250,7 @@ html {
 ```
 
 #### Future SCSS Architecture (To be implemented)
+
 - **Variables:** Global design tokens (colors, spacing, typography)
 - **Mixins:** Reusable style patterns (breakpoints, flexbox utilities)
 - **Themes:** SCSS variable-based theming system

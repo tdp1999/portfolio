@@ -1,10 +1,4 @@
-import {
-  wait,
-  createDeferred,
-  generateTestId,
-  createTestDate,
-  expectToThrow,
-} from './test-utils';
+import { wait, createDeferred, generateTestId, createTestDate, expectToThrow } from './test-utils';
 
 describe('wait', () => {
   it('should resolve after specified time', async () => {

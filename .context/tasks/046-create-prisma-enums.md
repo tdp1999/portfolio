@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Add all 9 enums to Prisma schema.
 
 ## Context
+
 Enums must exist before entities can reference them.
 
 ## Acceptance Criteria
+
 - [ ] All 9 enums in schema.prisma:
   - Language (EN, VI)
   - ContentStatus (DRAFT, PUBLISHED)
@@ -23,12 +26,15 @@ Enums must exist before entities can reference them.
 - [ ] TypeScript types generated
 
 ## Technical Notes
+
 Reference: `.context/database-schema-design.md`
 
 ## Files to Touch
+
 - apps/api/prisma/schema.prisma
 
 ## Dependencies
+
 - 043-setup-prisma-supabase
 
 ## Complexity: S

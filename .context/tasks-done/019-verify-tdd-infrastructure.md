@@ -3,12 +3,15 @@
 ## Status: completed
 
 ## Goal
+
 Run all tests and verify that the complete TDD infrastructure works correctly.
 
 ## Context
+
 This is the final verification task for the TDD epic. It ensures all tests pass, coverage reports generate correctly, and all test scripts work as expected. Uses test-runner subagent for validation.
 
 ## Acceptance Criteria
+
 - [ ] All unit tests pass (`pnpm test`)
 - [ ] All E2E tests pass (`pnpm test:e2e`)
 - [ ] Coverage report generates without errors (`pnpm test:coverage`)
@@ -20,6 +23,7 @@ This is the final verification task for the TDD epic. It ensures all tests pass,
 - [ ] No failing tests, no console errors during test runs
 
 ## Technical Notes
+
 - Run each test command to verify:
   ```bash
   pnpm test           # All unit/integration tests
@@ -34,10 +38,12 @@ This is the final verification task for the TDD epic. It ensures all tests pass,
 - If any test fails, fix before marking this task complete
 
 ## Files to Touch
+
 - No new files - this is verification only
 - May need to fix issues discovered in previous task files
 
 ## Dependencies
+
 - All previous tasks (010-018) must be completed
 
 ## Complexity: S

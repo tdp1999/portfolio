@@ -37,6 +37,7 @@ pnpm nx e2e-ui landing-e2e
 ## Writing Tests
 
 Follow Playwright best practices:
+
 - Use auto-waiting mechanisms (`expect().toBeVisible()`)
 - Test user-visible behavior, not implementation details
 - Use semantic locators (roles, labels) when possible

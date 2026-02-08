@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create REST controller for User endpoints.
 
 ## Context
+
 Controller exposes User operations via HTTP. Note: Full auth will be separate epic.
 
 ## Acceptance Criteria
+
 - [ ] `UserController` with route prefix `/api/users`
 - [ ] `POST /` - Create user (admin only, for now)
 - [ ] `GET /:id` - Get user by ID
@@ -18,19 +21,18 @@ Controller exposes User operations via HTTP. Note: Full auth will be separate ep
 - [ ] Unit tests for controller
 
 ## Technical Notes
+
 ```typescript
 @Controller('users')
 export class UserController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
+    private readonly queryBus: QueryBus
   ) {}
 
   @Post()
   async create(@Body() dto: CreateUserDto) {
-    const id = await this.commandBus.execute(
-      new CreateUserCommand('system', dto)
-    );
+    const id = await this.commandBus.execute(new CreateUserCommand('system', dto));
     return { id };
   }
 
@@ -42,10 +44,12 @@ export class UserController {
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/user/presentation/user.controller.ts
 - apps/api/src/modules/user/presentation/user.controller.spec.ts
 
 ## Dependencies
+
 - 053-user-commands
 - 054-user-queries
 

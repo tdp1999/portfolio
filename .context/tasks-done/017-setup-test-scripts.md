@@ -3,12 +3,15 @@
 ## Status: completed
 
 ## Goal
+
 Create convenient npm scripts for running different types of tests and test modes.
 
 ## Context
+
 Developers need easy access to run all tests, specific test types, watch mode, and coverage reports. This task consolidates all test commands into the workspace root `package.json`.
 
 ## Acceptance Criteria
+
 - [ ] All test scripts added to workspace root `package.json`:
   - `test` - Run all tests (unit, integration, but not E2E)
   - `test:watch` - Run tests in watch mode
@@ -22,6 +25,7 @@ Developers need easy access to run all tests, specific test types, watch mode, a
 - [ ] Scripts documented in README or contributing guide
 
 ## Technical Notes
+
 - Use Nx run-many for running multiple projects: `nx run-many -t test`
 - Example scripts:
   ```json
@@ -40,10 +44,12 @@ Developers need easy access to run all tests, specific test types, watch mode, a
 - Verify scripts work with `pnpm <script-name>`
 
 ## Files to Touch
+
 - `package.json` (workspace root - add scripts section)
 - `README.md` (document test scripts - optional but recommended)
 
 ## Dependencies
+
 - All previous test setup tasks (010-016)
 
 ## Complexity: S

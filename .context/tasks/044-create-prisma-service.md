@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create NestJS service extending PrismaClient with lifecycle hooks.
 
 ## Context
+
 Central database access point. Required by all repositories.
 
 ## Acceptance Criteria
+
 - [ ] `PrismaService` extends `PrismaClient`
 - [ ] Implements `OnModuleInit` (connect on startup)
 - [ ] Implements `OnModuleDestroy` (disconnect on shutdown)
@@ -17,10 +20,10 @@ Central database access point. Required by all repositories.
 - [ ] Health check query works
 
 ## Technical Notes
+
 ```typescript
 @Injectable()
-export class PrismaService extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy {
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await this.$connect();
   }
@@ -38,12 +41,14 @@ export class PrismaModule {}
 ```
 
 ## Files to Touch
+
 - apps/api/src/infrastructure/prisma/prisma.service.ts
 - apps/api/src/infrastructure/prisma/prisma.module.ts
 - apps/api/src/infrastructure/prisma/prisma.service.spec.ts
 - apps/api/src/app.module.ts (import PrismaModule)
 
 ## Dependencies
+
 - 043-setup-prisma-supabase
 
 ## Complexity: S

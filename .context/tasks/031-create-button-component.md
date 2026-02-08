@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the Button component with variants (primary, secondary, ghost) and sizes.
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Button is a fundamental component used throughout the application for actions and CTAs.
 
 ## Acceptance Criteria
+
 - [ ] ButtonComponent created with selector `lib-button`
 - [ ] Variants: `primary` (default), `secondary`, `ghost`
 - [ ] Sizes: `sm`, `md` (default), `lg`
@@ -21,16 +24,14 @@ Phase 4 of Design System epic - Base Components. Button is a fundamental compone
 - [ ] Unit tests with >70% coverage
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/button/button.component.ts
 @Component({
   selector: 'lib-button',
   standalone: true,
   template: `
-    <button
-      [class]="buttonClasses"
-      [disabled]="disabled"
-      (click)="onClick($event)">
+    <button [class]="buttonClasses" [disabled]="disabled" (click)="onClick($event)">
       <ng-content />
     </button>
   `,
@@ -45,6 +46,7 @@ export class ButtonComponent {
 ```
 
 Styles (Tailwind + semantic tokens):
+
 ```scss
 .btn {
   @apply rounded-lg font-medium transition-colors duration-150;
@@ -61,9 +63,15 @@ Styles (Tailwind + semantic tokens):
     @apply bg-transparent text-primary hover:bg-primary-container;
   }
 
-  &--sm { @apply px-3 py-1.5 text-sm; }
-  &--md { @apply px-4 py-2 text-base; }
-  &--lg { @apply px-6 py-3 text-lg; }
+  &--sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  &--md {
+    @apply px-4 py-2 text-base;
+  }
+  &--lg {
+    @apply px-6 py-3 text-lg;
+  }
 
   &:disabled {
     @apply opacity-50 cursor-not-allowed;
@@ -72,6 +80,7 @@ Styles (Tailwind + semantic tokens):
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/button/button.component.ts` (create)
 - `libs/ui/src/components/button/button.component.scss` (create)
 - `libs/ui/src/components/button/button.component.spec.ts` (create)
@@ -79,6 +88,7 @@ Styles (Tailwind + semantic tokens):
 - `libs/ui/src/index.ts` (export)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: M

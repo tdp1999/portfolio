@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the Input component with validation states and Angular Forms integration.
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Input is essential for forms (contact, search, etc.) and needs to integrate with Angular's reactive forms.
 
 ## Acceptance Criteria
+
 - [ ] InputComponent created with selector `lib-input`
 - [ ] Props: `type`, `placeholder`, `error?: boolean`, `disabled?: boolean`
 - [ ] Implements ControlValueAccessor for Angular Forms integration
@@ -20,6 +23,7 @@ Phase 4 of Design System epic - Base Components. Input is essential for forms (c
 - [ ] Works with both template-driven and reactive forms
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/input/input.component.ts
 @Component({
@@ -60,6 +64,7 @@ export class InputComponent implements ControlValueAccessor {
 ```
 
 Styles:
+
 ```scss
 .input {
   @apply w-full bg-surface border border-border rounded-md px-3 py-2;
@@ -78,6 +83,7 @@ Styles:
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/input/input.component.ts` (create)
 - `libs/ui/src/components/input/input.component.scss` (create)
 - `libs/ui/src/components/input/input.component.spec.ts` (create)
@@ -85,6 +91,7 @@ Styles:
 - `libs/ui/src/index.ts` (export)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: M

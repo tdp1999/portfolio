@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build an example hero section in the landing app demonstrating design system usage.
 
 ## Context
+
 Phase 4 of Design System epic - Examples. This validates that components work together and provides a reference implementation for future features.
 
 ## Acceptance Criteria
+
 - [ ] HeroExampleComponent created in landing app
 - [ ] Uses Button, Link, Container, Section components
 - [ ] Uses Icon component for decorative elements
@@ -18,18 +21,13 @@ Phase 4 of Design System epic - Examples. This validates that components work to
 - [ ] Component is temporary for validation (can be removed or repurposed later)
 
 ## Technical Notes
+
 ```typescript
 // apps/landing/src/app/examples/hero-example.component.ts
 @Component({
   selector: 'app-hero-example',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    LinkDirective,
-    ContainerComponent,
-    SectionComponent,
-    IconComponent,
-  ],
+  imports: [ButtonComponent, LinkDirective, ContainerComponent, SectionComponent, IconComponent],
   template: `
     <lib-section>
       <lib-container>
@@ -46,14 +44,14 @@ Phase 4 of Design System epic - Examples. This validates that components work to
                 View Projects
                 <lib-icon name="arrow-right" size="md" class="ml-2" />
               </lib-button>
-              <lib-button variant="secondary" size="lg">
-                Contact Me
-              </lib-button>
+              <lib-button variant="secondary" size="lg"> Contact Me </lib-button>
             </div>
           </div>
           <div class="flex-shrink-0">
             <!-- Placeholder for profile image or illustration -->
-            <div class="w-64 h-64 rounded-full bg-primary-container flex items-center justify-center">
+            <div
+              class="w-64 h-64 rounded-full bg-primary-container flex items-center justify-center"
+            >
               <lib-icon name="user" size="xl" class="text-primary" />
             </div>
           </div>
@@ -68,16 +66,19 @@ export class HeroExampleComponent {}
 Location: `apps/landing/src/app/examples/hero-example.component.ts`
 
 Include in app.component.html for testing:
+
 ```html
 <app-hero-example />
 ```
 
 ## Files to Touch
+
 - `apps/landing/src/app/examples/hero-example.component.ts` (create)
 - `apps/landing/src/app/app.component.html` (add example)
 - `apps/landing/src/app/app.component.ts` (import example)
 
 ## Dependencies
+
 - 031-create-button-component
 - 035-create-link-component
 - 036-create-layout-utilities

@@ -70,12 +70,14 @@ Full product (implementing complete vision)
 > **Full TDD details in `.context/testing-guide.md`** (single source of truth)
 
 **Key Points:**
+
 - Red → Green → Refactor workflow
 - All test execution delegated to **test-runner subagent** (runs affected tests only)
 - **build-validator subagent** for type checking and builds
 - Coverage: 80-90% business logic, 90%+ API endpoints, 70-80% complex components
 
 **Critical Paths Requiring Tests:**
+
 - All API endpoints (GET, POST, PUT, DELETE)
 - Authentication and authorization logic
 - Data validation and transformation

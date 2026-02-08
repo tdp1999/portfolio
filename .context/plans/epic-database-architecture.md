@@ -57,12 +57,14 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 ### 2. Core Entities
 
 #### User (Admin)
+
 - Single admin user for authentication
 - Email, hashed password, name
 - Created/updated timestamps
 - No roles system needed (single user)
 
 #### Profile (Personal Info)
+
 - Full name (translatable JSON: `{ "en": "...", "vi": "..." }`)
 - Professional title/position (translatable JSON)
 - Bio/summary short (translatable JSON)
@@ -78,6 +80,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Single record (site owner profile)
 
 #### Project
+
 - Title, slug (unique, always English), description, content (rich text)
 - Language field (`en` | `vi` - one language per record)
 - Technologies used (relation to Skills)
@@ -92,6 +95,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Note: Same project in multiple languages = separate records with different slugs
 
 #### Blog Post
+
 - Title, slug (unique, always English), excerpt, content (rich text)
 - Language field (`en` | `vi` - one language per record)
 - Author (relation to User)
@@ -106,6 +110,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Note: Same post in multiple languages = separate records with different slugs
 
 #### Skill
+
 - Name, slug
 - Category (Frontend, Backend, DevOps, Tools, etc.)
 - Years of experience
@@ -114,6 +119,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Projects relation (derived: "Used in X projects")
 
 #### Experience
+
 - Company name, position/title
 - Start date, end date (nullable for current)
 - Description (rich text)
@@ -123,6 +129,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Display order
 
 #### Contact Message
+
 - Name, email, subject, message
 - Created timestamp
 - Read flag (for admin)
@@ -130,15 +137,18 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Auto-delete after 1 year (retention policy)
 
 #### Category (Blog)
+
 - Name, slug
 - Description (optional)
 - Post count (derived)
 
 #### Tag (Blog & Projects)
+
 - Name, slug
 - Usage count (derived)
 
 #### Media
+
 - Filename, original filename
 - URL (Cloudinary/external storage)
 - Alt text
@@ -151,6 +161,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 ### 3. GitHub Sync Data
 
 #### GitHubRepo (cached/synced data)
+
 - GitHub repo ID (external)
 - Name, full name, description
 - Stars count, forks count, watchers
@@ -165,6 +176,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 ### 4. Analytics Tables
 
 #### PageView
+
 - Path/URL
 - Referrer (nullable)
 - User agent (for device/browser parsing)
@@ -173,11 +185,13 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 - Session ID (anonymous, for grouping)
 
 #### ProjectView (specific tracking)
+
 - Project ID (relation)
 - Timestamp
 - Referrer
 
 #### PostView (specific tracking)
+
 - Post ID (relation)
 - Timestamp
 - Referrer
@@ -185,7 +199,9 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 ### 5. Common Patterns
 
 #### Audit Fields (Every Entity)
+
 Following the Architecture Blueprint, all entities include:
+
 ```typescript
 {
     id: string;          // UUID v7 (time-ordered)
@@ -199,6 +215,7 @@ Following the Architecture Blueprint, all entities include:
 ```
 
 #### Other Patterns
+
 - Soft delete: `deletedAt` + `deletedById` (nullable)
 - Slugs: auto-generated from title, unique, URL-safe, always English
 - Timestamps: UTC
@@ -211,23 +228,27 @@ Following the Architecture Blueprint, all entities include:
 Following the `ARCHITECTURE_BLUEPRINT.md`, we use a hybrid approach:
 
 **Prisma handles:**
+
 - Schema definition (`schema.prisma`)
 - Migrations
 - Type-safe database queries
 - Generated types (replaces manual `*.persistence.ts` files)
 
 **Domain layer handles:**
+
 - Domain entities with business logic (`*.entity.ts`)
 - Static factories: `Entity.create()` and `Entity.load()`
 - Domain methods: `entity.update()`, `entity.delete()`
 - Business invariants and calculated properties
 
 **Infrastructure layer handles:**
+
 - Repositories implementing ports (interfaces)
 - Mappers: Prisma types ↔ Domain entities
 - PrismaService for database access
 
 #### Layer Structure per Module
+
 ```
 modules/[module]/
 ├── domain/
@@ -250,103 +271,106 @@ modules/[module]/
 ```
 
 #### Example: Domain Entity Pattern
+
 ```typescript
 // domain/entities/project.entity.ts
 export class Project {
-    readonly props: IProjectProps;
+  readonly props: IProjectProps;
 
-    private constructor(props: IProjectProps) {
-        this.props = props;
-    }
+  private constructor(props: IProjectProps) {
+    this.props = props;
+  }
 
-    // Factory for NEW entities
-    static create(data: ICreateProjectPayload, createdById: Id): Project {
-        return new Project({
-            ...data,
-            id: IdentifierValue.v7(),
-            slug: SlugValue.from(data.title),
-            createdById,
-            updatedById: createdById,
-            createdAt: TemporalValue.now,
-            updatedAt: TemporalValue.now,
-        });
-    }
+  // Factory for NEW entities
+  static create(data: ICreateProjectPayload, createdById: Id): Project {
+    return new Project({
+      ...data,
+      id: IdentifierValue.v7(),
+      slug: SlugValue.from(data.title),
+      createdById,
+      updatedById: createdById,
+      createdAt: TemporalValue.now,
+      updatedAt: TemporalValue.now,
+    });
+  }
 
-    // Factory for LOADING from Prisma
-    static load(raw: IProjectProps): Project {
-        return new Project(raw);
-    }
+  // Factory for LOADING from Prisma
+  static load(raw: IProjectProps): Project {
+    return new Project(raw);
+  }
 
-    // Domain method
-    update(data: IUpdateProjectPayload, updatedById: Id): Project {
-        return new Project({
-            ...this.props,
-            ...data,
-            updatedById,
-            updatedAt: TemporalValue.now,
-        });
-    }
+  // Domain method
+  update(data: IUpdateProjectPayload, updatedById: Id): Project {
+    return new Project({
+      ...this.props,
+      ...data,
+      updatedById,
+      updatedAt: TemporalValue.now,
+    });
+  }
 
-    // Soft delete
-    delete(deletedById: Id): Project {
-        return new Project({
-            ...this.props,
-            deletedById,
-            deletedAt: TemporalValue.now,
-        });
-    }
+  // Soft delete
+  delete(deletedById: Id): Project {
+    return new Project({
+      ...this.props,
+      deletedById,
+      deletedAt: TemporalValue.now,
+    });
+  }
 }
 ```
 
 #### Example: Mapper Pattern
+
 ```typescript
 // infrastructure/mapper/project.mapper.ts
 import { Project as PrismaProject } from '@prisma/client';
 
 export class ProjectMapper {
-    static toDomain(prisma: PrismaProject): Project {
-        return Project.load({ ...prisma });
-    }
+  static toDomain(prisma: PrismaProject): Project {
+    return Project.load({ ...prisma });
+  }
 
-    static toPrisma(domain: Project): Omit<PrismaProject, 'id'> & { id?: string } {
-        return { ...domain.props };
-    }
+  static toPrisma(domain: Project): Omit<PrismaProject, 'id'> & { id?: string } {
+    return { ...domain.props };
+  }
 
-    static toDomainArray(entities: PrismaProject[]): Project[] {
-        return entities.map(e => this.toDomain(e));
-    }
+  static toDomainArray(entities: PrismaProject[]): Project[] {
+    return entities.map((e) => this.toDomain(e));
+  }
 }
 ```
 
 #### Example: Repository with Port
+
 ```typescript
 // application/ports/project.repository.port.ts
 export type IProjectRepository = {
-    add(entity: Project): Promise<Id>;
-    update(id: Id, entity: Project): Promise<boolean>;
-    remove(id: Id): Promise<boolean>;
-    findById(id: Id): Promise<Project | null>;
-    findBySlug(slug: string): Promise<Project | null>;
-    list(query: ProjectQueryDto): Promise<Project[]>;
+  add(entity: Project): Promise<Id>;
+  update(id: Id, entity: Project): Promise<boolean>;
+  remove(id: Id): Promise<boolean>;
+  findById(id: Id): Promise<Project | null>;
+  findBySlug(slug: string): Promise<Project | null>;
+  list(query: ProjectQueryDto): Promise<Project[]>;
 };
 
 // infrastructure/repositories/project.repository.ts
 @Injectable()
 export class ProjectRepository implements IProjectRepository {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async add(project: Project): Promise<Id> {
-        const data = ProjectMapper.toPrisma(project);
-        const created = await this.prisma.project.create({ data });
-        return created.id;
-    }
+  async add(project: Project): Promise<Id> {
+    const data = ProjectMapper.toPrisma(project);
+    const created = await this.prisma.project.create({ data });
+    return created.id;
+  }
 
-    async findById(id: Id): Promise<Project | null> {
-        const record = await this.prisma.project.findFirst({
-            where: { id, deletedAt: null },
-        });
-        return record ? ProjectMapper.toDomain(record) : null;
-    }
+  async findById(id: Id): Promise<Project | null> {
+    const record = await this.prisma.project.findFirst({
+      where: { id, deletedAt: null },
+    });
+    return record ? ProjectMapper.toDomain(record) : null;
+  }
 }
 ```
 
@@ -418,6 +442,7 @@ Tag (many) >────< Project (many) [shared tags]
 Two approaches (choose one):
 
 **Option A: Prisma Middleware (global)**
+
 ```typescript
 // Automatically filters deleted records
 prisma.$use(async (params, next) => {
@@ -429,6 +454,7 @@ prisma.$use(async (params, next) => {
 ```
 
 **Option B: Repository Level (explicit, recommended)**
+
 ```typescript
 // In each repository method - more explicit control
 async findById(id: Id): Promise<Project | null> {
@@ -457,41 +483,49 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 ## Risks & Warnings
 
 ⚠️ **Supabase free tier limitations**
+
 - Pauses after 1 week of inactivity
 - 500MB database size limit
 - 2GB bandwidth/month
 - **Mitigation:** Set up a cron job to ping the database weekly; monitor usage
 
 ⚠️ **GitHub API rate limits**
+
 - 60 requests/hour unauthenticated
 - 5,000 requests/hour with personal access token
 - **Mitigation:** Cache GitHub data in `GitHubRepo` table, sync on schedule (daily), not on every request
 
 ⚠️ **Prisma cold starts**
+
 - First query after idle can be slow
 - **Mitigation:** Connection pooling, consider PgBouncer if issues arise
 
 ⚠️ **Migration in production**
+
 - `prisma migrate deploy` should be run carefully
 - **Mitigation:** Test migrations locally, backup before deploying, use CI/CD
 
 ⚠️ **Slug collisions**
+
 - Two posts with same title = same slug
 - **Mitigation:** Append number suffix if slug exists (e.g., `my-post-2`)
 
 ## Alternatives Considered
 
 ### ORM: TypeORM vs Prisma vs Hybrid
+
 - **TypeORM (Blueprint default):** Full control, decorator-based persistence entities, native NestJS support
 - **Prisma only:** Better DX, generated types, simpler migrations, but less separation
 - **Hybrid Prisma + DDD (Chosen):** Prisma for schema/migrations/queries, Domain entities for business logic, Mappers for conversion. Best of both worlds - Prisma simplicity with DDD patterns.
 
 ### Database: MongoDB vs PostgreSQL
+
 - **MongoDB:** Flexible schema, good for rapid prototyping
 - **PostgreSQL:** Relational integrity, better for structured data, industry standard
 - **Chosen:** PostgreSQL for relational data model and Supabase free tier
 
 ### Hosting: Railway vs Supabase
+
 - **Railway:** All-in-one, simple deployment
 - **Supabase:** Dedicated PostgreSQL, better free tier, additional features (auth, storage)
 - **Chosen:** Supabase for generous free tier and PostgreSQL focus
@@ -499,6 +533,7 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 ## Success Criteria
 
 ### Prisma Layer
+
 - [ ] Prisma schema compiles without errors
 - [ ] All entities have proper relations defined
 - [ ] Migrations run successfully on Supabase
@@ -507,29 +542,34 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 - [ ] Environment variables documented
 
 ### Domain Layer
+
 - [ ] All domain entities have `create()` and `load()` static factories
 - [ ] All domain entities have `update()` and `delete()` methods
 - [ ] Audit fields (createdById, updatedById, deletedById) implemented
 - [ ] UUID v7 generation working
 
 ### Infrastructure Layer
+
 - [ ] All mappers convert Prisma ↔ Domain correctly
 - [ ] All repositories implement their port interfaces
 - [ ] Soft delete filtering in repository queries
 - [ ] Slug generation utility working
 
 ### Integration
+
 - [ ] Token-based DI working for all repositories
 - [ ] CQRS bus configured (for future command/query handlers)
 
 ## Follow-up Tasks (to be broken down)
 
 ### Phase 1: Foundation
+
 1. **Schema Design Session** - Detailed property discussion for each entity (as requested)
 2. **Prisma Setup** - Initialize Prisma in NestJS, configure Supabase connection
 3. **Core Infrastructure** - PrismaService, base interfaces, shared value objects (IdentifierValue, TemporalValue, SlugValue)
 
 ### Phase 2: Core Entities (Prisma + Domain)
+
 4. **User Module** - Prisma schema + Domain entity + Repository + Mapper
 5. **Profile Module** - Prisma schema + Domain entity + Repository + Mapper
 6. **Project Module** - Prisma schema + Domain entity + Repository + Mapper
@@ -538,15 +578,18 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 9. **Experience Module** - Prisma schema + Domain entity + Repository + Mapper
 
 ### Phase 3: Supporting Entities
+
 10. **Contact Message Module** - Schema + Domain + Repository
 11. **Category & Tag Modules** - Schema + Domain + Repository
 12. **Media Module** - Schema + Domain + Repository
 
 ### Phase 4: External Integration
+
 13. **GitHub Sync Schema** - GitHubRepo cached data + sync service interface
 14. **Analytics Schema** - PageView, ProjectView, PostView
 
 ### Phase 5: Cross-Cutting
+
 15. **Seed Script** - Development data for all entities
 16. **Zod Schemas** - DTOs for all modules (create, update, query)
 17. **CQRS Setup** - CommandBus, QueryBus, base handlers
@@ -556,6 +599,7 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 **L (Large)**
 
 **Reasoning:**
+
 - Multiple related entities (10+ tables)
 - External service integration (Supabase, GitHub)
 - Cross-cutting concerns (soft delete, slugs, timestamps)
@@ -575,24 +619,24 @@ broken-down
 Complete one sprint fully before starting the next. Each module follows the 8-task pattern:
 `Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire`
 
-| Sprint | Module | Tasks | Complexity | Status | Notes |
-|--------|--------|-------|------------|--------|-------|
-| 1 | Foundation | 043-048 | S | 🔲 Pending | Prisma, Service, Value Objects, Enums, CQRS |
-| 2 | User | 049-056 | M | 🔲 Pending | Required for audit fields (createdById) |
-| 3 | Tag | 057-064 | S | 🔲 Pending | Simplest content entity, pattern template |
-| 4 | Category | TBD | S | ⏳ Not started | Similar to Tag, +displayOrder |
-| 5 | Skill | TBD | M | ⏳ Not started | Self-referential parentSkillId |
-| 6 | Media | TBD | M | ⏳ Not started | File metadata, soft delete |
-| 7 | ContactMessage | TBD | S | ⏳ Not started | Standalone, no audit FKs, expiry |
-| 8 | GitHubRepo | TBD | M | ⏳ Not started | Sync status, JSON fields |
-| 9 | Profile | TBD | L | ⏳ Not started | JSON translations, 1-to-1 User |
-| 10 | Experience | TBD | L | ⏳ Not started | JSON achievements, soft delete |
-| 11 | Project | TBD | XL | ⏳ Not started | Many relations, most complex |
-| 12 | BlogPost | TBD | L | ⏳ Not started | Similar to Project |
-| 13 | Analytics | TBD | M | ⏳ Not started | PageView, ProjectView, PostView |
-| 14 | Junction Tables | TBD | M | ⏳ Not started | 6 many-to-many tables |
-| 15 | Seed Script | TBD | L | ⏳ Not started | Sample data for all entities |
-| 16 | Final Verification | TBD | M | ⏳ Not started | E2E integration tests |
+| Sprint | Module             | Tasks   | Complexity | Status         | Notes                                       |
+| ------ | ------------------ | ------- | ---------- | -------------- | ------------------------------------------- |
+| 1      | Foundation         | 043-048 | S          | 🔲 Pending     | Prisma, Service, Value Objects, Enums, CQRS |
+| 2      | User               | 049-056 | M          | 🔲 Pending     | Required for audit fields (createdById)     |
+| 3      | Tag                | 057-064 | S          | 🔲 Pending     | Simplest content entity, pattern template   |
+| 4      | Category           | TBD     | S          | ⏳ Not started | Similar to Tag, +displayOrder               |
+| 5      | Skill              | TBD     | M          | ⏳ Not started | Self-referential parentSkillId              |
+| 6      | Media              | TBD     | M          | ⏳ Not started | File metadata, soft delete                  |
+| 7      | ContactMessage     | TBD     | S          | ⏳ Not started | Standalone, no audit FKs, expiry            |
+| 8      | GitHubRepo         | TBD     | M          | ⏳ Not started | Sync status, JSON fields                    |
+| 9      | Profile            | TBD     | L          | ⏳ Not started | JSON translations, 1-to-1 User              |
+| 10     | Experience         | TBD     | L          | ⏳ Not started | JSON achievements, soft delete              |
+| 11     | Project            | TBD     | XL         | ⏳ Not started | Many relations, most complex                |
+| 12     | BlogPost           | TBD     | L          | ⏳ Not started | Similar to Project                          |
+| 13     | Analytics          | TBD     | M          | ⏳ Not started | PageView, ProjectView, PostView             |
+| 14     | Junction Tables    | TBD     | M          | ⏳ Not started | 6 many-to-many tables                       |
+| 15     | Seed Script        | TBD     | L          | ⏳ Not started | Sample data for all entities                |
+| 16     | Final Verification | TBD     | M          | ⏳ Not started | E2E integration tests                       |
 
 **To continue:** Say "next database sprint" or "breakdown Category module"
 
@@ -609,6 +653,7 @@ Completed. See [database-schema-design.md](../database-schema-design.md) for ful
 ## Changelog
 
 ### [2026-02-03] Restructured to Sequential Sprints
+
 - Changed from 22 parallel tasks to sequential module development
 - Created Sprint Backlog with 16 sprints
 - Sprint 1-3 broken down (Foundation, User, Tag)
@@ -616,11 +661,13 @@ Completed. See [database-schema-design.md](../database-schema-design.md) for ful
 - Each module follows 8-task pattern: Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire
 
 ### [2025-02-03] Schema Design Session Complete
+
 - Completed detailed schema design for all 14 entities
 - Exported to `.context/database-schema-design.md`
 - Status changed to `ready`
 
 ### [2025-02-03] Added Hexagonal Architecture Integration
+
 - Integrated with `ARCHITECTURE_BLUEPRINT.md` patterns
 - Chose Hybrid approach: Prisma + Domain Entities + Mappers
 - Added domain entity patterns with static factories
@@ -632,5 +679,6 @@ Completed. See [database-schema-design.md](../database-schema-design.md) for ful
 - Expanded success criteria for all layers
 
 ### [2025-02-03] Initial draft
+
 - Created from database requirements questionnaire
 - All decisions documented from user discussion

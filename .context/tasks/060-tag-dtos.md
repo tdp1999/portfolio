@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create Zod validation schemas for Tag operations.
 
 ## Context
+
 Simple DTOs - just name for create/update, query options for list.
 
 ## Acceptance Criteria
+
 - [ ] `CreateTagSchema` - name required
 - [ ] `UpdateTagSchema` - name required
 - [ ] `TagQuerySchema` - pagination, sorting
@@ -16,6 +19,7 @@ Simple DTOs - just name for create/update, query options for list.
 - [ ] Unit tests for validation
 
 ## Technical Notes
+
 ```typescript
 export const CreateTagSchema = z.object({
   name: z.string().min(1).max(50).trim(),
@@ -38,10 +42,12 @@ export type TagQueryDto = z.infer<typeof TagQuerySchema>;
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/tag/application/tag.dto.ts
 - apps/api/src/modules/tag/application/tag.dto.spec.ts
 
 ## Dependencies
+
 - 058-tag-domain-entity
 
 ## Complexity: S

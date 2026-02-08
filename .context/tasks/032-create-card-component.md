@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the Card component for content containers with optional elevation.
 
 ## Context
+
 Phase 4 of Design System epic - Base Components. Card is used for grouping related content like project showcases, blog post previews, and feature highlights.
 
 ## Acceptance Criteria
+
 - [ ] CardComponent created with selector `lib-card`
 - [ ] Props: `elevated?: boolean` (adds stronger shadow)
 - [ ] Uses semantic tokens (bg-surface, rounded-xl, shadow-sm)
@@ -19,6 +22,7 @@ Phase 4 of Design System epic - Base Components. Card is used for grouping relat
 - [ ] Optional: CardHeader, CardContent, CardFooter sub-components
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/card/card.component.ts
 @Component({
@@ -41,6 +45,7 @@ export class CardComponent {
 ```
 
 Styles:
+
 ```scss
 .card {
   @apply bg-surface rounded-xl p-6 shadow-sm transition-shadow duration-150;
@@ -73,6 +78,7 @@ Styles:
 ```
 
 Usage:
+
 ```html
 <lib-card>
   <h3>Card Title</h3>
@@ -86,6 +92,7 @@ Usage:
 ```
 
 ## Files to Touch
+
 - `libs/ui/src/components/card/card.component.ts` (create)
 - `libs/ui/src/components/card/card.component.scss` (create)
 - `libs/ui/src/components/card/card.component.spec.ts` (create)
@@ -93,6 +100,7 @@ Usage:
 - `libs/ui/src/index.ts` (export)
 
 ## Dependencies
+
 - 030-verify-icon-system (Phase 3 complete)
 
 ## Complexity: S

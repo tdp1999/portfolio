@@ -11,6 +11,7 @@ A comprehensive, CSS variable-based design system built on **SCSS + Angular Mate
 
 **Design Philosophy:** Professional & Refined, minimal animations, generous spacing
 **Core Features:**
+
 - Dashboard-configurable accent color via HSL-based dynamic palette generation (deferred to Phase 5)
 - Tailwind v3 for spacing, layout, and effect utilities
 - Build-time configurable icon component
@@ -21,6 +22,7 @@ A comprehensive, CSS variable-based design system built on **SCSS + Angular Mate
 ## Why
 
 The portfolio project needs a consistent, professional design foundation that:
+
 1. **Ensures visual consistency** across all pages and components
 2. **Enables rapid development** with pre-built, tested components
 3. **Supports theming** for dark/light modes and future accent color customization
@@ -42,6 +44,7 @@ Currently, the project has SCSS configured but no design tokens, components, or 
 ## Scope
 
 ### In Scope (Phases 1-4)
+
 - Tailwind CSS v3 installation and configuration with custom color/typography tokens
 - HSL-based accent color palette (hardcoded, configurable later)
 - Angular Material v21 installation and theme integration
@@ -54,6 +57,7 @@ Currently, the project has SCSS configured but no design tokens, components, or 
 - Comprehensive test coverage for all components
 
 ### Out of Scope (Deferred)
+
 - **Phase 5:** Dashboard-configurable accent colors (requires API, dashboard app, theme service)
 - **Phase 5:** Runtime theme toggle component and persistence
 - **Phase 5:** System theme detection and preference sync
@@ -89,11 +93,13 @@ Based on industry best practices ([Martin Fowler](https://martinfowler.com/artic
 ```
 
 **Key Principles:**
+
 - **Layer 1 (Primitives):** Tailwind handles spacing (p-4), gray scale (gray-50), effects (shadow-sm). We add custom colors (accent palette via HSL) and typography (fluid clamp scale).
 - **Layer 2 (Semantic):** CSS variables map primitives to purpose (--color-primary = --color-accent-500). Dark mode overrides semantic tokens.
 - **Layer 3 (Component):** Components reference semantic tokens (button uses --color-primary, not --color-accent-500 directly).
 
 **Benefits:**
+
 - **Consistency:** Changing --color-primary updates all components
 - **Theming:** Dark mode only updates Layer 2, Layer 3 inherits changes
 - **Scalability:** New components use existing semantic tokens, no new color definitions needed
@@ -105,6 +111,7 @@ Based on industry best practices ([Martin Fowler](https://martinfowler.com/artic
 ### What Tailwind Handles (Utilities)
 
 Use Tailwind's built-in utilities for:
+
 - **Spacing:** `p-4`, `m-8`, `gap-6`, `space-y-4` (Tailwind's default scale)
 - **Layout:** `flex`, `grid`, `container`, `max-w-*`, responsive breakpoints (`sm:`, `md:`, etc.)
 - **Effects:** `shadow-sm`, `rounded-lg`, `transition-colors`, `duration-150`
@@ -113,6 +120,7 @@ Use Tailwind's built-in utilities for:
 ### What We Customize (CSS Variables)
 
 Define custom tokens that Tailwind references:
+
 - **Colors:** Dynamic accent palette, semantic color mappings
 - **Typography:** Font families, fluid type scale
 - **Component-specific tokens:** Button, card, input styles
@@ -122,16 +130,13 @@ Define custom tokens that Tailwind references:
 ```js
 // tailwind.config.js
 module.exports = {
-  content: [
-    "./apps/landing/src/**/*.{html,ts}",
-    "./libs/landing/**/*.{html,ts}",
-  ],
+  content: ['./apps/landing/src/**/*.{html,ts}', './libs/landing/**/*.{html,ts}'],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
         accent: {
-          50:  'hsl(var(--accent-hue) var(--accent-saturation) 97%)',
+          50: 'hsl(var(--accent-hue) var(--accent-saturation) 97%)',
           // ... 100-900
           500: 'hsl(var(--accent-hue) var(--accent-saturation) 50%)',
         },
@@ -169,6 +174,7 @@ module.exports = {
 ```
 
 This gives you utilities like:
+
 - `bg-accent-500`, `text-accent-600`, `border-accent-200`
 - `text-primary`, `bg-surface`, `bg-background`
 - `font-sans`, `font-mono`
@@ -200,7 +206,7 @@ Use Tailwind's default `gray` scale (`gray-50` through `gray-950`). No customiza
 /* CSS custom properties in :root (index.scss) */
 :root {
   /* Light mode semantic tokens */
-  --color-background: #f9fafb;   /* gray-50 */
+  --color-background: #f9fafb; /* gray-50 */
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
 
@@ -208,35 +214,35 @@ Use Tailwind's default `gray` scale (`gray-50` through `gray-950`). No customiza
   --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 42%);
   --color-primary-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
 
-  --color-text: #111827;          /* gray-900 */
+  --color-text: #111827; /* gray-900 */
   --color-text-secondary: #4b5563; /* gray-600 */
-  --color-text-muted: #9ca3af;    /* gray-400 */
+  --color-text-muted: #9ca3af; /* gray-400 */
   --color-text-on-primary: #ffffff;
 
-  --color-border: #e5e7eb;        /* gray-200 */
+  --color-border: #e5e7eb; /* gray-200 */
   --color-border-strong: #d1d5db; /* gray-300 */
 
   /* Feedback */
-  --color-success: #22c55e;       /* green-500 */
-  --color-warning: #f59e0b;       /* amber-500 */
-  --color-error: #ef4444;         /* red-500 */
+  --color-success: #22c55e; /* green-500 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-error: #ef4444; /* red-500 */
   --color-info: hsl(var(--accent-hue) var(--accent-saturation) 50%);
 }
 
 /* Dark mode (themes/dark.scss) */
 .dark {
-  --color-background: #030712;     /* gray-950 */
-  --color-surface: #111827;        /* gray-900 */
+  --color-background: #030712; /* gray-950 */
+  --color-surface: #111827; /* gray-900 */
   --color-surface-elevated: #1f2937; /* gray-800 */
 
   --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 62%); /* accent-400 */
   --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 74%); /* accent-300 */
 
-  --color-text: #f9fafb;          /* gray-50 */
+  --color-text: #f9fafb; /* gray-50 */
   --color-text-secondary: #9ca3af; /* gray-400 */
-  --color-text-muted: #6b7280;    /* gray-500 */
+  --color-text-muted: #6b7280; /* gray-500 */
 
-  --color-border: #1f2937;        /* gray-800 */
+  --color-border: #1f2937; /* gray-800 */
   --color-border-strong: #374151; /* gray-700 */
 }
 ```
@@ -249,19 +255,23 @@ Use Tailwind's default `gray` scale (`gray-50` through `gray-950`). No customiza
 html {
   color-scheme: light dark;
 
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: 'Inter',
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: 'Inter',
+      density: 0,
+    )
+  );
 
   // Override Material tokens with our semantic tokens
-  @include mat.theme-overrides((
-    primary: var(--color-primary),
-    on-primary: var(--color-text-on-primary),
-    surface: var(--color-surface),
-    on-surface: var(--color-text),
-  ));
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-text-on-primary),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+    )
+  );
 }
 ```
 
@@ -272,12 +282,14 @@ html {
 ### 2.1 Font Stack
 
 Defined in `tailwind.config.js` (see above):
+
 - `--font-sans`: Inter with system fallbacks
 - `--font-mono`: JetBrains Mono with system fallbacks
 
 ### 2.2 Type Scale
 
 Fluid scale using `clamp()`, defined via CSS custom properties. Use via:
+
 - `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`
 
 ### 2.3 Semantic Typography Classes
@@ -285,16 +297,32 @@ Fluid scale using `clamp()`, defined via CSS custom properties. Use via:
 ```css
 /* Base typography layer */
 @layer base {
-  h1 { @apply text-5xl font-semibold leading-tight tracking-tight; }
-  h2 { @apply text-4xl font-semibold leading-tight; }
-  h3 { @apply text-3xl font-semibold leading-snug; }
-  h4 { @apply text-2xl font-medium leading-snug; }
-  h5 { @apply text-xl font-medium leading-normal; }
-  h6 { @apply text-lg font-medium leading-normal; }
+  h1 {
+    @apply text-5xl font-semibold leading-tight tracking-tight;
+  }
+  h2 {
+    @apply text-4xl font-semibold leading-tight;
+  }
+  h3 {
+    @apply text-3xl font-semibold leading-snug;
+  }
+  h4 {
+    @apply text-2xl font-medium leading-snug;
+  }
+  h5 {
+    @apply text-xl font-medium leading-normal;
+  }
+  h6 {
+    @apply text-lg font-medium leading-normal;
+  }
 
-  p { @apply text-base leading-relaxed; }
+  p {
+    @apply text-base leading-relaxed;
+  }
 
-  code { @apply font-mono text-sm; }
+  code {
+    @apply font-mono text-sm;
+  }
 }
 ```
 
@@ -305,10 +333,12 @@ Fluid scale using `clamp()`, defined via CSS custom properties. Use via:
 ### 3.1 Spacing
 
 **Use Tailwind's default scale.** No customization needed.
+
 - `p-1` (4px) through `p-96` (384px)
 - Same for margin, gap, space-between, etc.
 
 For "generous/airy" feel, use larger values:
+
 - Component padding: `p-4` to `p-8`
 - Section spacing: `py-16` to `py-32`
 - Page margins: `px-4 md:px-8`
@@ -316,6 +346,7 @@ For "generous/airy" feel, use larger values:
 ### 3.2 Layout
 
 **Use Tailwind's layout utilities:**
+
 - Container: `container mx-auto max-w-4xl` (or `max-w-6xl` for wide)
 - Flexbox: `flex items-center justify-between gap-4`
 - Grid: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`
@@ -326,22 +357,26 @@ For "generous/airy" feel, use larger values:
 **Use Tailwind's built-in utilities:**
 
 **Shadows:**
+
 - `shadow-xs`, `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`
 - Cards: `shadow-sm hover:shadow-md`
 - Modals: `shadow-2xl`
 
 **Border Radius:**
+
 - `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-full`
 - Buttons: `rounded-lg`
 - Cards: `rounded-xl`
 - Badges: `rounded-full`
 
 **Transitions (Minimal & Subtle):**
+
 - `transition-colors duration-150 ease-in-out`
 - `transition-shadow duration-150`
 - `transition-transform duration-150`
 
 **Z-Index:**
+
 - `z-0`, `z-10`, `z-20`, `z-30`, `z-40`, `z-50`
 
 ---
@@ -368,6 +403,7 @@ export const ICON_PROVIDER = new InjectionToken<IconProvider>('ICON_PROVIDER');
 ### 4.2 Supported Icon Sets
 
 Build-time selection from:
+
 1. **Lucide** (default) - Clean, professional, 1000+ icons
 2. **Material Symbols** - Google's icon set, good Material integration
 3. **Heroicons** - By Tailwind team, minimal style
@@ -389,8 +425,8 @@ import { provideIcons, lucideIconProvider } from '@portfolio/ui/icon';
 
 export const appConfig = {
   providers: [
-    provideIcons(lucideIconProvider),  // or materialIconProvider, heroiconsProvider
-  ]
+    provideIcons(lucideIconProvider), // or materialIconProvider, heroiconsProvider
+  ],
 };
 ```
 
@@ -399,6 +435,7 @@ To switch icon sets, change the provider and rebuild.
 ### 4.5 Icon Sizing (Tailwind Classes)
 
 Use Tailwind's `size-*` utilities:
+
 - `size-4` (16px) - sm
 - `size-5` (20px) - md (default)
 - `size-6` (24px) - lg
@@ -410,15 +447,15 @@ Use Tailwind's `size-*` utilities:
 
 Components in `libs/ui/` using semantic tokens + Tailwind utilities:
 
-| Component | Implementation |
-|-----------|----------------|
-| Button | `bg-primary text-on-primary rounded-lg px-4 py-2 transition-colors hover:bg-primary-hover` |
-| Card | `bg-surface rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md` |
-| Input | `bg-surface border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-1` |
-| Badge | `bg-primary-container text-primary rounded-full px-2 py-0.5 text-xs font-medium` |
-| Link | `text-primary hover:text-primary-hover transition-colors underline-offset-2 hover:underline` |
-| Container | `mx-auto max-w-4xl px-4 md:px-8` |
-| Section | `py-16 md:py-24 lg:py-32` |
+| Component | Implementation                                                                               |
+| --------- | -------------------------------------------------------------------------------------------- |
+| Button    | `bg-primary text-on-primary rounded-lg px-4 py-2 transition-colors hover:bg-primary-hover`   |
+| Card      | `bg-surface rounded-xl shadow-sm p-6 transition-shadow hover:shadow-md`                      |
+| Input     | `bg-surface border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-1`     |
+| Badge     | `bg-primary-container text-primary rounded-full px-2 py-0.5 text-xs font-medium`             |
+| Link      | `text-primary hover:text-primary-hover transition-colors underline-offset-2 hover:underline` |
+| Container | `mx-auto max-w-4xl px-4 md:px-8`                                                             |
+| Section   | `py-16 md:py-24 lg:py-32`                                                                    |
 
 ---
 
@@ -487,6 +524,7 @@ Dashboard Settings
 ## High-Level Requirements
 
 ### Functional Requirements
+
 1. **FR-1:** Tailwind CSS v3 utilities available for spacing, layout, shadows, transitions
 2. **FR-2:** HSL-based color system generating full 50-900 accent palette from two base variables
 3. **FR-3:** Fluid typography scale (text-xs through text-5xl) using clamp() for responsive sizing
@@ -498,6 +536,7 @@ Dashboard Settings
 9. **FR-9:** All components have corresponding .spec.ts test files with >70% coverage
 
 ### Non-Functional Requirements
+
 1. **NFR-1:** Design tokens follow three-layer architecture (Primitive → Semantic → Component)
 2. **NFR-2:** Components use BEM naming convention for CSS classes
 3. **NFR-3:** SCSS files co-located with components
@@ -513,6 +552,7 @@ Dashboard Settings
 ### Architecture Integration
 
 **Current Project Structure:**
+
 - Nx monorepo with pnpm workspaces
 - Angular 21 landing app (`apps/landing/`) with SSR configured
 - NestJS API (`apps/api/`) - not involved in Phases 1-4
@@ -521,6 +561,7 @@ Dashboard Settings
 - Testing infrastructure: Jest, Playwright, @testing-library/angular
 
 **Design System File Structure:**
+
 ```
 libs/landing/shared/ui/src/
 ├── styles/
@@ -566,12 +607,14 @@ apps/landing/src/
 ### Dependencies to Install
 
 **New Dependencies:**
+
 - `tailwindcss` - v3 (JS config with tailwind.config.js)
 - `@angular/material` - v21 (Angular Material components)
 - `@fontsource/inter` - Inter font self-hosted
 - `lucide-angular` - Lucide icons for Angular (or `lucide-static` if building custom wrapper)
 
 **Configuration Files to Update:**
+
 - `libs/ui/project.json` - Add `inlineStyleLanguage: "scss"` (if generating components with styles)
 - `apps/landing/project.json` - Verify `inlineStyleLanguage: "scss"` already set (line 16 ✓)
 - `package.json` - Add new dependencies
@@ -583,12 +626,14 @@ apps/landing/src/
 ### Integration Points
 
 **With Existing Code:**
+
 - `apps/landing/src/app/app.ts` - Will import and use new UI components
 - `apps/landing/src/styles.scss` - Imports UI library styles
 - `libs/ui/src/lib/ui/ui.ts` - Current stub component, will be removed or refactored
 - `libs/ui/src/lib/ui/ui.scss` - Current empty file (has styleUrl bug - references `.css` but file is `.scss`)
 
 **Theme Configuration Flow (Hardcoded for Phases 1-4):**
+
 ```
 :root CSS Variables (hardcoded)
        │
@@ -625,8 +670,8 @@ Not implemented in Phases 1-4, but design system prepared for:
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export interface ThemeConfig {
-  accentHue: number;           // 0-360 (e.g., 210 for blue)
-  accentSaturation: number;    // 0-100 (e.g., 65 for moderately saturated)
+  accentHue: number; // 0-360 (e.g., 210 for blue)
+  accentSaturation: number; // 0-100 (e.g., 65 for moderately saturated)
   defaultMode: ThemeMode;
 }
 
@@ -647,23 +692,27 @@ export interface ColorPalette {
 ### Testing Strategy
 
 **Unit Tests (Jest):**
+
 - All components in `libs/ui/components/*/` have `.spec.ts` files
 - Test behavior, props, accessibility, and visual states
 - Coverage target: 70-80% for components
 
 **Component Tests (@testing-library/angular):**
+
 - Icon component: Rendering, provider switching, size props
 - Button: Variants (primary, secondary, ghost), disabled state, click events
 - Card: Layout, slots/projection, hover states
 - Input: Value binding, validation states, focus behavior
 
 **E2E Tests (Playwright) - landing app:**
+
 - Example hero section renders with design system components
 - Card grid displays correctly
 - Dark mode toggle works (when implemented in Phase 5)
 - Responsive breakpoints function correctly
 
 **Visual Regression (Future):**
+
 - Not in scope for Phases 1-4
 - Consider Storybook + Chromatic in future epic
 
@@ -676,6 +725,7 @@ export interface ColorPalette {
 **Goal:** Install Tailwind v3 and define custom color/typography tokens
 
 **Tasks:**
+
 1. Install Tailwind CSS v3, autoprefixer, and @fontsource/inter via pnpm
 2. Create `tailwind.config.js` at workspace root with content paths and custom colors
 3. Create `postcss.config.js` at workspace root with tailwindcss + autoprefixer
@@ -692,6 +742,7 @@ export interface ColorPalette {
 10. Test: Run `pnpm dev:landing` and verify Tailwind utilities work
 
 **Acceptance Criteria:**
+
 - [ ] Tailwind utilities render correctly (bg-accent-500, text-primary, p-4, rounded-lg)
 - [ ] Fluid typography scales between viewport sizes
 - [ ] Gray scale tokens (gray-50 through gray-950) available
@@ -705,6 +756,7 @@ export interface ColorPalette {
 **Goal:** Install Angular Material and integrate with custom theme tokens
 
 **Tasks:**
+
 1. Install @angular/material v21 via `ng add @angular/material` (select custom theme option)
 2. Create `libs/ui/src/styles/material/overrides.scss`:
    - Import Angular Material theming: `@use '@angular/material' as mat;`
@@ -720,6 +772,7 @@ export interface ColorPalette {
    - Which Material components to prefer vs. custom components
 
 **Acceptance Criteria:**
+
 - [ ] Angular Material installed without errors
 - [ ] Material components render with custom accent color
 - [ ] Material components respond to `.dark` class (when added to root)
@@ -733,6 +786,7 @@ export interface ColorPalette {
 **Goal:** Build configurable icon component with Lucide provider
 
 **Tasks:**
+
 1. Install lucide-angular: `pnpm add lucide-angular`
 2. Create icon provider architecture:
    - `libs/ui/src/components/icon/icon-provider.interface.ts` - Define IconProvider interface
@@ -757,8 +811,9 @@ export interface ColorPalette {
    - Available sizes and customization
 
 **Acceptance Criteria:**
+
 - [ ] Icon component renders Lucide icons correctly
-- [ ] Size prop applies correct Tailwind size-* class (size-4, size-5, size-6, size-8)
+- [ ] Size prop applies correct Tailwind size-\* class (size-4, size-5, size-6, size-8)
 - [ ] Icon component injectable and configurable
 - [ ] Tests pass with >70% coverage
 - [ ] Example icons display in landing app (arrow-right, check, menu)
@@ -772,6 +827,7 @@ export interface ColorPalette {
 **Sub-Phase 4.1: Component Library**
 
 **Tasks:**
+
 1. Create Button component:
    - `libs/ui/src/components/button/button.component.ts`
    - Props: `variant?: 'primary' | 'secondary' | 'ghost'`, `size?: 'sm' | 'md' | 'lg'`, `disabled?: boolean`
@@ -807,12 +863,13 @@ export interface ColorPalette {
 
 **Sub-Phase 4.2: Landing App Examples**
 
-**Tasks:**
-8. Create example hero section:
-   - File: `apps/landing/src/app/examples/hero-example.component.ts` (temporary, for validation)
-   - Use Button, Link, Container components
-   - Use Tailwind layout classes (flex, gap, items-center)
-   - Responsive design (mobile-first)
+**Tasks:** 8. Create example hero section:
+
+- File: `apps/landing/src/app/examples/hero-example.component.ts` (temporary, for validation)
+- Use Button, Link, Container components
+- Use Tailwind layout classes (flex, gap, items-center)
+- Responsive design (mobile-first)
+
 9. Create example card grid:
    - File: `apps/landing/src/app/examples/card-grid-example.component.ts`
    - Use Card, Badge components
@@ -826,6 +883,7 @@ export interface ColorPalette {
     - Spacing conventions (p-4 to p-8 for components, py-16 to py-32 for sections)
 
 **Acceptance Criteria:**
+
 - [ ] All base components implemented and tested (>70% coverage)
 - [ ] Components follow BEM naming and SCSS conventions
 - [ ] Components use semantic tokens consistently
@@ -842,42 +900,50 @@ export interface ColorPalette {
 ## Risks & Warnings
 
 ⚠️ **Tailwind v3 + SCSS Hybrid Approach**
+
 - **Risk:** ADR-007 (2026-02-02) standardized project on SCSS exclusively, but design system requires Tailwind CSS v3
 - **Mitigation:** ADR-008 documents the v4→v3 downgrade and hybrid approach (Tailwind for utilities, SCSS for Angular Material mixins)
 - **Decision:** Tailwind v3 chosen for Angular v21 compatibility (see ADR-008)
 
 ⚠️ **Angular Material Theme Integration**
+
 - **Risk:** Angular Material's M3 theming system may conflict with custom Tailwind tokens
 - **Mitigation:** Use `mat.theme-overrides()` to force Material components to respect custom CSS variables
 - **Watch for:** Material component styles overriding Tailwind utilities (use !important sparingly if needed)
 
 ⚠️ **Bundle Size Impact**
+
 - **Risk:** Adding Tailwind + Angular Material + Lucide icons significantly increases bundle size
 - **Current Budget:** 500kb warning, 1mb error for landing app
 - **Mitigation:** Tree-shake unused Tailwind classes, import only needed Material components, lazy-load icons
 - **Monitor:** Run `pnpm build:landing` after each phase and check bundle report
 
 ⚠️ **Tailwind v3 Compatibility**
+
 - **Risk:** Tailwind v4 had known compatibility issues with Angular v21 (ref: angular/angular-cli#29789)
 - **Mitigation:** Downgraded to Tailwind v3 which is fully compatible
 - **Note:** v3 uses `tailwind.config.js` + `@tailwind` directives instead of v4's `@theme` + `@import "tailwindcss"`
 
 ⚠️ **Icon Provider Architecture Complexity**
+
 - **Risk:** Build-time provider pattern adds indirection that may confuse future developers
 - **Mitigation:** Document clearly in `.context/patterns.md` with examples of adding new providers
 - **Trade-off:** Flexibility vs. simplicity - decided flexibility wins for future icon set changes
 
 ⚠️ **Dark Mode Without Toggle (Phases 1-4)**
+
 - **Risk:** Dark mode tokens defined but no UI to toggle them - may cause confusion
 - **Mitigation:** Document in patterns.md that manual `.dark` class addition is needed until Phase 5
 - **Temporary Test:** Add `.dark` class to `<html>` in browser DevTools to verify dark mode tokens work
 
 ⚠️ **Component Library Scope Creep**
+
 - **Risk:** Building too many components beyond the base set delays other features
 - **Mitigation:** Strict adherence to base components only (Button, Card, Input, Badge, Link, Container, Section)
 - **Defer:** Advanced components (Modals, Dropdowns, Tables, Forms) to future epics
 
 ⚠️ **Testing Infrastructure Load**
+
 - **Risk:** Adding tests for 7+ components increases test suite runtime
 - **Mitigation:** Focus on critical behavior tests, skip trivial rendering tests
 - **Target:** <30s total test time for `pnpm test:ui` library
@@ -887,26 +953,31 @@ export interface ColorPalette {
 ## Alternatives Considered
 
 ### Alternative 1: Pure SCSS Without Tailwind
+
 - **Pros:** Aligns with ADR-007, no new dependencies, full control over styling
 - **Cons:** Must define all spacing/layout utilities manually, misses Tailwind's battle-tested scale
 - **Why not chosen:** User preference for Tailwind utilities, industry standard for rapid development
 
 ### Alternative 2: Tailwind Only (No Angular Material)
+
 - **Pros:** Simpler stack, fewer conflicts, smaller bundle
 - **Cons:** Must build all interactive components from scratch (modals, dialogs, menus), misses Material's accessibility
 - **Why not chosen:** Angular Material provides robust, tested components for future dashboard features
 
 ### Alternative 3: All 4 Icon Providers Upfront
+
 - **Pros:** Complete flexibility, demonstrates full provider pattern
 - **Cons:** Increases initial implementation time, most projects only use one icon set
 - **Why not chosen:** YAGNI principle - implement Lucide first, add others only if needed
 
 ### Alternative 4: CSS-in-JS (styled-components, Emotion)
+
 - **Pros:** Component-scoped styles, dynamic styling, no BEM needed
 - **Cons:** Not idiomatic in Angular, adds runtime overhead, complicates SSR
 - **Why not chosen:** Angular community standard is SCSS + component styles, SSR performance concerns
 
 ### Alternative 5: Implement All 5 Phases Now
+
 - **Pros:** Complete design system including theme API and dashboard integration
 - **Cons:** Dashboard app doesn't exist yet, backend work unrelated to design system foundation
 - **Why not chosen:** User chose "Phases 1-4 only (defer Phase 5)" - dashboard-configurable themes deferred to future epic
@@ -926,10 +997,11 @@ export interface ColorPalette {
 - [ ] **Visual QA:** Manual verification of responsive design, color accuracy, typography scaling
 
 **Measurable Outcomes:**
+
 - 7 base components built (Button, Card, Input, Badge, Link, Container, Section)
 - 2 example sections in landing app (hero, card grid)
 - 1 icon system with provider architecture
-- >70% test coverage for UI library
+- > 70% test coverage for UI library
 - <30s test suite runtime for UI library
 - Bundle size increase <150kb (estimate: Tailwind ~50kb, Material ~80kb, Lucide ~20kb gzipped)
 
@@ -940,6 +1012,7 @@ export interface ColorPalette {
 **XL (Extra Large)**
 
 **Reasoning:**
+
 - Foundational infrastructure affecting entire project
 - 4 distinct phases each requiring multiple tasks
 - New dependency installation and configuration (Tailwind, Material, Lucide)
@@ -950,6 +1023,7 @@ export interface ColorPalette {
 - Estimated effort: 15-25 hours over multiple sessions
 
 **Breakdown by Phase:**
+
 - Phase 1 (Tailwind + Tokens): M (4-6 hours)
 - Phase 2 (Angular Material): S (2-3 hours)
 - Phase 3 (Icon System): M (3-4 hours)
@@ -961,6 +1035,7 @@ export interface ColorPalette {
 ## Critical Files to Modify
 
 ### New Files (Create)
+
 - `tailwind.config.js` (workspace root)
 - `postcss.config.js` (workspace root)
 - `libs/landing/shared/ui/src/styles/index.scss`
@@ -980,6 +1055,7 @@ export interface ColorPalette {
 - `apps/landing-e2e/src/design-system-examples.spec.ts`
 
 ### Existing Files (Modify)
+
 - `package.json` - Add tailwindcss v3, autoprefixer, @angular/material, @fontsource/inter, lucide-angular
 - `apps/landing/src/styles.scss` - Imports UI library styles
 - `apps/landing/src/app/app.config.ts` - Add icon provider configuration
@@ -989,6 +1065,7 @@ export interface ColorPalette {
 - `.context/decisions.md` - Update ADR-007 or add new ADR for Tailwind + SCSS hybrid
 
 ### Files to Delete/Replace
+
 - `libs/ui/src/lib/ui/ui.ts` - Current stub component (remove after library setup)
 - `libs/ui/src/lib/ui/ui.scss` - Empty stub file (remove)
 - `libs/ui/src/lib/ui/ui.html` - Placeholder template (remove)
@@ -998,6 +1075,7 @@ export interface ColorPalette {
 ## Verification & Testing
 
 ### Unit Tests (Jest)
+
 ```bash
 # Run UI library tests
 pnpm nx test ui
@@ -1010,11 +1088,13 @@ pnpm nx test ui --watch
 ```
 
 **Expected Results:**
+
 - All tests pass (icon, button, card, input, badge, link components)
 - Coverage >70% for libs/ui
 - Test execution time <30s
 
 ### E2E Tests (Playwright)
+
 ```bash
 # Run landing app E2E tests
 pnpm test:e2e
@@ -1024,6 +1104,7 @@ pnpm test:e2e:headed
 ```
 
 **Expected Results:**
+
 - Design system examples spec passes
 - Hero section renders with components
 - Card grid displays correctly
@@ -1054,6 +1135,7 @@ pnpm test:e2e:headed
    - Test responsive grid collapse on mobile (<768px)
 
 5. **Bundle Size:**
+
    ```bash
    pnpm build:landing
    # Check dist/apps/landing/browser/*.js file sizes
@@ -1067,6 +1149,7 @@ pnpm test:e2e:headed
    - Verify no console errors or warnings
 
 ### Design System Documentation
+
 - Read `.context/patterns.md` design system section
 - Verify token usage examples are clear
 - Verify component usage patterns documented
@@ -1100,6 +1183,7 @@ pnpm test:e2e:headed
 ## Changelog
 
 ### [2026-02-02] Initial Epic Creation
+
 - Converted high-level design system plan into detailed implementation epic
 - Scoped to Phases 1-4 only (Tailwind foundation, Material integration, icons, base components)
 - Deferred Phase 5 (dynamic theme API) to future epic when dashboard app exists

@@ -28,9 +28,7 @@ describe('AppController Integration Tests', () => {
 
     it('should return JSON response', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/')
-        .expect('Content-Type', /json/);
+      const response = await request(app.getHttpServer()).get('/').expect('Content-Type', /json/);
 
       // Assert
       expect(response.body).toBeDefined();

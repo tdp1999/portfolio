@@ -3,8 +3,7 @@ import { Route } from '@angular/router';
 export const appRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () =>
-      import('@portfolio/landing/feature-home').then((m) => m.FeatureHome),
+    loadComponent: () => import('@portfolio/landing/feature-home').then((m) => m.FeatureHome),
   },
   {
     path: 'ddl',

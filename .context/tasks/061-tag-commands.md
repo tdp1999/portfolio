@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create CQRS commands for Tag write operations.
 
 ## Context
+
 Full CRUD via commands: Create, Update, Delete.
 
 ## Acceptance Criteria
+
 - [ ] `CreateTagCommand` + `CreateTagHandler`
 - [ ] `UpdateTagCommand` + `UpdateTagHandler`
 - [ ] `DeleteTagCommand` + `DeleteTagHandler`
@@ -17,9 +20,13 @@ Full CRUD via commands: Create, Update, Delete.
 - [ ] Unit tests for each handler
 
 ## Technical Notes
+
 ```typescript
 export class CreateTagCommand extends BaseCommand {
-  constructor(userId: string, readonly data: CreateTagDto) {
+  constructor(
+    userId: string,
+    readonly data: CreateTagDto
+  ) {
     super(userId);
   }
 }
@@ -28,14 +35,12 @@ export class CreateTagCommand extends BaseCommand {
 export class CreateTagHandler implements ICommandHandler<CreateTagCommand> {
   constructor(
     @Inject(TAG_REPOSITORY)
-    private readonly repo: ITagRepository,
+    private readonly repo: ITagRepository
   ) {}
 
   async execute(command: CreateTagCommand): Promise<string> {
     // Check uniqueness
-    const existing = await this.repo.findBySlug(
-      SlugValue.from(command.data.name)
-    );
+    const existing = await this.repo.findBySlug(SlugValue.from(command.data.name));
     if (existing) {
       throw new ConflictException('Tag already exists');
     }
@@ -47,11 +52,13 @@ export class CreateTagHandler implements ICommandHandler<CreateTagCommand> {
 ```
 
 ## Files to Touch
-- apps/api/src/modules/tag/application/commands/*.command.ts
-- apps/api/src/modules/tag/application/commands/handlers/*.handler.ts
+
+- apps/api/src/modules/tag/application/commands/\*.command.ts
+- apps/api/src/modules/tag/application/commands/handlers/\*.handler.ts
 - Test files
 
 ## Dependencies
+
 - 059-tag-repository
 - 060-tag-dtos
 

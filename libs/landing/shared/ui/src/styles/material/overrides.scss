@@ -3,22 +3,26 @@
 html {
   color-scheme: light dark;
 
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: 'Inter',
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: 'Inter',
+      density: 0,
+    )
+  );
 
   // Override Material tokens with semantic tokens
-  @include mat.theme-overrides((
-    primary: var(--color-primary),
-    on-primary: var(--color-text-on-primary),
-    surface: var(--color-surface),
-    on-surface: var(--color-text),
-    surface-container: var(--color-surface),
-    surface-container-low: var(--color-surface),
-    surface-container-lowest: var(--color-surface),
-    surface-container-high: var(--color-surface-elevated),
-    surface-container-highest: var(--color-surface-elevated),
-  ));
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-text-on-primary),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+      surface-container: var(--color-surface),
+      surface-container-low: var(--color-surface),
+      surface-container-lowest: var(--color-surface),
+      surface-container-high: var(--color-surface-elevated),
+      surface-container-highest: var(--color-surface-elevated),
+    )
+  );
 }

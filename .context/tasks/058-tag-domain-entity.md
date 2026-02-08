@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Create Tag domain entity with business logic.
 
 ## Context
+
 Simple domain entity. Pattern established here will be reused.
 
 ## Acceptance Criteria
+
 - [ ] `Tag` entity class with private constructor
 - [ ] `create()` static factory (generates slug from name)
 - [ ] `load()` static factory for DB loading
@@ -17,6 +20,7 @@ Simple domain entity. Pattern established here will be reused.
 - [ ] Unit tests for all methods
 
 ## Technical Notes
+
 ```typescript
 export interface ITagProps {
   id: string;
@@ -60,11 +64,13 @@ export class Tag {
 ```
 
 ## Files to Touch
+
 - apps/api/src/modules/tag/domain/entities/tag.entity.ts
 - apps/api/src/modules/tag/domain/entities/tag.entity.spec.ts
 - apps/api/src/modules/tag/domain/tag.types.ts
 
 ## Dependencies
+
 - 057-tag-prisma-schema
 - 045-create-value-objects
 

@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Build the main icon component that uses the provider to render icons with configurable size and styling.
 
 ## Context
+
 Phase 3 of Design System epic. The icon component abstracts the underlying icon library, allowing components to use icons without knowing which library provides them.
 
 ## Acceptance Criteria
+
 - [ ] IconComponent created with selector `lib-icon`
 - [ ] Props: `name: string` (required), `size?: 'sm' | 'md' | 'lg' | 'xl'`, `strokeWidth?: number`
 - [ ] Component injects IconProvider and renders correct icon
@@ -19,6 +22,7 @@ Phase 3 of Design System epic. The icon component abstracts the underlying icon 
 - [ ] Component exported from library
 
 ## Technical Notes
+
 ```typescript
 // libs/ui/src/components/icon/icon.component.ts
 @Component({
@@ -52,20 +56,22 @@ export class IconComponent {
 ```
 
 Usage:
+
 ```html
-<lib-icon name="arrow-right" size="md" />
-<lib-icon name="check" size="lg" class="text-success" />
+<lib-icon name="arrow-right" size="md" /> <lib-icon name="check" size="lg" class="text-success" />
 ```
 
 Note: May need to adjust template based on how lucide-angular exposes components.
 
 ## Files to Touch
+
 - `libs/ui/src/components/icon/icon.component.ts` (create)
 - `libs/ui/src/components/icon/icon.component.spec.ts` (create)
 - `libs/ui/src/components/icon/index.ts` (add component export)
 - `libs/ui/src/index.ts` (export icon module)
 
 ## Dependencies
+
 - 028-implement-lucide-provider
 
 ## Complexity: M

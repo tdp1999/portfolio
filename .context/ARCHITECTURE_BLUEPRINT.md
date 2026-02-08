@@ -20,11 +20,11 @@
 
 This architecture combines three key patterns:
 
-| Pattern | Purpose |
-|---------|---------|
-| **Hexagonal Architecture** | Isolate business logic from external concerns (DB, HTTP, etc.) |
+| Pattern                        | Purpose                                                         |
+| ------------------------------ | --------------------------------------------------------------- |
+| **Hexagonal Architecture**     | Isolate business logic from external concerns (DB, HTTP, etc.)  |
 | **Domain-Driven Design (DDD)** | Rich domain models with business logic encapsulated in entities |
-| **CQRS** | Separate read (Query) and write (Command) operations |
+| **CQRS**                       | Separate read (Query) and write (Command) operations            |
 
 ### Core Principles
 
@@ -156,48 +156,48 @@ shared/
 
 ### File Naming
 
-| Layer | Pattern | Example |
-|-------|---------|---------|
-| Domain Entity | `[entity].entity.ts` | `asset.entity.ts` |
-| Domain Service | `[name].service.ts` | `ownership.service.ts` |
-| Domain Error | `[module].error.ts` | `portfolio.error.ts` |
-| Command Handler | `[action].command.ts` | `create-asset.command.ts` |
-| Query Handler | `[action].query.ts` | `list-assets.query.ts` |
-| Port (Interface) | `[name].out.port.ts` | `asset-repository.out.port.ts` |
-| Adapter | `[name].adapter.ts` | `jwt.adapter.ts` |
-| Repository | `[name].repository.ts` | `asset.repository.ts` |
-| Persistence | `[name].persistence.ts` | `asset.persistence.ts` |
-| Mapper | `[name].mapper.ts` | `asset.mapper.ts` |
-| DTO/Schema | `[module].dto.ts` | `asset.dto.ts` |
-| Tokens | `[module].token.ts` | `asset.token.ts` |
-| Controller | `[module].controller.ts` | `asset.controller.ts` |
-| RPC Controller | `[module].rpc.ts` | `user.rpc.ts` |
+| Layer            | Pattern                  | Example                        |
+| ---------------- | ------------------------ | ------------------------------ |
+| Domain Entity    | `[entity].entity.ts`     | `asset.entity.ts`              |
+| Domain Service   | `[name].service.ts`      | `ownership.service.ts`         |
+| Domain Error     | `[module].error.ts`      | `portfolio.error.ts`           |
+| Command Handler  | `[action].command.ts`    | `create-asset.command.ts`      |
+| Query Handler    | `[action].query.ts`      | `list-assets.query.ts`         |
+| Port (Interface) | `[name].out.port.ts`     | `asset-repository.out.port.ts` |
+| Adapter          | `[name].adapter.ts`      | `jwt.adapter.ts`               |
+| Repository       | `[name].repository.ts`   | `asset.repository.ts`          |
+| Persistence      | `[name].persistence.ts`  | `asset.persistence.ts`         |
+| Mapper           | `[name].mapper.ts`       | `asset.mapper.ts`              |
+| DTO/Schema       | `[module].dto.ts`        | `asset.dto.ts`                 |
+| Tokens           | `[module].token.ts`      | `asset.token.ts`               |
+| Controller       | `[module].controller.ts` | `asset.controller.ts`          |
+| RPC Controller   | `[module].rpc.ts`        | `user.rpc.ts`                  |
 
 ### Class Naming
 
 ```typescript
 // Domain Entities - PascalCase noun
-class Asset { }
-class Portfolio { }
+class Asset {}
+class Portfolio {}
 
 // Handlers - [Action][Entity][Command/Query]Handler
-class CreateAssetCommandHandler { }
-class ListAssetsQueryHandler { }
+class CreateAssetCommandHandler {}
+class ListAssetsQueryHandler {}
 
 // Repositories - [Entity]Repository
-class AssetRepository { }
+class AssetRepository {}
 
 // Persistence - [Entity]Persistence
-class AssetPersistence { }
+class AssetPersistence {}
 
 // Adapters - [Name]Adapter
-class JwtAdapter { }
+class JwtAdapter {}
 
 // Services - [Descriptive]Service
-class PortfolioOwnershipService { }
+class PortfolioOwnershipService {}
 
 // Controllers - [Entity]Controller
-class AssetController { }
+class AssetController {}
 ```
 
 ### DI Token Pattern
@@ -205,20 +205,20 @@ class AssetController { }
 ```typescript
 // src/modules/asset/application/asset.token.ts
 export const ASSET_TOKENS = {
-    REPOSITORIES: {
-        ASSET: Symbol('ASSET.REPOSITORY.ASSET'),
-        FINANCIAL_GOAL: Symbol('ASSET.REPOSITORY.FINANCIAL_GOAL'),
+  REPOSITORIES: {
+    ASSET: Symbol('ASSET.REPOSITORY.ASSET'),
+    FINANCIAL_GOAL: Symbol('ASSET.REPOSITORY.FINANCIAL_GOAL'),
+  },
+  HANDLERS: {
+    QUERY: {
+      LIST: Symbol('ASSET.QUERY.LIST'),
     },
-    HANDLERS: {
-        QUERY: {
-            LIST: Symbol('ASSET.QUERY.LIST'),
-        },
-        COMMAND: {
-            CREATE: Symbol('ASSET.COMMAND.CREATE'),
-            UPDATE: Symbol('ASSET.COMMAND.UPDATE'),
-            DELETE: Symbol('ASSET.COMMAND.DELETE'),
-        },
+    COMMAND: {
+      CREATE: Symbol('ASSET.COMMAND.CREATE'),
+      UPDATE: Symbol('ASSET.COMMAND.UPDATE'),
+      DELETE: Symbol('ASSET.COMMAND.DELETE'),
     },
+  },
 };
 ```
 
@@ -280,6 +280,7 @@ export const ASSET_TOKENS = {
 ### Detailed Example: Create Asset
 
 **1. Controller**
+
 ```typescript
 // src/modules/asset/infrastructure/controllers/asset.controller.ts
 @Post()
@@ -291,92 +292,95 @@ async create(@Body() body: unknown, @Requester() user: IUser): Promise<Id> {
 ```
 
 **2. Command Handler**
+
 ```typescript
 // src/modules/asset/application/commands/create-asset.command.ts
 @CommandHandler(CreateAssetCommand)
 export class CreateAssetCommandHandler implements ICommandHandler<CreateAssetCommand, Id> {
-    constructor(
-        @Inject(ASSET_TOKENS.REPOSITORIES.ASSET)
-        private readonly assetRepository: IAssetRepository,
-    ) {}
+  constructor(
+    @Inject(ASSET_TOKENS.REPOSITORIES.ASSET)
+    private readonly assetRepository: IAssetRepository
+  ) {}
 
-    async execute(command: CreateAssetCommand): Promise<Id> {
-        const { dto, userId } = command.payload;
+  async execute(command: CreateAssetCommand): Promise<Id> {
+    const { dto, userId } = command.payload;
 
-        // Validate input
-        const { success, data, error } = AssetCreateSchema.safeParse(dto);
-        if (!success)
-            throw BadRequestError(error, { layer: ErrorLayer.APPLICATION });
+    // Validate input
+    const { success, data, error } = AssetCreateSchema.safeParse(dto);
+    if (!success) throw BadRequestError(error, { layer: ErrorLayer.APPLICATION });
 
-        // Create domain entity
-        const asset = Asset.create(data, userId, userId);
+    // Create domain entity
+    const asset = Asset.create(data, userId, userId);
 
-        // Persist and return ID
-        return await this.assetRepository.add(asset);
-    }
+    // Persist and return ID
+    return await this.assetRepository.add(asset);
+  }
 }
 ```
 
 **3. Domain Entity**
+
 ```typescript
 // src/modules/asset/domain/entities/asset.entity.ts
 export class Asset {
-    readonly props: IAssetProps;
+  readonly props: IAssetProps;
 
-    private constructor(props: IAssetProps) {
-        this.props = props;
-    }
+  private constructor(props: IAssetProps) {
+    this.props = props;
+  }
 
-    static create(data: ICreateAssetPayload, userId: Id, createdById: Id): Asset {
-        const id = IdentifierValue.v7();
-        const now = TemporalValue.now;
-        return new Asset({
-            ...data,
-            id,
-            userId,
-            createdById,
-            updatedById: createdById,
-            createdAt: now,
-            updatedAt: now,
-        });
-    }
+  static create(data: ICreateAssetPayload, userId: Id, createdById: Id): Asset {
+    const id = IdentifierValue.v7();
+    const now = TemporalValue.now;
+    return new Asset({
+      ...data,
+      id,
+      userId,
+      createdById,
+      updatedById: createdById,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
 
-    static load(raw: IAssetProps): Asset {
-        return new Asset(raw);
-    }
+  static load(raw: IAssetProps): Asset {
+    return new Asset(raw);
+  }
 }
 ```
 
 **4. Repository**
+
 ```typescript
 // src/modules/asset/infrastructure/repositories/asset.repository.ts
 @Injectable()
 export class AssetRepository implements IAssetRepository {
-    constructor(
-        @InjectRepository(AssetPersistence)
-        private readonly repository: Repository<AssetPersistence>,
-    ) {}
+  constructor(
+    @InjectRepository(AssetPersistence)
+    private readonly repository: Repository<AssetPersistence>
+  ) {}
 
-    async add(asset: Asset): Promise<Id> {
-        const persistence = AssetMapper.toPersistence(asset);
-        const created = this.repository.create(persistence);
-        const saved = await this.repository.save(created);
-        return saved.id;
-    }
+  async add(asset: Asset): Promise<Id> {
+    const persistence = AssetMapper.toPersistence(asset);
+    const created = this.repository.create(persistence);
+    const saved = await this.repository.save(created);
+    return saved.id;
+  }
 }
 ```
 
 **5. Mapper**
+
 ```typescript
 // src/modules/asset/infrastructure/mapper/asset.mapper.ts
 export class AssetMapper {
-    static toPersistence(domain: Asset): DeepPartial<AssetPersistence> {
-        return { ...domain.props };
-    }
+  static toPersistence(domain: Asset): DeepPartial<AssetPersistence> {
+    return { ...domain.props };
+  }
 
-    static toDomain(entity: AssetPersistence): Asset {
-        return Asset.load({ ...entity });
-    }
+  static toDomain(entity: AssetPersistence): Asset {
+    return Asset.load({ ...entity });
+  }
 }
 ```
 
@@ -417,47 +421,52 @@ export class AssetMapper {
 ### Token-Based Dependency Injection
 
 **1. Define Port (Interface)**
+
 ```typescript
 // src/modules/asset/application/ports/asset-repository.out.port.ts
 export type IAssetRepository = IRepository<Asset, AssetQueryDto> & {
-    findByUserId(userId: Id, query: AssetQueryDto): Promise<Asset[]>;
+  findByUserId(userId: Id, query: AssetQueryDto): Promise<Asset[]>;
 };
 ```
 
 **2. Define Tokens**
+
 ```typescript
 // src/modules/asset/application/asset.token.ts
 export const ASSET_TOKENS = {
-    REPOSITORIES: {
-        ASSET: Symbol('ASSET.REPOSITORY.ASSET'),
-    },
+  REPOSITORIES: {
+    ASSET: Symbol('ASSET.REPOSITORY.ASSET'),
+  },
 };
 ```
 
 **3. Implement Adapter**
+
 ```typescript
 // src/modules/asset/infrastructure/repositories/asset.repository.ts
 @Injectable()
 export class AssetRepository implements IAssetRepository {
-    // Implementation...
+  // Implementation...
 }
 ```
 
 **4. Register in Module**
+
 ```typescript
 // src/modules/asset/asset.module.ts
 @Module({
-    providers: [
-        {
-            provide: ASSET_TOKENS.REPOSITORIES.ASSET,
-            useClass: AssetRepository,
-        },
-    ],
+  providers: [
+    {
+      provide: ASSET_TOKENS.REPOSITORIES.ASSET,
+      useClass: AssetRepository,
+    },
+  ],
 })
 export class AssetModule {}
 ```
 
 **5. Inject in Handler**
+
 ```typescript
 // src/modules/asset/application/commands/create-asset.command.ts
 constructor(
@@ -471,32 +480,32 @@ constructor(
 When Module A needs data from Module B, use RPC or export tokens:
 
 **Option 1: Export Token**
+
 ```typescript
 // Module B exports its repository
 @Module({
-    exports: [PORTFOLIO_TOKENS.REPOSITORIES.PORTFOLIO],
+  exports: [PORTFOLIO_TOKENS.REPOSITORIES.PORTFOLIO],
 })
 export class PortfolioModule {}
 
 // Module A imports and uses it
 @Module({
-    imports: [PortfolioModule],
+  imports: [PortfolioModule],
 })
 export class AssetModule {}
 ```
 
 **Option 2: RPC Repository**
+
 ```typescript
 // Create RPC adapter in Module A
 @Injectable()
 export class FinancialGoalRpcRepository implements IFinancialGoalRepository {
-    constructor(@Inject(CLIENT_PROXY) private readonly client: ClientProxy) {}
+  constructor(@Inject(CLIENT_PROXY) private readonly client: ClientProxy) {}
 
-    async getActive(userId: Id): Promise<FinancialGoal | null> {
-        return await observableToPromise(
-            this.client.send(FinancialGoalAction.GET_ACTIVE, userId),
-        );
-    }
+  async getActive(userId: Id): Promise<FinancialGoal | null> {
+    return await observableToPromise(this.client.send(FinancialGoalAction.GET_ACTIVE, userId));
+  }
 }
 ```
 
@@ -508,54 +517,54 @@ export class FinancialGoalRpcRepository implements IFinancialGoalRepository {
 
 ```typescript
 export class Asset {
-    readonly props: IAssetProps;
+  readonly props: IAssetProps;
 
-    private constructor(props: IAssetProps) {
-        this.props = props;
-    }
+  private constructor(props: IAssetProps) {
+    this.props = props;
+  }
 
-    // Factory for NEW entities
-    static create(data: ICreatePayload, userId: Id, createdById: Id): Asset {
-        return new Asset({
-            ...data,
-            id: IdentifierValue.v7(),
-            userId,
-            createdById,
-            updatedById: createdById,
-            createdAt: TemporalValue.now,
-            updatedAt: TemporalValue.now,
-        });
-    }
+  // Factory for NEW entities
+  static create(data: ICreatePayload, userId: Id, createdById: Id): Asset {
+    return new Asset({
+      ...data,
+      id: IdentifierValue.v7(),
+      userId,
+      createdById,
+      updatedById: createdById,
+      createdAt: TemporalValue.now,
+      updatedAt: TemporalValue.now,
+    });
+  }
 
-    // Factory for LOADING from persistence
-    static load(raw: IAssetProps): Asset {
-        return new Asset(raw);
-    }
+  // Factory for LOADING from persistence
+  static load(raw: IAssetProps): Asset {
+    return new Asset(raw);
+  }
 
-    // Domain method for updates
-    update(data: IUpdatePayload, updatedById: Id): Asset {
-        return new Asset({
-            ...this.props,
-            ...data,
-            updatedById,
-            updatedAt: TemporalValue.now,
-        });
-    }
+  // Domain method for updates
+  update(data: IUpdatePayload, updatedById: Id): Asset {
+    return new Asset({
+      ...this.props,
+      ...data,
+      updatedById,
+      updatedAt: TemporalValue.now,
+    });
+  }
 
-    // Domain method for soft delete
-    delete(deletedById: Id): Asset {
-        return new Asset({
-            ...this.props,
-            deletedById,
-            deletedAt: TemporalValue.now,
-        });
-    }
+  // Domain method for soft delete
+  delete(deletedById: Id): Asset {
+    return new Asset({
+      ...this.props,
+      deletedById,
+      deletedAt: TemporalValue.now,
+    });
+  }
 
-    // Calculated properties (business logic)
-    get progress(): number {
-        if (!this.props.targetValue) return 0;
-        return (this.props.currentValue / this.props.targetValue) * 100;
-    }
+  // Calculated properties (business logic)
+  get progress(): number {
+    if (!this.props.targetValue) return 0;
+    return (this.props.currentValue / this.props.targetValue) * 100;
+  }
 }
 ```
 
@@ -564,24 +573,24 @@ export class Asset {
 ```typescript
 // Define base schema
 export const AssetSchema = z.object({
-    id: z.string().uuid(),
-    name: z.string().min(1).max(255),
-    currentValue: z.number().positive(),
-    type: z.nativeEnum(AssetTypeEnum),
-    userId: z.string().uuid(),
+  id: z.string().uuid(),
+  name: z.string().min(1).max(255),
+  currentValue: z.number().positive(),
+  type: z.nativeEnum(AssetTypeEnum),
+  userId: z.string().uuid(),
 });
 
 // Derive create schema (pick required fields)
 export const AssetCreateSchema = AssetSchema.pick({
-    name: true,
-    currentValue: true,
-    type: true,
+  name: true,
+  currentValue: true,
+  type: true,
 });
 
 // Derive update schema (all optional)
 export const AssetUpdateSchema = AssetSchema.partial().omit({
-    id: true,
-    userId: true,
+  id: true,
+  userId: true,
 });
 
 // Type inference
@@ -593,35 +602,31 @@ export type CreateAssetDto = z.infer<typeof AssetCreateSchema>;
 ```typescript
 // Command (write operation)
 export class CreateAssetCommand implements ICommand {
-    constructor(public readonly payload: { dto: unknown; userId: Id }) {}
+  constructor(public readonly payload: { dto: unknown; userId: Id }) {}
 }
 
 @CommandHandler(CreateAssetCommand)
-export class CreateAssetCommandHandler
-    implements ICommandHandler<CreateAssetCommand, Id> {
-
-    async execute(command: CreateAssetCommand): Promise<Id> {
-        // 1. Validate
-        // 2. Create domain entity
-        // 3. Persist
-        // 4. Return ID
-    }
+export class CreateAssetCommandHandler implements ICommandHandler<CreateAssetCommand, Id> {
+  async execute(command: CreateAssetCommand): Promise<Id> {
+    // 1. Validate
+    // 2. Create domain entity
+    // 3. Persist
+    // 4. Return ID
+  }
 }
 
 // Query (read operation)
 export class ListAssetsQuery implements IQuery {
-    constructor(public readonly payload: { userId: Id; dto: AssetQueryDto }) {}
+  constructor(public readonly payload: { userId: Id; dto: AssetQueryDto }) {}
 }
 
 @QueryHandler(ListAssetsQuery)
-export class ListAssetsQueryHandler
-    implements IQueryHandler<ListAssetsQuery, Asset[]> {
-
-    async execute(query: ListAssetsQuery): Promise<Asset[]> {
-        // 1. Validate query params
-        // 2. Fetch from repository
-        // 3. Return results
-    }
+export class ListAssetsQueryHandler implements IQueryHandler<ListAssetsQuery, Asset[]> {
+  async execute(query: ListAssetsQuery): Promise<Asset[]> {
+    // 1. Validate query params
+    // 2. Fetch from repository
+    // 3. Return results
+  }
 }
 ```
 
@@ -629,28 +634,28 @@ export class ListAssetsQueryHandler
 
 ```typescript
 export class AssetMapper {
-    // Domain → Persistence (for saving)
-    static toPersistence(domain: Asset): DeepPartial<AssetPersistence> {
-        return {
-            ...domain.props,
-            // Handle nested entities if needed
-            target: domain.props.target?.props ?? null,
-        };
-    }
+  // Domain → Persistence (for saving)
+  static toPersistence(domain: Asset): DeepPartial<AssetPersistence> {
+    return {
+      ...domain.props,
+      // Handle nested entities if needed
+      target: domain.props.target?.props ?? null,
+    };
+  }
 
-    // Persistence → Domain (for loading)
-    static toDomain(entity: AssetPersistence): Asset {
-        return Asset.load({
-            ...entity,
-            // Reconstruct nested entities
-            target: entity.target ? AssetTarget.load(entity.target) : null,
-        });
-    }
+  // Persistence → Domain (for loading)
+  static toDomain(entity: AssetPersistence): Asset {
+    return Asset.load({
+      ...entity,
+      // Reconstruct nested entities
+      target: entity.target ? AssetTarget.load(entity.target) : null,
+    });
+  }
 
-    // Batch conversion
-    static toDomainArray(entities: AssetPersistence[]): Asset[] {
-        return entities.map(e => this.toDomain(e));
-    }
+  // Batch conversion
+  static toDomainArray(entities: AssetPersistence[]): Asset[] {
+    return entities.map((e) => this.toDomain(e));
+  }
 }
 ```
 
@@ -659,21 +664,22 @@ export class AssetMapper {
 ```typescript
 // src/core/interfaces/repository.interface.ts
 export interface IRepositoryCommand<T> {
-    add(entity: T): Promise<Id>;
-    update(id: Id, entity: T): Promise<boolean>;
-    remove(id: Id): Promise<boolean>;
+  add(entity: T): Promise<Id>;
+  update(id: Id, entity: T): Promise<boolean>;
+  remove(id: Id): Promise<boolean>;
 }
 
 export interface IRepositoryQuery<T, Search> {
-    list(query?: Search): Promise<T[]>;
-    paginatedList(query?: Search): Promise<PaginatedResponse<T>>;
-    findById(id: Id): Promise<T | null>;
-    findOne(conditions: Partial<T>): Promise<T | null>;
-    exists(id: Id): Promise<boolean>;
+  list(query?: Search): Promise<T[]>;
+  paginatedList(query?: Search): Promise<PaginatedResponse<T>>;
+  findById(id: Id): Promise<T | null>;
+  findOne(conditions: Partial<T>): Promise<T | null>;
+  exists(id: Id): Promise<boolean>;
 }
 
 export interface IRepository<T, Search>
-    extends IRepositoryCommand<T>, IRepositoryQuery<T, Search> {}
+  extends IRepositoryCommand<T>,
+    IRepositoryQuery<T, Search> {}
 ```
 
 ### Pattern 6: Domain Service for Security
@@ -751,30 +757,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([MyFeaturePersistence]),
-        CqrsModule,
-    ],
-    controllers: [MyFeatureController],
-    providers: [
-        // Repository
-        {
-            provide: MY_FEATURE_TOKENS.REPOSITORIES.MY_FEATURE,
-            useClass: MyFeatureRepository,
-        },
-        // Command Handlers
-        CreateMyFeatureCommandHandler,
-        UpdateMyFeatureCommandHandler,
-        DeleteMyFeatureCommandHandler,
-        // Query Handlers
-        ListMyFeaturesQueryHandler,
-        MyFeatureDetailQueryHandler,
-        // Domain Services
-        MyFeatureValidationService,
-    ],
-    exports: [
-        MY_FEATURE_TOKENS.REPOSITORIES.MY_FEATURE,
-    ],
+  imports: [TypeOrmModule.forFeature([MyFeaturePersistence]), CqrsModule],
+  controllers: [MyFeatureController],
+  providers: [
+    // Repository
+    {
+      provide: MY_FEATURE_TOKENS.REPOSITORIES.MY_FEATURE,
+      useClass: MyFeatureRepository,
+    },
+    // Command Handlers
+    CreateMyFeatureCommandHandler,
+    UpdateMyFeatureCommandHandler,
+    DeleteMyFeatureCommandHandler,
+    // Query Handlers
+    ListMyFeaturesQueryHandler,
+    MyFeatureDetailQueryHandler,
+    // Domain Services
+    MyFeatureValidationService,
+  ],
+  exports: [MY_FEATURE_TOKENS.REPOSITORIES.MY_FEATURE],
 })
 export class MyFeatureModule {}
 ```
@@ -789,30 +790,30 @@ export class MyFeatureModule {}
 // src/core/filters/global-exception.filter.ts
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-    catch(exception: unknown, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
 
-        let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = 'Internal server error';
-        let errorCode: string | null = null;
+    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
+    let errorCode: string | null = null;
 
-        if (exception instanceof DomainError) {
-            statusCode = exception.statusCode;
-            message = exception.message;
-            errorCode = exception.errorCode;
-        } else if (exception instanceof HttpException) {
-            statusCode = exception.getStatus();
-            message = exception.message;
-        }
-
-        response.status(statusCode).json({
-            statusCode,
-            errorCode,
-            error: HttpStatus[statusCode],
-            message,
-        });
+    if (exception instanceof DomainError) {
+      statusCode = exception.statusCode;
+      message = exception.message;
+      errorCode = exception.errorCode;
+    } else if (exception instanceof HttpException) {
+      statusCode = exception.getStatus();
+      message = exception.message;
     }
+
+    response.status(statusCode).json({
+      statusCode,
+      errorCode,
+      error: HttpStatus[statusCode],
+      message,
+    });
+  }
 }
 ```
 
@@ -822,14 +823,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 // src/core/interceptors/transform.interceptor.ts
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
-    intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
-        return next.handle().pipe(
-            map((data: T) => ({
-                data,
-                statusCode: context.switchToHttp().getResponse().statusCode,
-            })),
-        );
-    }
+  intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
+    return next.handle().pipe(
+      map((data: T) => ({
+        data,
+        statusCode: context.switchToHttp().getResponse().statusCode,
+      }))
+    );
+  }
 }
 ```
 
@@ -839,22 +840,22 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
 // src/core/features/auth/authenticate.guard.ts
 @Injectable()
 export class AuthenticateGuard implements CanActivate {
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        // Check for @Public() decorator
-        const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler());
-        if (isPublic) return true;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check for @Public() decorator
+    const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler());
+    if (isPublic) return true;
 
-        // Extract and verify JWT
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractToken(request);
+    // Extract and verify JWT
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractToken(request);
 
-        const payload = await this.jwtService.verify(token);
-        const user = await this.fetchUser(payload.userId);
+    const payload = await this.jwtService.verify(token);
+    const user = await this.fetchUser(payload.userId);
 
-        // Attach user to request
-        request.user = user;
-        return true;
-    }
+    // Attach user to request
+    request.user = user;
+    return true;
+  }
 }
 ```
 
@@ -882,33 +883,33 @@ async list(@Requester() user: IUser): Promise<Asset[]> {
 
 ### Layer Responsibilities
 
-| Layer | Contains | Depends On |
-|-------|----------|------------|
-| **Domain** | Entities, Value Objects, Domain Services | Nothing (pure business logic) |
-| **Application** | Commands, Queries, Ports, DTOs | Domain |
-| **Infrastructure** | Controllers, Repositories, Adapters | Application, Domain |
+| Layer              | Contains                                 | Depends On                    |
+| ------------------ | ---------------------------------------- | ----------------------------- |
+| **Domain**         | Entities, Value Objects, Domain Services | Nothing (pure business logic) |
+| **Application**    | Commands, Queries, Ports, DTOs           | Domain                        |
+| **Infrastructure** | Controllers, Repositories, Adapters      | Application, Domain           |
 
 ### File Quick Reference
 
-| Need To... | Create File | Location |
-|------------|-------------|----------|
-| Add business entity | `[name].entity.ts` | `domain/entities/` |
-| Add create/update/delete | `[action].command.ts` | `application/commands/` |
-| Add read operation | `[action].query.ts` | `application/queries/` |
-| Define repository interface | `[name].out.port.ts` | `application/ports/` |
-| Implement database access | `[name].repository.ts` | `infrastructure/repositories/` |
-| Add HTTP endpoints | `[name].controller.ts` | `infrastructure/controllers/` |
-| Define database schema | `[name].persistence.ts` | `infrastructure/persistence/` |
+| Need To...                  | Create File             | Location                       |
+| --------------------------- | ----------------------- | ------------------------------ |
+| Add business entity         | `[name].entity.ts`      | `domain/entities/`             |
+| Add create/update/delete    | `[action].command.ts`   | `application/commands/`        |
+| Add read operation          | `[action].query.ts`     | `application/queries/`         |
+| Define repository interface | `[name].out.port.ts`    | `application/ports/`           |
+| Implement database access   | `[name].repository.ts`  | `infrastructure/repositories/` |
+| Add HTTP endpoints          | `[name].controller.ts`  | `infrastructure/controllers/`  |
+| Define database schema      | `[name].persistence.ts` | `infrastructure/persistence/`  |
 
 ### Naming Patterns
 
-| Concept | Convention | Example |
-|---------|------------|---------|
-| DI Token | `SCREAMING_SNAKE_CASE` | `ASSET_TOKENS.REPOSITORIES.ASSET` |
-| Entity | `PascalCase` | `Asset`, `Portfolio` |
-| Handler | `[Action][Entity][Type]Handler` | `CreateAssetCommandHandler` |
-| Port | `I[Name]Repository` | `IAssetRepository` |
-| Schema | `[Entity][Action]Schema` | `AssetCreateSchema` |
+| Concept  | Convention                      | Example                           |
+| -------- | ------------------------------- | --------------------------------- |
+| DI Token | `SCREAMING_SNAKE_CASE`          | `ASSET_TOKENS.REPOSITORIES.ASSET` |
+| Entity   | `PascalCase`                    | `Asset`, `Portfolio`              |
+| Handler  | `[Action][Entity][Type]Handler` | `CreateAssetCommandHandler`       |
+| Port     | `I[Name]Repository`             | `IAssetRepository`                |
+| Schema   | `[Entity][Action]Schema`        | `AssetCreateSchema`               |
 
 ### Validation Flow
 
@@ -956,4 +957,4 @@ When creating a new module:
 
 ---
 
-*This blueprint is based on the Notum Backend project architecture. Adapt patterns as needed for your specific requirements.*
+_This blueprint is based on the Notum Backend project architecture. Adapt patterns as needed for your specific requirements._

@@ -5,11 +5,13 @@ ESLint `@nx/enforce-module-boundaries` configuration for library scoping.
 ## Tag System
 
 ### Scope Tags
+
 - `scope:shared` - Global shared libs (FE + BE)
 - `scope:landing` - Landing app and its libs
 - `scope:api` - API app and its libs (future)
 
 ### Type Tags
+
 - `type:feature` - Feature libraries
 - `type:shared-data-access` - Shared data access (services, state)
 - `type:shared-ui` - Shared UI components
@@ -27,11 +29,11 @@ ESLint `@nx/enforce-module-boundaries` configuration for library scoping.
 scope:landing (feature) → scope:landing (shared-*) → scope:shared
 ```
 
-| Source | Can Import |
-|--------|-----------|
-| `scope:landing, type:feature` | `scope:landing, type:shared-*` and `scope:shared` |
+| Source                         | Can Import                                        |
+| ------------------------------ | ------------------------------------------------- |
+| `scope:landing, type:feature`  | `scope:landing, type:shared-*` and `scope:shared` |
 | `scope:landing, type:shared-*` | `scope:landing, type:shared-*` and `scope:shared` |
-| `scope:shared` | Only other `scope:shared` |
+| `scope:shared`                 | Only other `scope:shared`                         |
 
 ### Forbidden Dependencies
 
@@ -97,12 +99,14 @@ nx affected -t lint
 ## Common Violations
 
 ### Feature importing feature
+
 ```
 Error: A project tagged with "type:feature" can only depend on libs tagged with...
 Fix: Extract shared logic to landing/shared/data-access or landing/shared/ui
 ```
 
 ### Landing importing from wrong scope
+
 ```
 Error: A project tagged with "scope:landing" can only depend on...
 Fix: Move shared code to scope:shared if needed by multiple apps

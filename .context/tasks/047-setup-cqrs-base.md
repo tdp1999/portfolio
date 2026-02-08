@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Configure NestJS CQRS and create base classes for commands/queries.
 
 ## Context
+
 CQRS infrastructure needed before creating module handlers.
 
 ## Acceptance Criteria
+
 - [ ] `@nestjs/cqrs` installed
 - [ ] CqrsModule imported in AppModule
 - [ ] `BaseCommand` class with userId and timestamp
@@ -16,6 +19,7 @@ CQRS infrastructure needed before creating module handlers.
 - [ ] Verify CommandBus and QueryBus are injectable
 
 ## Technical Notes
+
 ```typescript
 export abstract class BaseCommand {
   readonly timestamp = new Date();
@@ -28,6 +32,7 @@ export abstract class BaseQuery {
 ```
 
 ## Files to Touch
+
 - package.json
 - apps/api/src/app.module.ts
 - apps/api/src/shared/cqrs/base.command.ts
@@ -35,6 +40,7 @@ export abstract class BaseQuery {
 - apps/api/src/shared/cqrs/index.ts
 
 ## Dependencies
+
 - 044-create-prisma-service
 
 ## Complexity: S

@@ -3,12 +3,15 @@
 ## Status: pending
 
 ## Goal
+
 Remove the original stub component files from libs/ui that were generated during Nx setup.
 
 ## Context
+
 The UI library was generated with placeholder component files (ui.ts, ui.html, ui.scss). Now that real components exist, these stubs should be removed to avoid confusion.
 
 ## Acceptance Criteria
+
 - [ ] `libs/ui/src/lib/ui/ui.ts` deleted (or repurposed)
 - [ ] `libs/ui/src/lib/ui/ui.html` deleted
 - [ ] `libs/ui/src/lib/ui/ui.scss` deleted
@@ -20,7 +23,9 @@ The UI library was generated with placeholder component files (ui.ts, ui.html, u
 - [ ] No broken references in other files
 
 ## Technical Notes
+
 Current stub files to remove:
+
 ```
 libs/ui/src/lib/ui/
 ├── ui.ts           # Stub component
@@ -30,6 +35,7 @@ libs/ui/src/lib/ui/
 ```
 
 Check `libs/ui/src/index.ts` for:
+
 ```typescript
 // Remove this line
 export * from './lib/ui/ui';
@@ -38,6 +44,7 @@ export * from './lib/ui/ui';
 Verify no other files import the stub component before deleting.
 
 ## Files to Touch
+
 - `libs/ui/src/lib/ui/ui.ts` (delete)
 - `libs/ui/src/lib/ui/ui.html` (delete)
 - `libs/ui/src/lib/ui/ui.scss` (delete)
@@ -45,6 +52,7 @@ Verify no other files import the stub component before deleting.
 - `libs/ui/src/index.ts` (update exports)
 
 ## Dependencies
+
 - 039-verify-phase4-components (ensure new components work first)
 
 ## Complexity: S
