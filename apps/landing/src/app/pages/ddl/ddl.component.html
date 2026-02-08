@@ -1,109 +1,173 @@
-<div class="container mx-auto px-4 py-8">
-  <header class="mb-8">
-    <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
-    <p class="text-lg text-text-secondary mt-2">
-      Component showcase and design system documentation
-    </p>
-  </header>
+<div class="min-h-screen bg-background">
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-8 flex items-start justify-between">
+      <div>
+        <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
+        <p class="text-lg text-text-secondary mt-2">
+          Component showcase and design system documentation
+        </p>
+      </div>
+      <button
+        (click)="toggleDark()"
+        class="mt-2 px-4 py-2 rounded-lg border border-border text-text-secondary hover:text-text hover:border-border-strong transition-colors flex items-center gap-2"
+      >
+        <span>{{ isDark() ? '☀️' : '🌙' }}</span>
+        <span class="text-sm">{{ isDark() ? 'Light' : 'Dark' }}</span>
+      </button>
+    </header>
 
-  <section class="space-y-6">
-    <!-- Accent Color Palette Test -->
-    <div class="color-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-      <h2 class="text-2xl font-semibold mb-4 text-text">Accent Color Palette</h2>
-      <div class="grid grid-cols-5 gap-4">
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-50 rounded-lg border border-border"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-50</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-100 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-100</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-200 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-200</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-300 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-300</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-400 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-400</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-500 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-500</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-600 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-600</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-700 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-700</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-800 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-800</p>
-        </div>
-        <div class="text-center">
-          <div class="w-full h-20 bg-accent-900 rounded-lg"></div>
-          <p class="text-xs mt-2 text-text-secondary">accent-900</p>
+    <section class="space-y-6">
+      <!-- Accent Color Palette Test -->
+      <div class="color-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Accent Color Palette</h2>
+        <div class="grid grid-cols-5 gap-4">
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-50 rounded-lg border border-border"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-50</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-100 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-100</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-200 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-200</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-300 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-300</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-400 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-400</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-500 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-500</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-600 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-600</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-700 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-700</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-800 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-800</p>
+          </div>
+          <div class="text-center">
+            <div class="w-full h-20 bg-accent-900 rounded-lg"></div>
+            <p class="text-xs mt-2 text-text-secondary">accent-900</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Semantic Color Tokens Test -->
-    <div class="semantic-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-      <h2 class="text-2xl font-semibold mb-4 text-text">Semantic Color Tokens</h2>
-      <div class="flex gap-4 flex-wrap">
-        <button
-          class="px-4 py-2 bg-primary text-text-on-primary rounded-lg hover:bg-primary-hover transition-colors"
-        >
-          Primary Button
-        </button>
-        <button
-          class="px-4 py-2 bg-gray-200 text-text rounded-lg hover:bg-gray-300 transition-colors"
-        >
-          Secondary Button
-        </button>
-        <button
-          class="px-4 py-2 border border-border rounded-lg hover:bg-background transition-colors text-text"
-        >
-          Outline Button
-        </button>
-      </div>
-    </div>
-
-    <!-- Feedback Colors Test -->
-    <div class="feedback-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-      <h2 class="text-2xl font-semibold mb-4 text-text">Feedback Colors</h2>
-      <div class="space-y-3">
-        <div class="p-3 bg-info-container border-l-4 border-info text-text">
-          Info message using semantic tokens
-        </div>
-        <div class="p-3 bg-success-container border-l-4 border-success text-text">
-          Success message using semantic tokens
-        </div>
-        <div class="p-3 bg-warning-container border-l-4 border-warning text-text">
-          Warning message using semantic tokens
-        </div>
-        <div class="p-3 bg-error-container border-l-4 border-error text-text">
-          Error message using semantic tokens
+      <!-- Semantic Color Tokens Test -->
+      <div class="semantic-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Semantic Color Tokens</h2>
+        <div class="flex gap-4 flex-wrap">
+          <button
+            class="px-4 py-2 bg-primary text-text-on-primary rounded-lg hover:bg-primary-hover transition-colors"
+          >
+            Primary Button
+          </button>
+          <button
+            class="px-4 py-2 bg-surface-elevated text-text rounded-lg border border-border hover:border-border-strong transition-colors"
+          >
+            Secondary Button
+          </button>
+          <button
+            class="px-4 py-2 border border-border rounded-lg hover:bg-background transition-colors text-text"
+          >
+            Outline Button
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Border Tokens Test -->
-    <div class="border-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-      <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>
-      <div class="space-y-3">
-        <div class="p-3 border border-border rounded-lg">Default border using border-border</div>
-        <div class="p-3 border border-border-strong rounded-lg">
-          Strong border using border-border-strong
+      <!-- Feedback Colors Test -->
+      <div class="feedback-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Feedback Colors</h2>
+        <div class="space-y-3">
+          <div class="p-3 bg-info-container border-l-4 border-info text-text">
+            Info message using semantic tokens
+          </div>
+          <div class="p-3 bg-success-container border-l-4 border-success text-text">
+            Success message using semantic tokens
+          </div>
+          <div class="p-3 bg-warning-container border-l-4 border-warning text-text">
+            Warning message using semantic tokens
+          </div>
+          <div class="p-3 bg-error-container border-l-4 border-error text-text">
+            Error message using semantic tokens
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+
+      <!-- Typography Scale Test -->
+      <div class="typography-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Typography Scale</h2>
+        <div class="space-y-4">
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-5xl</span>
+            <span class="text-5xl font-semibold text-text">Heading 1</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-4xl</span>
+            <span class="text-4xl font-semibold text-text">Heading 2</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-3xl</span>
+            <span class="text-3xl font-medium text-text">Heading 3</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-2xl</span>
+            <span class="text-2xl font-medium text-text">Heading 4</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-xl</span>
+            <span class="text-xl font-medium text-text">Heading 5</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-lg</span>
+            <span class="text-lg text-text">Large body text</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-base</span>
+            <span class="text-base text-text">Regular body text</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-sm</span>
+            <span class="text-sm text-text-secondary">Small text</span>
+          </div>
+          <div class="flex items-baseline gap-4">
+            <span class="text-xs text-text-muted w-16 shrink-0">text-xs</span>
+            <span class="text-xs text-text-muted">Extra small text</span>
+          </div>
+          <hr class="border-border my-4" />
+          <div class="space-y-2">
+            <p class="text-sm font-medium text-text-secondary">Font Families</p>
+            <p class="font-sans text-base text-text">
+              Inter (sans): The quick brown fox jumps over the lazy dog
+            </p>
+            <p class="font-mono text-base text-text">
+              JetBrains Mono: const greeting = "Hello, World!";
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Border Tokens Test -->
+      <div class="border-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>
+        <div class="space-y-3">
+          <div class="p-3 border border-border rounded-lg">Default border using border-border</div>
+          <div class="p-3 border border-border-strong rounded-lg">
+            Strong border using border-border-strong
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>

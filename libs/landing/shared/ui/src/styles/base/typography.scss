@@ -1,1 +1,51 @@
-/* Base typography styles will be defined here in task 022 */
+/* Base Typography Styles */
+
+@layer base {
+  html, body {
+    background-color: var(--color-background);
+  }
+
+  body {
+    @apply font-sans text-base text-text leading-normal;
+  }
+
+  h1 {
+    @apply text-5xl font-semibold leading-tight tracking-tight;
+  }
+
+  h2 {
+    @apply text-4xl font-semibold leading-tight tracking-tight;
+  }
+
+  h3 {
+    @apply text-3xl font-medium leading-snug;
+  }
+
+  h4 {
+    @apply text-2xl font-medium leading-snug;
+  }
+
+  h5 {
+    @apply text-xl font-medium leading-snug;
+  }
+
+  h6 {
+    @apply text-lg font-medium leading-normal;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
+
+  code, kbd, samp {
+    @apply font-mono text-sm;
+  }
+
+  pre {
+    @apply font-mono text-sm leading-relaxed;
+  }
+
+  small {
+    @apply text-sm;
+  }
+}

@@ -1,1 +1,27 @@
-/* Dark mode token overrides will be defined here in task 023 */
+.dark {
+  --color-background: #0f1117; /* softened dark, not pure black */
+  --color-surface: #1a1d27; /* slightly blue-tinted dark */
+  --color-surface-elevated: #22263a; /* elevated surface with depth */
+
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 58%); /* slightly muted accent */
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 68%);
+  --color-primary-container: hsl(var(--accent-hue) 40% 22%); /* desaturated container */
+
+  --color-text: #e2e8f0; /* slate-200, softer than pure white */
+  --color-text-secondary: #94a3b8; /* slate-400 */
+  --color-text-muted: #64748b; /* slate-500 */
+  --color-text-on-primary: #ffffff;
+
+  --color-border: #2d3148; /* subtle border */
+  --color-border-strong: #3d4266; /* visible border */
+
+  /* Feedback colors — distinct hues, moderate saturation */
+  --color-success: #34d399; /* emerald-400 */
+  --color-success-container: #064e3b; /* emerald-900 */
+  --color-warning: #fcd34d; /* amber-300, brighter for contrast */
+  --color-warning-container: #3d2e00; /* warm dark amber — clearly distinct from error */
+  --color-error: #f87171; /* red-400 */
+  --color-error-container: #3d0808; /* deep red — clearly distinct from warning */
+  --color-info: hsl(var(--accent-hue) var(--accent-saturation) 58%);
+  --color-info-container: hsl(var(--accent-hue) 40% 18%);
+}

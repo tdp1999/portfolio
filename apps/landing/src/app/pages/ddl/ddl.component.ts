@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,5 +9,15 @@ import { CommonModule } from '@angular/common';
   styleUrl: './ddl.component.scss',
 })
 export class DdlComponent {
-  // Future: Will include component showcase logic
+  isDark = signal(false);
+
+  constructor() {
+    effect(() => {
+      document.documentElement.classList.toggle('dark', this.isDark());
+    });
+  }
+
+  toggleDark() {
+    this.isDark.update(v => !v);
+  }
 }
