@@ -1,1 +1,32 @@
-/* Color tokens will be defined here in task 021 */
+/* Configurable base values */
+:root {
+  --accent-hue: 210;
+  --accent-saturation: 65%;
+
+  /* Semantic color tokens (Light mode) */
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 50%);
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 42%);
+  --color-primary-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
+
+  --color-background: #f9fafb; /* gray-50 */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+
+  --color-text: #111827; /* gray-900 */
+  --color-text-secondary: #4b5563; /* gray-600 */
+  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-on-primary: #ffffff;
+
+  --color-border: #e5e7eb; /* gray-200 */
+  --color-border-strong: #d1d5db; /* gray-300 */
+
+  /* Feedback colors */
+  --color-success: #22c55e; /* green-500 */
+  --color-success-container: #dcfce7; /* green-100 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-warning-container: #fef3c7; /* amber-100 */
+  --color-error: #ef4444; /* red-500 */
+  --color-error-container: #fee2e2; /* red-100 */
+  --color-info: hsl(var(--accent-hue) var(--accent-saturation) 50%);
+  --color-info-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
+}

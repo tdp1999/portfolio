@@ -1,16 +1,16 @@
-/* SCSS modules with @use MUST come first (SCSS requirement) */
-@use "./tokens/colors.scss" as colors;
-@use "./tokens/typography.scss" as typography-tokens;
-@use "./themes/dark.scss" as dark-theme;
-@use "./base/typography.scss" as typography-base;
+/* SCSS module imports */
+@use './tokens/typography.scss' as typography-tokens;
+@use './tokens/colors.scss' as colors-tokens;
+@use './themes/dark.scss' as dark-theme;
+@use './base/typography.scss' as typography-base;
 
-/* Tailwind CSS v4 imports */
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/preflight" layer(base);
-@import "tailwindcss/utilities" layer(utilities);
+/* Tailwind CSS v3 directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Font imports */
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';

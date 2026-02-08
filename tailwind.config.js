@@ -1,0 +1,51 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./apps/landing/src/**/*.{html,ts}",
+    "./libs/landing/**/*.{html,ts}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        accent: {
+          50:  'hsl(var(--accent-hue) var(--accent-saturation) 97%)',
+          100: 'hsl(var(--accent-hue) var(--accent-saturation) 94%)',
+          200: 'hsl(var(--accent-hue) var(--accent-saturation) 86%)',
+          300: 'hsl(var(--accent-hue) var(--accent-saturation) 74%)',
+          400: 'hsl(var(--accent-hue) var(--accent-saturation) 62%)',
+          500: 'hsl(var(--accent-hue) var(--accent-saturation) 50%)',
+          600: 'hsl(var(--accent-hue) var(--accent-saturation) 42%)',
+          700: 'hsl(var(--accent-hue) var(--accent-saturation) 34%)',
+          800: 'hsl(var(--accent-hue) var(--accent-saturation) 26%)',
+          900: 'hsl(var(--accent-hue) var(--accent-saturation) 18%)',
+        },
+        primary:           'var(--color-primary)',
+        'primary-hover':   'var(--color-primary-hover)',
+        'primary-container': 'var(--color-primary-container)',
+        background:        'var(--color-background)',
+        surface:           'var(--color-surface)',
+        'surface-elevated':'var(--color-surface-elevated)',
+        text:              'var(--color-text)',
+        'text-secondary':  'var(--color-text-secondary)',
+        'text-muted':      'var(--color-text-muted)',
+        'text-on-primary': 'var(--color-text-on-primary)',
+        border:            'var(--color-border)',
+        'border-strong':   'var(--color-border-strong)',
+        success:           'var(--color-success)',
+        'success-container':'var(--color-success-container)',
+        warning:           'var(--color-warning)',
+        'warning-container':'var(--color-warning-container)',
+        error:             'var(--color-error)',
+        'error-container': 'var(--color-error-container)',
+        info:              'var(--color-info)',
+        'info-container':  'var(--color-info-container)',
+      },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+      },
+    },
+  },
+  plugins: [],
+};
