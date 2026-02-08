@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (21 tasks)
+- `.context/tasks-done/` - Archived completed tasks (19 tasks)
 
 ## Completed Milestones
 
@@ -30,8 +30,8 @@
 ### Epic: Design System (epic-design-system) - broken-down
 
 **Phase 1: Tailwind + Token Foundation**
-- [x] 020-install-tailwind-v4 - Install Tailwind CSS v4 and configure base setup (M) - Completed 2026-02-05
-- [ ] 021-define-color-tokens - Define HSL-based color tokens in Tailwind @theme (M)
+- [ ] 020-install-tailwind-v3 - Install Tailwind CSS v3 and configure base setup (M)
+- [ ] 021-define-color-tokens - Define HSL-based color tokens (M)
 - [ ] 022-define-typography-tokens - Define typography tokens and base styles (M)
 - [ ] 023-define-dark-mode-tokens - Define dark mode token overrides (S)
 - [ ] 024-verify-phase1-tailwind - Verify Phase 1 Tailwind token foundation (S)
@@ -118,16 +118,6 @@
 
 ## Completed Tasks (Recent)
 
-- [x] **020-install-tailwind-v4** - Install Tailwind CSS v4 and configure base setup (M) - Completed 2026-02-05
-  - Installed Tailwind CSS v4.0.0 with PostCSS plugin
-  - Installed @fontsource/inter for typography
-  - Created styles directory structure in `libs/landing/shared/ui/src/styles/`
-  - Created main entry CSS with Tailwind import and font imports
-  - Renamed landing app styles from .scss to .css
-  - Created `postcss.config.js` for Tailwind processing
-  - Verified Tailwind utilities render correctly (bg-gray-100 tested)
-  - All builds passing, no TypeScript errors
-
 - [x] **065-restructure-libs-architecture** - Restructure libs with scoped architecture (L) - Completed 2026-02-04
   - Implemented nested library structure: `libs/shared/*`, `libs/landing/shared/*`
   - Created `ng-lib` skill for generating Angular libraries
@@ -144,7 +134,7 @@
 
 ## Up Next
 
-**Next Design System Task:** **021-define-color-tokens** - Define HSL-based color tokens in Tailwind @theme
+**Next Design System Task:** **020-install-tailwind-v3** - Install Tailwind CSS v3 and configure base setup
 **Alternative Track:** Start Database with **043-setup-prisma-supabase**
 
 Both tracks can proceed in parallel if desired.
@@ -153,17 +143,18 @@ Both tracks can proceed in parallel if desired.
 
 | Status | Count |
 |--------|-------|
-| Done (archived) | 21 |
-| Done (Design System) | 1 |
+| Done (archived) | 19 |
+| Done (Design System) | 0 |
 | In Progress | 0 |
-| Pending (Design System) | 21 |
+| Pending (Design System) | 22 |
 | Pending (DB Foundation) | 6 |
 | Pending (DB User Module) | 8 |
 | Pending (DB Tag Module) | 8 |
-| **Total Created** | **65** |
+| **Total Created** | **63** |
 
 ## Notes
 
+- **Tailwind v4 → v3 downgrade:** Due to Angular v21 compatibility issues (see ADR-008)
 - **Sequential Development:** Complete one module before starting next
 - **Module Pattern:** Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire
 - Future sprints broken down only when current sprint completes

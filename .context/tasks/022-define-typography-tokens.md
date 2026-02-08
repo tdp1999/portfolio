@@ -12,28 +12,28 @@ Phase 1 of Design System epic. Typography system includes:
 - Base element styles: h1-h6, p, code in @layer base
 
 ## Acceptance Criteria
-- [ ] `libs/landing/shared/ui/src/styles/tokens/typography.scss` contains @theme typography definitions
-- [ ] Font families defined: --font-sans (Inter), --font-mono (JetBrains Mono)
-- [ ] Fluid type scale defined: --text-xs through --text-5xl using clamp()
+- [ ] `libs/landing/shared/ui/src/styles/tokens/typography.scss` contains typography definitions
+- [ ] Font families defined in `tailwind.config.js`: `theme.extend.fontFamily` (sans: Inter, mono: JetBrains Mono)
+- [ ] Fluid type scale defined using CSS custom properties and clamp()
 - [ ] `libs/landing/shared/ui/src/styles/base/typography.scss` contains @layer base element styles
 - [ ] h1-h6 styled with appropriate font sizes and weights
 - [ ] Tailwind utilities work: `font-sans`, `font-mono`, `text-xl`, etc.
 - [ ] Typography scales smoothly between viewport sizes
 
 ## Technical Notes
-```scss
-/* typography.scss tokens */
-@theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-
-  /* Fluid scale using clamp(min, preferred, max) */
-  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --text-base: clamp(1rem, 0.925rem + 0.4vw, 1.125rem);
-  --text-5xl: clamp(3rem, 2rem + 4vw, 4.5rem);
-  /* ... */
+```js
+// tailwind.config.js
+theme: {
+  extend: {
+    fontFamily: {
+      sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+    },
+  },
 }
+```
 
+```scss
 /* base/typography.scss */
 @layer base {
   h1 { @apply text-5xl font-semibold leading-tight tracking-tight; }
@@ -44,13 +44,14 @@ Phase 1 of Design System epic. Typography system includes:
 Note: May need to add @fontsource/jetbrains-mono if not already included with Inter.
 
 ## Files to Touch
+- `tailwind.config.js` (font family already added, may need fluid scale additions)
 - `libs/landing/shared/ui/src/styles/tokens/typography.scss` (populate)
 - `libs/landing/shared/ui/src/styles/base/typography.scss` (populate)
 - `libs/landing/shared/ui/src/styles/index.scss` (ensure imports)
 - `package.json` (if @fontsource/jetbrains-mono needed)
 
 ## Dependencies
-- 020-install-tailwind-v4
+- 020-install-tailwind-v3
 
 ## Complexity: M
 

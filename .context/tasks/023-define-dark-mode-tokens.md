@@ -11,13 +11,14 @@ Phase 1 of Design System epic. Dark mode works by overriding semantic tokens (La
 - Only semantic tokens need dark mode versions
 - Components automatically inherit correct colors
 
+Note: `darkMode: 'class'` is configured in `tailwind.config.js`.
 Note: Phase 5 (future) will add runtime toggle UI. For now, dark mode can be tested by manually adding `.dark` class in DevTools.
 
 ## Acceptance Criteria
 - [ ] `libs/landing/shared/ui/src/styles/themes/dark.scss` contains `.dark` class overrides
-- [ ] Background/surface colors inverted (light → gray.950, gray.900)
-- [ ] Text colors inverted (dark → gray.50, gray.400)
-- [ ] Primary accent shifted for dark mode visibility (500 → 400)
+- [ ] Background/surface colors inverted (light -> dark gray hex values)
+- [ ] Text colors inverted (dark -> light gray hex values)
+- [ ] Primary accent shifted for dark mode visibility (500 -> 400)
 - [ ] Border colors adjusted for dark mode contrast
 - [ ] Adding `.dark` to `<html>` in DevTools shows correct dark theme
 - [ ] All semantic tokens have dark mode equivalents
@@ -26,19 +27,19 @@ Note: Phase 5 (future) will add runtime toggle UI. For now, dark mode can be tes
 ```scss
 /* themes/dark.scss */
 .dark {
-  --color-background: theme(colors.gray.950);
-  --color-surface: theme(colors.gray.900);
-  --color-surface-elevated: theme(colors.gray.800);
+  --color-background: #030712;   /* gray-950 */
+  --color-surface: #111827;      /* gray-900 */
+  --color-surface-elevated: #1f2937; /* gray-800 */
 
-  --color-primary: var(--color-accent-400);
-  --color-primary-hover: var(--color-accent-300);
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 62%); /* accent-400 */
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 74%); /* accent-300 */
 
-  --color-text: theme(colors.gray.50);
-  --color-text-secondary: theme(colors.gray.400);
-  --color-text-muted: theme(colors.gray.500);
+  --color-text: #f9fafb;         /* gray-50 */
+  --color-text-secondary: #9ca3af; /* gray-400 */
+  --color-text-muted: #6b7280;   /* gray-500 */
 
-  --color-border: theme(colors.gray.800);
-  --color-border-strong: theme(colors.gray.700);
+  --color-border: #1f2937;       /* gray-800 */
+  --color-border-strong: #374151; /* gray-700 */
 }
 ```
 

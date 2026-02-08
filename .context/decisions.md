@@ -137,3 +137,44 @@
 
 - Minimal impact - only affects empty stub files in libraries
 - Future styling patterns documented in `.context/patterns.md`
+
+---
+
+### ADR-008: Downgrade Tailwind CSS v4 to v3
+
+**Status:** Accepted
+**Date:** 2026-02-08
+
+**Context:** Tailwind CSS v4 was installed as part of the Design System epic (task 020). However, v4 has known compatibility issues with Angular v21 (ref: angular/angular-cli#29789). The v4 CSS-first architecture (`@import "tailwindcss"`, `@theme {}` directive, `theme()` function) conflicts with Angular's build pipeline, causing build failures and runtime issues.
+
+**Decision:** Downgrade from Tailwind CSS v4 to v3 and adopt the hybrid SCSS + Tailwind approach:
+
+- **Tailwind v3** with `tailwind.config.js` for utility class generation
+- **PostCSS** with `tailwindcss` + `autoprefixer` plugins (replacing v4's `@tailwindcss/postcss`)
+- **SCSS** files with `@tailwind` directives instead of v4's `@import "tailwindcss"`
+- **CSS custom properties** in `:root` instead of v4's `@theme {}` block
+- **Hex values** for gray scale references instead of v4's `theme(colors.gray.X)` function
+- **`darkMode: 'class'`** in `tailwind.config.js` for dark mode support
+
+**Rationale:**
+
+- Tailwind v4 has documented incompatibilities with Angular v21's build system
+- v3 is stable, well-documented, and has broad Angular ecosystem support
+- The migration preserves all design token functionality using CSS custom properties
+- Same Tailwind utility classes work in both v3 and v4 (no template changes needed)
+
+**Alternatives Considered:**
+
+- **Wait for v4 Angular fix:** Rejected - unclear timeline, blocks design system progress
+- **Use v4 with workarounds:** Rejected - fragile, would require constant maintenance
+- **Drop Tailwind entirely:** Rejected - utility-first approach provides significant productivity benefits
+
+**Consequences:**
+
+- Tasks 020-024 rewritten to target v3 setup
+- Color tokens moved from `@theme {}` to `tailwind.config.js` `theme.extend.colors` + `:root` CSS vars
+- `theme(colors.gray.X)` references replaced with hex values
+- `.postcssrc.json` replaced with `postcss.config.js`
+- `tailwind.config.js` created at workspace root
+- Epic and documentation updated to reference v3 approach
+- Future upgrade to v4 possible when Angular compatibility is resolved

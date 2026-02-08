@@ -7,12 +7,12 @@
 
 ## Overview
 
-A comprehensive, CSS variable-based design system built on **SCSS + Angular Material v21 + Tailwind CSS v4**, designed for timelessness, configurability, and professional refinement.
+A comprehensive, CSS variable-based design system built on **SCSS + Angular Material v21 + Tailwind CSS v3**, designed for timelessness, configurability, and professional refinement.
 
 **Design Philosophy:** Professional & Refined, minimal animations, generous spacing
 **Core Features:**
 - Dashboard-configurable accent color via HSL-based dynamic palette generation (deferred to Phase 5)
-- Tailwind v4 for spacing, layout, and effect utilities
+- Tailwind v3 for spacing, layout, and effect utilities
 - Build-time configurable icon component
 - Base component library with example implementations
 
@@ -42,7 +42,7 @@ Currently, the project has SCSS configured but no design tokens, components, or 
 ## Scope
 
 ### In Scope (Phases 1-4)
-- Tailwind CSS v4 installation and configuration with custom color/typography tokens
+- Tailwind CSS v3 installation and configuration with custom color/typography tokens
 - HSL-based accent color palette (hardcoded, configurable later)
 - Angular Material v21 installation and theme integration
 - Lucide icon system with provider architecture
@@ -84,7 +84,7 @@ Based on industry best practices ([Martin Fowler](https://martinfowler.com/artic
 │  LAYER 1: Option/Primitive Tokens (what)                        │
 │  --accent-50...900, --gray-50...900, --text-xs...5xl           │
 │  Raw design values (Tailwind defaults + custom colors)          │
-│  → Defined in @theme via Tailwind CSS v4                       │
+│  → Defined in tailwind.config.js via Tailwind CSS v3            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -100,7 +100,7 @@ Based on industry best practices ([Martin Fowler](https://martinfowler.com/artic
 
 ---
 
-## Tailwind CSS v4 Integration Strategy
+## Tailwind CSS v3 Integration Strategy
 
 ### What Tailwind Handles (Utilities)
 
@@ -117,55 +117,54 @@ Define custom tokens that Tailwind references:
 - **Typography:** Font families, fluid type scale
 - **Component-specific tokens:** Button, card, input styles
 
-### Tailwind v4 Configuration
+### Tailwind v3 Configuration
 
-```css
-/* apps/landing/src/styles.css (or tailwind entry) */
-@import "tailwindcss";
+```js
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./apps/landing/src/**/*.{html,ts}",
+    "./libs/landing/**/*.{html,ts}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        accent: {
+          50:  'hsl(var(--accent-hue) var(--accent-saturation) 97%)',
+          // ... 100-900
+          500: 'hsl(var(--accent-hue) var(--accent-saturation) 50%)',
+        },
+        primary: 'var(--color-primary)',
+        background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
+        text: 'var(--color-text)',
+        border: 'var(--color-border)',
+        // ... more semantic colors
+      },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+      },
+    },
+  },
+  plugins: [],
+};
+```
 
-@theme {
-  /* === COLORS (Custom) === */
-  /* Accent - HSL-based for dashboard configurability */
-  --color-accent-50: hsl(var(--accent-hue) var(--accent-saturation) 97%);
-  --color-accent-100: hsl(var(--accent-hue) var(--accent-saturation) 94%);
-  --color-accent-200: hsl(var(--accent-hue) var(--accent-saturation) 86%);
-  --color-accent-300: hsl(var(--accent-hue) var(--accent-saturation) 74%);
-  --color-accent-400: hsl(var(--accent-hue) var(--accent-saturation) 62%);
-  --color-accent-500: hsl(var(--accent-hue) var(--accent-saturation) 50%);
-  --color-accent-600: hsl(var(--accent-hue) var(--accent-saturation) 42%);
-  --color-accent-700: hsl(var(--accent-hue) var(--accent-saturation) 34%);
-  --color-accent-800: hsl(var(--accent-hue) var(--accent-saturation) 26%);
-  --color-accent-900: hsl(var(--accent-hue) var(--accent-saturation) 18%);
+```scss
+/* index.scss - Entry file */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* Semantic colors */
-  --color-primary: var(--color-accent-500);
-  --color-primary-hover: var(--color-accent-600);
-  --color-surface: #ffffff;
-  --color-background: #fafafa;
-
-  /* === TYPOGRAPHY (Custom) === */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-
-  /* Fluid type scale */
-  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-  --text-base: clamp(1rem, 0.925rem + 0.4vw, 1.125rem);
-  --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
-  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
-  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
-  --text-3xl: clamp(1.875rem, 1.5rem + 1.75vw, 2.5rem);
-  --text-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
-  --text-5xl: clamp(3rem, 2rem + 4vw, 4.5rem);
-
-  /* === CUSTOM EASINGS === */
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Configurable base values (set via dashboard/SSR) */
+/* CSS custom properties */
 :root {
   --accent-hue: 210;
   --accent-saturation: 65%;
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 50%);
+  --color-background: #f9fafb;
+  /* ... */
 }
 ```
 
@@ -189,7 +188,7 @@ This gives you utilities like:
 }
 ```
 
-Tailwind's `@theme` generates the full palette from these base values.
+`tailwind.config.js` generates the full palette from these base values.
 
 ### 1.2 Neutral Palette
 
@@ -197,48 +196,48 @@ Use Tailwind's default `gray` scale (`gray-50` through `gray-950`). No customiza
 
 ### 1.3 Semantic Color Tokens
 
-```css
-@theme {
+```scss
+/* CSS custom properties in :root (index.scss) */
+:root {
   /* Light mode semantic tokens */
-  --color-background: theme(colors.gray.50);
+  --color-background: #f9fafb;   /* gray-50 */
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
 
-  --color-primary: var(--color-accent-500);
-  --color-primary-hover: var(--color-accent-600);
-  --color-primary-container: var(--color-accent-100);
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 50%);
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 42%);
+  --color-primary-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
 
-  --color-text: theme(colors.gray.900);
-  --color-text-secondary: theme(colors.gray.600);
-  --color-text-muted: theme(colors.gray.400);
+  --color-text: #111827;          /* gray-900 */
+  --color-text-secondary: #4b5563; /* gray-600 */
+  --color-text-muted: #9ca3af;    /* gray-400 */
   --color-text-on-primary: #ffffff;
 
-  --color-border: theme(colors.gray.200);
-  --color-border-strong: theme(colors.gray.300);
+  --color-border: #e5e7eb;        /* gray-200 */
+  --color-border-strong: #d1d5db; /* gray-300 */
 
   /* Feedback */
-  --color-success: theme(colors.green.500);
-  --color-warning: theme(colors.amber.500);
-  --color-error: theme(colors.red.500);
-  --color-info: var(--color-accent-500);
+  --color-success: #22c55e;       /* green-500 */
+  --color-warning: #f59e0b;       /* amber-500 */
+  --color-error: #ef4444;         /* red-500 */
+  --color-info: hsl(var(--accent-hue) var(--accent-saturation) 50%);
 }
 
-/* Dark mode */
+/* Dark mode (themes/dark.scss) */
 .dark {
-  --color-background: theme(colors.gray.950);
-  --color-surface: theme(colors.gray.900);
-  --color-surface-elevated: theme(colors.gray.800);
+  --color-background: #030712;     /* gray-950 */
+  --color-surface: #111827;        /* gray-900 */
+  --color-surface-elevated: #1f2937; /* gray-800 */
 
-  --color-primary: var(--color-accent-400);
-  --color-primary-hover: var(--color-accent-300);
-  --color-primary-container: var(--color-accent-900);
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 62%); /* accent-400 */
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 74%); /* accent-300 */
 
-  --color-text: theme(colors.gray.50);
-  --color-text-secondary: theme(colors.gray.400);
-  --color-text-muted: theme(colors.gray.500);
+  --color-text: #f9fafb;          /* gray-50 */
+  --color-text-secondary: #9ca3af; /* gray-400 */
+  --color-text-muted: #6b7280;    /* gray-500 */
 
-  --color-border: theme(colors.gray.800);
-  --color-border-strong: theme(colors.gray.700);
+  --color-border: #1f2937;        /* gray-800 */
+  --color-border-strong: #374151; /* gray-700 */
 }
 ```
 
@@ -272,13 +271,13 @@ html {
 
 ### 2.1 Font Stack
 
-Defined in Tailwind `@theme` (see above):
+Defined in `tailwind.config.js` (see above):
 - `--font-sans`: Inter with system fallbacks
 - `--font-mono`: JetBrains Mono with system fallbacks
 
 ### 2.2 Type Scale
 
-Fluid scale using `clamp()`, defined in `@theme`. Use via:
+Fluid scale using `clamp()`, defined via CSS custom properties. Use via:
 - `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`, `text-5xl`
 
 ### 2.3 Semantic Typography Classes
@@ -428,12 +427,12 @@ Components in `libs/ui/` using semantic tokens + Tailwind utilities:
 ```
 libs/ui/src/
 ├── styles/
-│   ├── index.css               # Main entry - Tailwind + custom tokens
+│   ├── index.scss              # Main entry - @tailwind directives + :root vars
 │   ├── tokens/
-│   │   ├── colors.css          # @theme color tokens
-│   │   └── typography.css      # @theme typography tokens
+│   │   ├── colors.scss         # Color token reference (defined in tailwind.config.js + :root)
+│   │   └── typography.scss     # Typography token definitions
 │   ├── themes/
-│   │   └── dark.css            # Dark mode token overrides
+│   │   └── dark.scss           # Dark mode token overrides
 │   ├── base/
 │   │   ├── reset.css           # CSS reset/normalize (if needed beyond Tailwind)
 │   │   └── typography.css      # Base element styles
@@ -453,7 +452,7 @@ libs/ui/src/
 │   └── ...
 
 apps/landing/src/
-├── styles.css                  # @import 'tailwindcss'; @import '@portfolio/ui/styles';
+├── styles.scss                 # @tailwind directives; @import '@portfolio/ui/styles';
 └── app/
     └── app.config.ts           # Icon provider configuration
 ```
@@ -488,7 +487,7 @@ Dashboard Settings
 ## High-Level Requirements
 
 ### Functional Requirements
-1. **FR-1:** Tailwind CSS v4 utilities available for spacing, layout, shadows, transitions
+1. **FR-1:** Tailwind CSS v3 utilities available for spacing, layout, shadows, transitions
 2. **FR-2:** HSL-based color system generating full 50-900 accent palette from two base variables
 3. **FR-3:** Fluid typography scale (text-xs through text-5xl) using clamp() for responsive sizing
 4. **FR-4:** Angular Material components styled with custom theme tokens
@@ -523,16 +522,16 @@ Dashboard Settings
 
 **Design System File Structure:**
 ```
-libs/ui/src/
+libs/landing/shared/ui/src/
 ├── styles/
-│   ├── index.css                    # Main entry (@import tailwindcss + token imports)
+│   ├── index.scss                   # Main entry (@tailwind directives + :root vars)
 │   ├── tokens/
-│   │   ├── colors.css               # @theme color tokens (HSL accent palette)
-│   │   └── typography.css           # @theme typography tokens (Inter font, clamp scale)
+│   │   ├── colors.scss              # Color token reference (see tailwind.config.js)
+│   │   └── typography.scss          # Typography token definitions
 │   ├── themes/
-│   │   └── dark.css                 # .dark class token overrides
+│   │   └── dark.scss                # .dark class token overrides
 │   ├── base/
-│   │   └── typography.css           # Base HTML element styles (@layer base)
+│   │   └── typography.scss          # Base HTML element styles (@layer base)
 │   └── material/
 │       └── overrides.scss           # Angular Material theme configuration
 │
@@ -559,7 +558,7 @@ libs/ui/src/
 └── index.ts                         # Library public API exports
 
 apps/landing/src/
-├── styles.css                       # Landing app entry: @import '@portfolio/ui/styles';
+├── styles.scss                      # Landing app entry: imports UI styles
 └── app/
     └── app.config.ts                # Configure icon provider: provideIcons(lucideProvider)
 ```
@@ -567,7 +566,7 @@ apps/landing/src/
 ### Dependencies to Install
 
 **New Dependencies:**
-- `tailwindcss` - v4 (CSS-first architecture with @theme directive)
+- `tailwindcss` - v3 (JS config with tailwind.config.js)
 - `@angular/material` - v21 (Angular Material components)
 - `@fontsource/inter` - Inter font self-hosted
 - `lucide-angular` - Lucide icons for Angular (or `lucide-static` if building custom wrapper)
@@ -576,7 +575,8 @@ apps/landing/src/
 - `libs/ui/project.json` - Add `inlineStyleLanguage: "scss"` (if generating components with styles)
 - `apps/landing/project.json` - Verify `inlineStyleLanguage: "scss"` already set (line 16 ✓)
 - `package.json` - Add new dependencies
-- `apps/landing/src/styles.css` - New entry point (replaces styles.scss for Tailwind)
+- `tailwind.config.js` - Tailwind v3 configuration at workspace root
+- `postcss.config.js` - PostCSS configuration with tailwindcss + autoprefixer
 - `.context/patterns.md` - Add design system patterns section
 - `.context/decisions.md` - May need ADR update if Tailwind changes SCSS-only stance
 
@@ -584,7 +584,7 @@ apps/landing/src/
 
 **With Existing Code:**
 - `apps/landing/src/app/app.ts` - Will import and use new UI components
-- `apps/landing/src/styles.scss` → **Replace with `styles.css`** for Tailwind v4
+- `apps/landing/src/styles.scss` - Imports UI library styles
 - `libs/ui/src/lib/ui/ui.ts` - Current stub component, will be removed or refactored
 - `libs/ui/src/lib/ui/ui.scss` - Current empty file (has styleUrl bug - references `.css` but file is `.scss`)
 
@@ -600,7 +600,7 @@ apps/landing/src/
        │
        ▼
 ┌──────────────────────────┐
-│ HSL Palette Generation   │  Calculated in @theme (--color-accent-50 through 900)
+│ HSL Palette Generation   │  Calculated in tailwind.config.js (accent-50 through 900)
 └──────────────────────────┘
        │
        ▼
@@ -673,28 +673,23 @@ export interface ColorPalette {
 
 ### Phase 1: Tailwind + Token Foundation
 
-**Goal:** Install Tailwind v4 and define custom color/typography tokens
+**Goal:** Install Tailwind v3 and define custom color/typography tokens
 
 **Tasks:**
-1. Install Tailwind CSS v4 and @fontsource/inter via pnpm
-2. Create `libs/ui/src/styles/` directory structure
-3. Create `libs/ui/src/styles/tokens/colors.css`:
-   - Define `@theme` with HSL-based accent palette (--color-accent-50 through 900)
-   - Define semantic tokens (--color-primary, --color-surface, --color-text, etc.)
-   - Use `theme(colors.gray.X)` for neutrals (Tailwind defaults)
-4. Create `libs/ui/src/styles/tokens/typography.css`:
-   - Define `@theme` with font families (--font-sans: Inter, --font-mono: JetBrains Mono)
-   - Define fluid type scale (--text-xs through --text-5xl using clamp())
-5. Create `libs/ui/src/styles/themes/dark.css`:
-   - `.dark` class overrides for semantic tokens
-6. Create `libs/ui/src/styles/base/typography.css`:
+1. Install Tailwind CSS v3, autoprefixer, and @fontsource/inter via pnpm
+2. Create `tailwind.config.js` at workspace root with content paths and custom colors
+3. Create `postcss.config.js` at workspace root with tailwindcss + autoprefixer
+4. Create `libs/landing/shared/ui/src/styles/` directory structure
+5. Create `libs/landing/shared/ui/src/styles/index.scss`:
+   - `@tailwind base; @tailwind components; @tailwind utilities;`
+   - `:root` block with HSL base values and semantic CSS custom properties
+6. Define accent palette in `tailwind.config.js` theme.extend.colors using HSL variables
+7. Define semantic color mappings in `tailwind.config.js` referencing CSS custom properties
+8. Create `libs/landing/shared/ui/src/styles/themes/dark.scss`:
+   - `.dark` class overrides for semantic tokens using hex values
+9. Create `libs/landing/shared/ui/src/styles/base/typography.scss`:
    - `@layer base` with h1-h6, p, code styles using @apply directive
-7. Create `libs/ui/src/styles/index.css`:
-   - `@import "tailwindcss";`
-   - Import all token and theme files
-8. Update `apps/landing/src/styles.css` (rename from .scss):
-   - `@import '@portfolio/ui/styles';`
-9. Test: Run `pnpm dev:landing` and verify Tailwind utilities work (add test classes to app.component.html)
+10. Test: Run `pnpm dev:landing` and verify Tailwind utilities work
 
 **Acceptance Criteria:**
 - [ ] Tailwind utilities render correctly (bg-accent-500, text-primary, p-4, rounded-lg)
@@ -846,10 +841,10 @@ export interface ColorPalette {
 
 ## Risks & Warnings
 
-⚠️ **Tailwind v4 vs. ADR-007 SCSS Standardization**
-- **Risk:** ADR-007 (2026-02-02) standardized project on SCSS exclusively, but design system plan requires Tailwind CSS v4
-- **Mitigation:** Update ADR-007 or create new ADR documenting hybrid approach (Tailwind for utilities, SCSS for Angular Material mixins)
-- **Decision:** User confirmed "Install Tailwind v4 as planned" - requires ADR update
+⚠️ **Tailwind v3 + SCSS Hybrid Approach**
+- **Risk:** ADR-007 (2026-02-02) standardized project on SCSS exclusively, but design system requires Tailwind CSS v3
+- **Mitigation:** ADR-008 documents the v4→v3 downgrade and hybrid approach (Tailwind for utilities, SCSS for Angular Material mixins)
+- **Decision:** Tailwind v3 chosen for Angular v21 compatibility (see ADR-008)
 
 ⚠️ **Angular Material Theme Integration**
 - **Risk:** Angular Material's M3 theming system may conflict with custom Tailwind tokens
@@ -862,10 +857,10 @@ export interface ColorPalette {
 - **Mitigation:** Tree-shake unused Tailwind classes, import only needed Material components, lazy-load icons
 - **Monitor:** Run `pnpm build:landing` after each phase and check bundle report
 
-⚠️ **SCSS → CSS File Rename**
-- **Risk:** Renaming `apps/landing/src/styles.scss` to `styles.css` may break imports in components
-- **Mitigation:** Update `apps/landing/project.json` line 23 to reference `styles.css` instead of `styles.scss`
-- **Verify:** All component styleUrls still resolve correctly
+⚠️ **Tailwind v3 Compatibility**
+- **Risk:** Tailwind v4 had known compatibility issues with Angular v21 (ref: angular/angular-cli#29789)
+- **Mitigation:** Downgraded to Tailwind v3 which is fully compatible
+- **Note:** v3 uses `tailwind.config.js` + `@tailwind` directives instead of v4's `@theme` + `@import "tailwindcss"`
 
 ⚠️ **Icon Provider Architecture Complexity**
 - **Risk:** Build-time provider pattern adds indirection that may confuse future developers
@@ -966,12 +961,14 @@ export interface ColorPalette {
 ## Critical Files to Modify
 
 ### New Files (Create)
-- `libs/ui/src/styles/index.css`
-- `libs/ui/src/styles/tokens/colors.css`
-- `libs/ui/src/styles/tokens/typography.css`
-- `libs/ui/src/styles/themes/dark.css`
-- `libs/ui/src/styles/base/typography.css`
-- `libs/ui/src/styles/material/overrides.scss`
+- `tailwind.config.js` (workspace root)
+- `postcss.config.js` (workspace root)
+- `libs/landing/shared/ui/src/styles/index.scss`
+- `libs/landing/shared/ui/src/styles/tokens/colors.scss`
+- `libs/landing/shared/ui/src/styles/tokens/typography.scss`
+- `libs/landing/shared/ui/src/styles/themes/dark.scss`
+- `libs/landing/shared/ui/src/styles/base/typography.scss`
+- `libs/landing/shared/ui/src/styles/material/overrides.scss`
 - `libs/ui/src/components/icon/icon.component.ts` (+ .spec.ts, providers/)
 - `libs/ui/src/components/button/button.component.ts` (+ .spec.ts, .scss)
 - `libs/ui/src/components/card/card.component.ts` (+ .spec.ts, .scss)
@@ -983,9 +980,8 @@ export interface ColorPalette {
 - `apps/landing-e2e/src/design-system-examples.spec.ts`
 
 ### Existing Files (Modify)
-- `package.json` - Add tailwindcss, @angular/material, @fontsource/inter, lucide-angular
-- `apps/landing/src/styles.scss` → **Rename to `styles.css`** and change imports
-- `apps/landing/project.json` - Update line 23 to reference `styles.css`
+- `package.json` - Add tailwindcss v3, autoprefixer, @angular/material, @fontsource/inter, lucide-angular
+- `apps/landing/src/styles.scss` - Imports UI library styles
 - `apps/landing/src/app/app.config.ts` - Add icon provider configuration
 - `libs/ui/src/index.ts` - Export all new components and utilities
 - `libs/ui/project.json` - Add `inlineStyleLanguage: "scss"` if needed
@@ -1093,7 +1089,7 @@ pnpm test:e2e:headed
 - [Martin Fowler: Design Token-Based UI Architecture](https://martinfowler.com/articles/design-token-based-ui-architecture.html)
 - [Material Design 3 Tokens](https://m3.material.io/foundations/design-tokens)
 - [Angular Material Theming](https://material.angular.dev/guide/theming-your-components)
-- [Tailwind CSS v4 @theme Directive](https://tailwindcss.com/docs/adding-custom-styles)
+- [Tailwind CSS v3 Configuration](https://v3.tailwindcss.com/docs/configuration)
 - [W3C Design Tokens Community Group](https://uxdesign.cc/design-tokens-with-confidence-862119eb819b)
 - [Angular Signals Guide](https://angular.dev/guide/signals)
 - [Nx Workspace Best Practices](https://nx.dev/concepts/more-concepts/applications-and-libraries)

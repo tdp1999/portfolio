@@ -69,6 +69,9 @@ See `.context/patterns.md` for file naming, exports, and all code conventions.
 - **Use Playwright skill for UI validation** instead of building or running non-template tests
   - Visual verification is more effective for HTML/template/UI changes
   - Use `playwright-skill` to validate rendering, layout, and visual aspects
+- **Test shared components and UI logic on /ddl route**
+  - When creating shared components or testing new UI logic (colors, icons, tokens, etc.), implement them on the `/ddl` route first
+  - Use Playwright skill to test and validate the implementation before integrating into main pages
 
 ## Context Files
 
