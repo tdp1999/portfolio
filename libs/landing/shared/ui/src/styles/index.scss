@@ -1,4 +1,5 @@
 /* SCSS module imports */
+@use './material/overrides.scss';
 @use './tokens/typography.scss' as typography-tokens;
 @use './tokens/colors.scss' as colors-tokens;
 @use './themes/dark.scss' as dark-theme;
