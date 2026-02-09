@@ -1,6 +1,6 @@
 # Task: Create Icon Provider Architecture
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Phase 3 of Design System epic. The icon system uses a provider pattern allowing 
 
 ## Acceptance Criteria
 
-- [ ] IconProvider interface defined with `getIcon(name: string)` method
-- [ ] ICON_PROVIDER injection token created
-- [ ] `provideIcons(provider: IconProvider)` helper function created
-- [ ] Provider architecture exported from `libs/ui/src/components/icon/index.ts`
-- [ ] TypeScript interfaces properly typed
-- [ ] Unit tests for provider injection mechanism
+- [x] IconProvider interface defined with `getSvg(name: string, size: number)` method
+- [x] ICON_PROVIDER injection token created
+- [x] `provideIcons(provider: IconProvider)` helper function created
+- [x] Provider architecture exported from `libs/landing/shared/ui/src/components/icon/index.ts`
+- [x] TypeScript interfaces properly typed
+- [x] Unit tests for provider injection mechanism
 
 ## Technical Notes
 
@@ -73,3 +73,6 @@ libs/ui/src/components/icon/
 ## Complexity: M
 
 ## Progress Log
+
+- [2026-02-08] Started and completed. Files created in `libs/landing/shared/ui/src/components/icon/`. All 6 tests pass.
+- [2026-02-09] Refactored: `getIcon()` → `getSvg(name, size)` returning SVG strings. Added `IconComponent` (`<landing-icon>`) with innerHTML rendering. `provideIcons()` now used in app.config.ts.

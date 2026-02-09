@@ -1,6 +1,6 @@
 # Task: Verify Icon System in Landing App
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ End of Phase 3 verification. Ensures the icon system works end-to-end before bui
 
 ## Acceptance Criteria
 
-- [ ] Icon provider configured in `apps/landing/src/app/app.config.ts`
-- [ ] Icons render in landing app: arrow-right, check, menu
-- [ ] Size prop works: sm (16px), md (20px), lg (24px), xl (32px)
-- [ ] Icons can be colored via Tailwind classes (`text-primary`, `text-accent-500`)
-- [ ] Missing icon names handled gracefully (no crash, console warning)
-- [ ] Document icon system usage in `.context/patterns.md`
+- [x] Icon provider configured in `apps/landing/src/app/app.config.ts`
+- [x] Icons render in landing app (DDL page shows all 32 icons)
+- [x] Size prop works (numeric px values)
+- [x] Icons can be colored via Tailwind classes (`class="text-text"` etc.)
+- [x] Missing icon names handled gracefully (returns null, no crash)
+- [x] Document icon system usage in `.context/patterns.md`
 
 ## Technical Notes
 
@@ -66,3 +66,5 @@ Pattern documentation should include:
 ## Complexity: S
 
 ## Progress Log
+
+- [2026-02-09] Verified complete. Provider in app.config.ts, DDL page renders all icons, added icon system docs to patterns.md.

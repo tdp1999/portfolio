@@ -200,6 +200,45 @@ html {
 - No z-index conflicts observed — CDK overlay container sits above content correctly
 - Tailwind `rounded-*`, `shadow-*` etc. should NOT be applied directly to `mat-button` or `mat-card` — use wrapping divs instead
 
+### Icon System
+
+The icon system uses a provider pattern allowing different icon libraries to be swapped at build time. Currently uses Lucide icons.
+
+#### Usage
+
+```html
+<!-- Basic usage -->
+<landing-icon name="arrow-right" />
+
+<!-- Custom size (px) -->
+<landing-icon name="check" [size]="32" />
+
+<!-- Colored via Tailwind -->
+<landing-icon name="github" class="text-accent-500" />
+<landing-icon name="mail" class="text-primary" />
+```
+
+#### Architecture
+
+- **`IconProvider` interface** — `getSvg(name, size)` returns SVG string or `null`
+- **`ICON_PROVIDER` token** — DI token for the active provider
+- **`provideIcons(provider)`** — registers provider in `app.config.ts`
+- **`IconComponent`** (`<landing-icon>`) — renders SVG via `innerHTML` with `DomSanitizer`
+
+#### Available Icons (32 mapped)
+
+`arrow-right`, `arrow-left`, `arrow-up`, `arrow-down`, `check`, `close`/`x`, `menu`, `search`, `home`, `user`, `settings`, `mail`, `github`, `linkedin`, `external-link`, `download`, `sun`, `moon`, `chevron-right`, `chevron-left`, `chevron-up`, `chevron-down`, `plus`, `minus`, `eye`, `eye-off`, `heart`, `star`, `briefcase`, `code`, `globe`, `phone`
+
+#### Adding New Icons
+
+Add entries to `ICON_MAP` in `libs/landing/shared/ui/src/components/icon/providers/lucide.provider.ts`:
+
+```typescript
+import { NewIcon } from 'lucide-angular';
+// Add to ICON_MAP:
+'new-icon': NewIcon,
+```
+
 ### Architecture Changelog
 
 #### [2026-02-02] Standardize Styling to SCSS

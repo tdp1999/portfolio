@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (24 tasks)
+- `.context/tasks-done/` - Archived completed tasks (31 tasks)
 
 ## Completed Milestones
 
@@ -44,10 +44,10 @@
 
 **Phase 3: Icon System**
 
-- [ ] 027-create-icon-provider-architecture - Create icon provider interface and DI system (M)
-- [ ] 028-implement-lucide-provider - Implement Lucide icon provider (M)
-- [ ] 029-create-icon-component - Create main icon component (M)
-- [ ] 030-verify-icon-system - Verify icon system in landing app (S)
+- [x] 027-create-icon-provider-architecture - Create icon provider interface and DI system (M)
+- [x] 028-implement-lucide-provider - Implement Lucide icon provider (M)
+- [x] 029-create-icon-component - Create main icon component (M)
+- [x] 030-verify-icon-system - Verify icon system in landing app (S)
 
 **Phase 4: Base Components + Examples**
 
@@ -143,7 +143,7 @@
 
 ## Up Next
 
-**Next Design System Task:** **027-create-icon-provider-architecture** - Create icon provider interface and DI system
+**Next Design System Task:** **031-create-button-component** - Create Button component with variants
 **Alternative Track:** Start Database with **043-setup-prisma-supabase**
 
 Both tracks can proceed in parallel if desired.
@@ -152,9 +152,9 @@ Both tracks can proceed in parallel if desired.
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 27     |
+| Done (archived)          | 31     |
 | In Progress              | 0      |
-| Pending (Design System)  | 19     |
+| Pending (Design System)  | 15     |
 | Pending (DB Foundation)  | 6      |
 | Pending (DB User Module) | 8      |
 | Pending (DB Tag Module)  | 8      |

@@ -4,93 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Nx monorepo for a professional portfolio website with:
-
-- **Angular 21 landing app** (SSR/SSG public site)
-- **NestJS API** (backend service)
-- **Shared libraries** (types, utils, ui, api-client)
-
-**Current Phase:** TDD Infrastructure Setup
-**Development Philosophy:** Pragmatic Test-Driven Development
-
-## Quick Reference
-
-- **Commands:** See `.context/commands.md` for all dev/build/test commands
-- **Testing:** See `.context/testing-guide.md` for TDD workflow and patterns
-- **Architecture:** See `.context/patterns.md` for code patterns and conventions
-- **Vision:** See `.context/vision.md` for project goals and philosophy
-
-## Architecture
-
-**Backend:** NestJS with layered architecture (Controllers → Services → Repositories)
-**Frontend:** Angular 21 with SSR, Signals, feature modules
-**Stage 1:** Mock JSON data (no database yet)
-
-See `.context/patterns.md` for detailed architecture patterns and module structure.
-
-## Test-Driven Development (TDD)
-
-Follow Red → Green → Refactor workflow. Write tests BEFORE implementation.
-**Delegate all test execution to the test-runner subagent** (runs affected tests only).
-
-See `.context/testing-guide.md` for full TDD workflow, coverage targets, and patterns.
-
-## Code Patterns
-
-See `.context/patterns.md` for file naming, exports, and all code conventions.
-
-## Key Decisions
-
-- **Stage 1:** API uses mock JSON data (no database)
-- **TDD:** Write tests before implementation, use test-runner subagent
-- See `.context/decisions.md` for architectural decision records
+Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJS API backend, shared libraries (types, utils, ui, api-client).
+**Philosophy:** Pragmatic Test-Driven Development
 
 ## Tech Stack
 
-- **Angular:** 21.1.0 (Signals, SSR, standalone components)
-- **NestJS:** 11.0.0
-- **Nx:** 22.4.4
-- **Package Manager:** pnpm
-- **Node:** 20+ LTS required
+- **Angular:** 21.1.0 (Signals, SSR, standalone) | **NestJS:** 11.0.0 | **Nx:** 22.4.4
+- **Package Manager:** pnpm | **Node:** 20+ LTS
 
-## Working with Nx
+## References
 
-- Projects defined in `apps/*/project.json` or `libs/*/project.json`
-- Use `nx affected` commands to only run tasks on changed projects
-- Use `pnpm graph` to visualize project dependencies
+- **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns.md`
+- **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
+- **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
-## Formatting Rules
-
-- **Run `npx prettier --write <file>` on each modified file** after completing any task, before committing. Never run the global `pnpm format` (it formats the entire project).
-- **Multi-line HTML/template elements:** If an element's content does not fit on a single line, the opening tag and closing tag must each be on their own separate lines. Never place a closing tag on the same line as sibling content just to avoid adding a line.
-
-  ```html
-  <!-- WRONG -->
-  </mat-card></div>
-
-  <!-- CORRECT -->
-  </mat-card>
-  </div>
-  ```
-
-## UI Development Preferences
-
-- **Always use SCSS files** for styles (`.scss` extension), never create `.css` files
-  - Rationale: SCSS is a superset of CSS and can contain CSS syntax, but provides additional features when needed
-  - This applies to all new style files and future style-related tasks
-- **Prefer Tailwind CSS utility classes over custom CSS styling**
-  - Use Tailwind classes in templates for styling when possible
-  - Only write custom SCSS when Tailwind utilities are insufficient or for complex component-specific styles
-- **Use Playwright skill for UI validation** instead of building or running non-template tests
-  - Visual verification is more effective for HTML/template/UI changes
-  - Use `playwright-skill` to validate rendering, layout, and visual aspects
-- **Test shared components and UI logic on /ddl route**
-  - When creating shared components or testing new UI logic (colors, icons, tokens, etc.), implement them on the `/ddl` route first
-  - Use Playwright skill to test and validate the implementation before integrating into main pages
-
-## Context Files
-
-The `.context/` directory contains project documentation:
+## Context Files (`.context/`)
 
 - `vision.md` - Project goals and philosophy
 - `patterns.md` - Architecture and code patterns
@@ -100,3 +28,13 @@ The `.context/` directory contains project documentation:
 - `progress.md` - Task completion tracking
 - `tasks/*.md` - Individual task definitions
 - `plans/*.md` - Epic and feature plans
+
+## Formatting Rules
+
+- Run `npx prettier --write <file>` on each modified file before committing. Never run `pnpm format` globally.
+- Multi-line HTML: opening and closing tags on their own lines when content doesn't fit on one line.
+
+## UI Development
+
+- Use `.scss` files only (never `.css`). Prefer Tailwind utility classes; custom SCSS only when necessary.
+- Use `playwright-skill` for UI validation. Test shared components/logic on `/ddl` route first.
