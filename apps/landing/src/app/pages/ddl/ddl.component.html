@@ -198,6 +198,24 @@
         </mat-form-field>
       </div>
 
+      <!-- Icon System Test -->
+      <div class="icon-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Icon System (Lucide)</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Icons via unified &lt;landing-icon&gt; component with LucideIconProvider
+        </p>
+        <div class="grid grid-cols-6 gap-4 sm:grid-cols-8 md:grid-cols-10">
+          @for (name of iconNames; track name) {
+            <div
+              class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-background transition-colors"
+            >
+              <landing-icon [name]="name" class="text-text" [size]="24" />
+              <span class="text-xs text-text-muted text-center leading-tight">{{ name }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
       <!-- Border Tokens Test -->
       <div class="border-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>

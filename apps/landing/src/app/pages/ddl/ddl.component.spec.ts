@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideIcons, lucideProvider } from '@portfolio/landing/shared/ui';
 import { DdlComponent } from './ddl.component';
 
 describe('DdlComponent', () => {
@@ -8,6 +9,7 @@ describe('DdlComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DdlComponent],
+      providers: [provideIcons(lucideProvider)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DdlComponent);
@@ -21,115 +23,83 @@ describe('DdlComponent', () => {
 
   describe('Header Section', () => {
     it('should render header with correct title', () => {
-      const compiled = fixture.nativeElement;
-      const title = compiled.querySelector('h1');
+      const title = fixture.nativeElement.querySelector('h1');
 
       expect(title).toBeTruthy();
       expect(title.textContent).toContain('Design Definition Language');
     });
 
     it('should render header description', () => {
-      const compiled = fixture.nativeElement;
-      const description = compiled.querySelector('header p');
+      const description = fixture.nativeElement.querySelector('header p');
 
       expect(description).toBeTruthy();
       expect(description.textContent).toContain('Component showcase');
     });
+
+    it('should render dark mode toggle button', () => {
+      const toggleBtn = fixture.nativeElement.querySelector('header button');
+
+      expect(toggleBtn).toBeTruthy();
+    });
   });
 
-  describe('Button Examples Section', () => {
-    it('should display button examples section', () => {
-      const compiled = fixture.nativeElement;
-      const buttonSection = compiled.querySelector('.button-examples');
+  describe('Color Palette Section', () => {
+    it('should display accent color palette section', () => {
+      const section = fixture.nativeElement.querySelector('.color-test');
 
-      expect(buttonSection).toBeTruthy();
+      expect(section).toBeTruthy();
     });
 
-    it('should render section title for buttons', () => {
-      const compiled = fixture.nativeElement;
-      const sectionTitle = compiled.querySelector('.button-examples h2');
+    it('should render accent color swatches', () => {
+      const swatches = fixture.nativeElement.querySelectorAll('.color-test .grid > div');
 
-      expect(sectionTitle).toBeTruthy();
-      expect(sectionTitle.textContent).toContain('Button Examples');
+      expect(swatches.length).toBe(10);
+    });
+  });
+
+  describe('Semantic Colors Section', () => {
+    it('should display semantic color tokens section', () => {
+      const section = fixture.nativeElement.querySelector('.semantic-test');
+
+      expect(section).toBeTruthy();
     });
 
     it('should display at least 3 button variants', () => {
-      const compiled = fixture.nativeElement;
-      const buttons = compiled.querySelectorAll('.button-examples button');
+      const buttons = fixture.nativeElement.querySelectorAll('.semantic-test button');
 
       expect(buttons.length).toBeGreaterThanOrEqual(3);
     });
+  });
 
-    it('should have primary button', () => {
-      const compiled = fixture.nativeElement;
-      const buttons = compiled.querySelectorAll('.button-examples button');
-      const buttonTexts = Array.from(buttons).map((btn: any) => btn.textContent.trim());
+  describe('Icon System Section', () => {
+    it('should display icon system section', () => {
+      const section = fixture.nativeElement.querySelector('.icon-test');
 
-      expect(buttonTexts).toContain('Primary Button');
+      expect(section).toBeTruthy();
     });
 
-    it('should have secondary button', () => {
-      const compiled = fixture.nativeElement;
-      const buttons = compiled.querySelectorAll('.button-examples button');
-      const buttonTexts = Array.from(buttons).map((btn: any) => btn.textContent.trim());
+    it('should render icon grid items', () => {
+      const icons = fixture.nativeElement.querySelectorAll('.icon-test landing-icon');
 
-      expect(buttonTexts).toContain('Secondary Button');
+      expect(icons.length).toBeGreaterThanOrEqual(20);
+    });
+
+    it('should expose iconNames from provider', () => {
+      expect(component.iconNames.length).toBeGreaterThanOrEqual(20);
     });
   });
 
-  describe('UI Elements Section', () => {
-    it('should display UI elements section', () => {
-      const compiled = fixture.nativeElement;
-      const uiSection = compiled.querySelector('.ui-elements');
-
-      expect(uiSection).toBeTruthy();
-    });
-
-    it('should render section title for UI elements', () => {
-      const compiled = fixture.nativeElement;
-      const sectionTitle = compiled.querySelector('.ui-elements h2');
-
-      expect(sectionTitle).toBeTruthy();
-      expect(sectionTitle.textContent).toContain('UI Elements');
-    });
-
-    it('should display info message element', () => {
-      const compiled = fixture.nativeElement;
-      const infoMessage = compiled.querySelector('.ui-elements .info-message');
-
-      expect(infoMessage).toBeTruthy();
-      expect(infoMessage.textContent).toContain('Info message');
-    });
-
-    it('should display success message element', () => {
-      const compiled = fixture.nativeElement;
-      const successMessage = compiled.querySelector('.ui-elements .success-message');
-
-      expect(successMessage).toBeTruthy();
-      expect(successMessage.textContent).toContain('Success message');
-    });
-
-    it('should display badge elements', () => {
-      const compiled = fixture.nativeElement;
-      const badges = compiled.querySelectorAll('.ui-elements .badge');
-
-      expect(badges.length).toBeGreaterThanOrEqual(3);
-    });
-  });
-
-  describe('Layout and Styling', () => {
+  describe('Layout', () => {
     it('should have container wrapper', () => {
-      const compiled = fixture.nativeElement;
-      const container = compiled.querySelector('.container');
+      const container = fixture.nativeElement.querySelector('.container');
 
       expect(container).toBeTruthy();
     });
 
-    it('should have proper spacing between sections', () => {
-      const compiled = fixture.nativeElement;
-      const sections = compiled.querySelectorAll('section > div');
+    it('should have multiple showcase sections', () => {
+      const sections = fixture.nativeElement.querySelectorAll('section > div');
 
-      expect(sections.length).toBeGreaterThanOrEqual(2);
+      expect(sections.length).toBeGreaterThanOrEqual(4);
     });
   });
 });
