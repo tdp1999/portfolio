@@ -198,6 +198,204 @@
         </mat-form-field>
       </div>
 
+      <!-- Button Component Test -->
+      <div class="button-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Button Component</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Custom button component with variants and sizes using semantic tokens
+        </p>
+
+        <div class="space-y-6">
+          <!-- Primary Variant -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Primary Variant</h3>
+            <div class="flex gap-3 flex-wrap items-center">
+              <landing-button variant="primary" size="sm">Small</landing-button>
+              <landing-button variant="primary" size="md">Medium</landing-button>
+              <landing-button variant="primary" size="lg">Large</landing-button>
+              <landing-button variant="primary" size="md" [disabled]="true"
+                >Disabled</landing-button
+              >
+            </div>
+          </div>
+
+          <!-- Secondary Variant -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Secondary Variant</h3>
+            <div class="flex gap-3 flex-wrap items-center">
+              <landing-button variant="secondary" size="sm">Small</landing-button>
+              <landing-button variant="secondary" size="md">Medium</landing-button>
+              <landing-button variant="secondary" size="lg">Large</landing-button>
+              <landing-button variant="secondary" size="md" [disabled]="true"
+                >Disabled</landing-button
+              >
+            </div>
+          </div>
+
+          <!-- Ghost Variant -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Ghost Variant</h3>
+            <div class="flex gap-3 flex-wrap items-center">
+              <landing-button variant="ghost" size="sm">Small</landing-button>
+              <landing-button variant="ghost" size="md">Medium</landing-button>
+              <landing-button variant="ghost" size="lg">Large</landing-button>
+              <landing-button variant="ghost" size="md" [disabled]="true">Disabled</landing-button>
+            </div>
+          </div>
+
+          <!-- With Icons -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">With Icons</h3>
+            <div class="flex gap-3 flex-wrap items-center">
+              <landing-button variant="primary">
+                <landing-icon name="check" [size]="16" />
+                <span>Save</span>
+              </landing-button>
+              <landing-button variant="secondary">
+                <landing-icon name="download" [size]="16" />
+                <span>Download</span>
+              </landing-button>
+              <landing-button variant="ghost">
+                <landing-icon name="external-link" [size]="16" />
+                <span>Open</span>
+              </landing-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Component Test -->
+      <div class="card-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Card Component</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Custom card component for content containers with optional elevation
+        </p>
+
+        <div class="space-y-6">
+          <!-- Basic Cards -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Card</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+              <landing-card>
+                <h3 class="text-lg font-semibold text-text mb-2">Default Card</h3>
+                <p class="text-text-secondary">
+                  This is a basic card with default shadow and hover transition.
+                </p>
+              </landing-card>
+
+              <landing-card [elevated]="true">
+                <h3 class="text-lg font-semibold text-text mb-2">Elevated Card</h3>
+                <p class="text-text-secondary">
+                  This card has stronger shadow with the elevated prop.
+                </p>
+              </landing-card>
+            </div>
+          </div>
+
+          <!-- Cards with Sub-components -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">
+              Card with Header, Content, Footer
+            </h3>
+            <div class="max-w-md">
+              <landing-card>
+                <div class="card__header">
+                  <h3 class="text-lg font-semibold text-text">Card Header</h3>
+                  <p class="text-sm text-text-muted">Subtitle or meta information</p>
+                </div>
+                <div class="card__content">
+                  <p class="text-text-secondary mb-2">
+                    The card supports BEM-style sub-component classes for flexible layouts.
+                  </p>
+                  <p class="text-text-secondary">Content area uses the card__content class.</p>
+                </div>
+                <div class="card__footer">
+                  <div class="flex gap-2 justify-end">
+                    <landing-button variant="ghost" size="sm">Cancel</landing-button>
+                    <landing-button variant="primary" size="sm">Confirm</landing-button>
+                  </div>
+                </div>
+              </landing-card>
+            </div>
+          </div>
+
+          <!-- Project Card Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Project Card</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <landing-card>
+                <div class="flex items-start gap-3 mb-3">
+                  <landing-icon name="code" class="text-accent-500" [size]="24" />
+                  <div>
+                    <h4 class="text-base font-semibold text-text">Portfolio Site</h4>
+                    <p class="text-xs text-text-muted">Angular • NestJS</p>
+                  </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">
+                  Personal portfolio with SSR, design system, and TDD workflow.
+                </p>
+                <div class="flex gap-2">
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="external-link" [size]="14" />
+                    <span>View</span>
+                  </landing-button>
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="github" [size]="14" />
+                    <span>Code</span>
+                  </landing-button>
+                </div>
+              </landing-card>
+
+              <landing-card [elevated]="true">
+                <div class="flex items-start gap-3 mb-3">
+                  <landing-icon name="globe" class="text-accent-500" [size]="24" />
+                  <div>
+                    <h4 class="text-base font-semibold text-text">E-commerce Platform</h4>
+                    <p class="text-xs text-text-muted">React • Node.js</p>
+                  </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">
+                  Full-stack e-commerce solution with payment integration.
+                </p>
+                <div class="flex gap-2">
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="external-link" [size]="14" />
+                    <span>View</span>
+                  </landing-button>
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="github" [size]="14" />
+                    <span>Code</span>
+                  </landing-button>
+                </div>
+              </landing-card>
+
+              <landing-card>
+                <div class="flex items-start gap-3 mb-3">
+                  <landing-icon name="briefcase" class="text-accent-500" [size]="24" />
+                  <div>
+                    <h4 class="text-base font-semibold text-text">Task Manager</h4>
+                    <p class="text-xs text-text-muted">Vue • Python</p>
+                  </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">
+                  Collaborative task management with real-time updates.
+                </p>
+                <div class="flex gap-2">
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="external-link" [size]="14" />
+                    <span>View</span>
+                  </landing-button>
+                  <landing-button variant="ghost" size="sm">
+                    <landing-icon name="github" [size]="14" />
+                    <span>Code</span>
+                  </landing-button>
+                </div>
+              </landing-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Icon System Test -->
       <div class="icon-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Icon System (Lucide)</h2>
