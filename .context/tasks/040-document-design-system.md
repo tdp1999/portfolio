@@ -1,6 +1,6 @@
 # Task: Document Design System Patterns
 
-## Status: pending
+## Status: completed
 
 ## Goal
 
@@ -12,15 +12,15 @@ Final task of Design System epic. Documentation ensures future development follo
 
 ## Acceptance Criteria
 
-- [ ] Design System section added to `.context/patterns.md`
-- [ ] Three-layer token architecture explained
-- [ ] Color token usage documented with examples
-- [ ] Typography token usage documented
-- [ ] Component usage patterns documented (Button, Card, Input, Badge, Link, Container, Section)
-- [ ] Icon system usage documented
-- [ ] Tailwind + SCSS hybrid approach explained
-- [ ] Dark mode testing instructions included
-- [ ] BEM naming convention examples
+- [x] Design System section added to `.context/patterns.md`
+- [x] Three-layer token architecture explained
+- [x] Color token usage documented with examples
+- [x] Typography token usage documented
+- [x] Component usage patterns documented (Button, Card, Input, Badge, Link, Container, Section)
+- [x] Icon system usage documented
+- [x] Tailwind + SCSS hybrid approach explained
+- [x] Dark mode testing instructions included
+- [x] BEM naming convention examples
 
 ## Technical Notes
 
@@ -97,4 +97,12 @@ document.documentElement.classList.add('dark');
 ## Complexity: M
 
 ## Progress Log
-```
+
+- [2026-02-10] Started documentation
+- [2026-02-10] Added comprehensive Design System section to patterns.md
+- [2026-02-10] Documented token architecture (3 layers)
+- [2026-02-10] Documented all component usage patterns with code examples
+- [2026-02-10] Documented layout patterns (hero, card grid)
+- [2026-02-10] Documented dark mode implementation
+- [2026-02-10] Documented Tailwind + SCSS hybrid approach
+- [2026-02-10] Verified ADR-008 exists for hybrid approach

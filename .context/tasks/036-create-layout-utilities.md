@@ -1,6 +1,6 @@
 # Task: Create Container and Section Layout Components
 
-## Status: pending
+## Status: completed
 
 ## Goal
 
@@ -12,41 +12,41 @@ Phase 4 of Design System epic - Base Components. Layout utilities ensure consist
 
 ## Acceptance Criteria
 
-- [ ] ContainerComponent created with selector `lib-container`
-- [ ] Container has max-width constraint and horizontal padding
-- [ ] Optional `wide` prop for wider content (max-w-6xl vs max-w-4xl)
-- [ ] SectionComponent created with selector `lib-section`
-- [ ] Section has vertical padding that scales with breakpoints
-- [ ] Both components support content projection
-- [ ] Both work correctly with responsive design
-- [ ] SCSS files follow BEM naming convention
-- [ ] Unit tests for both components
+- [x] ContainerComponent created with selector `landing-container`
+- [x] Container has max-width constraint and horizontal padding
+- [x] Optional `wide` signal input for wider content (max-w-6xl vs max-w-4xl)
+- [x] SectionComponent created with selector `landing-section`
+- [x] Section has vertical padding that scales with breakpoints
+- [x] Both components support content projection
+- [x] Both work correctly with responsive design
+- [x] SCSS files follow BEM naming convention
+- [x] Unit tests for both components
 
 ## Technical Notes
 
 ```typescript
-// libs/ui/src/components/container/container.component.ts
+// libs/landing/shared/ui/src/components/container/container.component.ts
 @Component({
-  selector: 'lib-container',
+  selector: 'landing-container',
   standalone: true,
   template: `
-    <div [class]="containerClasses">
+    <div [class]="containerClasses()">
       <ng-content />
     </div>
   `,
   styleUrl: './container.component.scss',
 })
 export class ContainerComponent {
-  @Input() wide = false;
+  wide = input(false);
 
-  get containerClasses(): string {
-    return `container ${this.wide ? 'container--wide' : ''}`;
-  }
+  containerClasses = computed(() =>
+    `container ${this.wide() ? 'container--wide' : ''}`
+  );
 }
 
-// libs/ui/src/components/section/section.component.ts
+// libs/landing/shared/ui/src/components/section/section.component.ts
 @Component({
-  selector: 'lib-section',
+  selector: 'landing-section',
   standalone: true,
   template: `
     <section class="section">
@@ -79,31 +79,31 @@ Styles:
 Usage:
 
 ```html
-<lib-section>
-  <lib-container>
+<landing-section>
+  <landing-container>
     <h2>Section Title</h2>
     <p>Section content...</p>
-  </lib-container>
-</lib-section>
+  </landing-container>
+</landing-section>
 
-<lib-section>
-  <lib-container [wide]="true">
+<landing-section>
+  <landing-container [wide]="true">
     <!-- Wide content like card grids -->
-  </lib-container>
-</lib-section>
+  </landing-container>
+</landing-section>
 ```
 
 ## Files to Touch
 
-- `libs/ui/src/components/container/container.component.ts` (create)
-- `libs/ui/src/components/container/container.component.scss` (create)
-- `libs/ui/src/components/container/container.component.spec.ts` (create)
-- `libs/ui/src/components/container/index.ts` (create)
-- `libs/ui/src/components/section/section.component.ts` (create)
-- `libs/ui/src/components/section/section.component.scss` (create)
-- `libs/ui/src/components/section/section.component.spec.ts` (create)
-- `libs/ui/src/components/section/index.ts` (create)
-- `libs/ui/src/index.ts` (export both)
+- `libs/landing/shared/ui/src/components/container/container.component.ts` (create)
+- `libs/landing/shared/ui/src/components/container/container.component.scss` (create)
+- `libs/landing/shared/ui/src/components/container/container.component.spec.ts` (create)
+- `libs/landing/shared/ui/src/components/container/index.ts` (create)
+- `libs/landing/shared/ui/src/components/section/section.component.ts` (create)
+- `libs/landing/shared/ui/src/components/section/section.component.scss` (create)
+- `libs/landing/shared/ui/src/components/section/section.component.spec.ts` (create)
+- `libs/landing/shared/ui/src/components/section/index.ts` (create)
+- `libs/landing/shared/ui/src/index.ts` (export both)
 
 ## Dependencies
 
@@ -112,3 +112,10 @@ Usage:
 ## Complexity: S
 
 ## Progress Log
+
+- Created ContainerComponent with signal input and computed classes
+- Created SectionComponent with responsive vertical padding
+- Implemented unit tests for both components (9 tests total)
+- Fixed test issue with stale DOM references
+- All tests passing (121/121)
+- Components exported from main index

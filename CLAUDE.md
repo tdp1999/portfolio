@@ -62,6 +62,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 | **Verify Nx names**   | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
 | **Read don't assume** | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
 | **Forward slashes**   | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
+| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Ensure code integrity since no live dev server is available |
 
 ## Angular Code Style
 
