@@ -3,7 +3,55 @@
     <a routerLink="/ddl" class="no-underline hover:underline">DDL</a>
   </nav>
 
-  <div class="flex-1 flex items-center justify-center">
-    <h1 class="font-bold text-6xl m-0">Hi, I'm Phuong</h1>
-  </div>
+  <!-- Hero Section -->
+  <landing-section>
+    <landing-container>
+      <div class="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+        <div class="flex-1 text-center md:text-left">
+          <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-text">
+            Hi, I'm <span class="text-primary">Phuong</span>
+          </h1>
+          <p class="mt-4 text-lg text-text-secondary">
+            Full-stack developer passionate about building great user experiences.
+          </p>
+          <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <landing-button variant="primary" size="lg">
+              View Projects
+              <landing-icon name="arrow-right" [size]="20" class="ml-2" />
+            </landing-button>
+            <landing-button variant="secondary" size="lg">Contact Me</landing-button>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <!-- Placeholder for profile image or illustration -->
+          <div class="w-64 h-64 rounded-full bg-primary-container flex items-center justify-center">
+            <landing-icon name="user" [size]="80" class="text-primary" />
+          </div>
+        </div>
+      </div>
+    </landing-container>
+  </landing-section>
+
+  <!-- Featured Projects Section -->
+  <landing-section>
+    <landing-container [wide]="true">
+      <h2 class="text-3xl font-semibold text-center mb-12 text-text">Featured Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (project of projects; track project.id) {
+        <landing-card>
+          <div class="flex items-center gap-2 mb-3">
+            <landing-icon [name]="project.icon" [size]="24" class="text-primary" />
+            <h3 class="text-xl font-medium text-text">{{ project.title }}</h3>
+          </div>
+          <p class="text-text-secondary mb-4">{{ project.description }}</p>
+          <div class="flex flex-wrap gap-2">
+            @for (tech of project.technologies; track tech) {
+            <landing-badge>{{ tech }}</landing-badge>
+            }
+          </div>
+        </landing-card>
+        }
+      </div>
+    </landing-container>
+  </landing-section>
 </div>
