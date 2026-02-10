@@ -22,6 +22,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 - `vision.md` - Project goals and philosophy
 - `patterns.md` - Architecture and code patterns
+- `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)
 - `testing-guide.md` - TDD workflow and patterns
 - `commands.md` - All dev/build/test commands
 - `decisions.md` - Architecture decision records
@@ -31,10 +32,22 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ## Formatting Rules
 
-- Run `npx prettier --write <file>` on each modified file before committing. Never run `pnpm format` globally.
+- Run `npx prettier --write <file>` on each modified file before committing (applies exclusively to .ts, .html, and .scss files). Never run `pnpm format` globally.
 - Multi-line HTML: opening and closing tags on their own lines when content doesn't fit on one line.
 
 ## UI Development
 
 - Use `.scss` files only (never `.css`). Prefer Tailwind utility classes; custom SCSS only when necessary.
 - Use `playwright-skill` for UI validation. Test shared components/logic on `/ddl` route first.
+
+## Critical Guardrails
+
+| Rule                  | Action                                                                | Example                                                            |
+| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Verify Nx names**   | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
+| **Read don't assume** | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
+| **Forward slashes**   | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
+
+## Angular Code Style
+
+**All code must follow Angular v21+ modern syntax.** See `.context/angular-style-guide.md` for complete standards:
