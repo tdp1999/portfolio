@@ -31,6 +31,9 @@ import {
   Code,
   Globe,
   Phone,
+  ShoppingCart,
+  CheckSquare,
+  BarChart,
   LucideIconData,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
@@ -69,6 +72,9 @@ const ICON_MAP: Record<string, LucideIconData> = {
   code: Code,
   globe: Globe,
   phone: Phone,
+  'shopping-cart': ShoppingCart,
+  'check-square': CheckSquare,
+  'bar-chart': BarChart,
 };
 
 export class LucideIconProvider implements IconProvider {
