@@ -1,7 +1,7 @@
 # Testing Guide
 
 > **Single source of truth for all testing patterns and TDD workflow.**
-> Referenced from: CLAUDE.md, patterns.md, vision.md
+> Referenced from: CLAUDE.md, patterns-architecture.md, vision.md
 
 ## Test-Driven Development (TDD)
 
@@ -38,7 +38,7 @@ Red → Green → Refactor
 | Type              | Tool                    | Notes                             |
 | ----------------- | ----------------------- | --------------------------------- |
 | Unit/Integration  | Jest                    | Configured in workspace           |
-| Component Testing | Angular Testing Library | For Angular components            |
+| Component Testing | Angular TestBed        | Signal-based component testing    |
 | E2E               | Playwright              | playwright-skill plugin available |
 | API Testing       | Supertest               | For NestJS endpoints              |
 
@@ -89,7 +89,7 @@ A post-edit hook in `.claude/settings.json` runs type-check after file edits:
 
 ## Test Patterns
 
-See `patterns.md` for detailed code patterns:
+See `patterns-architecture.md` for detailed code patterns:
 
 - AAA (Arrange-Act-Assert) structure
 - API endpoint testing pattern

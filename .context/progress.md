@@ -8,65 +8,26 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (37 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (43 tasks)
 
 ## Completed Milestones
 
 - [x] Vision defined (.context/vision.md)
 - [x] Vision updated with TDD approach (2026-02-01)
-- [x] Architecture patterns defined (.context/patterns.md)
+- [x] Architecture patterns defined (.context/patterns-architecture.md, .context/patterns-design-system.md)
 - [x] Patterns updated with testing patterns (2026-02-01)
 - [x] Tech stack selected (.project-init.md)
 
 ## Completed Epics
 
 - [x] **Nx Monorepo Setup** (epic-nx-monorepo-setup) - Completed 2026-02-01
-  - Tasks 001-009 → archived in `tasks-done/`
+  - Tasks 001-009 → archived in `tasks-done/epic-nx-monorepo-setup/`
 - [x] **TDD Infrastructure** (epic-tdd-infrastructure) - Completed 2026-02-01
-  - Tasks 010-019 → archived in `tasks-done/`
+  - Tasks 010-019 → archived in `tasks-done/epic-tdd-infrastructure/`
+- [x] **Design System** (epic-design-system) - Completed 2026-02-10
+  - Tasks 020-042 → archived in `tasks-done/epic-design-system/`
 
 ## In Progress
-
-### Epic: Design System (epic-design-system) - broken-down
-
-**Phase 1: Tailwind + Token Foundation**
-
-- [x] 020-install-tailwind-v3 - Install Tailwind CSS v3 and configure base setup (M)
-- [x] 021-define-color-tokens - Define HSL-based color tokens (M)
-- [x] 022-define-typography-tokens - Define typography tokens and base styles (M)
-- [x] 023-define-dark-mode-tokens - Define dark mode token overrides (S)
-- [x] 024-verify-phase1-tailwind - Verify Phase 1 Tailwind token foundation (S)
-
-**Phase 2: Angular Material Integration**
-
-- [x] 025-install-angular-material - Install Angular Material v21 and configure theme (M)
-- [x] 026-verify-material-integration - Verify Angular Material integration (S)
-
-**Phase 3: Icon System**
-
-- [x] 027-create-icon-provider-architecture - Create icon provider interface and DI system (M)
-- [x] 028-implement-lucide-provider - Implement Lucide icon provider (M)
-- [x] 029-create-icon-component - Create main icon component (M)
-- [x] 030-verify-icon-system - Verify icon system in landing app (S)
-
-**Phase 4: Base Components + Examples**
-
-- [x] 031-create-button-component - Create Button component with variants (M)
-- [x] 032-create-card-component - Create Card component (S)
-- [x] 033-create-input-component - Create Input component with forms integration (M)
-- [x] 034-create-badge-component - Create Badge component (S)
-- [x] 035-create-link-component - Create Link component/directive (S)
-- [ ] 036-create-layout-utilities - Create Container and Section layout components (S)
-- [ ] 037-create-hero-example - Create hero section example (M)
-- [ ] 038-create-card-grid-example - Create card grid example (M)
-- [ ] 039-verify-phase4-components - Verify Phase 4 components and examples (S)
-
-**Finalization**
-
-- [ ] 040-document-design-system - Document design system patterns (M)
-- [ ] 041-cleanup-stub-files - Clean up UI library stub files (S)
-
----
 
 ### Epic: Database Architecture (epic-database-architecture) - broken-down
 
@@ -127,6 +88,14 @@
 
 ## Completed Tasks (Recent)
 
+- [x] **036-041: Design System Finalization** - Layout utilities, examples, and documentation (M) - Completed 2026-02-10
+  - Created Container and Section layout components
+  - Implemented hero section and card grid examples on landing page
+  - Comprehensive design system documentation in `.context/patterns-design-system.md`
+  - Cleaned up stub UI files
+  - Verified all Phase 4 components and examples
+  - Design System epic fully completed (22 tasks total)
+
 - [x] **031-035: Base UI Components** - Button, Card, Input, Badge, Link (M) - Completed 2026-02-10
   - Created 5 foundational UI components with TDD approach
   - Implemented landing-specific components (`landing-*` selector prefix)
@@ -142,26 +111,16 @@
   - Created landing shared libs: data-access, ui, util
   - All 66 tests passing
 
-- [x] **042-create-ddl-page** - Design Definition Language showcase page (S) - Completed 2026-02-03
-  - Created DDL route at `/ddl` with lazy loading
-  - Implemented component with buttons and UI elements showcase
-  - Achieved 100% test coverage (13 tests passing)
-  - Validated TDD workflow (Red → Green → Refactor)
-
 ## Up Next
 
-**Next Design System Task:** **036-create-layout-utilities** - Create Container and Section layout components
-**Alternative Track:** Start Database with **043-setup-prisma-supabase**
-
-Both tracks can proceed in parallel if desired.
+**Next Task:** **043-setup-prisma-supabase** - Setup Prisma and Supabase connection (Database Architecture Sprint 1)
 
 ## Statistics
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 37     |
+| Done (archived)          | 43     |
 | In Progress              | 0      |
-| Pending (Design System)  | 4      |
 | Pending (DB Foundation)  | 6      |
 | Pending (DB User Module) | 8      |
 | Pending (DB Tag Module)  | 8      |

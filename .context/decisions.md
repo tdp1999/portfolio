@@ -136,7 +136,7 @@
 **Impact on Existing Work:**
 
 - Minimal impact - only affects empty stub files in libraries
-- Future styling patterns documented in `.context/patterns.md`
+- Future styling patterns documented in `.context/patterns-design-system.md`
 
 ---
 

@@ -7,48 +7,69 @@
   }
 
   body {
-    @apply font-sans text-base text-text leading-normal;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--color-text);
+    line-height: var(--leading-normal);
   }
 
   h1 {
-    @apply text-5xl font-semibold leading-tight tracking-tight;
+    font-size: var(--text-5xl);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
   }
 
   h2 {
-    @apply text-4xl font-semibold leading-tight tracking-tight;
+    font-size: var(--text-4xl);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
   }
 
   h3 {
-    @apply text-3xl font-medium leading-snug;
+    font-size: var(--text-3xl);
+    font-weight: 500;
+    line-height: var(--leading-snug);
   }
 
   h4 {
-    @apply text-2xl font-medium leading-snug;
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    line-height: var(--leading-snug);
   }
 
   h5 {
-    @apply text-xl font-medium leading-snug;
+    font-size: var(--text-xl);
+    font-weight: 500;
+    line-height: var(--leading-snug);
   }
 
   h6 {
-    @apply text-lg font-medium leading-normal;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    line-height: var(--leading-normal);
   }
 
   p {
-    @apply text-base leading-relaxed;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
   }
 
   code,
   kbd,
   samp {
-    @apply font-mono text-sm;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
   }
 
   pre {
-    @apply font-mono text-sm leading-relaxed;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
   }
 
   small {
-    @apply text-sm;
+    font-size: var(--text-sm);
   }
 }

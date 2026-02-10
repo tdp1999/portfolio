@@ -14,17 +14,20 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ## References
 
-- **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns.md`
+- **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns-architecture.md`
+- **Design System:** Tokens, components, layout patterns. See `.context/patterns-design-system.md`
 - **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
 ## Context Files (`.context/`)
 
 - `vision.md` - Project goals and philosophy
-- `patterns.md` - Architecture and code patterns
+- `patterns-architecture.md` - Architecture, module boundaries, code patterns
+- `patterns-design-system.md` - Design tokens, components, layout recipes
 - `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)
 - `testing-guide.md` - TDD workflow and patterns
 - `commands.md` - All dev/build/test commands
+- `getting-started.md` - Prerequisites, setup, and common tasks
 - `decisions.md` - Architecture decision records
 - `progress.md` - Task completion tracking
 - `tasks/*.md` - Individual task definitions
@@ -32,7 +35,9 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ## Formatting Rules
 
-- Run `npx prettier --write <file>` on each modified file before committing (applies exclusively to .ts, .html, and .scss files). Never run `pnpm format` globally.
+- Pre-commit hook (`husky` + `lint-staged`) auto-formats staged `.ts`, `.html`, `.scss` files with Prettier.
+- You can still run `npx prettier --write <file>` manually on individual files.
+- There is no global `pnpm format` script — formatting is per-file only.
 - Multi-line HTML: opening and closing tags on their own lines when content doesn't fit on one line.
 
 ## UI Development
@@ -62,7 +67,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 | **Verify Nx names**   | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
 | **Read don't assume** | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
 | **Forward slashes**   | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
-| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Ensure code integrity since no live dev server is available |
+| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline |
 
 ## Angular Code Style
 
