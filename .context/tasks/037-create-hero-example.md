@@ -29,8 +29,8 @@ Phase 4 of Design System epic - Examples. This validates that components work to
   standalone: true,
   imports: [ButtonComponent, LinkDirective, ContainerComponent, SectionComponent, IconComponent],
   template: `
-    <lib-section>
-      <lib-container>
+    <landing-section>
+      <landing-container>
         <div class="flex flex-col md:flex-row items-center gap-8 md:gap-16">
           <div class="flex-1 text-center md:text-left">
             <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-text">
@@ -40,11 +40,11 @@ Phase 4 of Design System epic - Examples. This validates that components work to
               Full-stack developer passionate about building great user experiences.
             </p>
             <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <lib-button variant="primary" size="lg">
+              <landing-button variant="primary" size="lg">
                 View Projects
-                <lib-icon name="arrow-right" size="md" class="ml-2" />
-              </lib-button>
-              <lib-button variant="secondary" size="lg"> Contact Me </lib-button>
+                <landing-icon name="arrow-right" size="md" class="ml-2" />
+              </landing-button>
+              <landing-button variant="secondary" size="lg"> Contact Me </landing-button>
             </div>
           </div>
           <div class="flex-shrink-0">
@@ -52,12 +52,12 @@ Phase 4 of Design System epic - Examples. This validates that components work to
             <div
               class="w-64 h-64 rounded-full bg-primary-container flex items-center justify-center"
             >
-              <lib-icon name="user" size="xl" class="text-primary" />
+              <landing-icon name="user" size="xl" class="text-primary" />
             </div>
           </div>
         </div>
-      </lib-container>
-    </lib-section>
+      </landing-container>
+    </landing-section>
   `,
 })
 export class HeroExampleComponent {}

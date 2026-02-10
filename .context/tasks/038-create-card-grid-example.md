@@ -30,27 +30,27 @@ Phase 4 of Design System epic - Examples. This validates card and grid patterns 
   standalone: true,
   imports: [CardComponent, BadgeComponent, ContainerComponent, SectionComponent, IconComponent],
   template: `
-    <lib-section>
-      <lib-container [wide]="true">
+    <landing-section>
+      <landing-container [wide]="true">
         <h2 class="text-3xl font-semibold text-center mb-12">Featured Projects</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           @for (project of projects; track project.id) {
-            <lib-card>
+            <landing-card>
               <div class="flex items-center gap-2 mb-3">
-                <lib-icon [name]="project.icon" size="md" class="text-primary" />
+                <landing-icon [name]="project.icon" size="md" class="text-primary" />
                 <h3 class="text-xl font-medium">{{ project.title }}</h3>
               </div>
               <p class="text-text-secondary mb-4">{{ project.description }}</p>
               <div class="flex flex-wrap gap-2">
                 @for (tech of project.technologies; track tech) {
-                  <lib-badge>{{ tech }}</lib-badge>
+                  <landing-badge>{{ tech }}</landing-badge>
                 }
               </div>
-            </lib-card>
+            </landing-card>
           }
         </div>
-      </lib-container>
-    </lib-section>
+      </landing-container>
+    </landing-section>
   `,
 })
 export class CardGridExampleComponent {
@@ -87,7 +87,7 @@ Note: May need to add additional icons to Lucide provider (shopping-cart, check-
 - `apps/landing/src/app/examples/card-grid-example.component.ts` (create)
 - `apps/landing/src/app/app.component.html` (add example)
 - `apps/landing/src/app/app.component.ts` (import example)
-- `libs/ui/src/components/icon/providers/lucide.provider.ts` (add icons if needed)
+- `libs/landing/shared/ui/src/components/icon/providers/lucide.provider.ts` (add icons if needed)
 
 ## Dependencies
 

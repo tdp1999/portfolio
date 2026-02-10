@@ -40,6 +40,21 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 - Use `.scss` files only (never `.css`). Prefer Tailwind utility classes; custom SCSS only when necessary.
 - Use `playwright-skill` for UI validation. Test shared components/logic on `/ddl` route first.
 
+### Component Domain Separation
+
+**CRITICAL: Components are strictly separated by application domain:**
+
+| Component Type | Selector Prefix | Location | Usage |
+|----------------|-----------------|----------|-------|
+| **Landing Page Components** | `landing-*` | `libs/landing/shared/ui/` | Custom UI components for the landing page (button, card, input, badge, link, icon, etc.) |
+| **Dashboard Components** | `mat-*` | Angular Material | Material Design components for dashboard/admin interface |
+
+**Rules:**
+- Landing page MUST use `landing-*` components exclusively
+- Dashboard app MUST use `mat-*` (Angular Material) components exclusively
+- NEVER mix component domains (no Material in landing, no landing-* in dashboard)
+- When creating new UI components, determine the target application first
+
 ## Critical Guardrails
 
 | Rule                  | Action                                                                | Example                                                            |

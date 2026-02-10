@@ -414,6 +414,220 @@
         </div>
       </div>
 
+      <!-- Input Component Test -->
+      <div class="input-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Input Component</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Custom input component with validation states and Angular Forms integration
+        </p>
+
+        <div class="space-y-6 max-w-2xl">
+          <!-- Basic Inputs -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Inputs</h3>
+            <div class="space-y-3">
+              <landing-input placeholder="Enter text..." />
+              <landing-input type="email" placeholder="Enter email..." />
+              <landing-input type="password" placeholder="Enter password..." />
+              <landing-input type="number" placeholder="Enter number..." />
+            </div>
+          </div>
+
+          <!-- States -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">States</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm text-text mb-1">Normal State</label>
+                <landing-input placeholder="Normal input" />
+              </div>
+              <div>
+                <label class="block text-sm text-text mb-1">Error State</label>
+                <landing-input placeholder="Error input" [error]="true" />
+                <p class="text-xs text-error mt-1">This field is required</p>
+              </div>
+              <div>
+                <label class="block text-sm text-text mb-1">Disabled State</label>
+                <landing-input placeholder="Disabled input" [disabled]="true" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Labeled Inputs -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">With Labels</h3>
+            <div class="space-y-3">
+              <div>
+                <label for="name" class="block text-sm font-medium text-text mb-1">
+                  Full Name
+                </label>
+                <landing-input type="text" placeholder="John Doe" />
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-text mb-1">
+                  Email Address
+                </label>
+                <landing-input type="email" placeholder="john@example.com" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badge Component Test -->
+      <div class="badge-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Badge Component</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Small, pill-shaped badges for tags, labels, and status indicators
+        </p>
+
+        <div class="space-y-6">
+          <!-- Color Variants -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Color Variants</h3>
+            <div class="flex gap-3 flex-wrap items-center">
+              <landing-badge>Primary</landing-badge>
+              <landing-badge color="success">Success</landing-badge>
+              <landing-badge color="warning">Warning</landing-badge>
+              <landing-badge color="error">Error</landing-badge>
+            </div>
+          </div>
+
+          <!-- Technology Tags Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Technology Tags</h3>
+            <div class="flex gap-2 flex-wrap">
+              <landing-badge>TypeScript</landing-badge>
+              <landing-badge>Angular</landing-badge>
+              <landing-badge>NestJS</landing-badge>
+              <landing-badge>TailwindCSS</landing-badge>
+              <landing-badge>Nx</landing-badge>
+            </div>
+          </div>
+
+          <!-- Status Indicators Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Status Indicators</h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-text w-24">Published:</span>
+                <landing-badge color="success">Live</landing-badge>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-text w-24">Draft:</span>
+                <landing-badge color="warning">In Progress</landing-badge>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-text w-24">Archived:</span>
+                <landing-badge color="error">Inactive</landing-badge>
+              </div>
+            </div>
+          </div>
+
+          <!-- In Project Card Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: In Project Card</h3>
+            <div class="max-w-sm">
+              <landing-card>
+                <div class="flex items-start gap-3 mb-3">
+                  <landing-icon name="code" class="text-accent-500" [size]="24" />
+                  <div class="flex-1">
+                    <h4 class="text-base font-semibold text-text mb-1">Portfolio Website</h4>
+                    <div class="flex gap-1.5 flex-wrap mb-2">
+                      <landing-badge>Angular</landing-badge>
+                      <landing-badge>TypeScript</landing-badge>
+                      <landing-badge>TDD</landing-badge>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-3">
+                      Professional portfolio with design system and SSR.
+                    </p>
+                    <landing-badge color="success">Published</landing-badge>
+                  </div>
+                </div>
+              </landing-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Link Directive Test -->
+      <div class="link-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Link Directive</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Styled navigation links with smooth hover transitions using semantic tokens
+        </p>
+
+        <div class="space-y-6">
+          <!-- Basic Links -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Links</h3>
+            <div class="space-y-2">
+              <div>
+                <a landingLink href="#">Regular link with hover underline</a>
+              </div>
+              <div>
+                <a landingLink href="https://github.com" [external]="true">
+                  External link with indicator
+                  <landing-icon name="external-link" [size]="14" class="inline" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- In Text -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">In Text Context</h3>
+            <div class="max-w-2xl">
+              <p class="text-text-secondary">
+                This is a paragraph with an
+                <a landingLink href="#">inline link</a>
+                that demonstrates the link styling in context. Links use semantic color tokens and
+                smooth transitions. You can also link to
+                <a landingLink href="https://example.com" [external]="true">
+                  external resources
+                  <landing-icon name="external-link" [size]="12" class="inline" />
+                </a>
+                with an indicator icon.
+              </p>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Navigation</h3>
+            <nav class="flex gap-4">
+              <a landingLink href="#">Home</a>
+              <a landingLink href="#">Projects</a>
+              <a landingLink href="#">About</a>
+              <a landingLink href="#">Contact</a>
+            </nav>
+          </div>
+
+          <!-- In Card Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Project Links</h3>
+            <div class="max-w-md">
+              <landing-card>
+                <h4 class="text-base font-semibold text-text mb-2">Portfolio Project</h4>
+                <p class="text-sm text-text-secondary mb-3">
+                  Check out the live demo and source code for this project.
+                </p>
+                <div class="flex gap-4">
+                  <a landingLink href="https://example.com" [external]="true">
+                    View Demo
+                    <landing-icon name="external-link" [size]="14" class="inline ml-1" />
+                  </a>
+                  <a landingLink href="https://github.com" [external]="true">
+                    Source Code
+                    <landing-icon name="github" [size]="14" class="inline ml-1" />
+                  </a>
+                </div>
+              </landing-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Border Tokens Test -->
       <div class="border-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>

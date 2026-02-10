@@ -5,6 +5,9 @@
 @use './themes/dark.scss' as dark-theme;
 @use './base/typography.scss' as typography-base;
 
+/* Component styles */
+@use '../components/link/link.directive.scss';
+
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;

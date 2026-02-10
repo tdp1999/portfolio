@@ -65,7 +65,7 @@ Three-layer system following industry best practices:
 ### Icon Usage
 
 ```html
-<lib-icon name="arrow-right" size="md" class="text-primary" />
+<landing-icon name="arrow-right" size="md" class="text-primary" />
 ```
 
 Available sizes: sm (16px), md (20px), lg (24px), xl (32px)

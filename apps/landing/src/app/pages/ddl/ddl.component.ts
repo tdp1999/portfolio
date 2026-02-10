@@ -9,6 +9,9 @@ import {
   IconComponent,
   ButtonComponent,
   CardComponent,
+  InputComponent,
+  BadgeComponent,
+  LinkDirective,
 } from '@portfolio/landing/shared/ui';
 
 @Component({
@@ -23,6 +26,9 @@ import {
     IconComponent,
     ButtonComponent,
     CardComponent,
+    InputComponent,
+    BadgeComponent,
+    LinkDirective,
   ],
   templateUrl: './ddl.component.html',
   styleUrl: './ddl.component.scss',

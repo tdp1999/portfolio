@@ -1,0 +1,8 @@
+.link {
+  @apply text-primary transition-colors duration-150;
+  @apply underline-offset-2 hover:underline hover:text-primary-hover;
+
+  &--external {
+    @apply inline-flex items-center gap-1;
+  }
+}
