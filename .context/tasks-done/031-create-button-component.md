@@ -26,9 +26,9 @@ Phase 4 of Design System epic - Base Components. Button is a fundamental compone
 ## Technical Notes
 
 ```typescript
-// libs/ui/src/components/button/button.component.ts
+// libs/landing/shared/ui/src/components/button/button.component.ts
 @Component({
-  selector: 'lib-button',
+  selector: 'landing-button',
   standalone: true,
   template: `
     <button [class]="buttonClasses" [disabled]="disabled" (click)="onClick($event)">
@@ -81,11 +81,11 @@ Styles (Tailwind + semantic tokens):
 
 ## Files to Touch
 
-- `libs/ui/src/components/button/button.component.ts` (create)
-- `libs/ui/src/components/button/button.component.scss` (create)
-- `libs/ui/src/components/button/button.component.spec.ts` (create)
-- `libs/ui/src/components/button/index.ts` (create)
-- `libs/ui/src/index.ts` (export)
+- `libs/landing/shared/ui/src/components/button/button.component.ts` (create)
+- `libs/landing/shared/ui/src/components/button/button.component.scss` (create)
+- `libs/landing/shared/ui/src/components/button/button.component.spec.ts` (create)
+- `libs/landing/shared/ui/src/components/button/index.ts` (create)
+- `libs/landing/shared/ui/src/index.ts` (export)
 
 ## Dependencies
 

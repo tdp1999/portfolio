@@ -12,7 +12,7 @@ Phase 4 of Design System epic - Base Components. Card is used for grouping relat
 
 ## Acceptance Criteria
 
-- [x] CardComponent created with selector `lib-card`
+- [x] CardComponent created with selector `landing-card`
 - [x] Props: `elevated?: boolean` (adds stronger shadow)
 - [x] Uses semantic tokens (bg-surface, rounded-xl, shadow-sm)
 - [x] Content projection for flexible content
@@ -24,9 +24,9 @@ Phase 4 of Design System epic - Base Components. Card is used for grouping relat
 ## Technical Notes
 
 ```typescript
-// libs/ui/src/components/card/card.component.ts
+// libs/landing/shared/ui/src/components/card/card.component.ts
 @Component({
-  selector: 'lib-card',
+  selector: 'landing-card',
   standalone: true,
   template: `
     <div [class]="cardClasses">
@@ -80,24 +80,24 @@ Styles:
 Usage:
 
 ```html
-<lib-card>
+<landing-card>
   <h3>Card Title</h3>
   <p>Card content goes here.</p>
-</lib-card>
+</landing-card>
 
 <lib-card [elevated]="true">
   <div class="card__header">Header</div>
   <div class="card__content">Content</div>
-</lib-card>
+</landing-card>
 ```
 
 ## Files to Touch
 
-- `libs/ui/src/components/card/card.component.ts` (create)
-- `libs/ui/src/components/card/card.component.scss` (create)
-- `libs/ui/src/components/card/card.component.spec.ts` (create)
-- `libs/ui/src/components/card/index.ts` (create)
-- `libs/ui/src/index.ts` (export)
+- `libs/landing/shared/ui/src/components/card/card.component.ts` (create)
+- `libs/landing/shared/ui/src/components/card/card.component.scss` (create)
+- `libs/landing/shared/ui/src/components/card/card.component.spec.ts` (create)
+- `libs/landing/shared/ui/src/components/card/index.ts` (create)
+- `libs/landing/shared/ui/src/index.ts` (export)
 
 ## Dependencies
 

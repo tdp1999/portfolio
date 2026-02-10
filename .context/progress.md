@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/` - Archived completed tasks (31 tasks)
+- `.context/tasks-done/` - Archived completed tasks (37 tasks)
 
 ## Completed Milestones
 
@@ -51,11 +51,11 @@
 
 **Phase 4: Base Components + Examples**
 
-- [ ] 031-create-button-component - Create Button component with variants (M)
-- [ ] 032-create-card-component - Create Card component (S)
-- [ ] 033-create-input-component - Create Input component with forms integration (M)
-- [ ] 034-create-badge-component - Create Badge component (S)
-- [ ] 035-create-link-component - Create Link component/directive (S)
+- [x] 031-create-button-component - Create Button component with variants (M)
+- [x] 032-create-card-component - Create Card component (S)
+- [x] 033-create-input-component - Create Input component with forms integration (M)
+- [x] 034-create-badge-component - Create Badge component (S)
+- [x] 035-create-link-component - Create Link component/directive (S)
 - [ ] 036-create-layout-utilities - Create Container and Section layout components (S)
 - [ ] 037-create-hero-example - Create hero section example (M)
 - [ ] 038-create-card-grid-example - Create card grid example (M)
@@ -127,6 +127,13 @@
 
 ## Completed Tasks (Recent)
 
+- [x] **031-035: Base UI Components** - Button, Card, Input, Badge, Link (M) - Completed 2026-02-10
+  - Created 5 foundational UI components with TDD approach
+  - Implemented landing-specific components (`landing-*` selector prefix)
+  - Components use Tailwind utilities and semantic design tokens
+  - Full test coverage for all components
+  - All components exported from `libs/landing/shared/ui`
+
 - [x] **065-restructure-libs-architecture** - Restructure libs with scoped architecture (L) - Completed 2026-02-04
   - Implemented nested library structure: `libs/shared/*`, `libs/landing/shared/*`
   - Created `ng-lib` skill for generating Angular libraries
@@ -143,7 +150,7 @@
 
 ## Up Next
 
-**Next Design System Task:** **031-create-button-component** - Create Button component with variants
+**Next Design System Task:** **036-create-layout-utilities** - Create Container and Section layout components
 **Alternative Track:** Start Database with **043-setup-prisma-supabase**
 
 Both tracks can proceed in parallel if desired.
@@ -152,13 +159,13 @@ Both tracks can proceed in parallel if desired.
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 31     |
+| Done (archived)          | 37     |
 | In Progress              | 0      |
-| Pending (Design System)  | 15     |
+| Pending (Design System)  | 4      |
 | Pending (DB Foundation)  | 6      |
 | Pending (DB User Module) | 8      |
 | Pending (DB Tag Module)  | 8      |
-| **Total Created**        | **63** |
+| **Total Created**        | **65** |
 
 ## Notes
 
