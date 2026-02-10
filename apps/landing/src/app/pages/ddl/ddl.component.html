@@ -550,6 +550,128 @@
         </div>
       </div>
 
+      <!-- Layout Components Test -->
+      <div class="layout-test p-6 bg-surface rounded-lg shadow-sm border border-border">
+        <h2 class="text-2xl font-semibold mb-4 text-text">Layout Components</h2>
+        <p class="text-sm text-text-secondary mb-4">
+          Container and Section components for consistent page structure and spacing
+        </p>
+
+        <div class="space-y-6">
+          <!-- Container Component -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Container</h3>
+            <div class="bg-background p-4 rounded-lg">
+              <landing-container>
+                <div class="bg-surface-elevated border border-border p-4 rounded">
+                  <p class="text-text-secondary">
+                    Default container with max-w-4xl constraint and horizontal padding. This
+                    container centers content and adds responsive padding.
+                  </p>
+                </div>
+              </landing-container>
+            </div>
+          </div>
+
+          <!-- Container Wide -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Container (Wide)</h3>
+            <div class="bg-background p-4 rounded-lg">
+              <landing-container [wide]="true">
+                <div class="bg-surface-elevated border border-border p-4 rounded">
+                  <p class="text-text-secondary">
+                    Wide container with max-w-6xl constraint. Useful for card grids and wider
+                    content layouts.
+                  </p>
+                </div>
+              </landing-container>
+            </div>
+          </div>
+
+          <!-- Section Component -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Section</h3>
+            <div class="bg-background rounded-lg overflow-hidden">
+              <landing-section>
+                <div class="bg-surface-elevated border border-border p-4 rounded">
+                  <p class="text-text-secondary">
+                    Section component adds responsive vertical padding (py-16 md:py-24 lg:py-32).
+                    Use sections to separate major page areas.
+                  </p>
+                </div>
+              </landing-section>
+            </div>
+          </div>
+
+          <!-- Combined Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">
+              Example: Section + Container
+            </h3>
+            <div class="bg-background rounded-lg overflow-hidden">
+              <landing-section>
+                <landing-container>
+                  <div class="text-center">
+                    <h3 class="text-2xl font-semibold text-text mb-3">Page Section Title</h3>
+                    <p class="text-text-secondary mb-6">
+                      This demonstrates the typical pattern of combining Section (for vertical
+                      spacing) with Container (for horizontal constraints).
+                    </p>
+                    <div class="flex gap-3 justify-center">
+                      <landing-button variant="primary">Primary Action</landing-button>
+                      <landing-button variant="secondary">Secondary Action</landing-button>
+                    </div>
+                  </div>
+                </landing-container>
+              </landing-section>
+            </div>
+          </div>
+
+          <!-- Card Grid Example -->
+          <div>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">
+              Example: Card Grid in Wide Container
+            </h3>
+            <div class="bg-background rounded-lg overflow-hidden">
+              <landing-section>
+                <landing-container [wide]="true">
+                  <h3 class="text-2xl font-semibold text-center mb-8 text-text">Featured Items</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <landing-card>
+                      <div class="flex items-center gap-2 mb-2">
+                        <landing-icon name="box" [size]="20" class="text-primary" />
+                        <h4 class="text-base font-semibold text-text">Item One</h4>
+                      </div>
+                      <p class="text-sm text-text-secondary">
+                        Wide container allows more horizontal space for card grids.
+                      </p>
+                    </landing-card>
+                    <landing-card>
+                      <div class="flex items-center gap-2 mb-2">
+                        <landing-icon name="package" [size]="20" class="text-primary" />
+                        <h4 class="text-base font-semibold text-text">Item Two</h4>
+                      </div>
+                      <p class="text-sm text-text-secondary">
+                        Section adds vertical breathing room.
+                      </p>
+                    </landing-card>
+                    <landing-card>
+                      <div class="flex items-center gap-2 mb-2">
+                        <landing-icon name="gift" [size]="20" class="text-primary" />
+                        <h4 class="text-base font-semibold text-text">Item Three</h4>
+                      </div>
+                      <p class="text-sm text-text-secondary">
+                        Cards respond to grid breakpoints automatically.
+                      </p>
+                    </landing-card>
+                  </div>
+                </landing-container>
+              </landing-section>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Link Directive Test -->
       <div class="link-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Link Directive</h2>
