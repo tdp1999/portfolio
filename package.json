@@ -2,6 +2,7 @@
   "name": "@portfolio/source",
   "version": "0.0.0",
   "license": "MIT",
+  "packageManager": "pnpm@10.16.0",
   "scripts": {
     "start": "nx serve landing",
     "dev:landing": "nx serve landing",
