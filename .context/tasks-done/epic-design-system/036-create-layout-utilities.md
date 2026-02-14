@@ -39,9 +39,7 @@ Phase 4 of Design System epic - Base Components. Layout utilities ensure consist
 export class ContainerComponent {
   wide = input(false);
 
-  containerClasses = computed(() =>
-    `container ${this.wide() ? 'container--wide' : ''}`
-  );
+  containerClasses = computed(() => `container ${this.wide() ? 'container--wide' : ''}`);
 }
 
 // libs/landing/shared/ui/src/components/section/section.component.ts

@@ -35,12 +35,12 @@ Red → Green → Refactor
 
 ### Testing Stack
 
-| Type              | Tool                    | Notes                             |
-| ----------------- | ----------------------- | --------------------------------- |
-| Unit/Integration  | Jest                    | Configured in workspace           |
-| Component Testing | Angular TestBed        | Signal-based component testing    |
-| E2E               | Playwright              | playwright-skill plugin available |
-| API Testing       | Supertest               | For NestJS endpoints              |
+| Type              | Tool            | Notes                             |
+| ----------------- | --------------- | --------------------------------- |
+| Unit/Integration  | Jest            | Configured in workspace           |
+| Component Testing | Angular TestBed | Signal-based component testing    |
+| E2E               | Playwright      | playwright-skill plugin available |
+| API Testing       | Supertest       | For NestJS endpoints              |
 
 ## Automated Testing with Subagents
 

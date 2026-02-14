@@ -32,7 +32,7 @@ import {
   LinkDirective,
   ContainerComponent,
   SectionComponent,
-  IconComponent
+  IconComponent,
 } from '@portfolio/landing/shared/ui';
 
 @Component({
@@ -43,7 +43,7 @@ import {
     LinkDirective,
     ContainerComponent,
     SectionComponent,
-    IconComponent
+    IconComponent,
   ],
   templateUrl: './feature-home.html',
   styleUrl: './feature-home.scss',

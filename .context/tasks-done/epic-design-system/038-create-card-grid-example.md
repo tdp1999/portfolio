@@ -34,7 +34,7 @@ import {
   SectionComponent,
   IconComponent,
   CardComponent,
-  BadgeComponent
+  BadgeComponent,
 } from '@portfolio/landing/shared/ui';
 
 @Component({
@@ -47,7 +47,7 @@ import {
     SectionComponent,
     IconComponent,
     CardComponent,
-    BadgeComponent
+    BadgeComponent,
   ],
   templateUrl: './feature-home.html',
   styleUrl: './feature-home.scss',
@@ -87,18 +87,18 @@ Add to template (after hero section):
     <h2 class="text-3xl font-semibold text-center mb-12">Featured Projects</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       @for (project of projects; track project.id) {
-        <landing-card>
-          <div class="flex items-center gap-2 mb-3">
-            <landing-icon [name]="project.icon" size="md" class="text-primary" />
-            <h3 class="text-xl font-medium">{{ project.title }}</h3>
-          </div>
-          <p class="text-text-secondary mb-4">{{ project.description }}</p>
-          <div class="flex flex-wrap gap-2">
-            @for (tech of project.technologies; track tech) {
-              <landing-badge>{{ tech }}</landing-badge>
-            }
-          </div>
-        </landing-card>
+      <landing-card>
+        <div class="flex items-center gap-2 mb-3">
+          <landing-icon [name]="project.icon" size="md" class="text-primary" />
+          <h3 class="text-xl font-medium">{{ project.title }}</h3>
+        </div>
+        <p class="text-text-secondary mb-4">{{ project.description }}</p>
+        <div class="flex flex-wrap gap-2">
+          @for (tech of project.technologies; track tech) {
+          <landing-badge>{{ tech }}</landing-badge>
+          }
+        </div>
+      </landing-card>
       }
     </div>
   </landing-container>

@@ -106,3 +106,4 @@ document.documentElement.classList.add('dark');
 - [2026-02-10] Documented dark mode implementation
 - [2026-02-10] Documented Tailwind + SCSS hybrid approach
 - [2026-02-10] Verified ADR-008 exists for hybrid approach
+```

@@ -38,11 +38,11 @@ pnpm test:e2e          # Playwright E2E tests
 
 ## Key Routes
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page (home) |
+| Route  | Description                                |
+| ------ | ------------------------------------------ |
+| `/`    | Landing page (home)                        |
 | `/ddl` | Design system showcase (all UI components) |
-| `/api` | API root (NestJS) |
+| `/api` | API root (NestJS)                          |
 
 ## Project Structure
 
@@ -55,10 +55,10 @@ See `.context/patterns-architecture.md` for full monorepo structure and module b
 
 ## Common Tasks
 
-| Task | Command |
-|------|---------|
-| Type-check after edits | `npx tsc --noEmit` |
-| Format a file | `npx prettier --write <file>` |
-| Test affected projects | `npx nx affected -t test` |
+| Task                    | Command                                    |
+| ----------------------- | ------------------------------------------ |
+| Type-check after edits  | `npx tsc --noEmit`                         |
+| Format a file           | `npx prettier --write <file>`              |
+| Test affected projects  | `npx nx affected -t test`                  |
 | Find an Nx project name | `npx nx show projects \| grep -i "<term>"` |
-| View dependency graph | `pnpm graph` |
+| View dependency graph   | `pnpm graph`                               |

@@ -3,18 +3,22 @@
 ## Status: pending
 
 ## Goal
+
 Reduce landing page development server startup time from 113+ seconds to under 15 seconds with stable, consistent performance.
 
 ## Context
+
 The local development server exhibits highly unstable behavior—alternating between fast and extremely slow startup/serve times. The application builds successfully but takes 113.317 seconds, which is excessive for a ~95KB initial bundle. Additionally, Vite shows "Re-optimizing dependencies because lockfile has changed" on every start, suggesting cache invalidation or lockfile churn issues.
 
 **Evidence from logs:**
+
 - Build time: 113.317 seconds for small app (94.75 KB initial + ~95 KB lazy)
 - SSR enabled (both browser and server bundles generated)
 - Vite re-optimization triggered on every serve
 - Intermittent hanging requiring Ctrl+C restart
 
 **Current Configuration:**
+
 - Executor: `@angular/build:dev-server` (Angular's esbuild-based, not Vite)
 - SSR enabled with Express server
 - Development mode: optimization=false, sourceMap=true
@@ -23,6 +27,7 @@ The local development server exhibits highly unstable behavior—alternating bet
 - Node v24.8.0, pnpm 10.16.0
 
 ## Acceptance Criteria
+
 - [ ] Dev server starts consistently in < 15 seconds
 - [ ] No "lockfile has changed" messages on subsequent serves
 - [ ] No intermittent hanging behavior
@@ -66,6 +71,7 @@ The local development server exhibits highly unstable behavior—alternating bet
    - Review if `outputMode: "server"` affects dev performance
 
 **Files to Review:**
+
 - `apps/landing/project.json` - Serve and build configuration
 - `nx.json` - Global cache and task runner settings
 - `tsconfig.base.json` - Path mappings optimization
@@ -96,11 +102,13 @@ The local development server exhibits highly unstable behavior—alternating bet
    - Verify no circular dependencies in library structure
 
 **Reference Project Standards:**
+
 - Follow `.context/patterns-architecture.md` for module boundaries
 - SSR is part of the architecture (Landing Page uses SSR/SSG per tech stack)
 - Maintain Nx monorepo best practices
 
 ## Files to Touch
+
 - `apps/landing/project.json` (serve/build configuration)
 - `nx.json` (cache configuration)
 - `tsconfig.base.json` (path mappings, if needed)
@@ -108,11 +116,13 @@ The local development server exhibits highly unstable behavior—alternating bet
 - Possibly: `apps/landing/src/server.ts` (SSR optimization)
 
 ## Dependencies
+
 None
 
 ## Complexity: M
 
 **Reasoning:**
+
 - Multiple potential root causes requiring investigation
 - Involves Nx cache, Angular build system, and SSR configuration
 - Windows-specific considerations (antivirus, file watchers)
