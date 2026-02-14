@@ -4,11 +4,17 @@ export class SlugValue {
       throw new Error('Cannot create slug from empty text');
     }
 
-    return text
+    const slug = text
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
+
+    if (!slug) {
+      throw new Error('Cannot create slug from empty text');
+    }
+
+    return slug;
   }
 }

@@ -29,4 +29,10 @@ describe('SlugValue', () => {
     expect(() => SlugValue.from('')).toThrow('Cannot create slug from empty text');
     expect(() => SlugValue.from('   ')).toThrow('Cannot create slug from empty text');
   });
+
+  it('should throw when text produces empty slug after transformation', () => {
+    expect(() => SlugValue.from(' - ')).toThrow('Cannot create slug from empty text');
+    expect(() => SlugValue.from('---')).toThrow('Cannot create slug from empty text');
+    expect(() => SlugValue.from('!@#$%')).toThrow('Cannot create slug from empty text');
+  });
 });
