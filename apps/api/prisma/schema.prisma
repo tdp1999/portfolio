@@ -5,3 +5,75 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Language {
+  EN
+  VI
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum SocialPlatform {
+  GITHUB
+  LINKEDIN
+  TWITTER
+  FACEBOOK
+  INSTAGRAM
+  YOUTUBE
+  WEBSITE
+  OTHER
+}
+
+enum Availability {
+  OPEN_TO_WORK
+  EMPLOYED
+  FREELANCING
+}
+
+enum SkillCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  DEVOPS
+  MOBILE
+  TOOLS
+  LANGUAGES
+  OTHER
+}
+
+enum ProjectCategory {
+  LANDING_PAGE
+  CMS
+  ERP
+  E_COMMERCE
+  DASHBOARD
+  API
+  MOBILE_APP
+  LIBRARY
+  CLI_TOOL
+  OTHER
+}
+
+enum ProjectType {
+  PERSONAL
+  TEAM
+  COMPANY
+  OPEN_SOURCE
+  FREELANCE
+}
+
+enum ProjectSize {
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum SyncStatus {
+  SYNCED
+  PENDING
+  FAILED
+}
