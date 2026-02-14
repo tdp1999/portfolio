@@ -1,16 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import request from 'supertest';
 import { AppModule } from './app.module';
+import { PrismaService } from '../infrastructure/prisma/prisma.service';
 
 describe('AppController Integration Tests', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    // Arrange: Create full application module
+    // Arrange: Create full application module with mocked PrismaService
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue({
+        $connect: jest.fn(),
+        $disconnect: jest.fn(),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -60,6 +68,18 @@ describe('AppController Integration Tests', () => {
       expect(response1.body).toEqual(response2.body);
       expect(response1.body.message).toBe('Hello API');
       expect(response2.body.message).toBe('Hello API');
+    });
+  });
+
+  describe('CQRS Integration', () => {
+    it('should make CommandBus injectable', async () => {
+      const commandBus = app.get(CommandBus);
+      expect(commandBus).toBeDefined();
+    });
+
+    it('should make QueryBus injectable', async () => {
+      const queryBus = app.get(QueryBus);
+      expect(queryBus).toBeDefined();
     });
   });
 
