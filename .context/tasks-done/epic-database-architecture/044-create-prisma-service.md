@@ -1,6 +1,6 @@
 # Task: Create PrismaService for NestJS
 
-## Status: pending
+## Status: done
 
 ## Goal
 

@@ -33,14 +33,14 @@
 
 > **Approach:** Sequential module development. Complete one module fully before starting the next.
 
-#### Sprint 1: Foundation (6 tasks)
+#### Sprint 1: Foundation (6 tasks) - COMPLETE
 
-- [ ] 043-setup-prisma-supabase - Setup Prisma and Supabase connection (S)
-- [ ] 044-create-prisma-service - Create PrismaService for NestJS (S)
-- [ ] 045-create-value-objects - Create shared value objects (S)
-- [ ] 046-create-prisma-enums - Define all Prisma enums (S)
-- [ ] 047-setup-cqrs-base - Setup CQRS base infrastructure (S)
-- [ ] 048-verify-foundation - Verify foundation sprint (S)
+- [x] 043-setup-prisma-supabase - Setup Prisma and Supabase connection (S)
+- [x] 044-create-prisma-service - Create PrismaService for NestJS (S)
+- [x] 045-create-value-objects - Create shared value objects (S)
+- [x] 046-create-prisma-enums - Define all Prisma enums (S)
+- [x] 047-setup-cqrs-base - Setup CQRS base infrastructure (S)
+- [x] 048-verify-foundation - Verify foundation sprint (S)
 
 **Milestone:** Can connect to DB, generate types, CQRS bus ready
 
@@ -117,15 +117,15 @@
 
 ## Up Next
 
-**Next Task:** **043-setup-prisma-supabase** - Setup Prisma and Supabase connection (Database Architecture Sprint 1)
+**Next Task:** **049-user-prisma-schema** - User Prisma schema + migration (Database Architecture Sprint 2)
 
 ## Statistics
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 43     |
+| Done (archived)          | 49     |
 | In Progress              | 0      |
-| Pending (DB Foundation)  | 6      |
+| Pending (DB Foundation)  | 0      |
 | Pending (DB User Module) | 8      |
 | Pending (DB Tag Module)  | 8      |
 | Pending (Standalone)     | 1      |
