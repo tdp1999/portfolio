@@ -1,6 +1,6 @@
 # Task: Setup CQRS Base Infrastructure
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,11 +12,11 @@ CQRS infrastructure needed before creating module handlers.
 
 ## Acceptance Criteria
 
-- [ ] `@nestjs/cqrs` installed
-- [ ] CqrsModule imported in AppModule
-- [ ] `BaseCommand` class with userId and timestamp
-- [ ] `BaseQuery` class
-- [ ] Verify CommandBus and QueryBus are injectable
+- [x] `@nestjs/cqrs` installed
+- [x] CqrsModule imported in AppModule
+- [x] `BaseCommand` class with userId and timestamp
+- [x] `BaseQuery` class
+- [x] Verify CommandBus and QueryBus are injectable
 
 ## Technical Notes
 
@@ -46,3 +46,5 @@ export abstract class BaseQuery {
 ## Complexity: S
 
 ## Progress Log
+
+- [2026-02-14] Completed all criteria. @nestjs/cqrs v11.0.3 installed, CqrsModule added to AppModule, base classes created, CommandBus/QueryBus injectability verified via integration tests.

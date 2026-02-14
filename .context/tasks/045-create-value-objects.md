@@ -1,6 +1,6 @@
 # Task: Create Shared Value Objects
 
-## Status: pending
+## Status: done
 
 ## Goal
 

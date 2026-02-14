@@ -1,6 +1,6 @@
 # Task: Define All Prisma Enums
 
-## Status: pending
+## Status: done
 
 ## Goal
 
