@@ -49,25 +49,27 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 **CRITICAL: Components are strictly separated by application domain:**
 
-| Component Type | Selector Prefix | Location | Usage |
-|----------------|-----------------|----------|-------|
-| **Landing Page Components** | `landing-*` | `libs/landing/shared/ui/` | Custom UI components for the landing page (button, card, input, badge, link, icon, etc.) |
-| **Dashboard Components** | `mat-*` | Angular Material | Material Design components for dashboard/admin interface |
+| Component Type              | Selector Prefix | Location                  | Usage                                                                                    |
+| --------------------------- | --------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| **Landing Page Components** | `landing-*`     | `libs/landing/shared/ui/` | Custom UI components for the landing page (button, card, input, badge, link, icon, etc.) |
+| **Dashboard Components**    | `mat-*`         | Angular Material          | Material Design components for dashboard/admin interface                                 |
 
 **Rules:**
+
 - Landing page MUST use `landing-*` components exclusively
 - Dashboard app MUST use `mat-*` (Angular Material) components exclusively
-- NEVER mix component domains (no Material in landing, no landing-* in dashboard)
+- NEVER mix component domains (no Material in landing, no landing-\* in dashboard)
 - When creating new UI components, determine the target application first
 
 ## Critical Guardrails
 
-| Rule                  | Action                                                                | Example                                                            |
-| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **Verify Nx names**   | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
-| **Read don't assume** | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
-| **Forward slashes**   | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
-| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline |
+| Rule                       | Action                                                                | Example                                                            |
+| -------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Verify Nx names**        | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
+| **Read don't assume**      | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
+| **Forward slashes**        | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
+| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline                                       |
+| **Never read .env files**  |                                                                       |                                                                    |
 
 ## Angular Code Style
 
