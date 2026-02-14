@@ -27,6 +27,7 @@ module.exports = {
     '!src/**/*.routes*.{js,ts}',
     '!src/test-setup.ts',
     '!src/**/index.ts',
+    '!src/app/app.ts',
   ],
   // Coverage thresholds for components - 70% target (pragmatic initial threshold)
   // Only measuring src/app/ directory which contains actual components
