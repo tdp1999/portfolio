@@ -438,17 +438,27 @@
             <h3 class="text-sm font-medium text-text-secondary mb-3">States</h3>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm text-text mb-1">Normal State</label>
-                <landing-input placeholder="Normal input" />
+                <label class="block text-sm text-text mb-1" for="ddl-input-normal"
+                  >Normal State</label
+                >
+                <landing-input placeholder="Normal input" id="ddl-input-normal" />
               </div>
               <div>
-                <label class="block text-sm text-text mb-1">Error State</label>
-                <landing-input placeholder="Error input" [error]="true" />
+                <label class="block text-sm text-text mb-1" for="ddl-input-error"
+                  >Error State</label
+                >
+                <landing-input placeholder="Error input" [error]="true" id="ddl-input-error" />
                 <p class="text-xs text-error mt-1">This field is required</p>
               </div>
               <div>
-                <label class="block text-sm text-text mb-1">Disabled State</label>
-                <landing-input placeholder="Disabled input" [disabled]="true" />
+                <label class="block text-sm text-text mb-1" for="ddl-input-disabled"
+                  >Disabled State</label
+                >
+                <landing-input
+                  placeholder="Disabled input"
+                  [disabled]="true"
+                  id="ddl-input-disabled"
+                />
               </div>
             </div>
           </div>
