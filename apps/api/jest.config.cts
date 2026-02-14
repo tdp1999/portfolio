@@ -7,6 +7,12 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api',
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '\\.module\\.ts$',
+    'index\\.ts$',
+    '/shared/cqrs/',
+  ],
   // Coverage thresholds for API endpoints - 90%+ target
   coverageThreshold: {
     global: {
