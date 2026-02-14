@@ -111,6 +111,10 @@
   - Created landing shared libs: data-access, ui, util
   - All 66 tests passing
 
+## Standalone Tasks
+
+- [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
+
 ## Up Next
 
 **Next Task:** **043-setup-prisma-supabase** - Setup Prisma and Supabase connection (Database Architecture Sprint 1)
@@ -124,7 +128,8 @@
 | Pending (DB Foundation)  | 6      |
 | Pending (DB User Module) | 8      |
 | Pending (DB Tag Module)  | 8      |
-| **Total Created**        | **65** |
+| Pending (Standalone)     | 1      |
+| **Total Created**        | **66** |
 
 ## Notes
 

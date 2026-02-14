@@ -1,6 +1,6 @@
 # Task: Setup Prisma and Supabase Connection
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Foundation for all database work. Must be completed before any entity can be cre
 
 ## Acceptance Criteria
 
-- [ ] Prisma packages installed (`prisma`, `@prisma/client`)
-- [ ] `schema.prisma` created with PostgreSQL datasource
-- [ ] `DATABASE_URL` documented in `.env.example`
-- [ ] Prisma CLI scripts added to package.json
-- [ ] `prisma generate` runs successfully
-- [ ] Connection test passes (can query database)
+- [x] Prisma packages installed (`prisma`, `@prisma/client`)
+- [x] `schema.prisma` created with PostgreSQL datasource
+- [x] `DATABASE_URL` documented in `.env.example`
+- [x] Prisma CLI scripts added to package.json
+- [x] `prisma generate` runs successfully
+- [x] Connection test passes (can query database)
 
 ## Technical Notes
 
@@ -53,3 +53,5 @@ None
 ## Complexity: S
 
 ## Progress Log
+- [2026-02-14] Started
+- [2026-02-14] Completed — all criteria met
