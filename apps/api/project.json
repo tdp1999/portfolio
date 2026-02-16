@@ -45,20 +45,14 @@
     },
     "serve": {
       "continuous": true,
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "api:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api:build:development"
-        },
-        "production": {
-          "buildTarget": "api:build:production"
-        }
+        "commands": [
+          "webpack-cli build --node-env=development --watch",
+          "node --watch-path=../../dist/apps/api ../../dist/apps/api/main.js"
+        ],
+        "cwd": "apps/api",
+        "parallel": true
       }
     },
     "test": {
