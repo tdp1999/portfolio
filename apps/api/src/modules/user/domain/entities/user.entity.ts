@@ -104,6 +104,15 @@ export class User {
     });
   }
 
+  updateProfile(data: { name?: string; email?: string }): User {
+    return new User({
+      ...this.props,
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.email !== undefined && { email: data.email }),
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
   clearPasswordResetToken(): User {
     return new User({
       ...this.props,
