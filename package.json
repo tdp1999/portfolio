@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nx serve landing",
     "dev:landing": "nx serve landing",
-    "dev:api": "nx serve api",
+    "dev:api": "nx serve api --no-tui",
     "dev": "nx run-many -t serve --projects=landing,api --parallel=2",
     "build:landing": "nx build landing",
     "build:api": "nx build api",
@@ -116,6 +116,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/cqrs": "^11.0.3",
     "@nestjs/platform-express": "^11.0.0",
+    "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "axios": "^1.6.0",
     "dotenv": "^17.3.1",
@@ -124,6 +125,7 @@
     "postcss": "^8.5.6",
     "reflect-metadata": "^0.1.14",
     "rxjs": "~7.8.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
   }
 }
