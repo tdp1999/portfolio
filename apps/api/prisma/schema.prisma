@@ -77,3 +77,19 @@ enum SyncStatus {
   PENDING
   FAILED
 }
+
+model User {
+  id                     String    @id @db.Uuid
+  email                  String    @unique
+  passwordHash           String
+  name                   String
+  lastLoginAt            DateTime?
+  refreshToken           String?
+  refreshTokenExpiresAt  DateTime?
+  passwordResetToken     String?
+  passwordResetExpiresAt DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@map("users")
+}
