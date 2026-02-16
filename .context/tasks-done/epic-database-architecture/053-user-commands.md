@@ -1,6 +1,6 @@
 # Task: User Module - Commands + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 

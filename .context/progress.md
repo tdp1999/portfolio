@@ -44,18 +44,18 @@
 
 **Milestone:** Can connect to DB, generate types, CQRS bus ready
 
-#### Sprint 2: User Module - Complete (8 tasks)
+#### Sprint 2: User Module (8 tasks) - COMPLETE
 
-- [ ] 049-user-prisma-schema - User Prisma schema + migration (S)
-- [ ] 050-user-domain-entity - User domain entity + tests (M)
-- [ ] 051-user-repository - User repository + mapper (M)
-- [ ] 052-user-dtos - User Zod DTOs (S)
-- [ ] 053-user-commands - User commands + handlers (M)
-- [ ] 054-user-queries - User queries + handlers (S)
-- [ ] 055-user-controller - User REST controller (M)
-- [ ] 056-user-module-wiring - User module wiring + verify (S)
+- [x] 049-user-prisma-schema - User Prisma schema + migration (S) ✓
+- [x] 050-user-domain-entity - User domain entity + tests (M) ✓
+- [x] 051-user-repository - User repository + mapper (M) ✓
+- [x] 052-user-dtos - User Zod DTOs (S) ✓
+- [x] 053-user-commands - User commands + handlers (M) ✓
+- [x] 054-user-queries - User queries + handlers (S) ✓
+- [x] 055-user-controller - User REST controller (M) ✓
+- [x] 056-user-module-wiring - User module wiring + verify (S) ✓
 
-**Milestone:** First complete module with full vertical slice
+**Milestone:** First complete module with full vertical slice ✓
 
 #### Sprint 3: Tag Module - Complete (8 tasks)
 
@@ -114,22 +114,22 @@
 ## Standalone Tasks
 
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
+- [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
 ## Up Next
 
-**Next Task:** **049-user-prisma-schema** - User Prisma schema + migration (Database Architecture Sprint 2)
+**Next Task:** **057-tag-prisma-schema** - Tag Prisma schema (Database Architecture Sprint 3)
 
 ## Statistics
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 49     |
+| Done (archived)          | 58     |
 | In Progress              | 0      |
-| Pending (DB Foundation)  | 0      |
-| Pending (DB User Module) | 8      |
+| Pending (DB User Module) | 0      |
 | Pending (DB Tag Module)  | 8      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **66** |
+| **Total Created**        | **67** |
 
 ## Notes
 

@@ -29,6 +29,12 @@ pnpm-debug.log*
 # Build outputs
 coverage
 
+# Compiled TypeScript in source directories
+libs/**/src/**/*.js
+libs/**/src/**/*.js.map
+apps/**/src/**/*.js
+apps/**/src/**/*.js.map
+
 .angular
 
 # Test artifacts

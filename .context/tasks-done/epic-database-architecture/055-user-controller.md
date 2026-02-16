@@ -1,6 +1,6 @@
 # Task: User Module - Controller
 
-## Status: pending
+## Status: done
 
 ## Goal
 

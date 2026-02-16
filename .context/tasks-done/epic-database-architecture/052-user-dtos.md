@@ -1,6 +1,6 @@
 # Task: User Module - Zod DTOs
 
-## Status: pending
+## Status: done
 
 ## Goal
 

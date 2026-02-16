@@ -11,6 +11,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 - **Angular:** 21.1.0 (Signals, SSR, standalone) | **NestJS:** 11.0.0 | **Nx:** 22.4.4
 - **Package Manager:** pnpm | **Node:** 20+ LTS
+- **Zod:** v4 — Use latest Zod v4 syntax (e.g., `z.email()` not `z.string().email()`)
 
 ## References
 
