@@ -1,6 +1,6 @@
 # Task: User Module - Domain Entity
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,13 +12,13 @@ Domain entity encapsulates User business rules.
 
 ## Acceptance Criteria
 
-- [ ] `User` entity class with private constructor
-- [ ] `create()` static factory for new users
-- [ ] `load()` static factory for loading from DB
-- [ ] `updateLastLogin()` method
-- [ ] `setRefreshToken()` / `clearRefreshToken()` methods
-- [ ] `setPasswordResetToken()` / `clearPasswordResetToken()` methods
-- [ ] Unit tests for all methods
+- [x] `User` entity class with private constructor
+- [x] `create()` static factory for new users
+- [x] `load()` static factory for loading from DB
+- [x] `updateLastLogin()` method
+- [x] `setRefreshToken()` / `clearRefreshToken()` methods
+- [x] `setPasswordResetToken()` / `clearPasswordResetToken()` methods
+- [x] Unit tests for all methods
 
 ## Technical Notes
 
@@ -49,3 +49,5 @@ export class User {
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-16] Started
+- [2026-02-16] All criteria complete, 7 tests passing

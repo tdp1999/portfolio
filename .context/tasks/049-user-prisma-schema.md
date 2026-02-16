@@ -1,6 +1,6 @@
 # Task: User Module - Prisma Schema
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,9 +12,9 @@ User is required for audit fields (createdById, updatedById) on all other entiti
 
 ## Acceptance Criteria
 
-- [ ] User model in schema.prisma with all 10 fields
-- [ ] Migration created and applied
-- [ ] Prisma types generated
+- [x] User model in schema.prisma with all 10 fields
+- [x] Migration created and applied
+- [x] Prisma types generated
 
 ## Technical Notes
 
@@ -43,3 +43,7 @@ Fields:
 ## Complexity: S
 
 ## Progress Log
+- [2026-02-14] Started
+- [2026-02-14] Added User model with 11 fields (id, email, passwordHash, name, lastLoginAt, refreshToken, refreshTokenExpiresAt, passwordResetToken, passwordResetExpiresAt, createdAt, updatedAt)
+- [2026-02-14] Migration 20260214142456_add_user_model applied
+- [2026-02-14] Prisma client generated. Done.

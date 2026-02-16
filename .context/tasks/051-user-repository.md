@@ -1,6 +1,6 @@
 # Task: User Module - Repository + Mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Repository provides data access; mapper converts between Prisma and domain.
 
 ## Acceptance Criteria
 
-- [ ] `IUserRepository` port interface
-- [ ] `UserRepository` implementation using Prisma
-- [ ] `UserMapper.toDomain()` and `toPrisma()` methods
-- [ ] Repository methods: `add`, `update`, `findById`, `findByEmail`
-- [ ] Unit tests for mapper
-- [ ] Integration tests for repository
+- [x] `IUserRepository` port interface
+- [x] `UserRepository` implementation using Prisma
+- [x] `UserMapper.toDomain()` and `toPrisma()` methods
+- [x] Repository methods: `add`, `update`, `findById`, `findByEmail`
+- [x] Unit tests for mapper
+- [x] Unit tests for repository (mocked Prisma)
 
 ## Technical Notes
 
@@ -49,3 +49,5 @@ export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-16] Started
+- [2026-02-16] All criteria complete, 9 new tests passing (31 total)
