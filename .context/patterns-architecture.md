@@ -16,7 +16,7 @@ Monorepo structure with two applications sharing common packages:
 
 - **Style:** Layered architecture with CQRS
 - **Layers:**
-  - Controllers (thin transport adapters — no validation, no business logic)
+  - Controllers (thin transport adapters — no validation, no business logic, no error throwing)
   - Application (Commands/Queries — own validation via Zod `safeParse`, orchestrate domain)
   - Domain (entities, value objects, domain services)
   - Infrastructure (repositories, persistence, external services)
@@ -42,8 +42,67 @@ async create(@Body() body: unknown): Promise<{ id: string }> {
 // Command handler — owns validation
 async execute(command: CreateCommand): Promise<string> {
   const { success, data, error } = CreateSchema.safeParse(command.dto);
-  if (!success) throw new BadRequestException(error.issues);
+  if (!success) throw BadRequestError(error, { layer: ErrorLayer.APPLICATION, remarks: 'Creation failed' });
   // ... proceed with validated data
+}
+```
+
+#### Controller Rule — No Error Throwing
+
+**Controllers must NEVER throw errors.** Controllers are thin transport adapters that only:
+
+1. Extract input from the request (`@Body()`, `@Param()`, `@Query()`)
+2. Dispatch to command/query bus
+3. Return the result
+
+All error throwing (validation, not-found, authorization) belongs in **command/query handlers** (Application Layer). This follows the hexagonal architecture principle: controllers are an outer adapter and must not contain business logic or error decisions.
+
+```ts
+// ❌ BAD — controller throws error
+@Get(':id')
+async getById(@Param('id') id: string) {
+  const user = await this.queryBus.execute(new GetUserByIdQuery(id));
+  if (!user) throw NotFoundError('User not found');  // ← logic in controller
+  return user;
+}
+
+// ✅ GOOD — handler owns the error
+@Get(':id')
+async getById(@Param('id') id: string) {
+  return await this.queryBus.execute(new GetUserByIdQuery(id));  // handler throws if not found
+}
+```
+
+#### Error Handling
+
+**All errors use a centralized error system from `@portfolio/shared/errors`.** Never throw raw NestJS exceptions or plain `Error`.
+
+**Structure:**
+- `DomainError` — Application/domain-level errors (validation, not-found, unauthorized). Private constructor, factory functions, serializable.
+- `InfrastructureError` — Infra-level errors (DB failures, external services). Includes `cause` chain.
+- `ErrorLayer` enum — Tags error origin: `APPLICATION`, `DOMAIN`, `INFRASTRUCTURE`, `CORE`.
+- Error code enums per module — Typed enums (e.g., `UserErrorCode.NOT_FOUND`), not free-form strings.
+- Zod error formatter — Flattens Zod v4 errors into `{ fieldName: string[] }` shape, integrated into `BadRequestError`.
+- `DomainExceptionFilter` — Global filter in `apps/api` that catches `DomainError`/`InfrastructureError` and serializes the response.
+
+**Factory functions:** `BadRequestError()`, `NotFoundError()`, `UnauthorizedError()`, `ForbiddenError()`, `InternalServerError()`.
+
+**Usage in handlers:**
+```ts
+import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+
+if (!success) throw BadRequestError(error, { layer: ErrorLayer.APPLICATION, remarks: 'User creation failed' });
+```
+
+**Usage in value objects (throw directly, no handler try/catch):**
+```ts
+import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+
+static from(id: string): string {
+  if (!validate(id)) {
+    throw BadRequestError(`Invalid UUID: ${id}`, { layer: ErrorLayer.DOMAIN });
+  }
+  return id;
 }
 ```
 
@@ -146,6 +205,7 @@ Use `/ng-lib` skill to generate new libraries with correct tags.
 | -------------------------- | --------------------------------------- | ----------------------------------------- |
 | shared/types               | `@portfolio/shared/types`               | TypeScript interfaces shared across FE+BE |
 | shared/utils               | `@portfolio/shared/utils`               | Utilities shared across FE+BE             |
+| shared/errors              | `@portfolio/shared/errors`              | Centralized error classes and factories   |
 | shared/testing             | `@portfolio/shared/testing`             | Test factories and mocks                  |
 | landing/shared/data-access | `@portfolio/landing/shared/data-access` | API services, state management            |
 | landing/shared/ui          | `@portfolio/landing/shared/ui`          | Landing-specific UI components            |

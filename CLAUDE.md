@@ -71,6 +71,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 | **Forward slashes**        | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
 | **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline                                       |
 | **Never read .env files**  |                                                                       |                                                                    |
+| **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
 
 ## Angular Code Style
 
