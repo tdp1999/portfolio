@@ -21,7 +21,8 @@
       "@portfolio/shared/utils": ["libs/shared/utils/src/index.ts"],
       "@portfolio/landing/shared/ui": ["libs/landing/shared/ui/src/index.ts"],
       "@portfolio/landing/shared/util": ["libs/landing/shared/util/src/index.ts"],
-      "@portfolio/landing/feature-home": ["libs/landing/feature-home/src/index.ts"]
+      "@portfolio/landing/feature-home": ["libs/landing/feature-home/src/index.ts"],
+      "@portfolio/shared/errors": ["libs/shared/errors/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
