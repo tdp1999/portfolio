@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { NotFoundException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { CreateUserCommand } from '../application/commands';
 import { GetUserByIdQuery } from '../application/queries';
@@ -37,7 +36,7 @@ describe('UserController', () => {
 
       const dto = {
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Strong#Pass1',
         name: 'Test User',
       };
       const result = await controller.create(dto);
@@ -60,12 +59,6 @@ describe('UserController', () => {
 
       expect(result).toEqual(mockUser);
       expect(queryBus.execute).toHaveBeenCalledWith(expect.any(GetUserByIdQuery));
-    });
-
-    it('should throw NotFoundException when user not found', async () => {
-      queryBus.execute.mockResolvedValue(null);
-
-      await expect(controller.getById('nonexistent')).rejects.toThrow(NotFoundException);
     });
   });
 

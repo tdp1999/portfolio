@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateUserCommand, UpdateUserCommand } from '../application/commands';
 import { GetUserByIdQuery } from '../application/queries';
@@ -29,9 +19,7 @@ export class UserController {
 
   @Get(':id')
   async getById(@Param('id') id: string) {
-    const user = await this.queryBus.execute(new GetUserByIdQuery(id));
-    if (!user) throw new NotFoundException('User not found');
-    return user;
+    return await this.queryBus.execute(new GetUserByIdQuery(id));
   }
 
   @Patch(':id')
