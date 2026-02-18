@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { CreateUserCommand, CreateUserHandler } from './create-user.command';
 import { IUserRepository } from '../ports/user.repository.port';
 
@@ -16,7 +17,11 @@ describe('CreateUserHandler', () => {
   });
 
   it('should create a user and return the id', async () => {
-    const command = new CreateUserCommand('test@example.com', 'hashed-password', 'John');
+    const command = new CreateUserCommand({
+      email: 'test@example.com',
+      password: 'hashed-password',
+      name: 'John',
+    });
 
     const result = await handler.execute(command);
 
@@ -28,8 +33,14 @@ describe('CreateUserHandler', () => {
     expect(user.passwordHash).toBe('hashed-password');
   });
 
+  it('should throw BadRequestException for invalid dto', async () => {
+    const command = new CreateUserCommand({ email: 'not-an-email' });
+
+    await expect(handler.execute(command)).rejects.toThrow(BadRequestException);
+  });
+
   it('should set timestamp on command', () => {
-    const command = new CreateUserCommand('a@b.com', 'hash', 'Name');
+    const command = new CreateUserCommand({});
     expect(command.timestamp).toBeInstanceOf(Date);
   });
 });

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateUserCommand, UpdateUserHandler } from './update-user.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { User } from '../../domain/entities/user.entity';
@@ -32,6 +32,12 @@ describe('UpdateUserHandler', () => {
     expect(repo.update).toHaveBeenCalledTimes(1);
     const updated = repo.update.mock.calls[0][1];
     expect(updated.name).toBe('New Name');
+  });
+
+  it('should throw BadRequestException for invalid dto', async () => {
+    const command = new UpdateUserCommand(mockUser.id, { name: 123 });
+
+    await expect(handler.execute(command)).rejects.toThrow(BadRequestException);
   });
 
   it('should throw NotFoundException when user not found', async () => {

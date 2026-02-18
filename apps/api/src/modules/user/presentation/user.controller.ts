@@ -8,19 +8,10 @@ import {
   Param,
   Patch,
   Post,
-  UsePipes,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../application/commands';
-import { UpdateUserCommand } from '../application/commands';
+import { CreateUserCommand, UpdateUserCommand } from '../application/commands';
 import { GetUserByIdQuery } from '../application/queries';
-import {
-  CreateUserDto,
-  CreateUserSchema,
-  UpdateUserDto,
-  UpdateUserSchema,
-} from '../application/user.dto';
-import { ZodValidationPipe } from '../../../shared/pipes/zod-validation.pipe';
 
 @Controller('users')
 export class UserController {
@@ -31,12 +22,8 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Body(new ZodValidationPipe(CreateUserSchema)) dto: CreateUserDto
-  ): Promise<{ id: string }> {
-    const id = await this.commandBus.execute(
-      new CreateUserCommand(dto.email, dto.password, dto.name)
-    );
+  async create(@Body() body: unknown): Promise<{ id: string }> {
+    const id = await this.commandBus.execute(new CreateUserCommand(body));
     return { id };
   }
 
@@ -48,11 +35,8 @@ export class UserController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body(new ZodValidationPipe(UpdateUserSchema)) dto: UpdateUserDto
-  ): Promise<{ success: boolean }> {
-    await this.commandBus.execute(new UpdateUserCommand(id, dto));
+  async update(@Param('id') id: string, @Body() body: unknown): Promise<{ success: boolean }> {
+    await this.commandBus.execute(new UpdateUserCommand(id, body));
     return { success: true };
   }
 }
