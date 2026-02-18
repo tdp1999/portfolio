@@ -1,3 +1,5 @@
+import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+
 export class TemporalValue {
   static now(): Date {
     return new Date();
@@ -6,7 +8,7 @@ export class TemporalValue {
   static fromISO(iso: string): Date {
     const date = new Date(iso);
     if (isNaN(date.getTime())) {
-      throw new Error(`Invalid ISO date: ${iso}`);
+      throw BadRequestError(`Invalid ISO date: ${iso}`, { layer: ErrorLayer.DOMAIN });
     }
     return date;
   }
