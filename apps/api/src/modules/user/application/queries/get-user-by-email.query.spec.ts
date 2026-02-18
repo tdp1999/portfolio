@@ -1,3 +1,4 @@
+import { DomainError } from '@portfolio/shared/errors';
 import { GetUserByEmailQuery, GetUserByEmailHandler } from './get-user-by-email.query';
 import { IUserRepository } from '../ports/user.repository.port';
 import { User } from '../../domain/entities/user.entity';
@@ -22,19 +23,33 @@ describe('GetUserByEmailHandler', () => {
     handler = new GetUserByEmailHandler(repo);
   });
 
-  it('should return user by email', async () => {
+  it('should return public props only', async () => {
     const query = new GetUserByEmailQuery('test@example.com');
     const result = await handler.execute(query);
 
-    expect(result).toBe(mockUser);
+    expect(result).toEqual({
+      id: mockUser.id,
+      email: 'test@example.com',
+      name: 'Test',
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    });
+    expect(result).not.toHaveProperty('passwordHash');
+    expect(result).not.toHaveProperty('refreshToken');
     expect(repo.findByEmail).toHaveBeenCalledWith('test@example.com');
   });
 
-  it('should return null when user not found', async () => {
+  it('should throw DomainError when user not found', async () => {
     repo.findByEmail.mockResolvedValue(null);
     const query = new GetUserByEmailQuery('missing@example.com');
-    const result = await handler.execute(query);
 
-    expect(result).toBeNull();
+    await expect(handler.execute(query)).rejects.toBeInstanceOf(DomainError);
+  });
+
+  it('should throw DomainError for invalid email format', async () => {
+    const query = new GetUserByEmailQuery('not-an-email');
+
+    await expect(handler.execute(query)).rejects.toBeInstanceOf(DomainError);
+    expect(repo.findByEmail).not.toHaveBeenCalled();
   });
 });

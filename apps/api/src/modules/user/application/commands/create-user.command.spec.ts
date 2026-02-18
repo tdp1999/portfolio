@@ -1,6 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
+import { DomainError } from '@portfolio/shared/errors';
 import { CreateUserCommand, CreateUserHandler } from './create-user.command';
 import { IUserRepository } from '../ports/user.repository.port';
+import { User } from '../../domain/entities/user.entity';
 
 describe('CreateUserHandler', () => {
   let handler: CreateUserHandler;
@@ -19,7 +20,7 @@ describe('CreateUserHandler', () => {
   it('should create a user and return the id', async () => {
     const command = new CreateUserCommand({
       email: 'test@example.com',
-      password: 'hashed-password',
+      password: 'Strong#Pass1',
       name: 'John',
     });
 
@@ -30,13 +31,44 @@ describe('CreateUserHandler', () => {
     const user = repo.add.mock.calls[0][0];
     expect(user.email).toBe('test@example.com');
     expect(user.name).toBe('John');
-    expect(user.passwordHash).toBe('hashed-password');
   });
 
-  it('should throw BadRequestException for invalid dto', async () => {
+  it('should hash the password before storing', async () => {
+    const command = new CreateUserCommand({
+      email: 'test@example.com',
+      password: 'Strong#Pass1',
+      name: 'John',
+    });
+
+    await handler.execute(command);
+
+    const user = repo.add.mock.calls[0][0];
+    expect(user.passwordHash).not.toBe('Strong#Pass1');
+    expect(user.passwordHash).toMatch(/^\$2[aby]?\$/);
+  });
+
+  it('should throw DomainError for invalid dto', async () => {
     const command = new CreateUserCommand({ email: 'not-an-email' });
 
-    await expect(handler.execute(command)).rejects.toThrow(BadRequestException);
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
+  });
+
+  it('should throw DomainError when email is already taken', async () => {
+    const existingUser = User.create({
+      email: 'test@example.com',
+      passwordHash: 'hash',
+      name: 'Existing',
+    });
+    repo.findByEmail.mockResolvedValue(existingUser);
+
+    const command = new CreateUserCommand({
+      email: 'test@example.com',
+      password: 'Strong#Pass1',
+      name: 'John',
+    });
+
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
+    expect(repo.add).not.toHaveBeenCalled();
   });
 
   it('should set timestamp on command', () => {

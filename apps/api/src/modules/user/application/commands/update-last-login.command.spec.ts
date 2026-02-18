@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { DomainError } from '@portfolio/shared/errors';
 import { UpdateLastLoginCommand, UpdateLastLoginHandler } from './update-last-login.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { User } from '../../domain/entities/user.entity';
@@ -34,10 +34,17 @@ describe('UpdateLastLoginHandler', () => {
     expect(updated.lastLoginAt).toBeInstanceOf(Date);
   });
 
-  it('should throw NotFoundException when user not found', async () => {
-    repo.findById.mockResolvedValue(null);
-    const command = new UpdateLastLoginCommand('missing-id');
+  it('should throw DomainError for invalid UUID', async () => {
+    const command = new UpdateLastLoginCommand('not-a-uuid');
 
-    await expect(handler.execute(command)).rejects.toThrow(NotFoundException);
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
+    expect(repo.findById).not.toHaveBeenCalled();
+  });
+
+  it('should throw DomainError when user not found', async () => {
+    repo.findById.mockResolvedValue(null);
+    const command = new UpdateLastLoginCommand(mockUser.id);
+
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
   });
 });

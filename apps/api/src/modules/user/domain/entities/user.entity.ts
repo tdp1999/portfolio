@@ -125,4 +125,14 @@ export class User {
   toProps(): IUserProps {
     return { ...this.props };
   }
+
+  toPublicProps() {
+    return {
+      id: this.props.id,
+      email: this.props.email,
+      name: this.props.name,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
+    };
+  }
 }

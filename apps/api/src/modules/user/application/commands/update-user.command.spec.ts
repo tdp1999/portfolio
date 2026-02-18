@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { DomainError } from '@portfolio/shared/errors';
 import { UpdateUserCommand, UpdateUserHandler } from './update-user.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { User } from '../../domain/entities/user.entity';
@@ -34,16 +34,23 @@ describe('UpdateUserHandler', () => {
     expect(updated.name).toBe('New Name');
   });
 
-  it('should throw BadRequestException for invalid dto', async () => {
+  it('should throw DomainError for invalid dto', async () => {
     const command = new UpdateUserCommand(mockUser.id, { name: 123 });
 
-    await expect(handler.execute(command)).rejects.toThrow(BadRequestException);
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
   });
 
-  it('should throw NotFoundException when user not found', async () => {
-    repo.findById.mockResolvedValue(null);
-    const command = new UpdateUserCommand('missing-id', { name: 'X' });
+  it('should throw DomainError for invalid UUID', async () => {
+    const command = new UpdateUserCommand('not-a-uuid', { name: 'X' });
 
-    await expect(handler.execute(command)).rejects.toThrow(NotFoundException);
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
+    expect(repo.findById).not.toHaveBeenCalled();
+  });
+
+  it('should throw DomainError when user not found', async () => {
+    repo.findById.mockResolvedValue(null);
+    const command = new UpdateUserCommand(mockUser.id, { name: 'X' });
+
+    await expect(handler.execute(command)).rejects.toBeInstanceOf(DomainError);
   });
 });

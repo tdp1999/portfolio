@@ -1,10 +1,12 @@
 import { CreateUserSchema, UpdateUserSchema, LoginSchema } from './user.dto';
 
+const VALID_PASSWORD = 'Strong#Pass1';
+
 describe('CreateUserSchema', () => {
   it('should accept valid data', () => {
     const result = CreateUserSchema.safeParse({
       email: 'test@example.com',
-      password: 'password123',
+      password: VALID_PASSWORD,
       name: 'John',
     });
     expect(result.success).toBe(true);
@@ -13,7 +15,7 @@ describe('CreateUserSchema', () => {
   it('should reject invalid email', () => {
     const result = CreateUserSchema.safeParse({
       email: 'not-an-email',
-      password: 'password123',
+      password: VALID_PASSWORD,
       name: 'John',
     });
     expect(result.success).toBe(false);
@@ -22,7 +24,43 @@ describe('CreateUserSchema', () => {
   it('should reject short password', () => {
     const result = CreateUserSchema.safeParse({
       email: 'test@example.com',
-      password: 'short',
+      password: 'Ab1#',
+      name: 'John',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject password without uppercase', () => {
+    const result = CreateUserSchema.safeParse({
+      email: 'test@example.com',
+      password: 'lowercase#1',
+      name: 'John',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject password without lowercase', () => {
+    const result = CreateUserSchema.safeParse({
+      email: 'test@example.com',
+      password: 'UPPERCASE#1',
+      name: 'John',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject password without number', () => {
+    const result = CreateUserSchema.safeParse({
+      email: 'test@example.com',
+      password: 'NoNumber#here',
+      name: 'John',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject password without special character', () => {
+    const result = CreateUserSchema.safeParse({
+      email: 'test@example.com',
+      password: 'NoSpecial1',
       name: 'John',
     });
     expect(result.success).toBe(false);
@@ -31,7 +69,7 @@ describe('CreateUserSchema', () => {
   it('should reject empty name', () => {
     const result = CreateUserSchema.safeParse({
       email: 'test@example.com',
-      password: 'password123',
+      password: VALID_PASSWORD,
       name: '',
     });
     expect(result.success).toBe(false);
@@ -40,7 +78,7 @@ describe('CreateUserSchema', () => {
   it('should reject name exceeding 100 characters', () => {
     const result = CreateUserSchema.safeParse({
       email: 'test@example.com',
-      password: 'password123',
+      password: VALID_PASSWORD,
       name: 'a'.repeat(101),
     });
     expect(result.success).toBe(false);

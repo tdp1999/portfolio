@@ -1,0 +1,5 @@
+export enum UserErrorCode {
+  NOT_FOUND = 'USER_NOT_FOUND',
+  INVALID_INPUT = 'USER_INVALID_INPUT',
+  EMAIL_TAKEN = 'USER_EMAIL_TAKEN',
+}
