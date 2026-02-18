@@ -14,13 +14,38 @@ Monorepo structure with two applications sharing common packages:
 
 ### Backend
 
-- **Style:** Layered architecture
+- **Style:** Layered architecture with CQRS
 - **Layers:**
-  - Controllers (API routes, request handling)
-  - Services (business logic)
-  - Repositories (data access)
-- **Pattern:** Dependency injection, repository pattern
+  - Controllers (thin transport adapters — no validation, no business logic)
+  - Application (Commands/Queries — own validation via Zod `safeParse`, orchestrate domain)
+  - Domain (entities, value objects, domain services)
+  - Infrastructure (repositories, persistence, external services)
+- **Pattern:** Dependency injection, repository pattern, CQRS
 - **Domain Approach:** CRUD with structured data models
+
+#### Validation Rule
+
+**Validation belongs in Command/Query Handlers (Application Layer), never in Controllers.**
+
+- Controllers accept raw `unknown` DTOs and pass them to commands/queries
+- Command/query handlers validate input via Zod `safeParse` before processing
+- This ensures commands are self-validating regardless of transport (HTTP, events, CLI)
+- Do NOT use NestJS `ValidationPipe` or `ZodValidationPipe` in controllers
+
+```ts
+// Controller — thin, passes raw input
+@Post()
+async create(@Body() body: unknown): Promise<{ id: string }> {
+  return await this.commandBus.execute(new CreateCommand(body));
+}
+
+// Command handler — owns validation
+async execute(command: CreateCommand): Promise<string> {
+  const { success, data, error } = CreateSchema.safeParse(command.dto);
+  if (!success) throw new BadRequestException(error.issues);
+  // ... proceed with validated data
+}
+```
 
 ### Frontend (Both Apps)
 
