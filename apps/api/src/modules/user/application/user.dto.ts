@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import { nonEmptyPartial } from '@portfolio/shared/utils';
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 const PASSWORD_ERROR =
@@ -6,16 +7,16 @@ const PASSWORD_ERROR =
 
 export const PasswordSchema = z.string().regex(PASSWORD_REGEX, PASSWORD_ERROR);
 
-export const CreateUserSchema = z.object({
+const UserFieldsSchema = z.object({
   email: z.email(),
-  password: PasswordSchema,
   name: z.string().min(1).max(100),
 });
 
-export const UpdateUserSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  email: z.email().optional(),
+export const CreateUserSchema = UserFieldsSchema.extend({
+  password: PasswordSchema,
 });
+
+export const UpdateUserSchema = nonEmptyPartial(UserFieldsSchema);
 
 export const LoginSchema = z.object({
   email: z.email(),
