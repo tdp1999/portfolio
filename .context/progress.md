@@ -57,7 +57,7 @@
 
 **Milestone:** First complete module with full vertical slice ✓
 
-#### Sprint 3: Tag Module - Complete (8 tasks)
+#### Sprint 3: Tag Module (8 tasks)
 
 - [ ] 057-tag-prisma-schema - Tag Prisma schema + migration (S)
 - [ ] 058-tag-domain-entity - Tag domain entity + tests (S)
