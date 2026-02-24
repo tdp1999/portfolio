@@ -48,18 +48,20 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ### Component Domain Separation
 
-**CRITICAL: Components are strictly separated by application domain:**
+**CRITICAL: Components are separated by application domain:**
 
 | Component Type              | Selector Prefix | Location                  | Usage                                                                                    |
 | --------------------------- | --------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
 | **Landing Page Components** | `landing-*`     | `libs/landing/shared/ui/` | Custom UI components for the landing page (button, card, input, badge, link, icon, etc.) |
-| **Dashboard Components**    | `mat-*`         | Angular Material          | Material Design components for dashboard/admin interface                                 |
+| **Dashboard/Internal Apps** | —               | Angular Material + custom | Material components are preferred, but custom `ui-*` shared components are also used     |
+| **Shared UI Components**    | `ui-*`          | `libs/shared/ui/`         | Cross-app reusable components (sidebar, shared icons, etc.)                              |
 
 **Rules:**
 
-- Landing page MUST use `landing-*` components exclusively
-- Dashboard app MUST use `mat-*` (Angular Material) components exclusively
-- NEVER mix component domains (no Material in landing, no landing-\* in dashboard)
+- Landing page MUST use `landing-*` components exclusively (custom, visually distinctive)
+- Dashboard/internal apps prioritize Angular Material but may also use `ui-*` shared components
+- NEVER use `landing-*` components in dashboard, or Material in landing
+- Shared `ui-*` components are available to any non-landing app
 - When creating new UI components, determine the target application first
 
 ## Critical Guardrails
