@@ -1,10 +1,12 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
+
+import { SidebarState } from './sidebar-state.service';
 
 @Component({
   selector: 'ui-sidebar-group',
   standalone: true,
   template: `
-    @if (label()) {
+    @if (label() && !state.isCompact()) {
       <button
         type="button"
         class="flex w-full items-center px-2 mb-1 text-xs font-semibold uppercase tracking-wider text-text-muted rounded-md select-none bg-transparent border-none"
@@ -25,6 +27,8 @@ import { Component, input, signal } from '@angular/core';
   host: { class: 'block relative w-full min-w-0' },
 })
 export class SidebarGroupComponent {
+  protected readonly state = inject(SidebarState);
+
   readonly label = input<string>('');
   readonly collapsible = input(false);
 

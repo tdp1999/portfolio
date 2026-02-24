@@ -1,4 +1,6 @@
 export { SidebarState } from './lib/sidebar-state.service';
+export { SIDEBAR_CONTEXT } from './lib/sidebar-context.token';
+export type { SidebarContext } from './lib/sidebar-context.token';
 export type { SidebarVariant } from './lib/sidebar.type';
 
 // Provider

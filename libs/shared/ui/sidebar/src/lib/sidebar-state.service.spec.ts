@@ -59,6 +59,16 @@ describe('SidebarState', () => {
     expect(service.isOpen()).toBe(true);
   });
 
+  it('should not be compact on mobile even with icon variant', () => {
+    service.setVariant('icon');
+    expect(service.isCompact()).toBe(true);
+
+    breakpointSignal.set({ name: 'mobile', mediaQuery: '', isActive: true });
+    TestBed.flushEffects();
+
+    expect(service.isCompact()).toBe(false);
+  });
+
   it('should detect mobile from breakpoint observer', () => {
     expect(service.isMobile()).toBe(false);
 

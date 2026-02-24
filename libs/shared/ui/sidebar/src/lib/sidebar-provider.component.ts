@@ -3,13 +3,14 @@ import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, fromEvent } from 'rxjs';
 
+import { SIDEBAR_CONTEXT } from './sidebar-context.token';
 import { SidebarState } from './sidebar-state.service';
 
 @Component({
   selector: 'ui-sidebar-provider',
   standalone: true,
   template: `<ng-content />`,
-  providers: [SidebarState],
+  providers: [SidebarState, { provide: SIDEBAR_CONTEXT, useExisting: SidebarState }],
   host: {
     class: 'flex h-full w-full',
   },

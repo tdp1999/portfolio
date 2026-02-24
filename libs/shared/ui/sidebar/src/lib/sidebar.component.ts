@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
-
 import { SidebarState } from './sidebar-state.service';
 import { SidebarVariant } from './sidebar.type';
 
@@ -25,7 +24,7 @@ import { SidebarVariant } from './sidebar.type';
       [class.z-40]="state.isMobile()"
       [class.h-dvh]="state.isMobile()"
       [class.shadow-xl]="state.isMobile() && state.isOpen()"
-      [style.width]="mobileWidth()"
+      [style.width]="asideWidth()"
       [style.transform]="mobileTransform()"
     >
       <div class="flex h-full flex-col overflow-hidden">
@@ -37,6 +36,8 @@ import { SidebarVariant } from './sidebar.type';
     </aside>
   `,
   host: {
+    class: 'block transition-[width] duration-200 ease-in-out',
+    '[style.width]': 'hostWidth()',
     '(document:keydown.escape)': 'onEscape()',
   },
 })
@@ -47,8 +48,14 @@ export class SidebarComponent {
   readonly expandedWidth = input('280px');
   readonly compactWidth = input('64px');
 
-  protected readonly mobileWidth = computed(() => {
+  protected readonly asideWidth = computed(() => {
     if (this.state.isMobile()) return this.expandedWidth();
+    if (!this.state.isOpen()) return '0px';
+    return this.state.isCompact() ? this.compactWidth() : this.expandedWidth();
+  });
+
+  protected readonly hostWidth = computed(() => {
+    if (this.state.isMobile()) return '0px';
     if (!this.state.isOpen()) return '0px';
     return this.state.isCompact() ? this.compactWidth() : this.expandedWidth();
   });

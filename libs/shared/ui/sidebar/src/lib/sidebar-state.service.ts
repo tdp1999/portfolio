@@ -13,7 +13,7 @@ export class SidebarState {
   readonly variant = signal<SidebarVariant>('expanded');
   readonly isMobile = computed(() => this.breakpoint().name === 'mobile');
 
-  readonly isCompact = computed(() => this.variant() === 'icon');
+  readonly isCompact = computed(() => !this.isMobile() && this.variant() === 'icon');
   readonly isOpen = computed(() => this.open());
 
   constructor() {
