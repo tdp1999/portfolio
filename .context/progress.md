@@ -130,6 +130,19 @@
 - [x] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) ✓
 - [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (in-progress)
 
+### Epic: Console Application (epic-console) - broken-down
+
+> **Approach:** Infrastructure first — scaffold, boundaries, then layouts, then routing.
+
+- [ ] 076-console-app-scaffold - Scaffold console Angular app (M)
+- [ ] 077-console-e2e-scaffold - Scaffold console E2E project (S)
+- [ ] 078-console-eslint-boundaries - Configure ESLint boundaries for console (S)
+- [ ] 079-console-shared-libs - Create console shared libraries (M)
+- [ ] 080-console-theming - Configure Tailwind and theming (S)
+- [ ] 081-console-blank-layout - Build blank layout for auth views (M)
+- [ ] 082-console-main-layout - Build main layout with sidebar (L)
+- [ ] 083-console-routing-skeleton - Configure routing skeleton (M)
+
 ## Up Next
 
 **Next Task:** **057-tag-prisma-schema** - Tag Prisma schema (Database Architecture Sprint 3)
@@ -141,8 +154,9 @@
 | Done (archived)          | 66     |
 | In Progress              | 1      |
 | Pending (DB Tag Module)  | 8      |
+| Pending (Console)        | 8      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **76** |
+| **Total Created**        | **84** |
 
 ## Notes
 
