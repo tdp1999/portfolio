@@ -2,7 +2,9 @@
 module.exports = {
   content: [
     './apps/landing/src/**/*.{html,ts}',
+    './apps/console/src/**/*.{html,ts}',
     './libs/landing/**/*.{html,ts}',
+    './libs/console/**/*.{html,ts}',
     './libs/shared/**/*.{html,ts}',
   ],
   darkMode: 'class',

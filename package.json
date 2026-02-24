@@ -7,6 +7,7 @@
     "start": "nx serve landing",
     "dev:landing": "nx serve landing",
     "dev:api": "nx serve api --no-tui",
+    "dev:console": "nx serve console --port=4300",
     "dev": "nx run-many -t serve --projects=landing,api --parallel=2",
     "build:landing": "nx build landing",
     "build:api": "nx build api",

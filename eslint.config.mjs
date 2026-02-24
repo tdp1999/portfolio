@@ -26,6 +26,11 @@ export default [
               sourceTag: 'scope:landing',
               onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
             },
+            // Console scope - can depend on shared and console
+            {
+              sourceTag: 'scope:console',
+              onlyDependOnLibsWithTags: ['scope:console', 'scope:shared'],
+            },
             // API scope - can depend on shared and api
             {
               sourceTag: 'scope:api',

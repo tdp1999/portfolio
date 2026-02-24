@@ -1,0 +1,46 @@
+/* Global styles for the console app */
+
+/* Shared design tokens */
+@use '../../../libs/landing/shared/ui/src/styles/tokens/colors.scss' as colors-tokens;
+@use '../../../libs/landing/shared/ui/src/styles/tokens/typography.scss' as typography-tokens;
+@use '../../../libs/landing/shared/ui/src/styles/themes/dark.scss' as dark-theme;
+@use '../../../libs/landing/shared/ui/src/styles/base/typography.scss' as typography-base;
+
+/* Tailwind CSS v3 directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global scrollbar styling */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-text-muted);
+  }
+}
+
+/* Font imports */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';

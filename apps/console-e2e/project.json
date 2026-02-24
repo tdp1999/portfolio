@@ -1,0 +1,31 @@
+{
+  "name": "console-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/console-e2e/src",
+  "tags": ["scope:console", "type:e2e"],
+  "implicitDependencies": ["console"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/console-e2e/playwright.config.ts"
+      }
+    },
+    "e2e-headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/console-e2e/playwright.config.ts --headed"
+      }
+    },
+    "e2e-ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/console-e2e/playwright.config.ts --ui"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

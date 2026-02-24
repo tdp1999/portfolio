@@ -1,0 +1,21 @@
+{
+  "name": "console-shared-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/console/shared/ui/src",
+  "prefix": "console",
+  "projectType": "library",
+  "tags": ["scope:console", "type:shared-ui"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/console/shared/ui/jest.config.cts",
+        "tsConfig": "libs/console/shared/ui/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

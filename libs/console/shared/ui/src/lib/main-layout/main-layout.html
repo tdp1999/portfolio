@@ -1,0 +1,158 @@
+<ui-sidebar-provider class="h-dvh bg-background">
+  <ui-sidebar>
+    <!-- Header: Console branding -->
+    <ui-sidebar-header>
+      <div
+        data-sidebar-icon
+        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-text-on-primary text-sm font-bold"
+      >
+        C
+      </div>
+      <div class="flex items-center gap-2 px-1 w-full">
+        <div class="flex min-w-0 flex-col">
+          <span class="truncate text-sm font-semibold text-text">Console</span>
+          <span class="truncate text-xs text-text-muted">Portfolio Management</span>
+        </div>
+      </div>
+    </ui-sidebar-header>
+
+    <ui-sidebar-content>
+      <!-- Main navigation -->
+      <ui-sidebar-group label="Navigation">
+        <ul uiSidebarMenu>
+          <li uiSidebarMenuItem>
+            <button ui-sidebar-menu-button tooltip="Dashboard">
+              <svg
+                data-sidebar-icon
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="2" width="5" height="5" rx="1" />
+                <rect x="9" y="2" width="5" height="5" rx="1" />
+                <rect x="2" y="9" width="5" height="5" rx="1" />
+                <rect x="9" y="9" width="5" height="5" rx="1" />
+              </svg>
+              <span>Dashboard</span>
+            </button>
+          </li>
+
+          <li uiSidebarMenuItem>
+            <button ui-sidebar-menu-button tooltip="Projects">
+              <svg
+                data-sidebar-icon
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 4h12M2 8h12M2 12h12" />
+              </svg>
+              <span>Projects</span>
+            </button>
+          </li>
+
+          <li uiSidebarMenuItem>
+            <button ui-sidebar-menu-button tooltip="Content">
+              <svg
+                data-sidebar-icon
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 2h10v12H3zM5 5h6M5 8h6M5 11h3" />
+              </svg>
+              <span>Content</span>
+            </button>
+          </li>
+
+          <li uiSidebarMenuItem>
+            <button ui-sidebar-menu-button tooltip="Analytics">
+              <svg
+                data-sidebar-icon
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 12l4-6 3 4 2-2 3 4" />
+                <rect x="2" y="2" width="12" height="12" rx="1" />
+              </svg>
+              <span>Analytics</span>
+            </button>
+          </li>
+        </ul>
+      </ui-sidebar-group>
+
+      <div uiSidebarSeparator></div>
+
+      <!-- Settings group -->
+      <ui-sidebar-group label="System" [collapsible]="true">
+        <ul uiSidebarMenu>
+          <li uiSidebarMenuItem>
+            <button ui-sidebar-menu-button tooltip="Settings">
+              <svg
+                data-sidebar-icon
+                class="h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="8" cy="8" r="2" />
+                <path
+                  d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"
+                />
+              </svg>
+              <span>Settings</span>
+            </button>
+          </li>
+        </ul>
+      </ui-sidebar-group>
+    </ui-sidebar-content>
+
+    <!-- Footer: User profile placeholder -->
+    <ui-sidebar-footer>
+      <div
+        data-sidebar-icon
+        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-text-on-primary text-xs font-bold"
+      >
+        U
+      </div>
+      <div class="flex items-center gap-2 px-1 w-full">
+        <div class="flex min-w-0 flex-col">
+          <span class="truncate text-sm font-medium text-text">User</span>
+          <span class="truncate text-xs text-text-muted">user&#64;example.com</span>
+        </div>
+      </div>
+    </ui-sidebar-footer>
+
+    <ui-sidebar-rail />
+  </ui-sidebar>
+
+  <ui-sidebar-inset>
+    <div class="flex items-center gap-2 border-b border-border px-4 py-2">
+      <ui-sidebar-trigger />
+      <h2 class="text-lg font-semibold text-text">Console</h2>
+    </div>
+    <div class="p-6">
+      <router-outlet />
+    </div>
+  </ui-sidebar-inset>
+</ui-sidebar-provider>

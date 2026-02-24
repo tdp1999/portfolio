@@ -1,0 +1,21 @@
+{
+  "name": "console-shared-data-access",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/console/shared/data-access/src",
+  "prefix": "console",
+  "projectType": "library",
+  "tags": ["scope:console", "type:shared-data-access"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/console/shared/data-access/jest.config.cts",
+        "tsConfig": "libs/console/shared/data-access/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
