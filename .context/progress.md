@@ -120,15 +120,15 @@
 
 > **Approach:** Sequential build — foundation first, then composition, then behavior, then tests.
 
-- [ ] 067-shared-breakpoint-observer - Shared breakpoint observer library (M) (from: epic-sidebar)
-- [ ] 068-sidebar-lib-scaffold - Scaffold sidebar lib + SidebarState service (M) (from: epic-sidebar) → depends on 067
-- [ ] 069-sidebar-root-layout - Root component + layout slots (L) (from: epic-sidebar) → depends on 068
-- [ ] 070-sidebar-menu-system - Menu components and directives (L) (from: epic-sidebar) → depends on 069
-- [ ] 071-sidebar-submenu - Collapsible submenu (M) (from: epic-sidebar) → depends on 070
-- [ ] 072-sidebar-mobile-overlay - Mobile overlay with CDK Overlay (L) (from: epic-sidebar) → depends on 069, 067
-- [ ] 073-sidebar-trigger-rail - Trigger button + rail + keyboard shortcut (M) (from: epic-sidebar) → depends on 068
-- [ ] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) (from: epic-sidebar) → depends on 070, 071, 073
-- [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (from: epic-sidebar) → depends on 072, 074
+- [x] 067-shared-breakpoint-observer - Shared breakpoint observer library (M) ✓
+- [x] 068-sidebar-lib-scaffold - Scaffold sidebar lib + SidebarState service (M) ✓
+- [x] 069-sidebar-root-layout - Root component + layout slots (L) ✓
+- [x] 070-sidebar-menu-system - Menu components and directives (L) ✓
+- [x] 071-sidebar-submenu - Collapsible submenu (M) ✓
+- [x] 072-sidebar-mobile-overlay - Mobile overlay with CDK Overlay (L) ✓
+- [x] 073-sidebar-trigger-rail - Trigger button + rail + keyboard shortcut (M) ✓
+- [x] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) ✓
+- [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (in-progress)
 
 ## Up Next
 
@@ -138,10 +138,9 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 58     |
-| In Progress              | 0      |
+| Done (archived)          | 66     |
+| In Progress              | 1      |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Sidebar)        | 9      |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **76** |
 
