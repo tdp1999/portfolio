@@ -16,7 +16,7 @@ import { SidebarVariant } from './sidebar.type';
       ></div>
     }
     <aside
-      class="h-full overflow-hidden bg-surface text-text transition-[width,transform] duration-200 ease-in-out"
+      class="relative h-full overflow-hidden bg-surface text-text transition-[width,transform] duration-200 ease-in-out"
       [class.border-r]="state.isOpen() || state.isMobile()"
       [class.border-border]="state.isOpen() || state.isMobile()"
       [class.fixed]="state.isMobile()"
@@ -33,6 +33,7 @@ import { SidebarVariant } from './sidebar.type';
         <ng-content select="ui-sidebar-content" />
         <ng-content select="ui-sidebar-footer" />
       </div>
+      <ng-content />
     </aside>
   `,
   host: {

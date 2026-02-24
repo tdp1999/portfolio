@@ -8,7 +8,7 @@ import { SidebarState } from './sidebar-state.service';
   template: `
     <button
       type="button"
-      class="absolute top-0 -right-2.5 z-10 h-full w-5 cursor-pointer border-0 bg-transparent group"
+      class="absolute top-0 -right-2.5 z-10 h-full w-5 cursor-col-resize border-0 bg-transparent group"
       (click)="state.toggle()"
       aria-label="Toggle sidebar"
     >
