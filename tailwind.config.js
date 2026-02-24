@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./apps/landing/src/**/*.{html,ts}', './libs/landing/**/*.{html,ts}'],
+  content: [
+    './apps/landing/src/**/*.{html,ts}',
+    './libs/landing/**/*.{html,ts}',
+    './libs/shared/**/*.{html,ts}',
+  ],
   darkMode: 'class',
   theme: {
     extend: {
