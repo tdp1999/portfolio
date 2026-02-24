@@ -12,13 +12,14 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
     <ui-sidebar-provider class="h-dvh bg-background">
       <ui-sidebar data-testid="sidebar">
         <!-- Header: Workspace selector -->
-        <ui-sidebar-header>
-          <div class="flex items-center gap-2 px-1" data-testid="sidebar-header">
-            <div
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-text-on-primary text-sm font-bold"
-            >
-              A
-            </div>
+        <ui-sidebar-header class="">
+          <div
+            data-sidebar-icon
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-text-on-primary text-sm font-bold"
+          >
+            A
+          </div>
+          <div class="flex items-center gap-2 px-1 w-full" data-testid="sidebar-header">
             <div class="flex min-w-0 flex-col">
               <span class="truncate text-sm font-semibold text-text">Acme Corp</span>
               <span class="truncate text-xs text-text-muted">Enterprise Plan</span>
@@ -46,10 +47,12 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                   ui-sidebar-menu-button
                   routerLink="/ddl/layout"
                   routerLinkActive="font-semibold"
+                  tooltip="Dashboard"
                   data-testid="menu-dashboard"
                 >
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -69,11 +72,13 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               <li uiSidebarMenuItem>
                 <button
                   ui-sidebar-menu-button
+                  tooltip="Projects"
                   (click)="projectsSub.toggle()"
                   data-testid="menu-projects"
                 >
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -103,9 +108,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               </li>
 
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button data-testid="menu-inbox">
+                <button ui-sidebar-menu-button tooltip="Inbox" data-testid="menu-inbox">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -122,9 +128,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               </li>
 
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Calendar">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -140,9 +147,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               </li>
 
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Tasks">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -158,9 +166,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               </li>
 
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Analytics">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -178,11 +187,13 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               <li uiSidebarMenuItem>
                 <button
                   ui-sidebar-menu-button
+                  tooltip="Reports"
                   (click)="reportsSub.toggle()"
                   data-testid="menu-reports"
                 >
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -210,9 +221,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
               </li>
 
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Documentation">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -234,9 +246,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
           <ui-sidebar-group label="Resources" [collapsible]="true" data-testid="resources-group">
             <ul uiSidebarMenu>
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Help Center">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -251,9 +264,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                 </button>
               </li>
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="API Reference">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -268,9 +282,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                 </button>
               </li>
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Changelog">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -284,9 +299,10 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                 </button>
               </li>
               <li uiSidebarMenuItem>
-                <button ui-sidebar-menu-button>
+                <button ui-sidebar-menu-button tooltip="Community Forum">
                   <svg
-                    class="h-4 w-4"
+                    data-sidebar-icon
+                    class="h-4 w-4 shrink-0"
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"
@@ -310,8 +326,9 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
             <ul uiSidebarMenu>
               @for (member of teamMembers; track member.name) {
                 <li uiSidebarMenuItem>
-                  <button ui-sidebar-menu-button>
+                  <button ui-sidebar-menu-button [tooltip]="member.name">
                     <span
+                      data-sidebar-icon
                       class="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[8px] font-bold text-white"
                       [style.background-color]="member.color"
                     >
@@ -331,14 +348,15 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
 
         <!-- Footer: User profile -->
         <ui-sidebar-footer>
-          <div class="flex items-center gap-2 px-1" data-testid="sidebar-footer">
-            <div
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600 text-white text-xs font-bold"
-            >
-              JD
-            </div>
+          <div
+            data-sidebar-icon
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600 text-white text-xs font-bold"
+          >
+            JD
+          </div>
+          <div class="flex items-center gap-2 px-1 w-full" data-testid="sidebar-footer">
             <div class="flex min-w-0 flex-col">
-              <span class="truncate text-sm font-medium text-text">John Doe</span>
+              <span class="truncate text-sm font-medium text-text">John Does</span>
               <span class="truncate text-xs text-text-muted">john&#64;acme.com</span>
             </div>
             <svg
