@@ -116,6 +116,20 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
+### Epic: Sidebar Component (epic-sidebar) - broken-down
+
+> **Approach:** Sequential build — foundation first, then composition, then behavior, then tests.
+
+- [ ] 067-shared-breakpoint-observer - Shared breakpoint observer library (M) (from: epic-sidebar)
+- [ ] 068-sidebar-lib-scaffold - Scaffold sidebar lib + SidebarState service (M) (from: epic-sidebar) → depends on 067
+- [ ] 069-sidebar-root-layout - Root component + layout slots (L) (from: epic-sidebar) → depends on 068
+- [ ] 070-sidebar-menu-system - Menu components and directives (L) (from: epic-sidebar) → depends on 069
+- [ ] 071-sidebar-submenu - Collapsible submenu (M) (from: epic-sidebar) → depends on 070
+- [ ] 072-sidebar-mobile-overlay - Mobile overlay with CDK Overlay (L) (from: epic-sidebar) → depends on 069, 067
+- [ ] 073-sidebar-trigger-rail - Trigger button + rail + keyboard shortcut (M) (from: epic-sidebar) → depends on 068
+- [ ] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) (from: epic-sidebar) → depends on 070, 071, 073
+- [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (from: epic-sidebar) → depends on 072, 074
+
 ## Up Next
 
 **Next Task:** **057-tag-prisma-schema** - Tag Prisma schema (Database Architecture Sprint 3)
@@ -126,10 +140,10 @@
 | ------------------------ | ------ |
 | Done (archived)          | 58     |
 | In Progress              | 0      |
-| Pending (DB User Module) | 0      |
 | Pending (DB Tag Module)  | 8      |
+| Pending (Sidebar)        | 9      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **67** |
+| **Total Created**        | **76** |
 
 ## Notes
 
