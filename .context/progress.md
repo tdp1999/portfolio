@@ -26,6 +26,8 @@
   - Tasks 010-019 → archived in `tasks-done/epic-tdd-infrastructure/`
 - [x] **Design System** (epic-design-system) - Completed 2026-02-10
   - Tasks 020-042 → archived in `tasks-done/epic-design-system/`
+- [x] **Console Application** (epic-console) - Completed 2026-02-24
+  - Tasks 076-083 → archived in `tasks-done/epic-console/`
 
 ## In Progress
 
@@ -130,18 +132,6 @@
 - [x] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) ✓
 - [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (in-progress)
 
-### Epic: Console Application (epic-console) - broken-down
-
-> **Approach:** Infrastructure first — scaffold, boundaries, then layouts, then routing.
-
-- [ ] 076-console-app-scaffold - Scaffold console Angular app (M)
-- [ ] 077-console-e2e-scaffold - Scaffold console E2E project (S)
-- [ ] 078-console-eslint-boundaries - Configure ESLint boundaries for console (S)
-- [ ] 079-console-shared-libs - Create console shared libraries (M)
-- [ ] 080-console-theming - Configure Tailwind and theming (S)
-- [ ] 081-console-blank-layout - Build blank layout for auth views (M)
-- [ ] 082-console-main-layout - Build main layout with sidebar (L)
-- [ ] 083-console-routing-skeleton - Configure routing skeleton (M)
 
 ## Up Next
 
@@ -151,12 +141,12 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 66     |
+| Done (archived)          | 74     |
 | In Progress              | 1      |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Console)        | 8      |
+| Pending (Sidebar polish) | 5      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **84** |
+| **Total Created**        | **89** |
 
 ## Notes
 
