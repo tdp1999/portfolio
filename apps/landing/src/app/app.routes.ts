@@ -9,4 +9,9 @@ export const appRoutes: Route[] = [
     path: 'ddl',
     loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
   },
+  {
+    path: 'ddl/layout',
+    loadComponent: () =>
+      import('./pages/ddl/layout/ddl-layout.component').then((m) => m.DdlLayoutComponent),
+  },
 ];
