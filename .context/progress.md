@@ -126,9 +126,39 @@
 
 > Tasks 089-100 → archived in `tasks-done/epic-authentication/`
 
+### Epic: Auth Frontend UI & Integration (epic-auth-frontend) - broken-down
+
+> **Approach:** Foundation first (CORS, HTTP, store), then UI components, then pages, then wiring.
+
+#### Phase 1: Foundation (4 tasks)
+
+- [ ] 101-cors-configuration - Configure CORS for cross-subdomain auth (S)
+- [ ] 102-console-http-setup - Setup HttpClient and API config (S)
+- [ ] 103-auth-store - Signal-based AuthStore service (L)
+- [ ] 104-auth-interceptors - Auth, Refresh, CSRF interceptors (L)
+
+#### Phase 2: UI Infrastructure (3 tasks)
+
+- [ ] 105-route-guards - Auth and Guest route guards (M)
+- [ ] 106-toast-service - Toast notification system (M)
+- [ ] 107-loading-indicators - Loading bar, skeleton, full-page spinner (M)
+
+#### Phase 3: Auth Pages (4 tasks)
+
+- [ ] 108-error-interceptor - Error interceptor with toast integration (S)
+- [ ] 109-login-page - Login page with form and Google SSO (M)
+- [ ] 110-forgot-reset-password-pages - Forgot and Reset password pages (M)
+- [ ] 111-oauth-callback-page - Google OAuth callback handler (S)
+
+#### Phase 4: Integration (3 tasks)
+
+- [ ] 112-app-bootstrap-auth - Wire auth bootstrap into app init (M)
+- [ ] 113-sidebar-user-integration - Wire user data into sidebar (S)
+- [ ] 114-csp-headers - Content Security Policy headers (S)
+
 ## Up Next
 
-**Next Task:** **057-tag-prisma-schema** - Tag Prisma schema (Database Architecture Sprint 3)
+**Next Task:** **101-cors-configuration** - Configure CORS (Auth Frontend Phase 1)
 
 ## Statistics
 
@@ -136,8 +166,9 @@
 | ------------------------ | ------ |
 | Done (archived)          | 92     |
 | Pending (DB Tag Module)  | 8      |
+| Pending (Auth Frontend)  | 14     |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **101** |
+| **Total Created**        | **115** |
 
 ## Notes
 
