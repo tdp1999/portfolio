@@ -81,7 +81,7 @@ enum SyncStatus {
 model User {
   id                     String    @id @db.Uuid
   email                  String    @unique
-  passwordHash           String
+  password               String
   name                   String
   lastLoginAt            DateTime?
   refreshToken           String?

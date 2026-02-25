@@ -32,6 +32,7 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d",
+    "db:studio": "prisma studio --url=postgresql://postgres:postgres@localhost:5432/portfolio",
     "prisma:generate": "prisma generate --config=apps/api/prisma/prisma.config.ts",
     "prisma:migrate:dev": "prisma migrate dev --config=apps/api/prisma/prisma.config.ts",
     "prisma:migrate:deploy": "prisma migrate deploy --config=apps/api/prisma/prisma.config.ts",

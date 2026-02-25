@@ -48,3 +48,6 @@ static
 
 # Local configuration
 .claude/settings.local.json
+
+# Prisma migration backups (contain real data)
+prisma/backups/
