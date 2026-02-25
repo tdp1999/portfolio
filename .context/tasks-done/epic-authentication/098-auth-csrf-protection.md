@@ -1,6 +1,6 @@
 # Task: Auth - CSRF Protection
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Since the refresh token is stored in an HttpOnly cookie, the refresh endpoint is
 
 ## Acceptance Criteria
 
-- [ ] On login/refresh: set a non-HttpOnly CSRF token cookie (`X-CSRF-Token`)
-- [ ] Refresh endpoint requires `X-CSRF-Token` header matching the cookie value
-- [ ] CSRF validation implemented as a guard or middleware
-- [ ] CSRF token rotated on each refresh (alongside refresh token)
-- [ ] Login response includes initial CSRF token cookie
-- [ ] Unit tests: valid CSRF, missing header, mismatched token
+- [x] On login/refresh: set a non-HttpOnly CSRF token cookie (`X-CSRF-Token`)
+- [x] Refresh endpoint requires `X-CSRF-Token` header matching the cookie value
+- [x] CSRF validation implemented as a guard or middleware
+- [x] CSRF token rotated on each refresh (alongside refresh token)
+- [x] Login response includes initial CSRF token cookie
+- [x] Unit tests: valid CSRF, missing header, mismatched token
 
 ## Technical Notes
 
@@ -55,3 +55,5 @@ Only the `/api/auth/refresh` endpoint needs this protection (it's the only state
 ## Complexity: S
 
 ## Progress Log
+- [2026-02-25] Started
+- [2026-02-25] Completed — all 5 unit tests passing, type check clean

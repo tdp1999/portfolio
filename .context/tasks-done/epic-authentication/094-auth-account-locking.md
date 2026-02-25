@@ -1,6 +1,6 @@
 # Task: Auth - Account Locking
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Brute-force protection. Locks the account temporarily after repeated failures, w
 
 ## Acceptance Criteria
 
-- [ ] Failed login increments `failedLoginAttempts` on User
-- [ ] After 5 failures, account is locked with exponential backoff: 1min, 5min, 15min, 30min, 1hr cap
-- [ ] Successful login resets `failedLoginAttempts` to 0 and clears `lockedUntil`
-- [ ] Login while locked returns generic "Invalid credentials" (no lock status leak)
-- [ ] Lock check happens before password comparison (avoid timing attacks)
-- [ ] Unit tests: lock after 5 attempts, exponential backoff durations, reset on success, locked login rejected
+- [x] Failed login increments `failedLoginAttempts` on User
+- [x] After 5 failures, account is locked with exponential backoff: 1min, 5min, 15min, 30min, 1hr cap
+- [x] Successful login resets `failedLoginAttempts` to 0 and clears `lockedUntil`
+- [x] Login while locked returns generic "Invalid credentials" (no lock status leak)
+- [x] Lock check happens before password comparison (avoid timing attacks)
+- [x] Unit tests: lock after 5 attempts, exponential backoff durations, reset on success, locked login rejected
 
 ## Technical Notes
 
@@ -50,3 +50,6 @@ The lock check order in login:
 ## Complexity: S
 
 ## Progress Log
+
+- [2026-02-25] Started
+- [2026-02-25] Added 5 locking tests + exponential backoff logic in LoginHandler. All 133 tests pass.

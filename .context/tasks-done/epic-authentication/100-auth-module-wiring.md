@@ -1,6 +1,6 @@
 # Task: Auth - Module Wiring & Integration Verification
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,15 +12,15 @@ Final task — ensures all handlers, guards, controllers, and services are prope
 
 ## Acceptance Criteria
 
-- [ ] AuthModule properly imports UserModule, EmailModule, JwtModule
-- [ ] All command/query handlers registered in AuthModule providers
-- [ ] All guards registered and applied correctly
-- [ ] Auth controller routes all wired and responding
-- [ ] Integration test: full login → refresh → logout flow works
-- [ ] Integration test: forgot-password → reset-password flow works
-- [ ] All auth-related tests pass (`nx test api --testPathPattern=auth`)
-- [ ] Type check passes (`npx tsc --noEmit`)
-- [ ] No circular dependencies between Auth and User modules
+- [x] AuthModule properly imports UserModule, EmailModule, JwtModule
+- [x] All command/query handlers registered in AuthModule providers
+- [x] All guards registered and applied correctly
+- [x] Auth controller routes all wired and responding
+- [x] Integration test: full login → refresh → logout flow works
+- [x] Integration test: forgot-password → reset-password flow works
+- [x] All auth-related tests pass (`nx test api --testPathPattern=auth`)
+- [x] Type check passes (`npx tsc --noEmit`)
+- [x] No circular dependencies between Auth and User modules
 
 ## Technical Notes
 
@@ -43,3 +43,5 @@ Verify the full vertical slice works by running through each flow manually or vi
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-25] Started. Added GoogleOAuthGuard to AuthModule providers. All 186 tests pass, type check clean, no circular deps.
+- [2026-02-25] Added DomainExceptionFilter, cookie-parser, integration tests. All 198 tests pass.

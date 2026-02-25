@@ -1,6 +1,6 @@
 # Task: Auth - Google SSO (OAuth2/OpenID Connect)
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,17 +12,17 @@ Allows users to authenticate with their Google account. If a user with that emai
 
 ## Acceptance Criteria
 
-- [ ] `@nestjs/passport` and `passport-google-oauth20` installed
-- [ ] `GET /api/auth/google` — redirects to Google consent screen
-- [ ] `GET /api/auth/google/callback` — handles OAuth callback
-- [ ] If user with email exists: link `googleId`, issue tokens, login
-- [ ] If user doesn't exist: create new user (no password, with googleId), issue tokens
-- [ ] Issues same access + refresh tokens as credential login
-- [ ] `GoogleOAuthGuard` implemented using Passport
-- [ ] Google strategy configured with `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callback URL
-- [ ] Callback redirects to frontend with access token (e.g., `{FRONTEND_URL}/auth/callback?token={accessToken}`)
-- [ ] Refresh token set as HttpOnly cookie (same as credential login)
-- [ ] Unit tests for GoogleLoginCommand handler (TDD)
+- [x] `@nestjs/passport` and `passport-google-oauth20` installed
+- [x] `GET /api/auth/google` — redirects to Google consent screen
+- [x] `GET /api/auth/google/callback` — handles OAuth callback
+- [x] If user with email exists: link `googleId`, issue tokens, login
+- [x] If user doesn't exist: create new user (no password, with googleId), issue tokens
+- [x] Issues same access + refresh tokens as credential login
+- [x] `GoogleOAuthGuard` implemented using Passport
+- [x] Google strategy configured with `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callback URL
+- [x] Callback redirects to frontend with access token (e.g., `{FRONTEND_URL}/auth/callback?token={accessToken}`)
+- [x] Refresh token set as HttpOnly cookie (same as credential login)
+- [x] Unit tests for GoogleLoginCommand handler (TDD)
 
 ## Technical Notes
 
@@ -56,3 +56,6 @@ Env vars: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`.
 ## Complexity: L
 
 ## Progress Log
+
+- [2026-02-25] Started
+- [2026-02-25] All acceptance criteria complete, 160/160 tests pass

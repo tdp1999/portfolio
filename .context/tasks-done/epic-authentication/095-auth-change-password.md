@@ -1,6 +1,6 @@
 # Task: Auth - Change Password
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,14 +12,14 @@ Allows logged-in users to change their password. Requires current password verif
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/auth/change-password` — protected by JwtAccessGuard
-- [ ] Validates current password before allowing change
-- [ ] New password validated against `PasswordSchema` (existing in user.dto.ts)
-- [ ] Updates `passwordHash` on User entity
-- [ ] Increments `tokenVersion` to invalidate all other sessions after password change
-- [ ] Returns 400 if current password wrong
-- [ ] Returns 400 if user is Google-only (no password to change)
-- [ ] Unit tests (TDD)
+- [x] `POST /api/auth/change-password` — protected by JwtAccessGuard
+- [x] Validates current password before allowing change
+- [x] New password validated against `PasswordSchema` (existing in user.dto.ts)
+- [x] Updates `passwordHash` on User entity
+- [x] Increments `tokenVersion` to invalidate all other sessions after password change
+- [x] Returns 400 if current password wrong
+- [x] Returns 400 if user is Google-only (no password to change)
+- [x] Unit tests (TDD)
 
 ## Technical Notes
 
@@ -47,3 +47,6 @@ Google-only users (no `passwordHash`) should get a clear error: "Account uses Go
 ## Complexity: S
 
 ## Progress Log
+
+- [2026-02-25] Started
+- [2026-02-25] Added User.updatePassword(), ChangePasswordSchema, handler with tests, controller endpoint, module wiring. 138 tests pass.

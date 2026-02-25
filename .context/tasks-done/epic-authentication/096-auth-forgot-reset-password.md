@@ -1,6 +1,6 @@
 # Task: Auth - Forgot & Reset Password
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,16 +12,16 @@ Allows users who forgot their password to reset it via email. Uses Resend email 
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/auth/forgot-password` — accepts email, generates reset token, sends email
-- [ ] Always returns 200 regardless of whether email exists (security)
-- [ ] Reset token is a random string, stored hashed in DB, expires in 1 hour
-- [ ] `POST /api/auth/reset-password` — accepts token + new password, validates token, updates password
-- [ ] Clears reset token after successful reset
-- [ ] Increments `tokenVersion` to invalidate all sessions
-- [ ] Rejects Google-only users with "Account uses Google sign-in" message (in forgot-password)
-- [ ] Actually, forgot-password should still return 200 for Google-only users (don't leak info) — just don't send email
-- [ ] Email contains reset link: `{FRONTEND_URL}/auth/reset-password?token={token}`
-- [ ] Unit tests for both handlers (TDD)
+- [x] `POST /api/auth/forgot-password` — accepts email, generates reset token, sends email
+- [x] Always returns 200 regardless of whether email exists (security)
+- [x] Reset token is a random string, stored hashed in DB, expires in 1 hour
+- [x] `POST /api/auth/reset-password` — accepts token + new password, validates token, updates password
+- [x] Clears reset token after successful reset
+- [x] Increments `tokenVersion` to invalidate all sessions
+- [x] Rejects Google-only users with "Account uses Google sign-in" message (in forgot-password)
+- [x] Actually, forgot-password should still return 200 for Google-only users (don't leak info) — just don't send email
+- [x] Email contains reset link: `{FRONTEND_URL}/auth/reset-password?token={token}`
+- [x] Unit tests for both handlers (TDD)
 
 ## Technical Notes
 
@@ -63,3 +63,6 @@ Body: Click to reset your password: {link}. This link expires in 1 hour.
 ## Complexity: L
 
 ## Progress Log
+
+- [2026-02-25] Started
+- [2026-02-25] All criteria completed — tests pass, type check clean

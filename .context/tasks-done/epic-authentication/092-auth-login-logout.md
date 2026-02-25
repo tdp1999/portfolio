@@ -1,6 +1,6 @@
 # Task: Auth - Login & Logout Endpoints
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,17 +12,17 @@ Core auth flow. Login validates credentials, issues tokens. Logout clears tokens
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/auth/login` — validates email/password, returns `{ accessToken }` in body, sets refresh token as HttpOnly cookie
-- [ ] "Remember Me" flag controls refresh token cookie lifetime (30 days vs session cookie)
-- [ ] `lastLoginAt` updated on successful login (uses existing `UpdateLastLoginCommand`)
-- [ ] `POST /api/auth/logout` — clears refresh token cookie, nullifies refresh token in DB
-- [ ] `POST /api/auth/logout-all` — increments `tokenVersion`, clears refresh token
-- [ ] `GET /api/auth/me` — returns current user profile (protected by JwtAccessGuard)
-- [ ] Login returns generic "Invalid credentials" for both wrong email and wrong password
-- [ ] LoginSchema validation in handler (email + password + rememberMe boolean)
-- [ ] All handlers follow CQRS pattern with Zod validation
-- [ ] Unit tests for all handlers (TDD)
-- [ ] Auth controller is thin — no logic, no error throwing
+- [x] `POST /api/auth/login` — validates email/password, returns `{ accessToken }` in body, sets refresh token as HttpOnly cookie
+- [x] "Remember Me" flag controls refresh token cookie lifetime (30 days vs session cookie)
+- [x] `lastLoginAt` updated on successful login (uses existing `UpdateLastLoginCommand`)
+- [x] `POST /api/auth/logout` — clears refresh token cookie, nullifies refresh token in DB
+- [x] `POST /api/auth/logout-all` — increments `tokenVersion`, clears refresh token
+- [x] `GET /api/auth/me` — returns current user profile (protected by JwtAccessGuard)
+- [x] Login returns generic "Invalid credentials" for both wrong email and wrong password
+- [x] LoginSchema validation in handler (email + password + rememberMe boolean)
+- [x] All handlers follow CQRS pattern with Zod validation
+- [x] Unit tests for all handlers (TDD)
+- [x] Auth controller is thin — no logic, no error throwing
 
 ## Technical Notes
 
@@ -67,3 +67,6 @@ Queries: `GetCurrentUserQuery`
 ## Complexity: L
 
 ## Progress Log
+
+- [2026-02-25] Started
+- [2026-02-25] All handlers, tests, controller, and module wiring complete. Moved LoginSchema from user.dto to auth.dto with rememberMe field. 117 tests pass, type check clean.

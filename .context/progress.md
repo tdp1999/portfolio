@@ -30,6 +30,8 @@
   - Tasks 076-083 → archived in `tasks-done/epic-console/`
 - [x] **Sidebar Component** (epic-sidebar) - Completed 2026-02-25
   - Tasks 067-075, 084-088 → archived in `tasks-done/`
+- [x] **Authentication** (epic-authentication) - Completed 2026-02-25
+  - Tasks 089-100 → archived in `tasks-done/epic-authentication/`
 
 ## In Progress
 
@@ -120,33 +122,9 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
-### Epic: Authentication (epic-authentication) - broken-down
+### Epic: Authentication (epic-authentication) - COMPLETE ✓
 
-> **Approach:** Foundation first, then core flows, then extended features, then polish.
-
-#### Phase 1: Foundation (3 tasks)
-
-- [ ] 089-auth-schema-migration - Schema migration & User entity updates (M)
-- [ ] 090-auth-jwt-infrastructure - JWT infrastructure & module scaffold (L)
-- [ ] 091-auth-email-service - Email service with Resend (M)
-- [ ] 099-auth-error-codes - Auth error codes & DTOs (S)
-
-#### Phase 2: Core Auth (3 tasks)
-
-- [ ] 092-auth-login-logout - Login, logout, logout-all, /me (L)
-- [ ] 093-auth-refresh-token-rotation - Refresh token rotation (M)
-- [ ] 094-auth-account-locking - Account locking after failed attempts (S)
-
-#### Phase 3: Extended Features (3 tasks)
-
-- [ ] 095-auth-change-password - Change password (S)
-- [ ] 096-auth-forgot-reset-password - Forgot & reset password via email (L)
-- [ ] 097-auth-google-sso - Google SSO OAuth2 (L)
-
-#### Phase 4: Polish & Wiring (2 tasks)
-
-- [ ] 098-auth-csrf-protection - CSRF protection for refresh endpoint (S)
-- [ ] 100-auth-module-wiring - Module wiring & integration verification (M)
+> Tasks 089-100 → archived in `tasks-done/epic-authentication/`
 
 ## Up Next
 
@@ -156,9 +134,8 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 80     |
+| Done (archived)          | 92     |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Auth)           | 12     |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **101** |
 
