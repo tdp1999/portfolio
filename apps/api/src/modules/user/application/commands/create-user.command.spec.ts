@@ -43,8 +43,8 @@ describe('CreateUserHandler', () => {
     await handler.execute(command);
 
     const user = repo.add.mock.calls[0][0];
-    expect(user.passwordHash).not.toBe('Strong#Pass1');
-    expect(user.passwordHash).toMatch(/^\$2[aby]?\$/);
+    expect(user.password).not.toBe('Strong#Pass1');
+    expect(user.password).toMatch(/^\$2[aby]?\$/);
   });
 
   it('should throw DomainError for invalid dto', async () => {
@@ -56,7 +56,7 @@ describe('CreateUserHandler', () => {
   it('should throw DomainError when email is already taken', async () => {
     const existingUser = User.create({
       email: 'test@example.com',
-      passwordHash: 'hash',
+      password: 'hash',
       name: 'Existing',
     });
     repo.findByEmail.mockResolvedValue(existingUser);

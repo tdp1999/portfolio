@@ -1,6 +1,6 @@
 # Task: Auth - Schema Migration & User Entity Updates
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,13 +12,13 @@ The Auth module requires new fields on User: `googleId`, `failedLoginAttempts`, 
 
 ## Acceptance Criteria
 
-- [ ] Prisma schema updated with 4 new fields (`googleId`, `failedLoginAttempts`, `lockedUntil`, `tokenVersion`)
-- [ ] Migration created and applied
-- [ ] `passwordHash` field made optional (Google-only users have no password)
-- [ ] User domain entity updated with new methods: `incrementFailedAttempts()`, `lock(until)`, `resetFailedAttempts()`, `incrementTokenVersion()`, `linkGoogle(googleId)`
-- [ ] User mapper updated to handle new fields
-- [ ] All existing User tests still pass
-- [ ] New entity method tests written (TDD)
+- [x] Prisma schema updated with 4 new fields (`googleId`, `failedLoginAttempts`, `lockedUntil`, `tokenVersion`)
+- [x] Migration created and applied
+- [x] `password` field made optional (Google-only users have no password)
+- [x] User domain entity updated with new methods: `incrementFailedAttempts()`, `lock(until)`, `resetFailedAttempts()`, `incrementTokenVersion()`, `linkGoogle(googleId)`, `isLocked()`
+- [x] User mapper updated to handle new fields
+- [x] All existing User tests still pass (14 suites, 81 tests)
+- [x] New entity method tests written (TDD)
 
 ## Technical Notes
 
@@ -60,3 +60,9 @@ Update `IUserProps` and `ICreateUserPayload` interfaces accordingly.
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-25] Started
+- [2026-02-25] Renamed passwordHash → password across all files
+- [2026-02-25] Added 4 new fields to schema, types, entity, mapper
+- [2026-02-25] Added 6 new entity methods + isLocked()
+- [2026-02-25] Migration 20260225120000_auth_fields applied
+- [2026-02-25] All 14 suites, 81 tests passing. Type check clean. Done.

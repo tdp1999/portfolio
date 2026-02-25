@@ -7,13 +7,17 @@ describe('UserMapper', () => {
   const prismaUser: PrismaUser = {
     id: '550e8400-e29b-41d4-a716-446655440000',
     email: 'test@example.com',
-    passwordHash: '$2b$10$hash',
+    password: '$2b$10$hash',
     name: 'Test User',
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
     passwordResetToken: null,
     passwordResetExpiresAt: null,
+    googleId: null,
+    failedLoginAttempts: 0,
+    lockedUntil: null,
+    tokenVersion: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
   };
@@ -21,13 +25,17 @@ describe('UserMapper', () => {
   const userProps: IUserProps = {
     id: '550e8400-e29b-41d4-a716-446655440000',
     email: 'test@example.com',
-    passwordHash: '$2b$10$hash',
+    password: '$2b$10$hash',
     name: 'Test User',
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
     passwordResetToken: null,
     passwordResetExpiresAt: null,
+    googleId: null,
+    failedLoginAttempts: 0,
+    lockedUntil: null,
+    tokenVersion: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
   };
@@ -39,7 +47,7 @@ describe('UserMapper', () => {
       expect(user).toBeInstanceOf(User);
       expect(user.id).toBe(prismaUser.id);
       expect(user.email).toBe(prismaUser.email);
-      expect(user.passwordHash).toBe(prismaUser.passwordHash);
+      expect(user.password).toBe(prismaUser.password);
       expect(user.name).toBe(prismaUser.name);
       expect(user.lastLoginAt).toBe(prismaUser.lastLoginAt);
       expect(user.createdAt).toBe(prismaUser.createdAt);
@@ -68,7 +76,7 @@ describe('UserMapper', () => {
 
       expect(data.id).toBe(userProps.id);
       expect(data.email).toBe(userProps.email);
-      expect(data.passwordHash).toBe(userProps.passwordHash);
+      expect(data.password).toBe(userProps.password);
       expect(data.name).toBe(userProps.name);
       expect(data).not.toHaveProperty('createdAt');
       expect(data).not.toHaveProperty('updatedAt');

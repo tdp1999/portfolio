@@ -9,7 +9,7 @@ describe('UpdateLastLoginHandler', () => {
 
   const mockUser = User.create({
     email: 'test@example.com',
-    passwordHash: 'hash',
+    password: 'hash',
     name: 'Test',
   });
 

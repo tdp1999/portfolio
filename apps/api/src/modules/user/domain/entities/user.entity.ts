@@ -9,13 +9,17 @@ export class User {
     return new User({
       id: IdentifierValue.v7(),
       email: data.email,
-      passwordHash: data.passwordHash,
+      password: data.password,
       name: data.name,
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
       passwordResetToken: null,
       passwordResetExpiresAt: null,
+      googleId: data.googleId ?? null,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      tokenVersion: 0,
       createdAt: now,
       updatedAt: now,
     });
@@ -33,8 +37,8 @@ export class User {
     return this.props.email;
   }
 
-  get passwordHash(): string {
-    return this.props.passwordHash;
+  get password(): string | null {
+    return this.props.password;
   }
 
   get name(): string {
@@ -59,6 +63,22 @@ export class User {
 
   get passwordResetExpiresAt(): Date | null {
     return this.props.passwordResetExpiresAt;
+  }
+
+  get googleId(): string | null {
+    return this.props.googleId;
+  }
+
+  get failedLoginAttempts(): number {
+    return this.props.failedLoginAttempts;
+  }
+
+  get lockedUntil(): Date | null {
+    return this.props.lockedUntil;
+  }
+
+  get tokenVersion(): number {
+    return this.props.tokenVersion;
   }
 
   get createdAt(): Date {
@@ -120,6 +140,51 @@ export class User {
       passwordResetExpiresAt: null,
       updatedAt: TemporalValue.now(),
     });
+  }
+
+  incrementFailedAttempts(): User {
+    return new User({
+      ...this.props,
+      failedLoginAttempts: this.props.failedLoginAttempts + 1,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  lock(until: Date): User {
+    return new User({
+      ...this.props,
+      lockedUntil: until,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  resetFailedAttempts(): User {
+    return new User({
+      ...this.props,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  incrementTokenVersion(): User {
+    return new User({
+      ...this.props,
+      tokenVersion: this.props.tokenVersion + 1,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  linkGoogle(googleId: string): User {
+    return new User({
+      ...this.props,
+      googleId,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  isLocked(): boolean {
+    return this.props.lockedUntil !== null && this.props.lockedUntil > new Date();
   }
 
   toProps(): IUserProps {

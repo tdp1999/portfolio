@@ -9,7 +9,7 @@ describe('GetUserByEmailHandler', () => {
 
   const mockUser = User.create({
     email: 'test@example.com',
-    passwordHash: 'hash',
+    password: 'hash',
     name: 'Test',
   });
 
@@ -34,7 +34,7 @@ describe('GetUserByEmailHandler', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
-    expect(result).not.toHaveProperty('passwordHash');
+    expect(result).not.toHaveProperty('password');
     expect(result).not.toHaveProperty('refreshToken');
     expect(repo.findByEmail).toHaveBeenCalledWith('test@example.com');
   });

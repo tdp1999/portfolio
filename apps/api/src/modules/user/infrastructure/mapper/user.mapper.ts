@@ -7,13 +7,17 @@ export class UserMapper {
     const props: IUserProps = {
       id: raw.id,
       email: raw.email,
-      passwordHash: raw.passwordHash,
+      password: raw.password,
       name: raw.name,
       lastLoginAt: raw.lastLoginAt,
       refreshToken: raw.refreshToken,
       refreshTokenExpiresAt: raw.refreshTokenExpiresAt,
       passwordResetToken: raw.passwordResetToken,
       passwordResetExpiresAt: raw.passwordResetExpiresAt,
+      googleId: raw.googleId,
+      failedLoginAttempts: raw.failedLoginAttempts,
+      lockedUntil: raw.lockedUntil,
+      tokenVersion: raw.tokenVersion,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     };
@@ -24,13 +28,17 @@ export class UserMapper {
     return {
       id: user.id,
       email: user.email,
-      passwordHash: user.passwordHash,
+      password: user.password,
       name: user.name,
       lastLoginAt: user.lastLoginAt,
       refreshToken: user.refreshToken,
       refreshTokenExpiresAt: user.refreshTokenExpiresAt,
       passwordResetToken: user.passwordResetToken,
       passwordResetExpiresAt: user.passwordResetExpiresAt,
+      googleId: user.googleId,
+      failedLoginAttempts: user.failedLoginAttempts,
+      lockedUntil: user.lockedUntil,
+      tokenVersion: user.tokenVersion,
     };
   }
 }

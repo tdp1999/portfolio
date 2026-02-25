@@ -37,7 +37,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     const hashedPassword = await hashPassword(data.password);
     const user = User.create({
       email: data.email,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
       name: data.name,
     });
     return this.repo.add(user);
