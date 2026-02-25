@@ -1,6 +1,6 @@
 # Task: Auth - Email Service (Resend)
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,13 +12,13 @@ Password reset requires email delivery. Using Resend (free tier: 3,000 emails/mo
 
 ## Acceptance Criteria
 
-- [ ] `resend` npm package installed
-- [ ] `IEmailService` port defined in application layer with `sendEmail(to, subject, body)` method
-- [ ] `ResendEmailService` adapter implemented in infrastructure layer
-- [ ] `EmailModule` created as a shared NestJS module (global, exportable)
-- [ ] `EMAIL_SERVICE` injection token created
-- [ ] Unit tests with mocked Resend client
-- [ ] Works with env var `RESEND_API_KEY` and `EMAIL_FROM` (sender address)
+- [x] `resend` npm package installed
+- [x] `IEmailService` port defined in application layer with `sendEmail(to, subject, body)` method
+- [x] `ResendEmailService` adapter implemented in infrastructure layer
+- [x] `EmailModule` created as a shared NestJS module (global, exportable)
+- [x] `EMAIL_SERVICE` injection token created
+- [x] Unit tests with mocked Resend client
+- [x] Works with env var `RESEND_API_KEY` and `EMAIL_FROM` (sender address)
 
 ## Technical Notes
 
@@ -49,3 +49,5 @@ For tests, mock the Resend client. In dev environment, consider logging emails i
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-25] Started
+- [2026-02-25] Completed — all 100 API tests passing

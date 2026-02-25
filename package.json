@@ -117,6 +117,7 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/cqrs": "^11.0.3",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.0.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
@@ -128,6 +129,7 @@
     "lucide-angular": "^0.563.0",
     "postcss": "^8.5.6",
     "reflect-metadata": "^0.1.14",
+    "resend": "^6.9.2",
     "rxjs": "~7.8.0",
     "uuid": "^13.0.0",
     "zod": "^4.3.6"
