@@ -117,15 +117,16 @@ Make the schema changes based on task requirements.
 
 ### Step 2: Generate SQL (Dry Run)
 
-```bash
-npx prisma migrate dev --create-only --name descriptive_name --config $PRISMA_CONFIG
-```
+**`prisma migrate dev` requires an interactive TTY and cannot run from Claude Code.**
+Ask the user to run this command in their terminal:
 
-This generates SQL without executing. **Never skip this step.**
+> Please run: `npx prisma migrate dev --create-only --name descriptive_name --config $PRISMA_CONFIG`
+
+Then read the generated `migration.sql` to analyze it. **Never skip this step.**
 
 ### Step 3: Analyze SQL for Risk
 
-Read the generated `migration.sql` and classify every statement:
+Review the generated SQL and classify every statement:
 
 - Look for `DROP COLUMN`, `DROP TABLE` → data loss
 - Look for `ALTER COLUMN ... TYPE` → type change
@@ -187,27 +188,21 @@ For each destructive change, ask the user specifically:
 
 #### 5c: Generate Multi-Step Migrations
 
-Use the **Expand → Data Migration → Contract** pattern:
+Use the **Expand → Data Migration → Contract** pattern.
+For each step, edit the schema to the intermediate state and ask the user to run:
 
-```bash
-# Step 1: Expand (add new structure)
-npx prisma migrate dev --create-only --name YYYYMMDD_description_expand --config $PRISMA_CONFIG
+> Please run: `npx prisma migrate dev --create-only --name YYYYMMDD_description_expand --config $PRISMA_CONFIG`
 
-# Manually edit the SQL, then:
-# Step 2: Data migration (transform data with user's logic)
-npx prisma migrate dev --create-only --name YYYYMMDD_description_data --config $PRISMA_CONFIG
-
-# Step 3: Contract (remove old structure)
-npx prisma migrate dev --create-only --name YYYYMMDD_description_contract --config $PRISMA_CONFIG
-```
+Then read and review the generated SQL. Manually edit if needed (e.g., add data migration SQL).
+Repeat for `_data` and `_contract` steps.
 
 Each SQL file must be reviewed by the user before execution.
 
-### Step 6: Execute
+### Step 6: Apply Migration
 
-```bash
-npx prisma migrate dev --config $PRISMA_CONFIG
-```
+Ask the user to run in their terminal:
+
+> Please run: `npx prisma migrate dev --config $PRISMA_CONFIG`
 
 ### Step 7: Regenerate Client
 
