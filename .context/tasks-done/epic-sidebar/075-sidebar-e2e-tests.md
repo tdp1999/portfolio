@@ -1,6 +1,6 @@
 # Task: E2E tests for sidebar with Playwright
 
-## Status: in-progress
+## Status: completed
 
 ## Goal
 Write comprehensive Playwright E2E tests (Chrome) covering all sidebar interaction flows. This is the primary test validation per the testing strategy.

@@ -21,6 +21,7 @@ The shared sidebar library has three critical issues: (1) no public state signal
 `SidebarState` is an `@Injectable()` provided in `SidebarProviderComponent`. Child components consume it via `inject(SidebarState)`. However, there is **no exported injection token** for client components outside the sidebar tree to subscribe to mode changes.
 
 **Notum reference** provides `SIDEBAR_CONTEXT` injection token:
+
 ```typescript
 export interface SidebarContext {
   isCompact: Signal<boolean>;
@@ -37,11 +38,13 @@ export const SIDEBAR_CONTEXT = new InjectionToken<SidebarContext>('SIDEBAR_CONTE
 **File:** `libs/shared/ui/sidebar/src/lib/sidebar-menu-button.component.ts`
 
 Current compact mode host classes:
+
 ```
 flex w-full items-center justify-center rounded-md px-2 py-1.5
 ```
 
 Problems:
+
 - **Touch target ≈ 28px height** (icon 16px + 2×6px padding) — below 44px minimum
 - **No compact-specific padding** — `px-2` is same for expanded and compact
 - Icons use `h-4 w-4` (16px) — adequate for expanded but feels small when icon-only
@@ -63,6 +66,7 @@ On mobile, `mobileWidth()` always returns `expandedWidth()` (280px) regardless o
 **Expected mobile behavior:** When sidebar opens on mobile, it should ALWAYS show the **full expanded layout** (labels, groups, badges) regardless of the desktop `variant` setting. The `isCompact` signal should be overridden to `false` on mobile.
 
 Additional mobile issues:
+
 - No body scroll lock when overlay is open
 - No swipe-to-close gesture support
 
@@ -71,6 +75,7 @@ Additional mobile issues:
 **File:** `libs/shared/ui/sidebar/src/lib/sidebar.component.ts:40`
 
 Added to make `aside[data-compact]` selectors work on projected `<ng-content>` children. This causes:
+
 - All sidebar CSS rules apply globally (any `aside[data-compact]` in the document matches)
 - Parent page styles can leak into sidebar internals
 
@@ -78,15 +83,15 @@ Added to make `aside[data-compact]` selectors work on projected `<ng-content>` c
 
 ### Affected Files
 
-| File | Role | Impact |
-|------|------|--------|
-| `libs/shared/ui/sidebar/src/lib/sidebar-state.service.ts` | State management | Needs public context token + mobile override |
-| `libs/shared/ui/sidebar/src/lib/sidebar.component.ts` | Main sidebar | Mobile width logic broken, ViewEncapsulation.None |
-| `libs/shared/ui/sidebar/src/lib/sidebar-menu-button.component.ts` | Menu items | Touch targets too small, compact styling incomplete |
-| `libs/shared/ui/sidebar/src/lib/sidebar-group.component.ts` | Group headers | Should hide label in compact mode internally |
-| `libs/shared/ui/sidebar/src/lib/sidebar-header.component.ts` | Header slot | Should hide non-icon content in compact mode |
-| `libs/shared/ui/sidebar/src/lib/sidebar-footer.component.ts` | Footer slot | Should hide non-icon content in compact mode |
-| `apps/landing/src/app/pages/ddl/layout/ddl-layout.component.ts` | Demo layout | Needs tooltips (done), icon sizing review |
+| File                                                              | Role             | Impact                                              |
+| ----------------------------------------------------------------- | ---------------- | --------------------------------------------------- |
+| `libs/shared/ui/sidebar/src/lib/sidebar-state.service.ts`         | State management | Needs public context token + mobile override        |
+| `libs/shared/ui/sidebar/src/lib/sidebar.component.ts`             | Main sidebar     | Mobile width logic broken, ViewEncapsulation.None   |
+| `libs/shared/ui/sidebar/src/lib/sidebar-menu-button.component.ts` | Menu items       | Touch targets too small, compact styling incomplete |
+| `libs/shared/ui/sidebar/src/lib/sidebar-group.component.ts`       | Group headers    | Should hide label in compact mode internally        |
+| `libs/shared/ui/sidebar/src/lib/sidebar-header.component.ts`      | Header slot      | Should hide non-icon content in compact mode        |
+| `libs/shared/ui/sidebar/src/lib/sidebar-footer.component.ts`      | Footer slot      | Should hide non-icon content in compact mode        |
+| `apps/landing/src/app/pages/ddl/layout/ddl-layout.component.ts`   | Demo layout      | Needs tooltips (done), icon sizing review           |
 
 ## Proposed Approach
 
@@ -123,11 +128,13 @@ Keep `data-compact` on the sidebar `<aside>` but scope styles properly:
 ## Risks & Warnings
 
 ⚠️ **Breaking change for existing consumers**
+
 - Adding `SIDEBAR_CONTEXT` token is additive (no break)
 - Changing `isCompact` to exclude mobile changes behavior — any component using `state.isCompact()` in mobile will now get `false`
 - Mitigation: This is the desired behavior; mobile should always show expanded
 
 ⚠️ **ViewEncapsulation change**
+
 - Removing `ViewEncapsulation.None` may break current compact hiding if component-level styles aren't added first
 - Mitigation: Implement component-level hiding before removing encapsulation override
 
@@ -149,7 +156,7 @@ M
 
 ## Status
 
-ready
+done
 
 ## Created
 

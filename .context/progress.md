@@ -28,6 +28,8 @@
   - Tasks 020-042 → archived in `tasks-done/epic-design-system/`
 - [x] **Console Application** (epic-console) - Completed 2026-02-24
   - Tasks 076-083 → archived in `tasks-done/epic-console/`
+- [x] **Sidebar Component** (epic-sidebar) - Completed 2026-02-25
+  - Tasks 067-075, 084-088 → archived in `tasks-done/`
 
 ## In Progress
 
@@ -118,21 +120,6 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
-### Epic: Sidebar Component (epic-sidebar) - broken-down
-
-> **Approach:** Sequential build — foundation first, then composition, then behavior, then tests.
-
-- [x] 067-shared-breakpoint-observer - Shared breakpoint observer library (M) ✓
-- [x] 068-sidebar-lib-scaffold - Scaffold sidebar lib + SidebarState service (M) ✓
-- [x] 069-sidebar-root-layout - Root component + layout slots (L) ✓
-- [x] 070-sidebar-menu-system - Menu components and directives (L) ✓
-- [x] 071-sidebar-submenu - Collapsible submenu (M) ✓
-- [x] 072-sidebar-mobile-overlay - Mobile overlay with CDK Overlay (L) ✓
-- [x] 073-sidebar-trigger-rail - Trigger button + rail + keyboard shortcut (M) ✓
-- [x] 074-sidebar-module-packaging - SidebarModule + barrel exports (S) ✓
-- [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (in-progress)
-
-
 ### Epic: Authentication (epic-authentication) - broken-down
 
 > **Approach:** Foundation first, then core flows, then extended features, then polish.
@@ -169,10 +156,8 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 74     |
-| In Progress              | 1      |
+| Done (archived)          | 80     |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Sidebar polish) | 5      |
 | Pending (Auth)           | 12     |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **101** |
