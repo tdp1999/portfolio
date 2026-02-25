@@ -133,6 +133,34 @@
 - [ ] 075-sidebar-e2e-tests - E2E tests with Playwright Chrome (L) (in-progress)
 
 
+### Epic: Authentication (epic-authentication) - broken-down
+
+> **Approach:** Foundation first, then core flows, then extended features, then polish.
+
+#### Phase 1: Foundation (3 tasks)
+
+- [ ] 089-auth-schema-migration - Schema migration & User entity updates (M)
+- [ ] 090-auth-jwt-infrastructure - JWT infrastructure & module scaffold (L)
+- [ ] 091-auth-email-service - Email service with Resend (M)
+- [ ] 099-auth-error-codes - Auth error codes & DTOs (S)
+
+#### Phase 2: Core Auth (3 tasks)
+
+- [ ] 092-auth-login-logout - Login, logout, logout-all, /me (L)
+- [ ] 093-auth-refresh-token-rotation - Refresh token rotation (M)
+- [ ] 094-auth-account-locking - Account locking after failed attempts (S)
+
+#### Phase 3: Extended Features (3 tasks)
+
+- [ ] 095-auth-change-password - Change password (S)
+- [ ] 096-auth-forgot-reset-password - Forgot & reset password via email (L)
+- [ ] 097-auth-google-sso - Google SSO OAuth2 (L)
+
+#### Phase 4: Polish & Wiring (2 tasks)
+
+- [ ] 098-auth-csrf-protection - CSRF protection for refresh endpoint (S)
+- [ ] 100-auth-module-wiring - Module wiring & integration verification (M)
+
 ## Up Next
 
 **Next Task:** **057-tag-prisma-schema** - Tag Prisma schema (Database Architecture Sprint 3)
@@ -145,8 +173,9 @@
 | In Progress              | 1      |
 | Pending (DB Tag Module)  | 8      |
 | Pending (Sidebar polish) | 5      |
+| Pending (Auth)           | 12     |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **89** |
+| **Total Created**        | **101** |
 
 ## Notes
 
