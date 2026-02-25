@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../../../../infrastructure/prisma/prisma.service';
+import { PrismaService } from '../../../../infrastructure/prisma';
 import { User } from '../../domain/entities/user.entity';
 import { UserRepository } from './user.repository';
 
@@ -10,13 +10,17 @@ describe('UserRepository', () => {
   const mockPrismaUser = {
     id: '550e8400-e29b-41d4-a716-446655440000',
     email: 'test@example.com',
-    passwordHash: '$2b$10$hash',
+    password: '$2b$10$hash',
     name: 'Test User',
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
     passwordResetToken: null,
     passwordResetExpiresAt: null,
+    googleId: null,
+    failedLoginAttempts: 0,
+    lockedUntil: null,
+    tokenVersion: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
   };

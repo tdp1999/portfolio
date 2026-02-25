@@ -3,7 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import request from 'supertest';
 import { AppModule } from './app.module';
-import { PrismaService } from '../infrastructure/prisma/prisma.service';
+import { PrismaService } from '../infrastructure/prisma';
+import { EMAIL_SERVICE } from '../modules/email';
 
 describe('AppController Integration Tests', () => {
   let app: INestApplication;
@@ -17,6 +18,10 @@ describe('AppController Integration Tests', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideProvider(EMAIL_SERVICE)
+      .useValue({
+        sendEmail: jest.fn(),
       })
       .compile();
 
