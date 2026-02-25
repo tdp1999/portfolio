@@ -13,7 +13,7 @@ export class AuthCookieService {
     res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] !== 'development',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: REFRESH_COOKIE_PATH,
       ...(rememberMe ? { maxAge: THIRTY_DAYS_MS } : {}),
     });
@@ -24,7 +24,7 @@ export class AuthCookieService {
     res.cookie(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
       secure: process.env['NODE_ENV'] !== 'development',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
     });
   }

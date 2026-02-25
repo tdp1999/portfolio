@@ -91,6 +91,67 @@ describe('AppController Integration Tests', () => {
     });
   });
 
+  describe('CORS Configuration', () => {
+    let corsApp: INestApplication;
+
+    beforeEach(async () => {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(PrismaService)
+        .useValue({
+          $connect: jest.fn(),
+          $disconnect: jest.fn(),
+        })
+        .overrideProvider(EMAIL_SERVICE)
+        .useValue({
+          sendEmail: jest.fn(),
+        })
+        .overrideProvider(GoogleStrategy)
+        .useValue({})
+        .compile();
+
+      corsApp = moduleFixture.createNestApplication();
+      corsApp.enableCors({
+        origin: ['http://localhost:4200', 'http://localhost:4300'],
+        credentials: true,
+      });
+      await corsApp.init();
+    });
+
+    afterEach(async () => {
+      await corsApp.close();
+    });
+
+    it('should include CORS headers for allowed origin', async () => {
+      const response = await request(corsApp.getHttpServer())
+        .get('/')
+        .set('Origin', 'http://localhost:4300');
+
+      expect(response.headers['access-control-allow-origin']).toBe('http://localhost:4300');
+      expect(response.headers['access-control-allow-credentials']).toBe('true');
+    });
+
+    it('should not include CORS headers for disallowed origin', async () => {
+      const response = await request(corsApp.getHttpServer())
+        .get('/')
+        .set('Origin', 'http://evil.com');
+
+      expect(response.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    it('should handle preflight OPTIONS request', async () => {
+      const response = await request(corsApp.getHttpServer())
+        .options('/')
+        .set('Origin', 'http://localhost:4300')
+        .set('Access-Control-Request-Method', 'POST');
+
+      expect(response.status).toBe(204);
+      expect(response.headers['access-control-allow-origin']).toBe('http://localhost:4300');
+      expect(response.headers['access-control-allow-credentials']).toBe('true');
+    });
+  });
+
   describe('Integration: Controller + Service', () => {
     it('should properly wire controller and service together', async () => {
       // Arrange & Act
