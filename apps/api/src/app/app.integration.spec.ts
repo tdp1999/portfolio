@@ -5,6 +5,7 @@ import request from 'supertest';
 import { AppModule } from './app.module';
 import { PrismaService } from '../infrastructure/prisma';
 import { EMAIL_SERVICE } from '../modules/email';
+import { GoogleStrategy } from '../modules/auth/infrastructure/strategies/google.strategy';
 
 describe('AppController Integration Tests', () => {
   let app: INestApplication;
@@ -23,6 +24,8 @@ describe('AppController Integration Tests', () => {
       .useValue({
         sendEmail: jest.fn(),
       })
+      .overrideProvider(GoogleStrategy)
+      .useValue({})
       .compile();
 
     app = moduleFixture.createNestApplication();
