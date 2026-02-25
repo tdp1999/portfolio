@@ -1,4 +1,4 @@
-import { CreateUserSchema, UpdateUserSchema, LoginSchema } from './user.dto';
+import { CreateUserSchema, UpdateUserSchema } from './user.dto';
 
 const VALID_PASSWORD = 'Strong#Pass1';
 
@@ -108,32 +108,6 @@ describe('UpdateUserSchema', () => {
 
   it('should reject empty name string', () => {
     const result = UpdateUserSchema.safeParse({ name: '' });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe('LoginSchema', () => {
-  it('should accept valid credentials', () => {
-    const result = LoginSchema.safeParse({
-      email: 'test@example.com',
-      password: 'any',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('should reject invalid email', () => {
-    const result = LoginSchema.safeParse({
-      email: 'bad',
-      password: 'any',
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject empty password', () => {
-    const result = LoginSchema.safeParse({
-      email: 'test@example.com',
-      password: '',
-    });
     expect(result.success).toBe(false);
   });
 });

@@ -25,9 +25,10 @@ export class TokenService {
     } as JwtSignOptions);
   }
 
-  verifyAccessToken(token: string): AccessTokenPayload {
+  verifyAccessToken(token: string, options?: { ignoreExpiration?: boolean }): AccessTokenPayload {
     return this.jwtService.verify<AccessTokenPayload>(token, {
       secret: this.config.jwtSecret,
+      ...options,
     });
   }
 

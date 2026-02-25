@@ -18,11 +18,5 @@ export const CreateUserSchema = UserFieldsSchema.extend({
 
 export const UpdateUserSchema = nonEmptyPartial(UserFieldsSchema);
 
-export const LoginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(1),
-});
-
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;
-export type LoginDto = z.infer<typeof LoginSchema>;

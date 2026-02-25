@@ -142,6 +142,14 @@ export class User {
     });
   }
 
+  updatePassword(hashedPassword: string): User {
+    return new User({
+      ...this.props,
+      password: hashedPassword,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
   incrementFailedAttempts(): User {
     return new User({
       ...this.props,
