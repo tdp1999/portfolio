@@ -1,6 +1,6 @@
 # Task: Auth - JWT Infrastructure & Module Scaffold
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,14 +12,14 @@ Foundation for all auth endpoints. Installs `@nestjs/jwt`, creates the AuthModul
 
 ## Acceptance Criteria
 
-- [ ] `@nestjs/jwt` installed
-- [ ] AuthModule created at `apps/api/src/modules/auth/` with CQRS structure
-- [ ] `TokenService` created — handles access token signing/verification and refresh token generation/hashing
-- [ ] `JwtAccessGuard` implemented — extracts Bearer token from Authorization header, verifies JWT, checks `tokenVersion` against DB
-- [ ] Auth config (JWT secrets, expiry times) loaded from environment variables
-- [ ] AuthModule registered in AppModule
-- [ ] Unit tests for TokenService (sign, verify, refresh token generation)
-- [ ] Unit tests for JwtAccessGuard (valid token, expired, invalid, version mismatch)
+- [x] `@nestjs/jwt` installed
+- [x] AuthModule created at `apps/api/src/modules/auth/` with CQRS structure
+- [x] `TokenService` created — handles access token signing/verification and refresh token generation/hashing
+- [x] `JwtAccessGuard` implemented — extracts Bearer token from Authorization header, verifies JWT, checks `tokenVersion` against DB
+- [x] Auth config (JWT secrets, expiry times) loaded from environment variables
+- [x] AuthModule registered in AppModule
+- [x] Unit tests for TokenService (sign, verify, refresh token generation)
+- [x] Unit tests for JwtAccessGuard (valid token, expired, invalid, version mismatch)
 
 ## Technical Notes
 
@@ -56,3 +56,8 @@ Auth config env vars: `JWT_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRY` (d
 ## Complexity: L
 
 ## Progress Log
+- [2026-02-25] Started
+- [2026-02-25] Installed @nestjs/jwt@11.0.2
+- [2026-02-25] Created TokenService with 10 passing tests (sign, verify, refresh token gen/hash/compare)
+- [2026-02-25] Created JwtAccessGuard with 6 passing tests (missing header, invalid token, user not found, version mismatch, success)
+- [2026-02-25] Created AuthModule with config, registered in AppModule. Type check clean. 16/16 tests pass. Done.
