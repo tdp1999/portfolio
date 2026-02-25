@@ -475,3 +475,24 @@ bootstrapApplication(AppComponent, {
 | Components              | NgModule-based         | Standalone       |
 | Change Detection        | zone.js (automatic)    | Zoneless (v21+)  |
 | Async data with signals | Manual signal + effect | resource() (v19) |
+
+---
+
+## 12. Test Configuration
+
+### tsconfig.spec.json for Angular libs
+
+Angular libs (any lib importing `@angular/*`) must use `bundler` module resolution in their `tsconfig.spec.json`:
+
+```json
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "moduleResolution": "bundler"
+  }
+}
+```
+
+**Why:** The Nx generator defaults to `"module": "commonjs"` and `"moduleResolution": "node10"`, which cannot resolve Angular's package exports (e.g., `@angular/core/testing`).
+
+**Scope:** Only Angular/frontend libs. Pure non-Angular shared libs (types, utils, errors) and backend (NestJS) can keep `node10`.

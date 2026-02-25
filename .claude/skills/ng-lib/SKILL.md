@@ -91,11 +91,17 @@ nx g @nx/angular:library feature-{name} \
 
 ## Post-Generation
 
-After generating, remind user to:
+After generating, do the following:
 
 1. Update `tsconfig.base.json` paths if not auto-added
 2. Verify tags in `project.json`
-3. Run `pnpm lint` to verify module boundaries
+3. **Fix `tsconfig.spec.json`** — The Nx generator defaults to `"module": "commonjs"` and `"moduleResolution": "node10"`, which breaks Angular package resolution (e.g., `@angular/core/testing`). Update to:
+   ```json
+   "module": "es2015",
+   "moduleResolution": "bundler"
+   ```
+   This only applies to Angular/frontend libs. Pure backend or non-Angular shared libs (types, utils, errors) can keep `node10`.
+4. Run `pnpm lint` to verify module boundaries
 
 ## Module Boundary Rules
 
