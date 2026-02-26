@@ -1,6 +1,6 @@
 # Task: Build OAuth Callback Page
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement the `/auth/callback` page that handles the Google OAuth redirect, parses the access token, and bootstraps the session.
@@ -9,14 +9,14 @@ Implement the `/auth/callback` page that handles the Google OAuth redirect, pars
 After Google OAuth, the API redirects to `FRONTEND_URL/auth/callback#token=<accessToken>`. This page must extract the token from the URL fragment, store it in the AuthStore, fetch the current user, and redirect to the dashboard.
 
 ## Acceptance Criteria
-- [ ] Route `/auth/callback` added to `app.routes.ts` (under blank layout)
-- [ ] Component reads `#token=<value>` from URL fragment
-- [ ] Stores token in AuthStore via a dedicated method (e.g., `setAccessToken()`)
-- [ ] Calls `AuthStore.fetchCurrentUser()` to populate user state
-- [ ] On success: clears URL fragment via `window.history.replaceState()`, redirects to `/`
-- [ ] On failure (no token or fetch fails): redirects to `/auth/login` with error toast
-- [ ] Shows full-page spinner while processing
-- [ ] No sensitive data remains in URL after processing
+- [x] Route `/auth/callback` added to `app.routes.ts` (under blank layout)
+- [x] Component reads `#token=<value>` from URL fragment
+- [x] Stores token in AuthStore via a dedicated method (e.g., `setAccessToken()`)
+- [x] Calls `AuthStore.fetchCurrentUser()` to populate user state
+- [x] On success: clears URL fragment via `window.history.replaceState()`, redirects to `/`
+- [x] On failure (no token or fetch fails): redirects to `/auth/login` with error toast
+- [x] Shows full-page spinner while processing
+- [x] No sensitive data remains in URL after processing
 
 ## Technical Notes
 - URL fragment (`#token=...`) is never sent to the server — safe from server logs

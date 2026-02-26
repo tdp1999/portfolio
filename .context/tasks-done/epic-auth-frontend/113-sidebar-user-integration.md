@@ -1,6 +1,6 @@
 # Task: Wire Auth User Data into Sidebar
 
-## Status: pending
+## Status: done
 
 ## Goal
 Replace the hardcoded "User" / "user@example.com" placeholder in the sidebar footer with real auth user data and add logout functionality.
@@ -9,11 +9,11 @@ Replace the hardcoded "User" / "user@example.com" placeholder in the sidebar foo
 The `ConsoleMainLayoutComponent` uses the sidebar from `@portfolio/shared/ui/sidebar`. The sidebar footer currently shows static placeholder text. It should display the authenticated user's name and email, plus a logout button.
 
 ## Acceptance Criteria
-- [ ] Sidebar footer shows `AuthStore.user().name` and `AuthStore.user().email`
-- [ ] Logout button/menu item in sidebar footer
-- [ ] Logout calls `AuthStore.logout()`, shows success toast, redirects to login
-- [ ] "Logout All Devices" option (secondary, e.g., in a dropdown menu)
-- [ ] Graceful handling if user is null (shouldn't happen behind auth guard, but defensive)
+- [x] Sidebar footer shows `AuthStore.user().name` and `AuthStore.user().email`
+- [x] Logout button/menu item in sidebar footer
+- [x] Logout calls `AuthStore.logout()`, shows success toast, redirects to login
+- [x] "Logout All Devices" option (secondary, e.g., in a dropdown menu)
+- [x] Graceful handling if user is null (shouldn't happen behind auth guard, but defensive)
 
 ## Technical Notes
 - Inject `AuthStore` into `ConsoleMainLayoutComponent`

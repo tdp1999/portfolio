@@ -32,6 +32,8 @@
   - Tasks 067-075, 084-088 → archived in `tasks-done/`
 - [x] **Authentication** (epic-authentication) - Completed 2026-02-25
   - Tasks 089-100 → archived in `tasks-done/epic-authentication/`
+- [x] **Auth Frontend UI & Integration** (epic-auth-frontend) - Completed 2026-02-26
+  - Tasks 101-114 → archived in `tasks-done/epic-auth-frontend/`
 
 ## In Progress
 
@@ -122,11 +124,7 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
-### Epic: Authentication (epic-authentication) - COMPLETE ✓
-
-> Tasks 089-100 → archived in `tasks-done/epic-authentication/`
-
-### Epic: Auth Frontend UI & Integration (epic-auth-frontend) - broken-down
+### Epic: Auth Frontend UI & Integration (epic-auth-frontend) - COMPLETE ✓
 
 > **Approach:** Foundation first (CORS, HTTP, store), then UI components, then pages, then wiring.
 
@@ -143,30 +141,29 @@
 - [x] 106-toast-service - Toast notification system (M) ✓
 - [x] 107-loading-indicators - Loading bar, skeleton, full-page spinner (M) ✓
 
-#### Phase 3: Auth Pages (4 tasks) — 3/4 COMPLETE
+#### Phase 3: Auth Pages (4 tasks) — COMPLETE
 
 - [x] 108-error-interceptor - Error interceptor with toast integration (S) ✓
 - [x] 109-login-page - Login page with form and Google SSO (M) ✓
 - [x] 110-forgot-reset-password-pages - Forgot and Reset password pages (M) ✓
-- [ ] 111-oauth-callback-page - Google OAuth callback handler (S)
+- [x] 111-oauth-callback-page - Google OAuth callback handler (S) ✓
 
-#### Phase 4: Integration (3 tasks)
+#### Phase 4: Integration (3 tasks) — COMPLETE
 
-- [ ] 112-app-bootstrap-auth - Wire auth bootstrap into app init (M)
-- [ ] 113-sidebar-user-integration - Wire user data into sidebar (S)
-- [ ] 114-csp-headers - Content Security Policy headers (S)
+- [x] 112-app-bootstrap-auth - Wire auth bootstrap into app init (M) ✓
+- [x] 113-sidebar-user-integration - Wire user data into sidebar (S) ✓
+- [x] 114-csp-headers - Content Security Policy headers (S) ✓
 
 ## Up Next
 
-**Next Task:** **111-oauth-callback-page** - Google OAuth callback handler (Auth Frontend Phase 3)
+**Next Task:** **057-tag-prisma-schema** - Tag Prisma schema + migration (DB Architecture Sprint 3)
 
 ## Statistics
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 102    |
+| Done (archived)          | 106    |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Auth Frontend)  | 4      |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **115** |
 
