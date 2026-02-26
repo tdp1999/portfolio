@@ -1,24 +1,44 @@
 /* Global styles for the console app */
 
+/* Angular Material */
+@use '@angular/material' as mat;
+
 /* Shared design tokens */
 @use '../../../libs/landing/shared/ui/src/styles/tokens/colors.scss' as colors-tokens;
 @use '../../../libs/landing/shared/ui/src/styles/tokens/typography.scss' as typography-tokens;
 @use '../../../libs/landing/shared/ui/src/styles/themes/dark.scss' as dark-theme;
 @use '../../../libs/landing/shared/ui/src/styles/base/typography.scss' as typography-base;
 
-/* Angular Material */
-@use '@angular/material' as mat;
+/* Console Material component token overrides (loaded as module, emitted in source order) */
+@use '../../../libs/console/shared/ui/src/styles/material/overrides' as console-material;
 
 html {
+  color-scheme: light dark;
+
   @include mat.theme(
     (
       color: (
         theme-type: dark,
         primary: mat.$azure-palette,
       ),
+      typography: 'Inter',
       density: (
         scale: 0,
       ),
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-text-on-primary),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+      surface-container: var(--color-surface),
+      surface-container-low: var(--color-surface),
+      surface-container-lowest: var(--color-surface),
+      surface-container-high: var(--color-surface-elevated),
+      surface-container-highest: var(--color-surface-elevated),
     )
   );
 }
