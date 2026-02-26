@@ -6,6 +6,13 @@ import {
 } from '@portfolio/console/shared/ui';
 
 export const appRoutes: Route[] = [
+  // OAuth callback — no guard (transitions from guest to authenticated)
+  {
+    path: 'auth/callback',
+    component: ConsoleBlankLayoutComponent,
+    children: [{ path: '', loadComponent: () => import('./pages/auth/callback/callback') }],
+  },
+
   // Auth routes — blank layout (no sidebar)
   {
     path: 'auth',

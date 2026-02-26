@@ -1,7 +1,7 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
@@ -32,13 +32,6 @@ export const appConfig: ApplicationConfig = {
       urlPrefix: 'api',
       timeout: 30_000,
     }),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => {
-        const authStore = inject(AuthStore);
-        return () => authStore.bootstrap();
-      },
-      multi: true,
-    },
+    provideAppInitializer(() => inject(AuthStore).bootstrap()),
   ],
 };
