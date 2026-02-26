@@ -6,6 +6,23 @@
 @use '../../../libs/landing/shared/ui/src/styles/themes/dark.scss' as dark-theme;
 @use '../../../libs/landing/shared/ui/src/styles/base/typography.scss' as typography-base;
 
+/* Angular Material */
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$azure-palette,
+      ),
+      density: (
+        scale: 0,
+      ),
+    )
+  );
+}
+
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;

@@ -42,7 +42,7 @@ describe('ApiService', () => {
     });
 
     it('should pass query params', () => {
-      service.get('users', { role: 'admin' }).subscribe();
+      service.get('users', { params: { role: 'admin' } }).subscribe();
 
       const req = httpTesting.expectOne('http://localhost:3000/api/users?role=admin');
       expect(req.request.params.get('role')).toBe('admin');

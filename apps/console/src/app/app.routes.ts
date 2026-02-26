@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { authGuard, guestGuard } from '@portfolio/console/shared/data-access';
 import {
   ConsoleBlankLayoutComponent,
   ConsoleMainLayoutComponent,
@@ -6,23 +7,39 @@ import {
 
 export const appRoutes: Route[] = [
   // Auth routes — blank layout (no sidebar)
-  // TODO: Add auth guard to redirect authenticated users
   {
     path: 'auth',
     component: ConsoleBlankLayoutComponent,
+    canActivate: [guestGuard],
     children: [
       { path: 'login', loadComponent: () => import('./pages/auth/login/login') },
-      { path: 'signup', loadComponent: () => import('./pages/auth/signup/signup') },
+      {
+        path: 'forgot-password',
+        loadComponent: () => import('./pages/auth/forgot-password/forgot-password'),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => import('./pages/auth/reset-password/reset-password'),
+      },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
 
+  // Error pages — no layout wrapper
+  {
+    path: 'error/:code',
+    loadComponent: () => import('./pages/error/error-page'),
+  },
+
   // Main routes — sidebar layout
-  // TODO: Add auth guard to protect routes
   {
     path: '',
     component: ConsoleMainLayoutComponent,
-    children: [{ path: '', loadComponent: () => import('./pages/home/home') }],
+    canActivate: [authGuard],
+    children: [
+      { path: '', loadComponent: () => import('./pages/home/home') },
+      { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
+    ],
   },
 
   // Wildcard

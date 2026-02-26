@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { SidebarModule } from '@portfolio/shared/ui/sidebar';
 
 @Component({
   selector: 'console-main-layout',
   standalone: true,
-  imports: [RouterOutlet, SidebarModule],
+  imports: [RouterLink, RouterOutlet, SidebarModule],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
