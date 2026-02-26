@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import {
-  AbstractControl,
+  ReactiveFormsModule,
   FormControl,
   FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 import { ApiService } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
@@ -15,7 +20,15 @@ import { ToastService } from '@portfolio/console/shared/ui';
 @Component({
   selector: 'console-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,35 +1,12 @@
 import { Route } from '@angular/router';
-import { authGuard, guestGuard } from '@portfolio/console/shared/data-access';
-import {
-  ConsoleBlankLayoutComponent,
-  ConsoleMainLayoutComponent,
-} from '@portfolio/console/shared/ui';
+import { authGuard } from '@portfolio/console/shared/data-access';
+import { ConsoleMainLayoutComponent } from '@portfolio/console/shared/ui';
 
 export const appRoutes: Route[] = [
-  // OAuth callback — no guard (transitions from guest to authenticated)
-  {
-    path: 'auth/callback',
-    component: ConsoleBlankLayoutComponent,
-    children: [{ path: '', loadComponent: () => import('./pages/auth/callback/callback') }],
-  },
-
-  // Auth routes — blank layout (no sidebar)
+  // Auth routes — delegated to feature-auth library
   {
     path: 'auth',
-    component: ConsoleBlankLayoutComponent,
-    canActivate: [guestGuard],
-    children: [
-      { path: 'login', loadComponent: () => import('./pages/auth/login/login') },
-      {
-        path: 'forgot-password',
-        loadComponent: () => import('./pages/auth/forgot-password/forgot-password'),
-      },
-      {
-        path: 'reset-password',
-        loadComponent: () => import('./pages/auth/reset-password/reset-password'),
-      },
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
-    ],
+    loadChildren: () => import('@portfolio/console/feature-auth').then((m) => m.authRoutes),
   },
 
   // Error pages — no layout wrapper
@@ -42,7 +19,7 @@ export const appRoutes: Route[] = [
   {
     path: '',
     component: ConsoleMainLayoutComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     children: [
       { path: '', loadComponent: () => import('./pages/home/home') },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },

@@ -1,45 +1,19 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 
 @Component({
   selector: 'console-callback',
   standalone: true,
-  template: `<div class="callback-spinner">
-    <div class="spinner"></div>
-    <p>Signing you in…</p>
-  </div>`,
-  styles: `
-    .callback-spinner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      gap: 1rem;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #e5e7eb;
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    p {
-      color: #6b7280;
-      font-size: 0.875rem;
-    }
+  imports: [MatProgressSpinnerModule],
+  template: `
+    <div class="flex h-dvh flex-col items-center justify-center gap-4">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="text-sm text-text-muted">Signing you in…</p>
+    </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

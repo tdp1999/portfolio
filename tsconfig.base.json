@@ -30,7 +30,8 @@
       "@portfolio/shared/ui/sidebar": ["libs/shared/ui/sidebar/src/index.ts"],
       "@portfolio/console/shared/ui": ["libs/console/shared/ui/src/index.ts"],
       "@portfolio/console/shared/data-access": ["libs/console/shared/data-access/src/index.ts"],
-      "@portfolio/console/shared/util": ["libs/console/shared/util/src/index.ts"]
+      "@portfolio/console/shared/util": ["libs/console/shared/util/src/index.ts"],
+      "@portfolio/console/feature-auth": ["libs/console/feature-auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
