@@ -1,12 +1,64 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthStore } from '@portfolio/console/shared/data-access';
+import { ToastService } from '@portfolio/console/shared/ui';
 
 @Component({
   selector: 'console-login',
   standalone: true,
-  template: `
-    <h2 class="text-xl font-semibold text-text">Sign in</h2>
-    <p class="mt-2 text-sm text-text-secondary">Enter your credentials to continue.</p>
-  `,
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class LoginComponent {}
+export default class LoginComponent {
+  private readonly authStore = inject(AuthStore);
+  private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly submitting = signal(false);
+  readonly showPassword = signal(false);
+
+  readonly form = new FormGroup({
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    rememberMe: new FormControl(false, { nonNullable: true }),
+  });
+
+  togglePassword(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.submitting.set(true);
+    const { email, password, rememberMe } = this.form.getRawValue();
+
+    this.authStore.login(email, password, rememberMe).subscribe({
+      next: () => {
+        this.toast.success('Signed in successfully');
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+        this.router.navigateByUrl(returnUrl);
+      },
+      error: () => {
+        this.submitting.set(false);
+      },
+    });
+  }
+
+  loginWithGoogle(): void {
+    this.authStore.loginWithGoogle();
+  }
+}
