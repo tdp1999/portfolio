@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (43 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (102 tasks)
 
 ## Completed Milestones
 
@@ -130,24 +130,24 @@
 
 > **Approach:** Foundation first (CORS, HTTP, store), then UI components, then pages, then wiring.
 
-#### Phase 1: Foundation (4 tasks)
+#### Phase 1: Foundation (4 tasks) — COMPLETE
 
-- [ ] 101-cors-configuration - Configure CORS for cross-subdomain auth (S)
-- [ ] 102-console-http-setup - Setup HttpClient and API config (S)
-- [ ] 103-auth-store - Signal-based AuthStore service (L)
-- [ ] 104-auth-interceptors - Auth, Refresh, CSRF interceptors (L)
+- [x] 101-cors-configuration - Configure CORS for cross-subdomain auth (S) ✓
+- [x] 102-console-http-setup - Setup HttpClient and API config (S) ✓
+- [x] 103-auth-store - Signal-based AuthStore service (L) ✓
+- [x] 104-auth-interceptors - Auth, Refresh, CSRF interceptors (L) ✓
 
-#### Phase 2: UI Infrastructure (3 tasks)
+#### Phase 2: UI Infrastructure (3 tasks) — COMPLETE
 
-- [ ] 105-route-guards - Auth and Guest route guards (M)
-- [ ] 106-toast-service - Toast notification system (M)
-- [ ] 107-loading-indicators - Loading bar, skeleton, full-page spinner (M)
+- [x] 105-route-guards - Auth and Guest route guards (M) ✓
+- [x] 106-toast-service - Toast notification system (M) ✓
+- [x] 107-loading-indicators - Loading bar, skeleton, full-page spinner (M) ✓
 
-#### Phase 3: Auth Pages (4 tasks)
+#### Phase 3: Auth Pages (4 tasks) — 3/4 COMPLETE
 
-- [ ] 108-error-interceptor - Error interceptor with toast integration (S)
-- [ ] 109-login-page - Login page with form and Google SSO (M)
-- [ ] 110-forgot-reset-password-pages - Forgot and Reset password pages (M)
+- [x] 108-error-interceptor - Error interceptor with toast integration (S) ✓
+- [x] 109-login-page - Login page with form and Google SSO (M) ✓
+- [x] 110-forgot-reset-password-pages - Forgot and Reset password pages (M) ✓
 - [ ] 111-oauth-callback-page - Google OAuth callback handler (S)
 
 #### Phase 4: Integration (3 tasks)
@@ -158,15 +158,15 @@
 
 ## Up Next
 
-**Next Task:** **101-cors-configuration** - Configure CORS (Auth Frontend Phase 1)
+**Next Task:** **111-oauth-callback-page** - Google OAuth callback handler (Auth Frontend Phase 3)
 
 ## Statistics
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 92     |
+| Done (archived)          | 102    |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Auth Frontend)  | 14     |
+| Pending (Auth Frontend)  | 4      |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **115** |
 

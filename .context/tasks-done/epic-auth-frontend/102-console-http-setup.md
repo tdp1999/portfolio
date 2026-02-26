@@ -1,6 +1,6 @@
 # Task: Setup HttpClient and API Configuration
 
-## Status: done
+## Status: completed
 
 ## Goal
 Configure Angular's `HttpClient` with `withFetch()` in the console app and create a reusable API service with base URL configuration, following the notum `ApiService` pattern.

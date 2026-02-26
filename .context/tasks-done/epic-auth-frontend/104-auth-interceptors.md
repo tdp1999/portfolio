@@ -1,6 +1,6 @@
 # Task: Implement HTTP Interceptors (Auth, Refresh, CSRF)
 
-## Status: pending
+## Status: completed
 
 ## Goal
 Create three functional interceptors: auth header attachment, automatic token refresh on 401, and CSRF token forwarding.

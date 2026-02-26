@@ -1,6 +1,6 @@
 # Task: Implement Auth and Guest Route Guards
 
-## Status: pending
+## Status: completed
 
 ## Goal
 Create `authGuard` and `guestGuard` to protect dashboard routes and redirect appropriately.

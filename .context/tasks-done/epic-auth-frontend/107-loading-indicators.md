@@ -1,6 +1,6 @@
 # Task: Implement Three Loading Indicator Types
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create three distinct loading indicators: route-change loading bar, skeleton loader, and full-page spinner.
@@ -9,14 +9,15 @@ Create three distinct loading indicators: route-change loading bar, skeleton loa
 The console app needs visual feedback for three scenarios: navigation between routes, data fetching within pages, and blocking operations like auth bootstrap.
 
 ## Acceptance Criteria
-- [ ] **Loading bar:** Thin animated bar at top of viewport, triggered by Router `NavigationStart`/`NavigationEnd` events
-- [ ] **Skeleton loader:** Reusable component with configurable shape (text line, rectangle, circle) for content placeholders
-- [ ] **Full-page spinner:** Overlay covering entire viewport with centered spinner, blocks interaction
-- [ ] `LoadingBarComponent` placed in app root, listens to Router events
-- [ ] `FullPageSpinnerComponent` controlled via a `SpinnerService` (show/hide)
-- [ ] `SkeletonComponent` usable inline in any template
-- [ ] All three use Tailwind + CSS animations (no external deps)
-- [ ] Unit tests for `SpinnerService` and `LoadingBarComponent`
+- [x] **Loading bar:** Thin animated bar at top of viewport, triggered by Router `NavigationStart`/`NavigationEnd` events
+- [x] **Skeleton loader:** Reusable component with configurable shape (text line, rectangle, circle) for content placeholders
+- [x] **Full-page spinner:** Overlay covering entire viewport with centered spinner, blocks interaction
+- [x] `LoadingBarComponent` placed in app root, listens to Router events
+- [x] `FullPageSpinnerComponent` controlled via a `SpinnerService` (show/hide)
+- [x] `SkeletonComponent` usable inline in any template
+- [x] All three use Tailwind + CSS animations (no external deps)
+- [x] Unit tests for `SpinnerService` and `LoadingBarComponent`
+- [x] Demo added to `/ddl` page showcasing all three loading indicator types
 
 ## Technical Notes
 - Loading bar: use CSS animation with `translateX` for indeterminate progress

@@ -1,6 +1,6 @@
 # Task: Configure CORS for Cross-Subdomain Auth
 
-## Status: done
+## Status: completed
 
 ## Goal
 Enable CORS on the NestJS API so the console app (`console.phuong.com` / `localhost:4300`) can make credentialed requests.

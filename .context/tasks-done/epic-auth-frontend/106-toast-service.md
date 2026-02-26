@@ -1,6 +1,6 @@
 # Task: Create Toast Notification System
 
-## Status: pending
+## Status: done
 
 ## Goal
 Build a lightweight toast notification service and component for the console app.
@@ -9,16 +9,17 @@ Build a lightweight toast notification service and component for the console app
 Auth flows need user feedback: success on login, error on invalid credentials, "session expired" on forced logout. The toast system will be reused by all future console features.
 
 ## Acceptance Criteria
-- [ ] `ToastService` with methods: `success(message)`, `error(message)`, `warning(message)`, `info(message)`
-- [ ] `ToastContainerComponent` renders active toasts, positioned top-right
-- [ ] Toasts auto-dismiss after 5 seconds (configurable per toast)
-- [ ] Toasts are stackable (multiple visible at once)
-- [ ] Each toast has a close button for manual dismiss
-- [ ] Visual distinction per type (success=green, error=red, warning=amber, info=blue)
-- [ ] Smooth enter/exit animations (CSS only, simple fade+slide)
-- [ ] `ToastContainerComponent` placed in app root component
-- [ ] Unit tests for `ToastService`
-- [ ] Exported from `@portfolio/console/shared/ui`
+- [x] `ToastService` with methods: `success(message)`, `error(message)`, `warning(message)`, `info(message)`
+- [x] `ToastContainerComponent` renders active toasts, positioned top-right
+- [x] Toasts auto-dismiss after 5 seconds (configurable per toast)
+- [x] Toasts are stackable (multiple visible at once)
+- [x] Each toast has a close button for manual dismiss
+- [x] Visual distinction per type (success=green, error=red, warning=amber, info=blue)
+- [x] Smooth enter/exit animations (CSS only, simple fade+slide)
+- [x] `ToastContainerComponent` placed in app root component
+- [x] Unit tests for `ToastService`
+- [x] Exported from `@portfolio/console/shared/ui`
+- [x] Demo added to `/ddl` page showcasing all toast types
 
 ## Technical Notes
 - Use Signals for toast state (array of active toasts)
