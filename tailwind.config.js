@@ -28,6 +28,8 @@ module.exports = {
         'primary-container': 'var(--color-primary-container)',
         background: 'var(--color-background)',
         surface: 'var(--color-surface)',
+        'surface-alt': 'var(--color-surface-alt)',
+        'surface-hover': 'var(--color-surface-hover)',
         'surface-elevated': 'var(--color-surface-elevated)',
         text: 'var(--color-text)',
         'text-secondary': 'var(--color-text-secondary)',

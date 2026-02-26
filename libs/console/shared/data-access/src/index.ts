@@ -11,3 +11,5 @@ export {
 export type { ErrorHandler } from './lib/interceptors';
 export { ERROR_HANDLER, SKIP_ERROR_HANDLING } from './lib/interceptors';
 export { authGuard, guestGuard } from './lib/guards';
+export { ThemeService } from './lib/theme.service';
+export type { Theme } from './lib/theme.service';

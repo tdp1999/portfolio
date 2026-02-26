@@ -1,6 +1,8 @@
 .dark {
   --color-background: #0f1117; /* softened dark, not pure black */
   --color-surface: #1a1d27; /* slightly blue-tinted dark */
+  --color-surface-alt: #1e2130; /* subtle input background */
+  --color-surface-hover: #252a3a; /* hover state */
   --color-surface-elevated: #22263a; /* elevated surface with depth */
 
   --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 58%); /* slightly muted accent */
