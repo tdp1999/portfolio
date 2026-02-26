@@ -5,9 +5,54 @@
     <title>console</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      CSP Notes:
+      - 'unsafe-inline' in style-src is required by Tailwind
+      - connect-src includes localhost:3000 for dev; remove in production
+      - To tighten: add nonce-based script-src, remove 'unsafe-inline' from style-src if Tailwind supports it
+      - frame-ancestors is set via helmet on the API (meta tags don't support it)
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' http://localhost:3000 https://api.phuong.com https://accounts.google.com;
+        img-src 'self' data:;
+        font-src 'self';
+        frame-src https://accounts.google.com;
+        object-src 'none';
+        base-uri 'self';
+      "
+    />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
-    <console-root></console-root>
+    <console-root>
+      <!-- Shown until Angular bootstraps; replaced automatically -->
+      <style>
+        .boot-spinner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+        }
+        .boot-spinner div {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #e5e7eb;
+          border-top-color: #3b82f6;
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <div class="boot-spinner"><div></div></div>
+    </console-root>
   </body>
 </html>

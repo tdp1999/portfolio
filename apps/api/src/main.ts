@@ -6,6 +6,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import { DomainExceptionFilter } from './infrastructure/filters/domain-exception.filter';
 
@@ -24,6 +25,24 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Helmet CSP for API-served responses (e.g. Swagger UI, error pages).
+  // Frontend CSP is set via <meta> tag in index.html.
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:'],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+          baseUri: ["'self'"],
+        },
+      },
+    })
+  );
   app.use(cookieParser());
   app.useGlobalFilters(new DomainExceptionFilter());
   const port = process.env.PORT || 3000;
