@@ -1,6 +1,6 @@
 # Task: E2E Login Page Tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 Comprehensive E2E tests for the login page: happy paths, error cases, and form validation.

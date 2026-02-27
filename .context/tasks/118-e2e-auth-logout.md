@@ -1,6 +1,6 @@
 # Task: E2E Logout Tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 E2E tests for logout and logout-all flows.
@@ -9,10 +9,10 @@ E2E tests for logout and logout-all flows.
 Verifies that logout clears session and redirects, and logout-all invalidates all sessions.
 
 ## Acceptance Criteria
-- [ ] `auth-logout.spec.ts` created
-- [ ] Happy: logout → redirected to login, dashboard inaccessible
-- [ ] Happy: logout-all → token version bumped, other sessions invalid
-- [ ] Cookie: refresh token cookie cleared after logout
+- [x] `auth-logout.spec.ts` created
+- [x] Happy: logout → redirected to login, dashboard inaccessible
+- [x] Happy: logout-all → token version bumped, other sessions invalid
+- [x] Cookie: refresh token cookie cleared after logout
 
 ## Technical Notes
 - Use `authenticatedPage` fixture for pre-logged-in state
@@ -27,3 +27,4 @@ Verifies that logout clears session and redirects, and logout-all invalidates al
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-27] Started — created auth-logout.spec.ts with logout redirect/cookie and logout-all multi-session tests
