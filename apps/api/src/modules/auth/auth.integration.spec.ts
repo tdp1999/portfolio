@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import request from 'supertest';
 import cookieParser from 'cookie-parser';
 import { hashPassword } from '@portfolio/shared/utils';
@@ -95,6 +96,8 @@ describe('Auth Integration Tests', () => {
       .useValue({})
       .overrideProvider(USER_REPOSITORY)
       .useValue(userRepo)
+      .overrideGuard(ThrottlerGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
