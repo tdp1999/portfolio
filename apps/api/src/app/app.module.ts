@@ -8,6 +8,8 @@ import { EmailModule } from '../modules/email';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+const isProduction = process.env['NODE_ENV'] === 'production';
+
 @Module({
   imports: [
     PrismaModule,
@@ -15,7 +17,10 @@ import { AppService } from './app.service';
     EmailModule,
     UserModule,
     AuthModule,
-    ThrottlerModule.forRoot({ throttlers: [{ ttl: 60000, limit: 60 }] }),
+    ThrottlerModule.forRoot({
+      skipIf: () => !isProduction,
+      throttlers: [{ ttl: 60000, limit: 60 }],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

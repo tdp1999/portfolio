@@ -42,7 +42,7 @@ export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordComm
     const updated = user.setPasswordResetToken(hashedToken, expiresAt);
     await this.repo.update(user.id, updated);
 
-    const resetLink = `${FRONTEND_URL}/auth/reset-password?token=${rawToken}&id=${user.id}`;
+    const resetLink = `${FRONTEND_URL}/auth/reset-password?token=${rawToken}&userId=${user.id}`;
     await this.emailService.sendEmail({
       to: user.email,
       subject: 'Password Reset',
