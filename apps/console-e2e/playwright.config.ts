@@ -7,6 +7,10 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './src',
 
+  // Global setup/teardown for test data seeding
+  globalSetup: require.resolve('./src/global-setup'),
+  globalTeardown: require.resolve('./src/global-teardown'),
+
   // Run tests in files in parallel
   fullyParallel: true,
 
