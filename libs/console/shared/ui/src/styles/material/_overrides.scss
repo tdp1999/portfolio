@@ -1,43 +1,91 @@
-/* Console Material Token Overrides */
-/* Maps Material Design component tokens to the shared design system */
+@use '@angular/material' as mat;
 
-/* Form Field */
+/* Console Material Component Overrides */
+/* Uses official mat.*-overrides() API for stable, type-checked token customization */
+
+:root {
+  /* Form Field */
+  @include mat.form-field-overrides(
+    (
+      filled-active-indicator-color: var(--color-border),
+      filled-focus-active-indicator-color: var(--color-primary),
+      filled-hover-active-indicator-color: var(--color-border-strong),
+      filled-container-color: var(--color-surface-alt),
+      filled-input-text-color: var(--color-text),
+      filled-label-text-color: var(--color-text-muted),
+      filled-focus-label-text-color: var(--color-primary),
+      filled-hover-label-text-color: var(--color-text-secondary),
+      filled-error-focus-active-indicator-color: var(--color-error),
+      filled-error-active-indicator-color: var(--color-error),
+      filled-error-label-text-color: var(--color-error),
+      filled-error-focus-label-text-color: var(--color-error),
+      outlined-outline-color: var(--color-border),
+      outlined-focus-outline-color: var(--color-primary),
+      outlined-hover-outline-color: var(--color-border-strong),
+      outlined-input-text-color: var(--color-text),
+      outlined-label-text-color: var(--color-text-muted),
+      outlined-focus-label-text-color: var(--color-primary),
+      outlined-error-outline-color: var(--color-error),
+      outlined-error-focus-outline-color: var(--color-error),
+      outlined-error-label-text-color: var(--color-error),
+      outlined-error-focus-label-text-color: var(--color-error),
+    )
+  );
+
+  /* Button */
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--color-primary),
+      filled-label-text-color: var(--color-text-on-primary),
+      filled-hover-state-layer-opacity: 0.08,
+      outlined-outline-color: var(--color-border),
+      outlined-label-text-color: var(--color-text),
+      outlined-hover-state-layer-opacity: 0.04,
+      outlined-container-height: 30px,
+    )
+  );
+
+  /* Menu */
+  @include mat.menu-overrides(
+    (
+      container-color: var(--color-surface),
+      item-label-text-color: var(--color-text),
+      item-hover-state-layer-color: var(--color-surface-hover),
+    )
+  );
+
+  /* Checkbox */
+  @include mat.checkbox-overrides(
+    (
+      selected-checkmark-color: var(--color-text-on-primary),
+      selected-focus-icon-color: var(--color-primary),
+      selected-hover-icon-color: var(--color-primary),
+      selected-icon-color: var(--color-primary),
+      selected-pressed-icon-color: var(--color-primary),
+      unselected-focus-icon-color: var(--color-text-secondary),
+      unselected-hover-icon-color: var(--color-text),
+      unselected-icon-color: var(--color-text-muted),
+    )
+  );
+
+  /* Progress Spinner */
+  @include mat.progress-spinner-overrides(
+    (
+      active-indicator-color: var(--color-primary),
+    )
+  );
+}
+
+/* Compact form fields — density -2 */
+@include mat.form-field-density(-2);
+
+/* Styles not covered by official token API */
 .mat-mdc-form-field {
-  --mdc-filled-text-field-container-color: var(--color-surface-alt);
-  --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
-  --mdc-filled-text-field-hover-active-indicator-color: var(--color-border-strong);
-  --mdc-filled-text-field-active-indicator-color: var(--color-border);
-  --mdc-filled-text-field-input-text-color: var(--color-text);
-  --mdc-filled-text-field-label-text-color: var(--color-text-muted);
-  --mdc-filled-text-field-focus-label-text-color: var(--color-primary);
-  --mdc-filled-text-field-hover-label-text-color: var(--color-text-secondary);
-  --mdc-filled-text-field-error-focus-active-indicator-color: var(--color-error);
-  --mdc-filled-text-field-error-active-indicator-color: var(--color-error);
-  --mdc-filled-text-field-error-label-text-color: var(--color-error);
-  --mdc-filled-text-field-error-focus-label-text-color: var(--color-error);
-
-  --mdc-outlined-text-field-outline-color: var(--color-border);
-  --mdc-outlined-text-field-focus-outline-color: var(--color-primary);
-  --mdc-outlined-text-field-hover-outline-color: var(--color-border-strong);
-  --mdc-outlined-text-field-input-text-color: var(--color-text);
-  --mdc-outlined-text-field-label-text-color: var(--color-text-muted);
-  --mdc-outlined-text-field-focus-label-text-color: var(--color-primary);
-  --mdc-outlined-text-field-error-outline-color: var(--color-error);
-  --mdc-outlined-text-field-error-focus-outline-color: var(--color-error);
-  --mdc-outlined-text-field-error-label-text-color: var(--color-error);
-  --mdc-outlined-text-field-error-focus-label-text-color: var(--color-error);
-
   --mat-form-field-error-text-color: var(--color-error);
-
   width: 100%;
 }
 
-/* Button */
 .mat-mdc-unelevated-button {
-  --mdc-filled-button-container-color: var(--color-primary);
-  --mdc-filled-button-label-text-color: var(--color-text-on-primary);
-  --mdc-filled-button-hover-state-layer-opacity: 0.08;
-
   &:hover {
     --mdc-filled-button-container-color: var(--color-primary-hover);
   }
@@ -48,35 +96,12 @@
   }
 }
 
-.mat-mdc-outlined-button {
-  --mdc-outlined-button-outline-color: var(--color-border);
-  --mdc-outlined-button-label-text-color: var(--color-text);
-  --mdc-outlined-button-hover-state-layer-opacity: 0.04;
+.mat-mdc-outlined-button .mdc-button__label {
+  display: inline-flex;
+  column-gap: 4px;
 }
 
-/* Menu */
 .mat-mdc-menu-panel {
-  --mat-menu-container-color: var(--color-surface);
-  --mat-menu-item-label-text-color: var(--color-text);
-  --mat-menu-item-hover-state-layer-color: var(--color-surface-hover);
-
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-}
-
-/* Checkbox */
-.mat-mdc-checkbox {
-  --mdc-checkbox-selected-checkmark-color: var(--color-text-on-primary);
-  --mdc-checkbox-selected-focus-icon-color: var(--color-primary);
-  --mdc-checkbox-selected-hover-icon-color: var(--color-primary);
-  --mdc-checkbox-selected-icon-color: var(--color-primary);
-  --mdc-checkbox-selected-pressed-icon-color: var(--color-primary);
-  --mdc-checkbox-unselected-focus-icon-color: var(--color-text-secondary);
-  --mdc-checkbox-unselected-hover-icon-color: var(--color-text);
-  --mdc-checkbox-unselected-icon-color: var(--color-text-muted);
-}
-
-/* Progress Spinner */
-.mat-mdc-progress-spinner {
-  --mdc-circular-progress-active-indicator-color: var(--color-primary);
 }
