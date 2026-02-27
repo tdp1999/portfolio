@@ -46,10 +46,9 @@ describe('GoogleLoginHandler', () => {
     };
     tokenService = {
       signAccessToken: jest.fn().mockReturnValue('access-token-123'),
-      generateRefreshToken: jest.fn().mockReturnValue('refresh-token-hex'),
-      hashRefreshToken: jest.fn().mockResolvedValue('hashed-refresh'),
+      signRefreshToken: jest.fn().mockReturnValue('refresh-token-jwt'),
       verifyAccessToken: jest.fn(),
-      compareRefreshToken: jest.fn(),
+      verifyRefreshToken: jest.fn(),
     } as unknown as jest.Mocked<TokenService>;
     commandBus = { execute: jest.fn() } as unknown as jest.Mocked<CommandBus>;
 
@@ -82,12 +81,12 @@ describe('GoogleLoginHandler', () => {
       const result: GoogleLoginResult = await handler.execute(new GoogleLoginCommand(validProfile));
 
       expect(result.accessToken).toBe('access-token-123');
-      expect(result.refreshToken).toBe('refresh-token-hex');
+      expect(result.refreshToken).toBe('refresh-token-jwt');
       expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.objectContaining({}));
       // Should have linked google + set refresh token
       const updatedUser = repo.update.mock.calls[0][1] as User;
       expect(updatedUser.googleId).toBe('google-123');
-      expect(updatedUser.refreshToken).toBe('hashed-refresh');
+      expect(updatedUser.refreshToken).toBe('refresh-token-jwt');
     });
 
     it('should not overwrite existing googleId if already linked', async () => {
@@ -130,7 +129,7 @@ describe('GoogleLoginHandler', () => {
       const result: GoogleLoginResult = await handler.execute(new GoogleLoginCommand(validProfile));
 
       expect(result.accessToken).toBe('access-token-123');
-      expect(result.refreshToken).toBe('refresh-token-hex');
+      expect(result.refreshToken).toBe('refresh-token-jwt');
       expect(repo.add).toHaveBeenCalled();
     });
 

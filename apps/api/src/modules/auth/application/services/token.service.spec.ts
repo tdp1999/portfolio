@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { TokenService } from './token.service';
-import { AUTH_CONFIG, AuthConfig } from '../auth.config';
+import { AuthConfig } from '../auth.config';
 
 describe('TokenService', () => {
   let tokenService: TokenService;
@@ -52,37 +52,42 @@ describe('TokenService', () => {
     });
   });
 
-  describe('generateRefreshToken', () => {
-    it('should return a string', () => {
-      const token = tokenService.generateRefreshToken();
+  describe('signRefreshToken', () => {
+    it('should return a JWT string', () => {
+      const token = tokenService.signRefreshToken('user-123', 0);
       expect(typeof token).toBe('string');
+      expect(token.split('.')).toHaveLength(3);
     });
 
-    it('should generate unique tokens', () => {
-      const token1 = tokenService.generateRefreshToken();
-      const token2 = tokenService.generateRefreshToken();
-      expect(token1).not.toBe(token2);
+    it('should include userId and tokenVersion in payload', () => {
+      const token = tokenService.signRefreshToken('user-123', 3);
+      const payload = jwtService.verify(token, { secret: config.jwtRefreshSecret });
+      expect(payload.sub).toBe('user-123');
+      expect(payload.tokenVersion).toBe(3);
     });
 
-    it('should be at least 32 bytes (64 hex chars)', () => {
-      const token = tokenService.generateRefreshToken();
-      expect(token.length).toBeGreaterThanOrEqual(64);
+    it('should be signed with refresh secret, not access secret', () => {
+      const token = tokenService.signRefreshToken('user-123', 0);
+      expect(() => jwtService.verify(token, { secret: config.jwtSecret })).toThrow();
+      expect(() => jwtService.verify(token, { secret: config.jwtRefreshSecret })).not.toThrow();
     });
   });
 
-  describe('hashRefreshToken / compareRefreshToken', () => {
-    it('should hash and verify a refresh token', async () => {
-      const token = 'my-refresh-token';
-      const hash = await tokenService.hashRefreshToken(token);
-      expect(hash).not.toBe(token);
-      const match = await tokenService.compareRefreshToken(token, hash);
-      expect(match).toBe(true);
+  describe('verifyRefreshToken', () => {
+    it('should return payload for a valid refresh token', () => {
+      const token = tokenService.signRefreshToken('user-123', 2);
+      const payload = tokenService.verifyRefreshToken(token);
+      expect(payload.sub).toBe('user-123');
+      expect(payload.tokenVersion).toBe(2);
     });
 
-    it('should reject a wrong token', async () => {
-      const hash = await tokenService.hashRefreshToken('correct-token');
-      const match = await tokenService.compareRefreshToken('wrong-token', hash);
-      expect(match).toBe(false);
+    it('should throw for an invalid token', () => {
+      expect(() => tokenService.verifyRefreshToken('invalid-token')).toThrow();
+    });
+
+    it('should throw for a token signed with access secret', () => {
+      const token = tokenService.signAccessToken('user-123', 0);
+      expect(() => tokenService.verifyRefreshToken(token)).toThrow();
     });
   });
 });

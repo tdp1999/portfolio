@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { hash, compare } from 'bcryptjs';
 import { AUTH_CONFIG, AuthConfig } from '../auth.config';
 
 export type AccessTokenPayload = {
@@ -9,6 +8,11 @@ export type AccessTokenPayload = {
   tokenVersion: number;
   iat: number;
   exp: number;
+};
+
+export type RefreshTokenPayload = {
+  sub: string;
+  tokenVersion: number;
 };
 
 @Injectable()
@@ -32,15 +36,17 @@ export class TokenService {
     });
   }
 
-  generateRefreshToken(): string {
-    return randomBytes(32).toString('hex');
+  signRefreshToken(userId: string, tokenVersion: number): string {
+    const jti = randomBytes(16).toString('hex');
+    return this.jwtService.sign({ sub: userId, tokenVersion, jti }, {
+      secret: this.config.jwtRefreshSecret,
+      expiresIn: this.config.jwtRefreshExpiry,
+    } as JwtSignOptions);
   }
 
-  async hashRefreshToken(token: string): Promise<string> {
-    return hash(token, 10);
-  }
-
-  async compareRefreshToken(token: string, hashedToken: string): Promise<boolean> {
-    return compare(token, hashedToken);
+  verifyRefreshToken(token: string): RefreshTokenPayload {
+    return this.jwtService.verify<RefreshTokenPayload>(token, {
+      secret: this.config.jwtRefreshSecret,
+    });
   }
 }

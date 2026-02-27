@@ -44,10 +44,9 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
       if (!user.googleId) {
         updated = updated.linkGoogle(data.googleId);
       }
-      const refreshToken = this.tokenService.generateRefreshToken();
-      const hashedRefresh = await this.tokenService.hashRefreshToken(refreshToken);
+      const refreshToken = this.tokenService.signRefreshToken(user.id, user.tokenVersion);
       const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      updated = updated.setRefreshToken(hashedRefresh, refreshExpiresAt);
+      updated = updated.setRefreshToken(refreshToken, refreshExpiresAt);
       await this.repo.update(user.id, updated);
 
       const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion);
@@ -64,10 +63,9 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
       googleId: data.googleId,
     });
 
-    const refreshToken = this.tokenService.generateRefreshToken();
-    const hashedRefresh = await this.tokenService.hashRefreshToken(refreshToken);
+    const refreshToken = this.tokenService.signRefreshToken(newUser.id, 0);
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const withRefresh = newUser.setRefreshToken(hashedRefresh, refreshExpiresAt);
+    const withRefresh = newUser.setRefreshToken(refreshToken, refreshExpiresAt);
 
     const userId = await this.repo.add(withRefresh);
     const accessToken = this.tokenService.signAccessToken(userId, 0);

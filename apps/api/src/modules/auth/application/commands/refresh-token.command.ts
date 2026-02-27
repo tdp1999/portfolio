@@ -9,7 +9,7 @@ import { AuthErrorCode } from '../auth-error-code';
 
 const GRACE_PERIOD_MS = 10_000;
 
-type GraceEntry = { hash: string; expiresAt: number };
+type GraceEntry = { token: string; expiresAt: number };
 
 export type RefreshTokenResult = {
   accessToken: string;
@@ -17,10 +17,7 @@ export type RefreshTokenResult = {
 };
 
 export class RefreshTokenCommand extends BaseCommand {
-  constructor(
-    readonly refreshToken: string | null,
-    readonly accessToken: string | null
-  ) {
+  constructor(readonly refreshToken: string | null) {
     super('anonymous');
   }
 }
@@ -39,47 +36,43 @@ export class RefreshTokenHandler
   ) {}
 
   async execute(command: RefreshTokenCommand): Promise<RefreshTokenResult> {
-    if (!command.refreshToken || !command.accessToken) {
-      throw UnauthorizedError('Missing tokens', {
+    if (!command.refreshToken) {
+      throw UnauthorizedError('Missing refresh token', {
         layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
       });
     }
 
-    // Decode access token (ignore expiration — it's expected to be expired)
-    const payload = this.tokenService.verifyAccessToken(command.accessToken, {
-      ignoreExpiration: true,
-    });
-    const userId = payload.sub;
+    // Verify refresh JWT — extract userId and tokenVersion
+    let userId: string;
+    let tokenVersion: number;
 
-    const user = await this.repo.findById(userId);
-    if (!user || !user.refreshToken || !user.refreshTokenExpiresAt) {
+    try {
+      const payload = this.tokenService.verifyRefreshToken(command.refreshToken);
+      userId = payload.sub;
+      tokenVersion = payload.tokenVersion;
+    } catch {
       throw UnauthorizedError('Invalid refresh token', {
         layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
       });
     }
 
-    // Check refresh token expiry
-    if (user.refreshTokenExpiresAt < new Date()) {
-      throw UnauthorizedError('Refresh token expired', {
+    const user = await this.repo.findById(userId);
+    if (!user || !user.refreshToken) {
+      throw UnauthorizedError('Invalid refresh token', {
         layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
       });
     }
 
-    // Compare refresh token against stored hash
-    const isValid = await this.tokenService.compareRefreshToken(
-      command.refreshToken,
-      user.refreshToken
-    );
+    // Compare refresh token against stored value (simple string equality)
+    const isValid = command.refreshToken === user.refreshToken;
     if (!isValid) {
       // Check grace period: accept the previous token for 10s after rotation
       const grace = this.graceTokens.get(userId);
       const graceValid =
-        grace &&
-        grace.expiresAt > Date.now() &&
-        (await this.tokenService.compareRefreshToken(command.refreshToken, grace.hash));
+        grace && grace.expiresAt > Date.now() && command.refreshToken === grace.token;
       if (!graceValid) {
         throw UnauthorizedError('Invalid refresh token', {
           layer: ErrorLayer.APPLICATION,
@@ -89,24 +82,23 @@ export class RefreshTokenHandler
     }
 
     // Check token version
-    if (payload.tokenVersion !== user.tokenVersion) {
+    if (tokenVersion !== user.tokenVersion) {
       throw UnauthorizedError('Token version mismatch', {
         layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.TOKEN_VERSION_MISMATCH,
       });
     }
 
-    // Rotate: generate new refresh token, store old hash in grace period
-    const oldHash = user.refreshToken;
-    const newRefreshToken = this.tokenService.generateRefreshToken();
-    const hashedRefresh = await this.tokenService.hashRefreshToken(newRefreshToken);
+    // Rotate: generate new refresh token, store old in grace period
+    const oldToken = user.refreshToken;
+    const newRefreshToken = this.tokenService.signRefreshToken(userId, user.tokenVersion);
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-    const updated = user.setRefreshToken(hashedRefresh, refreshExpiresAt);
+    const updated = user.setRefreshToken(newRefreshToken, refreshExpiresAt);
     await this.repo.update(user.id, updated);
 
     // Grace period: allow old token for 10 seconds
-    this.graceTokens.set(userId, { hash: oldHash, expiresAt: Date.now() + GRACE_PERIOD_MS });
+    this.graceTokens.set(userId, { token: oldToken, expiresAt: Date.now() + GRACE_PERIOD_MS });
     setTimeout(() => this.graceTokens.delete(userId), GRACE_PERIOD_MS);
 
     // Sign new access token

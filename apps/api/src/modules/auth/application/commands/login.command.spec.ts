@@ -45,10 +45,9 @@ describe('LoginHandler', () => {
     };
     tokenService = {
       signAccessToken: jest.fn().mockReturnValue('access-token-123'),
-      generateRefreshToken: jest.fn().mockReturnValue('refresh-token-hex'),
-      hashRefreshToken: jest.fn().mockResolvedValue('hashed-refresh'),
+      signRefreshToken: jest.fn().mockReturnValue('refresh-token-jwt'),
       verifyAccessToken: jest.fn(),
-      compareRefreshToken: jest.fn(),
+      verifyRefreshToken: jest.fn(),
     } as unknown as jest.Mocked<TokenService>;
     commandBus = { execute: jest.fn() } as unknown as jest.Mocked<CommandBus>;
 
@@ -69,16 +68,25 @@ describe('LoginHandler', () => {
     });
   });
 
-  it('should return generic error for locked account', async () => {
+  it('should return structured error for locked account with retryAfterSeconds', async () => {
     const lockedUser = createUser({ lockedUntil: new Date(Date.now() + 60000) });
     repo.findByEmail.mockResolvedValue(lockedUser);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.ACCOUNT_LOCKED,
     });
+
+    try {
+      await handler.execute(new LoginCommand(validDto));
+    } catch (e: unknown) {
+      const err = e as { message: unknown };
+      const msg = err.message as { remainingAttempts: number; retryAfterSeconds: number };
+      expect(msg.remainingAttempts).toBe(0);
+      expect(msg.retryAfterSeconds).toBeGreaterThan(0);
+    }
   });
 
-  it('should return generic error for wrong password', async () => {
+  it('should return structured error with remainingAttempts for wrong password', async () => {
     const user = createUser();
     repo.findByEmail.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
@@ -86,6 +94,17 @@ describe('LoginHandler', () => {
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_CREDENTIALS,
     });
+
+    try {
+      repo.findByEmail.mockResolvedValue(createUser());
+      jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
+      await handler.execute(new LoginCommand(validDto));
+    } catch (e: unknown) {
+      const err = e as { message: unknown };
+      const msg = err.message as { remainingAttempts: number; error: string };
+      expect(msg.remainingAttempts).toBe(4);
+      expect(msg.error).toBe('Invalid credentials');
+    }
   });
 
   it('should increment failed attempts on wrong password', async () => {
@@ -105,11 +124,10 @@ describe('LoginHandler', () => {
     const result: LoginResult = await handler.execute(new LoginCommand(validDto));
 
     expect(result.accessToken).toBe('access-token-123');
-    expect(result.refreshToken).toBe('refresh-token-hex');
+    expect(result.refreshToken).toBe('refresh-token-jwt');
     expect(result.rememberMe).toBe(false);
     expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 0);
-    expect(tokenService.generateRefreshToken).toHaveBeenCalled();
-    expect(tokenService.hashRefreshToken).toHaveBeenCalledWith('refresh-token-hex');
+    expect(tokenService.signRefreshToken).toHaveBeenCalledWith('user-id-123', 0);
   });
 
   it('should reset failed attempts on successful login', async () => {
@@ -147,13 +165,20 @@ describe('LoginHandler', () => {
     repo.findByEmail.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
-    await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
+    try {
+      await handler.execute(new LoginCommand(validDto));
+    } catch (e: unknown) {
+      const err = e as { message: unknown; errorCode: string };
+      expect(err.errorCode).toBe(AuthErrorCode.ACCOUNT_LOCKED);
+      const msg = err.message as { remainingAttempts: number; retryAfterSeconds: number };
+      expect(msg.remainingAttempts).toBe(0);
+      expect(msg.retryAfterSeconds).toBe(60);
+    }
 
     const updateCall = repo.update.mock.calls[0];
     const updatedUser = updateCall[1] as User;
     expect(updatedUser.failedLoginAttempts).toBe(5);
     expect(updatedUser.lockedUntil).not.toBeNull();
-    // 1 minute backoff for first lock
     const expectedLock = Date.now() + 1 * 60 * 1000;
     expect(updatedUser.lockedUntil!.getTime()).toBeCloseTo(expectedLock, -3);
   });

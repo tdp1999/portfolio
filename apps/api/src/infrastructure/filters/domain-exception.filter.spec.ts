@@ -1,6 +1,6 @@
 import { ArgumentsHost } from '@nestjs/common';
 import { DomainExceptionFilter } from './domain-exception.filter';
-import { UnauthorizedError, NotFoundError } from '@portfolio/shared/errors';
+import { UnauthorizedError, NotFoundError, BadRequestError } from '@portfolio/shared/errors';
 
 describe('DomainExceptionFilter', () => {
   let filter: DomainExceptionFilter;
@@ -44,7 +44,6 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('should handle 400 status correctly', () => {
-    const { BadRequestError } = require('@portfolio/shared/errors');
     const error = BadRequestError('Invalid data');
 
     filter.catch(error, mockHost);

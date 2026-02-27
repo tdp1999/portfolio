@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Request, Response } from 'express';
 import { LoginCommand, LoginResult } from '../application/commands/login.command';
@@ -45,6 +46,8 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async login(@Body() body: unknown, @Res({ passthrough: true }) res: Response) {
     const result: LoginResult = await this.commandBus.execute(new LoginCommand(body));
     this.cookieService.setRefreshToken(res, result.refreshToken, result.rememberMe);
@@ -57,11 +60,9 @@ export class AuthController {
   @UseGuards(CsrfGuard)
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies?.['refresh_token'] ?? null;
-    const authHeader = req.headers.authorization;
-    const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
     const result: RefreshTokenResult = await this.commandBus.execute(
-      new RefreshTokenCommand(refreshToken, accessToken)
+      new RefreshTokenCommand(refreshToken)
     );
     // rememberMe=true: if the user had a session-only cookie, it wouldn't survive
     // browser close, so reaching /refresh implies the cookie was persistent.
