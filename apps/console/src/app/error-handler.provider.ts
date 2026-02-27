@@ -28,15 +28,21 @@ class ConsoleErrorHandler implements ErrorHandler {
       return;
     }
 
+    if (error.status === 429) {
+      this.toastService.error('Too many requests. Please wait a moment and try again.');
+      return;
+    }
+
     if (BLOCKING_STATUSES.has(error.status)) {
       this.router.navigate(['/error', error.status], { skipLocationChange: true });
       return;
     }
 
-    const message =
+    const raw =
       error.error && typeof error.error === 'object' && 'message' in error.error
         ? error.error.message
-        : 'An unexpected error occurred';
+        : null;
+    const message = typeof raw === 'string' ? raw : 'An unexpected error occurred';
 
     this.toastService.error(message);
   }

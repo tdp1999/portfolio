@@ -68,6 +68,15 @@ describe('ConsoleErrorHandler', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/error', 500], { skipLocationChange: true });
   });
 
+  it('should show rate-limit toast for 429', () => {
+    handler.handleHttpError(new HttpErrorResponse({ status: 429 }));
+
+    expect(toastService.error).toHaveBeenCalledWith(
+      'Too many requests. Please wait a moment and try again.'
+    );
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
   it('should show toast with DomainError message for non-blocking errors', () => {
     handler.handleHttpError(
       new HttpErrorResponse({
@@ -81,6 +90,17 @@ describe('ConsoleErrorHandler', () => {
 
   it('should show generic message when body has no message field', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 422, error: 'plain text' }));
+
+    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred');
+  });
+
+  it('should show generic message when message is an object (not a string)', () => {
+    handler.handleHttpError(
+      new HttpErrorResponse({
+        status: 400,
+        error: { message: { remainingAttempts: 3, retryAfterSeconds: 0 } },
+      })
+    );
 
     expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred');
   });

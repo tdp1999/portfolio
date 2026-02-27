@@ -19,7 +19,7 @@ export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status !== 401 || req.url.includes('/auth/refresh')) {
+      if (error.status !== 401 || req.url.includes('/auth/')) {
         return throwError(() => error);
       }
 

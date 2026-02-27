@@ -19,7 +19,7 @@ export const appRoutes: Route[] = [
   {
     path: '',
     component: ConsoleMainLayoutComponent,
-    // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', loadComponent: () => import('./pages/home/home') },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },

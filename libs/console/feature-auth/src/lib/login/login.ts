@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,9 +32,13 @@ export default class LoginComponent {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   readonly submitting = signal(false);
   readonly showPassword = signal(false);
+  readonly remainingAttempts = signal<number | null>(null);
+  readonly retryAfterSeconds = signal<number | null>(null);
 
   readonly form = new FormGroup({
     email: new FormControl('', {
@@ -59,6 +63,10 @@ export default class LoginComponent {
     }
 
     this.submitting.set(true);
+    this.remainingAttempts.set(null);
+    this.retryAfterSeconds.set(null);
+    this.clearCountdown();
+
     const { email, password, rememberMe } = this.form.getRawValue();
 
     this.authStore.login(email, password, rememberMe).subscribe({
@@ -67,10 +75,48 @@ export default class LoginComponent {
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
         this.router.navigateByUrl(returnUrl);
       },
-      error: () => {
+      error: (err: {
+        status?: number;
+        error?: { message?: { remainingAttempts?: number; retryAfterSeconds?: number } };
+      }) => {
         this.submitting.set(false);
+
+        // 429 is handled by the global error interceptor — don't show a second toast
+        if (err.status === 429) return;
+
+        const msg = err.error?.message;
+        if (msg && typeof msg === 'object') {
+          if (msg.remainingAttempts != null) this.remainingAttempts.set(msg.remainingAttempts);
+          if (msg.retryAfterSeconds != null) {
+            this.retryAfterSeconds.set(msg.retryAfterSeconds);
+            this.startCountdown();
+          }
+        }
+        this.toast.error('Invalid email or password');
       },
     });
+  }
+
+  private startCountdown(): void {
+    this.clearCountdown();
+    this.countdownInterval = setInterval(() => {
+      const current = this.retryAfterSeconds();
+      if (current != null && current > 1) {
+        this.retryAfterSeconds.set(current - 1);
+      } else {
+        this.retryAfterSeconds.set(null);
+        this.remainingAttempts.set(null);
+        this.clearCountdown();
+      }
+    }, 1000);
+    this.destroyRef.onDestroy(() => this.clearCountdown());
+  }
+
+  private clearCountdown(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
   }
 
   loginWithGoogle(): void {

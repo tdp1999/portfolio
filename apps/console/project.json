@@ -65,7 +65,8 @@
       },
       "defaultConfiguration": "development",
       "options": {
-        "port": 4300
+        "port": 4300,
+        "proxyConfig": "apps/console/proxy.conf.json"
       }
     },
     "lint": {
