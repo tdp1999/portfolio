@@ -1,13 +1,9 @@
-import {
-  ApplicationConfig,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-} from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   AuthStore,
+  ThemeService,
   authInterceptor,
   csrfInterceptor,
   errorInterceptor,
@@ -15,8 +11,9 @@ import {
   refreshInterceptor,
 } from '@portfolio/console/shared/data-access';
 import { environment } from '../environments/environment';
-import { provideErrorHandler } from './error-handler.provider';
 import { appRoutes } from './app.routes';
+import { provideErrorHandler } from './error-handler.provider';
+import { THIRD_PARTY_PROVIDER } from '@portfolio/console/shared/util';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,5 +30,11 @@ export const appConfig: ApplicationConfig = {
       timeout: 30_000,
     }),
     provideAppInitializer(() => inject(AuthStore).bootstrap()),
+    provideAppInitializer(() => {
+      inject(ThemeService);
+    }),
+
+    // Third Party Providers
+    ...THIRD_PARTY_PROVIDER,
   ],
 };

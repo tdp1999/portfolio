@@ -1,1 +1,1 @@
-/* Console shared util barrel */
+export * from './lib/configs';
