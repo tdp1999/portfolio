@@ -154,6 +154,19 @@
 - [x] 113-sidebar-user-integration - Wire user data into sidebar (S) ✓
 - [x] 114-csp-headers - Content Security Policy headers (S) ✓
 
+### Epic: Auth E2E Test Suite (epic-auth-e2e) - broken-down
+
+> **Approach:** Infrastructure first, then test suites in parallel, CI last.
+
+- [ ] 116-e2e-auth-infrastructure - Fixtures, page objects, seed/cleanup (L)
+- [ ] 117-e2e-auth-login - Login page tests (M) → depends on 116
+- [ ] 118-e2e-auth-logout - Logout tests (M) → depends on 116
+- [ ] 119-e2e-auth-password - Password management tests (L) → depends on 116
+- [ ] 120-e2e-auth-google-oauth - Google OAuth mock tests (M) → depends on 116
+- [ ] 121-e2e-auth-guards-session - Route guards & session tests (M) → depends on 116
+- [ ] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) → depends on 116
+- [ ] 123-e2e-ci-integration - CI pipeline integration (M) → depends on 116-122
+
 ## Up Next
 
 **Next Task:** **057-tag-prisma-schema** - Tag Prisma schema + migration (DB Architecture Sprint 3)
@@ -164,8 +177,9 @@
 | ------------------------ | ------ |
 | Done (archived)          | 106    |
 | Pending (DB Tag Module)  | 8      |
+| Pending (Auth E2E)       | 8      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **115** |
+| **Total Created**        | **123** |
 
 ## Notes
 
