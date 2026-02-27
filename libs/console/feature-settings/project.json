@@ -1,0 +1,21 @@
+{
+  "name": "feature-settings",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/console/feature-settings/src",
+  "prefix": "console",
+  "projectType": "library",
+  "tags": ["scope:console", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/console/feature-settings/jest.config.cts",
+        "tsConfig": "libs/console/feature-settings/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

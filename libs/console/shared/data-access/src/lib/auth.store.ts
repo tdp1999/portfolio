@@ -42,6 +42,10 @@ export class AuthStore {
     window.location.href = this.getGoogleLoginUrl();
   }
 
+  changePassword(currentPassword: string, newPassword: string) {
+    return this.api.post('/auth/change-password', { currentPassword, newPassword });
+  }
+
   logout() {
     return this.api.post('/auth/logout', {}).pipe(tap(() => this.clearState()));
   }
@@ -91,9 +95,7 @@ export class AuthStore {
   }
 
   private buildUrlPrefix(): string {
-    const prefixes = Array.isArray(this.apiConfig.urlPrefix)
-      ? this.apiConfig.urlPrefix
-      : [this.apiConfig.urlPrefix];
+    const prefixes = Array.isArray(this.apiConfig.urlPrefix) ? this.apiConfig.urlPrefix : [this.apiConfig.urlPrefix];
     return prefixes.filter(Boolean).join('/');
   }
 }

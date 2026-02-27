@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
   standalone: true,
   imports: [
     RouterLink,
+    RouterLinkActive,
     RouterOutlet,
     SidebarModule,
     MatMenuModule,
@@ -33,9 +34,7 @@ export class ConsoleMainLayoutComponent {
 
   readonly user = this.authStore.user;
   readonly userInitial = computed(() => this.user()?.name?.charAt(0).toUpperCase() ?? '?');
-  readonly themeIcon = computed(() =>
-    this.themeService.resolvedTheme() === 'dark' ? 'light_mode' : 'dark_mode'
-  );
+  readonly themeIcon = computed(() => (this.themeService.resolvedTheme() === 'dark' ? 'light_mode' : 'dark_mode'));
   readonly themeTooltip = computed(() =>
     this.themeService.resolvedTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
   );

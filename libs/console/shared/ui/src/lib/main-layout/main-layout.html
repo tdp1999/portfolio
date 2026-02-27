@@ -84,10 +84,27 @@
           </li>
 
           <li uiSidebarMenuItem>
-            <button ui-sidebar-menu-button tooltip="Settings">
+            <button ui-sidebar-menu-button tooltip="Settings" (click)="settingsSub.toggle()">
               <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">settings</mat-icon>
               <span>Settings</span>
             </button>
+            <ui-sidebar-menu-sub #settingsSub>
+              <li uiSidebarMenuSubItem>
+                <a ui-sidebar-menu-sub-button routerLink="/settings/change-password" routerLinkActive>
+                  Change Password
+                </a>
+              </li>
+              <li uiSidebarMenuSubItem>
+                <a
+                  ui-sidebar-menu-sub-button
+                  routerLink="/settings"
+                  routerLinkActive
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  Profile
+                </a>
+              </li>
+            </ui-sidebar-menu-sub>
           </li>
         </ul>
       </ui-sidebar-group>
@@ -102,10 +119,7 @@
         {{ userInitial() }}
       </div>
       <div class="flex items-center gap-2 px-1 w-full">
-        <button
-          [matMenuTriggerFor]="userMenu"
-          class="flex min-w-0 flex-col text-left w-full cursor-pointer"
-        >
+        <button [matMenuTriggerFor]="userMenu" class="flex min-w-0 flex-col text-left w-full cursor-pointer">
           <span class="truncate text-sm font-medium text-text">{{ user()?.name ?? 'User' }}</span>
           <span class="truncate text-xs text-text-muted">{{ user()?.email ?? '' }}</span>
         </button>
