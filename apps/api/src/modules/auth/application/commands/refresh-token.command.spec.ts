@@ -1,13 +1,9 @@
-import {
-  RefreshTokenCommand,
-  RefreshTokenHandler,
-  RefreshTokenResult,
-} from './refresh-token.command';
+import { RefreshTokenCommand, RefreshTokenHandler, RefreshTokenResult } from './refresh-token.command';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { TokenService } from '../services/token.service';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
-import { AuthErrorCode } from '../auth-error-code';
+import { AuthErrorCode } from '@portfolio/shared/errors';
 
 describe('RefreshTokenHandler', () => {
   let handler: RefreshTokenHandler;
@@ -54,9 +50,7 @@ describe('RefreshTokenHandler', () => {
   });
 
   it('should reject when refresh token is missing', async () => {
-    await expect(handler.execute(new RefreshTokenCommand(null))).rejects.toBeInstanceOf(
-      DomainError
-    );
+    await expect(handler.execute(new RefreshTokenCommand(null))).rejects.toBeInstanceOf(DomainError);
   });
 
   it('should reject when refresh JWT verification fails', async () => {
@@ -72,18 +66,18 @@ describe('RefreshTokenHandler', () => {
   it('should reject when user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(
-      handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))
-    ).rejects.toMatchObject({ errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN });
+    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+      errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
+    });
   });
 
   it('should reject when no refresh token stored in DB', async () => {
     const user = createUser({ refreshToken: null });
     repo.findById.mockResolvedValue(user);
 
-    await expect(
-      handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))
-    ).rejects.toMatchObject({ errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN });
+    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+      errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
+    });
   });
 
   it('should reject when refresh token does not match stored value', async () => {
@@ -100,18 +94,16 @@ describe('RefreshTokenHandler', () => {
     repo.findById.mockResolvedValue(user);
     tokenService.verifyRefreshToken.mockReturnValue({ sub: 'user-id-123', tokenVersion: 3 });
 
-    await expect(
-      handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))
-    ).rejects.toMatchObject({ errorCode: AuthErrorCode.TOKEN_VERSION_MISMATCH });
+    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+      errorCode: AuthErrorCode.TOKEN_VERSION_MISMATCH,
+    });
   });
 
   it('should return new tokens on valid refresh', async () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    const result: RefreshTokenResult = await handler.execute(
-      new RefreshTokenCommand(STORED_REFRESH_TOKEN)
-    );
+    const result: RefreshTokenResult = await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
 
     expect(result.accessToken).toBe('new-access-token');
     expect(result.refreshToken).toBe('new-refresh-jwt');
@@ -172,9 +164,9 @@ describe('RefreshTokenHandler', () => {
     const rotatedUser = createUser({ refreshToken: 'new-refresh-jwt' });
     repo.findById.mockResolvedValue(rotatedUser);
 
-    await expect(
-      handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))
-    ).rejects.toMatchObject({ errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN });
+    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+      errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
+    });
 
     jest.useRealTimers();
   });

@@ -29,6 +29,7 @@ export class ChangePasswordPage {
 
   async goto(): Promise<void> {
     await this.page.goto('/settings/change-password');
+    await this.page.waitForSelector('input[formControlName="currentPassword"]');
   }
 
   async changePassword(currentPassword: string, newPassword: string, confirmPassword?: string): Promise<void> {

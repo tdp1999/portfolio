@@ -4,17 +4,19 @@ import { formatZodError } from './zod-formatter';
 
 interface DomainErrorConstructPayload {
   statusCode: number;
-  errorCode?: string | null;
+  errorCode: string;
   error: string;
-  message: unknown;
+  message: string;
+  data?: unknown;
   remarks?: string;
 }
 
 export interface DomainErrorPayload {
   statusCode: number;
-  errorCode?: string | null;
+  errorCode: string;
   error: string;
-  message: unknown;
+  message: string;
+  data?: unknown;
   options?: ErrorOptions;
   remarks?: string;
 }
@@ -28,13 +30,14 @@ function constructRemarks(options?: ErrorOptions): string | undefined {
 
 export class DomainError extends Error {
   statusCode!: number;
-  errorCode?: string | null;
+  errorCode!: string;
   error!: string;
   override message!: string;
+  data?: unknown;
   remarks?: string;
 
   private constructor(payload: DomainErrorConstructPayload) {
-    super(typeof payload.message === 'string' ? payload.message : JSON.stringify(payload.message));
+    super(payload.message);
     Object.assign(this, payload);
     Object.setPrototypeOf(this, DomainError.prototype);
   }
@@ -45,7 +48,8 @@ export class DomainError extends Error {
       statusCode: this.statusCode,
       errorCode: this.errorCode,
       error: this.error,
-      message: this.message as unknown,
+      message: this.message,
+      ...(this.data !== undefined && { data: this.data }),
       remarks: this.remarks,
     };
   }
@@ -56,85 +60,92 @@ export class DomainError extends Error {
       errorCode: json.errorCode,
       error: json.error,
       message: json.message,
+      data: json.data,
       remarks: json.remarks || constructRemarks(json.options),
     });
   }
 }
 
 // 400
-export const BadRequestError = (message: unknown = 'Data is invalid', options?: ErrorOptions) => {
-  let messageContent: unknown = message;
-
-  if (messageContent instanceof ZodError) {
-    messageContent = formatZodError(messageContent);
-  }
-
+export const BadRequestError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 400,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Bad Request',
-    message: messageContent,
+    message,
+    data,
+    options,
+  });
+};
+
+// 400 — Zod validation shorthand
+export const ValidationError = (error: ZodError, options: ErrorOptions) => {
+  return DomainError.fromJSON({
+    statusCode: 400,
+    errorCode: options.errorCode,
+    error: 'Bad Request',
+    message: 'Validation failed',
+    data: formatZodError(error),
     options,
   });
 };
 
 // 401
-export const UnauthorizedError = (message: unknown = 'Unauthorized', options?: ErrorOptions) => {
+export const UnauthorizedError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 401,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Unauthorized',
     message,
+    data,
     options,
   });
 };
 
 // 403
-export const ForbiddenError = (message: unknown = 'Forbidden', options?: ErrorOptions) => {
+export const ForbiddenError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 403,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Forbidden',
     message,
+    data,
     options,
   });
 };
 
 // 404
-export const NotFoundError = (message: unknown = 'Not Found', options?: ErrorOptions) => {
+export const NotFoundError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 404,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Not Found',
     message,
+    data,
     options,
   });
 };
 
 // 405
-export const MethodNotAllowedError = (
-  message: unknown = 'Method Not Allowed',
-  options?: ErrorOptions
-) => {
+export const MethodNotAllowedError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 405,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Method Not Allowed',
     message,
+    data,
     options,
   });
 };
 
 // 500
-export const InternalServerError = (
-  message: unknown = 'Internal Server Error',
-  options?: ErrorOptions
-) => {
+export const InternalServerError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
     statusCode: 500,
-    errorCode: options?.errorCode,
+    errorCode: options.errorCode,
     error: 'Internal Server Error',
     message,
+    data,
     options,
   });
 };

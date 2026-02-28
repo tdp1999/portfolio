@@ -2,7 +2,7 @@ import { ChangePasswordCommand, ChangePasswordHandler } from './change-password.
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
-import { AuthErrorCode } from '../auth-error-code';
+import { AuthErrorCode } from '@portfolio/shared/errors';
 import * as hashUtil from '@portfolio/shared/utils';
 
 describe('ChangePasswordHandler', () => {
@@ -44,26 +44,22 @@ describe('ChangePasswordHandler', () => {
   });
 
   it('should reject invalid input', async () => {
-    await expect(
-      handler.execute(new ChangePasswordCommand(userId, { currentPassword: '' }))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new ChangePasswordCommand(userId, { currentPassword: '' }))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should reject if user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(
-      handler.execute(new ChangePasswordCommand(userId, validDto))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new ChangePasswordCommand(userId, validDto))).rejects.toBeInstanceOf(DomainError);
   });
 
   it('should reject if user has no password (Google-only)', async () => {
     const user = createUser({ password: null });
     repo.findById.mockResolvedValue(user);
 
-    await expect(
-      handler.execute(new ChangePasswordCommand(userId, validDto))
-    ).rejects.toMatchObject({
+    await expect(handler.execute(new ChangePasswordCommand(userId, validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.NO_PASSWORD,
     });
   });
@@ -73,9 +69,7 @@ describe('ChangePasswordHandler', () => {
     repo.findById.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
-    await expect(
-      handler.execute(new ChangePasswordCommand(userId, validDto))
-    ).rejects.toMatchObject({
+    await expect(handler.execute(new ChangePasswordCommand(userId, validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.WRONG_PASSWORD,
     });
   });

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -14,8 +14,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import { ApiService } from '@portfolio/console/shared/data-access';
+import { ApiService, ErrorDataService } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
+import { AuthErrorCode } from '@portfolio/shared/errors';
 
 @Component({
   selector: 'console-reset-password',
@@ -38,6 +39,7 @@ export default class ResetPasswordComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly errorDataService = inject(ErrorDataService);
 
   readonly submitting = signal(false);
   readonly showPassword = signal(false);
@@ -60,12 +62,26 @@ export default class ResetPasswordComponent implements OnInit {
     { validators: [this.passwordsMatchValidator] }
   );
 
+  constructor() {
+    effect(() => {
+      const err = this.errorDataService.lastError();
+      if (!err) return;
+
+      if (err.errorCode === AuthErrorCode.INVALID_RESET_TOKEN || err.errorCode === AuthErrorCode.RESET_TOKEN_EXPIRED) {
+        this.tokenError.set(true);
+      }
+    });
+  }
+
+  private static readonly TOKEN_REGEX = /^[0-9a-f]{64}$/;
+
   ngOnInit(): void {
+    this.errorDataService.clear();
     const params = this.route.snapshot.queryParamMap;
     this.token = params.get('token') ?? '';
     this.userId = params.get('userId') ?? '';
 
-    if (!this.token || !this.userId) {
+    if (!this.token || !this.userId || !ResetPasswordComponent.TOKEN_REGEX.test(this.token)) {
       this.tokenError.set(true);
     }
   }
@@ -75,12 +91,16 @@ export default class ResetPasswordComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.form.markAllAsTouched();
+    if (this.form.hasError('passwordsMismatch')) {
+      this.form.controls.confirmPassword.setErrors({ passwordsMismatch: true });
+    }
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
       return;
     }
 
     this.submitting.set(true);
+    this.errorDataService.clear();
     const { password } = this.form.getRawValue();
 
     this.api
@@ -96,8 +116,7 @@ export default class ResetPasswordComponent implements OnInit {
           this.router.navigateByUrl('/auth/login');
         },
         error: () => {
-          this.tokenError.set(true);
-          this.toast.error('Reset link is invalid or expired. Please request a new one.');
+          // Known errors (invalid/expired token) handled by global handler + effect above
         },
       });
   }

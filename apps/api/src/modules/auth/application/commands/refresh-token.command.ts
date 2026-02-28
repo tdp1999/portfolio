@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { UnauthorizedError, ErrorLayer } from '@portfolio/shared/errors';
+import { UnauthorizedError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
 import { TokenService } from '../services/token.service';
-import { AuthErrorCode } from '../auth-error-code';
 
 const GRACE_PERIOD_MS = 10_000;
 
@@ -23,9 +22,7 @@ export class RefreshTokenCommand extends BaseCommand {
 }
 
 @CommandHandler(RefreshTokenCommand)
-export class RefreshTokenHandler
-  implements ICommandHandler<RefreshTokenCommand, RefreshTokenResult>
-{
+export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand, RefreshTokenResult> {
   // In-memory grace period for token rotation race conditions.
   // Note: not cluster-safe — use Redis with TTL for multi-instance deployments.
   private readonly graceTokens = new Map<string, GraceEntry>();
@@ -71,8 +68,7 @@ export class RefreshTokenHandler
     if (!isValid) {
       // Check grace period: accept the previous token for 10s after rotation
       const grace = this.graceTokens.get(userId);
-      const graceValid =
-        grace && grace.expiresAt > Date.now() && command.refreshToken === grace.token;
+      const graceValid = grace && grace.expiresAt > Date.now() && command.refreshToken === grace.token;
       if (!graceValid) {
         throw UnauthorizedError('Invalid refresh token', {
           layer: ErrorLayer.APPLICATION,

@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+import { BadRequestError, ValidationError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { hashPassword } from '@portfolio/shared/utils';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { User } from '../../domain/entities/user.entity';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 import { CreateUserSchema } from '../user.dto';
-import { UserErrorCode } from '../user-error-code';
 
 export class CreateUserCommand extends BaseCommand {
   constructor(readonly dto: unknown) {
@@ -22,7 +21,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   async execute(command: CreateUserCommand): Promise<string> {
     const { success, data, error } = CreateUserSchema.safeParse(command.dto);
     if (!success)
-      throw BadRequestError(error, {
+      throw ValidationError(error, {
+        errorCode: UserErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'User creation failed',
       });
@@ -30,8 +30,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     const existing = await this.repo.findByEmail(data.email);
     if (existing)
       throw BadRequestError('Email is already taken', {
-        layer: ErrorLayer.APPLICATION,
         errorCode: UserErrorCode.EMAIL_TAKEN,
+        layer: ErrorLayer.APPLICATION,
       });
 
     const hashedPassword = await hashPassword(data.password);

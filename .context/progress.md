@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (102 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (109 tasks)
 
 ## Completed Milestones
 
@@ -158,10 +158,10 @@
 
 > **Approach:** Infrastructure first, then test suites in parallel, CI last.
 
-- [ ] 116-e2e-auth-infrastructure - Fixtures, page objects, seed/cleanup (L)
-- [ ] 117-e2e-auth-login - Login page tests (M) → depends on 116
-- [ ] 118-e2e-auth-logout - Logout tests (M) → depends on 116
-- [ ] 119-e2e-auth-password - Password management tests (L) → depends on 116
+- [x] 116-e2e-auth-infrastructure - Fixtures, page objects, seed/cleanup (L) ✓
+- [x] 117-e2e-auth-login - Login page tests (M) ✓
+- [x] 118-e2e-auth-logout - Logout tests (M) ✓
+- [x] 119-e2e-auth-password - Password management tests (L) ✓
 - [ ] 120-e2e-auth-google-oauth - Google OAuth mock tests (M) → depends on 116
 - [ ] 121-e2e-auth-guards-session - Route guards & session tests (M) → depends on 116
 - [ ] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) → depends on 116
@@ -175,9 +175,9 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 106    |
+| Done (archived)          | 109    |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Auth E2E)       | 8      |
+| Pending (Auth E2E)       | 4      |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **123** |
 

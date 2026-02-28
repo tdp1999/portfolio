@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { BadRequestError, NotFoundError, ErrorLayer } from '@portfolio/shared/errors';
+import { BadRequestError, ValidationError, NotFoundError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { comparePassword, hashPassword } from '@portfolio/shared/utils';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
 import { ChangePasswordSchema } from '../auth.dto';
-import { AuthErrorCode } from '../auth-error-code';
 
 export class ChangePasswordCommand extends BaseCommand {
   constructor(
@@ -25,7 +24,8 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
   async execute(command: ChangePasswordCommand): Promise<void> {
     const { success, data, error } = ChangePasswordSchema.safeParse(command.dto);
     if (!success)
-      throw BadRequestError(error, {
+      throw ValidationError(error, {
+        errorCode: AuthErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Change password validation failed',
       });
@@ -34,24 +34,21 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     const user = await this.repo.findById(command.targetUserId);
     if (!user)
       throw NotFoundError('User not found', {
-        layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.UNAUTHORIZED,
+        layer: ErrorLayer.APPLICATION,
       });
 
     if (!user.password)
-      throw BadRequestError(
-        'Account uses Google sign-in. Set a password via forgot-password flow.',
-        {
-          layer: ErrorLayer.APPLICATION,
-          errorCode: AuthErrorCode.NO_PASSWORD,
-        }
-      );
+      throw BadRequestError('Account uses Google sign-in. Set a password via forgot-password flow.', {
+        errorCode: AuthErrorCode.NO_PASSWORD,
+        layer: ErrorLayer.APPLICATION,
+      });
 
     const passwordValid = await comparePassword(data.currentPassword, user.password);
     if (!passwordValid)
       throw BadRequestError('Current password is incorrect', {
-        layer: ErrorLayer.APPLICATION,
         errorCode: AuthErrorCode.WRONG_PASSWORD,
+        layer: ErrorLayer.APPLICATION,
       });
 
     const hashedPassword = await hashPassword(data.newPassword);

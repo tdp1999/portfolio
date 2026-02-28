@@ -1,9 +1,12 @@
-import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+import { BadRequestError, ErrorLayer, CommonErrorCode } from '@portfolio/shared/errors';
 
 export class SlugValue {
   static from(text: string): string {
     if (!text.trim()) {
-      throw BadRequestError('Cannot create slug from empty text', { layer: ErrorLayer.DOMAIN });
+      throw BadRequestError('Cannot create slug from empty text', {
+        errorCode: CommonErrorCode.VALIDATION_ERROR,
+        layer: ErrorLayer.DOMAIN,
+      });
     }
 
     const slug = text
@@ -14,7 +17,10 @@ export class SlugValue {
       .replace(/^-|-$/g, '');
 
     if (!slug) {
-      throw BadRequestError('Cannot create slug from empty text', { layer: ErrorLayer.DOMAIN });
+      throw BadRequestError('Cannot create slug from empty text', {
+        errorCode: CommonErrorCode.VALIDATION_ERROR,
+        layer: ErrorLayer.DOMAIN,
+      });
     }
 
     return slug;

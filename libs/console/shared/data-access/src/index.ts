@@ -2,14 +2,14 @@ export type { ApiConfig } from './lib/api';
 export { API_CONFIG, ApiService, provideApi } from './lib/api';
 export type { LoginResponse, UserProfile } from './lib/interfaces';
 export { AuthStore } from './lib/auth.store';
-export {
-  authInterceptor,
-  csrfInterceptor,
-  errorInterceptor,
-  refreshInterceptor,
-} from './lib/interceptors';
+export { authInterceptor, csrfInterceptor, errorInterceptor, refreshInterceptor } from './lib/interceptors';
 export type { ErrorHandler } from './lib/interceptors';
 export { ERROR_HANDLER, SKIP_ERROR_HANDLING } from './lib/interceptors';
 export { authGuard, guestGuard } from './lib/guards';
 export { ThemeService } from './lib/theme.service';
 export type { Theme } from './lib/theme.service';
+export type { ApiError } from './lib/errors/api-error';
+export { extractApiError } from './lib/errors/api-error';
+export { resolveErrorMessage, ERROR_DICTIONARY } from './lib/errors/error-dictionary';
+export { ValidationErrorService } from './lib/errors/validation-error.service';
+export { ErrorDataService } from './lib/errors/error-data.service';

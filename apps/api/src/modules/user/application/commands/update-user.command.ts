@@ -1,12 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { BadRequestError, NotFoundError, ErrorLayer } from '@portfolio/shared/errors';
+import { ValidationError, NotFoundError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 import { UpdateUserSchema } from '../user.dto';
-import { UserErrorCode } from '../user-error-code';
 
 export class UpdateUserCommand extends BaseCommand {
   constructor(
@@ -25,7 +24,8 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
     IdentifierValue.from(command.targetUserId);
     const { success, data, error } = UpdateUserSchema.safeParse(command.dto);
     if (!success)
-      throw BadRequestError(error, {
+      throw ValidationError(error, {
+        errorCode: UserErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'User update failed',
       });
@@ -33,8 +33,8 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
     const user = await this.repo.findById(command.targetUserId);
     if (!user)
       throw NotFoundError('User not found', {
-        layer: ErrorLayer.APPLICATION,
         errorCode: UserErrorCode.NOT_FOUND,
+        layer: ErrorLayer.APPLICATION,
       });
 
     const updated = user.updateProfile(data);

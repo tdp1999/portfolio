@@ -1,6 +1,6 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+import { ValidationError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
@@ -31,7 +31,8 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
   async execute(command: GoogleLoginCommand): Promise<GoogleLoginResult> {
     const { success, data, error } = GoogleCallbackSchema.safeParse(command.profile);
     if (!success)
-      throw BadRequestError(error, {
+      throw ValidationError(error, {
+        errorCode: AuthErrorCode.GOOGLE_AUTH_FAILED,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Google login validation failed',
       });

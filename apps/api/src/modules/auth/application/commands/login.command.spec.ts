@@ -4,7 +4,7 @@ import { TokenService } from '../services/token.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
-import { AuthErrorCode } from '../auth-error-code';
+import { AuthErrorCode } from '@portfolio/shared/errors';
 import * as hashUtil from '@portfolio/shared/utils';
 
 describe('LoginHandler', () => {
@@ -55,9 +55,7 @@ describe('LoginHandler', () => {
   });
 
   it('should reject invalid input', async () => {
-    await expect(handler.execute(new LoginCommand({ email: 'bad' }))).rejects.toBeInstanceOf(
-      DomainError
-    );
+    await expect(handler.execute(new LoginCommand({ email: 'bad' }))).rejects.toBeInstanceOf(DomainError);
   });
 
   it('should return generic error for non-existent email', async () => {
@@ -79,10 +77,10 @@ describe('LoginHandler', () => {
     try {
       await handler.execute(new LoginCommand(validDto));
     } catch (e: unknown) {
-      const err = e as { message: unknown };
-      const msg = err.message as { remainingAttempts: number; retryAfterSeconds: number };
-      expect(msg.remainingAttempts).toBe(0);
-      expect(msg.retryAfterSeconds).toBeGreaterThan(0);
+      const err = e as { data: unknown };
+      const data = err.data as { remainingAttempts: number; retryAfterSeconds: number };
+      expect(data.remainingAttempts).toBe(0);
+      expect(data.retryAfterSeconds).toBeGreaterThan(0);
     }
   });
 
@@ -100,10 +98,9 @@ describe('LoginHandler', () => {
       jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
       await handler.execute(new LoginCommand(validDto));
     } catch (e: unknown) {
-      const err = e as { message: unknown };
-      const msg = err.message as { remainingAttempts: number; error: string };
-      expect(msg.remainingAttempts).toBe(4);
-      expect(msg.error).toBe('Invalid credentials');
+      const err = e as { data: unknown };
+      const data = err.data as { remainingAttempts: number };
+      expect(data.remainingAttempts).toBe(4);
     }
   });
 
@@ -168,11 +165,11 @@ describe('LoginHandler', () => {
     try {
       await handler.execute(new LoginCommand(validDto));
     } catch (e: unknown) {
-      const err = e as { message: unknown; errorCode: string };
+      const err = e as { data: unknown; errorCode: string };
       expect(err.errorCode).toBe(AuthErrorCode.ACCOUNT_LOCKED);
-      const msg = err.message as { remainingAttempts: number; retryAfterSeconds: number };
-      expect(msg.remainingAttempts).toBe(0);
-      expect(msg.retryAfterSeconds).toBe(60);
+      const data = err.data as { remainingAttempts: number; retryAfterSeconds: number };
+      expect(data.remainingAttempts).toBe(0);
+      expect(data.retryAfterSeconds).toBe(60);
     }
 
     const updateCall = repo.update.mock.calls[0];

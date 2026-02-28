@@ -41,7 +41,6 @@
       outlined-outline-color: var(--color-border),
       outlined-label-text-color: var(--color-text),
       outlined-hover-state-layer-opacity: 0.04,
-      outlined-container-height: 30px,
     )
   );
 
@@ -96,9 +95,11 @@
   }
 }
 
-.mat-mdc-outlined-button .mdc-button__label {
+.mdc-button .mdc-button__label {
   display: inline-flex;
-  column-gap: 4px;
+  align-items: center;
+  column-gap: 8px;
+  //   row-gap: 8px;
 }
 
 .mat-mdc-menu-panel {

@@ -34,6 +34,8 @@ monitorTest.describe('Forgot Password', () => {
 // ---------------------------------------------------------------------------
 // Reset Password (unauthenticated, seeded token via DB)
 // ---------------------------------------------------------------------------
+monitorTest.describe.configure({ mode: 'serial' });
+
 monitorTest.describe('Reset Password', () => {
   const rawToken = randomBytes(32).toString('hex');
   const hashedToken = createHash('sha256').update(rawToken).digest('hex');

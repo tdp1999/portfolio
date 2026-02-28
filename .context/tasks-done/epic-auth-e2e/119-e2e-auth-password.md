@@ -1,6 +1,6 @@
 # Task: E2E Password Management Tests
 
-## Status: pending
+## Status: completed
 
 ## Goal
 E2E tests for forgot password, reset password, and change password flows.

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
-import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+import { ValidationError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
 import { EMAIL_SERVICE, IEmailService } from '../../../email';
@@ -23,7 +23,8 @@ export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordComm
   async execute(command: ForgotPasswordCommand): Promise<void> {
     const { success, data, error } = ForgotPasswordSchema.safeParse(command.dto);
     if (!success)
-      throw BadRequestError(error, {
+      throw ValidationError(error, {
+        errorCode: AuthErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Forgot password validation failed',
       });

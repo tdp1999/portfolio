@@ -2,7 +2,7 @@ import { ResetPasswordCommand, ResetPasswordHandler } from './reset-password.com
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
-import { AuthErrorCode } from '../auth-error-code';
+import { AuthErrorCode } from '@portfolio/shared/errors';
 import * as crypto from 'crypto';
 import * as hashUtil from '@portfolio/shared/utils';
 

@@ -1,11 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, ErrorLayer } from '@portfolio/shared/errors';
+import { NotFoundError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseQuery } from '../../../../shared/cqrs/base.query';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
-import { AuthErrorCode } from '../auth-error-code';
 
 export class GetCurrentUserQuery extends BaseQuery {
   constructor(readonly targetUserId: string) {

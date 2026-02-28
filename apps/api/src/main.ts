@@ -8,7 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
-import { DomainExceptionFilter } from './infrastructure/filters/domain-exception.filter';
+import { DomainExceptionFilter, InfrastructureExceptionFilter } from './infrastructure/filters/domain-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -44,7 +44,7 @@ async function bootstrap() {
     })
   );
   app.use(cookieParser());
-  app.useGlobalFilters(new DomainExceptionFilter());
+  app.useGlobalFilters(new DomainExceptionFilter(), new InfrastructureExceptionFilter());
   const port = process.env.PORT || 3000;
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);

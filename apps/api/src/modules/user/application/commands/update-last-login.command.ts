@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, ErrorLayer } from '@portfolio/shared/errors';
+import { NotFoundError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
-import { UserErrorCode } from '../user-error-code';
 
 export class UpdateLastLoginCommand extends BaseCommand {
   constructor(readonly targetUserId: string) {

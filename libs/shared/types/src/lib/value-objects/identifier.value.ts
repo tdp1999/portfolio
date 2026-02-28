@@ -1,5 +1,5 @@
 import { v7 as uuidv7, validate } from 'uuid';
-import { BadRequestError, ErrorLayer } from '@portfolio/shared/errors';
+import { BadRequestError, ErrorLayer, CommonErrorCode } from '@portfolio/shared/errors';
 
 export class IdentifierValue {
   static v7(): string {
@@ -8,7 +8,10 @@ export class IdentifierValue {
 
   static from(id: string): string {
     if (!validate(id)) {
-      throw BadRequestError(`Invalid UUID: ${id}`, { layer: ErrorLayer.DOMAIN });
+      throw BadRequestError(`Invalid UUID: ${id}`, {
+        errorCode: CommonErrorCode.VALIDATION_ERROR,
+        layer: ErrorLayer.DOMAIN,
+      });
     }
     return id;
   }
