@@ -69,7 +69,8 @@ class ConsoleErrorHandler implements ErrorHandler {
       return;
     }
 
-    // Unknown/missing error code — do nothing, component handles it
+    // Unknown/missing error code — show generic fallback toast
+    this.toastService.error('An unexpected error occurred. Please try again.');
   }
 }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,7 +28,7 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class LoginComponent {
+export default class LoginComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -53,6 +53,10 @@ export default class LoginComponent {
     }),
     rememberMe: new FormControl(false, { nonNullable: true }),
   });
+
+  ngOnInit(): void {
+    this.errorDataService.clear();
+  }
 
   constructor() {
     effect(() => {
