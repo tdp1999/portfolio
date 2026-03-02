@@ -14,7 +14,7 @@ export class ResendEmailService implements IEmailService {
     if (!apiKey && process.env['NODE_ENV'] !== 'development') {
       throw new Error('RESEND_API_KEY environment variable is required');
     }
-    this.resend = new Resend(apiKey);
+    this.resend = new Resend(apiKey || 're_dev_placeholder');
     this.from = process.env['EMAIL_FROM'] ?? 'noreply@example.com';
   }
 
