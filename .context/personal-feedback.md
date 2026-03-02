@@ -1,0 +1,1 @@
+- khi run /task va /sync, AC khong tu dong check khi hoan thanh

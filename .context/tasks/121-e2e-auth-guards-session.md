@@ -1,6 +1,6 @@
 # Task: E2E Route Guards & Session Tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 E2E tests for route protection (auth/guest guards) and session persistence behavior.
@@ -32,3 +32,4 @@ Verifies that unauthenticated users can't access protected routes, authenticated
 ## Complexity: M
 
 ## Progress Log
+- [2026-02-28] Completed — 9/9 tests passing (run with --workers=1 to avoid backend contention)

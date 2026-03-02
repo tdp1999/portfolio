@@ -94,6 +94,11 @@ Before marking any E2E test as complete:
 2. Confirm no request loops (run network audit on form/state-changing flows)
 3. Check that test data uses seeded fixtures, not hardcoded values
 4. Ensure page objects are reused, not duplicated across specs
+5. **Isolation check:** does this test mutate shared DB state (user counters, lockouts, etc.)? If yes, use `createTempUser()` or equivalent — never rely on serial mode as a fix
+6. **Rate limiter check:** does this test hit a rate-limited endpoint? If yes, ensure parallel workers can't exhaust the limit for other tests
+7. **Response shape check:** verify actual API response with `curl` before asserting on field paths — don't guess `body.message.x` vs `body.data.x`
+
+Reference: `references/test-patterns.md` (Test Isolation & Parallelism, Verifying API Response Shape)
 
 ## Project Structure Convention
 

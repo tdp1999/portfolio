@@ -24,8 +24,8 @@ class ConsoleErrorHandler implements ErrorHandler {
   private errorDataService = inject(ErrorDataService);
 
   handleHttpError(error: HttpErrorResponse): void {
-    // 401 — refresh interceptor handles it
-    if (error.status === 401) return;
+    // 401 on non-auth endpoints — refresh interceptor handles token rotation
+    if (error.status === 401 && !error.url?.includes('/auth/')) return;
 
     // Network error
     if (error.status === 0) {

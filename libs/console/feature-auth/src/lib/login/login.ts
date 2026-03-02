@@ -51,7 +51,7 @@ export default class LoginComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    rememberMe: new FormControl(false, { nonNullable: true }),
+    rememberMe: new FormControl(true, { nonNullable: true }),
   });
 
   ngOnInit(): void {

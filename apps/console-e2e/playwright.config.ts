@@ -33,6 +33,9 @@ export default defineConfig({
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',
 
+    // Capture screenshot on failure
+    screenshot: 'only-on-failure',
+
     // Headless mode (default: true)
     headless: true,
   },
@@ -45,11 +48,19 @@ export default defineConfig({
     },
   ],
 
-  // Run your local dev server before starting the tests
-  webServer: {
-    command: 'pnpm nx serve console',
-    url: 'http://localhost:4300',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Run API and console dev servers before starting the tests
+  webServer: [
+    {
+      command: 'pnpm nx serve api',
+      url: 'http://localhost:3000/api',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+    {
+      command: 'pnpm nx serve console',
+      url: 'http://localhost:4300',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+  ],
 });

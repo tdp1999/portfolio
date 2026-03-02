@@ -1,5 +1,6 @@
 import { HttpContext } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { catchError, EMPTY, switchMap, tap } from 'rxjs';
 import { API_CONFIG, ApiService } from './api';
 import { SKIP_ERROR_HANDLING } from './interceptors/error.interceptor';
@@ -9,6 +10,7 @@ import { LoginResponse, UserProfile } from './interfaces';
 export class AuthStore {
   private readonly api = inject(ApiService);
   private readonly apiConfig = inject(API_CONFIG);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private accessToken: string | null = null;
 
@@ -68,6 +70,13 @@ export class AuthStore {
 
   bootstrap(): Promise<void> {
     this.isBootstrapping.set(true);
+
+    if (!this.hasCsrfCookie()) {
+      this.clearState();
+      this.isBootstrapping.set(false);
+      return Promise.resolve();
+    }
+
     const silentContext = { context: new HttpContext().set(SKIP_ERROR_HANDLING, true) };
 
     return new Promise<void>((resolve) => {
@@ -76,7 +85,6 @@ export class AuthStore {
           switchMap(() => this.fetchCurrentUser(silentContext)),
           catchError(() => {
             this.clearState();
-            // Returns EMPTY → complete fires immediately → isBootstrapping reset below
             return EMPTY;
           })
         )
@@ -87,6 +95,10 @@ export class AuthStore {
           },
         });
     });
+  }
+
+  private hasCsrfCookie(): boolean {
+    return this.isBrowser && document.cookie.split('; ').some((row) => row.startsWith('csrf_token='));
   }
 
   private clearState(): void {
