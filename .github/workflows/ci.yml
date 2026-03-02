@@ -84,7 +84,7 @@ jobs:
         run: npx prisma generate --schema=apps/api/prisma/schema.prisma
 
       - name: Run database migrations
-        run: npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma
+        run: npx prisma migrate deploy --config=apps/api/prisma/prisma.config.ts
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
