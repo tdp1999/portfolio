@@ -67,6 +67,8 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio
       JWT_SECRET: ci-test-secret
       NODE_ENV: development
+      GOOGLE_CLIENT_ID: ci-placeholder
+      GOOGLE_CLIENT_SECRET: ci-placeholder
 
     steps:
       - uses: actions/checkout@v4
