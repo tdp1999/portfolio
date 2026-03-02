@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ErrorHandler, ERROR_HANDLER } from './error-handler';
+import { ERROR_HANDLER } from './error-handler';
 import { errorInterceptor, SKIP_ERROR_HANDLING } from './error.interceptor';
 
 describe('errorInterceptor', () => {
@@ -36,14 +36,15 @@ describe('errorInterceptor', () => {
   });
 
   it('should delegate errors to ERROR_HANDLER', () => {
-    http.get('/api/data').subscribe({ error: () => {} });
+    http.get('/api/data').subscribe({
+      error: () => {
+        /* expected */
+      },
+    });
 
     httpTesting
       .expectOne('/api/data')
-      .flush(
-        { name: 'DomainError', message: 'Email is invalid' },
-        { status: 400, statusText: 'Bad Request' }
-      );
+      .flush({ name: 'DomainError', message: 'Email is invalid' }, { status: 400, statusText: 'Bad Request' });
 
     expect(errorHandler.handleHttpError).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleHttpError.mock.calls[0][0].status).toBe(400);
@@ -60,9 +61,11 @@ describe('errorInterceptor', () => {
   });
 
   it('should skip error handling when SKIP_ERROR_HANDLING is set', () => {
-    http
-      .get('/api/data', { context: new HttpContext().set(SKIP_ERROR_HANDLING, true) })
-      .subscribe({ error: () => {} });
+    http.get('/api/data', { context: new HttpContext().set(SKIP_ERROR_HANDLING, true) }).subscribe({
+      error: () => {
+        /* expected */
+      },
+    });
 
     httpTesting.expectOne('/api/data').flush('fail', { status: 400, statusText: 'Bad Request' });
 
@@ -72,10 +75,7 @@ describe('errorInterceptor', () => {
   it('should work without ERROR_HANDLER provided', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(withInterceptors([errorInterceptor])),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(withInterceptors([errorInterceptor])), provideHttpClientTesting()],
     });
 
     const httpNoHandler = TestBed.inject(HttpClient);
