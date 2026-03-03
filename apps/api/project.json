@@ -52,10 +52,7 @@
           "node --watch-path=../../dist/apps/api ../../dist/apps/api/main.js"
         ],
         "cwd": "apps/api",
-        "parallel": true,
-        "env": {
-          "NODE_ENV": "development"
-        }
+        "parallel": true
       }
     },
     "test": {
