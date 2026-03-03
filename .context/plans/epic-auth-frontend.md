@@ -211,7 +211,7 @@ XL
 **Reasoning:** Cross-subdomain cookie configuration, 4 auth pages, signal-based auth store with silent refresh, 4 HTTP interceptors, 2 route guards, 3 loading indicator types, toast system, CSP headers. Likely 12-15 tasks.
 
 ## Status
-broken-down
+completed
 
 > Broken down into tasks 101-114 on 2026-02-25
 

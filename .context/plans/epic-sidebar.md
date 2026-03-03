@@ -225,7 +225,7 @@ L
 **Reasoning:** ~12 components/directives + NgModule, signal-based state service, CDK Overlay integration, shared breakpoint observer prerequisite, E2E test suite. Not XL because no backend, no data model, and we have a solid reference implementation to adapt from.
 
 ## Status
-broken-down
+completed
 
 **Broken down into tasks 067-075 on 2026-02-24**
 

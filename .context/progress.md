@@ -171,6 +171,29 @@
 
 **Next Task:** **057-tag-prisma-schema** - Tag Prisma schema + migration (DB Architecture Sprint 3)
 
+### Epic: User Module Production Hardening (epic-user-module-hardening) - broken-down
+
+#### Phase 1: Foundation
+- [ ] 124-user-hardening-foundation - Schema, entity, mapper, DTOs, JWT role, RoleGuard (L)
+- [ ] 128-user-hardening-admin-seed - Admin seed script (S) → depends on 124
+
+#### Phase 2: Security
+- [ ] 125-user-hardening-security - Guards, token hashing, IDOR, rate limit, input sanitization (M) → depends on 124
+
+#### Phase 3: Functional
+- [ ] 126-user-hardening-functional - Google SSO restriction, invite flow, soft-delete, list users (L) → depends on 124, 125
+
+#### Phase 4: Code Quality
+- [ ] 127-user-hardening-code-quality - Partial updates, zod import, typed DTOs, void return, BaseCommand (S) → depends on 124, 126
+
+#### Phase 5: Frontend
+- [ ] 129-user-hardening-set-password-page - Set-password page for invited users (S) → depends on 126
+- [ ] 130-user-hardening-profile-role-updates - UserProfile update & admin badge (S) → depends on 124
+- [ ] 131-user-hardening-admin-page - Admin user management page (L) → depends on 126, 130
+
+#### E2E
+- [ ] 132-user-hardening-e2e - E2E tests for all hardening features (L) → depends on 124-131
+
 ## Statistics
 
 | Status                   | Count  |
@@ -179,7 +202,8 @@
 | Pending (DB Tag Module)  | 8      |
 | Pending (Auth E2E)       | 1      |
 | Pending (Standalone)     | 1      |
-| **Total Created**        | **123** |
+| Pending (User Hardening) | 9      |
+| **Total Created**        | **132** |
 
 ## Notes
 
