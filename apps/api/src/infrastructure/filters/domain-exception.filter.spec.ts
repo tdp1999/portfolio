@@ -28,7 +28,7 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('should set status code from DomainError', () => {
-    const error = UnauthorizedError('Test unauthorized');
+    const error = UnauthorizedError('Test unauthorized', { errorCode: 'TEST_UNAUTH' });
 
     filter.catch(error, mockHost);
 
@@ -36,7 +36,7 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('should return toJSON() as response body', () => {
-    const error = NotFoundError('User not found');
+    const error = NotFoundError('User not found', { errorCode: 'USER_NOT_FOUND' });
 
     filter.catch(error, mockHost);
 
@@ -44,13 +44,11 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('should handle 400 status correctly', () => {
-    const error = BadRequestError('Invalid data');
+    const error = BadRequestError('Invalid data', { errorCode: 'BAD_REQUEST' });
 
     filter.catch(error, mockHost);
 
     expect(mockResponse.status).toHaveBeenCalledWith(400);
-    expect(mockResponse.json).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: 400, error: 'Bad Request' })
-    );
+    expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 400, error: 'Bad Request' }));
   });
 });

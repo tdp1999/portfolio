@@ -21,6 +21,7 @@ describe('AuthStore', () => {
     id: 'user-1',
     email: 'test@example.com',
     name: 'Test User',
+    hasPassword: true,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
   };
@@ -168,6 +169,31 @@ describe('AuthStore', () => {
   });
 
   describe('bootstrap', () => {
+    beforeEach(() => {
+      // Simulate having a csrf_token cookie so bootstrap doesn't short-circuit
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: 'csrf_token=test-csrf-value',
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: '',
+      });
+    });
+
+    it('should skip refresh when no csrf cookie is present', async () => {
+      Object.defineProperty(document, 'cookie', { writable: true, value: '' });
+
+      await store.bootstrap();
+
+      expect(store.getAccessToken()).toBeNull();
+      expect(store.user()).toBeNull();
+      expect(store.isBootstrapping()).toBe(false);
+    });
+
     it('should set user when refresh succeeds', async () => {
       const promise = store.bootstrap();
 

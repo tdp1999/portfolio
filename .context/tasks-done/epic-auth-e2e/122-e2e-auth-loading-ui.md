@@ -1,6 +1,6 @@
 # Task: E2E Loading Indicators & Toast Tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 E2E tests verifying loading spinners and toast notifications during auth flows.
@@ -9,10 +9,10 @@ E2E tests verifying loading spinners and toast notifications during auth flows.
 Ensures the UX polish elements work: full-page spinner during bootstrap, toasts on login success/failure.
 
 ## Acceptance Criteria
-- [ ] `auth-loading.spec.ts` created
-- [ ] Full-page spinner visible during auth bootstrap (intercept refresh endpoint to delay response)
-- [ ] Toast appears on login failure and auto-dismisses
-- [ ] Toast appears on login success (if applicable)
+- [x] `auth-loading.spec.ts` created
+- [x] Full-page spinner visible during auth bootstrap (intercept refresh endpoint to delay response)
+- [x] Toast appears on login failure and auto-dismisses
+- [x] Toast appears on login success (if applicable)
 
 ## Technical Notes
 - Use `page.route()` to intercept `/api/auth/refresh` and add delay to test spinner visibility

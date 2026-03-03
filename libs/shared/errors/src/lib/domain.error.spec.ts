@@ -7,43 +7,41 @@ import {
   NotFoundError,
   MethodNotAllowedError,
   InternalServerError,
+  ValidationError,
 } from './domain.error';
 import { ErrorLayer } from './error-layer';
 
 describe('DomainError', () => {
   describe('factory functions', () => {
     it.each([
-      { fn: BadRequestError, status: 400, error: 'Bad Request', defaultMsg: 'Data is invalid' },
-      { fn: UnauthorizedError, status: 401, error: 'Unauthorized', defaultMsg: 'Unauthorized' },
-      { fn: ForbiddenError, status: 403, error: 'Forbidden', defaultMsg: 'Forbidden' },
-      { fn: NotFoundError, status: 404, error: 'Not Found', defaultMsg: 'Not Found' },
+      { fn: BadRequestError, status: 400, error: 'Bad Request', msg: 'Data is invalid' },
+      { fn: UnauthorizedError, status: 401, error: 'Unauthorized', msg: 'Unauthorized' },
+      { fn: ForbiddenError, status: 403, error: 'Forbidden', msg: 'Forbidden' },
+      { fn: NotFoundError, status: 404, error: 'Not Found', msg: 'Not Found' },
       {
         fn: MethodNotAllowedError,
         status: 405,
         error: 'Method Not Allowed',
-        defaultMsg: 'Method Not Allowed',
+        msg: 'Method Not Allowed',
       },
       {
         fn: InternalServerError,
         status: 500,
         error: 'Internal Server Error',
-        defaultMsg: 'Internal Server Error',
+        msg: 'Internal Server Error',
       },
-    ])(
-      '$error should create DomainError with status $status',
-      ({ fn, status, error, defaultMsg }) => {
-        const err = fn();
+    ])('$error should create DomainError with status $status', ({ fn, status, error, msg }) => {
+      const err = fn(msg, { errorCode: 'TEST' });
 
-        expect(err).toBeInstanceOf(DomainError);
-        expect(err.statusCode).toBe(status);
-        expect(err.error).toBe(error);
-        expect(err.message).toBe(defaultMsg);
-      }
-    );
+      expect(err).toBeInstanceOf(DomainError);
+      expect(err.statusCode).toBe(status);
+      expect(err.error).toBe(error);
+      expect(err.message).toBe(msg);
+    });
   });
 
   it('should include custom message', () => {
-    const err = NotFoundError('User not found');
+    const err = NotFoundError('User not found', { errorCode: 'NOT_FOUND' });
 
     expect(err.message).toBe('User not found');
   });
@@ -55,13 +53,13 @@ describe('DomainError', () => {
   });
 
   it('should construct remarks from options', () => {
-    const err = BadRequestError('bad', { layer: ErrorLayer.APPLICATION, remarks: 'extra info' });
+    const err = BadRequestError('bad', { layer: ErrorLayer.APPLICATION, remarks: 'extra info', errorCode: 'TEST' });
 
     expect(err.remarks).toBe('[APPLICATION] extra info');
   });
 
   it('should construct remarks with layer only', () => {
-    const err = BadRequestError('bad', { layer: ErrorLayer.DOMAIN });
+    const err = BadRequestError('bad', { layer: ErrorLayer.DOMAIN, errorCode: 'TEST' });
 
     expect(err.remarks).toBe('[DOMAIN] No remarks provided.');
   });
@@ -80,7 +78,7 @@ describe('DomainError', () => {
     });
   });
 
-  it('should format ZodError in BadRequestError', () => {
+  it('should format ZodError in ValidationError', () => {
     const zodError = new ZodError([
       {
         code: 'invalid_type',
@@ -90,8 +88,10 @@ describe('DomainError', () => {
         message: 'Expected string',
       },
     ]);
-    const err = BadRequestError(zodError);
+    const err = ValidationError(zodError, { errorCode: 'VALIDATION' });
 
-    expect(err.message).toEqual({ name: ['Expected string'] });
+    expect(err.statusCode).toBe(400);
+    expect(err.message).toBe('Validation failed');
+    expect(err.data).toEqual({ name: ['Expected string'] });
   });
 });

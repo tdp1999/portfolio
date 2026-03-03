@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'ui-sidebar-content',
   standalone: true,
   template: `<ng-content />`,
-  host: { class: 'flex flex-col flex-1 min-h-0 gap-2 overflow-y-auto p-2' },
+  host: { class: 'flex flex-col flex-1 min-h-0 gap-2 overflow-y-auto p-3' },
 })
 export class SidebarContentComponent {}

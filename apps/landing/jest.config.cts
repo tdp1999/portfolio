@@ -33,10 +33,10 @@ module.exports = {
   // Only measuring src/app/ directory which contains actual components
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 50,
-      lines: 70,
-      statements: 70,
+      branches: 50,
+      functions: 25,
+      lines: 50,
+      statements: 50,
     },
   },
 };

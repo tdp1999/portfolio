@@ -39,14 +39,13 @@ describe('GetCurrentUserHandler', () => {
   it('should return public user props', async () => {
     repo.findById.mockResolvedValue(createUser());
 
-    const result = await handler.execute(
-      new GetCurrentUserQuery('019450c4-5b12-7000-8000-000000000001')
-    );
+    const result = await handler.execute(new GetCurrentUserQuery('019450c4-5b12-7000-8000-000000000001'));
 
     expect(result).toEqual({
       id: '019450c4-5b12-7000-8000-000000000001',
       email: 'test@example.com',
       name: 'Test User',
+      hasPassword: true,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     });
@@ -61,8 +60,6 @@ describe('GetCurrentUserHandler', () => {
   });
 
   it('should reject invalid user ID', async () => {
-    await expect(handler.execute(new GetCurrentUserQuery('bad-id'))).rejects.toBeInstanceOf(
-      DomainError
-    );
+    await expect(handler.execute(new GetCurrentUserQuery('bad-id'))).rejects.toBeInstanceOf(DomainError);
   });
 });

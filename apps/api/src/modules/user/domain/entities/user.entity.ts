@@ -204,6 +204,7 @@ export class User {
       id: this.props.id,
       email: this.props.email,
       name: this.props.name,
+      hasPassword: this.props.password !== null,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
     };

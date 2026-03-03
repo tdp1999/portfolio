@@ -162,9 +162,9 @@
 - [x] 117-e2e-auth-login - Login page tests (M) ✓
 - [x] 118-e2e-auth-logout - Logout tests (M) ✓
 - [x] 119-e2e-auth-password - Password management tests (L) ✓
-- [ ] 120-e2e-auth-google-oauth - Google OAuth mock tests (M) → depends on 116
-- [ ] 121-e2e-auth-guards-session - Route guards & session tests (M) → depends on 116
-- [ ] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) → depends on 116
+- [x] 120-e2e-auth-google-oauth - Google OAuth mock tests (M) ✓
+- [x] 121-e2e-auth-guards-session - Route guards & session tests (M) ✓
+- [x] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) ✓
 - [ ] 123-e2e-ci-integration - CI pipeline integration (M) → depends on 116-122
 
 ## Up Next
@@ -175,9 +175,9 @@
 
 | Status                   | Count  |
 | ------------------------ | ------ |
-| Done (archived)          | 109    |
+| Done (archived)          | 112    |
 | Pending (DB Tag Module)  | 8      |
-| Pending (Auth E2E)       | 4      |
+| Pending (Auth E2E)       | 1      |
 | Pending (Standalone)     | 1      |
 | **Total Created**        | **123** |
 

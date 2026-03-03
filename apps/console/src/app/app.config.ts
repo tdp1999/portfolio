@@ -29,7 +29,9 @@ export const appConfig: ApplicationConfig = {
       urlPrefix: 'api',
       timeout: 30_000,
     }),
-    provideAppInitializer(() => inject(AuthStore).bootstrap()),
+    provideAppInitializer(() => {
+      inject(AuthStore).bootstrap();
+    }),
     provideAppInitializer(() => {
       inject(ThemeService);
     }),

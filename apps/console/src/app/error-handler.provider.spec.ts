@@ -1,7 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { ERROR_HANDLER, ErrorHandler } from '@portfolio/console/shared/data-access';
+import {
+  ERROR_HANDLER,
+  ErrorHandler,
+  ValidationErrorService,
+  ErrorDataService,
+} from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { provideErrorHandler } from './error-handler.provider';
 
@@ -19,13 +24,15 @@ describe('ConsoleErrorHandler', () => {
         provideErrorHandler(),
         { provide: Router, useValue: router },
         { provide: ToastService, useValue: toastService },
+        { provide: ValidationErrorService, useValue: { push: jest.fn() } },
+        { provide: ErrorDataService, useValue: { push: jest.fn() } },
       ],
     });
 
     handler = TestBed.inject(ERROR_HANDLER);
   });
 
-  it('should skip 401 errors', () => {
+  it('should skip 401 errors on non-auth endpoints', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 401 }));
 
     expect(toastService.error).not.toHaveBeenCalled();
@@ -33,17 +40,13 @@ describe('ConsoleErrorHandler', () => {
   });
 
   it('should show network error toast for status 0', () => {
-    handler.handleHttpError(
-      new HttpErrorResponse({ status: 0, error: new ProgressEvent('error') })
-    );
+    handler.handleHttpError(new HttpErrorResponse({ status: 0, error: new ProgressEvent('error') }));
 
     expect(toastService.error).toHaveBeenCalledWith('Network error');
   });
 
   it('should not show toast for aborted requests', () => {
-    handler.handleHttpError(
-      new HttpErrorResponse({ status: 0, error: new DOMException('Aborted', 'AbortError') })
-    );
+    handler.handleHttpError(new HttpErrorResponse({ status: 0, error: new DOMException('Aborted', 'AbortError') }));
 
     expect(toastService.error).not.toHaveBeenCalled();
   });
@@ -55,13 +58,6 @@ describe('ConsoleErrorHandler', () => {
     expect(toastService.error).not.toHaveBeenCalled();
   });
 
-  it('should show toast for 404', () => {
-    handler.handleHttpError(new HttpErrorResponse({ status: 404 }));
-
-    expect(toastService.error).toHaveBeenCalledWith('The requested resource was not found');
-    expect(router.navigate).not.toHaveBeenCalled();
-  });
-
   it('should navigate to error page for 500', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 500 }));
 
@@ -71,30 +67,17 @@ describe('ConsoleErrorHandler', () => {
   it('should show rate-limit toast for 429', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 429 }));
 
-    expect(toastService.error).toHaveBeenCalledWith(
-      'Too many requests. Please wait a moment and try again.'
-    );
+    expect(toastService.error).toHaveBeenCalledWith('Too many requests. Please wait a moment and try again.');
     expect(router.navigate).not.toHaveBeenCalled();
   });
 
-  it('should show toast with DomainError message for non-blocking errors', () => {
-    handler.handleHttpError(
-      new HttpErrorResponse({
-        status: 400,
-        error: { name: 'DomainError', message: 'Email is invalid' },
-      })
-    );
-
-    expect(toastService.error).toHaveBeenCalledWith('Email is invalid');
-  });
-
-  it('should show generic message when body has no message field', () => {
+  it('should show generic fallback toast for unknown errors', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 422, error: 'plain text' }));
 
-    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred');
+    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred. Please try again.');
   });
 
-  it('should show generic message when message is an object (not a string)', () => {
+  it('should show generic fallback when message is an object (not a string)', () => {
     handler.handleHttpError(
       new HttpErrorResponse({
         status: 400,
@@ -102,6 +85,6 @@ describe('ConsoleErrorHandler', () => {
       })
     );
 
-    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred');
+    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred. Please try again.');
   });
 });

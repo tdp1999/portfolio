@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
   FullPageSpinnerComponent,
   LoadingBarComponent,
+  SpinnerService,
   ToastContainerComponent,
 } from '@portfolio/console/shared/ui';
+import { AuthStore } from '@portfolio/console/shared/data-access';
 
 @Component({
   selector: 'console-root',
@@ -17,4 +19,17 @@ import {
     <console-full-page-spinner />
   `,
 })
-export class App {}
+export class App {
+  constructor() {
+    const authStore = inject(AuthStore);
+    const spinnerService = inject(SpinnerService);
+
+    effect(() => {
+      if (authStore.isBootstrapping()) {
+        spinnerService.show();
+      } else {
+        spinnerService.hide();
+      }
+    });
+  }
+}

@@ -34,6 +34,7 @@ export class ConsoleMainLayoutComponent {
 
   readonly user = this.authStore.user;
   readonly userInitial = computed(() => this.user()?.name?.charAt(0).toUpperCase() ?? '?');
+  readonly hasPassword = computed(() => this.user()?.hasPassword ?? true);
   readonly themeIcon = computed(() => (this.themeService.resolvedTheme() === 'dark' ? 'light_mode' : 'dark_mode'));
   readonly themeTooltip = computed(() =>
     this.themeService.resolvedTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'

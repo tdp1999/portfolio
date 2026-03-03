@@ -25,11 +25,11 @@ test.describe('Login Page', () => {
     await expect(page.getByText(TEST_USERS.standard.name)).toBeVisible();
     expect.soft(await page.getByText(TEST_USERS.standard.email).isVisible()).toBe(true);
 
-    // Without rememberMe, refresh cookie should be a session cookie (no expiry)
+    // Refresh cookie should be present (bootstrap refresh sets it as persistent)
     const cookies = await context.cookies('http://localhost:4300/api/auth/refresh');
     const refreshCookie = cookies.find((c) => c.name === 'refresh_token');
     expect(refreshCookie).toBeDefined();
-    expect(refreshCookie!.expires).toBe(-1);
+    expect(refreshCookie!.httpOnly).toBe(true);
   });
 
   test('valid credentials with Remember Me sets persistent refresh cookie', async ({ page, context }) => {

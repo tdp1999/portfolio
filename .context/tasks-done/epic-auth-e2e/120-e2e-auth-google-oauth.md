@@ -1,6 +1,6 @@
 # Task: E2E Google OAuth Tests (Mocked)
 
-## Status: pending
+## Status: done
 
 ## Goal
 E2E tests for Google OAuth callback flow using a simple mock approach.
@@ -9,10 +9,10 @@ E2E tests for Google OAuth callback flow using a simple mock approach.
 Real Google OAuth can't be tested in E2E. We simulate the callback by navigating directly to the callback URL with a mock token, or by intercepting the Google redirect.
 
 ## Acceptance Criteria
-- [ ] `auth-google.spec.ts` created
-- [ ] Happy: simulated callback with valid token → user logged in, redirected to dashboard
-- [ ] Unhappy: callback with no/invalid token → redirected to login with error
-- [ ] UI: Google-only user has no "Change Password" option visible
+- [x] `auth-google.spec.ts` created
+- [x] Happy: simulated callback with valid token → user logged in, redirected to dashboard
+- [x] Unhappy: callback with no/invalid token → redirected to login with error
+- [x] UI: Google-only user has no "Change Password" option visible
 
 ## Technical Notes
 - Simplest approach: use `page.route()` to intercept the Google OAuth redirect and return a mock response

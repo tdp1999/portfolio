@@ -59,9 +59,9 @@ describe('ForgotPasswordHandler', () => {
   });
 
   it('should reject invalid input', async () => {
-    await expect(
-      handler.execute(new ForgotPasswordCommand({ email: 'not-an-email' }))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new ForgotPasswordCommand({ email: 'not-an-email' }))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should return silently if user not found', async () => {
@@ -108,6 +108,6 @@ describe('ForgotPasswordHandler', () => {
 
     const emailCall = emailService.sendEmail.mock.calls[0][0];
     expect(emailCall.html).toContain('token=');
-    expect(emailCall.html).toContain('id=');
+    expect(emailCall.html).toContain('userId=');
   });
 });

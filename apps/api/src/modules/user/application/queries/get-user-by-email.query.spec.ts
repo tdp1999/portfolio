@@ -31,6 +31,7 @@ describe('GetUserByEmailHandler', () => {
       id: mockUser.id,
       email: 'test@example.com',
       name: 'Test',
+      hasPassword: true,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });

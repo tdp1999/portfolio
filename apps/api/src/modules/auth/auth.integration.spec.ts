@@ -262,10 +262,7 @@ describe('Auth Integration Tests', () => {
       expect(meRes2.body.email).toBe(TEST_EMAIL);
 
       // 5. Logout
-      await request(app.getHttpServer())
-        .post('/auth/logout')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
+      await request(app.getHttpServer()).post('/auth/logout').set('Authorization', `Bearer ${accessToken}`).expect(200);
 
       // 6. /me should still work with valid JWT (token not expired, version unchanged)
       //    but refresh should fail (refresh token cleared)
@@ -284,10 +281,7 @@ describe('Auth Integration Tests', () => {
     it('should send reset email for valid user', async () => {
       await createTestUser(userRepo);
 
-      await request(app.getHttpServer())
-        .post('/auth/forgot-password')
-        .send({ email: TEST_EMAIL })
-        .expect(200);
+      await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: TEST_EMAIL }).expect(200);
 
       expect(emailService.sendEmail).toHaveBeenCalledTimes(1);
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -311,25 +305,19 @@ describe('Auth Integration Tests', () => {
       const user = await createTestUser(userRepo);
 
       // Request reset first to set token on user
-      await request(app.getHttpServer())
-        .post('/auth/forgot-password')
-        .send({ email: TEST_EMAIL })
-        .expect(200);
+      await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: TEST_EMAIL }).expect(200);
 
       await request(app.getHttpServer())
         .post('/auth/reset-password')
         .send({ token: 'invalidtoken', userId: user.id, newPassword: 'NewPass1#' })
-        .expect(401);
+        .expect(400);
     });
 
     it('full flow: forgot → reset → login with new password', async () => {
       const user = await createTestUser(userRepo);
 
       // 1. Request password reset
-      await request(app.getHttpServer())
-        .post('/auth/forgot-password')
-        .send({ email: TEST_EMAIL })
-        .expect(200);
+      await request(app.getHttpServer()).post('/auth/forgot-password').send({ email: TEST_EMAIL }).expect(200);
 
       // 2. Extract raw token from sent email
       const emailHtml: string = emailService.sendEmail.mock.calls[0][0].html;

@@ -12,7 +12,7 @@ import { SidebarState } from './sidebar-state.service';
     }
   `,
   host: {
-    class: 'flex gap-4 p-2 items-center shrink-0',
+    class: 'flex gap-4 p-4 items-center shrink-0',
   },
 })
 export class SidebarFooterComponent {

@@ -1,6 +1,7 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
-import { signal } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AuthStore } from '../auth.store';
 import { guestGuard } from './guest.guard';
 
