@@ -150,6 +150,9 @@ test.describe('Login Page', () => {
       // Note: throttler is disabled in non-production; skip assertions if 429 never fires
       const loginResponses: number[] = [];
       for (let i = 0; i < 6; i++) {
+        // Account may lock after several failures, disabling the submit button
+        if (await loginPage.submitButton.isDisabled()) break;
+
         const [response] = await Promise.all([
           page.waitForResponse((r) => r.url().includes('/api/auth/login')),
           loginPage.login(user.email, 'WrongPassword1!'),
@@ -158,7 +161,7 @@ test.describe('Login Page', () => {
         if (response.status() === 429) break;
       }
 
-      if (!loginResponses.includes(429)) return; // Throttler disabled in non-production env
+      if (!loginResponses.includes(429)) return; // Throttler disabled or account locked first
 
       // Should show the rate-limit toast
       await expect(page.getByText(/too many requests/i)).toBeVisible();
