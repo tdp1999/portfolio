@@ -19,10 +19,22 @@ describe('HealthController', () => {
   });
 
   describe('GET /health', () => {
+    it('returns status ok without querying the database', () => {
+      const result = controller.check();
+
+      expect(result).toEqual({
+        status: 'ok',
+        timestamp: expect.any(String),
+      });
+      expect(prisma.$queryRaw).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /health/db', () => {
     it('returns status ok with db connected when database is reachable', async () => {
       prisma.$queryRaw.mockResolvedValue([]);
 
-      const result = await controller.check();
+      const result = await controller.checkDb();
 
       expect(result).toEqual({
         status: 'ok',
@@ -37,7 +49,7 @@ describe('HealthController', () => {
 
       let caught: HttpException | null = null;
       try {
-        await controller.check();
+        await controller.checkDb();
       } catch (e) {
         caught = e as HttpException;
       }
@@ -45,7 +57,7 @@ describe('HealthController', () => {
       expect(caught).toBeInstanceOf(HttpException);
       expect(caught!.getStatus()).toBe(HttpStatus.SERVICE_UNAVAILABLE);
       expect(caught!.getResponse()).toMatchObject({
-        status: 'ok',
+        status: 'error',
         db: 'error',
         timestamp: expect.any(String),
       });
