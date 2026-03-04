@@ -33,4 +33,4 @@ RUN npm install --omit=dev && npx prisma generate --schema=./prisma/schema.prism
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && node main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma --url=$DATABASE_URL && node main.js"]
