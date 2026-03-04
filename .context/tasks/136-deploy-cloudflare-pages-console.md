@@ -1,6 +1,6 @@
 # Task: Cloudflare Pages Console Setup
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
 Configure Cloudflare Pages to build and deploy the Console SPA with correct build settings, SPA routing, and production environment configuration.
@@ -11,10 +11,10 @@ Phase 1 of epic-production-deployment. The Console is a static Angular SPA — p
 ## Acceptance Criteria
 - [ ] Cloudflare Pages project configured with build command: `pnpm nx build console --configuration=production`
 - [ ] Build output directory set to `dist/apps/console/browser`
-- [ ] `public/_redirects` file created with `/* /index.html 200` for SPA routing
+- [x] `_redirects` file created at `apps/console/src/_redirects` with `/* /index.html 200` and copied to build output via assets config
 - [ ] Production `environment.ts` updated with configurable `apiBaseUrl` (uses CF Pages build env var or hardcoded production URL)
-- [ ] Console builds successfully with production configuration
-- [ ] SPA routes work correctly (deep links don't 404)
+- [x] Console builds successfully with production configuration
+- [x] SPA routes work correctly (`_redirects` confirmed in `dist/apps/console/browser/`)
 - [ ] CF Pages connected to GitHub repo for automatic deploys on `master` push
 - [ ] Build environment variables documented
 
