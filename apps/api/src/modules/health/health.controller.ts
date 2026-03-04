@@ -12,6 +12,7 @@ export class HealthController {
       await this.prisma.$queryRaw`SELECT 1`;
       return { status: 'ok', db: 'connected', timestamp };
     } catch {
+      // Infrastructure exception — health check is exempt from "no throws in controllers" rule
       throw new HttpException({ status: 'ok', db: 'error', timestamp }, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }

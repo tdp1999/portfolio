@@ -5,7 +5,7 @@ import { PrismaModule } from '../infrastructure/prisma';
 import { UserModule } from '../modules/user';
 import { AuthModule } from '../modules/auth';
 import { EmailModule } from '../modules/email';
-import { HealthModule } from '../modules/health/health.module';
+import { HealthModule } from '../modules/health';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
