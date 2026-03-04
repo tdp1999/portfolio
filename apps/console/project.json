@@ -18,6 +18,11 @@
           {
             "glob": "**/*",
             "input": "apps/console/public"
+          },
+          {
+            "glob": "_redirects",
+            "input": "apps/console/src",
+            "output": "/"
           }
         ],
         "styles": ["apps/console/src/styles.scss"]

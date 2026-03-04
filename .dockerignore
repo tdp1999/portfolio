@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+
+# Version control
+.git
+.gitignore
+
+# Build output
+dist
+
+# Test files
+**/*.spec.ts
+**/*.test.ts
+**/*.e2e-spec.ts
+coverage
+.nyc_output
+
+# IDE and editor configs
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Playwright
+playwright-report
+test-results
+
+# Nx cache
+.nx/cache
+
+# Angular cache
+.angular
+
+# Docker
+**/Dockerfile
+**/.dockerignore
