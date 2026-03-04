@@ -16,7 +16,25 @@ export const CreateUserSchema = UserFieldsSchema.extend({
   password: PasswordSchema,
 });
 
-export const UpdateUserSchema = nonEmptyPartial(UserFieldsSchema);
+const UpdateUserFieldsSchema = z.object({
+  name: z.string().min(1).max(100),
+});
+
+export const UpdateUserSchema = nonEmptyPartial(UpdateUserFieldsSchema);
+
+export const CreateUserByAdminSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.email(),
+  role: z.enum(['ADMIN', 'USER']).default('USER'),
+});
+
+export const PaginationSearchSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+});
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;
+export type CreateUserByAdminDto = z.infer<typeof CreateUserByAdminSchema>;
+export type PaginationSearchDto = z.infer<typeof PaginationSearchSchema>;

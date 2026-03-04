@@ -3,6 +3,7 @@ export interface IUserProps {
   email: string;
   password: string | null;
   name: string;
+  role: string;
   lastLoginAt: Date | null;
   refreshToken: string | null;
   refreshTokenExpiresAt: Date | null;
@@ -12,6 +13,9 @@ export interface IUserProps {
   failedLoginAttempts: number;
   lockedUntil: Date | null;
   tokenVersion: number;
+  deletedAt: Date | null;
+  inviteToken: string | null;
+  inviteTokenExpiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,5 +24,6 @@ export interface ICreateUserPayload {
   email: string;
   password: string | null;
   name: string;
+  role?: string;
   googleId?: string;
 }

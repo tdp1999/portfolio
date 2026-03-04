@@ -18,6 +18,7 @@ describe('RefreshTokenHandler', () => {
       email: 'test@example.com',
       password: '$2a$10$hashedpassword',
       name: 'Test User',
+      role: 'USER',
       lastLoginAt: null,
       refreshToken: STORED_REFRESH_TOKEN,
       refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -27,6 +28,9 @@ describe('RefreshTokenHandler', () => {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       ...overrides,
@@ -126,7 +130,7 @@ describe('RefreshTokenHandler', () => {
 
     await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
 
-    expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 2);
+    expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 2, 'USER');
   });
 
   it('should accept old refresh token within grace period', async () => {

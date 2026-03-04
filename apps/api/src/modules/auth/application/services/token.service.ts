@@ -5,6 +5,7 @@ import { AUTH_CONFIG, AuthConfig } from '../auth.config';
 
 export type AccessTokenPayload = {
   sub: string;
+  role: string;
   tokenVersion: number;
   iat: number;
   exp: number;
@@ -22,8 +23,8 @@ export class TokenService {
     @Inject(AUTH_CONFIG) private readonly config: AuthConfig
   ) {}
 
-  signAccessToken(userId: string, tokenVersion: number): string {
-    return this.jwtService.sign({ sub: userId, tokenVersion }, {
+  signAccessToken(userId: string, tokenVersion: number, role: string): string {
+    return this.jwtService.sign({ sub: userId, tokenVersion, role }, {
       secret: this.config.jwtSecret,
       expiresIn: this.config.jwtAccessExpiry,
     } as JwtSignOptions);

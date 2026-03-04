@@ -11,6 +11,7 @@ export class User {
       email: data.email,
       password: data.password,
       name: data.name,
+      role: data.role ?? 'USER',
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
@@ -20,6 +21,9 @@ export class User {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: now,
       updatedAt: now,
     });
@@ -81,6 +85,22 @@ export class User {
     return this.props.tokenVersion;
   }
 
+  get role(): string {
+    return this.props.role;
+  }
+
+  get deletedAt(): Date | null {
+    return this.props.deletedAt;
+  }
+
+  get inviteToken(): string | null {
+    return this.props.inviteToken;
+  }
+
+  get inviteTokenExpiresAt(): Date | null {
+    return this.props.inviteTokenExpiresAt;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -124,11 +144,18 @@ export class User {
     });
   }
 
-  updateProfile(data: { name?: string; email?: string }): User {
+  updateProfile(data: { name?: string }): User {
     return new User({
       ...this.props,
       ...(data.name !== undefined && { name: data.name }),
-      ...(data.email !== undefined && { email: data.email }),
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  softDelete(): User {
+    return new User({
+      ...this.props,
+      deletedAt: TemporalValue.now(),
       updatedAt: TemporalValue.now(),
     });
   }
@@ -204,7 +231,9 @@ export class User {
       id: this.props.id,
       email: this.props.email,
       name: this.props.name,
+      role: this.props.role,
       hasPassword: this.props.password !== null,
+      hasGoogleLinked: !!this.props.googleId,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
     };

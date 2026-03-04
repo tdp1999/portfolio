@@ -20,6 +20,7 @@ import { ForgotPasswordHandler } from './application/commands/forgot-password.co
 import { ResetPasswordHandler } from './application/commands/reset-password.command';
 import { GetCurrentUserHandler } from './application/queries/get-current-user.query';
 import { GoogleOAuthGuard } from './application/guards/google-oauth.guard';
+import { RoleGuard } from './application/guards/role.guard';
 import { AuthController } from './presentation/auth.controller';
 
 const CommandHandlers = [
@@ -48,9 +49,10 @@ const QueryHandlers = [GetCurrentUserHandler];
     AuthCookieService,
     GoogleStrategy,
     GoogleOAuthGuard,
+    RoleGuard,
     ...CommandHandlers,
     ...QueryHandlers,
   ],
-  exports: [TokenService, JwtAccessGuard],
+  exports: [TokenService, JwtAccessGuard, RoleGuard],
 })
 export class AuthModule {}

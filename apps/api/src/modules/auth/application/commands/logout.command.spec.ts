@@ -13,6 +13,7 @@ describe('LogoutHandler', () => {
       email: 'test@example.com',
       password: 'hashed',
       name: 'Test',
+      role: 'USER',
       lastLoginAt: null,
       refreshToken: 'hashed-refresh',
       refreshTokenExpiresAt: new Date(Date.now() + 86400000),
@@ -22,6 +23,9 @@ describe('LogoutHandler', () => {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -50,9 +54,9 @@ describe('LogoutHandler', () => {
   it('should throw if user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(
-      handler.execute(new LogoutCommand('019450c4-5b12-7000-8000-000000000001'))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new LogoutCommand('019450c4-5b12-7000-8000-000000000001'))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should reject invalid user ID', async () => {

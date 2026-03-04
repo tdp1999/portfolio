@@ -38,6 +38,7 @@
     "prisma:migrate:dev": "prisma migrate dev --config=apps/api/prisma/prisma.config.ts",
     "prisma:migrate:deploy": "prisma migrate deploy --config=apps/api/prisma/prisma.config.ts",
     "prisma:studio": "prisma studio --config=apps/api/prisma/prisma.config.ts",
+    "prisma:seed": "cd apps/api/prisma && npx tsx seed.ts",
     "prepare": "husky"
   },
   "private": true,

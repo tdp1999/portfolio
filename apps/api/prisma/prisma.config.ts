@@ -9,6 +9,7 @@ export default defineConfig({
   migrations: {
     path: 'migrations',
   },
+  seed: 'npx tsx seed.ts',
   datasource: {
     url: process.env['DATABASE_URL'] ?? '',
   },

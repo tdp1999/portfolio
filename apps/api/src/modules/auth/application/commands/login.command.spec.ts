@@ -22,6 +22,7 @@ describe('LoginHandler', () => {
       email: 'test@example.com',
       password: hashedPassword,
       name: 'Test User',
+      role: 'USER',
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
@@ -31,6 +32,9 @@ describe('LoginHandler', () => {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       ...overrides,
@@ -123,7 +127,7 @@ describe('LoginHandler', () => {
     expect(result.accessToken).toBe('access-token-123');
     expect(result.refreshToken).toBe('refresh-token-jwt');
     expect(result.rememberMe).toBe(false);
-    expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 0);
+    expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 0, 'USER');
     expect(tokenService.signRefreshToken).toHaveBeenCalledWith('user-id-123', 0);
   });
 

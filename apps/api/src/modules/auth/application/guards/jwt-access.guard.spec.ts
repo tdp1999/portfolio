@@ -14,6 +14,7 @@ describe('JwtAccessGuard', () => {
     email: 'test@example.com',
     password: 'hashed',
     name: 'Test User',
+    role: 'USER',
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
@@ -23,6 +24,9 @@ describe('JwtAccessGuard', () => {
     failedLoginAttempts: 0,
     lockedUntil: null,
     tokenVersion: 3,
+    deletedAt: null,
+    inviteToken: null,
+    inviteTokenExpiresAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -72,6 +76,7 @@ describe('JwtAccessGuard', () => {
     tokenService.verifyAccessToken.mockReturnValue({
       sub: 'user-123',
       tokenVersion: 3,
+      role: 'USER',
       iat: 0,
       exp: 0,
     });
@@ -84,6 +89,7 @@ describe('JwtAccessGuard', () => {
     tokenService.verifyAccessToken.mockReturnValue({
       sub: 'user-123',
       tokenVersion: 2, // mismatch — user has version 3
+      role: 'USER',
       iat: 0,
       exp: 0,
     });
@@ -96,6 +102,7 @@ describe('JwtAccessGuard', () => {
     tokenService.verifyAccessToken.mockReturnValue({
       sub: 'user-123',
       tokenVersion: 3,
+      role: 'USER',
       iat: 0,
       exp: 0,
     });

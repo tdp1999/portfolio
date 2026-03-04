@@ -7,6 +7,7 @@ describe('User Entity', () => {
     email: 'test@example.com',
     password: '$2b$10$hashedpassword',
     name: 'Test User',
+    role: 'USER',
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
@@ -16,6 +17,9 @@ describe('User Entity', () => {
     failedLoginAttempts: 0,
     lockedUntil: null,
     tokenVersion: 0,
+    deletedAt: null,
+    inviteToken: null,
+    inviteTokenExpiresAt: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
   };
@@ -32,13 +36,28 @@ describe('User Entity', () => {
       expect(user.email).toBe('new@example.com');
       expect(user.password).toBe('$2b$10$hash');
       expect(user.name).toBe('New User');
+      expect(user.role).toBe('USER');
       expect(user.lastLoginAt).toBeNull();
       expect(user.refreshToken).toBeNull();
       expect(user.refreshTokenExpiresAt).toBeNull();
       expect(user.passwordResetToken).toBeNull();
       expect(user.passwordResetExpiresAt).toBeNull();
+      expect(user.deletedAt).toBeNull();
+      expect(user.inviteToken).toBeNull();
+      expect(user.inviteTokenExpiresAt).toBeNull();
       expect(user.createdAt).toBeInstanceOf(Date);
       expect(user.updatedAt).toBeInstanceOf(Date);
+    });
+
+    it('should create a user with specified role', () => {
+      const user = User.create({
+        email: 'admin@example.com',
+        password: '$2b$10$hash',
+        name: 'Admin User',
+        role: 'ADMIN',
+      });
+
+      expect(user.role).toBe('ADMIN');
     });
   });
 
@@ -50,6 +69,7 @@ describe('User Entity', () => {
       expect(user.email).toBe(validProps.email);
       expect(user.password).toBe(validProps.password);
       expect(user.name).toBe(validProps.name);
+      expect(user.role).toBe(validProps.role);
       expect(user.createdAt).toBe(validProps.createdAt);
       expect(user.updatedAt).toBe(validProps.updatedAt);
     });
@@ -62,6 +82,42 @@ describe('User Entity', () => {
 
       expect(props).toEqual(validProps);
       expect(props).not.toBe(validProps);
+    });
+  });
+
+  describe('toPublicProps()', () => {
+    it('should return public props with role and hasGoogleLinked', () => {
+      const user = User.load(validProps);
+      const publicProps = user.toPublicProps();
+
+      expect(publicProps).toEqual({
+        id: validProps.id,
+        email: validProps.email,
+        name: validProps.name,
+        role: 'USER',
+        hasPassword: true,
+        hasGoogleLinked: false,
+        createdAt: validProps.createdAt,
+        updatedAt: validProps.updatedAt,
+      });
+    });
+
+    it('should show hasGoogleLinked true when googleId is set', () => {
+      const user = User.load({ ...validProps, googleId: 'google-123' });
+      const publicProps = user.toPublicProps();
+
+      expect(publicProps.hasGoogleLinked).toBe(true);
+    });
+  });
+
+  describe('softDelete()', () => {
+    it('should return a new user with deletedAt set', () => {
+      const user = User.load(validProps);
+      const deleted = user.softDelete();
+
+      expect(deleted.deletedAt).toBeInstanceOf(Date);
+      expect(deleted.updatedAt.getTime()).toBeGreaterThanOrEqual(user.updatedAt.getTime());
+      expect(deleted).not.toBe(user);
     });
   });
 
@@ -125,6 +181,17 @@ describe('User Entity', () => {
 
       expect(updated.passwordResetToken).toBeNull();
       expect(updated.passwordResetExpiresAt).toBeNull();
+    });
+  });
+
+  describe('updateProfile()', () => {
+    it('should update name only', () => {
+      const user = User.load(validProps);
+      const updated = user.updateProfile({ name: 'Updated Name' });
+
+      expect(updated.name).toBe('Updated Name');
+      expect(updated.email).toBe(validProps.email);
+      expect(updated).not.toBe(user);
     });
   });
 

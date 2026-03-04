@@ -1,6 +1,6 @@
 # Task: User Hardening — Foundation (Schema, Entity, Mapper, DTOs, JWT, RoleGuard, Seed)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Lay the complete foundation for User module hardening: Prisma schema changes, updated entity/mapper, revised DTOs, role in JWT, RoleGuard, and admin seed script.
@@ -11,48 +11,48 @@ Phase 1 of epic-user-module-hardening. All subsequent tasks (security hardening,
 ## Acceptance Criteria
 
 ### Prisma Schema
-- [ ] `enum Role { ADMIN USER }` added to schema
-- [ ] `role Role @default(USER)` column added to User model
-- [ ] `deletedAt DateTime?` column added to User model
-- [ ] `inviteToken String?` column added to User model
-- [ ] `inviteTokenExpiresAt DateTime?` column added to User model
-- [ ] Migration generated and applied (`prisma migrate dev`)
+- [x] `enum Role { ADMIN USER }` added to schema
+- [x] `role Role @default(USER)` column added to User model
+- [x] `deletedAt DateTime?` column added to User model
+- [x] `inviteToken String?` column added to User model
+- [x] `inviteTokenExpiresAt DateTime?` column added to User model
+- [x] Migration generated and applied (`prisma migrate dev`)
 
 ### User Entity
-- [ ] `role` and `deletedAt` added to `IUserProps` and `ICreateUserPayload`
-- [ ] Getters for `role` and `deletedAt` added
-- [ ] `toPublicProps()` includes `role` and `hasGoogleLinked` (boolean: `!!googleId`)
-- [ ] `softDelete()` method added — returns new User with `deletedAt` set to current timestamp
-- [ ] `email` removed from `updateProfile()` — email is now immutable
-- [ ] `inviteToken` and `inviteTokenExpiresAt` added to `IUserProps` (optional fields)
-- [ ] Entity tests updated/added for new fields and `softDelete()`
+- [x] `role` and `deletedAt` added to `IUserProps` and `ICreateUserPayload`
+- [x] Getters for `role` and `deletedAt` added
+- [x] `toPublicProps()` includes `role` and `hasGoogleLinked` (boolean: `!!googleId`)
+- [x] `softDelete()` method added — returns new User with `deletedAt` set to current timestamp
+- [x] `email` removed from `updateProfile()` — email is now immutable
+- [x] `inviteToken` and `inviteTokenExpiresAt` added to `IUserProps` (optional fields)
+- [x] Entity tests updated/added for new fields and `softDelete()`
 
 ### UserMapper
-- [ ] Maps `role`, `deletedAt`, `inviteToken`, `inviteTokenExpiresAt` between Prisma model and domain entity
+- [x] Maps `role`, `deletedAt`, `inviteToken`, `inviteTokenExpiresAt` between Prisma model and domain entity
 
 ### DTOs
-- [ ] `email` removed from `UpdateUserSchema`
-- [ ] `CreateUserByAdminSchema` added: `{ name, email, role? }` (role defaults to USER)
-- [ ] Pagination/search query schema added: `{ page?, limit?, search? }`
+- [x] `email` removed from `UpdateUserSchema`
+- [x] `CreateUserByAdminSchema` added: `{ name, email, role? }` (role defaults to USER)
+- [x] Pagination/search query schema added: `{ page?, limit?, search? }`
 
 ### JWT Payload
-- [ ] `role` included in access token claims (`AccessTokenPayload` type updated)
-- [ ] `TokenService` updated to include `role` when signing access tokens
-- [ ] `JwtStrategy` / `AccessTokenPayload` type reflects new `role` field
+- [x] `role` included in access token claims (`AccessTokenPayload` type updated)
+- [x] `TokenService` updated to include `role` when signing access tokens
+- [x] `JwtStrategy` / `AccessTokenPayload` type reflects new `role` field
 
 ### RoleGuard
-- [ ] `RoleGuard` created at `apps/api/src/modules/auth/application/guards/role.guard.ts`
-- [ ] `@Roles('ADMIN')` decorator created
-- [ ] Guard reads `role` from JWT payload (`req.user.role`), checks against required roles
-- [ ] Guard registered in AuthModule
+- [x] `RoleGuard` created at `apps/api/src/modules/auth/application/guards/role.guard.ts`
+- [x] `@Roles('ADMIN')` decorator created
+- [x] Guard reads `role` from JWT payload (`req.user.role`), checks against required roles
+- [x] Guard registered in AuthModule
 
 ### Admin Seed Script
-- [ ] `apps/api/prisma/seed.ts` created
-- [ ] Reads `ADMIN_EMAIL`, `ADMIN_NAME`, `ADMIN_PASSWORD` from env
-- [ ] Validates password meets rules before hashing
-- [ ] Creates user with `role: ADMIN`, bcrypt-hashed password
-- [ ] Idempotent — skips if email already exists
-- [ ] `prisma/seed` configured in `package.json`
+- [x] `apps/api/prisma/seed.ts` created
+- [x] Reads `ADMIN_EMAIL`, `ADMIN_NAME`, `ADMIN_PASSWORD` from env
+- [x] Validates password meets rules before hashing
+- [x] Creates user with `role: ADMIN`, bcrypt-hashed password
+- [x] Idempotent — skips if email already exists
+- [x] `prisma/seed` configured in `package.json`
 
 ## Technical Notes
 - Follow existing `passwordResetToken`/`passwordResetExpiresAt` pattern for new `inviteToken` fields

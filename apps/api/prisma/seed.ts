@@ -1,0 +1,49 @@
+import { PrismaClient, Role } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { IdentifierValue } from '@portfolio/shared/types';
+
+const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+async function main() {
+  const prisma = new PrismaClient();
+
+  try {
+    const email = process.env['ADMIN_EMAIL'];
+    const name = process.env['ADMIN_NAME'];
+    const password = process.env['ADMIN_PASSWORD'];
+
+    if (!email || !name || !password) {
+      console.log('Skipping admin seed: ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD env vars required');
+      return;
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      throw new Error(
+        'ADMIN_PASSWORD must be at least 8 characters with uppercase, lowercase, number, and special character'
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        id: IdentifierValue.v7(),
+        email,
+        name,
+        password: hashedPassword,
+        role: Role.ADMIN,
+      },
+    });
+
+    console.log(`Admin user seeded: ${email}`);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

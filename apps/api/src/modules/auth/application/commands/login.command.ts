@@ -102,7 +102,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
     updated = updated.setRefreshToken(refreshToken, refreshExpiresAt);
     await this.repo.update(user.id, updated);
 
-    const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion);
+    const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
 
     // Fire-and-forget: update last login
     this.commandBus.execute(new UpdateLastLoginCommand(user.id));

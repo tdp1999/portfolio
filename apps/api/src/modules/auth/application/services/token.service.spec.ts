@@ -20,13 +20,13 @@ describe('TokenService', () => {
 
   describe('signAccessToken', () => {
     it('should return a JWT string', () => {
-      const token = tokenService.signAccessToken('user-123', 0);
+      const token = tokenService.signAccessToken('user-123', 0, 'USER');
       expect(typeof token).toBe('string');
       expect(token.split('.')).toHaveLength(3);
     });
 
     it('should include userId and tokenVersion in payload', () => {
-      const token = tokenService.signAccessToken('user-123', 5);
+      const token = tokenService.signAccessToken('user-123', 5, 'ADMIN');
       const payload = jwtService.verify(token, { secret: config.jwtSecret });
       expect(payload.sub).toBe('user-123');
       expect(payload.tokenVersion).toBe(5);
@@ -35,7 +35,7 @@ describe('TokenService', () => {
 
   describe('verifyAccessToken', () => {
     it('should return payload for a valid token', () => {
-      const token = tokenService.signAccessToken('user-123', 0);
+      const token = tokenService.signAccessToken('user-123', 0, 'USER');
       const payload = tokenService.verifyAccessToken(token);
       expect(payload.sub).toBe('user-123');
       expect(payload.tokenVersion).toBe(0);
@@ -86,7 +86,7 @@ describe('TokenService', () => {
     });
 
     it('should throw for a token signed with access secret', () => {
-      const token = tokenService.signAccessToken('user-123', 0);
+      const token = tokenService.signAccessToken('user-123', 0, 'USER');
       expect(() => tokenService.verifyRefreshToken(token)).toThrow();
     });
   });

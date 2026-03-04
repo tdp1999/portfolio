@@ -12,6 +12,7 @@ describe('UserRepository', () => {
     email: 'test@example.com',
     password: '$2b$10$hash',
     name: 'Test User',
+    role: 'USER' as const,
     lastLoginAt: null,
     refreshToken: null,
     refreshTokenExpiresAt: null,
@@ -21,6 +22,9 @@ describe('UserRepository', () => {
     failedLoginAttempts: 0,
     lockedUntil: null,
     tokenVersion: 0,
+    deletedAt: null,
+    inviteToken: null,
+    inviteTokenExpiresAt: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
   };

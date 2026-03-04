@@ -9,6 +9,7 @@ export class UserMapper {
       email: raw.email,
       password: raw.password,
       name: raw.name,
+      role: raw.role,
       lastLoginAt: raw.lastLoginAt,
       refreshToken: raw.refreshToken,
       refreshTokenExpiresAt: raw.refreshTokenExpiresAt,
@@ -18,6 +19,9 @@ export class UserMapper {
       failedLoginAttempts: raw.failedLoginAttempts,
       lockedUntil: raw.lockedUntil,
       tokenVersion: raw.tokenVersion,
+      deletedAt: raw.deletedAt,
+      inviteToken: raw.inviteToken,
+      inviteTokenExpiresAt: raw.inviteTokenExpiresAt,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     };
@@ -30,6 +34,7 @@ export class UserMapper {
       email: user.email,
       password: user.password,
       name: user.name,
+      role: user.role as PrismaUser['role'],
       lastLoginAt: user.lastLoginAt,
       refreshToken: user.refreshToken,
       refreshTokenExpiresAt: user.refreshTokenExpiresAt,
@@ -39,6 +44,9 @@ export class UserMapper {
       failedLoginAttempts: user.failedLoginAttempts,
       lockedUntil: user.lockedUntil,
       tokenVersion: user.tokenVersion,
+      deletedAt: user.deletedAt,
+      inviteToken: user.inviteToken,
+      inviteTokenExpiresAt: user.inviteTokenExpiresAt,
     };
   }
 }

@@ -91,18 +91,13 @@ describe('UpdateUserSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept partial update with email only', () => {
+  it('should reject email field (no longer accepted)', () => {
     const result = UpdateUserSchema.safeParse({ email: 'new@example.com' });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
   it('should reject empty object', () => {
     const result = UpdateUserSchema.safeParse({});
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject invalid email', () => {
-    const result = UpdateUserSchema.safeParse({ email: 'bad' });
     expect(result.success).toBe(false);
   });
 

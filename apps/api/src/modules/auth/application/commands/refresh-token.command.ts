@@ -98,7 +98,7 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand,
     setTimeout(() => this.graceTokens.delete(userId), GRACE_PERIOD_MS);
 
     // Sign new access token
-    const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion);
+    const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
 
     return { accessToken, refreshToken: newRefreshToken };
   }

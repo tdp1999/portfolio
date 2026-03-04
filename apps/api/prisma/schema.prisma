@@ -78,11 +78,17 @@ enum SyncStatus {
   FAILED
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id                     String    @id @db.Uuid
   email                  String    @unique
   password               String?
   name                   String
+  role                   Role      @default(USER)
   lastLoginAt            DateTime?
   refreshToken           String?
   refreshTokenExpiresAt  DateTime?
@@ -92,6 +98,9 @@ model User {
   failedLoginAttempts    Int       @default(0)
   lockedUntil            DateTime?
   tokenVersion           Int       @default(0)
+  deletedAt              DateTime?
+  inviteToken            String?
+  inviteTokenExpiresAt   DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 

@@ -23,6 +23,7 @@ describe('GoogleLoginHandler', () => {
       email: 'test@example.com',
       password: '$2a$10$hashedpassword',
       name: 'Test User',
+      role: 'USER',
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
@@ -32,6 +33,9 @@ describe('GoogleLoginHandler', () => {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       ...overrides,
@@ -56,21 +60,21 @@ describe('GoogleLoginHandler', () => {
   });
 
   it('should reject missing email', async () => {
-    await expect(
-      handler.execute(new GoogleLoginCommand({ ...validProfile, email: '' }))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new GoogleLoginCommand({ ...validProfile, email: '' }))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should reject missing googleId', async () => {
-    await expect(
-      handler.execute(new GoogleLoginCommand({ ...validProfile, googleId: '' }))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new GoogleLoginCommand({ ...validProfile, googleId: '' }))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should reject missing name', async () => {
-    await expect(
-      handler.execute(new GoogleLoginCommand({ ...validProfile, name: '' }))
-    ).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new GoogleLoginCommand({ ...validProfile, name: '' }))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   describe('when user with email exists', () => {

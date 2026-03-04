@@ -50,7 +50,7 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
       updated = updated.setRefreshToken(refreshToken, refreshExpiresAt);
       await this.repo.update(user.id, updated);
 
-      const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion);
+      const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
       this.commandBus.execute(new UpdateLastLoginCommand(user.id));
 
       return { accessToken, refreshToken };
@@ -69,7 +69,7 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
     const withRefresh = newUser.setRefreshToken(refreshToken, refreshExpiresAt);
 
     const userId = await this.repo.add(withRefresh);
-    const accessToken = this.tokenService.signAccessToken(userId, 0);
+    const accessToken = this.tokenService.signAccessToken(userId, 0, newUser.role);
     this.commandBus.execute(new UpdateLastLoginCommand(userId));
 
     return { accessToken, refreshToken };

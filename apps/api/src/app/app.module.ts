@@ -5,6 +5,7 @@ import { PrismaModule } from '../infrastructure/prisma';
 import { UserModule } from '../modules/user';
 import { AuthModule } from '../modules/auth';
 import { EmailModule } from '../modules/email';
+import { HealthModule } from '../modules/health/health.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -17,6 +18,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     EmailModule,
     UserModule,
     AuthModule,
+    HealthModule,
     ThrottlerModule.forRoot({
       skipIf: () => !isProduction,
       throttlers: [{ ttl: 60000, limit: 60 }],

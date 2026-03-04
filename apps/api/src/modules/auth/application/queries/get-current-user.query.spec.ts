@@ -13,6 +13,7 @@ describe('GetCurrentUserHandler', () => {
       email: 'test@example.com',
       password: 'hashed',
       name: 'Test User',
+      role: 'USER',
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
@@ -22,6 +23,9 @@ describe('GetCurrentUserHandler', () => {
       failedLoginAttempts: 0,
       lockedUntil: null,
       tokenVersion: 0,
+      deletedAt: null,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     });
@@ -45,7 +49,9 @@ describe('GetCurrentUserHandler', () => {
       id: '019450c4-5b12-7000-8000-000000000001',
       email: 'test@example.com',
       name: 'Test User',
+      role: 'USER',
       hasPassword: true,
+      hasGoogleLinked: false,
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
     });
