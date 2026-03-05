@@ -7,19 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!--
       CSP Notes:
-      - 'unsafe-inline' in style-src is required by Tailwind
-      - connect-src includes localhost:3000 for dev; remove in production
-      - To tighten: add nonce-based script-src, remove 'unsafe-inline' from style-src if Tailwind supports it
+      - 'unsafe-inline' in script-src required for Angular inline scripts and CF analytics
+      - 'unsafe-inline' in style-src required by Tailwind and boot spinner
       - frame-ancestors is set via helmet on the API (meta tags don't support it)
     -->
     <meta
       http-equiv="Content-Security-Policy"
       content="
         default-src 'self';
-        script-src 'self';
+        script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        connect-src 'self' http://localhost:3000 https://api.phuong.com https://accounts.google.com;
-        img-src 'self' data:;
+        connect-src 'self' http://localhost:3000 https://dashboard-api-production-d76d.up.railway.app https://accounts.google.com https://cloudflareinsights.com;
+        img-src 'self' data: https:;
         font-src 'self' https://fonts.gstatic.com;
         frame-src https://accounts.google.com;
         object-src 'none';

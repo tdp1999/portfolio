@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.phuong.com',
+  apiBaseUrl: 'https://dashboard-api-production-d76d.up.railway.app',
 };
