@@ -2,7 +2,7 @@
 
 ## Summary
 
-Deploy the full portfolio application to production using free-tier infrastructure: Railway (API + Angular SSR Landing), Cloudflare Pages (Console SPA), Supabase (PostgreSQL). Establish CI/CD pipeline from GitHub Actions, configure custom domain with subdomains, and validate the full MVP auth flow in a real environment.
+Deploy the full portfolio application to production. Railway hobby plan ($5/mo) for API + PostgreSQL. Cloudflare Pages (free) for Console SPA. Landing SSR TBD. Establish CI/CD pipeline from GitHub Actions, configure custom domain with subdomains, and validate the full MVP auth flow in a real environment.
 
 ## Why
 
@@ -15,8 +15,8 @@ The User module hardening (Epic 124-132) establishes a secure auth foundation. D
 | API hosting | Railway (free tier, $5/mo credit) | Simple container deploys, native Node.js, easy env vars, fast wake from sleep |
 | Landing SSR hosting | Railway (same platform) | Angular SSR requires Node.js runtime; CF Workers incompatible with Express-based SSR |
 | Console SPA hosting | Cloudflare Pages (free tier) | Static SPA — perfect fit for CDN. No cold starts, global edge, unlimited bandwidth |
-| Database | Supabase PostgreSQL (free tier) | Already chosen in DB architecture epic; generous free tier |
-| Budget | $0 (free tiers only) | MVP validation phase; upgrade when traffic justifies |
+| Database | Railway PostgreSQL (hobby plan) | Single platform for API + DB, no cross-provider networking, no pause issues |
+| Budget | $5/mo (Railway hobby plan) + free tiers | Railway hobby plan covers API + Postgres; CF Pages free |
 | Deploy scope | MVP Auth only (User + Auth modules) | Validates infra pipeline; content modules deploy incrementally |
 | Domain layout | `example.com` (landing), `console.example.com` (console), `api.example.com` (API) | Standard subdomain pattern; actual domain configured via env vars |
 | Rollback strategy | Git-based revert | Revert commit on master → CI/CD auto-deploys previous version |
@@ -28,7 +28,7 @@ The User module hardening (Epic 124-132) establishes a secure auth foundation. D
   ├── example.com            → Railway    (Angular SSR, Node.js)
   ├── console.example.com    → Cloudflare Pages (Angular SPA, static)
   └── api.example.com        → Railway    (NestJS API, Node.js)
-                                  └── Supabase PostgreSQL (free tier, pooled via PgBouncer)
+                                  └── Railway PostgreSQL (hobby plan, internal networking)
 ```
 
 Railway services deploy from GitHub repo on `master` push. Cloudflare Pages builds from the same repo.
@@ -43,7 +43,7 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 - Railway project configuration (two services: API + Landing SSR)
 - Cloudflare Pages project configuration (Console SPA)
 - Environment variable configuration on all platforms
-- Supabase production database provisioning + pooled connection string
+- Railway PostgreSQL provisioned (internal networking, no pooler needed)
 - Health check endpoint on API
 
 **Phase 2: CI/CD Pipeline**
@@ -58,7 +58,7 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 - Console SPA production environment file with correct API URL
 - Update `.env.example` with all production-required variables
 - Admin seed execution (one-time, idempotent)
-- Supabase free-tier keep-alive (scheduled ping)
+- ~~Supabase free-tier keep-alive~~ (removed — Railway Postgres doesn't pause)
 
 **Phase 4: Domain & SSL**
 - Custom domain DNS for Railway (landing + API subdomains)
@@ -77,7 +77,7 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 - Auto-scaling (free tier is single instance)
 - APM / distributed tracing
 - Blue-green or canary deployments
-- Database backups automation (Supabase free tier has daily backups)
+- Database backups automation
 - Load testing
 - CDN for API responses
 
@@ -93,9 +93,9 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 
 4. **Cloudflare Pages build config** — Configure build command: `pnpm nx build console --configuration=production`. Output directory: `dist/apps/console/browser`. Add `_redirects` file for SPA routing (`/* /index.html 200`).
 
-5. **Supabase production setup** — Document provisioning steps. Obtain pooled connection string (port 6543 for PgBouncer). Test connectivity from Railway.
+5. **~~Supabase~~ Railway Postgres setup** — ~~Document provisioning steps.~~ Done. Railway Postgres provisioned as part of project. Internal networking via `postgres.railway.internal:5432`. No pooler/SSL needed.
 
-6. **Railway project setup** — Create project with two services (`api`, `landing`). Each uses its Dockerfile. Configure all environment variables. Set health check path for API service.
+6. **Railway project setup** — ~~Create project with two services (`api`, `landing`).~~ Done. Project `distinguished-dream` with API + Postgres services. API deployed and healthy. Landing SSR service deferred.
 
 ### Phase 2: CI/CD Pipeline
 
@@ -113,11 +113,11 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 
 12. **Console environment configuration** — Update `environment.ts` (production) with configurable API URL. Since Console is a static SPA, the API URL is build-time. CF Pages build env vars inject the correct `apiBaseUrl`.
 
-13. **Update `.env.example`** — Add `CORS_ORIGINS`, `PORT`, `API_URL` with documentation comments. Add Supabase pooled URL format example. Mark which vars are needed per service (API vs Landing vs Console).
+13. **Update `.env.example`** — Add `CORS_ORIGINS`, `PORT`, `API_URL` with documentation comments. Add Railway Postgres URL format example. Mark which vars are needed per service (API vs Landing vs Console).
 
 14. **Admin seed in production** — Run `prisma db seed` via Railway CLI or one-time command after first deploy. Document the process. Verify idempotent behavior.
 
-15. **Supabase keep-alive** — GitHub Actions cron workflow (daily) that calls `GET https://api.example.com/health`. Keeps Supabase from pausing after 1 week inactivity.
+15. ~~**Supabase keep-alive**~~ — Removed. Railway Postgres doesn't pause after inactivity.
 
 ### Phase 4: Domain & SSL
 
@@ -135,27 +135,12 @@ Railway services deploy from GitHub repo on `master` push. Cloudflare Pages buil
 
 ### Dockerfile Strategy (API)
 
-```dockerfile
-# Stage 1: Build
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package.json pnpm-lock.yaml .npmrc ./
-RUN corepack enable && pnpm install --frozen-lockfile
-COPY . .
-RUN pnpm nx build api --configuration=production
-RUN pnpm prisma generate --schema=apps/api/prisma/schema.prisma
-
-# Stage 2: Production
-FROM node:20-alpine
-WORKDIR /app
-COPY --from=builder /app/dist/apps/api .
-COPY --from=builder /app/apps/api/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-RUN npm install --omit=dev
-EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && node main.js"]
-```
+See `apps/api/Dockerfile` for actual implementation. Key points:
+- Multi-stage: builder (pnpm + nx build) → production (node:20-alpine)
+- Prisma 7 uses `prisma.config.ts` (not `--schema` or `--url` flags)
+- Pin `prisma@7.4.0` in production stage to avoid version mismatch
+- `CMD` runs `prisma migrate deploy --config=./prisma/prisma.config.ts && node main.js`
+- App binds to `0.0.0.0` (required for Railway proxy)
 
 ### Console SPA on Cloudflare Pages
 
@@ -165,12 +150,13 @@ CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && n
 - Environment: `apiBaseUrl` baked at build time via Angular `environment.ts`
 - CF Pages environment variables can be used with a build-time injection script if needed
 
-### Railway Free Tier Constraints
+### Railway Hobby Plan ($5/mo)
 
-- **$5/month credit** — sufficient for two small Node.js services (~$2.50 each)
-- **Services sleep after ~15min inactivity** — acceptable for MVP; first request has ~5-10s cold start
-- **500MB RAM, 1 vCPU per service** — sufficient for NestJS + Angular SSR
+- **$5/month subscription** — covers API service + PostgreSQL
+- **No sleep/cold starts** — hobby plan services stay running
+- **Up to 4 vCPU, 4GB RAM** — configured per service
 - **No persistent disk** — logs ephemeral (use Railway log viewer)
+- **Region:** asia-southeast1-eqsg3a
 
 ### Cloudflare Pages Free Tier
 
@@ -179,12 +165,12 @@ CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && n
 - **Global CDN** — fast worldwide
 - **No cold starts** — static files served instantly
 
-### Supabase Free Tier Constraints
+### Railway PostgreSQL (Hobby Plan)
 
-- **500MB storage** — more than enough for User table
-- **Pauses after 1 week inactivity** — mitigated by keep-alive cron
-- **Pooled connections via PgBouncer** (port 6543) — must use pooled URL
-- **Daily backups included**
+- **Included in $5/mo hobby plan** — no separate DB cost
+- **No pause/sleep** — always available, no keep-alive cron needed
+- **Internal networking** — `postgres.railway.internal:5432`, no SSL overhead
+- **Direct connections** — no PgBouncer needed for this scale
 
 ### Migration Safety
 
@@ -205,9 +191,7 @@ CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && n
 - Free tier services sleep after inactivity. First visitor gets 5-10s wait.
 - Mitigation: keep-alive cron OR accept for MVP. Upgrade to paid when portfolio goes public.
 
-**Supabase Pause**
-- Free tier pauses DB after 1 week of zero connections.
-- Mitigation: scheduled health check ping prevents this.
+**~~Supabase Pause~~** — No longer applicable. Railway Postgres doesn't pause.
 
 **Monorepo Build on CF Pages**
 - CF Pages needs to build only the Console app, not the full monorepo.
@@ -241,7 +225,7 @@ CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma && n
 - [ ] Custom domains with SSL configured for all 3 subdomains
 - [ ] Rate limiting active in production (`NODE_ENV=production`)
 - [ ] Rollback tested: git revert → previous version auto-deploys
-- [ ] Supabase keep-alive cron running, DB doesn't pause
+- [x] ~~Supabase keep-alive~~ N/A — Railway Postgres doesn't pause
 
 ## Estimated Complexity
 

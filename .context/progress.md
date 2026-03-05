@@ -167,9 +167,33 @@
 - [x] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) ✓
 - [ ] 123-e2e-ci-integration - CI pipeline integration (M) → depends on 116-122
 
+### Epic: Production Deployment (epic-production-deployment) - in-progress
+
+> **Infrastructure:** Railway hobby plan ($5/mo) for API + Postgres. Cloudflare Pages (free) for Console SPA.
+
+#### Phase 1: Infrastructure Setup
+- [x] 133-deploy-health-check-endpoint - Health check endpoint (S) ✓
+- [x] 134-deploy-api-dockerfile - API Dockerfile (M) ✓
+- [x] 135-deploy-landing-dockerfile - Landing SSR Dockerfile (M) ✓
+- [x] 137-deploy-~~supabase~~-railway-postgres - Railway Postgres setup (S) ✓
+- [x] 138-deploy-railway-project-setup - Railway project + API deploy (M) ✓
+- [ ] 136-deploy-cloudflare-pages-console - Cloudflare Pages for Console SPA (S) → in-progress
+
+#### Phase 2: CI/CD Pipeline
+- [ ] 139-deploy-cicd-pipeline - GitHub Actions deploy pipeline (M)
+
+#### Phase 3: Production Configuration
+- [ ] 140-deploy-production-configuration - Runtime config, env docs, admin seed (M)
+
+#### Phase 4: Domain & SSL
+- [ ] 141-deploy-custom-domains-ssl - Custom domains + SSL (M)
+
+#### Phase 5: Validation
+- [ ] 142-deploy-validation-runbook - Production validation + runbook (M)
+
 ## Up Next
 
-**Next Task:** **057-tag-prisma-schema** - Tag Prisma schema + migration (DB Architecture Sprint 3)
+**Next Task:** **136-deploy-cloudflare-pages-console** or **057-tag-prisma-schema**
 
 ### Epic: User Module Production Hardening (epic-user-module-hardening) - broken-down
 
@@ -196,14 +220,16 @@
 
 ## Statistics
 
-| Status                   | Count  |
-| ------------------------ | ------ |
-| Done (archived)          | 112    |
-| Pending (DB Tag Module)  | 8      |
-| Pending (Auth E2E)       | 1      |
-| Pending (Standalone)     | 1      |
-| Pending (User Hardening) | 9      |
-| **Total Created**        | **132** |
+| Status                    | Count   |
+| ------------------------- | ------- |
+| Done (archived)           | 112     |
+| Done (Production Deploy)  | 5       |
+| Pending (Production Deploy)| 5      |
+| Pending (DB Tag Module)   | 8       |
+| Pending (Auth E2E)        | 1       |
+| Pending (Standalone)      | 1       |
+| Pending (User Hardening)  | 9       |
+| **Total Created**         | **142** |
 
 ## Notes
 

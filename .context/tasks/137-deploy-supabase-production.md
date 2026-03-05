@@ -1,39 +1,30 @@
-# Task: Supabase Production Database Setup
+# Task: ~~Supabase~~ Railway Postgres Production Database
 
-## Status: pending
+## Status: done
 
 ## Goal
-Provision and configure a Supabase PostgreSQL database for production, document the setup process, and verify connectivity from Railway.
+~~Provision and configure a Supabase PostgreSQL database for production.~~
+**Updated:** Production database is Railway-managed Postgres, provisioned as part of the Railway project. No external DB service needed.
 
 ## Context
-Phase 1 of epic-production-deployment. Supabase provides the production PostgreSQL database. Uses connection pooling via PgBouncer (port 6543) for efficient connections from Railway's containerized services.
+Originally planned to use Supabase free-tier PostgreSQL. Decision changed to Railway Postgres (included in $5/mo hobby plan) for simpler architecture — single platform for API + DB, no cross-provider networking, no Supabase pause/keep-alive concerns.
 
-## Acceptance Criteria
-- [ ] Supabase project created for production
-- [ ] Pooled connection string obtained (PgBouncer, port 6543)
-- [ ] Direct connection string obtained (for migrations, port 5432)
-- [ ] Connection string format documented in `.env.example`
-- [ ] `prisma.config.ts` supports pooled URL for runtime and direct URL for migrations (`directUrl` in datasource)
-- [ ] Prisma can connect to Supabase from local machine (`prisma migrate deploy` succeeds)
-- [ ] Setup steps documented in `.context/runbook-production.md` (Supabase section)
-- [ ] SSL mode configured (Supabase requires `sslmode=require`)
+## What Was Done
+- Railway Postgres service added to `distinguished-dream` project
+- `DATABASE_URL` configured as Railway service variable (internal networking via `postgres.railway.internal:5432`)
+- Prisma migrations run automatically via Dockerfile CMD (`prisma migrate deploy`)
+- No PgBouncer/pooling needed (direct connection within Railway's private network)
+- No SSL configuration needed (internal network)
 
-## Technical Notes
-- Supabase free tier: 500MB storage, pauses after 1 week inactivity, daily backups
-- PgBouncer pooled URL uses port 6543; direct URL uses port 5432
-- Prisma needs `directUrl` for migrations (PgBouncer doesn't support DDL well)
-- Connection string format: `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres`
-- Add `?pgbouncer=true&sslmode=require` to pooled URL
-- Keep-alive is handled in a later task (140)
-
-## Files to Touch
-- `apps/api/prisma/prisma.config.ts` (add directUrl support if not present)
-- `.env.example` (add Supabase URL format examples)
-- `.context/runbook-production.md` (new — Supabase section)
-
-## Dependencies
-None — can be done in parallel with other Phase 1 tasks.
+## Decision Record
+| Original Plan | Actual | Reason |
+|---|---|---|
+| Supabase free tier | Railway Postgres (hobby plan) | Single platform, no pause issues, simpler networking |
+| PgBouncer pooled URL (port 6543) | Direct connection (port 5432) | Internal Railway networking, no pooler needed |
+| `directUrl` for migrations | Single `DATABASE_URL` | No pooler = no need for separate migration URL |
+| Keep-alive cron needed | Not needed | Railway Postgres doesn't pause |
 
 ## Complexity: S
 
 ## Progress Log
+- 2026-03-05: Marked done. Railway Postgres provisioned and connected. API deploys with migrations successfully.
