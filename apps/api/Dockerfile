@@ -12,7 +12,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client (must run before build for type resolution)
-RUN pnpm exec prisma generate --schema=apps/api/prisma/schema.prisma
+RUN pnpm exec prisma generate --config=apps/api/prisma/prisma.config.ts
 
 # Build API — outputs dist/apps/api/ with main.js and package.json
 RUN pnpm exec nx build api --configuration=production
@@ -25,12 +25,15 @@ WORKDIR /app
 # Copy built dist (contains main.js and package.json with prod deps)
 COPY --from=builder /app/dist/apps/api/ ./
 
-# Copy Prisma schema + migrations for prisma migrate deploy
+# Copy Prisma schema + migrations + config for prisma migrate deploy
 COPY --from=builder /app/apps/api/prisma/ ./prisma/
 
-# Install production dependencies and generate Prisma client for linux/alpine
-RUN npm install --omit=dev && npx prisma generate --schema=./prisma/schema.prisma
+# Install production dependencies + Prisma CLI + ts-node (needed for prisma.config.ts)
+RUN npm install --omit=dev && npm install prisma@7.4.0 ts-node typescript
+
+# Generate Prisma client for linux/alpine
+RUN npx prisma generate --config=./prisma/prisma.config.ts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./prisma/schema.prisma --url=$DATABASE_URL && node main.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --config=./prisma/prisma.config.ts && node main.js"]
