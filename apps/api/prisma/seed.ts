@@ -1,3 +1,4 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { v7 as uuidv7 } from 'uuid';
@@ -5,7 +6,8 @@ import { v7 as uuidv7 } from 'uuid';
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
 async function main() {
-  const prisma = new PrismaClient();
+  const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+  const prisma = new PrismaClient({ adapter });
 
   try {
     const email = process.env['ADMIN_EMAIL'];
