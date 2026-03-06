@@ -1,6 +1,7 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
+// Rollback test marker — will be reverted
 @Controller('health')
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
