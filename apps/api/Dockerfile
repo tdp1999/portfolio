@@ -29,11 +29,11 @@ COPY --from=builder /app/dist/apps/api/ ./
 COPY --from=builder /app/apps/api/prisma/ ./prisma/
 
 # Install production dependencies + Prisma CLI + ts-node (needed for prisma.config.ts)
-RUN npm install --omit=dev && npm install prisma@7.4.0 ts-node typescript
+RUN npm install --omit=dev && npm install prisma@7.4.0 ts-node tsx typescript
 
 # Generate Prisma client for linux/alpine
 RUN npx prisma generate --config=./prisma/prisma.config.ts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --config=./prisma/prisma.config.ts && node main.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --config=./prisma/prisma.config.ts && npx tsx prisma/seed.ts && node main.js"]

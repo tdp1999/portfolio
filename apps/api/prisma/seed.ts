@@ -1,6 +1,6 @@
 import { PrismaClient, Role } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-import { IdentifierValue } from '@portfolio/shared/types';
+import * as bcrypt from 'bcryptjs';
+import { v7 as uuidv7 } from 'uuid';
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
@@ -29,7 +29,7 @@ async function main() {
       where: { email },
       update: {},
       create: {
-        id: IdentifierValue.v7(),
+        id: uuidv7(),
         email,
         name,
         password: hashedPassword,
