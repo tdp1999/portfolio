@@ -74,6 +74,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 | **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline                                       |
 | **Never read .env files**  |                                                                       |                                                                    |
 | **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
+| **Avoid non-null assertions** | Never use `!` non-null assertions — they indicate a type design issue. Ask user before using one. | ❌ `obj!.prop` ✅ Fix the type or add a proper guard |
 
 ## Angular Code Style
 

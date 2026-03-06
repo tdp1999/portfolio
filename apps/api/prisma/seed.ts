@@ -6,7 +6,7 @@ import { v7 as uuidv7 } from 'uuid';
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
 async function main() {
-  const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+  const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] });
   const prisma = new PrismaClient({ adapter });
 
   try {
