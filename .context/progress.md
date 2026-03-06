@@ -169,36 +169,30 @@
 
 ### Epic: Production Deployment (epic-production-deployment) - in-progress
 
-> **Infrastructure:** Railway hobby plan ($5/mo) for API + Postgres. Cloudflare Pages (free) for Console SPA.
+> **Infrastructure:** Railway hobby plan ($5/mo) for API + Postgres. Cloudflare Pages (free) for Console SPA + Landing.
 
-#### Phase 1: Infrastructure Setup
-- [x] 133-deploy-health-check-endpoint - Health check endpoint (S) ✓
-- [x] 134-deploy-api-dockerfile - API Dockerfile (M) ✓
-- [x] 135-deploy-landing-dockerfile - Landing SSR Dockerfile (M) ✓
-- [x] 137-deploy-~~supabase~~-railway-postgres - Railway Postgres setup (S) ✓
-- [x] 138-deploy-railway-project-setup - Railway project + API deploy (M) ✓
-- [ ] 136-deploy-cloudflare-pages-console - Cloudflare Pages for Console SPA (S) → in-progress
-
-#### Phase 2: CI/CD Pipeline
-- [ ] 139-deploy-cicd-pipeline - GitHub Actions deploy pipeline (M)
-
-#### Phase 3: Production Configuration
-- [ ] 140-deploy-production-configuration - Runtime config, env docs, admin seed (M)
-
-#### Phase 4: Domain & SSL
-- [ ] 141-deploy-custom-domains-ssl - Custom domains + SSL (M)
+#### Phases 1-4: COMPLETE (archived to tasks-done/epic-production-deployment/)
+- [x] 133-deploy-health-check-endpoint (S) ✓
+- [x] 134-deploy-api-dockerfile (M) ✓
+- [x] 135-deploy-landing-dockerfile (M) ✓
+- [x] 136-deploy-cloudflare-pages-console (S) ✓
+- [x] 137-deploy-railway-postgres (S) ✓
+- [x] 138-deploy-railway-project-setup (M) ✓
+- [x] 139-deploy-cicd-pipeline (M) ✓
+- [x] 140-deploy-production-configuration (M) ✓
+- [x] 141-deploy-custom-domains-ssl (M) ✓
 
 #### Phase 5: Validation
-- [ ] 142-deploy-validation-runbook - Production validation + runbook (M)
+- [ ] 142-deploy-validation-runbook - Production validation + runbook (M) → in-progress (manual browser checks remaining)
 
 ## Up Next
 
-**Next Task:** **136-deploy-cloudflare-pages-console** or **057-tag-prisma-schema**
+**Next Task:** **142-deploy-validation-runbook** (manual browser checks) or **057-tag-prisma-schema**
 
 ### Epic: User Module Production Hardening (epic-user-module-hardening) - broken-down
 
-#### Phase 1: Foundation
-- [ ] 124-user-hardening-foundation - Schema, entity, mapper, DTOs, JWT role, RoleGuard (L)
+#### Phase 1: Foundation — COMPLETE
+- [x] 124-user-hardening-foundation - Schema, entity, mapper, DTOs, JWT role, RoleGuard (L) ✓
 - [ ] 128-user-hardening-admin-seed - Admin seed script (S) → depends on 124
 
 #### Phase 2: Security
@@ -223,8 +217,8 @@
 | Status                    | Count   |
 | ------------------------- | ------- |
 | Done (archived)           | 112     |
-| Done (Production Deploy)  | 5       |
-| Pending (Production Deploy)| 5      |
+| Done (Production Deploy)  | 9       |
+| In-Progress (Prod Deploy) | 1       |
 | Pending (DB Tag Module)   | 8       |
 | Pending (Auth E2E)        | 1       |
 | Pending (Standalone)      | 1       |
