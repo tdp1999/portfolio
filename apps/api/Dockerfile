@@ -36,4 +36,4 @@ RUN npx prisma generate --config=./prisma/prisma.config.ts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --config=./prisma/prisma.config.ts && npx tsx prisma/seed.ts && node main.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --config=./prisma/prisma.config.ts && node_modules/.bin/prisma db seed --config=./prisma/prisma.config.ts && node main.js"]
