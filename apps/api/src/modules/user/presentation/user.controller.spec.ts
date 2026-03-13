@@ -4,11 +4,16 @@ import { UserController } from './user.controller';
 import { CreateUserCommand } from '../application/commands';
 import { GetUserByIdQuery } from '../application/queries';
 import { UpdateUserCommand } from '../application/commands';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
+import { RoleGuard } from '../../auth/application/guards/role.guard';
 
 describe('UserController', () => {
   let controller: UserController;
   let commandBus: jest.Mocked<CommandBus>;
   let queryBus: jest.Mocked<QueryBus>;
+
+  const mockReq = (id: string, role = 'USER') => ({ user: { id, role } }) as any;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -23,7 +28,14 @@ describe('UserController', () => {
           useValue: { execute: jest.fn() },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAccessGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RoleGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(ThrottlerGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get(UserController);
     commandBus = module.get(CommandBus);
@@ -55,7 +67,7 @@ describe('UserController', () => {
       };
       queryBus.execute.mockResolvedValue(mockUser);
 
-      const result = await controller.getById('user-123');
+      const result = await controller.getById('user-123', mockReq('user-123'));
 
       expect(result).toEqual(mockUser);
       expect(queryBus.execute).toHaveBeenCalledWith(expect.any(GetUserByIdQuery));
@@ -67,7 +79,7 @@ describe('UserController', () => {
       commandBus.execute.mockResolvedValue(undefined);
 
       const dto = { name: 'Updated Name' };
-      const result = await controller.update('user-123', dto);
+      const result = await controller.update('user-123', dto, mockReq('user-123'));
 
       expect(result).toEqual({ success: true });
       expect(commandBus.execute).toHaveBeenCalledWith(expect.any(UpdateUserCommand));

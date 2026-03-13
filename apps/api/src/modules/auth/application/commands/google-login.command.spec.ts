@@ -4,6 +4,7 @@ import { TokenService } from '../services/token.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
+import { hashRefreshToken } from '../utils/token-hash.util';
 
 describe('GoogleLoginHandler', () => {
   let handler: GoogleLoginHandler;
@@ -90,7 +91,7 @@ describe('GoogleLoginHandler', () => {
       // Should have linked google + set refresh token
       const updatedUser = repo.update.mock.calls[0][1] as User;
       expect(updatedUser.googleId).toBe('google-123');
-      expect(updatedUser.refreshToken).toBe('refresh-token-jwt');
+      expect(updatedUser.refreshToken).toBe(hashRefreshToken('refresh-token-jwt'));
     });
 
     it('should not overwrite existing googleId if already linked', async () => {

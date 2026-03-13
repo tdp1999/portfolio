@@ -23,8 +23,8 @@ describe('GetUserByIdHandler', () => {
     handler = new GetUserByIdHandler(repo);
   });
 
-  it('should return public props only', async () => {
-    const query = new GetUserByIdQuery(mockUser.id);
+  it('should return public props when user accesses own profile', async () => {
+    const query = new GetUserByIdQuery(mockUser.id, mockUser.id, 'USER');
     const result = await handler.execute(query);
 
     expect(result).toEqual({
@@ -42,8 +42,22 @@ describe('GetUserByIdHandler', () => {
     expect(repo.findById).toHaveBeenCalledWith(mockUser.id);
   });
 
+  it('should allow admin to access any user profile', async () => {
+    const query = new GetUserByIdQuery(mockUser.id, 'different-admin-id', 'ADMIN');
+    const result = await handler.execute(query);
+
+    expect(result.id).toBe(mockUser.id);
+  });
+
+  it('should throw ForbiddenError when user accesses another user profile', async () => {
+    const query = new GetUserByIdQuery(mockUser.id, 'different-user-id', 'USER');
+
+    await expect(handler.execute(query)).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(query)).rejects.toMatchObject({ statusCode: 403 });
+  });
+
   it('should throw DomainError for invalid UUID', async () => {
-    const query = new GetUserByIdQuery('not-a-uuid');
+    const query = new GetUserByIdQuery('not-a-uuid', 'some-id', 'USER');
 
     await expect(handler.execute(query)).rejects.toBeInstanceOf(DomainError);
     expect(repo.findById).not.toHaveBeenCalled();
@@ -51,7 +65,7 @@ describe('GetUserByIdHandler', () => {
 
   it('should throw DomainError when user not found', async () => {
     repo.findById.mockResolvedValue(null);
-    const query = new GetUserByIdQuery(mockUser.id);
+    const query = new GetUserByIdQuery(mockUser.id, mockUser.id, 'USER');
 
     await expect(handler.execute(query)).rejects.toBeInstanceOf(DomainError);
   });

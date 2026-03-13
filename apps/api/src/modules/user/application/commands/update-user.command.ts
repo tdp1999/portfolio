@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ValidationError, NotFoundError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
+import { ValidationError, NotFoundError, ForbiddenError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../ports/user.repository.port';
@@ -10,9 +10,11 @@ import { UpdateUserSchema } from '../user.dto';
 export class UpdateUserCommand extends BaseCommand {
   constructor(
     readonly targetUserId: string,
-    readonly dto: unknown
+    readonly dto: unknown,
+    readonly requesterId: string,
+    readonly requesterRole: string
   ) {
-    super(targetUserId);
+    super(requesterId);
   }
 }
 
@@ -22,6 +24,14 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
 
   async execute(command: UpdateUserCommand): Promise<void> {
     IdentifierValue.from(command.targetUserId);
+
+    if (command.requesterId !== command.targetUserId && command.requesterRole !== 'ADMIN') {
+      throw ForbiddenError('You can only update your own profile', {
+        errorCode: UserErrorCode.ACCESS_DENIED,
+        layer: ErrorLayer.APPLICATION,
+      });
+    }
+
     const { success, data, error } = UpdateUserSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {

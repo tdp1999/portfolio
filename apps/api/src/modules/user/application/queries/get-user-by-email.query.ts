@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { BadRequestError, NotFoundError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { BaseQuery } from '../../../../shared/cqrs/base.query';
 import { IUserRepository } from '../ports/user.repository.port';
@@ -25,7 +25,7 @@ export class GetUserByEmailHandler implements IQueryHandler<GetUserByEmailQuery>
       });
     }
 
-    const user = await this.repo.findByEmail(query.email);
+    const user = await this.repo.findByEmail(query.email.toLowerCase());
     if (!user)
       throw NotFoundError('User not found', {
         layer: ErrorLayer.APPLICATION,

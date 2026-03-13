@@ -1,13 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { AuthModule } from '../auth/auth.module';
 import { UserController } from './presentation/user.controller';
 import { UserRepository } from './infrastructure/repositories/user.repository';
 import { USER_REPOSITORY } from './application/user.token';
-import {
-  CreateUserHandler,
-  UpdateUserHandler,
-  UpdateLastLoginHandler,
-} from './application/commands';
+import { CreateUserHandler, UpdateUserHandler, UpdateLastLoginHandler } from './application/commands';
 import { GetUserByIdHandler, GetUserByEmailHandler } from './application/queries';
 
 const commandHandlers = [CreateUserHandler, UpdateUserHandler, UpdateLastLoginHandler];
@@ -15,7 +12,7 @@ const commandHandlers = [CreateUserHandler, UpdateUserHandler, UpdateLastLoginHa
 const queryHandlers = [GetUserByIdHandler, GetUserByEmailHandler];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, forwardRef(() => AuthModule)],
   controllers: [UserController],
   providers: [
     {

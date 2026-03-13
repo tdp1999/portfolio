@@ -1,14 +1,18 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
+import { NotFoundError, ForbiddenError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseQuery } from '../../../../shared/cqrs/base.query';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 
 export class GetUserByIdQuery extends BaseQuery {
-  constructor(readonly targetUserId: string) {
-    super();
+  constructor(
+    readonly targetUserId: string,
+    readonly requesterId: string,
+    readonly requesterRole: string
+  ) {
+    super(requesterId);
   }
 }
 
@@ -18,6 +22,14 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery> {
 
   async execute(query: GetUserByIdQuery) {
     IdentifierValue.from(query.targetUserId);
+
+    if (query.requesterId !== query.targetUserId && query.requesterRole !== 'ADMIN') {
+      throw ForbiddenError('You can only access your own profile', {
+        layer: ErrorLayer.APPLICATION,
+        errorCode: UserErrorCode.ACCESS_DENIED,
+      });
+    }
+
     const user = await this.repo.findById(query.targetUserId);
     if (!user)
       throw NotFoundError('User not found', {

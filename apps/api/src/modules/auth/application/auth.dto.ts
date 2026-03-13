@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 import { PasswordSchema } from '../../user/application/user.dto';
 
 export const LoginSchema = z.object({
-  email: z.email(),
+  email: z.email().transform((v) => v.toLowerCase()),
   password: z.string().min(1),
   rememberMe: z.boolean().default(false),
 });
@@ -17,7 +17,7 @@ export const ChangePasswordSchema = z.object({
 export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
 
 export const ForgotPasswordSchema = z.object({
-  email: z.email(),
+  email: z.email().transform((v) => v.toLowerCase()),
 });
 
 export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>;
@@ -31,7 +31,7 @@ export const ResetPasswordSchema = z.object({
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
 export const GoogleCallbackSchema = z.object({
-  email: z.email(),
+  email: z.email().transform((v) => v.toLowerCase()),
   name: z.string().min(1),
   googleId: z.string().min(1),
 });

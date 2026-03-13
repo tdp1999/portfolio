@@ -4,13 +4,15 @@ import { TokenService } from '../services/token.service';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
 import { AuthErrorCode } from '@portfolio/shared/errors';
+import { hashRefreshToken } from '../utils/token-hash.util';
 
 describe('RefreshTokenHandler', () => {
   let handler: RefreshTokenHandler;
   let repo: jest.Mocked<IUserRepository>;
   let tokenService: jest.Mocked<TokenService>;
 
-  const STORED_REFRESH_TOKEN = 'stored-refresh-jwt';
+  const PLAIN_REFRESH_TOKEN = 'stored-refresh-jwt';
+  const HASHED_REFRESH_TOKEN = hashRefreshToken(PLAIN_REFRESH_TOKEN);
 
   const createUser = (overrides: Partial<Record<string, unknown>> = {}) =>
     User.load({
@@ -20,7 +22,7 @@ describe('RefreshTokenHandler', () => {
       name: 'Test User',
       role: 'USER',
       lastLoginAt: null,
-      refreshToken: STORED_REFRESH_TOKEN,
+      refreshToken: HASHED_REFRESH_TOKEN,
       refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       passwordResetToken: null,
       passwordResetExpiresAt: null,
@@ -70,7 +72,7 @@ describe('RefreshTokenHandler', () => {
   it('should reject when user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+    await expect(handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
     });
   });
@@ -79,12 +81,12 @@ describe('RefreshTokenHandler', () => {
     const user = createUser({ refreshToken: null });
     repo.findById.mockResolvedValue(user);
 
-    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+    await expect(handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
     });
   });
 
-  it('should reject when refresh token does not match stored value', async () => {
+  it('should reject when refresh token does not match stored hash', async () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
@@ -98,7 +100,7 @@ describe('RefreshTokenHandler', () => {
     repo.findById.mockResolvedValue(user);
     tokenService.verifyRefreshToken.mockReturnValue({ sub: 'user-id-123', tokenVersion: 3 });
 
-    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+    await expect(handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN))).rejects.toMatchObject({
       errorCode: AuthErrorCode.TOKEN_VERSION_MISMATCH,
     });
   });
@@ -107,20 +109,23 @@ describe('RefreshTokenHandler', () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    const result: RefreshTokenResult = await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    const result: RefreshTokenResult = await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
     expect(result.accessToken).toBe('new-access-token');
     expect(result.refreshToken).toBe('new-refresh-jwt');
   });
 
-  it('should rotate refresh token in DB', async () => {
+  it('should store hashed refresh token in DB after rotation', async () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
     expect(tokenService.signRefreshToken).toHaveBeenCalledWith('user-id-123', 0);
     expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.anything());
+    const updatedUser = repo.update.mock.calls[0][1];
+    // Stored token should be a hash, not the plain JWT
+    expect(updatedUser.refreshToken).toBe(hashRefreshToken('new-refresh-jwt'));
   });
 
   it('should sign access token with correct user id and token version', async () => {
@@ -128,7 +133,7 @@ describe('RefreshTokenHandler', () => {
     repo.findById.mockResolvedValue(user);
     tokenService.verifyRefreshToken.mockReturnValue({ sub: 'user-id-123', tokenVersion: 2 });
 
-    await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
     expect(tokenService.signAccessToken).toHaveBeenCalledWith('user-id-123', 2, 'USER');
   });
@@ -138,37 +143,36 @@ describe('RefreshTokenHandler', () => {
     repo.findById.mockResolvedValue(user);
 
     // First refresh succeeds normally
-    await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
-    // After rotation, the stored token in DB is now 'new-refresh-jwt'
-    // Update user mock to reflect rotated state
-    const rotatedUser = createUser({ refreshToken: 'new-refresh-jwt' });
+    // After rotation, the stored token in DB is now the hash of 'new-refresh-jwt'
+    const rotatedUser = createUser({ refreshToken: hashRefreshToken('new-refresh-jwt') });
     repo.findById.mockResolvedValue(rotatedUser);
 
-    // Verify the OLD token — verifyRefreshToken still works on it
     tokenService.verifyRefreshToken.mockReturnValue({ sub: 'user-id-123', tokenVersion: 0 });
 
-    // Second refresh with the OLD token — grace period should accept it
-    const result = await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    // Second refresh with the OLD plain token — grace period should accept it
+    const result = await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
     expect(result.accessToken).toBe('new-access-token');
   });
 
   it('should reject old refresh token after grace period expires', async () => {
+    jest.useFakeTimers();
+
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    // First refresh — sets grace period
-    await handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN));
+    // First refresh — sets grace period (setTimeout captured by fake timers)
+    await handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN));
 
     // Simulate grace period expiry
-    jest.useFakeTimers();
     jest.advanceTimersByTime(11_000);
 
-    const rotatedUser = createUser({ refreshToken: 'new-refresh-jwt' });
+    const rotatedUser = createUser({ refreshToken: hashRefreshToken('new-refresh-jwt') });
     repo.findById.mockResolvedValue(rotatedUser);
 
-    await expect(handler.execute(new RefreshTokenCommand(STORED_REFRESH_TOKEN))).rejects.toMatchObject({
+    await expect(handler.execute(new RefreshTokenCommand(PLAIN_REFRESH_TOKEN))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_REFRESH_TOKEN,
     });
 

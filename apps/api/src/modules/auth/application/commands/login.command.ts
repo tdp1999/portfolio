@@ -2,6 +2,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { ValidationError, UnauthorizedError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { comparePassword } from '@portfolio/shared/utils';
+import { hashRefreshToken } from '../utils/token-hash.util';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
 import { USER_REPOSITORY } from '../../../user/application/user.token';
@@ -94,12 +95,13 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       );
     }
 
-    // Success: reset failed attempts, generate tokens, store refresh token
+    // Success: reset failed attempts, generate tokens, store hashed refresh token
     const refreshToken = this.tokenService.signRefreshToken(user.id, user.tokenVersion);
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const hashedRefreshToken = hashRefreshToken(refreshToken);
 
     let updated = user.resetFailedAttempts();
-    updated = updated.setRefreshToken(refreshToken, refreshExpiresAt);
+    updated = updated.setRefreshToken(hashedRefreshToken, refreshExpiresAt);
     await this.repo.update(user.id, updated);
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);

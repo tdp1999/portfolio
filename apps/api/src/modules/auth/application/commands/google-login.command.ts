@@ -6,6 +6,7 @@ import { IUserRepository } from '../../../user/application/ports/user.repository
 import { USER_REPOSITORY } from '../../../user/application/user.token';
 import { TokenService } from '../services/token.service';
 import { User } from '../../../user/domain/entities/user.entity';
+import { hashRefreshToken } from '../utils/token-hash.util';
 import { UpdateLastLoginCommand } from '../../../user/application/commands/update-last-login.command';
 import { GoogleCallbackSchema } from '../auth.dto';
 
@@ -47,7 +48,7 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
       }
       const refreshToken = this.tokenService.signRefreshToken(user.id, user.tokenVersion);
       const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      updated = updated.setRefreshToken(refreshToken, refreshExpiresAt);
+      updated = updated.setRefreshToken(hashRefreshToken(refreshToken), refreshExpiresAt);
       await this.repo.update(user.id, updated);
 
       const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
@@ -66,7 +67,7 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
 
     const refreshToken = this.tokenService.signRefreshToken(newUser.id, 0);
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const withRefresh = newUser.setRefreshToken(refreshToken, refreshExpiresAt);
+    const withRefresh = newUser.setRefreshToken(hashRefreshToken(refreshToken), refreshExpiresAt);
 
     const userId = await this.repo.add(withRefresh);
     const accessToken = this.tokenService.signAccessToken(userId, 0, newUser.role);
