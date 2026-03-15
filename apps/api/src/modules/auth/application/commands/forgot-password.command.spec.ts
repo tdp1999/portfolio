@@ -46,6 +46,7 @@ describe('ForgotPasswordHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
 
     emailService = {

@@ -19,6 +19,7 @@ describe('GetUserByEmailHandler', () => {
       update: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn().mockResolvedValue(mockUser),
+      findAll: jest.fn(),
     };
     handler = new GetUserByEmailHandler(repo);
   });

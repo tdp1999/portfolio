@@ -50,6 +50,7 @@ describe('JwtAccessGuard', () => {
       update: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     guard = new JwtAccessGuard(tokenService as unknown as TokenService, userRepository);
   });

@@ -19,6 +19,7 @@ describe('UpdateLastLoginHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn().mockResolvedValue(mockUser),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     handler = new UpdateLastLoginHandler(repo);
   });

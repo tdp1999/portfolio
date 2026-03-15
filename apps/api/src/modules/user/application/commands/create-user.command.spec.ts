@@ -13,6 +13,7 @@ describe('CreateUserHandler', () => {
       update: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     handler = new CreateUserHandler(repo);
   });

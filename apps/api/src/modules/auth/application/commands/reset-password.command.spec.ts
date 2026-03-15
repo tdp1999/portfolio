@@ -48,6 +48,7 @@ describe('ResetPasswordHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
 
     (crypto.createHash as jest.Mock).mockReturnValue({

@@ -36,6 +36,7 @@ describe('LogoutAllHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     handler = new LogoutAllHandler(repo);
   });
