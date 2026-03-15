@@ -46,6 +46,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         layer: ErrorLayer.APPLICATION,
       });
 
+    if (user.deletedAt)
+      throw UnauthorizedError('Account has been deactivated', {
+        errorCode: AuthErrorCode.ACCOUNT_DELETED,
+        layer: ErrorLayer.APPLICATION,
+      });
+
     if (user.isLocked()) {
       const retryAfterSeconds = Math.max(1, Math.ceil((user.lockedUntil!.getTime() - Date.now()) / 1000));
       throw UnauthorizedError(

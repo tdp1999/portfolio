@@ -64,6 +64,13 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand,
       });
     }
 
+    if (user.deletedAt) {
+      throw UnauthorizedError('Account has been deactivated', {
+        layer: ErrorLayer.APPLICATION,
+        errorCode: AuthErrorCode.ACCOUNT_DELETED,
+      });
+    }
+
     // Compare hashed refresh token against stored hash (timing-safe)
     const isValid = compareRefreshTokens(command.refreshToken, user.refreshToken);
     if (!isValid) {

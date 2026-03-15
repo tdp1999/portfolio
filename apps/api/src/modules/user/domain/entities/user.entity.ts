@@ -218,6 +218,24 @@ export class User {
     });
   }
 
+  setInviteToken(hashedToken: string, expiresAt: Date): User {
+    return new User({
+      ...this.props,
+      inviteToken: hashedToken,
+      inviteTokenExpiresAt: expiresAt,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  clearInviteToken(): User {
+    return new User({
+      ...this.props,
+      inviteToken: null,
+      inviteTokenExpiresAt: null,
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
   isLocked(): boolean {
     return this.props.lockedUntil !== null && this.props.lockedUntil > new Date();
   }

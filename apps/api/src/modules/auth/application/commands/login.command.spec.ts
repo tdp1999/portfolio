@@ -46,6 +46,7 @@ describe('LoginHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     tokenService = {
       signAccessToken: jest.fn().mockReturnValue('access-token-123'),
