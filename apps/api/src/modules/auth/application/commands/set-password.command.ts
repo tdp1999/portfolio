@@ -50,6 +50,6 @@ export class SetPasswordHandler implements ICommandHandler<SetPasswordCommand, v
     const hashedPassword = await hashPassword(data.newPassword);
     let updated = user.updatePassword(hashedPassword);
     updated = updated.clearInviteToken();
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
   }
 }

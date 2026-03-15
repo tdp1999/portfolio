@@ -5,14 +5,20 @@ import { ValidationError, ConflictError, ErrorLayer, UserErrorCode } from '@port
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 import { EMAIL_SERVICE, IEmailService } from '../../../email';
+import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { CreateUserByAdminSchema } from '../user.dto';
 import { User } from '../../domain/entities/user.entity';
 
 const FRONTEND_URL = process.env['FRONTEND_URL'] || 'http://localhost:4200';
 const INVITE_EXPIRY_MS = 72 * 60 * 60 * 1000; // 72 hours
 
-export class InviteUserCommand {
-  constructor(readonly dto: unknown) {}
+export class InviteUserCommand extends BaseCommand {
+  constructor(
+    readonly dto: unknown,
+    initiatorId: string
+  ) {
+    super(initiatorId);
+  }
 }
 
 @CommandHandler(InviteUserCommand)

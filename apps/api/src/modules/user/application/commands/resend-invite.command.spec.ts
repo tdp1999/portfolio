@@ -67,12 +67,15 @@ describe('ResendInviteHandler', () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    await handler.execute(new ResendInviteCommand('user-id-123'));
+    await handler.execute(new ResendInviteCommand('user-id-123', 'admin-1'));
 
-    expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.any(User));
-    const updatedUser = repo.update.mock.calls[0][0 + 1] as User;
-    expect(updatedUser.inviteToken).toBe('new-hashed-token');
-    expect(updatedUser.inviteTokenExpiresAt).toBeInstanceOf(Date);
+    expect(repo.update).toHaveBeenCalledWith(
+      'user-id-123',
+      expect.objectContaining({
+        inviteToken: 'new-hashed-token',
+        inviteTokenExpiresAt: expect.any(Date),
+      })
+    );
 
     expect(emailService.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -84,7 +87,7 @@ describe('ResendInviteHandler', () => {
   it('should throw NotFoundError if user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(handler.execute(new ResendInviteCommand('non-existent'))).rejects.toMatchObject({
+    await expect(handler.execute(new ResendInviteCommand('non-existent', 'admin-1'))).rejects.toMatchObject({
       statusCode: 404,
     });
   });
@@ -93,7 +96,7 @@ describe('ResendInviteHandler', () => {
     const user = createUser({ password: '$2a$10$hashedpassword' });
     repo.findById.mockResolvedValue(user);
 
-    await expect(handler.execute(new ResendInviteCommand('user-id-123'))).rejects.toMatchObject({
+    await expect(handler.execute(new ResendInviteCommand('user-id-123', 'admin-1'))).rejects.toMatchObject({
       statusCode: 409,
       message: 'User has already activated their account.',
     });

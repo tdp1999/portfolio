@@ -5,6 +5,7 @@ import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseQuery } from '../../../../shared/cqrs/base.query';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
+import { UserPublicDto } from '../user.dto';
 
 export class GetUserByIdQuery extends BaseQuery {
   constructor(
@@ -20,7 +21,7 @@ export class GetUserByIdQuery extends BaseQuery {
 export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery> {
   constructor(@Inject(USER_REPOSITORY) private readonly repo: IUserRepository) {}
 
-  async execute(query: GetUserByIdQuery) {
+  async execute(query: GetUserByIdQuery): Promise<UserPublicDto> {
     IdentifierValue.from(query.targetUserId);
 
     if (query.requesterId !== query.targetUserId && query.requesterRole !== 'ADMIN') {

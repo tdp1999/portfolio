@@ -66,11 +66,13 @@ describe('InviteUserHandler', () => {
   });
 
   it('should reject invalid input', async () => {
-    await expect(handler.execute(new InviteUserCommand({ email: 'bad' }))).rejects.toBeInstanceOf(DomainError);
+    await expect(handler.execute(new InviteUserCommand({ email: 'bad' }, 'admin-1'))).rejects.toBeInstanceOf(
+      DomainError
+    );
   });
 
   it('should create user and send invite email on success', async () => {
-    const result = await handler.execute(new InviteUserCommand(validDto));
+    const result = await handler.execute(new InviteUserCommand(validDto, 'admin-1'));
 
     expect(repo.findByEmail).toHaveBeenCalledWith('john@example.com');
     expect(repo.add).toHaveBeenCalled();
@@ -95,7 +97,7 @@ describe('InviteUserHandler', () => {
   it('should throw ConflictError if email already exists', async () => {
     repo.findByEmail.mockResolvedValue(createUser());
 
-    await expect(handler.execute(new InviteUserCommand(validDto))).rejects.toMatchObject({
+    await expect(handler.execute(new InviteUserCommand(validDto, 'admin-1'))).rejects.toMatchObject({
       statusCode: 409,
       message: 'Email is already taken',
     });
@@ -104,18 +106,18 @@ describe('InviteUserHandler', () => {
   it('should propagate email send failure', async () => {
     emailService.sendEmail.mockRejectedValue(new Error('SMTP error'));
 
-    await expect(handler.execute(new InviteUserCommand(validDto))).rejects.toThrow('SMTP error');
+    await expect(handler.execute(new InviteUserCommand(validDto, 'admin-1'))).rejects.toThrow('SMTP error');
   });
 
   it('should default role to USER', async () => {
-    await handler.execute(new InviteUserCommand(validDto));
+    await handler.execute(new InviteUserCommand(validDto, 'admin-1'));
 
     const addedUser = repo.add.mock.calls[0][0] as User;
     expect(addedUser.role).toBe('USER');
   });
 
   it('should allow specifying ADMIN role', async () => {
-    await handler.execute(new InviteUserCommand({ ...validDto, role: 'ADMIN' }));
+    await handler.execute(new InviteUserCommand({ ...validDto, role: 'ADMIN' }, 'admin-1'));
 
     const addedUser = repo.add.mock.calls[0][0] as User;
     expect(addedUser.role).toBe('ADMIN');

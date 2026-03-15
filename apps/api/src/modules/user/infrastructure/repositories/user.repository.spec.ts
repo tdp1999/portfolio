@@ -60,16 +60,15 @@ describe('UserRepository', () => {
   });
 
   describe('update()', () => {
-    it('should update a user and return true', async () => {
+    it('should update a user', async () => {
       prisma.user.update.mockResolvedValue(mockPrismaUser);
       const user = User.load(mockPrismaUser);
 
-      const result = await repository.update(mockPrismaUser.id, user);
+      await repository.update(mockPrismaUser.id, user.toUpdateData());
 
-      expect(result).toBe(true);
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { id: mockPrismaUser.id },
-        data: expect.not.objectContaining({ id: expect.anything() }),
+        data: expect.objectContaining({ email: 'test@example.com' }),
       });
     });
   });

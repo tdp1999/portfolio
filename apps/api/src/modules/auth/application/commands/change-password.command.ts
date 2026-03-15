@@ -54,6 +54,6 @@ export class ChangePasswordHandler implements ICommandHandler<ChangePasswordComm
     const hashedPassword = await hashPassword(data.newPassword);
     let updated = user.updatePassword(hashedPassword);
     updated = updated.incrementTokenVersion();
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
   }
 }

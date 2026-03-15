@@ -26,6 +26,6 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand> {
       });
 
     const updated = user.clearRefreshToken();
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
   }
 }

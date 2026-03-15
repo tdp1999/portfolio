@@ -1,6 +1,6 @@
 # Task: User Hardening — Code Quality Cleanup
 
-## Status: pending
+## Status: done
 
 ## Goal
 Fix small code quality issues in the User module: partial repository updates, zod import fix, typed DTOs, repository void return, and BaseCommand initiator.
@@ -11,26 +11,26 @@ Phase 4 of epic-user-module-hardening. These are independent cleanup items that 
 ## Acceptance Criteria
 
 ### Partial Repository Updates
-- [ ] `UserRepository.update()` accepts a partial changeset (only changed fields) instead of full entity
-- [ ] Only fields present in the changeset are sent to Prisma `update()`
-- [ ] All callers in auth module (`setRefreshToken`, `incrementTokenVersion`, etc.) updated to pass partial changesets
-- [ ] No regressions — all existing auth flows (login, refresh, logout, change-password) still pass tests
+- [x] `UserRepository.update()` accepts a partial changeset (only changed fields) instead of full entity
+- [x] Only fields present in the changeset are sent to Prisma `update()`
+- [x] All callers in auth module (`setRefreshToken`, `incrementTokenVersion`, etc.) updated to pass partial changesets
+- [x] No regressions — all existing auth flows (login, refresh, logout, change-password) still pass tests
 
 ### Fix Zod Import
-- [ ] `get-user-by-email.query.ts` line 3: `import { z } from 'zod'` changed to `import { z } from 'zod/v4'`
+- [x] `get-user-by-email.query.ts` line 3: `import { z } from 'zod'` changed to `import { z } from 'zod/v4'`
 
 ### Typed Query Responses
-- [ ] `UserPublicDto` type defined (matches shape returned by `toPublicProps()`)
-- [ ] Query handlers (`GetUserHandler`, `ListUsersHandler`) use `UserPublicDto` as explicit return type
+- [x] `UserPublicDto` type defined (matches shape returned by `toPublicProps()`)
+- [x] Query handlers (`GetUserHandler`, `ListUsersHandler`) use `UserPublicDto` as explicit return type
 
 ### Repository `update()` Returns Void
-- [ ] `UserRepository.update()` return type changed to `Promise<void>` (was returning boolean or entity)
-- [ ] All callers that previously used the return value updated
+- [x] `UserRepository.update()` return type changed to `Promise<void>` (was returning boolean or entity)
+- [x] All callers that previously used the return value updated
 
 ### BaseCommand Initiator
-- [ ] All User controller handlers pass `req.user.id` to command constructors as the initiator
-- [ ] `'system'` string only used in seed script and any internal/scheduled operations
-- [ ] `BaseCommand` type accepts `initiatorId: string` — verify the existing interface before changing
+- [x] All User controller handlers pass `req.user.id` to command constructors as the initiator
+- [x] `'system'` string only used in seed script and any internal/scheduled operations
+- [x] `BaseCommand` type accepts `initiatorId: string` — verify the existing interface before changing
 
 ## Technical Notes
 - Partial update: use `Partial<Prisma.UserUpdateInput>` or build the update object dynamically
@@ -53,3 +53,5 @@ Phase 4 of epic-user-module-hardening. These are independent cleanup items that 
 ## Complexity: S
 
 ## Progress Log
+- [2026-03-15] Started
+- [2026-03-15] Done — all ACs satisfied

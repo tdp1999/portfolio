@@ -10,7 +10,7 @@ import { PrismaService } from '../../infrastructure/prisma';
 import { EMAIL_SERVICE, IEmailService } from '../email';
 import { GoogleStrategy } from './infrastructure/strategies/google.strategy';
 import { USER_REPOSITORY } from '../user/application/user.token';
-import { IUserRepository } from '../user/application/ports/user.repository.port';
+import { IUserRepository, UserUpdateData } from '../user/application/ports/user.repository.port';
 import { User } from '../user/domain/entities/user.entity';
 
 /**
@@ -25,10 +25,11 @@ class InMemoryUserRepository implements IUserRepository {
     return user.id;
   }
 
-  async update(id: string, user: User): Promise<boolean> {
-    if (!this.users.has(id)) return false;
-    this.users.set(id, user);
-    return true;
+  async update(id: string, data: UserUpdateData): Promise<void> {
+    const existing = this.users.get(id);
+    if (!existing) return;
+    const updated = User.load({ ...existing.toProps(), ...data });
+    this.users.set(id, updated);
   }
 
   async findById(id: string): Promise<User | null> {

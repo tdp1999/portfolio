@@ -5,6 +5,7 @@ import { BadRequestError, NotFoundError, ErrorLayer, UserErrorCode } from '@port
 import { BaseQuery } from '../../../../shared/cqrs/base.query';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
+import { UserPublicDto } from '../user.dto';
 
 export class GetUserByEmailQuery extends BaseQuery {
   constructor(readonly email: string) {
@@ -16,7 +17,7 @@ export class GetUserByEmailQuery extends BaseQuery {
 export class GetUserByEmailHandler implements IQueryHandler<GetUserByEmailQuery> {
   constructor(@Inject(USER_REPOSITORY) private readonly repo: IUserRepository) {}
 
-  async execute(query: GetUserByEmailQuery) {
+  async execute(query: GetUserByEmailQuery): Promise<UserPublicDto> {
     const result = z.email().safeParse(query.email);
     if (!result.success) {
       throw BadRequestError('Invalid email format', {

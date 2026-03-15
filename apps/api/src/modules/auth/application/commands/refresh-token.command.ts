@@ -101,7 +101,7 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand,
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const updated = user.setRefreshToken(hashRefreshToken(newRefreshToken), refreshExpiresAt);
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
 
     // Grace period: store old hashed token for 10 seconds
     this.graceTokens.set(userId, { token: oldHashedToken, expiresAt: Date.now() + GRACE_PERIOD_MS });

@@ -48,6 +48,6 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
       });
 
     const updated = user.updateProfile(data);
-    await this.repo.update(command.targetUserId, updated);
+    await this.repo.update(command.targetUserId, updated.toUpdateData());
   }
 }

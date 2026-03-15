@@ -1,11 +1,17 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { NotFoundError, BadRequestError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
+import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 
-export class SoftDeleteUserCommand {
-  constructor(readonly userId: string) {}
+export class SoftDeleteUserCommand extends BaseCommand {
+  constructor(
+    readonly targetUserId: string,
+    initiatorId: string
+  ) {
+    super(initiatorId);
+  }
 }
 
 @CommandHandler(SoftDeleteUserCommand)
@@ -13,7 +19,7 @@ export class SoftDeleteUserHandler implements ICommandHandler<SoftDeleteUserComm
   constructor(@Inject(USER_REPOSITORY) private readonly repo: IUserRepository) {}
 
   async execute(command: SoftDeleteUserCommand): Promise<void> {
-    const user = await this.repo.findById(command.userId);
+    const user = await this.repo.findById(command.targetUserId);
     if (!user)
       throw NotFoundError('User not found', {
         errorCode: UserErrorCode.NOT_FOUND,
@@ -29,6 +35,6 @@ export class SoftDeleteUserHandler implements ICommandHandler<SoftDeleteUserComm
     let updated = user.softDelete();
     updated = updated.clearRefreshToken();
     updated = updated.incrementTokenVersion();
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
   }
 }

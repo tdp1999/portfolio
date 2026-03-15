@@ -47,20 +47,23 @@ describe('SoftDeleteUserHandler', () => {
     const user = createUser();
     repo.findById.mockResolvedValue(user);
 
-    await handler.execute(new SoftDeleteUserCommand('user-id-123'));
+    await handler.execute(new SoftDeleteUserCommand('user-id-123', 'admin-1'));
 
-    expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.any(User));
-    const updatedUser = repo.update.mock.calls[0][1] as User;
-    expect(updatedUser.deletedAt).toBeInstanceOf(Date);
-    expect(updatedUser.refreshToken).toBeNull();
-    expect(updatedUser.refreshTokenExpiresAt).toBeNull();
-    expect(updatedUser.tokenVersion).toBe(1);
+    expect(repo.update).toHaveBeenCalledWith(
+      'user-id-123',
+      expect.objectContaining({
+        deletedAt: expect.any(Date),
+        refreshToken: null,
+        refreshTokenExpiresAt: null,
+        tokenVersion: 1,
+      })
+    );
   });
 
   it('should throw NotFoundError if user not found', async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(handler.execute(new SoftDeleteUserCommand('non-existent'))).rejects.toMatchObject({
+    await expect(handler.execute(new SoftDeleteUserCommand('non-existent', 'admin-1'))).rejects.toMatchObject({
       statusCode: 404,
     });
   });
@@ -69,7 +72,7 @@ describe('SoftDeleteUserHandler', () => {
     const user = createUser({ deletedAt: new Date() });
     repo.findById.mockResolvedValue(user);
 
-    await expect(handler.execute(new SoftDeleteUserCommand('user-id-123'))).rejects.toMatchObject({
+    await expect(handler.execute(new SoftDeleteUserCommand('user-id-123', 'admin-1'))).rejects.toMatchObject({
       statusCode: 400,
       message: 'User is already deleted',
     });

@@ -67,7 +67,7 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
     const refreshToken = this.tokenService.signRefreshToken(user.id, user.tokenVersion);
     const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     updated = updated.setRefreshToken(hashRefreshToken(refreshToken), refreshExpiresAt);
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
     this.commandBus.execute(new UpdateLastLoginCommand(user.id));

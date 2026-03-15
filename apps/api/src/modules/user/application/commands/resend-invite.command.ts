@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
 import { NotFoundError, ConflictError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
+import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
 import { EMAIL_SERVICE, IEmailService } from '../../../email';
@@ -9,8 +10,13 @@ import { EMAIL_SERVICE, IEmailService } from '../../../email';
 const FRONTEND_URL = process.env['FRONTEND_URL'] || 'http://localhost:4200';
 const INVITE_EXPIRY_MS = 72 * 60 * 60 * 1000; // 72 hours
 
-export class ResendInviteCommand {
-  constructor(readonly userId: string) {}
+export class ResendInviteCommand extends BaseCommand {
+  constructor(
+    readonly targetUserId: string,
+    initiatorId: string
+  ) {
+    super(initiatorId);
+  }
 }
 
 @CommandHandler(ResendInviteCommand)
@@ -21,7 +27,7 @@ export class ResendInviteHandler implements ICommandHandler<ResendInviteCommand,
   ) {}
 
   async execute(command: ResendInviteCommand): Promise<void> {
-    const user = await this.repo.findById(command.userId);
+    const user = await this.repo.findById(command.targetUserId);
     if (!user)
       throw NotFoundError('User not found', {
         errorCode: UserErrorCode.NOT_FOUND,
@@ -38,7 +44,7 @@ export class ResendInviteHandler implements ICommandHandler<ResendInviteCommand,
     const hashedToken = createHash('sha256').update(rawToken).digest('hex');
     const expiresAt = new Date(Date.now() + INVITE_EXPIRY_MS);
     const updated = user.setInviteToken(hashedToken, expiresAt);
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
 
     const inviteLink = `${FRONTEND_URL}/auth/set-password?token=${rawToken}&userId=${user.id}`;
     await this.emailService.sendEmail({

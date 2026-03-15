@@ -93,10 +93,13 @@ describe('ForgotPasswordHandler', () => {
 
     await handler.execute(new ForgotPasswordCommand({ email: 'test@example.com' }));
 
-    expect(repo.update).toHaveBeenCalledWith(user.id, expect.any(User));
-    const updatedUser = repo.update.mock.calls[0][1] as User;
-    expect(updatedUser.passwordResetToken).toBe('hashed-token');
-    expect(updatedUser.passwordResetExpiresAt).toBeInstanceOf(Date);
+    expect(repo.update).toHaveBeenCalledWith(
+      user.id,
+      expect.objectContaining({
+        passwordResetToken: 'hashed-token',
+        passwordResetExpiresAt: expect.any(Date),
+      })
+    );
     expect(emailService.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'test@example.com',

@@ -26,6 +26,6 @@ export class UpdateLastLoginHandler implements ICommandHandler<UpdateLastLoginCo
       });
 
     const updated = user.updateLastLogin();
-    await this.repo.update(command.targetUserId, updated);
+    await this.repo.update(command.targetUserId, updated.toUpdateData());
   }
 }

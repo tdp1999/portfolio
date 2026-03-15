@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { ValidationError, ErrorLayer, UserErrorCode } from '@portfolio/shared/errors';
 import { IUserRepository } from '../ports/user.repository.port';
 import { USER_REPOSITORY } from '../user.token';
-import { PaginationSearchSchema } from '../user.dto';
+import { PaginationSearchSchema, UserPublicDto } from '../user.dto';
 
 export class ListUsersQuery {
   constructor(readonly params: unknown) {}
@@ -13,7 +13,7 @@ export class ListUsersQuery {
 export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
   constructor(@Inject(USER_REPOSITORY) private readonly repo: IUserRepository) {}
 
-  async execute(query: ListUsersQuery) {
+  async execute(query: ListUsersQuery): Promise<{ data: UserPublicDto[]; total: number; page: number; limit: number }> {
     const { success, data, error } = PaginationSearchSchema.safeParse(query.params);
     if (!success)
       throw ValidationError(error, {

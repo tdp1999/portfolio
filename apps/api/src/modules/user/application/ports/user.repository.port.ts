@@ -1,4 +1,7 @@
 import { User } from '../../domain/entities/user.entity';
+import { IUserProps } from '../../domain/user.types';
+
+export type UserUpdateData = Partial<Omit<IUserProps, 'id' | 'createdAt'>>;
 
 export type FindAllOptions = {
   page: number;
@@ -13,7 +16,7 @@ export type FindAllResult = {
 
 export type IUserRepository = {
   add(user: User): Promise<string>;
-  update(id: string, user: User): Promise<boolean>;
+  update(id: string, data: UserUpdateData): Promise<void>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   findAll(options: FindAllOptions): Promise<FindAllResult>;

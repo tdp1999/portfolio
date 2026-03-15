@@ -52,7 +52,7 @@ describe('UserController', () => {
       commandBus.execute.mockResolvedValue(publicProps);
 
       const dto = { email: 'test@example.com', name: 'Test User' };
-      const result = await controller.invite(dto);
+      const result = await controller.invite(dto, mockReq('admin-1', 'ADMIN'));
 
       expect(result).toEqual(publicProps);
       expect(commandBus.execute).toHaveBeenCalledWith(expect.any(InviteUserCommand));
@@ -99,7 +99,7 @@ describe('UserController', () => {
     it('should soft-delete user and return success', async () => {
       commandBus.execute.mockResolvedValue(undefined);
 
-      const result = await controller.softDelete('user-123');
+      const result = await controller.softDelete('user-123', mockReq('admin-1', 'ADMIN'));
 
       expect(result).toEqual({ success: true });
       expect(commandBus.execute).toHaveBeenCalledWith(expect.any(SoftDeleteUserCommand));
@@ -110,7 +110,7 @@ describe('UserController', () => {
     it('should resend invite and return success', async () => {
       commandBus.execute.mockResolvedValue(undefined);
 
-      const result = await controller.resendInvite('user-123');
+      const result = await controller.resendInvite('user-123', mockReq('admin-1', 'ADMIN'));
 
       expect(result).toEqual({ success: true });
       expect(commandBus.execute).toHaveBeenCalledWith(expect.any(ResendInviteCommand));

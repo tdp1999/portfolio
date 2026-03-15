@@ -27,6 +27,6 @@ export class LogoutAllHandler implements ICommandHandler<LogoutAllCommand> {
 
     let updated = user.incrementTokenVersion();
     updated = updated.clearRefreshToken();
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
   }
 }

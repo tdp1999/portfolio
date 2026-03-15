@@ -79,11 +79,14 @@ describe('SetPasswordHandler', () => {
 
     await handler.execute(new SetPasswordCommand(validDto));
 
-    expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.any(User));
-    const updatedUser = repo.update.mock.calls[0][1] as User;
-    expect(updatedUser.password).toBe('$2a$10$newhashed');
-    expect(updatedUser.inviteToken).toBeNull();
-    expect(updatedUser.inviteTokenExpiresAt).toBeNull();
+    expect(repo.update).toHaveBeenCalledWith(
+      'user-id-123',
+      expect.objectContaining({
+        password: '$2a$10$newhashed',
+        inviteToken: null,
+        inviteTokenExpiresAt: null,
+      })
+    );
   });
 
   it('should throw if user not found', async () => {
