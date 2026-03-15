@@ -7,6 +7,7 @@ export {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  ConflictError,
   MethodNotAllowedError,
   InternalServerError,
 } from './lib/domain.error';

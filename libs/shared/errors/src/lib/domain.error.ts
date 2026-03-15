@@ -126,6 +126,18 @@ export const NotFoundError = (message: string, options: ErrorOptions, data?: unk
   });
 };
 
+// 409
+export const ConflictError = (message: string, options: ErrorOptions, data?: unknown) => {
+  return DomainError.fromJSON({
+    statusCode: 409,
+    errorCode: options.errorCode,
+    error: 'Conflict',
+    message,
+    data,
+    options,
+  });
+};
+
 // 405
 export const MethodNotAllowedError = (message: string, options: ErrorOptions, data?: unknown) => {
   return DomainError.fromJSON({
