@@ -1,9 +1,13 @@
 import { Test } from '@nestjs/testing';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { UserController } from './user.controller';
-import { CreateUserCommand } from '../application/commands';
-import { GetUserByIdQuery } from '../application/queries';
-import { UpdateUserCommand } from '../application/commands';
+import {
+  InviteUserCommand,
+  ResendInviteCommand,
+  SoftDeleteUserCommand,
+  UpdateUserCommand,
+} from '../application/commands';
+import { GetUserByIdQuery, ListUsersQuery } from '../application/queries';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard } from '../../auth/application/guards/role.guard';
@@ -42,29 +46,34 @@ describe('UserController', () => {
     queryBus = module.get(QueryBus);
   });
 
-  describe('POST /users', () => {
-    it('should create a user and return id', async () => {
-      commandBus.execute.mockResolvedValue('user-123');
+  describe('POST /users (invite)', () => {
+    it('should invite a user and return public props', async () => {
+      const publicProps = { id: 'user-123', email: 'test@example.com', name: 'Test User' };
+      commandBus.execute.mockResolvedValue(publicProps);
 
-      const dto = {
-        email: 'test@example.com',
-        password: 'Strong#Pass1',
-        name: 'Test User',
-      };
-      const result = await controller.create(dto);
+      const dto = { email: 'test@example.com', name: 'Test User' };
+      const result = await controller.invite(dto);
 
-      expect(result).toEqual({ id: 'user-123' });
-      expect(commandBus.execute).toHaveBeenCalledWith(expect.any(CreateUserCommand));
+      expect(result).toEqual(publicProps);
+      expect(commandBus.execute).toHaveBeenCalledWith(expect.any(InviteUserCommand));
+    });
+  });
+
+  describe('GET /users (list)', () => {
+    it('should return paginated users', async () => {
+      const response = { data: [], total: 0, page: 1, limit: 20 };
+      queryBus.execute.mockResolvedValue(response);
+
+      const result = await controller.list({ page: '1', limit: '20' });
+
+      expect(result).toEqual(response);
+      expect(queryBus.execute).toHaveBeenCalledWith(expect.any(ListUsersQuery));
     });
   });
 
   describe('GET /users/:id', () => {
     it('should return user when found', async () => {
-      const mockUser = {
-        id: 'user-123',
-        email: 'test@example.com',
-        name: 'Test User',
-      };
+      const mockUser = { id: 'user-123', email: 'test@example.com', name: 'Test User' };
       queryBus.execute.mockResolvedValue(mockUser);
 
       const result = await controller.getById('user-123', mockReq('user-123'));
@@ -83,6 +92,28 @@ describe('UserController', () => {
 
       expect(result).toEqual({ success: true });
       expect(commandBus.execute).toHaveBeenCalledWith(expect.any(UpdateUserCommand));
+    });
+  });
+
+  describe('DELETE /users/:id (soft-delete)', () => {
+    it('should soft-delete user and return success', async () => {
+      commandBus.execute.mockResolvedValue(undefined);
+
+      const result = await controller.softDelete('user-123');
+
+      expect(result).toEqual({ success: true });
+      expect(commandBus.execute).toHaveBeenCalledWith(expect.any(SoftDeleteUserCommand));
+    });
+  });
+
+  describe('POST /users/:id/resend-invite', () => {
+    it('should resend invite and return success', async () => {
+      commandBus.execute.mockResolvedValue(undefined);
+
+      const result = await controller.resendInvite('user-123');
+
+      expect(result).toEqual({ success: true });
+      expect(commandBus.execute).toHaveBeenCalledWith(expect.any(ResendInviteCommand));
     });
   });
 });
