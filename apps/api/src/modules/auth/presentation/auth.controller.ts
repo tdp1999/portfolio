@@ -1,31 +1,16 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Body,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post, Body, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Request, Response } from 'express';
 import { LoginCommand, LoginResult } from '../application/commands/login.command';
-import {
-  GoogleLoginCommand,
-  GoogleLoginResult,
-} from '../application/commands/google-login.command';
+import { GoogleLoginCommand, GoogleLoginResult } from '../application/commands/google-login.command';
 import { LogoutCommand } from '../application/commands/logout.command';
 import { LogoutAllCommand } from '../application/commands/logout-all.command';
 import { ChangePasswordCommand } from '../application/commands/change-password.command';
 import { ForgotPasswordCommand } from '../application/commands/forgot-password.command';
 import { ResetPasswordCommand } from '../application/commands/reset-password.command';
-import {
-  RefreshTokenCommand,
-  RefreshTokenResult,
-} from '../application/commands/refresh-token.command';
+import { SetPasswordCommand } from '../application/commands/set-password.command';
+import { RefreshTokenCommand, RefreshTokenResult } from '../application/commands/refresh-token.command';
 import { GetCurrentUserQuery } from '../application/queries/get-current-user.query';
 import { JwtAccessGuard } from '../application/guards/jwt-access.guard';
 import { CsrfGuard } from '../application/guards/csrf.guard';
@@ -61,9 +46,7 @@ export class AuthController {
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies?.['refresh_token'] ?? null;
 
-    const result: RefreshTokenResult = await this.commandBus.execute(
-      new RefreshTokenCommand(refreshToken)
-    );
+    const result: RefreshTokenResult = await this.commandBus.execute(new RefreshTokenCommand(refreshToken));
     // rememberMe=true: if the user had a session-only cookie, it wouldn't survive
     // browser close, so reaching /refresh implies the cookie was persistent.
     this.cookieService.setRefreshToken(res, result.refreshToken, true);
@@ -116,6 +99,13 @@ export class AuthController {
     return { success: true };
   }
 
+  @Post('set-password')
+  @HttpCode(HttpStatus.OK)
+  async setPassword(@Body() body: unknown) {
+    await this.commandBus.execute(new SetPasswordCommand(body));
+    return { success: true };
+  }
+
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
   async googleLogin() {
@@ -126,9 +116,7 @@ export class AuthController {
   @UseGuards(GoogleOAuthGuard)
   async googleCallback(@Req() req: Request, @Res() res: Response) {
     const profile = req.user as { email: string; name: string; googleId: string };
-    const result: GoogleLoginResult = await this.commandBus.execute(
-      new GoogleLoginCommand(profile)
-    );
+    const result: GoogleLoginResult = await this.commandBus.execute(new GoogleLoginCommand(profile));
     this.cookieService.setRefreshToken(res, result.refreshToken, true);
     this.cookieService.setCsrfToken(res);
     const frontendUrl = process.env['FRONTEND_URL'] || 'http://localhost:4200';

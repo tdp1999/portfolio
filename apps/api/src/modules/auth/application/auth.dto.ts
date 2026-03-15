@@ -30,6 +30,14 @@ export const ResetPasswordSchema = z.object({
 
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
+export const SetPasswordSchema = z.object({
+  token: z.string().min(1),
+  userId: z.string().min(1),
+  newPassword: PasswordSchema,
+});
+
+export type SetPasswordDto = z.infer<typeof SetPasswordSchema>;
+
 export const GoogleCallbackSchema = z.object({
   email: z.email().transform((v) => v.toLowerCase()),
   name: z.string().min(1),

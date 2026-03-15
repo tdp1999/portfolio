@@ -18,6 +18,7 @@ import { RefreshTokenHandler } from './application/commands/refresh-token.comman
 import { ChangePasswordHandler } from './application/commands/change-password.command';
 import { ForgotPasswordHandler } from './application/commands/forgot-password.command';
 import { ResetPasswordHandler } from './application/commands/reset-password.command';
+import { SetPasswordHandler } from './application/commands/set-password.command';
 import { GetCurrentUserHandler } from './application/queries/get-current-user.query';
 import { GoogleOAuthGuard } from './application/guards/google-oauth.guard';
 import { RoleGuard } from './application/guards/role.guard';
@@ -32,6 +33,7 @@ const CommandHandlers = [
   ChangePasswordHandler,
   ForgotPasswordHandler,
   ResetPasswordHandler,
+  SetPasswordHandler,
 ];
 const QueryHandlers = [GetCurrentUserHandler];
 
