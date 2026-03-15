@@ -38,8 +38,11 @@
     "prisma:migrate:dev": "prisma migrate dev --config=apps/api/prisma/prisma.config.ts",
     "prisma:migrate:deploy": "prisma migrate deploy --config=apps/api/prisma/prisma.config.ts",
     "prisma:studio": "prisma studio --config=apps/api/prisma/prisma.config.ts",
-    "prisma:seed": "cd apps/api/prisma && npx tsx seed.ts",
+    "prisma:seed": "tsx --tsconfig apps/api/tsconfig.json apps/api/prisma/seed.ts",
     "prepare": "husky"
+  },
+  "prisma": {
+    "seed": "tsx --tsconfig apps/api/tsconfig.json apps/api/prisma/seed.ts"
   },
   "private": true,
   "devDependencies": {
@@ -96,6 +99,7 @@
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0",
     "webpack-cli": "^5.1.4"
