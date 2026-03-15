@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../infrastructure/prisma';
-import { FindAllOptions, FindAllResult, IUserRepository } from '../../application/ports/user.repository.port';
+import {
+  FindAllOptions,
+  FindAllResult,
+  IUserRepository,
+  UserUpdateData,
+} from '../../application/ports/user.repository.port';
 import { User } from '../../domain/entities/user.entity';
 import { UserMapper } from '../mapper/user.mapper';
 
@@ -15,14 +20,11 @@ export class UserRepository implements IUserRepository {
     return created.id;
   }
 
-  async update(id: string, user: User): Promise<boolean> {
-    const data = UserMapper.toPrisma(user);
-    const { id: _, ...updateData } = data;
-    const updated = await this.prisma.user.update({
+  async update(id: string, data: UserUpdateData): Promise<void> {
+    await this.prisma.user.update({
       where: { id },
-      data: updateData,
+      data,
     });
-    return !!updated;
   }
 
   async findById(id: string): Promise<User | null> {

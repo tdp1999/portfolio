@@ -34,7 +34,7 @@ export class UserMapper {
       email: user.email,
       password: user.password,
       name: user.name,
-      role: user.role as PrismaUser['role'],
+      role: user.role,
       lastLoginAt: user.lastLoginAt,
       refreshToken: user.refreshToken,
       refreshTokenExpiresAt: user.refreshTokenExpiresAt,

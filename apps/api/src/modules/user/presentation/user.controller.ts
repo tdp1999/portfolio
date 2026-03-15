@@ -17,6 +17,7 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { Request } from 'express';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
+import { UserRole } from '../domain/user.types';
 import {
   InviteUserCommand,
   ResendInviteCommand,
@@ -27,7 +28,7 @@ import { GetUserByIdQuery, ListUsersQuery } from '../application/queries';
 
 // user is guaranteed non-null by JwtAccessGuard
 interface AuthenticatedRequest extends Request {
-  user: { id: string; role: string };
+  user: { id: string; role: UserRole };
 }
 
 @Controller('users')
@@ -43,8 +44,8 @@ export class UserController {
   @Roles(['ADMIN'])
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async invite(@Body() body: unknown) {
-    return await this.commandBus.execute(new InviteUserCommand(body));
+  async invite(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    return await this.commandBus.execute(new InviteUserCommand(body, req.user.id));
   }
 
   @Get()
@@ -71,8 +72,8 @@ export class UserController {
   @Delete(':id')
   @Roles(['ADMIN'])
   @HttpCode(HttpStatus.OK)
-  async softDelete(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.commandBus.execute(new SoftDeleteUserCommand(id));
+  async softDelete(@Param('id') id: string, @Req() req: AuthenticatedRequest): Promise<{ success: boolean }> {
+    await this.commandBus.execute(new SoftDeleteUserCommand(id, req.user.id));
     return { success: true };
   }
 
@@ -81,8 +82,8 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  async resendInvite(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.commandBus.execute(new ResendInviteCommand(id));
+  async resendInvite(@Param('id') id: string, @Req() req: AuthenticatedRequest): Promise<{ success: boolean }> {
+    await this.commandBus.execute(new ResendInviteCommand(id, req.user.id));
     return { success: true };
   }
 }

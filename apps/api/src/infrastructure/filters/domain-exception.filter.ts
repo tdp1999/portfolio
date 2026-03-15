@@ -9,13 +9,13 @@ export class DomainExceptionFilter implements ExceptionFilter {
   catch(exception: DomainError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const json = exception.toJSON();
+    const { remarks, ...json } = exception.toJSON();
 
     if (isProduction) {
-      delete (json as Record<string, unknown>)['remarks'];
+      response.status(exception.statusCode).json(json);
+    } else {
+      response.status(exception.statusCode).json({ ...json, remarks });
     }
-
-    response.status(exception.statusCode).json(json);
   }
 }
 

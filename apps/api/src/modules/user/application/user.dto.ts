@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 import { nonEmptyPartial } from '@portfolio/shared/utils';
+import { UserRole } from '../domain/user.types';
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 const PASSWORD_ERROR =
@@ -44,6 +45,17 @@ export const PaginationSearchSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
 });
+
+export type UserPublicDto = {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  hasPassword: boolean;
+  hasGoogleLinked: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;

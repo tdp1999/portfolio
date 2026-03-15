@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { AUTH_CONFIG, AuthConfig } from '../auth.config';
+import { UserRole } from '../../../user/domain/user.types';
 
 export type AccessTokenPayload = {
   sub: string;
-  role: string;
+  role: UserRole;
   tokenVersion: number;
   iat: number;
   exp: number;
@@ -23,11 +24,12 @@ export class TokenService {
     @Inject(AUTH_CONFIG) private readonly config: AuthConfig
   ) {}
 
-  signAccessToken(userId: string, tokenVersion: number, role: string): string {
-    return this.jwtService.sign({ sub: userId, tokenVersion, role }, {
+  signAccessToken(userId: string, tokenVersion: number, role: UserRole): string {
+    const options: JwtSignOptions = {
       secret: this.config.jwtSecret,
       expiresIn: this.config.jwtAccessExpiry,
-    } as JwtSignOptions);
+    };
+    return this.jwtService.sign({ sub: userId, tokenVersion, role }, options);
   }
 
   verifyAccessToken(token: string, options?: { ignoreExpiration?: boolean }): AccessTokenPayload {
@@ -39,10 +41,11 @@ export class TokenService {
 
   signRefreshToken(userId: string, tokenVersion: number): string {
     const jti = randomBytes(16).toString('hex');
-    return this.jwtService.sign({ sub: userId, tokenVersion, jti }, {
+    const options: JwtSignOptions = {
       secret: this.config.jwtRefreshSecret,
       expiresIn: this.config.jwtRefreshExpiry,
-    } as JwtSignOptions);
+    };
+    return this.jwtService.sign({ sub: userId, tokenVersion, jti }, options);
   }
 
   verifyRefreshToken(token: string): RefreshTokenPayload {

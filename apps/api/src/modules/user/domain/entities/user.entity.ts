@@ -1,5 +1,5 @@
 import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
-import { ICreateUserPayload, IUserProps } from '../user.types';
+import { ICreateUserPayload, IUserProps, UserRole } from '../user.types';
 
 export class User {
   private constructor(private readonly props: IUserProps) {}
@@ -85,7 +85,7 @@ export class User {
     return this.props.tokenVersion;
   }
 
-  get role(): string {
+  get role(): UserRole {
     return this.props.role;
   }
 
@@ -236,12 +236,17 @@ export class User {
     });
   }
 
-  isLocked(): boolean {
+  isLocked(): this is User & { lockedUntil: Date } {
     return this.props.lockedUntil !== null && this.props.lockedUntil > new Date();
   }
 
   toProps(): IUserProps {
     return { ...this.props };
+  }
+
+  toUpdateData(): Omit<IUserProps, 'id' | 'createdAt'> {
+    const { id: _, createdAt: __, ...data } = this.props;
+    return data;
   }
 
   toPublicProps() {

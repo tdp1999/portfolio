@@ -1,9 +1,11 @@
+export type UserRole = 'ADMIN' | 'USER';
+
 export interface IUserProps {
   id: string;
   email: string;
   password: string | null;
   name: string;
-  role: string;
+  role: UserRole;
   lastLoginAt: Date | null;
   refreshToken: string | null;
   refreshTokenExpiresAt: Date | null;
@@ -24,6 +26,6 @@ export interface ICreateUserPayload {
   email: string;
   password: string | null;
   name: string;
-  role?: string;
+  role?: UserRole;
   googleId?: string;
 }

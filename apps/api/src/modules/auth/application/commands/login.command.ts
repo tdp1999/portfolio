@@ -53,7 +53,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
       });
 
     if (user.isLocked()) {
-      const retryAfterSeconds = Math.max(1, Math.ceil((user.lockedUntil!.getTime() - Date.now()) / 1000));
+      const retryAfterSeconds = Math.max(1, Math.ceil((user.lockedUntil.getTime() - Date.now()) / 1000));
       throw UnauthorizedError(
         'Account is locked due to too many failed attempts',
         {
@@ -79,7 +79,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         const lockIndex = Math.min(updated.failedLoginAttempts - MAX_ATTEMPTS, BACKOFF_MINUTES.length - 1);
         const lockUntil = new Date(Date.now() + BACKOFF_MINUTES[lockIndex] * 60 * 1000);
         updated = updated.lock(lockUntil);
-        await this.repo.update(user.id, updated);
+        await this.repo.update(user.id, updated.toUpdateData());
         const retryAfterSeconds = Math.ceil(BACKOFF_MINUTES[lockIndex] * 60);
         throw UnauthorizedError(
           'Account is locked due to too many failed attempts',
@@ -90,7 +90,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
           { remainingAttempts: 0, retryAfterSeconds }
         );
       }
-      await this.repo.update(user.id, updated);
+      await this.repo.update(user.id, updated.toUpdateData());
       throw UnauthorizedError(
         'Invalid credentials',
         {
@@ -108,7 +108,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
 
     let updated = user.resetFailedAttempts();
     updated = updated.setRefreshToken(hashedRefreshToken, refreshExpiresAt);
-    await this.repo.update(user.id, updated);
+    await this.repo.update(user.id, updated.toUpdateData());
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
 
