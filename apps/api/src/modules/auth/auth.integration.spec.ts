@@ -42,6 +42,11 @@ class InMemoryUserRepository implements IUserRepository {
     return null;
   }
 
+  async findAll(): Promise<{ data: User[]; total: number }> {
+    const data = Array.from(this.users.values());
+    return { data, total: data.length };
+  }
+
   clear() {
     this.users.clear();
   }
