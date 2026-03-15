@@ -48,6 +48,7 @@ describe('GoogleLoginHandler', () => {
       update: jest.fn().mockResolvedValue(true),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      findAll: jest.fn(),
     };
     tokenService = {
       signAccessToken: jest.fn().mockReturnValue('access-token-123'),
@@ -126,38 +127,34 @@ describe('GoogleLoginHandler', () => {
     });
   });
 
-  describe('when user does not exist', () => {
-    it('should create new user without password and issue tokens', async () => {
+  describe('when user does not exist (invite-only)', () => {
+    it('should throw ForbiddenError for unknown email', async () => {
       repo.findByEmail.mockResolvedValue(null);
-      repo.add.mockResolvedValue('new-user-id');
 
-      const result: GoogleLoginResult = await handler.execute(new GoogleLoginCommand(validProfile));
-
-      expect(result.accessToken).toBe('access-token-123');
-      expect(result.refreshToken).toBe('refresh-token-jwt');
-      expect(repo.add).toHaveBeenCalled();
+      await expect(handler.execute(new GoogleLoginCommand(validProfile))).rejects.toBeInstanceOf(DomainError);
+      await expect(handler.execute(new GoogleLoginCommand(validProfile))).rejects.toMatchObject({
+        statusCode: 403,
+        message: 'This site is invite-only. Contact the administrator.',
+      });
     });
 
-    it('should create user with googleId and no password', async () => {
+    it('should not create a new user', async () => {
       repo.findByEmail.mockResolvedValue(null);
-      repo.add.mockResolvedValue('new-user-id');
 
-      await handler.execute(new GoogleLoginCommand(validProfile));
-
-      const addedUser = repo.add.mock.calls[0][0] as User;
-      expect(addedUser.email).toBe('test@example.com');
-      expect(addedUser.name).toBe('Test User');
-      expect(addedUser.googleId).toBe('google-123');
-      expect(addedUser.password).toBeNull();
+      await expect(handler.execute(new GoogleLoginCommand(validProfile))).rejects.toThrow();
+      expect(repo.add).not.toHaveBeenCalled();
     });
+  });
 
-    it('should dispatch UpdateLastLoginCommand for new user', async () => {
-      repo.findByEmail.mockResolvedValue(null);
-      repo.add.mockResolvedValue('new-user-id');
+  describe('soft-deleted account', () => {
+    it('should reject login for soft-deleted user', async () => {
+      const user = createUser({ deletedAt: new Date() });
+      repo.findByEmail.mockResolvedValue(user);
 
-      await handler.execute(new GoogleLoginCommand(validProfile));
-
-      expect(commandBus.execute).toHaveBeenCalled();
+      await expect(handler.execute(new GoogleLoginCommand(validProfile))).rejects.toMatchObject({
+        statusCode: 401,
+        message: 'Account has been deactivated',
+      });
     });
   });
 
