@@ -1,3 +1,7 @@
+export { FilterBarComponent } from './lib/filter-bar/filter-bar';
+export { FilterSearchComponent } from './lib/filter-bar/filter-search';
+export { FilterSelectComponent } from './lib/filter-bar/filter-select';
+export type { FilterOption } from './lib/filter-bar/filter-select';
 export { ConsoleBlankLayoutComponent } from './lib/blank-layout/blank-layout';
 export { ConsoleMainLayoutComponent } from './lib/main-layout/main-layout';
 export { ToastService } from './lib/toast/toast.service';

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Provider } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import {
   ERROR_HANDLER,
   ErrorHandler,
@@ -19,6 +20,7 @@ function isValidationCode(code: string): boolean {
 
 class ConsoleErrorHandler implements ErrorHandler {
   private router = inject(Router);
+  private dialog = inject(MatDialog);
   private toastService = inject(ToastService);
   private validationErrorService = inject(ValidationErrorService);
   private errorDataService = inject(ErrorDataService);
@@ -42,8 +44,9 @@ class ConsoleErrorHandler implements ErrorHandler {
       return;
     }
 
-    // Blocking errors — navigate to error page
+    // Blocking errors — close all dialogs, navigate to error page
     if (BLOCKING_STATUSES.has(error.status)) {
+      this.dialog.closeAll();
       this.router.navigate(['/error', error.status], { skipLocationChange: true });
       return;
     }

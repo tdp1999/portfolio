@@ -17,6 +17,20 @@
     </ui-sidebar-header>
 
     <ui-sidebar-content>
+      <!-- Admin group (visible only for admins) -->
+      @if (isAdmin()) {
+        <ui-sidebar-group label="Admin" [collapsible]="true">
+          <ul uiSidebarMenu>
+            <li uiSidebarMenuItem>
+              <a routerLink="/admin/users" ui-sidebar-menu-button tooltip="User Management">
+                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">group</mat-icon>
+                <span>Users</span>
+              </a>
+            </li>
+          </ul>
+        </ui-sidebar-group>
+      }
+
       <!-- System group -->
       <ui-sidebar-group label="System" [collapsible]="true">
         <ul uiSidebarMenu>

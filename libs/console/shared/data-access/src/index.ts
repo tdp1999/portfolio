@@ -5,7 +5,7 @@ export { AuthStore } from './lib/auth.store';
 export { authInterceptor, csrfInterceptor, errorInterceptor, refreshInterceptor } from './lib/interceptors';
 export type { ErrorHandler } from './lib/interceptors';
 export { ERROR_HANDLER, SKIP_ERROR_HANDLING } from './lib/interceptors';
-export { authGuard, guestGuard } from './lib/guards';
+export { adminGuard, authGuard, guestGuard } from './lib/guards';
 export { ThemeService } from './lib/theme.service';
 export type { Theme } from './lib/theme.service';
 export type { ApiError } from './lib/errors/api-error';

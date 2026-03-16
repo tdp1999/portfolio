@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { authGuard } from '@portfolio/console/shared/data-access';
+import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
 import { ConsoleMainLayoutComponent } from '@portfolio/console/shared/ui';
 
 export const appRoutes: Route[] = [
@@ -25,6 +25,11 @@ export const appRoutes: Route[] = [
       {
         path: 'settings',
         loadChildren: () => import('@portfolio/console/feature-settings').then((m) => m.settingsRoutes),
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('@portfolio/console/feature-admin').then((m) => m.adminRoutes),
+        canActivate: [adminGuard],
       },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
     ],
