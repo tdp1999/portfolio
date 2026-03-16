@@ -39,7 +39,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
         remarks: 'Login validation failed',
       });
 
-    const user = await this.repo.findByEmail(data.email);
+    const user = await this.repo.findByEmailIncludingDeleted(data.email);
     if (!user)
       throw UnauthorizedError('Invalid credentials', {
         errorCode: AuthErrorCode.INVALID_CREDENTIALS,

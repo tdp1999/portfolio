@@ -65,7 +65,7 @@ describe('LoginHandler', () => {
   });
 
   it('should return generic error for non-existent email', async () => {
-    repo.findByEmail.mockResolvedValue(null);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(null);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_CREDENTIALS,
@@ -74,7 +74,7 @@ describe('LoginHandler', () => {
 
   it('should return structured error for locked account with retryAfterSeconds', async () => {
     const lockedUser = createUser({ lockedUntil: new Date(Date.now() + 60000) });
-    repo.findByEmail.mockResolvedValue(lockedUser);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(lockedUser);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.ACCOUNT_LOCKED,
@@ -92,7 +92,7 @@ describe('LoginHandler', () => {
 
   it('should return structured error with remainingAttempts for wrong password', async () => {
     const user = createUser();
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
@@ -100,7 +100,7 @@ describe('LoginHandler', () => {
     });
 
     try {
-      repo.findByEmail.mockResolvedValue(createUser());
+      repo.findByEmailIncludingDeleted.mockResolvedValue(createUser());
       jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
       await handler.execute(new LoginCommand(validDto));
     } catch (e: unknown) {
@@ -112,7 +112,7 @@ describe('LoginHandler', () => {
 
   it('should increment failed attempts on wrong password', async () => {
     const user = createUser();
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
@@ -121,7 +121,7 @@ describe('LoginHandler', () => {
 
   it('should return tokens on successful login', async () => {
     const user = createUser();
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(true);
 
     const result: LoginResult = await handler.execute(new LoginCommand(validDto));
@@ -135,7 +135,7 @@ describe('LoginHandler', () => {
 
   it('should reset failed attempts on successful login', async () => {
     const user = createUser({ failedLoginAttempts: 3 });
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(true);
 
     await handler.execute(new LoginCommand(validDto));
@@ -145,7 +145,7 @@ describe('LoginHandler', () => {
 
   it('should dispatch UpdateLastLoginCommand on success', async () => {
     const user = createUser();
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(true);
 
     await handler.execute(new LoginCommand(validDto));
@@ -155,7 +155,7 @@ describe('LoginHandler', () => {
 
   it('should pass rememberMe flag through', async () => {
     const user = createUser();
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(true);
 
     const result = await handler.execute(new LoginCommand({ ...validDto, rememberMe: true }));
@@ -165,7 +165,7 @@ describe('LoginHandler', () => {
 
   it('should lock account after 5th failed attempt with 1 minute backoff', async () => {
     const user = createUser({ failedLoginAttempts: 4 }); // will become 5
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     try {
@@ -188,7 +188,7 @@ describe('LoginHandler', () => {
 
   it('should apply exponential backoff: 5min on 6th failure', async () => {
     const user = createUser({ failedLoginAttempts: 5 });
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
@@ -201,7 +201,7 @@ describe('LoginHandler', () => {
 
   it('should apply exponential backoff: 15min on 7th failure', async () => {
     const user = createUser({ failedLoginAttempts: 6 });
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
@@ -213,7 +213,7 @@ describe('LoginHandler', () => {
 
   it('should cap backoff at 60 minutes', async () => {
     const user = createUser({ failedLoginAttempts: 20 }); // way past cap
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
@@ -225,7 +225,7 @@ describe('LoginHandler', () => {
 
   it('should not lock account before 5th failed attempt', async () => {
     const user = createUser({ failedLoginAttempts: 3 }); // will become 4
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
     jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(false);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
@@ -235,9 +235,18 @@ describe('LoginHandler', () => {
     expect(updatedUser.lockedUntil).toBeNull();
   });
 
+  it('should reject login for soft-deleted user with ACCOUNT_DELETED', async () => {
+    const user = createUser({ deletedAt: new Date('2025-01-01') });
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
+
+    await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
+      errorCode: AuthErrorCode.ACCOUNT_DELETED,
+    });
+  });
+
   it('should reject login when user has no password (OAuth-only)', async () => {
     const user = createUser({ password: null });
-    repo.findByEmail.mockResolvedValue(user);
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toMatchObject({
       errorCode: AuthErrorCode.INVALID_CREDENTIALS,
