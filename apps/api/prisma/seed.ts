@@ -1,8 +1,21 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '@prisma/client';
-import { hashPassword } from '@portfolio/shared/utils';
-import { PasswordSchema } from '../src/modules/user/application/user.dto';
+import { hash } from 'bcryptjs';
 import { v7 as uuidv7 } from 'uuid';
+
+// Inlined to avoid monorepo imports that don't exist in the Docker production image
+const hashPassword = (password: string): Promise<string> => hash(password, 10);
+
+const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+const PASSWORD_ERROR =
+  'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (#?!@$%^&*-)';
+
+const validatePassword = (password: string): { success: boolean; error?: string } => {
+  if (!PASSWORD_REGEX.test(password)) {
+    return { success: false, error: PASSWORD_ERROR };
+  }
+  return { success: true };
+};
 
 interface SeedEnv {
   ADMIN_EMAIL?: string;
@@ -19,9 +32,9 @@ export async function seedAdmin(prisma: Pick<PrismaClient, 'user'>, env: SeedEnv
     throw new Error('Missing required environment variables: ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD must all be set');
   }
 
-  const result = PasswordSchema.safeParse(password);
+  const result = validatePassword(password);
   if (!result.success) {
-    throw new Error(`ADMIN_PASSWORD validation failed: ${result.error.issues[0].message}`);
+    throw new Error(`ADMIN_PASSWORD validation failed: ${result.error}`);
   }
 
   const hashedPassword = await hashPassword(password);
