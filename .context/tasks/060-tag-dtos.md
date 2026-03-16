@@ -1,6 +1,6 @@
 # Task: Tag Module - Zod DTOs
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,11 +12,11 @@ Simple DTOs - just name for create/update, query options for list.
 
 ## Acceptance Criteria
 
-- [ ] `CreateTagSchema` - name required
-- [ ] `UpdateTagSchema` - name required
-- [ ] `TagQuerySchema` - pagination, sorting
-- [ ] TypeScript types inferred
-- [ ] Unit tests for validation
+- [x] `CreateTagSchema` - name required, trim, strip HTML, max 50
+- [x] `UpdateTagSchema` - name required
+- [x] `TagQuerySchema` - pagination with defaults (page=1, limit=20), search
+- [x] TypeScript types inferred (CreateTagDto, UpdateTagDto, TagQueryDto, TagResponseDto)
+- [x] Unit tests for validation (8 tests)
 
 ## Technical Notes
 

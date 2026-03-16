@@ -2,7 +2,7 @@
 
 ## Summary
 
-Design and implement a PostgreSQL database architecture using a **Hybrid Prisma + Hexagonal Architecture** approach, hosted on Supabase. Prisma handles schema definition, migrations, and type-safe database access, while Domain Entities with DDD patterns encapsulate business logic. The database will support the portfolio's core entities (Users, Profile, Projects, Blog Posts, Skills, Experience, Contact Messages) with features including GitHub API sync, custom analytics tracking, soft deletes, and slug-based URLs. Built to serve both the public landing page and admin dashboard.
+Design and implement a PostgreSQL database architecture using a **Hybrid Prisma + Hexagonal Architecture** approach, hosted on Railway (PostgreSQL). Prisma handles schema definition, migrations, and type-safe database access, while Domain Entities with DDD patterns encapsulate business logic. The database will support the portfolio's core entities (Users, Profile, Projects, Blog Posts, Skills, Experience, Contact Messages) with features including GitHub API sync, custom analytics tracking, soft deletes, and slug-based URLs. Built to serve both the public landing page and admin dashboard.
 
 ## Why
 
@@ -24,7 +24,7 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 
 - Database schema design for all core entities
 - Prisma setup and configuration with NestJS
-- Supabase PostgreSQL connection
+- PostgreSQL connection (Docker local, Railway production)
 - Soft delete pattern for all entities
 - Slug generation for SEO-friendly URLs
 - Media table for centralized asset management
@@ -48,11 +48,11 @@ Design and implement a PostgreSQL database architecture using a **Hybrid Prisma 
 
 ### 1. Database Setup
 
-1. Configure Supabase PostgreSQL project
-2. Set up Prisma with NestJS integration
-3. Configure environment variables for database connection
-4. Establish migration workflow (`prisma migrate dev` / `prisma migrate deploy`)
-5. Create seed script for development data
+1. ✅ PostgreSQL via Docker (local) + Railway (production)
+2. ✅ Prisma v7 with PrismaPg adapter integrated in NestJS
+3. ✅ Environment variables configured
+4. ✅ Migration workflow established (10 migrations applied)
+5. Create seed script for development data (pending)
 
 ### 2. Core Entities
 
@@ -376,13 +376,13 @@ export class ProjectRepository implements IProjectRepository {
 
 ### Dependencies
 
-- Supabase account and project (free tier)
-- Prisma CLI and client packages
+- PostgreSQL 16 (Docker local, Railway production)
+- Prisma v7 with PrismaPg adapter
 - `@prisma/client` for runtime
 - `prisma` for development/migrations
 - `@nestjs/cqrs` for Command/Query bus
-- `zod` for DTO validation
-- `uuid` or custom UUID v7 generator
+- `zod` v4 for DTO validation
+- Custom UUID v7 generator (`IdentifierValue.v7()`)
 - Environment variables for `DATABASE_URL`
 
 ### Prisma Configuration
@@ -394,16 +394,15 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // URL provided via PrismaPg adapter, not env()
 }
 ```
 
 ### NestJS Integration
 
-- Create `PrismaService` extending `PrismaClient`
-- Implement `onModuleInit` for connection
-- Implement `onModuleDestroy` for cleanup
-- Global module for DI across all features
+- ✅ `PrismaService` uses PrismaPg adapter (not extending PrismaClient)
+- ✅ Implements `onModuleInit` / `onModuleDestroy`
+- ✅ Global module for DI across all features
 - Token-based DI for repositories (following blueprint pattern)
 - CQRS setup with CommandBus and QueryBus
 
@@ -482,12 +481,10 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 
 ## Risks & Warnings
 
-⚠️ **Supabase free tier limitations**
+⚠️ **Railway hosting**
 
-- Pauses after 1 week of inactivity
-- 500MB database size limit
-- 2GB bandwidth/month
-- **Mitigation:** Set up a cron job to ping the database weekly; monitor usage
+- Free trial has limited credits; Hobby plan $5/month
+- **Mitigation:** Monitor usage via Railway dashboard
 
 ⚠️ **GitHub API rate limits**
 
@@ -526,9 +523,9 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 
 ### Hosting: Railway vs Supabase
 
-- **Railway:** All-in-one, simple deployment
-- **Supabase:** Dedicated PostgreSQL, better free tier, additional features (auth, storage)
-- **Chosen:** Supabase for generous free tier and PostgreSQL focus
+- **Railway:** All-in-one, simple deployment, API + DB in one platform
+- **Supabase:** Dedicated PostgreSQL, free tier but pauses after inactivity
+- **Chosen:** Railway for unified deployment (API + PostgreSQL on same platform)
 
 ## Success Criteria
 
@@ -536,7 +533,7 @@ async remove(id: Id, deletedById: Id): Promise<boolean> {
 
 - [ ] Prisma schema compiles without errors
 - [ ] All entities have proper relations defined
-- [ ] Migrations run successfully on Supabase
+- [ ] Migrations run successfully on Railway PostgreSQL
 - [ ] Seed script populates development data
 - [ ] PrismaService integrated with NestJS
 - [ ] Environment variables documented
@@ -616,29 +613,28 @@ broken-down
 
 ## Sprint Backlog (Sequential)
 
-Complete one sprint fully before starting the next. Each module follows the 8-task pattern:
-`Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire`
+Complete one sprint fully before starting the next.
 
-| Sprint | Module             | Tasks   | Complexity | Status         | Notes                                       |
-| ------ | ------------------ | ------- | ---------- | -------------- | ------------------------------------------- |
-| 1      | Foundation         | 043-048 | S          | 🔲 Pending     | Prisma, Service, Value Objects, Enums, CQRS |
-| 2      | User               | 049-056 | M          | 🔲 Pending     | Required for audit fields (createdById)     |
-| 3      | Tag                | 057-064 | S          | 🔲 Pending     | Simplest content entity, pattern template   |
-| 4      | Category           | TBD     | S          | ⏳ Not started | Similar to Tag, +displayOrder               |
-| 5      | Skill              | TBD     | M          | ⏳ Not started | Self-referential parentSkillId              |
-| 6      | Media              | TBD     | M          | ⏳ Not started | File metadata, soft delete                  |
-| 7      | ContactMessage     | TBD     | S          | ⏳ Not started | Standalone, no audit FKs, expiry            |
-| 8      | GitHubRepo         | TBD     | M          | ⏳ Not started | Sync status, JSON fields                    |
-| 9      | Profile            | TBD     | L          | ⏳ Not started | JSON translations, 1-to-1 User              |
-| 10     | Experience         | TBD     | L          | ⏳ Not started | JSON achievements, soft delete              |
-| 11     | Project            | TBD     | XL         | ⏳ Not started | Many relations, most complex                |
-| 12     | BlogPost           | TBD     | L          | ⏳ Not started | Similar to Project                          |
-| 13     | Analytics          | TBD     | M          | ⏳ Not started | PageView, ProjectView, PostView             |
-| 14     | Junction Tables    | TBD     | M          | ⏳ Not started | 6 many-to-many tables                       |
-| 15     | Seed Script        | TBD     | L          | ⏳ Not started | Sample data for all entities                |
-| 16     | Final Verification | TBD     | M          | ⏳ Not started | E2E integration tests                       |
+**Sprint 1-2:** Foundation + User (done).
+**Sprint 3 (Tag):** Last module in this epic. Full vertical slice (BE + FE + E2E) + extract base classes. See task files 057-067.
+**Sprint 4+:** Each module will be a separate epic with full vertical slice (BE + FE + E2E).
 
-**To continue:** Say "next database sprint" or "breakdown Category module"
+### Future Modules (separate epics)
+
+| Module         | Complexity | Notes                                            |
+| -------------- | ---------- | ------------------------------------------------ |
+| Category       | S          | Separate epic, first to validate base classes     |
+| Skill          | M          | Self-referential parentSkillId                   |
+| Media          | M          | File metadata, soft delete                       |
+| ContactMessage | S          | Standalone, no audit FKs, expiry                 |
+| GitHubRepo     | M          | Sync status, JSON fields                         |
+| Profile        | L          | JSON translations, 1-to-1 User                   |
+| Experience     | L          | JSON achievements, soft delete                   |
+| Project        | XL         | Many relations, most complex                     |
+| BlogPost       | L          | Similar to Project                               |
+| Analytics      | M          | PageView, ProjectView, PostView                  |
+| Junction Tables| M          | 6 many-to-many tables                            |
+| Seed Script    | L          | Sample data for all entities                     |
 
 ---
 
@@ -651,6 +647,14 @@ Completed. See [database-schema-design.md](../database-schema-design.md) for ful
 2025-02-03
 
 ## Changelog
+
+### [2026-03-16] Tag Sprint expanded to full vertical slice
+
+- Added FE + E2E tasks (065-067) to Tag sprint
+- Extract base classes (BaseCrudEntity, BasePrismaRepository, BaseCrudController, BaseCrudService) during Tag implementation
+- Base classes go in shared libs for cross-project reuse
+- Decision: From Category onwards, each module = separate epic (BE + FE + E2E)
+- Updated hosting references: Supabase → Railway throughout
 
 ### [2026-02-03] Restructured to Sequential Sprints
 

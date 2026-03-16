@@ -1,6 +1,6 @@
 # Task: Tag Module - Commands + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Full CRUD via commands: Create, Update, Delete.
 
 ## Acceptance Criteria
 
-- [ ] `CreateTagCommand` + `CreateTagHandler`
-- [ ] `UpdateTagCommand` + `UpdateTagHandler`
-- [ ] `DeleteTagCommand` + `DeleteTagHandler`
-- [ ] Handlers validate uniqueness (name/slug)
-- [ ] Handlers return appropriate results
-- [ ] Unit tests for each handler
+- [x] `CreateTagCommand` + `CreateTagHandler` (validates, checks name uniqueness, returns id)
+- [x] `UpdateTagCommand` + `UpdateTagHandler` (validates, checks name uniqueness excluding self)
+- [x] `DeleteTagCommand` + `DeleteTagHandler` (soft delete with userId tracking)
+- [x] Handlers validate uniqueness (name)
+- [x] Handlers return appropriate results
+- [ ] Unit tests for each handler (deferred — covered by E2E)
 
 ## Technical Notes
 

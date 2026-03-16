@@ -1,6 +1,6 @@
 # Task: Tag Module - Prisma Schema
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,11 +12,11 @@ Tag is the simplest content entity - perfect for establishing the full module pa
 
 ## Acceptance Criteria
 
-- [ ] Tag model in schema.prisma with all 6 fields
-- [ ] Foreign key relations to User (createdById, updatedById)
-- [ ] Unique constraints on name and slug
-- [ ] Migration created and applied
-- [ ] Prisma types generated
+- [x] Tag model in schema.prisma with 8 fields (added deletedAt, deletedById for soft delete)
+- [x] Foreign key relations to User (createdById, updatedById, deletedById)
+- [x] Unique constraints on name and slug
+- [x] Migration created and applied (20260316091723_add_tag_model)
+- [x] Prisma types generated
 
 ## Technical Notes
 
@@ -54,3 +54,5 @@ model Tag {
 ## Complexity: S
 
 ## Progress Log
+
+- 2026-03-16: Schema created with soft delete fields (deletedAt, deletedById) per epic decision. Migration applied.

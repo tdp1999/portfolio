@@ -1,6 +1,6 @@
 # Task: Tag Module - Queries + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,10 +12,10 @@ Read operations: GetById, GetBySlug, List with pagination.
 
 ## Acceptance Criteria
 
-- [ ] `GetTagByIdQuery` + handler
-- [ ] `GetTagBySlugQuery` + handler
-- [ ] `ListTagsQuery` + handler with pagination
-- [ ] Unit tests for each handler
+- [x] `GetTagByIdQuery` + handler (validates UUID, returns TagResponseDto)
+- [x] `GetTagBySlugQuery` + handler
+- [x] `ListTagsQuery` + handler with pagination (validates params, returns paginated result)
+- [ ] Unit tests for each handler (deferred — covered by E2E)
 
 ## Technical Notes
 

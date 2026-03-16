@@ -1,6 +1,6 @@
 # Task: Tag Module - Domain Entity
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,15 @@ Simple domain entity. Pattern established here will be reused.
 
 ## Acceptance Criteria
 
-- [ ] `Tag` entity class with private constructor
-- [ ] `create()` static factory (generates slug from name)
-- [ ] `load()` static factory for DB loading
-- [ ] `update()` method (regenerates slug if name changes)
-- [ ] Props interface defined
-- [ ] Unit tests for all methods
+- [x] `Tag` entity class with private constructor (extends `BaseCrudEntity`)
+- [x] `create()` static factory (generates slug from name)
+- [x] `load()` static factory for DB loading
+- [x] `update()` method (regenerates slug if name changes)
+- [x] `softDelete()` and `restore()` methods
+- [x] Props interface defined (`ITagProps extends IBaseAuditProps`)
+- [x] Unit tests for all methods (7 tests passing)
+- [x] Extracted `BaseCrudEntity` to `@portfolio/shared/types`
+- [x] Created `TagErrorCode` enum in `@portfolio/shared/errors`
 
 ## Technical Notes
 
@@ -77,3 +80,5 @@ export class Tag {
 ## Complexity: S
 
 ## Progress Log
+
+- 2026-03-16: Created Tag entity extending BaseCrudEntity. Extracted BaseCrudEntity to shared-types lib. Added TagErrorCode. All tests passing.

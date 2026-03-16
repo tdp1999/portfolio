@@ -1,6 +1,6 @@
 # Task: Tag Module - Repository + Mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,14 @@ Data access layer for Tag. Pattern will be reused across modules.
 
 ## Acceptance Criteria
 
-- [ ] `ITagRepository` port interface
-- [ ] `TagRepository` implementation using Prisma
-- [ ] `TagMapper.toDomain()` and `toPrisma()` methods
-- [ ] Repository methods: `add`, `update`, `remove`, `findById`, `findBySlug`, `findAll`
-- [ ] Unit tests for mapper
-- [ ] Integration tests for repository
+- [x] `ITagRepository` port interface (extends `ICrudRepository<Tag>`)
+- [x] `TagRepository` implementation using Prisma
+- [x] `TagMapper.toDomain()` and `toPrisma()` methods
+- [x] Repository methods: `add`, `update`, `remove`, `findById`, `findBySlug`, `findByName`, `findAll`
+- [x] Unit tests for mapper (2 tests)
+- [x] `TAG_REPOSITORY` DI token
+- [x] Extracted `ICrudRepository`, `PaginatedQuery`, `PaginatedResult` to `@portfolio/shared/types`
+- [ ] Integration tests for repository (deferred to E2E task)
 
 ## Technical Notes
 
@@ -49,3 +51,5 @@ export const TAG_REPOSITORY = Symbol('TAG_REPOSITORY');
 ## Complexity: M
 
 ## Progress Log
+
+- 2026-03-16: Created port, repo, mapper, token. Extracted ICrudRepository + PaginatedQuery/Result to shared-types. All tests passing (262 total).
