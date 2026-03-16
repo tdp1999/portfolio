@@ -4,6 +4,7 @@ import { TEST_USERS } from '../data/test-users';
 
 type AuthFixtures = {
   authenticatedPage: Page;
+  adminPage: Page;
 };
 
 async function loginViaApi(page: Page, email: string, password: string): Promise<void> {
@@ -21,6 +22,10 @@ export { loginViaApi };
 export const test = monitorTest.extend<AuthFixtures>({
   authenticatedPage: async ({ page }, use) => {
     await loginViaApi(page, TEST_USERS.standard.email, TEST_USERS.standard.password);
+    await use(page);
+  },
+  adminPage: async ({ page }, use) => {
+    await loginViaApi(page, TEST_USERS.admin.email, TEST_USERS.admin.password);
     await use(page);
   },
 });

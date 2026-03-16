@@ -18,6 +18,13 @@ export const TEST_USERS = {
     name: 'E2E Locked User',
     failedLoginAttempts: 5,
   },
+  admin: {
+    id: '00000000-0000-4000-a000-000000000004',
+    email: 'test-admin@e2e.local',
+    password: 'TestPass1!',
+    name: 'E2E Admin User',
+    role: 'ADMIN',
+  },
 } as const;
 
 export const TEST_EMAIL_PREFIX = 'test-';

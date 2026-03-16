@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures/auth.fixture';
+import { loginViaApi } from './fixtures/auth.fixture';
 import { TEST_USERS } from './data/test-users';
 import { LoginPage } from './pages/login.page';
 
@@ -49,5 +50,58 @@ test.describe('Auth Guards', () => {
 
     const url = new URL(page.url());
     expect(url.searchParams.get('returnUrl')).toBe('/settings/change-password');
+  });
+});
+
+async function getAccessToken(page: import('@playwright/test').Page, email: string, password: string): Promise<string> {
+  const res = await page.request.post('/api/auth/login', {
+    data: { email, password, rememberMe: false },
+  });
+  const body = await res.json();
+  return body.accessToken;
+}
+
+test.describe('API Auth Guards', () => {
+  test('unauthenticated request to /api/users returns 401', async ({ page }) => {
+    const response = await page.request.get('/api/users', {
+      headers: { Authorization: '' },
+    });
+    expect(response.status()).toBe(401);
+  });
+
+  test('non-admin user cannot access admin-only endpoints (403)', async ({ page }) => {
+    const token = await getAccessToken(page, TEST_USERS.standard.email, TEST_USERS.standard.password);
+    const response = await page.request.get('/api/users', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status()).toBe(403);
+  });
+
+  test('regular user can access own profile', async ({ page }) => {
+    const token = await getAccessToken(page, TEST_USERS.standard.email, TEST_USERS.standard.password);
+    const response = await page.request.get('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status()).toBe(200);
+
+    const body = await response.json();
+    expect(body.email).toBe(TEST_USERS.standard.email);
+  });
+
+  test('non-admin cannot invite users (403)', async ({ page }) => {
+    const token = await getAccessToken(page, TEST_USERS.standard.email, TEST_USERS.standard.password);
+    const response = await page.request.post('/api/users', {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { name: 'Hacker', email: 'hack@e2e.local' },
+    });
+    expect(response.status()).toBe(403);
+  });
+
+  test('non-admin cannot delete users (403)', async ({ page }) => {
+    const token = await getAccessToken(page, TEST_USERS.standard.email, TEST_USERS.standard.password);
+    const response = await page.request.delete(`/api/users/${TEST_USERS.admin.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status()).toBe(403);
   });
 });

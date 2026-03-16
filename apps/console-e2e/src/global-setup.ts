@@ -13,6 +13,7 @@ const prisma = new PrismaClient({ adapter });
 async function globalSetup(): Promise<void> {
   const hashedStandard = await hashPassword(TEST_USERS.standard.password);
   const hashedLocked = await hashPassword(TEST_USERS.locked.password);
+  const hashedAdmin = await hashPassword(TEST_USERS.admin.password);
 
   // Clean up any leftover test users first
   await prisma.user.deleteMany({
@@ -49,6 +50,17 @@ async function globalSetup(): Promise<void> {
       name: TEST_USERS.locked.name,
       failedLoginAttempts: TEST_USERS.locked.failedLoginAttempts,
       lockedUntil: new Date(Date.now() + 30 * 60 * 1000), // locked for 30 min
+    },
+  });
+
+  // Seed admin user
+  await prisma.user.create({
+    data: {
+      id: TEST_USERS.admin.id,
+      email: TEST_USERS.admin.email,
+      password: hashedAdmin,
+      name: TEST_USERS.admin.name,
+      role: TEST_USERS.admin.role,
     },
   });
 

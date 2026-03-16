@@ -77,6 +77,19 @@ test.describe('Google OAuth', () => {
     await expect(page.getByText('Change Password')).not.toBeVisible();
   });
 
+  test('Google login with unknown email shows invite-only error', async ({ page, consoleErrors }) => {
+    // Simulate the backend redirecting to /auth/login?error=AUTH_INVITE_ONLY
+    // This is what happens when Google OAuth callback returns a 403 for unknown email
+    await page.goto('/auth/login?error=AUTH_INVITE_ONLY');
+
+    await expect(page.getByText(/invite-only/i)).toBeVisible();
+
+    // URL should be cleaned up (error param removed)
+    await expect(page).toHaveURL(/\/auth\/login$/);
+
+    consoleErrors.length = 0;
+  });
+
   test('password user sees Change Password in sidebar', async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
