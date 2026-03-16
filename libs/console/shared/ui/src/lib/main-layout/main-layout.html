@@ -87,7 +87,16 @@
       </div>
       <div class="flex items-center gap-2 px-1 w-full">
         <button [matMenuTriggerFor]="userMenu" class="flex min-w-0 flex-col text-left w-full cursor-pointer">
-          <span class="truncate text-sm font-medium text-text">{{ user()?.name ?? 'User' }}</span>
+          <span class="truncate text-sm font-medium text-text">
+            {{ user()?.name ?? 'User' }}
+            @if (isAdmin()) {
+              <span
+                class="ml-1 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none bg-primary/15 text-primary"
+              >
+                Admin
+              </span>
+            }
+          </span>
           <span class="truncate text-xs text-text-muted">{{ user()?.email ?? '' }}</span>
         </button>
 
