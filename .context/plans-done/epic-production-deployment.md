@@ -234,7 +234,7 @@ See `apps/api/Dockerfile` for actual implementation. Key points:
 **Reasoning:** ~19 requirements across 5 phases. Three separate deployment targets (Railway x2, CF Pages), external service configuration (Supabase, Google OAuth, DNS), Dockerfiles, CI/CD extension, and production validation. Each task is small-medium individually, but the breadth of infrastructure and cross-platform coordination makes this a large effort.
 
 ## Status
-proposed
+done
 
 ## Created
 2026-03-04

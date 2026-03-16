@@ -36,6 +36,10 @@
   - Tasks 101-114 → archived in `tasks-done/epic-auth-frontend/`
 - [x] **User Module Production Hardening** (epic-user-module-hardening) - Completed 2026-03-16
   - Tasks 124-132 → archived in `tasks-done/epic-user-module-hardening/`
+- [x] **Auth E2E Test Suite** (epic-auth-e2e) - Completed 2026-03-16
+  - Tasks 116-123 → archived in `tasks-done/epic-auth-e2e/`
+- [x] **Production Deployment** (epic-production-deployment) - Completed 2026-03-16
+  - Tasks 133-142 → archived in `tasks-done/epic-production-deployment/`
 
 ## In Progress
 
@@ -156,49 +160,17 @@
 - [x] 113-sidebar-user-integration - Wire user data into sidebar (S) ✓
 - [x] 114-csp-headers - Content Security Policy headers (S) ✓
 
-### Epic: Auth E2E Test Suite (epic-auth-e2e) - broken-down
-
-> **Approach:** Infrastructure first, then test suites in parallel, CI last.
-
-- [x] 116-e2e-auth-infrastructure - Fixtures, page objects, seed/cleanup (L) ✓
-- [x] 117-e2e-auth-login - Login page tests (M) ✓
-- [x] 118-e2e-auth-logout - Logout tests (M) ✓
-- [x] 119-e2e-auth-password - Password management tests (L) ✓
-- [x] 120-e2e-auth-google-oauth - Google OAuth mock tests (M) ✓
-- [x] 121-e2e-auth-guards-session - Route guards & session tests (M) ✓
-- [x] 122-e2e-auth-loading-ui - Loading indicators & toast tests (S) ✓
-- [ ] 123-e2e-ci-integration - CI pipeline integration (M) → depends on 116-122
-
-### Epic: Production Deployment (epic-production-deployment) - in-progress
-
-> **Infrastructure:** Railway hobby plan ($5/mo) for API + Postgres. Cloudflare Pages (free) for Console SPA + Landing.
-
-#### Phases 1-4: COMPLETE (archived to tasks-done/epic-production-deployment/)
-- [x] 133-deploy-health-check-endpoint (S) ✓
-- [x] 134-deploy-api-dockerfile (M) ✓
-- [x] 135-deploy-landing-dockerfile (M) ✓
-- [x] 136-deploy-cloudflare-pages-console (S) ✓
-- [x] 137-deploy-railway-postgres (S) ✓
-- [x] 138-deploy-railway-project-setup (M) ✓
-- [x] 139-deploy-cicd-pipeline (M) ✓
-- [x] 140-deploy-production-configuration (M) ✓
-- [x] 141-deploy-custom-domains-ssl (M) ✓
-
-#### Phase 5: Validation
-- [ ] 142-deploy-validation-runbook - Production validation + runbook (M) → in-progress (manual browser checks remaining)
 
 ## Up Next
 
-**Next Task:** **142-deploy-validation-runbook** (manual browser checks) or **057-tag-prisma-schema**
+**Next Task:** **057-tag-prisma-schema** or **123-e2e-ci-integration**
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 121     |
-| In-Progress (Prod Deploy) | 1       |
-| In-Progress (Auth E2E)    | 1       |
+| Done (archived)           | 133     |
 | Pending (DB Tag Module)   | 8       |
 | Pending (Standalone)      | 1       |
 | **Total Created**         | **142** |

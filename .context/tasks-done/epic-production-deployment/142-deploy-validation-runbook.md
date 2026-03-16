@@ -1,6 +1,6 @@
 # Task: Production Validation & Runbook
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Execute a full end-to-end production validation of the auth flow and write a comprehensive production runbook documenting all operational procedures.
@@ -11,10 +11,10 @@ Phase 5 of epic-production-deployment. Final task — validates that everything 
 ## Acceptance Criteria
 
 ### Production Validation Checklist
-- [ ] Admin login works with seeded credentials on Console
-- [ ] Google OAuth login works with production callback URL
-- [ ] Token refresh works (access token expires -> auto-refresh via refresh token)
-- [ ] Logout works (tokens invalidated)
+- [x] Admin login works with seeded credentials on Console
+- [x] Google OAuth login works with production callback URL
+- [x] Token refresh works (access token expires -> auto-refresh via refresh token)
+- [x] Logout works (tokens invalidated)
 - [x] Rate limiting is active (ThrottlerModule configured: 60 req/min)
 - [x] CORS blocks requests from unauthorized origins (verified: no `Access-Control-Allow-Origin` for unauthorized origin)
 - [x] Landing SSR renders server-side (12 `ng-app-id` markers in HTML source)

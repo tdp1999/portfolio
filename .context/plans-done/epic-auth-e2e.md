@@ -250,7 +250,7 @@ L
 **Reasoning:** Test infrastructure setup (global setup/teardown, fixtures, page objects) is the bulk of the work. Individual test cases are straightforward once infrastructure is in place. ~8-10 tasks.
 
 ## Status
-completed
+done
 
 Broken down into tasks 116-123 on 2026-02-26
 

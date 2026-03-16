@@ -1,6 +1,6 @@
 # Task: E2E Auth Tests CI Integration
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Configure CI pipeline to run auth E2E tests reliably.
@@ -13,7 +13,7 @@ Playwright tests need a running API server and database in CI. Must configure th
 - [x] API server and database available during test run
 - [x] Screenshots on failure saved as CI artifacts
 - [x] Traces on first retry saved as CI artifacts
-- [ ] Tests pass in CI with Chromium
+- [x] Tests pass in CI with Chromium
 - [x] Playwright config: retries set to 1-2 on CI, 0 locally
 
 ## Technical Notes
