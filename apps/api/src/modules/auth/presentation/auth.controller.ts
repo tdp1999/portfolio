@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Post, Body, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Logger, Post, Body, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Request, Response } from 'express';
@@ -115,12 +115,20 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   async googleCallback(@Req() req: Request, @Res() res: Response) {
-    const profile = req.user as { email: string; name: string; googleId: string };
-    const result: GoogleLoginResult = await this.commandBus.execute(new GoogleLoginCommand(profile));
-    this.cookieService.setRefreshToken(res, result.refreshToken, true);
-    this.cookieService.setCsrfToken(res);
     const frontendUrl = process.env['FRONTEND_URL'] || 'http://localhost:4200';
-    res.redirect(`${frontendUrl}/auth/callback#token=${result.accessToken}`);
+
+    try {
+      const profile = req.user as { email: string; name: string; googleId: string };
+      const result: GoogleLoginResult = await this.commandBus.execute(new GoogleLoginCommand(profile));
+      this.cookieService.setRefreshToken(res, result.refreshToken, true);
+      this.cookieService.setCsrfToken(res);
+      res.redirect(`${frontendUrl}/auth/callback#token=${result.accessToken}`);
+    } catch (error) {
+      Logger.warn(`Google OAuth failed: ${error instanceof Error ? error.message : error}`, 'AuthController');
+      const errorCode =
+        error != null && typeof error === 'object' && 'errorCode' in error ? error.errorCode : 'unknown';
+      res.redirect(`${frontendUrl}/auth/login?error=${errorCode}`);
+    }
   }
 
   @Get('me')
