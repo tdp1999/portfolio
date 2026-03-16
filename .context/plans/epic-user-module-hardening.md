@@ -220,7 +220,7 @@ model User {
 **Reasoning:** ~23 requirements across 4 phases touching User module, Auth module, Prisma schema, JWT payload, and seeding infrastructure. Each individual item is small-medium, but the aggregate scope and cross-cutting nature (auth token hashing affects login, refresh, logout flows) makes this a large effort. Recommend breaking into 4 task batches matching the phases.
 
 ## Status
-broken-down
+done
 
 ## Broken Down
 2026-03-03 — Tasks 124-132
