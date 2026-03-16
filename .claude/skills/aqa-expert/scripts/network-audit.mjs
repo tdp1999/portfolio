@@ -17,8 +17,8 @@
  *
  * Examples:
  *   node network-audit.mjs http://localhost:3000/products
- *   node network-audit.mjs http://localhost:4200/dashboard --full
- *   node network-audit.mjs http://localhost:4200/search \
+ *   node network-audit.mjs http://localhost:4300/dashboard --full
+ *   node network-audit.mjs http://localhost:4300/search \
  *     --actions '[{"fill":"input[name=q]","value":"test"},{"click":"button[type=submit]"}]'
  */
 
@@ -28,9 +28,7 @@ const args = process.argv.slice(2);
 const url = args.find((a) => !a.startsWith('--'));
 
 if (!url) {
-  console.log(
-    'Usage: node network-audit.mjs <url> [--actions <json>] [--duration <ms>] [--full] [--api-filter <str>]'
-  );
+  console.log('Usage: node network-audit.mjs <url> [--actions <json>] [--duration <ms>] [--full] [--api-filter <str>]');
   process.exit(1);
 }
 
