@@ -1,6 +1,6 @@
 # Task: Frontend — Set-Password Page for Invited Users
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create a set-password page at `/auth/set-password` so invited users can set their password via the email invite link.
@@ -9,15 +9,15 @@ Create a set-password page at `/auth/set-password` so invited users can set thei
 Part of epic-user-module-hardening Phase 5 (Frontend). Mirrors the existing reset-password page UX but calls `POST /auth/set-password` instead. Invite emails contain a link with `token` and `userId` query params.
 
 ## Acceptance Criteria
-- [ ] New page component at `/auth/set-password` route
-- [ ] Reads `token` and `userId` from query params
-- [ ] Form fields: new password + confirm password with validation (matching existing password rules)
-- [ ] Calls `POST /auth/set-password` with `{ token, userId, newPassword }`
-- [ ] On success: redirects to `/auth/login` with success toast ("Password set successfully. You can now log in.")
-- [ ] On error (invalid/expired token): shows clear error message on page
-- [ ] Accessible without authentication (add to guest routes, similar to reset-password)
-- [ ] Follows existing reset-password page patterns and landing-* component usage rules
-- [ ] Unit tests for the component
+- [x] New page component at `/auth/set-password` route
+- [x] Reads `token` and `userId` from query params
+- [x] Form fields: new password + confirm password with validation (matching existing password rules)
+- [x] Calls `POST /auth/set-password` with `{ token, userId, newPassword }`
+- [x] On success: redirects to `/auth/login` with success toast ("Password set successfully. You can now log in.")
+- [x] On error (invalid/expired token): shows clear error message on page
+- [x] Accessible without authentication (add to guest routes, similar to reset-password)
+- [x] Follows existing reset-password page patterns and landing-* component usage rules
+- [x] Unit tests for the component
 
 ## Technical Notes
 - Mirror `libs/console/feature-auth/src/lib/reset-password/` structure closely
@@ -36,3 +36,4 @@ Part of epic-user-module-hardening Phase 5 (Frontend). Mirrors the existing rese
 ## Complexity: S
 
 ## Progress Log
+- 2026-03-15: Created set-password component mirroring reset-password pattern, added route under guestGuard, 9 unit tests passing

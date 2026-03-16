@@ -21,13 +21,13 @@ describe('SetPasswordHandler', () => {
 
   const validDto = {
     token: 'raw-invite-token',
-    userId: 'user-id-123',
+    userId: '019450c4-5b12-7000-8000-000000000002',
     newPassword: 'StrongPass1@',
   };
 
   const createUser = (overrides: Partial<Record<string, unknown>> = {}) =>
     User.load({
-      id: 'user-id-123',
+      id: '019450c4-5b12-7000-8000-000000000002',
       email: 'john@example.com',
       password: null,
       name: 'John Doe',
@@ -80,7 +80,7 @@ describe('SetPasswordHandler', () => {
     await handler.execute(new SetPasswordCommand(validDto));
 
     expect(repo.update).toHaveBeenCalledWith(
-      'user-id-123',
+      '019450c4-5b12-7000-8000-000000000002',
       expect.objectContaining({
         password: '$2a$10$newhashed',
         inviteToken: null,

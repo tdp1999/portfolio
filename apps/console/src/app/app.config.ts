@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   AuthStore,
   ThemeService,
+  SERVER_ERROR_FALLBACK,
   authInterceptor,
   csrfInterceptor,
   errorInterceptor,
@@ -12,6 +13,7 @@ import {
 } from '@portfolio/console/shared/data-access';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+import { ToastService } from '@portfolio/console/shared/ui';
 import { provideErrorHandler } from './error-handler.provider';
 import { THIRD_PARTY_PROVIDER } from '@portfolio/console/shared/util';
 
@@ -24,6 +26,13 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([errorInterceptor, csrfInterceptor, authInterceptor, refreshInterceptor])
     ),
     provideErrorHandler(),
+    {
+      provide: SERVER_ERROR_FALLBACK,
+      useFactory: () => {
+        const toast = inject(ToastService);
+        return { showError: (msg: string) => toast.error(msg) };
+      },
+    },
     provideApi({
       baseUrl: environment.apiBaseUrl,
       urlPrefix: 'api',

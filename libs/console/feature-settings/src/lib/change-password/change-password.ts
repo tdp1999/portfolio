@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import { AuthStore, ValidationErrorService, ErrorDataService } from '@portfolio/console/shared/data-access';
+import { AuthStore, ErrorDataService, ServerErrorDirective } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 
 @Component({
@@ -27,6 +27,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    ServerErrorDirective,
   ],
   templateUrl: './change-password.html',
   styleUrl: './change-password.scss',
@@ -36,7 +37,6 @@ export default class ChangePasswordComponent {
   private readonly authStore = inject(AuthStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
-  private readonly validationErrorService = inject(ValidationErrorService);
   private readonly errorDataService = inject(ErrorDataService);
 
   readonly submitting = signal(false);
@@ -62,21 +62,6 @@ export default class ChangePasswordComponent {
     { validators: [this.passwordsMatchValidator] }
   );
 
-  constructor() {
-    effect(() => {
-      const fieldErrors = this.validationErrorService.fieldErrors();
-      if (!fieldErrors) return;
-
-      for (const [field, messages] of Object.entries(fieldErrors)) {
-        const control = this.form.get(field);
-        if (control) {
-          control.setErrors({ server: messages[0] });
-          control.markAsTouched();
-        }
-      }
-    });
-  }
-
   toggleCurrentPassword(): void {
     this.showCurrentPassword.update((v) => !v);
   }
@@ -96,7 +81,6 @@ export default class ChangePasswordComponent {
     }
 
     this.submitting.set(true);
-    this.validationErrorService.clear();
     this.errorDataService.clear();
     const { currentPassword, newPassword } = this.form.getRawValue();
 
@@ -109,7 +93,7 @@ export default class ChangePasswordComponent {
           this.router.navigateByUrl('/');
         },
         error: () => {
-          // Known errors handled by global handler (toast) + effects above (validation)
+          // Known errors handled by global handler (toast) + directive (validation)
         },
       });
   }

@@ -90,7 +90,7 @@ describe('ResetPasswordSchema', () => {
   it('should accept valid data', () => {
     const result = ResetPasswordSchema.safeParse({
       token: 'reset-token',
-      userId: 'user-123',
+      userId: '019450c4-5b12-7000-8000-000000000001',
       newPassword: VALID_PASSWORD,
     });
     expect(result.success).toBe(true);
@@ -99,7 +99,7 @@ describe('ResetPasswordSchema', () => {
   it('should reject empty token', () => {
     const result = ResetPasswordSchema.safeParse({
       token: '',
-      userId: 'user-123',
+      userId: '019450c4-5b12-7000-8000-000000000001',
       newPassword: VALID_PASSWORD,
     });
     expect(result.success).toBe(false);
@@ -117,7 +117,7 @@ describe('ResetPasswordSchema', () => {
   it('should reject weak password', () => {
     const result = ResetPasswordSchema.safeParse({
       token: 'reset-token',
-      userId: 'user-123',
+      userId: '019450c4-5b12-7000-8000-000000000001',
       newPassword: 'weak',
     });
     expect(result.success).toBe(false);

@@ -19,7 +19,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
 
 @Component({
-  selector: 'console-reset-password',
+  selector: 'console-set-password',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -31,11 +31,11 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
     MatProgressSpinnerModule,
     ServerErrorDirective,
   ],
-  templateUrl: './reset-password.html',
-  styleUrl: './reset-password.scss',
+  templateUrl: './set-password.html',
+  styleUrl: './set-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ResetPasswordComponent implements OnInit {
+export default class SetPasswordComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -68,13 +68,16 @@ export default class ResetPasswordComponent implements OnInit {
       const err = this.errorDataService.lastError();
       if (!err) return;
 
-      if (err.errorCode === AuthErrorCode.INVALID_RESET_TOKEN || err.errorCode === AuthErrorCode.RESET_TOKEN_EXPIRED) {
+      if (
+        err.errorCode === AuthErrorCode.INVALID_INVITE_TOKEN ||
+        err.errorCode === AuthErrorCode.INVITE_TOKEN_EXPIRED
+      ) {
         this.tokenError.set(true);
       }
     });
   }
 
-  private static readonly TOKEN_REGEX = /^[0-9a-f]{64}$/;
+  private static readonly TOKEN_REGEX = /^[0-9a-f]{64}$/i;
 
   ngOnInit(): void {
     this.errorDataService.clear();
@@ -82,7 +85,7 @@ export default class ResetPasswordComponent implements OnInit {
     this.token = params.get('token') ?? '';
     this.userId = params.get('userId') ?? '';
 
-    if (!this.token || !this.userId || !ResetPasswordComponent.TOKEN_REGEX.test(this.token)) {
+    if (!this.token || !this.userId || !SetPasswordComponent.TOKEN_REGEX.test(this.token)) {
       this.tokenError.set(true);
     }
   }
@@ -105,7 +108,7 @@ export default class ResetPasswordComponent implements OnInit {
     const { password } = this.form.getRawValue();
 
     this.api
-      .post('/auth/reset-password', {
+      .post('/auth/set-password', {
         token: this.token,
         userId: this.userId,
         newPassword: password,
@@ -113,7 +116,7 @@ export default class ResetPasswordComponent implements OnInit {
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
         next: () => {
-          this.toast.success('Password reset successfully. Please sign in.');
+          this.toast.success('Password set successfully. You can now log in.');
           this.router.navigateByUrl('/auth/login');
         },
         error: () => {

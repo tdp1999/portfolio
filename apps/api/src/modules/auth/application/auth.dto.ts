@@ -24,7 +24,7 @@ export type ForgotPasswordDto = z.infer<typeof ForgotPasswordSchema>;
 
 export const ResetPasswordSchema = z.object({
   token: z.string().min(1),
-  userId: z.string().min(1),
+  userId: z.uuid(),
   newPassword: PasswordSchema,
 });
 
@@ -32,7 +32,7 @@ export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
 export const SetPasswordSchema = z.object({
   token: z.string().min(1),
-  userId: z.string().min(1),
+  userId: z.uuid(),
   newPassword: PasswordSchema,
 });
 
