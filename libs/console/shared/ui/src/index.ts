@@ -12,3 +12,4 @@ export { SkeletonComponent } from './lib/skeleton/skeleton.component';
 export { SpinnerService } from './lib/spinner/spinner.service';
 export { FullPageSpinnerComponent } from './lib/spinner/full-page-spinner.component';
 export { SpinnerOverlayComponent } from './lib/spinner/spinner-overlay.component';
+export { default as ConfirmDialogComponent, type ConfirmDialogData } from './lib/confirm-dialog/confirm-dialog';

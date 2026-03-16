@@ -3,20 +3,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { SpinnerOverlayComponent } from '@portfolio/console/shared/ui';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe } from '@angular/common';
 import { AuthStore, extractApiError } from '@portfolio/console/shared/data-access';
 import {
+  ConfirmDialogComponent,
+  type ConfirmDialogData,
   FilterBarComponent,
   FilterSearchComponent,
   FilterSelectComponent,
+  SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
 import type { FilterOption } from '@portfolio/console/shared/ui';
 import { AdminUser, AdminUserService } from '../admin-user.service';
-import { ConfirmDialogData } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'console-users-page',
@@ -100,19 +101,17 @@ export default class UsersPageComponent implements OnInit {
   }
 
   confirmDelete(user: AdminUser): void {
-    import('../confirm-dialog/confirm-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        data: {
-          title: 'Delete User',
-          message: `Are you sure you want to delete "${user.name}"? This action can be reversed later.`,
-          confirmLabel: 'Delete',
-        } satisfies ConfirmDialogData,
-      });
-      dialogRef.afterClosed().subscribe((confirmed) => {
-        if (confirmed) {
-          this.deleteUser(user.id);
-        }
-      });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete User',
+        message: `Are you sure you want to delete "${user.name}"? This action can be reversed later.`,
+        confirmLabel: 'Delete',
+      } satisfies ConfirmDialogData,
+    });
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteUser(user.id);
+      }
     });
   }
 

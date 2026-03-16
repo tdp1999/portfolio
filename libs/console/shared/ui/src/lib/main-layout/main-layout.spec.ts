@@ -63,8 +63,8 @@ describe('ConsoleMainLayoutComponent', () => {
           provide: AuthStore,
           useValue: {
             user: userSignal,
-            logout: () => ({ subscribe: () => {} }),
-            logoutAll: () => ({ subscribe: () => {} }),
+            logout: () => ({ subscribe: /* noop */ () => undefined }),
+            logoutAll: () => ({ subscribe: /* noop */ () => undefined }),
           },
         },
       ],
