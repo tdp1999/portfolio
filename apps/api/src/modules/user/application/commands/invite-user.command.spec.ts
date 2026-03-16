@@ -49,6 +49,7 @@ describe('InviteUserHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn().mockResolvedValue(null),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn().mockResolvedValue(null),
     };
 
     emailService = {
@@ -74,7 +75,7 @@ describe('InviteUserHandler', () => {
   it('should create user and send invite email on success', async () => {
     const result = await handler.execute(new InviteUserCommand(validDto, 'admin-1'));
 
-    expect(repo.findByEmail).toHaveBeenCalledWith('john@example.com');
+    expect(repo.findByEmailIncludingDeleted).toHaveBeenCalledWith('john@example.com');
     expect(repo.add).toHaveBeenCalled();
     const addedUser = repo.add.mock.calls[0][0] as User;
     expect(addedUser.email).toBe('john@example.com');
@@ -95,12 +96,25 @@ describe('InviteUserHandler', () => {
   });
 
   it('should throw ConflictError if email already exists', async () => {
-    repo.findByEmail.mockResolvedValue(createUser());
+    repo.findByEmailIncludingDeleted.mockResolvedValue(createUser());
 
     await expect(handler.execute(new InviteUserCommand(validDto, 'admin-1'))).rejects.toMatchObject({
       statusCode: 409,
       message: 'Email is already taken',
     });
+  });
+
+  it('should restore soft-deleted user and re-invite', async () => {
+    const deletedUser = createUser({ deletedAt: new Date('2024-01-01') });
+    repo.findByEmailIncludingDeleted.mockResolvedValue(deletedUser);
+
+    const result = await handler.execute(new InviteUserCommand(validDto, 'admin-1'));
+
+    // Should call update, not add
+    expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.any(Object));
+    expect(repo.add).not.toHaveBeenCalled();
+    expect(emailService.sendEmail).toHaveBeenCalled();
+    expect(result).toHaveProperty('email', 'john@example.com');
   });
 
   it('should propagate email send failure', async () => {

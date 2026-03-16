@@ -43,6 +43,13 @@ class InMemoryUserRepository implements IUserRepository {
     return null;
   }
 
+  async findByEmailIncludingDeleted(email: string): Promise<User | null> {
+    for (const user of this.users.values()) {
+      if (user.email === email) return user;
+    }
+    return null;
+  }
+
   async findAll(): Promise<{ data: User[]; total: number }> {
     const data = Array.from(this.users.values());
     return { data, total: data.length };

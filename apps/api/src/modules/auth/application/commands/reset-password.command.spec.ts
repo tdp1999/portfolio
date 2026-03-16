@@ -49,6 +49,7 @@ describe('ResetPasswordHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
 
     (crypto.createHash as jest.Mock).mockReturnValue({

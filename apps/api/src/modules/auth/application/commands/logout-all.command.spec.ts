@@ -37,6 +37,7 @@ describe('LogoutAllHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
     handler = new LogoutAllHandler(repo);
   });

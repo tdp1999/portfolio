@@ -144,10 +144,11 @@ export class User {
     });
   }
 
-  updateProfile(data: { name?: string }): User {
+  updateProfile(data: { name?: string; role?: UserRole }): User {
     return new User({
       ...this.props,
       ...(data.name !== undefined && { name: data.name }),
+      ...(data.role !== undefined && { role: data.role }),
       updatedAt: TemporalValue.now(),
     });
   }
@@ -156,6 +157,14 @@ export class User {
     return new User({
       ...this.props,
       deletedAt: TemporalValue.now(),
+      updatedAt: TemporalValue.now(),
+    });
+  }
+
+  restore(): User {
+    return new User({
+      ...this.props,
+      deletedAt: null,
       updatedAt: TemporalValue.now(),
     });
   }
@@ -259,6 +268,14 @@ export class User {
       hasGoogleLinked: !!this.props.googleId,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
+    };
+  }
+
+  toAdminProps() {
+    return {
+      ...this.toPublicProps(),
+      deletedAt: this.props.deletedAt,
+      hasAcceptedInvite: this.props.password !== null,
     };
   }
 }

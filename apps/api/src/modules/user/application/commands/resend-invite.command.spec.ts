@@ -47,6 +47,7 @@ describe('ResendInviteHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
 
     emailService = {

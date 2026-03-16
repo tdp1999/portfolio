@@ -45,6 +45,7 @@ describe('RefreshTokenHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
     tokenService = {
       signAccessToken: jest.fn().mockReturnValue('new-access-token'),

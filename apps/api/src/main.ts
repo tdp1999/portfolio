@@ -3,6 +3,9 @@
  * This is only a minimal backend to get started.
  */
 
+import { config } from 'dotenv';
+config();
+
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
@@ -48,6 +51,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(`📎 FRONTEND_URL=${process.env['FRONTEND_URL'] ?? '(not set, fallback 4200)'}`);
 }
 
 bootstrap();

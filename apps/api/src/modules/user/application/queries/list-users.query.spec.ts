@@ -37,6 +37,7 @@ describe('ListUsersHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
 
     handler = new ListUsersHandler(repo);
@@ -52,7 +53,13 @@ describe('ListUsersHandler', () => {
     expect(result.total).toBe(2);
     expect(result.page).toBe(1);
     expect(result.limit).toBe(20);
-    expect(repo.findAll).toHaveBeenCalledWith({ page: 1, limit: 20, search: undefined });
+    expect(repo.findAll).toHaveBeenCalledWith({
+      page: 1,
+      limit: 20,
+      search: undefined,
+      status: undefined,
+      includeDeleted: true,
+    });
   });
 
   it('should pass search parameter', async () => {
@@ -60,7 +67,27 @@ describe('ListUsersHandler', () => {
 
     await handler.execute(new ListUsersQuery({ page: 1, limit: 10, search: 'john' }));
 
-    expect(repo.findAll).toHaveBeenCalledWith({ page: 1, limit: 10, search: 'john' });
+    expect(repo.findAll).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+      search: 'john',
+      status: undefined,
+      includeDeleted: true,
+    });
+  });
+
+  it('should pass status parameter', async () => {
+    repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+    await handler.execute(new ListUsersQuery({ page: 1, limit: 10, status: 'active' }));
+
+    expect(repo.findAll).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+      search: undefined,
+      status: 'active',
+      includeDeleted: true,
+    });
   });
 
   it('should use defaults for missing params', async () => {
@@ -84,6 +111,7 @@ describe('ListUsersHandler', () => {
 
     expect(result.data[0]).toHaveProperty('id');
     expect(result.data[0]).toHaveProperty('email');
+    expect(result.data[0]).toHaveProperty('deletedAt');
     expect(result.data[0]).not.toHaveProperty('password');
     expect(result.data[0]).not.toHaveProperty('refreshToken');
   });

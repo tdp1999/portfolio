@@ -20,6 +20,7 @@ describe('GetUserByEmailHandler', () => {
       findById: jest.fn(),
       findByEmail: jest.fn().mockResolvedValue(mockUser),
       findAll: jest.fn(),
+      findByEmailIncludingDeleted: jest.fn(),
     };
     handler = new GetUserByEmailHandler(repo);
   });

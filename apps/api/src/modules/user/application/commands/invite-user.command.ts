@@ -37,26 +37,41 @@ export class InviteUserHandler implements ICommandHandler<InviteUserCommand> {
         remarks: 'Invite user validation failed',
       });
 
-    const existing = await this.repo.findByEmail(data.email);
-    if (existing)
+    const existing = await this.repo.findByEmailIncludingDeleted(data.email);
+
+    if (existing && !existing.deletedAt)
       throw ConflictError('Email is already taken', {
         errorCode: UserErrorCode.EMAIL_TAKEN,
         layer: ErrorLayer.APPLICATION,
       });
 
-    const user = User.create({
-      email: data.email,
-      name: data.name,
-      password: null,
-      role: data.role,
-    });
-
     const rawToken = randomBytes(32).toString('hex');
     const hashedToken = createHash('sha256').update(rawToken).digest('hex');
     const expiresAt = new Date(Date.now() + INVITE_EXPIRY_MS);
-    const withToken = user.setInviteToken(hashedToken, expiresAt);
 
-    const userId = await this.repo.add(withToken);
+    let userId: string;
+    let withToken: User;
+
+    if (existing?.deletedAt) {
+      // Restore soft-deleted user and re-invite
+      const restored = existing
+        .restore()
+        .updateProfile({ name: data.name, role: data.role })
+        .setInviteToken(hashedToken, expiresAt);
+      withToken = restored;
+      userId = existing.id;
+      await this.repo.update(userId, restored.toUpdateData());
+    } else {
+      // Create new user
+      const user = User.create({
+        email: data.email,
+        name: data.name,
+        password: null,
+        role: data.role,
+      });
+      withToken = user.setInviteToken(hashedToken, expiresAt);
+      userId = await this.repo.add(withToken);
+    }
 
     const inviteLink = `${FRONTEND_URL}/auth/set-password?token=${rawToken}&userId=${userId}`;
     await this.emailService.sendEmail({

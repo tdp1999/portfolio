@@ -37,9 +37,24 @@ export class UserRepository implements IUserRepository {
     return raw ? UserMapper.toDomain(raw) : null;
   }
 
+  async findByEmailIncludingDeleted(email: string): Promise<User | null> {
+    const raw = await this.prisma.user.findUnique({ where: { email } });
+    return raw ? UserMapper.toDomain(raw) : null;
+  }
+
   async findAll(options: FindAllOptions): Promise<FindAllResult> {
-    const { page, limit, search } = options;
-    const where: Prisma.UserWhereInput = { deletedAt: null };
+    const { page, limit, search, includeDeleted, status } = options;
+    const where: Prisma.UserWhereInput = includeDeleted ? {} : { deletedAt: null };
+
+    if (status === 'active') {
+      where.deletedAt = null;
+      where.inviteToken = null;
+    } else if (status === 'invited') {
+      where.deletedAt = null;
+      where.inviteToken = { not: null };
+    } else if (status === 'deleted') {
+      where.deletedAt = { not: null };
+    }
 
     if (search) {
       where.OR = [

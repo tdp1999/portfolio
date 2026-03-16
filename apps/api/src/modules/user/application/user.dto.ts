@@ -44,6 +44,7 @@ export const PaginationSearchSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
+  status: z.enum(['active', 'invited', 'deleted']).optional(),
 });
 
 export type UserPublicDto = {
@@ -55,6 +56,11 @@ export type UserPublicDto = {
   hasGoogleLinked: boolean;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type UserAdminDto = UserPublicDto & {
+  deletedAt: Date | null;
+  hasAcceptedInvite: boolean;
 };
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
