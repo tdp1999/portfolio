@@ -11,7 +11,7 @@ export class ResendEmailService implements IEmailService {
 
   constructor() {
     const apiKey = process.env['RESEND_API_KEY'];
-    if (!apiKey && process.env['NODE_ENV'] !== 'development') {
+    if (!apiKey && process.env['NODE_ENV'] === 'production') {
       throw new Error('RESEND_API_KEY environment variable is required');
     }
     this.resend = new Resend(apiKey || 're_dev_placeholder');
@@ -19,7 +19,10 @@ export class ResendEmailService implements IEmailService {
   }
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
-    if (process.env['NODE_ENV'] === 'development') {
+    if (process.env['NODE_ENV'] !== 'production') {
+      if (!process.env['NODE_ENV']) {
+        this.logger.warn('NODE_ENV is not set — skipping email send. Set NODE_ENV=production to enable.');
+      }
       this.logger.log(`[DEV] Email to=${options.to} subject="${options.subject}"`);
       return;
     }
