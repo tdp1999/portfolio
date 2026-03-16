@@ -104,5 +104,28 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
+  // Tag relations
+  tagsCreated    Tag[] @relation("TagCreatedBy")
+  tagsUpdated    Tag[] @relation("TagUpdatedBy")
+  tagsDeleted    Tag[] @relation("TagDeletedBy")
+
   @@map("users")
+}
+
+model Tag {
+  id          String    @id @db.Uuid
+  name        String    @unique
+  slug        String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String    @db.Uuid
+  updatedById String    @db.Uuid
+  deletedAt   DateTime?
+  deletedById String?   @db.Uuid
+
+  createdBy   User      @relation("TagCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User      @relation("TagUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy   User?     @relation("TagDeletedBy", fields: [deletedById], references: [id])
+
+  @@map("tags")
 }
