@@ -54,8 +54,25 @@ export default class LoginComponent implements OnInit {
     rememberMe: new FormControl(true, { nonNullable: true }),
   });
 
+  private static readonly GOOGLE_ERROR_MESSAGES: Record<string, string> = {
+    [AuthErrorCode.INVITE_ONLY]: 'This site is invite-only. Contact the administrator to get access.',
+    [AuthErrorCode.ACCOUNT_DELETED]: 'Your account has been deactivated. Contact the administrator.',
+  };
+
   ngOnInit(): void {
     this.errorDataService.clear();
+    this.handleOAuthError();
+  }
+
+  private handleOAuthError(): void {
+    const errorCode = this.route.snapshot.queryParamMap.get('error');
+    if (!errorCode) return;
+
+    const message = LoginComponent.GOOGLE_ERROR_MESSAGES[errorCode] ?? 'Authentication failed. Please try again.';
+    this.toast.error(message);
+
+    // Clean the URL so the error doesn't persist on refresh
+    this.router.navigate([], { queryParams: {}, replaceUrl: true });
   }
 
   constructor() {

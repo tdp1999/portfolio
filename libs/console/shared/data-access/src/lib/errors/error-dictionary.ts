@@ -8,6 +8,9 @@ export const ERROR_DICTIONARY: Record<string, string> = {
   [AuthErrorCode.RESET_TOKEN_EXPIRED]: 'Reset link is invalid or expired. Please request a new one.',
   [AuthErrorCode.GOOGLE_ONLY_ACCOUNT]: 'This account uses Google sign-in. No password is set.',
   [AuthErrorCode.NO_PASSWORD]: 'No password is set for this account.',
+  [AuthErrorCode.ACCOUNT_DELETED]: 'Your account has been deactivated. Contact the administrator.',
+  [AuthErrorCode.INVALID_INVITE_TOKEN]: 'Invite link is invalid or expired. Please contact your administrator.',
+  [AuthErrorCode.INVITE_TOKEN_EXPIRED]: 'Invite link is invalid or expired. Please contact your administrator.',
   [UserErrorCode.EMAIL_TAKEN]: 'This email is already registered.',
   [CommonErrorCode.NOT_FOUND]: 'The requested resource was not found.',
 };
