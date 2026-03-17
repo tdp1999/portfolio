@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (141 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (151 tasks)
 
 ## Completed Milestones
 
@@ -40,6 +40,8 @@
   - Tasks 116-123 → archived in `tasks-done/epic-auth-e2e/`
 - [x] **Production Deployment** (epic-production-deployment) - Completed 2026-03-16
   - Tasks 133-142 → archived in `tasks-done/epic-production-deployment/`
+- [x] **Category Module** (epic-category-module) - Completed 2026-03-17
+  - Tasks 143-152 → archived in `tasks-done/epic-category-module/`
 
 ## In Progress
 
@@ -84,9 +86,14 @@
 
 **Milestone:** First content module, pattern established for reuse ✓
 
+#### Sprint 4: Category Module (10 tasks) - COMPLETE
+
+- [x] 143-152 → See epic-category-module (archived in `tasks-done/epic-category-module/`)
+
+**Milestone:** Second content module with description + displayOrder + soft delete ✓
+
 #### Future Sprints (to be broken down when ready)
 
-- Sprint 4: Category Module (similar to Tag)
 - Sprint 5: Skill Module (with self-reference)
 - Sprint 6: Media Module
 - Sprint 7: Profile Module
@@ -161,42 +168,18 @@
 - [x] 114-csp-headers - Content Security Policy headers (S) ✓
 
 
-### Epic: Category Module (epic-category-module) - broken-down
-
-> **Approach:** Full vertical slice — BE (Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire) → FE → E2E
-
-#### Backend (8 tasks)
-
-- [ ] 143-category-prisma-schema - Prisma schema + migration (S)
-- [ ] 144-category-domain-entity - Domain entity + tests (S)
-- [ ] 145-category-repository - Repository + mapper (M)
-- [ ] 146-category-dtos - Zod DTOs + tests (S)
-- [ ] 147-category-commands - Commands + handlers (M)
-- [ ] 148-category-queries - Queries + handlers (S)
-- [ ] 149-category-controller - REST controller (S)
-- [ ] 150-category-module-wiring - Module wiring + verify (S)
-
-#### Frontend (1 task)
-
-- [ ] 151-category-fe-library - Angular library + CRUD page (L)
-
-#### E2E (1 task)
-
-- [ ] 152-category-e2e-tests - Playwright E2E tests (M)
-
 ---
 
 ## Up Next
 
-**Next Task:** 143-category-prisma-schema (start Category Module)
+**Next Module:** Skill Module (to be broken down)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 141     |
-| Pending (Category)        | 10      |
+| Done (archived)           | 151     |
 | Pending (Standalone)      | 1       |
 | **Total Created**         | **152** |
 

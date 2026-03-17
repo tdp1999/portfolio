@@ -1,6 +1,6 @@
 # Task: Category Module - Frontend Library + CRUD Page
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,18 +12,18 @@ Follows the `console/feature-tag` library pattern. Create via `/ng-lib`. Include
 
 ## Acceptance Criteria
 
-- [ ] Angular library created: `libs/console/feature-category/` (use `/ng-lib`)
-- [ ] `category.service.ts` — API service with list, create, update, delete methods
-- [ ] `categories-page` component — Material table with columns: name, slug, description (truncated), displayOrder, actions
-- [ ] Search bar filtering by name/description
-- [ ] Pagination via MatPaginator
-- [ ] `category-dialog` component — create/edit form with: name (input), description (textarea), displayOrder (number input)
-- [ ] Form validation matching backend Zod schemas
-- [ ] Delete via ConfirmDialogComponent (soft delete)
-- [ ] Toast notifications for success/error feedback
-- [ ] Signal-based state management (following tags-page pattern)
-- [ ] Route registered in `app.routes.ts` at `/categories` with `adminGuard`
-- [ ] Sidebar navigation entry added for Categories
+- [x] Angular library created: `libs/console/feature-category/` (use `/ng-lib`)
+- [x] `category.service.ts` — API service with list, create, update, delete methods
+- [x] `categories-page` component — Material table with columns: name, slug, description (truncated), displayOrder, actions
+- [x] Search bar filtering by name/description
+- [x] Pagination via MatPaginator
+- [x] `category-dialog` component — create/edit form with: name (input), description (textarea), displayOrder (number input)
+- [x] Form validation matching backend Zod schemas
+- [x] Delete via ConfirmDialogComponent (soft delete)
+- [x] Toast notifications for success/error feedback
+- [x] Signal-based state management (following tags-page pattern)
+- [x] Route registered in `app.routes.ts` at `/categories` with `adminGuard`
+- [x] Sidebar navigation entry added for Categories
 
 ## Technical Notes
 
@@ -51,3 +51,5 @@ Shared components: FilterBarComponent, FilterSearchComponent, SpinnerOverlayComp
 Full CRUD page with table, dialog, service, routing. Multiple components and files.
 
 ## Progress Log
+- [2026-03-17] Started
+- [2026-03-17] Done — all ACs satisfied

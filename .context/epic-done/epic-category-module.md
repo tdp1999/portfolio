@@ -63,9 +63,9 @@ Full vertical slice for the Category entity (Blog post categories). Backend CRUD
 
 ## Status
 
-broken-down
+done
 
-> Broken down into tasks 143-152 on 2026-03-17
+> Broken down into tasks 143-152 on 2026-03-17. All tasks completed 2026-03-17.
 
 ## Created
 
