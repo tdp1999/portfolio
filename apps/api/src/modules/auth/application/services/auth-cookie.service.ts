@@ -7,6 +7,7 @@ const REFRESH_COOKIE_PATH = '/api/auth/refresh';
 const CSRF_COOKIE_NAME = 'csrf_token';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 const IS_DEV = process.env['NODE_ENV'] === 'development';
+const COOKIE_DOMAIN = process.env['COOKIE_DOMAIN'] || undefined;
 
 @Injectable()
 export class AuthCookieService {
@@ -14,8 +15,9 @@ export class AuthCookieService {
     res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       httpOnly: true,
       secure: !IS_DEV,
-      sameSite: IS_DEV ? 'lax' : 'none',
+      sameSite: 'lax',
       path: REFRESH_COOKIE_PATH,
+      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       ...(rememberMe ? { maxAge: THIRTY_DAYS_MS } : {}),
     });
   }
@@ -25,16 +27,23 @@ export class AuthCookieService {
     res.cookie(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
       secure: !IS_DEV,
-      sameSite: IS_DEV ? 'lax' : 'none',
+      sameSite: 'lax',
       path: '/',
+      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
     });
   }
 
   clearRefreshToken(res: Response): void {
-    res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
+    res.clearCookie(REFRESH_COOKIE_NAME, {
+      path: REFRESH_COOKIE_PATH,
+      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+    });
   }
 
   clearCsrfToken(res: Response): void {
-    res.clearCookie(CSRF_COOKIE_NAME, { path: '/' });
+    res.clearCookie(CSRF_COOKIE_NAME, {
+      path: '/',
+      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+    });
   }
 }
