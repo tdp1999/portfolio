@@ -32,7 +32,8 @@
       "@portfolio/console/feature-auth": ["libs/console/feature-auth/src/index.ts"],
       "@portfolio/console/feature-settings": ["libs/console/feature-settings/src/index.ts"],
       "@portfolio/console/feature-admin": ["libs/console/feature-admin/src/index.ts"],
-      "@portfolio/console/feature-tag": ["libs/console/feature-tag/src/index.ts"]
+      "@portfolio/console/feature-tag": ["libs/console/feature-tag/src/index.ts"],
+      "@portfolio/console/feature-category": ["libs/console/feature-category/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,0 +1,21 @@
+{
+  "name": "feature-category",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/console/feature-category/src",
+  "prefix": "console",
+  "projectType": "library",
+  "tags": ["scope:console", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/console/feature-category/jest.config.cts",
+        "tsConfig": "libs/console/feature-category/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

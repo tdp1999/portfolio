@@ -36,6 +36,11 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@portfolio/console/feature-tag').then((m) => m.tagRoutes),
         canActivate: [adminGuard],
       },
+      {
+        path: 'categories',
+        loadChildren: () => import('@portfolio/console/feature-category').then((m) => m.categoryRoutes),
+        canActivate: [adminGuard],
+      },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
     ],
   },
