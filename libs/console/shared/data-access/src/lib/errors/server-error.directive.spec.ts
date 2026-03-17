@@ -8,7 +8,7 @@ import { ValidationErrorService } from './validation-error.service';
   standalone: true,
   imports: [ReactiveFormsModule, ServerErrorDirective],
   template: `
-    <form [formGroup]="form" [serverErrorMap]="fieldMap">
+    <form [formGroup]="form" [consoleServerErrorMap]="fieldMap">
       <input formControlName="password" />
       <input formControlName="email" />
     </form>
@@ -26,7 +26,7 @@ class TestHostComponent {
   standalone: true,
   imports: [ReactiveFormsModule, ServerErrorDirective],
   template: `
-    <form [formGroup]="form" [serverErrorMap]="{ newPassword: 'password' }">
+    <form [formGroup]="form" [consoleServerErrorMap]="{ newPassword: 'password' }">
       <input formControlName="password" />
     </form>
   `,

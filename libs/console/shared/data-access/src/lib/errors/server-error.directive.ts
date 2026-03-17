@@ -11,7 +11,7 @@ import { InjectionToken } from '@angular/core';
 export const SERVER_ERROR_FALLBACK = new InjectionToken<ServerErrorFallback>('SERVER_ERROR_FALLBACK');
 
 @Directive({
-  selector: '[formGroup][serverErrorMap]',
+  selector: '[formGroup][consoleServerErrorMap]',
   standalone: true,
 })
 export class ServerErrorDirective {
@@ -21,7 +21,7 @@ export class ServerErrorDirective {
   private readonly fallback = inject(SERVER_ERROR_FALLBACK, { optional: true });
 
   /** Maps API field names to form control names. Default: identity (API name = control name). */
-  serverErrorMap = input<Record<string, string>>({});
+  consoleServerErrorMap = input<Record<string, string>>({});
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -39,7 +39,7 @@ export class ServerErrorDirective {
       const fieldErrors = this.validationErrorService.fieldErrors();
       if (!fieldErrors) return;
 
-      const map = this.serverErrorMap();
+      const map = this.consoleServerErrorMap();
       const form = this.formGroupDir.form;
       const unmatchedMessages: string[] = [];
 
