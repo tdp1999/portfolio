@@ -1,6 +1,6 @@
 # Task: Category Module - Zod DTOs
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Similar to Tag DTOs but adds description and displayOrder fields.
 
 ## Acceptance Criteria
 
-- [ ] `CreateCategorySchema`: name (required, 1-100, trimmed, HTML stripped), description (optional, max 500), displayOrder (optional, int, default 0)
-- [ ] `UpdateCategorySchema`: name (optional), description (optional), displayOrder (optional)
-- [ ] `CategoryQuerySchema`: page, limit, search (extends Tag query pattern)
-- [ ] `CategoryResponseDto` type: id, name, slug, description, displayOrder, createdAt, updatedAt
-- [ ] DTO validation unit tests (valid/invalid inputs, transforms, defaults)
-- [ ] Zod v4 syntax
+- [x] `CreateCategorySchema`: name (required, 1-100, trimmed, HTML stripped), description (optional, max 500), displayOrder (optional, int, default 0)
+- [x] `UpdateCategorySchema`: name (optional), description (optional), displayOrder (optional)
+- [x] `CategoryQuerySchema`: page, limit, search (extends Tag query pattern)
+- [x] `CategoryResponseDto` type: id, name, slug, description, displayOrder, createdAt, updatedAt
+- [x] DTO validation unit tests (valid/invalid inputs, transforms, defaults)
+- [x] Zod v4 syntax
 
 ## Technical Notes
 
@@ -37,3 +37,4 @@ Follow Tag DTO pattern. Use `z.coerce.number()` for displayOrder from query para
 Straightforward Zod schemas with minor additions over Tag.
 
 ## Progress Log
+- [2026-03-17] Done — all ACs satisfied

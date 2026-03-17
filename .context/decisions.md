@@ -178,3 +178,12 @@
 - `tailwind.config.js` created at workspace root
 - Epic and documentation updated to reference v3 approach
 - Future upgrade to v4 possible when Angular compatibility is resolved
+
+## 2026-03-17: Response Shaping Pattern
+
+### ADR-012: Presenter Pattern for Domain-to-DTO Mapping
+
+**Status:** Accepted
+**Context:** Query handlers had inline object mapping from domain entities to response DTOs, duplicated across handlers. Considered alternatives: entity.toResponse() method, infrastructure mapper, controller mapping, or dedicated presenter.
+**Decision:** Use a **Presenter class** in the Application layer (`{module}.presenter.ts`) with static `toResponse()` methods. Domain entities must NOT contain toDTO/toResponse methods (anti-pattern per Vernon, Uncle Bob, Cockburn). Query handlers call `Presenter.toResponse()` instead of inline mapping.
+**Consequences:** Single source of truth for response shape per module. Domain entities stay pure. Easy to add multiple shapes (toSummary, toDetail) when needed. Applied retroactively to Tag module, enforced for all future modules.

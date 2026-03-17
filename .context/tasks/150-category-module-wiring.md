@@ -1,6 +1,6 @@
 # Task: Category Module - Module Wiring + Verify
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,14 +12,14 @@ Final BE task. Register module, verify all endpoints via manual testing or REST 
 
 ## Acceptance Criteria
 
-- [ ] `CategoryModule` with CqrsModule import, forwardRef for Auth/User
-- [ ] Repository provided via DI token (`CATEGORY_REPOSITORY` → `CategoryRepository`)
-- [ ] All command + query handlers registered as providers
-- [ ] Module imported in `AppModule`
-- [ ] Barrel export `index.ts`
-- [ ] Verify all 6 endpoints work (list, getById, getBySlug, create, update, delete)
-- [ ] Verify auth guards work (public reads, admin-only writes)
-- [ ] Verify soft delete works (deleted categories excluded from list)
+- [x] `CategoryModule` with CqrsModule import, forwardRef for Auth/User
+- [x] Repository provided via DI token (`CATEGORY_REPOSITORY` → `CategoryRepository`)
+- [x] All command + query handlers registered as providers
+- [x] Module imported in `AppModule`
+- [x] Barrel export `index.ts`
+- [x] Verify all 6 endpoints work (list, getById, getBySlug, create, update, delete)
+- [x] Verify auth guards work (public reads, admin-only writes)
+- [x] Verify soft delete works (deleted categories excluded from list)
 
 ## Technical Notes
 
@@ -40,3 +40,4 @@ Follow Tag module wiring. Export `CATEGORY_REPOSITORY` for future modules that m
 Module registration and verification.
 
 ## Progress Log
+- [2026-03-17] Done — all ACs satisfied, all 6 endpoints verified via curl

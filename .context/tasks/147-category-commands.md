@@ -1,6 +1,6 @@
 # Task: Category Module - Commands + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,13 +12,13 @@ Full CRUD via commands: Create, Update, Delete. Follows Tag command pattern.
 
 ## Acceptance Criteria
 
-- [ ] `CreateCategoryCommand` + handler (validates DTO, checks name uniqueness, returns id)
-- [ ] `UpdateCategoryCommand` + handler (validates DTO, checks name uniqueness excluding self, partial update)
-- [ ] `DeleteCategoryCommand` + handler (soft delete with userId tracking)
-- [ ] All handlers validate with Zod schemas via `safeParse()`
-- [ ] All handlers use domain entity methods (Category.create, category.update, category.softDelete)
-- [ ] Proper error codes from `CategoryErrorCode`
-- [ ] Barrel exports in commands/index.ts
+- [x] `CreateCategoryCommand` + handler (validates DTO, checks name uniqueness, returns id)
+- [x] `UpdateCategoryCommand` + handler (validates DTO, checks name uniqueness excluding self, partial update)
+- [x] `DeleteCategoryCommand` + handler (soft delete with userId tracking)
+- [x] All handlers validate with Zod schemas via `safeParse()`
+- [x] All handlers use domain entity methods (Category.create, category.update, category.softDelete)
+- [x] Proper error codes from `CategoryErrorCode`
+- [x] Barrel exports in commands/index.ts
 
 ## Technical Notes
 
@@ -43,3 +43,4 @@ Delete handler: check `deletedAt` already set → throw `CATEGORY_ALREADY_DELETE
 3 command handlers with validation and business logic.
 
 ## Progress Log
+- [2026-03-17] Done — all ACs satisfied

@@ -1,6 +1,6 @@
 # Task: Category Module - Queries + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,12 +12,12 @@ Three queries: list (paginated), get by ID, get by slug. Follows Tag query patte
 
 ## Acceptance Criteria
 
-- [ ] `ListCategoriesQuery` + handler (validates query params, returns paginated results with metadata)
-- [ ] `GetCategoryByIdQuery` + handler (validates UUID, returns single category)
-- [ ] `GetCategoryBySlugQuery` + handler (returns single category)
-- [ ] All responses mapped to `CategoryResponseDto` (includes description, displayOrder)
-- [ ] List returns `{ data, total, page, limit }`
-- [ ] Barrel exports in queries/index.ts
+- [x] `ListCategoriesQuery` + handler (validates query params, returns paginated results with metadata)
+- [x] `GetCategoryByIdQuery` + handler (validates UUID, returns single category)
+- [x] `GetCategoryBySlugQuery` + handler (returns single category)
+- [x] All responses mapped to `CategoryResponseDto` (includes description, displayOrder)
+- [x] List returns `{ data, total, page, limit }`
+- [x] Barrel exports in queries/index.ts
 
 ## Technical Notes
 
@@ -40,3 +40,4 @@ Follow Tag queries. List handler should sort by displayOrder then name (handled 
 Straightforward read operations, same pattern as Tag.
 
 ## Progress Log
+- [2026-03-17] Done — all ACs satisfied

@@ -106,6 +106,40 @@ static from(id: string): string {
 }
 ```
 
+#### Response Shaping — Presenter Pattern
+
+**Domain entities must NOT contain `toResponse()` or `toDTO()` methods.** Response shaping uses a dedicated **Presenter** class in the Application layer.
+
+**Why:** Domain entities model business rules. Making them aware of DTOs (a presentation concept) violates separation of concerns and the Dependency Rule (inner layer knowing about outer layer). Different consumers (REST, GraphQL, events) need different shapes — the entity shouldn't know about any of them.
+
+**Pattern:** Each module has a `{Module}Presenter` class with static `toResponse()` method(s):
+
+```ts
+// application/category.presenter.ts
+export class CategoryPresenter {
+  static toResponse(category: Category): CategoryResponseDto {
+    return {
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      // ... only fields needed by the API consumer
+    };
+  }
+}
+
+// In query handlers:
+return {
+  data: categories.map(CategoryPresenter.toResponse),
+  total, page, limit,
+};
+```
+
+**Rules:**
+- One Presenter per module, co-located in `application/` alongside DTOs
+- Query handlers use `Presenter.toResponse()` instead of inline object mapping
+- Presenter only reads from entity's public getters — never accesses `.props` directly
+- If a module needs multiple response shapes, add methods: `toResponse()`, `toSummary()`, `toDetail()`
+
 ### Frontend (Both Apps)
 
 - **Style:** Feature-modules

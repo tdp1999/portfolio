@@ -1,6 +1,6 @@
 # Task: Category Module - Repository + Mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 
@@ -12,15 +12,15 @@ Follows Tag repository pattern. Adds `findAll` sorting by `displayOrder` then `n
 
 ## Acceptance Criteria
 
-- [ ] `ITagRepository` port interface extending `ICrudRepository<Category>`
-- [ ] Additional port methods: `update()`, `remove()`, `findBySlug()`, `findByName()`
-- [ ] `findAll()` with `CategoryFindAllOptions` (page, limit, search, includeDeleted)
-- [ ] `findAll()` sorts by `displayOrder ASC` then `name ASC`
-- [ ] `CategoryRepository` Prisma implementation
-- [ ] Soft delete filtering (deletedAt: null) by default
-- [ ] `CategoryMapper` with `toDomain()` and `toPrisma()` static methods
-- [ ] Mapper unit tests
-- [ ] DI token: `CATEGORY_REPOSITORY`
+- [x] `ICategoryRepository` port interface extending `ICrudRepository<Category>`
+- [x] Additional port methods: `update()`, `remove()`, `findBySlug()`, `findByName()`
+- [x] `findAll()` with `CategoryFindAllOptions` (page, limit, search, includeDeleted)
+- [x] `findAll()` sorts by `displayOrder ASC` then `name ASC`
+- [x] `CategoryRepository` Prisma implementation
+- [x] Soft delete filtering (deletedAt: null) by default
+- [x] `CategoryMapper` with `toDomain()` and `toPrisma()` static methods
+- [x] Mapper unit tests
+- [x] DI token: `CATEGORY_REPOSITORY`
 
 ## Technical Notes
 
@@ -45,3 +45,4 @@ Search should match against `name` and `description` fields (Tag only searches `
 Repository + mapper + tests, multiple files.
 
 ## Progress Log
+- [2026-03-17] Done — all ACs satisfied
