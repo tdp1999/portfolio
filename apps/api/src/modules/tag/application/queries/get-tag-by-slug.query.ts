@@ -4,6 +4,7 @@ import { NotFoundError, ErrorLayer, TagErrorCode } from '@portfolio/shared/error
 import { ITagRepository } from '../ports/tag.repository.port';
 import { TAG_REPOSITORY } from '../tag.token';
 import { TagResponseDto } from '../tag.dto';
+import { TagPresenter } from '../tag.presenter';
 
 export class GetTagBySlugQuery {
   constructor(readonly slug: string) {}
@@ -21,12 +22,6 @@ export class GetTagBySlugHandler implements IQueryHandler<GetTagBySlugQuery> {
         layer: ErrorLayer.APPLICATION,
       });
 
-    return {
-      id: tag.id,
-      name: tag.name,
-      slug: tag.slug,
-      createdAt: tag.createdAt,
-      updatedAt: tag.updatedAt,
-    };
+    return TagPresenter.toResponse(tag);
   }
 }

@@ -4,6 +4,7 @@ import { ValidationError, ErrorLayer, TagErrorCode } from '@portfolio/shared/err
 import { ITagRepository } from '../ports/tag.repository.port';
 import { TAG_REPOSITORY } from '../tag.token';
 import { TagQuerySchema, TagResponseDto } from '../tag.dto';
+import { TagPresenter } from '../tag.presenter';
 
 export class ListTagsQuery {
   constructor(readonly params: unknown) {}
@@ -29,13 +30,7 @@ export class ListTagsHandler implements IQueryHandler<ListTagsQuery> {
     });
 
     return {
-      data: tags.map((t) => ({
-        id: t.id,
-        name: t.name,
-        slug: t.slug,
-        createdAt: t.createdAt,
-        updatedAt: t.updatedAt,
-      })),
+      data: tags.map(TagPresenter.toResponse),
       total,
       page: data.page,
       limit: data.limit,

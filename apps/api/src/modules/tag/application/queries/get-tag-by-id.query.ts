@@ -5,6 +5,7 @@ import { IdentifierValue } from '@portfolio/shared/types';
 import { ITagRepository } from '../ports/tag.repository.port';
 import { TAG_REPOSITORY } from '../tag.token';
 import { TagResponseDto } from '../tag.dto';
+import { TagPresenter } from '../tag.presenter';
 
 export class GetTagByIdQuery {
   constructor(readonly tagId: string) {}
@@ -24,12 +25,6 @@ export class GetTagByIdHandler implements IQueryHandler<GetTagByIdQuery> {
         layer: ErrorLayer.APPLICATION,
       });
 
-    return {
-      id: tag.id,
-      name: tag.name,
-      slug: tag.slug,
-      createdAt: tag.createdAt,
-      updatedAt: tag.updatedAt,
-    };
+    return TagPresenter.toResponse(tag);
   }
 }
