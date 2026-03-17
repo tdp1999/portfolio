@@ -1,6 +1,5 @@
 import { z } from 'zod/v4';
-
-const stripHtmlTags = (value: string) => value.replace(/<[^>]*>/g, '');
+import { stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
 
 const TagNameSchema = z
   .string()
@@ -16,11 +15,7 @@ export const UpdateTagSchema = z.object({
   name: TagNameSchema,
 });
 
-export const TagQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  search: z.string().optional(),
-});
+export const TagQuerySchema = PaginatedQuerySchema;
 
 export type CreateTagDto = z.infer<typeof CreateTagSchema>;
 export type UpdateTagDto = z.infer<typeof UpdateTagSchema>;

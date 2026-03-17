@@ -1,13 +1,10 @@
 import { z } from 'zod/v4';
-import { nonEmptyPartial } from '@portfolio/shared/utils';
+import { nonEmptyPartial, stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { UserRole } from '../domain/user.types';
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 const PASSWORD_ERROR =
   'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (#?!@$%^&*-)';
-
-// Structural strip only — output encoding in the frontend is the primary XSS defense
-const stripHtmlTags = (value: string) => value.replace(/<[^>]*>/g, '');
 
 export const PasswordSchema = z.string().regex(PASSWORD_REGEX, PASSWORD_ERROR);
 
@@ -40,10 +37,7 @@ export const CreateUserByAdminSchema = z.object({
   role: z.enum(['ADMIN', 'USER']).default('USER'),
 });
 
-export const PaginationSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  search: z.string().optional(),
+export const PaginationSearchSchema = PaginatedQuerySchema.extend({
   status: z.enum(['active', 'invited', 'deleted']).optional(),
 });
 
