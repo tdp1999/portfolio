@@ -6,14 +6,15 @@ const REFRESH_COOKIE_NAME = 'refresh_token';
 const REFRESH_COOKIE_PATH = '/api/auth/refresh';
 const CSRF_COOKIE_NAME = 'csrf_token';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const IS_DEV = process.env['NODE_ENV'] === 'development';
 
 @Injectable()
 export class AuthCookieService {
   setRefreshToken(res: Response, refreshToken: string, rememberMe: boolean): void {
     res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       httpOnly: true,
-      secure: process.env['NODE_ENV'] !== 'development',
-      sameSite: 'lax',
+      secure: !IS_DEV,
+      sameSite: IS_DEV ? 'lax' : 'none',
       path: REFRESH_COOKIE_PATH,
       ...(rememberMe ? { maxAge: THIRTY_DAYS_MS } : {}),
     });
@@ -23,8 +24,8 @@ export class AuthCookieService {
     const token = randomBytes(32).toString('hex');
     res.cookie(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
-      secure: process.env['NODE_ENV'] !== 'development',
-      sameSite: 'lax',
+      secure: !IS_DEV,
+      sameSite: IS_DEV ? 'lax' : 'none',
       path: '/',
     });
   }
