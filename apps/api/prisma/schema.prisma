@@ -109,6 +109,11 @@ model User {
   tagsUpdated    Tag[] @relation("TagUpdatedBy")
   tagsDeleted    Tag[] @relation("TagDeletedBy")
 
+  // Category relations
+  categoriesCreated Category[] @relation("CategoryCreatedBy")
+  categoriesUpdated Category[] @relation("CategoryUpdatedBy")
+  categoriesDeleted Category[] @relation("CategoryDeletedBy")
+
   @@map("users")
 }
 
@@ -128,4 +133,24 @@ model Tag {
   deletedBy   User?     @relation("TagDeletedBy", fields: [deletedById], references: [id])
 
   @@map("tags")
+}
+
+model Category {
+  id           String    @id @db.Uuid
+  name         String    @unique
+  slug         String    @unique
+  description  String?
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  createdById  String    @db.Uuid
+  updatedById  String    @db.Uuid
+  deletedAt    DateTime?
+  deletedById  String?   @db.Uuid
+
+  createdBy User  @relation("CategoryCreatedBy", fields: [createdById], references: [id])
+  updatedBy User  @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User? @relation("CategoryDeletedBy", fields: [deletedById], references: [id])
+
+  @@map("categories")
 }
