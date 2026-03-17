@@ -161,9 +161,34 @@
 - [x] 114-csp-headers - Content Security Policy headers (S) ✓
 
 
+### Epic: Category Module (epic-category-module) - broken-down
+
+> **Approach:** Full vertical slice — BE (Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire) → FE → E2E
+
+#### Backend (8 tasks)
+
+- [ ] 143-category-prisma-schema - Prisma schema + migration (S)
+- [ ] 144-category-domain-entity - Domain entity + tests (S)
+- [ ] 145-category-repository - Repository + mapper (M)
+- [ ] 146-category-dtos - Zod DTOs + tests (S)
+- [ ] 147-category-commands - Commands + handlers (M)
+- [ ] 148-category-queries - Queries + handlers (S)
+- [ ] 149-category-controller - REST controller (S)
+- [ ] 150-category-module-wiring - Module wiring + verify (S)
+
+#### Frontend (1 task)
+
+- [ ] 151-category-fe-library - Angular library + CRUD page (L)
+
+#### E2E (1 task)
+
+- [ ] 152-category-e2e-tests - Playwright E2E tests (M)
+
+---
+
 ## Up Next
 
-**Next Task:** Sprint 4 (Category Module) or Tag FE E2E expansion
+**Next Task:** 143-category-prisma-schema (start Category Module)
 
 
 ## Statistics
@@ -171,8 +196,9 @@
 | Status                    | Count   |
 | ------------------------- | ------- |
 | Done (archived)           | 141     |
+| Pending (Category)        | 10      |
 | Pending (Standalone)      | 1       |
-| **Total Created**         | **142** |
+| **Total Created**         | **152** |
 
 ## Notes
 

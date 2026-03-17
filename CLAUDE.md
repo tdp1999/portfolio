@@ -20,6 +20,16 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 - **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
+## Skills
+
+Use these skills for specific workflows. More will be added over time.
+
+| Skill            | When to Use                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| `prisma-migrate` | Any Prisma schema change or migration (creates, applies, handles backups)  |
+| `aqa-expert`     | Writing or updating E2E tests (Playwright, POM pattern, flakiness checks)  |
+| `ng-lib`         | Creating new Nx Angular libraries (correct tags, directory, import paths)  |
+
 ## Context Files (`.context/`)
 
 - `vision.md` - Project goals and philosophy

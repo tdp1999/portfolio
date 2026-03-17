@@ -42,14 +42,9 @@ enum Availability {
 }
 
 enum SkillCategory {
-  FRONTEND
-  BACKEND
-  DATABASE
-  DEVOPS
-  MOBILE
+  TECHNICAL
   TOOLS
-  LANGUAGES
-  OTHER
+  ADDITIONAL
 }
 
 enum ProjectCategory {
@@ -282,16 +277,20 @@ Technical skills and technologies.
 | `parentSkillId`     | `String`              | FK → Skill, Nullable      | Max 1 level, no circular   |
 | `yearsOfExperience` | `Int`                 | Nullable                  |                            |
 | `iconUrl`           | `String`              | Nullable                  | Skill logo                 |
+| `proficiencyNote`   | `String`              | Nullable                  | e.g., "TOEIC 970"         |
+| `isFeatured`        | `Boolean`             | Not Null, Default `false` | Show on landing page       |
 | `displayOrder`      | `Int`                 | Not Null, Default `0`     |                            |
 | **Audit**           |
 | `createdAt`         | `DateTime`            | Not Null                  |                            |
 | `updatedAt`         | `DateTime`            | Not Null                  |                            |
 | `createdById`       | `String`              | FK → User                 |                            |
 | `updatedById`       | `String`              | FK → User                 |                            |
+| `deletedAt`         | `DateTime`            | Nullable                  | Soft delete                |
+| `deletedById`       | `String`              | FK → User, Nullable       |                            |
 
 **Notes:**
 
-- No soft delete - simple reference data
+- Soft delete supported — block delete if skill has children (parentSkillId references)
 - `parentSkillId` allows 1 level hierarchy (e.g., Angular → TypeScript)
 - Validation required: no circular references, max 1 level depth
 
@@ -404,6 +403,8 @@ Blog post categories.
 | `updatedAt`    | `DateTime`         | Not Null              |                  |
 | `createdById`  | `String`           | FK → User             |                  |
 | `updatedById`  | `String`           | FK → User             |                  |
+| `deletedAt`    | `DateTime`         | Nullable              | Soft delete      |
+| `deletedById`  | `String`           | FK → User, Nullable   |                  |
 
 ---
 
@@ -443,7 +444,9 @@ Centralized media/file storage metadata.
 | `caption`          | `String`           | Nullable            | Display caption       |
 | **Audit**          |
 | `createdAt`        | `DateTime`         | Not Null            |                       |
-| `uploadedById`     | `String`           | FK → User, Not Null |                       |
+| `updatedAt`        | `DateTime`         | Not Null            |                       |
+| `createdById`      | `String`           | FK → User, Not Null |                       |
+| `updatedById`      | `String`           | FK → User, Not Null |                       |
 | `deletedAt`        | `DateTime`         | Nullable            | Soft delete           |
 | `deletedById`      | `String`           | FK → User, Nullable |                       |
 
