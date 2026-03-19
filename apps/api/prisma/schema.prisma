@@ -34,14 +34,9 @@ enum Availability {
 }
 
 enum SkillCategory {
-  FRONTEND
-  BACKEND
-  DATABASE
-  DEVOPS
-  MOBILE
+  TECHNICAL
   TOOLS
-  LANGUAGES
-  OTHER
+  ADDITIONAL
 }
 
 enum ProjectCategory {
@@ -114,6 +109,11 @@ model User {
   categoriesUpdated Category[] @relation("CategoryUpdatedBy")
   categoriesDeleted Category[] @relation("CategoryDeletedBy")
 
+  // Skill relations
+  skillsCreated Skill[] @relation("SkillCreatedBy")
+  skillsUpdated Skill[] @relation("SkillUpdatedBy")
+  skillsDeleted Skill[] @relation("SkillDeletedBy")
+
   @@map("users")
 }
 
@@ -153,4 +153,33 @@ model Category {
   deletedBy User? @relation("CategoryDeletedBy", fields: [deletedById], references: [id])
 
   @@map("categories")
+}
+
+model Skill {
+  id                String        @id @db.Uuid
+  name              String        @unique
+  slug              String        @unique
+  description       String?
+  category          SkillCategory
+  isLibrary         Boolean       @default(false)
+  parentSkillId     String?       @db.Uuid
+  yearsOfExperience Int?
+  iconUrl           String?
+  proficiencyNote   String?
+  isFeatured        Boolean       @default(false)
+  displayOrder      Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  createdById       String        @db.Uuid
+  updatedById       String        @db.Uuid
+  deletedAt         DateTime?
+  deletedById       String?       @db.Uuid
+
+  parentSkill Skill?  @relation("SkillParent", fields: [parentSkillId], references: [id])
+  childSkills Skill[] @relation("SkillParent")
+  createdBy   User    @relation("SkillCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User    @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy   User?   @relation("SkillDeletedBy", fields: [deletedById], references: [id])
+
+  @@map("skills")
 }

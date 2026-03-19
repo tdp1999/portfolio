@@ -8,6 +8,7 @@ import { EmailModule } from '../modules/email';
 import { HealthModule } from '../modules/health';
 import { TagModule } from '../modules/tag';
 import { CategoryModule } from '../modules/category';
+import { SkillModule } from '../modules/skill/skill.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -23,6 +24,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     HealthModule,
     TagModule,
     CategoryModule,
+    SkillModule,
     ThrottlerModule.forRoot({
       skipIf: () => !isProduction,
       throttlers: [{ ttl: 60000, limit: 60 }],

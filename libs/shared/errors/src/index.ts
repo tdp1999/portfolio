@@ -20,3 +20,4 @@ export { UserErrorCode } from './lib/error-codes/user.error-codes';
 export { CommonErrorCode } from './lib/error-codes/common.error-codes';
 export { TagErrorCode } from './lib/error-codes/tag.error-codes';
 export { CategoryErrorCode } from './lib/error-codes/category.error-codes';
+export { SkillErrorCode } from './lib/error-codes/skill.error-codes';
