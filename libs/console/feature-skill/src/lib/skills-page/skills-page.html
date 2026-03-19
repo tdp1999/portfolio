@@ -1,0 +1,108 @@
+<div class="max-w-6xl">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold text-text">Skill Management</h1>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Create Skill
+    </button>
+  </div>
+
+  <console-filter-bar>
+    <console-filter-search
+      label="Search skills"
+      placeholder="Search by name..."
+      (searchChange)="onSearchChange($event)"
+    />
+    <console-filter-select
+      label="Category"
+      [options]="categoryOptions"
+      [value]="category()"
+      (selectionChange)="onCategoryChange($event)"
+    />
+  </console-filter-bar>
+
+  <div class="relative">
+    <console-spinner-overlay [loading]="loading()" />
+
+    <div class="overflow-x-auto">
+      <table mat-table [dataSource]="skills()" class="w-full">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let skill">
+            @if (skill.parentSkillId) {
+              <span class="text-text-muted mr-1">└</span>
+            }
+            {{ skill.name }}
+          </td>
+        </ng-container>
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let skill" class="text-text-muted">
+            {{ skill.category }}
+          </td>
+        </ng-container>
+
+        <!-- Parent Column -->
+        <ng-container matColumnDef="parent">
+          <th mat-header-cell *matHeaderCellDef>Parent</th>
+          <td mat-cell *matCellDef="let skill" class="text-text-muted">
+            {{ getParentName(skill.parentSkillId) }}
+          </td>
+        </ng-container>
+
+        <!-- isLibrary Column -->
+        <ng-container matColumnDef="isLibrary">
+          <th mat-header-cell *matHeaderCellDef>Library</th>
+          <td mat-cell *matCellDef="let skill">
+            @if (skill.isLibrary) {
+              <mat-icon class="!text-[18px] text-green-500">check</mat-icon>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Display Order Column -->
+        <ng-container matColumnDef="displayOrder">
+          <th mat-header-cell *matHeaderCellDef>Order</th>
+          <td mat-cell *matCellDef="let skill">
+            {{ skill.displayOrder }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let skill">
+            <button mat-icon-button matTooltip="Edit skill" (click)="openEditDialog(skill)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete skill" (click)="confirmDelete(skill)">
+              <mat-icon class="text-red-500">delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <!-- No data row -->
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+            No skills found
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[20, 50, 100]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  </div>
+</div>

@@ -41,6 +41,11 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@portfolio/console/feature-category').then((m) => m.categoryRoutes),
         canActivate: [adminGuard],
       },
+      {
+        path: 'skills',
+        loadChildren: () => import('@portfolio/console/feature-skill').then((m) => m.skillRoutes),
+        canActivate: [adminGuard],
+      },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
     ],
   },
