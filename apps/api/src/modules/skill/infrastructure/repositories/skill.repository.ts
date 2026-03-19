@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { ConflictError, ErrorLayer, SkillErrorCode } from '@portfolio/shared/errors';
 import { PaginatedResult } from '@portfolio/shared/types';
 import { PrismaService } from '../../../../infrastructure/prisma';
 import { ISkillRepository, SkillFindAllOptions } from '../../application/ports/skill.repository.port';
@@ -12,29 +13,49 @@ export class SkillRepository implements ISkillRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async add(skill: Skill): Promise<string> {
-    const data = SkillMapper.toPrisma(skill);
-    const created = await this.prisma.skill.create({ data });
-    return created.id;
+    try {
+      const data = SkillMapper.toPrisma(skill);
+      const created = await this.prisma.skill.create({ data });
+      return created.id;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        throw ConflictError('Skill with this name already exists', {
+          errorCode: SkillErrorCode.NAME_TAKEN,
+          layer: ErrorLayer.INFRASTRUCTURE,
+        });
+      }
+      throw err;
+    }
   }
 
   async update(id: string, skill: Skill): Promise<void> {
-    await this.prisma.skill.update({
-      where: { id },
-      data: {
-        name: skill.name,
-        slug: skill.slug,
-        description: skill.description,
-        category: skill.category as Prisma.EnumSkillCategoryFieldUpdateOperationsInput['set'],
-        isLibrary: skill.isLibrary,
-        parentSkillId: skill.parentSkillId,
-        yearsOfExperience: skill.yearsOfExperience,
-        iconUrl: skill.iconUrl,
-        proficiencyNote: skill.proficiencyNote,
-        isFeatured: skill.isFeatured,
-        displayOrder: skill.displayOrder,
-        updatedById: skill.updatedById,
-      },
-    });
+    try {
+      await this.prisma.skill.update({
+        where: { id },
+        data: {
+          name: skill.name,
+          slug: skill.slug,
+          description: skill.description,
+          category: skill.category as Prisma.EnumSkillCategoryFieldUpdateOperationsInput['set'],
+          isLibrary: skill.isLibrary,
+          parentSkillId: skill.parentSkillId,
+          yearsOfExperience: skill.yearsOfExperience,
+          iconUrl: skill.iconUrl,
+          proficiencyNote: skill.proficiencyNote,
+          isFeatured: skill.isFeatured,
+          displayOrder: skill.displayOrder,
+          updatedById: skill.updatedById,
+        },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        throw ConflictError('Skill with this name already exists', {
+          errorCode: SkillErrorCode.NAME_TAKEN,
+          layer: ErrorLayer.INFRASTRUCTURE,
+        });
+      }
+      throw err;
+    }
   }
 
   async remove(id: string, skill: Skill): Promise<void> {
