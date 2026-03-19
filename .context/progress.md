@@ -42,6 +42,8 @@
   - Tasks 133-142 → archived in `tasks-done/epic-production-deployment/`
 - [x] **Category Module** (epic-category-module) - Completed 2026-03-17
   - Tasks 143-152 → archived in `tasks-done/epic-category-module/`
+- [x] **Skill Module** (epic-skill-module) - Completed 2026-03-19
+  - Tasks 153-162 → archived in `tasks-done/epic-skill-module/`
 
 ## In Progress
 
@@ -92,9 +94,13 @@
 
 **Milestone:** Second content module with description + displayOrder + soft delete ✓
 
-#### Future Sprints (to be broken down when ready)
+#### Sprint 5: Skill Module (10 tasks) - COMPLETE
 
-- Sprint 5: Skill Module (with self-reference)
+- [x] 153-162 → See epic-skill-module (archived in `tasks-done/epic-skill-module/`)
+
+**Milestone:** First self-referential module with parent-child hierarchy ✓
+
+#### Future Sprints (to be broken down when ready)
 - Sprint 6: Media Module
 - Sprint 7: Profile Module
 - Sprint 8: Project Module (complex, with relations)
@@ -172,16 +178,16 @@
 
 ## Up Next
 
-**Next Module:** Skill Module (to be broken down)
+**Next Module:** Media Module (to be broken down)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 151     |
+| Done (archived)           | 161     |
 | Pending (Standalone)      | 1       |
-| **Total Created**         | **152** |
+| **Total Created**         | **162** |
 
 ## Notes
 
