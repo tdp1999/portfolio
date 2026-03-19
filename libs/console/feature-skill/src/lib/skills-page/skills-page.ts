@@ -178,9 +178,8 @@ export default class SkillsPageComponent implements OnInit {
         this.toast.success('Skill deleted successfully');
         this.loadSkills();
       },
-      error: (err) => {
-        const apiError = extractApiError(err);
-        this.toast.error(apiError?.message ?? 'Failed to delete skill');
+      error: () => {
+        // Error toast handled by global error interceptor
       },
     });
   }

@@ -136,9 +136,8 @@ export default class CategoriesPageComponent implements OnInit {
         this.toast.success('Category deleted successfully');
         this.loadCategories();
       },
-      error: (err) => {
-        const apiError = extractApiError(err);
-        this.toast.error(apiError?.message ?? 'Failed to delete category');
+      error: () => {
+        // Error toast handled by global error interceptor
       },
     });
   }

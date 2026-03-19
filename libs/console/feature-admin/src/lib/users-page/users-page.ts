@@ -157,9 +157,8 @@ export default class UsersPageComponent implements OnInit {
         this.toast.success('User deleted successfully');
         this.loadUsers();
       },
-      error: (err) => {
-        const apiError = extractApiError(err);
-        this.toast.error(apiError?.message ?? 'Failed to delete user');
+      error: () => {
+        // Error toast handled by global error interceptor
       },
     });
   }

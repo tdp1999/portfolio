@@ -138,9 +138,8 @@ export default class TagsPageComponent implements OnInit {
         this.toast.success('Tag deleted successfully');
         this.loadTags();
       },
-      error: (err) => {
-        const apiError = extractApiError(err);
-        this.toast.error(apiError?.message ?? 'Failed to delete tag');
+      error: () => {
+        // Error toast handled by global error interceptor
       },
     });
   }

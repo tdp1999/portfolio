@@ -218,8 +218,8 @@ test.describe('Skill Management', () => {
     await parentRow.locator('button', { has: page.locator('mat-icon', { hasText: 'delete' }) }).click();
     await clickConfirm(page);
 
-    // Server rejects — shows error toast with server message
-    await expectToast(page, 'Cannot delete skill with child skills');
+    // Server rejects — interceptor shows dictionary error toast
+    await expectToast(page, 'Cannot delete a skill that has child skills');
 
     // Parent should still exist in table
     await expect(page.getByRole('row', { name: /e2e-skill-parent TECHNICAL/ })).toBeVisible();
