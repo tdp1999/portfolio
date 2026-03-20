@@ -1,0 +1,3 @@
+export const STORAGE_SERVICE = Symbol('STORAGE_SERVICE');
+export const SECURITY_SCANNER = Symbol('SECURITY_SCANNER');
+export const MEDIA_REPOSITORY = Symbol('MEDIA_REPOSITORY');

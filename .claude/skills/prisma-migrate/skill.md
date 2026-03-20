@@ -31,6 +31,10 @@ npx prisma migrate status --config "$PRISMA_CONFIG"
 
 **All `npx prisma` commands below assume `--config $PRISMA_CONFIG` is appended.** Shown as `--config $PRISMA_CONFIG` for clarity.
 
+### Prisma v7 — No `url` in schema.prisma
+
+Prisma v7 removed `url` from the `datasource` block. The connection URL is configured in `prisma.config.ts` instead. If you encounter `P1012: The datasource property 'url' is no longer supported`, do NOT add `url` to schema.prisma. Instead, ensure `prisma.config.ts` exists and all commands use `--config`. **Never attempt to run `prisma migrate dev` directly** — it requires an interactive TTY. Always give the user the command to run.
+
 ## References & Scripts
 
 | File | Purpose |

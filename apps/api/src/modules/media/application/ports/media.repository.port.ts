@@ -1,0 +1,18 @@
+import { ICrudRepository, PaginatedQuery, PaginatedResult } from '@portfolio/shared/types';
+import { Media } from '../../domain/entities/media.entity';
+
+export interface MediaFindAllOptions extends PaginatedQuery {
+  mimeTypePrefix?: string;
+}
+
+export type IMediaRepository = ICrudRepository<Media> & {
+  update(id: string, media: Media): Promise<void>;
+  remove(id: string, media: Media): Promise<void>;
+  hardDelete(id: string): Promise<void>;
+  findByPublicId(publicId: string): Promise<Media | null>;
+  findByMimeTypePrefix(prefix: string): Promise<Media[]>;
+  findOrphans(): Promise<Media[]>;
+  findExpiredSoftDeleted(olderThan: Date): Promise<Media[]>;
+  findDeleted(options: PaginatedQuery): Promise<PaginatedResult<Media>>;
+  findAll(options: MediaFindAllOptions): Promise<PaginatedResult<Media>>;
+};

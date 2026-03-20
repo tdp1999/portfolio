@@ -232,7 +232,9 @@ Default max: 5MB. Per-type overrides configurable via `MEDIA_CONFIG`.
 
 ## Status
 
-placeholder
+broken-down
+
+Broken down into tasks 163-177 on 2026-03-20
 
 ## Created
 

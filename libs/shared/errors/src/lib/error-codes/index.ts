@@ -4,3 +4,4 @@ export { CommonErrorCode } from './common.error-codes';
 export { TagErrorCode } from './tag.error-codes';
 export { CategoryErrorCode } from './category.error-codes';
 export { SkillErrorCode } from './skill.error-codes';
+export { MediaErrorCode } from './media.error-codes';

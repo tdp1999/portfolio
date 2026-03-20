@@ -100,8 +100,36 @@
 
 **Milestone:** First self-referential module with parent-child hierarchy ✓
 
+#### Sprint 6: Media Module (15 tasks) - IN PROGRESS
+
+**Phase 1: Backend Core (6 tasks)**
+- [ ] 163-media-prisma-schema - Prisma schema + migration (S)
+- [ ] 164-media-domain-entity - Domain entity + tests (M)
+- [ ] 165-media-storage-port-cloudinary - Storage port + Cloudinary adapter (L)
+- [ ] 166-media-security-scanner - Security scanner port + implementation (L)
+- [ ] 167-media-repository-mapper - Repository + mapper (M)
+- [ ] 168-media-dtos - Zod DTOs + presenter (M)
+
+**Phase 2: Backend Logic (4 tasks)**
+- [ ] 169-media-commands - Command handlers (XL)
+- [ ] 170-media-queries - Query handlers (M)
+- [ ] 171-media-controller - REST controller with file interceptors (M)
+- [ ] 172-media-scheduled-jobs - Cleanup + orphan detection cron jobs (M)
+
+**Phase 3: Backend Wiring (1 task)**
+- [ ] 173-media-module-wiring - Module wiring + verification (S)
+
+**Phase 4: Frontend (3 tasks)**
+- [ ] 174-media-fe-library-service - FE library + MediaService (M)
+- [ ] 175-media-fe-upload-browser - Upload dropzone + grid/list browser (XL)
+- [ ] 176-media-fe-metadata-trash - Metadata edit + trash view (L)
+
+**Phase 5: E2E (1 task)**
+- [ ] 177-media-e2e-tests - Playwright E2E tests (L)
+
+**Milestone:** Full media management with Cloudinary integration, security scanning, admin UI
+
 #### Future Sprints (to be broken down when ready)
-- Sprint 6: Media Module
 - Sprint 7: Profile Module
 - Sprint 8: Project Module (complex, with relations)
 - Sprint 9: BlogPost Module
@@ -178,7 +206,7 @@
 
 ## Up Next
 
-**Next Module:** Media Module (to be broken down)
+**Next Module:** Media Module (broken down → tasks 163-177)
 
 
 ## Statistics
@@ -186,8 +214,9 @@
 | Status                    | Count   |
 | ------------------------- | ------- |
 | Done (archived)           | 161     |
+| Pending (Media)           | 15      |
 | Pending (Standalone)      | 1       |
-| **Total Created**         | **162** |
+| **Total Created**         | **177** |
 
 ## Notes
 

@@ -114,6 +114,11 @@ model User {
   skillsUpdated Skill[] @relation("SkillUpdatedBy")
   skillsDeleted Skill[] @relation("SkillDeletedBy")
 
+  // Media relations
+  mediaCreated Media[] @relation("MediaCreatedBy")
+  mediaUpdated Media[] @relation("MediaUpdatedBy")
+  mediaDeleted Media[] @relation("MediaDeletedBy")
+
   @@map("users")
 }
 
@@ -182,4 +187,34 @@ model Skill {
   deletedBy   User?   @relation("SkillDeletedBy", fields: [deletedById], references: [id])
 
   @@map("skills")
+}
+
+model Media {
+  id               String    @id @db.Uuid
+  originalFilename String
+  mimeType         String
+  publicId         String    @unique
+  url              String
+  format           String
+  bytes            Int
+  width            Int?
+  height           Int?
+  altText          String?
+  caption          String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  createdById      String    @db.Uuid
+  updatedById      String    @db.Uuid
+  deletedAt        DateTime?
+  deletedById      String?   @db.Uuid
+
+  createdBy User  @relation("MediaCreatedBy", fields: [createdById], references: [id])
+  updatedBy User  @relation("MediaUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User? @relation("MediaDeletedBy", fields: [deletedById], references: [id])
+
+  @@index([mimeType])
+  @@index([deletedAt])
+  @@index([createdById])
+  @@index([createdAt])
+  @@map("media")
 }

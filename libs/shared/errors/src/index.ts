@@ -21,3 +21,4 @@ export { CommonErrorCode } from './lib/error-codes/common.error-codes';
 export { TagErrorCode } from './lib/error-codes/tag.error-codes';
 export { CategoryErrorCode } from './lib/error-codes/category.error-codes';
 export { SkillErrorCode } from './lib/error-codes/skill.error-codes';
+export { MediaErrorCode } from './lib/error-codes/media.error-codes';
