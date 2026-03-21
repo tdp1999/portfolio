@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, Logger } from '@nestjs/common';
 import { ValidationError, ExternalServiceError, ErrorLayer, MediaErrorCode } from '@portfolio/shared/errors';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
+import { MulterFile } from '../../../../shared/types';
 import { IMediaRepository } from '../ports/media.repository.port';
 import { IStorageService, FileInput } from '../ports/storage.service.port';
 import { ISecurityScanner } from '../ports/security-scanner.port';
@@ -17,7 +18,7 @@ export interface BulkUploadResult {
 
 export class BulkUploadMediaCommand extends BaseCommand {
   constructor(
-    readonly files: FileInput[],
+    readonly files: MulterFile[],
     readonly dto: unknown,
     userId: string
   ) {
@@ -48,11 +49,11 @@ export class BulkUploadMediaHandler implements ICommandHandler<BulkUploadMediaCo
     const failed: { filename: string; error: string }[] = [];
 
     for (const file of command.files) {
-      const sanitizedName = this.scanner.sanitizeFilename(file.originalFilename);
+      const sanitizedName = this.scanner.sanitizeFilename(file.originalname);
       try {
-        validateFileSize(file.buffer, file.mimeType);
-        validateMimeType(file.mimeType);
-        const scanResult = await validateSecurity(this.scanner, file.buffer, file.mimeType);
+        validateFileSize(file.buffer, file.mimetype);
+        validateMimeType(file.mimetype);
+        const scanResult = await validateSecurity(this.scanner, file.buffer, file.mimetype);
         validFiles.push({
           buffer: scanResult.sanitizedBuffer,
           originalFilename: sanitizedName,

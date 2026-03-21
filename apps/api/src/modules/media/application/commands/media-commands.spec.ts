@@ -55,6 +55,7 @@ describe('Media Commands', () => {
       findExpiredSoftDeleted: jest.fn(),
       findDeleted: jest.fn(),
       findAll: jest.fn(),
+      getStorageStats: jest.fn(),
     };
 
     storage = {
@@ -90,7 +91,11 @@ describe('Media Commands', () => {
 
     it('should upload a file through the full pipeline', async () => {
       const result = await handler.execute(
-        new UploadMediaCommand(mockFile, 'photo.jpg', 'image/jpeg', { folder: 'avatars' }, userId)
+        new UploadMediaCommand(
+          { buffer: mockFile, originalname: 'photo.jpg', mimetype: 'image/jpeg' },
+          { folder: 'avatars' },
+          userId
+        )
       );
 
       expect(result).toBe(mediaId);
@@ -101,7 +106,13 @@ describe('Media Commands', () => {
 
     it('should validate DTO and reject invalid folder', async () => {
       await expect(
-        handler.execute(new UploadMediaCommand(mockFile, 'photo.jpg', 'image/jpeg', { folder: 'invalid' }, userId))
+        handler.execute(
+          new UploadMediaCommand(
+            { buffer: mockFile, originalname: 'photo.jpg', mimetype: 'image/jpeg' },
+            { folder: 'invalid' },
+            userId
+          )
+        )
       ).rejects.toMatchObject({ errorCode: 'MEDIA_INVALID_INPUT' });
     });
 
@@ -109,14 +120,24 @@ describe('Media Commands', () => {
       const largeFile = Buffer.alloc(6 * 1024 * 1024); // 6MB, limit is 5MB for jpeg
 
       await expect(
-        handler.execute(new UploadMediaCommand(largeFile, 'big.jpg', 'image/jpeg', { folder: 'general' }, userId))
+        handler.execute(
+          new UploadMediaCommand(
+            { buffer: largeFile, originalname: 'big.jpg', mimetype: 'image/jpeg' },
+            { folder: 'general' },
+            userId
+          )
+        )
       ).rejects.toMatchObject({ errorCode: 'MEDIA_FILE_TOO_LARGE' });
     });
 
     it('should reject unsupported MIME type', async () => {
       await expect(
         handler.execute(
-          new UploadMediaCommand(mockFile, 'script.exe', 'application/x-msdownload', { folder: 'general' }, userId)
+          new UploadMediaCommand(
+            { buffer: mockFile, originalname: 'script.exe', mimetype: 'application/x-msdownload' },
+            { folder: 'general' },
+            userId
+          )
         )
       ).rejects.toMatchObject({ errorCode: 'MEDIA_UNSUPPORTED_TYPE' });
     });
@@ -130,7 +151,13 @@ describe('Media Commands', () => {
       });
 
       await expect(
-        handler.execute(new UploadMediaCommand(mockFile, 'virus.jpg', 'image/jpeg', { folder: 'general' }, userId))
+        handler.execute(
+          new UploadMediaCommand(
+            { buffer: mockFile, originalname: 'virus.jpg', mimetype: 'image/jpeg' },
+            { folder: 'general' },
+            userId
+          )
+        )
       ).rejects.toMatchObject({ errorCode: 'MEDIA_SECURITY_THREAT' });
     });
 
@@ -138,7 +165,13 @@ describe('Media Commands', () => {
       storage.upload.mockRejectedValue(new Error('Cloudinary down'));
 
       await expect(
-        handler.execute(new UploadMediaCommand(mockFile, 'photo.jpg', 'image/jpeg', { folder: 'general' }, userId))
+        handler.execute(
+          new UploadMediaCommand(
+            { buffer: mockFile, originalname: 'photo.jpg', mimetype: 'image/jpeg' },
+            { folder: 'general' },
+            userId
+          )
+        )
       ).rejects.toMatchObject({ errorCode: 'MEDIA_UPLOAD_FAILED' });
     });
   });
@@ -151,8 +184,8 @@ describe('Media Commands', () => {
 
     it('should upload multiple files and return results', async () => {
       const files = [
-        { buffer: mockFile, originalFilename: 'a.jpg', mimeType: 'image/jpeg' },
-        { buffer: mockFile, originalFilename: 'b.png', mimeType: 'image/png' },
+        { buffer: mockFile, originalname: 'a.jpg', mimetype: 'image/jpeg' },
+        { buffer: mockFile, originalname: 'b.png', mimetype: 'image/png' },
       ];
 
       scanner.sanitizeFilename.mockImplementation((name) => name);
@@ -190,8 +223,8 @@ describe('Media Commands', () => {
 
     it('should reject files exceeding size limit in bulk', async () => {
       const files = [
-        { buffer: Buffer.alloc(6 * 1024 * 1024), originalFilename: 'big.jpg', mimeType: 'image/jpeg' },
-        { buffer: mockFile, originalFilename: 'ok.jpg', mimeType: 'image/jpeg' },
+        { buffer: Buffer.alloc(6 * 1024 * 1024), originalname: 'big.jpg', mimetype: 'image/jpeg' },
+        { buffer: mockFile, originalname: 'ok.jpg', mimetype: 'image/jpeg' },
       ];
 
       scanner.sanitizeFilename.mockImplementation((name) => name);
@@ -218,7 +251,7 @@ describe('Media Commands', () => {
     });
 
     it('should throw when storage bulk upload fails', async () => {
-      const files = [{ buffer: mockFile, originalFilename: 'a.jpg', mimeType: 'image/jpeg' }];
+      const files = [{ buffer: mockFile, originalname: 'a.jpg', mimetype: 'image/jpeg' }];
 
       scanner.sanitizeFilename.mockReturnValue('a.jpg');
 
@@ -230,7 +263,7 @@ describe('Media Commands', () => {
     });
 
     it('should reject unsafe files in bulk', async () => {
-      const files = [{ buffer: mockFile, originalFilename: 'virus.jpg', mimeType: 'image/jpeg' }];
+      const files = [{ buffer: mockFile, originalname: 'virus.jpg', mimetype: 'image/jpeg' }];
 
       scanner.sanitizeFilename.mockReturnValue('virus.jpg');
       scanner.validate.mockResolvedValue({

@@ -2,6 +2,7 @@ import { Controller, Get, HttpCode, HttpStatus, Logger, Post, Body, Req, Res, Us
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../../../shared/types';
 import { LoginCommand, LoginResult } from '../application/commands/login.command';
 import { GoogleLoginCommand, GoogleLoginResult } from '../application/commands/google-login.command';
 import { LogoutCommand } from '../application/commands/logout.command';
@@ -16,10 +17,6 @@ import { JwtAccessGuard } from '../application/guards/jwt-access.guard';
 import { CsrfGuard } from '../application/guards/csrf.guard';
 import { GoogleOAuthGuard } from '../application/guards/google-oauth.guard';
 import { AuthCookieService } from '../application/services/auth-cookie.service';
-
-interface AuthenticatedRequest extends Request {
-  user?: { id: string };
-}
 
 @Controller('auth')
 export class AuthController {
@@ -58,8 +55,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAccessGuard)
   async logout(@Req() req: AuthenticatedRequest, @Res({ passthrough: true }) res: Response) {
-    const user = req.user as { id: string };
-    await this.commandBus.execute(new LogoutCommand(user.id));
+    await this.commandBus.execute(new LogoutCommand(req.user.id));
     this.cookieService.clearRefreshToken(res);
     this.cookieService.clearCsrfToken(res);
     return { success: true };
@@ -69,8 +65,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAccessGuard)
   async logoutAll(@Req() req: AuthenticatedRequest, @Res({ passthrough: true }) res: Response) {
-    const user = req.user as { id: string };
-    await this.commandBus.execute(new LogoutAllCommand(user.id));
+    await this.commandBus.execute(new LogoutAllCommand(req.user.id));
     this.cookieService.clearRefreshToken(res);
     this.cookieService.clearCsrfToken(res);
     return { success: true };
@@ -80,8 +75,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAccessGuard)
   async changePassword(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
-    const user = req.user as { id: string };
-    await this.commandBus.execute(new ChangePasswordCommand(user.id, body));
+    await this.commandBus.execute(new ChangePasswordCommand(req.user.id, body));
     return { success: true };
   }
 
@@ -134,7 +128,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAccessGuard)
   async me(@Req() req: AuthenticatedRequest) {
-    const user = req.user as { id: string };
-    return await this.queryBus.execute(new GetCurrentUserQuery(user.id));
+    return await this.queryBus.execute(new GetCurrentUserQuery(req.user.id));
   }
 }

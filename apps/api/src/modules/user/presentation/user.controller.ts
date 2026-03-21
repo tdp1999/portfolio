@@ -14,10 +14,9 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { Request } from 'express';
+import { AuthenticatedRequest } from '../../../shared/types';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
-import { UserRole } from '../domain/user.types';
 import {
   InviteUserCommand,
   ResendInviteCommand,
@@ -25,11 +24,6 @@ import {
   UpdateUserCommand,
 } from '../application/commands';
 import { GetUserByIdQuery, ListUsersQuery } from '../application/queries';
-
-// user is guaranteed non-null by JwtAccessGuard
-interface AuthenticatedRequest extends Request {
-  user: { id: string; role: UserRole };
-}
 
 @Controller('users')
 @UseGuards(JwtAccessGuard, RoleGuard)

@@ -1,6 +1,6 @@
 # Task: Media REST Controller
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the Media controller with file upload endpoints using NestJS interceptors.
@@ -9,18 +9,18 @@ Create the Media controller with file upload endpoints using NestJS interceptors
 Controller is a thin transport adapter. File handling via multer interceptors, all logic delegated to command/query bus.
 
 ## Acceptance Criteria
-- [ ] `POST /media/upload` — single file upload via `FileInterceptor`, dispatches `UploadMediaCommand`
-- [ ] `POST /media/upload/bulk` — multi-file upload via `FilesInterceptor`, dispatches `BulkUploadMediaCommand`
-- [ ] `GET /media` — list with query params, dispatches `ListMediaQuery`
-- [ ] `GET /media/stats` — storage statistics, dispatches `GetStorageStatsQuery`
-- [ ] `GET /media/trash` — deleted media list, dispatches `ListDeletedMediaQuery`
-- [ ] `GET /media/:id` — get by ID, dispatches `GetMediaByIdQuery`
-- [ ] `PATCH /media/:id` — update metadata, dispatches `UpdateMediaMetadataCommand`
-- [ ] `DELETE /media/:id` — soft delete, dispatches `SoftDeleteMediaCommand`
-- [ ] `POST /media/:id/restore` — restore, dispatches `RestoreMediaCommand`
-- [ ] All endpoints auth-guarded
-- [ ] Controller is thin — no error throwing, no validation logic
-- [ ] File size limit configured at interceptor level (defense in depth)
+- [x] `POST /media/upload` — single file upload via `FileInterceptor`, dispatches `UploadMediaCommand`
+- [x] `POST /media/upload/bulk` — multi-file upload via `FilesInterceptor`, dispatches `BulkUploadMediaCommand`
+- [x] `GET /media` — list with query params, dispatches `ListMediaQuery`
+- [x] `GET /media/stats` — storage statistics, dispatches `GetStorageStatsQuery`
+- [x] `GET /media/trash` — deleted media list, dispatches `ListDeletedMediaQuery`
+- [x] `GET /media/:id` — get by ID, dispatches `GetMediaByIdQuery`
+- [x] `PATCH /media/:id` — update metadata, dispatches `UpdateMediaMetadataCommand`
+- [x] `DELETE /media/:id` — soft delete, dispatches `SoftDeleteMediaCommand`
+- [x] `POST /media/:id/restore` — restore, dispatches `RestoreMediaCommand`
+- [x] All endpoints auth-guarded
+- [x] Controller is thin — no error throwing, no validation logic
+- [x] File size limit configured at interceptor level (defense in depth)
 
 ## Technical Notes
 - `@UseInterceptors(FileInterceptor('file'))` for single, `FilesInterceptor('files', 10)` for bulk (max 10)
@@ -38,3 +38,4 @@ Controller is a thin transport adapter. File handling via multer interceptors, a
 ## Complexity: M
 
 ## Progress Log
+- [2026-03-21] Done — all ACs satisfied

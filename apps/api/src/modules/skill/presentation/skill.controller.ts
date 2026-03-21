@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Request } from 'express';
+import { AuthenticatedRequest } from '../../../shared/types';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
 import {
@@ -23,10 +23,6 @@ import {
   RestoreSkillCommand,
 } from '../application/commands';
 import { ListSkillsQuery, GetSkillByIdQuery, GetSkillBySlugQuery, GetSkillChildrenQuery } from '../application/queries';
-
-interface AuthenticatedRequest extends Request {
-  user: { id: string; role: string };
-}
 
 @Controller('skills')
 export class SkillController {

@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { ValidationError, ExternalServiceError, ErrorLayer, MediaErrorCode } from '@portfolio/shared/errors';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
+import { MulterFile } from '../../../../shared/types';
 import { IMediaRepository } from '../ports/media.repository.port';
 import { IStorageService } from '../ports/storage.service.port';
 import { ISecurityScanner } from '../ports/security-scanner.port';
@@ -12,9 +13,7 @@ import { validateFileSize, validateMimeType, validateSecurity, resolveResourceTy
 
 export class UploadMediaCommand extends BaseCommand {
   constructor(
-    readonly file: Buffer,
-    readonly originalFilename: string,
-    readonly mimeType: string,
+    readonly file: MulterFile,
     readonly dto: unknown,
     userId: string
   ) {
@@ -39,15 +38,17 @@ export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
         remarks: 'Media upload validation failed',
       });
 
-    validateFileSize(command.file, command.mimeType);
-    validateMimeType(command.mimeType);
-    const scanResult = await validateSecurity(this.scanner, command.file, command.mimeType);
+    const { buffer, originalname, mimetype } = command.file;
+
+    validateFileSize(buffer, mimetype);
+    validateMimeType(mimetype);
+    const scanResult = await validateSecurity(this.scanner, buffer, mimetype);
 
     let storageResult;
     try {
       storageResult = await this.storage.upload(scanResult.sanitizedBuffer, {
         folder: data.folder,
-        resourceType: resolveResourceType(command.mimeType),
+        resourceType: resolveResourceType(mimetype),
       });
     } catch (err) {
       throw ExternalServiceError('Media upload to storage failed', err instanceof Error ? err : undefined, {
@@ -55,7 +56,7 @@ export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
       });
     }
 
-    const sanitizedFilename = this.scanner.sanitizeFilename(command.originalFilename);
+    const sanitizedFilename = this.scanner.sanitizeFilename(originalname);
     const media = Media.create(
       {
         originalFilename: sanitizedFilename,
