@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '../infrastructure/prisma';
 import { UserModule } from '../modules/user';
@@ -18,6 +19,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
   imports: [
     PrismaModule,
     CqrsModule,
+    ScheduleModule.forRoot(),
     EmailModule,
     UserModule,
     AuthModule,
