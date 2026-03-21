@@ -1,6 +1,6 @@
 # Task: Media Module Wiring + Verification
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
 Wire all media components into a NestJS module and verify the full backend works end-to-end.
@@ -9,15 +9,15 @@ Wire all media components into a NestJS module and verify the full backend works
 Final backend integration task. Connects all ports, adapters, handlers, and controller into a working module.
 
 ## Acceptance Criteria
-- [ ] `MediaModule` defined with all providers, controllers, imports
-- [ ] DI wiring: `STORAGE_SERVICE` → `CloudinaryStorageService`, `SECURITY_SCANNER` → `FileSecurityScanner`, `MEDIA_REPOSITORY` → `PrismaMediaRepository`
-- [ ] All command/query handlers registered
-- [ ] Schedule module imported for cron jobs
-- [ ] Module imported in `AppModule`
-- [ ] Env var validation for Cloudinary credentials at module init
+- [x] `MediaModule` defined with all providers, controllers, imports
+- [x] DI wiring: `STORAGE_SERVICE` → `CloudinaryStorageService`, `SECURITY_SCANNER` → `FileSecurityScanner`, `MEDIA_REPOSITORY` → `MediaRepository`
+- [x] All command/query handlers registered
+- [x] Schedule module imported for cron jobs
+- [x] Module imported in `AppModule`
+- [x] Env var validation for Cloudinary credentials at module init
 - [ ] Manual API smoke test: upload, list, get, update metadata, delete, restore
-- [ ] All existing tests still pass
-- [ ] Type check passes (`npx tsc --noEmit`)
+- [x] All existing tests still pass
+- [x] Type check passes (`npx tsc --noEmit`)
 
 ## Technical Notes
 - Follow Skill module wiring pattern
@@ -34,3 +34,4 @@ Final backend integration task. Connects all ports, adapters, handlers, and cont
 ## Complexity: S
 
 ## Progress Log
+- [2026-03-21] Started — created MediaModule, wired DI tokens, added to AppModule, tsc passes
