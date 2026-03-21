@@ -29,6 +29,7 @@ export const UpdateMediaMetadataSchema = nonEmptyPartial(UpdateMediaMetadataFiel
 
 export const ListMediaSchema = PaginatedQuerySchema.extend({
   mimeTypePrefix: z.string().optional(),
+  includeDeleted: z.coerce.boolean().optional(),
 });
 
 export const BulkDeleteSchema = z.object({
@@ -39,6 +40,12 @@ export type CreateMediaDto = z.infer<typeof CreateMediaSchema>;
 export type UpdateMediaMetadataDto = z.infer<typeof UpdateMediaMetadataSchema>;
 export type ListMediaDto = z.infer<typeof ListMediaSchema>;
 export type BulkDeleteDto = z.infer<typeof BulkDeleteSchema>;
+
+export type StorageStatsDto = {
+  totalFiles: number;
+  totalBytes: number;
+  breakdown: { mimeTypePrefix: string; count: number; bytes: number }[];
+};
 
 export type MediaResponseDto = {
   id: string;

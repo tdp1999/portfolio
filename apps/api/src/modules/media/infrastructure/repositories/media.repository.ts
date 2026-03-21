@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginatedQuery, PaginatedResult } from '@portfolio/shared/types';
 import { PrismaService } from '../../../../infrastructure/prisma';
-import { IMediaRepository, MediaFindAllOptions } from '../../application/ports/media.repository.port';
+import {
+  IMediaRepository,
+  MediaFindAllOptions,
+  StorageStatsResult,
+} from '../../application/ports/media.repository.port';
 import { Media } from '../../domain/entities/media.entity';
 import { MediaMapper } from '../mapper/media.mapper';
 
@@ -96,6 +100,40 @@ export class MediaRepository implements IMediaRepository {
     return {
       data: data.map(MediaMapper.toDomain),
       total,
+    };
+  }
+
+  async getStorageStats(options?: { includeDeleted?: boolean }): Promise<StorageStatsResult> {
+    const where: Prisma.MediaWhereInput = options?.includeDeleted ? {} : { deletedAt: null };
+
+    const groups = await this.prisma.media.groupBy({
+      by: ['mimeType'],
+      where,
+      _count: true,
+      _sum: { bytes: true },
+    });
+
+    const prefixMap = new Map<string, { count: number; bytes: number }>();
+    let totalFiles = 0;
+    let totalBytes = 0;
+
+    for (const group of groups) {
+      const prefix = group.mimeType.split('/')[0];
+      const existing = prefixMap.get(prefix) ?? { count: 0, bytes: 0 };
+      existing.count += group._count;
+      existing.bytes += group._sum.bytes ?? 0;
+      prefixMap.set(prefix, existing);
+      totalFiles += group._count;
+      totalBytes += group._sum.bytes ?? 0;
+    }
+
+    return {
+      totalFiles,
+      totalBytes,
+      breakdown: Array.from(prefixMap.entries()).map(([mimeTypePrefix, stats]) => ({
+        mimeTypePrefix,
+        ...stats,
+      })),
     };
   }
 

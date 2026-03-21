@@ -1,6 +1,6 @@
 # Task: Media Queries + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement CQRS query handlers for listing, getting by ID, and storage statistics.
@@ -9,12 +9,12 @@ Implement CQRS query handlers for listing, getting by ID, and storage statistics
 Queries serve the admin media library UI with filtering, search, and storage usage data.
 
 ## Acceptance Criteria
-- [ ] `ListMediaQuery` + handler: paginated list with mimeType prefix filter, filename search, include-deleted option
-- [ ] `GetMediaByIdQuery` + handler: single media by ID, throws MEDIA_NOT_FOUND
-- [ ] `GetStorageStatsQuery` + handler: total files, total bytes, breakdown by mimeType prefix
-- [ ] `ListDeletedMediaQuery` + handler: paginated list of soft-deleted media (trash view)
-- [ ] Unit tests for each query handler
-- [ ] TDD approach
+- [x] `ListMediaQuery` + handler: paginated list with mimeType prefix filter, filename search, include-deleted option
+- [x] `GetMediaByIdQuery` + handler: single media by ID, throws MEDIA_NOT_FOUND
+- [x] `GetStorageStatsQuery` + handler: total files, total bytes, breakdown by mimeType prefix
+- [x] `ListDeletedMediaQuery` + handler: paginated list of soft-deleted media (trash view)
+- [x] Unit tests for each query handler
+- [x] TDD approach
 
 ## Technical Notes
 - Follow Skill queries pattern
@@ -33,3 +33,5 @@ Queries serve the admin media library UI with filtering, search, and storage usa
 ## Complexity: M
 
 ## Progress Log
+- 2026-03-21 Started
+- 2026-03-21 Done — all ACs satisfied

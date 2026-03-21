@@ -3,6 +3,13 @@ import { Media } from '../../domain/entities/media.entity';
 
 export interface MediaFindAllOptions extends PaginatedQuery {
   mimeTypePrefix?: string;
+  includeDeleted?: boolean;
+}
+
+export interface StorageStatsResult {
+  totalFiles: number;
+  totalBytes: number;
+  breakdown: { mimeTypePrefix: string; count: number; bytes: number }[];
 }
 
 export type IMediaRepository = ICrudRepository<Media> & {
@@ -15,4 +22,5 @@ export type IMediaRepository = ICrudRepository<Media> & {
   findExpiredSoftDeleted(olderThan: Date): Promise<Media[]>;
   findDeleted(options: PaginatedQuery): Promise<PaginatedResult<Media>>;
   findAll(options: MediaFindAllOptions): Promise<PaginatedResult<Media>>;
+  getStorageStats(options?: { includeDeleted?: boolean }): Promise<StorageStatsResult>;
 };
