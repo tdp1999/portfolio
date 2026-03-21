@@ -1,6 +1,6 @@
 # Task: Media Commands + Handlers
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement CQRS command handlers for upload (single + bulk), update metadata, soft delete, restore, and hard delete.
@@ -9,16 +9,16 @@ Implement CQRS command handlers for upload (single + bulk), update metadata, sof
 Commands orchestrate the upload pipeline: validate → scan → store → persist. This is the core business logic layer.
 
 ## Acceptance Criteria
-- [ ] `UploadMediaCommand` + handler: validate size/type → security scan → upload to Cloudinary → create entity → persist
-- [ ] `BulkUploadMediaCommand` + handler: validate each → scan each → `uploadBulk` → persist succeeded → return succeeded + failed
-- [ ] `UpdateMediaMetadataCommand` + handler: find by ID → updateMetadata → persist
-- [ ] `SoftDeleteMediaCommand` + handler: find by ID → softDelete → persist
-- [ ] `RestoreMediaCommand` + handler: find by ID → restore → persist
-- [ ] `HardDeleteMediaCommand` + handler: delete from Cloudinary → hard delete from DB
-- [ ] All handlers inject ports via tokens (STORAGE_SERVICE, SECURITY_SCANNER, MEDIA_REPOSITORY)
-- [ ] Error codes used: MEDIA_NOT_FOUND, MEDIA_INVALID_INPUT, MEDIA_FILE_TOO_LARGE, MEDIA_UNSUPPORTED_TYPE, MEDIA_UPLOAD_FAILED, MEDIA_SECURITY_THREAT, MEDIA_ALREADY_DELETED
-- [ ] Unit tests for each command handler with mocked ports
-- [ ] TDD approach
+- [x] `UploadMediaCommand` + handler: validate size/type → security scan → upload to Cloudinary → create entity → persist
+- [x] `BulkUploadMediaCommand` + handler: validate each → scan each → `uploadBulk` → persist succeeded → return succeeded + failed
+- [x] `UpdateMediaMetadataCommand` + handler: find by ID → updateMetadata → persist
+- [x] `SoftDeleteMediaCommand` + handler: find by ID → softDelete → persist
+- [x] `RestoreMediaCommand` + handler: find by ID → restore → persist
+- [x] `HardDeleteMediaCommand` + handler: delete from Cloudinary → hard delete from DB
+- [x] All handlers inject ports via tokens (STORAGE_SERVICE, SECURITY_SCANNER, MEDIA_REPOSITORY)
+- [x] Error codes used: MEDIA_NOT_FOUND, MEDIA_INVALID_INPUT, MEDIA_FILE_TOO_LARGE, MEDIA_UNSUPPORTED_TYPE, MEDIA_UPLOAD_FAILED, MEDIA_SECURITY_THREAT, MEDIA_ALREADY_DELETED
+- [x] Unit tests for each command handler with mocked ports
+- [x] TDD approach
 
 ## Technical Notes
 - Upload pipeline order: size check → MIME type check → security scan → Cloudinary upload → DB persist
@@ -41,3 +41,5 @@ Commands orchestrate the upload pipeline: validate → scan → store → persis
 ## Complexity: XL
 
 ## Progress Log
+- [2026-03-21] Started — TDD approach, writing tests first
+- [2026-03-21] Done — all ACs satisfied, 21/21 tests passing
