@@ -496,3 +496,68 @@ Angular libs (any lib importing `@angular/*`) must use `bundler` module resoluti
 **Why:** The Nx generator defaults to `"module": "commonjs"` and `"moduleResolution": "node10"`, which cannot resolve Angular's package exports (e.g., `@angular/core/testing`).
 
 **Scope:** Only Angular/frontend libs. Pure non-Angular shared libs (types, utils, errors) and backend (NestJS) can keep `node10`.
+
+---
+
+## 13. Accessibility & E2E Testability
+
+Templates must be both accessible and E2E-testable. These goals are aligned — if an element is accessible, it's testable via semantic selectors.
+
+### Icon Buttons — Always add `aria-label`
+
+`matTooltip` does NOT set `aria-label`. Icon-only buttons are invisible to screen readers and Playwright's `getByRole` without it.
+
+```html
+<!-- BAD: no accessible name -->
+<button mat-icon-button matTooltip="Delete">
+  <mat-icon>delete</mat-icon>
+</button>
+
+<!-- GOOD: accessible + testable -->
+<button mat-icon-button aria-label="Delete" matTooltip="Delete">
+  <mat-icon>delete</mat-icon>
+</button>
+```
+
+**Rule:** Every interactive element (button, link, input) must have an accessible name via `aria-label`, `<mat-label>`, or visible text content.
+
+### Error Messages — Use `role="alert"`
+
+Use `<console-error-message>` component (which renders `role="alert"`) instead of raw `<p class="text-red-500">`.
+
+```html
+<!-- BAD: no semantic meaning, hard to target in E2E -->
+<p class="text-sm text-red-500">{{ error }}</p>
+
+<!-- GOOD: accessible, findable via getByRole('alert') -->
+<console-error-message [message]="error" />
+```
+
+### State Indicators
+
+| State | Pattern | E2E selector |
+|-------|---------|-------------|
+| Loading | `aria-busy="true"` on container | `locator('[aria-busy="true"]')` |
+| Empty | Visible descriptive text | `getByText('No items found')` |
+| Error | `role="alert"` or `<console-error-message>` | `getByRole('alert')` |
+
+### Looped Elements — Use `data-testid`
+
+When rendering lists where items share the same semantic role, add `data-testid` for E2E targeting:
+
+```html
+@for (item of items(); track item.id) {
+  <div [attr.data-testid]="'card-' + item.id">
+    <!-- child elements can use getByRole within this scope -->
+  </div>
+}
+```
+
+### `data-testid` Policy (Pragmatic)
+
+Use `data-testid` as an **escape hatch** when semantic selectors are insufficient:
+- Repeated items in loops (grid cards, list items with identical roles)
+- Custom components with no standard ARIA role (dropzones, progress indicators)
+- Complex nested structures where scoping by text is ambiguous
+
+**Do not use** `data-testid` when `getByRole`, `getByLabel`, or `getByText` can identify the element.
