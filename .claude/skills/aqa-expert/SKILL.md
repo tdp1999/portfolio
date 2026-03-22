@@ -58,7 +58,7 @@ Apply these checks on EVERY test unless explicitly skipped:
 **UI Layer:**
 - Use `page.waitForURL()` for navigation, never arbitrary waits
 - Assert visible text, not DOM structure
-- Use `getByText`, `getByRole`, `getByLabel` over CSS selectors when possible
+- Follow the **Selector Priority** (see below) — semantic selectors first, `data-testid` as escape hatch
 
 **Network Layer:**
 - Monitor fixture catches request loops automatically (>10 API calls = fail)
@@ -113,6 +113,68 @@ apps/{app}-e2e/
     global-teardown.ts
   playwright.config.ts
 ```
+
+## Selector Priority (Mandatory)
+
+Follow this hierarchy when writing locators in POMs:
+
+| Priority | Selector | Example |
+|----------|----------|---------|
+| 1 | `getByRole` + accessible name | `getByRole('button', { name: 'Delete' })` |
+| 2 | `getByLabel` | `getByLabel('Email')` |
+| 3 | `getByText` | `getByText('No media files')` |
+| 4 | `getByTestId` | `getByTestId('media-card-abc123')` |
+| 5 | CSS/locator | Last resort only |
+
+### Angular Material Specific Selectors
+
+| Component | Selector | Notes |
+|-----------|----------|-------|
+| `mat-dialog` | `getByRole('dialog')` | NOT `locator('mat-dialog-container')` |
+| `mat-table` | `getByRole('table')` | NOT `locator('table')` |
+| Table rows | `getByRole('row').filter({ hasText })` | NOT `locator('tr')` |
+| `mat-icon-button` | `getByRole('button', { name })` | **Requires `aria-label` in template** |
+| `mat-select` | `getByRole('combobox', { name })` | Needs `<mat-label>` |
+| `mat-checkbox` | `getByRole('checkbox', { name })` | Needs label or `aria-label` |
+| Error messages | `getByRole('alert')` | Template must use `role="alert"` or `<console-error-message>` |
+| Form fields | `getByRole('textbox', { name })` | Template must have `<mat-label>` |
+
+### Anti-Patterns (Never Use)
+
+```typescript
+// BAD: CSS class selectors
+page.locator('.text-red-500')
+page.locator('.media-card__preview')
+
+// BAD: Implementation details
+page.locator('input[formControlName="name"]')
+page.locator('mat-dialog-container')
+
+// BAD: Component tag selectors
+page.locator('console-filter-select')
+```
+
+### Looped Elements
+
+When targeting one item from a list, use scoped chaining:
+
+```typescript
+// Static data-testid on container + role-based child
+const card = page.getByTestId('media-card-abc123');
+await card.getByRole('button', { name: 'Edit' }).click();
+
+// Or filter by visible text
+const row = page.getByRole('row').filter({ hasText: 'photo.png' });
+await row.getByRole('button', { name: 'Delete' }).click();
+```
+
+### FE Template Requirements for Testability
+
+When writing E2E tests, if you encounter elements that **cannot** be located by semantic selectors, flag it as an implementation gap in the FE code. The FE template must provide:
+- `aria-label` on every icon button (matTooltip is NOT enough)
+- `<mat-label>` on every form field
+- `role="alert"` on error containers (or use `<console-error-message>`)
+- `data-testid` on repeated items in loops
 
 ## Flag Implementation Gaps
 
