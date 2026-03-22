@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (151 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (176 tasks)
 
 ## Completed Milestones
 
@@ -44,6 +44,10 @@
   - Tasks 143-152 → archived in `tasks-done/epic-category-module/`
 - [x] **Skill Module** (epic-skill-module) - Completed 2026-03-19
   - Tasks 153-162 → archived in `tasks-done/epic-skill-module/`
+- [x] **Media Module** (epic-media-module) - Completed 2026-03-22
+  - Tasks 163-177 → archived in `tasks-done/epic-media-module/`
+  - Full vertical slice: Cloudinary storage, security scanning, admin UI, E2E tests
+  - Backend bugs found & fixed during E2E: restore handler, repo update method
 
 ## In Progress
 
@@ -100,34 +104,11 @@
 
 **Milestone:** First self-referential module with parent-child hierarchy ✓
 
-#### Sprint 6: Media Module (15 tasks) - IN PROGRESS
+#### Sprint 6: Media Module (15 tasks) - COMPLETE
 
-**Phase 1: Backend Core (6 tasks)**
-- [ ] 163-media-prisma-schema - Prisma schema + migration (S)
-- [ ] 164-media-domain-entity - Domain entity + tests (M)
-- [ ] 165-media-storage-port-cloudinary - Storage port + Cloudinary adapter (L)
-- [ ] 166-media-security-scanner - Security scanner port + implementation (L)
-- [ ] 167-media-repository-mapper - Repository + mapper (M)
-- [ ] 168-media-dtos - Zod DTOs + presenter (M)
+- [x] 163-177 → See epic-media-module (archived in `tasks-done/epic-media-module/`)
 
-**Phase 2: Backend Logic (4 tasks)**
-- [ ] 169-media-commands - Command handlers (XL)
-- [ ] 170-media-queries - Query handlers (M)
-- [ ] 171-media-controller - REST controller with file interceptors (M)
-- [ ] 172-media-scheduled-jobs - Cleanup + orphan detection cron jobs (M)
-
-**Phase 3: Backend Wiring (1 task)**
-- [ ] 173-media-module-wiring - Module wiring + verification (S)
-
-**Phase 4: Frontend (3 tasks)**
-- [ ] 174-media-fe-library-service - FE library + MediaService (M)
-- [ ] 175-media-fe-upload-browser - Upload dropzone + grid/list browser (XL)
-- [ ] 176-media-fe-metadata-trash - Metadata edit + trash view (L)
-
-**Phase 5: E2E (1 task)**
-- [ ] 177-media-e2e-tests - Playwright E2E tests (L)
-
-**Milestone:** Full media management with Cloudinary integration, security scanning, admin UI
+**Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
 
 #### Future Sprints (to be broken down when ready)
 - Sprint 7: Profile Module
@@ -171,50 +152,18 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 
-### Epic: Auth Frontend UI & Integration (epic-auth-frontend) - COMPLETE ✓
-
-> **Approach:** Foundation first (CORS, HTTP, store), then UI components, then pages, then wiring.
-
-#### Phase 1: Foundation (4 tasks) — COMPLETE
-
-- [x] 101-cors-configuration - Configure CORS for cross-subdomain auth (S) ✓
-- [x] 102-console-http-setup - Setup HttpClient and API config (S) ✓
-- [x] 103-auth-store - Signal-based AuthStore service (L) ✓
-- [x] 104-auth-interceptors - Auth, Refresh, CSRF interceptors (L) ✓
-
-#### Phase 2: UI Infrastructure (3 tasks) — COMPLETE
-
-- [x] 105-route-guards - Auth and Guest route guards (M) ✓
-- [x] 106-toast-service - Toast notification system (M) ✓
-- [x] 107-loading-indicators - Loading bar, skeleton, full-page spinner (M) ✓
-
-#### Phase 3: Auth Pages (4 tasks) — COMPLETE
-
-- [x] 108-error-interceptor - Error interceptor with toast integration (S) ✓
-- [x] 109-login-page - Login page with form and Google SSO (M) ✓
-- [x] 110-forgot-reset-password-pages - Forgot and Reset password pages (M) ✓
-- [x] 111-oauth-callback-page - Google OAuth callback handler (S) ✓
-
-#### Phase 4: Integration (3 tasks) — COMPLETE
-
-- [x] 112-app-bootstrap-auth - Wire auth bootstrap into app init (M) ✓
-- [x] 113-sidebar-user-integration - Wire user data into sidebar (S) ✓
-- [x] 114-csp-headers - Content Security Policy headers (S) ✓
-
-
 ---
 
 ## Up Next
 
-**Next Module:** Media Module (broken down → tasks 163-177)
+**Next Module:** Profile Module (Sprint 7 — to be broken down)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 161     |
-| Pending (Media)           | 15      |
+| Done (archived)           | 176     |
 | Pending (Standalone)      | 1       |
 | **Total Created**         | **177** |
 

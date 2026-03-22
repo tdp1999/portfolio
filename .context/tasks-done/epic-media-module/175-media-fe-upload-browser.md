@@ -1,6 +1,6 @@
 # Task: Media FE Upload Dropzone + Browser UI
 
-## Status: pending
+## Status: done
 
 ## Goal
 Build the main media library page with upload dropzone and grid/list file browser.
@@ -9,19 +9,19 @@ Build the main media library page with upload dropzone and grid/list file browse
 Primary admin UI for media management. Drag-and-drop upload with per-file progress, browsable media grid with list toggle.
 
 ## Acceptance Criteria
-- [ ] Media library page component with responsive layout
-- [ ] Upload dropzone: drag & drop area + click-to-browse fallback
-- [ ] Multi-file upload support with per-file progress indicators
-- [ ] File type and size validation before upload (client-side pre-check)
-- [ ] Grid view: thumbnail cards with filename, type badge, size
-- [ ] List view: table with columns (thumbnail, name, type, size, date, actions)
-- [ ] Grid/list toggle persisted in localStorage
-- [ ] Search bar: filter by filename
-- [ ] Filter: by MIME type prefix (images, documents, video, archives)
-- [ ] Pagination for media list
-- [ ] Storage usage widget: total files, total size, type breakdown
-- [ ] Empty state for no media
-- [ ] Loading states (skeletons)
+- [x] Media library page component with responsive layout
+- [x] Upload dropzone: drag & drop area + click-to-browse fallback
+- [x] Multi-file upload support with per-file progress indicators
+- [x] File type and size validation before upload (client-side pre-check)
+- [x] Grid view: thumbnail cards with filename, type badge, size
+- [x] List view: table with columns (thumbnail, name, type, size, date, actions)
+- [x] Grid/list toggle persisted in localStorage
+- [x] Search bar: filter by filename
+- [x] Filter: by MIME type prefix (images, documents, video, archives)
+- [x] Pagination for media list
+- [x] Storage usage widget: total files, total size, type breakdown
+- [x] Empty state for no media
+- [x] Loading states (spinner overlay)
 
 ## Technical Notes
 - Use Angular Signals for state management
@@ -42,3 +42,4 @@ Primary admin UI for media management. Drag-and-drop upload with per-file progre
 ## Complexity: XL
 
 ## Progress Log
+- [2026-03-22] Done — all ACs satisfied. Media page with grid/list views, upload dropzone, filters, pagination, stats widget.

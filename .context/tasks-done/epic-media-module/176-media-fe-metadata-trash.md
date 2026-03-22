@@ -1,6 +1,6 @@
 # Task: Media FE Metadata Edit + Trash View
 
-## Status: pending
+## Status: done
 
 ## Goal
 Build the metadata editing dialog and trash management view for soft-deleted media.
@@ -9,17 +9,17 @@ Build the metadata editing dialog and trash management view for soft-deleted med
 Completes the admin media management UI with editing and trash/restore functionality.
 
 ## Acceptance Criteria
-- [ ] Metadata edit dialog: edit altText and caption for a media item
-- [ ] Dialog opens on click from grid/list view
-- [ ] Shows file preview, filename, type, size, upload date (read-only info)
-- [ ] Save dispatches update metadata API call
-- [ ] Bulk actions: multi-select in grid/list → bulk delete
-- [ ] Trash view: separate tab/route showing soft-deleted media
-- [ ] Trash items show: filename, deleted date, deleted by
-- [ ] Restore button per item and bulk restore
-- [ ] Permanent delete button with confirmation dialog
-- [ ] Toast notifications for all actions (upload success/fail, delete, restore, update)
-- [ ] Error handling: display API errors in toasts
+- [x] Metadata edit dialog: edit altText and caption for a media item
+- [x] Dialog opens on click from grid/list view
+- [x] Shows file preview, filename, type, size, upload date (read-only info)
+- [x] Save dispatches update metadata API call
+- [x] Bulk actions: multi-select in grid/list → bulk delete
+- [x] Trash view: separate tab/route showing soft-deleted media
+- [x] Trash items show: filename, deleted date, deleted by
+- [x] Restore button per item and bulk restore
+- [x] Permanent delete button with confirmation dialog
+- [x] Toast notifications for all actions (upload success/fail, delete, restore, update)
+- [x] Error handling: display API errors in toasts
 
 ## Technical Notes
 - Use Angular Material dialog for metadata editing
@@ -38,3 +38,4 @@ Completes the admin media management UI with editing and trash/restore functiona
 ## Complexity: L
 
 ## Progress Log
+- [2026-03-22] Done — all ACs satisfied. Media dialog, bulk select, trash view with restore.

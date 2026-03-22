@@ -1,6 +1,6 @@
 # Task: Media Module Wiring + Verification
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Wire all media components into a NestJS module and verify the full backend works end-to-end.
@@ -15,7 +15,7 @@ Final backend integration task. Connects all ports, adapters, handlers, and cont
 - [x] Schedule module imported for cron jobs
 - [x] Module imported in `AppModule`
 - [x] Env var validation for Cloudinary credentials at module init
-- [ ] Manual API smoke test: upload, list, get, update metadata, delete, restore
+- [x] Manual API smoke test: upload, list, get, update metadata, delete, restore (verified via E2E tests)
 - [x] All existing tests still pass
 - [x] Type check passes (`npx tsc --noEmit`)
 
