@@ -43,7 +43,7 @@ import { validateFile, MAX_BULK_UPLOAD_FILES } from '../media.constants';
         p-8 cursor-pointer transition-colors;
       &:hover,
       &.dragover {
-        @apply border-primary bg-primary/5;
+        @apply border-primary bg-primary;
       }
     }
   `,
