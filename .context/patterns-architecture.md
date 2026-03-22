@@ -1,7 +1,7 @@
 # Architecture Patterns
 
 > Architectural decisions, module boundaries, and backend/frontend structure.
-> For design system and component patterns, see `patterns-design-system.md`.
+> For design system and component patterns, see `design/foundations.md`.
 
 ## Architecture
 

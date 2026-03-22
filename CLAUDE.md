@@ -16,7 +16,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 ## References
 
 - **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns-architecture.md`
-- **Design System:** Tokens, components, layout patterns. See `.context/patterns-design-system.md`
+- **Design System:** Tokens, components, layout patterns. See `.context/design/` (foundations, landing, console, shared)
 - **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
@@ -34,7 +34,9 @@ Use these skills for specific workflows. More will be added over time.
 
 - `vision.md` - Project goals and philosophy
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
-- `patterns-design-system.md` - Design tokens, components, layout recipes
+- `design/` - Design system (foundations, landing, console, shared)
+- `DESIGN-landing.md` - Stitch-compatible AI-readable spec for landing
+- `DESIGN-console.md` - Stitch-compatible AI-readable spec for console
 - `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)
 - `testing-guide.md` - TDD workflow and patterns
 - `commands.md` - All dev/build/test commands

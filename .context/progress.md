@@ -110,6 +110,41 @@
 
 **Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
 
+### Epic: Console UI Redesign (epic-console-ui-redesign) - broken-down
+
+> **Approach:** 5 phases — layout shell → content pages → specialized pages → light mode → validation
+
+#### Phase 1: Layout Shell (3 tasks)
+- [ ] 180-console-background-pattern - Grain noise + radial glow background (S)
+- [ ] 181-sidebar-gradient-pill - Gradient pill active indicator in ui-sidebar-* (M)
+- [ ] 182-topbar-footer - Search input, notification bell, footer bar (M)
+
+#### Phase 2: Content Pages (4 tasks)
+- [ ] 183-dashboard-page - Welcome, stat cards, recent activity, quick actions (M)
+- [ ] 184-crud-template - Header + filter bar + table + fixed pagination template (M)
+- [ ] 185-apply-crud-tags-categories - Apply template to Tags + Categories (S)
+- [ ] 186-apply-crud-skills-users - Apply template to Skills + Users (S)
+
+#### Phase 3: Specialized Pages (2 tasks)
+- [ ] 187-media-page-redesign - Grid/list views, upload, stats, batch ops (L)
+- [ ] 188-auth-pages-redesign - Login, forgot/reset/set password cards (M)
+
+#### Phase 4: Light Mode + Polish (2 tasks)
+- [ ] 189-light-mode - Token-based theme swap, verify all screens (M)
+- [ ] 190-visual-effects - Box-shadow, hover glow, transitions (S)
+
+#### Phase 5: Validation + Docs (2 tasks)
+- [ ] 191-playwright-validation - Screenshot all screens dark+light, compare Stitch (S)
+- [ ] 192-update-design-docs - Update console.md + DESIGN-console.md (S)
+
+---
+
+### Standalone Tasks
+
+- [ ] 193-foundations-audit-landing - Audit landing page vs Design Foundations standards (M)
+
+---
+
 #### Future Sprints (to be broken down when ready)
 - Sprint 7: Profile Module
 - Sprint 8: Project Module (complex, with relations)

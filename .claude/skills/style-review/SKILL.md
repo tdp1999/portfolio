@@ -29,7 +29,7 @@ When a review item is resolved, determine impact and persist the decision:
 | **Core standard** (fundamental rule) | `CLAUDE.md` — add to Critical Guardrails table | "Validation in Application Layer, not Controllers" |
 | **Architecture pattern** (backend structure) | `.context/patterns-architecture.md` | CQRS handler patterns, layer responsibilities |
 | **Angular pattern** (frontend convention) | `.context/angular-style-guide.md` | Signal usage, component structure |
-| **Design pattern** (UI/component) | `.context/patterns-design-system.md` | Component API conventions |
+| **Design pattern** (UI/component) | `.context/design/` | Component API conventions |
 | **Testing pattern** | `.context/testing-guide.md` | Test structure, mocking approach |
 
 ## Workflow
