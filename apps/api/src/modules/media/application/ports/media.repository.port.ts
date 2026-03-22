@@ -16,6 +16,7 @@ export type IMediaRepository = ICrudRepository<Media> & {
   update(id: string, media: Media): Promise<void>;
   remove(id: string, media: Media): Promise<void>;
   hardDelete(id: string): Promise<void>;
+  findByIdIncludeDeleted(id: string): Promise<Media | null>;
   findByPublicId(publicId: string): Promise<Media | null>;
   findByMimeTypePrefix(prefix: string): Promise<Media[]>;
   findOrphans(): Promise<Media[]>;

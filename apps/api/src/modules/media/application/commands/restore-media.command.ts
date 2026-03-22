@@ -22,7 +22,7 @@ export class RestoreMediaHandler implements ICommandHandler<RestoreMediaCommand>
   async execute(command: RestoreMediaCommand): Promise<void> {
     IdentifierValue.from(command.mediaId);
 
-    const media = await this.repo.findById(command.mediaId);
+    const media = await this.repo.findByIdIncludeDeleted(command.mediaId);
     if (!media)
       throw NotFoundError('Media not found', {
         errorCode: MediaErrorCode.NOT_FOUND,

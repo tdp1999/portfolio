@@ -26,6 +26,8 @@ export class MediaRepository implements IMediaRepository {
       data: {
         altText: media.altText,
         caption: media.caption,
+        deletedAt: media.deletedAt,
+        deletedById: media.deletedById,
         updatedById: media.updatedById,
       },
     });
@@ -48,6 +50,11 @@ export class MediaRepository implements IMediaRepository {
 
   async findById(id: string): Promise<Media | null> {
     const raw = await this.prisma.media.findFirst({ where: { id, deletedAt: null } });
+    return raw ? MediaMapper.toDomain(raw) : null;
+  }
+
+  async findByIdIncludeDeleted(id: string): Promise<Media | null> {
+    const raw = await this.prisma.media.findFirst({ where: { id } });
     return raw ? MediaMapper.toDomain(raw) : null;
   }
 
