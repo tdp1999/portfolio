@@ -46,6 +46,11 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@portfolio/console/feature-skill').then((m) => m.skillRoutes),
         canActivate: [adminGuard],
       },
+      {
+        path: 'media',
+        loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
+        canActivate: [adminGuard],
+      },
       { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
     ],
   },

@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.media-grid {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.media-card {
+  @apply relative rounded-lg border border-border overflow-hidden transition-shadow;
+
+  &:hover {
+    @apply shadow-md;
+  }
+
+  &.selected {
+    @apply border-primary ring-1 ring-primary;
+  }
+
+  &__select {
+    @apply absolute top-2 left-2 z-10 opacity-0 transition-opacity;
+
+    .group:hover &,
+    .selected & {
+      @apply opacity-100;
+    }
+  }
+
+  &__preview {
+    @apply flex items-center justify-center bg-surface-alt h-[140px] overflow-hidden;
+
+    img {
+      @apply w-full h-full object-cover;
+    }
+  }
+
+  &__info {
+    @apply p-3;
+  }
+
+  &__actions {
+    @apply flex items-center justify-end gap-1 px-2 pb-2 opacity-0 transition-opacity;
+
+    .group:hover & {
+      @apply opacity-100;
+    }
+  }
+}
