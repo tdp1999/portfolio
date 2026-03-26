@@ -9,10 +9,7 @@ import { SidebarVariant } from './sidebar.type';
     @if (state.isMobile() && state.isOpen()) {
       <!-- Overlay backdrop - not interactive content, click dismisses modal -->
       <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-      <div
-        class="fixed inset-0 z-30 bg-black/50 transition-opacity duration-200"
-        (click)="state.setOpen(false)"
-      ></div>
+      <div class="fixed inset-0 z-30 bg-black/50 transition-opacity duration-200" (click)="state.setOpen(false)"></div>
     }
     <aside
       class="relative h-full overflow-hidden bg-surface text-text transition-[width,transform] duration-200 ease-in-out"
@@ -45,7 +42,7 @@ export class SidebarComponent {
   protected readonly state = inject(SidebarState);
 
   readonly variant = input<SidebarVariant>('expanded');
-  readonly expandedWidth = input('280px');
+  readonly expandedWidth = input('240px');
   readonly compactWidth = input('64px');
 
   protected readonly asideWidth = computed(() => {

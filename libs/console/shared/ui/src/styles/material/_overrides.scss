@@ -38,9 +38,20 @@
       filled-container-color: var(--color-primary),
       filled-label-text-color: var(--color-text-on-primary),
       filled-hover-state-layer-opacity: 0.08,
+      filled-container-shape: 8px,
       outlined-outline-color: var(--color-border),
       outlined-label-text-color: var(--color-text),
       outlined-hover-state-layer-opacity: 0.04,
+      outlined-container-shape: 8px,
+      text-container-shape: 8px,
+    )
+  );
+
+  /* Icon Button */
+  @include mat.icon-button-overrides(
+    (
+      state-layer-size: 40px,
+      icon-size: 24px,
     )
   );
 
@@ -105,4 +116,35 @@
 .mat-mdc-menu-panel {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
+}
+
+/* Compact search field — reusable class for topbar/toolbar search inputs */
+.console-search {
+  --mdc-outlined-text-field-outline-color: transparent;
+  --mdc-outlined-text-field-hover-outline-color: rgba(148, 163, 184, 0.2);
+  --mdc-outlined-text-field-focus-outline-color: rgba(99, 102, 241, 0.5);
+  --mdc-outlined-text-field-container-shape: 6px;
+  --mdc-outlined-text-field-input-text-placeholder-color: #94a3b8;
+  --mdc-outlined-text-field-input-text-size: var(--text-xs);
+  --mat-form-field-container-height: 32px;
+  --mat-form-field-container-vertical-padding: 4px;
+  background: var(--color-surface-alt);
+  border-radius: 6px;
+
+  .mat-mdc-form-field-infix {
+    min-height: unset;
+  }
+
+  input.mat-mdc-input-element {
+    font-size: var(--text-xs);
+    line-height: 20px;
+  }
+
+  [matprefix] {
+    color: #94a3b8;
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    margin-right: 4px;
+  }
 }

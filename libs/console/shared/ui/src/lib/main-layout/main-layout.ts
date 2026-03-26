@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthStore, ThemeService } from '@portfolio/console/shared/data-access';
@@ -16,6 +18,8 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
     RouterLinkActive,
     RouterOutlet,
     SidebarModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatMenuModule,
     MatIconModule,
     MatButtonModule,

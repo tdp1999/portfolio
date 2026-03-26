@@ -4,7 +4,7 @@ import { Directive } from '@angular/core';
   selector: 'ul[uiSidebarMenu]',
   standalone: true,
   host: {
-    class: 'sidebar-menu',
+    class: 'sidebar-menu space-y-1',
     role: 'menu',
   },
 })

@@ -22,32 +22,32 @@
         <ui-sidebar-group label="Admin" [collapsible]="true">
           <ul uiSidebarMenu>
             <li uiSidebarMenuItem>
-              <a routerLink="/admin/users" ui-sidebar-menu-button tooltip="User Management">
-                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">group</mat-icon>
+              <a routerLink="/admin/users" routerLinkActive ui-sidebar-menu-button tooltip="User Management">
+                <mat-icon data-sidebar-icon class="icon-md">group</mat-icon>
                 <span>Users</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/tags" ui-sidebar-menu-button tooltip="Tag Management">
-                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">local_offer</mat-icon>
+              <a routerLink="/tags" routerLinkActive ui-sidebar-menu-button tooltip="Tag Management">
+                <mat-icon data-sidebar-icon class="icon-md">local_offer</mat-icon>
                 <span>Tags</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/categories" ui-sidebar-menu-button tooltip="Category Management">
-                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">category</mat-icon>
+              <a routerLink="/categories" routerLinkActive ui-sidebar-menu-button tooltip="Category Management">
+                <mat-icon data-sidebar-icon class="icon-md">category</mat-icon>
                 <span>Categories</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/skills" ui-sidebar-menu-button tooltip="Skill Management">
-                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">psychology</mat-icon>
+              <a routerLink="/skills" routerLinkActive ui-sidebar-menu-button tooltip="Skill Management">
+                <mat-icon data-sidebar-icon class="icon-md">psychology</mat-icon>
                 <span>Skills</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/media" ui-sidebar-menu-button tooltip="Media Library">
-                <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">perm_media</mat-icon>
+              <a routerLink="/media" routerLinkActive ui-sidebar-menu-button tooltip="Media Library">
+                <mat-icon data-sidebar-icon class="icon-md">perm_media</mat-icon>
                 <span>Media</span>
               </a>
             </li>
@@ -59,15 +59,15 @@
       <ui-sidebar-group label="System" [collapsible]="true">
         <ul uiSidebarMenu>
           <li uiSidebarMenuItem>
-            <a routerLink="/ddl" ui-sidebar-menu-button tooltip="DDL">
-              <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">grid_on</mat-icon>
+            <a routerLink="/ddl" routerLinkActive ui-sidebar-menu-button tooltip="DDL">
+              <mat-icon data-sidebar-icon class="icon-md">grid_on</mat-icon>
               <span>DDL</span>
             </a>
           </li>
 
           <li uiSidebarMenuItem>
             <button ui-sidebar-menu-button tooltip="Settings" (click)="settingsSub.toggle()">
-              <mat-icon data-sidebar-icon class="!h-4 !w-4 !text-[16px]">settings</mat-icon>
+              <mat-icon data-sidebar-icon class="icon-md">settings</mat-icon>
               <span>Settings</span>
             </button>
             <ui-sidebar-menu-sub #settingsSub>
@@ -137,14 +137,26 @@
     <div class="flex items-center gap-2 border-b border-border px-4 py-2">
       <ui-sidebar-trigger />
       <h2 class="text-lg font-semibold text-text">Console</h2>
-      <div class="ml-auto">
+      <div class="ml-auto flex items-center gap-1">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="console-search w-56">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search resources..." disabled />
+        </mat-form-field>
+        <button mat-icon-button matTooltip="Notifications" disabled>
+          <mat-icon>notifications_none</mat-icon>
+        </button>
         <button mat-icon-button (click)="themeService.toggle()" [matTooltip]="themeTooltip()">
           <mat-icon>{{ themeIcon() }}</mat-icon>
         </button>
       </div>
     </div>
-    <div class="p-6 overflow-auto w-full h-full [&>*]:mx-auto">
+    <div class="console-content p-8 overflow-auto w-full flex-1">
       <router-outlet />
     </div>
+    <footer class="console-footer flex items-center justify-between px-6 py-3 border-t border-border">
+      <span>&copy; 2026 Console Portfolio Management</span>
+      <span>Terms of Service &middot; Privacy Policy</span>
+      <span>v1.0.0</span>
+    </footer>
   </ui-sidebar-inset>
 </ui-sidebar-provider>

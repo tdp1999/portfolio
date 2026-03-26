@@ -11,7 +11,7 @@ import { SidebarState } from './sidebar-state.service';
   template: `<ng-content />`,
   host: {
     class:
-      'flex h-7 min-w-0 items-center gap-2 overflow-hidden rounded-md px-2 text-sm text-text no-underline transition-colors duration-150 hover:bg-surface-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+      'flex min-w-0 items-center gap-2 overflow-hidden rounded-md px-3 py-2 text-sm text-text no-underline transition-colors duration-150 hover:bg-surface-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
     '[class.bg-surface-elevated]': 'active()',
     '[class.font-medium]': 'active()',
     '[class.text-xs]': 'size() === "sm"',

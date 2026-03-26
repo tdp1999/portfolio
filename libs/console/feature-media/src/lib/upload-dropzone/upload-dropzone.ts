@@ -21,7 +21,7 @@ import { validateFile, MAX_BULK_UPLOAD_FILES } from '../media.constants';
       role="button"
       aria-label="Upload files"
     >
-      <mat-icon class="!text-5xl !w-12 !h-12 text-text-muted mb-2">cloud_upload</mat-icon>
+      <mat-icon class="icon-2xl text-text-muted mb-2">cloud_upload</mat-icon>
       <p class="text-text font-medium">Drag & drop files here</p>
       <p class="text-text-muted text-sm mt-1">or click to browse</p>
       @if (errors().length) {

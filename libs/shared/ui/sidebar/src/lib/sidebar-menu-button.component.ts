@@ -16,22 +16,42 @@ import { SidebarState } from './sidebar-state.service';
   `,
   host: {
     class:
-      'flex w-full cursor-pointer rounded-md text-sm text-text no-underline transition-colors duration-150 hover:bg-surface-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-    '[class.bg-surface-elevated]': 'active()',
+      'sidebar-menu-button flex w-full cursor-pointer rounded-md text-sm no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+    '[class.active]': 'active()',
     '[class.font-semibold]': 'active()',
     '[class.items-center]': 'true',
     '[class.justify-center]': 'state.isCompact()',
-    '[class.gap-2]': '!state.isCompact()',
+    '[class.gap-3]': '!state.isCompact()',
     '[class.p-3]': 'state.isCompact()',
-    '[class.px-2]': '!state.isCompact() && !isLarge()',
-    '[class.py-1]': '!state.isCompact() && size() === "sm"',
-    '[class.py-1.5]': '!state.isCompact() && size() === "default"',
-    '[class.px-3]': '!state.isCompact() && isLarge()',
-    '[class.py-2]': '!state.isCompact() && isLarge()',
+    '[class.px-3]': '!state.isCompact()',
+    '[class.py-1.5]': '!state.isCompact() && size() === "sm"',
+    '[class.py-2.5]': '!state.isCompact() && (size() === "default" || isLarge())',
     '[class.text-base]': 'isLarge()',
     '[attr.title]': 'tooltipText()',
     role: 'menuitem',
   },
+  styles: [
+    `
+      :host {
+        color: var(--color-text-secondary);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      :host(:hover:not(.active)) {
+        background: var(--color-surface-hover);
+        color: var(--color-text);
+      }
+      :host(.active) {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.08));
+        box-shadow:
+          0 0 0 1px rgba(99, 102, 241, 0.1),
+          0 0 20px -5px rgba(99, 102, 241, 0.15);
+        color: var(--color-text);
+      }
+    `,
+  ],
 })
 export class SidebarMenuButtonComponent {
   protected readonly state = inject(SidebarState);

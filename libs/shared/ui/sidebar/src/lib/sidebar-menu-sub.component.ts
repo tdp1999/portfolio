@@ -13,7 +13,7 @@ import { SidebarState } from './sidebar-state.service';
         [style.opacity]="expanded() ? '1' : '0'"
       >
         <ul
-          class="flex min-w-0 min-h-0 flex-col gap-1 border-l border-border px-2.5 overflow-hidden"
+          class="flex min-w-0 min-h-0 flex-col gap-1 border-l border-border ml-3 pl-3 mt-1 overflow-hidden"
           role="menu"
         >
           <ng-content />

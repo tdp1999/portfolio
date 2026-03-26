@@ -9,7 +9,7 @@ import { SidebarState } from './sidebar-state.service';
     @if (label() && !state.isCompact()) {
       <button
         type="button"
-        class="flex w-full items-center px-2 mb-1 text-xs font-semibold uppercase tracking-wider text-text-muted rounded-md select-none bg-transparent border-none"
+        class="flex w-full items-center px-3 mb-2 text-nav-label rounded-md select-none bg-transparent border-none"
         [class.cursor-pointer]="collapsible()"
         [class]="collapsible() ? 'hover:text-text-secondary' : ''"
         [disabled]="!collapsible()"
