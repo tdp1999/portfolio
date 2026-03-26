@@ -6,6 +6,9 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
+  /* Fixed micro size — 10px, even exception for labels/badges only */
+  --text-2xs: 0.625rem;
+
   /* Fluid type scale: clamp(min, preferred, max) */
   /* Scales smoothly from 320px to 1280px viewport */
   --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);

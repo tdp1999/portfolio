@@ -1,9 +1,12 @@
 /* SCSS module imports */
 @use './material/overrides.scss';
+@use './material/icons.scss' as icon-overrides;
 @use './tokens/typography.scss' as typography-tokens;
 @use './tokens/colors.scss' as colors-tokens;
+@use './tokens/layout.scss' as layout-tokens;
 @use './themes/dark.scss' as dark-theme;
 @use './base/typography.scss' as typography-base;
+@use './base/components.scss' as component-classes;
 
 /* Component styles */
 @use '../components/link/link.directive.scss';
@@ -31,7 +34,7 @@
 
   *::-webkit-scrollbar-thumb {
     background-color: var(--color-border);
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   *::-webkit-scrollbar-thumb:hover {

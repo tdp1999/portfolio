@@ -6,8 +6,11 @@
 /* Shared design tokens */
 @use '../../../libs/landing/shared/ui/src/styles/tokens/colors.scss' as colors-tokens;
 @use '../../../libs/landing/shared/ui/src/styles/tokens/typography.scss' as typography-tokens;
+@use '../../../libs/landing/shared/ui/src/styles/tokens/layout.scss' as layout-tokens;
 @use '../../../libs/landing/shared/ui/src/styles/themes/dark.scss' as dark-theme;
 @use '../../../libs/landing/shared/ui/src/styles/base/typography.scss' as typography-base;
+@use '../../../libs/landing/shared/ui/src/styles/base/components.scss' as component-classes;
+@use '../../../libs/landing/shared/ui/src/styles/material/icons.scss' as icon-overrides;
 
 /* Console Material component token overrides (loaded as module, emitted in source order) */
 @use '../../../libs/console/shared/ui/src/styles/material/overrides' as console-material;
@@ -66,7 +69,7 @@ html {
 
   *::-webkit-scrollbar-thumb {
     background-color: var(--color-border);
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   *::-webkit-scrollbar-thumb:hover {

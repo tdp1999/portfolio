@@ -114,13 +114,21 @@
 
 > **Approach:** 5 phases — layout shell → content pages → specialized pages → light mode → validation
 
-#### Phase 1: Layout Shell (3 tasks)
-- [ ] 180-console-background-pattern - Grain noise + radial glow background (S)
-- [ ] 181-sidebar-gradient-pill - Gradient pill active indicator in ui-sidebar-* (M)
-- [ ] 182-topbar-footer - Search input, notification bell, footer bar (M)
+#### Phase 1: Layout Shell (3 tasks) - COMPLETE
+- [x] 180-console-background-pattern - Grain noise + radial glow background (S) ✓
+- [x] 181-sidebar-gradient-pill - Gradient pill active indicator in ui-sidebar-* (M) ✓
+- [x] 182-topbar-footer - Search input, notification bell, footer bar (M) ✓
+
+#### Scale Contract (cross-cutting)
+- [x] Scale contract defined (`.context/design/scale-contract.md`) — 4px grid, typography hierarchy, layout tokens
+- [x] Foundation style files: `tokens/layout.scss`, `base/components.scss`, `material/icons.scss`
+- [x] Sidebar: 280→240px, menu items px-3 py-2 gap-3, icon-md, text-nav-item
+- [x] Material overrides: button shapes 8px, icon-button 40px, console-search 4px fixes
+- [x] Enforcement: `scripts/scale-audit.js` + Claude hook + CLAUDE.md guardrails
+- [x] Playwright VRT baseline created
 
 #### Phase 2: Content Pages (4 tasks)
-- [ ] 183-dashboard-page - Welcome, stat cards, recent activity, quick actions (M)
+- [x] 183-dashboard-page - Welcome, stat cards, recent activity, quick actions (M) ✓
 - [ ] 184-crud-template - Header + filter bar + table + fixed pagination template (M)
 - [ ] 185-apply-crud-tags-categories - Apply template to Tags + Categories (S)
 - [ ] 186-apply-crud-skills-users - Apply template to Skills + Users (S)

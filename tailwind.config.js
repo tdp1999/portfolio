@@ -51,6 +51,7 @@ module.exports = {
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       fontSize: {
+        '2xs': ['var(--text-2xs)', { lineHeight: 'var(--leading-normal)' }],
         xs: ['var(--text-xs)', { lineHeight: 'var(--leading-normal)' }],
         sm: ['var(--text-sm)', { lineHeight: 'var(--leading-normal)' }],
         base: ['var(--text-base)', { lineHeight: 'var(--leading-normal)' }],

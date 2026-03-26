@@ -87,6 +87,10 @@ Use these skills for specific workflows. More will be added over time.
 | **Never read .env files**  |                                                                       |                                                                    |
 | **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
 | **Avoid non-null assertions** | Never use `!` non-null assertions — they indicate a type design issue. Ask user before using one. | ❌ `obj!.prop` ✅ Fix the type or add a proper guard |
+| **4px grid**                 | All fixed px values must be multiples of 4. Even non-multiples (6, 10, 18) sparingly. Odd px banned. | ❌ `text-[13px]` ✅ `text-xs`; see `.context/design/scale-contract.md` |
+| **No !important in Tailwind** | Never use `!` prefix in Tailwind classes. Use `.icon-*` classes for Material icon sizing. | ❌ `!h-5 !w-5` ✅ `icon-md` |
+| **Typography classes**       | Use unified `.text-page-title`, `.text-section-heading`, `.text-stat-label`, etc. | See `base/components.scss` |
+| **Material density**         | Only use even densities (0, -2, -4). Odd densities break 4px grid. | ✅ density -2 ❌ density -1 |
 
 ## Angular Code Style
 

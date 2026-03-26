@@ -1,0 +1,57 @@
+/* Unified Typography Hierarchy + Utility Classes */
+/* Shared across all apps — one set of role-based classes */
+
+@layer components {
+  /* Page-level typography */
+  .text-page-title {
+    @apply text-3xl font-bold tracking-tight text-text;
+  }
+
+  .text-page-subtitle {
+    @apply text-base text-text-secondary;
+  }
+
+  /* Section-level typography */
+  .text-section-heading {
+    @apply text-lg font-semibold text-text;
+  }
+
+  .text-card-title {
+    @apply text-base font-semibold text-text;
+  }
+
+  /* Data display typography */
+  .text-stat-label {
+    @apply text-xs font-bold text-text-muted uppercase tracking-widest;
+  }
+
+  .text-stat-value {
+    @apply text-3xl font-bold text-text;
+  }
+
+  /* Body & caption typography */
+  .text-body {
+    @apply text-sm text-text leading-normal;
+  }
+
+  .text-caption {
+    @apply text-xs text-text-muted;
+  }
+
+  /* Navigation typography */
+  .text-nav-item {
+    @apply text-sm;
+  }
+
+  .text-nav-label {
+    font-size: var(--text-2xs);
+    @apply font-bold uppercase text-text-muted;
+    letter-spacing: 0.1em;
+  }
+
+  /* Badge typography */
+  .text-badge {
+    font-size: var(--text-2xs);
+    @apply font-semibold uppercase leading-none;
+  }
+}
