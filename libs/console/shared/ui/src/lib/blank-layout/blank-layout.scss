@@ -1,3 +1,91 @@
 :host {
   display: block;
+  height: 100vh;
+}
+
+.auth-backdrop {
+  position: relative;
+  min-height: 100vh;
+  background: var(--color-background);
+  overflow: hidden;
+}
+
+/* Grain noise overlay via SVG filter */
+.auth-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+
+  /* Dark: subtle white grain; Light: subtle dark grain */
+  opacity: 0.03;
+
+  :host-context(.dark) & {
+    opacity: 0.04;
+  }
+}
+
+/* Radial indigo glow behind card */
+.auth-glow {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: blur(80px);
+
+  /* Light: softer, lower opacity; Dark: richer glow */
+  background: radial-gradient(circle, hsl(230 60% 55% / 0.08) 0%, transparent 70%);
+
+  :host-context(.dark) & {
+    background: radial-gradient(circle, hsl(230 60% 48% / 0.2) 0%, transparent 70%);
+  }
+}
+
+/* Centered container */
+.auth-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px 16px;
+}
+
+/* Logo circle */
+.auth-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.02em;
+}
+
+/* Card */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 32px;
+
+  /* Light mode: subtle shadow for depth instead of glow */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+
+  :host-context(.dark) & {
+    box-shadow: none;
+  }
 }

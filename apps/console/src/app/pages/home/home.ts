@@ -85,14 +85,14 @@ interface ActivityItem {
     .stat-card {
       background: var(--color-surface-elevated);
       border-color: var(--color-border);
-      transition: background 0.2s ease;
+      transition: all 0.15s ease;
     }
     .stat-card:hover {
-      background: rgba(99, 102, 241, 0.05);
+      background: var(--color-primary-container);
     }
     .stat-icon {
-      background: rgba(99, 102, 241, 0.1);
-      color: rgb(99, 102, 241);
+      background: var(--color-primary-container);
+      color: var(--color-primary);
     }
     .activity-container {
       background: var(--color-surface-elevated);
@@ -100,6 +100,9 @@ interface ActivityItem {
     }
     .activity-item + .activity-item {
       border-top: 1px solid var(--color-border);
+    }
+    .activity-item {
+      transition: background 0.15s ease;
     }
     .activity-item:hover {
       background: var(--color-surface-hover);

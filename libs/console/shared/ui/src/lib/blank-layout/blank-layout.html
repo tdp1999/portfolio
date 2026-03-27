@@ -1,12 +1,21 @@
-<div class="flex min-h-screen items-center justify-center bg-background p-4">
-  <div class="w-full max-w-md">
-    <div class="mb-8 text-center">
-      <h1 class="text-2xl font-semibold text-text">Console</h1>
-      <p class="mt-1 text-sm text-text-muted">Portfolio Management</p>
+<div class="auth-backdrop">
+  <!-- Grain noise overlay -->
+  <div class="auth-grain"></div>
+  <!-- Radial glow -->
+  <div class="auth-glow"></div>
+
+  <div class="auth-container">
+    <!-- Logo -->
+    <div class="mb-8 flex flex-col items-center">
+      <div class="auth-logo">C</div>
     </div>
 
-    <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+    <!-- Card -->
+    <div class="auth-card">
       <router-outlet />
     </div>
+
+    <!-- Footer -->
+    <p class="mt-8 text-center text-xs text-text-muted">&copy; 2026 Console Portfolio Management</p>
   </div>
 </div>
