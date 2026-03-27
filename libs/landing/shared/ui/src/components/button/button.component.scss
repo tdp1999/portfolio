@@ -40,15 +40,18 @@
   }
 
   &--sm {
-    @apply px-3 py-1.5 text-sm;
+    @apply px-3 py-2 text-sm;
+    min-height: 32px;
   }
 
   &--md {
-    @apply px-4 py-2 text-base;
+    @apply px-4 py-2.5 text-base;
+    min-height: 40px;
   }
 
   &--lg {
     @apply px-6 py-3 text-lg;
+    min-height: 48px;
   }
 
   &:disabled {

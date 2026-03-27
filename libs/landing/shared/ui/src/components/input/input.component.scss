@@ -1,5 +1,6 @@
 .input {
-  @apply w-full bg-surface border border-border rounded-md px-3 py-2;
+  @apply w-full bg-surface border border-border rounded-lg px-3 py-2.5;
+  min-height: 40px;
   @apply text-text placeholder:text-text-muted;
   @apply transition-colors duration-150;
   @apply focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary;
