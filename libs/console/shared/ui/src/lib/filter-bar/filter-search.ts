@@ -12,7 +12,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   standalone: true,
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule],
   template: `
-    <mat-form-field subscriptSizing="dynamic" class="min-w-[250px]">
+    <mat-form-field subscriptSizing="dynamic" class="filter-field min-w-[250px]">
       <mat-label>{{ label() }}</mat-label>
       <input matInput [ngModel]="value" (ngModelChange)="onValueChange($event)" [placeholder]="placeholder()" />
       <mat-icon matPrefix>search</mat-icon>

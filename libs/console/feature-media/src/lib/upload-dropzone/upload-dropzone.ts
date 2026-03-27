@@ -22,8 +22,8 @@ import { validateFile, MAX_BULK_UPLOAD_FILES } from '../media.constants';
       aria-label="Upload files"
     >
       <mat-icon class="icon-2xl text-text-muted mb-2">cloud_upload</mat-icon>
-      <p class="text-text font-medium">Drag & drop files here</p>
-      <p class="text-text-muted text-sm mt-1">or click to browse</p>
+      <p class="text-text font-medium">Drag and drop files here</p>
+      <p class="text-text-muted text-sm mt-1">or <span class="text-primary underline">browse files</span></p>
       @if (errors().length) {
         <div class="mt-3 space-y-1">
           @for (error of errors(); track error) {
@@ -39,11 +39,12 @@ import { validateFile, MAX_BULK_UPLOAD_FILES } from '../media.constants';
       display: block;
     }
     .dropzone {
-      @apply flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border
-        p-8 cursor-pointer transition-colors;
+      @apply flex flex-col items-center justify-center rounded-lg p-8 cursor-pointer transition-colors;
+      border: 2px dashed var(--color-border-strong);
       &:hover,
       &.dragover {
-        @apply border-primary bg-primary;
+        border-color: var(--color-primary);
+        background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
       }
     }
   `,

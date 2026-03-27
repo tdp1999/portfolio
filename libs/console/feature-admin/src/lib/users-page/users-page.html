@@ -1,118 +1,118 @@
-<div>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-semibold text-text">User Management</h1>
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">User Management</h1>
+      <p class="crud-header__subtitle">Manage users and their access to the console.</p>
+    </div>
     <button mat-flat-button color="primary" (click)="openInviteDialog()">
-      <mat-icon>person_add</mat-icon>
+      <mat-icon class="icon-md">person_add</mat-icon>
       Invite User
     </button>
   </div>
 
   <console-filter-bar>
-    <console-filter-search
-      label="Search users"
-      placeholder="Search by name or email..."
-      (searchChange)="onSearchChange($event)"
-    />
+    <console-filter-search placeholder="Search by name or email..." (searchChange)="onSearchChange($event)" />
     <console-filter-select label="Status" [options]="statusOptions" (selectionChange)="onStatusChange($event)" />
   </console-filter-bar>
 
-  <div class="relative">
+  <div class="crud-table-container relative">
     <console-spinner-overlay [loading]="loading()" />
 
-    <div class="overflow-x-auto">
-      <table mat-table [dataSource]="users()" class="w-full">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-            {{ user.name }}
-          </td>
-        </ng-container>
+    <table mat-table [dataSource]="users()" class="w-full">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">{{ user.name }}</td>
+      </ng-container>
 
-        <!-- Email Column -->
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-            {{ user.email }}
-          </td>
-        </ng-container>
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">{{ user.email }}</td>
+      </ng-container>
 
-        <!-- Role Column -->
-        <ng-container matColumnDef="role">
-          <th mat-header-cell *matHeaderCellDef>Role</th>
-          <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-            <span
-              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
-              [class]="user.role === 'ADMIN' ? 'bg-primary/15 text-primary' : 'bg-surface-alt text-text-muted'"
-            >
-              {{ user.role }}
+      <!-- Role Column -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef>Role</th>
+        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
+          <span
+            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+            [class]="user.role === 'ADMIN' ? 'bg-primary/15 text-primary' : 'bg-surface-alt text-text-muted'"
+          >
+            {{ user.role }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let user">
+          @if (isDeleted(user)) {
+            <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-red-500/15 text-red-400">
+              Deleted
             </span>
-          </td>
-        </ng-container>
+          } @else if (!user.hasAcceptedInvite) {
+            <span
+              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-amber-500/15 text-amber-400"
+            >
+              Invited
+            </span>
+          } @else {
+            <span
+              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-green-500/15 text-green-400"
+            >
+              Active
+            </span>
+          }
+        </td>
+      </ng-container>
 
-        <!-- Status Column -->
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let user">
-            @if (isDeleted(user)) {
-              <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700">
-                Deleted
-              </span>
-            } @else if (!user.hasAcceptedInvite) {
-              <span
-                class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700"
-              >
-                Invited
-              </span>
-            } @else {
-              <span
-                class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700"
-              >
-                Active
-              </span>
-            }
-          </td>
-        </ng-container>
+      <!-- Created Date Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Created</th>
+        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
+          {{ user.createdAt | date: 'mediumDate' }}
+        </td>
+      </ng-container>
 
-        <!-- Created Date Column -->
-        <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef>Created</th>
-          <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-            {{ user.createdAt | date: 'mediumDate' }}
-          </td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let user">
-            @if (canDelete(user)) {
-              <button mat-icon-button matTooltip="Delete user" (click)="confirmDelete(user)">
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let user" class="col-actions">
+          @if (canDelete(user)) {
+            <button mat-icon-button [matMenuTriggerFor]="userMenu">
+              <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
+            </button>
+            <mat-menu #userMenu="matMenu">
+              <button mat-menu-item (click)="confirmDelete(user)">
                 <mat-icon class="text-red-500">delete</mat-icon>
+                Delete
               </button>
-            }
-          </td>
-        </ng-container>
+            </mat-menu>
+          }
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-        <!-- No data row -->
-        <tr class="mat-mdc-row" *matNoDataRow>
-          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-            No users found
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <mat-paginator
-      [length]="total()"
-      [pageIndex]="pageIndex()"
-      [pageSize]="pageSize()"
-      [pageSizeOptions]="[20, 50, 100]"
-      (page)="onPage($event)"
-      showFirstLastButtons
-    />
+      <!-- No data row -->
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+          No users found
+        </td>
+      </tr>
+    </table>
   </div>
+
+  <mat-paginator
+    class="crud-pagination"
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[20, 50, 100]"
+    (page)="onPage($event)"
+    showFirstLastButtons
+  />
 </div>

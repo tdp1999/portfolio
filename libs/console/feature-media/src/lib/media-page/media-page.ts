@@ -17,6 +17,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
@@ -60,6 +61,7 @@ const VIEW_MODE_KEY = 'media-view-mode';
     MatProgressBarModule,
     MatTableModule,
     MatTooltipModule,
+    MatMenuModule,
     MatChipsModule,
     RouterLink,
     SpinnerOverlayComponent,
@@ -84,6 +86,7 @@ export default class MediaPageComponent implements OnInit {
   readonly media = signal<MediaItem[]>([]);
   readonly total = signal(0);
   readonly stats = signal<StorageStats | null>(null);
+  readonly trashCount = signal(0);
   readonly loading = signal(false);
   readonly uploading = signal(false);
   readonly uploads = signal<FileUpload[]>([]);
@@ -137,6 +140,7 @@ export default class MediaPageComponent implements OnInit {
     }
     this.loadMedia();
     this.loadStats();
+    this.loadTrashCount();
   }
 
   // --- View ---
@@ -339,7 +343,9 @@ export default class MediaPageComponent implements OnInit {
   private loadStats(): void {
     this.mediaService.getStats().subscribe({
       next: (stats) => this.stats.set(stats),
-      error: () => {},
+      error: () => {
+        // Ignore errors for stats, it's not critical
+      },
     });
   }
 
@@ -366,11 +372,21 @@ export default class MediaPageComponent implements OnInit {
     this.selected.set(new Set());
     this.loadMedia();
     this.loadStats();
+    this.loadTrashCount();
     if (failed === 0) {
       this.toast.success(`${success} item(s) moved to trash`);
     } else {
       this.toast.error(`${failed} item(s) failed to delete`);
     }
+  }
+
+  private loadTrashCount(): void {
+    this.mediaService.listDeleted({ page: 1, limit: 1 }).subscribe({
+      next: (res) => this.trashCount.set(res.total),
+      error: () => {
+        // Ignore errors for trash count, it's not critical
+      },
+    });
   }
 
   private deleteMedia(id: string): void {
@@ -379,6 +395,7 @@ export default class MediaPageComponent implements OnInit {
         this.toast.success('Media moved to trash');
         this.loadMedia();
         this.loadStats();
+        this.loadTrashCount();
       },
       error: (err) => {
         const apiError = extractApiError(err);

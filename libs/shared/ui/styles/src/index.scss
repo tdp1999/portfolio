@@ -1,0 +1,16 @@
+/* Shared UI Styles — foundation layer for all apps */
+
+/* Design tokens */
+@use './tokens/colors.scss';
+@use './tokens/typography.scss';
+@use './tokens/layout.scss';
+
+/* Theme overrides */
+@use './themes/dark.scss';
+
+/* Base element styles */
+@use './base/typography.scss';
+@use './base/components.scss';
+
+/* Material icon size classes */
+@use './material/icons.scss';

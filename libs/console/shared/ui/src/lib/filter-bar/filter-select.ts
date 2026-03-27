@@ -12,7 +12,7 @@ export interface FilterOption {
   standalone: true,
   imports: [MatFormFieldModule, MatSelectModule],
   template: `
-    <mat-form-field subscriptSizing="dynamic" class="min-w-[140px]">
+    <mat-form-field subscriptSizing="dynamic" class="filter-field min-w-[140px]">
       <mat-label>{{ label() }}</mat-label>
       <mat-select [value]="value()" (selectionChange)="selectionChange.emit($event.value)">
         @if (showAll()) {

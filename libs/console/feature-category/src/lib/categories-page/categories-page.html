@@ -1,89 +1,88 @@
-<div>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-semibold text-text">Category Management</h1>
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Category Management</h1>
+      <p class="crud-header__subtitle">Manage content categories for blog posts and projects.</p>
+    </div>
     <button mat-flat-button color="primary" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+      <mat-icon class="icon-md">add</mat-icon>
       Create Category
     </button>
   </div>
 
   <console-filter-bar>
-    <console-filter-search
-      label="Search categories"
-      placeholder="Search by name..."
-      (searchChange)="onSearchChange($event)"
-    />
+    <console-filter-search placeholder="Search categories..." (searchChange)="onSearchChange($event)" />
   </console-filter-bar>
 
-  <div class="relative">
+  <div class="crud-table-container relative">
     <console-spinner-overlay [loading]="loading()" />
 
-    <div class="overflow-x-auto">
-      <table mat-table [dataSource]="categories()" class="w-full">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let category">
-            {{ category.name }}
-          </td>
-        </ng-container>
+    <table mat-table [dataSource]="categories()" class="w-full">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let category">{{ category.name }}</td>
+      </ng-container>
 
-        <!-- Slug Column -->
-        <ng-container matColumnDef="slug">
-          <th mat-header-cell *matHeaderCellDef>Slug</th>
-          <td mat-cell *matCellDef="let category" class="text-text-muted">
-            {{ category.slug }}
-          </td>
-        </ng-container>
+      <!-- Slug Column -->
+      <ng-container matColumnDef="slug">
+        <th mat-header-cell *matHeaderCellDef>Slug</th>
+        <td mat-cell *matCellDef="let category" class="text-text-muted">{{ category.slug }}</td>
+      </ng-container>
 
-        <!-- Description Column -->
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Description</th>
-          <td mat-cell *matCellDef="let category" class="text-text-muted max-w-[200px] truncate">
-            {{ category.description ?? '—' }}
-          </td>
-        </ng-container>
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let category" class="text-text-muted max-w-[200px] truncate">
+          {{ category.description ?? '—' }}
+        </td>
+      </ng-container>
 
-        <!-- Display Order Column -->
-        <ng-container matColumnDef="displayOrder">
-          <th mat-header-cell *matHeaderCellDef>Order</th>
-          <td mat-cell *matCellDef="let category">
-            {{ category.displayOrder }}
-          </td>
-        </ng-container>
+      <!-- Display Order Column -->
+      <ng-container matColumnDef="displayOrder">
+        <th mat-header-cell *matHeaderCellDef>Order</th>
+        <td mat-cell *matCellDef="let category">{{ category.displayOrder }}</td>
+      </ng-container>
 
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let category">
-            <button mat-icon-button matTooltip="Edit category" (click)="openEditDialog(category)">
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let category" class="col-actions">
+          <button mat-icon-button [matMenuTriggerFor]="categoryMenu">
+            <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
+          </button>
+          <mat-menu #categoryMenu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(category)">
               <mat-icon>edit</mat-icon>
+              Edit
             </button>
-            <button mat-icon-button matTooltip="Delete category" (click)="confirmDelete(category)">
+            <button mat-menu-item (click)="confirmDelete(category)">
               <mat-icon class="text-red-500">delete</mat-icon>
+              Delete
             </button>
-          </td>
-        </ng-container>
+          </mat-menu>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-        <!-- No data row -->
-        <tr class="mat-mdc-row" *matNoDataRow>
-          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-            No categories found
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <mat-paginator
-      [length]="total()"
-      [pageIndex]="pageIndex()"
-      [pageSize]="pageSize()"
-      [pageSizeOptions]="[20, 50, 100]"
-      (page)="onPage($event)"
-      showFirstLastButtons
-    />
+      <!-- No data row -->
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+          No categories found
+        </td>
+      </tr>
+    </table>
   </div>
+
+  <mat-paginator
+    class="crud-pagination"
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[20, 50, 100]"
+    (page)="onPage($event)"
+    showFirstLastButtons
+  />
 </div>

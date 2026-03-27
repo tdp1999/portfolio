@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { extractApiError } from '@portfolio/console/shared/data-access';
 import {
   ConfirmDialogComponent,
@@ -25,7 +25,7 @@ import { CategoryDialogData } from '../category-dialog/category-dialog';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
+    MatMenuModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
     FilterSearchComponent,

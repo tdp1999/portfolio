@@ -118,6 +118,98 @@
   border-radius: 0.5rem;
 }
 
+/* Filter field — compact dark style inside filter bars */
+.filter-field {
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-hover-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
+}
+
+/* ─── CRUD page template ─────────────────────────────────────────────────── */
+
+/* Page layout */
+.crud-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+}
+
+/* Page header: title (left) + action button (right) */
+.crud-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.crud-header__subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Table container */
+.crud-table-container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+
+  .mat-mdc-table {
+    background: transparent;
+    width: 100%;
+  }
+
+  .mat-mdc-header-row {
+    background: transparent;
+  }
+
+  .mat-mdc-header-cell {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom-color: var(--color-border);
+  }
+
+  .mat-mdc-row {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--color-text);
+    border-bottom-color: var(--color-border);
+    font-size: 0.875rem;
+  }
+
+  /* Last row — no bottom border */
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+}
+
+/* Actions column (3-dot menu) */
+.col-actions {
+  width: 48px;
+  padding-right: 8px;
+  text-align: right;
+}
+
+/* Pagination bar — mat-paginator styled as sticky bottom bar */
+.crud-pagination {
+  position: sticky;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
 /* Compact search field — reusable class for topbar/toolbar search inputs */
 .console-search {
   --mdc-outlined-text-field-outline-color: transparent;

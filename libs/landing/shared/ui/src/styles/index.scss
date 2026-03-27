@@ -1,12 +1,14 @@
-/* SCSS module imports */
+/* SCSS module imports — shared foundation */
+@use 'tokens/colors' as colors-tokens;
+@use 'tokens/typography' as typography-tokens;
+@use 'tokens/layout' as layout-tokens;
+@use 'themes/dark' as dark-theme;
+@use 'base/typography' as typography-base;
+@use 'base/components' as component-classes;
+@use 'material/icons' as icon-overrides;
+
+/* Landing-specific Material overrides */
 @use './material/overrides.scss';
-@use './material/icons.scss' as icon-overrides;
-@use './tokens/typography.scss' as typography-tokens;
-@use './tokens/colors.scss' as colors-tokens;
-@use './tokens/layout.scss' as layout-tokens;
-@use './themes/dark.scss' as dark-theme;
-@use './base/typography.scss' as typography-base;
-@use './base/components.scss' as component-classes;
 
 /* Component styles */
 @use '../components/link/link.directive.scss';

@@ -127,14 +127,14 @@
 - [x] Enforcement: `scripts/scale-audit.js` + Claude hook + CLAUDE.md guardrails
 - [x] Playwright VRT baseline created
 
-#### Phase 2: Content Pages (4 tasks)
+#### Phase 2: Content Pages (4 tasks) - COMPLETE
 - [x] 183-dashboard-page - Welcome, stat cards, recent activity, quick actions (M) ✓
-- [ ] 184-crud-template - Header + filter bar + table + fixed pagination template (M)
-- [ ] 185-apply-crud-tags-categories - Apply template to Tags + Categories (S)
-- [ ] 186-apply-crud-skills-users - Apply template to Skills + Users (S)
+- [x] 184-crud-template - Header + filter bar + table + fixed pagination template (M) ✓
+- [x] 185-apply-crud-tags-categories - Apply template to Tags + Categories (S) ✓
+- [x] 186-apply-crud-skills-users - Apply template to Skills + Users (S) ✓
 
 #### Phase 3: Specialized Pages (2 tasks)
-- [ ] 187-media-page-redesign - Grid/list views, upload, stats, batch ops (L)
+- [x] 187-media-page-redesign - Grid/list views, upload, stats, batch ops (L) ✓
 - [ ] 188-auth-pages-redesign - Login, forgot/reset/set password cards (M)
 
 #### Phase 4: Light Mode + Polish (2 tasks)
@@ -150,6 +150,7 @@
 ### Standalone Tasks
 
 - [ ] 193-foundations-audit-landing - Audit landing page vs Design Foundations standards (M)
+- [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
 ---
 
@@ -206,9 +207,9 @@
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 176     |
-| Pending (Standalone)      | 1       |
-| **Total Created**         | **177** |
+| Done (archived)           | 184     |
+| Pending                   | 8       |
+| **Total Created**         | **192** |
 
 ## Notes
 

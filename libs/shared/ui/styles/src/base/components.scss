@@ -29,6 +29,11 @@
     @apply text-3xl font-bold text-text;
   }
 
+  /* Compact stat value — for dense stat rows (media library, etc.) */
+  .text-stat-value-sm {
+    @apply text-xl font-bold text-text;
+  }
+
   /* Body & caption typography */
   .text-body {
     @apply text-sm text-text leading-normal;

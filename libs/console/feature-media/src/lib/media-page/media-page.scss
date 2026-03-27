@@ -2,16 +2,57 @@
   display: block;
 }
 
-.media-grid {
-  @apply grid gap-4;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+/* ─── Stats row ─────────────────────────────────────────────────────────── */
+
+.stats-row {
+  //   @apply flex flex-wrap items-stretch gap-4;
+  //   @apply grid grid-cols-[200px_1fr] gap-4 mb-6;
+  @apply grid gap-4 mb-6;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 300px));
 }
 
+.stat-card {
+  @apply bg-surface border border-border rounded-xl px-5 py-4;
+}
+
+.breakdown-badge {
+  @apply flex flex-col justify-center gap-1 bg-surface border border-border rounded-xl px-4 py-3;
+}
+
+/* ─── Upload progress ───────────────────────────────────────────────────── */
+
+.upload-progress {
+  @apply rounded-xl border border-border bg-surface p-4;
+}
+
+.upload-item {
+  @apply flex items-center gap-3 py-2 border-t border-border;
+
+  &:first-of-type {
+    border-top: none;
+  }
+}
+
+/* ─── Media badge (type / size on grid cards) ───────────────────────────── */
+
+.media-badge {
+  @apply text-xs text-text-muted bg-surface-elevated rounded px-2 py-0.5;
+}
+
+/* ─── Grid ──────────────────────────────────────────────────────────────── */
+
+.media-grid {
+  @apply grid gap-4 mb-4;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ─── Grid card ─────────────────────────────────────────────────────────── */
+
 .media-card {
-  @apply relative rounded-lg border border-border overflow-hidden transition-shadow;
+  @apply relative rounded-xl bg-surface border border-border overflow-hidden transition-all duration-200;
 
   &:hover {
-    @apply shadow-md;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
   &.selected {
@@ -28,7 +69,7 @@
   }
 
   &__preview {
-    @apply flex items-center justify-center bg-surface-alt h-[140px] overflow-hidden;
+    @apply flex items-center justify-center bg-surface-elevated h-[140px] overflow-hidden;
 
     img {
       @apply w-full h-full object-cover;
@@ -46,4 +87,41 @@
       @apply opacity-100;
     }
   }
+}
+
+/* ─── View toggle ───────────────────────────────────────────────────────── */
+
+// .view-toggle {
+//   .mat-button-toggle {
+//     width: 40px;
+//     height: 40px;
+
+//     .mat-button-toggle-button {
+//       width: 40px;
+//       height: 40px;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//     }
+//   }
+// }
+
+/* ─── Trash link ─────────────────────────────────────────────────────────── */
+
+.trash-link {
+  @apply inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text
+    transition-colors px-3 py-2 rounded-lg border border-border;
+}
+
+.trash-badge {
+  @apply inline-flex items-center justify-center rounded-full bg-red-500 text-white
+    text-xs font-semibold min-w-[18px] h-[18px] px-1 leading-none;
+}
+
+/* ─── Floating batch selection bar ──────────────────────────────────────── */
+
+.batch-bar {
+  @apply fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4
+    bg-surface-elevated border border-border-strong rounded-xl px-6 py-3 z-50;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }

@@ -1,81 +1,80 @@
-<div>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-semibold text-text">Tag Management</h1>
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Tag Management</h1>
+      <p class="crud-header__subtitle">Manage content tags for blog posts and projects.</p>
+    </div>
     <button mat-flat-button color="primary" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+      <mat-icon class="icon-md">add</mat-icon>
       Create Tag
     </button>
   </div>
 
   <console-filter-bar>
-    <console-filter-search
-      label="Search tags"
-      placeholder="Search by name..."
-      (searchChange)="onSearchChange($event)"
-    />
+    <console-filter-search placeholder="Search tags..." (searchChange)="onSearchChange($event)" />
   </console-filter-bar>
 
-  <div class="relative">
+  <div class="crud-table-container relative">
     <console-spinner-overlay [loading]="loading()" />
 
-    <div class="overflow-x-auto">
-      <table mat-table [dataSource]="tags()" class="w-full">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let tag">
-            {{ tag.name }}
-          </td>
-        </ng-container>
+    <table mat-table [dataSource]="tags()" class="w-full">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let tag">{{ tag.name }}</td>
+      </ng-container>
 
-        <!-- Slug Column -->
-        <ng-container matColumnDef="slug">
-          <th mat-header-cell *matHeaderCellDef>Slug</th>
-          <td mat-cell *matCellDef="let tag" class="text-text-muted">
-            {{ tag.slug }}
-          </td>
-        </ng-container>
+      <!-- Slug Column -->
+      <ng-container matColumnDef="slug">
+        <th mat-header-cell *matHeaderCellDef>Slug</th>
+        <td mat-cell *matCellDef="let tag" class="text-text-muted">{{ tag.slug }}</td>
+      </ng-container>
 
-        <!-- Created Date Column -->
-        <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef>Created</th>
-          <td mat-cell *matCellDef="let tag">
-            {{ tag.createdAt | date: 'mediumDate' }}
-          </td>
-        </ng-container>
+      <!-- Created Date Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Created</th>
+        <td mat-cell *matCellDef="let tag">{{ tag.createdAt | date: 'mediumDate' }}</td>
+      </ng-container>
 
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let tag">
-            <button mat-icon-button matTooltip="Edit tag" (click)="openEditDialog(tag)">
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let tag" class="col-actions">
+          <button mat-icon-button [matMenuTriggerFor]="tagMenu">
+            <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
+          </button>
+          <mat-menu #tagMenu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(tag)">
               <mat-icon>edit</mat-icon>
+              Edit
             </button>
-            <button mat-icon-button matTooltip="Delete tag" (click)="confirmDelete(tag)">
+            <button mat-menu-item (click)="confirmDelete(tag)">
               <mat-icon class="text-red-500">delete</mat-icon>
+              Delete
             </button>
-          </td>
-        </ng-container>
+          </mat-menu>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-        <!-- No data row -->
-        <tr class="mat-mdc-row" *matNoDataRow>
-          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-            No tags found
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <mat-paginator
-      [length]="total()"
-      [pageIndex]="pageIndex()"
-      [pageSize]="pageSize()"
-      [pageSizeOptions]="[20, 50, 100]"
-      (page)="onPage($event)"
-      showFirstLastButtons
-    />
+      <!-- No data row -->
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+          No tags found
+        </td>
+      </tr>
+    </table>
   </div>
+
+  <mat-paginator
+    class="crud-pagination"
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[20, 50, 100]"
+    (page)="onPage($event)"
+    showFirstLastButtons
+  />
 </div>

@@ -25,7 +25,10 @@
             "output": "/"
           }
         ],
-        "styles": ["apps/console/src/styles.scss"]
+        "styles": ["apps/console/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/shared/ui/styles/src"]
+        }
       },
       "configurations": {
         "production": {

@@ -1,6 +1,6 @@
 # Task: Apply CRUD template to Tags + Categories pages
 
-## Status: pending
+## Status: done
 
 ## Goal
 Apply the CRUD template styling from task 184 to the Tags and Categories management pages.
@@ -9,14 +9,14 @@ Apply the CRUD template styling from task 184 to the Tags and Categories managem
 Phase 2 of Console UI Redesign. Tags has: search filter. Categories has: search filter. Both are simple CRUD pages with similar structure.
 
 ## Acceptance Criteria
-- [ ] Tags page: "Tag Management" title + subtitle + "Create Tag" button
-- [ ] Tags filter: search input styled per CRUD template
-- [ ] Tags table: Name, Slug, Created, Actions columns — dark styled
-- [ ] Categories page: "Category Management" title + subtitle + "Create Category" button
-- [ ] Categories filter: search input styled per CRUD template
-- [ ] Categories table: Name, Slug, Description, Order, Actions columns — dark styled
-- [ ] Both pages: fixed pagination, footer visible
-- [ ] Both pages: consistent with CRUD template
+- [x] Tags page: "Tag Management" title + subtitle + "Create Tag" button
+- [x] Tags filter: search input styled per CRUD template
+- [x] Tags table: Name, Slug, Created, Actions columns — dark styled
+- [x] Categories page: "Category Management" title + subtitle + "Create Category" button
+- [x] Categories filter: search input styled per CRUD template
+- [x] Categories table: Name, Slug, Description, Order, Actions columns — dark styled
+- [x] Both pages: fixed pagination, footer visible
+- [x] Both pages: consistent with CRUD template
 
 ## Files to Touch
 - `libs/console/feature-tag/src/lib/tags-page/tags-page.html`
@@ -30,3 +30,4 @@ Phase 2 of Console UI Redesign. Tags has: search filter. Categories has: search 
 ## Complexity: S
 
 ## Progress Log
+- 2026-03-26 Done — all ACs satisfied
