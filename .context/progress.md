@@ -48,6 +48,13 @@
   - Tasks 163-177 → archived in `tasks-done/epic-media-module/`
   - Full vertical slice: Cloudinary storage, security scanning, admin UI, E2E tests
   - Backend bugs found & fixed during E2E: restore handler, repo update method
+- [x] **Console UI Redesign** (epic-console-ui-redesign) - Completed 2026-03-27
+  - Tasks 180-192 → archived in `tasks-done/epic-console-ui-redesign/`
+  - 5 phases: layout shell, content pages, specialized pages, light mode, validation
+  - Grain+glow bg, gradient pill sidebar, CRUD template, auth card redesign, light/dark mode
+- [x] **Foundations Audit: Landing** (standalone) - Completed 2026-03-27
+  - Task 193 → archived in `tasks-done/other/`
+  - Button min-heights (sm=32, md=40, lg=48), input 40px, rounded-lg
 
 ## In Progress
 
@@ -110,46 +117,8 @@
 
 **Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
 
-### Epic: Console UI Redesign (epic-console-ui-redesign) - broken-down
-
-> **Approach:** 5 phases — layout shell → content pages → specialized pages → light mode → validation
-
-#### Phase 1: Layout Shell (3 tasks) - COMPLETE
-- [x] 180-console-background-pattern - Grain noise + radial glow background (S) ✓
-- [x] 181-sidebar-gradient-pill - Gradient pill active indicator in ui-sidebar-* (M) ✓
-- [x] 182-topbar-footer - Search input, notification bell, footer bar (M) ✓
-
-#### Scale Contract (cross-cutting)
-- [x] Scale contract defined (`.context/design/scale-contract.md`) — 4px grid, typography hierarchy, layout tokens
-- [x] Foundation style files: `tokens/layout.scss`, `base/components.scss`, `material/icons.scss`
-- [x] Sidebar: 280→240px, menu items px-3 py-2 gap-3, icon-md, text-nav-item
-- [x] Material overrides: button shapes 8px, icon-button 40px, console-search 4px fixes
-- [x] Enforcement: `scripts/scale-audit.js` + Claude hook + CLAUDE.md guardrails
-- [x] Playwright VRT baseline created
-
-#### Phase 2: Content Pages (4 tasks) - COMPLETE
-- [x] 183-dashboard-page - Welcome, stat cards, recent activity, quick actions (M) ✓
-- [x] 184-crud-template - Header + filter bar + table + fixed pagination template (M) ✓
-- [x] 185-apply-crud-tags-categories - Apply template to Tags + Categories (S) ✓
-- [x] 186-apply-crud-skills-users - Apply template to Skills + Users (S) ✓
-
-#### Phase 3: Specialized Pages (2 tasks)
-- [x] 187-media-page-redesign - Grid/list views, upload, stats, batch ops (L) ✓
-- [ ] 188-auth-pages-redesign - Login, forgot/reset/set password cards (M)
-
-#### Phase 4: Light Mode + Polish (2 tasks)
-- [ ] 189-light-mode - Token-based theme swap, verify all screens (M)
-- [ ] 190-visual-effects - Box-shadow, hover glow, transitions (S)
-
-#### Phase 5: Validation + Docs (2 tasks)
-- [ ] 191-playwright-validation - Screenshot all screens dark+light, compare Stitch (S)
-- [ ] 192-update-design-docs - Update console.md + DESIGN-console.md (S)
-
----
-
 ### Standalone Tasks
 
-- [ ] 193-foundations-audit-landing - Audit landing page vs Design Foundations standards (M)
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
 ---
@@ -195,6 +164,7 @@
 
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
+- [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
 
 ---
 
@@ -207,9 +177,9 @@
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 184     |
-| Pending                   | 8       |
-| **Total Created**         | **192** |
+| Done (archived)           | 191     |
+| Pending                   | 2       |
+| **Total Created**         | **194** |
 
 ## Notes
 

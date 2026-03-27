@@ -73,6 +73,8 @@ For decorative elements or when semantic tokens don't fit:
 | `--color-text-on-primary`   | `#ffffff`             | `#ffffff`             | Text on primary backgrounds  |
 | `--color-border`            | `#e5e7eb` (gray-200)  | `#2d3148`             | Default borders              |
 | `--color-border-strong`     | `#d1d5db` (gray-300)  | `#3d4266`             | Emphasized borders           |
+| `--color-surface-alt`       | `#f8fafc` (slate-50)  | `#1e2130`             | Subtle input background      |
+| `--color-surface-hover`     | `#f1f5f9` (slate-100) | `#252a3a`             | Hover state for surfaces     |
 
 **Feedback colors:** `--color-success`, `--color-warning`, `--color-error`, `--color-info` (each with `-container` variant)
 
