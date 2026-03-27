@@ -5,8 +5,6 @@
 /* ─── Stats row ─────────────────────────────────────────────────────────── */
 
 .stats-row {
-  //   @apply flex flex-wrap items-stretch gap-4;
-  //   @apply grid grid-cols-[200px_1fr] gap-4 mb-6;
   @apply grid gap-4 mb-6;
   grid-template-columns: repeat(auto-fit, minmax(100px, 300px));
 }
@@ -89,23 +87,6 @@
   }
 }
 
-/* ─── View toggle ───────────────────────────────────────────────────────── */
-
-// .view-toggle {
-//   .mat-button-toggle {
-//     width: 40px;
-//     height: 40px;
-
-//     .mat-button-toggle-button {
-//       width: 40px;
-//       height: 40px;
-//       display: flex;
-//       align-items: center;
-//       justify-content: center;
-//     }
-//   }
-// }
-
 /* ─── Trash link ─────────────────────────────────────────────────────────── */
 
 .trash-link {
@@ -115,7 +96,7 @@
 
 .trash-badge {
   @apply inline-flex items-center justify-center rounded-full bg-red-500 text-white
-    text-xs font-semibold min-w-[18px] h-[18px] px-1 leading-none;
+    text-xs font-semibold min-w-5 h-5 px-1 leading-none;
 }
 
 /* ─── Floating batch selection bar ──────────────────────────────────────── */

@@ -2,18 +2,12 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import {
-  ConfirmDialogComponent,
-  type ConfirmDialogData,
-  SpinnerOverlayComponent,
-  ToastService,
-} from '@portfolio/console/shared/ui';
+import { SpinnerOverlayComponent, ToastService } from '@portfolio/console/shared/ui';
 import { MediaService } from '../media.service';
 import { MediaItem } from '../media.types';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
@@ -38,7 +32,6 @@ import { formatFileSize, getMimeTypeCategory } from '../media.constants';
 })
 export default class MediaTrashComponent implements OnInit {
   private readonly mediaService = inject(MediaService);
-  private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
 
   readonly paginator = viewChild.required(MatPaginator);
@@ -126,23 +119,6 @@ export default class MediaTrashComponent implements OnInit {
         },
       });
     }
-  }
-
-  confirmBulkDelete(): void {
-    const count = this.selectedCount;
-    if (count === 0) return;
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Permanent Delete',
-        message: `Permanently delete ${count} item(s)? This cannot be undone.`,
-        confirmLabel: 'Delete Forever',
-      } satisfies ConfirmDialogData,
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) this.toast.error('Permanent delete not yet implemented');
-    });
   }
 
   getTypeBadge(mimeType: string): string {

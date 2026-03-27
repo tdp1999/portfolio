@@ -1,15 +1,16 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   PLATFORM_ID,
   signal,
   viewChild,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
@@ -79,6 +80,7 @@ export default class MediaPageComponent implements OnInit {
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly paginator = viewChild.required(MatPaginator);
 
@@ -147,7 +149,9 @@ export default class MediaPageComponent implements OnInit {
 
   onViewModeChange(mode: ViewMode): void {
     this.viewMode.set(mode);
-    localStorage.setItem(VIEW_MODE_KEY, mode);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(VIEW_MODE_KEY, mode);
+    }
   }
 
   // --- Filters ---
@@ -234,23 +238,26 @@ export default class MediaPageComponent implements OnInit {
       } satisfies ConfirmDialogData,
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-      let completed = 0;
-      let failed = 0;
-      for (const id of ids) {
-        this.mediaService.delete(id).subscribe({
-          next: () => {
-            completed++;
-            if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
-          },
-          error: () => {
-            failed++;
-            if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
-          },
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        let completed = 0;
+        let failed = 0;
+        for (const id of ids) {
+          this.mediaService.delete(id).subscribe({
+            next: () => {
+              completed++;
+              if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
+            },
+            error: () => {
+              failed++;
+              if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
+            },
+          });
+        }
+      });
   }
 
   // --- Edit dialog ---
@@ -261,12 +268,15 @@ export default class MediaPageComponent implements OnInit {
         width: '560px',
         data: { item } satisfies MediaDialogData,
       });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Media updated');
-          this.loadMedia();
-        }
-      });
+      dialogRef
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((result) => {
+          if (result) {
+            this.toast.success('Media updated');
+            this.loadMedia();
+          }
+        });
     });
   }
 
@@ -281,9 +291,12 @@ export default class MediaPageComponent implements OnInit {
       } satisfies ConfirmDialogData,
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) this.deleteMedia(item.id);
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) this.deleteMedia(item.id);
+      });
   }
 
   // --- Helpers ---

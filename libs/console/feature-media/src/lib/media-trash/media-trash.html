@@ -11,16 +11,10 @@
       </div>
     </div>
     @if (selectedCount > 0) {
-      <div class="flex items-center gap-2">
-        <button mat-flat-button color="primary" (click)="bulkRestore()">
-          <mat-icon class="icon-md">restore</mat-icon>
-          Restore Selected
-        </button>
-        <button mat-stroked-button color="warn" (click)="confirmBulkDelete()">
-          <mat-icon class="icon-md">delete_forever</mat-icon>
-          Delete Forever
-        </button>
-      </div>
+      <button mat-flat-button color="primary" (click)="bulkRestore()">
+        <mat-icon class="icon-md">restore</mat-icon>
+        Restore Selected
+      </button>
     }
   </div>
 
