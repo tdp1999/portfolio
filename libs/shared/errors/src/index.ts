@@ -22,3 +22,4 @@ export { TagErrorCode } from './lib/error-codes/tag.error-codes';
 export { CategoryErrorCode } from './lib/error-codes/category.error-codes';
 export { SkillErrorCode } from './lib/error-codes/skill.error-codes';
 export { MediaErrorCode } from './lib/error-codes/media.error-codes';
+export { EmailTemplateErrorCode } from './lib/error-codes/email-template.error-codes';

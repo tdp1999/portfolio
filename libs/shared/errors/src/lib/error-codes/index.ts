@@ -5,3 +5,4 @@ export { TagErrorCode } from './tag.error-codes';
 export { CategoryErrorCode } from './category.error-codes';
 export { SkillErrorCode } from './skill.error-codes';
 export { MediaErrorCode } from './media.error-codes';
+export { EmailTemplateErrorCode } from './email-template.error-codes';

@@ -6,6 +6,7 @@ import { PrismaModule } from '../infrastructure/prisma';
 import { UserModule } from '../modules/user';
 import { AuthModule } from '../modules/auth';
 import { EmailModule } from '../modules/email';
+import { EmailTemplateModule } from '../modules/email-template';
 import { HealthModule } from '../modules/health';
 import { TagModule } from '../modules/tag';
 import { CategoryModule } from '../modules/category';
@@ -22,6 +23,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     CqrsModule,
     ScheduleModule.forRoot(),
     EmailModule,
+    EmailTemplateModule,
     UserModule,
     AuthModule,
     HealthModule,
