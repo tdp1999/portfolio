@@ -117,18 +117,72 @@
 
 **Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
 
+### Epic: Contact Message (epic-contact-message) - broken-down
+
+> **Approach:** EmailTemplate module first, then ContactMessage BE vertical slice, then Console FE, then E2E.
+
+#### Sprint 7: ContactMessage Module (10 tasks)
+
+- [x] 195-email-template-module - EmailTemplate port/adapter + hardcoded templates (M) ✓
+- [ ] 196-contact-message-schema - Prisma schema + migration (S)
+- [ ] 197-contact-message-entity - Domain entity + types + errors (M)
+- [ ] 198-contact-message-repository - Repository port + adapter + mapper (M)
+- [ ] 199-contact-message-dtos - Zod DTOs + presenter + disposable email util (M)
+- [ ] 200-contact-message-commands - Commands + handlers + tests (L)
+- [ ] 201-contact-message-queries - Queries + handlers + tests (S)
+- [ ] 202-contact-message-controller - Controller + cron job + module wiring (M)
+- [ ] 203-console-messages-page - Console inbox UI + sidebar badge (L)
+- [ ] 204-contact-message-e2e - E2E tests (L)
+
+**Milestone:** Full contact message system — public submission, spam protection, auto-reply, admin inbox
+
 ### Standalone Tasks
 
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
 ---
 
+### Epic: Profile (epic-profile) - broken-down
+
+> **Approach:** Schema + shared utils first, then BE vertical slice, then Console FE, then Landing integration, then E2E.
+
+#### Sprint 8: Profile Module (10 tasks)
+
+- [ ] 205-profile-schema-enums - Prisma schema + enum updates + migration (M)
+- [ ] 206-translatable-json-shared - Shared translatable Zod schemas + utilities (M)
+- [ ] 207-profile-entity - Domain entity + types + errors (M)
+- [ ] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L)
+- [ ] 209-profile-repository - Repository port + adapter + mapper (M)
+- [ ] 210-profile-commands-queries - Commands + queries + handlers + tests (L)
+- [ ] 211-profile-controller-wiring - Controller + module wiring (S)
+- [ ] 212-console-profile-page - Console profile settings page (L)
+- [ ] 213-landing-profile-integration - Landing page dynamic profile data + JSON-LD SSR (L)
+- [ ] 214-profile-e2e - E2E tests: API, console, landing (L)
+
+**Milestone:** All personal data dynamic, landing page live from DB, JSON-LD SEO active
+
+### Epic: Experience (epic-experience) - broken-down
+
+> **Approach:** Schema + enums first, then BE vertical slice, then Console FE, then Landing integration, then E2E.
+
+#### Sprint 9: Experience Module (10 tasks)
+
+- [ ] 215-experience-schema-enums - Prisma schema + enum updates + migration (M)
+- [ ] 216-experience-entity - Domain entity + types + errors (M)
+- [ ] 217-experience-repository - Repository port + adapter + mapper (M)
+- [ ] 218-experience-dtos - Zod DTOs + presenter (M)
+- [ ] 219-experience-commands - Commands + handlers + tests (L)
+- [ ] 220-experience-queries - Queries + handlers + tests (S)
+- [ ] 221-experience-controller-wiring - Controller + module wiring (S)
+- [ ] 222-console-experience-page - Console experience CRUD page (L)
+- [ ] 223-landing-experience-integration - Landing page career timeline integration (L)
+- [ ] 224-experience-e2e - E2E tests: API, console, landing (L)
+
+**Milestone:** Full experience/work history system — console CRUD, landing timeline, skills-per-role
+
 #### Future Sprints (to be broken down when ready)
-- Sprint 7: Profile Module
-- Sprint 8: Project Module (complex, with relations)
-- Sprint 9: BlogPost Module
-- Sprint 10: Experience Module
-- Sprint 11: ContactMessage Module
+- Sprint 10: Project Module (complex, with relations)
+- Sprint 11: BlogPost Module
 - Sprint 12: GitHubRepo Module
 - Sprint 13: Analytics Module
 - Sprint 14: Seed Script + Final Verification
@@ -170,16 +224,16 @@
 
 ## Up Next
 
-**Next Module:** Profile Module (Sprint 7 — to be broken down)
+**Current:** ContactMessage Module (Sprint 7) + Profile Module (Sprint 8) + Experience Module (Sprint 9) — all broken down, ready to start
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 191     |
-| Pending                   | 2       |
-| **Total Created**         | **194** |
+| Done (archived)           | 192     |
+| Pending                   | 31      |
+| **Total Created**         | **224** |
 
 ## Notes
 
