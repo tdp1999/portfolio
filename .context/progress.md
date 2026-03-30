@@ -55,6 +55,10 @@
 - [x] **Foundations Audit: Landing** (standalone) - Completed 2026-03-27
   - Task 193 → archived in `tasks-done/other/`
   - Button min-heights (sm=32, md=40, lg=48), input 40px, rounded-lg
+- [x] **Contact Message** (epic-contact-message) - Completed 2026-03-30
+  - Tasks 195-204 → archived in `tasks-done/epic-contact-message/`
+  - Full vertical slice: EmailTemplate module, ContactMessage BE (schema→entity→repo→DTO→CQRS→controller), Console inbox UI, E2E tests
+  - Spam protection (honeypot, disposable email, min-time), auto-reply, admin notification, GDPR retention/purge
 
 ## In Progress
 
@@ -116,25 +120,6 @@
 - [x] 163-177 → See epic-media-module (archived in `tasks-done/epic-media-module/`)
 
 **Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
-
-### Epic: Contact Message (epic-contact-message) - broken-down
-
-> **Approach:** EmailTemplate module first, then ContactMessage BE vertical slice, then Console FE, then E2E.
-
-#### Sprint 7: ContactMessage Module (10 tasks)
-
-- [x] 195-email-template-module - EmailTemplate port/adapter + hardcoded templates (M) ✓
-- [ ] 196-contact-message-schema - Prisma schema + migration (S)
-- [ ] 197-contact-message-entity - Domain entity + types + errors (M)
-- [ ] 198-contact-message-repository - Repository port + adapter + mapper (M)
-- [ ] 199-contact-message-dtos - Zod DTOs + presenter + disposable email util (M)
-- [ ] 200-contact-message-commands - Commands + handlers + tests (L)
-- [ ] 201-contact-message-queries - Queries + handlers + tests (S)
-- [ ] 202-contact-message-controller - Controller + cron job + module wiring (M)
-- [ ] 203-console-messages-page - Console inbox UI + sidebar badge (L)
-- [ ] 204-contact-message-e2e - E2E tests (L)
-
-**Milestone:** Full contact message system — public submission, spam protection, auto-reply, admin inbox
 
 ### Standalone Tasks
 
@@ -224,15 +209,15 @@
 
 ## Up Next
 
-**Current:** ContactMessage Module (Sprint 7) + Profile Module (Sprint 8) + Experience Module (Sprint 9) — all broken down, ready to start
+**Current:** Profile Module (Sprint 8) + Experience Module (Sprint 9) — broken down, ready to start
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 192     |
-| Pending                   | 31      |
+| Done (archived)           | 201     |
+| Pending                   | 22      |
 | **Total Created**         | **224** |
 
 ## Notes
