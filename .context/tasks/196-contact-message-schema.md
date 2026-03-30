@@ -1,6 +1,6 @@
 # Task: ContactMessage Prisma schema + migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Define the ContactMessage model in Prisma schema with enums, indexes, and apply migration.
@@ -11,9 +11,9 @@ First step of the ContactMessage module. The model stores visitor inquiries with
 ## Acceptance Criteria
 
 ### Prisma Schema
-- [ ] `ContactPurpose` enum: `GENERAL`, `JOB_OPPORTUNITY`, `FREELANCE`, `COLLABORATION`, `BUG_REPORT`, `OTHER`
-- [ ] `ContactMessageStatus` enum: `UNREAD`, `READ`, `REPLIED`, `ARCHIVED`
-- [ ] `ContactMessage` model with all fields per epic spec:
+- [x] `ContactPurpose` enum: `GENERAL`, `JOB_OPPORTUNITY`, `FREELANCE`, `COLLABORATION`, `BUG_REPORT`, `OTHER`
+- [x] `ContactMessageStatus` enum: `UNREAD`, `READ`, `REPLIED`, `ARCHIVED`
+- [x] `ContactMessage` model with all fields per epic spec:
   - `id` (UUID v7, PK)
   - `name` (VarChar 200, not null)
   - `email` (VarChar 320, not null — RFC 5321 max)
@@ -32,15 +32,15 @@ First step of the ContactMessage module. The model stores visitor inquiries with
   - `deletedAt` (DateTime, nullable — soft delete)
 
 ### Indexes
-- [ ] Composite index on `[status, deletedAt]` (inbox queries)
-- [ ] Index on `createdAt` (ordering)
-- [ ] Index on `expiresAt` (purge cron)
-- [ ] Index on `email` (rate limit checks)
+- [x] Composite index on `[status, deletedAt]` (inbox queries)
+- [x] Index on `createdAt` (ordering)
+- [x] Index on `expiresAt` (purge cron)
+- [x] Index on `email` (rate limit checks)
 
 ### Migration
-- [ ] Migration applies cleanly to local Docker PostgreSQL
-- [ ] `npx prisma generate` succeeds
-- [ ] Generated types available in `@prisma/client`
+- [x] Migration applies cleanly to local Docker PostgreSQL
+- [x] `npx prisma generate` succeeds
+- [x] Generated types available in `@prisma/client`
 
 **Specialized Skill:** prisma-migrate — use `/prisma-migrate` for migration workflow.
 
@@ -60,3 +60,5 @@ First step of the ContactMessage module. The model stores visitor inquiries with
 ## Complexity: S
 
 ## Progress Log
+- [2026-03-29] Started. Using prisma-migrate for migration workflow.
+- [2026-03-29] Done — all ACs satisfied. Migration 20260329151457_add_contact_message applied cleanly.

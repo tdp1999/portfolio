@@ -1,6 +1,6 @@
 # Task: ContactMessage domain entity + types + errors
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the ContactMessage domain entity with factory methods, status transitions, and domain-specific error codes.
@@ -11,40 +11,40 @@ ContactMessage is simpler than other entities — no audit FKs, no slug. But it 
 ## Acceptance Criteria
 
 ### Domain Entity
-- [ ] `ContactMessage` class with private constructor
-- [ ] `ContactMessage.create(data)` factory — generates UUID v7, computes `expiresAt = now + 12 months`, sets status UNREAD, hashes IP
-- [ ] `ContactMessage.load(props)` factory — reconstitutes from DB
-- [ ] `markAsRead()` — transitions to READ, sets `readAt`
-- [ ] `markAsUnread()` — transitions back to UNREAD, clears `readAt`
-- [ ] `setReplied()` — transitions to REPLIED, sets `repliedAt` (must be READ first)
-- [ ] `archive()` — transitions to ARCHIVED, sets `archivedAt`
-- [ ] `softDelete()` — sets `deletedAt`
-- [ ] `restore()` — clears `deletedAt`
-- [ ] `markAsSpam()` / `clearSpam()` — toggles `isSpam`
-- [ ] All transition methods return new instance (immutable pattern)
-- [ ] Getters for all public properties
+- [x] `ContactMessage` class with private constructor
+- [x] `ContactMessage.create(data)` factory — generates UUID v7, computes `expiresAt = now + 12 months`, sets status UNREAD, hashes IP
+- [x] `ContactMessage.load(props)` factory — reconstitutes from DB
+- [x] `markAsRead()` — transitions to READ, sets `readAt`
+- [x] `markAsUnread()` — transitions back to UNREAD, clears `readAt`
+- [x] `setReplied()` — transitions to REPLIED, sets `repliedAt` (must be READ first)
+- [x] `archive()` — transitions to ARCHIVED, sets `archivedAt`
+- [x] `softDelete()` — sets `deletedAt`
+- [x] `restore()` — clears `deletedAt`
+- [x] `markAsSpam()` / `clearSpam()` — toggles `isSpam`
+- [x] All transition methods return new instance (immutable pattern)
+- [x] Getters for all public properties
 
 ### Types
-- [ ] `IContactMessageProps` interface with all fields
-- [ ] `ICreateContactMessagePayload` — input for `create()`: name, email, purpose, subject, message, locale, ipAddress, userAgent, consentGivenAt
-- [ ] Types in separate file (`contact-message.types.ts`)
+- [x] `IContactMessageProps` interface with all fields
+- [x] `ICreateContactMessagePayload` — input for `create()`: name, email, purpose, subject, message, locale, ipAddress, userAgent, consentGivenAt
+- [x] Types in separate file (`contact-message.types.ts`)
 
 ### Error Codes
-- [ ] `ContactMessageErrorCode` enum: `NOT_FOUND`, `INVALID_INPUT`, `ALREADY_DELETED`, `ALREADY_ARCHIVED`, `INVALID_TRANSITION`, `RATE_LIMITED`, `DISPOSABLE_EMAIL`, `SPAM_DETECTED`
-- [ ] In separate file (`contact-message.error.ts`)
+- [x] `ContactMessageErrorCode` enum: `NOT_FOUND`, `INVALID_INPUT`, `ALREADY_DELETED`, `ALREADY_ARCHIVED`, `INVALID_TRANSITION`, `RATE_LIMITED`, `DISPOSABLE_EMAIL`, `SPAM_DETECTED`
+- [x] In separate file (`contact-message.error.ts`)
 
 ### Validation Rules (in entity)
-- [ ] `setReplied()` throws if status is not READ (must read before replying — rule CTM-001)
-- [ ] `archive()` throws if already archived
-- [ ] `softDelete()` throws if already deleted
-- [ ] `restore()` throws if not deleted
+- [x] `setReplied()` throws if status is not READ (must read before replying — rule CTM-001)
+- [x] `archive()` throws if already archived
+- [x] `softDelete()` throws if already deleted
+- [x] `restore()` throws if not deleted
 
 ### Unit Tests
-- [ ] `create()` generates valid UUID v7, sets UNREAD status, computes expiresAt 12 months ahead
-- [ ] `create()` hashes ipAddress (SHA-256)
-- [ ] All status transitions produce correct state + timestamps
-- [ ] Invalid transitions throw with correct error code
-- [ ] `load()` reconstitutes entity from raw props without modification
+- [x] `create()` generates valid UUID v7, sets UNREAD status, computes expiresAt 12 months ahead
+- [x] `create()` hashes ipAddress (SHA-256)
+- [x] All status transitions produce correct state + timestamps
+- [x] Invalid transitions throw with correct error code
+- [x] `load()` reconstitutes entity from raw props without modification
 
 ## Technical Notes
 - IP hashing: use Node.js `crypto.createHash('sha256').update(ip).digest('hex')` — done in entity factory, not infrastructure
@@ -64,3 +64,5 @@ ContactMessage is simpler than other entities — no audit FKs, no slug. But it 
 ## Complexity: M
 
 ## Progress Log
+- [2026-03-29] Started
+- [2026-03-29] Done — all ACs satisfied. Entity, types, error codes, 21 unit tests passing.

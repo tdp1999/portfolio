@@ -47,6 +47,11 @@ export const appRoutes: Route[] = [
         canActivate: [adminGuard],
       },
       {
+        path: 'messages',
+        loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'media',
         loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
         canActivate: [adminGuard],

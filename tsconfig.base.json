@@ -36,7 +36,8 @@
       "@portfolio/console/feature-category": ["libs/console/feature-category/src/index.ts"],
       "@portfolio/console/feature-skill": ["libs/console/feature-skill/src/index.ts"],
       "@prisma/client": ["apps/api/src/generated/prisma"],
-      "@portfolio/console/feature-media": ["libs/console/feature-media/src/index.ts"]
+      "@portfolio/console/feature-media": ["libs/console/feature-media/src/index.ts"],
+      "@portfolio/console/feature-messages": ["libs/console/feature-messages/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

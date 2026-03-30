@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AuthStore, ThemeService } from '@portfolio/console/shared/data-access';
+import { AuthStore, ThemeService, UnreadBadgeService } from '@portfolio/console/shared/data-access';
 import { ToastService } from '../toast/toast.service';
 import { SidebarModule } from '@portfolio/shared/ui/sidebar';
 
@@ -35,6 +35,7 @@ export class ConsoleMainLayoutComponent {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   protected readonly themeService = inject(ThemeService);
+  protected readonly unreadBadge = inject(UnreadBadgeService);
 
   readonly user = this.authStore.user;
   readonly userInitial = computed(() => this.user()?.name?.charAt(0).toUpperCase() ?? '?');
@@ -44,6 +45,19 @@ export class ConsoleMainLayoutComponent {
   readonly themeTooltip = computed(() =>
     this.themeService.resolvedTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
   );
+  readonly unreadCount = this.unreadBadge.count;
+  readonly unreadBadgeText = computed(() => {
+    const count = this.unreadCount();
+    if (count === 0) return '';
+    return count > 99 ? '99+' : String(count);
+  });
+
+  constructor() {
+    // Refresh unread count on init (admin only)
+    if (this.isAdmin()) {
+      this.unreadBadge.refresh();
+    }
+  }
 
   logout(): void {
     this.authStore.logout().subscribe(() => {

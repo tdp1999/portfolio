@@ -46,6 +46,19 @@
               </a>
             </li>
             <li uiSidebarMenuItem>
+              <a routerLink="/messages" routerLinkActive ui-sidebar-menu-button tooltip="Messages">
+                <mat-icon data-sidebar-icon class="icon-md">mail</mat-icon>
+                <span>Messages</span>
+                @if (unreadBadgeText()) {
+                  <span
+                    class="ml-auto inline-flex items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-text-on-primary min-w-5"
+                  >
+                    {{ unreadBadgeText() }}
+                  </span>
+                }
+              </a>
+            </li>
+            <li uiSidebarMenuItem>
               <a routerLink="/media" routerLinkActive ui-sidebar-menu-button tooltip="Media Library">
                 <mat-icon data-sidebar-icon class="icon-md">perm_media</mat-icon>
                 <span>Media</span>

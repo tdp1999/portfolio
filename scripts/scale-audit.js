@@ -39,8 +39,9 @@ const IGNORE_PATTERNS = [/node_modules/, /dist/, /\.spec\.ts$/];
 const ARBITRARY_PX_REGEX =
   /(?:^|[\s"'])(!?(?:p|px|py|pl|pr|pt|pb|m|mx|my|ml|mr|mt|mb|gap|w|h|min-w|min-h|max-w|max-h|text|top|right|bottom|left|inset)-\[(\d+)px\])/g;
 
-// !important Tailwind prefixes
-const IMPORTANT_REGEX = /(?:^|[\s"'])(![a-z][\w.-]*)/g;
+// !important Tailwind prefixes — must contain a hyphen (e.g., !h-5, !text-red-500)
+// This avoids matching JS/Angular negation like !isValid, !allSelected()
+const IMPORTANT_REGEX = /(?:^|[\s"'])(![a-z][\w]*-[\w.-]*)/g;
 
 // Hardcoded px values in SCSS/CSS (font-size: 13px, width: 15px, etc.)
 const CSS_PX_REGEX =
@@ -142,16 +143,18 @@ function auditFile(filePath) {
       }
     }
 
-    // Check !important Tailwind prefixes
-    IMPORTANT_REGEX.lastIndex = 0;
-    while ((match = IMPORTANT_REGEX.exec(line)) !== null) {
-      const fullClass = match[1];
-      violations.push({
-        line: lineNum,
-        severity: 'ERROR',
-        message: `${fullClass} — !important prefix banned. Use .icon-* classes for Material icons.`,
-        code: line.trim(),
-      });
+    // Check !important Tailwind prefixes (only in .html and .scss — skip .ts to avoid JS negation false positives)
+    if (!filePath.endsWith('.ts')) {
+      IMPORTANT_REGEX.lastIndex = 0;
+      while ((match = IMPORTANT_REGEX.exec(line)) !== null) {
+        const fullClass = match[1];
+        violations.push({
+          line: lineNum,
+          severity: 'ERROR',
+          message: `${fullClass} — !important prefix banned. Use .icon-* classes for Material icons.`,
+          code: line.trim(),
+        });
+      }
     }
 
     // Check hardcoded CSS px values (only in .scss files)

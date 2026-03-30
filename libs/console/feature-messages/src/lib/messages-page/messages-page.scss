@@ -1,0 +1,101 @@
+:host {
+  display: block;
+}
+
+.bulk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+}
+
+.col-select {
+  width: 48px;
+}
+
+.col-status {
+  width: 32px;
+  padding-right: 0;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-unread {
+  background: var(--color-primary);
+}
+
+.dot-read {
+  background: var(--color-text-muted);
+  opacity: 0.4;
+}
+
+.dot-replied {
+  background: #22c55e;
+}
+
+.dot-archived {
+  background: var(--color-text-muted);
+  opacity: 0.25;
+}
+
+.dot-spam {
+  background: #ef4444;
+  opacity: 0.5;
+}
+
+.purpose-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+.badge-default {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.badge-job {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.badge-freelance {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.badge-collab {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.badge-bug {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.badge-spam {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.row-unread {
+  background: var(--color-surface-alt);
+}
+
+.row-spam {
+  opacity: 0.6;
+}

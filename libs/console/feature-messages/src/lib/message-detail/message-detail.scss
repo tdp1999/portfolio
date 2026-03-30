@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.detail-content {
+  min-height: 200px;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.message-card {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.message-meta {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+.meta-row {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.meta-label {
+  width: 80px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.meta-value {
+  color: var(--color-text);
+}
+
+.message-body {
+  padding: 1.5rem;
+  white-space: pre-wrap;
+  line-height: 1.75;
+  font-size: 0.9375rem;
+}
+
+.message-timestamps {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+.ts-row {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.125rem 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.ts-label {
+  width: 80px;
+  flex-shrink: 0;
+  font-weight: 500;
+}

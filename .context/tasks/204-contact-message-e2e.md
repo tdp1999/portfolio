@@ -1,6 +1,6 @@
 # Task: ContactMessage E2E tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 Write end-to-end tests covering the full ContactMessage lifecycle: public submission, admin inbox management, spam protection, and edge cases.
@@ -11,45 +11,45 @@ E2E tests validate the entire vertical slice — API endpoints through to consol
 ## Acceptance Criteria
 
 ### Public Submission Flow
-- [ ] Submit valid message → 201 response with `{ id }`
-- [ ] Submit with all fields (name, email, purpose, subject, message, locale, consentGivenAt) → stored correctly
-- [ ] Submit with minimal fields (name, email, message, consentGivenAt) → defaults applied (purpose=GENERAL, locale=en)
-- [ ] Submit with invalid email format → validation error
-- [ ] Submit with missing required fields → validation error
-- [ ] Submit with message too short (< 10 chars) → validation error
-- [ ] Submit with honeypot field filled → 201 response but NOT stored in DB
+- [x] Submit valid message → 201 response with `{ id }`
+- [x] Submit with all fields (name, email, purpose, subject, message, locale, consentGivenAt) → stored correctly
+- [x] Submit with minimal fields (name, email, message, consentGivenAt) → defaults applied (purpose=GENERAL, locale=en)
+- [x] Submit with invalid email format → validation error
+- [x] Submit with missing required fields → validation error
+- [x] Submit with message too short (< 10 chars) → validation error
+- [x] Submit with honeypot field filled → 201 response but NOT stored in DB
 
 ### Spam Protection
-- [ ] Rate limit: submit 6 times from same IP within 1 hour → 429 on 6th
-- [ ] Disposable email: submit with mailinator.com email → validation error
+- [x] Rate limit: submit 6 times from same IP within 1 hour → 429 on 6th
+- [x] Disposable email: submit with mailinator.com email → validation error
 
 ### Admin Inbox Management
-- [ ] List messages → returns paginated results
-- [ ] List with status filter → returns only matching status
-- [ ] List with search → returns matching name/email/subject
-- [ ] Get message by ID → returns full detail
-- [ ] Get non-existent ID → 404
-- [ ] Mark as read → status changes to READ, readAt set
-- [ ] Mark as unread → status changes to UNREAD, readAt cleared
-- [ ] Set replied → status changes to REPLIED (from READ state)
-- [ ] Set replied from UNREAD → error (invalid transition)
-- [ ] Archive → status changes to ARCHIVED
-- [ ] Soft delete → deletedAt set, excluded from default list
-- [ ] Restore → deletedAt cleared, visible in list again
-- [ ] Unread count → returns correct number
+- [x] List messages → returns paginated results
+- [x] List with status filter → returns only matching status
+- [x] List with search → returns matching name/email/subject
+- [x] Get message by ID → returns full detail
+- [x] Get non-existent ID → 404
+- [x] Mark as read → status changes to READ, readAt set
+- [x] Mark as unread → status changes to UNREAD, readAt cleared
+- [x] Set replied → status changes to REPLIED (from READ state)
+- [x] Set replied from UNREAD → error (invalid transition)
+- [x] Archive → status changes to ARCHIVED
+- [x] Soft delete → deletedAt set, excluded from default list
+- [x] Restore → deletedAt cleared, visible in list again
+- [x] Unread count → returns correct number
 
 ### Auth Protection
-- [ ] All admin endpoints without auth token → 401
-- [ ] Public submit endpoint works without auth
+- [x] All admin endpoints without auth token → 401
+- [x] Public submit endpoint works without auth
 
 ### Console UI (if Playwright tests)
-- [ ] Navigate to /messages → inbox list loads
-- [ ] Click message → detail view opens, status changes to READ
-- [ ] Click "Archive" → message moves to archived filter
-- [ ] Click "Delete" → message disappears from active list
-- [ ] Unread badge shows correct count
-- [ ] Search filters results
-- [ ] Bulk select + action works
+- [x] Navigate to /messages → inbox list loads
+- [x] Click message → detail view opens, status changes to READ
+- [x] Click "Archive" → message moves to archived filter
+- [x] Click "Delete" → message disappears from active list
+- [x] Unread badge shows correct count
+- [x] Search filters results
+- [x] Bulk select + action works
 
 **Specialized Skill:** aqa-expert — read SKILL.md for E2E test patterns (POM, console monitoring, flakiness prevention).
 
@@ -73,3 +73,5 @@ E2E tests validate the entire vertical slice — API endpoints through to consol
 ## Complexity: L
 
 ## Progress Log
+- [2026-03-30] Started
+- [2026-03-30] Done — all ACs satisfied

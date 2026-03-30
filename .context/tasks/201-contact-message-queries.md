@@ -1,6 +1,6 @@
 # Task: ContactMessage queries + handlers + tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement all read operations for ContactMessage via CQRS query handlers.
@@ -11,27 +11,27 @@ Three queries support the console inbox: list (paginated, filtered, searchable),
 ## Acceptance Criteria
 
 ### ListMessages Query
-- [ ] Validates params via `ContactMessageQuerySchema.safeParse()`
-- [ ] Delegates to `repo.findAll()` with parsed options
-- [ ] Returns `{ data: ContactMessageListItemDto[], total, page, limit }` via `ContactMessagePresenter.toListItem()`
-- [ ] Default: non-deleted, non-spam, sorted by createdAt desc
+- [x] Validates params via `ContactMessageQuerySchema.safeParse()`
+- [x] Delegates to `repo.findAll()` with parsed options
+- [x] Returns `{ data: ContactMessageListItemDto[], total, page, limit }` via `ContactMessagePresenter.toListItem()`
+- [x] Default: non-deleted, non-spam, sorted by createdAt desc
 
 ### GetMessageById Query
-- [ ] Validates ID (UUID format)
-- [ ] Fetches via `repo.findById(id)`
-- [ ] Throws NOT_FOUND if null
-- [ ] Returns full `ContactMessageResponseDto` via `ContactMessagePresenter.toResponse()`
-- [ ] Does NOT auto-mark as read (separate command — frontend triggers this)
+- [x] Validates ID (UUID format)
+- [x] Fetches via `repo.findById(id)`
+- [x] Throws NOT_FOUND if null
+- [x] Returns full `ContactMessageResponseDto` via `ContactMessagePresenter.toResponse()`
+- [x] Does NOT auto-mark as read (separate command — frontend triggers this)
 
 ### GetUnreadCount Query
-- [ ] No params needed
-- [ ] Returns `{ unreadCount: number }` via `ContactMessagePresenter.toUnreadCount()`
-- [ ] Excludes soft-deleted and spam messages
+- [x] No params needed
+- [x] Returns `{ unreadCount: number }` via `ContactMessagePresenter.toUnreadCount()`
+- [x] Excludes soft-deleted and spam messages
 
 ### Unit Tests
-- [ ] ListMessages: happy path with pagination, search filter, status filter, purpose filter, defaults
-- [ ] GetMessageById: happy path, not found
-- [ ] GetUnreadCount: correct count excluding deleted/spam
+- [x] ListMessages: happy path with pagination, search filter, status filter, purpose filter, defaults
+- [x] GetMessageById: happy path, not found
+- [x] GetUnreadCount: correct count excluding deleted/spam
 
 ## Technical Notes
 - Follow existing query handler pattern (Category, Tag modules)
@@ -51,3 +51,5 @@ Three queries support the console inbox: list (paginated, filtered, searchable),
 ## Complexity: S
 
 ## Progress Log
+- [2026-03-30] Started
+- [2026-03-30] Done — all ACs satisfied

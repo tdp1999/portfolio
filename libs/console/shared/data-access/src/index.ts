@@ -15,3 +15,4 @@ export { ValidationErrorService } from './lib/errors/validation-error.service';
 export { ErrorDataService } from './lib/errors/error-data.service';
 export { ServerErrorDirective, SERVER_ERROR_FALLBACK } from './lib/errors/server-error.directive';
 export type { ServerErrorFallback } from './lib/errors/server-error.directive';
+export { UnreadBadgeService } from './lib/unread-badge.service';

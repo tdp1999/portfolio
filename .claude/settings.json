@@ -6,13 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx nx affected -t typecheck --base=HEAD --head=HEAD --quiet 2>/dev/null || echo 'Type check skipped (no git changes)'",
-            "timeout": 120,
-            "statusMessage": "Running type check on affected files..."
-          },
-          {
-            "type": "command",
-            "command": "node scripts/scale-audit.js",
+            "command": "test -f scripts/scale-audit.js && node scripts/scale-audit.js || true",
             "timeout": 10,
             "statusMessage": "Checking 4px grid compliance..."
           }

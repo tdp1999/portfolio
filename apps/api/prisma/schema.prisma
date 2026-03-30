@@ -73,6 +73,22 @@ enum SyncStatus {
   FAILED
 }
 
+enum ContactPurpose {
+  GENERAL
+  JOB_OPPORTUNITY
+  FREELANCE
+  COLLABORATION
+  BUG_REPORT
+  OTHER
+}
+
+enum ContactMessageStatus {
+  UNREAD
+  READ
+  REPLIED
+  ARCHIVED
+}
+
 enum Role {
   ADMIN
   USER
@@ -217,4 +233,31 @@ model Media {
   @@index([createdById])
   @@index([createdAt])
   @@map("media")
+}
+
+model ContactMessage {
+  id             String               @id @db.Uuid
+  name           String               @db.VarChar(200)
+  email          String               @db.VarChar(320)
+  purpose        ContactPurpose       @default(GENERAL)
+  subject        String?              @db.VarChar(500)
+  message        String
+  status         ContactMessageStatus @default(UNREAD)
+  isSpam         Boolean              @default(false)
+  ipAddress      String?              @db.VarChar(64)
+  userAgent      String?              @db.VarChar(512)
+  locale         String               @default("en") @db.VarChar(5)
+  consentGivenAt DateTime
+  createdAt      DateTime             @default(now())
+  readAt         DateTime?
+  repliedAt      DateTime?
+  archivedAt     DateTime?
+  expiresAt      DateTime
+  deletedAt      DateTime?
+
+  @@index([status, deletedAt])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@index([email])
+  @@map("contact_messages")
 }

@@ -1,6 +1,6 @@
 # Task: ContactMessage commands + handlers + tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement all write operations for ContactMessage via CQRS command handlers, including spam protection logic and email sending.
@@ -11,54 +11,54 @@ The submit command is the most complex — it validates, checks spam layers, sto
 ## Acceptance Criteria
 
 ### SubmitContactMessage Command
-- [ ] Validates input via `SubmitContactMessageSchema.safeParse()`
-- [ ] **Honeypot check:** if `website` field is non-empty, return `{ id: generated-uuid, success: true }` silently (no store, no emails)
-- [ ] **Rate limit check (email):** query repo `countRecentByEmail` — if >= 3 in last hour, throw `RATE_LIMITED` error
-- [ ] **Rate limit check (IP):** query repo `countRecentByIpHash` — if >= 5 in last hour, throw `RATE_LIMITED` error
-- [ ] **Disposable email check:** if `isDisposableEmail(email)`, throw `DISPOSABLE_EMAIL` error
-- [ ] Creates `ContactMessage` entity via `ContactMessage.create()`
-- [ ] Stores via repository `add()`
-- [ ] Sends auto-reply email: gets template from `EMAIL_TEMPLATE_REPOSITORY`, sends via `EMAIL_SERVICE`
-- [ ] Sends admin notification: gets template, sends to `ADMIN_NOTIFICATION_EMAIL` env var
-- [ ] Email failures are logged but do NOT block submission (try/catch around email sending)
-- [ ] Returns `{ id: string }`
+- [x] Validates input via `SubmitContactMessageSchema.safeParse()`
+- [x] **Honeypot check:** if `website` field is non-empty, return `{ id: generated-uuid, success: true }` silently (no store, no emails)
+- [x] **Rate limit check (email):** query repo `countRecentByEmail` — if >= 3 in last hour, throw `RATE_LIMITED` error
+- [x] **Rate limit check (IP):** query repo `countRecentByIpHash` — if >= 5 in last hour, throw `RATE_LIMITED` error
+- [x] **Disposable email check:** if `isDisposableEmail(email)`, throw `DISPOSABLE_EMAIL` error
+- [x] Creates `ContactMessage` entity via `ContactMessage.create()`
+- [x] Stores via repository `add()`
+- [x] Sends auto-reply email: gets template from `EMAIL_TEMPLATE_REPOSITORY`, sends via `EMAIL_SERVICE`
+- [x] Sends admin notification: gets template, sends to `ADMIN_NOTIFICATION_EMAIL` env var
+- [x] Email failures are logged but do NOT block submission (try/catch around email sending)
+- [x] Returns `{ id: string }`
 
 ### MarkAsRead Command
-- [ ] Validates message ID
-- [ ] Fetches message, throws NOT_FOUND if missing
-- [ ] Calls `entity.markAsRead()`, saves via `repo.update()`
-- [ ] Returns void
+- [x] Validates message ID
+- [x] Fetches message, throws NOT_FOUND if missing
+- [x] Calls `entity.markAsRead()`, saves via `repo.update()`
+- [x] Returns void
 
 ### MarkAsUnread Command
-- [ ] Same pattern, calls `entity.markAsUnread()`
+- [x] Same pattern, calls `entity.markAsUnread()`
 
 ### SetReplied Command
-- [ ] Calls `entity.setReplied()`, saves
-- [ ] Entity enforces: must be in READ status first (throws INVALID_TRANSITION)
+- [x] Calls `entity.setReplied()`, saves
+- [x] Entity enforces: must be in READ status first (throws INVALID_TRANSITION)
 
 ### ArchiveMessage Command
-- [ ] Calls `entity.archive()`, saves
+- [x] Calls `entity.archive()`, saves
 
 ### RestoreMessage Command
-- [ ] Calls `entity.restore()`, saves (clears deletedAt)
+- [x] Calls `entity.restore()`, saves (clears deletedAt)
 
 ### SoftDeleteMessage Command
-- [ ] Calls `entity.softDelete()`, saves
+- [x] Calls `entity.softDelete()`, saves
 
 ### PurgeExpiredMessages Command
-- [ ] Calls `repo.hardDeleteExpired()` — returns count of purged expired messages
-- [ ] Calls `repo.hardDeleteOldSoftDeleted(now - 30 days)` — returns count of purged soft-deleted
-- [ ] Returns `{ expiredCount, softDeletedCount }`
-- [ ] No validation needed (internal system command)
+- [x] Calls `repo.hardDeleteExpired()` — returns count of purged expired messages
+- [x] Calls `repo.hardDeleteOldSoftDeleted(now - 30 days)` — returns count of purged soft-deleted
+- [x] Returns `{ expiredCount, softDeletedCount }`
+- [x] No validation needed (internal system command)
 
 ### Unit Tests (for each handler)
-- [ ] SubmitContactMessage: happy path (store + emails), honeypot silent accept, rate limit email, rate limit IP, disposable email rejection, email send failure doesn't block
-- [ ] MarkAsRead/Unread: happy path, not found
-- [ ] SetReplied: happy path, invalid transition (not READ)
-- [ ] Archive: happy path, already archived
-- [ ] SoftDelete: happy path, already deleted
-- [ ] Restore: happy path, not deleted
-- [ ] PurgeExpired: returns counts
+- [x] SubmitContactMessage: happy path (store + emails), honeypot silent accept, rate limit email, rate limit IP, disposable email rejection, email send failure doesn't block
+- [x] MarkAsRead/Unread: happy path, not found
+- [x] SetReplied: happy path, invalid transition (not READ)
+- [x] Archive: happy path, already archived
+- [x] SoftDelete: happy path, already deleted
+- [x] Restore: happy path, not deleted
+- [x] PurgeExpired: returns counts
 
 ## Technical Notes
 - Inject: `CONTACT_MESSAGE_REPOSITORY`, `EMAIL_TEMPLATE_REPOSITORY`, `EMAIL_SERVICE`, `ConfigService` (for ADMIN_NOTIFICATION_EMAIL)
@@ -84,3 +84,5 @@ The submit command is the most complex — it validates, checks spam layers, sto
 ## Complexity: L
 
 ## Progress Log
+- [2026-03-29] Started
+- [2026-03-29] Done — all ACs satisfied. 8 commands, 21 tests passing, type check clean.

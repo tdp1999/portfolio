@@ -1,6 +1,6 @@
 # Task: ContactMessage repository + mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement the ContactMessage repository (port + adapter) and Prisma-to-domain mapper.
@@ -11,8 +11,8 @@ Standard repository pattern following existing modules. Key differences from oth
 ## Acceptance Criteria
 
 ### Repository Port
-- [ ] `IContactMessageRepository` interface defined in `application/ports/`
-- [ ] Methods:
+- [x] `IContactMessageRepository` interface defined in `application/ports/`
+- [x] Methods:
   - `add(entity: ContactMessage): Promise<string>` — returns ID
   - `findById(id: string): Promise<ContactMessage | null>` — includes soft-deleted (admin needs to see them)
   - `findAll(options: ContactMessageFindAllOptions): Promise<PaginatedResult<ContactMessage>>` — filtered by status, purpose, search, deletedAt
@@ -23,27 +23,27 @@ Standard repository pattern following existing modules. Key differences from oth
   - `hardDeleteOldSoftDeleted(olderThan: Date): Promise<number>` — delete where deletedAt < olderThan, return count
   - `countRecentByEmail(email: string, since: Date): Promise<number>` — for rate limiting
   - `countRecentByIpHash(ipHash: string, since: Date): Promise<number>` — for rate limiting
-- [ ] `CONTACT_MESSAGE_REPOSITORY` DI token exported
+- [x] `CONTACT_MESSAGE_REPOSITORY` DI token exported
 
 ### Mapper
-- [ ] `ContactMessageMapper.toDomain(prisma)` — converts Prisma model to domain entity via `ContactMessage.load()`
-- [ ] `ContactMessageMapper.toPrisma(domain)` — converts domain entity props to Prisma create/update data
-- [ ] Handles nullable fields correctly (readAt, repliedAt, archivedAt, deletedAt)
+- [x] `ContactMessageMapper.toDomain(prisma)` — converts Prisma model to domain entity via `ContactMessage.load()`
+- [x] `ContactMessageMapper.toPrisma(domain)` — converts domain entity props to Prisma create/update data
+- [x] Handles nullable fields correctly (readAt, repliedAt, archivedAt, deletedAt)
 
 ### Repository Implementation
-- [ ] `ContactMessageRepository` implements `IContactMessageRepository`
-- [ ] `findAll` supports:
+- [x] `ContactMessageRepository` implements `IContactMessageRepository`
+- [x] `findAll` supports:
   - Filter by `status` (single or array)
   - Filter by `purpose` (single or array)
   - Filter by `deletedAt` (null = active, not-null = deleted, all = both)
   - Search across `name`, `email`, `subject` fields (case-insensitive ILIKE)
   - Pagination (page, limit) with total count
   - Sort by `createdAt` descending (default)
-- [ ] `getUnreadCount` excludes soft-deleted and spam messages
-- [ ] Rate limit queries use indexed `email` and `createdAt` fields
+- [x] `getUnreadCount` excludes soft-deleted and spam messages
+- [x] Rate limit queries use indexed `email` and `createdAt` fields
 
 ### FindAll Options Type
-- [ ] `ContactMessageFindAllOptions`: page, limit, status?, purpose?, search?, includeDeleted?, includeSpam?
+- [x] `ContactMessageFindAllOptions`: page, limit, status?, purpose?, search?, includeDeleted?, includeSpam?
 
 ## Technical Notes
 - Unlike other repos, `findById` does NOT filter by `deletedAt: null` — admin needs to see deleted messages for restore
@@ -64,3 +64,5 @@ Standard repository pattern following existing modules. Key differences from oth
 ## Complexity: M
 
 ## Progress Log
+- [2026-03-29] Started
+- [2026-03-29] Done — all ACs satisfied. Port, mapper, repository implementation, DI token, type check clean.
