@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { MatMenuModule } from '@angular/material/menu';
-import { extractApiError } from '@portfolio/console/shared/data-access';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -15,8 +14,8 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { AdminTag, TagService } from '../tag.service';
 import { TagDialogData } from '../tag-dialog/tag-dialog';
+import { AdminTag, TagService } from '../tag.service';
 
 @Component({
   selector: 'console-tags-page',

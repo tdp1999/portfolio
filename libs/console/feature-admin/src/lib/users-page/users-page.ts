@@ -1,12 +1,13 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { MatMenuModule } from '@angular/material/menu';
-import { DatePipe } from '@angular/common';
-import { AuthStore, extractApiError } from '@portfolio/console/shared/data-access';
+import { AuthStore } from '@portfolio/console/shared/data-access';
+import type { FilterOption } from '@portfolio/console/shared/ui';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -16,7 +17,6 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import type { FilterOption } from '@portfolio/console/shared/ui';
 import { AdminUser, AdminUserService } from '../admin-user.service';
 
 @Component({

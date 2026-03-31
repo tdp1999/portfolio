@@ -2,22 +2,21 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild }
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { MatMenuModule } from '@angular/material/menu';
-import { extractApiError } from '@portfolio/console/shared/data-access';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
   FilterBarComponent,
+  type FilterOption,
   FilterSearchComponent,
   FilterSelectComponent,
-  type FilterOption,
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { AdminSkill, SkillService } from '../skill.service';
 import { SkillDialogData } from '../skill-dialog/skill-dialog';
+import { AdminSkill, SkillService } from '../skill.service';
 
 @Component({
   selector: 'console-skills-page',

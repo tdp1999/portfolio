@@ -1,15 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { ApiService, API_CONFIG } from '@portfolio/console/shared/data-access';
+import { API_CONFIG, ApiService } from '@portfolio/console/shared/data-access';
 import { map, timeout } from 'rxjs';
-import {
-  MediaItem,
-  MediaListParams,
-  MediaListResponse,
-  StorageStats,
-  BulkUploadResult,
-  UpdateMediaPayload,
-} from './media.types';
+import { MediaItem, MediaListParams, MediaListResponse, StorageStats, UpdateMediaPayload } from './media.types';
 
 @Injectable({ providedIn: 'root' })
 export class MediaService {
