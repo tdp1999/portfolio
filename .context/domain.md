@@ -11,9 +11,10 @@
 | ExperienceSkill | Junction linking an Experience to the Skills/technologies used in that role | Relation |
 | Skill | A technical or professional competency with proficiency level | Entity |
 | Testimonial | A recommendation or quote from a colleague or client | Entity |
-| Project | A side project or portfolio piece with metadata and technologies used | Aggregate |
-| ProjectDetail | Extended information about a Project (process, challenges, outcomes) | Entity |
-| Technology | A technology or tool associated with a Project | Value Object |
+| Project | A portfolio project showcasing personal or open-source work. Contains translatable fields (oneLiner, description, motivation, role), technical highlights, gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
+| TechnicalHighlight | A structured technical narrative (Challenge → Approach → Outcome) attached to a Project. 2-4 per project max. All fields translatable. Optional codeUrl links to specific file/PR. | Entity |
+| ProjectImage | Junction linking a Project to Media, with displayOrder. Layout decides contextual placement — no placement hints stored. | Relation |
+| ProjectSkill | Junction linking a Project to the Skills/technologies used in that project | Relation |
 | Post | A blog article with content, metadata, and publication status | Aggregate |
 | Category | A grouping label for Posts | Entity |
 | Tag | A keyword associated with a Post for filtering | Value Object |
@@ -66,6 +67,26 @@
   - Validation failure: System rejects (e.g., missing required fields)
 - **End states:** Post saved with chosen PostStatus
 
+### Import Markdown Post
+- **Trigger:** Owner wants to import an article written in Obsidian/markdown
+- **Actors:** Owner (via Console)
+- **Happy path:**
+  1. Owner clicks "Import Markdown" in Console editor
+  2. Owner uploads .md file (optionally with images as .zip or folder)
+  3. System extracts image references (standard markdown + Obsidian `![[]]` syntax)
+  4. System uploads referenced images to Media module (Cloudinary)
+  5. System replaces local image paths with Cloudinary URLs
+  6. System converts Obsidian-specific syntax to standard markdown
+  7. Parsed content loaded into ProseMirror editor as new DRAFT
+  8. Owner reviews, adds metadata (category, tags, featured image), then saves
+- **Variations:**
+  - No images in markdown: skip image upload, load content directly
+  - Broken image references (file not provided): flagged as missing, user fixes manually in editor
+- **Error paths:**
+  - Invalid file type: System rejects (only .md accepted)
+  - Image upload failure: Partial import — content loaded, failed images flagged
+- **End states:** Draft post created with imported content, images uploaded to Media
+
 ### Receive Contact Message
 - **Trigger:** Visitor submits the contact form on Landing Page
 - **Actors:** Visitor (anonymous), System
@@ -101,6 +122,29 @@
   - Message not found or already hard-deleted: System returns 404
 - **End states:** Messages triaged — read, replied, archived, or deleted
 
+### Manage Projects
+- **Trigger:** Owner wants to add, edit, or remove portfolio projects
+- **Actors:** Owner (via Console)
+- **Happy path:**
+  1. Owner navigates to Projects section in Console
+  2. Owner creates or edits a project (title, translatable fields, highlights, images, skills)
+  3. System validates input — including translatable JSON fields and nested CAO highlights (max 4)
+  4. System generates slug from title (on create, regenerated on title change)
+  5. System manages child records atomically: TechnicalHighlight, ProjectImage, ProjectSkill (replace-all strategy)
+  6. Public `/projects` and `/projects/:slug` pages reflect changes on next visit
+- **Variations:**
+  - Draft: Owner saves without publishing — project not visible publicly
+  - Featured: Owner marks project as featured — appears in landing teaser
+  - Soft delete: Owner hides project (sets deletedAt), can restore
+  - Reorder: Owner updates displayOrder for manual sorting
+  - Ongoing project: endDate is null, displayed as "Present"
+- **Error paths:**
+  - Validation failure: System rejects invalid input (malformed translatable JSON, too many highlights, invalid URLs)
+  - Slug collision: System appends numeric suffix (-2, -3)
+  - Media not found: thumbnailId or imageIds reference non-existent Media — rejected
+  - Skill not found: skillIds reference non-existent Skill — rejected
+- **End states:** Project saved with child records, public pages reflect changes
+
 ### Manage Work History
 - **Trigger:** Owner wants to add, edit, or remove professional experience entries
 - **Actors:** Owner (via Console)
@@ -130,6 +174,9 @@
 - PST-003: A Private Post is only accessible by the Owner (even with direct link)
 - PST-004: An Unlisted Post is accessible via direct link but not shown in public blog listing
 - PST-005: A Published Post appears in the public blog listing on Landing Page
+- PST-006: readTimeMinutes is auto-calculated on save (content word count / 200, rounded up). Manual override allowed.
+- PST-007: publishedAt is auto-set on first transition to PUBLISHED; not modified on subsequent status changes. Manual override allowed via admin.
+- PST-008: Markdown import always creates a DRAFT post; user must explicitly publish
 
 ### Contact Message
 - CTM-001: A ContactMessage requires name, email, message, and GDPR consent
@@ -145,6 +192,15 @@
 - EXP-004: No ContentStatus — all non-deleted experiences are publicly visible
 - EXP-005: Translatable fields use fallback chain: requested locale -> en -> first available
 - EXP-006: ExperienceSkill uses replace strategy on update — deletes existing associations, inserts new set
+
+### Project
+- PRJ-001: Slug auto-generated from title (English), regenerated on title change. Collision handled with numeric suffix (-2, -3). Unique constraint at DB level.
+- PRJ-002: Maximum 4 TechnicalHighlights per project
+- PRJ-003: Public endpoints return only published + non-deleted projects
+- PRJ-004: Featured query filters by featured=true + published + non-deleted
+- PRJ-005: Child records (highlights, images, skills) use replace-all strategy on update — delete existing, insert new, within transaction
+- PRJ-006: ProjectImage ordered by displayOrder; layout decides contextual placement (no placement hints in data)
+- PRJ-007: SEO meta tags auto-generated from title + oneLiner — no manual override fields
 
 ### Profile
 - PRF-001: Only one Profile exists (single-owner site)
@@ -164,8 +220,12 @@
 - **Unlisted Post discovery:** An Unlisted Post URL shared externally remains accessible as long as status is Unlisted
 - **Profile not yet created:** Landing page shows placeholder/coming soon content until admin creates Profile
 - **Stale enum in socialLinks JSON:** If a SocialPlatform value is removed from enum, existing socialLinks JSON may contain stale values — validate gracefully, don't reject entire Profile
+- **Markdown import with unsupported syntax:** Obsidian plugins (dataview, mermaid) produce syntax the editor can't render — stripped silently, user informed of what was removed
+- **Post with inline images deleted from Media:** Content references Cloudinary URLs that may be deleted — broken images display placeholder. No cascading delete from Media to post content.
 
 ## Changelog
+- [2026-03-31] Expanded Post domain — added Import Markdown Post flow, added rules PST-006 to PST-008 (readTime, publishedAt, import=draft), added edge cases (unsupported markdown syntax, inline image deletion)
+- [2026-03-31] Added Project domain — updated glossary (Project expanded, removed ProjectDetail/Technology, added TechnicalHighlight, ProjectImage, ProjectSkill), added Manage Projects flow, added rules PRJ-001 to PRJ-007
 - [2026-03-29] Added Experience domain — updated glossary (Experience expanded, EmploymentType, LocationType, ExperienceSkill), added Manage Work History flow, added rules EXP-001 to EXP-006
 - [2026-03-29] Expanded Profile domain — updated glossary (Certification, SocialLink, TranslatableJson), refined Update Personal Info flow (upsert, JSON-LD), added rules PRF-002 to PRF-005, edge cases (profile not created, stale enum)
 - [2026-03-29] Added ContactMessage domain — glossary (ContactMessage, ContactPurpose, ContactMessageStatus, EmailTemplate), flows (Receive + Manage), rules (CTM-001 to CTM-005), invariants (public write, admin auth)

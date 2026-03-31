@@ -165,12 +165,52 @@
 
 **Milestone:** Full experience/work history system — console CRUD, landing timeline, skills-per-role
 
+### Epic: Project (epic-project) - broken-down
+
+> **Approach:** Schema first, then BE vertical slice (entity → repo → DTO → commands → queries → controller), then Console FE, then public pages, then E2E.
+
+#### Sprint 10: Project Module (11 tasks)
+
+- [ ] 225-project-schema-migration - Prisma schema + migration for 4 models (M)
+- [ ] 226-project-entity - Domain entity + types + errors (M)
+- [ ] 227-project-repository - Repository port + adapter + mapper (L)
+- [ ] 228-project-dtos-presenter - Zod DTOs + public/admin presenters (M)
+- [ ] 229-project-commands - CQRS commands: create, update, delete, restore, reorder (L)
+- [ ] 230-project-queries - CQRS queries: admin list, public list, featured, by slug (M)
+- [ ] 231-project-controller-module - Controller + NestJS module wiring (M)
+- [ ] 232-console-project-page - Console CRUD page with 6-section dialog (XL)
+- [ ] 233-public-projects-list-page - Public /projects stacked rows page (M)
+- [ ] 234-public-project-detail-page - Public /projects/:slug detail page (L)
+- [ ] 235-project-e2e - E2E tests: API, console, public pages (L)
+
+**Milestone:** Full project showcase — console CRUD, public list + detail pages, technical highlights
+
+### Epic: Blog Post (epic-blog-post) - broken-down
+
+> **Approach:** Schema first, then BE vertical slice, then ProseMirror editor setup, then Console pages, then public pages, then E2E.
+
+#### Sprint 11: Blog Post Module (12 tasks)
+
+- [ ] 236-blog-post-schema-migration - Prisma schema + PostStatus enum + migration (M)
+- [ ] 237-blog-post-entity - Domain entity + types + errors + tests (M)
+- [ ] 238-blog-post-repository - Repository port + adapter + mapper (L)
+- [ ] 239-blog-post-dtos-presenter - Zod DTOs + public/admin presenters (M)
+- [ ] 240-blog-post-commands - CQRS commands: create, update, delete, restore, import-markdown (L)
+- [ ] 241-blog-post-queries - CQRS queries: admin list, public list, featured, by-slug, related (M)
+- [ ] 242-blog-post-controller-module - Controller + NestJS module wiring (S)
+- [ ] 243-prosemirror-editor-setup - Integrate existing document-engine package + Angular wrapper (L)
+- [ ] 244-console-blog-post-page - Console list page + full-page editor + preview + import (XL)
+- [ ] 245-public-blog-list-page - Public /blog list with pagination + category/tag filter (M)
+- [ ] 246-public-blog-detail-page - Public /blog/:slug detail: markdown rendering, Shiki, TOC, progress bar (XL)
+- [ ] 247-blog-post-e2e - E2E tests: API, console, public pages (L)
+
+**Milestone:** Full blogging system — ProseMirror editor, markdown import, public reading experience with syntax highlighting
+
 #### Future Sprints (to be broken down when ready)
-- Sprint 10: Project Module (complex, with relations)
-- Sprint 11: BlogPost Module
 - Sprint 12: GitHubRepo Module
 - Sprint 13: Analytics Module
-- Sprint 14: Seed Script + Final Verification
+- Sprint 14: Landing Integration (wire all APIs to landing page)
+- Sprint 15: Seed Script + Final Verification
 
 ---
 
@@ -217,8 +257,8 @@
 | Status                    | Count   |
 | ------------------------- | ------- |
 | Done (archived)           | 201     |
-| Pending                   | 22      |
-| **Total Created**         | **224** |
+| Pending                   | 45      |
+| **Total Created**         | **247** |
 
 ## Notes
 
