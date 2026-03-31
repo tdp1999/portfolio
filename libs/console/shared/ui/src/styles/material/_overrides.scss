@@ -84,6 +84,13 @@
       active-indicator-color: var(--color-primary),
     )
   );
+
+  /* Dialog */
+  //   @include mat.dialog-overrides(
+  //     (
+  //       with-actions-content-padding: 12px,
+  //     )
+  //   );
 }
 
 /* Compact form fields — density -2 */
@@ -128,6 +135,11 @@
 .mat-mdc-menu-panel {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__content.mat-mdc-dialog-content {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 /* Filter field — compact dark style inside filter bars */
