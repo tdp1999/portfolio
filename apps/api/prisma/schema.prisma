@@ -20,9 +20,10 @@ enum SocialPlatform {
   GITHUB
   LINKEDIN
   TWITTER
-  FACEBOOK
-  INSTAGRAM
-  YOUTUBE
+  BLUESKY
+  STACKOVERFLOW
+  DEV_TO
+  HASHNODE
   WEBSITE
   OTHER
 }
@@ -31,6 +32,7 @@ enum Availability {
   OPEN_TO_WORK
   EMPLOYED
   FREELANCING
+  NOT_AVAILABLE
 }
 
 enum SkillCategory {
@@ -114,6 +116,11 @@ model User {
   inviteTokenExpiresAt   DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
+
+  // Profile relations
+  profile         Profile?  @relation("ProfileUser")
+  profilesCreated Profile[] @relation("ProfileCreatedBy")
+  profilesUpdated Profile[] @relation("ProfileUpdatedBy")
 
   // Tag relations
   tagsCreated    Tag[] @relation("TagCreatedBy")
@@ -228,6 +235,10 @@ model Media {
   updatedBy User  @relation("MediaUpdatedBy", fields: [updatedById], references: [id])
   deletedBy User? @relation("MediaDeletedBy", fields: [deletedById], references: [id])
 
+  // Profile relations
+  profileAvatars  Profile[] @relation("ProfileAvatar")
+  profileOgImages Profile[] @relation("ProfileOgImage")
+
   @@index([mimeType])
   @@index([deletedAt])
   @@index([createdById])
@@ -260,4 +271,69 @@ model ContactMessage {
   @@index([expiresAt])
   @@index([email])
   @@map("contact_messages")
+}
+
+model Profile {
+  // Identity
+  id     String @id @db.Uuid
+  userId String @unique @db.Uuid
+
+  // Translatable
+  fullName  Json
+  title     Json
+  bioShort  Json
+  bioLong   Json?
+
+  // Work
+  yearsOfExperience Int
+  availability      Availability @default(EMPLOYED)
+  openTo            Json         @default("[]")
+
+  // Contact
+  email                    String       @db.VarChar(320)
+  phone                    String?      @db.VarChar(20)
+  preferredContactPlatform SocialPlatform @default(LINKEDIN)
+  preferredContactValue    String       @db.VarChar(500)
+
+  // Location
+  locationCountry     String  @db.VarChar(100)
+  locationCity        String  @db.VarChar(100)
+  locationPostalCode  String? @db.VarChar(20)
+  locationAddress1    String? @db.VarChar(200)
+  locationAddress2    String? @db.VarChar(200)
+
+  // Social/Resume
+  socialLinks Json @default("[]")
+  resumeUrls  Json @default("{}")
+
+  // Certifications
+  certifications Json @default("[]")
+
+  // SEO
+  metaTitle       String? @db.VarChar(70)
+  metaDescription String? @db.VarChar(160)
+  ogImageId       String? @db.Uuid
+
+  // Misc
+  timezone     String? @db.VarChar(50)
+  canonicalUrl String? @db.VarChar(500)
+
+  // Media
+  avatarId String? @db.Uuid
+
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String   @db.Uuid
+  updatedById String   @db.Uuid
+
+  // Relations
+  user      User   @relation("ProfileUser", fields: [userId], references: [id])
+  avatar    Media? @relation("ProfileAvatar", fields: [avatarId], references: [id])
+  ogImage   Media? @relation("ProfileOgImage", fields: [ogImageId], references: [id])
+  createdBy User   @relation("ProfileCreatedBy", fields: [createdById], references: [id])
+  updatedBy User   @relation("ProfileUpdatedBy", fields: [updatedById], references: [id])
+
+  @@index([userId])
+  @@map("profiles")
 }
