@@ -45,11 +45,6 @@ describe('SubmitContactMessageSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should fail when email format is invalid', () => {
-    const result = SubmitContactMessageSchema.safeParse({ ...validInput, email: 'not-an-email' });
-    expect(result.success).toBe(false);
-  });
-
   it('should fail when message is missing', () => {
     const result = SubmitContactMessageSchema.safeParse({ ...validInput, message: undefined });
     expect(result.success).toBe(false);

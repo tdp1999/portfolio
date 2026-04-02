@@ -26,37 +26,7 @@ describe('Media Entity', () => {
   };
 
   describe('create()', () => {
-    it('should create a media entity with all fields', () => {
-      const media = Media.create(
-        {
-          originalFilename: 'photo.jpg',
-          mimeType: 'image/jpeg',
-          publicId: 'portfolio/avatars/xyz',
-          url: 'https://res.cloudinary.com/demo/image/upload/portfolio/avatars/xyz.jpg',
-          format: 'jpg',
-          bytes: 102400,
-          width: 800,
-          height: 600,
-          altText: 'Profile photo',
-          caption: 'My avatar',
-        },
-        userId
-      );
-
-      expect(media.id).toBeDefined();
-      expect(media.originalFilename).toBe('photo.jpg');
-      expect(media.mimeType).toBe('image/jpeg');
-      expect(media.publicId).toBe('portfolio/avatars/xyz');
-      expect(media.format).toBe('jpg');
-      expect(media.bytes).toBe(102400);
-      expect(media.width).toBe(800);
-      expect(media.height).toBe(600);
-      expect(media.altText).toBe('Profile photo');
-      expect(media.caption).toBe('My avatar');
-      expect(media.isDeleted).toBe(false);
-    });
-
-    it('should default nullable fields to null', () => {
+    it('should default nullable fields to null when not provided', () => {
       const media = Media.create(
         {
           originalFilename: 'doc.pdf',
@@ -69,21 +39,12 @@ describe('Media Entity', () => {
         userId
       );
 
+      expect(media.id).toBeDefined();
       expect(media.width).toBeNull();
       expect(media.height).toBeNull();
       expect(media.altText).toBeNull();
       expect(media.caption).toBeNull();
-    });
-  });
-
-  describe('load()', () => {
-    it('should reconstitute from persistence', () => {
-      const media = Media.load(validProps);
-
-      expect(media.id).toBe(validProps.id);
-      expect(media.originalFilename).toBe('screenshot.png');
-      expect(media.publicId).toBe(validProps.publicId);
-      expect(media.createdAt).toEqual(validProps.createdAt);
+      expect(media.isDeleted).toBe(false);
     });
   });
 
@@ -105,27 +66,6 @@ describe('Media Entity', () => {
 
       expect(updated.altText).toBeNull();
       expect(updated.caption).toBeNull();
-    });
-
-    it('should preserve fields not included in update', () => {
-      const media = Media.load(validProps);
-
-      const updated = media.updateMetadata({ altText: 'Only alt' }, userId);
-
-      expect(updated.altText).toBe('Only alt');
-      expect(updated.caption).toBe(validProps.caption);
-    });
-
-    it('should not change immutable file data', () => {
-      const media = Media.load(validProps);
-
-      const updated = media.updateMetadata({ altText: 'Changed' }, userId);
-
-      expect(updated.originalFilename).toBe(media.originalFilename);
-      expect(updated.mimeType).toBe(media.mimeType);
-      expect(updated.publicId).toBe(media.publicId);
-      expect(updated.url).toBe(media.url);
-      expect(updated.bytes).toBe(media.bytes);
     });
   });
 

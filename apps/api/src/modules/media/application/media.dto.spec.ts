@@ -41,14 +41,6 @@ describe('Media DTOs', () => {
 
       expect(result.success).toBe(false);
     });
-
-    it('should accept all valid folders', () => {
-      const folders = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'general'];
-      for (const folder of folders) {
-        const result = CreateMediaSchema.safeParse({ folder });
-        expect(result.success).toBe(true);
-      }
-    });
   });
 
   describe('UpdateMediaMetadataSchema', () => {

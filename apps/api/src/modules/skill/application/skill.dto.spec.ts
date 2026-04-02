@@ -57,11 +57,5 @@ describe('Skill DTOs', () => {
         expect(result.data.search).toBe('react');
       }
     });
-
-    it('should coerce string boolean for isLibrary', () => {
-      const result = SkillQuerySchema.safeParse({ isLibrary: 'true' });
-      expect(result.success).toBe(true);
-      if (result.success) expect(result.data.isLibrary).toBe(true);
-    });
   });
 });

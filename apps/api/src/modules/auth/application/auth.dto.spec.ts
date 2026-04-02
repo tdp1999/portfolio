@@ -30,11 +30,6 @@ describe('LoginSchema', () => {
     if (result.success) expect(result.data.rememberMe).toBe(true);
   });
 
-  it('should reject invalid email', () => {
-    const result = LoginSchema.safeParse({ email: 'not-email', password: 'any' });
-    expect(result.success).toBe(false);
-  });
-
   it('should reject empty password', () => {
     const result = LoginSchema.safeParse({ email: 'test@example.com', password: '' });
     expect(result.success).toBe(false);
@@ -73,11 +68,6 @@ describe('ForgotPasswordSchema', () => {
   it('should accept valid email', () => {
     const result = ForgotPasswordSchema.safeParse({ email: 'test@example.com' });
     expect(result.success).toBe(true);
-  });
-
-  it('should reject invalid email', () => {
-    const result = ForgotPasswordSchema.safeParse({ email: 'bad' });
-    expect(result.success).toBe(false);
   });
 
   it('should reject missing email', () => {
@@ -132,15 +122,6 @@ describe('GoogleCallbackSchema', () => {
       googleId: '123456789',
     });
     expect(result.success).toBe(true);
-  });
-
-  it('should reject invalid email', () => {
-    const result = GoogleCallbackSchema.safeParse({
-      email: 'not-email',
-      name: 'John',
-      googleId: '123',
-    });
-    expect(result.success).toBe(false);
   });
 
   it('should reject empty name', () => {

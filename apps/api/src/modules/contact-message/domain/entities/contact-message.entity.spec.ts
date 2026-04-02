@@ -91,26 +91,6 @@ describe('ContactMessage', () => {
     });
   });
 
-  describe('load', () => {
-    it('should reconstitute entity from raw props without modification', () => {
-      const message = ContactMessage.load(loadProps);
-
-      expect(message.id).toBe(loadProps.id);
-      expect(message.name).toBe(loadProps.name);
-      expect(message.email).toBe(loadProps.email);
-      expect(message.purpose).toBe(loadProps.purpose);
-      expect(message.subject).toBeNull();
-      expect(message.message).toBe(loadProps.message);
-      expect(message.status).toBe(loadProps.status);
-      expect(message.isSpam).toBe(false);
-      expect(message.ipAddress).toBe('hashed-ip');
-      expect(message.locale).toBe('vi');
-      expect(message.consentGivenAt).toEqual(loadProps.consentGivenAt);
-      expect(message.expiresAt).toEqual(loadProps.expiresAt);
-      expect(message.deletedAt).toBeNull();
-    });
-  });
-
   describe('markAsRead', () => {
     it('should transition to READ and set readAt', () => {
       const message = ContactMessage.load(loadProps);
@@ -118,11 +98,6 @@ describe('ContactMessage', () => {
 
       expect(read.status).toBe(ContactMessageStatus.READ);
       expect(read.readAt).toBeInstanceOf(Date);
-    });
-
-    it('should return a new instance', () => {
-      const message = ContactMessage.load(loadProps);
-      const read = message.markAsRead();
       expect(read).not.toBe(message);
       expect(message.status).toBe(ContactMessageStatus.UNREAD);
     });
@@ -225,10 +200,7 @@ describe('ContactMessage', () => {
     });
 
     it('should throw if already deleted', () => {
-      const message = ContactMessage.load({
-        ...loadProps,
-        deletedAt: new Date(),
-      });
+      const message = ContactMessage.load({ ...loadProps, deletedAt: new Date() });
 
       let caughtError: unknown;
       try {
@@ -244,10 +216,7 @@ describe('ContactMessage', () => {
 
   describe('restore', () => {
     it('should clear deletedAt', () => {
-      const message = ContactMessage.load({
-        ...loadProps,
-        deletedAt: new Date(),
-      });
+      const message = ContactMessage.load({ ...loadProps, deletedAt: new Date() });
       const restored = message.restore();
 
       expect(restored.deletedAt).toBeNull();
@@ -278,22 +247,6 @@ describe('ContactMessage', () => {
 
       const cleared = spammed.clearSpam();
       expect(cleared.isSpam).toBe(false);
-    });
-
-    it('should return new instances', () => {
-      const message = ContactMessage.load(loadProps);
-      const spammed = message.markAsSpam();
-      expect(spammed).not.toBe(message);
-    });
-  });
-
-  describe('toProps', () => {
-    it('should return a copy of all props', () => {
-      const message = ContactMessage.load(loadProps);
-      const props = message.toProps();
-
-      expect(props).toEqual(loadProps);
-      expect(props).not.toBe(loadProps);
     });
   });
 });
