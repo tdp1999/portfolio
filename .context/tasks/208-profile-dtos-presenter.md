@@ -71,6 +71,7 @@ Profile has the most complex DTO in the project — ~28 fields with 6 validated 
 - [ ] JSON-LD: valid Schema.org structure, locale-aware field selection
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
 - Import shared schemas from task 206 (TranslatableSchema, SocialLinkSchema, etc.)
 - Presenter resolves `avatarId` → `avatarUrl` and `ogImageId` → `ogImageUrl`. This may need the Media URL to be loaded via join/include in the repository query, or resolved in the presenter via a lookup.
 - JSON-LD generator can be a static method on ProfilePresenter or a separate service — keep it simple, static method is fine for now.

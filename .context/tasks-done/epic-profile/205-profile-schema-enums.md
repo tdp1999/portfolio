@@ -1,6 +1,6 @@
 # Task: Profile Prisma schema + enum updates + migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Define the Profile model in Prisma with ~28 fields, update SocialPlatform and Availability enums, and apply migration.
@@ -11,12 +11,12 @@ Profile is a single-record entity (1:1 with User) containing all site owner pers
 ## Acceptance Criteria
 
 ### Enum Updates
-- [ ] `SocialPlatform` updated: remove FACEBOOK, INSTAGRAM, YOUTUBE; add BLUESKY, STACKOVERFLOW, DEV_TO, HASHNODE
-- [ ] `Availability` updated: add NOT_AVAILABLE
-- [ ] Verify no existing data uses removed enum values (socialLinks is JSON, not enum column — safe)
+- [x] `SocialPlatform` updated: remove FACEBOOK, INSTAGRAM, YOUTUBE; add BLUESKY, STACKOVERFLOW, DEV_TO, HASHNODE
+- [x] `Availability` updated: add NOT_AVAILABLE
+- [x] Verify no existing data uses removed enum values (socialLinks is JSON, not enum column — safe)
 
 ### Profile Model
-- [ ] All ~28 fields per epic spec:
+- [x] All ~28 fields per epic spec:
   - Identity: `id` (UUID v7), `userId` (unique FK→User)
   - Translatable: `fullName`, `title`, `bioShort` (JsonB, not null), `bioLong` (JsonB, nullable)
   - Work: `yearsOfExperience` (Int), `availability` (Availability enum, default EMPLOYED), `openTo` (JsonB, default [])
@@ -30,19 +30,19 @@ Profile is a single-record entity (1:1 with User) containing all site owner pers
   - Audit: `createdAt`, `updatedAt`, `createdById` (FK→User), `updatedById` (FK→User)
 
 ### Relations
-- [ ] `user` (1:1 via userId unique)
-- [ ] `avatar` (Media, "ProfileAvatar" relation)
-- [ ] `ogImage` (Media, "ProfileOgImage" relation)
-- [ ] `createdBy` / `updatedBy` (User, named relations)
-- [ ] Corresponding relation fields added to User and Media models
+- [x] `user` (1:1 via userId unique)
+- [x] `avatar` (Media, "ProfileAvatar" relation)
+- [x] `ogImage` (Media, "ProfileOgImage" relation)
+- [x] `createdBy` / `updatedBy` (User, named relations)
+- [x] Corresponding relation fields added to User and Media models
 
 ### Indexes
-- [ ] `@@index([userId])` (lookup by user)
+- [x] `@@index([userId])` (lookup by user)
 
 ### Migration
-- [ ] Migration applies cleanly to local Docker PostgreSQL
-- [ ] `npx prisma generate` succeeds
-- [ ] Enum changes handled safely (add new values first, remove old values — may need 2-step migration)
+- [x] Migration applies cleanly to local Docker PostgreSQL
+- [x] `npx prisma generate` succeeds
+- [x] Enum changes handled safely (add new values first, remove old values — may need 2-step migration)
 
 **Specialized Skill:** prisma-migrate — use `/prisma-migrate` for migration workflow (especially for destructive enum changes).
 
@@ -62,3 +62,5 @@ Profile is a single-record entity (1:1 with User) containing all site owner pers
 ## Complexity: M
 
 ## Progress Log
+- 2026-03-31 Started
+- 2026-03-31 Done — all ACs satisfied. Fixed Prisma-generated SQL ordering bug (ALTER TABLE profiles before CREATE TABLE).

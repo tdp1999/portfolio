@@ -58,6 +58,7 @@ Experience commands follow established CQRS pattern. Key complexities: slug gene
 - [ ] Reorder: valid → displayOrder updated
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Command section)
 - Follow Skill commands pattern as reference (`apps/api/src/modules/skill/application/commands/`)
 - Slug collision handling: simple loop `while (await repo.slugExists(candidate)) { candidate = base + '-' + counter++ }`
 - Skill validation: inject `SKILL_REPOSITORY` or use `SkillModule` export. Check all IDs exist in one query.

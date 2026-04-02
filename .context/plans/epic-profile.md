@@ -506,6 +506,7 @@ Fallback chain: requested locale → en → first available → empty string.
 ## Specialized Skills
 
 - **prisma-migrate** — Prisma migration + destructive enum change handling → task 205
+- **be-test** — BE unit/integration test writer (analyze logic → plan → write → validate) → tasks 208, 210
 - **aqa-expert** — E2E test patterns (POM, SSR testing, Playwright) → task 214
 - **ng-lib** — Angular library generator for Nx monorepo → task 212
 

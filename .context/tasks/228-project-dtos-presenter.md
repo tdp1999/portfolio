@@ -21,6 +21,7 @@ Project has the most complex DTO in the system — nested TechnicalHighlight arr
 - [ ] Unit tests for Presenter (list item shape, detail shape, null thumbnail handling)
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
 - Follow Skill DTO pattern: `apps/api/src/modules/skill/application/skill.dto.ts`
 - Follow Skill Presenter pattern: `apps/api/src/modules/skill/application/skill.presenter.ts`
 - TranslatableSchema: `z.object({ en: z.string().min(1), vi: z.string().min(1) })`

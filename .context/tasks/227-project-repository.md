@@ -22,6 +22,7 @@ Repository follows port/adapter pattern. The Project repo is more complex than e
 - [ ] Unit tests for mapper (Prisma record → domain entity)
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Mapper section)
 - Follow Skill repo pattern: `apps/api/src/modules/skill/infrastructure/repositories/skill.repository.ts`
 - Use `this.prisma.$transaction()` for atomic create/update with child records
 - Replace-all strategy for highlights: `deleteMany({ projectId })` then `createMany(newHighlights)`

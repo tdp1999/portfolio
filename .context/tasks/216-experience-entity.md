@@ -45,6 +45,7 @@ Experience extends `BaseCrudEntity<IExperienceProps>` and is the second entity u
 - [ ] Default achievements is `{ en: [], vi: [] }`
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
 - Follow Skill entity pattern as reference (`apps/api/src/modules/skill/domain/entities/skill.entity.ts`)
 - Slug is immutable (EXP-001) — `update()` method must NOT regenerate slug even if companyName or position changes
 - `TranslatableString` and `TranslatableStringArray` shared types must exist (from Profile epic, task 206). If not yet available, define locally and refactor when shared types land.

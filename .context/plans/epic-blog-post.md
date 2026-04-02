@@ -655,6 +655,13 @@ Public detail page shows author info (name, avatar, bio). If Profile module isn'
 - Public detail page has multiple interactive features (progress bar, TOC, anchor links)
 - 4 status states multiply testing surface
 
+## Specialized Skills
+
+- **prisma-migrate** — Prisma migration for BlogPost + junction tables
+- **be-test** — BE unit/integration test writer (analyze logic → plan → write → validate) → tasks 237, 238
+- **aqa-expert** — E2E test patterns (POM, Playwright)
+- **ng-lib** — Angular library generator for console feature-blog library
+
 ## Status
 
 broken-down

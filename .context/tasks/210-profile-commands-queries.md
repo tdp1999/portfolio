@@ -54,6 +54,7 @@ Profile has fewer handlers than typical modules (no list, no delete, no create/u
 - [ ] GetJsonLd: valid Schema.org structure, locale switching (en vs vi)
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Command + Query sections)
 - UpsertProfile injects: `PROFILE_REPOSITORY`, `MEDIA_REPOSITORY` (for avatar/ogImage validation)
 - Public profile: since there's only one admin user, the query can find the first (and only) Profile. No userId needed in public endpoint.
 - Media validation: `mediaRepo.findById(avatarId)` — if null, throw. This prevents dangling references.

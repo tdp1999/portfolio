@@ -32,6 +32,7 @@ BlogPost repository needs status-aware filtering for public vs admin queries, pl
 - [ ] Unit tests for mapper
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Mapper section)
 - Junction replace strategy: within `$transaction`, delete all PostCategory/PostTag for postId, then insert new set
 - Related posts: `WHERE id != :currentPostId AND status = 'PUBLISHED' AND deletedAt IS NULL AND (id IN (SELECT postId FROM post_categories WHERE categoryId IN (...)) OR id IN (SELECT postId FROM post_tags WHERE tagId IN (...)))` ORDER BY publishedAt DESC LIMIT 3
 - Include strategy: always include categories + tags for list/detail. Only include featuredImage when needed for URL resolution.

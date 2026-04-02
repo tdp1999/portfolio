@@ -57,6 +57,7 @@ Experience has 4 translatable JSON fields requiring Zod validation. Reuses `Tran
 - [ ] `ExperiencePresenter.toAdminListResponse(entities, total)` — maps array with pagination metadata
 
 ## Technical Notes
+- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
 - `TranslatableStringSchema` and `TranslatableStringArraySchema` should come from shared types. If Profile hasn't created them yet, define locally with a TODO to refactor.
 - `z.coerce.date()` handles ISO string → Date conversion from JSON body
 - `nonEmptyPartial()` is from `@portfolio/shared/utils` — makes all fields optional with at-least-one refinement

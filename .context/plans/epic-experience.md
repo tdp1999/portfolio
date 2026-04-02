@@ -579,12 +579,13 @@ This module uses **JSON Translatable** (same as Profile), not separate records:
 ## Specialized Skills
 
 - **prisma-migrate** — Prisma migration for new enums + Experience model + ExperienceSkill junction
+- **be-test** — BE unit/integration test writer (analyze logic → plan → write → validate) → tasks 216, 218, 219, 220
 - **aqa-expert** — E2E test patterns (POM, Playwright, flakiness prevention)
 - **ng-lib** — Angular library generator for console feature-experience library
 
 ## Status
 
-draft
+broken-down
 
 ## Created
 

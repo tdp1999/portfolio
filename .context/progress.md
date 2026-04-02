@@ -59,67 +59,12 @@
   - Tasks 195-204 → archived in `tasks-done/epic-contact-message/`
   - Full vertical slice: EmailTemplate module, ContactMessage BE (schema→entity→repo→DTO→CQRS→controller), Console inbox UI, E2E tests
   - Spam protection (honeypot, disposable email, min-time), auto-reply, admin notification, GDPR retention/purge
+- [x] **Database Architecture** (epic-database-architecture) - Completed 2026-04-02
+  - Tasks 043-064 → archived in `tasks-done/epic-database-architecture/`
+  - 6 sprints: Foundation, User, Tag, Category, Skill, Media modules
+  - Established sequential module development pattern
 
 ## In Progress
-
-### Epic: Database Architecture (epic-database-architecture) - broken-down
-
-> **Approach:** Sequential module development. Complete one module fully before starting the next.
-
-#### Sprint 1: Foundation (6 tasks) - COMPLETE
-
-- [x] 043-setup-prisma-supabase - Setup Prisma and Supabase connection (S)
-- [x] 044-create-prisma-service - Create PrismaService for NestJS (S)
-- [x] 045-create-value-objects - Create shared value objects (S)
-- [x] 046-create-prisma-enums - Define all Prisma enums (S)
-- [x] 047-setup-cqrs-base - Setup CQRS base infrastructure (S)
-- [x] 048-verify-foundation - Verify foundation sprint (S)
-
-**Milestone:** Can connect to DB, generate types, CQRS bus ready
-
-#### Sprint 2: User Module (8 tasks) - COMPLETE
-
-- [x] 049-user-prisma-schema - User Prisma schema + migration (S) ✓
-- [x] 050-user-domain-entity - User domain entity + tests (M) ✓
-- [x] 051-user-repository - User repository + mapper (M) ✓
-- [x] 052-user-dtos - User Zod DTOs (S) ✓
-- [x] 053-user-commands - User commands + handlers (M) ✓
-- [x] 054-user-queries - User queries + handlers (S) ✓
-- [x] 055-user-controller - User REST controller (M) ✓
-- [x] 056-user-module-wiring - User module wiring + verify (S) ✓
-
-**Milestone:** First complete module with full vertical slice ✓
-
-#### Sprint 3: Tag Module (8 tasks) - COMPLETE
-
-- [x] 057-tag-prisma-schema - Tag Prisma schema + migration (S) ✓
-- [x] 058-tag-domain-entity - Tag domain entity + tests (S) ✓
-- [x] 059-tag-repository - Tag repository + mapper (M) ✓
-- [x] 060-tag-dtos - Tag Zod DTOs (S) ✓
-- [x] 061-tag-commands - Tag commands + handlers (M) ✓
-- [x] 062-tag-queries - Tag queries + handlers (S) ✓
-- [x] 063-tag-controller - Tag REST controller (M) ✓
-- [x] 064-tag-module-wiring - Tag module wiring + verify (S) ✓
-
-**Milestone:** First content module, pattern established for reuse ✓
-
-#### Sprint 4: Category Module (10 tasks) - COMPLETE
-
-- [x] 143-152 → See epic-category-module (archived in `tasks-done/epic-category-module/`)
-
-**Milestone:** Second content module with description + displayOrder + soft delete ✓
-
-#### Sprint 5: Skill Module (10 tasks) - COMPLETE
-
-- [x] 153-162 → See epic-skill-module (archived in `tasks-done/epic-skill-module/`)
-
-**Milestone:** First self-referential module with parent-child hierarchy ✓
-
-#### Sprint 6: Media Module (15 tasks) - COMPLETE
-
-- [x] 163-177 → See epic-media-module (archived in `tasks-done/epic-media-module/`)
-
-**Milestone:** Full media management with Cloudinary integration, security scanning, admin UI ✓
 
 ### Standalone Tasks
 
@@ -133,9 +78,9 @@
 
 #### Sprint 8: Profile Module (10 tasks)
 
-- [ ] 205-profile-schema-enums - Prisma schema + enum updates + migration (M)
-- [ ] 206-translatable-json-shared - Shared translatable Zod schemas + utilities (M)
-- [ ] 207-profile-entity - Domain entity + types + errors (M)
+- [x] 205-profile-schema-enums - Prisma schema + enum updates + migration (M) ✓
+- [x] 206-translatable-json-shared - Shared translatable Zod schemas + utilities (M) ✓
+- [x] 207-profile-entity - Domain entity + types + errors (M) ✓
 - [ ] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L)
 - [ ] 209-profile-repository - Repository port + adapter + mapper (M)
 - [ ] 210-profile-commands-queries - Commands + queries + handlers + tests (L)
@@ -149,6 +94,7 @@
 ### Epic: Experience (epic-experience) - broken-down
 
 > **Approach:** Schema + enums first, then BE vertical slice, then Console FE, then Landing integration, then E2E.
+> **Note:** Epic plan updated from draft → broken-down (tasks 215-224 exist)
 
 #### Sprint 9: Experience Module (10 tasks)
 
@@ -249,15 +195,15 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8) + Experience Module (Sprint 9) — broken down, ready to start
+**Current:** Profile Module (Sprint 8, 1/10 done) → Experience (Sprint 9) → Project (Sprint 10) → Blog Post (Sprint 11)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 201     |
-| Pending                   | 45      |
+| Done (archived)           | 204     |
+| Pending                   | 42      |
 | **Total Created**         | **247** |
 
 ## Notes

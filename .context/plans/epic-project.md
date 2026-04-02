@@ -534,6 +534,13 @@ This is the first module with multiple public pages (list + detail) requiring SS
 - Two new public pages (list + detail) with SSR — first module with public detail page
 - First module with a rich public layout pattern (single-column + breakout images)
 
+## Specialized Skills
+
+- **prisma-migrate** — Prisma migration for Project + child tables
+- **be-test** — BE unit/integration test writer (analyze logic → plan → write → validate) → tasks 226, 227, 228
+- **aqa-expert** — E2E test patterns (POM, Playwright)
+- **ng-lib** — Angular library generator for console feature-project library
+
 ## Status
 
 broken-down
