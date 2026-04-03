@@ -12,7 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { JsonPipe } from '@angular/common';
 import { extractApiError } from '@portfolio/console/shared/data-access';
 import { SpinnerOverlayComponent, ToastService } from '@portfolio/console/shared/ui';
-import { ProfileAdminResponse, ProfileService } from '../profile.service';
+import { ProfileAdminResponse } from '../profile.types';
+import { ProfileService } from '../profile.service';
 
 const AVAILABILITY_OPTIONS = [
   { value: 'EMPLOYED', label: 'Employed' },
