@@ -1,0 +1,453 @@
+<div class="profile-page" [formGroup]="form">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <!-- Page Header -->
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-page-title">Profile Settings</h1>
+      <p class="text-text-muted text-sm mt-1">Manage your public profile and portfolio information.</p>
+    </div>
+    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
+      @if (saving()) {
+        <mat-spinner diameter="18" class="inline-block mr-2" />
+      }
+      Save Profile
+    </button>
+  </div>
+
+  <div class="profile-sections">
+    <!-- ── Section: Identity ─────────────────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">Identity</h2>
+
+      <!-- Avatar -->
+      <div class="mb-6">
+        <p class="field-label">Avatar</p>
+        <div class="flex items-center gap-4">
+          <div class="avatar-preview">
+            @if (avatarPreview(); as avatarSrc) {
+              <img [src]="avatarSrc" alt="Avatar preview" class="h-20 w-20 rounded-full object-cover" />
+            } @else {
+              <div class="h-20 w-20 rounded-full bg-surface-alt flex items-center justify-center text-text-muted">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+            @if (avatarUploading()) {
+              <div class="avatar-uploading">
+                <mat-spinner diameter="20" />
+              </div>
+            }
+          </div>
+          <div class="flex gap-2">
+            <button mat-stroked-button type="button" (click)="avatarInput.click()" [disabled]="avatarUploading()">
+              <mat-icon>upload</mat-icon> Upload
+            </button>
+            @if (avatarPreview()) {
+              <button mat-stroked-button color="warn" type="button" (click)="clearAvatar()">
+                <mat-icon>clear</mat-icon> Remove
+              </button>
+            }
+          </div>
+          <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
+        </div>
+      </div>
+
+      <!-- Full Name bilingual -->
+      <div class="bilingual-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name (EN)</mat-label>
+          <input matInput formControlName="fullName_en" />
+          @let fullNameEn = form.controls.fullName_en;
+          @if (fullNameEn.hasError('required') && fullNameEn.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name (VI)</mat-label>
+          <input matInput formControlName="fullName_vi" />
+          @let fullNameVi = form.controls.fullName_vi;
+          @if (fullNameVi.hasError('required') && fullNameVi.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Title bilingual -->
+      <div class="bilingual-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Title (EN)</mat-label>
+          <input matInput formControlName="title_en" placeholder="e.g. Senior Software Engineer" />
+          @let titleEn = form.controls.title_en;
+          @if (titleEn.hasError('required') && titleEn.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Title (VI)</mat-label>
+          <input matInput formControlName="title_vi" />
+          @let titleVi = form.controls.title_vi;
+          @if (titleVi.hasError('required') && titleVi.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Bio Short bilingual -->
+      <div class="bilingual-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Short Bio (EN)</mat-label>
+          <textarea matInput formControlName="bioShort_en" rows="3" maxlength="200"></textarea>
+          @let bioShortEn = form.controls.bioShort_en;
+          <mat-hint align="end">{{ bioShortEn.value?.length ?? 0 }}/200</mat-hint>
+          @if (bioShortEn.hasError('required') && bioShortEn.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Short Bio (VI)</mat-label>
+          <textarea matInput formControlName="bioShort_vi" rows="3" maxlength="200"></textarea>
+          @let bioShortVi = form.controls.bioShort_vi;
+          <mat-hint align="end">{{ bioShortVi.value?.length ?? 0 }}/200</mat-hint>
+          @if (bioShortVi.hasError('required') && bioShortVi.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Bio Long bilingual -->
+      <div class="bilingual-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Long Bio (EN)</mat-label>
+          <textarea matInput formControlName="bioLong_en" rows="5"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Long Bio (VI)</mat-label>
+          <textarea matInput formControlName="bioLong_vi" rows="5"></textarea>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ── Section: Work & Availability ──────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">Work &amp; Availability</h2>
+
+      <div class="field-row">
+        <mat-form-field appearance="outline" class="w-32">
+          <mat-label>Years of Experience</mat-label>
+          <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
+          @let yoeCtrl = form.controls.yearsOfExperience;
+          @if (yoeCtrl.hasError('min') || yoeCtrl.hasError('max')) {
+            <mat-error>0–99</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-48">
+          <mat-label>Availability</mat-label>
+          <mat-select formControlName="availability">
+            @for (opt of availabilityOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Open To chips -->
+      <div class="mb-4">
+        <p class="field-label">Open To</p>
+        <div class="flex flex-wrap gap-2">
+          @for (opt of openToOptions; track opt.value) {
+            <button
+              type="button"
+              class="chip-toggle"
+              [class.chip-toggle--selected]="isOpenToSelected(opt.value)"
+              (click)="toggleOpenTo(opt.value)"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section: Contact ───────────────────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">Contact</h2>
+
+      <div class="field-row">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          @let emailCtrl = form.controls.email;
+          @if (emailCtrl.hasError('required') && emailCtrl.touched) {
+            <mat-error>Required</mat-error>
+          }
+          @if (emailCtrl.hasError('email') && emailCtrl.touched) {
+            <mat-error>Invalid email</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Phone (optional)</mat-label>
+          <input matInput formControlName="phone" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-row">
+        <mat-form-field appearance="outline" class="w-48">
+          <mat-label>Preferred Contact Platform</mat-label>
+          <mat-select formControlName="preferredContactPlatform">
+            @for (opt of socialPlatformOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Preferred Contact Value</mat-label>
+          <input matInput formControlName="preferredContactValue" placeholder="@handle or URL" />
+          @let prefContactCtrl = form.controls.preferredContactValue;
+          @if (prefContactCtrl.hasError('required') && prefContactCtrl.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ── Section: Location ─────────────────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">Location</h2>
+
+      <div class="field-row">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Country</mat-label>
+          <input matInput formControlName="locationCountry" />
+          @let countryCtrl = form.controls.locationCountry;
+          @if (countryCtrl.hasError('required') && countryCtrl.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="locationCity" />
+          @let cityCtrl = form.controls.locationCity;
+          @if (cityCtrl.hasError('required') && cityCtrl.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-36">
+          <mat-label>Postal Code (optional)</mat-label>
+          <input matInput formControlName="locationPostalCode" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Address Line 1 (optional)</mat-label>
+        <input matInput formControlName="locationAddress1" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Address Line 2 (optional)</mat-label>
+        <input matInput formControlName="locationAddress2" />
+      </mat-form-field>
+    </section>
+
+    <!-- ── Section: Social Links ─────────────────────────────────────────── -->
+    <section class="profile-section">
+      <div class="section-header">
+        <h2 class="section-title">Social Links</h2>
+        <button mat-stroked-button type="button" (click)="addSocialLink()"><mat-icon>add</mat-icon> Add Link</button>
+      </div>
+
+      <div formArrayName="socialLinks" class="space-y-3">
+        @for (control of socialLinksArray.controls; track $index) {
+          @let linkGroup = asSocialLinkGroup(control);
+          <div [formGroup]="linkGroup" class="social-link-row">
+            <mat-form-field appearance="outline" class="w-40">
+              <mat-label>Platform</mat-label>
+              <mat-select formControlName="platform">
+                @for (opt of socialPlatformOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>URL</mat-label>
+              <input matInput formControlName="url" placeholder="https://" />
+              @let urlCtrl = linkGroup.controls['url'];
+              @if (urlCtrl.hasError('pattern') && urlCtrl.touched) {
+                <mat-error>Must be a valid URL (https://...)</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-36">
+              <mat-label>Handle (optional)</mat-label>
+              <input matInput formControlName="handle" placeholder="@username" />
+            </mat-form-field>
+            <button mat-icon-button color="warn" type="button" matTooltip="Remove" (click)="removeSocialLink($index)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        }
+        @if (socialLinksArray.length === 0) {
+          <p class="text-text-muted text-sm">No social links added yet.</p>
+        }
+      </div>
+    </section>
+
+    <!-- ── Section: Resume ───────────────────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">Resume</h2>
+      <div class="bilingual-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Resume URL (EN)</mat-label>
+          <input matInput formControlName="resumeUrl_en" placeholder="https://" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Resume URL (VI)</mat-label>
+          <input matInput formControlName="resumeUrl_vi" placeholder="https://" />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ── Section: Certifications ───────────────────────────────────────── -->
+    <section class="profile-section">
+      <div class="section-header">
+        <h2 class="section-title">Certifications</h2>
+        <button mat-stroked-button type="button" (click)="addCertification()">
+          <mat-icon>add</mat-icon> Add Certification
+        </button>
+      </div>
+
+      <div formArrayName="certifications" class="space-y-4">
+        @for (control of certificationsArray.controls; track $index) {
+          @let certGroup = asCertificationGroup(control);
+          <div [formGroup]="certGroup" class="cert-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Certificate Name</mat-label>
+              <input matInput formControlName="name" />
+              @let nameCtrl = certGroup.controls['name'];
+              @if (nameCtrl.hasError('required') && nameCtrl.touched) {
+                <mat-error>Required</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Issuer</mat-label>
+              <input matInput formControlName="issuer" />
+              @let issuerCtrl = certGroup.controls['issuer'];
+              @if (issuerCtrl.hasError('required') && issuerCtrl.touched) {
+                <mat-error>Required</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-24">
+              <mat-label>Year</mat-label>
+              <input matInput type="number" formControlName="year" min="1990" max="2100" />
+              @let yearCtrl = certGroup.controls['year'];
+              @if (yearCtrl.invalid && yearCtrl.touched) {
+                <mat-error>1990–2100</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>URL (optional)</mat-label>
+              <input matInput formControlName="url" placeholder="https://" />
+            </mat-form-field>
+            <button
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Remove"
+              (click)="removeCertification($index)"
+            >
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        }
+        @if (certificationsArray.length === 0) {
+          <p class="text-text-muted text-sm">No certifications added yet.</p>
+        }
+      </div>
+    </section>
+
+    <!-- ── Section: SEO & Meta ───────────────────────────────────────────── -->
+    <section class="profile-section">
+      <h2 class="section-title">SEO &amp; Meta</h2>
+
+      <!-- OG Image -->
+      <div class="mb-6">
+        <p class="field-label">OG Image</p>
+        <div class="flex items-center gap-4">
+          <div class="og-image-preview">
+            @if (ogImagePreview(); as ogSrc) {
+              <img [src]="ogSrc" alt="OG image preview" class="h-16 w-28 rounded object-cover" />
+            } @else {
+              <div class="h-16 w-28 rounded bg-surface-alt flex items-center justify-center text-text-muted">
+                <mat-icon>image</mat-icon>
+              </div>
+            }
+            @if (ogImageUploading()) {
+              <div class="og-uploading">
+                <mat-spinner diameter="20" />
+              </div>
+            }
+          </div>
+          <div class="flex gap-2">
+            <button mat-stroked-button type="button" (click)="ogImageInput.click()" [disabled]="ogImageUploading()">
+              <mat-icon>upload</mat-icon> Upload
+            </button>
+            @if (ogImagePreview()) {
+              <button mat-stroked-button color="warn" type="button" (click)="clearOgImage()">
+                <mat-icon>clear</mat-icon> Remove
+              </button>
+            }
+          </div>
+          <input #ogImageInput type="file" class="hidden" accept="image/*" (change)="onOgImageFileSelected($event)" />
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Meta Title</mat-label>
+        <input matInput formControlName="metaTitle" maxlength="70" />
+        <mat-hint align="end">{{ form.controls['metaTitle'].value?.length ?? 0 }}/70</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Meta Description</mat-label>
+        <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
+        <mat-hint align="end">{{ form.controls['metaDescription'].value?.length ?? 0 }}/160</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Canonical URL</mat-label>
+        <input matInput formControlName="canonicalUrl" placeholder="https://" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Timezone</mat-label>
+        <mat-select formControlName="timezone">
+          <mat-option value="">— None —</mat-option>
+          @for (tz of timezoneOptions; track tz) {
+            <mat-option [value]="tz">{{ tz }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- JSON-LD Preview -->
+      <div class="mt-4">
+        <button mat-stroked-button type="button" (click)="loadJsonLd()">
+          <mat-icon>data_object</mat-icon> Preview JSON-LD
+        </button>
+        @if (showJsonLd() && jsonLd()) {
+          <div class="json-ld-preview mt-3">
+            <pre class="text-xs overflow-auto rounded bg-surface-alt p-4 max-h-64">{{ jsonLd() | json }}</pre>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom Save Button -->
+  <div class="mt-8 flex justify-end">
+    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
+      @if (saving()) {
+        <mat-spinner diameter="18" class="inline-block mr-2" />
+      }
+      Save Profile
+    </button>
+  </div>
+</div>

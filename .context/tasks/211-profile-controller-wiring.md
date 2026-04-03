@@ -1,6 +1,6 @@
 # Task: Profile REST controller + module wiring
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
 Create the HTTP transport layer with public and admin endpoints, and wire the Profile module into the application.
@@ -11,31 +11,31 @@ Profile controller is unique: it has both public endpoints (no auth, for landing
 ## Acceptance Criteria
 
 ### Controller — Public Endpoints
-- [ ] `GET /profile` — no auth, dispatches `GetPublicProfileQuery`, returns filtered response
-- [ ] `GET /profile/json-ld` — no auth, accepts `?locale=en|vi` query param, dispatches `GetJsonLdQuery`
-- [ ] Returns 404 if Profile not yet created (not an error — just hasn't been set up)
+- [x] `GET /profile` — no auth, dispatches `GetPublicProfileQuery`, returns filtered response
+- [x] `GET /profile/json-ld` — no auth, accepts `?locale=en|vi` query param, dispatches `GetJsonLdQuery`
+- [x] Returns 404 if Profile not yet created (not an error — just hasn't been set up)
 
 ### Controller — Admin Endpoints
-- [ ] `GET /admin/profile` — admin auth, dispatches `GetProfileQuery(req.user.id)`, returns full response
-- [ ] `PUT /admin/profile` — admin auth, dispatches `UpsertProfileCommand(body, req.user.id)`, returns `{ id }`
-- [ ] `PATCH /admin/profile/avatar` — admin auth, dispatches `UpdateProfileAvatarCommand`
-- [ ] `PATCH /admin/profile/og-image` — admin auth, dispatches `UpdateProfileOgImageCommand`
-- [ ] All admin endpoints use `@UseGuards(JwtAccessGuard, RoleGuard)` + `@Roles(['ADMIN'])`
+- [x] `GET /admin/profile` — admin auth, dispatches `GetProfileQuery(req.user.id)`, returns full response
+- [x] `PUT /admin/profile` — admin auth, dispatches `UpsertProfileCommand(body, req.user.id)`, returns `{ id }`
+- [x] `PATCH /admin/profile/avatar` — admin auth, dispatches `UpdateProfileAvatarCommand`
+- [x] `PATCH /admin/profile/og-image` — admin auth, dispatches `UpdateProfileOgImageCommand`
+- [x] All admin endpoints use `@UseGuards(JwtAccessGuard, RoleGuard)` + `@Roles(['ADMIN'])`
 
 ### Controller Rules
-- [ ] Thin adapter — no validation, no error throwing (application layer handles both)
-- [ ] `/profile/json-ld` registered BEFORE `/:id` style routes (no /:id routes here, but good practice)
+- [x] Thin adapter — no validation, no error throwing (application layer handles both)
+- [x] `/profile/json-ld` registered BEFORE `/:id` style routes (no /:id routes here, but good practice)
 
 ### Module Wiring
-- [ ] `ProfileModule` imports: `CqrsModule`, `AuthModule` (forwardRef), `UserModule` (forwardRef), `MediaModule` (forwardRef)
-- [ ] Provides: `PROFILE_REPOSITORY` → `ProfileRepository`, all command handlers, all query handlers
-- [ ] Exports: `PROFILE_REPOSITORY`
-- [ ] Controller registered
-- [ ] Module imported in `AppModule`
+- [x] `ProfileModule` imports: `CqrsModule`, `AuthModule` (forwardRef), `UserModule` (forwardRef), `MediaModule` (forwardRef)
+- [x] Provides: `PROFILE_REPOSITORY` → `ProfileRepository`, all command handlers, all query handlers
+- [x] Exports: `PROFILE_REPOSITORY`
+- [x] Controller registered
+- [x] Module imported in `AppModule`
 
 ### Integration Verification
 - [ ] App starts without errors
-- [ ] `npx tsc --noEmit` passes
+- [x] `npx tsc --noEmit` passes
 - [ ] Manual test: PUT `/admin/profile` with valid payload → 200 with `{ id }`
 - [ ] Manual test: GET `/profile` → public response (no phone, no address details)
 - [ ] Manual test: GET `/profile/json-ld?locale=en` → valid JSON-LD
@@ -57,3 +57,4 @@ Profile controller is unique: it has both public endpoints (no auth, for landing
 ## Complexity: S
 
 ## Progress Log
+- 2026-04-03 Started and completed — all ACs satisfied except runtime manual tests

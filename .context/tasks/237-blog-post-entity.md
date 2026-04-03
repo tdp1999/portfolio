@@ -23,7 +23,7 @@ BlogPost entity follows the established BaseCrudEntity pattern. Key domain logic
 - [ ] Unit tests for: create, update, publish (first + subsequent), read time calculation, slug generation, status validation
 
 ## Technical Notes
-- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
+- **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
 - Read time formula: split content by whitespace, count tokens, divide by 200, Math.ceil
 - publishedAt: set on first `publish()` call only. If post was published before (publishedAt already set), don't overwrite.
 - Status transition validation: cannot go to PUBLISHED or UNLISTED without title + content (PST-001)

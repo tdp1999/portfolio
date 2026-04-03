@@ -1,6 +1,6 @@
 # Task: Profile repository + mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement the Profile repository (port + adapter) with upsert support and Prisma-to-domain mapper including Media relation resolution.
@@ -11,28 +11,28 @@ Profile repository is simpler than most — no list/pagination (single record), 
 ## Acceptance Criteria
 
 ### Repository Port
-- [ ] `IProfileRepository` interface:
+- [x] `IProfileRepository` interface:
   - `findByUserId(userId: string): Promise<Profile | null>`
   - `findWithMedia(userId: string): Promise<ProfileWithMedia | null>` — includes avatar + ogImage URLs
   - `upsert(entity: Profile): Promise<string>` — create or update, returns ID
   - `updateAvatar(userId: string, avatarId: string | null): Promise<void>`
   - `updateOgImage(userId: string, ogImageId: string | null): Promise<void>`
-- [ ] `PROFILE_REPOSITORY` DI token exported
-- [ ] `ProfileWithMedia` type: Profile entity + `avatarUrl: string | null` + `ogImageUrl: string | null`
+- [x] `PROFILE_REPOSITORY` DI token exported
+- [x] `ProfileWithMedia` type: Profile entity + `avatarUrl: string | null` + `ogImageUrl: string | null`
 
 ### Mapper
-- [ ] `ProfileMapper.toDomain(prisma)` — converts Prisma model to domain entity via `Profile.load()`
-- [ ] `ProfileMapper.toPrisma(domain)` — converts domain entity to Prisma create/update data
-- [ ] `ProfileMapper.toDomainWithMedia(prisma)` — includes resolved avatar/ogImage URLs from Prisma includes
-- [ ] Handles all JSON fields (pass through — they're already objects from Prisma)
-- [ ] Handles nullable fields correctly
+- [x] `ProfileMapper.toDomain(prisma)` — converts Prisma model to domain entity via `Profile.load()`
+- [x] `ProfileMapper.toPrisma(domain)` — converts domain entity to Prisma create/update data
+- [x] `ProfileMapper.toDomainWithMedia(prisma)` — includes resolved avatar/ogImage URLs from Prisma includes
+- [x] Handles all JSON fields (pass through — they're already objects from Prisma)
+- [x] Handles nullable fields correctly
 
 ### Repository Implementation
-- [ ] `ProfileRepository` implements `IProfileRepository`
-- [ ] `findByUserId` uses `findUnique({ where: { userId } })`
-- [ ] `findWithMedia` uses `findUnique({ where: { userId }, include: { avatar: true, ogImage: true } })`
-- [ ] `upsert` uses Prisma `upsert({ where: { userId }, create: {...}, update: {...} })` — single atomic operation
-- [ ] `updateAvatar` / `updateOgImage` use targeted `update` on specific field only
+- [x] `ProfileRepository` implements `IProfileRepository`
+- [x] `findByUserId` uses `findUnique({ where: { userId } })`
+- [x] `findWithMedia` uses `findUnique({ where: { userId }, include: { avatar: true, ogImage: true } })`
+- [x] `upsert` uses Prisma `upsert({ where: { userId }, create: {...}, update: {...} })` — single atomic operation
+- [x] `updateAvatar` / `updateOgImage` use targeted `update` on specific field only
 
 ## Technical Notes
 - Prisma's `upsert` is atomic — perfect for single-record create-or-update
@@ -53,3 +53,5 @@ Profile repository is simpler than most — no list/pagination (single record), 
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-02] Started
+- [2026-04-02] Done — all ACs satisfied

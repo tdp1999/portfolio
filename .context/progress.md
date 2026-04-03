@@ -81,12 +81,12 @@
 - [x] 205-profile-schema-enums - Prisma schema + enum updates + migration (M) ✓
 - [x] 206-translatable-json-shared - Shared translatable Zod schemas + utilities (M) ✓
 - [x] 207-profile-entity - Domain entity + types + errors (M) ✓
-- [ ] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L)
-- [ ] 209-profile-repository - Repository port + adapter + mapper (M)
-- [ ] 210-profile-commands-queries - Commands + queries + handlers + tests (L)
+- [x] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L) ✓
+- [x] 209-profile-repository - Repository port + adapter + mapper (M) ✓
+- [x] 210-profile-commands-queries - Commands + queries + handlers + tests (L) ✓
 - [ ] 211-profile-controller-wiring - Controller + module wiring (S)
-- [ ] 212-console-profile-page - Console profile settings page (L)
-- [ ] 213-landing-profile-integration - Landing page dynamic profile data + JSON-LD SSR (L)
+- [x] 212-console-profile-page - Console profile settings page (L) ✓
+- [x] 213-landing-profile-integration - Landing page dynamic profile data + JSON-LD SSR (L) ✓
 - [ ] 214-profile-e2e - E2E tests: API, console, landing (L)
 
 **Milestone:** All personal data dynamic, landing page live from DB, JSON-LD SEO active
@@ -195,15 +195,15 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 1/10 done) → Experience (Sprint 9) → Project (Sprint 10) → Blog Post (Sprint 11)
+**Current:** Profile Module (Sprint 8, 8/10 done — 211 in-progress, 214 pending) → Experience (Sprint 9) → Project (Sprint 10) → Blog Post (Sprint 11)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 204     |
-| Pending                   | 42      |
+| Done (archived)           | 209     |
+| Pending                   | 37      |
 | **Total Created**         | **247** |
 
 ## Notes

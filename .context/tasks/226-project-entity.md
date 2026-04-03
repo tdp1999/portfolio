@@ -22,7 +22,7 @@ Domain entity for the Project aggregate. Extends BaseCrudEntity pattern. Include
 - [ ] PRJ-002: Entity does NOT enforce max highlights (that's at command level) — but types document it
 
 ## Technical Notes
-- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
+- **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
 - Follow `Skill` entity pattern: `apps/api/src/modules/skill/domain/entities/skill.entity.ts`
 - Use `SlugValue.from(title)` from `@portfolio/shared/types`
 - Use `BaseCrudEntity.createBaseProps(userId)` for audit fields

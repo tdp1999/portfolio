@@ -23,6 +23,11 @@ export const appRoutes: Route[] = [
     children: [
       { path: '', loadComponent: () => import('./pages/home/home') },
       {
+        path: 'profile',
+        loadChildren: () => import('@portfolio/console/feature-profile').then((m) => m.profileRoutes),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'settings',
         loadChildren: () => import('@portfolio/console/feature-settings').then((m) => m.settingsRoutes),
       },

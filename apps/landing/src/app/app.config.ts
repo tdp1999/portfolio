@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideIcons, lucideProvider } from '@portfolio/landing/shared/ui';
 
 export const appConfig: ApplicationConfig = {
@@ -10,5 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
     provideIcons(lucideProvider),
+    provideHttpClient(withFetch()),
   ],
 };

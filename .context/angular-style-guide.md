@@ -9,17 +9,10 @@ Modern Angular syntax standards for this project. All code must follow these pat
 ### Inputs & Outputs
 
 ```typescript
-// Inputs
 name = input.required<string>();
 variant = input<'primary' | 'secondary'>('primary');
-
-// Outputs
 clicked = output<void>();
-valueChanged = output<string>();
-
-// Two-way binding
-value = model<string>('');
-selectedId = model.required<number>();
+value = model<string>(''); // Two-way binding
 ```
 
 **Never use:** `@Input()`, `@Output()`, `EventEmitter`
@@ -27,14 +20,8 @@ selectedId = model.required<number>();
 ### Queries
 
 ```typescript
-// Single elements
-submitButton = viewChild<ElementRef>('submitBtn');
-submitButtonRequired = viewChild.required<ElementRef>('submitBtn');
-
-// Multiple elements
+submitButton = viewChild.required<ElementRef>('submitBtn');
 listItems = viewChildren<ElementRef>('item');
-
-// Content projection
 contentHeader = contentChild<HeaderComponent>(HeaderComponent);
 contentItems = contentChildren<ItemComponent>(ItemComponent);
 ```
@@ -44,206 +31,140 @@ contentItems = contentChildren<ItemComponent>(ItemComponent);
 ### Computed & Effects
 
 ```typescript
-// Derived state
 fullName = computed(() => `${this.firstName()} ${this.lastName()}`);
 
-// Side effects only
 constructor() {
-  effect(() => {
-    console.log('User changed:', this.userId());
-  });
+  effect(() => console.log('User changed:', this.userId()));
 }
 ```
 
-### Linked Signals (v19+)
+### linkedSignal (stable v21)
 
-For derived state that needs to remain writable:
+Derived state that remains writable:
 
 ```typescript
-import { linkedSignal } from '@angular/core';
-
-// Selection that resets when options change
 options = signal(['A', 'B', 'C']);
-selectedOption = linkedSignal(() => this.options()[0]); // Resets when options change
-
-// Writable derived state
-basePrice = signal(100);
-adjustedPrice = linkedSignal({
-  source: this.basePrice,
-  computation: (base) => base * 1.1,
-}); // Can be updated: adjustedPrice.set(150)
+selectedOption = linkedSignal(() => this.options()[0]); // Resets when options change, but writable
 ```
 
-**Use when:** You need derived state that can be manually overridden but still tracks source changes.
-
-### Resource API (v19, Experimental)
-
-Async data handling with signals:
+### resource (experimental)
 
 ```typescript
-import { resource } from '@angular/core';
-
-// Basic resource
 userId = signal(1);
 userResource = resource({
   request: () => ({ id: this.userId() }),
   loader: ({ request }) => fetch(`/api/users/${request.id}`).then((r) => r.json()),
 });
-
-// Template usage: userResource.value(), userResource.isLoading(), userResource.error()
+// Template: userResource.value(), userResource.isLoading(), userResource.error()
 ```
 
-**Use when:** Loading async data that depends on signals. **Note:** Experimental API.
+### httpResource (experimental)
+
+```typescript
+import { httpResource } from '@angular/common/http';
+
+users = httpResource<User[]>('/api/users');
+user = httpResource<User>(() => `/api/users/${this.userId()}`);
+
+// With Zod parse
+user = httpResource(() => `/api/users/${this.id()}`, { parse: UserSchema.parse });
+
+// Variants: httpResource.text(), httpResource.blob(), httpResource.arrayBuffer()
+```
+
+**Use for reads only.** For mutations (POST/PUT/DELETE), use `HttpClient` directly.
+Signals: `value()`, `hasValue()`, `error()`, `isLoading()`
 
 ---
 
 ## 2. Built-In Control Flow
 
 ```html
-<!-- Conditionals -->
 @if (isLoading()) {
-<app-spinner />
+  <app-spinner />
 } @else if (error()) {
-<app-error [message]="error()" />
+  <app-error [message]="error()" />
 } @else {
-<app-content [data]="data()" />
+  <app-content [data]="data()" />
 }
 
-<!-- Loops -->
 @for (item of items(); track item.id) {
-<app-item [data]="item" />
+  <app-item [data]="item" />
 } @empty {
-<p>No items found</p>
+  <p>No items found</p>
 }
 
-<!-- Switch -->
-@switch (status()) { @case ('loading') { <app-spinner /> } @case ('error') { <app-error /> }
-@default {
-<p>Unknown</p>
-} }
+@switch (status()) {
+  @case ('loading') { <app-spinner /> }
+  @case ('error') { <app-error /> }
+  @default { <p>Unknown</p> }
+}
 ```
 
-**Never use:** `*ngIf`, `*ngFor`, `*ngSwitch`, `*ngSwitchCase`, `*ngSwitchDefault`
+**Never use:** `*ngIf`, `*ngFor`, `*ngSwitch` (deprecated in v21)
 
 ### Template Variables (@let)
 
-Declare local variables in templates (v18.1+):
-
 ```html
-<!-- Store computed values -->
 @let fullName = firstName() + ' ' + lastName();
 <h1>{{ fullName }}</h1>
-<p>Welcome, {{ fullName }}!</p>
 
-<!-- Cache async results -->
-@let user = userSignal(); @if (user) {
-<p>{{ user.name }} - {{ user.email }}</p>
-}
-
-<!-- Complex expressions -->
-@let isEligible = age() >= 18 && hasLicense(); @if (isEligible) {
-<button>Apply Now</button>
+@let user = userSignal();
+@if (user) {
+  <p>{{ user.name }} - {{ user.email }}</p>
 }
 ```
 
-**Use when:** Avoiding repeated expressions or storing intermediate values. **Note:** Cannot be reassigned, scoped to current view.
+**Use when:** Avoiding repeated expressions or storing intermediate values. Cannot be reassigned, scoped to current view.
 
 ---
 
 ## 3. Deferred Loading
 
-Lazy load components to improve initial load time:
-
 ```html
-<!-- Basic defer -->
-@defer {
-<heavy-component />
-} @placeholder {
-<p>Loading...</p>
-}
-
-<!-- Viewport trigger -->
 @defer (on viewport) {
-<analytics-widget />
+  <analytics-widget />
+} @placeholder {
+  <p>Loading...</p>
 } @loading (minimum 1s) {
-<app-spinner />
+  <app-spinner />
 } @error {
-<p>Failed to load</p>
-}
-
-<!-- Prefetch on idle -->
-@defer (on interaction; prefetch on idle) {
-<user-dashboard />
+  <p>Failed to load</p>
 }
 ```
 
 **Triggers:** `idle` (default), `viewport`, `interaction`, `hover`, `immediate`, `timer(ms)`, `when condition`
-
-**Best practices:**
-
-- Use for large components below the fold
-- Deferred dependencies must be standalone
-- Add `prefetch` for better UX
-- Avoid nested cascading @defer blocks
+**Tips:** Use for large components below the fold. Deferred components must be standalone. Add `prefetch` for better UX.
 
 ---
 
 ## 4. Image Optimization
 
-Use `NgOptimizedImage` for automatic performance optimization:
-
-```typescript
-// Component
-import { NgOptimizedImage } from '@angular/common';
-imports: [NgOptimizedImage];
-```
-
 ```html
-<!-- Basic usage -->
-<img ngSrc="cat.jpg" width="400" height="200" alt="Cat" />
-
-<!-- Priority for LCP images -->
 <img ngSrc="hero.jpg" width="1200" height="600" priority alt="Hero" />
-
-<!-- Fill mode (parent must be positioned) -->
-<img ngSrc="bg.jpg" fill alt="Background" />
-
-<!-- Responsive sizing -->
-<img
-  ngSrc="product.jpg"
-  width="800"
-  height="600"
-  sizes="(max-width: 768px) 100vw, 50vw"
-  alt="Product"
-/>
+<img ngSrc="product.jpg" width="800" height="600"
+  sizes="(max-width: 768px) 100vw, 50vw" alt="Product" />
+<img ngSrc="bg.jpg" fill alt="Background" /> <!-- parent must be positioned -->
 ```
 
-**Features:**
-
-- Automatic `srcset` generation
-- Lazy loading by default (non-priority)
-- Preconnect links for CDNs
-- Prevents layout shifts
-
-**Never use:** Regular `<img src="...">` for content images
+Import `NgOptimizedImage` from `@angular/common`. Auto `srcset`, lazy by default, prevents layout shifts.
+**Never use:** Raw `<img src="...">` for content images.
 
 ---
 
-## 5. Signal Forms (Experimental)
-
-Type-safe forms with automatic synchronization:
+## 5. Signal Forms (experimental)
 
 ```typescript
 import { form, FormField, required, email } from '@angular/forms/signals';
 
-// Component
-@Component({
-  imports: [FormField],
-})
+@Component({ imports: [FormField] })
 export class SignupComponent {
+  name = signal('');
+  emailAddr = signal('');
+
   userForm = form({
-    name: ['', [required()]],
-    email: ['', [required(), email()]],
+    name: [this.name, [required()]],
+    email: [this.emailAddr, [required(), email()]],
   });
 
   onSubmit() {
@@ -254,113 +175,122 @@ export class SignupComponent {
 }
 ```
 
-**Note:** Signal Forms are experimental. Use reactive forms for production stability.
+```html
+<input [formField]="userForm.controls.name" />
+```
+
+Field state signals: `value()`, `valid()`, `touched()`, `dirty()`, `errors()`
+**Status:** Experimental. Use reactive forms for production stability.
 
 ---
 
 ## 6. Dependency Injection
 
-### inject() Function
-
-Modern DI pattern (v14+, enhanced v16):
-
 ```typescript
-import { inject } from '@angular/core';
-
 export class UserService {
   private http = inject(HttpClient);
   private router = inject(Router);
-
-  // Works in functions, guards, resolvers
-  loadUser(id: string) {
-    return this.http.get(`/api/users/${id}`);
-  }
 }
 
 // Functional guards
-export const authGuard = () => {
-  const authService = inject(AuthService);
-  return authService.isAuthenticated();
-};
-
-// Outside injection context (with injector)
-const injector = inject(Injector);
-runInInjectionContext(injector, () => {
-  const service = inject(SomeService);
-});
+export const authGuard = () => inject(AuthService).isAuthenticated();
 ```
 
-**Never use:** Constructor injection for new code (except in tests or when required).
+**Never use:** Constructor injection for new code.
 
 ---
 
-## 7. Zoneless Change Detection (v18+, Default v21)
+## 7. Zoneless Change Detection (stable, default v21)
 
-Remove zone.js for better performance (20-30% faster):
+Zoneless is the default in Angular v21. No provider needed for new apps.
 
 ```typescript
-// Bootstrap without zone.js
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+// Only needed to opt BACK into zones:
+providers: [provideZoneChangeDetection()]
 
-bootstrapApplication(AppComponent, {
-  providers: [provideExperimentalZonelessChangeDetection()],
-});
+// To explicitly enable zoneless (e.g., migrating existing app):
+providers: [provideZonelessChangeDetection()]
 ```
 
-**Requirements:**
+**Requirements:** Use signals for reactive state. Use `async` pipe or signal-based state management. Test with `await fixture.whenStable()`.
 
-- Use signals for all reactive state
-- Use `async` pipe or signal-based state management
-- Manual `ChangeDetectorRef.markForCheck()` for non-signal state
-- Test thoroughly - some third-party libs may rely on zone.js
-
-**Benefits:** Smaller bundle, faster rendering, cleaner stack traces.
+**Note:** `provideExperimentalZonelessChangeDetection()` is obsolete — use `provideZonelessChangeDetection()`.
 
 ---
 
-## 8. Template Best Practices
+## 8. Reactive Forms — Typed Access
+
+### Direct control access (no `.get()`)
+
+Access form controls via `.controls` property — typed, no optional chaining needed:
+
+```typescript
+// BAD — untyped, requires optional chaining
+form.get('email')?.hasError('required')
+form.get('email')?.value
+
+// GOOD — typed, IDE autocomplete works
+form.controls.email.hasError('required')
+form.controls.email.value
+```
+
+### Template patterns with @let
+
+```html
+@let emailCtrl = form.controls.email;
+@if (emailCtrl.hasError('required') && emailCtrl.touched) {
+  <mat-error>Required</mat-error>
+}
+@if (emailCtrl.hasError('email') && emailCtrl.touched) {
+  <mat-error>Invalid email</mat-error>
+}
+```
+
+### Template data access — avoid getters
+
+Access component fields directly in the template. Never wrap in a getter.
+
+```
+BAD:  get metaTitleLength() { return this.form.controls.metaTitle.value?.length ?? 0; }
+GOOD: {{ form.controls.metaTitle.value?.length ?? 0 }}
+```
+
+Getters OK only for expensive computations. For reactive derived values, use `computed()`.
+
+---
+
+## 9. Template Best Practices
 
 ```html
 <!-- Self-closing tags -->
 <app-header />
 <input type="text" [value]="name()" />
-<img ngSrc="logo.png" width="100" height="50" alt="Logo" />
 
 <!-- Direct class/style bindings -->
-<div [class.active]="isActive()" [class.disabled]="isDisabled()">...</div>
-<div [style.color]="textColor()" [style.font-size.px]="fontSize()">...</div>
+<div [class.active]="isActive()" [style.font-size.px]="fontSize()">...</div>
 ```
 
-**Never use:** `NgClass`, `NgStyle`
+**Never use:** `NgClass`, `NgStyle` (deprecated in v21)
 
 ---
 
-## 9. Component Structure
+## 10. Component Structure
 
 ```typescript
-import { Component, input, output, computed, inject } from '@angular/core';
-
 @Component({
   selector: 'app-button',
   standalone: true,
-  imports: [
-    /* minimal imports */
-  ],
+  imports: [/* minimal */],
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
 })
 export class ButtonComponent {
-  // Dependency injection
   private analytics = inject(AnalyticsService);
 
-  // Inputs
   variant = input<'primary' | 'secondary'>('primary');
   disabled = input<boolean>(false);
-
-  // Outputs
   clicked = output<void>();
 
-  // Computed
   buttonClass = computed(() => `btn-${this.variant()}`);
 
   handleClick() {
@@ -372,117 +302,77 @@ export class ButtonComponent {
 }
 ```
 
-**Always:** Use standalone components. **Avoid:** `CommonModule` imports (rarely needed with built-in control flow).
+**Always:** Standalone components. **Avoid:** `CommonModule` imports.
 
 ---
 
-## 10. Advanced Composition
+## 11. Advanced Composition
 
-### Host Directives (v16+)
-
-Compose behaviors without inheritance:
+### Host Directives
 
 ```typescript
 @Component({
-  selector: 'app-menu',
-  standalone: true,
   hostDirectives: [
-    HasColor, // Apply directive behavior
-    { directive: Tooltipable, inputs: ['tooltip: menuTooltip'] }, // Rename inputs
+    HasColor,
+    { directive: Tooltipable, inputs: ['tooltip: menuTooltip'] },
   ],
 })
 export class MenuComponent {}
 ```
 
-**Use when:** Sharing cross-cutting concerns (logging, accessibility, validation) across components.
-
-### Router Input Binding (v16+)
-
-Bind route params directly to component inputs:
+### Router Input Binding
 
 ```typescript
-// Route config
 { path: 'user/:id', component: UserComponent }
 
-// Component - automatic binding
+// Component — automatic binding
 export class UserComponent {
-  id = input.required<string>(); // Automatically bound from route param
+  id = input.required<string>(); // Bound from route param
 }
 ```
 
-**Enable:** Add `withComponentInputBinding()` to router providers.
+Enable with `withComponentInputBinding()` in router providers.
 
 ---
 
-## 11. SSR & Hydration (v16+)
-
-Improved server-side rendering:
+## 12. SSR & Hydration (stable)
 
 ```typescript
-// Enable hydration
-import { provideClientHydration } from '@angular/platform-browser';
+import { provideClientHydration, withIncrementalHydration } from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
-  providers: [provideClientHydration()],
-});
+providers: [
+  provideClientHydration(withIncrementalHydration()),
+  // provideStabilityDebugging() — for diagnosing hydration issues
+]
 ```
 
-**Features:**
-
-- Full app hydration (v16+)
-- Event replay for better interactivity (v18+)
-- i18n hydration support (v18+)
-- Streamed SSR for faster TTFB (v20+)
-
-**Best practices:** Test with SSR enabled, avoid DOM manipulation in constructors, use `afterNextRender()` for browser-only code.
+- **Full hydration:** stable (v16+)
+- **Incremental hydration:** stable (v20+) — lazy-hydrates deferred blocks
+- **Event replay:** automatically enabled with incremental hydration
+- Use `afterNextRender()` for browser-only code. Avoid DOM manipulation in constructors.
 
 ---
 
-## Quick Reference
+## 13. Guardrails
 
-### Signal APIs
+Rules that must be followed in all Angular template and component code.
 
-| Old Syntax                              | New Syntax (v17+)                     |
-| --------------------------------------- | ------------------------------------- |
-| `@Input() name: T`                      | `name = input<T>()`                   |
-| `@Input({ required: true })`            | `name = input.required<T>()`          |
-| `@Output() evt = new EventEmitter<T>()` | `evt = output<T>()`                   |
-| `@Input()/@Output()` pair               | `value = model<T>()`                  |
-| `@ViewChild('ref')`                     | `ref = viewChild<T>('ref')`           |
-| Writable derived signal                 | `linkedSignal(() => source())` (v19+) |
-
-### Template Syntax
-
-| Old Syntax                     | New Syntax (v17+)                  |
-| ------------------------------ | ---------------------------------- |
-| `*ngIf="cond"`                 | `@if (cond) {}`                    |
-| `*ngFor="let x of items"`      | `@for (x of items; track x.id) {}` |
-| `[ngSwitch]` + `*ngSwitchCase` | `@switch (val) { @case (x) {} }`   |
-| Template variable repetition   | `@let name = expression` (v18.1+)  |
-| `<img src="...">`              | `<img ngSrc="..." width height>`   |
-| Lazy load                      | `@defer { <component /> }` (v17+)  |
-
-### Dependency Injection
-
-| Old Syntax (v13-)                      | New Syntax (v14+)               |
-| -------------------------------------- | ------------------------------- |
-| `constructor(private svc: Service) {}` | `private svc = inject(Service)` |
-
-### Architecture
-
-| Feature                 | Old (v15-)             | New (v16+)       |
-| ----------------------- | ---------------------- | ---------------- |
-| Components              | NgModule-based         | Standalone       |
-| Change Detection        | zone.js (automatic)    | Zoneless (v21+)  |
-| Async data with signals | Manual signal + effect | resource() (v19) |
+| Rule | Do | Don't |
+|------|----|-------|
+| **No non-null assertions** | Fix the type or add a guard | `obj!.prop` |
+| **No `!important` in Tailwind** | Use `.icon-*` for Material icon sizing | `!h-5 !w-5` |
+| **Material density: even only** | `density: -2` | `density: -1` (breaks 4px grid) |
+| **Direct form access** | `form.controls.email.hasError(...)` | `form.get('email')?.hasError(...)` |
+| **No getters for templates** | Direct access or `computed()` | `get prop() { return ... }` |
+| **Self-closing tags** | `<app-header />` | `<app-header></app-header>` |
 
 ---
 
-## 12. Test Configuration
+## 14. Test Configuration
 
 ### tsconfig.spec.json for Angular libs
 
-Angular libs (any lib importing `@angular/*`) must use `bundler` module resolution in their `tsconfig.spec.json`:
+Angular libs must use `bundler` module resolution in `tsconfig.spec.json`:
 
 ```json
 {
@@ -493,45 +383,27 @@ Angular libs (any lib importing `@angular/*`) must use `bundler` module resoluti
 }
 ```
 
-**Why:** The Nx generator defaults to `"module": "commonjs"` and `"moduleResolution": "node10"`, which cannot resolve Angular's package exports (e.g., `@angular/core/testing`).
-
-**Scope:** Only Angular/frontend libs. Pure non-Angular shared libs (types, utils, errors) and backend (NestJS) can keep `node10`.
+**Why:** Nx generator defaults to `node10` which cannot resolve Angular's package exports.
+**Scope:** Angular/frontend libs only. Backend and pure shared libs can keep `node10`.
 
 ---
 
-## 13. Accessibility & E2E Testability
-
-Templates must be both accessible and E2E-testable. These goals are aligned — if an element is accessible, it's testable via semantic selectors.
+## 15. Accessibility & E2E Testability
 
 ### Icon Buttons — Always add `aria-label`
 
-`matTooltip` does NOT set `aria-label`. Icon-only buttons are invisible to screen readers and Playwright's `getByRole` without it.
-
 ```html
-<!-- BAD: no accessible name -->
-<button mat-icon-button matTooltip="Delete">
-  <mat-icon>delete</mat-icon>
-</button>
-
-<!-- GOOD: accessible + testable -->
+<!-- GOOD -->
 <button mat-icon-button aria-label="Delete" matTooltip="Delete">
   <mat-icon>delete</mat-icon>
 </button>
 ```
 
-**Rule:** Every interactive element (button, link, input) must have an accessible name via `aria-label`, `<mat-label>`, or visible text content.
+Every interactive element must have an accessible name via `aria-label`, `<mat-label>`, or visible text.
 
 ### Error Messages — Use `role="alert"`
 
-Use `<console-error-message>` component (which renders `role="alert"`) instead of raw `<p class="text-red-500">`.
-
-```html
-<!-- BAD: no semantic meaning, hard to target in E2E -->
-<p class="text-sm text-red-500">{{ error }}</p>
-
-<!-- GOOD: accessible, findable via getByRole('alert') -->
-<console-error-message [message]="error" />
-```
+Use `<console-error-message>` component (renders `role="alert"`) instead of raw `<p class="text-red-500">`.
 
 ### State Indicators
 
@@ -541,23 +413,41 @@ Use `<console-error-message>` component (which renders `role="alert"`) instead o
 | Empty | Visible descriptive text | `getByText('No items found')` |
 | Error | `role="alert"` or `<console-error-message>` | `getByRole('alert')` |
 
-### Looped Elements — Use `data-testid`
+### `data-testid` Policy
 
-When rendering lists where items share the same semantic role, add `data-testid` for E2E targeting:
+Use as escape hatch when semantic selectors are insufficient (looped items, custom components with no ARIA role). Prefer `getByRole`, `getByLabel`, `getByText` first.
 
-```html
-@for (item of items(); track item.id) {
-  <div [attr.data-testid]="'card-' + item.id">
-    <!-- child elements can use getByRole within this scope -->
-  </div>
-}
-```
+---
 
-### `data-testid` Policy (Pragmatic)
+## Quick Reference
 
-Use `data-testid` as an **escape hatch** when semantic selectors are insufficient:
-- Repeated items in loops (grid cards, list items with identical roles)
-- Custom components with no standard ARIA role (dropzones, progress indicators)
-- Complex nested structures where scoping by text is ambiguous
+### Signal APIs
 
-**Do not use** `data-testid` when `getByRole`, `getByLabel`, or `getByText` can identify the element.
+| Old | New (v17+) |
+|-----|------------|
+| `@Input() name: T` | `name = input<T>()` |
+| `@Output() evt = new EventEmitter<T>()` | `evt = output<T>()` |
+| `@Input()/@Output()` pair | `value = model<T>()` |
+| `@ViewChild('ref')` | `ref = viewChild<T>('ref')` |
+| Writable derived signal | `linkedSignal(() => source())` (stable v21) |
+
+### Template Syntax
+
+| Old | New |
+|-----|-----|
+| `*ngIf="cond"` | `@if (cond) {}` |
+| `*ngFor="let x of items"` | `@for (x of items; track x.id) {}` |
+| `[ngSwitch]` + `*ngSwitchCase` | `@switch (val) { @case (x) {} }` |
+| Repeated expressions | `@let name = expr` |
+| `<img src="...">` | `<img ngSrc="..." width height>` |
+
+### Architecture
+
+| Feature | Status |
+|---------|--------|
+| Standalone components | Default (NgModule deprecated) |
+| Zoneless change detection | Stable, default in v21 |
+| linkedSignal | Stable in v21 |
+| resource() / httpResource() | Experimental |
+| Signal Forms | Experimental |
+| Incremental hydration | Stable (v20+) |

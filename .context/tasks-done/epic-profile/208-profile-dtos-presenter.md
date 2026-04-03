@@ -1,6 +1,6 @@
 # Task: Profile Zod DTOs + presenter (public + admin)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Define Zod validation schemas for Profile upsert and two presenters: public (filtered, no private fields) and admin (full).
@@ -11,7 +11,7 @@ Profile has the most complex DTO in the project — ~28 fields with 6 validated 
 ## Acceptance Criteria
 
 ### Upsert DTO
-- [ ] `UpsertProfileSchema` — validates all Profile fields:
+- [x] `UpsertProfileSchema` — validates all Profile fields:
   - `fullName`: TranslatableSchema (en + vi required)
   - `title`: TranslatableSchema
   - `bioShort`: TranslatableSchema
@@ -39,39 +39,39 @@ Profile has the most complex DTO in the project — ~28 fields with 6 validated 
   - `ogImageId`: UUID string, optional
 
 ### Update Avatar / OG Image DTOs
-- [ ] `UpdateAvatarSchema` — `{ avatarId: UUID string | null }` (null to remove)
-- [ ] `UpdateOgImageSchema` — `{ ogImageId: UUID string | null }`
+- [x] `UpdateAvatarSchema` — `{ avatarId: UUID string | null }` (null to remove)
+- [x] `UpdateOgImageSchema` — `{ ogImageId: UUID string | null }`
 
 ### Public Presenter (PRF-003)
-- [ ] `ProfilePresenter.toPublicResponse(entity)` returns:
+- [x] `ProfilePresenter.toPublicResponse(entity)` returns:
   - fullName, title, bioShort, bioLong, yearsOfExperience, availability, openTo
   - email, preferredContactPlatform, preferredContactValue
   - locationCountry, locationCity (city + country ONLY)
   - socialLinks, resumeUrls, certifications
   - avatarUrl (resolved from Media), ogImageUrl (resolved from Media)
   - metaTitle, metaDescription, timezone, canonicalUrl
-- [ ] Excludes: phone, locationPostalCode, locationAddress1, locationAddress2, audit fields
+- [x] Excludes: phone, locationPostalCode, locationAddress1, locationAddress2, audit fields
 
 ### Admin Presenter
-- [ ] `ProfilePresenter.toAdminResponse(entity)` returns ALL fields including private ones
-- [ ] Includes audit fields (createdAt, updatedAt, createdById, updatedById)
+- [x] `ProfilePresenter.toAdminResponse(entity)` returns ALL fields including private ones
+- [x] Includes audit fields (createdAt, updatedAt, createdById, updatedById)
 
 ### JSON-LD Presenter
-- [ ] `ProfilePresenter.toJsonLd(entity, locale)` returns Schema.org Person object
-- [ ] Uses `getLocalized()` for translatable fields with requested locale
-- [ ] Includes: name, jobTitle, description, image, email, url, address (city+country), sameAs (social URLs), knowsLanguage
+- [x] `ProfilePresenter.toJsonLd(entity, locale)` returns Schema.org Person object
+- [x] Uses `getLocalized()` for translatable fields with requested locale
+- [x] Includes: name, jobTitle, description, image, email, url, address (city+country), sameAs (social URLs), knowsLanguage
 
 ### Unit Tests
-- [ ] UpsertProfileSchema: valid full payload, missing required fields, invalid JSON fields, max lengths, email validation
-- [ ] TranslatableSchema integration: missing locale, empty strings
-- [ ] SocialLinks validation: invalid URL, invalid platform, max array size
-- [ ] Certifications validation: missing required fields, year bounds
-- [ ] Public presenter: excludes private fields
-- [ ] Admin presenter: includes all fields
-- [ ] JSON-LD: valid Schema.org structure, locale-aware field selection
+- [x] UpsertProfileSchema: valid full payload, missing required fields, invalid JSON fields, max lengths, email validation
+- [x] TranslatableSchema integration: missing locale, empty strings
+- [x] SocialLinks validation: invalid URL, invalid platform, max array size
+- [x] Certifications validation: missing required fields, year bounds
+- [x] Public presenter: excludes private fields
+- [x] Admin presenter: includes all fields
+- [x] JSON-LD: valid Schema.org structure, locale-aware field selection
 
 ## Technical Notes
-- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
+- **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
 - Import shared schemas from task 206 (TranslatableSchema, SocialLinkSchema, etc.)
 - Presenter resolves `avatarId` → `avatarUrl` and `ogImageId` → `ogImageUrl`. This may need the Media URL to be loaded via join/include in the repository query, or resolved in the presenter via a lookup.
 - JSON-LD generator can be a static method on ProfilePresenter or a separate service — keep it simple, static method is fine for now.
@@ -88,3 +88,5 @@ Profile has the most complex DTO in the project — ~28 fields with 6 validated 
 ## Complexity: L
 
 ## Progress Log
+- [2026-04-02] Started
+- [2026-04-02] Done — all ACs satisfied

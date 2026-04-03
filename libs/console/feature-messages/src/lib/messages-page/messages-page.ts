@@ -1,15 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
-import { NgClass } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialog } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,6 +17,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { forkJoin, Observable } from 'rxjs';
 import { ContactMessageListItem, MessageService } from '../message.service';
 import { RelativeTimePipe } from '../pipes/relative-time.pipe';
 
@@ -53,7 +52,6 @@ const PURPOSE_OPTIONS = [
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
-    NgClass,
     RelativeTimePipe,
   ],
   templateUrl: './messages-page.html',

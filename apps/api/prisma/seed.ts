@@ -1,3 +1,7 @@
+import { config } from 'dotenv';
+import { resolve } from 'node:path';
+config({ path: resolve(__dirname, '../../../.env') });
+
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '@prisma/client';
 import { hash } from 'bcryptjs';
@@ -58,12 +62,51 @@ export async function seedAdmin(prisma: Pick<PrismaClient, 'user'>, env: SeedEnv
   console.log(`Admin user seeded: ${email}`);
 }
 
+export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>, env: SeedEnv): Promise<void> {
+  const email = env.ADMIN_EMAIL;
+  if (!email) throw new Error('Missing ADMIN_EMAIL');
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    console.log('Admin user not found — skipping profile seed');
+    return;
+  }
+
+  const existing = await prisma.profile.findUnique({ where: { userId: user.id } });
+  if (existing) {
+    console.log(`Profile already exists for ${email} — skipping`);
+    return;
+  }
+
+  const name = env.ADMIN_NAME ?? '';
+
+  await prisma.profile.create({
+    data: {
+      id: uuidv7(),
+      userId: user.id,
+      fullName: { en: name, vi: name },
+      title: { en: 'Full-stack Developer', vi: 'Lập trình viên Full-stack' },
+      bioShort: { en: 'Portfolio in progress', vi: 'Portfolio đang được cập nhật' },
+      yearsOfExperience: 0,
+      email,
+      preferredContactValue: '',
+      locationCountry: '',
+      locationCity: '',
+      createdById: user.id,
+      updatedById: user.id,
+    },
+  });
+
+  console.log(`Profile seeded for: ${email}`);
+}
+
 async function main() {
   const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] });
   const prisma = new PrismaClient({ adapter });
 
   try {
     await seedAdmin(prisma, process.env as SeedEnv);
+    await seedProfile(prisma, process.env as SeedEnv);
   } finally {
     await prisma.$disconnect();
   }

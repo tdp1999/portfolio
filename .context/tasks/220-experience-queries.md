@@ -46,7 +46,7 @@ Experience has two audience contexts: public (landing page, no auth, filtered re
 - [ ] ListPublic: includes skills and companyLogoUrl
 
 ## Technical Notes
-- **Specialized Skill:** `be-test` — **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Query section)
+- **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Query section)
 - Follow Skill queries pattern as reference
 - Public vs admin response: the Presenter handles field filtering, not the repository
 - `findAllPublic()` should eager-load skills and companyLogo in one query to avoid N+1

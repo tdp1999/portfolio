@@ -13,6 +13,7 @@ import { CategoryModule } from '../modules/category';
 import { SkillModule } from '../modules/skill/skill.module';
 import { MediaModule } from '../modules/media/media.module';
 import { ContactMessageModule } from '../modules/contact-message';
+import { ProfileModule } from '../modules/profile';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -33,6 +34,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     SkillModule,
     MediaModule,
     ContactMessageModule,
+    ProfileModule,
     ThrottlerModule.forRoot({
       skipIf: () => !isProduction,
       throttlers: [{ ttl: 60000, limit: 60 }],
