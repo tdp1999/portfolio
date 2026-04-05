@@ -12,6 +12,11 @@ module.exports = async function () {
   const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
   const prisma = new PrismaClient({ adapter });
 
+  // Clean up test profiles before users (FK constraint: profiles_userId_fkey)
+  await prisma.profile.deleteMany({
+    where: { user: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } },
+  });
+  // Clean up test admin user
   await prisma.user.deleteMany({
     where: { email: { startsWith: 'test-', endsWith: '@e2e.local' } },
   });

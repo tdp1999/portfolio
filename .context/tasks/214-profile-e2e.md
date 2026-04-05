@@ -1,6 +1,6 @@
 # Task: Profile E2E tests
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
 Write end-to-end tests covering the full Profile lifecycle: admin upsert, public access, field filtering, JSON-LD generation, and landing page dynamic data display.
@@ -11,48 +11,48 @@ Profile E2E validates the complete vertical slice — from admin console form sa
 ## Acceptance Criteria
 
 ### API E2E — Admin Operations
-- [ ] PUT `/admin/profile` with full valid payload → 200, returns `{ id }`
-- [ ] PUT `/admin/profile` again (update) → 200, same id returned (PRF-002: upsert)
-- [ ] PUT with missing required translatable field (both en + vi) → validation error
-- [ ] PUT with invalid socialLinks (bad URL) → validation error
-- [ ] PUT with invalid certifications (year out of range) → validation error
-- [ ] PUT with non-existent avatarId → MEDIA_NOT_FOUND error
-- [ ] GET `/admin/profile` → returns full Profile including private fields (phone, address)
+- [x] PUT `/admin/profile` with full valid payload → 200, returns `{ id }`
+- [x] PUT `/admin/profile` again (update) → 200, same id returned (PRF-002: upsert)
+- [x] PUT with missing required translatable field (both en + vi) → validation error
+- [x] PUT with invalid socialLinks (bad URL) → validation error
+- [x] PUT with invalid certifications (year out of range) → validation error
+- [x] PUT with non-existent avatarId → MEDIA_NOT_FOUND error
+- [x] GET `/admin/profile` → returns full Profile including private fields (phone, address)
 - [ ] PATCH `/admin/profile/avatar` with valid Media ID → avatar updated
-- [ ] PATCH `/admin/profile/avatar` with null → avatar cleared
+- [x] PATCH `/admin/profile/avatar` with null → avatar cleared
 
 ### API E2E — Public Access (PRF-003)
-- [ ] GET `/profile` without auth → returns 200 with public fields
-- [ ] GET `/profile` response does NOT contain phone
-- [ ] GET `/profile` response does NOT contain locationPostalCode, locationAddress1, locationAddress2
-- [ ] GET `/profile` response DOES contain locationCity, locationCountry
-- [ ] GET `/profile` when Profile not yet created → 404
-- [ ] GET `/profile/json-ld?locale=en` → valid Schema.org Person JSON-LD
-- [ ] GET `/profile/json-ld?locale=vi` → JSON-LD with vi translatable fields
-- [ ] JSON-LD contains: @type Person, name, jobTitle, description, sameAs (social URLs)
+- [x] GET `/profile` without auth → returns 200 with public fields
+- [x] GET `/profile` response does NOT contain phone
+- [x] GET `/profile` response does NOT contain locationPostalCode, locationAddress1, locationAddress2
+- [x] GET `/profile` response DOES contain locationCity, locationCountry
+- [x] GET `/profile` when Profile not yet created → 404
+- [x] GET `/profile/json-ld?locale=en` → valid Schema.org Person JSON-LD
+- [x] GET `/profile/json-ld?locale=vi` → JSON-LD with vi translatable fields
+- [x] JSON-LD contains: @type Person, name, jobTitle, description, sameAs (social URLs)
 
 ### API E2E — Auth Protection
-- [ ] PUT `/admin/profile` without auth → 401
-- [ ] GET `/admin/profile` without auth → 401
-- [ ] GET `/profile` without auth → 200 (public, no auth needed)
+- [x] PUT `/admin/profile` without auth → 401
+- [x] GET `/admin/profile` without auth → 401
+- [x] GET `/profile` without auth → 200 (public, no auth needed)
 
 ### Console UI (Playwright)
-- [ ] Navigate to `/profile` → settings form loads
-- [ ] Form prefills with existing Profile data
-- [ ] Fill identity section (name en/vi, title en/vi) → save → success toast
-- [ ] Add social link (GitHub + URL) → save → verify in public API response
-- [ ] Add certification → save → verify in response
+- [x] Navigate to `/profile` → settings form loads
+- [x] Form prefills with existing Profile data
+- [x] Fill identity section (name en/vi, title en/vi) → save → success toast
+- [x] Add social link (GitHub + URL) → save → verify in public API response
+- [x] Add certification → save → verify in response
 - [ ] Upload avatar → avatar preview shown → save → avatarUrl in public API response
-- [ ] Change availability + openTo → save → reflected in public response
+- [x] Change availability + openTo → save → reflected in public response
 
 ### Landing Page (Playwright)
-- [ ] Landing page hero shows fullName (not hardcoded "Phuong")
-- [ ] Hero shows title from Profile
-- [ ] Avatar image renders (not placeholder icon)
-- [ ] Social link icons appear and link correctly
-- [ ] Resume download button links to correct URL
+- [x] Landing page hero shows fullName (not hardcoded "Phuong")
+- [x] Hero shows title from Profile
+- [x] Avatar image renders (not placeholder icon)
+- [x] Social link icons appear and link correctly
+- [x] Resume download button links to correct URL
 - [ ] Switch locale → translatable fields update (en↔vi)
-- [ ] JSON-LD in `<head>` contains correct Profile data
+- [x] JSON-LD in `<head>` contains correct Profile data
 
 **Specialized Skill:** aqa-expert — read SKILL.md for E2E patterns (POM, SSR testing, console monitoring, flakiness prevention).
 
@@ -77,3 +77,11 @@ Profile E2E validates the complete vertical slice — from admin console form sa
 ## Complexity: L
 
 ## Progress Log
+- [2026-04-04] Started — beginning with API E2E tests
+- [2026-04-04] API E2E — 20 tests passing (admin ops, public access, JSON-LD, auth protection)
+- [2026-04-04] Console E2E — 6 tests passing (form load, prefill, save, social links, certs, availability)
+- [2026-04-04] Landing E2E — 8 tests passing (hero, social links, resume, JSON-LD, badges, experience)
+- [2026-04-04] Bug fix: profile form sent empty strings for bioLong (Zod min(1) rejection). Fixed to send null.
+- [2026-04-04] Infra: added global-setup/teardown to landing-e2e, updated playwright config for API server
+- [2026-04-04] Infra: fixed console-e2e global-teardown FK constraint (delete profiles before users)
+- [2026-04-04] Skipped: avatar upload (needs real media), locale switching (no locale UI yet)
