@@ -16,6 +16,13 @@ enum ContentStatus {
   PUBLISHED
 }
 
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  PRIVATE
+  UNLISTED
+}
+
 enum SocialPlatform {
   GITHUB
   LINKEDIN
@@ -167,6 +174,12 @@ model User {
   projectsUpdated Project[] @relation("ProjectUpdatedBy")
   projectsDeleted Project[] @relation("ProjectDeletedBy")
 
+  // BlogPost relations
+  postsAuthored  BlogPost[] @relation("PostAuthor")
+  postsCreated   BlogPost[] @relation("PostCreatedBy")
+  postsUpdated   BlogPost[] @relation("PostUpdatedBy")
+  postsDeleted   BlogPost[] @relation("PostDeletedBy")
+
   @@map("users")
 }
 
@@ -184,6 +197,7 @@ model Tag {
   createdBy   User      @relation("TagCreatedBy", fields: [createdById], references: [id])
   updatedBy   User      @relation("TagUpdatedBy", fields: [updatedById], references: [id])
   deletedBy   User?     @relation("TagDeletedBy", fields: [deletedById], references: [id])
+  posts       PostTag[]
 
   @@map("tags")
 }
@@ -201,9 +215,10 @@ model Category {
   deletedAt    DateTime?
   deletedById  String?   @db.Uuid
 
-  createdBy User  @relation("CategoryCreatedBy", fields: [createdById], references: [id])
-  updatedBy User  @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
-  deletedBy User? @relation("CategoryDeletedBy", fields: [deletedById], references: [id])
+  createdBy User           @relation("CategoryCreatedBy", fields: [createdById], references: [id])
+  updatedBy User           @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User?          @relation("CategoryDeletedBy", fields: [deletedById], references: [id])
+  posts     PostCategory[]
 
   @@map("categories")
 }
@@ -272,6 +287,9 @@ model Media {
   // Project relations
   projectThumbnails ProjectImage[] @relation("ProjectImageMedia")
   projectCovers     Project[]      @relation("ProjectThumbnail")
+
+  // BlogPost relations
+  postFeaturedImages BlogPost[] @relation("PostFeaturedImage")
 
   @@index([mimeType])
   @@index([deletedAt])
@@ -537,4 +555,74 @@ model ProjectSkill {
 
   @@id([projectId, skillId])
   @@map("project_skills")
+}
+
+model BlogPost {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug            String     @unique @db.VarChar(200)
+  language        Language   @default(EN)
+
+  // Content
+  title           String     @db.VarChar(300)
+  excerpt         String?    @db.VarChar(500)
+  content         String     @db.Text
+  readTimeMinutes Int?
+
+  // Status & Display
+  status          PostStatus @default(DRAFT)
+  featured        Boolean    @default(false)
+  publishedAt     DateTime?
+
+  // SEO
+  metaTitle       String?    @db.VarChar(200)
+  metaDescription String?    @db.VarChar(500)
+
+  // Relations
+  authorId        String     @db.Uuid
+  featuredImageId String?    @db.Uuid
+
+  // Audit
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  createdById     String     @db.Uuid
+  updatedById     String     @db.Uuid
+  deletedAt       DateTime?
+  deletedById     String?    @db.Uuid
+
+  // Relation definitions
+  author        User           @relation("PostAuthor", fields: [authorId], references: [id])
+  featuredImage Media?         @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
+  createdBy     User           @relation("PostCreatedBy", fields: [createdById], references: [id])
+  updatedBy     User           @relation("PostUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy     User?          @relation("PostDeletedBy", fields: [deletedById], references: [id])
+  categories    PostCategory[]
+  tags          PostTag[]
+
+  @@index([status, deletedAt])
+  @@index([featured, status, deletedAt])
+  @@index([language, status, deletedAt])
+  @@index([publishedAt])
+  @@map("blog_posts")
+}
+
+model PostCategory {
+  postId     String @db.Uuid
+  categoryId String @db.Uuid
+
+  post     BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([postId, categoryId])
+  @@map("post_categories")
+}
+
+model PostTag {
+  postId String @db.Uuid
+  tagId  String @db.Uuid
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+  @@map("post_tags")
 }

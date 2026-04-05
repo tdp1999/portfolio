@@ -27,3 +27,4 @@ export { ContactMessageErrorCode } from './lib/error-codes/contact-message.error
 export { ProfileErrorCode } from './lib/error-codes/profile.error-codes';
 export { ExperienceErrorCode } from './lib/error-codes/experience.error-codes';
 export { ProjectErrorCode } from './lib/error-codes/project.error-codes';
+export { BlogPostErrorCode } from './lib/error-codes/blog-post.error-codes';
