@@ -13,13 +13,20 @@ import {
 } from './application/commands';
 import {
   ListSkillsHandler,
+  ListAllSkillsHandler,
   GetSkillByIdHandler,
   GetSkillBySlugHandler,
   GetSkillChildrenHandler,
 } from './application/queries';
 
 const commandHandlers = [CreateSkillHandler, UpdateSkillHandler, DeleteSkillHandler, RestoreSkillHandler];
-const queryHandlers = [ListSkillsHandler, GetSkillByIdHandler, GetSkillBySlugHandler, GetSkillChildrenHandler];
+const queryHandlers = [
+  ListSkillsHandler,
+  ListAllSkillsHandler,
+  GetSkillByIdHandler,
+  GetSkillBySlugHandler,
+  GetSkillChildrenHandler,
+];
 
 @Module({
   imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule)],

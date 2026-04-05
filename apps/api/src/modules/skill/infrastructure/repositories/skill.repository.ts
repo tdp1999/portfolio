@@ -107,6 +107,14 @@ export class SkillRepository implements ISkillRepository {
     return count > 0;
   }
 
+  async findAllNoLimit(): Promise<Skill[]> {
+    const raw = await this.prisma.skill.findMany({
+      where: { deletedAt: null },
+      orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+    });
+    return raw.map(SkillMapper.toDomain);
+  }
+
   async findAll(options: SkillFindAllOptions): Promise<PaginatedResult<Skill>> {
     const { page, limit, search, includeDeleted, category, isLibrary, parentSkillId } = options;
     const where: Prisma.SkillWhereInput = includeDeleted ? {} : { deletedAt: null };

@@ -17,4 +17,5 @@ export type ISkillRepository = ICrudRepository<Skill> & {
   findChildren(parentId: string): Promise<Skill[]>;
   hasChildren(skillId: string): Promise<boolean>;
   findAll(options: SkillFindAllOptions): Promise<PaginatedResult<Skill>>;
+  findAllNoLimit(): Promise<Skill[]>;
 };

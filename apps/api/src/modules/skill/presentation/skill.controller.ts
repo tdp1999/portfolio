@@ -22,7 +22,13 @@ import {
   DeleteSkillCommand,
   RestoreSkillCommand,
 } from '../application/commands';
-import { ListSkillsQuery, GetSkillByIdQuery, GetSkillBySlugQuery, GetSkillChildrenQuery } from '../application/queries';
+import {
+  ListSkillsQuery,
+  ListAllSkillsQuery,
+  GetSkillByIdQuery,
+  GetSkillBySlugQuery,
+  GetSkillChildrenQuery,
+} from '../application/queries';
 
 @Controller('skills')
 export class SkillController {
@@ -34,6 +40,11 @@ export class SkillController {
   @Get()
   async list(@Query() query: unknown) {
     return await this.queryBus.execute(new ListSkillsQuery(query));
+  }
+
+  @Get('all')
+  async listAll() {
+    return await this.queryBus.execute(new ListAllSkillsQuery());
   }
 
   @Get('slug/:slug')
