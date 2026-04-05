@@ -1,6 +1,6 @@
 # Task: BlogPost Prisma Schema + Migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Add BlogPost, PostCategory, and PostTag models to Prisma schema with PostStatus enum, and run migration.
@@ -9,15 +9,15 @@ Add BlogPost, PostCategory, and PostTag models to Prisma schema with PostStatus 
 BlogPost is the blog module's core entity. It uses language-per-record (not TranslatableJSON like Project), a new PostStatus enum with 4 states (DRAFT, PUBLISHED, PRIVATE, UNLISTED), and two junction tables for M2M with Category and Tag. Featured image is a FK to Media.
 
 ## Acceptance Criteria
-- [ ] New `PostStatus` enum: DRAFT, PUBLISHED, PRIVATE, UNLISTED
-- [ ] `BlogPost` model with all fields per epic (slug, language, title, excerpt, content as Text, readTimeMinutes, status, featured, publishedAt, metaTitle, metaDescription, authorId, featuredImageId, audit fields)
-- [ ] `PostCategory` junction: composite PK (postId, categoryId), cascade delete on post
-- [ ] `PostTag` junction: composite PK (postId, tagId), cascade delete on post
-- [ ] Indexes: (status, deletedAt), (featured, status, deletedAt), (language, status, deletedAt), (publishedAt)
-- [ ] Relations to User (author, createdBy, updatedBy, deletedBy), Media (featuredImage), Category (via junction), Tag (via junction)
-- [ ] Inverse relations added to existing Category and Tag models
-- [ ] Migration runs successfully on local Docker PostgreSQL
-- [ ] `npx prisma generate` produces updated client types
+- [x] New `PostStatus` enum: DRAFT, PUBLISHED, PRIVATE, UNLISTED
+- [x] `BlogPost` model with all fields per epic (slug, language, title, excerpt, content as Text, readTimeMinutes, status, featured, publishedAt, metaTitle, metaDescription, authorId, featuredImageId, audit fields)
+- [x] `PostCategory` junction: composite PK (postId, categoryId), cascade delete on post
+- [x] `PostTag` junction: composite PK (postId, tagId), cascade delete on post
+- [x] Indexes: (status, deletedAt), (featured, status, deletedAt), (language, status, deletedAt), (publishedAt)
+- [x] Relations to User (author, createdBy, updatedBy, deletedBy), Media (featuredImage), Category (via junction), Tag (via junction)
+- [x] Inverse relations added to existing Category and Tag models
+- [x] Migration runs successfully on local Docker PostgreSQL
+- [x] `npx prisma generate` produces updated client types
 
 ## Technical Notes
 - `content` field: `String @db.Text` — stores markdown
@@ -37,3 +37,4 @@ BlogPost is the blog module's core entity. It uses language-per-record (not Tran
 3 new models + 1 enum, but straightforward relational schema. Junction tables are simple composite PKs.
 
 ## Progress Log
+- [2026-04-05] Done — all ACs satisfied. Migration: 20260405142928_add_blog_post_models

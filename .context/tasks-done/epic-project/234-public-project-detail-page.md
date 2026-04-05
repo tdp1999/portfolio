@@ -1,6 +1,6 @@
 # Task: Public /projects/:slug detail page
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the public project detail page with single-column layout (~800px text) and breakout images (~1200px).
@@ -11,35 +11,35 @@ The key page of the Project module — tells the story of each project to recrui
 ## Acceptance Criteria
 
 ### Route & Data
-- [ ] Route `/projects/:slug` registered in landing app (within feature-projects lib)
-- [ ] Fetches project by slug via `GET /projects/:slug` (SSR-compatible)
-- [ ] 404 page/redirect for invalid or non-published slugs
+- [x] Route `/projects/:slug` registered in landing app (within feature-projects lib)
+- [x] Fetches project by slug via `GET /projects/:slug` (SSR-compatible)
+- [x] 404 page/redirect for invalid or non-published slugs
 
 ### Layout — Single Column + Breakout Images
-- [ ] Text content container: `max-width: ~800px`, centered
-- [ ] Breakout images: `max-width: ~1200px`, centered (one CSS class override)
-- [ ] Generous vertical spacing between sections (consistent rhythm, 4px grid)
+- [x] Text content container: `max-width: ~800px`, centered
+- [x] Breakout images: `max-width: ~1200px`, centered (one CSS class override)
+- [x] Generous vertical spacing between sections (consistent rhythm, 4px grid)
 
 ### Sections (top to bottom)
-- [ ] **Hero image:** thumbnail displayed at breakout width (~1200px). Fallback if no thumbnail.
-- [ ] **Title block (~800px):** title, oneLiner (locale-aware), date range, tech skill tags (badges), source/project URL links (icons)
-- [ ] **Motivation (~800px):** "Why I built this" — plain text, locale-aware
-- [ ] **Overview + Role (~800px):** description + role — plain text, locale-aware
-- [ ] **Contextual image (breakout):** gallery image[0] placed here (if exists)
-- [ ] **Technical Highlights (~800px):** 2-4 CAO items, each showing Challenge → Approach → Outcome with optional code link. Locale-aware.
-- [ ] **Contextual image (breakout):** gallery image[1] placed here (if exists)
-- [ ] **Footer CTA:** "← Back to Projects" link + "Contact me →" link
+- [x] **Hero image:** thumbnail displayed at breakout width (~1200px). Fallback if no thumbnail.
+- [x] **Title block (~800px):** title, oneLiner (locale-aware), date range, tech skill tags (badges), source/project URL links (icons)
+- [x] **Motivation (~800px):** "Why I built this" — plain text, locale-aware
+- [x] **Overview + Role (~800px):** description + role — plain text, locale-aware
+- [x] **Contextual image (breakout):** gallery image[0] placed here (if exists)
+- [x] **Technical Highlights (~800px):** 2-4 CAO items, each showing Challenge → Approach → Outcome with optional code link. Locale-aware.
+- [x] **Contextual image (breakout):** gallery image[1] placed here (if exists)
+- [x] **Footer CTA:** "← Back to Projects" link + "Contact me →" link
 
 ### Responsiveness & Polish
-- [ ] Mobile: single column naturally (breakout images become full-width)
-- [ ] All translatable fields respond to locale switch
-- [ ] Uses `landing-*` components per domain separation rules
-- [ ] No animations (per vision.md — clean, minimal)
+- [x] Mobile: single column naturally (breakout images become full-width)
+- [x] All translatable fields respond to locale switch
+- [x] Uses `landing-*` components per domain separation rules
+- [x] No animations (per vision.md — clean, minimal)
 
 ### SEO (SSR)
-- [ ] `<title>` = `${title} | Phuong Tran`
-- [ ] `<meta name="description">` = `oneLiner[currentLocale]`
-- [ ] `<meta property="og:image">` = `thumbnailUrl`
+- [x] `<title>` = `${title} | Phuong Tran`
+- [x] `<meta name="description">` = `oneLiner[currentLocale]`
+- [x] `<meta property="og:image">` = `thumbnailUrl`
 
 ## Technical Notes
 - This is a component within `libs/landing/feature-projects/` (same lib as list page)
@@ -62,3 +62,5 @@ The key page of the Project module — tells the story of each project to recrui
 - Custom layout with breakout images, multiple sections, locale-aware, SSR meta tags
 
 ## Progress Log
+- [2026-04-05] Started — working alongside task 233
+- [2026-04-05] Done — all ACs satisfied

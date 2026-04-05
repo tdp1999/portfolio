@@ -1,6 +1,6 @@
 # Task: BlogPost Repository Port + Adapter + Mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create repository interface (port), Prisma implementation (adapter), and mapper for BlogPost entity.
@@ -9,7 +9,7 @@ Create repository interface (port), Prisma implementation (adapter), and mapper 
 BlogPost repository needs status-aware filtering for public vs admin queries, plus junction table management for PostCategory and PostTag. Follows established port/adapter pattern from Category, Skill, Media modules.
 
 ## Acceptance Criteria
-- [ ] `IBlogPostRepository` port interface with methods:
+- [x] `IBlogPostRepository` port interface with methods:
   - `add(entity: BlogPost): Promise<Id>` — insert with category/tag junctions
   - `update(id: Id, entity: BlogPost, categoryIds: string[], tagIds: string[]): Promise<boolean>` — update + replace junctions
   - `remove(id: Id, deletedById: Id): Promise<boolean>` — soft delete
@@ -21,15 +21,15 @@ BlogPost repository needs status-aware filtering for public vs admin queries, pl
   - `listPublic(query): Promise<{ data: BlogPost[]; total: number }>` — published only, paginated, filter by category/tag
   - `listFeatured(): Promise<BlogPost[]>` — featured + published + not deleted
   - `findRelated(postId: Id, categoryIds: string[], tagIds: string[], limit: number): Promise<BlogPost[]>`
-- [ ] `BlogPostMapper` with `toDomain()` and `toPrisma()` methods
+- [x] `BlogPostMapper` with `toDomain()` and `toPrisma()` methods
   - Handles nested includes: categories (with Category), tags (with Tag), featuredImage (with Media)
-- [ ] `BlogPostRepository` Prisma implementation
+- [x] `BlogPostRepository` Prisma implementation
   - Junction tables use replace-all strategy on update (delete existing + insert new in transaction)
   - Public queries: `WHERE status = 'PUBLISHED' AND deletedAt IS NULL`
   - Slug query: `WHERE status IN ('PUBLISHED', 'UNLISTED') AND deletedAt IS NULL`
   - Related posts query: find posts sharing categories/tags, exclude current post, limit N
-- [ ] `BLOG_POST_REPOSITORY_TOKEN` DI token
-- [ ] Unit tests for mapper
+- [x] `BLOG_POST_REPOSITORY_TOKEN` DI token
+- [x] Unit tests for mapper
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Mapper section)

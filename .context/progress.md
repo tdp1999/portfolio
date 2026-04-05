@@ -107,9 +107,9 @@
 - [x] 229-project-commands - CQRS commands: create, update, delete, restore, reorder (L) ✓
 - [x] 230-project-queries - CQRS queries: admin list, public list, featured, by slug (M) ✓
 - [x] 231-project-controller-module - Controller + NestJS module wiring (M) ✓
-- [ ] 232-console-project-page - Console CRUD page with 6-section dialog (XL)
-- [ ] 233-public-projects-list-page - Public /projects stacked rows page (M)
-- [ ] 234-public-project-detail-page - Public /projects/:slug detail page (L)
+- [x] 232-console-project-page - Console CRUD page with 6-section dialog (XL) ✓
+- [x] 233-public-projects-list-page - Public /projects stacked rows page (M) ✓
+- [x] 234-public-project-detail-page - Public /projects/:slug detail page (L) ✓
 - [ ] 235-project-e2e - E2E tests: API, console, public pages (L)
 
 **Milestone:** Full project showcase — console CRUD, public list + detail pages, technical highlights
@@ -120,9 +120,9 @@
 
 #### Sprint 11: Blog Post Module (12 tasks)
 
-- [ ] 236-blog-post-schema-migration - Prisma schema + PostStatus enum + migration (M)
-- [ ] 237-blog-post-entity - Domain entity + types + errors + tests (M)
-- [ ] 238-blog-post-repository - Repository port + adapter + mapper (L)
+- [x] 236-blog-post-schema-migration - Prisma schema + PostStatus enum + migration (M) ✓
+- [x] 237-blog-post-entity - Domain entity + types + errors + tests (M) ✓
+- [x] 238-blog-post-repository - Repository port + adapter + mapper (L) ✓
 - [ ] 239-blog-post-dtos-presenter - Zod DTOs + public/admin presenters (M)
 - [ ] 240-blog-post-commands - CQRS commands: create, update, delete, restore, import-markdown (L)
 - [ ] 241-blog-post-queries - CQRS queries: admin list, public list, featured, by-slug, related (M)
@@ -178,16 +178,16 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 7/11 done — 232 next) → Blog Post (Sprint 11)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 10/11 done — 235 next) → Blog Post (Sprint 11, 3/12 done — 239 next)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 227     |
+| Done (archived)           | 233     |
 | In Progress               | 1       |
-| Pending                   | 19      |
+| Pending                   | 13      |
 | **Total Created**         | **247** |
 
 ## Notes

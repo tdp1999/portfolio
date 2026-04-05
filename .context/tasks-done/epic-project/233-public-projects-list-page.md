@@ -1,6 +1,6 @@
 # Task: Public /projects list page
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the public `/projects` page showing all published projects as stacked full-width rows.
@@ -9,21 +9,21 @@ Create the public `/projects` page showing all published projects as stacked ful
 First public page for the Project module. Stacked rows layout (not grid) — each row shows thumbnail, title, oneLiner, tech tags, and date. Click navigates to `/projects/:slug`. SSR for SEO. This is an Angular feature library in the landing app scope.
 
 ## Acceptance Criteria
-- [ ] New Nx library: `libs/landing/feature-projects/` with correct tags (scope:landing, type:feature)
-- [ ] Route `/projects` registered in landing app (lazy loaded)
-- [ ] `ProjectDataService` in landing shared data-access lib — calls `GET /projects` public API
-- [ ] Page fetches published projects on init (SSR-compatible)
-- [ ] Stacked rows layout — each row:
+- [x] New Nx library: `libs/landing/feature-projects/` with correct tags (scope:landing, type:feature)
+- [x] Route `/projects` registered in landing app (lazy loaded)
+- [x] `ProjectDataService` in landing shared data-access lib — calls `GET /projects` public API
+- [x] Page fetches published projects on init (SSR-compatible)
+- [x] Stacked rows layout — each row:
   - Thumbnail image (left side)
   - Title, oneLiner (locale-aware), tech tags (skill names), date range (right side)
   - Click → navigates to `/projects/:slug`
-- [ ] Sorted by displayOrder (API handles sorting)
-- [ ] No pagination, no filtering (3-4 items)
-- [ ] Locale-aware: oneLiner displays in current locale with fallback chain (PRJ-007 / EXP-005 pattern)
-- [ ] SSR meta tags: `<title>Projects | Phuong Tran</title>`, `<meta name="description">`
-- [ ] Empty state: message if no published projects exist
-- [ ] Mobile responsive: rows stack naturally (thumbnail above text on small screens)
-- [ ] Uses `landing-*` components (NOT Material) per component domain separation rules
+- [x] Sorted by displayOrder (API handles sorting)
+- [x] No pagination, no filtering (3-4 items)
+- [x] Locale-aware: oneLiner displays in current locale with fallback chain (PRJ-007 / EXP-005 pattern)
+- [x] SSR meta tags: `<title>Projects | Phuong Tran</title>`, `<meta name="description">`
+- [x] Empty state: message if no published projects exist
+- [x] Mobile responsive: rows stack naturally (thumbnail above text on small screens)
+- [x] Uses `landing-*` components (NOT Material) per component domain separation rules
 
 **Specialized Skill:** ng-lib — use for library creation.
 
@@ -47,3 +47,5 @@ First public page for the Project module. Stacked rows layout (not grid) — eac
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-05] Started — working on 233 + 234 together
+- [2026-04-05] Done — all ACs satisfied

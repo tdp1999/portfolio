@@ -1,6 +1,6 @@
 # Task: BlogPost Domain Entity + Types + Errors
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create BlogPost domain entity with business logic, type definitions, and domain-specific error codes.
@@ -9,18 +9,18 @@ Create BlogPost domain entity with business logic, type definitions, and domain-
 BlogPost entity follows the established BaseCrudEntity pattern. Key domain logic: slug generation from title, read time calculation from content word count, publishedAt auto-set on first publish, 4-state PostStatus visibility rules.
 
 ## Acceptance Criteria
-- [ ] `IBlogPostProps` interface with all fields matching Prisma schema
-- [ ] `ICreateBlogPostPayload` and `IUpdateBlogPostPayload` types
-- [ ] `BlogPost` entity extending `BaseCrudEntity<IBlogPostProps>`
-- [ ] `BlogPost.create()` static factory: generates slug from title, sets defaults (status=DRAFT, featured=false), calculates readTimeMinutes
-- [ ] `BlogPost.load()` static factory for hydrating from persistence
-- [ ] `update()` method: recalculates readTimeMinutes on content change, regenerates slug on title change
-- [ ] `publish()` method: sets status=PUBLISHED, auto-sets publishedAt if first publish (PST-007)
-- [ ] `softDelete()` and `restore()` methods (inherited from BaseCrudEntity)
-- [ ] Read time calculation: word count / 200, rounded up (PST-006)
-- [ ] Validation: title + content required before Published/Unlisted status (PST-001)
-- [ ] `BlogPostErrorCode` enum with NOT_FOUND, SLUG_CONFLICT, INVALID_STATUS_TRANSITION, CONTENT_REQUIRED
-- [ ] Unit tests for: create, update, publish (first + subsequent), read time calculation, slug generation, status validation
+- [x] `IBlogPostProps` interface with all fields matching Prisma schema
+- [x] `ICreateBlogPostPayload` and `IUpdateBlogPostPayload` types
+- [x] `BlogPost` entity extending `BaseCrudEntity<IBlogPostProps>`
+- [x] `BlogPost.create()` static factory: generates slug from title, sets defaults (status=DRAFT, featured=false), calculates readTimeMinutes
+- [x] `BlogPost.load()` static factory for hydrating from persistence
+- [x] `update()` method: recalculates readTimeMinutes on content change, regenerates slug on title change
+- [x] `publish()` method: sets status=PUBLISHED, auto-sets publishedAt if first publish (PST-007)
+- [x] `softDelete()` and `restore()` methods (inherited from BaseCrudEntity)
+- [x] Read time calculation: word count / 200, rounded up (PST-006)
+- [x] Validation: title + content required before Published/Unlisted status (PST-001)
+- [x] `BlogPostErrorCode` enum with NOT_FOUND, SLUG_CONFLICT, INVALID_STATUS_TRANSITION, CONTENT_REQUIRED
+- [x] Unit tests for: create, update, publish (first + subsequent), read time calculation, slug generation, status validation
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
