@@ -38,7 +38,8 @@
       "@prisma/client": ["apps/api/src/generated/prisma"],
       "@portfolio/console/feature-media": ["libs/console/feature-media/src/index.ts"],
       "@portfolio/console/feature-messages": ["libs/console/feature-messages/src/index.ts"],
-      "@portfolio/console/feature-profile": ["libs/console/feature-profile/src/index.ts"]
+      "@portfolio/console/feature-profile": ["libs/console/feature-profile/src/index.ts"],
+      "@portfolio/console/feature-experience": ["libs/console/feature-experience/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

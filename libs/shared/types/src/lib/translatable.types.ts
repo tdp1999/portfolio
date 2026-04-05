@@ -1,5 +1,10 @@
 export type Locale = 'en' | 'vi';
 
+export interface TranslatableStringArray {
+  en: string[];
+  vi: string[];
+}
+
 export interface TranslatableJson {
   en: string;
   vi: string;

@@ -34,7 +34,7 @@ export interface UpsertProfilePayload {
   fullName: { en: string; vi: string };
   title: { en: string; vi: string };
   bioShort: { en: string; vi: string };
-  bioLong?: { en?: string; vi?: string };
+  bioLong?: { en?: string; vi?: string } | null;
   yearsOfExperience: number;
   availability: string;
   openTo: string[];

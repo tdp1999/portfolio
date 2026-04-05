@@ -345,7 +345,7 @@ export default class ProfilePageComponent implements OnInit {
       fullName: { en: v.fullName_en ?? '', vi: v.fullName_vi ?? '' },
       title: { en: v.title_en ?? '', vi: v.title_vi ?? '' },
       bioShort: { en: v.bioShort_en ?? '', vi: v.bioShort_vi ?? '' },
-      bioLong: { en: v.bioLong_en ?? '', vi: v.bioLong_vi ?? '' },
+      bioLong: v.bioLong_en || v.bioLong_vi ? { en: v.bioLong_en || undefined, vi: v.bioLong_vi || undefined } : null,
       yearsOfExperience: v.yearsOfExperience ?? 0,
       availability: v.availability ?? 'EMPLOYED',
       openTo: v.openTo ?? [],

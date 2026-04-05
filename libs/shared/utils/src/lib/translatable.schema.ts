@@ -27,6 +27,11 @@ export const PartialTranslatableSchema = z
     message: 'At least one of en or vi is required',
   });
 
+export const TranslatableStringArraySchema = z.object({
+  en: z.array(z.string()),
+  vi: z.array(z.string()),
+});
+
 // --- Social Link Schemas ---
 
 export const SocialPlatformSchema = z.enum(Object.values(SOCIAL_PLATFORM) as [string, ...string[]]);
