@@ -162,6 +162,11 @@ model User {
   experiencesUpdated Experience[] @relation("ExperienceUpdatedBy")
   experiencesDeleted Experience[] @relation("ExperienceDeletedBy")
 
+  // Project relations
+  projectsCreated Project[] @relation("ProjectCreatedBy")
+  projectsUpdated Project[] @relation("ProjectUpdatedBy")
+  projectsDeleted Project[] @relation("ProjectDeletedBy")
+
   @@map("users")
 }
 
@@ -229,6 +234,7 @@ model Skill {
   updatedBy    User             @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
   deletedBy    User?            @relation("SkillDeletedBy", fields: [deletedById], references: [id])
   experiences  ExperienceSkill[]
+  projects     ProjectSkill[]
 
   @@map("skills")
 }
@@ -262,6 +268,10 @@ model Media {
 
   // Experience relations
   experienceLogos Experience[] @relation("ExperienceCompanyLogo")
+
+  // Project relations
+  projectThumbnails ProjectImage[] @relation("ProjectImageMedia")
+  projectCovers     Project[]      @relation("ProjectThumbnail")
 
   @@index([mimeType])
   @@index([deletedAt])
@@ -432,4 +442,99 @@ model ExperienceSkill {
 
   @@id([experienceId, skillId])
   @@map("experience_skills")
+}
+
+model Project {
+  id           String        @id @db.Uuid
+  slug         String        @unique @db.VarChar(200)
+
+  // Not translatable
+  title        String        @db.VarChar(200)
+
+  // Translatable (JSONB)
+  oneLiner     Json          @db.JsonB
+  description  Json          @db.JsonB
+  motivation   Json          @db.JsonB
+  role         Json          @db.JsonB
+
+  // Dates
+  startDate    DateTime      @db.Date
+  endDate      DateTime?     @db.Date
+
+  // Status & Display
+  status       ContentStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  displayOrder Int           @default(0)
+
+  // Links
+  sourceUrl    String?       @db.VarChar(500)
+  projectUrl   String?       @db.VarChar(500)
+
+  // Media
+  thumbnailId  String?       @db.Uuid
+
+  // Audit
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  createdById  String        @db.Uuid
+  updatedById  String        @db.Uuid
+  deletedAt    DateTime?
+  deletedById  String?       @db.Uuid
+
+  // Relations
+  thumbnail    Media?              @relation("ProjectThumbnail", fields: [thumbnailId], references: [id])
+  createdBy    User                @relation("ProjectCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User                @relation("ProjectUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy    User?               @relation("ProjectDeletedBy", fields: [deletedById], references: [id])
+  highlights   TechnicalHighlight[]
+  images       ProjectImage[]
+  skills       ProjectSkill[]
+
+  @@index([status, deletedAt])
+  @@index([featured, status, deletedAt])
+  @@index([displayOrder])
+  @@map("projects")
+}
+
+model TechnicalHighlight {
+  id           String  @id @db.Uuid
+  projectId    String  @db.Uuid
+
+  // CAO structure — all translatable
+  challenge    Json    @db.JsonB
+  approach     Json    @db.JsonB
+  outcome      Json    @db.JsonB
+
+  codeUrl      String? @db.VarChar(500)
+  displayOrder Int     @default(0)
+
+  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, displayOrder])
+  @@map("technical_highlights")
+}
+
+model ProjectImage {
+  id           String  @id @db.Uuid
+  projectId    String  @db.Uuid
+  mediaId      String  @db.Uuid
+  displayOrder Int     @default(0)
+
+  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media        Media   @relation("ProjectImageMedia", fields: [mediaId], references: [id])
+
+  @@unique([projectId, mediaId])
+  @@index([projectId, displayOrder])
+  @@map("project_images")
+}
+
+model ProjectSkill {
+  projectId String @db.Uuid
+  skillId   String @db.Uuid
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id])
+
+  @@id([projectId, skillId])
+  @@map("project_skills")
 }
