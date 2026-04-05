@@ -7,6 +7,10 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './src',
 
+  // Global setup/teardown for test data seeding
+  globalSetup: require.resolve('./src/global-setup'),
+  globalTeardown: require.resolve('./src/global-teardown'),
+
   // Run tests in files in parallel
   fullyParallel: true,
 
@@ -41,11 +45,19 @@ export default defineConfig({
     },
   ],
 
-  // Run your local dev server before starting the tests
-  webServer: {
-    command: 'pnpm nx serve landing',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Run API and landing dev servers before starting the tests
+  webServer: [
+    {
+      command: 'pnpm nx serve api',
+      url: 'http://localhost:3000/api',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+    {
+      command: 'pnpm nx serve landing',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+  ],
 });
