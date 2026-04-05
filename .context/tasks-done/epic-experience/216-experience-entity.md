@@ -1,6 +1,6 @@
 # Task: Experience domain entity + types
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the Experience domain entity with translatable JSON fields, static factories, update/softDelete/restore methods, and comprehensive unit tests.
@@ -11,38 +11,38 @@ Experience extends `BaseCrudEntity<IExperienceProps>` and is the second entity u
 ## Acceptance Criteria
 
 ### Types (experience.types.ts)
-- [ ] `IExperienceProps` interface with all ~25 fields typed correctly
-- [ ] Translatable fields typed as `TranslatableString` / `TranslatableStringArray` (from `@portfolio/shared/types`)
-- [ ] `EmploymentType` and `LocationType` enums (or re-export from Prisma)
-- [ ] `ICreateExperiencePayload` — fields needed for creation (excludes audit, id, slug)
-- [ ] `IUpdateExperiencePayload` — partial updatable fields
+- [x] `IExperienceProps` interface with all ~25 fields typed correctly
+- [x] Translatable fields typed as `TranslatableString` / `TranslatableStringArray` (from `@portfolio/shared/types`)
+- [x] `EmploymentType` and `LocationType` enums (or re-export from Prisma)
+- [x] `ICreateExperiencePayload` — fields needed for creation (excludes audit, id, slug)
+- [x] `IUpdateExperiencePayload` — partial updatable fields
 
 ### Entity (experience.entity.ts)
-- [ ] Extends `BaseCrudEntity<IExperienceProps>`
-- [ ] Private constructor
-- [ ] `static create(data: ICreateExperiencePayload, userId: string): Experience`
+- [x] Extends `BaseCrudEntity<IExperienceProps>`
+- [x] Private constructor
+- [x] `static create(data: ICreateExperiencePayload, userId: string): Experience`
   - Generates UUID v7 via `IdentifierValue.v7()`
   - Generates slug from `companyName + data.position.en` via `SlugValue.from()`
   - Sets base audit props via `BaseCrudEntity.createBaseProps(userId)`
   - Sets `displayOrder` default 0, `achievements` default `{ en: [], vi: [] }`
-- [ ] `static load(props: IExperienceProps): Experience` — hydrates from persistence
-- [ ] `update(data: IUpdateExperiencePayload, userId: string): Experience` — returns new immutable instance, does NOT update slug (EXP-001: immutable)
-- [ ] `softDelete(userId: string): Experience` — sets deletedAt/deletedById
-- [ ] `restore(userId: string): Experience` — clears deletedAt/deletedById
-- [ ] Getters for all fields (no direct `.props` access from outside)
-- [ ] `get isCurrent(): boolean` — returns `this.endDate === null`
-- [ ] `toProps(): IExperienceProps` — used by mapper
+- [x] `static load(props: IExperienceProps): Experience` — hydrates from persistence
+- [x] `update(data: IUpdateExperiencePayload, userId: string): Experience` — returns new immutable instance, does NOT update slug (EXP-001: immutable)
+- [x] `softDelete(userId: string): Experience` — sets deletedAt/deletedById
+- [x] `restore(userId: string): Experience` — clears deletedAt/deletedById
+- [x] Getters for all fields (no direct `.props` access from outside)
+- [x] `get isCurrent(): boolean` — returns `this.endDate === null`
+- [x] `toProps(): IExperienceProps` — used by mapper
 
 ### Unit Tests (experience.entity.spec.ts)
-- [ ] `create()` generates valid UUID v7, slug, audit fields
-- [ ] `create()` slug from "FPT Software" + "Senior Frontend Engineer" → `fpt-software-senior-frontend-engineer`
-- [ ] `load()` hydrates all fields correctly
-- [ ] `update()` returns new instance with updated fields but preserves slug
-- [ ] `update()` sets updatedAt and updatedById
-- [ ] `softDelete()` sets deletedAt and deletedById
-- [ ] `restore()` clears deletedAt and deletedById
-- [ ] `isCurrent` returns true when endDate is null, false otherwise
-- [ ] Default achievements is `{ en: [], vi: [] }`
+- [x] `create()` generates valid UUID v7, slug, audit fields
+- [x] `create()` slug from "FPT Software" + "Senior Frontend Engineer" → `fpt-software-senior-frontend-engineer`
+- [x] `load()` hydrates all fields correctly
+- [x] `update()` returns new instance with updated fields but preserves slug
+- [x] `update()` sets updatedAt and updatedById
+- [x] `softDelete()` sets deletedAt and deletedById
+- [x] `restore()` clears deletedAt and deletedById
+- [x] `isCurrent` returns true when endDate is null, false otherwise
+- [x] Default achievements is `{ en: [], vi: [] }`
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
@@ -63,3 +63,5 @@ Experience extends `BaseCrudEntity<IExperienceProps>` and is the second entity u
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-04] Started — using be-test skill for entity tests
+- [2026-04-04] Done — all ACs satisfied, 10/10 tests passed, tsc clean

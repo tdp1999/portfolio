@@ -1,6 +1,6 @@
 # Task: Experience CQRS queries (list, get-by-id, get-by-slug, list-public)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement all 4 query handlers for Experience read operations with public/admin response variants and unit tests.
@@ -11,39 +11,39 @@ Experience has two audience contexts: public (landing page, no auth, filtered re
 ## Acceptance Criteria
 
 ### ListExperiencesQuery (Admin)
-- [ ] Validates input via `ListExperiencesSchema.safeParse()`
-- [ ] Calls `repository.findAll(options)` with pagination, search, filters
-- [ ] Returns `PaginatedResult` with admin response (full fields via `ExperiencePresenter.toAdminListResponse()`)
-- [ ] Supports filtering by employmentType, locationType
-- [ ] Supports search across companyName, position (en/vi)
-- [ ] Supports includeDeleted flag
+- [x] Validates input via `ListExperiencesSchema.safeParse()`
+- [x] Calls `repository.findAll(options)` with pagination, search, filters
+- [x] Returns `PaginatedResult` with admin response (full fields via `ExperiencePresenter.toAdminListResponse()`)
+- [x] Supports filtering by employmentType, locationType
+- [x] Supports search across companyName, position (en/vi)
+- [x] Supports includeDeleted flag
 
 ### GetExperienceByIdQuery (Admin)
-- [ ] Finds experience by ID via `repository.findById()`
-- [ ] Throws `NotFoundError` if not found
-- [ ] Returns admin response (full fields via `ExperiencePresenter.toAdminResponse()`)
+- [x] Finds experience by ID via `repository.findById()`
+- [x] Throws `NotFoundError` if not found
+- [x] Returns admin response (full fields via `ExperiencePresenter.toAdminResponse()`)
 
 ### GetExperienceBySlugQuery (Public)
-- [ ] Finds experience by slug via `repository.findBySlug()`
-- [ ] Throws `NotFoundError` if not found
-- [ ] Returns public response (filtered via `ExperiencePresenter.toPublicResponse()`) — excludes private fields (EXP-002)
+- [x] Finds experience by slug via `repository.findBySlug()`
+- [x] Throws `NotFoundError` if not found
+- [x] Returns public response (filtered via `ExperiencePresenter.toPublicResponse()`) — excludes private fields (EXP-002)
 
 ### ListPublicExperiencesQuery
-- [ ] No input validation needed (no parameters)
-- [ ] Calls `repository.findAllPublic()` — non-deleted, sorted displayOrder ASC then startDate DESC (EXP-003)
-- [ ] Returns public response array (filtered via `ExperiencePresenter.toPublicListResponse()`)
-- [ ] Includes resolved companyLogoUrl (Media URL) and skills (id, name, slug) per entry
+- [x] No input validation needed (no parameters)
+- [x] Calls `repository.findAllPublic()` — non-deleted, sorted displayOrder ASC then startDate DESC (EXP-003)
+- [x] Returns public response array (filtered via `ExperiencePresenter.toPublicListResponse()`)
+- [x] Includes resolved companyLogoUrl (Media URL) and skills (id, name, slug) per entry
 
 ### Unit Tests (experience-queries.spec.ts)
-- [ ] ListExperiences: returns paginated admin response
-- [ ] ListExperiences: search filters correctly
-- [ ] ListExperiences: employmentType filter works
-- [ ] GetById: found → admin response
-- [ ] GetById: not found → NotFoundError
-- [ ] GetBySlug: found → public response (no audit fields, no private location)
-- [ ] GetBySlug: not found → NotFoundError
-- [ ] ListPublic: returns sorted array, non-deleted only
-- [ ] ListPublic: includes skills and companyLogoUrl
+- [x] ListExperiences: returns paginated admin response
+- [x] ListExperiences: search filters correctly
+- [x] ListExperiences: employmentType filter works
+- [x] GetById: found → admin response
+- [x] GetById: not found → NotFoundError
+- [x] GetBySlug: found → public response (no audit fields, no private location)
+- [x] GetBySlug: not found → NotFoundError
+- [x] ListPublic: returns sorted array, non-deleted only
+- [x] ListPublic: includes skills and companyLogoUrl
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Query section)
@@ -67,3 +67,5 @@ Experience has two audience contexts: public (landing page, no auth, filtered re
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-04] Started
+- [2026-04-04] Done — all ACs satisfied

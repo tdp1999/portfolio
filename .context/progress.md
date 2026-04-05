@@ -84,7 +84,7 @@
 - [x] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L) ✓
 - [x] 209-profile-repository - Repository port + adapter + mapper (M) ✓
 - [x] 210-profile-commands-queries - Commands + queries + handlers + tests (L) ✓
-- [ ] 211-profile-controller-wiring - Controller + module wiring (S)
+- [x] 211-profile-controller-wiring - Controller + module wiring (S) ✓
 - [x] 212-console-profile-page - Console profile settings page (L) ✓
 - [x] 213-landing-profile-integration - Landing page dynamic profile data + JSON-LD SSR (L) ✓
 - [ ] 214-profile-e2e - E2E tests: API, console, landing (L)
@@ -98,14 +98,14 @@
 
 #### Sprint 9: Experience Module (10 tasks)
 
-- [ ] 215-experience-schema-enums - Prisma schema + enum updates + migration (M)
-- [ ] 216-experience-entity - Domain entity + types + errors (M)
-- [ ] 217-experience-repository - Repository port + adapter + mapper (M)
-- [ ] 218-experience-dtos - Zod DTOs + presenter (M)
-- [ ] 219-experience-commands - Commands + handlers + tests (L)
-- [ ] 220-experience-queries - Queries + handlers + tests (S)
-- [ ] 221-experience-controller-wiring - Controller + module wiring (S)
-- [ ] 222-console-experience-page - Console experience CRUD page (L)
+- [x] 215-experience-schema-enums - Prisma schema + enum updates + migration (M) ✓
+- [x] 216-experience-entity - Domain entity + types + errors (M) ✓
+- [x] 217-experience-repository - Repository port + adapter + mapper (M) ✓
+- [x] 218-experience-dtos - Zod DTOs + presenter (M) ✓
+- [x] 219-experience-commands - Commands + handlers + tests (L) ✓
+- [x] 220-experience-queries - Queries + handlers + tests (S) ✓
+- [x] 221-experience-controller-wiring - Controller + module wiring (S) ✓
+- [x] 222-console-experience-page - Console experience CRUD page (L) ✓
 - [ ] 223-landing-experience-integration - Landing page career timeline integration (L)
 - [ ] 224-experience-e2e - E2E tests: API, console, landing (L)
 
@@ -195,15 +195,15 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 8/10 done — 211 in-progress, 214 pending) → Experience (Sprint 9) → Project (Sprint 10) → Blog Post (Sprint 11)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Experience (Sprint 9, 8/10 done — 223 next) → Project (Sprint 10) → Blog Post (Sprint 11)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 209     |
-| Pending                   | 37      |
+| Done (archived)           | 218     |
+| Pending                   | 28      |
 | **Total Created**         | **247** |
 
 ## Notes

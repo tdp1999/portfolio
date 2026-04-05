@@ -1,6 +1,6 @@
 # Task: Experience Prisma schema + new enums + migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Define the Experience model, ExperienceSkill junction table, and two new enums (EmploymentType, LocationType) in Prisma, then apply migration.
@@ -11,11 +11,11 @@ Experience is a work history entity with ~25 fields including 4 translatable JSO
 ## Acceptance Criteria
 
 ### New Enums
-- [ ] `EmploymentType` enum: FULL_TIME, PART_TIME, CONTRACT, FREELANCE, INTERNSHIP, SELF_EMPLOYED
-- [ ] `LocationType` enum: REMOTE, HYBRID, ONSITE
+- [x] `EmploymentType` enum: FULL_TIME, PART_TIME, CONTRACT, FREELANCE, INTERNSHIP, SELF_EMPLOYED
+- [x] `LocationType` enum: REMOTE, HYBRID, ONSITE
 
 ### Experience Model
-- [ ] All fields per epic spec:
+- [x] All fields per epic spec:
   - Identity: `id` (UUID v7), `slug` (unique, VarChar 200)
   - Company: `companyName` (VarChar 200), `companyUrl` (VarChar 500, nullable), `companyLogoId` (FK→Media, nullable)
   - Translatable: `position` (JsonB, not null), `description` (JsonB, nullable), `achievements` (JsonB, default {}), `teamRole` (JsonB, nullable)
@@ -27,27 +27,27 @@ Experience is a work history entity with ~25 fields including 4 translatable JSO
   - Audit: `createdAt`, `updatedAt`, `createdById` (FK→User), `updatedById` (FK→User), `deletedAt` (nullable), `deletedById` (FK→User, nullable)
 
 ### ExperienceSkill Junction
-- [ ] Composite PK: `experienceId` + `skillId`
-- [ ] FK to Experience with `onDelete: Cascade`
-- [ ] FK to Skill with `onDelete: Cascade`
-- [ ] Corresponding `skills ExperienceSkill[]` relation on Experience model
-- [ ] Corresponding `experiences ExperienceSkill[]` relation on Skill model
+- [x] Composite PK: `experienceId` + `skillId`
+- [x] FK to Experience with `onDelete: Cascade`
+- [x] FK to Skill with `onDelete: Cascade`
+- [x] Corresponding `skills ExperienceSkill[]` relation on Experience model
+- [x] Corresponding `experiences ExperienceSkill[]` relation on Skill model
 
 ### Relations
-- [ ] `companyLogo` (Media, "ExperienceCompanyLogo" relation)
-- [ ] `createdBy` / `updatedBy` / `deletedBy` (User, named relations)
-- [ ] Corresponding relation fields added to User, Media, and Skill models
+- [x] `companyLogo` (Media, "ExperienceCompanyLogo" relation)
+- [x] `createdBy` / `updatedBy` / `deletedBy` (User, named relations)
+- [x] Corresponding relation fields added to User, Media, and Skill models
 
 ### Indexes
-- [ ] `@@index([startDate])` (default sort)
-- [ ] `@@index([deletedAt])` (soft delete filter)
-- [ ] `@@index([displayOrder])` (manual sort)
-- [ ] `slug` already unique via `@unique`
+- [x] `@@index([startDate])` (default sort)
+- [x] `@@index([deletedAt])` (soft delete filter)
+- [x] `@@index([displayOrder])` (manual sort)
+- [x] `slug` already unique via `@unique`
 
 ### Migration
-- [ ] Migration applies cleanly to local Docker PostgreSQL
-- [ ] `npx prisma generate` succeeds
-- [ ] New enums created (additive, no destructive changes)
+- [x] Migration applies cleanly to local Docker PostgreSQL
+- [x] `npx prisma generate` succeeds
+- [x] New enums created (additive, no destructive changes)
 
 **Specialized Skill:** prisma-migrate — use `/prisma-migrate` for migration workflow.
 
@@ -68,3 +68,5 @@ Experience is a work history entity with ~25 fields including 4 translatable JSO
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-04] Started — adding enums, Experience model, ExperienceSkill, updating relations
+- [2026-04-04] Done — all ACs satisfied, migration applied, prisma generate clean, tsc clean

@@ -1,6 +1,6 @@
 # Task: Experience repository port + implementation + mapper
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the repository port interface, Prisma repository implementation with skills eager loading and soft delete filtering, and the bidirectional mapper.
@@ -11,7 +11,7 @@ Experience repository follows the established port/adapter pattern. Key complexi
 ## Acceptance Criteria
 
 ### Repository Port (experience.repository.port.ts)
-- [ ] `IExperienceRepository` type extending `ICrudRepository<Experience>`:
+- [x] `IExperienceRepository` type extending `ICrudRepository<Experience>`:
   - `add(entity: Experience, skillIds: string[]): Promise<string>` — creates experience + junction rows
   - `update(id: string, entity: Experience, skillIds: string[]): Promise<void>` — updates experience + replaces junction rows (EXP-006)
   - `remove(id: string, entity: Experience): Promise<void>` — soft delete (updates deletedAt/deletedById)
@@ -24,23 +24,23 @@ Experience repository follows the established port/adapter pattern. Key complexi
   - `reorder(items: { id: string; displayOrder: number }[]): Promise<void>` — bulk update displayOrder
 
 ### Token (experience.token.ts)
-- [ ] `EXPERIENCE_REPOSITORY = Symbol('EXPERIENCE_REPOSITORY')`
+- [x] `EXPERIENCE_REPOSITORY = Symbol('EXPERIENCE_REPOSITORY')`
 
 ### Repository Implementation (experience.repository.ts)
-- [ ] Implements `IExperienceRepository`
-- [ ] Injects `PrismaService`
-- [ ] All read queries filter `deletedAt: null` unless `includeDeleted` option (EXP-004)
-- [ ] `add()` uses `prisma.experience.create()` with nested `skills: { create: skillIds.map(...) }`
-- [ ] `update()` uses transaction: delete existing ExperienceSkill rows + create new ones + update experience (EXP-006)
-- [ ] `findAll()` supports: pagination (page/limit), search (companyName, position JSON), includeDeleted flag
-- [ ] `findAllPublic()` returns with `include: { skills: { include: { skill: true } }, companyLogo: true }`, sorted `displayOrder ASC, startDate DESC`
-- [ ] `reorder()` uses transaction for bulk `prisma.experience.update()` calls
+- [x] Implements `IExperienceRepository`
+- [x] Injects `PrismaService`
+- [x] All read queries filter `deletedAt: null` unless `includeDeleted` option (EXP-004)
+- [x] `add()` uses `prisma.experience.create()` with nested `skills: { create: skillIds.map(...) }`
+- [x] `update()` uses transaction: delete existing ExperienceSkill rows + create new ones + update experience (EXP-006)
+- [x] `findAll()` supports: pagination (page/limit), search (companyName, position JSON), includeDeleted flag
+- [x] `findAllPublic()` returns with `include: { skills: true }`, sorted `displayOrder ASC, startDate DESC`
+- [x] `reorder()` uses transaction for bulk `prisma.experience.update()` calls
 
 ### Mapper (experience.mapper.ts)
-- [ ] `ExperienceMapper.toDomain(prisma: PrismaExperienceWithRelations): Experience` — converts Prisma JSON to TranslatableString/TranslatableStringArray
-- [ ] `ExperienceMapper.toPrisma(entity: Experience): PrismaExperienceCreateInput` — converts domain types back to Prisma-compatible JSON
-- [ ] Handles nullable fields correctly (description, teamRole, endDate, location fields, client fields)
-- [ ] Skill relation mapping: Prisma `ExperienceSkill[]` → `string[]` (skill IDs) on domain side
+- [x] `ExperienceMapper.toDomain(prisma: PrismaExperienceWithRelations): Experience` — converts Prisma JSON to TranslatableString/TranslatableStringArray
+- [x] `ExperienceMapper.toPrisma(entity: Experience): PrismaExperienceCreateInput` — converts domain types back to Prisma-compatible JSON
+- [x] Handles nullable fields correctly (description, teamRole, endDate, location fields, client fields)
+- [x] Skill relation mapping: Prisma `ExperienceSkill[]` → `string[]` (skill IDs) on domain side
 
 ## Technical Notes
 - Follow Skill repository pattern as reference
@@ -61,3 +61,5 @@ Experience repository follows the established port/adapter pattern. Key complexi
 ## Complexity: L
 
 ## Progress Log
+- [2026-04-04] Started
+- [2026-04-04] Done — all ACs satisfied, tsc clean, entity tests 10/10 pass

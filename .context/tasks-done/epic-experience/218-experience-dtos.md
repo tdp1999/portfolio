@@ -1,6 +1,6 @@
 # Task: Experience DTOs (Zod schemas) + Presenter
 
-## Status: pending
+## Status: done
 
 ## Goal
 Define Zod v4 validation schemas for all Experience operations and create the Presenter for public vs admin response shaping.
@@ -11,7 +11,7 @@ Experience has 4 translatable JSON fields requiring Zod validation. Reuses `Tran
 ## Acceptance Criteria
 
 ### DTO Schemas (experience.dto.ts)
-- [ ] `CreateExperienceSchema` — Zod schema for creation:
+- [x] `CreateExperienceSchema` — Zod schema for creation:
   - `companyName`: `z.string().min(1).max(200)`
   - `companyUrl`: `z.string().url().max(500).optional()`
   - `companyLogoId`: `z.string().uuid().optional()`
@@ -32,29 +32,29 @@ Experience has 4 translatable JSON fields requiring Zod validation. Reuses `Tran
   - `endDate`: `z.coerce.date().optional()` (nullable = current position)
   - `skillIds`: `z.array(z.string().uuid()).default([])`
   - `displayOrder`: `z.number().int().min(0).default(0)`
-- [ ] `UpdateExperienceSchema` — uses `nonEmptyPartial()` from shared utils (all fields optional, at least one required)
-- [ ] `ListExperiencesSchema` — extends `PaginatedQuerySchema` with optional filters:
+- [x] `UpdateExperienceSchema` — uses `nonEmptyPartial()` from shared utils (all fields optional, at least one required)
+- [x] `ListExperiencesSchema` — extends `PaginatedQuerySchema` with optional filters:
   - `employmentType`: `z.nativeEnum(EmploymentType).optional()`
   - `locationType`: `z.nativeEnum(LocationType).optional()`
   - `includeDeleted`: `z.coerce.boolean().default(false)`
-- [ ] `ReorderExperiencesSchema` — `z.array(z.object({ id: z.string().uuid(), displayOrder: z.number().int().min(0) })).min(1)`
-- [ ] TypeScript types exported: `CreateExperienceDto`, `UpdateExperienceDto`, `ListExperiencesDto`, `ReorderExperiencesDto`
+- [x] `ReorderExperiencesSchema` — `z.array(z.object({ id: z.string().uuid(), displayOrder: z.number().int().min(0) })).min(1)`
+- [x] TypeScript types exported: `CreateExperienceDto`, `UpdateExperienceDto`, `ListExperiencesDto`, `ReorderExperiencesDto`
 
 ### DTO Tests (experience.dto.spec.ts)
-- [ ] CreateExperienceSchema validates valid complete input
-- [ ] CreateExperienceSchema rejects missing required fields (companyName, position, startDate)
-- [ ] CreateExperienceSchema validates translatable fields structure ({ en, vi })
-- [ ] UpdateExperienceSchema rejects empty object (nonEmptyPartial)
-- [ ] TranslatableStringArraySchema defaults to { en: [], vi: [] }
+- [x] CreateExperienceSchema validates valid complete input
+- [x] CreateExperienceSchema rejects missing required fields (companyName, position, startDate)
+- [x] CreateExperienceSchema validates translatable fields structure ({ en, vi })
+- [x] UpdateExperienceSchema rejects empty object (nonEmptyPartial)
+- [x] TranslatableStringArraySchema defaults to { en: [], vi: [] }
 
 ### Presenter (experience.presenter.ts)
-- [ ] `ExperiencePresenter.toPublicResponse(entity, skills, companyLogoUrl)` — returns:
+- [x] `ExperiencePresenter.toPublicResponse(entity, skills, companyLogoUrl)` — returns:
   - All non-private fields (id, slug, companyName, companyUrl, companyLogoUrl, position, description, achievements, teamRole, employmentType, locationType, locationCountry, locationCity, domain, teamSize, startDate, endDate, skills)
   - Excludes: clientName, clientIndustry, locationPostalCode, locationAddress1, locationAddress2, displayOrder, all audit fields (EXP-002)
   - Skills formatted as `{ id, name, slug }[]`
-- [ ] `ExperiencePresenter.toAdminResponse(entity, skills, companyLogoUrl)` — returns all fields including audit, private location, client metadata
-- [ ] `ExperiencePresenter.toPublicListResponse(entities)` — maps array
-- [ ] `ExperiencePresenter.toAdminListResponse(entities, total)` — maps array with pagination metadata
+- [x] `ExperiencePresenter.toAdminResponse(entity, skills, companyLogoUrl)` — returns all fields including audit, private location, client metadata
+- [x] `ExperiencePresenter.toPublicListResponse(entities)` — maps array
+- [x] `ExperiencePresenter.toAdminListResponse(entities, total)` — maps array with pagination metadata
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (DTO section)
@@ -74,3 +74,5 @@ Experience has 4 translatable JSON fields requiring Zod validation. Reuses `Tran
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-04] Started
+- [2026-04-04] Done — all ACs satisfied. Added TranslatableStringArraySchema to shared/utils. Note: description/teamRole use OptionalTranslatableSchema.optional() (nullable + optional); UpdateExperienceSchema uses a separate base schema without defaults so nonEmptyPartial correctly rejects empty objects.
