@@ -43,7 +43,7 @@ export type CreateExperienceDto = z.infer<typeof CreateExperienceSchema>;
 const UpdateExperienceBaseSchema = z.object({
   companyName: z.string().min(1).max(200),
   companyUrl: z.url().max(500).optional(),
-  companyLogoId: z.uuid().optional(),
+  companyLogoId: z.uuid().nullable().optional(),
   position: TranslatableSchema,
   description: OptionalTranslatableSchema.optional(),
   achievements: TranslatableStringArraySchema,

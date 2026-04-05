@@ -10,9 +10,10 @@ import {
   CardComponent,
   BadgeComponent,
 } from '@portfolio/landing/shared/ui';
-import { ProfileService } from '@portfolio/landing/shared/data-access';
+import { ProfileService, ExperienceService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale, SocialPlatform } from '@portfolio/shared/types';
+import type { PublicExperience } from '@portfolio/landing/shared/data-access';
 
 const SOCIAL_ICON_MAP: Record<SocialPlatform, string> = {
   GITHUB: 'github',
@@ -42,6 +43,7 @@ const SOCIAL_ICON_MAP: Record<SocialPlatform, string> = {
 })
 export class FeatureHome {
   private profileService = inject(ProfileService);
+  private experienceService = inject(ExperienceService);
   private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
 
@@ -49,6 +51,9 @@ export class FeatureHome {
 
   locale = signal<Locale>('en');
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
+  experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });
+
+  recentExperiences = computed(() => this.experiences().slice(0, 3));
 
   fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()) || 'Portfolio in progress');
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));
@@ -100,5 +105,17 @@ export class FeatureHome {
 
   getSocialIcon(platform: SocialPlatform): string {
     return this.socialIconMap[platform] ?? 'external-link';
+  }
+
+  getExpPosition(exp: PublicExperience): string {
+    return getLocalized(exp.position, this.locale());
+  }
+
+  formatExpDateRange(exp: PublicExperience): string {
+    const start = new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const end = exp.endDate
+      ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      : 'Present';
+    return `${start} – ${end}`;
   }
 }

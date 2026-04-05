@@ -94,6 +94,50 @@
     </landing-container>
   </landing-section>
 
+  <!-- Experience Overview Section -->
+  @if (recentExperiences().length > 0) {
+    <landing-section>
+      <landing-container>
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-section-heading text-text">Experience</h2>
+          <a routerLink="/experience" class="text-primary hover:underline text-sm font-medium flex items-center gap-1">
+            View full career history
+            <landing-icon name="arrow-right" [size]="16" />
+          </a>
+        </div>
+        <div class="flex flex-col divide-y divide-border">
+          @for (exp of recentExperiences(); track exp.id) {
+            <div class="py-4 flex items-start gap-4">
+              @if (exp.companyLogoUrl) {
+                <img
+                  [src]="exp.companyLogoUrl"
+                  [alt]="exp.companyName"
+                  width="40"
+                  height="40"
+                  class="w-10 h-10 rounded-md object-contain border border-border bg-surface flex-shrink-0"
+                />
+              } @else {
+                <div
+                  class="w-10 h-10 rounded-md bg-primary-container flex items-center justify-center text-primary font-semibold flex-shrink-0"
+                >
+                  {{ exp.companyName.charAt(0) }}
+                </div>
+              }
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-text">{{ getExpPosition(exp) }}</p>
+                <p class="text-sm text-text-secondary">{{ exp.companyName }}</p>
+                <p class="text-xs text-text-secondary mt-0.5">{{ formatExpDateRange(exp) }}</p>
+              </div>
+              @if (!exp.endDate) {
+                <span class="text-xs text-primary font-medium flex-shrink-0">Current</span>
+              }
+            </div>
+          }
+        </div>
+      </landing-container>
+    </landing-section>
+  }
+
   <!-- Featured Projects Section -->
   <landing-section>
     <landing-container [wide]="true">

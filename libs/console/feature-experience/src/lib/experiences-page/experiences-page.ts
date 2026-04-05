@@ -68,7 +68,7 @@ export default class ExperiencesPageComponent implements OnInit {
   readonly pageSize = signal(20);
   readonly search = signal('');
   readonly employmentType = signal('');
-  readonly includeDeleted = signal(false);
+  readonly includeDeleted = signal(true);
 
   readonly employmentTypeOptions: FilterOption[] = [
     { value: 'FULL_TIME', label: 'Full Time' },

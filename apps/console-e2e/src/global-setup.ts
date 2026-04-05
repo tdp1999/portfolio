@@ -15,6 +15,23 @@ async function globalSetup(): Promise<void> {
   const hashedLocked = await hashPassword(TEST_USERS.locked.password);
   const hashedAdmin = await hashPassword(TEST_USERS.admin.password);
 
+  // Clean up test experiences (reference test users via FK — must delete first)
+  const testExps = await prisma.experience.findMany({
+    where: {
+      OR: [
+        { companyName: { startsWith: 'e2e-' } },
+        { createdBy: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } },
+        { updatedBy: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } },
+      ],
+    },
+    select: { id: true },
+  });
+  if (testExps.length) {
+    const ids = testExps.map((e) => e.id);
+    await prisma.experienceSkill.deleteMany({ where: { experienceId: { in: ids } } });
+    await prisma.experience.deleteMany({ where: { id: { in: ids } } });
+  }
+
   // Clean up any leftover test users first
   await prisma.user.deleteMany({
     where: { email: { startsWith: 'test-', endsWith: '@e2e.local' } },

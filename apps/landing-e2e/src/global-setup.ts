@@ -18,6 +18,17 @@ async function globalSetup(): Promise<void> {
   const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
   const prisma = new PrismaClient({ adapter });
 
+  // Clean up leftover E2E experience test data from previous runs
+  const staleExps = await prisma.experience.findMany({
+    where: { companyName: { startsWith: 'e2e-landing-exp-' } },
+    select: { id: true },
+  });
+  if (staleExps.length) {
+    const ids = staleExps.map((e) => e.id);
+    await prisma.experienceSkill.deleteMany({ where: { experienceId: { in: ids } } });
+    await prisma.experience.deleteMany({ where: { id: { in: ids } } });
+  }
+
   const hashed = await hash(TEST_ADMIN.password, 10);
   await prisma.user.upsert({
     where: { email: TEST_ADMIN.email },

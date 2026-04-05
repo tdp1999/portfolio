@@ -1,0 +1,161 @@
+<div class="flex flex-col min-h-screen">
+  <landing-section>
+    <landing-container>
+      <div class="mb-8">
+        <a
+          routerLink="/"
+          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
+        >
+          <landing-icon name="arrow-left" [size]="16" />
+          Back to home
+        </a>
+      </div>
+
+      <h1 class="text-page-title text-text mb-2">Career History</h1>
+      <p class="text-text-secondary mb-12">My professional experience and journey</p>
+
+      @if (experiences().length === 0) {
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <landing-icon name="briefcase" [size]="48" class="text-text-secondary mb-4" />
+          <p class="text-text-secondary text-lg">Career history coming soon</p>
+        </div>
+      } @else {
+        <div class="relative">
+          <!-- Timeline line -->
+          <div class="absolute left-6 top-0 bottom-0 w-px bg-border hidden md:block"></div>
+
+          <div class="flex flex-col gap-12">
+            @for (exp of experiences(); track exp.id) {
+              <div class="md:pl-20 relative">
+                <!-- Timeline dot -->
+                <div class="absolute left-0 top-0 hidden md:flex items-center justify-center">
+                  @if (!exp.endDate) {
+                    <div
+                      class="w-12 h-12 rounded-full bg-primary-container border-2 border-primary flex items-center justify-center"
+                    >
+                      <div class="w-3 h-3 rounded-full bg-primary"></div>
+                    </div>
+                  } @else {
+                    <div
+                      class="w-12 h-12 rounded-full bg-surface border-2 border-border flex items-center justify-center"
+                    >
+                      <div class="w-3 h-3 rounded-full bg-text-secondary"></div>
+                    </div>
+                  }
+                </div>
+
+                <div class="flex flex-col gap-4">
+                  <!-- Header row -->
+                  <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                    <!-- Company logo / initial -->
+                    <div class="flex-shrink-0">
+                      @if (exp.companyLogoUrl) {
+                        <img
+                          [src]="exp.companyLogoUrl"
+                          [alt]="exp.companyName"
+                          width="48"
+                          height="48"
+                          class="w-12 h-12 rounded-lg object-contain border border-border bg-surface"
+                          (error)="$any($event.target).style.display = 'none'"
+                        />
+                      } @else {
+                        <div
+                          class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary font-semibold text-lg"
+                        >
+                          {{ getInitial(exp.companyName) }}
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Company + position info -->
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2 mb-1">
+                        @if (exp.companyUrl) {
+                          <a
+                            [href]="exp.companyUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-section-heading text-text hover:text-primary transition-colors"
+                          >
+                            {{ exp.companyName }}
+                            <landing-icon name="external-link" [size]="14" class="inline ml-1 opacity-60" />
+                          </a>
+                        } @else {
+                          <span class="text-section-heading text-text">{{ exp.companyName }}</span>
+                        }
+                        @if (!exp.endDate) {
+                          <span class="flex items-center gap-1 text-xs text-primary font-medium">
+                            <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                            Current
+                          </span>
+                        }
+                      </div>
+
+                      <p class="text-base font-medium text-text mb-1">{{ getPosition(exp) }}</p>
+
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-secondary">
+                        <span>{{ formatDateRange(exp) }}</span>
+                        <span class="opacity-40">·</span>
+                        <span>{{ formatDuration(exp) }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Badges row -->
+                  <div class="flex flex-wrap gap-2">
+                    <landing-badge variant="primary">{{ getEmploymentLabel(exp.employmentType) }}</landing-badge>
+                    <landing-badge>{{ getLocationLabel(exp.locationType) }}</landing-badge>
+                    @if (exp.locationCity) {
+                      <landing-badge>{{ exp.locationCity }}, {{ exp.locationCountry }}</landing-badge>
+                    } @else {
+                      <landing-badge>{{ exp.locationCountry }}</landing-badge>
+                    }
+                    @if (exp.domain) {
+                      <landing-badge>{{ exp.domain }}</landing-badge>
+                    }
+                    @if (exp.teamSize) {
+                      <landing-badge>Team of {{ exp.teamSize }}</landing-badge>
+                    }
+                  </div>
+
+                  <!-- Description -->
+                  @if (getDescription(exp)) {
+                    <p class="text-text-secondary leading-relaxed">{{ getDescription(exp) }}</p>
+                  }
+
+                  <!-- Team role -->
+                  @if (getTeamRole(exp)) {
+                    <p class="text-sm text-text-secondary">
+                      <span class="font-medium text-text">Role: </span>{{ getTeamRole(exp) }}
+                    </p>
+                  }
+
+                  <!-- Achievements -->
+                  @if (getAchievements(exp).length > 0) {
+                    <ul class="flex flex-col gap-2">
+                      @for (achievement of getAchievements(exp); track $index) {
+                        <li class="flex items-start gap-2 text-text-secondary">
+                          <landing-icon name="check" [size]="16" class="text-primary flex-shrink-0 mt-0.5" />
+                          <span>{{ achievement }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+
+                  <!-- Skills -->
+                  @if (exp.skills.length > 0) {
+                    <div class="flex flex-wrap gap-2">
+                      @for (skill of exp.skills; track skill.id) {
+                        <landing-badge>{{ getSkillName(skill.name) }}</landing-badge>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </landing-container>
+  </landing-section>
+</div>

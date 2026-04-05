@@ -6,12 +6,15 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('@portfolio/landing/feature-home').then((m) => m.FeatureHome),
   },
   {
+    path: 'experience',
+    loadComponent: () => import('@portfolio/landing/feature-experience').then((m) => m.FeatureExperience),
+  },
+  {
     path: 'ddl',
     loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
   },
   {
     path: 'ddl/layout',
-    loadComponent: () =>
-      import('./pages/ddl/layout/ddl-layout.component').then((m) => m.DdlLayoutComponent),
+    loadComponent: () => import('./pages/ddl/layout/ddl-layout.component').then((m) => m.DdlLayoutComponent),
   },
 ];
