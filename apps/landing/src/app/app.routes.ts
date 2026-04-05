@@ -10,6 +10,10 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('@portfolio/landing/feature-experience').then((m) => m.FeatureExperience),
   },
   {
+    path: 'projects',
+    loadChildren: () => import('@portfolio/landing/feature-projects').then((m) => m.PROJECTS_ROUTES),
+  },
+  {
     path: 'ddl',
     loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
   },

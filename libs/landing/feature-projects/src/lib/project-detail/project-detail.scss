@@ -1,0 +1,17 @@
+.text-column {
+  max-width: 800px;
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: 1rem;
+}
+
+.breakout-image {
+  max-width: 1200px;
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: 1rem;
+}
+
+.highlight-card {
+  @apply p-6 rounded-lg border border-border;
+}

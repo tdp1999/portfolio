@@ -14,3 +14,10 @@ export { FullPageSpinnerComponent } from './lib/spinner/full-page-spinner.compon
 export { SpinnerOverlayComponent } from './lib/spinner/spinner-overlay.component';
 export { default as ConfirmDialogComponent, type ConfirmDialogData } from './lib/confirm-dialog/confirm-dialog';
 export { ErrorMessageComponent } from './lib/error-message/error-message';
+export { TranslatableInputComponent } from './lib/translatable-input/translatable-input';
+export type { LanguageConfig } from './lib/translatable-input/translatable-input';
+export { default as MediaPickerDialogComponent } from './lib/media-picker-dialog/media-picker-dialog';
+export type {
+  MediaPickerDialogData,
+  MediaPickerDialogResult,
+} from './lib/media-picker-dialog/media-picker-dialog.types';

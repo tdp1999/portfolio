@@ -1,0 +1,12 @@
+.project-row {
+  @apply flex flex-col sm:flex-row gap-6 p-4 rounded-lg border border-transparent;
+  @apply hover:border-border transition-colors cursor-pointer no-underline;
+
+  &__thumbnail {
+    @apply flex-shrink-0 w-full sm:w-48 h-36 rounded-lg overflow-hidden border border-border;
+  }
+
+  &__content {
+    @apply flex-1 min-w-0 flex flex-col justify-center;
+  }
+}

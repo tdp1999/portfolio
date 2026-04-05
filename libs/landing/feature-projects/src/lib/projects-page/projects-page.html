@@ -1,0 +1,62 @@
+<div class="flex flex-col min-h-screen">
+  <landing-section>
+    <landing-container>
+      <div class="mb-8">
+        <a
+          routerLink="/"
+          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
+        >
+          <landing-icon name="arrow-left" [size]="16" />
+          Back to home
+        </a>
+      </div>
+
+      <h1 class="text-page-title text-text mb-2">Projects</h1>
+      <p class="text-text-secondary mb-12">Side projects and open-source work</p>
+
+      @if (projects().length === 0) {
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <landing-icon name="folder-open" [size]="48" class="text-text-secondary mb-4" />
+          <p class="text-text-secondary text-lg">No projects published yet</p>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-8">
+          @for (project of projects(); track project.slug) {
+            <a [routerLink]="['/projects', project.slug]" class="project-row group">
+              <!-- Thumbnail -->
+              <div class="project-row__thumbnail">
+                @if (project.thumbnailUrl) {
+                  <img [src]="project.thumbnailUrl" [alt]="project.title" class="w-full h-full object-cover" />
+                } @else {
+                  <div class="w-full h-full bg-surface-variant flex items-center justify-center">
+                    <landing-icon name="image" [size]="32" class="text-text-secondary opacity-40" />
+                  </div>
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="project-row__content">
+                <h2 class="text-section-heading text-text group-hover:text-primary transition-colors mb-1">
+                  {{ project.title }}
+                </h2>
+                <p class="text-text-secondary mb-3 line-clamp-2">
+                  {{ getOneLiner(project) }}
+                </p>
+
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  @for (skill of project.skills; track skill.slug) {
+                    <landing-badge>{{ skill.name }}</landing-badge>
+                  }
+                </div>
+
+                <span class="text-sm text-text-secondary">
+                  {{ formatDate(project.startDate) }}
+                </span>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </landing-container>
+  </landing-section>
+</div>

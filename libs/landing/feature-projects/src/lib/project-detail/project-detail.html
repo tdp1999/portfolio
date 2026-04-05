@@ -1,0 +1,175 @@
+@if (project(); as project) {
+  <div class="flex flex-col min-h-screen">
+    <landing-section>
+      <!-- Hero image (breakout) -->
+      @if (project.thumbnailUrl) {
+        <div class="breakout-image mb-12">
+          <img
+            [src]="project.thumbnailUrl"
+            [alt]="project.title"
+            class="w-full rounded-lg object-cover max-h-[480px]"
+          />
+        </div>
+      }
+
+      <!-- Text content -->
+      <div class="text-column">
+        <!-- Back link -->
+        <div class="mb-8">
+          <a
+            routerLink="/projects"
+            class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
+          >
+            <landing-icon name="arrow-left" [size]="16" />
+            Back to projects
+          </a>
+        </div>
+
+        <!-- Title block -->
+        <h1 class="text-page-title text-text mb-2">{{ project.title }}</h1>
+        <p class="text-lg text-text-secondary mb-4">{{ getLocalized(project.oneLiner) }}</p>
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+          <span class="text-sm text-text-secondary">{{ dateRange() }}</span>
+
+          @if (project.sourceUrl) {
+            <a
+              [href]="project.sourceUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-primary hover:underline flex items-center gap-1"
+            >
+              <landing-icon name="github" [size]="16" />
+              Source
+            </a>
+          }
+
+          @if (project.projectUrl) {
+            <a
+              [href]="project.projectUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-primary hover:underline flex items-center gap-1"
+            >
+              <landing-icon name="external-link" [size]="16" />
+              Live
+            </a>
+          }
+        </div>
+
+        <!-- Skill tags -->
+        @if (project.skills.length > 0) {
+          <div class="flex flex-wrap gap-2 mb-12">
+            @for (skill of project.skills; track skill.slug) {
+              <landing-badge>{{ skill.name }}</landing-badge>
+            }
+          </div>
+        }
+
+        <!-- Motivation -->
+        @if (getLocalized(project.motivation)) {
+          <div class="mb-12">
+            <h2 class="text-section-heading text-text mb-4">Why I built this</h2>
+            <p class="text-text-secondary leading-relaxed">{{ getLocalized(project.motivation) }}</p>
+          </div>
+        }
+
+        <!-- Overview + Role -->
+        <div class="mb-12">
+          @if (getLocalized(project.description)) {
+            <h2 class="text-section-heading text-text mb-4">Overview</h2>
+            <p class="text-text-secondary leading-relaxed mb-6">{{ getLocalized(project.description) }}</p>
+          }
+
+          @if (getLocalized(project.role)) {
+            <h3 class="text-base font-medium text-text mb-2">My Role</h3>
+            <p class="text-text-secondary leading-relaxed">{{ getLocalized(project.role) }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Contextual image 1 (breakout) -->
+      @if (project.images[0]; as img) {
+        <div class="breakout-image mb-12">
+          <img [src]="img.url" [alt]="img.alt ?? project.title" class="w-full rounded-lg object-cover" />
+        </div>
+      }
+
+      <!-- Technical Highlights -->
+      @if (project.highlights.length > 0) {
+        <div class="text-column mb-12">
+          <h2 class="text-section-heading text-text mb-8">Technical Highlights</h2>
+
+          <div class="flex flex-col gap-8">
+            @for (highlight of project.highlights; track $index) {
+              <div class="highlight-card">
+                <div class="mb-4">
+                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Challenge</h3>
+                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'challenge') }}</p>
+                </div>
+
+                <div class="mb-4">
+                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Approach</h3>
+                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'approach') }}</p>
+                </div>
+
+                <div class="mb-4">
+                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Outcome</h3>
+                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'outcome') }}</p>
+                </div>
+
+                @if (highlight.codeUrl) {
+                  <a
+                    [href]="highlight.codeUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm text-primary hover:underline flex items-center gap-1"
+                  >
+                    <landing-icon name="code" [size]="16" />
+                    View code
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Contextual image 2 (breakout) -->
+      @if (project.images[1]; as img) {
+        <div class="breakout-image mb-12">
+          <img [src]="img.url" [alt]="img.alt ?? project.title" class="w-full rounded-lg object-cover" />
+        </div>
+      }
+
+      <!-- Footer CTA -->
+      <div class="text-column">
+        <div class="flex items-center justify-between pt-12 border-t border-border">
+          <a
+            routerLink="/projects"
+            class="text-text-secondary hover:text-primary transition-colors flex items-center gap-2"
+          >
+            <landing-icon name="arrow-left" [size]="16" />
+            Back to Projects
+          </a>
+          <a routerLink="/" fragment="contact" class="text-primary hover:underline flex items-center gap-2">
+            Contact me
+            <landing-icon name="arrow-right" [size]="16" />
+          </a>
+        </div>
+      </div>
+    </landing-section>
+  </div>
+} @else {
+  <div class="flex flex-col min-h-screen">
+    <landing-section>
+      <landing-container>
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <landing-icon name="folder-open" [size]="48" class="text-text-secondary mb-4" />
+          <p class="text-text-secondary text-lg mb-4">Project not found</p>
+          <a routerLink="/projects" class="text-primary hover:underline"> Back to projects </a>
+        </div>
+      </landing-container>
+    </landing-section>
+  </div>
+}

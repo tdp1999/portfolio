@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user';
 import { ProjectController } from './presentation/project.controller';
 import { ProjectRepository } from './infrastructure/repositories/project.repository';
 import { PROJECT_REPOSITORY } from './application/project.token';
@@ -36,7 +37,7 @@ const queryHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, forwardRef(() => AuthModule)],
+  imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule)],
   controllers: [ProjectController],
   providers: [
     {

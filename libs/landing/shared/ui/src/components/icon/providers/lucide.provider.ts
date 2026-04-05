@@ -34,6 +34,8 @@ import {
   ShoppingCart,
   CheckSquare,
   BarChart,
+  FolderOpen,
+  Image,
   LucideIconData,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
@@ -75,6 +77,8 @@ const ICON_MAP: Record<string, LucideIconData> = {
   'shopping-cart': ShoppingCart,
   'check-square': CheckSquare,
   'bar-chart': BarChart,
+  'folder-open': FolderOpen,
+  image: Image,
 };
 
 export class LucideIconProvider implements IconProvider {

@@ -40,7 +40,9 @@
       "@portfolio/console/feature-messages": ["./libs/console/feature-messages/src/index.ts"],
       "@portfolio/console/feature-profile": ["./libs/console/feature-profile/src/index.ts"],
       "@portfolio/console/feature-experience": ["./libs/console/feature-experience/src/index.ts"],
-      "@portfolio/landing/feature-experience": ["./libs/landing/feature-experience/src/index.ts"]
+      "@portfolio/landing/feature-experience": ["./libs/landing/feature-experience/src/index.ts"],
+      "@portfolio/console/feature-project": ["libs/console/feature-project/src/index.ts"],
+      "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
