@@ -1,6 +1,6 @@
 # Task: Project domain entity
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create the Project domain entity with create/update/soft-delete methods, slug generation, and validation.
@@ -9,17 +9,17 @@ Create the Project domain entity with create/update/soft-delete methods, slug ge
 Domain entity for the Project aggregate. Extends BaseCrudEntity pattern. Includes slug auto-generation from title (using existing SlugValue), soft delete/restore, and featured toggle. Entity owns 4 translatable JSON fields but does NOT manage child records (highlights, images, skills) — those are managed at the command handler level.
 
 ## Acceptance Criteria
-- [ ] `Project` entity class extending `BaseCrudEntity` with all properties
-- [ ] `IProjectProps` interface in `project.types.ts` (separate file per code style rule)
-- [ ] `static create(data, userId)` — generates slug from title via `SlugValue.from(title)`, sets defaults
-- [ ] `update(data, userId)` — updates fields, regenerates slug if title changed
-- [ ] `softDelete(userId)` / `restore(userId)` methods
-- [ ] `toggleFeatured()` method
-- [ ] Public getters for all properties
-- [ ] `get isPublished()` convenience accessor (`status === PUBLISHED && !isDeleted`)
-- [ ] `ProjectErrorCode` enum in `project.error.ts` (NOT_FOUND, SLUG_CONFLICT, MAX_HIGHLIGHTS_EXCEEDED)
-- [ ] Unit tests: create with valid data, slug generation, update regenerates slug, soft delete/restore, featured toggle
-- [ ] PRJ-002: Entity does NOT enforce max highlights (that's at command level) — but types document it
+- [x] `Project` entity class extending `BaseCrudEntity` with all properties
+- [x] `IProjectProps` interface in `project.types.ts` (separate file per code style rule)
+- [x] `static create(data, userId)` — generates slug from title via `SlugValue.from(title)`, sets defaults
+- [x] `update(data, userId)` — updates fields, regenerates slug if title changed
+- [x] `softDelete(userId)` / `restore(userId)` methods
+- [x] `toggleFeatured()` method
+- [x] Public getters for all properties
+- [x] `get isPublished()` convenience accessor (`status === PUBLISHED && !isDeleted`)
+- [x] `ProjectErrorCode` enum in `project.error.ts` (NOT_FOUND, SLUG_CONFLICT, MAX_HIGHLIGHTS_EXCEEDED)
+- [x] Unit tests: create with valid data, slug generation, update regenerates slug, soft delete/restore, featured toggle
+- [x] PRJ-002: Entity does NOT enforce max highlights (that's at command level) — but types document it
 
 ## Technical Notes
 - **Specialized Skill:** `be-test` — read `.claude/skills/be-test/SKILL.md` for guidelines. **Key sections to read:** `Core Workflow: Analyze -> Plan -> Write -> Validate`, `references/layer-rules.md` (Entity section)
@@ -41,3 +41,5 @@ Domain entity for the Project aggregate. Extends BaseCrudEntity pattern. Include
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-05] Started
+- [2026-04-05] Done — all ACs satisfied. Entity + types + error codes + 15 unit tests passing

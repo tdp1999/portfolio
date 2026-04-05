@@ -1,6 +1,6 @@
 # Task: Project CQRS queries
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create all query handlers for Project: admin list, get by ID, get by slug, public list, and featured list.
@@ -9,14 +9,14 @@ Create all query handlers for Project: admin list, get by ID, get by slug, publi
 Queries handle the read side. Two audiences: admin (all projects, paginated) and public (published only). The featured query powers the landing teaser endpoint.
 
 ## Acceptance Criteria
-- [ ] `ListProjectsQuery` + handler: admin, paginated, optional status filter, includes drafts + deleted, returns paginated response via Presenter.toAdminResponse
-- [ ] `GetProjectByIdQuery` + handler: admin, returns full project via Presenter.toAdminResponse, throws NOT_FOUND
-- [ ] `GetProjectBySlugQuery` + handler: public, returns published+non-deleted project via Presenter.toDetail, throws NOT_FOUND
-- [ ] `ListPublicProjectsQuery` + handler: no auth, returns published+non-deleted sorted by displayOrder via Presenter.toListItem (PRJ-003)
-- [ ] `ListFeaturedProjectsQuery` + handler: no auth, returns featured+published+non-deleted via Presenter.toListItem (PRJ-004)
-- [ ] All queries use Presenter for response shaping (never return raw entity)
-- [ ] Unit tests for each query handler
-- [ ] Queries barrel export in `queries/index.ts`
+- [x] `ListProjectsQuery` + handler: admin, paginated, optional status filter, includes drafts + deleted, returns paginated response via Presenter.toAdminResponse
+- [x] `GetProjectByIdQuery` + handler: admin, returns full project via Presenter.toAdminResponse, throws NOT_FOUND
+- [x] `GetProjectBySlugQuery` + handler: public, returns published+non-deleted project via Presenter.toDetail, throws NOT_FOUND
+- [x] `ListPublicProjectsQuery` + handler: no auth, returns published+non-deleted sorted by displayOrder via Presenter.toListItem (PRJ-003)
+- [x] `ListFeaturedProjectsQuery` + handler: no auth, returns featured+published+non-deleted via Presenter.toListItem (PRJ-004)
+- [x] All queries use Presenter for response shaping (never return raw entity)
+- [x] Unit tests for each query handler
+- [x] Queries barrel export in `queries/index.ts`
 
 ## Technical Notes
 - Follow Skill query pattern: `apps/api/src/modules/skill/application/queries/`
@@ -40,3 +40,5 @@ Queries handle the read side. Two audiences: admin (all projects, paginated) and
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-05] Started
+- [2026-04-05] Done — 5 query handlers (list admin, by ID, by slug, public, featured) with Presenter shaping, barrel export

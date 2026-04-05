@@ -63,6 +63,9 @@
   - Tasks 043-064 → archived in `tasks-done/epic-database-architecture/`
   - 6 sprints: Foundation, User, Tag, Category, Skill, Media modules
   - Established sequential module development pattern
+- [x] **Experience Module** (epic-experience) - Completed 2026-04-05
+  - Tasks 215-224 → archived in `tasks-done/epic-experience/`
+  - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console CRUD, landing timeline, E2E
 
 ## In Progress
 
@@ -91,39 +94,19 @@
 
 **Milestone:** All personal data dynamic, landing page live from DB, JSON-LD SEO active
 
-### Epic: Experience (epic-experience) - broken-down
-
-> **Approach:** Schema + enums first, then BE vertical slice, then Console FE, then Landing integration, then E2E.
-> **Note:** Epic plan updated from draft → broken-down (tasks 215-224 exist)
-
-#### Sprint 9: Experience Module (10 tasks)
-
-- [x] 215-experience-schema-enums - Prisma schema + enum updates + migration (M) ✓
-- [x] 216-experience-entity - Domain entity + types + errors (M) ✓
-- [x] 217-experience-repository - Repository port + adapter + mapper (M) ✓
-- [x] 218-experience-dtos - Zod DTOs + presenter (M) ✓
-- [x] 219-experience-commands - Commands + handlers + tests (L) ✓
-- [x] 220-experience-queries - Queries + handlers + tests (S) ✓
-- [x] 221-experience-controller-wiring - Controller + module wiring (S) ✓
-- [x] 222-console-experience-page - Console experience CRUD page (L) ✓
-- [ ] 223-landing-experience-integration - Landing page career timeline integration (L)
-- [ ] 224-experience-e2e - E2E tests: API, console, landing (L)
-
-**Milestone:** Full experience/work history system — console CRUD, landing timeline, skills-per-role
-
 ### Epic: Project (epic-project) - broken-down
 
 > **Approach:** Schema first, then BE vertical slice (entity → repo → DTO → commands → queries → controller), then Console FE, then public pages, then E2E.
 
 #### Sprint 10: Project Module (11 tasks)
 
-- [ ] 225-project-schema-migration - Prisma schema + migration for 4 models (M)
-- [ ] 226-project-entity - Domain entity + types + errors (M)
-- [ ] 227-project-repository - Repository port + adapter + mapper (L)
-- [ ] 228-project-dtos-presenter - Zod DTOs + public/admin presenters (M)
-- [ ] 229-project-commands - CQRS commands: create, update, delete, restore, reorder (L)
-- [ ] 230-project-queries - CQRS queries: admin list, public list, featured, by slug (M)
-- [ ] 231-project-controller-module - Controller + NestJS module wiring (M)
+- [x] 225-project-schema-migration - Prisma schema + migration for 4 models (M) ✓
+- [x] 226-project-entity - Domain entity + types + errors (M) ✓
+- [x] 227-project-repository - Repository port + adapter + mapper (L) ✓
+- [x] 228-project-dtos-presenter - Zod DTOs + public/admin presenters (M) ✓
+- [x] 229-project-commands - CQRS commands: create, update, delete, restore, reorder (L) ✓
+- [x] 230-project-queries - CQRS queries: admin list, public list, featured, by slug (M) ✓
+- [x] 231-project-controller-module - Controller + NestJS module wiring (M) ✓
 - [ ] 232-console-project-page - Console CRUD page with 6-section dialog (XL)
 - [ ] 233-public-projects-list-page - Public /projects stacked rows page (M)
 - [ ] 234-public-project-detail-page - Public /projects/:slug detail page (L)
@@ -195,15 +178,16 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Experience (Sprint 9, 8/10 done — 223 next) → Project (Sprint 10) → Blog Post (Sprint 11)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 7/11 done — 232 next) → Blog Post (Sprint 11)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 218     |
-| Pending                   | 28      |
+| Done (archived)           | 227     |
+| In Progress               | 1       |
+| Pending                   | 19      |
 | **Total Created**         | **247** |
 
 ## Notes

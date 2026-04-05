@@ -1,6 +1,6 @@
 # Task: Project Prisma schema and migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Add Project, TechnicalHighlight, ProjectImage, and ProjectSkill models to Prisma schema and run migration.
@@ -9,16 +9,16 @@ Add Project, TechnicalHighlight, ProjectImage, and ProjectSkill models to Prisma
 First task in the Project module epic. Creates the database foundation — 4 tables with relations to existing Media and Skill models. No existing ProjectCategory/ProjectType/ProjectSize enums are used (decision: no categories). Uses ContentStatus enum (already exists).
 
 ## Acceptance Criteria
-- [ ] `Project` model added with all fields per epic spec (title, slug, 4 translatable JSON fields, dates, status, featured, displayOrder, links, thumbnailId, audit fields)
-- [ ] `TechnicalHighlight` model added (CAO fields as JsonB, codeUrl, displayOrder, cascade delete)
-- [ ] `ProjectImage` model added (projectId + mediaId junction, displayOrder, unique constraint, cascade delete)
-- [ ] `ProjectSkill` model added (composite PK on projectId + skillId, cascade delete)
-- [ ] All `@@map()` table names use snake_case (`projects`, `technical_highlights`, `project_images`, `project_skills`)
-- [ ] Composite indexes on Project: `[status, deletedAt]`, `[featured, status, deletedAt]`, `[displayOrder]`
-- [ ] Relations added to existing `Media` and `Skill` models (reverse relations)
-- [ ] Relations added to `User` model for audit fields (ProjectCreatedBy, ProjectUpdatedBy, ProjectDeletedBy)
-- [ ] Migration runs successfully against dev database
-- [ ] `npx prisma generate` produces updated client types
+- [x] `Project` model added with all fields per epic spec (title, slug, 4 translatable JSON fields, dates, status, featured, displayOrder, links, thumbnailId, audit fields)
+- [x] `TechnicalHighlight` model added (CAO fields as JsonB, codeUrl, displayOrder, cascade delete)
+- [x] `ProjectImage` model added (projectId + mediaId junction, displayOrder, unique constraint, cascade delete)
+- [x] `ProjectSkill` model added (composite PK on projectId + skillId, cascade delete)
+- [x] All `@@map()` table names use snake_case (`projects`, `technical_highlights`, `project_images`, `project_skills`)
+- [x] Composite indexes on Project: `[status, deletedAt]`, `[featured, status, deletedAt]`, `[displayOrder]`
+- [x] Relations added to existing `Media` and `Skill` models (reverse relations)
+- [x] Relations added to `User` model for audit fields (ProjectCreatedBy, ProjectUpdatedBy, ProjectDeletedBy)
+- [x] Migration runs successfully against dev database
+- [x] `npx prisma generate` produces updated client types
 
 ## Technical Notes
 - Follow existing pattern from Skill/Media models for audit fields and soft delete
@@ -40,3 +40,5 @@ First task in the Project module epic. Creates the database foundation — 4 tab
 - 4 new models, multiple relations, but straightforward schema work
 
 ## Progress Log
+- [2026-04-05] Started
+- [2026-04-05] Done — all ACs satisfied. Migration: 20260405084642_add_project_module

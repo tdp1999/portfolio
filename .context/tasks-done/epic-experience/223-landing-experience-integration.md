@@ -1,6 +1,6 @@
 # Task: Landing page experience timeline integration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Integrate dynamic Experience data into the landing page — dedicated Experience page with career timeline and brief overview on home page, with SSR, multi-language support, and graceful fallbacks.
@@ -11,16 +11,16 @@ This is the second module providing dynamic data to the landing page (after Prof
 ## Acceptance Criteria
 
 ### Data Service
-- [ ] `ExperienceService` in landing shared data-access library
-- [ ] Fetches from `GET /experiences` (public, no auth)
-- [ ] Returns typed `PublicExperience[]` with skills and companyLogoUrl
-- [ ] SSR-compatible (works with Angular HttpClient transfer state)
-- [ ] Error handling: returns empty array on failure (graceful degradation)
+- [x] `ExperienceService` in landing shared data-access library
+- [x] Fetches from `GET /experiences` (public, no auth)
+- [x] Returns typed `PublicExperience[]` with skills and companyLogoUrl
+- [x] SSR-compatible (works with Angular HttpClient transfer state)
+- [x] Error handling: returns empty array on failure (graceful degradation)
 
 ### Experience Page (dedicated)
-- [ ] Route: `/experience` in landing app
-- [ ] Career timeline layout (vertical, chronological, most recent at top)
-- [ ] Per entry displays:
+- [x] Route: `/experience` in landing app
+- [x] Career timeline layout (vertical, chronological, most recent at top)
+- [x] Per entry displays:
   - Company logo (with fallback: first letter of companyName or generic icon)
   - companyName (with optional link to companyUrl)
   - position (in current locale)
@@ -33,29 +33,29 @@ This is the second module providing dynamic data to the landing page (after Prof
   - domain/industry tag (if provided)
   - teamSize indicator (if provided, e.g., "Team of 8")
   - Skills as tag chips
-- [ ] "Current" indicator for ongoing positions (endDate null): green dot, "Present" label, or highlighted styling
-- [ ] Empty state when no experiences exist ("Career history coming soon" or similar)
+- [x] "Current" indicator for ongoing positions (endDate null): green dot, "Present" label, or highlighted styling
+- [x] Empty state when no experiences exist ("Career history coming soon" or similar)
 
 ### Home Page Overview
-- [ ] Brief section showing 2-3 most recent positions
-- [ ] Per entry: companyName, position, date range (compact)
-- [ ] "View full career history →" link to `/experience` page
-- [ ] Uses same `ExperienceService` data (no extra API call if already fetched)
+- [x] Brief section showing 2-3 most recent positions
+- [x] Per entry: companyName, position, date range (compact)
+- [x] "View full career history →" link to `/experience` page
+- [x] Uses same `ExperienceService` data (no extra API call if already fetched)
 
 ### Multi-Language
-- [ ] All translatable fields (position, description, achievements, teamRole) display in current locale
-- [ ] Uses `getLocalized()` fallback chain: requested locale → en → first available (EXP-005)
-- [ ] Locale switch updates displayed text without page reload
+- [x] All translatable fields (position, description, achievements, teamRole) display in current locale
+- [x] Uses `getLocalized()` fallback chain: requested locale → en → first available (EXP-005)
+- [x] Locale switch updates displayed text without page reload
 
 ### SSR
-- [ ] Experience data fetched server-side for initial render
-- [ ] SEO: page title and meta description set for Experience page
-- [ ] Transfer state prevents duplicate API call on client hydration
+- [x] Experience data fetched server-side for initial render
+- [x] SEO: page title and meta description set for Experience page
+- [x] Transfer state prevents duplicate API call on client hydration
 
 ### Responsive Design
-- [ ] Timeline layout adapts to mobile (single column)
-- [ ] Badges and chips wrap appropriately on small screens
-- [ ] Company logos sized consistently
+- [x] Timeline layout adapts to mobile (single column)
+- [x] Badges and chips wrap appropriately on small screens
+- [x] Company logos sized consistently
 
 ## Technical Notes
 - Follow Profile landing integration pattern (task 213) for SSR data fetching
@@ -78,3 +78,5 @@ This is the second module providing dynamic data to the landing page (after Prof
 ## Complexity: L
 
 ## Progress Log
+- 2026-04-05 Started
+- 2026-04-05 Done — all ACs satisfied
