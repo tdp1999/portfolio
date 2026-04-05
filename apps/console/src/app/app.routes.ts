@@ -52,6 +52,11 @@ export const appRoutes: Route[] = [
         canActivate: [adminGuard],
       },
       {
+        path: 'experiences',
+        loadChildren: () => import('@portfolio/console/feature-experience').then((m) => m.experienceRoutes),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'messages',
         loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
         canActivate: [adminGuard],

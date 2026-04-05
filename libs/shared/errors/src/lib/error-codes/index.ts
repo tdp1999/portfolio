@@ -8,3 +8,4 @@ export { MediaErrorCode } from './media.error-codes';
 export { EmailTemplateErrorCode } from './email-template.error-codes';
 export { ContactMessageErrorCode } from './contact-message.error-codes';
 export { ProfileErrorCode } from './profile.error-codes';
+export { ExperienceErrorCode } from './experience.error-codes';

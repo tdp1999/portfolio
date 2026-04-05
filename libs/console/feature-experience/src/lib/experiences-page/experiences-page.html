@@ -1,0 +1,128 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Experience Management</h1>
+      <p class="crud-header__subtitle">Manage work history showcased on your portfolio.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon class="icon-md">add</mat-icon>
+      Add Experience
+    </button>
+  </div>
+
+  <console-filter-bar>
+    <console-filter-search placeholder="Search company or position..." (searchChange)="onSearchChange($event)" />
+    <console-filter-select
+      label="Employment Type"
+      [options]="employmentTypeOptions"
+      [value]="employmentType()"
+      (selectionChange)="onEmploymentTypeChange($event)"
+    />
+  </console-filter-bar>
+
+  <div class="crud-table-container relative">
+    <console-spinner-overlay [loading]="loading()" />
+
+    <table mat-table [dataSource]="experiences()" class="w-full">
+      <!-- Company Column -->
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef>Company</th>
+        <td mat-cell *matCellDef="let exp">
+          <div class="flex items-center gap-2">
+            @if (exp.companyLogoUrl) {
+              <img [src]="exp.companyLogoUrl" [alt]="exp.companyName" class="h-6 w-6 rounded object-contain" />
+            }
+            <div>
+              <div class="font-medium text-text">{{ exp.companyName }}</div>
+              @if (exp.locationCity) {
+                <div class="text-xs text-text-muted">{{ exp.locationCity }}, {{ exp.locationCountry }}</div>
+              } @else {
+                <div class="text-xs text-text-muted">{{ exp.locationCountry }}</div>
+              }
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="position">
+        <th mat-header-cell *matHeaderCellDef>Position</th>
+        <td mat-cell *matCellDef="let exp" class="text-text">{{ exp.position.en }}</td>
+      </ng-container>
+
+      <!-- Employment Type Column -->
+      <ng-container matColumnDef="employmentType">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let exp">
+          <mat-chip class="chip-sm">{{ getEmploymentTypeLabel(exp.employmentType) }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Location Type Column -->
+      <ng-container matColumnDef="locationType">
+        <th mat-header-cell *matHeaderCellDef>Location</th>
+        <td mat-cell *matCellDef="let exp">
+          <mat-chip class="chip-sm">{{ getLocationTypeLabel(exp.locationType) }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Date Range Column -->
+      <ng-container matColumnDef="dateRange">
+        <th mat-header-cell *matHeaderCellDef>Period</th>
+        <td mat-cell *matCellDef="let exp" class="text-text-muted text-sm whitespace-nowrap">
+          {{ formatDateRange(exp) }}
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+        <td mat-cell *matCellDef="let exp" class="col-actions">
+          @if (exp.deletedAt) {
+            <span class="text-xs text-red-400 mr-2">Deleted</span>
+          }
+          <button mat-icon-button [matMenuTriggerFor]="expMenu">
+            <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
+          </button>
+          <mat-menu #expMenu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(exp)">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            @if (exp.deletedAt) {
+              <button mat-menu-item (click)="confirmRestore(exp)">
+                <mat-icon class="text-green-500">restore</mat-icon>
+                Restore
+              </button>
+            } @else {
+              <button mat-menu-item (click)="confirmDelete(exp)">
+                <mat-icon class="text-red-500">delete</mat-icon>
+                Delete
+              </button>
+            }
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.opacity-50]="row.deletedAt"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+          No experiences found
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    class="crud-pagination"
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[20, 50, 100]"
+    (page)="onPage($event)"
+    showFirstLastButtons
+  />
+</div>

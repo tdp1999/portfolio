@@ -69,6 +69,21 @@ enum ProjectSize {
   ENTERPRISE
 }
 
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+  SELF_EMPLOYED
+}
+
+enum LocationType {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
 enum SyncStatus {
   SYNCED
   PENDING
@@ -142,6 +157,11 @@ model User {
   mediaUpdated Media[] @relation("MediaUpdatedBy")
   mediaDeleted Media[] @relation("MediaDeletedBy")
 
+  // Experience relations
+  experiencesCreated Experience[] @relation("ExperienceCreatedBy")
+  experiencesUpdated Experience[] @relation("ExperienceUpdatedBy")
+  experiencesDeleted Experience[] @relation("ExperienceDeletedBy")
+
   @@map("users")
 }
 
@@ -203,11 +223,12 @@ model Skill {
   deletedAt         DateTime?
   deletedById       String?       @db.Uuid
 
-  parentSkill Skill?  @relation("SkillParent", fields: [parentSkillId], references: [id])
-  childSkills Skill[] @relation("SkillParent")
-  createdBy   User    @relation("SkillCreatedBy", fields: [createdById], references: [id])
-  updatedBy   User    @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
-  deletedBy   User?   @relation("SkillDeletedBy", fields: [deletedById], references: [id])
+  parentSkill  Skill?           @relation("SkillParent", fields: [parentSkillId], references: [id])
+  childSkills  Skill[]          @relation("SkillParent")
+  createdBy    User             @relation("SkillCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User             @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy    User?            @relation("SkillDeletedBy", fields: [deletedById], references: [id])
+  experiences  ExperienceSkill[]
 
   @@map("skills")
 }
@@ -238,6 +259,9 @@ model Media {
   // Profile relations
   profileAvatars  Profile[] @relation("ProfileAvatar")
   profileOgImages Profile[] @relation("ProfileOgImage")
+
+  // Experience relations
+  experienceLogos Experience[] @relation("ExperienceCompanyLogo")
 
   @@index([mimeType])
   @@index([deletedAt])
@@ -336,4 +360,76 @@ model Profile {
 
   @@index([userId])
   @@map("profiles")
+}
+
+model Experience {
+  // Identity
+  id   String @id @db.Uuid
+  slug String @unique @db.VarChar(200)
+
+  // Company
+  companyName    String  @db.VarChar(200)
+  companyUrl     String? @db.VarChar(500)
+  companyLogoId  String? @db.Uuid
+
+  // Translatable (JSONB)
+  position     Json  @db.JsonB
+  description  Json? @db.JsonB
+  achievements Json  @default("{}") @db.JsonB
+  teamRole     Json? @db.JsonB
+
+  // Employment
+  employmentType EmploymentType @default(FULL_TIME)
+  locationType   LocationType   @default(ONSITE)
+
+  // Location
+  locationCountry    String  @db.VarChar(100)
+  locationCity       String? @db.VarChar(100)
+  locationPostalCode String? @db.VarChar(20)
+  locationAddress1   String? @db.VarChar(300)
+  locationAddress2   String? @db.VarChar(300)
+
+  // Client context
+  clientName     String? @db.VarChar(200)
+  clientIndustry String? @db.VarChar(100)
+  domain         String? @db.VarChar(100)
+  teamSize       Int?
+
+  // Dates
+  startDate DateTime
+  endDate   DateTime?
+
+  // Display
+  displayOrder Int @default(0)
+
+  // Audit
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String    @db.Uuid
+  updatedById String    @db.Uuid
+  deletedAt   DateTime?
+  deletedById String?   @db.Uuid
+
+  // Relations
+  companyLogo Media?            @relation("ExperienceCompanyLogo", fields: [companyLogoId], references: [id], onDelete: SetNull)
+  createdBy   User              @relation("ExperienceCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User              @relation("ExperienceUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy   User?             @relation("ExperienceDeletedBy", fields: [deletedById], references: [id])
+  skills      ExperienceSkill[]
+
+  @@index([startDate])
+  @@index([deletedAt])
+  @@index([displayOrder])
+  @@map("experiences")
+}
+
+model ExperienceSkill {
+  experienceId String @db.Uuid
+  skillId      String @db.Uuid
+
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  skill      Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([experienceId, skillId])
+  @@map("experience_skills")
 }

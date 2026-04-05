@@ -1,6 +1,7 @@
 import { Provider } from '@angular/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions } from '@angular/material/form-field';
 import { MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorDefaultOptions } from '@angular/material/paginator';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 // MatFormField
 const formFieldDefault: MatFormFieldDefaultOptions = {
@@ -24,4 +25,5 @@ export const THIRD_PARTY_PROVIDER: Provider[] = [
     provide: MAT_PAGINATOR_DEFAULT_OPTIONS,
     useValue: paginatorDefault,
   },
+  ...provideNativeDateAdapter(),
 ];
