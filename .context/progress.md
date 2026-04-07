@@ -123,14 +123,14 @@
 - [x] 236-blog-post-schema-migration - Prisma schema + PostStatus enum + migration (M) ✓
 - [x] 237-blog-post-entity - Domain entity + types + errors + tests (M) ✓
 - [x] 238-blog-post-repository - Repository port + adapter + mapper (L) ✓
-- [ ] 239-blog-post-dtos-presenter - Zod DTOs + public/admin presenters (M)
-- [ ] 240-blog-post-commands - CQRS commands: create, update, delete, restore, import-markdown (L)
-- [ ] 241-blog-post-queries - CQRS queries: admin list, public list, featured, by-slug, related (M)
-- [ ] 242-blog-post-controller-module - Controller + NestJS module wiring (S)
-- [ ] 243-prosemirror-editor-setup - Integrate existing document-engine package + Angular wrapper (L)
-- [ ] 244-console-blog-post-page - Console list page + full-page editor + preview + import (XL)
-- [ ] 245-public-blog-list-page - Public /blog list with pagination + category/tag filter (M)
-- [ ] 246-public-blog-detail-page - Public /blog/:slug detail: markdown rendering, Shiki, TOC, progress bar (XL)
+- [x] 239-blog-post-dtos-presenter - Zod DTOs + public/admin presenters (M) ✓
+- [x] 240-blog-post-commands - CQRS commands: create, update, delete, restore, import-markdown (L) ✓
+- [x] 241-blog-post-queries - CQRS queries: admin list, public list, featured, by-slug, related (M) ✓
+- [x] 242-blog-post-controller-module - Controller + NestJS module wiring (S) ✓
+- [ ] 243-prosemirror-editor-setup - Integrate existing document-engine package + Angular wrapper (L) [in-progress]
+- [x] 244-console-blog-post-page - Console list page + full-page editor + preview + import (XL) ✓
+- [x] 245-public-blog-list-page - Public /blog list with pagination + category/tag filter (M) ✓
+- [x] 246-public-blog-detail-page - Public /blog/:slug detail: markdown rendering, Shiki, TOC, progress bar (XL) ✓
 - [ ] 247-blog-post-e2e - E2E tests: API, console, public pages (L)
 
 **Milestone:** Full blogging system — ProseMirror editor, markdown import, public reading experience with syntax highlighting
@@ -178,16 +178,16 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 10/11 done — 235 next) → Blog Post (Sprint 11, 3/12 done — 239 next)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 10/11 done — 235 next) → Blog Post (Sprint 11, 10/12 done — 243 in-progress, 247 next)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 233     |
-| In Progress               | 1       |
-| Pending                   | 13      |
+| Done (archived)           | 240     |
+| In Progress               | 2       |
+| Pending                   | 5       |
 | **Total Created**         | **247** |
 
 ## Notes

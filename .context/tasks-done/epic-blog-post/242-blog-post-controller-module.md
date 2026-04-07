@@ -1,6 +1,6 @@
 # Task: BlogPost Controller + NestJS Module Wiring
 
-## Status: pending
+## Status: done
 
 ## Goal
 Create thin REST controller with public and admin routes, and wire up the BlogPost NestJS module with all dependencies.
@@ -11,11 +11,11 @@ Controller is a thin transport adapter — extracts input, dispatches to command
 ## Acceptance Criteria
 
 **Controller:**
-- [ ] Public routes (no auth):
+- [x] Public routes (no auth):
   - `GET /blog` → ListPublicPostsQuery (paginated, filterable)
   - `GET /blog/featured` → ListFeaturedPostsQuery
   - `GET /blog/:slug` → GetPublicPostBySlugQuery
-- [ ] Admin routes (JWT + ADMIN guard):
+- [x] Admin routes (JWT + ADMIN guard):
   - `GET /admin/blog` → ListPostsQuery (paginated, all statuses)
   - `GET /admin/blog/:id` → GetPostByIdQuery
   - `POST /admin/blog` → CreatePostCommand
@@ -23,20 +23,20 @@ Controller is a thin transport adapter — extracts input, dispatches to command
   - `DELETE /admin/blog/:id` → DeletePostCommand
   - `POST /admin/blog/:id/restore` → RestorePostCommand
   - `POST /admin/blog/import-markdown` → ImportMarkdownCommand
-- [ ] Controller passes raw `@Body() body: unknown` to commands (no validation in controller)
-- [ ] Controller passes `@Query()` params to queries
-- [ ] Admin routes inject `userId` from JWT token into commands
+- [x] Controller passes raw `@Body() body: unknown` to commands (no validation in controller)
+- [x] Controller passes `@Query()` params to queries
+- [x] Admin routes inject `userId` from JWT token into commands
 
 **Module:**
-- [ ] `BlogPostModule` with providers: repository (token → implementation), all command handlers, all query handlers
-- [ ] Imports: `PrismaModule`, `AuthModule` (for guards)
-- [ ] Exports: nothing (no other module depends on BlogPost)
-- [ ] Module registered in `AppModule`
+- [x] `BlogPostModule` with providers: repository (token → implementation), all command handlers, all query handlers
+- [x] Imports: `PrismaModule`, `AuthModule` (for guards)
+- [x] Exports: nothing (no other module depends on BlogPost)
+- [x] Module registered in `AppModule`
 
 **Verification:**
-- [ ] `npx tsc --noEmit` passes
-- [ ] API starts without errors
-- [ ] Smoke test: `GET /blog` returns empty array
+- [x] `npx tsc --noEmit` passes
+- [x] API starts without errors (routes registered, Nest bootstrap OK)
+- [x] Smoke test: `GET /api/blog` → `{data:[],total:0,page:1,limit:20}`; `GET /api/blog/featured` → `[]`; `GET /api/blog/missing-slug` → 404
 
 ## Technical Notes
 - Follow `apps/api/src/modules/category/presentation/category.controller.ts` pattern
@@ -58,3 +58,4 @@ Controller is a thin transport adapter — extracts input, dispatches to command
 Thin controller + standard module wiring. No business logic — just routing.
 
 ## Progress Log
+- 2026-04-06 Done — 2 controllers (public/admin split) + module wired + registered in app.module; tsc clean; 89/89 blog-post specs green

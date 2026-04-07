@@ -1,6 +1,6 @@
 # Task: BlogPost CQRS Commands + Handlers + Tests
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement write operations: create, update, delete (soft), restore, and import-markdown commands with full test coverage.
@@ -11,34 +11,34 @@ BlogPost commands follow CQRS pattern. Create/Update handle junction tables (cat
 ## Acceptance Criteria
 
 **CreatePostCommand:**
-- [ ] Validates input via `CreateBlogPostSchema.safeParse()`
-- [ ] Creates BlogPost entity via `BlogPost.create()`
-- [ ] Persists with category/tag associations in transaction
-- [ ] Returns created post ID
-- [ ] Unit test: valid create, validation failure, slug collision handling
+- [x] Validates input via `CreateBlogPostSchema.safeParse()`
+- [x] Creates BlogPost entity via `BlogPost.create()`
+- [x] Persists with category/tag associations in transaction
+- [x] Returns created post ID
+- [x] Unit test: valid create, validation failure, slug collision handling
 
 **UpdatePostCommand:**
-- [ ] Validates input via `UpdateBlogPostSchema.safeParse()`
-- [ ] Loads existing entity, applies `entity.update()`
-- [ ] If status changed to PUBLISHED: call `entity.publish()` (auto-sets publishedAt per PST-007)
-- [ ] Replace-all strategy for category/tag junctions
-- [ ] Unit test: valid update, not found, status transition, readTime recalculation
+- [x] Validates input via `UpdateBlogPostSchema.safeParse()`
+- [x] Loads existing entity, applies `entity.update()`
+- [x] If status changed to PUBLISHED: call `entity.publish()` (auto-sets publishedAt per PST-007)
+- [x] Replace-all strategy for category/tag junctions
+- [x] Unit test: valid update, not found, status transition, readTime recalculation
 
 **DeletePostCommand:**
-- [ ] Soft delete via `entity.softDelete()`
-- [ ] Unit test: valid delete, already deleted, not found
+- [x] Soft delete via `entity.softDelete()`
+- [x] Unit test: valid delete, already deleted, not found
 
 **RestorePostCommand:**
-- [ ] Restore via `entity.restore()`
-- [ ] Unit test: valid restore, not deleted, not found
+- [x] Restore via `entity.restore()`
+- [x] Unit test: valid restore, not deleted, not found
 
 **ImportMarkdownCommand:**
-- [ ] Accepts raw markdown string (already parsed by frontend)
-- [ ] Extracts title from first h1 heading (if present), otherwise requires explicit title
-- [ ] Calculates readTimeMinutes from content
-- [ ] Creates BlogPost with status=DRAFT always (PST-008)
-- [ ] Returns created post ID
-- [ ] Unit test: import with h1, import without h1, empty content
+- [x] Accepts raw markdown string (already parsed by frontend)
+- [x] Extracts title from first h1 heading (if present), otherwise requires explicit title
+- [x] Calculates readTimeMinutes from content
+- [x] Creates BlogPost with status=DRAFT always (PST-008)
+- [x] Returns created post ID
+- [x] Unit test: import with h1, import without h1, empty content
 
 ## Technical Notes
 - Slug collision: query existing slugs, append -2, -3 etc. Same pattern as Project.
@@ -64,3 +64,4 @@ BlogPost commands follow CQRS pattern. Create/Update handle junction tables (cat
 5 commands with junction table management, status transitions, slug collision handling, and import logic. Significant test surface.
 
 ## Progress Log
+- 2026-04-06 Done — 5 commands + 22 specs green
