@@ -1,0 +1,207 @@
+<div class="editor-page">
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="flex items-center gap-2">
+      <button mat-icon-button (click)="goBack()" aria-label="Back" matTooltip="Back to posts">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="text-lg font-semibold">
+        {{ isEditMode() ? 'Edit Post' : 'New Post' }}
+        @if (dirty()) {
+          <span class="ml-2 text-sm text-text-muted">· unsaved</span>
+        }
+      </h1>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input #mdInput type="file" accept=".md,text/markdown" class="hidden" (change)="importMarkdownFile($event)" />
+      <button mat-stroked-button (click)="mdInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        Import Markdown
+      </button>
+      <button mat-stroked-button (click)="togglePreview()">
+        <mat-icon>{{ previewMode() ? 'edit' : 'visibility' }}</mat-icon>
+        {{ previewMode() ? 'Edit' : 'Preview' }}
+      </button>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-36">
+        <mat-select [(value)]="status" (selectionChange)="markDirty()">
+          <mat-option value="DRAFT">Draft</mat-option>
+          <mat-option value="PUBLISHED">Published</mat-option>
+          <mat-option value="UNLISTED">Unlisted</mat-option>
+          <mat-option value="PRIVATE">Private</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+        <mat-icon>save</mat-icon>
+        {{ saving() ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </div>
+
+  @if (importWarnings().length > 0) {
+    <div class="import-warnings">
+      <mat-icon class="text-amber-600">warning</mat-icon>
+      <ul>
+        @for (w of importWarnings(); track w) {
+          <li>{{ w }}</li>
+        }
+      </ul>
+      <button mat-icon-button (click)="importWarnings.set([])"><mat-icon>close</mat-icon></button>
+    </div>
+  }
+
+  <div class="editor-body">
+    <!-- Editor / Preview area -->
+    <div class="editor-main">
+      @if (previewMode()) {
+        <div class="preview-container">
+          <article class="preview-article" [innerHTML]="previewHtml()"></article>
+        </div>
+      } @else {
+        <div class="editor-toolbar">
+          <button mat-icon-button (click)="insertImage()" matTooltip="Insert image" aria-label="Insert image">
+            <mat-icon>image</mat-icon>
+          </button>
+          <span class="text-xs text-text-muted ml-2"> Editor is a temporary textarea — rich editor coming soon. </span>
+        </div>
+        <textarea
+          class="content-textarea"
+          placeholder="Write your post in markdown…"
+          [ngModel]="content()"
+          (ngModelChange)="onContentChange($event)"
+        ></textarea>
+      }
+    </div>
+
+    <!-- Metadata sidebar -->
+    <aside class="sidebar">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Title *</mat-label>
+        <input matInput [ngModel]="title()" (ngModelChange)="onTitleChange($event)" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Slug</mat-label>
+        <input matInput [ngModel]="slug()" (ngModelChange)="onSlugChange($event)" />
+      </mat-form-field>
+
+      <div class="grid grid-cols-2 gap-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Language</mat-label>
+          <mat-select [(value)]="language" (selectionChange)="markDirty()">
+            <mat-option value="EN">English</mat-option>
+            <mat-option value="VI">Vietnamese</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="flex items-center">
+          <mat-slide-toggle [(ngModel)]="featured" (change)="markDirty()">Featured</mat-slide-toggle>
+        </div>
+      </div>
+
+      <!-- Featured image -->
+      <div class="field-block">
+        <label class="field-label">Featured Image</label>
+        @if (featuredImageUrl()) {
+          <div class="featured-image-preview">
+            <img [src]="featuredImageUrl()" alt="Featured" />
+            <div class="featured-image-actions">
+              <button mat-icon-button (click)="openFeaturedImagePicker()" matTooltip="Replace">
+                <mat-icon>swap_horiz</mat-icon>
+              </button>
+              <button mat-icon-button (click)="clearFeaturedImage()" matTooltip="Remove">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @else {
+          <button mat-stroked-button type="button" (click)="openFeaturedImagePicker()">
+            <mat-icon>add_photo_alternate</mat-icon>
+            Choose image
+          </button>
+        }
+      </div>
+
+      <!-- Categories -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Categories</mat-label>
+        <mat-select multiple [(value)]="categoryIds" (selectionChange)="markDirty()">
+          @for (cat of categories(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Tags -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Tags</mat-label>
+        <mat-select multiple [(value)]="tagIds" (selectionChange)="markDirty()">
+          @for (tag of tags(); track tag.id) {
+            <mat-option [value]="tag.id">{{ tag.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Excerpt -->
+      <div class="field-block">
+        <div class="flex items-center justify-between">
+          <label class="field-label">Excerpt</label>
+          <button mat-button type="button" (click)="autoGenerateExcerpt()">
+            <mat-icon class="icon-sm">auto_awesome</mat-icon>
+            Auto
+          </button>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <textarea
+            matInput
+            rows="3"
+            [ngModel]="excerpt()"
+            (ngModelChange)="excerpt.set($event); markDirty()"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- SEO -->
+      <div class="field-block">
+        <label class="field-label">SEO</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Meta Title</mat-label>
+          <input matInput [ngModel]="metaTitle()" (ngModelChange)="metaTitle.set($event); markDirty()" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Meta Description</mat-label>
+          <textarea
+            matInput
+            rows="2"
+            [ngModel]="metaDescription()"
+            (ngModelChange)="metaDescription.set($event); markDirty()"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Read-only info -->
+      <div class="readonly-info">
+        <div>
+          <span class="field-label">Read time</span>
+          <span>
+            @if (readTimeMinutes() !== null) {
+              {{ readTimeMinutes() | number }} min
+            } @else {
+              <span class="text-text-muted">—</span>
+            }
+          </span>
+        </div>
+        <div>
+          <span class="field-label">Published</span>
+          <span>
+            @if (publishedAt()) {
+              {{ publishedAt() | date: 'mediumDate' }}
+            } @else {
+              <span class="text-text-muted">—</span>
+            }
+          </span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

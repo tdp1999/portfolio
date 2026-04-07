@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.markdown-editor {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.12));
+  border-radius: 8px;
+  background: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface, inherit);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: var(--mat-sys-primary, #1976d2);
+    box-shadow: 0 0 0 1px var(--mat-sys-primary, #1976d2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
