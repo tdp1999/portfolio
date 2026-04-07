@@ -16,6 +16,7 @@ import { ContactMessageModule } from '../modules/contact-message';
 import { ProfileModule } from '../modules/profile';
 import { ExperienceModule } from '../modules/experience';
 import { ProjectModule } from '../modules/project';
+import { BlogPostModule } from '../modules/blog-post';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -39,6 +40,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     ProfileModule,
     ExperienceModule,
     ProjectModule,
+    BlogPostModule,
     ThrottlerModule.forRoot({
       skipIf: () => !isProduction,
       throttlers: [{ ttl: 60000, limit: 60 }],
