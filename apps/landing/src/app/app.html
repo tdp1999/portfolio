@@ -1,3 +1,11 @@
+<header class="temp-header">
+  <nav class="temp-header__nav">
+    <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/experience" routerLinkActive="is-active">Experience</a>
+    <a routerLink="/projects" routerLinkActive="is-active">Projects</a>
+    <a routerLink="/blog" routerLinkActive="is-active">Blog</a>
+  </nav>
+</header>
 <div class="bg-gray-100">
   <router-outlet></router-outlet>
 </div>

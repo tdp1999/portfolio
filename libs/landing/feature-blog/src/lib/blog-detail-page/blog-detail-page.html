@@ -1,0 +1,111 @@
+@if (post(); as p) {
+  <landing-reading-progress [target]="articleElement()" />
+
+  <landing-section>
+    <landing-container>
+      <div class="blog-detail-layout">
+        <article class="blog-article" #articleEl>
+          <div class="mb-8">
+            <a
+              routerLink="/blog"
+              class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
+            >
+              <landing-icon name="arrow-left" [size]="16" />
+              All Articles
+            </a>
+          </div>
+
+          <header class="mb-8">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+              @for (cat of p.categories; track cat.slug) {
+                <landing-badge>{{ cat.name }}</landing-badge>
+              }
+              @if (p.readTimeMinutes) {
+                <span class="text-sm text-text-secondary"> · {{ p.readTimeMinutes }} min read </span>
+              }
+              @if (p.publishedAt) {
+                <span class="text-sm text-text-secondary">· {{ formatDate(p.publishedAt) }}</span>
+              }
+            </div>
+
+            <h1 class="text-page-title text-text mb-6">{{ p.title }}</h1>
+
+            @if (p.author) {
+              <div class="author-card">
+                @if (p.author.avatarUrl) {
+                  <img [src]="p.author.avatarUrl" [alt]="p.author.name ?? ''" class="author-card__avatar" />
+                } @else {
+                  <div class="author-card__avatar author-card__avatar--placeholder">
+                    <landing-icon name="user" [size]="20" />
+                  </div>
+                }
+                <div class="author-card__meta">
+                  <p class="font-medium text-text">{{ p.author.name }}</p>
+                  @if (p.author.shortBio) {
+                    <p class="text-sm text-text-secondary">{{ p.author.shortBio }}</p>
+                  }
+                </div>
+                <button type="button" class="copy-link" (click)="copyLink()">
+                  <landing-icon [name]="copied() ? 'check' : 'link'" [size]="16" />
+                  {{ copied() ? 'Copied!' : 'Copy link' }}
+                </button>
+              </div>
+            }
+          </header>
+
+          @if (p.featuredImageUrl) {
+            <img [src]="p.featuredImageUrl" [alt]="p.title" class="blog-article__hero" />
+          }
+
+          <div class="blog-content prose" [innerHTML]="contentHtml()"></div>
+
+          @if (p.tags.length > 0) {
+            <div class="flex flex-wrap gap-2 mt-12 pt-6 border-t border-border">
+              @for (tag of p.tags; track tag.slug) {
+                <a [routerLink]="['/blog']" [queryParams]="{ tag: tag.slug }">
+                  <landing-badge>#{{ tag.name }}</landing-badge>
+                </a>
+              }
+            </div>
+          }
+
+          @if (p.relatedPosts.length > 0) {
+            <section class="mt-16 pt-8 border-t border-border">
+              <h2 class="text-section-heading text-text mb-6">Related posts</h2>
+              <div class="related-grid">
+                @for (related of p.relatedPosts; track related.slug) {
+                  <a [routerLink]="['/blog', related.slug]" class="related-card group">
+                    @if (related.featuredImageUrl) {
+                      <img [src]="related.featuredImageUrl" [alt]="related.title" class="related-card__image" />
+                    }
+                    <h3 class="text-text group-hover:text-primary transition-colors font-medium mt-3">
+                      {{ related.title }}
+                    </h3>
+                    @if (related.excerpt) {
+                      <p class="text-sm text-text-secondary mt-1 line-clamp-2">{{ related.excerpt }}</p>
+                    }
+                  </a>
+                }
+              </div>
+            </section>
+          }
+        </article>
+
+        <aside class="blog-sidebar">
+          <landing-toc [entries]="toc()" />
+        </aside>
+      </div>
+    </landing-container>
+  </landing-section>
+} @else {
+  <landing-section>
+    <landing-container>
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <landing-icon name="file-x" [size]="48" class="text-text-secondary mb-4" />
+        <h1 class="text-section-heading text-text mb-2">Post not found</h1>
+        <p class="text-text-secondary mb-6">This article may have been moved, unpublished, or never existed.</p>
+        <a routerLink="/blog" class="text-primary hover:underline">Browse all articles</a>
+      </div>
+    </landing-container>
+  </landing-section>
+}

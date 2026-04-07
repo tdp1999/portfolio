@@ -1,0 +1,27 @@
+.blog-row {
+  @apply flex flex-col sm:flex-row gap-6 p-4 rounded-lg border border-transparent;
+  @apply hover:border-border transition-colors cursor-pointer no-underline;
+
+  &__thumbnail {
+    @apply flex-shrink-0 w-full sm:w-48 h-36 rounded-lg overflow-hidden border border-border;
+  }
+
+  &__content {
+    @apply flex-1 min-w-0 flex flex-col justify-center;
+  }
+}
+
+.blog-filter {
+  @apply px-4 py-2 rounded-full border border-border text-sm text-text-secondary;
+  @apply hover:border-primary hover:text-primary transition-colors cursor-pointer;
+
+  &--active {
+    @apply border-primary text-primary;
+  }
+}
+
+.blog-page-btn {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-text;
+  @apply hover:border-primary hover:text-primary transition-colors;
+  @apply disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-text;
+}

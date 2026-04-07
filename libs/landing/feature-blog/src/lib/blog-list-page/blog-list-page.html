@@ -1,0 +1,103 @@
+<div class="flex flex-col min-h-screen">
+  <landing-section>
+    <landing-container>
+      <div class="mb-8">
+        <a
+          routerLink="/"
+          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
+        >
+          <landing-icon name="arrow-left" [size]="16" />
+          Back to home
+        </a>
+      </div>
+
+      <h1 class="text-page-title text-text mb-2">Blog</h1>
+      <p class="text-text-secondary mb-8">Articles, notes, and explorations</p>
+
+      @if (categories().length > 0) {
+        <div class="flex flex-wrap gap-2 mb-12">
+          <button
+            type="button"
+            class="blog-filter"
+            [class.blog-filter--active]="!categorySlug()"
+            (click)="selectCategory(undefined)"
+          >
+            All
+          </button>
+          @for (cat of categories(); track cat.slug) {
+            <button
+              type="button"
+              class="blog-filter"
+              [class.blog-filter--active]="categorySlug() === cat.slug"
+              (click)="selectCategory(cat.slug)"
+            >
+              {{ cat.name }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (posts().length === 0) {
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <landing-icon name="file-text" [size]="48" class="text-text-secondary mb-4" />
+          <p class="text-text-secondary text-lg">No posts yet</p>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-8">
+          @for (post of posts(); track post.slug) {
+            <a [routerLink]="['/blog', post.slug]" class="blog-row group">
+              <div class="blog-row__thumbnail">
+                @if (post.featuredImageUrl) {
+                  <img [src]="post.featuredImageUrl" [alt]="post.title" class="w-full h-full object-cover" />
+                } @else {
+                  <div class="w-full h-full bg-surface-variant flex items-center justify-center">
+                    <landing-icon name="image" [size]="32" class="text-text-secondary opacity-40" />
+                  </div>
+                }
+              </div>
+
+              <div class="blog-row__content">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  @for (cat of post.categories; track cat.slug) {
+                    <landing-badge>{{ cat.name }}</landing-badge>
+                  }
+                  @if (post.readTimeMinutes) {
+                    <span class="text-sm text-text-secondary"> · {{ post.readTimeMinutes }} min read </span>
+                  }
+                </div>
+
+                <h2 class="text-section-heading text-text group-hover:text-primary transition-colors mb-2">
+                  {{ post.title }}
+                </h2>
+
+                @if (post.excerpt) {
+                  <p class="text-text-secondary mb-3 line-clamp-2">{{ post.excerpt }}</p>
+                }
+
+                @if (post.publishedAt) {
+                  <span class="text-sm text-text-secondary">
+                    {{ formatDate(post.publishedAt) }}
+                  </span>
+                }
+              </div>
+            </a>
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-4 mt-12">
+            <button type="button" class="blog-page-btn" [disabled]="page() <= 1" (click)="prevPage()">
+              <landing-icon name="arrow-left" [size]="16" />
+              Previous
+            </button>
+            <span class="text-sm text-text-secondary"> Page {{ page() }} of {{ totalPages() }} </span>
+            <button type="button" class="blog-page-btn" [disabled]="page() >= totalPages()" (click)="nextPage()">
+              Next
+              <landing-icon name="arrow-right" [size]="16" />
+            </button>
+          </div>
+        }
+      }
+    </landing-container>
+  </landing-section>
+</div>

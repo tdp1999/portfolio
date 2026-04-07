@@ -14,11 +14,11 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('@portfolio/landing/feature-projects').then((m) => m.PROJECTS_ROUTES),
   },
   {
-    path: 'ddl',
-    loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
+    path: 'blog',
+    loadChildren: () => import('@portfolio/landing/feature-blog').then((m) => m.BLOG_ROUTES),
   },
   {
-    path: 'ddl/layout',
-    loadComponent: () => import('./pages/ddl/layout/ddl-layout.component').then((m) => m.DdlLayoutComponent),
+    path: 'ddl',
+    loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
   },
 ];

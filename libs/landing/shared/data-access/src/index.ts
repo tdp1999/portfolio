@@ -6,3 +6,5 @@ export * from './lib/api-base-url.token';
 export * from './lib/profile.service';
 export * from './lib/experience.service';
 export * from './lib/project.service';
+export * from './lib/blog.types';
+export * from './lib/blog.service';

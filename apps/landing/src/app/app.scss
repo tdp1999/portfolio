@@ -1,0 +1,28 @@
+.temp-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-surface, #0b0b0c);
+  border-bottom: 1px solid var(--color-border, #2a2a2a);
+
+  &__nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+
+    a {
+      color: var(--color-text-secondary, #9ca3af);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+
+      &:hover,
+      &.is-active {
+        color: var(--color-primary, #6366f1);
+      }
+    }
+  }
+}
