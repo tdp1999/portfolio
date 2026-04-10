@@ -543,9 +543,10 @@ This is the first module with multiple public pages (list + detail) requiring SS
 
 ## Status
 
-broken-down
+completed
 
 > Broken down into tasks 225-235 on 2026-03-31
+> Completed 2026-04-10 — all 11 tasks done
 
 ## Created
 

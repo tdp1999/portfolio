@@ -66,6 +66,10 @@
 - [x] **Experience Module** (epic-experience) - Completed 2026-04-05
   - Tasks 215-224 → archived in `tasks-done/epic-experience/`
   - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console CRUD, landing timeline, E2E
+- [x] **Project Module** (epic-project) - Completed 2026-04-10
+  - Tasks 225-235 → archived in `tasks-done/epic-project/`
+  - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console CRUD, public pages, E2E
+  - Bug fix: findBySlug didn't filter by PUBLISHED status
 
 ## In Progress
 
@@ -110,9 +114,9 @@
 - [x] 232-console-project-page - Console CRUD page with 6-section dialog (XL) ✓
 - [x] 233-public-projects-list-page - Public /projects stacked rows page (M) ✓
 - [x] 234-public-project-detail-page - Public /projects/:slug detail page (L) ✓
-- [ ] 235-project-e2e - E2E tests: API, console, public pages (L)
+- [x] 235-project-e2e - E2E tests: API, console, public pages (L) ✓
 
-**Milestone:** Full project showcase — console CRUD, public list + detail pages, technical highlights
+**Milestone:** Full project showcase — console CRUD, public list + detail pages, technical highlights ✓ COMPLETE
 
 ### Epic: Blog Post (epic-blog-post) - broken-down
 
@@ -131,7 +135,7 @@
 - [x] 244-console-blog-post-page - Console list page + full-page editor + preview + import (XL) ✓
 - [x] 245-public-blog-list-page - Public /blog list with pagination + category/tag filter (M) ✓
 - [x] 246-public-blog-detail-page - Public /blog/:slug detail: markdown rendering, Shiki, TOC, progress bar (XL) ✓
-- [ ] 247-blog-post-e2e - E2E tests: API, console, public pages (L)
+- [x] 247-blog-post-e2e - E2E tests: API, console, public pages (L) ✓
 
 **Milestone:** Full blogging system — ProseMirror editor, markdown import, public reading experience with syntax highlighting
 
@@ -178,16 +182,16 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, 10/11 done — 235 next) → Blog Post (Sprint 11, 10/12 done — 243 in-progress, 247 next)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, COMPLETE) → Blog Post (Sprint 11, 11/12 done — 243 ProseMirror in-progress)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 240     |
+| Done (archived)           | 242     |
 | In Progress               | 2       |
-| Pending                   | 5       |
+| Pending                   | 3       |
 | **Total Created**         | **247** |
 
 ## Notes
