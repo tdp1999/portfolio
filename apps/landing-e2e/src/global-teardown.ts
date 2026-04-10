@@ -25,6 +25,35 @@ async function globalTeardown(): Promise<void> {
     where: { user: { email: 'test-admin@e2e.local' } },
   });
 
+  // Clean up test projects
+  const testProjects = await prisma.project.findMany({
+    where: {
+      OR: [{ title: { startsWith: 'e2e-' } }, { createdBy: { email: 'test-admin@e2e.local' } }],
+    },
+    select: { id: true },
+  });
+  if (testProjects.length) {
+    const projIds = testProjects.map((p) => p.id);
+    await prisma.technicalHighlight.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.projectImage.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.projectSkill.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.project.deleteMany({ where: { id: { in: projIds } } });
+  }
+
+  // Clean up test blog posts
+  const testPosts = await prisma.blogPost.findMany({
+    where: {
+      OR: [{ title: { startsWith: 'e2e-' } }, { author: { email: 'test-admin@e2e.local' } }],
+    },
+    select: { id: true },
+  });
+  if (testPosts.length) {
+    const postIds = testPosts.map((p) => p.id);
+    await prisma.postCategory.deleteMany({ where: { postId: { in: postIds } } });
+    await prisma.postTag.deleteMany({ where: { postId: { in: postIds } } });
+    await prisma.blogPost.deleteMany({ where: { id: { in: postIds } } });
+  }
+
   await prisma.$disconnect();
 }
 

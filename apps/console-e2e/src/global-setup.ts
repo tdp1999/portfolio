@@ -32,6 +32,38 @@ async function globalSetup(): Promise<void> {
     await prisma.experience.deleteMany({ where: { id: { in: ids } } });
   }
 
+  // Clean up test projects (reference test users via FK — must delete before users)
+  const testProjects = await prisma.project.findMany({
+    where: {
+      OR: [
+        { title: { startsWith: 'e2e-' } },
+        { createdBy: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } },
+      ],
+    },
+    select: { id: true },
+  });
+  if (testProjects.length) {
+    const projIds = testProjects.map((p) => p.id);
+    await prisma.technicalHighlight.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.projectImage.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.projectSkill.deleteMany({ where: { projectId: { in: projIds } } });
+    await prisma.project.deleteMany({ where: { id: { in: projIds } } });
+  }
+
+  // Clean up test blog posts (FK constraint: blog_posts_authorId_fkey)
+  const testPosts = await prisma.blogPost.findMany({
+    where: {
+      OR: [{ title: { startsWith: 'e2e-' } }, { author: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } }],
+    },
+    select: { id: true },
+  });
+  if (testPosts.length) {
+    const postIds = testPosts.map((p) => p.id);
+    await prisma.postCategory.deleteMany({ where: { postId: { in: postIds } } });
+    await prisma.postTag.deleteMany({ where: { postId: { in: postIds } } });
+    await prisma.blogPost.deleteMany({ where: { id: { in: postIds } } });
+  }
+
   // Clean up any leftover test users first
   await prisma.user.deleteMany({
     where: { email: { startsWith: 'test-', endsWith: '@e2e.local' } },

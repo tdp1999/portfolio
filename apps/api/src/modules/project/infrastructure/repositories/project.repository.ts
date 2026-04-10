@@ -132,7 +132,7 @@ export class ProjectRepository implements IProjectRepository {
 
   async findBySlug(slug: string): Promise<ProjectReadResult | null> {
     const raw = await this.prisma.project.findFirst({
-      where: { slug, deletedAt: null },
+      where: { slug, deletedAt: null, status: 'PUBLISHED' },
       include: fullInclude,
     });
     return raw ? ProjectMapper.toReadResult(raw as PrismaProjectWithRelations) : null;
