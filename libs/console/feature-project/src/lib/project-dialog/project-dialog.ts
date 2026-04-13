@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import {
   TranslatableInputComponent,
   MediaPickerDialogComponent,
@@ -54,6 +54,7 @@ const EMPTY_TRANSLATABLE: TranslatableJson = { en: '', vi: '' };
     MatDividerModule,
     MatTooltipModule,
     TranslatableInputComponent,
+    FormErrorPipe,
   ],
   templateUrl: './project-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

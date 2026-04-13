@@ -40,19 +40,12 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
         <td mat-cell *matCellDef="let tag" class="col-actions">
-          <button mat-icon-button [matMenuTriggerFor]="tagMenu">
-            <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
+          <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(tag)">
+            <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
           </button>
-          <mat-menu #tagMenu="matMenu">
-            <button mat-menu-item (click)="openEditDialog(tag)">
-              <mat-icon>edit</mat-icon>
-              Edit
-            </button>
-            <button mat-menu-item (click)="confirmDelete(tag)">
-              <mat-icon class="text-red-500">delete</mat-icon>
-              Delete
-            </button>
-          </mat-menu>
+          <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(tag)">
+            <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild }
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import {
@@ -26,7 +26,7 @@ import { AdminSkill, SkillService } from '../skill.service';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
+    MatTooltipModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
     FilterSearchComponent,
@@ -87,7 +87,7 @@ export default class SkillsPageComponent implements OnInit {
   openCreateDialog(): void {
     import('../skill-dialog/skill-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '560px',
+        width: '640px',
         data: { parentSkills: this.getTopLevelSkills() } satisfies SkillDialogData,
       });
       dialogRef.afterClosed().subscribe((result) => {
@@ -102,7 +102,7 @@ export default class SkillsPageComponent implements OnInit {
   openEditDialog(skill: AdminSkill): void {
     import('../skill-dialog/skill-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '560px',
+        width: '640px',
         data: {
           skill,
           parentSkills: this.getTopLevelSkills().filter((s) => s.id !== skill.id),

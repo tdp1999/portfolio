@@ -5,7 +5,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { AdminUserService } from '../admin-user.service';
 
 @Component({
@@ -18,6 +18,7 @@ import { AdminUserService } from '../admin-user.service';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    FormErrorPipe,
   ],
   template: `
     <h2 mat-dialog-title>Invite User</h2>
@@ -26,11 +27,13 @@ import { AdminUserService } from '../admin-user.service';
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" />
+          <mat-error>{{ form.controls.name | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" type="email" />
+          <mat-error>{{ form.controls.email | formError }}</mat-error>
         </mat-form-field>
 
         @if (serverError()) {

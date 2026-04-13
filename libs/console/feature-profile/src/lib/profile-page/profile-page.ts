@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { JsonPipe } from '@angular/common';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { SpinnerOverlayComponent, ToastService } from '@portfolio/console/shared/ui';
 import { ProfileAdminResponse } from '../profile.types';
 import { ProfileService } from '../profile.service';
@@ -86,6 +86,7 @@ type CertificationGroup = FormGroup<{
     MatTooltipModule,
     JsonPipe,
     SpinnerOverlayComponent,
+    FormErrorPipe,
   ],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.scss',

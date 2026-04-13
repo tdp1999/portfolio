@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild }
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import {
@@ -25,7 +25,7 @@ import { AdminTag, TagService } from '../tag.service';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
+    MatTooltipModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
     FilterSearchComponent,
@@ -66,7 +66,7 @@ export default class TagsPageComponent implements OnInit {
 
   openCreateDialog(): void {
     import('../tag-dialog/tag-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, { width: '400px' });
+      const dialogRef = this.dialog.open(m.default, { width: '520px' });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this.toast.success('Tag created successfully');
@@ -79,7 +79,7 @@ export default class TagsPageComponent implements OnInit {
   openEditDialog(tag: AdminTag): void {
     import('../tag-dialog/tag-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '400px',
+        width: '520px',
         data: { tag } satisfies TagDialogData,
       });
       dialogRef.afterClosed().subscribe((result) => {

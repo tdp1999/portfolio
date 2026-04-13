@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { AdminTag, TagService } from '../tag.service';
 
 export interface TagDialogData {
@@ -23,6 +23,7 @@ export interface TagDialogData {
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    FormErrorPipe,
   ],
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Edit Tag' : 'Create Tag' }}</h2>
@@ -31,12 +32,7 @@ export interface TagDialogData {
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" placeholder="e.g. TypeScript" />
-          @if (form.controls.name.hasError('required')) {
-            <mat-error>Name is required</mat-error>
-          }
-          @if (form.controls.name.hasError('maxlength')) {
-            <mat-error>Name must be 50 characters or less</mat-error>
-          }
+          <mat-error>{{ form.controls.name | formError }}</mat-error>
         </mat-form-field>
         @if (serverError()) {
           <p class="text-sm text-red-500">{{ serverError() }}</p>

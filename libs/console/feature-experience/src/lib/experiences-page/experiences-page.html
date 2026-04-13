@@ -24,10 +24,10 @@
     <console-spinner-overlay [loading]="loading()" />
 
     <table mat-table [dataSource]="experiences()" class="w-full">
-      <!-- Company Column -->
+      <!-- Company Column (identity column — clickable to detail) -->
       <ng-container matColumnDef="company">
         <th mat-header-cell *matHeaderCellDef>Company</th>
-        <td mat-cell *matCellDef="let exp">
+        <td mat-cell *matCellDef="let exp" class="col-identity" (click)="goToDetail(exp)">
           <div class="flex items-center gap-2">
             @if (exp.companyLogoUrl) {
               <img [src]="exp.companyLogoUrl" [alt]="exp.companyName" class="h-6 w-6 rounded object-contain" />
@@ -79,28 +79,17 @@
         <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
         <td mat-cell *matCellDef="let exp" class="col-actions">
           @if (exp.deletedAt) {
-            <span class="text-xs text-red-400 mr-2">Deleted</span>
-          }
-          <button mat-icon-button [matMenuTriggerFor]="expMenu">
-            <mat-icon class="icon-sm text-text-muted">more_vert</mat-icon>
-          </button>
-          <mat-menu #expMenu="matMenu">
-            <button mat-menu-item (click)="openEditDialog(exp)">
-              <mat-icon>edit</mat-icon>
-              Edit
+            <button mat-icon-button matTooltip="Restore" aria-label="Restore" (click)="confirmRestore(exp)">
+              <mat-icon class="icon-sm text-text-muted">restore</mat-icon>
             </button>
-            @if (exp.deletedAt) {
-              <button mat-menu-item (click)="confirmRestore(exp)">
-                <mat-icon class="text-green-500">restore</mat-icon>
-                Restore
-              </button>
-            } @else {
-              <button mat-menu-item (click)="confirmDelete(exp)">
-                <mat-icon class="text-red-500">delete</mat-icon>
-                Delete
-              </button>
-            }
-          </mat-menu>
+          } @else {
+            <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(exp)">
+              <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(exp)">
+              <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+            </button>
+          }
         </td>
       </ng-container>
 

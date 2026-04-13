@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { AdminCategory, CategoryService } from '../category.service';
 
 export interface CategoryDialogData {
@@ -23,6 +23,7 @@ export interface CategoryDialogData {
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    FormErrorPipe,
   ],
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Edit Category' : 'Create Category' }}</h2>
@@ -31,20 +32,13 @@ export interface CategoryDialogData {
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" placeholder="e.g. Frontend" />
-          @if (form.controls.name.hasError('required')) {
-            <mat-error>Name is required</mat-error>
-          }
-          @if (form.controls.name.hasError('maxlength')) {
-            <mat-error>Name must be 100 characters or less</mat-error>
-          }
+          <mat-error>{{ form.controls.name | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>Description</mat-label>
           <textarea matInput formControlName="description" placeholder="Optional description" rows="3"></textarea>
-          @if (form.controls.description.hasError('maxlength')) {
-            <mat-error>Description must be 500 characters or less</mat-error>
-          }
+          <mat-error>{{ form.controls.description | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>

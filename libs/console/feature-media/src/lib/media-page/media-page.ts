@@ -18,7 +18,6 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
@@ -62,7 +61,6 @@ const VIEW_MODE_KEY = 'media-view-mode';
     MatProgressBarModule,
     MatTableModule,
     MatTooltipModule,
-    MatMenuModule,
     MatChipsModule,
     RouterLink,
     SpinnerOverlayComponent,
@@ -265,7 +263,7 @@ export default class MediaPageComponent implements OnInit {
   openEditDialog(item: MediaItem): void {
     import('../media-dialog/media-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '560px',
+        width: '640px',
         data: { item } satisfies MediaDialogData,
       });
       dialogRef

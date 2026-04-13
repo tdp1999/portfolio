@@ -9,9 +9,7 @@
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" placeholder="Project title" />
-        @if (form.controls.title.hasError('required')) {
-          <mat-error>Title is required</mat-error>
-        }
+        <mat-error>{{ form.controls.title | formError }}</mat-error>
       </mat-form-field>
 
       <console-translatable-input formControlName="oneLiner" label="One-Liner" />
@@ -22,9 +20,7 @@
           <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
           <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
           <mat-datepicker #startPicker />
-          @if (form.controls.startDate.hasError('required')) {
-            <mat-error>Start date is required</mat-error>
-          }
+          <mat-error>{{ form.controls.startDate | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="flex-1">

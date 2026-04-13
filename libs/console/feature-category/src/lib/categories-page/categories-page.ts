@@ -4,8 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { MatMenuModule } from '@angular/material/menu';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -14,8 +13,8 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { AdminCategory, CategoryService } from '../category.service';
 import { CategoryDialogData } from '../category-dialog/category-dialog';
+import { AdminCategory, CategoryService } from '../category.service';
 
 @Component({
   selector: 'console-categories-page',
@@ -25,7 +24,7 @@ import { CategoryDialogData } from '../category-dialog/category-dialog';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
+    MatTooltipModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
     FilterSearchComponent,
@@ -65,7 +64,7 @@ export default class CategoriesPageComponent implements OnInit {
 
   openCreateDialog(): void {
     import('../category-dialog/category-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, { width: '480px' });
+      const dialogRef = this.dialog.open(m.default, { width: '520px' });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this.toast.success('Category created successfully');
@@ -78,7 +77,7 @@ export default class CategoriesPageComponent implements OnInit {
   openEditDialog(category: AdminCategory): void {
     import('../category-dialog/category-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '480px',
+        width: '520px',
         data: { category } satisfies CategoryDialogData,
       });
       dialogRef.afterClosed().subscribe((result) => {

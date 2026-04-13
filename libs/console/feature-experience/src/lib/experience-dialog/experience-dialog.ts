@@ -22,7 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
 
@@ -49,6 +49,7 @@ type AchievementGroup = FormGroup<{ text: FormControl<string> }>;
     MatAutocompleteModule,
     MatTabsModule,
     MatProgressSpinnerModule,
+    FormErrorPipe,
   ],
   templateUrl: './experience-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

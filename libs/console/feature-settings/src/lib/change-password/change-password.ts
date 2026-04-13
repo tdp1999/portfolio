@@ -1,12 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormControl,
-  FormGroup,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import { AuthStore, ErrorDataService, ServerErrorDirective } from '@portfolio/console/shared/data-access';
+import {
+  AuthStore,
+  ErrorDataService,
+  FormErrorPipe,
+  passwordsMatchValidator,
+  ServerErrorDirective,
+} from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 
 @Component({
@@ -28,6 +27,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
     MatIconModule,
     MatProgressSpinnerModule,
     ServerErrorDirective,
+    FormErrorPipe,
   ],
   templateUrl: './change-password.html',
   styleUrl: './change-password.scss',
@@ -59,7 +59,7 @@ export default class ChangePasswordComponent {
         validators: [Validators.required],
       }),
     },
-    { validators: [this.passwordsMatchValidator] }
+    { validators: [passwordsMatchValidator('newPassword', 'confirmPassword')] }
   );
 
   toggleCurrentPassword(): void {
@@ -96,14 +96,5 @@ export default class ChangePasswordComponent {
           // Known errors handled by global handler (toast) + directive (validation)
         },
       });
-  }
-
-  private passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('newPassword');
-    const confirm = control.get('confirmPassword');
-    if (password && confirm && password.value !== confirm.value) {
-      return { passwordsMismatch: true };
-    }
-    return null;
   }
 }

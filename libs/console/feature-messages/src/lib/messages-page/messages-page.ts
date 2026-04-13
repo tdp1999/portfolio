@@ -4,7 +4,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -47,7 +46,6 @@ const PURPOSE_OPTIONS = [
     MatCheckboxModule,
     MatChipsModule,
     MatIconModule,
-    MatMenuModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
     FilterSearchComponent,
@@ -66,7 +64,7 @@ export default class MessagesPageComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['select', 'status', 'name', 'purpose', 'subject', 'createdAt', 'actions'];
+  readonly displayedColumns = ['select', 'status', 'name', 'purpose', 'subject', 'createdAt'];
   readonly statusOptions = STATUS_OPTIONS;
   readonly purposeOptions = PURPOSE_OPTIONS;
 

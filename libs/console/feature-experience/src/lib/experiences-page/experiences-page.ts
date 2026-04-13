@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import {
@@ -43,7 +44,7 @@ const LOCATION_TYPE_LABELS: Record<string, string> = {
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
+    MatTooltipModule,
     MatChipsModule,
     SpinnerOverlayComponent,
     FilterBarComponent,
@@ -58,6 +59,7 @@ export default class ExperiencesPageComponent implements OnInit {
   private readonly experienceService = inject(ExperienceService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
   readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['company', 'position', 'employmentType', 'locationType', 'dateRange', 'actions'];
@@ -81,6 +83,10 @@ export default class ExperiencesPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExperiences();
+  }
+
+  goToDetail(exp: AdminExperience): void {
+    this.router.navigate(['/experiences', exp.id]);
   }
 
   onSearchChange(value: string): void {

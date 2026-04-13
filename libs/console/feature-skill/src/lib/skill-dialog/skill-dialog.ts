@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import { AdminSkill, SkillService } from '../skill.service';
 
 export interface SkillDialogData {
@@ -28,6 +28,7 @@ export interface SkillDialogData {
     MatProgressSpinnerModule,
     MatSelectModule,
     MatCheckboxModule,
+    FormErrorPipe,
   ],
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Edit Skill' : 'Create Skill' }}</h2>
@@ -36,12 +37,7 @@ export interface SkillDialogData {
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" placeholder="e.g. TypeScript" />
-          @if (form.controls.name.hasError('required')) {
-            <mat-error>Name is required</mat-error>
-          }
-          @if (form.controls.name.hasError('maxlength')) {
-            <mat-error>Name must be 100 characters or less</mat-error>
-          }
+          <mat-error>{{ form.controls.name | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>
@@ -51,17 +47,13 @@ export interface SkillDialogData {
             <mat-option value="TOOLS">Tools</mat-option>
             <mat-option value="ADDITIONAL">Additional</mat-option>
           </mat-select>
-          @if (form.controls.category.hasError('required')) {
-            <mat-error>Category is required</mat-error>
-          }
+          <mat-error>{{ form.controls.category | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>Description</mat-label>
           <textarea matInput formControlName="description" placeholder="Optional description" rows="3"></textarea>
-          @if (form.controls.description.hasError('maxlength')) {
-            <mat-error>Description must be 1000 characters or less</mat-error>
-          }
+          <mat-error>{{ form.controls.description | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>

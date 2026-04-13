@@ -1,12 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormControl,
-  FormGroup,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-import { ApiService, ErrorDataService, ServerErrorDirective } from '@portfolio/console/shared/data-access';
+import {
+  ApiService,
+  ErrorDataService,
+  FormErrorPipe,
+  passwordsMatchValidator,
+  ServerErrorDirective,
+} from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
 
@@ -30,6 +29,7 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
     MatIconModule,
     MatProgressSpinnerModule,
     ServerErrorDirective,
+    FormErrorPipe,
   ],
   templateUrl: './set-password.html',
   styleUrl: './set-password.scss',
@@ -60,7 +60,7 @@ export default class SetPasswordComponent implements OnInit {
         validators: [Validators.required],
       }),
     },
-    { validators: [this.passwordsMatchValidator] }
+    { validators: [passwordsMatchValidator()] }
   );
 
   constructor() {
@@ -96,9 +96,6 @@ export default class SetPasswordComponent implements OnInit {
 
   onSubmit(): void {
     this.form.markAllAsTouched();
-    if (this.form.hasError('passwordsMismatch')) {
-      this.form.controls.confirmPassword.setErrors({ passwordsMismatch: true });
-    }
     if (this.form.invalid) {
       return;
     }
@@ -123,14 +120,5 @@ export default class SetPasswordComponent implements OnInit {
           // Known errors (invalid/expired token) handled by global handler + effect above
         },
       });
-  }
-
-  private passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirm = control.get('confirmPassword');
-    if (password && confirm && password.value !== confirm.value) {
-      return { passwordsMismatch: true };
-    }
-    return null;
   }
 }

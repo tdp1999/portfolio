@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import {
   FilterBarComponent,
   FilterSearchComponent,
+  FilterSelectComponent,
+  type FilterOption,
   SpinnerOverlayComponent,
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,12 +20,11 @@ import {
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
 
-const TAB_FILTERS = [
-  { status: undefined, includeDeleted: false }, // All
-  { status: 'PUBLISHED', includeDeleted: false }, // Published
-  { status: 'DRAFT', includeDeleted: false }, // Draft
-  { status: undefined, includeDeleted: true }, // Trash
-] as const;
+const STATUS_OPTIONS: FilterOption[] = [
+  { value: 'PUBLISHED', label: 'Published' },
+  { value: 'DRAFT', label: 'Draft' },
+  { value: 'TRASH', label: 'Trash' },
+];
 
 @Component({
   selector: 'console-projects-page',
@@ -35,11 +35,10 @@ const TAB_FILTERS = [
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
-    MatTabsModule,
     MatTooltipModule,
     FilterBarComponent,
     FilterSearchComponent,
+    FilterSelectComponent,
     SpinnerOverlayComponent,
   ],
   templateUrl: './projects-page.html',
@@ -50,6 +49,7 @@ export default class ProjectsPageComponent implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
   readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['thumbnail', 'title', 'status', 'featured', 'startDate', 'actions'];
@@ -60,9 +60,10 @@ export default class ProjectsPageComponent implements OnInit {
   readonly pageIndex = signal(0);
   readonly pageSize = signal(20);
   readonly search = signal('');
-  readonly tabIndex = signal(0);
+  readonly status = signal('');
+  readonly statusOptions = STATUS_OPTIONS;
 
-  readonly isTrashTab = computed(() => this.tabIndex() === 3);
+  readonly isTrashTab = computed(() => this.status() === 'TRASH');
 
   private skillsCache: SkillOption[] = [];
 
@@ -73,8 +74,8 @@ export default class ProjectsPageComponent implements OnInit {
     });
   }
 
-  onTabChange(index: number): void {
-    this.tabIndex.set(index);
+  onStatusChange(value: string): void {
+    this.status.set(value);
     this.pageIndex.set(0);
     this.loadProjects();
   }
@@ -89,6 +90,10 @@ export default class ProjectsPageComponent implements OnInit {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadProjects();
+  }
+
+  goToDetail(project: AdminProject): void {
+    this.router.navigate(['/projects', project.id]);
   }
 
   async openCreateDialog(): Promise<void> {
@@ -148,19 +153,19 @@ export default class ProjectsPageComponent implements OnInit {
 
   private loadProjects(): void {
     this.loading.set(true);
-    const filter = TAB_FILTERS[this.tabIndex()];
+    const isTrash = this.isTrashTab();
+    const statusValue = this.status();
     this.projectService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
-        status: filter.status,
-        includeDeleted: filter.includeDeleted || undefined,
+        status: isTrash ? undefined : statusValue || undefined,
+        includeDeleted: isTrash || undefined,
         search: this.search() || undefined,
       })
       .subscribe({
         next: (res) => {
-          // For trash tab, only show deleted items
-          const data = this.isTrashTab() ? res.data.filter((p) => p.deletedAt) : res.data;
+          const data = isTrash ? res.data.filter((p) => p.deletedAt) : res.data;
           this.projects.set(data);
           this.total.set(res.total);
           this.loading.set(false);

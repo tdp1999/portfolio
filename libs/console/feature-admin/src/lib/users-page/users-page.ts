@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild }
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { AuthStore } from '@portfolio/console/shared/data-access';
@@ -28,7 +28,7 @@ import { AdminUser, AdminUserService } from '../admin-user.service';
     MatButtonModule,
     MatIconModule,
     SpinnerOverlayComponent,
-    MatMenuModule,
+    MatTooltipModule,
     DatePipe,
     FilterBarComponent,
     FilterSearchComponent,
@@ -89,7 +89,7 @@ export default class UsersPageComponent implements OnInit {
   openInviteDialog(): void {
     import('../invite-dialog/invite-dialog').then((m) => {
       const dialogRef = this.dialog.open(m.default, {
-        width: '400px',
+        width: '520px',
       });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {

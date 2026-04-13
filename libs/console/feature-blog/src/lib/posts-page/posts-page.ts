@@ -5,13 +5,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import {
   FilterBarComponent,
   FilterSearchComponent,
+  FilterSelectComponent,
+  type FilterOption,
   SpinnerOverlayComponent,
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -20,18 +20,12 @@ import {
 import { BlogService } from '../blog.service';
 import { AdminBlogPostListItem, BlogStatus } from '../blog.types';
 
-interface TabFilter {
-  status?: BlogStatus;
-  includeDeleted: boolean;
-}
-
-const TAB_FILTERS: TabFilter[] = [
-  { includeDeleted: false }, // All
-  { status: 'PUBLISHED', includeDeleted: false },
-  { status: 'DRAFT', includeDeleted: false },
-  { status: 'UNLISTED', includeDeleted: false },
-  { status: 'PRIVATE', includeDeleted: false },
-  { includeDeleted: true }, // Trash
+const STATUS_OPTIONS: FilterOption[] = [
+  { value: 'PUBLISHED', label: 'Published' },
+  { value: 'DRAFT', label: 'Draft' },
+  { value: 'UNLISTED', label: 'Unlisted' },
+  { value: 'PRIVATE', label: 'Private' },
+  { value: 'TRASH', label: 'Trash' },
 ];
 
 @Component({
@@ -43,11 +37,10 @@ const TAB_FILTERS: TabFilter[] = [
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
-    MatTabsModule,
     MatTooltipModule,
     FilterBarComponent,
     FilterSearchComponent,
+    FilterSelectComponent,
     SpinnerOverlayComponent,
   ],
   templateUrl: './posts-page.html',
@@ -69,16 +62,17 @@ export default class PostsPageComponent implements OnInit {
   readonly pageIndex = signal(0);
   readonly pageSize = signal(20);
   readonly search = signal('');
-  readonly tabIndex = signal(0);
+  readonly status = signal('');
+  readonly statusOptions = STATUS_OPTIONS;
 
-  readonly isTrashTab = computed(() => this.tabIndex() === TAB_FILTERS.length - 1);
+  readonly isTrashTab = computed(() => this.status() === 'TRASH');
 
   ngOnInit(): void {
     this.loadPosts();
   }
 
-  onTabChange(index: number): void {
-    this.tabIndex.set(index);
+  onStatusChange(value: string): void {
+    this.status.set(value);
     this.pageIndex.set(0);
     this.loadPosts();
   }
@@ -174,18 +168,19 @@ export default class PostsPageComponent implements OnInit {
 
   private loadPosts(): void {
     this.loading.set(true);
-    const filter = TAB_FILTERS[this.tabIndex()];
+    const isTrash = this.isTrashTab();
+    const statusValue = this.status();
     this.blogService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
-        status: filter.status,
-        includeDeleted: filter.includeDeleted || undefined,
+        status: (isTrash ? undefined : statusValue || undefined) as BlogStatus | undefined,
+        includeDeleted: isTrash || undefined,
         search: this.search() || undefined,
       })
       .subscribe({
         next: (res) => {
-          const data = this.isTrashTab() ? res.data.filter((p) => p.deletedAt) : res.data;
+          const data = isTrash ? res.data.filter((p) => p.deletedAt) : res.data;
           this.posts.set(data);
           this.total.set(res.total);
           this.loading.set(false);

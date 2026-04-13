@@ -57,18 +57,12 @@
         <mat-form-field appearance="outline">
           <mat-label>Full Name (EN)</mat-label>
           <input matInput formControlName="fullName_en" />
-          @let fullNameEn = form.controls.fullName_en;
-          @if (fullNameEn.hasError('required') && fullNameEn.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.fullName_en | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Full Name (VI)</mat-label>
           <input matInput formControlName="fullName_vi" />
-          @let fullNameVi = form.controls.fullName_vi;
-          @if (fullNameVi.hasError('required') && fullNameVi.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.fullName_vi | formError }}</mat-error>
         </mat-form-field>
       </div>
 
@@ -77,18 +71,12 @@
         <mat-form-field appearance="outline">
           <mat-label>Title (EN)</mat-label>
           <input matInput formControlName="title_en" placeholder="e.g. Senior Software Engineer" />
-          @let titleEn = form.controls.title_en;
-          @if (titleEn.hasError('required') && titleEn.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.title_en | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Title (VI)</mat-label>
           <input matInput formControlName="title_vi" />
-          @let titleVi = form.controls.title_vi;
-          @if (titleVi.hasError('required') && titleVi.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.title_vi | formError }}</mat-error>
         </mat-form-field>
       </div>
 
@@ -97,20 +85,14 @@
         <mat-form-field appearance="outline">
           <mat-label>Short Bio (EN)</mat-label>
           <textarea matInput formControlName="bioShort_en" rows="3" maxlength="200"></textarea>
-          @let bioShortEn = form.controls.bioShort_en;
-          <mat-hint align="end">{{ bioShortEn.value?.length ?? 0 }}/200</mat-hint>
-          @if (bioShortEn.hasError('required') && bioShortEn.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-hint align="end">{{ form.controls.bioShort_en.value?.length ?? 0 }}/200</mat-hint>
+          <mat-error>{{ form.controls.bioShort_en | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Short Bio (VI)</mat-label>
           <textarea matInput formControlName="bioShort_vi" rows="3" maxlength="200"></textarea>
-          @let bioShortVi = form.controls.bioShort_vi;
-          <mat-hint align="end">{{ bioShortVi.value?.length ?? 0 }}/200</mat-hint>
-          @if (bioShortVi.hasError('required') && bioShortVi.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-hint align="end">{{ form.controls.bioShort_vi.value?.length ?? 0 }}/200</mat-hint>
+          <mat-error>{{ form.controls.bioShort_vi | formError }}</mat-error>
         </mat-form-field>
       </div>
 
@@ -135,10 +117,7 @@
         <mat-form-field appearance="outline" class="w-32">
           <mat-label>Years of Experience</mat-label>
           <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
-          @let yoeCtrl = form.controls.yearsOfExperience;
-          @if (yoeCtrl.hasError('min') || yoeCtrl.hasError('max')) {
-            <mat-error>0–99</mat-error>
-          }
+          <mat-error>{{ form.controls.yearsOfExperience | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-48">
@@ -177,13 +156,7 @@
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" />
-          @let emailCtrl = form.controls.email;
-          @if (emailCtrl.hasError('required') && emailCtrl.touched) {
-            <mat-error>Required</mat-error>
-          }
-          @if (emailCtrl.hasError('email') && emailCtrl.touched) {
-            <mat-error>Invalid email</mat-error>
-          }
+          <mat-error>{{ form.controls.email | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>Phone (optional)</mat-label>
@@ -203,10 +176,7 @@
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>Preferred Contact Value</mat-label>
           <input matInput formControlName="preferredContactValue" placeholder="@handle or URL" />
-          @let prefContactCtrl = form.controls.preferredContactValue;
-          @if (prefContactCtrl.hasError('required') && prefContactCtrl.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.preferredContactValue | formError }}</mat-error>
         </mat-form-field>
       </div>
     </section>
@@ -219,18 +189,12 @@
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>Country</mat-label>
           <input matInput formControlName="locationCountry" />
-          @let countryCtrl = form.controls.locationCountry;
-          @if (countryCtrl.hasError('required') && countryCtrl.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.locationCountry | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>City</mat-label>
           <input matInput formControlName="locationCity" />
-          @let cityCtrl = form.controls.locationCity;
-          @if (cityCtrl.hasError('required') && cityCtrl.touched) {
-            <mat-error>Required</mat-error>
-          }
+          <mat-error>{{ form.controls.locationCity | formError }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-36">
           <mat-label>Postal Code (optional)</mat-label>
@@ -271,10 +235,9 @@
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>URL</mat-label>
               <input matInput formControlName="url" placeholder="https://" />
-              @let urlCtrl = linkGroup.controls['url'];
-              @if (urlCtrl.hasError('pattern') && urlCtrl.touched) {
-                <mat-error>Must be a valid URL (https://...)</mat-error>
-              }
+              <mat-error>{{
+                linkGroup.controls['url'] | formError: { pattern: 'Must be a valid URL (https://...)' }
+              }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-36">
               <mat-label>Handle (optional)</mat-label>
@@ -322,26 +285,17 @@
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>Certificate Name</mat-label>
               <input matInput formControlName="name" />
-              @let nameCtrl = certGroup.controls['name'];
-              @if (nameCtrl.hasError('required') && nameCtrl.touched) {
-                <mat-error>Required</mat-error>
-              }
+              <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>Issuer</mat-label>
               <input matInput formControlName="issuer" />
-              @let issuerCtrl = certGroup.controls['issuer'];
-              @if (issuerCtrl.hasError('required') && issuerCtrl.touched) {
-                <mat-error>Required</mat-error>
-              }
+              <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-24">
               <mat-label>Year</mat-label>
               <input matInput type="number" formControlName="year" min="1990" max="2100" />
-              @let yearCtrl = certGroup.controls['year'];
-              @if (yearCtrl.invalid && yearCtrl.touched) {
-                <mat-error>1990–2100</mat-error>
-              }
+              <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>URL (optional)</mat-label>

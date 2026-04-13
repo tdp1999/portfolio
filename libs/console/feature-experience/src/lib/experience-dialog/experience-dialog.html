@@ -9,9 +9,7 @@
         <mat-form-field>
           <mat-label>Company Name</mat-label>
           <input matInput formControlName="companyName" placeholder="e.g. Acme Corp" />
-          @if (form.controls.companyName.hasError('required')) {
-            <mat-error>Company name is required</mat-error>
-          }
+          <mat-error>{{ form.controls.companyName | formError }}</mat-error>
         </mat-form-field>
 
         <mat-form-field>
@@ -55,16 +53,12 @@
           <mat-form-field class="flex-1">
             <mat-label>Position (EN)</mat-label>
             <input matInput formControlName="position_en" placeholder="e.g. Senior Software Engineer" />
-            @if (form.controls.position_en.hasError('required')) {
-              <mat-error>English position is required</mat-error>
-            }
+            <mat-error>{{ form.controls.position_en | formError }}</mat-error>
           </mat-form-field>
           <mat-form-field class="flex-1">
             <mat-label>Position (VI)</mat-label>
             <input matInput formControlName="position_vi" placeholder="Kỹ sư phần mềm cao cấp" />
-            @if (form.controls.position_vi.hasError('required')) {
-              <mat-error>Vietnamese position is required</mat-error>
-            }
+            <mat-error>{{ form.controls.position_vi | formError }}</mat-error>
           </mat-form-field>
         </div>
 
@@ -111,9 +105,7 @@
             <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
             <mat-datepicker-toggle matSuffix [for]="startPicker" />
             <mat-datepicker #startPicker startView="multi-year" />
-            @if (form.controls.startDate.hasError('required')) {
-              <mat-error>Start date is required</mat-error>
-            }
+            <mat-error>{{ form.controls.startDate | formError }}</mat-error>
           </mat-form-field>
           <mat-form-field class="flex-1">
             <mat-label>End Date</mat-label>
