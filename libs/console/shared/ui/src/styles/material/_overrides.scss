@@ -137,9 +137,14 @@
   border-radius: 0.5rem;
 }
 
+/* Dialog content — prevent floating label clipping on first form field.
+   Angular Material's overflow-y:auto on mat-dialog-content clips labels
+   that float above the field boundary (angular/components#26352).
+   We use padding-block on the content AND a pseudo-element spacer to
+   guarantee clearance regardless of MDC internal padding resets. */
 .mat-mdc-dialog-container .mdc-dialog__content.mat-mdc-dialog-content {
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 12px !important;
+  padding-bottom: 16px;
 }
 
 /* Filter field — compact dark style inside filter bars */
@@ -219,11 +224,29 @@
   }
 }
 
-/* Actions column (3-dot menu) */
+/* Actions column — inline icon buttons with tooltips */
 .col-actions {
-  width: 48px;
+  width: 96px;
   padding-right: 8px;
   text-align: right;
+  white-space: nowrap;
+}
+
+/* 3+ action buttons need more space */
+.col-actions--wide {
+  width: 136px;
+}
+
+/* Identity column — clickable link to detail page */
+.col-identity {
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 
 /* Pagination bar — mat-paginator styled as sticky bottom bar */
@@ -239,13 +262,13 @@
   --mdc-outlined-text-field-outline-color: transparent;
   --mdc-outlined-text-field-hover-outline-color: rgba(148, 163, 184, 0.2);
   --mdc-outlined-text-field-focus-outline-color: rgba(99, 102, 241, 0.5);
-  --mdc-outlined-text-field-container-shape: 6px;
+  --mdc-outlined-text-field-container-shape: 8px;
   --mdc-outlined-text-field-input-text-placeholder-color: var(--color-text-muted);
   --mdc-outlined-text-field-input-text-size: var(--text-xs);
   --mat-form-field-container-height: 32px;
   --mat-form-field-container-vertical-padding: 4px;
   background: var(--color-surface-alt);
-  border-radius: 6px;
+  border-radius: 8px;
 
   .mat-mdc-form-field-infix {
     min-height: unset;
@@ -263,4 +286,94 @@
     width: 20px;
     margin-right: 4px;
   }
+}
+
+/* ─── Detail page template ──────────────────────────────────────────────── */
+
+/* Page wrapper */
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+}
+
+/* Header: back button + title + action buttons */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Action bar below header */
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Content area */
+.detail-content {
+  min-height: 200px;
+}
+
+/* Card with sections */
+.detail-card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Section within a card */
+.detail-section {
+  padding: 16px 24px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.detail-section__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+/* Label-value field pair */
+.detail-field {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: 0.875rem;
+}
+
+.detail-field__label {
+  width: 140px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.detail-field__value {
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.detail-field__value--empty {
+  color: var(--color-text-muted);
+}
+
+/* Timestamps footer */
+.detail-timestamps {
+  padding: 12px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
 }

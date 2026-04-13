@@ -1,0 +1,236 @@
+<div class="detail-page">
+  <div class="detail-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-page-title ml-2">Project Detail</h1>
+  </div>
+
+  <div class="detail-content relative">
+    <console-spinner-overlay [loading]="loading()" />
+
+    @if (project(); as p) {
+      <!-- Action bar -->
+      <div class="detail-actions">
+        <button mat-stroked-button (click)="openEditDialog()">
+          <mat-icon class="icon-sm">edit</mat-icon>
+          Edit
+        </button>
+        @if (!p.deletedAt) {
+          <button mat-stroked-button color="warn" (click)="confirmDelete()">
+            <mat-icon class="icon-sm">delete</mat-icon>
+            Delete
+          </button>
+        }
+      </div>
+
+      <div class="detail-card mt-4">
+        <!-- Basic Info -->
+        <div class="detail-section">
+          <h3 class="detail-section__title">Basic Info</h3>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Title</span>
+            <span class="detail-field__value font-medium">{{ p.title }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">One-Liner</span>
+            <span class="detail-field__value">{{ translatable(p.oneLiner) }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Period</span>
+            <span class="detail-field__value">{{ formatDateRange(p) }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Status</span>
+            <span class="detail-field__value">
+              @if (p.deletedAt) {
+                <span
+                  class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
+                  >Deleted</span
+                >
+              } @else if (p.status === 'PUBLISHED') {
+                <span
+                  class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
+                  >Published</span
+                >
+              } @else {
+                <span
+                  class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                  >Draft</span
+                >
+              }
+              @if (p.featured) {
+                <mat-icon class="text-yellow-500 icon-sm ml-2">star</mat-icon>
+              }
+            </span>
+          </div>
+        </div>
+
+        <!-- Story -->
+        <div class="detail-section">
+          <h3 class="detail-section__title">Story</h3>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Motivation</span>
+            <span
+              class="detail-field__value"
+              [class.detail-field__value--empty]="!translatable(p.motivation) || translatable(p.motivation) === '—'"
+            >
+              {{ translatable(p.motivation) }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Description</span>
+            <span
+              class="detail-field__value"
+              [class.detail-field__value--empty]="!translatable(p.description) || translatable(p.description) === '—'"
+            >
+              {{ translatable(p.description) }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Role</span>
+            <span
+              class="detail-field__value"
+              [class.detail-field__value--empty]="!translatable(p.role) || translatable(p.role) === '—'"
+            >
+              {{ translatable(p.role) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Technical Highlights -->
+        @if (p.highlights.length > 0) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Technical Highlights ({{ p.highlights.length }})</h3>
+
+            @for (h of p.highlights; track h.id; let i = $index) {
+              <div class="mb-4 rounded-lg border border-border p-4">
+                <p class="mb-2 text-sm font-medium text-text-muted">Highlight {{ i + 1 }}</p>
+                <div class="detail-field">
+                  <span class="detail-field__label">Challenge</span>
+                  <span class="detail-field__value">{{ translatable(h.challenge) }}</span>
+                </div>
+                <div class="detail-field">
+                  <span class="detail-field__label">Approach</span>
+                  <span class="detail-field__value">{{ translatable(h.approach) }}</span>
+                </div>
+                <div class="detail-field">
+                  <span class="detail-field__label">Outcome</span>
+                  <span class="detail-field__value">{{ translatable(h.outcome) }}</span>
+                </div>
+                @if (h.codeUrl) {
+                  <div class="detail-field">
+                    <span class="detail-field__label">Code URL</span>
+                    <a
+                      class="detail-field__value text-primary hover:underline"
+                      [href]="h.codeUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ h.codeUrl }}
+                    </a>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Media -->
+        <div class="detail-section">
+          <h3 class="detail-section__title">Media</h3>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Thumbnail</span>
+            <span class="detail-field__value">
+              @if (p.thumbnailUrl) {
+                <img [src]="p.thumbnailUrl" [alt]="p.title" class="h-16 w-16 rounded object-cover" />
+              } @else {
+                <span class="detail-field__value--empty">No thumbnail</span>
+              }
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Gallery</span>
+            <span class="detail-field__value">
+              @if (p.images.length > 0) {
+                <div class="flex flex-wrap gap-2">
+                  @for (img of p.images; track img.id) {
+                    <img [src]="img.url" [alt]="img.altText ?? ''" class="h-16 w-16 rounded object-cover" />
+                  }
+                </div>
+              } @else {
+                <span class="detail-field__value--empty">No gallery images</span>
+              }
+            </span>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="detail-section">
+          <h3 class="detail-section__title">Details</h3>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Source URL</span>
+            @if (p.sourceUrl) {
+              <a
+                class="detail-field__value text-primary hover:underline"
+                [href]="p.sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ p.sourceUrl }}
+              </a>
+            } @else {
+              <span class="detail-field__value detail-field__value--empty">—</span>
+            }
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Project URL</span>
+            @if (p.projectUrl) {
+              <a
+                class="detail-field__value text-primary hover:underline"
+                [href]="p.projectUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ p.projectUrl }}
+              </a>
+            } @else {
+              <span class="detail-field__value detail-field__value--empty">—</span>
+            }
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Skills</span>
+            <span class="detail-field__value">
+              @if (p.skills.length > 0) {
+                <div class="flex flex-wrap gap-1">
+                  @for (skill of p.skills; track skill.id) {
+                    <mat-chip class="chip-sm">{{ skill.name }}</mat-chip>
+                  }
+                </div>
+              } @else {
+                <span class="detail-field__value--empty">—</span>
+              }
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Display Order</span>
+            <span class="detail-field__value">{{ p.displayOrder }}</span>
+          </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="detail-timestamps">
+          <span>Created: {{ p.createdAt | date: 'medium' }}</span>
+          <span>Updated: {{ p.updatedAt | date: 'medium' }}</span>
+          @if (p.deletedAt) {
+            <span class="text-red-400">Deleted: {{ p.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
