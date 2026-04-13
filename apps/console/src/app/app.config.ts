@@ -1,8 +1,10 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { ErrorStateMatcher } from '@angular/material/core';
 import {
   AuthStore,
+  RewardEarlyErrorStateMatcher,
   ThemeService,
   SERVER_ERROR_FALLBACK,
   authInterceptor,
@@ -26,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([errorInterceptor, csrfInterceptor, authInterceptor, refreshInterceptor])
     ),
     provideErrorHandler(),
+    { provide: ErrorStateMatcher, useClass: RewardEarlyErrorStateMatcher },
     {
       provide: SERVER_ERROR_FALLBACK,
       useFactory: () => {

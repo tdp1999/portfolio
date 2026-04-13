@@ -15,6 +15,11 @@ export { ValidationErrorService } from './lib/errors/validation-error.service';
 export { ErrorDataService } from './lib/errors/error-data.service';
 export { ServerErrorDirective, SERVER_ERROR_FALLBACK } from './lib/errors/server-error.directive';
 export type { ServerErrorFallback } from './lib/errors/server-error.directive';
+export { FormErrorPipe } from './lib/errors/form-error.pipe';
+export { RewardEarlyErrorStateMatcher } from './lib/errors/reward-early-error-state.matcher';
+export type { ErrorMessage } from './lib/errors/validation-messages';
+export { DEFAULT_VALIDATION_MESSAGES, resolveValidationMessage } from './lib/errors/validation-messages';
+export { passwordsMatchValidator } from './lib/validators';
 export { UnreadBadgeService } from './lib/unread-badge.service';
 export { MediaService } from './lib/media/media.service';
 export type {
