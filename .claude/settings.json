@@ -1,5 +1,36 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(*.html)",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/design-bank-nudge.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "if": "Write(*.html)",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/design-bank-nudge.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "if": "Edit(*.scss)",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/design-bank-nudge.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "if": "Write(*.scss)",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/design-bank-nudge.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",

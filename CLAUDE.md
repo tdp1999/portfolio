@@ -17,6 +17,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 - **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns-architecture.md`
 - **Design System:** Tokens, components, layout patterns. See `.context/design/` (foundations, landing, console, shared)
+- **Design Bank:** Research-backed UX principles and patterns. See `.context/design/bank/index.md`
 - **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
@@ -28,6 +29,8 @@ Use these skills for specific workflows. More will be added over time.
 | ---------------- | -------------------------------------------------------------------------- |
 | `prisma-migrate` | Any Prisma schema change or migration (creates, applies, handles backups)  |
 | `aqa-expert`     | Writing or updating E2E tests (Playwright, POM pattern, flakiness checks)  |
+| `design-ingest`  | Extracting design knowledge from articles/URLs into the bank               |
+| `design-check`   | Reviewing a component against design bank patterns                         |
 | `ng-lib`         | Creating new Nx Angular libraries (correct tags, directory, import paths)  |
 
 ## Context Files (`.context/`)
