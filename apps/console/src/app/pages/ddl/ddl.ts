@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'console-ddl',
@@ -28,10 +28,19 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,
+    RouterLink,
   ],
   template: `
     <div class="p-8">
       <h1 class="text-2xl font-bold mb-6">Design Development Lab</h1>
+
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Long-Form Chassis</h2>
+        <p class="text-sm text-gray-500 mb-2">
+          Scrollspy rail + section cards + sticky save bar + unsaved-changes guard. Demo of ADR-013 / ADR-014.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/ddl/long-form">Open long-form demo</a>
+      </section>
 
       <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Toast Notifications</h2>

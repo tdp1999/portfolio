@@ -1,407 +1,453 @@
-<div class="profile-page" [formGroup]="form">
+<div class="profile-page">
   <console-spinner-overlay [loading]="loading()" />
 
-  <!-- Page Header -->
-  <div class="mb-8 flex items-center justify-between">
+  <div class="profile-page__header">
     <div>
       <h1 class="text-page-title">Profile Settings</h1>
-      <p class="text-text-muted text-sm mt-1">Manage your public profile and portfolio information.</p>
+      <p class="text-body text-text-secondary">Manage your public profile. Each section saves independently.</p>
     </div>
-    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
-      @if (saving()) {
-        <mat-spinner diameter="18" class="inline-block mr-2" />
-      }
-      Save Profile
-    </button>
   </div>
 
-  <div class="profile-sections">
-    <!-- ── Section: Identity ─────────────────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">Identity</h2>
+  <console-long-form-layout>
+    <div rail>
+      <console-scrollspy-rail [sections]="sections" />
+    </div>
 
-      <!-- Avatar -->
-      <div class="mb-6">
-        <p class="field-label">Avatar</p>
-        <div class="flex items-center gap-4">
-          <div class="avatar-preview">
-            @if (avatarPreview(); as avatarSrc) {
-              <img [src]="avatarSrc" alt="Avatar preview" class="h-20 w-20 rounded-full object-cover" />
-            } @else {
-              <div class="h-20 w-20 rounded-full bg-surface-alt flex items-center justify-center text-text-muted">
-                <mat-icon>person</mat-icon>
-              </div>
-            }
-            @if (avatarUploading()) {
-              <div class="avatar-uploading">
-                <mat-spinner diameter="20" />
-              </div>
-            }
-          </div>
-          <div class="flex gap-2">
-            <button mat-stroked-button type="button" (click)="avatarInput.click()" [disabled]="avatarUploading()">
-              <mat-icon>upload</mat-icon> Upload
-            </button>
-            @if (avatarPreview()) {
-              <button mat-stroked-button color="warn" type="button" (click)="clearAvatar()">
-                <mat-icon>clear</mat-icon> Remove
+    <div content>
+      <!-- ── Identity ────────────────────────────────────────────────────── -->
+      <console-section-card
+        id="section-identity"
+        title="Identity"
+        description="Display name, title, and bios. Avatar saves on upload."
+        saveMode="per-section"
+        [formGroup]="identityForm"
+        [saving]="savingSignals.identity"
+        [lastSavedAt]="lastSavedSignals.identity"
+        [errorMessage]="errorSignals.identity"
+        (save)="saveIdentity()"
+      >
+        <!-- Avatar -->
+        <div class="field-block">
+          <p class="field-label">Avatar</p>
+          <div class="media-row">
+            <div class="media-preview media-preview--avatar">
+              @if (avatarPreview(); as src) {
+                <img [src]="src" alt="Avatar preview" />
+              } @else {
+                <div class="media-placeholder"><mat-icon>person</mat-icon></div>
+              }
+              @if (avatarUploading()) {
+                <div class="media-uploading"><mat-spinner diameter="20" /></div>
+              }
+            </div>
+            <div class="media-actions">
+              <button mat-stroked-button type="button" [disabled]="avatarUploading()" (click)="avatarInput.click()">
+                <mat-icon>upload</mat-icon> Upload
               </button>
-            }
+              @if (avatarPreview()) {
+                <button mat-stroked-button color="warn" type="button" (click)="clearAvatar()">
+                  <mat-icon>clear</mat-icon> Remove
+                </button>
+              }
+            </div>
+            <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
           </div>
-          <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
         </div>
-      </div>
 
-      <!-- Full Name bilingual -->
-      <div class="bilingual-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Full Name (EN)</mat-label>
-          <input matInput formControlName="fullName_en" />
-          <mat-error>{{ form.controls.fullName_en | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Full Name (VI)</mat-label>
-          <input matInput formControlName="fullName_vi" />
-          <mat-error>{{ form.controls.fullName_vi | formError }}</mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Title bilingual -->
-      <div class="bilingual-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Title (EN)</mat-label>
-          <input matInput formControlName="title_en" placeholder="e.g. Senior Software Engineer" />
-          <mat-error>{{ form.controls.title_en | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Title (VI)</mat-label>
-          <input matInput formControlName="title_vi" />
-          <mat-error>{{ form.controls.title_vi | formError }}</mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Bio Short bilingual -->
-      <div class="bilingual-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Short Bio (EN)</mat-label>
-          <textarea matInput formControlName="bioShort_en" rows="3" maxlength="200"></textarea>
-          <mat-hint align="end">{{ form.controls.bioShort_en.value?.length ?? 0 }}/200</mat-hint>
-          <mat-error>{{ form.controls.bioShort_en | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Short Bio (VI)</mat-label>
-          <textarea matInput formControlName="bioShort_vi" rows="3" maxlength="200"></textarea>
-          <mat-hint align="end">{{ form.controls.bioShort_vi.value?.length ?? 0 }}/200</mat-hint>
-          <mat-error>{{ form.controls.bioShort_vi | formError }}</mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Bio Long bilingual -->
-      <div class="bilingual-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Long Bio (EN)</mat-label>
-          <textarea matInput formControlName="bioLong_en" rows="5"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Long Bio (VI)</mat-label>
-          <textarea matInput formControlName="bioLong_vi" rows="5"></textarea>
-        </mat-form-field>
-      </div>
-    </section>
-
-    <!-- ── Section: Work & Availability ──────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">Work &amp; Availability</h2>
-
-      <div class="field-row">
-        <mat-form-field appearance="outline" class="w-32">
-          <mat-label>Years of Experience</mat-label>
-          <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
-          <mat-error>{{ form.controls.yearsOfExperience | formError }}</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-48">
-          <mat-label>Availability</mat-label>
-          <mat-select formControlName="availability">
-            @for (opt of availabilityOptions; track opt.value) {
-              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <!-- Open To chips -->
-      <div class="mb-4">
-        <p class="field-label">Open To</p>
-        <div class="flex flex-wrap gap-2">
-          @for (opt of openToOptions; track opt.value) {
-            <button
-              type="button"
-              class="chip-toggle"
-              [class.chip-toggle--selected]="isOpenToSelected(opt.value)"
-              (click)="toggleOpenTo(opt.value)"
-            >
-              {{ opt.label }}
-            </button>
-          }
+        <div formGroupName="fullName" class="bilingual-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name (EN)</mat-label>
+            <input matInput formControlName="en" />
+            <mat-error>{{ identityForm.controls.fullName.controls.en | formError }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name (VI)</mat-label>
+            <input matInput formControlName="vi" />
+            <mat-error>{{ identityForm.controls.fullName.controls.vi | formError }}</mat-error>
+          </mat-form-field>
         </div>
-      </div>
-    </section>
 
-    <!-- ── Section: Contact ───────────────────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">Contact</h2>
+        <div formGroupName="title" class="bilingual-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Title (EN)</mat-label>
+            <input matInput formControlName="en" placeholder="e.g. Senior Software Engineer" />
+            <mat-error>{{ identityForm.controls.title.controls.en | formError }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Title (VI)</mat-label>
+            <input matInput formControlName="vi" />
+            <mat-error>{{ identityForm.controls.title.controls.vi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
 
-      <div class="field-row">
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" />
-          <mat-error>{{ form.controls.email | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Phone (optional)</mat-label>
-          <input matInput formControlName="phone" />
-        </mat-form-field>
-      </div>
+        <div formGroupName="bioShort" class="bilingual-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Short Bio (EN)</mat-label>
+            <textarea matInput formControlName="en" rows="3" maxlength="200"></textarea>
+            <mat-hint align="end">{{ identityForm.controls.bioShort.controls.en.value.length }}/200</mat-hint>
+            <mat-error>{{ identityForm.controls.bioShort.controls.en | formError }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Short Bio (VI)</mat-label>
+            <textarea matInput formControlName="vi" rows="3" maxlength="200"></textarea>
+            <mat-hint align="end">{{ identityForm.controls.bioShort.controls.vi.value.length }}/200</mat-hint>
+            <mat-error>{{ identityForm.controls.bioShort.controls.vi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
 
-      <div class="field-row">
-        <mat-form-field appearance="outline" class="w-48">
-          <mat-label>Preferred Contact Platform</mat-label>
-          <mat-select formControlName="preferredContactPlatform">
-            @for (opt of socialPlatformOptions; track opt.value) {
-              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Preferred Contact Value</mat-label>
-          <input matInput formControlName="preferredContactValue" placeholder="@handle or URL" />
-          <mat-error>{{ form.controls.preferredContactValue | formError }}</mat-error>
-        </mat-form-field>
-      </div>
-    </section>
+        <div formGroupName="bioLong" class="bilingual-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Long Bio (EN)</mat-label>
+            <textarea matInput formControlName="en" rows="5"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Long Bio (VI)</mat-label>
+            <textarea matInput formControlName="vi" rows="5"></textarea>
+          </mat-form-field>
+        </div>
+      </console-section-card>
 
-    <!-- ── Section: Location ─────────────────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">Location</h2>
+      <!-- ── Work & Availability ─────────────────────────────────────────── -->
+      <console-section-card
+        id="section-work-availability"
+        title="Work & Availability"
+        description="Experience, current availability, and what you're open to."
+        saveMode="per-section"
+        [formGroup]="workAvailabilityForm"
+        [saving]="savingSignals.workAvailability"
+        [lastSavedAt]="lastSavedSignals.workAvailability"
+        [errorMessage]="errorSignals.workAvailability"
+        (save)="saveWorkAvailability()"
+      >
+        <div class="form-stack">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="w-32">
+              <mat-label>Years of Experience</mat-label>
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
+              <mat-error>{{ workAvailabilityForm.controls.yearsOfExperience | formError }}</mat-error>
+            </mat-form-field>
 
-      <div class="field-row">
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Country</mat-label>
-          <input matInput formControlName="locationCountry" />
-          <mat-error>{{ form.controls.locationCountry | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>City</mat-label>
-          <input matInput formControlName="locationCity" />
-          <mat-error>{{ form.controls.locationCity | formError }}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-36">
-          <mat-label>Postal Code (optional)</mat-label>
-          <input matInput formControlName="locationPostalCode" />
-        </mat-form-field>
-      </div>
+            <mat-form-field appearance="outline" class="w-48">
+              <mat-label>Availability</mat-label>
+              <mat-select formControlName="availability">
+                @for (opt of availabilityOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Address Line 1 (optional)</mat-label>
-        <input matInput formControlName="locationAddress1" />
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="w-48">
+              <mat-label>Timezone</mat-label>
+              <mat-select formControlName="timezone">
+                <mat-option value="">— None —</mat-option>
+                @for (tz of timezoneOptions; track tz) {
+                  <mat-option [value]="tz">{{ tz }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Address Line 2 (optional)</mat-label>
-        <input matInput formControlName="locationAddress2" />
-      </mat-form-field>
-    </section>
+          <div>
+            <p class="field-label">Open To</p>
+            <div class="chip-row">
+              @for (opt of openToOptions; track opt.value) {
+                <button
+                  type="button"
+                  class="chip-toggle"
+                  [class.chip-toggle--selected]="isOpenToSelected(opt.value)"
+                  (click)="toggleOpenTo(opt.value)"
+                >
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </console-section-card>
 
-    <!-- ── Section: Social Links ─────────────────────────────────────────── -->
-    <section class="profile-section">
-      <div class="section-header">
-        <h2 class="section-title">Social Links</h2>
-        <button mat-stroked-button type="button" (click)="addSocialLink()"><mat-icon>add</mat-icon> Add Link</button>
-      </div>
+      <!-- ── Contact ─────────────────────────────────────────────────────── -->
+      <console-section-card
+        id="section-contact"
+        title="Contact"
+        description="How people reach you."
+        saveMode="per-section"
+        [formGroup]="contactForm"
+        [saving]="savingSignals.contact"
+        [lastSavedAt]="lastSavedSignals.contact"
+        [errorMessage]="errorSignals.contact"
+        (save)="saveContact()"
+      >
+        <div class="form-stack">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" />
+              <mat-error>{{ contactForm.controls.email | formError }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Phone (optional)</mat-label>
+              <input matInput formControlName="phone" />
+            </mat-form-field>
+          </div>
 
-      <div formArrayName="socialLinks" class="space-y-3">
-        @for (control of socialLinksArray.controls; track $index) {
-          @let linkGroup = asSocialLinkGroup(control);
-          <div [formGroup]="linkGroup" class="social-link-row">
-            <mat-form-field appearance="outline" class="w-40">
-              <mat-label>Platform</mat-label>
-              <mat-select formControlName="platform">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="w-48">
+              <mat-label>Preferred Platform</mat-label>
+              <mat-select formControlName="preferredContactPlatform">
                 @for (opt of socialPlatformOptions; track opt.value) {
                   <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>URL</mat-label>
-              <input matInput formControlName="url" placeholder="https://" />
-              <mat-error>{{
-                linkGroup.controls['url'] | formError: { pattern: 'Must be a valid URL (https://...)' }
-              }}</mat-error>
+              <mat-label>Preferred Contact Value</mat-label>
+              <input matInput formControlName="preferredContactValue" placeholder="@handle or URL" />
+              <mat-error>{{ contactForm.controls.preferredContactValue | formError }}</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </console-section-card>
+
+      <!-- ── Location ────────────────────────────────────────────────────── -->
+      <console-section-card
+        id="section-location"
+        title="Location"
+        description="Country and city are public. Address lines are internal only."
+        saveMode="per-section"
+        [formGroup]="locationForm"
+        [saving]="savingSignals.location"
+        [lastSavedAt]="lastSavedSignals.location"
+        [errorMessage]="errorSignals.location"
+        (save)="saveLocation()"
+      >
+        <div class="form-stack">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Country</mat-label>
+              <input matInput formControlName="locationCountry" />
+              <mat-error>{{ locationForm.controls.locationCountry | formError }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>City</mat-label>
+              <input matInput formControlName="locationCity" />
+              <mat-error>{{ locationForm.controls.locationCity | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-36">
-              <mat-label>Handle (optional)</mat-label>
-              <input matInput formControlName="handle" placeholder="@username" />
+              <mat-label>Postal Code</mat-label>
+              <input matInput formControlName="locationPostalCode" />
             </mat-form-field>
-            <button mat-icon-button color="warn" type="button" matTooltip="Remove" (click)="removeSocialLink($index)">
-              <mat-icon>delete_outline</mat-icon>
-            </button>
           </div>
-        }
-        @if (socialLinksArray.length === 0) {
-          <p class="text-text-muted text-sm">No social links added yet.</p>
-        }
-      </div>
-    </section>
 
-    <!-- ── Section: Resume ───────────────────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">Resume</h2>
-      <div class="bilingual-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Resume URL (EN)</mat-label>
-          <input matInput formControlName="resumeUrl_en" placeholder="https://" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Resume URL (VI)</mat-label>
-          <input matInput formControlName="resumeUrl_vi" placeholder="https://" />
-        </mat-form-field>
-      </div>
-    </section>
+          <mat-form-field appearance="outline">
+            <mat-label>Address Line 1</mat-label>
+            <input matInput formControlName="locationAddress1" />
+          </mat-form-field>
 
-    <!-- ── Section: Certifications ───────────────────────────────────────── -->
-    <section class="profile-section">
-      <div class="section-header">
-        <h2 class="section-title">Certifications</h2>
-        <button mat-stroked-button type="button" (click)="addCertification()">
-          <mat-icon>add</mat-icon> Add Certification
-        </button>
-      </div>
-
-      <div formArrayName="certifications" class="space-y-4">
-        @for (control of certificationsArray.controls; track $index) {
-          @let certGroup = asCertificationGroup(control);
-          <div [formGroup]="certGroup" class="cert-row">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Certificate Name</mat-label>
-              <input matInput formControlName="name" />
-              <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Issuer</mat-label>
-              <input matInput formControlName="issuer" />
-              <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-24">
-              <mat-label>Year</mat-label>
-              <input matInput type="number" formControlName="year" min="1990" max="2100" />
-              <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>URL (optional)</mat-label>
-              <input matInput formControlName="url" placeholder="https://" />
-            </mat-form-field>
-            <button
-              mat-icon-button
-              color="warn"
-              type="button"
-              matTooltip="Remove"
-              (click)="removeCertification($index)"
-            >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </div>
-        }
-        @if (certificationsArray.length === 0) {
-          <p class="text-text-muted text-sm">No certifications added yet.</p>
-        }
-      </div>
-    </section>
-
-    <!-- ── Section: SEO & Meta ───────────────────────────────────────────── -->
-    <section class="profile-section">
-      <h2 class="section-title">SEO &amp; Meta</h2>
-
-      <!-- OG Image -->
-      <div class="mb-6">
-        <p class="field-label">OG Image</p>
-        <div class="flex items-center gap-4">
-          <div class="og-image-preview">
-            @if (ogImagePreview(); as ogSrc) {
-              <img [src]="ogSrc" alt="OG image preview" class="h-16 w-28 rounded object-cover" />
-            } @else {
-              <div class="h-16 w-28 rounded bg-surface-alt flex items-center justify-center text-text-muted">
-                <mat-icon>image</mat-icon>
-              </div>
-            }
-            @if (ogImageUploading()) {
-              <div class="og-uploading">
-                <mat-spinner diameter="20" />
-              </div>
-            }
-          </div>
-          <div class="flex gap-2">
-            <button mat-stroked-button type="button" (click)="ogImageInput.click()" [disabled]="ogImageUploading()">
-              <mat-icon>upload</mat-icon> Upload
-            </button>
-            @if (ogImagePreview()) {
-              <button mat-stroked-button color="warn" type="button" (click)="clearOgImage()">
-                <mat-icon>clear</mat-icon> Remove
-              </button>
-            }
-          </div>
-          <input #ogImageInput type="file" class="hidden" accept="image/*" (change)="onOgImageFileSelected($event)" />
+          <mat-form-field appearance="outline">
+            <mat-label>Address Line 2</mat-label>
+            <input matInput formControlName="locationAddress2" />
+          </mat-form-field>
         </div>
-      </div>
+      </console-section-card>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Meta Title</mat-label>
-        <input matInput formControlName="metaTitle" maxlength="70" />
-        <mat-hint align="end">{{ form.controls['metaTitle'].value?.length ?? 0 }}/70</mat-hint>
-      </mat-form-field>
+      <!-- ── Social Links ────────────────────────────────────────────────── -->
+      <console-section-card
+        id="section-social-links"
+        title="Social Links"
+        description="Public links, resume URLs, and certifications."
+        saveMode="per-section"
+        [formGroup]="socialLinksForm"
+        [saving]="savingSignals.socialLinks"
+        [lastSavedAt]="lastSavedSignals.socialLinks"
+        [errorMessage]="errorSignals.socialLinks"
+        (save)="saveSocialLinks()"
+      >
+        <div class="form-stack">
+          <div class="subsection">
+            <div class="subsection__header">
+              <h4 class="text-card-title">Links</h4>
+              <button mat-stroked-button type="button" (click)="addSocialLink()">
+                <mat-icon>add</mat-icon> Add Link
+              </button>
+            </div>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Meta Description</mat-label>
-        <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
-        <mat-hint align="end">{{ form.controls['metaDescription'].value?.length ?? 0 }}/160</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Canonical URL</mat-label>
-        <input matInput formControlName="canonicalUrl" placeholder="https://" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-48">
-        <mat-label>Timezone</mat-label>
-        <mat-select formControlName="timezone">
-          <mat-option value="">— None —</mat-option>
-          @for (tz of timezoneOptions; track tz) {
-            <mat-option [value]="tz">{{ tz }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <!-- JSON-LD Preview -->
-      <div class="mt-4">
-        <button mat-stroked-button type="button" (click)="loadJsonLd()">
-          <mat-icon>data_object</mat-icon> Preview JSON-LD
-        </button>
-        @if (showJsonLd() && jsonLd()) {
-          <div class="json-ld-preview mt-3">
-            <pre class="text-xs overflow-auto rounded bg-surface-alt p-4 max-h-64">{{ jsonLd() | json }}</pre>
+            <div formArrayName="socialLinks" class="rows">
+              @for (control of socialLinksArray.controls; track $index) {
+                @let linkGroup = asFormGroup(control);
+                <div [formGroup]="linkGroup" class="social-link-row">
+                  <mat-form-field appearance="outline" class="w-40">
+                    <mat-label>Platform</mat-label>
+                    <mat-select formControlName="platform">
+                      @for (opt of socialPlatformOptions; track opt.value) {
+                        <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>URL</mat-label>
+                    <input matInput formControlName="url" placeholder="https://" />
+                    <mat-error>{{
+                      linkGroup.controls['url'] | formError: { pattern: 'Must be a valid URL (https://...)' }
+                    }}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-36">
+                    <mat-label>Handle</mat-label>
+                    <input matInput formControlName="handle" placeholder="@username" />
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    matTooltip="Remove"
+                    (click)="removeSocialLink($index)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              @if (socialLinksArray.length === 0) {
+                <p class="text-body text-text-muted">No social links added yet.</p>
+              }
+            </div>
           </div>
-        }
-      </div>
-    </section>
-  </div>
 
-  <!-- Bottom Save Button -->
-  <div class="mt-8 flex justify-end">
-    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
-      @if (saving()) {
-        <mat-spinner diameter="18" class="inline-block mr-2" />
-      }
-      Save Profile
-    </button>
-  </div>
+          <div class="subsection" formGroupName="resumeUrls">
+            <h4 class="text-card-title">Resume URLs</h4>
+            <div class="bilingual-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Resume URL (EN)</mat-label>
+                <input matInput formControlName="en" placeholder="https://" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Resume URL (VI)</mat-label>
+                <input matInput formControlName="vi" placeholder="https://" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection__header">
+              <h4 class="text-card-title">Certifications</h4>
+              <button mat-stroked-button type="button" (click)="addCertification()">
+                <mat-icon>add</mat-icon> Add Certification
+              </button>
+            </div>
+
+            <div formArrayName="certifications" class="rows">
+              @for (control of certificationsArray.controls; track $index) {
+                @let certGroup = asFormGroup(control);
+                <div [formGroup]="certGroup" class="cert-row">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" />
+                    <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Issuer</mat-label>
+                    <input matInput formControlName="issuer" />
+                    <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-24">
+                    <mat-label>Year</mat-label>
+                    <input matInput type="number" formControlName="year" min="1990" max="2100" />
+                    <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>URL</mat-label>
+                    <input matInput formControlName="url" placeholder="https://" />
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    matTooltip="Remove"
+                    (click)="removeCertification($index)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              @if (certificationsArray.length === 0) {
+                <p class="text-body text-text-muted">No certifications added yet.</p>
+              }
+            </div>
+          </div>
+        </div>
+      </console-section-card>
+
+      <!-- ── SEO / OG ─────────────────────────────────────────────────────── -->
+      <console-section-card
+        id="section-seo-og"
+        title="SEO / OG"
+        description="Metadata for search engines and social preview. OG image saves on upload."
+        saveMode="per-section"
+        [formGroup]="seoOgForm"
+        [saving]="savingSignals.seoOg"
+        [lastSavedAt]="lastSavedSignals.seoOg"
+        [errorMessage]="errorSignals.seoOg"
+        (save)="saveSeoOg()"
+      >
+        <div class="form-stack">
+          <div class="field-block">
+            <p class="field-label">OG Image</p>
+            <div class="media-row">
+              <div class="media-preview media-preview--og">
+                @if (ogImagePreview(); as src) {
+                  <img [src]="src" alt="OG image preview" />
+                } @else {
+                  <div class="media-placeholder"><mat-icon>image</mat-icon></div>
+                }
+                @if (ogImageUploading()) {
+                  <div class="media-uploading"><mat-spinner diameter="20" /></div>
+                }
+              </div>
+              <div class="media-actions">
+                <button mat-stroked-button type="button" [disabled]="ogImageUploading()" (click)="ogImageInput.click()">
+                  <mat-icon>upload</mat-icon> Upload
+                </button>
+                @if (ogImagePreview()) {
+                  <button mat-stroked-button color="warn" type="button" (click)="clearOgImage()">
+                    <mat-icon>clear</mat-icon> Remove
+                  </button>
+                }
+              </div>
+              <input
+                #ogImageInput
+                type="file"
+                class="hidden"
+                accept="image/*"
+                (change)="onOgImageFileSelected($event)"
+              />
+            </div>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Title</mat-label>
+            <input matInput formControlName="metaTitle" maxlength="70" />
+            <mat-hint align="end">{{ seoOgForm.controls.metaTitle.value.length }}/70</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Description</mat-label>
+            <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
+            <mat-hint align="end">{{ seoOgForm.controls.metaDescription.value.length }}/160</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Canonical URL</mat-label>
+            <input matInput formControlName="canonicalUrl" placeholder="https://" />
+          </mat-form-field>
+
+          <div>
+            <button mat-stroked-button type="button" (click)="loadJsonLd()">
+              <mat-icon>data_object</mat-icon> Preview JSON-LD
+            </button>
+            @if (showJsonLd() && jsonLd()) {
+              <pre class="json-ld-preview">{{ jsonLd() | json }}</pre>
+            }
+          </div>
+        </div>
+      </console-section-card>
+    </div>
+  </console-long-form-layout>
 </div>

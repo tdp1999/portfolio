@@ -1,0 +1,122 @@
+<div class="ddl-long-form">
+  <header class="ddl-long-form__header">
+    <div>
+      <h1 class="text-page-title">Long-Form Chassis Demo</h1>
+      <p class="text-body text-text-secondary">
+        Scrollspy rail + 4 section cards (one per status) · mixes per-section and atomic save modes · wired to
+        UnsavedChangesGuard.
+      </p>
+    </div>
+    <a mat-stroked-button routerLink="/ddl">Back to DDL</a>
+  </header>
+
+  <console-long-form-layout>
+    <div rail>
+      <console-scrollspy-rail [sections]="sections" />
+    </div>
+
+    <div content>
+      <!-- Section 1: Basics — per-section save · status: editing · nested bilingual FormGroup -->
+      <console-section-card
+        id="section-basics"
+        title="Basics"
+        description="Display name and job title. Demonstrates the nested { en, vi } bilingual FormGroup convention."
+        saveMode="per-section"
+        [formGroup]="basicsForm"
+        [saving]="basicsSaving"
+        [lastSavedAt]="basicsLastSavedAt"
+        [errorMessage]="basicsError"
+        (save)="saveBasics()"
+      >
+        <form [formGroup]="basicsForm" class="form-stack">
+          <div formGroupName="name" class="form-pair">
+            <mat-form-field appearance="outline">
+              <mat-label>Name (EN)</mat-label>
+              <input matInput formControlName="en" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Name (VI)</mat-label>
+              <input matInput formControlName="vi" />
+            </mat-form-field>
+          </div>
+
+          <div formGroupName="title" class="form-pair">
+            <mat-form-field appearance="outline">
+              <mat-label>Title (EN)</mat-label>
+              <input matInput formControlName="en" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Title (VI)</mat-label>
+              <input matInput formControlName="vi" />
+            </mat-form-field>
+          </div>
+        </form>
+      </console-section-card>
+
+      <!-- Section 2: Contact — per-section save · status: saved -->
+      <console-section-card
+        id="section-contact"
+        title="Contact"
+        description="Reachable channels. Saved state — note the timestamp and ✓ icon in the rail."
+        saveMode="per-section"
+        [formGroup]="contactForm"
+        [saving]="contactSaving"
+        [lastSavedAt]="contactLastSavedAt"
+        [errorMessage]="contactError"
+        (save)="saveContact()"
+      >
+        <form [formGroup]="contactForm" class="form-stack">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput type="tel" formControlName="phone" />
+          </mat-form-field>
+        </form>
+      </console-section-card>
+
+      <!-- Section 3: Skills — atomic mode · status: untouched -->
+      <console-section-card
+        id="section-skills"
+        title="Skills"
+        description="Atomic mode — no footer. Saves via the sticky save bar together with Achievements."
+        saveMode="atomic"
+      >
+        <form [formGroup]="skillsForm" class="form-stack">
+          <mat-form-field appearance="outline">
+            <mat-label>Primary stack</mat-label>
+            <input matInput formControlName="primaryStack" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Years of experience</mat-label>
+            <input matInput type="number" formControlName="yearsOfExperience" />
+          </mat-form-field>
+        </form>
+      </console-section-card>
+
+      <!-- Section 4: Achievements — atomic mode · status: error -->
+      <console-section-card
+        id="section-achievements"
+        title="Achievements"
+        description="Atomic mode with a required field left empty — rail shows ⚠ to indicate a validation error."
+        saveMode="atomic"
+      >
+        <form [formGroup]="achievementsForm" class="form-stack">
+          <mat-form-field appearance="outline">
+            <mat-label>Summary</mat-label>
+            <textarea matInput rows="4" formControlName="summary"></textarea>
+          </mat-form-field>
+        </form>
+      </console-section-card>
+    </div>
+  </console-long-form-layout>
+
+  <console-sticky-save-bar
+    [dirty]="atomicDirty"
+    [saving]="atomicSaving"
+    (save)="saveAtomic()"
+    (discard)="discardAtomic()"
+  />
+</div>

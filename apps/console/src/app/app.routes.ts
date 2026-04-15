@@ -1,6 +1,8 @@
 import { Route } from '@angular/router';
 import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
 import { ConsoleMainLayoutComponent } from '@portfolio/console/shared/ui';
+import { unsavedChangesGuard } from '@portfolio/console/shared/util';
+import { environment } from '../environments/environment';
 
 export const appRoutes: Route[] = [
   // Auth routes — delegated to feature-auth library
@@ -76,7 +78,16 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
         canActivate: [adminGuard],
       },
-      { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
+      ...(environment.production
+        ? []
+        : [
+            { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
+            {
+              path: 'ddl/long-form',
+              loadComponent: () => import('./pages/ddl/long-form/long-form'),
+              canDeactivate: [unsavedChangesGuard],
+            },
+          ]),
     ],
   },
 

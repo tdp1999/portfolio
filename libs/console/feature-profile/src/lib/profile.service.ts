@@ -2,7 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { API_CONFIG, ApiService } from '@portfolio/console/shared/data-access';
 import { map, timeout } from 'rxjs';
-import { ProfileAdminResponse, UpsertProfilePayload } from './profile.types';
+import {
+  ProfileAdminResponse,
+  UpdateContactPayload,
+  UpdateIdentityPayload,
+  UpdateLocationPayload,
+  UpdateSeoOgPayload,
+  UpdateSocialLinksPayload,
+  UpdateWorkAvailabilityPayload,
+} from './profile.types';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -14,9 +22,43 @@ export class ProfileService {
     return this.api.get<ProfileAdminResponse>('/admin/profile');
   }
 
-  upsert(data: UpsertProfilePayload) {
-    return this.api.put<{ id: string }>('/admin/profile', data);
+  // ── Per-section updates ──────────────────────────────────────────────────
+
+  updateIdentity(payload: UpdateIdentityPayload) {
+    return this.api.patch<void>('/admin/profile/identity', payload);
   }
+
+  updateWorkAvailability(payload: UpdateWorkAvailabilityPayload) {
+    return this.api.patch<void>('/admin/profile/work-availability', payload);
+  }
+
+  updateContact(payload: UpdateContactPayload) {
+    return this.api.patch<void>('/admin/profile/contact', payload);
+  }
+
+  updateLocation(payload: UpdateLocationPayload) {
+    return this.api.patch<void>('/admin/profile/location', payload);
+  }
+
+  updateSocialLinks(payload: UpdateSocialLinksPayload) {
+    return this.api.patch<void>('/admin/profile/social-links', payload);
+  }
+
+  updateSeoOg(payload: UpdateSeoOgPayload) {
+    return this.api.patch<void>('/admin/profile/seo-og', payload);
+  }
+
+  // ── Media (dedicated endpoints) ──────────────────────────────────────────
+
+  updateAvatar(avatarId: string | null) {
+    return this.api.patch<void>('/admin/profile/avatar', { avatarId });
+  }
+
+  updateOgImage(ogImageId: string | null) {
+    return this.api.patch<void>('/admin/profile/og-image', { ogImageId });
+  }
+
+  // ── Utility ──────────────────────────────────────────────────────────────
 
   getJsonLd(locale: 'en' | 'vi' = 'en') {
     return this.api.get<unknown>(`/profile/json-ld`, { params: { locale } });
