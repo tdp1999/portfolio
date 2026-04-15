@@ -64,7 +64,12 @@ async function globalSetup(): Promise<void> {
     await prisma.blogPost.deleteMany({ where: { id: { in: postIds } } });
   }
 
-  // Clean up any leftover test users first
+  // Clean up test profiles (must happen before test user deletion due to FK)
+  await prisma.profile.deleteMany({
+    where: { user: { email: { startsWith: 'test-', endsWith: '@e2e.local' } } },
+  });
+
+  // Clean up any leftover test users
   await prisma.user.deleteMany({
     where: { email: { startsWith: 'test-', endsWith: '@e2e.local' } },
   });
