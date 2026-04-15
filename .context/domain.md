@@ -4,7 +4,13 @@
 
 | Term | Definition | Type |
 |------|-----------|------|
-| Profile | Personal information of the site owner — identity, contact, location, social links, certifications, availability, SEO metadata. Single record with translatable JSON fields. | Entity |
+| Profile | Personal information of the site owner — composed of 6 section value objects (Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg). Single record with translatable JSON fields. | Aggregate |
+| Identity | Profile section: display name, full name (translatable), title (translatable), bio (translatable), avatar reference | Value Object |
+| WorkAvailability | Profile section: employment status, weekly hours, hourly rate, timezone, openTo flags (Freelance, Consulting, Side Project, Full-time, Speaking, Open Source) | Value Object |
+| Contact | Profile section: email, phone | Value Object |
+| Location | Profile section: city, country | Value Object |
+| SocialLinks | Profile section: collection of SocialLink entries (platform → URL/handle) | Value Object |
+| SeoOg | Profile section: OG image reference, meta title (translatable), meta description (translatable) | Value Object |
 | Experience | A professional career entry — company, role (translatable), employment type, location type, dates, achievements, skills used, and company logo. Single record per job with translatable JSON fields for position, description, achievements, teamRole | Entity |
 | EmploymentType | The contract/engagement type of a work experience: Full-time, Part-time, Contract, Freelance, Internship, Self-employed | Value Object |
 | LocationType | The work arrangement of a role: Remote, Hybrid, On-site | Value Object |
@@ -39,12 +45,13 @@
   1. Owner navigates to the relevant Console section
   2. Owner edits content (Profile, Experience, Skill, or Testimonial)
   3. System validates input — including JSON fields (translatable, socialLinks, certifications)
-  4. System upserts Profile (create if first time, update if exists)
-  5. JSON-LD Person structured data is regenerated from updated Profile
-  6. Landing Page reflects updated content on next visit
+  4. System updates the target section via section command (Identity, WorkAvailability, Contact, Location, SocialLinks, or SeoOg)
+  5. Only the section's fields are persisted — other sections untouched
+  6. JSON-LD Person structured data is regenerated from updated Profile
+  7. Landing Page reflects updated content on next visit
 - **Variations:**
-  - First-time setup: Profile does not exist yet — upsert creates it
-  - Partial update: Owner updates only one section — other fields preserved
+  - First-time setup: Profile does not exist yet — upsert creates it (initial setup flow)
+  - Per-section save: Owner updates one section at a time — each section validates and persists independently
 - **Error paths:**
   - Validation failure: System rejects invalid input (e.g., malformed JSON, invalid URL in socialLinks)
   - Media not found: Avatar or OG Image ID references non-existent Media — rejected

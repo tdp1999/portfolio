@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (176 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (252 tasks)
 
 ## Completed Milestones
 
@@ -70,6 +70,12 @@
   - Tasks 225-235 → archived in `tasks-done/epic-project/`
   - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console CRUD, public pages, E2E
   - Bug fix: findBySlug didn't filter by PUBLISHED status
+- [x] **Profile Per-Section Refactor** (epic-profile-per-section-refactor) - Completed 2026-04-15
+  - Tasks 248-258 → archived in `tasks-done/epic-profile-per-section-refactor/`
+  - BE: 6 section VOs + 6 PATCH commands/schemas + targeted repo methods (delete UpsertProfile)
+  - FE shared chassis (in `libs/console/shared/ui` + `util`): LongFormLayout, ScrollspyRail, SectionCard, StickySaveBar, UnsavedChangesGuard
+  - Profile page rebuilt on new chassis with per-section save + rollback on error
+  - ADR-013 (long-form chassis) + ADR-014 (per-section save) realized
 
 ## In Progress
 
@@ -97,26 +103,6 @@
 - [ ] 214-profile-e2e - E2E tests: API, console, landing (L)
 
 **Milestone:** All personal data dynamic, landing page live from DB, JSON-LD SEO active
-
-### Epic: Project (epic-project) - broken-down
-
-> **Approach:** Schema first, then BE vertical slice (entity → repo → DTO → commands → queries → controller), then Console FE, then public pages, then E2E.
-
-#### Sprint 10: Project Module (11 tasks)
-
-- [x] 225-project-schema-migration - Prisma schema + migration for 4 models (M) ✓
-- [x] 226-project-entity - Domain entity + types + errors (M) ✓
-- [x] 227-project-repository - Repository port + adapter + mapper (L) ✓
-- [x] 228-project-dtos-presenter - Zod DTOs + public/admin presenters (M) ✓
-- [x] 229-project-commands - CQRS commands: create, update, delete, restore, reorder (L) ✓
-- [x] 230-project-queries - CQRS queries: admin list, public list, featured, by slug (M) ✓
-- [x] 231-project-controller-module - Controller + NestJS module wiring (M) ✓
-- [x] 232-console-project-page - Console CRUD page with 6-section dialog (XL) ✓
-- [x] 233-public-projects-list-page - Public /projects stacked rows page (M) ✓
-- [x] 234-public-project-detail-page - Public /projects/:slug detail page (L) ✓
-- [x] 235-project-e2e - E2E tests: API, console, public pages (L) ✓
-
-**Milestone:** Full project showcase — console CRUD, public list + detail pages, technical highlights ✓ COMPLETE
 
 ### Epic: Blog Post (epic-blog-post) - broken-down
 
@@ -182,17 +168,17 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Project (Sprint 10, COMPLETE) → Blog Post (Sprint 11, 11/12 done — 243 ProseMirror in-progress)
+**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Blog Post (Sprint 11, 11/12 done — 243 ProseMirror in-progress)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 242     |
+| Done (archived)           | 252     |
 | In Progress               | 2       |
-| Pending                   | 3       |
-| **Total Created**         | **247** |
+| Pending                   | 2       |
+| **Total Created**         | **256** |
 
 ## Notes
 

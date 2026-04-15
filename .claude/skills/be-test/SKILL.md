@@ -41,7 +41,11 @@ Skip: controllers (thin adapters), repository implementations (CRUD wrappers), i
 
 ## Core Workflow: Analyze -> Plan -> Write -> Validate
 
+**MANDATORY OUTPUT GATES.** Steps 1, 2, and 4 each require a structured output block in your reply to the user. These are not mental exercises — they are deliverables. Skipping any of them (including when the user says "go ahead", "bắt đầu", "start", or similar) is a skill violation. A generic "start" message does NOT authorize skipping Step 2's approval gate.
+
 ### Step 1: Analyze the Source
+
+**REQUIRED OUTPUT:** You MUST produce the analysis table below in your reply before moving to Step 2. Do not proceed silently.
 
 Read the source file and classify every method/property into one of two buckets:
 
@@ -82,6 +86,8 @@ Present the analysis as a brief table:
 ```
 
 ### Step 2: Plan Test Cases
+
+**REQUIRED OUTPUT + STOP:** You MUST produce BOTH lists below in your reply AND wait for explicit user approval ("ok", "approve", "yes", "go") of the plan itself before writing any spec file. A prior generic message like "bắt đầu" or "start the task" does NOT count as plan approval — the user hasn't seen the plan yet at that point. After you post the plan, stop and wait.
 
 Apply the **Single Owner Rule**: each behavior has exactly ONE test that owns it.
 
@@ -147,21 +153,41 @@ expect(() => ...).toThrow('expected message string');
 
 ### Step 4: Validate
 
-After writing, cross-check every test against the checklist in `references/validation-checklist.md`.
+**REQUIRED OUTPUT:** You MUST produce the Validation Report block below in your reply BEFORE claiming the tests are done or moving on to other AC items. This is not a mental checklist — it is a deliverable. If you skip it, you have not completed the skill's workflow.
 
-Run the validation mentally (or as a structured check):
+Cross-check every test against the checklist in `references/validation-checklist.md`, then output this exact block:
 
-1. **Waste check:** For each test, ask "What breaks if I delete this test?" If answer is "nothing" or "another test catches it" -> flag for removal
-2. **Owner check:** Is this behavior tested at another layer too? -> flag the duplicate
-3. **Anti-pattern check:** Does any test fall into the NOT-to-test list? -> remove
-4. **Budget check:** Is the test count within budget for this module type?
-   - CRUD module entity: 5-10 tests
-   - CRUD module DTO: 6-10 tests
-   - CRUD module commands (all): 8-12 tests
-   - CRUD module queries (all): 3-5 tests
-   - Complex module: multiply by 1.5-2x
+```
+## Validation Report
 
-If any test fails validation, remove it and note why.
+**Waste check** (what breaks if each test is deleted?):
+- <test name> -> <what it catches, or FLAG FOR REMOVAL>
+- ...
+
+**Owner check** (any duplicate behavior covered at another layer?):
+- <finding, or "none">
+
+**Anti-pattern check** (any test in the NOT-to-test list?):
+- <finding, or "none">
+
+**Budget check:**
+- Test count: <N>
+- Module type + layer: <e.g., CRUD commands>
+- Budget: <range from below>
+- Status: <within / over / under — if over, list which to remove>
+
+**Actions taken:**
+- <tests removed and why, or "no changes needed">
+```
+
+Budget reference:
+- CRUD module entity: 5-10 tests
+- CRUD module DTO: 6-10 tests
+- CRUD module commands (all): 8-12 tests
+- CRUD module queries (all): 3-5 tests
+- Complex module: multiply by 1.5-2x
+
+If any test fails validation, remove it and note why in Actions taken.
 
 ## Handling Existing Test Files
 

@@ -187,3 +187,36 @@
 **Context:** Query handlers had inline object mapping from domain entities to response DTOs, duplicated across handlers. Considered alternatives: entity.toResponse() method, infrastructure mapper, controller mapping, or dedicated presenter.
 **Decision:** Use a **Presenter class** in the Application layer (`{module}.presenter.ts`) with static `toResponse()` methods. Domain entities must NOT contain toDTO/toResponse methods (anti-pattern per Vernon, Uncle Bob, Cockburn). Query handlers call `Presenter.toResponse()` instead of inline mapping.
 **Consequences:** Single source of truth for response shape per module. Domain entities stay pure. Easy to add multiple shapes (toSummary, toDetail) when needed. Applied retroactively to Tag module, enforced for all future modules.
+
+## 2026-04-13: Long-Form Layout & Save Semantics
+
+### ADR-013: Long-Form Layout Chassis — Sectioned Cards + Sticky Scrollspy Rail
+
+**Status:** Accepted
+**Context:** Console pages with many fields (Profile ~30 fields, Experience ~25, Project ~14 + relations) currently render as flat single-column forms with all space biased to the left half of the viewport. Researched 5 patterns (wizard, progressive single-page + scrollspy, tabs, accordion, one-thing-per-page) against project needs. Cross-page nav (Profile / Account / Notifications / Billing) and in-page nav both needed. See `.context/design/bank/patterns/long-form-layout.md` for full pattern catalog and decision matrix.
+**Decision:** Adopt a **single universal chassis** for all long-form pages in console: vertically stacked **section cards** (description-left / form-right per `bank/patterns/settings-section.md`) plus a **sticky scrollspy left rail** as the only in-page nav. Cross-page navigation uses **routes**, not tabs. No 3-column layouts; the console sidebar may collapse on detail pages.
+**Consequences:**
+- Universal layout — users learn once, applies to Profile, Experience, Project, future entities
+- Scrollspy rail uses Angular CDK `ScrollDispatcher` + `IntersectionObserver` (no third-party lib)
+- Section status indicators (✓/●/⚠/○) live on the rail and are populated regardless of save mechanic (see ADR-014)
+- Rejected: top tabs (duplicates routing), accordions (too click-heavy), 3-column layouts (visually crowded)
+- Section-card structure may require restructuring monolithic FormGroups into child FormGroups for status mapping
+
+### ADR-014: Save Semantics — Per-Section for Settings, Atomic for Domain Entities
+
+**Status:** Accepted
+**Context:** ADR-013 establishes a shared layout chassis but doesn't prescribe save mechanics. Two valid mechanics exist: per-section save (Stripe/Linear settings) and atomic save (GitHub repo settings, Stripe Connect onboarding). Choosing one for all modules forces a wrong fit somewhere. Current BE state: Profile / Experience / Project all expose single coarse-grained `Update*Command` with monolithic Zod schema; FE uses single FormGroup. Profile already has fine-grained breadcrumbs (`UpdateAvatarCommand`, `UpdateOgImageCommand`).
+**Decision:** Choose save mechanic by **module type**, not by layout:
+
+| Module type | Save mechanic | BE shape | Examples |
+|---|---|---|---|
+| **Settings / Preferences** (loose collection of independent fields) | Per-section save with section-level Save button | Section commands + section value objects + section Zod schemas | Profile, Notifications, Billing |
+| **Domain entity** (transactional, cross-field invariants) | Atomic save with sticky save bar | Single command, monolithic aggregate, full schema validation | Experience, Project, Article, Skill |
+
+Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: sticky save bar, scrollspy section status, submit-time validation summary, `CanDeactivate` + `beforeunload` nav guard, optional localStorage draft.
+**Consequences:**
+- Profile requires structural refactor: aggregate split into VOs (Identity, WorkAvailability, ContactInfo, Social, SEO), section commands, section schemas, FE child FormGroups (tracked as separate epic)
+- Experience / Project keep current atomic command shape; need only FE additions: sticky save bar, nav guard, scrollspy status mapping
+- New modules: classify on creation as Settings vs Domain entity; pick mechanic accordingly
+- Section names live in domain (VO names for Settings; logical groupings for Domain entities) — keeps BE and FE labels in sync
+
