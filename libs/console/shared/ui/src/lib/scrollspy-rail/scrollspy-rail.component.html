@@ -1,0 +1,21 @@
+<nav class="scrollspy-rail" aria-label="Page sections">
+  @for (section of sections(); track section.id) {
+    <button
+      class="scrollspy-rail__item"
+      [class.scrollspy-rail__item--active]="activeId() === section.id"
+      [attr.aria-current]="activeId() === section.id ? 'true' : null"
+      (click)="scrollTo(section.id)"
+      type="button"
+    >
+      <span
+        class="scrollspy-rail__icon"
+        [class.scrollspy-rail__icon--saved]="section.status() === 'saved'"
+        [class.scrollspy-rail__icon--editing]="section.status() === 'editing'"
+        [class.scrollspy-rail__icon--error]="section.status() === 'error'"
+      >
+        {{ statusIcon(section.status()) }}
+      </span>
+      <span class="scrollspy-rail__label">{{ section.label }}</span>
+    </button>
+  }
+</nav>

@@ -1,0 +1,54 @@
+.section-card {
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+  padding: 24px;
+
+  &__body {
+    display: grid;
+    grid-template-columns: minmax(0, 35%) minmax(0, 65%);
+    gap: 24px;
+  }
+
+  &__description {
+    padding-right: 16px;
+  }
+
+  &__form {
+    min-width: 0;
+  }
+
+  &__footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__error {
+    @apply text-sm;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: var(--color-error-container);
+    color: var(--color-error);
+  }
+
+  &__footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  &__saved-label {
+    margin-right: auto;
+    color: var(--color-success);
+  }
+
+  &__dirty-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: inline-block;
+  }
+}

@@ -1,0 +1,20 @@
+.long-form-layout {
+  display: grid;
+  grid-template-columns: 208px 1fr;
+  gap: 24px;
+  align-items: start;
+  min-height: 0;
+
+  &__rail {
+    position: sticky;
+    top: 80px; // header (64px) + 16px gap
+    align-self: start;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-width: 0;
+  }
+}

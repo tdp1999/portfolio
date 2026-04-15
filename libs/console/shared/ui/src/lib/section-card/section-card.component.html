@@ -1,0 +1,38 @@
+<section class="section-card" [attr.id]="sectionId()">
+  <div class="section-card__body">
+    <div class="section-card__description">
+      <h3 class="text-section-heading">{{ title() }}</h3>
+      <p class="text-body text-text-secondary mt-1">{{ description() }}</p>
+    </div>
+    <div class="section-card__form">
+      <ng-content />
+    </div>
+  </div>
+
+  @if (saveMode() === 'per-section') {
+    <div class="section-card__footer">
+      @if (errorMessage()?.(); as error) {
+        <div class="section-card__error" role="alert">{{ error }}</div>
+      }
+
+      <div class="section-card__footer-actions">
+        @if (lastSavedLabel(); as label) {
+          <span class="section-card__saved-label text-caption">{{ label }}</span>
+        }
+
+        @if (formGroup()?.dirty) {
+          <span class="section-card__dirty-dot" aria-label="Unsaved changes"></span>
+        }
+
+        <button mat-button type="button" [disabled]="isCancelDisabled()" (click)="onCancel()">Cancel</button>
+        <button mat-flat-button type="button" [disabled]="isSaveDisabled()" (click)="onSave()">
+          @if (saving()?.()) {
+            Saving…
+          } @else {
+            Save section
+          }
+        </button>
+      </div>
+    </div>
+  }
+</section>
