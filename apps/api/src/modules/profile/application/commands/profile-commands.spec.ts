@@ -1,6 +1,17 @@
-import { UpsertProfileCommand, UpsertProfileHandler } from './upsert-profile.command';
 import { UpdateAvatarCommand, UpdateAvatarHandler } from './update-avatar.command';
 import { UpdateOgImageCommand, UpdateOgImageHandler } from './update-og-image.command';
+import { UpdateProfileIdentityCommand, UpdateProfileIdentityHandler } from './update-profile-identity.command';
+import {
+  UpdateProfileWorkAvailabilityCommand,
+  UpdateProfileWorkAvailabilityHandler,
+} from './update-profile-work-availability.command';
+import { UpdateProfileContactCommand, UpdateProfileContactHandler } from './update-profile-contact.command';
+import { UpdateProfileLocationCommand, UpdateProfileLocationHandler } from './update-profile-location.command';
+import {
+  UpdateProfileSocialLinksCommand,
+  UpdateProfileSocialLinksHandler,
+} from './update-profile-social-links.command';
+import { UpdateProfileSeoOgCommand, UpdateProfileSeoOgHandler } from './update-profile-seo-og.command';
 import { IProfileRepository } from '../ports/profile.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
@@ -48,24 +59,6 @@ describe('Profile Commands', () => {
     updatedById: userId,
   };
 
-  const validUpsertDto = {
-    fullName: { en: 'John Doe', vi: 'Nguyen Van A' },
-    title: { en: 'Developer', vi: 'Lap trinh vien' },
-    bioShort: { en: 'A dev', vi: 'Mot dev' },
-    bioLong: null,
-    yearsOfExperience: 5,
-    availability: 'EMPLOYED',
-    openTo: [],
-    email: 'john@example.com',
-    preferredContactPlatform: 'LINKEDIN',
-    preferredContactValue: 'linkedin.com/in/john',
-    locationCountry: 'Vietnam',
-    locationCity: 'HCMC',
-    socialLinks: [],
-    resumeUrls: {},
-    certifications: [],
-  };
-
   const loadProfile = (overrides: Partial<IProfileProps> = {}) => Profile.load({ ...baseProps, ...overrides });
 
   beforeEach(() => {
@@ -73,93 +66,19 @@ describe('Profile Commands', () => {
       findByUserId: jest.fn(),
       findOwnerProfile: jest.fn(),
       findWithMedia: jest.fn(),
-      upsert: jest.fn().mockResolvedValue(profileId),
+
       updateAvatar: jest.fn(),
       updateOgImage: jest.fn(),
+      updateIdentity: jest.fn(),
+      updateWorkAvailability: jest.fn(),
+      updateContact: jest.fn(),
+      updateLocation: jest.fn(),
+      updateSocialLinks: jest.fn(),
+      updateSeoOg: jest.fn(),
     };
     mediaRepo = {
       findById: jest.fn(),
     };
-  });
-
-  // --- Upsert Profile ---
-
-  describe('UpsertProfileHandler', () => {
-    let handler: UpsertProfileHandler;
-    beforeEach(() => (handler = new UpsertProfileHandler(profileRepo, mediaRepo as unknown as IMediaRepository)));
-
-    it('should create new profile when none exists', async () => {
-      profileRepo.findByUserId.mockResolvedValue(null);
-
-      const result = await handler.execute(new UpsertProfileCommand(validUpsertDto, userId));
-
-      expect(result).toEqual({ id: profileId });
-      expect(profileRepo.upsert).toHaveBeenCalled();
-    });
-
-    it('should update existing profile', async () => {
-      profileRepo.findByUserId.mockResolvedValue(loadProfile());
-
-      const result = await handler.execute(
-        new UpsertProfileCommand({ ...validUpsertDto, yearsOfExperience: 10 }, userId)
-      );
-
-      expect(result).toEqual({ id: profileId });
-      expect(profileRepo.upsert).toHaveBeenCalled();
-    });
-
-    it('should reject invalid input', async () => {
-      await expect(handler.execute(new UpsertProfileCommand({}, userId))).rejects.toMatchObject({
-        statusCode: 400,
-        errorCode: 'PROFILE_INVALID_INPUT',
-      });
-    });
-
-    it('should reject missing required translatable fields', async () => {
-      await expect(
-        handler.execute(new UpsertProfileCommand({ ...validUpsertDto, fullName: { en: '' } }, userId))
-      ).rejects.toMatchObject({ statusCode: 400 });
-    });
-
-    it('should reject invalid socialLinks', async () => {
-      await expect(
-        handler.execute(new UpsertProfileCommand({ ...validUpsertDto, socialLinks: [{ bad: 'data' }] }, userId))
-      ).rejects.toMatchObject({ statusCode: 400 });
-    });
-
-    it('should reject invalid certifications', async () => {
-      await expect(
-        handler.execute(
-          new UpsertProfileCommand({ ...validUpsertDto, certifications: [{ missing: 'fields' }] }, userId)
-        )
-      ).rejects.toMatchObject({ statusCode: 400 });
-    });
-
-    it('should throw MEDIA_NOT_FOUND when avatarId references nonexistent media', async () => {
-      profileRepo.findByUserId.mockResolvedValue(null);
-      mediaRepo.findById.mockResolvedValue(null);
-
-      await expect(
-        handler.execute(new UpsertProfileCommand({ ...validUpsertDto, avatarId: mediaId }, userId))
-      ).rejects.toMatchObject({ statusCode: 404, errorCode: 'PROFILE_MEDIA_NOT_FOUND' });
-    });
-
-    it('should reject avatarId: null (use UpdateAvatarCommand to clear avatar)', async () => {
-      // UpsertProfileSchema uses z.uuid().optional() — null is rejected intentionally.
-      // To clear an avatar, callers must use UpdateAvatarCommand which uses z.uuid().nullable().
-      await expect(
-        handler.execute(new UpsertProfileCommand({ ...validUpsertDto, avatarId: null }, userId))
-      ).rejects.toMatchObject({ statusCode: 400 });
-    });
-
-    it('should throw MEDIA_NOT_FOUND when ogImageId references nonexistent media', async () => {
-      profileRepo.findByUserId.mockResolvedValue(null);
-      mediaRepo.findById.mockResolvedValue(null);
-
-      await expect(
-        handler.execute(new UpsertProfileCommand({ ...validUpsertDto, ogImageId: mediaId }, userId))
-      ).rejects.toMatchObject({ statusCode: 404, errorCode: 'PROFILE_MEDIA_NOT_FOUND' });
-    });
   });
 
   // --- Update Avatar ---
@@ -219,6 +138,202 @@ describe('Profile Commands', () => {
         statusCode: 404,
         errorCode: 'PROFILE_MEDIA_NOT_FOUND',
       });
+    });
+  });
+
+  // --- Update Profile Identity ---
+
+  describe('UpdateProfileIdentityHandler', () => {
+    let handler: UpdateProfileIdentityHandler;
+    beforeEach(() => (handler = new UpdateProfileIdentityHandler(profileRepo)));
+
+    const validDto = {
+      fullName: { en: 'Jane Doe', vi: 'Tran Thi B' },
+      title: { en: 'Designer', vi: 'Nha thiet ke' },
+      bioShort: { en: 'Short bio', vi: 'Tieu su' },
+      bioLong: null,
+    };
+
+    it('should update identity when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileIdentityCommand(validDto, userId));
+
+      expect(profileRepo.updateIdentity).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    // Shared NOT_FOUND branch — tested once here, same logic in all 6 section handlers.
+    it('should throw NOT_FOUND when profile missing', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new UpdateProfileIdentityCommand(validDto, userId))).rejects.toMatchObject({
+        statusCode: 404,
+        errorCode: 'PROFILE_NOT_FOUND',
+      });
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      await expect(handler.execute(new UpdateProfileIdentityCommand({}, userId))).rejects.toMatchObject({
+        errorCode: 'PROFILE_INVALID_INPUT',
+      });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile Work Availability ---
+
+  describe('UpdateProfileWorkAvailabilityHandler', () => {
+    let handler: UpdateProfileWorkAvailabilityHandler;
+    beforeEach(() => (handler = new UpdateProfileWorkAvailabilityHandler(profileRepo)));
+
+    const validDto = {
+      yearsOfExperience: 8,
+      availability: 'OPEN_TO_WORK',
+      openTo: ['FULL_TIME'],
+      timezone: 'Asia/Ho_Chi_Minh',
+    };
+
+    it('should update work availability when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileWorkAvailabilityCommand(validDto, userId));
+
+      expect(profileRepo.updateWorkAvailability).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      await expect(handler.execute(new UpdateProfileWorkAvailabilityCommand({}, userId))).rejects.toMatchObject({
+        errorCode: 'PROFILE_INVALID_INPUT',
+      });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile Contact ---
+
+  describe('UpdateProfileContactHandler', () => {
+    let handler: UpdateProfileContactHandler;
+    beforeEach(() => (handler = new UpdateProfileContactHandler(profileRepo)));
+
+    const validDto = {
+      email: 'jane@example.com',
+      phone: null,
+      preferredContactPlatform: 'LINKEDIN',
+      preferredContactValue: 'linkedin.com/in/jane',
+    };
+
+    it('should update contact when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileContactCommand(validDto, userId));
+
+      expect(profileRepo.updateContact).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      await expect(handler.execute(new UpdateProfileContactCommand({}, userId))).rejects.toMatchObject({
+        errorCode: 'PROFILE_INVALID_INPUT',
+      });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile Location ---
+
+  describe('UpdateProfileLocationHandler', () => {
+    let handler: UpdateProfileLocationHandler;
+    beforeEach(() => (handler = new UpdateProfileLocationHandler(profileRepo)));
+
+    const validDto = {
+      locationCountry: 'Vietnam',
+      locationCity: 'Hanoi',
+      locationPostalCode: null,
+      locationAddress1: null,
+      locationAddress2: null,
+    };
+
+    it('should update location when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileLocationCommand(validDto, userId));
+
+      expect(profileRepo.updateLocation).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      await expect(handler.execute(new UpdateProfileLocationCommand({}, userId))).rejects.toMatchObject({
+        errorCode: 'PROFILE_INVALID_INPUT',
+      });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile Social Links ---
+
+  describe('UpdateProfileSocialLinksHandler', () => {
+    let handler: UpdateProfileSocialLinksHandler;
+    beforeEach(() => (handler = new UpdateProfileSocialLinksHandler(profileRepo)));
+
+    const validDto = {
+      socialLinks: [{ platform: 'GITHUB', url: 'https://github.com/user' }],
+      resumeUrls: {},
+      certifications: [],
+    };
+
+    it('should update social links when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileSocialLinksCommand(validDto, userId));
+
+      expect(profileRepo.updateSocialLinks).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      // socialLinks entry with missing url/platform fails schema
+      await expect(
+        handler.execute(new UpdateProfileSocialLinksCommand({ socialLinks: [{}] }, userId))
+      ).rejects.toMatchObject({ errorCode: 'PROFILE_INVALID_INPUT' });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile SEO/OG ---
+
+  describe('UpdateProfileSeoOgHandler', () => {
+    let handler: UpdateProfileSeoOgHandler;
+    beforeEach(() => (handler = new UpdateProfileSeoOgHandler(profileRepo)));
+
+    const validDto = {
+      metaTitle: 'My Portfolio',
+      metaDescription: 'A short description',
+      canonicalUrl: 'https://example.com',
+    };
+
+    it('should update SEO/OG when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileSeoOgCommand(validDto, userId));
+
+      expect(profileRepo.updateSeoOg).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should coerce empty strings to null and accept the payload', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(
+        new UpdateProfileSeoOgCommand({ metaTitle: '', metaDescription: '', canonicalUrl: '' }, userId)
+      );
+
+      expect(profileRepo.updateSeoOg).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when canonicalUrl is not a URL', async () => {
+      await expect(
+        handler.execute(
+          new UpdateProfileSeoOgCommand({ metaTitle: null, metaDescription: null, canonicalUrl: 'not-a-url' }, userId)
+        )
+      ).rejects.toMatchObject({ errorCode: 'PROFILE_INVALID_INPUT' });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
     });
   });
 });

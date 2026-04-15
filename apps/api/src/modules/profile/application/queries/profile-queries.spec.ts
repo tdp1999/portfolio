@@ -56,9 +56,14 @@ describe('Profile Queries', () => {
       findByUserId: jest.fn(),
       findOwnerProfile: jest.fn(),
       findWithMedia: jest.fn(),
-      upsert: jest.fn(),
       updateAvatar: jest.fn(),
       updateOgImage: jest.fn(),
+      updateIdentity: jest.fn(),
+      updateWorkAvailability: jest.fn(),
+      updateContact: jest.fn(),
+      updateLocation: jest.fn(),
+      updateSocialLinks: jest.fn(),
+      updateSeoOg: jest.fn(),
     };
   });
 
@@ -99,7 +104,7 @@ describe('Profile Queries', () => {
     it('should return public response without private fields', async () => {
       repo.findOwnerProfile.mockResolvedValue(profileWithMedia);
 
-      const result = await handler.execute(new GetPublicProfileQuery());
+      const result = await handler.execute();
 
       expect(result.fullName).toEqual({ en: 'John Doe', vi: 'Nguyen Van A' });
       expect(result.avatarUrl).toBe('https://cdn.example.com/avatar.jpg');
@@ -113,7 +118,7 @@ describe('Profile Queries', () => {
     it('should throw NotFound when profile does not exist', async () => {
       repo.findOwnerProfile.mockResolvedValue(null);
 
-      await expect(handler.execute(new GetPublicProfileQuery())).rejects.toMatchObject({
+      await expect(handler.execute()).rejects.toMatchObject({
         statusCode: 404,
         errorCode: 'PROFILE_NOT_FOUND',
       });

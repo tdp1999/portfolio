@@ -1,14 +1,4 @@
 import { z } from 'zod/v4';
-import { Availability, SocialPlatform } from '@prisma/client';
-import {
-  TranslatableSchema,
-  OptionalTranslatableSchema,
-  SocialLinksArraySchema,
-  CertificationsArraySchema,
-  ResumeUrlsSchema,
-  OpenToSchema,
-} from '@portfolio/shared/utils';
-import { TimezoneSchema } from '@portfolio/shared/utils';
 import type {
   TranslatableJson,
   SocialLink,
@@ -18,38 +8,6 @@ import type {
   SocialPlatform as SocialPlatformType,
 } from '@portfolio/shared/types';
 import type { Availability as AvailabilityType } from '../domain/profile.types';
-
-// --- Upsert Profile Schema ---
-
-export const UpsertProfileSchema = z.object({
-  fullName: TranslatableSchema,
-  title: TranslatableSchema,
-  bioShort: TranslatableSchema,
-  bioLong: OptionalTranslatableSchema,
-  yearsOfExperience: z.number().int().min(0).max(99),
-  availability: z.nativeEnum(Availability),
-  openTo: OpenToSchema,
-  email: z.email().max(320),
-  phone: z.string().max(20).optional(),
-  preferredContactPlatform: z.nativeEnum(SocialPlatform),
-  preferredContactValue: z.string().max(500),
-  locationCountry: z.string().max(100),
-  locationCity: z.string().max(100),
-  locationPostalCode: z.string().max(20).optional(),
-  locationAddress1: z.string().max(300).optional(),
-  locationAddress2: z.string().max(300).optional(),
-  socialLinks: SocialLinksArraySchema,
-  resumeUrls: ResumeUrlsSchema,
-  certifications: CertificationsArraySchema,
-  metaTitle: z.string().max(70).optional(),
-  metaDescription: z.string().max(160).optional(),
-  timezone: TimezoneSchema.optional(),
-  canonicalUrl: z.url().optional(),
-  avatarId: z.uuid().optional(),
-  ogImageId: z.uuid().optional(),
-});
-
-export type UpsertProfileDto = z.infer<typeof UpsertProfileSchema>;
 
 // --- Update Avatar / OG Image Schemas ---
 

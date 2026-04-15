@@ -1,43 +1,9 @@
-import { UpsertProfileSchema, UpdateAvatarSchema, UpdateOgImageSchema } from './profile.dto';
+import { UpdateAvatarSchema, UpdateOgImageSchema } from './profile.dto';
 import { ProfilePresenter } from './profile.presenter';
 import { Profile } from '../domain/entities/profile.entity';
 import type { IProfileProps } from '../domain/profile.types';
 
 // --- Test Helpers ---
-
-const validTranslatable = { en: 'English text', vi: 'Vietnamese text' };
-
-const validSocialLink = {
-  platform: 'GITHUB',
-  url: 'https://github.com/user',
-};
-
-const validCertification = {
-  name: 'AWS Solutions Architect',
-  issuer: 'Amazon',
-  year: 2024,
-};
-
-function buildValidUpsertPayload(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-  return {
-    fullName: validTranslatable,
-    title: validTranslatable,
-    bioShort: validTranslatable,
-    bioLong: null,
-    yearsOfExperience: 5,
-    availability: 'EMPLOYED',
-    openTo: ['FREELANCE'],
-    email: 'test@example.com',
-    preferredContactPlatform: 'LINKEDIN',
-    preferredContactValue: 'linkedin.com/in/test',
-    locationCountry: 'Vietnam',
-    locationCity: 'Ho Chi Minh City',
-    socialLinks: [validSocialLink],
-    resumeUrls: { en: 'https://example.com/resume-en.pdf' },
-    certifications: [validCertification],
-    ...overrides,
-  };
-}
 
 function buildProfileProps(overrides: Partial<IProfileProps> = {}): IProfileProps {
   return {
@@ -75,118 +41,6 @@ function buildProfileProps(overrides: Partial<IProfileProps> = {}): IProfileProp
     ...overrides,
   };
 }
-
-// --- UpsertProfileSchema ---
-
-describe('UpsertProfileSchema', () => {
-  it('should accept a valid full payload', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload());
-    expect(result.success).toBe(true);
-  });
-
-  it('should reject missing required fields', () => {
-    const result = UpsertProfileSchema.safeParse({});
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject invalid email', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ email: 'not-an-email' }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject yearsOfExperience out of range', () => {
-    const tooLow = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ yearsOfExperience: -1 }));
-    const tooHigh = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ yearsOfExperience: 100 }));
-    expect(tooLow.success).toBe(false);
-    expect(tooHigh.success).toBe(false);
-  });
-
-  it('should accept optional fields when omitted', () => {
-    const payload = buildValidUpsertPayload();
-    delete (payload as Record<string, unknown>)['phone'];
-    delete (payload as Record<string, unknown>)['metaTitle'];
-    delete (payload as Record<string, unknown>)['timezone'];
-    const result = UpsertProfileSchema.safeParse(payload);
-    expect(result.success).toBe(true);
-  });
-
-  it('should reject metaTitle exceeding max length', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ metaTitle: 'a'.repeat(71) }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject metaDescription exceeding max length', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ metaDescription: 'a'.repeat(161) }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject invalid availability enum', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ availability: 'RETIRED' }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject invalid canonicalUrl', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ canonicalUrl: 'not-a-url' }));
-    expect(result.success).toBe(false);
-  });
-});
-
-// --- TranslatableSchema integration ---
-
-describe('UpsertProfileSchema — translatable fields', () => {
-  it('should reject missing locale in fullName', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ fullName: { en: 'Only English' } }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject empty strings in translatable fields', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ title: { en: '', vi: '' } }));
-    expect(result.success).toBe(false);
-  });
-});
-
-// --- SocialLinks validation ---
-
-describe('UpsertProfileSchema — socialLinks', () => {
-  it('should reject invalid URL in social link', () => {
-    const result = UpsertProfileSchema.safeParse(
-      buildValidUpsertPayload({ socialLinks: [{ platform: 'GITHUB', url: 'not-a-url' }] })
-    );
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject invalid platform in social link', () => {
-    const result = UpsertProfileSchema.safeParse(
-      buildValidUpsertPayload({ socialLinks: [{ platform: 'MYSPACE', url: 'https://example.com' }] })
-    );
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject array exceeding max size', () => {
-    const links = Array.from({ length: 21 }, (_, i) => ({
-      platform: 'GITHUB',
-      url: `https://github.com/user${i}`,
-    }));
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ socialLinks: links }));
-    expect(result.success).toBe(false);
-  });
-});
-
-// --- Certifications validation ---
-
-describe('UpsertProfileSchema — certifications', () => {
-  it('should reject certification missing required fields', () => {
-    const result = UpsertProfileSchema.safeParse(buildValidUpsertPayload({ certifications: [{ name: 'AWS' }] }));
-    expect(result.success).toBe(false);
-  });
-
-  it('should reject certification with year out of bounds', () => {
-    const result = UpsertProfileSchema.safeParse(
-      buildValidUpsertPayload({ certifications: [{ ...validCertification, year: 1800 }] })
-    );
-    expect(result.success).toBe(false);
-  });
-});
 
 // --- UpdateAvatarSchema / UpdateOgImageSchema ---
 
