@@ -51,11 +51,11 @@ export class ProfileService {
   // ── Media (dedicated endpoints) ──────────────────────────────────────────
 
   updateAvatar(avatarId: string | null) {
-    return this.api.patch<void>('/admin/profile/avatar', { avatarId });
+    return this.api.patch<{ avatarUrl: string | null }>('/admin/profile/avatar', { avatarId });
   }
 
   updateOgImage(ogImageId: string | null) {
-    return this.api.patch<void>('/admin/profile/og-image', { ogImageId });
+    return this.api.patch<{ ogImageUrl: string | null }>('/admin/profile/og-image', { ogImageId });
   }
 
   // ── Utility ──────────────────────────────────────────────────────────────

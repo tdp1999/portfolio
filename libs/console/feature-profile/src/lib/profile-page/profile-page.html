@@ -13,97 +13,77 @@
       <console-scrollspy-rail [sections]="sections" />
     </div>
 
-    <div content>
+    <div content class="flex flex-col gap-8">
       <!-- ── Identity ────────────────────────────────────────────────────── -->
       <console-section-card
         id="section-identity"
         title="Identity"
         description="Display name, title, and bios. Avatar saves on upload."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="identityForm"
         [saving]="savingSignals.identity"
         [lastSavedAt]="lastSavedSignals.identity"
         [errorMessage]="errorSignals.identity"
         (save)="saveIdentity()"
       >
-        <!-- Avatar -->
-        <div class="field-block">
-          <p class="field-label">Avatar</p>
-          <div class="media-row">
-            <div class="media-preview media-preview--avatar">
-              @if (avatarPreview(); as src) {
-                <img [src]="src" alt="Avatar preview" />
-              } @else {
-                <div class="media-placeholder"><mat-icon>person</mat-icon></div>
-              }
-              @if (avatarUploading()) {
-                <div class="media-uploading"><mat-spinner diameter="20" /></div>
-              }
-            </div>
-            <div class="media-actions">
-              <button mat-stroked-button type="button" [disabled]="avatarUploading()" (click)="avatarInput.click()">
-                <mat-icon>upload</mat-icon> Upload
+        <div class="form-stack">
+          <!-- Avatar -->
+          <div class="field-block">
+            <p class="field-label">Avatar</p>
+            <div class="media-upload">
+              <button
+                type="button"
+                class="media-trigger media-trigger--avatar"
+                [disabled]="avatarUploading()"
+                (click)="avatarInput.click()"
+              >
+                @if (avatarPreview(); as src) {
+                  <img [src]="src" alt="Avatar preview" />
+                } @else {
+                  <div class="media-default"><mat-icon>person</mat-icon></div>
+                }
+                <div class="media-overlay">
+                  @if (avatarUploading()) {
+                    <mat-spinner diameter="24" />
+                  } @else {
+                    <mat-icon>photo_camera</mat-icon>
+                  }
+                </div>
               </button>
               @if (avatarPreview()) {
-                <button mat-stroked-button color="warn" type="button" (click)="clearAvatar()">
-                  <mat-icon>clear</mat-icon> Remove
+                <button mat-button type="button" class="media-remove" (click)="confirmClearAvatar()">
+                  Remove photo
                 </button>
               }
+              <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
             </div>
-            <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
           </div>
-        </div>
 
-        <div formGroupName="fullName" class="bilingual-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Full Name (EN)</mat-label>
-            <input matInput formControlName="en" />
-            <mat-error>{{ identityForm.controls.fullName.controls.en | formError }}</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Full Name (VI)</mat-label>
-            <input matInput formControlName="vi" />
-            <mat-error>{{ identityForm.controls.fullName.controls.vi | formError }}</mat-error>
-          </mat-form-field>
-        </div>
+          <console-translatable-group [group]="identityForm.controls.fullName" label="Full Name" />
 
-        <div formGroupName="title" class="bilingual-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Title (EN)</mat-label>
-            <input matInput formControlName="en" placeholder="e.g. Senior Software Engineer" />
-            <mat-error>{{ identityForm.controls.title.controls.en | formError }}</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Title (VI)</mat-label>
-            <input matInput formControlName="vi" />
-            <mat-error>{{ identityForm.controls.title.controls.vi | formError }}</mat-error>
-          </mat-form-field>
-        </div>
+          <console-translatable-group
+            [group]="identityForm.controls.title"
+            label="Title"
+            [placeholder]="{ en: 'e.g. Senior Software Engineer' }"
+          />
 
-        <div formGroupName="bioShort" class="bilingual-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Short Bio (EN)</mat-label>
-            <textarea matInput formControlName="en" rows="3" maxlength="200"></textarea>
-            <mat-hint align="end">{{ identityForm.controls.bioShort.controls.en.value.length }}/200</mat-hint>
-            <mat-error>{{ identityForm.controls.bioShort.controls.en | formError }}</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Short Bio (VI)</mat-label>
-            <textarea matInput formControlName="vi" rows="3" maxlength="200"></textarea>
-            <mat-hint align="end">{{ identityForm.controls.bioShort.controls.vi.value.length }}/200</mat-hint>
-            <mat-error>{{ identityForm.controls.bioShort.controls.vi | formError }}</mat-error>
-          </mat-form-field>
-        </div>
+          <console-translatable-group
+            [group]="identityForm.controls.bioShort"
+            label="Short Bio"
+            type="textarea"
+            [rows]="3"
+            [maxLength]="200"
+            [showCounter]="true"
+          />
 
-        <div formGroupName="bioLong" class="bilingual-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Long Bio (EN)</mat-label>
-            <textarea matInput formControlName="en" rows="5"></textarea>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Long Bio (VI)</mat-label>
-            <textarea matInput formControlName="vi" rows="5"></textarea>
-          </mat-form-field>
+          <console-translatable-group
+            [group]="identityForm.controls.bioLong"
+            label="Long Bio"
+            type="textarea"
+            [rows]="5"
+            [showCounter]="true"
+          />
         </div>
       </console-section-card>
 
@@ -113,6 +93,7 @@
         title="Work & Availability"
         description="Experience, current availability, and what you're open to."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="workAvailabilityForm"
         [saving]="savingSignals.workAvailability"
         [lastSavedAt]="lastSavedSignals.workAvailability"
@@ -121,9 +102,9 @@
       >
         <div class="form-stack">
           <div class="field-row">
-            <mat-form-field appearance="outline" class="w-32">
+            <mat-form-field appearance="outline" class="w-48">
               <mat-label>Years of Experience</mat-label>
-              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" step="0.5" />
               <mat-error>{{ workAvailabilityForm.controls.yearsOfExperience | formError }}</mat-error>
             </mat-form-field>
 
@@ -149,18 +130,7 @@
 
           <div>
             <p class="field-label">Open To</p>
-            <div class="chip-row">
-              @for (opt of openToOptions; track opt.value) {
-                <button
-                  type="button"
-                  class="chip-toggle"
-                  [class.chip-toggle--selected]="isOpenToSelected(opt.value)"
-                  (click)="toggleOpenTo(opt.value)"
-                >
-                  {{ opt.label }}
-                </button>
-              }
-            </div>
+            <console-chip-toggle-group formControlName="openTo" [options]="openToOptions" />
           </div>
         </div>
       </console-section-card>
@@ -171,6 +141,7 @@
         title="Contact"
         description="How people reach you."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="contactForm"
         [saving]="savingSignals.contact"
         [lastSavedAt]="lastSavedSignals.contact"
@@ -214,6 +185,7 @@
         title="Location"
         description="Country and city are public. Address lines are internal only."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="locationForm"
         [saving]="savingSignals.location"
         [lastSavedAt]="lastSavedSignals.location"
@@ -256,6 +228,8 @@
         title="Social Links"
         description="Public links, resume URLs, and certifications."
         saveMode="per-section"
+        formSnapshot
+        [formSnapshotRebuild]="rebuildSocialLinks"
         [formGroup]="socialLinksForm"
         [saving]="savingSignals.socialLinks"
         [lastSavedAt]="lastSavedSignals.socialLinks"
@@ -272,6 +246,7 @@
             </div>
 
             <div formArrayName="socialLinks" class="rows">
+              @let socialLinksArray = socialLinksForm.controls.socialLinks;
               @for (control of socialLinksArray.controls; track $index) {
                 @let linkGroup = asFormGroup(control);
                 <div [formGroup]="linkGroup" class="social-link-row">
@@ -306,23 +281,14 @@
                 </div>
               }
               @if (socialLinksArray.length === 0) {
-                <p class="text-body text-text-muted">No social links added yet.</p>
+                <p class="text-body text-text-secondary">No social links added yet.</p>
               }
             </div>
           </div>
 
-          <div class="subsection" formGroupName="resumeUrls">
+          <div class="subsection">
             <h4 class="text-card-title">Resume URLs</h4>
-            <div class="bilingual-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Resume URL (EN)</mat-label>
-                <input matInput formControlName="en" placeholder="https://" />
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Resume URL (VI)</mat-label>
-                <input matInput formControlName="vi" placeholder="https://" />
-              </mat-form-field>
-            </div>
+            <console-translatable-group [group]="socialLinksForm.controls.resumeUrls" label="Resume URL" />
           </div>
 
           <div class="subsection">
@@ -334,6 +300,7 @@
             </div>
 
             <div formArrayName="certifications" class="rows">
+              @let certificationsArray = socialLinksForm.controls.certifications;
               @for (control of certificationsArray.controls; track $index) {
                 @let certGroup = asFormGroup(control);
                 <div [formGroup]="certGroup" class="cert-row">
@@ -368,7 +335,7 @@
                 </div>
               }
               @if (certificationsArray.length === 0) {
-                <p class="text-body text-text-muted">No certifications added yet.</p>
+                <p class="text-body text-text-secondary">No certifications added yet.</p>
               }
             </div>
           </div>
@@ -381,6 +348,7 @@
         title="SEO / OG"
         description="Metadata for search engines and social preview. OG image saves on upload."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="seoOgForm"
         [saving]="savingSignals.seoOg"
         [lastSavedAt]="lastSavedSignals.seoOg"
@@ -390,27 +358,31 @@
         <div class="form-stack">
           <div class="field-block">
             <p class="field-label">OG Image</p>
-            <div class="media-row">
-              <div class="media-preview media-preview--og">
+            <div class="media-upload">
+              <button
+                type="button"
+                class="media-trigger media-trigger--og"
+                [disabled]="ogImageUploading()"
+                (click)="ogImageInput.click()"
+              >
                 @if (ogImagePreview(); as src) {
                   <img [src]="src" alt="OG image preview" />
                 } @else {
-                  <div class="media-placeholder"><mat-icon>image</mat-icon></div>
+                  <div class="media-default"><mat-icon>image</mat-icon></div>
                 }
-                @if (ogImageUploading()) {
-                  <div class="media-uploading"><mat-spinner diameter="20" /></div>
-                }
-              </div>
-              <div class="media-actions">
-                <button mat-stroked-button type="button" [disabled]="ogImageUploading()" (click)="ogImageInput.click()">
-                  <mat-icon>upload</mat-icon> Upload
+                <div class="media-overlay">
+                  @if (ogImageUploading()) {
+                    <mat-spinner diameter="24" />
+                  } @else {
+                    <mat-icon>photo_camera</mat-icon>
+                  }
+                </div>
+              </button>
+              @if (ogImagePreview()) {
+                <button mat-button type="button" class="media-remove" (click)="confirmClearOgImage()">
+                  Remove image
                 </button>
-                @if (ogImagePreview()) {
-                  <button mat-stroked-button color="warn" type="button" (click)="clearOgImage()">
-                    <mat-icon>clear</mat-icon> Remove
-                  </button>
-                }
-              </div>
+              }
               <input
                 #ogImageInput
                 type="file"

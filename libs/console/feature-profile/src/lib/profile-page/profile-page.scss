@@ -3,55 +3,40 @@
 }
 
 .profile-page {
-  padding: 24px;
+  @apply p-6;
 
   &__header {
-    margin-bottom: 32px;
+    @apply mb-8;
   }
 }
 
 .form-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  @apply gap-4;
 }
 
 .field-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  @apply gap-4;
   align-items: flex-start;
 }
 
 .field-block {
-  margin-bottom: 16px;
+  @apply mb-4;
 }
 
 .field-label {
-  @apply text-sm;
+  @apply text-sm leading-normal mb-2;
   font-weight: 500;
   color: var(--color-text);
-  margin-bottom: 8px;
-}
-
-.bilingual-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  mat-form-field {
-    width: 100%;
-  }
 }
 
 .subsection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  @apply gap-6;
 
   &__header {
     display: flex;
@@ -63,114 +48,130 @@
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  @apply gap-4;
 }
 
 .social-link-row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 12px;
+  @apply gap-4;
 }
 
 .cert-row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 8px;
+  @apply gap-4 p-4 rounded-lg;
   background: var(--color-surface-alt);
 }
 
-.chip-row {
+.media-upload {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
 }
 
-.chip-toggle {
-  @apply text-sm;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  background: transparent;
-
-  &:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-  }
-
-  &--selected {
-    background: var(--color-primary);
-    color: var(--color-text-on-primary);
-    border-color: var(--color-primary);
-
-    &:hover {
-      color: var(--color-text-on-primary);
-    }
-  }
-}
-
-.media-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.media-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.media-preview {
+.media-trigger {
   position: relative;
-  display: inline-block;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  background: var(--color-surface-alt);
+  padding: 0;
+  display: block;
+  transition: border-color 200ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 
   img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  &--avatar img,
-  &--avatar .media-placeholder {
-    width: 80px;
-    height: 80px;
+  &--avatar {
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
   }
 
-  &--og img,
-  &--og .media-placeholder {
-    width: 112px;
-    height: 64px;
-    border-radius: 4px;
+  &--og {
+    width: 200px;
+    height: 104px;
+    border-radius: 8px;
   }
 }
 
-.media-placeholder {
+.media-default {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface-alt);
   color: var(--color-text-muted);
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
 }
 
-.media-uploading {
+.media-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  color: white;
+  opacity: 0;
+  transition:
+    background 200ms ease,
+    opacity 200ms ease;
+  --mat-progress-spinner-active-indicator-color: white;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.media-trigger:hover:not(:disabled) .media-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+}
+
+.media-trigger:disabled .media-overlay {
   background: rgba(0, 0, 0, 0.4);
-  border-radius: inherit;
+  opacity: 1;
+}
+
+.media-remove {
+  @apply text-xs;
+  color: var(--color-text-secondary);
+  min-height: 28px;
+  line-height: 28px;
+  min-width: 0;
+
+  &:hover {
+    color: var(--color-error);
+  }
 }
 
 .json-ld-preview {
-  margin-top: 12px;
-  padding: 16px;
-  border-radius: 8px;
+  @apply mt-3 p-4 rounded-lg;
   background: var(--color-surface-alt);
   font-size: 12px;
   overflow: auto;

@@ -1,22 +1,14 @@
-// ── Translatable value object shape (mirrors BE TranslatableJson) ──────────
-export interface TranslatableValue {
-  en: string;
-  vi: string;
-}
-
-export interface OptionalTranslatableValue {
-  en?: string;
-  vi?: string;
-}
+import { OptionalTranslatableJson, TranslatableJson } from '@portfolio/shared/types';
+import { PROFILE_SECTIONS } from './profile.data';
 
 // ── Full admin profile response (GET /admin/profile) ───────────────────────
 export interface ProfileAdminResponse {
   id: string;
   userId: string;
-  fullName: TranslatableValue;
-  title: TranslatableValue;
-  bioShort: TranslatableValue;
-  bioLong: OptionalTranslatableValue | null;
+  fullName: TranslatableJson;
+  title: TranslatableJson;
+  bioShort: TranslatableJson;
+  bioLong: OptionalTranslatableJson | null;
   yearsOfExperience: number;
   availability: string;
   openTo: string[];
@@ -30,7 +22,7 @@ export interface ProfileAdminResponse {
   locationAddress1: string | null;
   locationAddress2: string | null;
   socialLinks: Array<{ platform: string; url: string; handle?: string }>;
-  resumeUrls: OptionalTranslatableValue;
+  resumeUrls: OptionalTranslatableJson;
   certifications: Array<{ name: string; issuer: string; year: number; url?: string }>;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -45,10 +37,10 @@ export interface ProfileAdminResponse {
 // ── Per-section PATCH payloads (mirror BE Update*Schema shapes) ────────────
 
 export interface UpdateIdentityPayload {
-  fullName: TranslatableValue;
-  title: TranslatableValue;
-  bioShort: TranslatableValue;
-  bioLong: OptionalTranslatableValue | null;
+  fullName: TranslatableJson;
+  title: TranslatableJson;
+  bioShort: TranslatableJson;
+  bioLong: OptionalTranslatableJson | null;
 }
 
 export interface UpdateWorkAvailabilityPayload {
@@ -75,7 +67,7 @@ export interface UpdateLocationPayload {
 
 export interface UpdateSocialLinksPayload {
   socialLinks: Array<{ platform: string; url: string; handle?: string }>;
-  resumeUrls: OptionalTranslatableValue;
+  resumeUrls: OptionalTranslatableJson;
   certifications: Array<{ name: string; issuer: string; year: number; url?: string }>;
 }
 
@@ -84,3 +76,5 @@ export interface UpdateSeoOgPayload {
   metaDescription: string | null;
   canonicalUrl: string | null;
 }
+
+export type SectionKey = (typeof PROFILE_SECTIONS)[number]['value'];

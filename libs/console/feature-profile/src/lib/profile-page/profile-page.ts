@@ -1,35 +1,29 @@
+import { JsonPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
+  inject,
   OnDestroy,
   OnInit,
   Signal,
-  computed,
-  inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { JsonPipe } from '@angular/common';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe, maxDecimalsValidator } from '@portfolio/console/shared/data-access';
 import {
+  ChipToggleGroupComponent,
+  FormSnapshotDirective,
   LongFormLayoutComponent,
   ScrollspyRailComponent,
   SectionCardComponent,
@@ -37,76 +31,38 @@ import {
   SectionStatus,
   SpinnerOverlayComponent,
   ToastService,
+  TranslatableGroupComponent,
 } from '@portfolio/console/shared/ui';
 import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 import { SidebarState } from '@portfolio/shared/ui/sidebar';
-import { Observable } from 'rxjs';
-import { ProfileService } from '../profile.service';
+import { map, Observable, startWith, switchMap } from 'rxjs';
 import {
-  OptionalTranslatableValue,
-  ProfileAdminResponse,
-  TranslatableValue,
-  UpdateContactPayload,
-  UpdateIdentityPayload,
-  UpdateLocationPayload,
-  UpdateSeoOgPayload,
-  UpdateSocialLinksPayload,
-  UpdateWorkAvailabilityPayload,
-} from '../profile.types';
+  AVAILABILITY_OPTIONS,
+  OPEN_TO_OPTIONS,
+  PROFILE_SECTIONS,
+  SOCIAL_PLATFORM_OPTIONS,
+  TIMEZONE_OPTIONS,
+} from '../profile.data';
+import { ProfileService } from '../profile.service';
+import { ProfileAdminResponse, SectionKey, UpdateSocialLinksPayload } from '../profile.types';
 
-const AVAILABILITY_OPTIONS = [
-  { value: 'EMPLOYED', label: 'Employed' },
-  { value: 'OPEN_TO_WORK', label: 'Open to Work' },
-  { value: 'FREELANCING', label: 'Freelancing' },
-  { value: 'NOT_AVAILABLE', label: 'Not Available' },
-] as const;
-
-const OPEN_TO_OPTIONS = [
-  { value: 'FREELANCE', label: 'Freelance' },
-  { value: 'CONSULTING', label: 'Consulting' },
-  { value: 'SIDE_PROJECT', label: 'Side Project' },
-  { value: 'FULL_TIME', label: 'Full Time' },
-  { value: 'SPEAKING', label: 'Speaking' },
-  { value: 'OPEN_SOURCE', label: 'Open Source' },
-] as const;
-
-const SOCIAL_PLATFORM_OPTIONS = [
-  { value: 'GITHUB', label: 'GitHub' },
-  { value: 'LINKEDIN', label: 'LinkedIn' },
-  { value: 'TWITTER', label: 'Twitter / X' },
-  { value: 'BLUESKY', label: 'Bluesky' },
-  { value: 'STACKOVERFLOW', label: 'Stack Overflow' },
-  { value: 'DEV_TO', label: 'Dev.to' },
-  { value: 'HASHNODE', label: 'Hashnode' },
-  { value: 'WEBSITE', label: 'Website' },
-  { value: 'OTHER', label: 'Other' },
-] as const;
-
-const TIMEZONE_OPTIONS = [
-  'UTC',
-  'Asia/Ho_Chi_Minh',
-  'America/New_York',
-  'America/Los_Angeles',
-  'America/Chicago',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Asia/Tokyo',
-  'Asia/Singapore',
-  'Asia/Bangkok',
-  'Australia/Sydney',
-] as const;
-
-type SectionKey = 'identity' | 'workAvailability' | 'contact' | 'location' | 'socialLinks' | 'seoOg';
-
-type BilingualGroup = FormGroup<{
-  en: FormControl<string>;
-  vi: FormControl<string>;
-}>;
-
-/** Snapshot kept before a section PATCH so we can roll back on failure. */
-interface SectionSnapshot {
-  value: { [key: string]: unknown };
+@Component({
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content
+      ><p>{{ data.message }}</p></mat-dialog-content
+    >
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="false">Cancel</button>
+      <button mat-flat-button color="warn" [mat-dialog-close]="true">{{ data.confirmLabel }}</button>
+    </mat-dialog-actions>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class MediaRemoveDialogComponent {
+  readonly data = inject<{ title: string; message: string; confirmLabel: string }>(MAT_DIALOG_DATA);
 }
 
 @Component({
@@ -120,7 +76,7 @@ interface SectionSnapshot {
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule,
+    ChipToggleGroupComponent,
     MatProgressSpinnerModule,
     MatTooltipModule,
     SpinnerOverlayComponent,
@@ -128,22 +84,35 @@ interface SectionSnapshot {
     LongFormLayoutComponent,
     ScrollspyRailComponent,
     SectionCardComponent,
+    FormSnapshotDirective,
+    TranslatableGroupComponent,
   ],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsavedChanges {
+  // ── Injectors  ───────────────────────────────────────────────────────
   private readonly fb = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
   private readonly sidebarState = inject(SidebarState, { optional: true });
 
   private readonly sidebarWasOpen = signal<boolean | null>(null);
 
-  // ── UI state ─────────────────────────────────────────────────────────────
+  // ── Readonly Data  ───────────────────────────────────────────────────────
+  readonly availabilityOptions = AVAILABILITY_OPTIONS;
+  readonly openToOptions = OPEN_TO_OPTIONS;
+  readonly socialPlatformOptions = SOCIAL_PLATFORM_OPTIONS;
+  readonly timezoneOptions = TIMEZONE_OPTIONS;
+  readonly profileSections = PROFILE_SECTIONS;
+  readonly sectionLabel = new Map<SectionKey, string>(
+    PROFILE_SECTIONS.map((section) => [section.value, section.label])
+  );
 
+  // ── UI state ─────────────────────────────────────────────────────────────
   readonly loading = signal(false);
   readonly avatarUploading = signal(false);
   readonly ogImageUploading = signal(false);
@@ -152,13 +121,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   readonly jsonLd = signal<unknown>(null);
   readonly showJsonLd = signal(false);
 
-  readonly availabilityOptions = AVAILABILITY_OPTIONS;
-  readonly openToOptions = OPEN_TO_OPTIONS;
-  readonly socialPlatformOptions = SOCIAL_PLATFORM_OPTIONS;
-  readonly timezoneOptions = TIMEZONE_OPTIONS;
-
   // ── Parent FormGroup composed of 6 child FormGroups ──────────────────────
-
   readonly identityForm = this.fb.group({
     fullName: this.bilingualGroup({ required: true }),
     title: this.bilingualGroup({ required: true }),
@@ -169,7 +132,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   readonly workAvailabilityForm = this.fb.group({
     yearsOfExperience: this.fb.control(0, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(99)],
+      validators: [Validators.required, Validators.min(0), Validators.max(99), maxDecimalsValidator(1)],
     }),
     availability: this.fb.control<string>('EMPLOYED', {
       nonNullable: true,
@@ -208,10 +171,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   readonly socialLinksForm = this.fb.group({
     socialLinks: this.fb.array<FormGroup>([]),
-    resumeUrls: this.fb.group({
-      en: this.fb.control('', { nonNullable: true }),
-      vi: this.fb.control('', { nonNullable: true }),
-    }),
+    resumeUrls: this.bilingualGroup({ required: false }),
     certifications: this.fb.array<FormGroup>([]),
   });
 
@@ -386,16 +346,6 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     return this.isDirty;
   }
 
-  // ── Form array accessors ─────────────────────────────────────────────────
-
-  get socialLinksArray(): FormArray {
-    return this.socialLinksForm.get('socialLinks') as FormArray;
-  }
-
-  get certificationsArray(): FormArray {
-    return this.socialLinksForm.get('certifications') as FormArray;
-  }
-
   // ── Loading & patching ───────────────────────────────────────────────────
 
   private loadProfile(): void {
@@ -448,15 +398,19 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       locationAddress2: profile.locationAddress2 ?? '',
     });
 
-    this.socialLinksArray.clear();
+    this.socialLinksForm.controls.socialLinks.clear();
     for (const link of profile.socialLinks) {
-      this.socialLinksArray.push(this.createSocialLinkGroup(link.platform, link.url, link.handle ?? ''));
+      this.socialLinksForm.controls.socialLinks.push(
+        this.createSocialLinkGroup(link.platform, link.url, link.handle ?? '')
+      );
     }
-    this.certificationsArray.clear();
+    this.socialLinksForm.controls.certifications.clear();
     for (const cert of profile.certifications) {
-      this.certificationsArray.push(this.createCertificationGroup(cert.name, cert.issuer, cert.year, cert.url ?? ''));
+      this.socialLinksForm.controls.certifications.push(
+        this.createCertificationGroup(cert.name, cert.issuer, cert.year, cert.url ?? '')
+      );
     }
-    this.socialLinksForm.get('resumeUrls')?.reset({
+    this.socialLinksForm.controls.resumeUrls.reset({
       en: profile.resumeUrls.en ?? '',
       vi: profile.resumeUrls.vi ?? '',
     });
@@ -500,107 +454,92 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   }
 
   addSocialLink(): void {
-    this.socialLinksArray.push(this.createSocialLinkGroup());
-    this.socialLinksArray.markAsDirty();
+    this.socialLinksForm.controls.socialLinks.push(this.createSocialLinkGroup());
+    this.socialLinksForm.controls.socialLinks.markAsDirty();
   }
 
   removeSocialLink(index: number): void {
-    this.socialLinksArray.removeAt(index);
-    this.socialLinksArray.markAsDirty();
+    this.socialLinksForm.controls.socialLinks.removeAt(index);
+    this.socialLinksForm.controls.socialLinks.markAsDirty();
   }
 
   addCertification(): void {
-    this.certificationsArray.push(this.createCertificationGroup());
-    this.certificationsArray.markAsDirty();
+    this.socialLinksForm.controls.certifications.push(this.createCertificationGroup());
+    this.socialLinksForm.controls.certifications.markAsDirty();
   }
 
   removeCertification(index: number): void {
-    this.certificationsArray.removeAt(index);
-    this.certificationsArray.markAsDirty();
+    this.socialLinksForm.controls.certifications.removeAt(index);
+    this.socialLinksForm.controls.certifications.markAsDirty();
   }
 
-  // ── Open-To chip toggle ──────────────────────────────────────────────────
-
-  toggleOpenTo(value: string): void {
-    const ctrl = this.workAvailabilityForm.get('openTo');
-    const current: string[] = ctrl?.value ?? [];
-    const updated = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
-    ctrl?.setValue(updated);
-    ctrl?.markAsDirty();
-  }
-
-  isOpenToSelected(value: string): boolean {
-    return (this.workAvailabilityForm.get('openTo')?.value ?? []).includes(value);
-  }
+  /**
+   * FormSnapshotDirective rebuild callback for the social-links section.
+   * Required because `FormGroup.reset()` can't grow FormArrays that shrank;
+   * this re-pushes groups using the same factories as initial load.
+   */
+  readonly rebuildSocialLinks = (snap: unknown): void => {
+    const s = snap as {
+      socialLinks: Array<{ platform: string; url: string; handle: string }>;
+      certifications: Array<{ name: string; issuer: string; year: number; url: string }>;
+      resumeUrls: { en: string; vi: string };
+    };
+    const links = this.socialLinksForm.controls.socialLinks;
+    const certs = this.socialLinksForm.controls.certifications;
+    links.clear();
+    for (const l of s.socialLinks) links.push(this.createSocialLinkGroup(l.platform, l.url, l.handle));
+    certs.clear();
+    for (const c of s.certifications) certs.push(this.createCertificationGroup(c.name, c.issuer, c.year, c.url));
+    this.socialLinksForm.controls.resumeUrls.reset(s.resumeUrls);
+  };
 
   // ── Per-section save handlers ────────────────────────────────────────────
 
   saveIdentity(): void {
-    const v = this.identityForm.getRawValue();
-    const payload: UpdateIdentityPayload = {
-      fullName: v.fullName as TranslatableValue,
-      title: v.title as TranslatableValue,
-      bioShort: v.bioShort as TranslatableValue,
-      bioLong: this.toOptionalTranslatable(v.bioLong as TranslatableValue),
-    };
-    this.runSectionSave('identity', this.identityForm, () => this.profileService.updateIdentity(payload));
+    this.runSectionSave('identity', this.identityForm, () =>
+      this.profileService.updateIdentity(this.identityForm.getRawValue())
+    );
   }
 
   saveWorkAvailability(): void {
     const v = this.workAvailabilityForm.getRawValue();
-    const payload: UpdateWorkAvailabilityPayload = {
-      yearsOfExperience: v.yearsOfExperience,
-      availability: v.availability,
-      openTo: v.openTo,
-      timezone: v.timezone ? v.timezone : null,
-    };
     this.runSectionSave('workAvailability', this.workAvailabilityForm, () =>
-      this.profileService.updateWorkAvailability(payload)
+      this.profileService.updateWorkAvailability({ ...v, timezone: v.timezone || null })
     );
   }
 
   saveContact(): void {
     const v = this.contactForm.getRawValue();
-    const payload: UpdateContactPayload = {
-      email: v.email,
-      phone: v.phone ? v.phone : null,
-      preferredContactPlatform: v.preferredContactPlatform,
-      preferredContactValue: v.preferredContactValue,
-    };
-    this.runSectionSave('contact', this.contactForm, () => this.profileService.updateContact(payload));
+    this.runSectionSave('contact', this.contactForm, () =>
+      this.profileService.updateContact({ ...v, phone: v.phone || null })
+    );
   }
 
   saveLocation(): void {
     const v = this.locationForm.getRawValue();
-    const payload: UpdateLocationPayload = {
-      locationCountry: v.locationCountry,
-      locationCity: v.locationCity,
-      locationPostalCode: v.locationPostalCode ? v.locationPostalCode : null,
-      locationAddress1: v.locationAddress1 ? v.locationAddress1 : null,
-      locationAddress2: v.locationAddress2 ? v.locationAddress2 : null,
-    };
-    this.runSectionSave('location', this.locationForm, () => this.profileService.updateLocation(payload));
+    this.runSectionSave('location', this.locationForm, () =>
+      this.profileService.updateLocation({
+        ...v,
+        locationPostalCode: v.locationPostalCode || null,
+        locationAddress1: v.locationAddress1 || null,
+        locationAddress2: v.locationAddress2 || null,
+      })
+    );
   }
 
   saveSocialLinks(): void {
     const v = this.socialLinksForm.getRawValue();
     const payload: UpdateSocialLinksPayload = {
       socialLinks: (v.socialLinks as Array<{ platform: string; url: string; handle: string }>).map((l) => ({
-        platform: l.platform,
-        url: l.url,
+        ...l,
         handle: l.handle || undefined,
       })),
       resumeUrls: {
-        en: v.resumeUrls.en || undefined,
-        vi: v.resumeUrls.vi || undefined,
+        en: v.resumeUrls['en'] || undefined,
+        vi: v.resumeUrls['vi'] || undefined,
       },
       certifications: (v.certifications as Array<{ name: string; issuer: string; year: number; url: string }>).map(
-        (c) => ({
-          name: c.name,
-          issuer: c.issuer,
-          year: c.year,
-          url: c.url || undefined,
-        })
+        (c) => ({ ...c, url: c.url || undefined })
       ),
     };
     this.runSectionSave('socialLinks', this.socialLinksForm, () => this.profileService.updateSocialLinks(payload));
@@ -608,12 +547,13 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   saveSeoOg(): void {
     const v = this.seoOgForm.getRawValue();
-    const payload: UpdateSeoOgPayload = {
-      metaTitle: v.metaTitle ? v.metaTitle : null,
-      metaDescription: v.metaDescription ? v.metaDescription : null,
-      canonicalUrl: v.canonicalUrl ? v.canonicalUrl : null,
-    };
-    this.runSectionSave('seoOg', this.seoOgForm, () => this.profileService.updateSeoOg(payload));
+    this.runSectionSave('seoOg', this.seoOgForm, () =>
+      this.profileService.updateSeoOg({
+        metaTitle: v.metaTitle || null,
+        metaDescription: v.metaDescription || null,
+        canonicalUrl: v.canonicalUrl || null,
+      })
+    );
   }
 
   // ── Save orchestration (optimistic update + rollback on error) ───────────
@@ -625,49 +565,26 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       return;
     }
 
-    // Snapshot for rollback — take the raw value BEFORE marking pristine.
-    const snapshot: SectionSnapshot = { value: form.getRawValue() as { [key: string]: unknown } };
     this.saving[key].set(true);
     this.errors[key].set(null);
-    // Optimistic: treat the form as pristine right away.
-    form.markAsPristine();
 
     call()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.saving[key].set(false);
+          form.markAsPristine();
           this.lastSaved[key].set(new Date());
-          this.toast.success(`${this.labelFor(key)} saved`);
+          this.toast.success(`${this.sectionLabel.get(key)} saved`);
         },
         error: (err) => {
           this.saving[key].set(false);
-          // Roll back to the snapshot (re-marks form as dirty via patch).
-          form.patchValue(snapshot.value);
-          form.markAsDirty();
           const apiError = extractApiError(err);
-          const message = apiError?.message ?? `Failed to save ${this.labelFor(key)}`;
+          const message = apiError?.message ?? `Failed to save ${this.sectionLabel.get(key)}`;
           this.errors[key].set(message);
           this.toast.error(message);
         },
       });
-  }
-
-  private labelFor(key: SectionKey): string {
-    switch (key) {
-      case 'identity':
-        return 'Identity';
-      case 'workAvailability':
-        return 'Work & Availability';
-      case 'contact':
-        return 'Contact';
-      case 'location':
-        return 'Location';
-      case 'socialLinks':
-        return 'Social Links';
-      case 'seoOg':
-        return 'SEO / OG';
-    }
   }
 
   // ── Avatar / OG image (dedicated endpoints, save-on-upload) ──────────────
@@ -678,24 +595,16 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     this.avatarUploading.set(true);
     this.profileService
       .uploadMedia(file)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((id) => this.profileService.updateAvatar(id).pipe(map(({ avatarUrl }) => ({ id, avatarUrl }))))
+      )
       .subscribe({
-        next: (id) => {
-          this.profileService
-            .updateAvatar(id)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: () => {
-                this.avatarUploading.set(false);
-                this.avatarId.set(id);
-                this.avatarPreview.set(URL.createObjectURL(file));
-                this.toast.success('Avatar updated');
-              },
-              error: () => {
-                this.avatarUploading.set(false);
-                this.toast.error('Avatar save failed');
-              },
-            });
+        next: ({ id, avatarUrl }) => {
+          this.avatarUploading.set(false);
+          this.avatarId.set(id);
+          this.avatarPreview.set(avatarUrl);
+          this.toast.success('Avatar updated');
         },
         error: () => {
           this.avatarUploading.set(false);
@@ -704,7 +613,20 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       });
   }
 
-  clearAvatar(): void {
+  confirmClearAvatar(): void {
+    this.dialog
+      .open<MediaRemoveDialogComponent, unknown, boolean>(MediaRemoveDialogComponent, {
+        data: { title: 'Remove Avatar', message: 'Remove your avatar photo?', confirmLabel: 'Remove' },
+        width: '360px',
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) this.clearAvatar();
+      });
+  }
+
+  private clearAvatar(): void {
     this.avatarUploading.set(true);
     this.profileService
       .updateAvatar(null)
@@ -728,24 +650,16 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     this.ogImageUploading.set(true);
     this.profileService
       .uploadMedia(file)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((id) => this.profileService.updateOgImage(id).pipe(map(({ ogImageUrl }) => ({ id, ogImageUrl }))))
+      )
       .subscribe({
-        next: (id) => {
-          this.profileService
-            .updateOgImage(id)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: () => {
-                this.ogImageUploading.set(false);
-                this.ogImageId.set(id);
-                this.ogImagePreview.set(URL.createObjectURL(file));
-                this.toast.success('OG image updated');
-              },
-              error: () => {
-                this.ogImageUploading.set(false);
-                this.toast.error('OG image save failed');
-              },
-            });
+        next: ({ id, ogImageUrl }) => {
+          this.ogImageUploading.set(false);
+          this.ogImageId.set(id);
+          this.ogImagePreview.set(ogImageUrl);
+          this.toast.success('OG image updated');
         },
         error: () => {
           this.ogImageUploading.set(false);
@@ -754,7 +668,20 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       });
   }
 
-  clearOgImage(): void {
+  confirmClearOgImage(): void {
+    this.dialog
+      .open<MediaRemoveDialogComponent, unknown, boolean>(MediaRemoveDialogComponent, {
+        data: { title: 'Remove OG Image', message: 'Remove your OG preview image?', confirmLabel: 'Remove' },
+        width: '360px',
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) this.clearOgImage();
+      });
+  }
+
+  private clearOgImage(): void {
     this.ogImageUploading.set(true);
     this.profileService
       .updateOgImage(null)
@@ -795,7 +722,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   // ── Internals ────────────────────────────────────────────────────────────
 
-  private bilingualGroup(opts: { required: boolean; maxLength?: number }): BilingualGroup {
+  private bilingualGroup(opts: { required: boolean; maxLength?: number }) {
     const validators = [];
     if (opts.required) validators.push(Validators.required);
     if (opts.maxLength !== undefined) validators.push(Validators.maxLength(opts.maxLength));
@@ -805,24 +732,11 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     });
   }
 
-  private toOptionalTranslatable(value: TranslatableValue): OptionalTranslatableValue | null {
-    const en = value.en?.trim();
-    const vi = value.vi?.trim();
-    if (!en && !vi) return null;
-    return {
-      en: en || undefined,
-      vi: vi || undefined,
-    };
-  }
-
   private wireFormStateSignal(key: SectionKey, fg: FormGroup): void {
-    const sync = (): void => {
+    fg.events.pipe(startWith(null), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.dirty[key].set(fg.dirty);
       this.invalid[key].set(fg.invalid);
-      // User resumed editing — clear the stale error banner.
       if (fg.dirty && this.errors[key]()) this.errors[key].set(null);
-    };
-    sync();
-    fg.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => sync());
+    });
   }
 }
