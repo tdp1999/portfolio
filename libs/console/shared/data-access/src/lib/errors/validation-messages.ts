@@ -9,6 +9,7 @@ export const DEFAULT_VALIDATION_MESSAGES: Record<string, ErrorMessage> = {
   min: (p) => `Must be at least ${p['min']}.`,
   max: (p) => `Must be at most ${p['max']}.`,
   pattern: 'Invalid format.',
+  maxDecimals: (p) => `Use at most ${p['max']} decimal place${p['max'] === 1 ? '' : 's'}.`,
   passwordsMismatch: 'Passwords do not match.',
   server: (p) => `${p['message'] ?? p['value'] ?? 'Server error.'}`,
 };

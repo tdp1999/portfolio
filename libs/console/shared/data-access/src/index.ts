@@ -19,7 +19,7 @@ export { FormErrorPipe } from './lib/errors/form-error.pipe';
 export { RewardEarlyErrorStateMatcher } from './lib/errors/reward-early-error-state.matcher';
 export type { ErrorMessage } from './lib/errors/validation-messages';
 export { DEFAULT_VALIDATION_MESSAGES, resolveValidationMessage } from './lib/errors/validation-messages';
-export { passwordsMatchValidator } from './lib/validators';
+export { passwordsMatchValidator, maxDecimalsValidator } from './lib/validators';
 export { UnreadBadgeService } from './lib/unread-badge.service';
 export { MediaService } from './lib/media/media.service';
 export type {
