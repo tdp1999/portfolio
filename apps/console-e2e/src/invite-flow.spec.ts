@@ -47,7 +47,7 @@ test.describe.serial('Invite & Set-Password Flow', () => {
     });
 
     expect(user).toBeTruthy();
-    expect(user!.inviteToken).toBeTruthy();
+    expect(user?.inviteToken).toBeTruthy();
 
     // The stored token is hashed — we need the raw token.
     // Since we can't reverse the hash, we read it from DB and construct the URL
@@ -66,7 +66,7 @@ test.describe.serial('Invite & Set-Password Flow', () => {
     });
 
     const setPasswordPage = new SetPasswordPage(page);
-    await setPasswordPage.goto(rawToken, user!.id);
+    await setPasswordPage.goto(rawToken, (user as { id: string }).id);
 
     // Should show the set password form, not error
     await expect(page.getByText('Set your password')).toBeVisible();

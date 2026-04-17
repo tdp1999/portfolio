@@ -94,7 +94,7 @@ test.describe('Landing Page - Profile Display', () => {
     const jsonLdMatch = content.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
 
     expect(jsonLdMatch).not.toBeNull();
-    const jsonLd = JSON.parse(jsonLdMatch![1]);
+    const jsonLd = JSON.parse((jsonLdMatch as RegExpMatchArray)[1]);
 
     expect(jsonLd['@context']).toBe('https://schema.org');
     expect(jsonLd['@type']).toBe('Person');

@@ -1,15 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -308,7 +300,8 @@ export default class ExperienceDialogComponent implements OnInit {
         next: (all) => {
           this.allSkills.set(all);
           if (this.exp?.skills) {
-            const preSelected = all.filter((s) => this.exp!.skills.some((es) => es.id === s.id));
+            const expSkills = this.exp.skills;
+            const preSelected = all.filter((s) => expSkills.some((es) => es.id === s.id));
             this.selectedSkills.set(preSelected);
           }
           this.updateFilteredSkills('');

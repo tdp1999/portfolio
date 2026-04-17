@@ -199,7 +199,7 @@ test.describe('Landing Page - Experience Display', () => {
 
 test.describe('Landing Page - Experience Empty State', () => {
   let adminToken: string;
-  let idsToRestore: string[] = [];
+  const idsToRestore: string[] = [];
 
   test.beforeAll(async () => {
     adminToken = await loginAsAdmin();

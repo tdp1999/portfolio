@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto';
 import { prisma } from './db';
-import { TEST_USERS } from '../data/test-users';
 
 export const TEST_MSG_PREFIX = 'e2e-msg-';
 

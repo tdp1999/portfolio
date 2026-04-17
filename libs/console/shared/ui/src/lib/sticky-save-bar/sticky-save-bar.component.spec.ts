@@ -80,7 +80,7 @@ describe('StickySaveBarComponent', () => {
   });
 
   it('should not emit discard when dialog is cancelled', async () => {
-    dialog.open.mockReturnValue({ afterClosed: () => of(false) } as any);
+    dialog.open.mockReturnValue({ afterClosed: () => of(false) } as ReturnType<typeof dialog.open>);
     const discardBtn = el.querySelectorAll('.sticky-save-bar__actions button')[0] as HTMLButtonElement;
     discardBtn.click();
     await fixture.whenStable();

@@ -13,8 +13,8 @@ import { FormSnapshotDirective } from './form-snapshot.directive';
       title="t"
       description="d"
       saveMode="per-section"
-      formSnapshot
-      [formSnapshotRebuild]="rebuild"
+      consoleFormSnapshot
+      [consoleFormSnapshotRebuild]="rebuild"
       [formGroup]="form"
       [saving]="saving"
       [lastSavedAt]="lastSavedAt"

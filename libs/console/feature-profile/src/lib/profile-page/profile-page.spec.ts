@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { HttpErrorResponse } from '@angular/common/http';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { API_CONFIG, ApiService } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { SidebarState } from '@portfolio/shared/ui/sidebar';

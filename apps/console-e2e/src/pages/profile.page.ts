@@ -101,7 +101,9 @@ export class ProfilePage {
     await this.page
       .locator('console-spinner-overlay[ng-reflect-loading="true"]')
       .waitFor({ state: 'detached', timeout: 10_000 })
-      .catch(() => {});
+      .catch(() => {
+        // Spinner may have already detached before the wait started; ignore.
+      });
   }
 
   // ── Identity helpers ────────────────────────────────────────────────

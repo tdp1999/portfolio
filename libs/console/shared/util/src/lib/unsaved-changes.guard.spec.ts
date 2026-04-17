@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, provideRouter } from '@angular/router';
+import type { MatDialogRef } from '@angular/material/dialog';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import {
@@ -32,9 +33,10 @@ function mockDialogResult(result: UnsavedChangesResult | undefined) {
 // Tests
 // ---------------------------------------------------------------------------
 
+type DialogRef = MatDialogRef<unknown, UnsavedChangesResult>;
+
 describe('unsavedChangesGuard', () => {
   let dialog: jest.Mocked<MatDialog>;
-  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -49,17 +51,11 @@ describe('unsavedChangesGuard', () => {
     });
 
     dialog = TestBed.inject(MatDialog) as jest.Mocked<MatDialog>;
-    router = TestBed.inject(Router);
   });
 
   function runGuard(component: HasUnsavedChanges): Promise<boolean> {
     return TestBed.runInInjectionContext(() =>
-      unsavedChangesGuard(
-        component,
-        {} as any, // ActivatedRouteSnapshot
-        {} as any, // RouterStateSnapshot (current)
-        {} as any // RouterStateSnapshot (next)
-      )
+      unsavedChangesGuard(component, {} as ActivatedRouteSnapshot, {} as RouterStateSnapshot, {} as RouterStateSnapshot)
     ) as Promise<boolean>;
   }
 
@@ -78,21 +74,21 @@ describe('unsavedChangesGuard', () => {
   });
 
   it('should block navigation when dirty and user clicks Stay', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('stay') as any);
+    dialog.open.mockReturnValue(mockDialogResult('stay') as DialogRef);
     const component = createMockComponent(true);
     const result = await runGuard(component);
     expect(result).toBe(false);
   });
 
   it('should allow navigation when dirty and user clicks Discard', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('discard') as any);
+    dialog.open.mockReturnValue(mockDialogResult('discard') as DialogRef);
     const component = createMockComponent(true);
     const result = await runGuard(component);
     expect(result).toBe(true);
   });
 
   it('should call onSaveAndContinue when dirty and user clicks Save', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('save') as any);
+    dialog.open.mockReturnValue(mockDialogResult('save') as DialogRef);
     const saveHandler = jest.fn().mockResolvedValue(true);
     const component = createMockComponent(true, saveHandler);
     const result = await runGuard(component);
@@ -101,7 +97,7 @@ describe('unsavedChangesGuard', () => {
   });
 
   it('should block navigation if save handler returns false', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('save') as any);
+    dialog.open.mockReturnValue(mockDialogResult('save') as DialogRef);
     const saveHandler = jest.fn().mockResolvedValue(false);
     const component = createMockComponent(true, saveHandler);
     const result = await runGuard(component);
@@ -110,14 +106,14 @@ describe('unsavedChangesGuard', () => {
   });
 
   it('should not show Save button when onSaveAndContinue is absent', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('discard') as any);
+    dialog.open.mockReturnValue(mockDialogResult('discard') as DialogRef);
     const component = createMockComponent(true);
     await runGuard(component);
     expect(dialog.open).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ data: { showSave: false } }));
   });
 
   it('should show Save button when onSaveAndContinue is provided', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('discard') as any);
+    dialog.open.mockReturnValue(mockDialogResult('discard') as DialogRef);
     const saveHandler = jest.fn().mockResolvedValue(true);
     const component = createMockComponent(true, saveHandler);
     await runGuard(component);
@@ -125,14 +121,14 @@ describe('unsavedChangesGuard', () => {
   });
 
   it('should block navigation when dialog is dismissed (undefined)', async () => {
-    dialog.open.mockReturnValue(mockDialogResult(undefined) as any);
+    dialog.open.mockReturnValue(mockDialogResult(undefined) as DialogRef);
     const component = createMockComponent(true);
     const result = await runGuard(component);
     expect(result).toBe(false);
   });
 
   it('should detect dirty state from signal', async () => {
-    dialog.open.mockReturnValue(mockDialogResult('discard') as any);
+    dialog.open.mockReturnValue(mockDialogResult('discard') as DialogRef);
     const component = createMockComponent(signal(true));
     const result = await runGuard(component);
     expect(result).toBe(true);

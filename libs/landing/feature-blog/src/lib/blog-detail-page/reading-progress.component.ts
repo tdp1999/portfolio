@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, signal } from '@angular/core';
+import { Component, HostListener, Input, signal } from '@angular/core';
 
 @Component({
   selector: 'landing-reading-progress',

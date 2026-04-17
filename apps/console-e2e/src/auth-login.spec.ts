@@ -29,7 +29,7 @@ test.describe('Login Page', () => {
     const cookies = await context.cookies('http://localhost:4300/api/auth/refresh');
     const refreshCookie = cookies.find((c) => c.name === 'refresh_token');
     expect(refreshCookie).toBeDefined();
-    expect(refreshCookie!.httpOnly).toBe(true);
+    expect(refreshCookie?.httpOnly).toBe(true);
   });
 
   test('valid credentials with Remember Me sets persistent refresh cookie', async ({ page, context, request }) => {
@@ -49,7 +49,7 @@ test.describe('Login Page', () => {
     const cookies = await context.cookies('http://localhost:4300/api/auth/refresh');
     const refreshCookie = cookies.find((c) => c.name === 'refresh_token');
     expect(refreshCookie).toBeDefined();
-    expect(refreshCookie!.httpOnly).toBe(true);
+    expect(refreshCookie?.httpOnly).toBe(true);
 
     // Verify rememberMe=true sends Max-Age via direct API call (bypasses proxy stripping)
     const apiResponse = await request.post('http://localhost:3000/api/auth/login', {

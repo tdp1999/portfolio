@@ -20,7 +20,7 @@ monitorTest.describe('Forgot Password', () => {
     await forgotPage.goto();
   });
 
-  monitorTest('valid email shows success message', async ({ page }) => {
+  monitorTest('valid email shows success message', async () => {
     await forgotPage.requestReset(TEST_USERS.standard.email);
     await monitorExpect(forgotPage.successHeading).toBeVisible();
   });

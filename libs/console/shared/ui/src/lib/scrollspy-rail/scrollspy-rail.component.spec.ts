@@ -12,7 +12,7 @@ const mockObserve = jest.fn();
 const mockDisconnect = jest.fn();
 const mockUnobserve = jest.fn();
 
-(globalThis as any).IntersectionObserver = jest.fn(() => ({
+(globalThis as unknown as { IntersectionObserver: unknown }).IntersectionObserver = jest.fn(() => ({
   observe: mockObserve,
   disconnect: mockDisconnect,
   unobserve: mockUnobserve,
@@ -42,7 +42,6 @@ class TestHostComponent {
 
 describe('ScrollspyRailComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>;
-  let host: TestHostComponent;
   let nativeEl: HTMLElement;
   let router: Router;
 
@@ -53,7 +52,6 @@ describe('ScrollspyRailComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
-    host = fixture.componentInstance;
     nativeEl = fixture.nativeElement;
     router = TestBed.inject(Router);
     fixture.detectChanges();

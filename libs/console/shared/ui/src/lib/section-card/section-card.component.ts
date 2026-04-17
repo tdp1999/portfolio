@@ -26,6 +26,7 @@ export class SectionCardComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   /** Anchor id for scrollspy (rendered as HTML id attribute) */
+  // eslint-disable-next-line @angular-eslint/no-input-rename -- alias matches native DOM `id` attribute
   sectionId = input.required<string>({ alias: 'id' });
 
   /** Section title shown in the description column */

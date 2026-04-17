@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures/auth.fixture';
-import { loginViaApi } from './fixtures/auth.fixture';
 import { TEST_USERS } from './data/test-users';
 import { LoginPage } from './pages/login.page';
 

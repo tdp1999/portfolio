@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -160,7 +160,7 @@ export default class ProjectDialogComponent {
       maxHeight: '80vh',
       data: {
         mode: 'single',
-        selectedIds: this.thumbnailId() ? [this.thumbnailId()!] : [],
+        selectedIds: this.thumbnailId() ? [this.thumbnailId() as string] : [],
         mimeFilter: 'image/',
       } satisfies MediaPickerDialogData,
     });

@@ -150,7 +150,6 @@ describe('ButtonComponent', () => {
     it('should have inline-flex for icon + text layout', () => {
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');
-      const styles = window.getComputedStyle(button);
       expect(button.className).toContain('btn');
       // The btn class applies inline-flex via Tailwind
     });

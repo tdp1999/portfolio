@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 config({ path: resolve(process.cwd(), '.env') });
 
-const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] as string });
 const prisma = new PrismaClient({ adapter });
 
 async function globalTeardown(): Promise<void> {

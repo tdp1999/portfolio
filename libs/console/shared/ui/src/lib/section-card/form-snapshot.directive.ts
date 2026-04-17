@@ -8,14 +8,14 @@ import { SectionCardComponent } from './section-card.component';
  * `reset(snapshot)` only restores values, not array structure.
  */
 @Directive({
-  selector: 'console-section-card[formSnapshot]',
+  selector: 'console-section-card[consoleFormSnapshot]',
   standalone: true,
 })
 export class FormSnapshotDirective {
   private readonly card = inject(SectionCardComponent);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly formSnapshotRebuild = input<((snapshot: unknown) => void) | undefined>(undefined);
+  readonly consoleFormSnapshotRebuild = input<((snapshot: unknown) => void) | undefined>(undefined);
 
   private snapshot: unknown = null;
 
@@ -48,7 +48,7 @@ export class FormSnapshotDirective {
   private restore(): void {
     const fg = this.card.formGroup();
     if (!fg || this.snapshot === null) return;
-    const fn = this.formSnapshotRebuild();
+    const fn = this.consoleFormSnapshotRebuild();
     if (fn) fn(this.snapshot);
     else fg.reset(this.snapshot);
     fg.markAsPristine();

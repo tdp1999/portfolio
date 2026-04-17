@@ -20,7 +20,7 @@
         title="Identity"
         description="Display name, title, and bios. Avatar saves on upload."
         saveMode="per-section"
-        formSnapshot
+        consoleFormSnapshot
         [formGroup]="identityForm"
         [saving]="savingSignals.identity"
         [lastSavedAt]="lastSavedSignals.identity"
@@ -93,7 +93,7 @@
         title="Work & Availability"
         description="Experience, current availability, and what you're open to."
         saveMode="per-section"
-        formSnapshot
+        consoleFormSnapshot
         [formGroup]="workAvailabilityForm"
         [saving]="savingSignals.workAvailability"
         [lastSavedAt]="lastSavedSignals.workAvailability"
@@ -141,7 +141,7 @@
         title="Contact"
         description="How people reach you."
         saveMode="per-section"
-        formSnapshot
+        consoleFormSnapshot
         [formGroup]="contactForm"
         [saving]="savingSignals.contact"
         [lastSavedAt]="lastSavedSignals.contact"
@@ -185,7 +185,7 @@
         title="Location"
         description="Country and city are public. Address lines are internal only."
         saveMode="per-section"
-        formSnapshot
+        consoleFormSnapshot
         [formGroup]="locationForm"
         [saving]="savingSignals.location"
         [lastSavedAt]="lastSavedSignals.location"
@@ -228,8 +228,8 @@
         title="Social Links"
         description="Public links, resume URLs, and certifications."
         saveMode="per-section"
-        formSnapshot
-        [formSnapshotRebuild]="rebuildSocialLinks"
+        consoleFormSnapshot
+        [consoleFormSnapshotRebuild]="rebuildSocialLinks"
         [formGroup]="socialLinksForm"
         [saving]="savingSignals.socialLinks"
         [lastSavedAt]="lastSavedSignals.socialLinks"
@@ -348,7 +348,7 @@
         title="SEO / OG"
         description="Metadata for search engines and social preview. OG image saves on upload."
         saveMode="per-section"
-        formSnapshot
+        consoleFormSnapshot
         [formGroup]="seoOgForm"
         [saving]="savingSignals.seoOg"
         [lastSavedAt]="lastSavedSignals.seoOg"

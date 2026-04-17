@@ -66,8 +66,7 @@ export class InputComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
-    // Note: disabled is a signal input, so this method isn't used
-    // The component handles disabled state through the input property
+  setDisabledState(_isDisabled: boolean): void {
+    // Note: disabled is a signal input; this ControlValueAccessor hook is a no-op.
   }
 }

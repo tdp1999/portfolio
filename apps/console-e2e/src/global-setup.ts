@@ -7,7 +7,7 @@ import { TEST_USERS } from './data/test-users';
 
 config({ path: resolve(process.cwd(), '.env') });
 
-const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] as string });
 const prisma = new PrismaClient({ adapter });
 
 async function globalSetup(): Promise<void> {

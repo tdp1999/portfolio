@@ -5,7 +5,7 @@ import { TEST_USERS } from './data/test-users';
 import { createTestExperience, deleteTestExperiences, softDeleteTestExperience } from './helpers/db-experiences';
 import { createTestSkill, deleteTestSkills } from './helpers/db-skills';
 import { expectToast } from './helpers/toast';
-import { clickConfirm, clickCancel } from './helpers/dialog';
+import { clickConfirm } from './helpers/dialog';
 
 /** Login via page.request (shares browser cookie jar) and return Bearer token for API calls. */
 async function getAdminToken(page: import('@playwright/test').Page): Promise<string> {

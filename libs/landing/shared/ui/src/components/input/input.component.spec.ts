@@ -1,10 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormControl,
-  NonNullableFormBuilder,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { InputComponent } from './input.component';
 
 describe('InputComponent', () => {
@@ -142,14 +137,14 @@ describe('InputComponent', () => {
     });
 
     it('should handle null value in writeValue', () => {
-      component.writeValue(null as any);
+      component.writeValue(null as unknown as string);
       fixture.detectChanges();
 
       expect(component['value']()).toBe('');
     });
 
     it('should handle undefined value in writeValue', () => {
-      component.writeValue(undefined as any);
+      component.writeValue(undefined as unknown as string);
       fixture.detectChanges();
 
       expect(component['value']()).toBe('');

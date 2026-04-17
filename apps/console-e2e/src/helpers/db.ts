@@ -8,7 +8,7 @@ import { TEST_EMAIL_DOMAIN, TEST_EMAIL_PREFIX } from '../data/test-users';
 
 config({ path: resolve(process.cwd(), '.env') });
 
-const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] as string });
 const prisma = new PrismaClient({ adapter });
 
 interface TempUser {

@@ -15,7 +15,7 @@ const TEST_ADMIN = {
 };
 
 async function globalSetup(): Promise<void> {
-  const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL']! });
+  const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] as string });
   const prisma = new PrismaClient({ adapter });
 
   // Clean up leftover E2E experience test data from previous runs

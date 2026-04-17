@@ -101,7 +101,7 @@
 
       <!-- Featured image -->
       <div class="field-block">
-        <label class="field-label">Featured Image</label>
+        <div class="field-label">Featured Image</div>
         @if (featuredImageUrl()) {
           <div class="featured-image-preview">
             <img [src]="featuredImageUrl()" alt="Featured" />
@@ -145,7 +145,7 @@
       <!-- Excerpt -->
       <div class="field-block">
         <div class="flex items-center justify-between">
-          <label class="field-label">Excerpt</label>
+          <div class="field-label">Excerpt</div>
           <button mat-button type="button" (click)="autoGenerateExcerpt()">
             <mat-icon class="icon-sm">auto_awesome</mat-icon>
             Auto
@@ -163,7 +163,7 @@
 
       <!-- SEO -->
       <div class="field-block">
-        <label class="field-label">SEO</label>
+        <div class="field-label">SEO</div>
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Meta Title</mat-label>
           <input matInput [ngModel]="metaTitle()" (ngModelChange)="metaTitle.set($event); markDirty()" />

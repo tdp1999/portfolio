@@ -19,7 +19,10 @@ describe('adminGuard', () => {
     });
   });
 
-  const runGuard = () => TestBed.runInInjectionContext(() => adminGuard({} as any, {} as any));
+  const runGuard = () =>
+    TestBed.runInInjectionContext(() =>
+      adminGuard({} as Parameters<typeof adminGuard>[0], {} as Parameters<typeof adminGuard>[1])
+    );
 
   it('should allow access for admin users', () => {
     authStore.user.mockReturnValue({ role: 'ADMIN' });

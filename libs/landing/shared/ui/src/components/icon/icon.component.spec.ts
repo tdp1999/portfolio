@@ -4,8 +4,6 @@ import { IconComponent } from './icon.component';
 import { IconProvider } from './icon-provider.interface';
 import { ICON_PROVIDER } from './icon-provider.token';
 
-const MOCK_SVG = '<svg width="24" height="24"><path d="M1 1" /></svg>';
-
 class MockIconProvider implements IconProvider {
   getSvg(name: string, size: number): string | null {
     if (name === 'test') {

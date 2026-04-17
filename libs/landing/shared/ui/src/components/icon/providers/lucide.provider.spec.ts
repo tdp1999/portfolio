@@ -30,7 +30,7 @@ describe('LucideIconProvider', () => {
     });
 
     it('should include standard SVG attributes', () => {
-      const svg = provider.getSvg('check', 24)!;
+      const svg = provider.getSvg('check', 24) as string;
 
       expect(svg).toContain('viewBox="0 0 24 24"');
       expect(svg).toContain('stroke="currentColor"');
@@ -41,13 +41,13 @@ describe('LucideIconProvider', () => {
     });
 
     it('should filter out the key attribute from children', () => {
-      const svg = provider.getSvg('arrow-right', 24)!;
+      const svg = provider.getSvg('arrow-right', 24) as string;
 
       expect(svg).not.toContain('key=');
     });
 
     it('should include path d attributes', () => {
-      const svg = provider.getSvg('arrow-right', 24)!;
+      const svg = provider.getSvg('arrow-right', 24) as string;
 
       expect(svg).toContain('<path');
       expect(svg).toContain('d="');
