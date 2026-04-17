@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +13,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { filter, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
 
@@ -28,6 +30,7 @@ export default class ProjectDetailComponent implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly project = signal<AdminProject | null>(null);
   readonly loading = signal(false);
@@ -71,17 +74,20 @@ export default class ProjectDetailComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.projectService.delete(p.id).subscribe({
-          next: () => {
-            this.toast.success('Project deleted');
-            this.goBack();
-          },
-          error: () => this.toast.error('Failed to delete project'),
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.projectService.delete(p.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Project deleted');
+          this.goBack();
+        },
+        error: () => this.toast.error('Failed to delete project'),
+      });
   }
 
   translatable(value: Record<string, string> | null | undefined): string {

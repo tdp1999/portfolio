@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -17,6 +27,7 @@ import {
   type ConfirmDialogData,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
 import { AdminBlogPostListItem, BlogStatus } from '../blog.types';
 
@@ -52,6 +63,7 @@ export default class PostsPageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'actions'];
@@ -124,16 +136,20 @@ export default class PostsPageComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-      this.blogService.delete(post.id).subscribe({
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.blogService.delete(post.id))
+      )
+      .subscribe({
         next: () => {
           this.toast.success('Post deleted');
           this.loadPosts();
         },
         error: () => this.toast.error('Failed to delete post'),
       });
-    });
   }
 
   restorePost(post: AdminBlogPostListItem): void {
@@ -154,16 +170,20 @@ export default class PostsPageComponent implements OnInit {
         confirmLabel: 'Delete Forever',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-      this.blogService.delete(post.id).subscribe({
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.blogService.delete(post.id))
+      )
+      .subscribe({
         next: () => {
           this.toast.success('Post permanently deleted');
           this.loadPosts();
         },
         error: () => this.toast.error('Failed to delete post'),
       });
-    });
   }
 
   private loadPosts(): void {

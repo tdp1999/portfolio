@@ -12,7 +12,7 @@
         <mat-error>{{ form.controls.title | formError }}</mat-error>
       </mat-form-field>
 
-      <console-translatable-input formControlName="oneLiner" label="One-Liner" />
+      <console-translatable-group [group]="form.controls.oneLiner" label="One-Liner" />
 
       <div class="flex gap-4">
         <mat-form-field appearance="outline" class="flex-1">
@@ -38,9 +38,9 @@
     <section class="flex flex-col gap-4">
       <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-text-muted">Story</h3>
 
-      <console-translatable-input formControlName="motivation" label="Motivation" type="textarea" />
-      <console-translatable-input formControlName="description" label="Description" type="textarea" />
-      <console-translatable-input formControlName="role" label="Role" type="textarea" />
+      <console-translatable-group [group]="form.controls.motivation" label="Motivation" type="textarea" />
+      <console-translatable-group [group]="form.controls.description" label="Description" type="textarea" />
+      <console-translatable-group [group]="form.controls.role" label="Role" type="textarea" />
     </section>
 
     <mat-divider />
@@ -49,15 +49,20 @@
     <section class="flex flex-col gap-4">
       <div class="mb-3 flex items-center justify-between">
         <h3 class="text-sm font-semibold uppercase tracking-wide text-text-muted">
-          Technical Highlights ({{ highlights.length }}/4)
+          Technical Highlights ({{ form.controls.highlights.length }}/4)
         </h3>
-        <button mat-stroked-button type="button" [disabled]="highlights.length >= 4" (click)="addHighlight()">
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="form.controls.highlights.length >= 4"
+          (click)="addHighlight()"
+        >
           <mat-icon>add</mat-icon>
           Add Highlight
         </button>
       </div>
 
-      @for (group of highlights.controls; track $index; let i = $index) {
+      @for (group of form.controls.highlights.controls; track $index; let i = $index) {
         <div class="mb-4 rounded-lg border border-border p-4 flex flex-col gap-4">
           <div class="mb-2 flex items-center justify-between">
             <span class="text-sm font-medium">Highlight {{ i + 1 }}</span>
@@ -72,10 +77,25 @@
             </button>
           </div>
 
-          <ng-container [formGroup]="$any(group)">
-            <console-translatable-input formControlName="challenge" label="Challenge" type="textarea" [rows]="2" />
-            <console-translatable-input formControlName="approach" label="Approach" type="textarea" [rows]="2" />
-            <console-translatable-input formControlName="outcome" label="Outcome" type="textarea" [rows]="2" />
+          <ng-container [formGroup]="group">
+            <console-translatable-group
+              [group]="group.controls['challenge']"
+              label="Challenge"
+              type="textarea"
+              [rows]="2"
+            />
+            <console-translatable-group
+              [group]="group.controls['approach']"
+              label="Approach"
+              type="textarea"
+              [rows]="2"
+            />
+            <console-translatable-group
+              [group]="group.controls['outcome']"
+              label="Outcome"
+              type="textarea"
+              [rows]="2"
+            />
 
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Code URL (optional)</mat-label>

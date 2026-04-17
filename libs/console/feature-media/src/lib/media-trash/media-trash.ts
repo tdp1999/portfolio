@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,19 +44,17 @@ export default class MediaTrashComponent implements OnInit {
   readonly pageSize = signal(20);
   readonly selected = signal<Set<string>>(new Set());
 
-  get allSelected(): boolean {
+  readonly allSelected = computed(() => {
     const items = this.items();
     return items.length > 0 && this.selected().size === items.length;
-  }
+  });
 
-  get someSelected(): boolean {
+  readonly someSelected = computed(() => {
     const sel = this.selected();
     return sel.size > 0 && sel.size < this.items().length;
-  }
+  });
 
-  get selectedCount(): number {
-    return this.selected().size;
-  }
+  readonly selectedCount = computed(() => this.selected().size);
 
   ngOnInit(): void {
     this.loadTrash();
@@ -69,7 +67,7 @@ export default class MediaTrashComponent implements OnInit {
   }
 
   toggleAll(): void {
-    if (this.allSelected) {
+    if (this.allSelected()) {
       this.selected.set(new Set());
     } else {
       this.selected.set(new Set(this.items().map((i) => i.id)));

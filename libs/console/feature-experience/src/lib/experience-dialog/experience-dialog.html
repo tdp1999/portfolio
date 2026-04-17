@@ -200,7 +200,7 @@
         <!-- English achievements -->
         <mat-tab label="English">
           <div class="flex flex-col gap-2 pt-4">
-            @for (control of achievementsEnArray.controls; track $index) {
+            @for (control of form.controls.achievements_en.controls; track $index) {
               <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
                 <mat-form-field class="flex-1">
                   <mat-label>Achievement {{ $index + 1 }}</mat-label>
@@ -221,7 +221,7 @@
         <!-- Vietnamese achievements -->
         <mat-tab label="Vietnamese">
           <div class="flex flex-col gap-2 pt-4">
-            @for (control of achievementsViArray.controls; track $index) {
+            @for (control of form.controls.achievements_vi.controls; track $index) {
               <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
                 <mat-form-field class="flex-1">
                   <mat-label>Achievement {{ $index + 1 }}</mat-label>

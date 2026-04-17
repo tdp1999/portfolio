@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +11,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { filter, of, switchMap, tap } from 'rxjs';
 import { ContactMessageDetail, MessageService } from '../message.service';
 
 @Component({
@@ -26,6 +28,7 @@ export default class MessageDetailComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly message = signal<ContactMessageDetail | null>(null);
   readonly loading = signal(false);
@@ -101,35 +104,39 @@ export default class MessageDetailComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.messageService.softDelete(msg.id).subscribe({
-          next: () => {
-            this.toast.success('Message deleted');
-            this.goBack();
-          },
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.messageService.softDelete(msg.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Message deleted');
+          this.goBack();
+        },
+      });
   }
 
   private loadMessage(id: string): void {
     this.loading.set(true);
-    this.messageService.getById(id).subscribe({
-      next: (msg) => {
-        this.message.set(msg);
-        this.loading.set(false);
-
-        // Auto-mark as read if unread
-        if (msg.status === 'UNREAD') {
-          this.messageService.markAsRead(id).subscribe();
-        }
-      },
-      error: () => {
-        this.loading.set(false);
-        this.toast.error('Failed to load message');
-        this.goBack();
-      },
-    });
+    this.messageService
+      .getById(id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap((msg) => {
+          this.message.set(msg);
+          this.loading.set(false);
+        }),
+        switchMap((msg) => (msg.status === 'UNREAD' ? this.messageService.markAsRead(id) : of(void 0)))
+      )
+      .subscribe({
+        error: () => {
+          this.loading.set(false);
+          this.toast.error('Failed to load message');
+          this.goBack();
+        },
+      });
   }
 }

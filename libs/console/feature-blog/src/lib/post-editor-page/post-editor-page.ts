@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   HostListener,
   OnInit,
   computed,
@@ -8,6 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,6 +35,7 @@ import {
   CreateBlogPostPayload,
   UpdateBlogPostPayload,
 } from '../blog.types';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPreview } from './markdown-utils';
 
 @Component({
@@ -64,6 +67,7 @@ export default class PostEditorPageComponent implements OnInit {
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly postId = signal<string | null>(null);
   readonly isEditMode = computed(() => this.postId() !== null);
@@ -178,16 +182,19 @@ export default class PostEditorPageComponent implements OnInit {
         mimeFilter: 'image/',
       } satisfies MediaPickerDialogData,
     });
-    ref.afterClosed().subscribe((result) => {
-      if (!result) return;
-      const id = Array.isArray(result) ? result[0] : result;
-      if (!id) return;
-      this.featuredImageId.set(id);
-      this.markDirty();
-      this.mediaService.getById(id).subscribe({
-        next: (item: MediaItem) => this.featuredImageUrl.set(item.url),
-      });
-    });
+    ref
+      .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map((result) => (Array.isArray(result) ? result[0] : result) as string | undefined),
+        filter((id): id is string => !!id),
+        tap((id) => {
+          this.featuredImageId.set(id);
+          this.markDirty();
+        }),
+        switchMap((id) => this.mediaService.getById(id))
+      )
+      .subscribe({ next: (item: MediaItem) => this.featuredImageUrl.set(item.url) });
   }
 
   clearFeaturedImage(): void {
@@ -202,11 +209,15 @@ export default class PostEditorPageComponent implements OnInit {
       maxHeight: '90vh',
       data: { mode: 'single', mimeFilter: 'image/' } satisfies MediaPickerDialogData,
     });
-    ref.afterClosed().subscribe((result) => {
-      if (!result) return;
-      const id = Array.isArray(result) ? result[0] : result;
-      if (!id) return;
-      this.mediaService.getById(id).subscribe({
+    ref
+      .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map((result) => (Array.isArray(result) ? result[0] : result) as string | undefined),
+        filter((id): id is string => !!id),
+        switchMap((id) => this.mediaService.getById(id))
+      )
+      .subscribe({
         next: (item: MediaItem) => {
           const alt = item.altText ?? item.originalFilename;
           const md = `\n![${alt}](${item.url})\n`;
@@ -214,7 +225,6 @@ export default class PostEditorPageComponent implements OnInit {
           this.markDirty();
         },
       });
-    });
   }
 
   importMarkdownFile(event: Event): void {

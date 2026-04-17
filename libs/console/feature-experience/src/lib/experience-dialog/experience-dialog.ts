@@ -144,25 +144,17 @@ export default class ExperienceDialogComponent implements OnInit {
     }
   }
 
-  get achievementsEnArray(): FormArray {
-    return this.form.get('achievements_en') as FormArray;
-  }
-
-  get achievementsViArray(): FormArray {
-    return this.form.get('achievements_vi') as FormArray;
-  }
-
   asFormGroup(control: AbstractControl): FormGroup {
     return control as FormGroup;
   }
 
   addAchievement(lang: 'en' | 'vi'): void {
-    const arr = lang === 'en' ? this.achievementsEnArray : this.achievementsViArray;
+    const arr = lang === 'en' ? this.form.controls.achievements_en : this.form.controls.achievements_vi;
     arr.push(this.createAchievementGroup());
   }
 
   removeAchievement(lang: 'en' | 'vi', index: number): void {
-    const arr = lang === 'en' ? this.achievementsEnArray : this.achievementsViArray;
+    const arr = lang === 'en' ? this.form.controls.achievements_en : this.form.controls.achievements_vi;
     arr.removeAt(index);
   }
 
@@ -282,10 +274,10 @@ export default class ExperienceDialogComponent implements OnInit {
   private populateAchievements(): void {
     if (this.exp?.achievements) {
       for (const text of this.exp.achievements.en ?? []) {
-        this.achievementsEnArray.push(this.createAchievementGroup(text));
+        this.form.controls.achievements_en.push(this.createAchievementGroup(text));
       }
       for (const text of this.exp.achievements.vi ?? []) {
-        this.achievementsViArray.push(this.createAchievementGroup(text));
+        this.form.controls.achievements_vi.push(this.createAchievementGroup(text));
       }
     }
   }

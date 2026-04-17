@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +13,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { filter, switchMap } from 'rxjs';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import type { ExperienceDialogData } from '../experience-dialog/experience-dialog';
@@ -44,6 +46,7 @@ export default class ExperienceDetailComponent implements OnInit {
   private readonly experienceService = inject(ExperienceService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly experience = signal<AdminExperience | null>(null);
   readonly loading = signal(false);
@@ -81,17 +84,20 @@ export default class ExperienceDetailComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.experienceService.delete(exp.id).subscribe({
-          next: () => {
-            this.toast.success('Experience deleted');
-            this.goBack();
-          },
-          error: () => this.toast.error('Failed to delete experience'),
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.experienceService.delete(exp.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Experience deleted');
+          this.goBack();
+        },
+        error: () => this.toast.error('Failed to delete experience'),
+      });
   }
 
   confirmRestore(): void {

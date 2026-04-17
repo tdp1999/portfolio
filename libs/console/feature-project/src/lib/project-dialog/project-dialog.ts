@@ -15,7 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
 import {
-  TranslatableInputComponent,
+  TranslatableGroupComponent,
   MediaPickerDialogComponent,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
@@ -36,6 +36,13 @@ export interface ProjectDialogData {
 
 const EMPTY_TRANSLATABLE: TranslatableJson = { en: '', vi: '' };
 
+function translatableGroup(fb: FormBuilder, value: TranslatableJson = EMPTY_TRANSLATABLE): FormGroup {
+  return fb.group({
+    en: fb.control(value['en'] ?? '', { nonNullable: true }),
+    vi: fb.control(value['vi'] ?? '', { nonNullable: true }),
+  });
+}
+
 @Component({
   selector: 'console-project-dialog',
   standalone: true,
@@ -53,7 +60,7 @@ const EMPTY_TRANSLATABLE: TranslatableJson = { en: '', vi: '' };
     MatCheckboxModule,
     MatDividerModule,
     MatTooltipModule,
-    TranslatableInputComponent,
+    TranslatableGroupComponent,
     FormErrorPipe,
   ],
   templateUrl: './project-dialog.html',
@@ -83,23 +90,19 @@ export default class ProjectDialogComponent {
 
   readonly form = this.buildForm();
 
-  get highlights(): FormArray {
-    return this.form.controls.highlights;
-  }
-
   private buildForm() {
     const p = this.data?.project;
     const form = this.fb.nonNullable.group({
       // Section 1: Basic Info
       title: [p?.title ?? '', Validators.required],
-      oneLiner: [p?.oneLiner ?? { ...EMPTY_TRANSLATABLE }],
+      oneLiner: translatableGroup(this.fb, p?.oneLiner ?? EMPTY_TRANSLATABLE),
       startDate: [p?.startDate ? new Date(p.startDate) : (null as Date | null), Validators.required],
       endDate: [p?.endDate ? new Date(p.endDate) : (null as Date | null)],
 
       // Section 2: Story
-      motivation: [p?.motivation ?? { ...EMPTY_TRANSLATABLE }],
-      description: [p?.description ?? { ...EMPTY_TRANSLATABLE }],
-      role: [p?.role ?? { ...EMPTY_TRANSLATABLE }],
+      motivation: translatableGroup(this.fb, p?.motivation ?? EMPTY_TRANSLATABLE),
+      description: translatableGroup(this.fb, p?.description ?? EMPTY_TRANSLATABLE),
+      role: translatableGroup(this.fb, p?.role ?? EMPTY_TRANSLATABLE),
 
       // Section 3: Highlights
       highlights: this.fb.array<FormGroup>([], { validators: Validators.maxLength(4) }),
@@ -130,23 +133,23 @@ export default class ProjectDialogComponent {
     approach: TranslatableJson;
     outcome: TranslatableJson;
     codeUrl: string | null;
-  }): FormGroup {
+  }) {
     return this.fb.group({
-      challenge: [data?.challenge ?? { ...EMPTY_TRANSLATABLE }],
-      approach: [data?.approach ?? { ...EMPTY_TRANSLATABLE }],
-      outcome: [data?.outcome ?? { ...EMPTY_TRANSLATABLE }],
+      challenge: translatableGroup(this.fb, data?.challenge ?? EMPTY_TRANSLATABLE),
+      approach: translatableGroup(this.fb, data?.approach ?? EMPTY_TRANSLATABLE),
+      outcome: translatableGroup(this.fb, data?.outcome ?? EMPTY_TRANSLATABLE),
       codeUrl: [data?.codeUrl ?? ''],
     });
   }
 
   addHighlight(): void {
-    if (this.highlights.length < 4) {
-      this.highlights.push(this.createHighlightGroup());
+    if (this.form.controls.highlights.length < 4) {
+      this.form.controls.highlights.push(this.createHighlightGroup());
     }
   }
 
   removeHighlight(index: number): void {
-    this.highlights.removeAt(index);
+    this.form.controls.highlights.removeAt(index);
   }
 
   // --- Media Picker ---
