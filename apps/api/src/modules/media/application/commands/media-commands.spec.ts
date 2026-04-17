@@ -49,6 +49,7 @@ describe('Media Commands', () => {
       remove: jest.fn(),
       hardDelete: jest.fn(),
       findById: jest.fn(),
+      findByIdIncludeDeleted: jest.fn(),
       findByPublicId: jest.fn(),
       findByMimeTypePrefix: jest.fn(),
       findOrphans: jest.fn(),
@@ -355,7 +356,7 @@ describe('Media Commands', () => {
     beforeEach(() => (handler = new RestoreMediaHandler(repo)));
 
     it('should restore deleted media', async () => {
-      repo.findById.mockResolvedValue(loadMedia({ deletedAt: new Date(), deletedById: userId }));
+      repo.findByIdIncludeDeleted.mockResolvedValue(loadMedia({ deletedAt: new Date(), deletedById: userId }));
 
       await handler.execute(new RestoreMediaCommand(mediaId, userId));
 
@@ -366,7 +367,7 @@ describe('Media Commands', () => {
     });
 
     it('should reject when media not found', async () => {
-      repo.findById.mockResolvedValue(null);
+      repo.findByIdIncludeDeleted.mockResolvedValue(null);
 
       await expect(handler.execute(new RestoreMediaCommand(mediaId, userId))).rejects.toMatchObject({
         errorCode: 'MEDIA_NOT_FOUND',
@@ -374,7 +375,7 @@ describe('Media Commands', () => {
     });
 
     it('should reject when media is not deleted', async () => {
-      repo.findById.mockResolvedValue(loadMedia());
+      repo.findByIdIncludeDeleted.mockResolvedValue(loadMedia());
 
       await expect(handler.execute(new RestoreMediaCommand(mediaId, userId))).rejects.toMatchObject({
         errorCode: 'MEDIA_NOT_DELETED',

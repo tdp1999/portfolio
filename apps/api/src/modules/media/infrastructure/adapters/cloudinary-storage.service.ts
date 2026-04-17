@@ -23,9 +23,10 @@ export class CloudinaryStorageService implements IStorageService, OnModuleInit {
     const apiSecret = process.env['CLOUDINARY_API_SECRET'];
 
     if (!cloudName || !apiKey || !apiSecret) {
-      throw new Error(
-        'Missing Cloudinary environment variables: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET'
-      );
+      // Boot without Cloudinary when env vars are missing (CI, local-no-upload).
+      // Upload/delete calls will surface a clear runtime error via the SDK.
+      this.logger.warn('Cloudinary env vars missing; storage will be unavailable until configured.');
+      return;
     }
 
     cloudinary.config({

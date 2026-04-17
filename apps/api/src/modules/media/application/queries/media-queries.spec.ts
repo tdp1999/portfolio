@@ -41,6 +41,7 @@ describe('Media Queries', () => {
       remove: jest.fn(),
       hardDelete: jest.fn(),
       findById: jest.fn(),
+      findByIdIncludeDeleted: jest.fn(),
       findByPublicId: jest.fn(),
       findByMimeTypePrefix: jest.fn(),
       findOrphans: jest.fn(),

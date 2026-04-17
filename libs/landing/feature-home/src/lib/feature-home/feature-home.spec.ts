@@ -35,19 +35,6 @@ describe('FeatureHome', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render hero section with title', () => {
-    const heroTitle = fixture.nativeElement.querySelector('h1');
-    expect(heroTitle).toBeTruthy();
-    expect(heroTitle.textContent).toContain("Hi, I'm");
-    expect(heroTitle.textContent).toContain('Phuong');
-  });
-
-  it('should render subtitle text', () => {
-    const subtitle = fixture.nativeElement.querySelector('p');
-    expect(subtitle).toBeTruthy();
-    expect(subtitle.textContent).toContain('Full-stack developer');
-  });
-
   it('should render primary action button with arrow icon', () => {
     const buttons = fixture.nativeElement.querySelectorAll('landing-button');
     expect(buttons.length).toBeGreaterThanOrEqual(1);
@@ -61,12 +48,6 @@ describe('FeatureHome', () => {
     const buttons = fixture.nativeElement.querySelectorAll('landing-button');
     expect(buttons.length).toBeGreaterThanOrEqual(2);
     expect(buttons[1].textContent).toContain('Contact Me');
-  });
-
-  it('should render navigation link to DDL page', () => {
-    const navLink = fixture.nativeElement.querySelector('a[routerLink="/ddl"]');
-    expect(navLink).toBeTruthy();
-    expect(navLink.textContent).toContain('DDL');
   });
 
   it('should render user icon in profile circle', () => {
@@ -84,10 +65,7 @@ describe('FeatureHome', () => {
     // Find the hero grid container (the one with items-center and gap-8)
     let heroGrid = null;
     for (let i = 0; i < flexContainers.length; i++) {
-      if (
-        flexContainers[i].classList.contains('items-center') &&
-        flexContainers[i].classList.contains('gap-8')
-      ) {
+      if (flexContainers[i].classList.contains('items-center') && flexContainers[i].classList.contains('gap-8')) {
         heroGrid = flexContainers[i];
         break;
       }

@@ -87,10 +87,12 @@ describe('FormSnapshotDirective', () => {
     expect(host.form.controls.tags.value).toEqual(['a', 'b']);
   });
 
-  it('re-captures snapshot when form becomes pristine (post-save)', () => {
+  it('re-captures snapshot when form becomes pristine (post-save)', async () => {
     host.form.controls.name.setValue('Bob');
     host.form.markAsPristine();
     fixture.detectChanges();
+    // Directive defers snapshot capture to a microtask; let it flush before dirtying again.
+    await fixture.whenStable();
     host.form.controls.name.setValue('Carol');
     host.form.markAsDirty();
     fixture.detectChanges();

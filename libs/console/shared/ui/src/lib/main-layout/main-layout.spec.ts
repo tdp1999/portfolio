@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { AuthStore, UserProfile } from '@portfolio/console/shared/data-access';
+import { API_CONFIG, AuthStore, UserProfile } from '@portfolio/console/shared/data-access';
 import { ConsoleMainLayoutComponent } from './main-layout';
 
 beforeAll(() => {
@@ -59,6 +59,7 @@ describe('ConsoleMainLayoutComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        { provide: API_CONFIG, useValue: { baseUrl: '', timeout: 0 } },
         {
           provide: AuthStore,
           useValue: {

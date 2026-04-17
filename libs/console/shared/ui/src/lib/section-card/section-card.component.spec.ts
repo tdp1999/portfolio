@@ -65,7 +65,7 @@ describe('SectionCardComponent', () => {
 
     it('should render title and description', () => {
       expect(el.querySelector('.text-section-heading')?.textContent?.trim()).toBe('Identity');
-      expect(el.querySelector('.section-card__description p')?.textContent?.trim()).toBe('Your public profile info');
+      expect(el.querySelector('.section-card__header p')?.textContent?.trim()).toBe('Your public profile info');
     });
 
     it('should project form content', () => {

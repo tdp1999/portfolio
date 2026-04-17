@@ -42,14 +42,17 @@ describe('CloudinaryStorageService', () => {
   });
 
   describe('onModuleInit()', () => {
-    it('should throw if env vars are missing', () => {
+    it('should warn and skip configuration when env vars are missing', () => {
       delete process.env['CLOUDINARY_CLOUD_NAME'];
       delete process.env['CLOUDINARY_API_KEY'];
       delete process.env['CLOUDINARY_API_SECRET'];
 
       const svc = new CloudinaryStorageService();
+      const warnSpy = jest.spyOn(svc['logger'], 'warn').mockImplementation();
 
-      expect(() => svc.onModuleInit()).toThrow('Missing Cloudinary environment variables');
+      expect(() => svc.onModuleInit()).not.toThrow();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Cloudinary env vars missing'));
+      expect(cloudinary.config).not.toHaveBeenCalled();
     });
 
     it('should configure cloudinary with env vars', () => {

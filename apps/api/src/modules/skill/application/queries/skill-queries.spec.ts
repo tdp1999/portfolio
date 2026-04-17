@@ -45,6 +45,7 @@ describe('Skill Queries', () => {
       findByName: jest.fn(),
       findByCategory: jest.fn(),
       findChildren: jest.fn(),
+      findAllNoLimit: jest.fn(),
       hasChildren: jest.fn(),
       findAll: jest.fn(),
     };
