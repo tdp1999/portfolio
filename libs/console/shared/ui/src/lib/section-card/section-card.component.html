@@ -1,12 +1,11 @@
 <section class="section-card" [attr.id]="sectionId()">
-  <div class="section-card__body">
-    <div class="section-card__description">
-      <h3 class="text-section-heading">{{ title() }}</h3>
-      <p class="text-body text-text-secondary mt-1">{{ description() }}</p>
-    </div>
-    <div class="section-card__form">
-      <ng-content />
-    </div>
+  <div class="section-card__header">
+    <h3 class="text-section-heading">{{ title() }}</h3>
+    <p class="text-body text-text-secondary mt-1">{{ description() }}</p>
+  </div>
+
+  <div class="section-card__form">
+    <ng-content />
   </div>
 
   @if (saveMode() === 'per-section') {

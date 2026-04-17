@@ -8,7 +8,7 @@
 
       <div class="sticky-save-bar__actions">
         <button mat-button type="button" [disabled]="saving()()" (click)="onDiscard()">Discard</button>
-        <button mat-flat-button type="button" [disabled]="isSaveDisabled" (click)="onSave()">
+        <button mat-flat-button type="button" [disabled]="isSaveDisabled()" (click)="onSave()">
           @if (saving()()) {
             Saving…
           } @else {

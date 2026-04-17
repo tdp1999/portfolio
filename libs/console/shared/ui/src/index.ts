@@ -17,10 +17,13 @@ export { ErrorMessageComponent } from './lib/error-message/error-message';
 export { ScrollspyRailComponent } from './lib/scrollspy-rail/scrollspy-rail.component';
 export type { SectionDescriptor, SectionStatus } from './lib/scrollspy-rail/scrollspy-rail.types';
 export { SectionCardComponent } from './lib/section-card/section-card.component';
+export { FormSnapshotDirective } from './lib/section-card/form-snapshot.directive';
 export { LongFormLayoutComponent } from './lib/long-form-layout/long-form-layout.component';
 export { StickySaveBarComponent } from './lib/sticky-save-bar/sticky-save-bar.component';
-export { TranslatableInputComponent } from './lib/translatable-input/translatable-input';
-export type { LanguageConfig } from './lib/translatable-input/translatable-input';
+export { TranslatableGroupComponent } from './lib/translatable-group/translatable-group';
+export { ChipToggleGroupComponent } from './lib/chip-toggle-group/chip-toggle-group.component';
+export type { ChipOption } from './lib/chip-toggle-group/chip-toggle-group.component';
+export type { LanguageConfig } from './lib/translatable-group/translatable-group';
 export { default as MediaPickerDialogComponent } from './lib/media-picker-dialog/media-picker-dialog';
 export type {
   MediaPickerDialogData,

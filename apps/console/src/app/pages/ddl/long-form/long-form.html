@@ -22,6 +22,7 @@
         title="Basics"
         description="Display name and job title. Demonstrates the nested { en, vi } bilingual FormGroup convention."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="basicsForm"
         [saving]="basicsSaving"
         [lastSavedAt]="basicsLastSavedAt"
@@ -29,27 +30,8 @@
         (save)="saveBasics()"
       >
         <form [formGroup]="basicsForm" class="form-stack">
-          <div formGroupName="name" class="form-pair">
-            <mat-form-field appearance="outline">
-              <mat-label>Name (EN)</mat-label>
-              <input matInput formControlName="en" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Name (VI)</mat-label>
-              <input matInput formControlName="vi" />
-            </mat-form-field>
-          </div>
-
-          <div formGroupName="title" class="form-pair">
-            <mat-form-field appearance="outline">
-              <mat-label>Title (EN)</mat-label>
-              <input matInput formControlName="en" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Title (VI)</mat-label>
-              <input matInput formControlName="vi" />
-            </mat-form-field>
-          </div>
+          <console-translatable-group [group]="basicsForm.controls.name" label="Name" />
+          <console-translatable-group [group]="basicsForm.controls.title" label="Title" />
         </form>
       </console-section-card>
 
@@ -59,6 +41,7 @@
         title="Contact"
         description="Reachable channels. Saved state — note the timestamp and ✓ icon in the rail."
         saveMode="per-section"
+        formSnapshot
         [formGroup]="contactForm"
         [saving]="contactSaving"
         [lastSavedAt]="contactLastSavedAt"

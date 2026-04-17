@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, Signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
@@ -30,9 +30,7 @@ export class StickySaveBarComponent {
   /** Emitted when the user confirms discard */
   discard = output<void>();
 
-  get isSaveDisabled(): boolean {
-    return this.saving()() || (this.disabled()?.() ?? false);
-  }
+  readonly isSaveDisabled = computed(() => this.saving()() || (this.disabled()?.() ?? false));
 
   onSave(): void {
     this.save.emit();

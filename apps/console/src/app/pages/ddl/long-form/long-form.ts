@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import {
+  FormSnapshotDirective,
   LongFormLayoutComponent,
   ScrollspyRailComponent,
   SectionCardComponent,
@@ -12,6 +13,7 @@ import {
   SectionStatus,
   StickySaveBarComponent,
   ToastService,
+  TranslatableGroupComponent,
 } from '@portfolio/console/shared/ui';
 import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 
@@ -40,7 +42,9 @@ import { HasUnsavedChanges } from '@portfolio/console/shared/util';
     LongFormLayoutComponent,
     ScrollspyRailComponent,
     SectionCardComponent,
+    FormSnapshotDirective,
     StickySaveBarComponent,
+    TranslatableGroupComponent,
   ],
   templateUrl: './long-form.html',
   styleUrl: './long-form.scss',

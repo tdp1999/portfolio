@@ -1,0 +1,13 @@
+<div class="chip-row">
+  @for (opt of options(); track opt.value) {
+    <button
+      type="button"
+      class="chip-toggle"
+      [class.chip-toggle--selected]="selected().has(opt.value)"
+      [disabled]="disabled()"
+      (click)="toggle(opt.value)"
+    >
+      {{ opt.label }}
+    </button>
+  }
+</div>

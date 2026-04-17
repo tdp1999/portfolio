@@ -1,25 +1,27 @@
 .section-card {
-  background: var(--color-surface-elevated);
-  border-radius: 8px;
-  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
 
-  &__body {
-    display: grid;
-    grid-template-columns: minmax(0, 35%) minmax(0, 65%);
-    gap: 24px;
+  &:focus-within {
+    border-color: var(--color-border-strong);
   }
 
-  &__description {
-    padding-right: 16px;
+  &__header {
+    padding: 20px 24px;
+    background: var(--color-surface-elevated);
+    border-bottom: 1px solid var(--color-border);
   }
 
   &__form {
-    min-width: 0;
+    padding: 24px;
   }
 
   &__footer {
-    margin-top: 24px;
-    padding-top: 16px;
+    padding: 12px 24px;
+    background: var(--color-surface-elevated);
     border-top: 1px solid var(--color-border);
   }
 
@@ -27,7 +29,7 @@
     @apply text-sm;
     margin-bottom: 12px;
     padding: 8px 12px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: var(--color-error-container);
     color: var(--color-error);
   }

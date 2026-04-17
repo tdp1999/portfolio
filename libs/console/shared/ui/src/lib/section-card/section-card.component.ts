@@ -52,14 +52,18 @@ export class SectionCardComponent {
   /** Emitted when the user clicks Save in per-section mode */
   save = output<void>();
 
+  /**
+   * Emitted when the user clicks Cancel. Consumers own form-state restoration —
+   * apply `formSnapshot` directive for the default snapshot/restore behaviour.
+   */
+  cancelled = output<void>();
+
   constructor() {
-    // Subscribe to FormGroup status/value changes to trigger OnPush re-render
+    // Keep OnPush re-rendering in sync with FormGroup state changes (dirty/invalid).
     effect((onCleanup) => {
       const fg = this.formGroup();
       if (!fg) return;
-      const sub = fg.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.cdr.markForCheck();
-      });
+      const sub = fg.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
       onCleanup(() => sub.unsubscribe());
     });
   }
@@ -95,10 +99,6 @@ export class SectionCardComponent {
   }
 
   onCancel(): void {
-    const fg = this.formGroup();
-    if (fg) {
-      fg.reset(fg.getRawValue());
-      fg.markAsPristine();
-    }
+    this.cancelled.emit();
   }
 }

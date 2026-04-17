@@ -4,6 +4,8 @@
   gap: 24px;
   align-items: start;
   min-height: 0;
+  max-width: var(--layout-long-form-max-width);
+  margin: 0 auto;
 
   &__rail {
     position: sticky;
