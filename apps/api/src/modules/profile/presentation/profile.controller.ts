@@ -80,12 +80,12 @@ export class AdminProfileController {
   }
 
   @Patch('avatar')
-  async updateAvatar(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<void> {
+  async updateAvatar(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<{ avatarUrl: string | null }> {
     return await this.commandBus.execute(new UpdateAvatarCommand(body, req.user.id));
   }
 
   @Patch('og-image')
-  async updateOgImage(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<void> {
+  async updateOgImage(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<{ ogImageUrl: string | null }> {
     return await this.commandBus.execute(new UpdateOgImageCommand(body, req.user.id));
   }
 }

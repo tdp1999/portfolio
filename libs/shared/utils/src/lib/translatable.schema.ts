@@ -8,6 +8,12 @@ export const TranslatableSchema = z.object({
   vi: z.string().min(1),
 });
 
+/** Shape-only schema for reading from persistence — allows empty strings (written before strict validation). */
+export const PersistenceTranslatableSchema = z.object({
+  en: z.string(),
+  vi: z.string(),
+});
+
 export const OptionalTranslatableSchema = z
   .object({
     en: z.string().min(1).optional(),

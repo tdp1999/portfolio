@@ -78,7 +78,7 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
     return;
   }
 
-  const name = env.ADMIN_NAME ?? '';
+  const name = env.ADMIN_NAME || 'Admin';
 
   await prisma.profile.create({
     data: {

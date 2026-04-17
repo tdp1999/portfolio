@@ -4,8 +4,7 @@ import { IProfileProps, Availability } from '../../domain/profile.types';
 import type { ProfileWithMedia } from '../../application/ports/profile.repository.port';
 import type { TranslatableJson, SocialLink, OpenToValue, SocialPlatform } from '@portfolio/shared/types';
 import {
-  TranslatableSchema,
-  OptionalTranslatableSchema,
+  PersistenceTranslatableSchema,
   SocialLinksArraySchema,
   CertificationsArraySchema,
   ResumeUrlsSchema,
@@ -22,10 +21,10 @@ export class ProfileMapper {
     const props: IProfileProps = {
       id: raw.id,
       userId: raw.userId,
-      fullName: TranslatableSchema.parse(raw.fullName),
-      title: TranslatableSchema.parse(raw.title),
-      bioShort: TranslatableSchema.parse(raw.bioShort),
-      bioLong: raw.bioLong != null ? (OptionalTranslatableSchema.parse(raw.bioLong) as TranslatableJson) : null,
+      fullName: PersistenceTranslatableSchema.parse(raw.fullName),
+      title: PersistenceTranslatableSchema.parse(raw.title),
+      bioShort: PersistenceTranslatableSchema.parse(raw.bioShort),
+      bioLong: raw.bioLong != null ? (PersistenceTranslatableSchema.parse(raw.bioLong) as TranslatableJson) : null,
       yearsOfExperience: raw.yearsOfExperience,
       availability: raw.availability as Availability,
       openTo: OpenToSchema.parse(raw.openTo) as OpenToValue[],

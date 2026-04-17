@@ -24,7 +24,7 @@ export class UpdateOgImageHandler implements ICommandHandler<UpdateOgImageComman
     @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository
   ) {}
 
-  async execute(command: UpdateOgImageCommand): Promise<void> {
+  async execute(command: UpdateOgImageCommand): Promise<{ ogImageUrl: string | null }> {
     const { success, data, error } = UpdateOgImageSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
@@ -33,6 +33,7 @@ export class UpdateOgImageHandler implements ICommandHandler<UpdateOgImageComman
         remarks: 'Update OG image validation failed',
       });
 
+    let ogImageUrl: string | null = null;
     if (data.ogImageId) {
       const media = await this.mediaRepo.findById(data.ogImageId);
       if (!media)
@@ -40,8 +41,10 @@ export class UpdateOgImageHandler implements ICommandHandler<UpdateOgImageComman
           errorCode: ProfileErrorCode.MEDIA_NOT_FOUND,
           layer: ErrorLayer.APPLICATION,
         });
+      ogImageUrl = media.url;
     }
 
     await this.repo.updateOgImage(command.userId, data.ogImageId);
+    return { ogImageUrl };
   }
 }

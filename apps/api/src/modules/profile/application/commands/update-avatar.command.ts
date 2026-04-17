@@ -24,7 +24,7 @@ export class UpdateAvatarHandler implements ICommandHandler<UpdateAvatarCommand>
     @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository
   ) {}
 
-  async execute(command: UpdateAvatarCommand): Promise<void> {
+  async execute(command: UpdateAvatarCommand): Promise<{ avatarUrl: string | null }> {
     const { success, data, error } = UpdateAvatarSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
@@ -33,6 +33,7 @@ export class UpdateAvatarHandler implements ICommandHandler<UpdateAvatarCommand>
         remarks: 'Update avatar validation failed',
       });
 
+    let avatarUrl: string | null = null;
     if (data.avatarId) {
       const media = await this.mediaRepo.findById(data.avatarId);
       if (!media)
@@ -40,8 +41,10 @@ export class UpdateAvatarHandler implements ICommandHandler<UpdateAvatarCommand>
           errorCode: ProfileErrorCode.MEDIA_NOT_FOUND,
           layer: ErrorLayer.APPLICATION,
         });
+      avatarUrl = media.url;
     }
 
     await this.repo.updateAvatar(command.userId, data.avatarId);
+    return { avatarUrl };
   }
 }
