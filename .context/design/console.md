@@ -2,6 +2,7 @@
 
 > Design rules, components, and patterns for the console/dashboard application.
 > For shared tokens and foundations, see `foundations.md`.
+> **Before writing console HTML/SCSS:** use `console-cookbook.md` for spacing and typography decisions.
 
 ## Styling Approach
 
@@ -153,17 +154,15 @@ Article, future entities). Backed by ADR-013 (layout chassis) and ADR-014
 - Form left-aligned with `max-width` but unaligned outer container (the bug
   this layout contract was created to fix)
 
-### Component Inventory (to be built)
+### Component Inventory
 
-These do not exist yet — see Profile refactor epic for delivery:
-
-| Component | Selector | Library |
-|-----------|----------|---------|
-| `LongFormLayoutComponent` | `console-long-form-layout` | `@portfolio/console/shared/ui` |
-| `ScrollspyRailComponent` | `console-scrollspy-rail` | `@portfolio/console/shared/ui` |
-| `SectionCardComponent` | `console-section-card` | `@portfolio/console/shared/ui` |
-| `StickySaveBarComponent` | `console-sticky-save-bar` | `@portfolio/console/shared/ui` |
-| `UnsavedChangesGuard` | `canDeactivate` fn | `@portfolio/console/shared/util` |
+| Component | Selector | Library | Status |
+|-----------|----------|---------|--------|
+| `LongFormLayoutComponent` | `console-long-form-layout` | `@portfolio/console/shared/ui` | ✓ shipped |
+| `ScrollspyRailComponent` | `console-scrollspy-rail` | `@portfolio/console/shared/ui` | ✓ shipped |
+| `SectionCardComponent` | `console-section-card` | `@portfolio/console/shared/ui` | ✓ shipped |
+| `StickySaveBarComponent` | `console-sticky-save-bar` | `@portfolio/console/shared/ui` | ✓ shipped |
+| `UnsavedChangesGuard` | `canDeactivate` fn | `@portfolio/console/shared/util` | ✓ shipped |
 
 ## Bilingual FormGroup Convention
 

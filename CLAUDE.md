@@ -17,6 +17,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 - **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns-architecture.md`
 - **Design System:** Tokens, components, layout patterns. See `.context/design/` (foundations, landing, console, shared)
+- **Console Cookbook:** Actionable spacing/typography rules for console pages — read this before writing any console HTML/SCSS. See `.context/design/console-cookbook.md`
 - **Design Bank:** Research-backed UX principles and patterns. See `.context/design/bank/index.md`
 - **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
@@ -38,6 +39,8 @@ Use these skills for specific workflows. More will be added over time.
 - `vision.md` - Project goals and philosophy
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
 - `design/` - Design system (foundations, landing, console, shared)
+- `design/console-cookbook.md` - **Read before writing console HTML/SCSS.** Spacing decision table, typography class picker, surface/text pairings, pre-report checklist
+- `design/visual-feedback.md` - Chrome DevTools MCP screenshot workflow for console pages (login snippet, when to screenshot, what to check)
 - `DESIGN-landing.md` - Stitch-compatible AI-readable spec for landing
 - `DESIGN-console.md` - Stitch-compatible AI-readable spec for console
 - `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)

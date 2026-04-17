@@ -365,6 +365,31 @@ Rules that must be followed in all Angular template and component code.
 | **Direct form access** | `form.controls.email.hasError(...)` | `form.get('email')?.hasError(...)` |
 | **No getters for templates** | Direct access or `computed()` | `get prop() { return ... }` |
 | **Self-closing tags** | `<app-header />` | `<app-header></app-header>` |
+| **No nested subscribes** | Chain with `switchMap`/`concatMap`/`mergeMap` + `map` | `obs1.subscribe(() => obs2.subscribe(...))` |
+
+### RxJS: Chaining dependent HTTP calls
+
+When one HTTP call depends on the result of another, use `switchMap` to flatten into one pipeline. Never subscribe inside a subscribe callback.
+
+```typescript
+// BAD — nested subscribe, inner not covered by outer takeUntilDestroyed
+this.uploadMedia(file).subscribe((id) => {
+  this.updateRecord(id).subscribe(({ url }) => { ... });
+});
+
+// GOOD — single pipeline, one subscribe, one error handler
+this.uploadMedia(file)
+  .pipe(
+    takeUntilDestroyed(this.destroyRef),
+    switchMap((id) => this.updateRecord(id).pipe(map((res) => ({ id, ...res })))),
+  )
+  .subscribe({
+    next: ({ id, url }) => { ... },
+    error: () => { ... },
+  });
+```
+
+**Operator choice:** `switchMap` for HTTP mutations (cancels in-flight if re-triggered), `concatMap` for ordered queues, `mergeMap` for parallel.
 
 ---
 
