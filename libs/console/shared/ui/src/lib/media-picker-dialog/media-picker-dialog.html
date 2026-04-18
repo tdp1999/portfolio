@@ -1,0 +1,93 @@
+<div class="picker" cdkTrapFocus cdkTrapFocusAutoCapture>
+  <header class="picker__header">
+    <h3 id="media-picker-title" class="picker__title">
+      {{ data.mode === 'single' ? 'Select Media' : 'Select Media Files' }}
+    </h3>
+    <button type="button" mat-icon-button class="picker__close" aria-label="Close dialog" (click)="handleClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <mat-tab-group
+    class="picker__tabs"
+    [selectedIndex]="activeTab() === 'library' ? 0 : 1"
+    (selectedIndexChange)="onTabChange($event)"
+  >
+    <mat-tab label="Library">
+      <mat-dialog-content class="picker__content">
+        <console-recently-used-strip
+          [items]="recentItems()"
+          [selectedIds]="selectedIdsArray()"
+          (pick)="onRecentPick($event)"
+        />
+
+        <div class="picker__toolbar">
+          <console-asset-filter-bar
+            [search]="search()"
+            [mimeGroup]="mimeGroup()"
+            [folder]="folder()"
+            [sort]="sort()"
+            [showMimeChips]="!data.mimeFilter"
+            (searchChange)="onSearchChange($event)"
+            (mimeGroupChange)="onMimeGroupChange($event)"
+            (folderChange)="onFolderChange($event)"
+            (sortChange)="onSortChange($event)"
+            (clearAll)="onClearFilters()"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            class="picker__view-toggle"
+            [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+            (click)="onViewModeToggle()"
+          >
+            <mat-icon>{{ viewMode() === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
+          </button>
+        </div>
+
+        <console-asset-grid
+          class="picker__grid"
+          [class.picker__grid--highlight]="highlightActive()"
+          [items]="items()"
+          [selectedIds]="selectedIdsArray()"
+          [mode]="data.mode"
+          [viewMode]="viewMode()"
+          [loading]="loading()"
+          [currentPage]="page()"
+          [totalPages]="totalPages()"
+          (selectionChange)="onSelectionChange($event)"
+          (itemActivated)="onItemActivated($event)"
+          (pageChange)="onPageChange($event)"
+        />
+      </mat-dialog-content>
+    </mat-tab>
+
+    <mat-tab label="Upload">
+      <mat-dialog-content class="picker__content picker__content--upload">
+        <console-asset-upload-zone
+          [uploadFn]="uploadFn"
+          [accept]="data.mimeFilter ?? '*/*'"
+          [multiple]="data.mode === 'multi'"
+          (uploadsComplete)="onUploadsComplete($event)"
+        />
+      </mat-dialog-content>
+    </mat-tab>
+  </mat-tab-group>
+
+  <mat-dialog-actions class="picker__footer">
+    <div class="picker__footer-left">
+      <span class="picker__hint text-caption"> ↑↓←→ navigate · Space select · Enter insert · Esc close </span>
+      <span class="picker__count text-stat-label" aria-live="polite">
+        @if (selected().size > 0) {
+          {{ selected().size }} selected
+        }
+      </span>
+    </div>
+    <div class="picker__footer-right">
+      <button type="button" mat-stroked-button (click)="handleClose()">Cancel</button>
+      <button type="button" mat-flat-button color="primary" [disabled]="selected().size === 0" (click)="confirm()">
+        {{ ctaLabel() }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

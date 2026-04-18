@@ -83,6 +83,44 @@ describe('Media Queries', () => {
       expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ search: 'photo' }));
     });
 
+    it('should pass folder filter to repo', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ folder: 'avatars' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ folder: 'avatars' }));
+    });
+
+    it('should pass sort option to repo', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ sort: 'filename_asc' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ sort: 'filename_asc' }));
+    });
+
+    it('should compose all filters into a single repo call', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(
+        new ListMediaQuery({
+          search: 'hero',
+          mimeTypePrefix: 'image',
+          folder: 'posts',
+          sort: 'bytes_desc',
+        })
+      );
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          search: 'hero',
+          mimeTypePrefix: 'image',
+          folder: 'posts',
+          sort: 'bytes_desc',
+        })
+      );
+    });
+
     it('should pass includeDeleted flag to repo', async () => {
       repo.findAll.mockResolvedValue({ data: [], total: 0 });
 
@@ -91,8 +129,20 @@ describe('Media Queries', () => {
       expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ includeDeleted: true }));
     });
 
-    it('should throw on invalid params', async () => {
+    it('should throw on invalid pagination params', async () => {
       await expect(handler.execute(new ListMediaQuery({ page: -1 }))).rejects.toMatchObject({ statusCode: 400 });
+    });
+
+    it('should throw on invalid folder value', async () => {
+      await expect(handler.execute(new ListMediaQuery({ folder: 'not-a-folder' }))).rejects.toMatchObject({
+        statusCode: 400,
+      });
+    });
+
+    it('should throw on invalid sort value', async () => {
+      await expect(handler.execute(new ListMediaQuery({ sort: 'weird_sort' }))).rejects.toMatchObject({
+        statusCode: 400,
+      });
     });
   });
 

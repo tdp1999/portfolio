@@ -8,9 +8,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { SpinnerOverlayComponent, ToastService } from '@portfolio/console/shared/ui';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { MediaService } from '../media.service';
 import { MediaItem } from '../media.types';
-import { formatFileSize, getMimeTypeCategory } from '../media.constants';
+import { MimeCategoryPipe, ReadableSizePipe } from '@portfolio/shared/ui-pipes';
 
 @Component({
   selector: 'console-media-trash',
@@ -25,6 +26,8 @@ import { formatFileSize, getMimeTypeCategory } from '../media.constants';
     SpinnerOverlayComponent,
     DatePipe,
     RouterLink,
+    MimeCategoryPipe,
+    ReadableSizePipe,
   ],
   templateUrl: './media-trash.html',
   styleUrl: './media-trash.scss',
@@ -41,7 +44,8 @@ export default class MediaTrashComponent implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(20);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly selected = signal<Set<string>>(new Set());
 
   readonly allSelected = computed(() => {
@@ -117,14 +121,6 @@ export default class MediaTrashComponent implements OnInit {
         },
       });
     }
-  }
-
-  getTypeBadge(mimeType: string): string {
-    return getMimeTypeCategory(mimeType);
-  }
-
-  getFileSize(bytes: number): string {
-    return formatFileSize(bytes);
   }
 
   private loadTrash(): void {

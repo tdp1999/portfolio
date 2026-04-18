@@ -73,7 +73,11 @@ describe('CloudinaryStorageService', () => {
         end: () => callback(null, mockUploadResult),
       }));
 
-      const result = await service.upload(Buffer.from('file'), { folder: 'projects' });
+      const result = await service.upload(Buffer.from('file'), {
+        folder: 'projects',
+        originalFilename: 'test.png',
+        mimeType: 'image/png',
+      });
 
       expect(result.externalId).toBe('portfolio/projects/abc123');
       expect(result.url).toContain('cloudinary.com');
@@ -83,15 +87,32 @@ describe('CloudinaryStorageService', () => {
       expect(result.height).toBe(1080);
     });
 
-    it('should pass folder with portfolio prefix', async () => {
+    it('should pass asset_folder with portfolio prefix', async () => {
       (cloudinary.uploader.upload_stream as jest.Mock).mockImplementation((opts, callback) => ({
         end: () => {
-          expect(opts.folder).toBe('portfolio/avatars');
+          expect(opts.asset_folder).toBe('portfolio/avatars');
+          expect(opts.use_filename).toBe(true);
+          expect(opts.unique_filename).toBe(true);
+          expect(opts.filename_override).toBe('me.png');
+          expect(opts.display_name).toBe('me.png');
+          expect(opts.overwrite).toBe(false);
+          expect(opts.invalidate).toBe(true);
+          expect(opts.context).toEqual(
+            expect.objectContaining({
+              original_filename: 'me.png',
+              mime_type: 'image/png',
+              folder: 'avatars',
+            })
+          );
           callback(null, mockUploadResult);
         },
       }));
 
-      await service.upload(Buffer.from('file'), { folder: 'avatars' });
+      await service.upload(Buffer.from('file'), {
+        folder: 'avatars',
+        originalFilename: 'me.png',
+        mimeType: 'image/png',
+      });
     });
 
     it('should use CLOUDINARY_FOLDER_PREFIX when set', async () => {
@@ -101,12 +122,16 @@ describe('CloudinaryStorageService', () => {
 
       (cloudinary.uploader.upload_stream as jest.Mock).mockImplementation((opts, callback) => ({
         end: () => {
-          expect(opts.folder).toBe('dev/portfolio/avatars');
+          expect(opts.asset_folder).toBe('dev/portfolio/avatars');
           callback(null, mockUploadResult);
         },
       }));
 
-      await prefixedService.upload(Buffer.from('file'), { folder: 'avatars' });
+      await prefixedService.upload(Buffer.from('file'), {
+        folder: 'avatars',
+        originalFilename: 'me.png',
+        mimeType: 'image/png',
+      });
       delete process.env['CLOUDINARY_FOLDER_PREFIX'];
     });
 
@@ -116,7 +141,11 @@ describe('CloudinaryStorageService', () => {
       }));
 
       try {
-        await service.upload(Buffer.from('file'), { folder: 'projects' });
+        await service.upload(Buffer.from('file'), {
+          folder: 'projects',
+          originalFilename: 'test.png',
+          mimeType: 'image/png',
+        });
         fail('Expected error');
       } catch (e) {
         expect(e).toBeInstanceOf(DomainError);
@@ -130,10 +159,31 @@ describe('CloudinaryStorageService', () => {
         end: () => callback(null, docResult),
       }));
 
-      const result = await service.upload(Buffer.from('file'), { folder: 'docs', resourceType: 'raw' });
+      const result = await service.upload(Buffer.from('file'), {
+        folder: 'docs',
+        resourceType: 'raw',
+        originalFilename: 'note.txt',
+        mimeType: 'text/plain',
+      });
 
       expect(result.width).toBeUndefined();
       expect(result.height).toBeUndefined();
+    });
+
+    it('should derive format from filename extension when raw upload omits format', async () => {
+      const rawResult = { ...mockUploadResult, format: undefined, width: undefined, height: undefined };
+      (cloudinary.uploader.upload_stream as jest.Mock).mockImplementation((_opts, callback) => ({
+        end: () => callback(null, rawResult),
+      }));
+
+      const result = await service.upload(Buffer.from('file'), {
+        folder: 'docs',
+        resourceType: 'raw',
+        originalFilename: 'report.zip',
+        mimeType: 'application/zip',
+      });
+
+      expect(result.format).toBe('zip');
     });
   });
 

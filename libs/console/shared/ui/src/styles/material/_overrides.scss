@@ -86,15 +86,27 @@
   );
 
   /* Dialog */
-  //   @include mat.dialog-overrides(
-  //     (
-  //       with-actions-content-padding: 12px,
-  //     )
-  //   );
+  @include mat.dialog-overrides(
+    (
+      container-max-width: 1440px,
+      headline-padding: 16px 20px 8px,
+      content-padding: 16px 20px,
+      actions-padding: 12px 20px,
+    )
+  );
 }
 
 /* Compact form fields — density -2 */
 @include mat.form-field-density(-2);
+
+.mdc-icon-button.mat-mdc-icon-button {
+  display: inline-flex;
+  place-items: center;
+
+  .mat-icon {
+    margin: auto;
+  }
+}
 
 /* Styles not covered by official token API */
 .mat-mdc-form-field {
@@ -135,16 +147,6 @@
 .mat-mdc-menu-panel {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-}
-
-/* Dialog content — prevent floating label clipping on first form field.
-   Angular Material's overflow-y:auto on mat-dialog-content clips labels
-   that float above the field boundary (angular/components#26352).
-   We use padding-block on the content AND a pseudo-element spacer to
-   guarantee clearance regardless of MDC internal padding resets. */
-.mat-mdc-dialog-container .mdc-dialog__content.mat-mdc-dialog-content {
-  padding-top: 12px !important;
-  padding-bottom: 16px;
 }
 
 /* Filter field — compact dark style inside filter bars */

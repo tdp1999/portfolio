@@ -1,6 +1,12 @@
 export interface UploadOptions {
   folder: string;
   resourceType?: 'image' | 'video' | 'raw';
+  uploadedByUserId?: string;
+}
+
+export interface SingleUploadOptions extends UploadOptions {
+  originalFilename: string;
+  mimeType: string;
 }
 
 export interface StorageResult {
@@ -24,7 +30,7 @@ export interface BulkUploadResult {
 }
 
 export interface IStorageService {
-  upload(file: Buffer, options: UploadOptions): Promise<StorageResult>;
+  upload(file: Buffer, options: SingleUploadOptions): Promise<StorageResult>;
   uploadBulk(files: FileInput[], options: UploadOptions): Promise<BulkUploadResult>;
   delete(externalId: string): Promise<void>;
   generateUrl(externalId: string, transforms?: Record<string, string>): string;

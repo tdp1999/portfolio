@@ -43,12 +43,16 @@ export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
     validateFileSize(buffer, mimetype);
     validateMimeType(mimetype);
     const scanResult = await validateSecurity(this.scanner, buffer, mimetype);
+    const sanitizedFilename = this.scanner.sanitizeFilename(originalname);
 
     let storageResult;
     try {
       storageResult = await this.storage.upload(scanResult.sanitizedBuffer, {
         folder: data.folder,
-        resourceType: resolveResourceType(mimetype),
+        resourceType: resolveResourceType(scanResult.detectedMimeType),
+        originalFilename: sanitizedFilename,
+        mimeType: scanResult.detectedMimeType,
+        uploadedByUserId: command.userId,
       });
     } catch (err) {
       throw ExternalServiceError('Media upload to storage failed', err instanceof Error ? err : undefined, {
@@ -56,7 +60,6 @@ export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
       });
     }
 
-    const sanitizedFilename = this.scanner.sanitizeFilename(originalname);
     const media = Media.create(
       {
         originalFilename: sanitizedFilename,

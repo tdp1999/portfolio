@@ -1,217 +1,230 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { A11yModule } from '@angular/cdk/a11y';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MediaService, type MediaItem } from '@portfolio/console/shared/data-access';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MediaService } from '@portfolio/console/shared/data-access';
+import type { MediaFolder, MediaItem, MediaSort } from '@portfolio/console/shared/util';
+import { DEFAULT_PAGE_SIZE, MEDIA_PICKER_MIN_LOADING_MS } from '@portfolio/console/shared/util';
+import { catchError, finalize, forkJoin, map, of, startWith, switchMap } from 'rxjs';
+import { AssetFilterBarComponent } from '../asset-filter-bar/asset-filter-bar.component';
+import {
+  DEFAULT_SORT,
+  type MimeGroup,
+  type SortOption,
+  type UploadFolder,
+} from '../asset-filter-bar/asset-filter-bar.types';
+import { AssetGridComponent } from '../asset-grid/asset-grid.component';
+import type { AssetGridViewMode } from '../asset-grid/asset-grid.types';
+import { AssetUploadZoneComponent } from '../asset-upload-zone/asset-upload-zone.component';
+import type { UploadFn, UploadProgress } from '../asset-upload-zone/asset-upload-zone.types';
+import ConfirmDialogComponent, { type ConfirmDialogData } from '../confirm-dialog/confirm-dialog';
 import { MediaPickerDialogData, MediaPickerDialogResult } from './media-picker-dialog.types';
+import { pushRecentIds, readRecentIds, readViewMode, writeViewMode } from './picker-storage.util';
+import { RecentlyUsedStripComponent } from './recently-used-strip.component';
+
+const MIME_GROUP_TO_PREFIX: Partial<Record<MimeGroup, string>> = {
+  image: 'image/',
+  video: 'video/',
+  pdf: 'application/pdf',
+};
 
 @Component({
   selector: 'console-media-picker-dialog',
   standalone: true,
   imports: [
-    MatDialogModule,
+    A11yModule,
+    MatDialogContent,
+    MatDialogActions,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatPaginatorModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
+    MatTabsModule,
+    AssetGridComponent,
+    AssetFilterBarComponent,
+    AssetUploadZoneComponent,
+    RecentlyUsedStripComponent,
   ],
-  template: `
-    <h2 mat-dialog-title>{{ data.mode === 'single' ? 'Select Media' : 'Select Media Files' }}</h2>
-
-    <mat-dialog-content class="media-picker-content">
-      <mat-form-field appearance="outline" class="w-full mb-4">
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput placeholder="Search media..." (input)="onSearch($event)" />
-      </mat-form-field>
-
-      @if (loading()) {
-        <div class="flex items-center justify-center py-12">
-          <mat-spinner diameter="40" />
-        </div>
-      } @else if (items().length === 0) {
-        <div class="flex items-center justify-center py-12 text-text-muted">No media found</div>
-      } @else {
-        <div class="media-grid">
-          @for (item of items(); track item.id) {
-            <button
-              type="button"
-              class="media-card"
-              [class.selected]="isSelected(item.id)"
-              (click)="toggleSelect(item)"
-            >
-              @if (item.mimeType.startsWith('image/')) {
-                <img [src]="item.url" [alt]="item.altText ?? item.originalFilename" class="media-thumb" />
-              } @else {
-                <div class="media-thumb media-file-icon">
-                  <mat-icon>insert_drive_file</mat-icon>
-                </div>
-              }
-              <span class="media-name">{{ item.originalFilename }}</span>
-              @if (data.mode === 'multi') {
-                <mat-checkbox
-                  [checked]="isSelected(item.id)"
-                  class="media-checkbox"
-                  (click)="$event.stopPropagation()"
-                  (change)="toggleSelect(item)"
-                />
-              }
-            </button>
-          }
-        </div>
-      }
-
-      <mat-paginator
-        [length]="total()"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex()"
-        [pageSizeOptions]="[20, 50]"
-        (page)="onPage($event)"
-      />
-    </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-flat-button color="primary" [disabled]="selected().size === 0" (click)="confirm()">
-        Select{{ data.mode === 'multi' && selected().size > 0 ? ' (' + selected().size + ')' : '' }}
-      </button>
-    </mat-dialog-actions>
-  `,
-  styles: `
-    .media-picker-content {
-      min-width: 600px;
-      max-height: 60vh;
-    }
-
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 0.5rem;
-    }
-
-    .media-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.5rem;
-      border: 2px solid transparent;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      background: none;
-      transition: border-color 0.15s;
-
-      &:hover {
-        border-color: var(--color-border);
-      }
-
-      &.selected {
-        border-color: var(--color-primary);
-        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
-      }
-    }
-
-    .media-thumb {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 0.25rem;
-    }
-
-    .media-file-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-surface);
-    }
-
-    .media-name {
-      font-size: 0.75rem;
-      max-width: 100px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--color-text-muted);
-    }
-
-    .media-checkbox {
-      position: absolute;
-      top: 0.25rem;
-      right: 0.25rem;
-    }
-  `,
+  templateUrl: './media-picker-dialog.html',
+  styleUrl: './media-picker-dialog.scss',
+  host: {
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-labelledby': 'media-picker-title',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MediaPickerDialogComponent implements OnInit {
   private readonly mediaService = inject(MediaService);
   private readonly dialogRef = inject(MatDialogRef<MediaPickerDialogComponent, MediaPickerDialogResult>);
+  private readonly matDialog = inject(MatDialog);
   readonly data = inject<MediaPickerDialogData>(MAT_DIALOG_DATA);
 
+  readonly activeTab = signal<'library' | 'upload'>('library');
   readonly items = signal<MediaItem[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
-  readonly pageIndex = signal(0);
-  readonly pageSize = 20;
+  readonly page = signal(1);
   readonly selected = signal<Set<string>>(new Set());
+  readonly recentItems = signal<MediaItem[]>([]);
+  readonly viewMode = signal<AssetGridViewMode>('grid');
+  readonly uploadsInProgress = signal(0);
+  readonly highlightActive = signal(false);
 
-  private searchTerm = '';
-  private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  readonly search = signal('');
+  readonly mimeGroup = signal<MimeGroup | null>(null);
+  readonly folder = signal<UploadFolder | null>(null);
+  readonly sort = signal<SortOption>(DEFAULT_SORT);
+
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / DEFAULT_PAGE_SIZE)));
+  readonly selectedIdsArray = computed(() => [...this.selected()]);
+  readonly ctaLabel = computed(() => {
+    if (this.data.mode === 'single') return 'Insert';
+    const n = this.selected().size;
+    return n > 0 ? `Insert ${n} item${n === 1 ? '' : 's'}` : 'Insert';
+  });
+
+  readonly uploadFn: UploadFn = (file) => {
+    this.uploadsInProgress.update((n) => n + 1);
+    return this.mediaService.upload(file).pipe(
+      switchMap(({ id }) => this.mediaService.getById(id)),
+      map((result): UploadProgress => ({ progress: 100, result })),
+      startWith<UploadProgress>({ progress: 0 }),
+      finalize(() => this.uploadsInProgress.update((n) => Math.max(0, n - 1)))
+    );
+  };
 
   ngOnInit(): void {
     if (this.data.selectedIds?.length) {
       this.selected.set(new Set(this.data.selectedIds));
     }
+    this.viewMode.set(readViewMode());
+
+    this.dialogRef.disableClose = true;
+    this.dialogRef.keydownEvents().subscribe((event) => {
+      if (event.key === 'Escape') this.handleClose();
+    });
+    this.dialogRef.backdropClick().subscribe(() => this.handleClose());
+
+    this.loadRecent();
     this.loadMedia();
   }
 
-  onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    if (this.searchTimeout) clearTimeout(this.searchTimeout);
-    this.searchTimeout = setTimeout(() => {
-      this.searchTerm = value;
-      this.pageIndex.set(0);
-      this.loadMedia();
-    }, 300);
+  protected onTabChange(index: number): void {
+    this.activeTab.set(index === 0 ? 'library' : 'upload');
   }
 
-  onPage(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
+  protected onSearchChange(value: string): void {
+    this.search.set(value);
+    this.page.set(1);
     this.loadMedia();
   }
 
-  isSelected(id: string): boolean {
-    return this.selected().has(id);
+  protected onMimeGroupChange(group: MimeGroup | null): void {
+    this.mimeGroup.set(group);
+    this.page.set(1);
+    this.loadMedia();
   }
 
-  toggleSelect(item: MediaItem): void {
+  protected onFolderChange(folder: UploadFolder | null): void {
+    this.folder.set(folder);
+    this.page.set(1);
+    this.loadMedia();
+  }
+
+  protected onSortChange(sort: SortOption): void {
+    this.sort.set(sort);
+    this.page.set(1);
+    this.loadMedia();
+  }
+
+  protected onClearFilters(): void {
+    this.search.set('');
+    this.mimeGroup.set(null);
+    this.folder.set(null);
+    this.sort.set(DEFAULT_SORT);
+    this.page.set(1);
+    this.loadMedia();
+  }
+
+  protected onSelectionChange(ids: string[]): void {
+    if (this.data.mode === 'single') {
+      const last = ids[ids.length - 1];
+      this.selected.set(last ? new Set([last]) : new Set());
+    } else {
+      this.selected.set(new Set(ids));
+    }
+  }
+
+  protected onItemActivated(id: string): void {
+    this.selected.set(new Set(this.data.mode === 'single' ? [id] : [...this.selected(), id]));
+    this.confirm();
+  }
+
+  protected onPageChange(page: number): void {
+    this.page.set(page);
+    this.loadMedia();
+  }
+
+  protected onViewModeToggle(): void {
+    const next: AssetGridViewMode = this.viewMode() === 'grid' ? 'list' : 'grid';
+    this.viewMode.set(next);
+    writeViewMode(next);
+  }
+
+  protected onRecentPick(id: string): void {
+    if (this.data.mode === 'single') {
+      this.selected.set(new Set([id]));
+      return;
+    }
+    const current = new Set(this.selected());
+    if (current.has(id)) current.delete(id);
+    else current.add(id);
+    this.selected.set(current);
+  }
+
+  protected onUploadsComplete(uploaded: MediaItem[]): void {
+    if (!uploaded.length) return;
+    const ids = uploaded.map((i) => i.id);
+    pushRecentIds(ids);
+
     const current = new Set(this.selected());
     if (this.data.mode === 'single') {
       current.clear();
-      current.add(item.id);
+      current.add(ids[0]);
     } else {
-      if (current.has(item.id)) {
-        current.delete(item.id);
-      } else {
-        current.add(item.id);
-      }
+      for (const id of ids) current.add(id);
     }
     this.selected.set(current);
 
-    // In single mode, auto-confirm on click
-    if (this.data.mode === 'single') {
-      this.dialogRef.close(item.id);
-    }
+    this.highlightActive.set(true);
+    setTimeout(() => this.highlightActive.set(false), 2500);
+
+    this.activeTab.set('library');
+    this.page.set(1);
+    this.loadMedia();
+    this.loadRecent();
   }
 
-  confirm(): void {
+  protected handleClose(): void {
+    if (this.uploadsInProgress() > 0) {
+      const confirmRef = this.matDialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Upload in progress',
+          message: 'Uploads are still running. Close anyway?',
+          confirmLabel: 'Close',
+        } satisfies ConfirmDialogData,
+      });
+      confirmRef.afterClosed().subscribe((ok) => {
+        if (ok) this.dialogRef.close();
+      });
+      return;
+    }
+    this.dialogRef.close();
+  }
+
+  protected confirm(): void {
+    pushRecentIds([...this.selected()]);
     if (this.data.mode === 'single') {
       const [first] = this.selected();
       this.dialogRef.close(first);
@@ -222,22 +235,49 @@ export default class MediaPickerDialogComponent implements OnInit {
 
   private loadMedia(): void {
     this.loading.set(true);
+    const startedAt = Date.now();
+    const settle = (apply: () => void) => {
+      const remaining = MEDIA_PICKER_MIN_LOADING_MS - (Date.now() - startedAt);
+      const finish = () => {
+        apply();
+        this.loading.set(false);
+      };
+      if (remaining > 0) setTimeout(finish, remaining);
+      else finish();
+    };
     this.mediaService
       .list({
-        page: this.pageIndex() + 1,
-        limit: this.pageSize,
-        search: this.searchTerm || undefined,
-        mimeTypePrefix: this.data.mimeFilter || undefined,
+        page: this.page(),
+        limit: DEFAULT_PAGE_SIZE,
+        search: this.search() || undefined,
+        mimeTypePrefix: this.resolveMimePrefix(),
+        folder: this.folder() ? (this.folder() as MediaFolder) : undefined,
+        sort: this.sort() as MediaSort,
       })
       .subscribe({
-        next: (res) => {
-          this.items.set(res.data);
-          this.total.set(res.total);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-        },
+        next: (res) =>
+          settle(() => {
+            this.items.set(res.data);
+            this.total.set(res.total);
+          }),
+        error: () => settle(() => undefined),
       });
+  }
+
+  private loadRecent(): void {
+    const ids = readRecentIds();
+    if (!ids.length) {
+      this.recentItems.set([]);
+      return;
+    }
+    forkJoin(ids.map((id) => this.mediaService.getById(id).pipe(catchError(() => of(null))))).subscribe((results) => {
+      this.recentItems.set(results.filter((x): x is MediaItem => x !== null));
+    });
+  }
+
+  private resolveMimePrefix(): string | undefined {
+    if (this.data.mimeFilter) return this.data.mimeFilter;
+    const group = this.mimeGroup();
+    return group ? MIME_GROUP_TO_PREFIX[group] : undefined;
   }
 }

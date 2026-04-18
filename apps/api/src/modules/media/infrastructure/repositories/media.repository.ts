@@ -145,15 +145,24 @@ export class MediaRepository implements IMediaRepository {
   }
 
   async findAll(options: MediaFindAllOptions): Promise<PaginatedResult<Media>> {
-    const { page, limit, search, includeDeleted, mimeTypePrefix } = options;
+    const { page, limit, search, includeDeleted, mimeTypePrefix, folder, sort } = options;
     const where: Prisma.MediaWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (search) {
-      where.originalFilename = { contains: search, mode: 'insensitive' };
+      where.OR = [
+        { originalFilename: { contains: search, mode: 'insensitive' } },
+        { altText: { contains: search, mode: 'insensitive' } },
+        { caption: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
     if (mimeTypePrefix) {
       where.mimeType = { startsWith: mimeTypePrefix };
+    }
+
+    if (folder) {
+      // Folder is encoded in Cloudinary publicId as `portfolio/{folder}/...`
+      where.publicId = { startsWith: `portfolio/${folder}/` };
     }
 
     const [data, total] = await Promise.all([
@@ -161,7 +170,7 @@ export class MediaRepository implements IMediaRepository {
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: this.toOrderBy(sort),
       }),
       this.prisma.media.count({ where }),
     ]);
@@ -170,5 +179,19 @@ export class MediaRepository implements IMediaRepository {
       data: data.map(MediaMapper.toDomain),
       total,
     };
+  }
+
+  private toOrderBy(sort?: MediaFindAllOptions['sort']): Prisma.MediaOrderByWithRelationInput {
+    switch (sort) {
+      case 'createdAt_asc':
+        return { createdAt: 'asc' };
+      case 'filename_asc':
+        return { originalFilename: 'asc' };
+      case 'bytes_desc':
+        return { bytes: 'desc' };
+      case 'createdAt_desc':
+      default:
+        return { createdAt: 'desc' };
+    }
   }
 }

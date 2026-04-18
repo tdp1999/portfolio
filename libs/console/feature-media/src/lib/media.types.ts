@@ -1,4 +1,4 @@
-// Re-exported from shared data-access — canonical location is @portfolio/console/shared/data-access
+// Re-exported from shared util — canonical location is @portfolio/console/shared/util
 export type {
   MediaItem,
   MediaListResponse,
@@ -7,4 +7,4 @@ export type {
   BulkUploadResult,
   MediaListParams,
   UpdateMediaPayload,
-} from '@portfolio/console/shared/data-access';
+} from '@portfolio/console/shared/util';

@@ -1,0 +1,139 @@
+<div class="asset-grid" [attr.aria-busy]="loading() ? 'true' : null">
+  @if (loading()) {
+    <div
+      class="asset-grid__container"
+      [class.asset-grid__container--list]="viewMode() === 'list'"
+      [class.asset-grid__container--grid]="viewMode() === 'grid'"
+    >
+      @for (i of skeletonItems(); track i) {
+        @if (viewMode() === 'grid') {
+          <div class="asset-grid__skeleton-card">
+            <console-skeleton shape="rectangle" height="160px" />
+            <console-skeleton width="70%" />
+          </div>
+        } @else {
+          <div class="asset-grid__skeleton-row">
+            <console-skeleton shape="rectangle" width="48px" height="48px" />
+            <div class="asset-grid__skeleton-row-lines">
+              <console-skeleton width="40%" />
+              <console-skeleton width="25%" />
+            </div>
+          </div>
+        }
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <div class="asset-grid__empty">
+      <mat-icon class="asset-grid__empty-icon">image_not_supported</mat-icon>
+      <p class="asset-grid__empty-text">No media found</p>
+    </div>
+  } @else {
+    <div
+      #container
+      class="asset-grid__container"
+      [class.asset-grid__container--list]="viewMode() === 'list'"
+      [class.asset-grid__container--grid]="viewMode() === 'grid'"
+      [attr.role]="containerRole()"
+      [attr.aria-multiselectable]="mode() === 'multi' ? 'true' : null"
+      tabindex="0"
+    >
+      @for (item of items(); track item.id; let idx = $index) {
+        @let selected = selectedSet().has(item.id);
+        <button
+          #itemBtn
+          type="button"
+          class="asset-grid__item"
+          [class.asset-grid__item--selected]="selected"
+          [class.asset-grid__item--grid]="viewMode() === 'grid'"
+          [class.asset-grid__item--list]="viewMode() === 'list'"
+          [attr.role]="itemRole()"
+          [attr.aria-selected]="selected"
+          [attr.aria-label]="item.originalFilename"
+          [tabindex]="focusedIndex() === idx ? 0 : -1"
+          (click)="onItemClick(item, idx)"
+          (dblclick)="onItemDblClick(item)"
+        >
+          @if (viewMode() === 'grid') {
+            <div class="asset-grid__thumb-wrap">
+              @if (item.mimeType | isImage) {
+                <img
+                  class="asset-grid__thumb"
+                  [src]="item.url | cloudinaryThumb"
+                  [alt]="item.altText ?? item.originalFilename"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="asset-grid__thumb asset-grid__thumb--file">
+                  <mat-icon>insert_drive_file</mat-icon>
+                </div>
+              }
+              @if (mode() === 'multi') {
+                <span class="asset-grid__check">
+                  <mat-checkbox
+                    [checked]="selected"
+                    [attr.aria-label]="'Select ' + item.originalFilename"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleSelection(item.id)"
+                  />
+                </span>
+              }
+            </div>
+            <span class="asset-grid__caption">{{ item.originalFilename }}</span>
+          } @else {
+            @if (item.mimeType | isImage) {
+              <img
+                class="asset-grid__row-thumb"
+                [src]="item.url | cloudinaryThumb"
+                [alt]="item.altText ?? item.originalFilename"
+                loading="lazy"
+              />
+            } @else {
+              <div class="asset-grid__row-thumb asset-grid__row-thumb--file">
+                <mat-icon>insert_drive_file</mat-icon>
+              </div>
+            }
+            <span class="asset-grid__row-name">{{ item.originalFilename }}</span>
+            <span class="asset-grid__row-meta text-text-muted">{{ item.bytes | readableSize }}</span>
+            <span class="asset-grid__row-meta text-text-muted">{{ item.createdAt | date: 'mediumDate' }}</span>
+            <span class="asset-grid__row-meta text-text-muted">{{ item.mimeType }}</span>
+            @if (mode() === 'multi') {
+              <mat-checkbox
+                class="asset-grid__row-check"
+                [checked]="selected"
+                [attr.aria-label]="'Select ' + item.originalFilename"
+                (click)="$event.stopPropagation()"
+                (change)="toggleSelection(item.id)"
+              />
+            }
+          }
+        </button>
+      }
+    </div>
+  }
+
+  @if (totalPages() > 1) {
+    <nav class="asset-grid__pager" aria-label="Pagination">
+      <button
+        type="button"
+        mat-stroked-button
+        [disabled]="currentPage() <= 1"
+        aria-label="Previous page"
+        (click)="prevPage()"
+      >
+        <mat-icon class="icon-sm">chevron_left</mat-icon>
+        Previous
+      </button>
+      <span class="asset-grid__pager-info text-text-muted"> Page {{ currentPage() }} of {{ totalPages() }} </span>
+      <button
+        type="button"
+        mat-stroked-button
+        [disabled]="currentPage() >= totalPages()"
+        aria-label="Next page"
+        (click)="nextPage()"
+      >
+        Next
+        <mat-icon class="icon-sm" iconPositionEnd>chevron_right</mat-icon>
+      </button>
+    </nav>
+  }
+</div>

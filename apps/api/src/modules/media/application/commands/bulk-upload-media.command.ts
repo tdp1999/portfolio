@@ -70,7 +70,10 @@ export class BulkUploadMediaHandler implements ICommandHandler<BulkUploadMediaCo
 
     let bulkResult;
     try {
-      bulkResult = await this.storage.uploadBulk(validFiles, { folder: data.folder });
+      bulkResult = await this.storage.uploadBulk(validFiles, {
+        folder: data.folder,
+        uploadedByUserId: command.userId,
+      });
     } catch (err) {
       throw ExternalServiceError('Bulk upload to storage failed', err instanceof Error ? err : undefined, {
         errorCode: MediaErrorCode.UPLOAD_FAILED,

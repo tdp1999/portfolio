@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import {
   TranslatableGroupComponent,
   MediaPickerDialogComponent,
@@ -156,7 +156,7 @@ export default class ProjectDialogComponent {
 
   async pickThumbnail(): Promise<void> {
     const dialogRef = this.matDialog.open(MediaPickerDialogComponent, {
-      width: '800px',
+      width: '1280px',
       maxHeight: '80vh',
       data: {
         mode: 'single',
@@ -180,7 +180,7 @@ export default class ProjectDialogComponent {
 
   async pickGalleryImages(): Promise<void> {
     const dialogRef = this.matDialog.open(MediaPickerDialogComponent, {
-      width: '800px',
+      width: '1200px',
       maxHeight: '80vh',
       data: {
         mode: 'multi',

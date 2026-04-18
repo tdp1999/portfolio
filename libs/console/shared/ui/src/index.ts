@@ -24,8 +24,31 @@ export { TranslatableGroupComponent } from './lib/translatable-group/translatabl
 export { ChipToggleGroupComponent } from './lib/chip-toggle-group/chip-toggle-group.component';
 export type { ChipOption } from './lib/chip-toggle-group/chip-toggle-group.component';
 export type { LanguageConfig } from './lib/translatable-group/translatable-group';
+export { AssetGridComponent } from './lib/asset-grid/asset-grid.component';
+export type { AssetGridMode, AssetGridViewMode } from './lib/asset-grid/asset-grid.types';
 export { default as MediaPickerDialogComponent } from './lib/media-picker-dialog/media-picker-dialog';
 export type {
   MediaPickerDialogData,
   MediaPickerDialogResult,
 } from './lib/media-picker-dialog/media-picker-dialog.types';
+export { AssetFilterBarComponent } from './lib/asset-filter-bar/asset-filter-bar.component';
+export type { MimeGroup, SortOption, UploadFolder } from './lib/asset-filter-bar/asset-filter-bar.types';
+export {
+  MIME_GROUPS,
+  SORT_OPTIONS,
+  UPLOAD_FOLDERS,
+  DEFAULT_SORT,
+  MIME_GROUP_LABELS,
+  SORT_LABELS,
+  UPLOAD_FOLDER_LABELS,
+} from './lib/asset-filter-bar/asset-filter-bar.types';
+export { AssetUploadZoneComponent } from './lib/asset-upload-zone/asset-upload-zone.component';
+export { UploadRowComponent } from './lib/asset-upload-zone/upload-row.component';
+export type {
+  UploadFn,
+  UploadProgress,
+  UploadRowState,
+  UploadState,
+} from './lib/asset-upload-zone/asset-upload-zone.types';
+export { Editor as MarkdownEditorComponent } from './lib/markdown-editor/editor';
+export type { MarkdownEditorApi, MarkdownEditorChange } from './lib/markdown-editor/markdown-editor.types';

@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  min-width: 720px;
+  max-width: 90vw;
+  height: min(80vh, 720px);
+}
+
+.picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mat-dialog-headline-padding);
+}
+
+.picker__title {
+  margin: 0;
+  font: var(--mat-dialog-subhead-font, inherit);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.picker__close {
+  flex-shrink: 0;
+}
+
+.picker__tabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .mat-mdc-tab-body-wrapper,
+  ::ng-deep .mat-mdc-tab-body,
+  ::ng-deep .mat-mdc-tab-body-content {
+    height: 100%;
+  }
+
+  ::ng-deep .mat-mdc-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.picker__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  /* padding inherited from --mat-dialog-content-padding */
+}
+
+.picker__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  console-asset-filter-bar {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.picker__view-toggle {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.picker__grid {
+  flex: 1;
+  min-height: 0;
+  display: block;
+}
+
+.picker__grid--highlight {
+  ::ng-deep .asset-grid__item--selected {
+    animation: picker-pulse 2s ease-out;
+  }
+}
+
+@keyframes picker-pulse {
+  0%,
+  100% {
+    border-color: var(--color-primary);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  }
+}
+
+.picker__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--color-border);
+  /* padding inherited from --mat-dialog-actions-padding */
+}
+
+.picker__footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.picker__footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.picker__hint {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.picker__count {
+  min-height: 16px;
+}

@@ -39,6 +39,7 @@ export const MAX_FILE_SIZES: Record<string, number> = {
 export const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export const UPLOAD_FOLDERS = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'general'] as const;
+export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 /** Defense-in-depth limit at multer/interceptor level (50MB). Per-type limits enforced in handlers. */
 export const MULTER_LIMITS = { fileSize: 50 * 1024 * 1024 } as const;

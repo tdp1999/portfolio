@@ -1,8 +1,12 @@
 import { ICrudRepository, PaginatedQuery, PaginatedResult } from '@portfolio/shared/types';
 import { Media } from '../../domain/entities/media.entity';
+import { MediaSort } from '../media.dto';
+import { UploadFolder } from '../media.constants';
 
 export interface MediaFindAllOptions extends PaginatedQuery {
   mimeTypePrefix?: string;
+  folder?: UploadFolder;
+  sort?: MediaSort;
   includeDeleted?: boolean;
 }
 

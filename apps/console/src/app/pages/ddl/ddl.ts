@@ -1,5 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import {
+  AssetFilterBarComponent,
+  AssetGridComponent,
+  AssetUploadZoneComponent,
+  type MimeGroup,
+  type SortOption,
+  type UploadFolder,
   FilterBarComponent,
   FilterOption,
   FilterSearchComponent,
@@ -8,12 +14,15 @@ import {
   SpinnerOverlayComponent,
   SpinnerService,
   ToastService,
+  UploadFn,
 } from '@portfolio/console/shared/ui';
+import type { MediaItem } from '@portfolio/console/shared/util';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Router, RouterLink } from '@angular/router';
+import { delay, map, mergeMap, of, throwError, timer } from 'rxjs';
 
 @Component({
   selector: 'console-ddl',
@@ -24,6 +33,9 @@ import { Router, RouterLink } from '@angular/router';
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
+    AssetGridComponent,
+    AssetUploadZoneComponent,
+    AssetFilterBarComponent,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
@@ -159,6 +171,148 @@ import { Router, RouterLink } from '@angular/router';
       </section>
 
       <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Asset Grid</h2>
+        <p class="text-sm text-gray-500 mb-3">
+          Presentational grid/list atom for media pages and pickers. Selection, keyboard nav, skeleton, empty state.
+        </p>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Multi-select grid</h3>
+          <console-asset-grid
+            [items]="demoMedia"
+            [selectedIds]="multiSelection()"
+            mode="multi"
+            viewMode="grid"
+            [currentPage]="1"
+            [totalPages]="3"
+            (selectionChange)="multiSelection.set($event)"
+            (itemActivated)="toastService.info('Activated: ' + $event)"
+            (pageChange)="toastService.info('Page: ' + $event)"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Single-select grid</h3>
+          <console-asset-grid
+            [items]="demoMedia"
+            [selectedIds]="singleSelection()"
+            mode="single"
+            viewMode="grid"
+            (selectionChange)="singleSelection.set($event)"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">List mode</h3>
+          <console-asset-grid
+            [items]="demoMedia"
+            [selectedIds]="multiSelection()"
+            mode="multi"
+            viewMode="list"
+            (selectionChange)="multiSelection.set($event)"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Loading skeleton</h3>
+          <console-asset-grid [items]="[]" [loading]="true" viewMode="grid" [skeletonCount]="8" />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Empty state</h3>
+          <console-asset-grid [items]="[]" viewMode="grid" />
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Asset Upload Zone</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Multi-file drag-drop with per-file progress, cancel, retry, and client-side validation.
+        </p>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Single upload (image/* only, max 2 MB)</h3>
+          <console-asset-upload-zone
+            accept="image/*"
+            [maxFileSize]="2 * 1024 * 1024"
+            [multiple]="false"
+            [uploadFn]="slowUploadFn"
+            (uploadsComplete)="toastService.success('Uploaded: ' + $event.length + ' file(s)')"
+            (uploadFailed)="toastService.error('Failed: ' + $event.length + ' file(s)')"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Multi upload (any type, max 10 MB)</h3>
+          <console-asset-upload-zone
+            accept="*/*"
+            [maxFileSize]="10 * 1024 * 1024"
+            [multiple]="true"
+            [uploadFn]="slowUploadFn"
+            (uploadsComplete)="toastService.success('Uploaded: ' + $event.length + ' file(s)')"
+            (uploadFailed)="toastService.error('Failed: ' + $event.length + ' file(s)')"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Error + retry flow (always fails)</h3>
+          <console-asset-upload-zone
+            accept="*/*"
+            [maxFileSize]="10 * 1024 * 1024"
+            [multiple]="true"
+            [uploadFn]="errorUploadFn"
+            (uploadFailed)="toastService.error('Upload failed (expected in demo)')"
+          />
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Oversize rejection (max 1 KB)</h3>
+          <p class="text-xs text-gray-400 mb-2">
+            Drop any file &gt; 1 KB — it should be rejected before upload starts.
+          </p>
+          <console-asset-upload-zone accept="*/*" [maxFileSize]="1024" [multiple]="true" [uploadFn]="slowUploadFn" />
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Asset Filter Bar</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Search (300ms debounce) + MIME group chips + folder dropdown + sort dropdown. Emits one change per control;
+          parent owns state.
+        </p>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Default state</h3>
+          <console-asset-filter-bar
+            [search]="filterSearch()"
+            [mimeGroup]="filterMime()"
+            [folder]="filterFolder()"
+            [sort]="filterSort()"
+            (searchChange)="filterSearch.set($event)"
+            (mimeGroupChange)="filterMime.set($event)"
+            (folderChange)="filterFolder.set($event)"
+            (sortChange)="filterSort.set($event)"
+            (clearAll)="toastService.info('Cleared all filters')"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            search: "{{ filterSearch() }}" | mime: {{ filterMime() ?? 'null' }} | folder:
+            {{ filterFolder() ?? 'null' }} | sort: {{ filterSort() }}
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-medium mb-2">Active filters (clear-all visible)</h3>
+          <console-asset-filter-bar
+            search="portfolio"
+            mimeGroup="image"
+            folder="projects"
+            sort="filename_asc"
+            (clearAll)="toastService.success('Clear-all clicked')"
+          />
+        </div>
+      </section>
+
+      <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Skeleton Loaders</h2>
         <div class="max-w-md space-y-4">
           <div>
@@ -206,6 +360,29 @@ export default class DdlComponent {
     { value: 'inactive', label: 'Inactive' },
   ];
 
+  protected readonly multiSelection = signal<string[]>([]);
+  protected readonly singleSelection = signal<string[]>([]);
+
+  protected readonly filterSearch = signal('');
+  protected readonly filterMime = signal<MimeGroup | null>(null);
+  protected readonly filterFolder = signal<UploadFolder | null>(null);
+  protected readonly filterSort = signal<SortOption>('createdAt_desc');
+
+  readonly demoMedia: MediaItem[] = Array.from({ length: 8 }, (_, i) => ({
+    id: `demo-${i + 1}`,
+    originalFilename: `asset-${i + 1}.jpg`,
+    mimeType: i === 7 ? 'application/pdf' : 'image/jpeg',
+    url: `https://res.cloudinary.com/demo/image/upload/v1/sample${(i % 4) + 1}.jpg`,
+    format: 'jpg',
+    bytes: 50_000 + i * 12_000,
+    width: 800,
+    height: 600,
+    altText: null,
+    caption: null,
+    createdAt: new Date(2026, 0, i + 1).toISOString(),
+    updatedAt: new Date(2026, 0, i + 1).toISOString(),
+  }));
+
   readonly demoRows = [
     { name: 'Angular', slug: 'angular', count: 12 },
     { name: 'NestJS', slug: 'nestjs', count: 8 },
@@ -213,6 +390,40 @@ export default class DdlComponent {
     { name: 'Design System', slug: 'design-system', count: 5 },
     { name: 'Playwright', slug: 'playwright', count: 3 },
   ];
+
+  readonly slowUploadFn: UploadFn = (file: File) => {
+    let tick = 0;
+    const steps = 5;
+    const mockResult = {
+      id: `demo-${Date.now()}`,
+      originalFilename: file.name,
+      mimeType: file.type,
+      url: 'https://res.cloudinary.com/demo/image/upload/v1/sample1.jpg',
+      format: file.name.split('.').pop() ?? 'bin',
+      bytes: file.size,
+      width: 800,
+      height: 600,
+      altText: null,
+      caption: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } satisfies MediaItem;
+
+    return timer(0, 400).pipe(
+      map(() => {
+        tick++;
+        const progress = Math.min(tick * (100 / steps), 100);
+        return progress >= 100 ? { progress: 100, result: mockResult } : { progress };
+      }),
+      mergeMap((val) => (val.progress >= 100 ? of(val) : of(val)))
+    );
+  };
+
+  readonly errorUploadFn: UploadFn = (_file: File) =>
+    timer(0, 400).pipe(
+      map((tick) => ({ progress: Math.min((tick + 1) * 25, 75) })),
+      mergeMap((val, idx) => (idx === 2 ? throwError(() => new Error('Server rejected the file')) : of(val)))
+    );
 
   triggerLoadingBar(): void {
     this.router.navigateByUrl('/').then(() => {

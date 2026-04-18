@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DatePipe } from '@angular/common';
-import { extractApiError } from '@portfolio/console/shared/data-access';
+import { extractApiError } from '@portfolio/console/shared/util';
 import { MediaService } from '../media.service';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
 import { MediaDialogData } from './media-dialog.types';

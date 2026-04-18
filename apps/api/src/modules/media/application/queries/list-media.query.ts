@@ -30,6 +30,8 @@ export class ListMediaHandler implements IQueryHandler<ListMediaQuery> {
       limit: data.limit,
       search: data.search,
       mimeTypePrefix: data.mimeTypePrefix,
+      folder: data.folder,
+      sort: data.sort,
       includeDeleted: data.includeDeleted || undefined,
     });
 

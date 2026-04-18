@@ -40,7 +40,7 @@ export async function validateSecurity(
 }
 
 export function resolveResourceType(mimeType: string): 'image' | 'video' | 'raw' {
-  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('image/') || mimeType === 'application/pdf') return 'image';
   if (mimeType.startsWith('video/')) return 'video';
   return 'raw';
 }

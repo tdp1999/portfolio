@@ -1,0 +1,51 @@
+<div class="upload-zone">
+  <div
+    class="upload-zone__dropzone"
+    [class.upload-zone__dropzone--dragover]="isDragOver()"
+    tabindex="0"
+    role="button"
+    aria-label="Upload files — drag and drop or press Enter to browse"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="openFilePicker()"
+    (keydown)="onDropZoneKeydown($event)"
+  >
+    <mat-icon class="icon-2xl text-text-muted mb-2">cloud_upload</mat-icon>
+    <p class="text-body font-medium text-text">Drag and drop files here</p>
+    <p class="text-caption text-text-muted mt-1">or <span class="text-primary underline">browse files</span></p>
+  </div>
+
+  <input
+    #fileInput
+    type="file"
+    class="hidden"
+    [accept]="accept()"
+    [multiple]="multiple()"
+    (change)="onFileInputChange($event)"
+  />
+
+  @if (validationErrors().length) {
+    <div class="upload-zone__errors mt-3 space-y-1">
+      @for (err of validationErrors(); track err) {
+        <p class="text-caption text-red-500">{{ err }}</p>
+      }
+    </div>
+  }
+
+  @if (hasRows()) {
+    <div class="upload-zone__rows mt-4 space-y-2">
+      @for (row of rows(); track row.id) {
+        <console-upload-row
+          [file]="row.file"
+          [state]="row.state"
+          [progress]="row.progress"
+          [error]="row.error"
+          (cancelled)="onCancelRow(row.id)"
+          (retry)="onRetryRow(row.id)"
+          (remove)="onRemoveRow(row.id)"
+        />
+      }
+    </div>
+  }
+</div>

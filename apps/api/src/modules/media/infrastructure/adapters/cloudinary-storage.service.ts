@@ -1,16 +1,18 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { v2 as cloudinary, UploadApiOptions, UploadApiResponse } from 'cloudinary';
 import { BadRequestError, InternalServerError } from '@portfolio/shared/errors';
 import { MediaErrorCode } from '@portfolio/shared/errors';
 import {
   IStorageService,
   UploadOptions,
+  SingleUploadOptions,
   StorageResult,
   FileInput,
   BulkUploadResult,
 } from '../../application/ports/storage.service.port';
 
 const MAX_BULK_FILES = 10;
+const MAX_DISPLAY_NAME_LEN = 255;
 
 @Injectable()
 export class CloudinaryStorageService implements IStorageService, OnModuleInit {
@@ -42,10 +44,13 @@ export class CloudinaryStorageService implements IStorageService, OnModuleInit {
     this.logger.log(`Cloudinary configured for cloud: ${cloudName}, folder prefix: ${this.folderPrefix}`);
   }
 
-  async upload(file: Buffer, options: UploadOptions): Promise<StorageResult> {
+  async upload(file: Buffer, options: SingleUploadOptions): Promise<StorageResult> {
     try {
-      const result = await this.uploadBuffer(file, options);
-      return this.toStorageResult(result);
+      const result = await this.uploadBuffer(file, options, {
+        originalFilename: options.originalFilename,
+        mimeType: options.mimeType,
+      });
+      return this.toStorageResult(result, options.originalFilename, options.mimeType);
     } catch (error) {
       this.logger.error(`Cloudinary upload failed: ${(error as Error).message}`);
       throw InternalServerError('File upload failed', {
@@ -63,8 +68,14 @@ export class CloudinaryStorageService implements IStorageService, OnModuleInit {
 
     const results = await Promise.allSettled(
       files.map(async (file) => {
-        const result = await this.uploadBuffer(file.buffer, options);
-        return { ...this.toStorageResult(result), originalFilename: file.originalFilename };
+        const result = await this.uploadBuffer(file.buffer, options, {
+          originalFilename: file.originalFilename,
+          mimeType: file.mimeType,
+        });
+        return {
+          ...this.toStorageResult(result, file.originalFilename, file.mimeType),
+          originalFilename: file.originalFilename,
+        };
       })
     );
 
@@ -103,34 +114,77 @@ export class CloudinaryStorageService implements IStorageService, OnModuleInit {
     });
   }
 
-  private uploadBuffer(buffer: Buffer, options: UploadOptions): Promise<UploadApiResponse> {
+  private uploadBuffer(
+    buffer: Buffer,
+    options: UploadOptions,
+    perFile: { originalFilename: string; mimeType: string }
+  ): Promise<UploadApiResponse> {
+    const assetFolder = `${this.folderPrefix}/${options.folder}`;
+    const displayName = perFile.originalFilename.slice(0, MAX_DISPLAY_NAME_LEN);
+    const resourceType = options.resourceType ?? 'auto';
+
+    const uploadParams: UploadApiOptions = {
+      asset_folder: assetFolder,
+      resource_type: resourceType,
+      type: 'upload',
+      access_mode: 'public',
+      use_filename: true,
+      unique_filename: true,
+      filename_override: perFile.originalFilename,
+      display_name: displayName,
+      overwrite: false,
+      invalidate: true,
+      tags: [options.folder, perFile.mimeType.split('/')[0]],
+      context: this.buildContext({
+        original_filename: perFile.originalFilename,
+        mime_type: perFile.mimeType,
+        folder: options.folder,
+        ...(options.uploadedByUserId ? { uploaded_by: options.uploadedByUserId } : {}),
+      }),
+    };
+
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: `${this.folderPrefix}/${options.folder}`,
-          resource_type: options.resourceType ?? 'auto',
-        },
-        (error, result) => {
-          if (error || !result) {
-            reject(error ?? new Error('Upload returned no result'));
-          } else {
-            resolve(result);
-          }
+      const uploadStream = cloudinary.uploader.upload_stream(uploadParams, (error, result) => {
+        if (error || !result) {
+          reject(error ?? new Error('Upload returned no result'));
+        } else {
+          resolve(result);
         }
-      );
+      });
 
       uploadStream.end(buffer);
     });
   }
 
-  private toStorageResult(result: UploadApiResponse): StorageResult {
+  private buildContext(entries: Record<string, string>): Record<string, string> {
+    const sanitized: Record<string, string> = {};
+    for (const [key, value] of Object.entries(entries)) {
+      sanitized[key] = value.replace(/[|=]/g, '_');
+    }
+    return sanitized;
+  }
+
+  private toStorageResult(result: UploadApiResponse, originalFilename: string, mimeType: string): StorageResult {
+    const format = result.format ?? this.deriveFormat(originalFilename, mimeType);
     return {
       externalId: result.public_id,
       url: result.secure_url,
-      format: result.format,
+      format,
       bytes: result.bytes,
       ...(result.width ? { width: result.width } : {}),
       ...(result.height ? { height: result.height } : {}),
     };
+  }
+
+  private deriveFormat(filename: string, mimeType: string): string {
+    const dot = filename.lastIndexOf('.');
+    if (dot >= 0 && dot < filename.length - 1) {
+      return filename.slice(dot + 1).toLowerCase();
+    }
+    const slash = mimeType.lastIndexOf('/');
+    if (slash >= 0 && slash < mimeType.length - 1) {
+      return mimeType.slice(slash + 1).toLowerCase();
+    }
+    return 'bin';
   }
 }

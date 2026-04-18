@@ -1,0 +1,77 @@
+<div class="asset-filter-bar">
+  <div class="asset-filter-bar__row">
+    <mat-form-field subscriptSizing="dynamic" class="asset-filter-bar__search">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="search"
+        [ngModel]="searchValue()"
+        (ngModelChange)="onSearchInput($event)"
+        placeholder="Search filename, alt text, caption..."
+      />
+      <mat-icon matPrefix>search</mat-icon>
+      @if (searchValue()) {
+        <button matSuffix mat-icon-button type="button" aria-label="Clear search" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" class="asset-filter-bar__folder">
+      <mat-label>Folder</mat-label>
+      <mat-select [value]="folder() ?? ''" (selectionChange)="onFolderChange($event.value)">
+        <mat-option value="">All folders</mat-option>
+        @for (f of foldersAvailable(); track f) {
+          <mat-option [value]="f">{{ folderLabels[f] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" class="asset-filter-bar__sort">
+      <mat-label>Sort</mat-label>
+      <mat-select [value]="sort()" (selectionChange)="onSortChange($event.value)">
+        @for (opt of sortOptions; track opt) {
+          <mat-option [value]="opt">{{ sortLabels[opt] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (hasActiveFilters()) {
+      <button
+        type="button"
+        mat-stroked-button
+        class="asset-filter-bar__clear"
+        aria-label="Clear all filters"
+        (click)="resetAll()"
+      >
+        <mat-icon class="icon-sm">filter_list_off</mat-icon>
+        Clear all
+      </button>
+    }
+  </div>
+
+  @if (showMimeChips()) {
+    <div class="asset-filter-bar__chips" role="group" aria-label="Filter by type">
+      <button
+        type="button"
+        class="chip-toggle"
+        [class.chip-toggle--selected]="mimeGroup() === null"
+        [attr.aria-pressed]="mimeGroup() === null"
+        (click)="mimeGroupChange.emit(null)"
+      >
+        All
+      </button>
+      @for (group of mimeGroups; track group) {
+        <button
+          type="button"
+          class="chip-toggle"
+          [class.chip-toggle--selected]="mimeGroup() === group"
+          [attr.aria-pressed]="mimeGroup() === group"
+          (click)="toggleMimeGroup(group)"
+        >
+          {{ mimeGroupLabels[group] }}
+        </button>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.upload-zone {
+  &__dropzone {
+    @apply flex flex-col items-center justify-center rounded-lg p-8 cursor-pointer transition-colors outline-none;
+    border: 2px dashed var(--color-border-strong);
+
+    &:hover,
+    &--dragover {
+      border-color: var(--color-primary);
+      background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &__errors {
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: color-mix(in srgb, var(--color-error, #ef4444) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-error, #ef4444) 25%, transparent);
+  }
+}

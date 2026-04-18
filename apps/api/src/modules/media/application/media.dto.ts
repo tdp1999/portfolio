@@ -27,8 +27,14 @@ const UpdateMediaMetadataFieldsSchema = z.object({
 
 export const UpdateMediaMetadataSchema = nonEmptyPartial(UpdateMediaMetadataFieldsSchema);
 
+export const MediaSortSchema = z
+  .enum(['createdAt_desc', 'createdAt_asc', 'filename_asc', 'bytes_desc'])
+  .default('createdAt_desc');
+
 export const ListMediaSchema = PaginatedQuerySchema.extend({
   mimeTypePrefix: z.string().optional(),
+  folder: z.enum(UPLOAD_FOLDERS).optional(),
+  sort: MediaSortSchema.optional(),
   includeDeleted: z.coerce.boolean().optional(),
 });
 
@@ -39,6 +45,7 @@ export const BulkDeleteSchema = z.object({
 export type CreateMediaDto = z.infer<typeof CreateMediaSchema>;
 export type UpdateMediaMetadataDto = z.infer<typeof UpdateMediaMetadataSchema>;
 export type ListMediaDto = z.infer<typeof ListMediaSchema>;
+export type MediaSort = z.infer<typeof MediaSortSchema>;
 export type BulkDeleteDto = z.infer<typeof BulkDeleteSchema>;
 
 export type StorageStatsDto = {

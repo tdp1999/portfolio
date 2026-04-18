@@ -24,7 +24,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastService, MediaPickerDialogComponent, type MediaPickerDialogData } from '@portfolio/console/shared/ui';
-import { MediaService, type MediaItem } from '@portfolio/console/shared/data-access';
+import { MediaService } from '@portfolio/console/shared/data-access';
+import type { MediaItem } from '@portfolio/console/shared/util';
 import { BlogService } from '../blog.service';
 import {
   AdminBlogPostDetail,
