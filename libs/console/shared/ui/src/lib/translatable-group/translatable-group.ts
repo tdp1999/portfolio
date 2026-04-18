@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { FormErrorPipe } from '@portfolio/console/shared/util';
 
 export interface LanguageConfig {
   key: string;

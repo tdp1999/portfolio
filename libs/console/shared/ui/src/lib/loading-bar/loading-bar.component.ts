@@ -1,15 +1,8 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import {
-  NavigationCancel,
-  NavigationEnd,
-  NavigationError,
-  NavigationStart,
-  Router,
-} from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
-const MIN_DISPLAY_MS = 250;
+import { LOADING_BAR_MIN_DISPLAY_MS as MIN_DISPLAY_MS } from '@portfolio/console/shared/util';
 
 @Component({
   selector: 'console-loading-bar',

@@ -7,7 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthStore, ErrorDataService, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { AuthStore } from '@portfolio/console/shared/data-access';
+import { ErrorDataService, FormErrorPipe } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
 

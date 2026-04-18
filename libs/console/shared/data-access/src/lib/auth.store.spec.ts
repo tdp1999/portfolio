@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { UserProfile } from './interfaces';
+import { UserProfile } from '@portfolio/console/shared/util';
 import { API_CONFIG, ApiConfig } from './api';
 import { AuthStore } from './auth.store';
 

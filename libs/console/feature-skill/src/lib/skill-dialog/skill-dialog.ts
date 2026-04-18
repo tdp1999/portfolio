@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import { AdminSkill, SkillService } from '../skill.service';
 
 export interface SkillDialogData {

@@ -62,7 +62,7 @@
                         <div
                           class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary font-semibold text-lg"
                         >
-                          {{ getInitial(exp.companyName) }}
+                          {{ exp.companyName | initials }}
                         </div>
                       }
                     </div>
@@ -94,9 +94,9 @@
                       <p class="text-base font-medium text-text mb-1">{{ getPosition(exp) }}</p>
 
                       <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-secondary">
-                        <span>{{ formatDateRange(exp) }}</span>
+                        <span>{{ exp | dateRange }}</span>
                         <span class="opacity-40">·</span>
-                        <span>{{ formatDuration(exp) }}</span>
+                        <span>{{ durationFor(exp) }}</span>
                       </div>
                     </div>
                   </div>

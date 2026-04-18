@@ -17,9 +17,11 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import type { ExperienceDialogData } from '../experience-dialog/experience-dialog';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
+import { DateRangePipe } from '@portfolio/shared/ui-pipes';
 
 const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   FULL_TIME: 'Full Time',
@@ -50,6 +52,7 @@ const LOCATION_TYPE_LABELS: Record<string, string> = {
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
+    DateRangePipe,
   ],
   templateUrl: './experiences-page.html',
   styleUrl: './experiences-page.scss',
@@ -67,7 +70,8 @@ export default class ExperiencesPageComponent implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(20);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly employmentType = signal('');
   readonly includeDeleted = signal(true);
@@ -111,12 +115,6 @@ export default class ExperiencesPageComponent implements OnInit {
 
   getLocationTypeLabel(value: string): string {
     return LOCATION_TYPE_LABELS[value] ?? value;
-  }
-
-  formatDateRange(exp: AdminExperience): string {
-    const start = this.formatMonth(exp.startDate);
-    const end = exp.endDate ? this.formatMonth(exp.endDate) : 'Present';
-    return `${start} – ${end}`;
   }
 
   openCreateDialog(): void {
@@ -228,10 +226,5 @@ export default class ExperiencesPageComponent implements OnInit {
         this.toast.error('Failed to restore experience');
       },
     });
-  }
-
-  private formatMonth(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   }
 }

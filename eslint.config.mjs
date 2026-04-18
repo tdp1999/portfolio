@@ -41,10 +41,20 @@ export default [
               sourceTag: 'type:feature',
               notDependOnLibsWithTags: ['type:feature'],
             },
-            // Data-access cannot depend on UI (unidirectional)
+            // Data-access cannot depend on UI or features (unidirectional)
             {
               sourceTag: 'type:shared-data-access',
               notDependOnLibsWithTags: ['type:shared-ui', 'type:feature'],
+            },
+            // Shared UI cannot depend on features (shell components may consume state services from data-access)
+            {
+              sourceTag: 'type:shared-ui',
+              notDependOnLibsWithTags: ['type:feature'],
+            },
+            // Shared util is the lowest level — cannot depend on ui, data-access, or features
+            {
+              sourceTag: 'type:shared-util',
+              notDependOnLibsWithTags: ['type:shared-ui', 'type:shared-data-access', 'type:feature'],
             },
             // Fallback for untagged libs (temporary during migration)
             {

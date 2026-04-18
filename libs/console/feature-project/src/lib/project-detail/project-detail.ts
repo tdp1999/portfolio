@@ -16,11 +16,20 @@ import {
 import { filter, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
+import { DateRangePipe } from '@portfolio/shared/ui-pipes';
 
 @Component({
   selector: 'console-project-detail',
   standalone: true,
-  imports: [DatePipe, MatButtonModule, MatChipsModule, MatIconModule, MatTooltipModule, SpinnerOverlayComponent],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatTooltipModule,
+    SpinnerOverlayComponent,
+    DateRangePipe,
+  ],
   templateUrl: './project-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -93,13 +102,6 @@ export default class ProjectDetailComponent implements OnInit {
   translatable(value: Record<string, string> | null | undefined): string {
     if (!value) return '—';
     return value['en'] || value['vi'] || '—';
-  }
-
-  formatDateRange(project: AdminProject): string {
-    const start = new Date(project.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    if (!project.endDate) return `${start} – Present`;
-    const end = new Date(project.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    return `${start} – ${end}`;
   }
 
   private loadProject(id: string): void {

@@ -17,6 +17,7 @@ import { filter, switchMap } from 'rxjs';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import type { ExperienceDialogData } from '../experience-dialog/experience-dialog';
+import { DateRangePipe } from '@portfolio/shared/ui-pipes';
 
 const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   FULL_TIME: 'Full Time',
@@ -36,7 +37,15 @@ const LOCATION_TYPE_LABELS: Record<string, string> = {
 @Component({
   selector: 'console-experience-detail',
   standalone: true,
-  imports: [DatePipe, MatButtonModule, MatChipsModule, MatIconModule, MatTooltipModule, SpinnerOverlayComponent],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatTooltipModule,
+    SpinnerOverlayComponent,
+    DateRangePipe,
+  ],
   templateUrl: './experience-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -118,13 +127,6 @@ export default class ExperienceDetailComponent implements OnInit {
 
   getLocationTypeLabel(type: string): string {
     return LOCATION_TYPE_LABELS[type] ?? type;
-  }
-
-  formatDateRange(exp: AdminExperience): string {
-    const start = new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    if (!exp.endDate) return `${start} – Present`;
-    const end = new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    return `${start} – ${end}`;
   }
 
   formatLocation(exp: AdminExperience): string {

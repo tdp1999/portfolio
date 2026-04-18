@@ -24,7 +24,7 @@
     "test:e2e:ui": "nx e2e-ui landing-e2e",
     "lint:landing": "nx lint landing",
     "lint:api": "nx lint api",
-    "lint": "nx run-many -t lint --all",
+    "lint": "nx run-many -t lint --all --skip-nx-cache --tui=false",
     "lint:fix": "nx run-many -t lint --all --fix",
     "format:check": "prettier --check .",
     "graph": "nx graph",

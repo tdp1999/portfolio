@@ -20,7 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError, FormErrorPipe, maxDecimalsValidator } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe, maxDecimalsValidator } from '@portfolio/console/shared/util';
 import {
   ChipToggleGroupComponent,
   FormSnapshotDirective,

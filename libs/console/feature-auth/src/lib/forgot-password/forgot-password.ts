@@ -5,7 +5,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApiService, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { ApiService } from '@portfolio/console/shared/data-access';
+import { FormErrorPipe } from '@portfolio/console/shared/util';
 
 @Component({
   selector: 'console-forgot-password',

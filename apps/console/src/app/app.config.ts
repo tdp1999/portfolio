@@ -4,15 +4,14 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { ErrorStateMatcher } from '@angular/material/core';
 import {
   AuthStore,
-  RewardEarlyErrorStateMatcher,
   ThemeService,
-  SERVER_ERROR_FALLBACK,
   authInterceptor,
   csrfInterceptor,
   errorInterceptor,
   provideApi,
   refreshInterceptor,
 } from '@portfolio/console/shared/data-access';
+import { RewardEarlyErrorStateMatcher, SERVER_ERROR_FALLBACK } from '@portfolio/console/shared/util';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
 import { ToastService } from '@portfolio/console/shared/ui';

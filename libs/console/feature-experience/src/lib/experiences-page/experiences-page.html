@@ -70,7 +70,7 @@
       <ng-container matColumnDef="dateRange">
         <th mat-header-cell *matHeaderCellDef>Period</th>
         <td mat-cell *matCellDef="let exp" class="text-text-muted text-sm whitespace-nowrap">
-          {{ formatDateRange(exp) }}
+          {{ exp | dateRange }}
         </td>
       </ng-container>
 
@@ -110,7 +110,7 @@
     [length]="total()"
     [pageIndex]="pageIndex()"
     [pageSize]="pageSize()"
-    [pageSizeOptions]="[20, 50, 100]"
+    [pageSizeOptions]="pageSizeOptions"
     (page)="onPage($event)"
     showFirstLastButtons
   />

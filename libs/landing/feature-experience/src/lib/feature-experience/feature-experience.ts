@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
 import { ExperienceService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
+import { DateRangePipe, InitialsPipe } from '@portfolio/shared/ui-pipes';
 import type { Locale } from '@portfolio/shared/types';
 import type { EmploymentType, LocationType, PublicExperience } from '@portfolio/landing/shared/data-access';
 
@@ -45,7 +46,15 @@ function formatDuration(startStr: string, endStr: string | null): string {
 
 @Component({
   selector: 'landing-feature-experience',
-  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent],
+  imports: [
+    RouterLink,
+    ContainerComponent,
+    SectionComponent,
+    IconComponent,
+    BadgeComponent,
+    DateRangePipe,
+    InitialsPipe,
+  ],
   templateUrl: './feature-experience.html',
   styleUrl: './feature-experience.scss',
 })
@@ -93,17 +102,7 @@ export class FeatureExperience {
     return LOCATION_TYPE_LABEL[type] ?? type;
   }
 
-  formatDateRange(exp: PublicExperience): string {
-    const start = formatMonth(exp.startDate);
-    const end = exp.endDate ? formatMonth(exp.endDate) : 'Present';
-    return `${start} – ${end}`;
-  }
-
-  formatDuration(exp: PublicExperience): string {
+  durationFor(exp: PublicExperience): string {
     return formatDuration(exp.startDate, exp.endDate);
-  }
-
-  getInitial(companyName: string): string {
-    return companyName.charAt(0).toUpperCase();
   }
 }

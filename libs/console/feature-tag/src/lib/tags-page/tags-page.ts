@@ -14,6 +14,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { TagDialogData } from '../tag-dialog/tag-dialog';
 import { AdminTag, TagService } from '../tag.service';
 
@@ -46,7 +47,8 @@ export default class TagsPageComponent implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(20);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
 
   ngOnInit(): void {

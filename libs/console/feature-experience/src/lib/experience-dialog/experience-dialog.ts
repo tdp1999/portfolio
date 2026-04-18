@@ -14,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
 

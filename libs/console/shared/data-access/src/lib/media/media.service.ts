@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, timeout } from 'rxjs';
 import { API_CONFIG, ApiService } from '../api';
-import { MediaItem, MediaListParams, MediaListResponse, StorageStats, UpdateMediaPayload } from './media.types';
+import {
+  MediaItem,
+  MediaListParams,
+  MediaListResponse,
+  StorageStats,
+  UpdateMediaPayload,
+} from '@portfolio/console/shared/util';
 
 @Injectable({ providedIn: 'root' })
 export class MediaService {
@@ -17,6 +23,8 @@ export class MediaService {
     };
     if (params.search) queryParams['search'] = params.search;
     if (params.mimeTypePrefix) queryParams['mimeTypePrefix'] = params.mimeTypePrefix;
+    if (params.folder) queryParams['folder'] = params.folder;
+    if (params.sort) queryParams['sort'] = params.sort;
     return this.api.get<MediaListResponse>('/media', { params: queryParams });
   }
 

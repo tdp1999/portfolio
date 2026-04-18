@@ -17,6 +17,7 @@ import {
   type ConfirmDialogData,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
 
@@ -58,7 +59,8 @@ export default class ProjectsPageComponent implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
-  readonly pageSize = signal(20);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly status = signal('');
   readonly statusOptions = STATUS_OPTIONS;

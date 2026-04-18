@@ -2,13 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Provider } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ERROR_HANDLER, ErrorHandler } from '@portfolio/console/shared/data-access';
 import {
-  ERROR_HANDLER,
-  ErrorHandler,
-  ValidationErrorService,
   ErrorDataService,
-} from '@portfolio/console/shared/data-access';
-import { extractApiError, resolveErrorMessage } from '@portfolio/console/shared/data-access';
+  extractApiError,
+  resolveErrorMessage,
+  ValidationErrorService,
+} from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 
 const BLOCKING_STATUSES = new Set([403, 500]);

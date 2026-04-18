@@ -7,13 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
+import { ApiService } from '@portfolio/console/shared/data-access';
 import {
-  ApiService,
   ErrorDataService,
   FormErrorPipe,
   passwordsMatchValidator,
   ServerErrorDirective,
-} from '@portfolio/console/shared/data-access';
+} from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
 

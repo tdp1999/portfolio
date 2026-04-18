@@ -4,7 +4,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { API_CONFIG, AuthStore, UserProfile } from '@portfolio/console/shared/data-access';
+import { API_CONFIG, AuthStore } from '@portfolio/console/shared/data-access';
+import { UserProfile } from '@portfolio/console/shared/util';
 import { ConsoleMainLayoutComponent } from './main-layout';
 
 beforeAll(() => {

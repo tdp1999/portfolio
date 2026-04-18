@@ -4,7 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { catchError, EMPTY, switchMap, tap } from 'rxjs';
 import { API_CONFIG, ApiService } from './api';
 import { SKIP_ERROR_HANDLING } from './interceptors/error.interceptor';
-import { LoginResponse, UserProfile } from './interfaces';
+import { LoginResponse, UserProfile } from '@portfolio/console/shared/util';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStore {

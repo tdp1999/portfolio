@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/data-access';
+import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import { AdminCategory, CategoryService } from '../category.service';
 
 export interface CategoryDialogData {

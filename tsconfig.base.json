@@ -44,8 +44,8 @@
       "@portfolio/console/feature-project": ["libs/console/feature-project/src/index.ts"],
       "@portfolio/console/feature-blog": ["libs/console/feature-blog/src/index.ts"],
       "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"],
-      "@portfolio/console/shared/ui-editor": ["libs/console/shared/ui-editor/src/index.ts"],
-      "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"]
+      "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
+      "@portfolio/shared/ui-pipes": ["libs/shared/ui-pipes/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

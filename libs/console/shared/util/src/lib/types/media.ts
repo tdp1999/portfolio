@@ -42,11 +42,17 @@ export interface BulkUploadResult {
 
 // --- Payload types ---
 
+export type MediaSort = 'createdAt_desc' | 'createdAt_asc' | 'filename_asc' | 'bytes_desc';
+
+export type MediaFolder = 'avatars' | 'projects' | 'posts' | 'logos' | 'resumes' | 'general';
+
 export interface MediaListParams {
   page: number;
   limit: number;
   search?: string;
   mimeTypePrefix?: string;
+  folder?: MediaFolder;
+  sort?: MediaSort;
 }
 
 export interface UpdateMediaPayload {

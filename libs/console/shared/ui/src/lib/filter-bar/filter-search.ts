@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { FILTER_DEBOUNCE_MS } from '@portfolio/console/shared/util';
 
 @Component({
   selector: 'console-filter-search',
@@ -31,7 +32,7 @@ export class FilterSearchComponent implements OnInit {
 
   readonly label = input('Search');
   readonly placeholder = input('Search...');
-  readonly debounce = input(300);
+  readonly debounce = input(FILTER_DEBOUNCE_MS);
   readonly searchChange = output<string>();
 
   value = '';

@@ -1,12 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import {
-  ERROR_HANDLER,
-  ErrorHandler,
-  ValidationErrorService,
-  ErrorDataService,
-} from '@portfolio/console/shared/data-access';
+import { ERROR_HANDLER, ErrorHandler } from '@portfolio/console/shared/data-access';
+import { ErrorDataService, ValidationErrorService } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { provideErrorHandler } from './error-handler.provider';
 
