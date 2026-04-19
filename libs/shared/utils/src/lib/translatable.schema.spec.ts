@@ -201,16 +201,21 @@ describe('ResumeUrlsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept valid URLs', () => {
+  it('should accept valid entries with url and name', () => {
     const result = ResumeUrlsSchema.safeParse({
-      en: 'https://example.com/resume-en.pdf',
-      vi: 'https://example.com/resume-vi.pdf',
+      en: { url: 'https://example.com/resume-en.pdf', name: 'resume-en.pdf' },
+      vi: { url: 'https://example.com/resume-vi.pdf', name: 'resume-vi.pdf' },
     });
     expect(result.success).toBe(true);
   });
 
-  it('should reject invalid URL', () => {
-    const result = ResumeUrlsSchema.safeParse({ en: 'not-a-url' });
+  it('should reject entry with invalid url', () => {
+    const result = ResumeUrlsSchema.safeParse({ en: { url: 'not-a-url', name: 'resume.pdf' } });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject entry missing name', () => {
+    const result = ResumeUrlsSchema.safeParse({ en: { url: 'https://example.com/resume.pdf' } });
     expect(result.success).toBe(false);
   });
 });

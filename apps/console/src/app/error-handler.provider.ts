@@ -72,6 +72,13 @@ class ConsoleErrorHandler implements ErrorHandler {
       return;
     }
 
+    // Fallback for unknown errors with a message — toast it and push data
+    if (apiError.message) {
+      this.toastService.error(apiError.message);
+      this.errorDataService.push(apiError);
+      return;
+    }
+
     // Unknown/missing error code — show generic fallback toast
     this.toastService.error('An unexpected error occurred. Please try again.');
   }

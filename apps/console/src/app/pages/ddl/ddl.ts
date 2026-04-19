@@ -379,6 +379,7 @@ export default class DdlComponent {
     height: 600,
     altText: null,
     caption: null,
+    folder: 'general',
     createdAt: new Date(2026, 0, i + 1).toISOString(),
     updatedAt: new Date(2026, 0, i + 1).toISOString(),
   }));
@@ -405,6 +406,7 @@ export default class DdlComponent {
       height: 600,
       altText: null,
       caption: null,
+      folder: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     } satisfies MediaItem;

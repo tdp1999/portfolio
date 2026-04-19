@@ -41,7 +41,7 @@ import { map, switchMap } from 'rxjs';
 import { MediaDialogData } from '../media-dialog/media-dialog.types';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
 import { MediaService } from '../media.service';
-import { MediaItem, StorageStats } from '../media.types';
+import { MediaItem, MediaMimeGroup, StorageStats } from '../media.types';
 
 const VIEW_MODE_KEY = STORAGE_KEYS.mediaPickerViewMode;
 
@@ -260,18 +260,6 @@ export default class MediaPageComponent implements OnInit {
     this.pageIndex.set(0);
   }
 
-  private mimeGroupToPrefix(group: MimeGroup | null): string | undefined {
-    if (!group) return undefined;
-    const prefixMap: Record<MimeGroup, string> = {
-      image: 'image/',
-      video: 'video/',
-      pdf: 'application/pdf',
-      doc: 'application/vnd',
-      archive: 'application/zip',
-    };
-    return prefixMap[group];
-  }
-
   private loadMedia(): void {
     this.loading.set(true);
 
@@ -291,7 +279,7 @@ export default class MediaPageComponent implements OnInit {
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
         search: this.search() || undefined,
-        mimeTypePrefix: this.mimeGroupToPrefix(this.mimeGroup()),
+        mimeGroup: (this.mimeGroup() as MediaMimeGroup | null) ?? undefined,
         folder: this.folder() ?? undefined,
         sort: this.sort(),
       })

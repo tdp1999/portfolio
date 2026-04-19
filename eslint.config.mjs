@@ -46,10 +46,10 @@ export default [
               sourceTag: 'type:shared-data-access',
               notDependOnLibsWithTags: ['type:shared-ui', 'type:feature'],
             },
-            // Shared UI cannot depend on features (shell components may consume state services from data-access)
+            // Shared UI cannot depend on features or data-access (purely presentational)
             {
               sourceTag: 'type:shared-ui',
-              notDependOnLibsWithTags: ['type:feature'],
+              notDependOnLibsWithTags: ['type:shared-data-access', 'type:feature'],
             },
             // Shared util is the lowest level — cannot depend on ui, data-access, or features
             {

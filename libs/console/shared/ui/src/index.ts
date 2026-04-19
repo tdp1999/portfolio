@@ -28,6 +28,7 @@ export { AssetGridComponent } from './lib/asset-grid/asset-grid.component';
 export type { AssetGridMode, AssetGridViewMode } from './lib/asset-grid/asset-grid.types';
 export { default as MediaPickerDialogComponent } from './lib/media-picker-dialog/media-picker-dialog';
 export type {
+  MediaPickerDataSource,
   MediaPickerDialogData,
   MediaPickerDialogResult,
 } from './lib/media-picker-dialog/media-picker-dialog.types';

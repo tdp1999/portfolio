@@ -27,7 +27,7 @@
             [mimeGroup]="mimeGroup()"
             [folder]="folder()"
             [sort]="sort()"
-            [showMimeChips]="!data.mimeFilter"
+            [showMimeChips]="!data.mimeFilter && !data.mimeGroup"
             (searchChange)="onSearchChange($event)"
             (mimeGroupChange)="onMimeGroupChange($event)"
             (folderChange)="onFolderChange($event)"
@@ -64,6 +64,16 @@
 
     <mat-tab label="Upload">
       <mat-dialog-content class="picker__content picker__content--upload">
+        <div class="picker__upload-folder">
+          <mat-form-field appearance="outline" class="picker__upload-folder-field">
+            <mat-label>Upload to folder</mat-label>
+            <mat-select [value]="uploadFolder()" (valueChange)="uploadFolder.set($event)">
+              @for (f of uploadFolders; track f) {
+                <mat-option [value]="f">{{ uploadFolderLabels[f] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
         <console-asset-upload-zone
           [uploadFn]="uploadFn"
           [accept]="data.mimeFilter ?? '*/*'"

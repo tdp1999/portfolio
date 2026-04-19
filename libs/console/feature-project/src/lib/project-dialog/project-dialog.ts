@@ -17,8 +17,10 @@ import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import {
   TranslatableGroupComponent,
   MediaPickerDialogComponent,
+  type MediaPickerDataSource,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
+import { MediaService } from '@portfolio/console/shared/data-access';
 import { ProjectService } from '../project.service';
 import {
   AdminProject,
@@ -71,6 +73,12 @@ export default class ProjectDialogComponent {
   private readonly projectService = inject(ProjectService);
   private readonly matDialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
+  private readonly mediaService = inject(MediaService);
+  private readonly mediaDataSource: MediaPickerDataSource = {
+    list: (p) => this.mediaService.list(p),
+    upload: (f, folder) => this.mediaService.upload(f, { folder }),
+    getById: (id) => this.mediaService.getById(id),
+  };
   readonly data = inject<ProjectDialogData>(MAT_DIALOG_DATA, { optional: true });
 
   readonly isEdit = !!this.data?.project;
@@ -162,6 +170,7 @@ export default class ProjectDialogComponent {
         mode: 'single',
         selectedIds: this.thumbnailId() ? [this.thumbnailId() as string] : [],
         mimeFilter: 'image/',
+        dataSource: this.mediaDataSource,
       } satisfies MediaPickerDialogData,
     });
     dialogRef.afterClosed().subscribe((result: string | undefined) => {
@@ -186,6 +195,7 @@ export default class ProjectDialogComponent {
         mode: 'multi',
         selectedIds: this.galleryImages().map((img) => img.mediaId),
         mimeFilter: 'image/',
+        dataSource: this.mediaDataSource,
       } satisfies MediaPickerDialogData,
     });
     dialogRef.afterClosed().subscribe((result: string[] | undefined) => {

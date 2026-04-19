@@ -6,5 +6,6 @@ export type {
   UploadResult,
   BulkUploadResult,
   MediaListParams,
+  MediaMimeGroup,
   UpdateMediaPayload,
 } from '@portfolio/console/shared/util';

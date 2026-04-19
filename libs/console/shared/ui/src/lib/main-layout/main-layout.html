@@ -17,9 +17,9 @@
     </ui-sidebar-header>
 
     <ui-sidebar-content>
-      <!-- Admin group (visible only for admins) -->
+      <!-- Admin group -->
       @if (isAdmin()) {
-        <ui-sidebar-group label="Admin" [collapsible]="true">
+        <ui-sidebar-group label="Operations" [collapsible]="true">
           <ul uiSidebarMenu>
             <li uiSidebarMenuItem>
               <a routerLink="/admin/users" routerLinkActive ui-sidebar-menu-button tooltip="User Management">
@@ -27,6 +27,25 @@
                 <span>Users</span>
               </a>
             </li>
+            <li uiSidebarMenuItem>
+              <a routerLink="/messages" routerLinkActive ui-sidebar-menu-button tooltip="Messages">
+                <mat-icon data-sidebar-icon class="icon-md">mail</mat-icon>
+                <span>Messages</span>
+                @if (unreadBadgeText()) {
+                  <span
+                    class="ml-auto inline-flex items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-text-on-primary min-w-5"
+                  >
+                    {{ unreadBadgeText() }}
+                  </span>
+                }
+              </a>
+            </li>
+          </ul>
+        </ui-sidebar-group>
+
+        <!-- Data Setup group -->
+        <ui-sidebar-group label="Data Setup" [collapsible]="true">
+          <ul uiSidebarMenu>
             <li uiSidebarMenuItem>
               <a routerLink="/tags" routerLinkActive ui-sidebar-menu-button tooltip="Tag Management">
                 <mat-icon data-sidebar-icon class="icon-md">local_offer</mat-icon>
@@ -46,22 +65,27 @@
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/experiences" routerLinkActive ui-sidebar-menu-button tooltip="Experience Management">
-                <mat-icon data-sidebar-icon class="icon-md">work_history</mat-icon>
-                <span>Experiences</span>
+              <a routerLink="/media" routerLinkActive ui-sidebar-menu-button tooltip="Media Library">
+                <mat-icon data-sidebar-icon class="icon-md">perm_media</mat-icon>
+                <span>Media</span>
+              </a>
+            </li>
+          </ul>
+        </ui-sidebar-group>
+
+        <!-- Portfolio group -->
+        <ui-sidebar-group label="Portfolio" [collapsible]="true">
+          <ul uiSidebarMenu>
+            <li uiSidebarMenuItem>
+              <a routerLink="/profile" routerLinkActive ui-sidebar-menu-button tooltip="Profile">
+                <mat-icon data-sidebar-icon class="icon-md">person</mat-icon>
+                <span>Profile</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
-              <a routerLink="/messages" routerLinkActive ui-sidebar-menu-button tooltip="Messages">
-                <mat-icon data-sidebar-icon class="icon-md">mail</mat-icon>
-                <span>Messages</span>
-                @if (unreadBadgeText()) {
-                  <span
-                    class="ml-auto inline-flex items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-text-on-primary min-w-5"
-                  >
-                    {{ unreadBadgeText() }}
-                  </span>
-                }
+              <a routerLink="/experiences" routerLinkActive ui-sidebar-menu-button tooltip="Experience Management">
+                <mat-icon data-sidebar-icon class="icon-md">work_history</mat-icon>
+                <span>Experiences</span>
               </a>
             </li>
             <li uiSidebarMenuItem>
@@ -76,43 +100,18 @@
                 <span>Blog</span>
               </a>
             </li>
-            <li uiSidebarMenuItem>
-              <a routerLink="/media" routerLinkActive ui-sidebar-menu-button tooltip="Media Library">
-                <mat-icon data-sidebar-icon class="icon-md">perm_media</mat-icon>
-                <span>Media</span>
-              </a>
-            </li>
           </ul>
         </ui-sidebar-group>
       }
 
-      <!-- System group -->
-      <ui-sidebar-group label="System" [collapsible]="true">
+      <!-- Playground group -->
+      <ui-sidebar-group label="Playground" [collapsible]="true">
         <ul uiSidebarMenu>
           <li uiSidebarMenuItem>
             <a routerLink="/ddl" routerLinkActive ui-sidebar-menu-button tooltip="DDL">
               <mat-icon data-sidebar-icon class="icon-md">grid_on</mat-icon>
               <span>DDL</span>
             </a>
-          </li>
-
-          <li uiSidebarMenuItem>
-            <button ui-sidebar-menu-button tooltip="Settings" (click)="settingsSub.toggle()">
-              <mat-icon data-sidebar-icon class="icon-md">settings</mat-icon>
-              <span>Settings</span>
-            </button>
-            <ui-sidebar-menu-sub #settingsSub>
-              @if (hasPassword()) {
-                <li uiSidebarMenuSubItem>
-                  <a ui-sidebar-menu-sub-button routerLink="/settings/change-password" routerLinkActive>
-                    Change Password
-                  </a>
-                </li>
-              }
-              <li uiSidebarMenuSubItem>
-                <a ui-sidebar-menu-sub-button routerLink="/profile" routerLinkActive> Profile </a>
-              </li>
-            </ui-sidebar-menu-sub>
           </li>
         </ul>
       </ui-sidebar-group>
@@ -142,11 +141,17 @@
         </button>
 
         <mat-menu #userMenu="matMenu" yPosition="above">
-          <button mat-menu-item (click)="logout()">
+          @if (hasPassword()) {
+            <a mat-menu-item routerLink="/settings/change-password">
+              <mat-icon>lock</mat-icon>
+              <span>Change Password</span>
+            </a>
+          }
+          <button mat-menu-item (click)="logout.emit()">
             <mat-icon>logout</mat-icon>
             <span>Logout</span>
           </button>
-          <button mat-menu-item (click)="logoutAll()">
+          <button mat-menu-item (click)="logoutAll.emit()">
             <mat-icon>devices</mat-icon>
             <span>Logout All Devices</span>
           </button>
@@ -169,7 +174,7 @@
         <button mat-icon-button matTooltip="Notifications" disabled>
           <mat-icon>notifications_none</mat-icon>
         </button>
-        <button mat-icon-button (click)="themeService.toggle()" [matTooltip]="themeTooltip()">
+        <button mat-icon-button (click)="themeToggle.emit()" [matTooltip]="themeTooltip()">
           <mat-icon>{{ themeIcon() }}</mat-icon>
         </button>
       </div>

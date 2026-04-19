@@ -1,12 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { signal } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { API_CONFIG, AuthStore } from '@portfolio/console/shared/data-access';
 import { UserProfile } from '@portfolio/console/shared/util';
 import { ConsoleMainLayoutComponent } from './main-layout';
+import { ComponentRef } from '@angular/core';
 
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
@@ -26,7 +23,7 @@ beforeAll(() => {
 
 describe('ConsoleMainLayoutComponent', () => {
   let fixture: ComponentFixture<ConsoleMainLayoutComponent>;
-  let userSignal: ReturnType<typeof signal<UserProfile | null>>;
+  let componentRef: ComponentRef<ConsoleMainLayoutComponent>;
 
   const adminUser: UserProfile = {
     id: 'user-1',
@@ -51,33 +48,19 @@ describe('ConsoleMainLayoutComponent', () => {
   };
 
   beforeEach(async () => {
-    userSignal = signal<UserProfile | null>(null);
-
     await TestBed.configureTestingModule({
       imports: [ConsoleMainLayoutComponent],
-      providers: [
-        provideRouter([]),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideAnimationsAsync(),
-        { provide: API_CONFIG, useValue: { baseUrl: '', timeout: 0 } },
-        {
-          provide: AuthStore,
-          useValue: {
-            user: userSignal,
-            logout: () => ({ subscribe: /* noop */ () => undefined }),
-            logoutAll: () => ({ subscribe: /* noop */ () => undefined }),
-          },
-        },
-      ],
+      providers: [provideRouter([]), provideAnimationsAsync()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConsoleMainLayoutComponent);
+    componentRef = fixture.componentRef;
+    componentRef.setInput('resolvedTheme', 'light');
   });
 
   describe('admin badge', () => {
     it('should display admin badge when user has ADMIN role', () => {
-      userSignal.set(adminUser);
+      componentRef.setInput('user', adminUser);
       fixture.detectChanges();
 
       const badge = fixture.nativeElement.querySelector('ui-sidebar-footer .bg-primary\\/15');
@@ -86,7 +69,7 @@ describe('ConsoleMainLayoutComponent', () => {
     });
 
     it('should not display admin badge when user has USER role', () => {
-      userSignal.set(regularUser);
+      componentRef.setInput('user', regularUser);
       fixture.detectChanges();
 
       const badge = fixture.nativeElement.querySelector('ui-sidebar-footer .bg-primary\\/15');
@@ -94,7 +77,7 @@ describe('ConsoleMainLayoutComponent', () => {
     });
 
     it('should not display admin badge when user is null', () => {
-      userSignal.set(null);
+      componentRef.setInput('user', null);
       fixture.detectChanges();
 
       const badge = fixture.nativeElement.querySelector('ui-sidebar-footer .bg-primary\\/15');
@@ -102,11 +85,11 @@ describe('ConsoleMainLayoutComponent', () => {
     });
 
     it('should reactively show badge when user role changes to ADMIN', () => {
-      userSignal.set(regularUser);
+      componentRef.setInput('user', regularUser);
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('ui-sidebar-footer .bg-primary\\/15')).toBeNull();
 
-      userSignal.set(adminUser);
+      componentRef.setInput('user', adminUser);
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('ui-sidebar-footer .bg-primary\\/15')).toBeTruthy();
     });

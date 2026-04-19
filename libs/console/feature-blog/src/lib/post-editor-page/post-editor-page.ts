@@ -23,7 +23,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { ToastService, MediaPickerDialogComponent, type MediaPickerDialogData } from '@portfolio/console/shared/ui';
+import {
+  ToastService,
+  MediaPickerDialogComponent,
+  type MediaPickerDataSource,
+  type MediaPickerDialogData,
+} from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
 import { BlogService } from '../blog.service';
@@ -67,6 +72,11 @@ export default class PostEditorPageComponent implements OnInit {
   private readonly blogService = inject(BlogService);
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(MatDialog);
+  private readonly mediaDataSource: MediaPickerDataSource = {
+    list: (p) => this.mediaService.list(p),
+    upload: (f, folder) => this.mediaService.upload(f, { folder }),
+    getById: (id) => this.mediaService.getById(id),
+  };
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -181,6 +191,7 @@ export default class PostEditorPageComponent implements OnInit {
         mode: 'single',
         selectedIds: this.featuredImageId() ? [this.featuredImageId() as string] : [],
         mimeFilter: 'image/',
+        dataSource: this.mediaDataSource,
       } satisfies MediaPickerDialogData,
     });
     ref
@@ -208,7 +219,7 @@ export default class PostEditorPageComponent implements OnInit {
     const ref = this.dialog.open(MediaPickerDialogComponent, {
       width: '900px',
       maxHeight: '90vh',
-      data: { mode: 'single', mimeFilter: 'image/' } satisfies MediaPickerDialogData,
+      data: { mode: 'single', mimeFilter: 'image/', dataSource: this.mediaDataSource } satisfies MediaPickerDialogData,
     });
     ref
       .afterClosed()

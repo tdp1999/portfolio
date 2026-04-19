@@ -13,18 +13,24 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MediaService } from '@portfolio/console/shared/data-access';
 import { extractApiError, FormErrorPipe, maxDecimalsValidator } from '@portfolio/console/shared/util';
 import {
   ChipToggleGroupComponent,
+  ConfirmDialogComponent,
+  ConfirmDialogData,
   FormSnapshotDirective,
   LongFormLayoutComponent,
+  MediaPickerDialogComponent,
+  MediaPickerDataSource,
+  MediaPickerDialogData,
   ScrollspyRailComponent,
   SectionCardComponent,
   SectionDescriptor,
@@ -35,7 +41,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 import { SidebarState } from '@portfolio/shared/ui/sidebar';
-import { map, Observable, startWith, switchMap } from 'rxjs';
+import { Observable, of, startWith, switchMap } from 'rxjs';
 import {
   AVAILABILITY_OPTIONS,
   OPEN_TO_OPTIONS,
@@ -47,25 +53,6 @@ import { ProfileService } from '../profile.service';
 import { ProfileAdminResponse, SectionKey, UpdateSocialLinksPayload } from '../profile.types';
 
 @Component({
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
-  template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content
-      ><p>{{ data.message }}</p></mat-dialog-content
-    >
-    <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="false">Cancel</button>
-      <button mat-flat-button color="warn" [mat-dialog-close]="true">{{ data.confirmLabel }}</button>
-    </mat-dialog-actions>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-class MediaRemoveDialogComponent {
-  readonly data = inject<{ title: string; message: string; confirmLabel: string }>(MAT_DIALOG_DATA);
-}
-
-@Component({
   selector: 'console-profile-page',
   standalone: true,
   imports: [
@@ -75,9 +62,9 @@ class MediaRemoveDialogComponent {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatIconModule,
     ChipToggleGroupComponent,
-    MatProgressSpinnerModule,
     MatTooltipModule,
     SpinnerOverlayComponent,
     FormErrorPipe,
@@ -98,11 +85,22 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
+  private readonly mediaService = inject(MediaService);
   private readonly sidebarState = inject(SidebarState, { optional: true });
+  private readonly mediaDataSource: MediaPickerDataSource = {
+    list: (p) => this.mediaService.list(p),
+    upload: (f, folder) => this.mediaService.upload(f, { folder }),
+    getById: (id) => this.mediaService.getById(id),
+  };
 
   private readonly sidebarWasOpen = signal<boolean | null>(null);
 
   // ── Readonly Data  ───────────────────────────────────────────────────────
+  readonly resumeLocales: { key: 'en' | 'vi'; label: string }[] = [
+    { key: 'en', label: 'EN' },
+    { key: 'vi', label: 'VI' },
+  ];
+
   readonly availabilityOptions = AVAILABILITY_OPTIONS;
   readonly openToOptions = OPEN_TO_OPTIONS;
   readonly socialPlatformOptions = SOCIAL_PLATFORM_OPTIONS;
@@ -114,12 +112,13 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   // ── UI state ─────────────────────────────────────────────────────────────
   readonly loading = signal(false);
-  readonly avatarUploading = signal(false);
-  readonly ogImageUploading = signal(false);
+  readonly avatarSaving = signal(false);
+  readonly ogImageSaving = signal(false);
   readonly avatarPreview = signal<string | null>(null);
   readonly ogImagePreview = signal<string | null>(null);
   readonly jsonLd = signal<unknown>(null);
   readonly showJsonLd = signal(false);
+  readonly certModes = signal<('file' | 'link')[]>([]);
 
   // ── Parent FormGroup composed of 6 child FormGroups ──────────────────────
   readonly identityForm = this.fb.group({
@@ -174,6 +173,8 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     resumeUrls: this.bilingualGroup({ required: false }),
     certifications: this.fb.array<FormGroup>([]),
   });
+
+  readonly resumeNames = signal<{ en: string | null; vi: string | null }>({ en: null, vi: null });
 
   readonly seoOgForm = this.fb.group({
     metaTitle: this.fb.control('', {
@@ -315,10 +316,10 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   ngOnInit(): void {
     // Collapse the main sidebar so the long-form page has more horizontal room.
-    if (this.sidebarState) {
-      this.sidebarWasOpen.set(this.sidebarState.isOpen());
-      this.sidebarState.setOpen(false);
-    }
+    // if (this.sidebarState) {
+    //   this.sidebarWasOpen.set(this.sidebarState.isOpen());
+    //   this.sidebarState.setOpen(false);
+    // }
     this.loadProfile();
   }
 
@@ -410,9 +411,14 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
         this.createCertificationGroup(cert.name, cert.issuer, cert.year, cert.url ?? '')
       );
     }
+    this.certModes.set(profile.certifications.map((c) => this.inferCertMode(c.url ?? '')));
     this.socialLinksForm.controls.resumeUrls.reset({
-      en: profile.resumeUrls.en ?? '',
-      vi: profile.resumeUrls.vi ?? '',
+      en: profile.resumeUrls.en?.url ?? '',
+      vi: profile.resumeUrls.vi?.url ?? '',
+    });
+    this.resumeNames.set({
+      en: profile.resumeUrls.en?.name ?? null,
+      vi: profile.resumeUrls.vi?.name ?? null,
     });
     this.socialLinksForm.markAsPristine();
 
@@ -466,11 +472,47 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   addCertification(): void {
     this.socialLinksForm.controls.certifications.push(this.createCertificationGroup());
     this.socialLinksForm.controls.certifications.markAsDirty();
+    this.certModes.update((modes) => [...modes, 'link']);
   }
 
   removeCertification(index: number): void {
     this.socialLinksForm.controls.certifications.removeAt(index);
     this.socialLinksForm.controls.certifications.markAsDirty();
+    this.certModes.update((modes) => modes.filter((_, i) => i !== index));
+  }
+
+  setCertMode(index: number, mode: 'file' | 'link'): void {
+    this.certModes.update((modes) => modes.map((m, i) => (i === index ? mode : m)));
+  }
+
+  openCertPicker(index: number): void {
+    const certsArray = this.socialLinksForm.controls.certifications;
+    const certGroup = certsArray.at(index) as FormGroup;
+    this.dialog
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+        data: {
+          mode: 'single',
+          mimeFilter: 'application/pdf',
+          defaultFolder: 'general',
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+        width: '900px',
+      })
+      .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((id) => (id ? this.mediaService.getById(id) : of(null)))
+      )
+      .subscribe((item) => {
+        if (!item) return;
+        certGroup.controls['url'].setValue(item.url);
+        certsArray.markAsDirty();
+      });
+  }
+
+  certFileLabel(url: string): string {
+    const segments = url.split('/');
+    return segments[segments.length - 1].split('?')[0] || url;
   }
 
   /**
@@ -490,6 +532,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     for (const l of s.socialLinks) links.push(this.createSocialLinkGroup(l.platform, l.url, l.handle));
     certs.clear();
     for (const c of s.certifications) certs.push(this.createCertificationGroup(c.name, c.issuer, c.year, c.url));
+    this.certModes.set(s.certifications.map((c) => this.inferCertMode(c.url)));
     this.socialLinksForm.controls.resumeUrls.reset(s.resumeUrls);
   };
 
@@ -529,14 +572,15 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   saveSocialLinks(): void {
     const v = this.socialLinksForm.getRawValue();
+    const names = this.resumeNames();
     const payload: UpdateSocialLinksPayload = {
       socialLinks: (v.socialLinks as Array<{ platform: string; url: string; handle: string }>).map((l) => ({
         ...l,
         handle: l.handle || undefined,
       })),
       resumeUrls: {
-        en: v.resumeUrls['en'] || undefined,
-        vi: v.resumeUrls['vi'] || undefined,
+        en: v.resumeUrls['en'] ? { url: v.resumeUrls['en'], name: names.en ?? v.resumeUrls['en'] } : undefined,
+        vi: v.resumeUrls['vi'] ? { url: v.resumeUrls['vi'], name: names.vi ?? v.resumeUrls['vi'] } : undefined,
       },
       certifications: (v.certifications as Array<{ name: string; issuer: string; year: number; url: string }>).map(
         (c) => ({ ...c, url: c.url || undefined })
@@ -587,37 +631,47 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       });
   }
 
-  // ── Avatar / OG image (dedicated endpoints, save-on-upload) ──────────────
+  // ── Avatar / OG image (picker-based, save-on-select) ─────────────────────
 
-  onAvatarFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    this.avatarUploading.set(true);
-    this.profileService
-      .uploadMedia(file)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        switchMap((id) => this.profileService.updateAvatar(id).pipe(map(({ avatarUrl }) => ({ id, avatarUrl }))))
-      )
-      .subscribe({
-        next: ({ id, avatarUrl }) => {
-          this.avatarUploading.set(false);
-          this.avatarId.set(id);
-          this.avatarPreview.set(avatarUrl);
-          this.toast.success('Avatar updated');
-        },
-        error: () => {
-          this.avatarUploading.set(false);
-          this.toast.error('Avatar upload failed');
-        },
+  openAvatarPicker(): void {
+    this.dialog
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+        data: {
+          mode: 'single',
+          mimeFilter: 'image/',
+          defaultFolder: 'avatars',
+          selectedIds: this.avatarId() ? [this.avatarId()!] : [],
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+        width: '900px',
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((id) => {
+        if (id === undefined) return;
+        this.avatarSaving.set(true);
+        this.profileService
+          .updateAvatar(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: ({ avatarUrl }) => {
+              this.avatarSaving.set(false);
+              this.avatarId.set(id);
+              this.avatarPreview.set(avatarUrl);
+              this.toast.success('Avatar updated');
+            },
+            error: () => {
+              this.avatarSaving.set(false);
+              this.toast.error('Avatar update failed');
+            },
+          });
       });
   }
 
   confirmClearAvatar(): void {
     this.dialog
-      .open<MediaRemoveDialogComponent, unknown, boolean>(MediaRemoveDialogComponent, {
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
         data: { title: 'Remove Avatar', message: 'Remove your avatar photo?', confirmLabel: 'Remove' },
-        width: '360px',
       })
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -627,52 +681,62 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   }
 
   private clearAvatar(): void {
-    this.avatarUploading.set(true);
+    this.avatarSaving.set(true);
     this.profileService
       .updateAvatar(null)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.avatarUploading.set(false);
+          this.avatarSaving.set(false);
           this.avatarId.set(null);
           this.avatarPreview.set(null);
         },
         error: () => {
-          this.avatarUploading.set(false);
+          this.avatarSaving.set(false);
           this.toast.error('Failed to remove avatar');
         },
       });
   }
 
-  onOgImageFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    this.ogImageUploading.set(true);
-    this.profileService
-      .uploadMedia(file)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        switchMap((id) => this.profileService.updateOgImage(id).pipe(map(({ ogImageUrl }) => ({ id, ogImageUrl }))))
-      )
-      .subscribe({
-        next: ({ id, ogImageUrl }) => {
-          this.ogImageUploading.set(false);
-          this.ogImageId.set(id);
-          this.ogImagePreview.set(ogImageUrl);
-          this.toast.success('OG image updated');
-        },
-        error: () => {
-          this.ogImageUploading.set(false);
-          this.toast.error('OG image upload failed');
-        },
+  openOgImagePicker(): void {
+    this.dialog
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+        data: {
+          mode: 'single',
+          mimeFilter: 'image/',
+          defaultFolder: 'logos',
+          selectedIds: this.ogImageId() ? [this.ogImageId()!] : [],
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+        width: '900px',
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((id) => {
+        if (id === undefined) return;
+        this.ogImageSaving.set(true);
+        this.profileService
+          .updateOgImage(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: ({ ogImageUrl }) => {
+              this.ogImageSaving.set(false);
+              this.ogImageId.set(id);
+              this.ogImagePreview.set(ogImageUrl);
+              this.toast.success('OG image updated');
+            },
+            error: () => {
+              this.ogImageSaving.set(false);
+              this.toast.error('OG image update failed');
+            },
+          });
       });
   }
 
   confirmClearOgImage(): void {
     this.dialog
-      .open<MediaRemoveDialogComponent, unknown, boolean>(MediaRemoveDialogComponent, {
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
         data: { title: 'Remove OG Image', message: 'Remove your OG preview image?', confirmLabel: 'Remove' },
-        width: '360px',
       })
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -682,21 +746,53 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   }
 
   private clearOgImage(): void {
-    this.ogImageUploading.set(true);
+    this.ogImageSaving.set(true);
     this.profileService
       .updateOgImage(null)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.ogImageUploading.set(false);
+          this.ogImageSaving.set(false);
           this.ogImageId.set(null);
           this.ogImagePreview.set(null);
         },
         error: () => {
-          this.ogImageUploading.set(false);
+          this.ogImageSaving.set(false);
           this.toast.error('Failed to remove OG image');
         },
       });
+  }
+
+  // ── Resume URL pickers (picker-based, written into form) ─────────────────
+
+  openResumePicker(locale: 'en' | 'vi'): void {
+    this.dialog
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+        data: {
+          mode: 'single',
+          mimeFilter: 'application/pdf',
+          defaultFolder: 'resumes',
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+        width: '900px',
+      })
+      .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((id) => (id ? this.mediaService.getById(id) : of(null)))
+      )
+      .subscribe((item) => {
+        if (!item) return;
+        this.socialLinksForm.controls.resumeUrls.controls[locale].setValue(item.url);
+        this.socialLinksForm.controls.resumeUrls.markAsDirty();
+        this.resumeNames.update((n) => ({ ...n, [locale]: item.originalFilename }));
+      });
+  }
+
+  clearResumeUrl(locale: 'en' | 'vi'): void {
+    this.socialLinksForm.controls.resumeUrls.controls[locale].setValue('');
+    this.socialLinksForm.controls.resumeUrls.markAsDirty();
+    this.resumeNames.update((n) => ({ ...n, [locale]: null }));
   }
 
   // ── JSON-LD preview ──────────────────────────────────────────────────────
@@ -721,6 +817,10 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   }
 
   // ── Internals ────────────────────────────────────────────────────────────
+
+  private inferCertMode(url: string): 'file' | 'link' {
+    return url.includes('res.cloudinary.com') ? 'file' : 'link';
+  }
 
   private bilingualGroup(opts: { required: boolean; maxLength?: number }) {
     const validators = [];

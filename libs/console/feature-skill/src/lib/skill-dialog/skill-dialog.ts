@@ -3,12 +3,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MediaService } from '@portfolio/console/shared/data-access';
 import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
+import { MediaPickerDialogComponent, MediaPickerDataSource, MediaPickerDialogData } from '@portfolio/console/shared/ui';
+import { of, switchMap } from 'rxjs';
 import { AdminSkill, SkillService } from '../skill.service';
 
 export interface SkillDialogData {
@@ -28,6 +33,8 @@ export interface SkillDialogData {
     MatProgressSpinnerModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatIconModule,
+    MatTooltipModule,
     FormErrorPipe,
   ],
   template: `
@@ -83,10 +90,28 @@ export interface SkillDialogData {
           </mat-form-field>
         </div>
 
-        <mat-form-field>
-          <mat-label>Icon URL</mat-label>
-          <input matInput formControlName="iconUrl" placeholder="https://..." />
-        </mat-form-field>
+        <div class="flex flex-col gap-1">
+          <span class="text-sm text-gray-600 dark:text-gray-400">Icon</span>
+          <div class="flex items-center gap-3">
+            @if (iconPreviewUrl()) {
+              <img [src]="iconPreviewUrl()" alt="Icon preview" class="w-10 h-10 object-contain rounded" />
+            } @else {
+              <div
+                class="w-10 h-10 rounded border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center"
+              >
+                <mat-icon class="text-gray-400" style="font-size:20px;width:20px;height:20px">image</mat-icon>
+              </div>
+            }
+            <button mat-stroked-button type="button" (click)="openIconPicker()">
+              {{ iconPreviewUrl() ? 'Change Icon' : 'Pick Icon' }}
+            </button>
+            @if (iconPreviewUrl()) {
+              <button mat-icon-button type="button" matTooltip="Remove icon" (click)="clearIcon()">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
 
         <mat-form-field>
           <mat-label>Proficiency Note</mat-label>
@@ -114,7 +139,14 @@ export interface SkillDialogData {
 export default class SkillDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<SkillDialogComponent>);
   private readonly skillService = inject(SkillService);
+  private readonly mediaService = inject(MediaService);
+  private readonly matDialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
+  private readonly mediaDataSource: MediaPickerDataSource = {
+    list: (p) => this.mediaService.list(p),
+    upload: (f, folder) => this.mediaService.upload(f, { folder }),
+    getById: (id) => this.mediaService.getById(id),
+  };
   readonly data = inject<SkillDialogData>(MAT_DIALOG_DATA, { optional: true });
 
   readonly isEdit = !!this.data?.skill;
@@ -127,11 +159,40 @@ export default class SkillDialogComponent {
     isFeatured: [this.data?.skill?.isFeatured ?? false],
     yearsOfExperience: [this.data?.skill?.yearsOfExperience ?? (null as number | null)],
     displayOrder: [this.data?.skill?.displayOrder ?? 0],
-    iconUrl: [this.data?.skill?.iconUrl ?? ''],
     proficiencyNote: [this.data?.skill?.proficiencyNote ?? ''],
   });
+
+  readonly iconId = signal<string | null>(this.data?.skill?.iconId ?? null);
+  readonly iconPreviewUrl = signal<string | null>(this.data?.skill?.iconUrl ?? null);
   readonly submitting = signal(false);
   readonly serverError = signal('');
+
+  openIconPicker(): void {
+    this.matDialog
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+        data: {
+          mode: 'single',
+          mimeFilter: 'image/svg+xml, image/png, image/webp',
+          mimeGroup: 'image',
+          defaultFolder: 'skills',
+          selectedIds: this.iconId() ? [this.iconId()!] : [],
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+        width: '900px',
+      })
+      .afterClosed()
+      .pipe(switchMap((id) => (id ? this.mediaService.getById(id) : of(null))))
+      .subscribe((item) => {
+        if (!item) return;
+        this.iconId.set(item.id);
+        this.iconPreviewUrl.set(item.url);
+      });
+  }
+
+  clearIcon(): void {
+    this.iconId.set(null);
+    this.iconPreviewUrl.set(null);
+  }
 
   submit(): void {
     if (this.form.invalid) {
@@ -161,7 +222,7 @@ export default class SkillDialogComponent {
           isFeatured: raw.isFeatured,
           yearsOfExperience: raw.yearsOfExperience ?? null,
           displayOrder: raw.displayOrder,
-          iconUrl: raw.iconUrl || null,
+          iconId: this.iconId(),
           proficiencyNote: raw.proficiencyNote || null,
         })
         .subscribe({
@@ -179,7 +240,7 @@ export default class SkillDialogComponent {
           isFeatured: raw.isFeatured,
           yearsOfExperience: raw.yearsOfExperience ?? undefined,
           displayOrder: raw.displayOrder,
-          iconUrl: raw.iconUrl || undefined,
+          iconId: this.iconId() ?? undefined,
           proficiencyNote: raw.proficiencyNote || undefined,
         })
         .subscribe({

@@ -63,9 +63,14 @@ export const CertificationsArraySchema = z.array(CertificationSchema).max(50);
 
 // --- Resume URLs Schema ---
 
+const ResumeEntrySchema = z.object({
+  url: z.url(),
+  name: z.string().min(1),
+});
+
 export const ResumeUrlsSchema = z.object({
-  en: z.url().optional(),
-  vi: z.url().optional(),
+  en: ResumeEntrySchema.optional(),
+  vi: ResumeEntrySchema.optional(),
 });
 
 // --- OpenTo Schema ---

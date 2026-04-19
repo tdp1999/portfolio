@@ -9,3 +9,4 @@ export { ThemeService } from './lib/theme.service';
 export type { Theme } from './lib/theme.service';
 export { UnreadBadgeService } from './lib/unread-badge.service';
 export { MediaService } from './lib/media/media.service';
+export type { MediaMimeGroup } from '@portfolio/console/shared/util';

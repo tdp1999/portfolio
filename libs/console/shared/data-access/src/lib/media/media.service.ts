@@ -23,6 +23,7 @@ export class MediaService {
     };
     if (params.search) queryParams['search'] = params.search;
     if (params.mimeTypePrefix) queryParams['mimeTypePrefix'] = params.mimeTypePrefix;
+    if (params.mimeGroup) queryParams['mimeGroup'] = params.mimeGroup;
     if (params.folder) queryParams['folder'] = params.folder;
     if (params.sort) queryParams['sort'] = params.sort;
     return this.api.get<MediaListResponse>('/media', { params: queryParams });
@@ -44,11 +45,12 @@ export class MediaService {
     return this.api.get<MediaListResponse>('/media/trash', { params: queryParams });
   }
 
-  upload(file: File, metadata?: { altText?: string; caption?: string }) {
+  upload(file: File, options?: { folder?: string; altText?: string; caption?: string }) {
     const formData = new FormData();
     formData.append('file', file);
-    if (metadata?.altText) formData.append('altText', metadata.altText);
-    if (metadata?.caption) formData.append('caption', metadata.caption);
+    if (options?.folder) formData.append('folder', options.folder);
+    if (options?.altText) formData.append('altText', options.altText);
+    if (options?.caption) formData.append('caption', options.caption);
     return this.http
       .post(this.buildUrl('/media/upload'), formData, {
         withCredentials: true,

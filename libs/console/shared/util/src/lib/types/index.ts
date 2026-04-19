@@ -8,6 +8,7 @@ export type {
   BulkUploadResult,
   MediaSort,
   MediaFolder,
+  MediaMimeGroup,
   MediaListParams,
   UpdateMediaPayload,
 } from './media';

@@ -2,10 +2,11 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MediaService } from '@portfolio/console/shared/data-access';
-import type { MediaFolder, MediaItem, MediaSort } from '@portfolio/console/shared/util';
+import type { MediaFolder, MediaItem, MediaMimeGroup, MediaSort } from '@portfolio/console/shared/util';
 import { DEFAULT_PAGE_SIZE, MEDIA_PICKER_MIN_LOADING_MS } from '@portfolio/console/shared/util';
 import { catchError, finalize, forkJoin, map, of, startWith, switchMap } from 'rxjs';
 import { AssetFilterBarComponent } from '../asset-filter-bar/asset-filter-bar.component';
@@ -13,6 +14,8 @@ import {
   DEFAULT_SORT,
   type MimeGroup,
   type SortOption,
+  UPLOAD_FOLDERS,
+  UPLOAD_FOLDER_LABELS,
   type UploadFolder,
 } from '../asset-filter-bar/asset-filter-bar.types';
 import { AssetGridComponent } from '../asset-grid/asset-grid.component';
@@ -24,12 +27,6 @@ import { MediaPickerDialogData, MediaPickerDialogResult } from './media-picker-d
 import { pushRecentIds, readRecentIds, readViewMode, writeViewMode } from './picker-storage.util';
 import { RecentlyUsedStripComponent } from './recently-used-strip.component';
 
-const MIME_GROUP_TO_PREFIX: Partial<Record<MimeGroup, string>> = {
-  image: 'image/',
-  video: 'video/',
-  pdf: 'application/pdf',
-};
-
 @Component({
   selector: 'console-media-picker-dialog',
   standalone: true,
@@ -38,7 +35,9 @@ const MIME_GROUP_TO_PREFIX: Partial<Record<MimeGroup, string>> = {
     MatDialogContent,
     MatDialogActions,
     MatButtonModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatSelectModule,
     MatTabsModule,
     AssetGridComponent,
     AssetFilterBarComponent,
@@ -55,7 +54,6 @@ const MIME_GROUP_TO_PREFIX: Partial<Record<MimeGroup, string>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MediaPickerDialogComponent implements OnInit {
-  private readonly mediaService = inject(MediaService);
   private readonly dialogRef = inject(MatDialogRef<MediaPickerDialogComponent, MediaPickerDialogResult>);
   private readonly matDialog = inject(MatDialog);
   readonly data = inject<MediaPickerDialogData>(MAT_DIALOG_DATA);
@@ -70,6 +68,10 @@ export default class MediaPickerDialogComponent implements OnInit {
   readonly viewMode = signal<AssetGridViewMode>('grid');
   readonly uploadsInProgress = signal(0);
   readonly highlightActive = signal(false);
+  readonly uploadFolder = signal<UploadFolder>(this.data.defaultFolder ?? 'general');
+
+  readonly uploadFolders = UPLOAD_FOLDERS;
+  readonly uploadFolderLabels = UPLOAD_FOLDER_LABELS;
 
   readonly search = signal('');
   readonly mimeGroup = signal<MimeGroup | null>(null);
@@ -86,8 +88,8 @@ export default class MediaPickerDialogComponent implements OnInit {
 
   readonly uploadFn: UploadFn = (file) => {
     this.uploadsInProgress.update((n) => n + 1);
-    return this.mediaService.upload(file).pipe(
-      switchMap(({ id }) => this.mediaService.getById(id)),
+    return this.data.dataSource.upload(file, this.uploadFolder()).pipe(
+      switchMap(({ id }) => this.data.dataSource.getById(id)),
       map((result): UploadProgress => ({ progress: 100, result })),
       startWith<UploadProgress>({ progress: 0 }),
       finalize(() => this.uploadsInProgress.update((n) => Math.max(0, n - 1)))
@@ -97,6 +99,9 @@ export default class MediaPickerDialogComponent implements OnInit {
   ngOnInit(): void {
     if (this.data.selectedIds?.length) {
       this.selected.set(new Set(this.data.selectedIds));
+    }
+    if (this.data.defaultFolder) {
+      this.folder.set(this.data.defaultFolder);
     }
     this.viewMode.set(readViewMode());
 
@@ -245,12 +250,15 @@ export default class MediaPickerDialogComponent implements OnInit {
       if (remaining > 0) setTimeout(finish, remaining);
       else finish();
     };
-    this.mediaService
+    this.data.dataSource
       .list({
         page: this.page(),
         limit: DEFAULT_PAGE_SIZE,
         search: this.search() || undefined,
-        mimeTypePrefix: this.resolveMimePrefix(),
+        mimeTypePrefix: this.data.mimeFilter && !this.data.mimeGroup ? this.data.mimeFilter : undefined,
+        mimeGroup:
+          this.data.mimeGroup ??
+          (this.data.mimeFilter ? undefined : ((this.mimeGroup() as MediaMimeGroup | null) ?? undefined)),
         folder: this.folder() ? (this.folder() as MediaFolder) : undefined,
         sort: this.sort() as MediaSort,
       })
@@ -270,14 +278,10 @@ export default class MediaPickerDialogComponent implements OnInit {
       this.recentItems.set([]);
       return;
     }
-    forkJoin(ids.map((id) => this.mediaService.getById(id).pipe(catchError(() => of(null))))).subscribe((results) => {
-      this.recentItems.set(results.filter((x): x is MediaItem => x !== null));
-    });
-  }
-
-  private resolveMimePrefix(): string | undefined {
-    if (this.data.mimeFilter) return this.data.mimeFilter;
-    const group = this.mimeGroup();
-    return group ? MIME_GROUP_TO_PREFIX[group] : undefined;
+    forkJoin(ids.map((id) => this.data.dataSource.getById(id).pipe(catchError(() => of(null))))).subscribe(
+      (results) => {
+        this.recentItems.set(results.filter((x): x is MediaItem => x !== null));
+      }
+    );
   }
 }

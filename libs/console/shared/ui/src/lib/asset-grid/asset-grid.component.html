@@ -49,6 +49,7 @@
           [attr.role]="itemRole()"
           [attr.aria-selected]="selected"
           [attr.aria-label]="item.originalFilename"
+          [attr.data-media-id]="item.id"
           [tabindex]="focusedIndex() === idx ? 0 : -1"
           (click)="onItemClick(item, idx)"
           (dblclick)="onItemDblClick(item)"
@@ -94,6 +95,7 @@
             }
             <span class="asset-grid__row-name">{{ item.originalFilename }}</span>
             <span class="asset-grid__row-meta text-text-muted">{{ item.bytes | readableSize }}</span>
+            <span class="asset-grid__row-meta text-text-muted">{{ item.folder ?? '—' }}</span>
             <span class="asset-grid__row-meta text-text-muted">{{ item.createdAt | date: 'mediumDate' }}</span>
             <span class="asset-grid__row-meta text-text-muted">{{ item.mimeType }}</span>
             @if (mode() === 'multi') {

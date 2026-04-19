@@ -1,4 +1,4 @@
-import { OptionalTranslatableJson, TranslatableJson } from '@portfolio/shared/types';
+import { OptionalTranslatableJson, ResumeUrls, TranslatableJson } from '@portfolio/shared/types';
 import { PROFILE_SECTIONS } from './profile.data';
 
 // ── Full admin profile response (GET /admin/profile) ───────────────────────
@@ -22,7 +22,7 @@ export interface ProfileAdminResponse {
   locationAddress1: string | null;
   locationAddress2: string | null;
   socialLinks: Array<{ platform: string; url: string; handle?: string }>;
-  resumeUrls: OptionalTranslatableJson;
+  resumeUrls: ResumeUrls;
   certifications: Array<{ name: string; issuer: string; year: number; url?: string }>;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -67,7 +67,7 @@ export interface UpdateLocationPayload {
 
 export interface UpdateSocialLinksPayload {
   socialLinks: Array<{ platform: string; url: string; handle?: string }>;
-  resumeUrls: OptionalTranslatableJson;
+  resumeUrls: ResumeUrls;
   certifications: Array<{ name: string; issuer: string; year: number; url?: string }>;
 }
 

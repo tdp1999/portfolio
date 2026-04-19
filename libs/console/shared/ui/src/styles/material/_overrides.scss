@@ -92,6 +92,7 @@
       headline-padding: 16px 20px 8px,
       content-padding: 16px 20px,
       actions-padding: 12px 20px,
+      with-actions-content-padding: 16px,
     )
   );
 }
@@ -147,6 +148,10 @@
 .mat-mdc-menu-panel {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
+}
+
+.mat-mdc-dialog-content {
+  padding-top: 12px !important;
 }
 
 /* Filter field — compact dark style inside filter bars */

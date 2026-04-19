@@ -10,6 +10,7 @@ export interface AdminSkill {
   isLibrary: boolean;
   parentSkillId: string | null;
   yearsOfExperience: number | null;
+  iconId: string | null;
   iconUrl: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;
@@ -32,7 +33,7 @@ export interface CreateSkillPayload {
   isLibrary?: boolean;
   parentSkillId?: string;
   yearsOfExperience?: number;
-  iconUrl?: string;
+  iconId?: string;
   proficiencyNote?: string;
   isFeatured?: boolean;
   displayOrder?: number;
@@ -45,7 +46,7 @@ export interface UpdateSkillPayload {
   isLibrary?: boolean;
   parentSkillId?: string | null;
   yearsOfExperience?: number | null;
-  iconUrl?: string | null;
+  iconId?: string | null;
   proficiencyNote?: string | null;
   isFeatured?: boolean;
   displayOrder?: number;

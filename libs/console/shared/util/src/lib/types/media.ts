@@ -11,6 +11,7 @@ export interface MediaItem {
   height: number | null;
   altText: string | null;
   caption: string | null;
+  folder: string | null;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -44,13 +45,16 @@ export interface BulkUploadResult {
 
 export type MediaSort = 'createdAt_desc' | 'createdAt_asc' | 'filename_asc' | 'bytes_desc';
 
-export type MediaFolder = 'avatars' | 'projects' | 'posts' | 'logos' | 'resumes' | 'general';
+export type MediaFolder = 'avatars' | 'projects' | 'posts' | 'logos' | 'resumes' | 'skills' | 'general';
+
+export type MediaMimeGroup = 'image' | 'video' | 'pdf' | 'doc' | 'archive';
 
 export interface MediaListParams {
   page: number;
   limit: number;
   search?: string;
   mimeTypePrefix?: string;
+  mimeGroup?: MediaMimeGroup;
   folder?: MediaFolder;
   sort?: MediaSort;
 }

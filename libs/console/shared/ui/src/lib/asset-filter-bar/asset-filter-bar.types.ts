@@ -6,7 +6,7 @@ export type SortOption = (typeof SORT_OPTIONS)[number];
 
 export const DEFAULT_SORT: SortOption = 'createdAt_desc';
 
-export const UPLOAD_FOLDERS = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'general'] as const;
+export const UPLOAD_FOLDERS = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'skills', 'general'] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 export const MIME_GROUP_LABELS: Record<MimeGroup, string> = {
@@ -30,5 +30,6 @@ export const UPLOAD_FOLDER_LABELS: Record<UploadFolder, string> = {
   posts: 'Posts',
   logos: 'Logos',
   resumes: 'Resumes',
+  skills: 'Skills',
   general: 'General',
 };

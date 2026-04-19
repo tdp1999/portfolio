@@ -35,8 +35,8 @@
               <button
                 type="button"
                 class="media-trigger media-trigger--avatar"
-                [disabled]="avatarUploading()"
-                (click)="avatarInput.click()"
+                [disabled]="avatarSaving()"
+                (click)="openAvatarPicker()"
               >
                 @if (avatarPreview(); as src) {
                   <img [src]="src" alt="Avatar preview" />
@@ -44,11 +44,7 @@
                   <div class="media-default"><mat-icon>person</mat-icon></div>
                 }
                 <div class="media-overlay">
-                  @if (avatarUploading()) {
-                    <mat-spinner diameter="24" />
-                  } @else {
-                    <mat-icon>photo_camera</mat-icon>
-                  }
+                  <mat-icon>photo_camera</mat-icon>
                 </div>
               </button>
               @if (avatarPreview()) {
@@ -56,7 +52,6 @@
                   Remove photo
                 </button>
               }
-              <input #avatarInput type="file" class="hidden" accept="image/*" (change)="onAvatarFileSelected($event)" />
             </div>
           </div>
 
@@ -287,8 +282,37 @@
           </div>
 
           <div class="subsection">
-            <h4 class="text-card-title">Resume URLs</h4>
-            <console-translatable-group [group]="socialLinksForm.controls.resumeUrls" label="Resume URL" />
+            <h4 class="text-card-title">Resume</h4>
+            <div class="resume-rows">
+              @for (locale of resumeLocales; track locale.key) {
+                @let ctrl = socialLinksForm.controls.resumeUrls.controls[locale.key];
+                <div class="resume-row">
+                  <span class="locale-badge">{{ locale.label }}</span>
+                  <span class="resume-url-preview text-body">
+                    @if (ctrl.value; as url) {
+                      @let label = resumeNames()[locale.key] ?? url;
+                      <a [href]="url" target="_blank" rel="noopener" class="resume-link" [title]="label">
+                        {{ label }}
+                      </a>
+                    } @else {
+                      <span class="text-text-secondary">No file selected</span>
+                    }
+                  </span>
+                  <button mat-stroked-button type="button" (click)="openResumePicker(locale.key)">Change</button>
+                  @if (ctrl.value) {
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      type="button"
+                      matTooltip="Remove"
+                      (click)="clearResumeUrl(locale.key)"
+                    >
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
           </div>
 
           <div class="subsection">
@@ -304,34 +328,62 @@
               @for (control of certificationsArray.controls; track $index) {
                 @let certGroup = asFormGroup(control);
                 <div [formGroup]="certGroup" class="cert-row">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Name</mat-label>
-                    <input matInput formControlName="name" />
-                    <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Issuer</mat-label>
-                    <input matInput formControlName="issuer" />
-                    <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="w-24">
-                    <mat-label>Year</mat-label>
-                    <input matInput type="number" formControlName="year" min="1990" max="2100" />
-                    <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>URL</mat-label>
-                    <input matInput formControlName="url" placeholder="https://" />
-                  </mat-form-field>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    type="button"
-                    matTooltip="Remove"
-                    (click)="removeCertification($index)"
-                  >
-                    <mat-icon>delete_outline</mat-icon>
-                  </button>
+                  <div class="cert-fields">
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>Name</mat-label>
+                      <input matInput formControlName="name" />
+                      <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>Issuer</mat-label>
+                      <input matInput formControlName="issuer" />
+                      <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-24">
+                      <mat-label>Year</mat-label>
+                      <input matInput type="number" formControlName="year" min="1990" max="2100" />
+                      <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
+                    </mat-form-field>
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      type="button"
+                      matTooltip="Remove"
+                      (click)="removeCertification($index)"
+                    >
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                  <div class="cert-url-row">
+                    <mat-button-toggle-group
+                      class="cert-mode-toggle"
+                      [value]="certModes()[$index]"
+                      (change)="setCertMode($index, $event.value)"
+                    >
+                      <mat-button-toggle value="link">Link</mat-button-toggle>
+                      <mat-button-toggle value="file">File</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    @if (certModes()[$index] === 'file') {
+                      <div class="cert-file-area">
+                        @if (certGroup.controls['url'].value; as url) {
+                          <a [href]="url" target="_blank" rel="noopener" class="cert-file-link">
+                            <mat-icon>picture_as_pdf</mat-icon>
+                            <span>{{ certFileLabel(url) }}</span>
+                          </a>
+                        } @else {
+                          <span class="text-body text-text-secondary">No file selected</span>
+                        }
+                        <button mat-stroked-button type="button" (click)="openCertPicker($index)">
+                          <mat-icon>upload_file</mat-icon> Choose file
+                        </button>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="flex-1">
+                        <mat-label>URL</mat-label>
+                        <input matInput formControlName="url" placeholder="https://" />
+                      </mat-form-field>
+                    }
+                  </div>
                 </div>
               }
               @if (certificationsArray.length === 0) {
@@ -362,8 +414,8 @@
               <button
                 type="button"
                 class="media-trigger media-trigger--og"
-                [disabled]="ogImageUploading()"
-                (click)="ogImageInput.click()"
+                [disabled]="ogImageSaving()"
+                (click)="openOgImagePicker()"
               >
                 @if (ogImagePreview(); as src) {
                   <img [src]="src" alt="OG image preview" />
@@ -371,11 +423,7 @@
                   <div class="media-default"><mat-icon>image</mat-icon></div>
                 }
                 <div class="media-overlay">
-                  @if (ogImageUploading()) {
-                    <mat-spinner diameter="24" />
-                  } @else {
-                    <mat-icon>photo_camera</mat-icon>
-                  }
+                  <mat-icon>photo_camera</mat-icon>
                 </div>
               </button>
               @if (ogImagePreview()) {
@@ -383,13 +431,6 @@
                   Remove image
                 </button>
               }
-              <input
-                #ogImageInput
-                type="file"
-                class="hidden"
-                accept="image/*"
-                (change)="onOgImageFileSelected($event)"
-              />
             </div>
           </div>
 

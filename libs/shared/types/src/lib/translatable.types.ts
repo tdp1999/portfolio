@@ -47,9 +47,14 @@ export interface Certification {
   url?: string;
 }
 
+export interface ResumeEntry {
+  url: string;
+  name: string;
+}
+
 export interface ResumeUrls {
-  en?: string;
-  vi?: string;
+  en?: ResumeEntry;
+  vi?: ResumeEntry;
 }
 
 export const OPEN_TO_VALUE = {

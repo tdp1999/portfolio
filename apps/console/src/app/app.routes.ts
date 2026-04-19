@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
-import { ConsoleMainLayoutComponent } from '@portfolio/console/shared/ui';
+import { LayoutShellComponent } from './layout-shell';
 import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 import { environment } from '../environments/environment';
 
@@ -20,7 +20,7 @@ export const appRoutes: Route[] = [
   // Main routes — sidebar layout
   {
     path: '',
-    component: ConsoleMainLayoutComponent,
+    component: LayoutShellComponent,
     canActivate: [authGuard],
     children: [
       { path: '', loadComponent: () => import('./pages/home/home') },
