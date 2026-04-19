@@ -15,12 +15,6 @@ const SkillDescriptionSchema = z
   .max(1000)
   .transform((v) => stripHtmlTags(v.trim()));
 
-const SkillIconUrlSchema = z
-  .string()
-  .min(1)
-  .max(500)
-  .transform((v) => v.trim());
-
 const SkillProficiencyNoteSchema = z
   .string()
   .min(1)
@@ -34,7 +28,7 @@ export const CreateSkillSchema = z.object({
   isLibrary: z.boolean().default(false),
   parentSkillId: z.uuid().optional(),
   yearsOfExperience: z.number().int().min(0).max(50).optional(),
-  iconUrl: SkillIconUrlSchema.optional(),
+  iconId: z.uuid().optional(),
   proficiencyNote: SkillProficiencyNoteSchema.optional(),
   isFeatured: z.boolean().default(false),
   displayOrder: z.number().int().default(0),
@@ -47,7 +41,7 @@ const UpdateSkillFieldsSchema = z.object({
   isLibrary: z.boolean(),
   parentSkillId: z.uuid().nullable(),
   yearsOfExperience: z.number().int().min(0).max(50).nullable(),
-  iconUrl: SkillIconUrlSchema.nullable(),
+  iconId: z.uuid().nullable(),
   proficiencyNote: SkillProficiencyNoteSchema.nullable(),
   isFeatured: z.boolean(),
   displayOrder: z.number().int(),
@@ -76,6 +70,7 @@ export type SkillResponseDto = {
   isLibrary: boolean;
   parentSkillId: string | null;
   yearsOfExperience: number | null;
+  iconId: string | null;
   iconUrl: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;

@@ -21,6 +21,7 @@ describe('Skill Queries', () => {
     isLibrary: false,
     parentSkillId: null,
     yearsOfExperience: null,
+    iconId: null,
     iconUrl: null,
     proficiencyNote: null,
     isFeatured: false,

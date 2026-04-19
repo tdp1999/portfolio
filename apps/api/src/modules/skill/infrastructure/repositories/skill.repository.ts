@@ -40,7 +40,7 @@ export class SkillRepository implements ISkillRepository {
           isLibrary: skill.isLibrary,
           parentSkillId: skill.parentSkillId,
           yearsOfExperience: skill.yearsOfExperience,
-          iconUrl: skill.iconUrl,
+          iconId: skill.iconId,
           proficiencyNote: skill.proficiencyNote,
           isFeatured: skill.isFeatured,
           displayOrder: skill.displayOrder,
@@ -70,12 +70,12 @@ export class SkillRepository implements ISkillRepository {
   }
 
   async findById(id: string): Promise<Skill | null> {
-    const raw = await this.prisma.skill.findFirst({ where: { id, deletedAt: null } });
+    const raw = await this.prisma.skill.findFirst({ where: { id, deletedAt: null }, include: { icon: true } });
     return raw ? SkillMapper.toDomain(raw) : null;
   }
 
   async findBySlug(slug: string): Promise<Skill | null> {
-    const raw = await this.prisma.skill.findFirst({ where: { slug, deletedAt: null } });
+    const raw = await this.prisma.skill.findFirst({ where: { slug, deletedAt: null }, include: { icon: true } });
     return raw ? SkillMapper.toDomain(raw) : null;
   }
 
@@ -87,6 +87,7 @@ export class SkillRepository implements ISkillRepository {
   async findByCategory(category: SkillCategory): Promise<Skill[]> {
     const raw = await this.prisma.skill.findMany({
       where: { category, deletedAt: null },
+      include: { icon: true },
       orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
     });
     return raw.map(SkillMapper.toDomain);
@@ -95,6 +96,7 @@ export class SkillRepository implements ISkillRepository {
   async findChildren(parentId: string): Promise<Skill[]> {
     const raw = await this.prisma.skill.findMany({
       where: { parentSkillId: parentId, deletedAt: null },
+      include: { icon: true },
       orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
     });
     return raw.map(SkillMapper.toDomain);
@@ -110,6 +112,7 @@ export class SkillRepository implements ISkillRepository {
   async findAllNoLimit(): Promise<Skill[]> {
     const raw = await this.prisma.skill.findMany({
       where: { deletedAt: null },
+      include: { icon: true },
       orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
     });
     return raw.map(SkillMapper.toDomain);
@@ -141,6 +144,7 @@ export class SkillRepository implements ISkillRepository {
     const [data, total] = await Promise.all([
       this.prisma.skill.findMany({
         where,
+        include: { icon: true },
         skip: (page - 1) * limit,
         take: limit,
         orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],

@@ -22,6 +22,7 @@ describe('Skill Commands', () => {
     isLibrary: false,
     parentSkillId: null,
     yearsOfExperience: null,
+    iconId: null,
     iconUrl: null,
     proficiencyNote: null,
     isFeatured: false,

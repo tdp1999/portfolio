@@ -14,7 +14,8 @@ describe('Skill Entity', () => {
     isLibrary: false,
     parentSkillId: null,
     yearsOfExperience: 5,
-    iconUrl: 'https://example.com/ts.svg',
+    iconId: '550e8400-e29b-41d4-a716-446655440099',
+    iconUrl: 'https://cdn.example.com/ts.svg',
     proficiencyNote: 'Advanced',
     isFeatured: true,
     displayOrder: 1,
@@ -54,13 +55,13 @@ describe('Skill Entity', () => {
       const skill = Skill.load(validProps);
 
       const updated = skill.update(
-        { description: null, yearsOfExperience: null, iconUrl: null, proficiencyNote: null },
+        { description: null, yearsOfExperience: null, iconId: null, proficiencyNote: null },
         userId
       );
 
       expect(updated.description).toBeNull();
       expect(updated.yearsOfExperience).toBeNull();
-      expect(updated.iconUrl).toBeNull();
+      expect(updated.iconId).toBeNull();
       expect(updated.proficiencyNote).toBeNull();
     });
   });

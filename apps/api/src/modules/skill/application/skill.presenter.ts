@@ -12,6 +12,7 @@ export class SkillPresenter {
       isLibrary: skill.isLibrary,
       parentSkillId: skill.parentSkillId,
       yearsOfExperience: skill.yearsOfExperience,
+      iconId: skill.iconId,
       iconUrl: skill.iconUrl,
       proficiencyNote: skill.proficiencyNote,
       isFeatured: skill.isFeatured,

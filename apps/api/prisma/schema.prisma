@@ -232,7 +232,7 @@ model Skill {
   isLibrary         Boolean       @default(false)
   parentSkillId     String?       @db.Uuid
   yearsOfExperience Int?
-  iconUrl           String?
+  iconId            String?       @db.Uuid
   proficiencyNote   String?
   isFeatured        Boolean       @default(false)
   displayOrder      Int           @default(0)
@@ -245,6 +245,7 @@ model Skill {
 
   parentSkill  Skill?           @relation("SkillParent", fields: [parentSkillId], references: [id])
   childSkills  Skill[]          @relation("SkillParent")
+  icon         Media?           @relation("SkillIcon", fields: [iconId], references: [id])
   createdBy    User             @relation("SkillCreatedBy", fields: [createdById], references: [id])
   updatedBy    User             @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
   deletedBy    User?            @relation("SkillDeletedBy", fields: [deletedById], references: [id])
@@ -266,6 +267,7 @@ model Media {
   height           Int?
   altText          String?
   caption          String?
+  folder           String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   createdById      String    @db.Uuid
@@ -287,6 +289,9 @@ model Media {
   // Project relations
   projectThumbnails ProjectImage[] @relation("ProjectImageMedia")
   projectCovers     Project[]      @relation("ProjectThumbnail")
+
+  // Skill relations
+  skillIcons  Skill[] @relation("SkillIcon")
 
   // BlogPost relations
   postFeaturedImages BlogPost[] @relation("PostFeaturedImage")

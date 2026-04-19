@@ -11,6 +11,7 @@ export interface ISkillProps extends IBaseAuditProps {
   parentSkillId: string | null;
   yearsOfExperience: number | null;
   iconUrl: string | null;
+  iconId: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;
@@ -22,7 +23,7 @@ export interface ICreateSkillPayload {
   description?: string;
   isLibrary?: boolean;
   yearsOfExperience?: number;
-  iconUrl?: string;
+  iconId?: string;
   proficiencyNote?: string;
   isFeatured?: boolean;
   displayOrder?: number;
@@ -34,7 +35,7 @@ export interface IUpdateSkillPayload {
   category?: SkillCategory;
   isLibrary?: boolean;
   yearsOfExperience?: number | null;
-  iconUrl?: string | null;
+  iconId?: string | null;
   proficiencyNote?: string | null;
   isFeatured?: boolean;
   displayOrder?: number;
