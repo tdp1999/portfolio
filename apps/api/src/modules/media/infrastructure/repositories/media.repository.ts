@@ -145,24 +145,33 @@ export class MediaRepository implements IMediaRepository {
   }
 
   async findAll(options: MediaFindAllOptions): Promise<PaginatedResult<Media>> {
-    const { page, limit, search, includeDeleted, mimeTypePrefix, folder, sort } = options;
+    const { page, limit, search, includeDeleted, mimeTypePrefix, mimeTypes, folder, sort } = options;
     const where: Prisma.MediaWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (search) {
-      where.OR = [
-        { originalFilename: { contains: search, mode: 'insensitive' } },
-        { altText: { contains: search, mode: 'insensitive' } },
-        { caption: { contains: search, mode: 'insensitive' } },
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        {
+          OR: [
+            { originalFilename: { contains: search, mode: 'insensitive' } },
+            { altText: { contains: search, mode: 'insensitive' } },
+            { caption: { contains: search, mode: 'insensitive' } },
+          ],
+        },
       ];
     }
 
-    if (mimeTypePrefix) {
-      where.mimeType = { startsWith: mimeTypePrefix };
+    if (mimeTypes?.length) {
+      where.AND = [...(Array.isArray(where.AND) ? where.AND : []), { mimeType: { in: mimeTypes } }];
+    } else if (mimeTypePrefix?.length) {
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        { OR: mimeTypePrefix.map((prefix) => ({ mimeType: { startsWith: prefix } })) },
+      ];
     }
 
     if (folder) {
-      // Folder is encoded in Cloudinary publicId as `portfolio/{folder}/...`
-      where.publicId = { startsWith: `portfolio/${folder}/` };
+      where.folder = folder;
     }
 
     const [data, total] = await Promise.all([

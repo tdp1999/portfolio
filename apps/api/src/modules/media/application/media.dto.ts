@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import { stripHtmlTags, nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
-import { UPLOAD_FOLDERS } from './media.constants';
+import { MEDIA_MIME_GROUPS, UPLOAD_FOLDERS } from './media.constants';
 
 const AltTextSchema = z
   .string()
@@ -32,7 +32,17 @@ export const MediaSortSchema = z
   .default('createdAt_desc');
 
 export const ListMediaSchema = PaginatedQuerySchema.extend({
-  mimeTypePrefix: z.string().optional(),
+  mimeTypePrefix: z
+    .string()
+    .transform((v) =>
+      v
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((p) => (p.endsWith('/') ? p : `${p}/`))
+    )
+    .optional(),
+  mimeGroup: z.enum(MEDIA_MIME_GROUPS).optional(),
   folder: z.enum(UPLOAD_FOLDERS).optional(),
   sort: MediaSortSchema.optional(),
   includeDeleted: z.coerce.boolean().optional(),
@@ -46,6 +56,7 @@ export type CreateMediaDto = z.infer<typeof CreateMediaSchema>;
 export type UpdateMediaMetadataDto = z.infer<typeof UpdateMediaMetadataSchema>;
 export type ListMediaDto = z.infer<typeof ListMediaSchema>;
 export type MediaSort = z.infer<typeof MediaSortSchema>;
+export type { MediaMimeGroup } from './media.constants';
 export type BulkDeleteDto = z.infer<typeof BulkDeleteSchema>;
 
 export type StorageStatsDto = {
@@ -65,6 +76,7 @@ export type MediaResponseDto = {
   height: number | null;
   altText: string | null;
   caption: string | null;
+  folder: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

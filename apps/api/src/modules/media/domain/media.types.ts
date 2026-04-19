@@ -11,6 +11,7 @@ export interface IMediaProps extends IBaseAuditProps {
   height: number | null;
   altText: string | null;
   caption: string | null;
+  folder: string | null;
 }
 
 export interface ICreateMediaPayload {
@@ -24,6 +25,7 @@ export interface ICreateMediaPayload {
   height?: number | null;
   altText?: string;
   caption?: string;
+  folder?: string | null;
 }
 
 export interface IUpdateMediaMetadataPayload {

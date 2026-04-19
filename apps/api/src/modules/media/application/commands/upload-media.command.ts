@@ -72,6 +72,7 @@ export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
         height: storageResult.height,
         altText: data.altText,
         caption: data.caption,
+        folder: data.folder,
       },
       command.userId
     );

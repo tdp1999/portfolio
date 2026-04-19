@@ -14,6 +14,7 @@ export class MediaPresenter {
       height: media.height,
       altText: media.altText,
       caption: media.caption,
+      folder: media.folder,
       createdAt: media.createdAt,
       updatedAt: media.updatedAt,
     };

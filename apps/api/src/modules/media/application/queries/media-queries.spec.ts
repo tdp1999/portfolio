@@ -24,6 +24,7 @@ describe('Media Queries', () => {
     height: 600,
     altText: 'A photo',
     caption: null,
+    folder: 'general',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -72,7 +73,7 @@ describe('Media Queries', () => {
 
       await handler.execute(new ListMediaQuery({ mimeTypePrefix: 'image' }));
 
-      expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ mimeTypePrefix: 'image' }));
+      expect(repo.findAll).toHaveBeenCalledWith(expect.objectContaining({ mimeTypePrefix: ['image/'] }));
     });
 
     it('should pass search filter to repo', async () => {
@@ -114,7 +115,7 @@ describe('Media Queries', () => {
       expect(repo.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
           search: 'hero',
-          mimeTypePrefix: 'image',
+          mimeTypePrefix: ['image'],
           folder: 'posts',
           sort: 'bytes_desc',
         })
@@ -141,6 +142,105 @@ describe('Media Queries', () => {
 
     it('should throw on invalid sort value', async () => {
       await expect(handler.execute(new ListMediaQuery({ sort: 'weird_sort' }))).rejects.toMatchObject({
+        statusCode: 400,
+      });
+    });
+
+    it('should translate mimeGroup=image to exact image MIME types', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'image' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: expect.arrayContaining(['image/jpeg', 'image/png', 'image/webp']),
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should translate mimeGroup=doc to all doc MIME types', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'doc' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: expect.arrayContaining([
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'text/plain',
+            'text/csv',
+          ]),
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should translate mimeGroup=archive to all archive MIME types', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'archive' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: expect.arrayContaining([
+            'application/zip',
+            'application/x-rar-compressed',
+            'application/x-7z-compressed',
+            'application/x-tar',
+            'application/gzip',
+          ]),
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should translate mimeGroup=pdf to application/pdf only', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'pdf' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: ['application/pdf'],
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should translate mimeGroup=video to exact video MIME types', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'video' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: expect.arrayContaining(['video/mp4', 'video/webm']),
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should ignore mimeTypePrefix when mimeGroup is present (mimeGroup wins)', async () => {
+      repo.findAll.mockResolvedValue({ data: [], total: 0 });
+
+      await handler.execute(new ListMediaQuery({ mimeGroup: 'image', mimeTypePrefix: 'video/' }));
+
+      expect(repo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeTypes: expect.arrayContaining(['image/jpeg']),
+          mimeTypePrefix: undefined,
+        })
+      );
+    });
+
+    it('should throw on invalid mimeGroup value', async () => {
+      await expect(handler.execute(new ListMediaQuery({ mimeGroup: 'spreadsheet' }))).rejects.toMatchObject({
         statusCode: 400,
       });
     });

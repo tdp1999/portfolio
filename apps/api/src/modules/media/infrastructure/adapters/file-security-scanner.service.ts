@@ -13,6 +13,7 @@ const MAGIC_BYTES: Record<string, { bytes: number[]; offset?: number }[]> = {
   'image/avif': [{ bytes: [0x66, 0x74, 0x79, 0x70], offset: 4 }],
   'application/pdf': [{ bytes: [0x25, 0x50, 0x44, 0x46] }],
   'application/zip': [{ bytes: [0x50, 0x4b, 0x03, 0x04] }],
+  'application/msword': [{ bytes: [0xd0, 0xcf, 0x11, 0xe0] }],
   'video/mp4': [{ bytes: [0x66, 0x74, 0x79, 0x70], offset: 4 }],
   'video/webm': [{ bytes: [0x1a, 0x45, 0xdf, 0xa3] }],
 };
@@ -82,17 +83,25 @@ export class FileSecurityScanner implements ISecurityScanner {
     while (sanitized.includes('../') || sanitized.includes('..\\')) {
       sanitized = sanitized.replace(/\.\.\//g, '').replace(/\.\.\\/g, '');
     }
-    return sanitized
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
-      .replace(/\s+/g, '_')
-      .trim();
+    return (
+      sanitized
+        // eslint-disable-next-line no-control-regex
+        .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+        .replace(/\s+/g, '_')
+        .trim()
+    );
   }
 
   private detectMimeType(file: Buffer, declaredMimeType: string): string {
     // SVG is text-based, no magic bytes
     if (declaredMimeType === 'image/svg+xml') {
-      const text = file.subarray(0, 256).toString('utf-8');
-      if (text.includes('<svg') || text.includes('<?xml')) {
+      const rawText = file.subarray(0, 256).toString('utf-8');
+      // Strip UTF-8 BOM and leading whitespace before checking SVG markers
+      const cleanText = rawText
+        .replace(/^\uFEFF/, '')
+        .replace(/\0/g, '')
+        .trimStart();
+      if (cleanText.includes('<svg') || cleanText.includes('<?xml')) {
         return 'image/svg+xml';
       }
       return 'unknown';
@@ -100,6 +109,11 @@ export class FileSecurityScanner implements ISecurityScanner {
 
     // Text/markdown — no magic bytes
     if (declaredMimeType === 'text/plain' || declaredMimeType === 'text/markdown') {
+      return declaredMimeType;
+    }
+
+    // ZIP-based documents must be checked before generic magic bytes — docx/xlsx are ZIPs
+    if (this.isZip(file) && ZIP_BASED_MIMES.includes(declaredMimeType)) {
       return declaredMimeType;
     }
 
@@ -111,11 +125,6 @@ export class FileSecurityScanner implements ISecurityScanner {
       if (matches) {
         return mime;
       }
-    }
-
-    // ZIP-based documents
-    if (this.isZip(file) && ZIP_BASED_MIMES.includes(declaredMimeType)) {
-      return declaredMimeType;
     }
 
     return 'unknown';

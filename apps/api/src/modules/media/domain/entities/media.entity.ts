@@ -48,6 +48,10 @@ export class Media extends BaseCrudEntity<IMediaProps> {
     return this.props.caption;
   }
 
+  get folder(): string | null {
+    return this.props.folder;
+  }
+
   static create(data: ICreateMediaPayload, userId: string): Media {
     return new Media({
       ...BaseCrudEntity.createBaseProps(userId),
@@ -61,6 +65,7 @@ export class Media extends BaseCrudEntity<IMediaProps> {
       height: data.height ?? null,
       altText: data.altText ?? null,
       caption: data.caption ?? null,
+      folder: data.folder ?? null,
     });
   }
 

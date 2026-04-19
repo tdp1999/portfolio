@@ -2,6 +2,7 @@ export const ALLOWED_MIME_TYPES = {
   images: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/avif'],
   documents: [
     'application/pdf',
+    'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'text/markdown',
@@ -27,6 +28,7 @@ export const MAX_FILE_SIZES: Record<string, number> = {
   'image/svg+xml': 5 * 1024 * 1024,
   'image/avif': 5 * 1024 * 1024,
   'application/pdf': 10 * 1024 * 1024,
+  'application/msword': 10 * 1024 * 1024,
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 10 * 1024 * 1024,
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 10 * 1024 * 1024,
   'text/markdown': 10 * 1024 * 1024,
@@ -38,8 +40,34 @@ export const MAX_FILE_SIZES: Record<string, number> = {
 
 export const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-export const UPLOAD_FOLDERS = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'general'] as const;
+export const UPLOAD_FOLDERS = ['avatars', 'projects', 'posts', 'logos', 'resumes', 'skills', 'general'] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
+
+export const MEDIA_MIME_GROUPS = ['image', 'video', 'pdf', 'doc', 'archive'] as const;
+export type MediaMimeGroup = (typeof MEDIA_MIME_GROUPS)[number];
+
+export const MIME_GROUP_SETS: Record<MediaMimeGroup, readonly string[]> = {
+  image: ALLOWED_MIME_TYPES.images,
+  video: ALLOWED_MIME_TYPES.video,
+  pdf: ['application/pdf'],
+  doc: [
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain',
+    'text/markdown',
+  ],
+  archive: [
+    'application/zip',
+    'application/x-rar-compressed',
+    'application/x-7z-compressed',
+    'application/x-tar',
+    'application/gzip',
+  ],
+} as const;
 
 /** Defense-in-depth limit at multer/interceptor level (50MB). Per-type limits enforced in handlers. */
 export const MULTER_LIMITS = { fileSize: 50 * 1024 * 1024 } as const;

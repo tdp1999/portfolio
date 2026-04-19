@@ -5,6 +5,7 @@ import { IMediaRepository } from '../ports/media.repository.port';
 import { MEDIA_REPOSITORY } from '../media.token';
 import { ListMediaSchema, MediaResponseDto } from '../media.dto';
 import { MediaPresenter } from '../media.presenter';
+import { MIME_GROUP_SETS } from '../media.constants';
 
 export class ListMediaQuery {
   constructor(readonly params: unknown) {}
@@ -25,11 +26,14 @@ export class ListMediaHandler implements IQueryHandler<ListMediaQuery> {
         remarks: 'List media pagination validation failed',
       });
 
+    const mimeTypes = data.mimeGroup ? [...MIME_GROUP_SETS[data.mimeGroup]] : undefined;
+
     const { data: media, total } = await this.repo.findAll({
       page: data.page,
       limit: data.limit,
       search: data.search,
-      mimeTypePrefix: data.mimeTypePrefix,
+      mimeTypePrefix: mimeTypes ? undefined : data.mimeTypePrefix,
+      mimeTypes,
       folder: data.folder,
       sort: data.sort,
       includeDeleted: data.includeDeleted || undefined,

@@ -4,7 +4,8 @@ import { MediaSort } from '../media.dto';
 import { UploadFolder } from '../media.constants';
 
 export interface MediaFindAllOptions extends PaginatedQuery {
-  mimeTypePrefix?: string;
+  mimeTypePrefix?: string[];
+  mimeTypes?: string[];
   folder?: UploadFolder;
   sort?: MediaSort;
   includeDeleted?: boolean;
