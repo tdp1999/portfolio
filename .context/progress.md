@@ -70,6 +70,14 @@
   - Tasks 225-235 → archived in `tasks-done/epic-project/`
   - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console CRUD, public pages, E2E
   - Bug fix: findBySlug didn't filter by PUBLISHED status
+- [x] **Media Picker Unification** (epic-media-picker-unification) - Completed 2026-04-19
+  - Tasks 259-272 → archived in `tasks-done/epic-media-picker-unification/`
+  - Shared atoms: asset-grid, asset-upload-zone, asset-filter-bar
+  - Picker rebuilt with 2 tabs, recently-used strip, localStorage persistence, full a11y
+  - Migrated: profile avatar/ogimage, resume EN/VI, certifications, skill icon → picker
+  - Contract migration: Skill.iconId FK added, iconUrl dropped
+  - BE: mimeGroup filter, multi-field search, sort, folder filter extensions
+  - Shared-ui dependency inversion: main-layout + media-picker-dialog now pure
 - [x] **Profile Per-Section Refactor** (epic-profile-per-section-refactor) - Completed 2026-04-15
   - Tasks 248-258 → archived in `tasks-done/epic-profile-per-section-refactor/`
   - BE: 6 section VOs + 6 PATCH commands/schemas + targeted repo methods (delete UpsertProfile)
@@ -125,28 +133,9 @@
 
 **Milestone:** Full blogging system — ProseMirror editor, markdown import, public reading experience with syntax highlighting
 
-### Epic: Media Picker Unification (epic-media-picker-unification) - broken-down
+~~### Epic: Media Picker Unification (epic-media-picker-unification) - completed~~
 
-> **Approach:** BE query extension → 3 shared atoms → picker rebuild → media page refactor → Skill expand/backfill → 4 UI migrations → contract migration → E2E.
-
-#### Sprint 12: Media Picker Unification (14 tasks)
-
-- [ ] 259-list-media-query-extension - Extend list-media with multi-field search, sort, folder filter (M)
-- [ ] 260-asset-grid-atom - Build asset-grid shared atom (L)
-- [ ] 261-asset-upload-zone-atom - Build asset-upload-zone shared atom (M)
-- [ ] 262-asset-filter-bar-atom - Build asset-filter-bar shared atom (M)
-- [ ] 263-media-picker-dialog-rebuild - Rebuild MediaPickerDialog with 2 tabs + recently-used + a11y (L)
-- [ ] 264-media-page-refactor - Refactor media page to consume shared atoms (M)
-- [ ] 265-skill-iconid-expand-migration - Prisma expand: add Skill.iconId FK (S)
-- [ ] 266-skill-iconurl-backfill - Backfill Skill.iconUrl → Media + iconId (M)
-- [ ] 267-profile-avatar-ogimage-picker - Migrate Profile avatar + OG image to picker (M)
-- [ ] 268-profile-resume-picker - Migrate Profile resume EN/VI to picker (M)
-- [ ] 269-certification-dual-mode-picker - Certification dual-mode toggle + picker (M)
-- [ ] 270-skill-icon-picker-contract - Skill icon picker + contract drop iconUrl (M)
-- [ ] 271-media-picker-e2e - E2E tests: picker + all migration points + keyboard flow (L)
-- [ ] 272-media-mime-group-filter-fix - Fix Docs/Archives mime group filters (silently return all media) (M)
-
-**Milestone:** Single canonical picker across all console file fields; media page and picker share UI atoms.
+> All 14 tasks done → archived to `tasks-done/epic-media-picker-unification/` and `plans-done/`
 
 #### Future Sprints (to be broken down when ready)
 - Sprint 13: GitHubRepo Module
@@ -184,7 +173,7 @@
 ## Standalone Tasks
 
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
-- [ ] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone)
+- [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
 
@@ -199,10 +188,10 @@
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 252     |
+| Done (archived)           | 267     |
 | In Progress               | 2       |
-| Pending                   | 2       |
-| **Total Created**         | **256** |
+| Pending                   | 1       |
+| **Total Created**         | **270** |
 
 ## Notes
 

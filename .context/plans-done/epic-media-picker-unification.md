@@ -255,7 +255,7 @@ Media page (`libs/console/feature-media/`) becomes a thin consumer: hosts the th
 
 ## Status
 
-broken-down
+completed
 
 > Broken down into tasks 259-271 on 2026-04-17
 > Follow-up task 272 added on 2026-04-18 (Docs/Archives mime group filter bug surfaced during task 263 manual testing).

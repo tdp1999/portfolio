@@ -35,6 +35,8 @@
 | Certification | A professional certification stored as JSON on Profile (name, issuer, year, URL) | Value Object |
 | SocialLink | A social media profile link with platform enum, URL, and optional handle | Value Object |
 | TranslatableJson | A JSON object with locale keys (en, vi) for multilingual content display | Value Object |
+| Media | An uploaded asset (image, document, video) stored externally. Belongs to a named Folder for organization. Supports soft delete and metadata (alt text, caption). | Entity |
+| MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
 
 ## Flows
 
@@ -216,6 +218,25 @@
 - PRF-004: Translatable fields fall back: requested locale → en → first available
 - PRF-005: Social links, certifications, and openTo are validated JSON arrays (not free-form)
 
+### Upload Media
+- **Trigger:** Owner wants to upload an asset (image, document, video)
+- **Actors:** Owner (via Console)
+- **Happy path:**
+  1. Owner selects a file and chooses a MediaFolder
+  2. System validates file type and size
+  3. System stores asset externally and records the Folder assignment
+  4. Media becomes available in pickers filtered by that Folder
+- **Error paths:**
+  - Invalid file type or size: System rejects upload
+- **End states:** Media stored with Folder, available in listings and pickers
+
+## Rules
+
+### Media
+- MED-001: A Media asset belongs to exactly one MediaFolder, assigned at upload time and not changeable after
+- MED-002: Filtering Media by Folder uses exact Folder match — a Media without a Folder only appears in unfiltered (show-all) listings
+- MED-003: Soft-deleted Media is excluded from all listings and pickers unless explicitly requested
+
 ## Invariants
 - The Landing Page only displays content that has been saved and is in a public-visible state
 - All content changes go through Console — Landing Page is read-only for visitors
@@ -231,6 +252,7 @@
 - **Post with inline images deleted from Media:** Content references Cloudinary URLs that may be deleted — broken images display placeholder. No cascading delete from Media to post content.
 
 ## Changelog
+- [2026-04-19] Added Media domain — glossary (Media, MediaFolder), Upload Media flow, rules MED-001 to MED-003. Fixed: folder stored as explicit DB column, not derived from publicId.
 - [2026-03-31] Expanded Post domain — added Import Markdown Post flow, added rules PST-006 to PST-008 (readTime, publishedAt, import=draft), added edge cases (unsupported markdown syntax, inline image deletion)
 - [2026-03-31] Added Project domain — updated glossary (Project expanded, removed ProjectDetail/Technology, added TechnicalHighlight, ProjectImage, ProjectSkill), added Manage Projects flow, added rules PRJ-001 to PRJ-007
 - [2026-03-29] Added Experience domain — updated glossary (Experience expanded, EmploymentType, LocationType, ExperienceSkill), added Manage Work History flow, added rules EXP-001 to EXP-006

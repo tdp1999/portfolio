@@ -208,7 +208,7 @@ Features → Landing Shared → Global Shared
 - Features cannot import other features directly
 - `scope:shared` cannot import `scope:landing`
 - `type:shared-data-access` cannot import `type:shared-ui` or `type:feature`
-- `type:shared-ui` cannot import `type:feature` (may import data-access for shell state)
+- `type:shared-ui` cannot import `type:feature` or `type:shared-data-access` (purely presentational — shell state flows in via inputs)
 - `type:shared-util` cannot import `type:shared-ui`, `type:shared-data-access`, or `type:feature` (lowest layer)
 
 Use `/ng-lib` skill to generate new libraries with correct tags.
@@ -219,7 +219,7 @@ Use `/ng-lib` skill to generate new libraries with correct tags.
 
 - **`util`** — pure TS/Angular utilities: constants (`DEFAULT_PAGE_SIZE`, `STORAGE_KEYS`, `FILTER_DEBOUNCE_MS`), shared types/DTOs (`MediaItem`, `UserProfile`, `LoginResponse`), validators (`passwordsMatchValidator`, `maxDecimalsValidator`), error infrastructure (`ApiError`, `FormErrorPipe`, `ServerErrorDirective`, `ValidationErrorService`, `ErrorDataService`, `RewardEarlyErrorStateMatcher`), Material provider config, unsaved-changes guard. No HTTP calls, no feature logic. **Anything sharable across features that isn't a service-over-HTTP or a component.**
 - **`data-access`** — HTTP clients and app state: `ApiService`/`API_CONFIG`/`provideApi`, HTTP interceptors, route guards, `AuthStore`, `ThemeService`, `UnreadBadgeService`, `MediaService`. Consumes util types; never imports UI or features.
-- **`ui`** — presentational components used across features (layouts, dialogs, filter bars, toast, asset grid, markdown editor, etc.). May consume data-access services for shell chrome (e.g., `main-layout` uses `AuthStore`), but must not import features.
+- **`ui`** — purely presentational components used across features (layouts, dialogs, filter bars, toast, asset grid, markdown editor, etc.). Must not import `data-access` or features. Shell state (user, theme, unread count) is passed in as inputs from callers in `apps/console`.
 
 ### Modules
 

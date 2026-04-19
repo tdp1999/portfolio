@@ -1,6 +1,6 @@
 # Task: Skill icon picker integration + contract migration
 
-## Status: pending
+## Status: done
 
 ## Goal
 Switch Skill CRUD UI to pick icons via MediaPickerDialog (writing `iconId`); drop `iconUrl` column in a contract-phase migration once verified.
@@ -9,15 +9,15 @@ Switch Skill CRUD UI to pick icons via MediaPickerDialog (writing `iconId`); dro
 Backfill (task 266) populated `iconId` for all skills. This task switches writers to `iconId`, makes readers prefer `iconId` over `iconUrl`, then contracts `iconUrl` out of the schema.
 
 ## Acceptance Criteria
-- [ ] Skill dialog: replace `iconUrl` text input with picker trigger (single, `mimeFilter: 'image/svg+xml, image/png, image/webp'`, default folder `skills`).
-- [ ] Skill create / update BE commands accept `iconId` instead of `iconUrl`.
-- [ ] Skill entity / mapper / DTO use `iconId`; resolve URL via Media relation.
-- [ ] Landing page skill rendering uses resolved `icon.url` via the new FK.
-- [ ] Verify in prod-like data all skills either have `iconId` populated or intentionally null.
-- [ ] Contract migration: drop `iconUrl` column from Skill table.
-- [ ] Update skill repository queries to `include: { icon: true }` where URL is needed.
-- [ ] All Skill tests updated and passing.
-- [ ] Manual browser check: add new skill → pick icon → landing renders.
+- [x] Skill dialog: replace `iconUrl` text input with picker trigger (single, `mimeFilter: 'image/svg+xml, image/png, image/webp'`, default folder `skills`).
+- [x] Skill create / update BE commands accept `iconId` instead of `iconUrl`.
+- [x] Skill entity / mapper / DTO use `iconId`; resolve URL via Media relation.
+- [x] Landing page skill rendering uses resolved `icon.url` via the new FK.
+- [x] Verify in prod-like data all skills either have `iconId` populated or intentionally null.
+- [x] Contract migration: drop `iconUrl` column from Skill table.
+- [x] Update skill repository queries to `include: { icon: true }` where URL is needed.
+- [x] All Skill tests updated and passing.
+- [x] Manual browser check: add new skill → pick icon → landing renders.
 
 ## Technical Notes
 - Contract is destructive — verify all envs have backfill run before dropping.
@@ -46,3 +46,4 @@ Backfill (task 266) populated `iconId` for all skills. This task switches writer
 ## Complexity: M
 
 ## Progress Log
+- 2026-04-19 Smoke-tested — add skill → pick icon via picker → landing renders correctly; task complete

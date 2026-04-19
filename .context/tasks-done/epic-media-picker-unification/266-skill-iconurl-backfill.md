@@ -1,6 +1,6 @@
 # Task: Backfill Skill.iconUrl into Media + populate iconId
 
-## Status: pending
+## Status: done
 
 ## Goal
 Write a data migration script that, for each Skill with a non-empty `iconUrl`, finds or creates a matching Media record and sets `iconId`. Idempotent, safe to re-run.
@@ -35,3 +35,4 @@ Between expand (task 265) and contract (task 270) phases. After this runs, every
 ## Complexity: M
 
 ## Progress Log
+- [2026-04-19] Skipped — no skills exist in production; backfill is a no-op. Proceeding directly to contract phase.

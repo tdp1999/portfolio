@@ -1,6 +1,6 @@
 # Task: Invert service deps in shared/ui (main-layout + media-picker-dialog)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Make `main-layout` and `media-picker-dialog` purely presentational so the strict `type:shared-ui` ESLint boundary (no import from `type:shared-data-access`) can be re-enabled.
@@ -16,17 +16,17 @@ Relaxing the rule lets future drift slip in. The structurally clean fix (option 
 See `.context/patterns-architecture.md` → "Console Shared-Lib Taxonomy" for the intended role of `shared/ui`.
 
 ## Acceptance Criteria
-- [ ] `main-layout` accepts `user` (signal input `UserProfile | null`), `theme` / `resolvedTheme`, `unreadCount` as inputs; no service injection inside the component
-- [ ] `main-layout` emits `logout`, `themeChange`, and any other side-effect events via `output()`
-- [ ] `apps/console/src/app/app.ts` (or a thin wrapper in the app) injects `AuthStore`, `ThemeService`, `UnreadBadgeService` and binds them to `main-layout`
-- [ ] `main-layout.spec.ts` no longer needs `API_CONFIG`/`AuthStore` fixtures — tests drive inputs directly
-- [ ] `MediaPickerDataSource` interface defined in `media-picker-dialog.types.ts` with at least: `list(params: MediaListParams): Observable<MediaListResponse>`, `upload(file: File): Observable<{ id: string }>`, `getById(id: string): Observable<MediaItem>`
-- [ ] `MediaPickerDialogComponent` reads the data source from `MAT_DIALOG_DATA` (extend `MediaPickerDialogData`) and no longer injects `MediaService`
-- [ ] All 3 callers (`feature-blog/post-editor-page`, `feature-project/project-dialog`, any others found by grep of `MediaPickerDialogComponent`) inject `MediaService` themselves and pass an adapter in the dialog open call
-- [ ] `eslint.config.mjs` rule for `type:shared-ui` updated to: `notDependOnLibsWithTags: ['type:shared-data-access', 'type:feature']`
-- [ ] `pnpm nx affected -t lint` passes
-- [ ] `npx tsc --noEmit -p apps/console/tsconfig.app.json` passes
-- [ ] Smoke-test: login → verify user name + avatar in main-layout; toggle theme; check unread badge; open media picker from blog editor and project dialog (and any other caller); upload and select files
+- [x] `main-layout` accepts `user` (signal input `UserProfile | null`), `theme` / `resolvedTheme`, `unreadCount` as inputs; no service injection inside the component
+- [x] `main-layout` emits `logout`, `themeChange`, and any other side-effect events via `output()`
+- [x] `apps/console/src/app/app.ts` (or a thin wrapper in the app) injects `AuthStore`, `ThemeService`, `UnreadBadgeService` and binds them to `main-layout`
+- [x] `main-layout.spec.ts` no longer needs `API_CONFIG`/`AuthStore` fixtures — tests drive inputs directly
+- [x] `MediaPickerDataSource` interface defined in `media-picker-dialog.types.ts` with at least: `list(params: MediaListParams): Observable<MediaListResponse>`, `upload(file: File): Observable<{ id: string }>`, `getById(id: string): Observable<MediaItem>`
+- [x] `MediaPickerDialogComponent` reads the data source from `MAT_DIALOG_DATA` (extend `MediaPickerDialogData`) and no longer injects `MediaService`
+- [x] All 3 callers (`feature-blog/post-editor-page`, `feature-project/project-dialog`, any others found by grep of `MediaPickerDialogComponent`) inject `MediaService` themselves and pass an adapter in the dialog open call
+- [x] `eslint.config.mjs` rule for `type:shared-ui` updated to: `notDependOnLibsWithTags: ['type:shared-data-access', 'type:feature']`
+- [x] `pnpm nx affected -t lint` passes
+- [x] `npx tsc --noEmit -p apps/console/tsconfig.app.json` passes
+- [x] Smoke-test: login → verify user name + avatar in main-layout; toggle theme; check unread badge; open media picker from blog editor and project dialog (and any other caller); upload and select files
 
 ## Technical Notes
 
@@ -115,3 +115,6 @@ None. Follows completion of the shared-libs cleanup (PRs 1–4) merged April 202
 **Reasoning:** Two distinct refactors touching ~10 files with real API-shape changes (dialog data contract, layout inputs/outputs). Each caller must be updated together since the dialog's `MediaPickerDialogData` becomes breaking. Test updates non-trivial. Not risky (mechanical + well-scoped) but sizeable.
 
 ## Progress Log
+- [2026-04-19] Started
+- [2026-04-19] Done — all ACs satisfied (smoke-test pending manual verification)
+- [2026-04-19] Smoke-test verified — all flows tested and working; task complete

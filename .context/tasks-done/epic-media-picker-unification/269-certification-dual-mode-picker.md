@@ -1,6 +1,6 @@
 # Task: Certification dual-mode (file vs external link) with picker
 
-## Status: pending
+## Status: done
 
 ## Goal
 Add a "Upload file / External link" toggle per certification row. File mode uses MediaPickerDialog (single, `mimeFilter: 'application/pdf'`); link mode keeps the text input. The `url` field in the certifications JSON is populated for both modes.
@@ -9,14 +9,14 @@ Add a "Upload file / External link" toggle per certification row. File mode uses
 Industry norm (LinkedIn, Credly) lets users either upload a credential PDF or link to an external issuer page. Current UI only supports the latter.
 
 ## Acceptance Criteria
-- [ ] Each certification row has a mode toggle (segmented control: "File" vs "Link").
-- [ ] Link mode: URL text input (existing behavior).
-- [ ] File mode: picker trigger button → MediaPickerDialog → selected URL written into `url` field.
-- [ ] Mode is transient UI state; `certifications` JSON schema unchanged (still `{ name, issuer, year, url? }`).
-- [ ] Mode inferred on load by inspecting URL origin (Cloudinary → File mode; else Link mode). Override possible via toggle.
-- [ ] Validation adapts: link mode accepts any URL; file mode accepts only picker-returned URLs (no manual paste).
-- [ ] Add row / remove row still works.
-- [ ] Visual check: switch modes, add/remove rows, save, reload — state persists correctly.
+- [x] Each certification row has a mode toggle (segmented control: "File" vs "Link").
+- [x] Link mode: URL text input (existing behavior).
+- [x] File mode: picker trigger button → MediaPickerDialog → selected URL written into `url` field.
+- [x] Mode is transient UI state; `certifications` JSON schema unchanged (still `{ name, issuer, year, url? }`).
+- [x] Mode inferred on load by inspecting URL origin (Cloudinary → File mode; else Link mode). Override possible via toggle.
+- [x] Validation adapts: link mode accepts any URL; file mode accepts only picker-returned URLs (no manual paste).
+- [x] Add row / remove row still works.
+- [x] Visual check: switch modes, add/remove rows, save, reload — state persists correctly.
 
 ## Technical Notes
 - Mode is a local UI flag per row, not stored in DB.
@@ -35,3 +35,5 @@ Industry norm (LinkedIn, Credly) lets users either upload a credential PDF or li
 ## Complexity: M
 
 ## Progress Log
+- 2026-04-19 Started — implementing dual-mode toggle for certification rows
+- 2026-04-19 Smoke-tested — dual-mode (file/link) toggle, add/remove rows, save/reload persistence verified; task complete

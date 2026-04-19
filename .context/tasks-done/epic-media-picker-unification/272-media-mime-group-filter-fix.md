@@ -1,6 +1,6 @@
 # Task: Fix Docs/Archives mime group filters (silently return all media)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Make `Docs` and `Archives` mime-group chips in `asset-filter-bar` actually filter media on the BE, instead of silently returning all rows.
@@ -11,14 +11,14 @@ Discovered during manual testing of task 263 (media picker rebuild). The asset-f
 Evidence: `libs/console/shared/ui/src/lib/media-picker-dialog/media-picker-dialog.ts` defines `MIME_GROUP_TO_PREFIX: Partial<Record<MimeGroup, string>>` with only `image/video/pdf` entries. `apps/api/src/modules/media/application/media.dto.ts:35` accepts `mimeTypePrefix: z.string().optional()` only.
 
 ## Acceptance Criteria
-- [ ] BE `ListMediaQuery` accepts a new `mimeGroup` param: enum `'image' | 'video' | 'pdf' | 'doc' | 'archive'` (or equivalent shape).
-- [ ] BE owns the group → MIME-set mapping. `doc` group matches at minimum: `application/msword`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `application/vnd.ms-excel`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/vnd.ms-powerpoint`, `application/vnd.openxmlformats-officedocument.presentationml.presentation`, `text/plain`, `text/csv`. `archive` group matches at minimum: `application/zip`, `application/x-rar-compressed`, `application/x-7z-compressed`, `application/x-tar`, `application/gzip`.
-- [ ] `mimeGroup` and existing `mimeTypePrefix` compose predictably: if both present, `mimeGroup` wins (documented) OR they AND together — pick one and stick with it in the handler test.
-- [ ] FE `MediaListParams` adds `mimeGroup?: MediaMimeGroup`; `MediaService.list()` forwards it. `MediaMimeGroup` type exported from `console/shared/data-access`.
-- [ ] Media picker dialog passes `mimeGroup` directly to `MediaService.list()` instead of mapping to prefix. `MIME_GROUP_TO_PREFIX` constant and `resolveMimePrefix()` helper deleted or reduced to the caller-override path only.
-- [ ] Media page filter (task 264 / feature-media) uses the new param.
-- [ ] BE handler unit tests cover each group (especially `doc` and `archive`) returning the expected subset.
-- [ ] Manual: opening the picker without a caller `mimeFilter`, clicking `Docs` → only doc MIMEs returned; clicking `Archives` → only archive MIMEs; clicking `Images` / `Video` / `PDF` → unchanged behavior.
+- [x] BE `ListMediaQuery` accepts a new `mimeGroup` param: enum `'image' | 'video' | 'pdf' | 'doc' | 'archive'` (or equivalent shape).
+- [x] BE owns the group → MIME-set mapping. `doc` group matches at minimum: `application/msword`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `application/vnd.ms-excel`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/vnd.ms-powerpoint`, `application/vnd.openxmlformats-officedocument.presentationml.presentation`, `text/plain`, `text/csv`. `archive` group matches at minimum: `application/zip`, `application/x-rar-compressed`, `application/x-7z-compressed`, `application/x-tar`, `application/gzip`.
+- [x] `mimeGroup` and existing `mimeTypePrefix` compose predictably: if both present, `mimeGroup` wins (documented) OR they AND together — pick one and stick with it in the handler test.
+- [x] FE `MediaListParams` adds `mimeGroup?: MediaMimeGroup`; `MediaService.list()` forwards it. `MediaMimeGroup` type exported from `console/shared/data-access`.
+- [x] Media picker dialog passes `mimeGroup` directly to `MediaService.list()` instead of mapping to prefix. `MIME_GROUP_TO_PREFIX` constant and `resolveMimePrefix()` helper deleted or reduced to the caller-override path only.
+- [x] Media page filter (task 264 / feature-media) uses the new param.
+- [x] BE handler unit tests cover each group (especially `doc` and `archive`) returning the expected subset.
+- [x] Manual: opening the picker without a caller `mimeFilter`, clicking `Docs` → only doc MIMEs returned; clicking `Archives` → only archive MIMEs; clicking `Images` / `Video` / `PDF` → unchanged behavior.
 
 ## Technical Notes
 - **Preferred shape (Option A in discussion):** BE-owned group enum. Rationale: FE shouldn't own the mime-type catalog — it changes with every new office format. BE centralizes the set, FE just sends a string. Option B (array of OR'd prefixes) leaks the catalog to FE and requires array coercion in the DTO.
@@ -52,3 +52,8 @@ Evidence: `libs/console/shared/ui/src/lib/media-picker-dialog/media-picker-dialo
 **Reasoning:** Small additive BE DTO/handler change + FE param plumbing + one set of handler tests. No schema migration, no FE UI work beyond deleting dead code. Scope creep risk: deciding the doc/archive MIME catalog — kept pragmatic in ACs.
 
 ## Progress Log
+- 2026-04-19 Started
+- 2026-04-19 BE: added MIME_GROUP_SETS + MEDIA_MIME_GROUPS to constants; mimeGroup Zod param in DTO; mimeTypes exact-IN path in repo; handler translates group → types (mimeGroup wins)
+- 2026-04-19 FE: MediaMimeGroup exported from util/data-access; mimeGroup forwarded in MediaService.list(); picker dialog MIME_GROUP_TO_PREFIX + resolveMimePrefix() deleted; media-page mimeGroupToPrefix() deleted
+- 2026-04-19 Tests: 7 new mimeGroup handler tests (all 5 groups + mimeGroup-wins + invalid value); fixed 2 pre-existing tests (mimeTypePrefix now array after Zod transform)
+- 2026-04-19 Smoke-tested — Docs/Archives chips now filter correctly; Images/Video/PDF unchanged; task complete
