@@ -91,6 +91,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     list: (p) => this.mediaService.list(p),
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
+    getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
   };
 
   private readonly sidebarWasOpen = signal<boolean | null>(null);

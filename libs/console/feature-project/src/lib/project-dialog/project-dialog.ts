@@ -78,6 +78,7 @@ export default class ProjectDialogComponent {
     list: (p) => this.mediaService.list(p),
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
+    getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
   };
   readonly data = inject<ProjectDialogData>(MAT_DIALOG_DATA, { optional: true });
 

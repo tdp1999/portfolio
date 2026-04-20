@@ -24,7 +24,7 @@ import { AssetUploadZoneComponent } from '../asset-upload-zone/asset-upload-zone
 import type { UploadFn, UploadProgress } from '../asset-upload-zone/asset-upload-zone.types';
 import ConfirmDialogComponent, { type ConfirmDialogData } from '../confirm-dialog/confirm-dialog';
 import { MediaPickerDialogData, MediaPickerDialogResult } from './media-picker-dialog.types';
-import { pushRecentIds, readRecentIds, readViewMode, writeViewMode } from './picker-storage.util';
+import { pushRecentIds, readRecentIds, readViewMode, writeRecentIds, writeViewMode } from './picker-storage.util';
 import { RecentlyUsedStripComponent } from './recently-used-strip.component';
 
 @Component({
@@ -278,8 +278,10 @@ export default class MediaPickerDialogComponent implements OnInit {
       this.recentItems.set([]);
       return;
     }
-    forkJoin(ids.map((id) => this.data.dataSource.getById(id).pipe(catchError(() => of(null))))).subscribe(
+    forkJoin(ids.map((id) => this.data.dataSource.getByIdSilent(id).pipe(catchError(() => of(null))))).subscribe(
       (results) => {
+        const validIds = ids.filter((_, i) => results[i] !== null);
+        if (validIds.length !== ids.length) writeRecentIds(validIds);
         this.recentItems.set(results.filter((x): x is MediaItem => x !== null));
       }
     );

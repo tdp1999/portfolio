@@ -76,6 +76,7 @@ export default class PostEditorPageComponent implements OnInit {
     list: (p) => this.mediaService.list(p),
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
+    getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
   };
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);

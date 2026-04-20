@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, timeout } from 'rxjs';
 import { API_CONFIG, ApiService } from '../api';
+import { SKIP_ERROR_HANDLING } from '../interceptors/error.interceptor';
 import {
   MediaItem,
   MediaListParams,
@@ -31,6 +32,12 @@ export class MediaService {
 
   getById(id: string) {
     return this.api.get<MediaItem>(`/media/${id}`);
+  }
+
+  getByIdSilent(id: string) {
+    return this.api.get<MediaItem>(`/media/${id}`, {
+      context: new HttpContext().set(SKIP_ERROR_HANDLING, true),
+    });
   }
 
   getStats() {

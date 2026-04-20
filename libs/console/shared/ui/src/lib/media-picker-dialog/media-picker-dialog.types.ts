@@ -6,6 +6,7 @@ export interface MediaPickerDataSource {
   list(params: MediaListParams): Observable<MediaListResponse>;
   upload(file: File, folder?: string): Observable<{ id: string }>;
   getById(id: string): Observable<MediaItem>;
+  getByIdSilent(id: string): Observable<MediaItem>;
 }
 
 export interface MediaPickerDialogData {

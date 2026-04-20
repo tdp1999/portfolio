@@ -44,6 +44,16 @@ export function pushRecentIds(ids: readonly string[]): void {
   }
 }
 
+export function writeRecentIds(ids: string[]): void {
+  const storage = safeStorage();
+  if (!storage) return;
+  try {
+    storage.setItem(RECENT_KEY, JSON.stringify(ids.slice(0, MAX_RECENT)));
+  } catch {
+    // ignore
+  }
+}
+
 export function readViewMode(): AssetGridViewMode {
   const parsed = readJson<unknown>(VIEW_MODE_KEY);
   return parsed === 'list' ? 'list' : 'grid';
