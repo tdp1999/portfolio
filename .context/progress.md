@@ -84,6 +84,17 @@
   - FE shared chassis (in `libs/console/shared/ui` + `util`): LongFormLayout, ScrollspyRail, SectionCard, StickySaveBar, UnsavedChangesGuard
   - Profile page rebuilt on new chassis with per-section save + rollback on error
   - ADR-013 (long-form chassis) + ADR-014 (per-section save) realized
+- [x] **Console Visual System Foundation** (epic-console-visual-system-foundation) - Completed 2026-04-20
+  - All deliverables built under epic-profile-per-section-refactor (tasks 248-258)
+  - console-cookbook.md, visual-feedback.md, 3 layout primitives, profile page refactor
+- [x] **Profile Module** (epic-profile) - Completed 2026-04-20
+  - Tasks 205-214 → archived in `tasks-done/epic-profile/`
+  - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console settings page, landing integration, E2E
+  - Translatable JSON pattern established (en/vi fields); JSON-LD Person SSR injection
+- [x] **Blog Post Module** (epic-blog-post) - Completed 2026-04-20
+  - Tasks 236-247 → archived in `tasks-done/epic-blog-post/`
+  - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console editor + list page, public /blog + /blog/:slug, E2E
+  - ProseMirror editor (textarea placeholder, swap-ready); Shiki syntax highlighting; TOC + reading progress bar
 
 ## In Progress
 
@@ -92,50 +103,6 @@
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
 ---
-
-### Epic: Profile (epic-profile) - broken-down
-
-> **Approach:** Schema + shared utils first, then BE vertical slice, then Console FE, then Landing integration, then E2E.
-
-#### Sprint 8: Profile Module (10 tasks)
-
-- [x] 205-profile-schema-enums - Prisma schema + enum updates + migration (M) ✓
-- [x] 206-translatable-json-shared - Shared translatable Zod schemas + utilities (M) ✓
-- [x] 207-profile-entity - Domain entity + types + errors (M) ✓
-- [x] 208-profile-dtos-presenter - Zod DTOs + public/admin/JSON-LD presenters (L) ✓
-- [x] 209-profile-repository - Repository port + adapter + mapper (M) ✓
-- [x] 210-profile-commands-queries - Commands + queries + handlers + tests (L) ✓
-- [x] 211-profile-controller-wiring - Controller + module wiring (S) ✓
-- [x] 212-console-profile-page - Console profile settings page (L) ✓
-- [x] 213-landing-profile-integration - Landing page dynamic profile data + JSON-LD SSR (L) ✓
-- [ ] 214-profile-e2e - E2E tests: API, console, landing (L)
-
-**Milestone:** All personal data dynamic, landing page live from DB, JSON-LD SEO active
-
-### Epic: Blog Post (epic-blog-post) - broken-down
-
-> **Approach:** Schema first, then BE vertical slice, then ProseMirror editor setup, then Console pages, then public pages, then E2E.
-
-#### Sprint 11: Blog Post Module (12 tasks)
-
-- [x] 236-blog-post-schema-migration - Prisma schema + PostStatus enum + migration (M) ✓
-- [x] 237-blog-post-entity - Domain entity + types + errors + tests (M) ✓
-- [x] 238-blog-post-repository - Repository port + adapter + mapper (L) ✓
-- [x] 239-blog-post-dtos-presenter - Zod DTOs + public/admin presenters (M) ✓
-- [x] 240-blog-post-commands - CQRS commands: create, update, delete, restore, import-markdown (L) ✓
-- [x] 241-blog-post-queries - CQRS queries: admin list, public list, featured, by-slug, related (M) ✓
-- [x] 242-blog-post-controller-module - Controller + NestJS module wiring (S) ✓
-- [ ] 243-prosemirror-editor-setup - Integrate existing document-engine package + Angular wrapper (L) [in-progress]
-- [x] 244-console-blog-post-page - Console list page + full-page editor + preview + import (XL) ✓
-- [x] 245-public-blog-list-page - Public /blog list with pagination + category/tag filter (M) ✓
-- [x] 246-public-blog-detail-page - Public /blog/:slug detail: markdown rendering, Shiki, TOC, progress bar (XL) ✓
-- [x] 247-blog-post-e2e - E2E tests: API, console, public pages (L) ✓
-
-**Milestone:** Full blogging system — ProseMirror editor, markdown import, public reading experience with syntax highlighting
-
-~~### Epic: Media Picker Unification (epic-media-picker-unification) - completed~~
-
-> All 14 tasks done → archived to `tasks-done/epic-media-picker-unification/` and `plans-done/`
 
 #### Future Sprints (to be broken down when ready)
 - Sprint 13: GitHubRepo Module
@@ -181,17 +148,17 @@
 
 ## Up Next
 
-**Current:** Profile Module (Sprint 8, 9/10 done — 214 in-progress) → Blog Post (Sprint 11, 11/12 done — 243 ProseMirror in-progress)
+**Current:** Dashboard backend APIs (194, pending standalone) → Next epic TBD (GitHubRepo / Analytics / Landing Integration)
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 267     |
-| In Progress               | 2       |
-| Pending                   | 1       |
-| **Total Created**         | **270** |
+| Done (archived)           | 283     |
+| In Progress               | 0       |
+| Pending                   | 2       |
+| **Total Created**         | **285** |
 
 ## Notes
 

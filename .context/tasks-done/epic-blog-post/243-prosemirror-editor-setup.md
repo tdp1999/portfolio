@@ -1,6 +1,6 @@
 # Task: Integrate Existing ProseMirror Editor Package
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Integrate the owner's existing ProseMirror-based editor package (`document-engine`) into the portfolio monorepo and wrap it as an Angular component for the blog console.

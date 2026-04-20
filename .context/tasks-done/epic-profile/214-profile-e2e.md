@@ -1,6 +1,6 @@
 # Task: Profile E2E tests
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Write end-to-end tests covering the full Profile lifecycle: admin upsert, public access, field filtering, JSON-LD generation, and landing page dynamic data display.

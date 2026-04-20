@@ -171,7 +171,9 @@ Close the gap between the console's rich design documentation and its actual ren
 
 ## Status
 
-draft
+done
+
+> All deliverables built under epic-profile-per-section-refactor (tasks 248–258). Primitives (LongFormLayout, ScrollspyRail, SectionCard, StickySaveBar), console-cookbook.md, visual-feedback.md, and profile page refactor all completed. Marked done 2026-04-20.
 
 ## Created
 

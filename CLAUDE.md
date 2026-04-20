@@ -89,7 +89,7 @@ Use these skills for specific workflows. More will be added over time.
 | **Verify Nx names**        | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
 | **Read don't assume**      | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
 | **Forward slashes**        | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
-| **Type check after edits** | Run `npx tsc --noEmit` immediately after modifying .ts or .html files | Also enforced in CI pipeline                                       |
+| **Type check after edits** | If a `watch-servers` Monitor is active, skip manual `tsc` — the build output is the type check. Otherwise run `npx tsc --noEmit` after modifying `.ts` or `.html` files. | Also enforced in CI pipeline |
 | **Never read .env files**  |                                                                       |                                                                    |
 | **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
 | **4px grid**                 | All fixed px values must be multiples of 4. Even non-multiples (6, 10, 18) sparingly. Odd px banned. | ❌ `text-[13px]` ✅ `text-xs`; see `.context/design/scale-contract.md` |

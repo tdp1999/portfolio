@@ -664,9 +664,9 @@ Public detail page shows author info (name, avatar, bio). If Profile module isn'
 
 ## Status
 
-broken-down
+done
 
-> Broken down into tasks 236-247 on 2026-03-31
+> Broken down into tasks 236-247 on 2026-03-31. Marked done 2026-04-20.
 
 ## Created
 

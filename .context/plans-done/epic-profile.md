@@ -512,9 +512,9 @@ Fallback chain: requested locale → en → first available → empty string.
 
 ## Status
 
-broken-down
+done
 
-> Broken down into tasks 205-214 on 2026-03-29
+> Broken down into tasks 205-214 on 2026-03-29. Marked done 2026-04-20.
 
 ## Created
 

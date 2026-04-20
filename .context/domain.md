@@ -15,13 +15,13 @@
 | EmploymentType | The contract/engagement type of a work experience: Full-time, Part-time, Contract, Freelance, Internship, Self-employed | Value Object |
 | LocationType | The work arrangement of a role: Remote, Hybrid, On-site | Value Object |
 | ExperienceSkill | Junction linking an Experience to the Skills/technologies used in that role | Relation |
-| Skill | A technical or professional competency with proficiency level | Entity |
+| Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. | Entity |
 | Testimonial | A recommendation or quote from a colleague or client | Entity |
 | Project | A portfolio project showcasing personal or open-source work. Contains translatable fields (oneLiner, description, motivation, role), technical highlights, gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
 | TechnicalHighlight | A structured technical narrative (Challenge → Approach → Outcome) attached to a Project. 2-4 per project max. All fields translatable. Optional codeUrl links to specific file/PR. | Entity |
 | ProjectImage | Junction linking a Project to Media, with displayOrder. Layout decides contextual placement — no placement hints stored. | Relation |
 | ProjectSkill | Junction linking a Project to the Skills/technologies used in that project | Relation |
-| Post | A blog article with content, metadata, and publication status | Aggregate |
+| Post | A blog article with content, metadata, and publication status. Each Post exists in exactly one Language; the same content published in another language is a separate Post record with its own slug and independent lifecycle. | Aggregate |
 | Category | A grouping label for Posts | Entity |
 | Tag | A keyword associated with a Post for filtering | Value Object |
 | SiteConfig | Site-wide settings (theme defaults, analytics, SEO metadata) | Entity |
@@ -186,6 +186,7 @@
 - PST-006: readTimeMinutes is auto-calculated on save (content word count / 200, rounded up). Manual override allowed.
 - PST-007: publishedAt is auto-set on first transition to PUBLISHED; not modified on subsequent status changes. Manual override allowed via admin.
 - PST-008: Markdown import always creates a DRAFT post; user must explicitly publish
+- PST-009: A Post belongs to exactly one Language. Publishing the same article in multiple languages requires separate Post records, each with its own slug and independent publication status.
 
 ### Contact Message
 - CTM-001: A ContactMessage requires name, email, message, and GDPR consent
@@ -252,6 +253,7 @@
 - **Post with inline images deleted from Media:** Content references Cloudinary URLs that may be deleted — broken images display placeholder. No cascading delete from Media to post content.
 
 ## Changelog
+- [2026-04-20] Updated Post glossary (single-language nature), updated Skill glossary (icon via Media). Added PST-009 (language-per-record rule). Confirmed Profile and BlogPost domain docs remain accurate post-implementation.
 - [2026-04-19] Added Media domain — glossary (Media, MediaFolder), Upload Media flow, rules MED-001 to MED-003. Fixed: folder stored as explicit DB column, not derived from publicId.
 - [2026-03-31] Expanded Post domain — added Import Markdown Post flow, added rules PST-006 to PST-008 (readTime, publishedAt, import=draft), added edge cases (unsupported markdown syntax, inline image deletion)
 - [2026-03-31] Added Project domain — updated glossary (Project expanded, removed ProjectDetail/Technology, added TechnicalHighlight, ProjectImage, ProjectSkill), added Manage Projects flow, added rules PRJ-001 to PRJ-007

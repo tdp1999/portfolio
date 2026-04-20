@@ -294,6 +294,12 @@ pnpm sync-types --type=Project
 - Runtime validation of types
 - Migration scripts for existing code
 
+## Status
+
+aborted
+
+> Never started, never broken down. Aborted 2026-04-20 — low priority, not recalled.
+
 ## Notes
 
 This epic can be broken down into tasks using the `/breakdown` skill when ready to implement.
