@@ -1,0 +1,302 @@
+<div class="project-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="project-form-page__header">
+    <div>
+      <h1 class="text-page-title">{{ isEdit() ? 'Edit Project' : 'Create Project' }}</h1>
+      <p class="text-body text-text-secondary">
+        {{
+          isEdit()
+            ? 'Update details for this project. Changes save together when you click Save.'
+            : 'Create a new portfolio project.'
+        }}
+      </p>
+    </div>
+    <a mat-stroked-button routerLink="/projects">
+      <mat-icon class="icon-sm">arrow_back</mat-icon>
+      Back
+    </a>
+  </div>
+
+  <console-long-form-layout>
+    <div rail>
+      <console-scrollspy-rail [sections]="sections" [activeIndicator]="false" />
+    </div>
+
+    <div content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+        <!-- Basic -->
+        <console-section-card
+          id="section-basic"
+          title="Basic Info"
+          description="Project title, one-liner, and date range."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Title</mat-label>
+              <input matInput formControlName="title" placeholder="Project title" />
+              <mat-error>{{ form.controls.title | formError }}</mat-error>
+            </mat-form-field>
+
+            <console-translatable-group [group]="form.controls.oneLiner" label="One-Liner" />
+
+            <div class="flex gap-4">
+              <mat-form-field appearance="outline" class="flex-1">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+                <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+                <mat-datepicker #startPicker />
+                <mat-error>{{ form.controls.startDate | formError }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="flex-1">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+                <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+                <mat-datepicker #endPicker />
+              </mat-form-field>
+            </div>
+          </div>
+        </console-section-card>
+
+        <!-- Story -->
+        <console-section-card
+          id="section-story"
+          title="Story"
+          description="Motivation, description, and your role. Provide English and Vietnamese."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <console-translatable-group [group]="form.controls.motivation" label="Motivation" type="textarea" />
+            <console-translatable-group [group]="form.controls.description" label="Description" type="textarea" />
+            <console-translatable-group [group]="form.controls.role" label="Role" type="textarea" />
+          </div>
+        </console-section-card>
+
+        <!-- Highlights -->
+        <console-section-card
+          id="section-highlights"
+          title="Technical Highlights"
+          description="Up to 4 Challenge → Approach → Outcome blocks with an optional code link."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <div class="flex items-center justify-between">
+              <span class="text-body text-text-secondary">{{ form.controls.highlights.length }}/4 highlights</span>
+              <button
+                mat-stroked-button
+                type="button"
+                [disabled]="form.controls.highlights.length >= 4"
+                (click)="addHighlight()"
+              >
+                <mat-icon>add</mat-icon>
+                Add Highlight
+              </button>
+            </div>
+
+            @for (group of form.controls.highlights.controls; track $index; let i = $index) {
+              <div class="highlight-card">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium">Highlight {{ i + 1 }}</span>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    aria-label="Remove highlight"
+                    matTooltip="Remove"
+                    (click)="removeHighlight(i)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <ng-container [formGroup]="group">
+                  <console-translatable-group
+                    [group]="group.controls['challenge']"
+                    label="Challenge"
+                    type="textarea"
+                    [rows]="2"
+                  />
+                  <console-translatable-group
+                    [group]="group.controls['approach']"
+                    label="Approach"
+                    type="textarea"
+                    [rows]="2"
+                  />
+                  <console-translatable-group
+                    [group]="group.controls['outcome']"
+                    label="Outcome"
+                    type="textarea"
+                    [rows]="2"
+                  />
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Code URL (optional)</mat-label>
+                    <input matInput formControlName="codeUrl" placeholder="https://github.com/..." />
+                  </mat-form-field>
+                </ng-container>
+              </div>
+            } @empty {
+              <p class="py-4 text-center text-body text-text-muted">No highlights added yet</p>
+            }
+          </div>
+        </console-section-card>
+
+        <!-- Media -->
+        <console-section-card
+          id="section-media"
+          title="Media"
+          description="Thumbnail and gallery images. Selections save when you click Save."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <div>
+              <p class="field-label">Thumbnail</p>
+              <div class="flex items-center gap-3">
+                @if (thumbnailUrl()) {
+                  <img [src]="thumbnailUrl()" alt="Thumbnail" class="h-16 w-16 rounded object-cover" />
+                } @else if (thumbnailId()) {
+                  <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
+                    <mat-icon>check_circle</mat-icon>
+                  </div>
+                } @else {
+                  <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
+                    <mat-icon class="text-text-muted">image</mat-icon>
+                  </div>
+                }
+                <button mat-stroked-button type="button" (click)="pickThumbnail()">
+                  {{ thumbnailId() ? 'Change' : 'Choose' }} Thumbnail
+                </button>
+                @if (thumbnailId()) {
+                  <button mat-icon-button type="button" aria-label="Clear thumbnail" (click)="clearThumbnail()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <p class="field-label">Gallery Images ({{ galleryImages().length }})</p>
+                <button mat-stroked-button type="button" (click)="pickGalleryImages()">
+                  <mat-icon>add_photo_alternate</mat-icon>
+                  Add Images
+                </button>
+              </div>
+
+              @if (galleryImages().length > 0) {
+                <div class="flex flex-col gap-2 mt-3">
+                  @for (img of galleryImages(); track img.mediaId; let i = $index) {
+                    <div class="gallery-row">
+                      @if (img.url) {
+                        <img [src]="img.url" [alt]="img.altText ?? ''" class="h-10 w-10 rounded object-cover" />
+                      } @else {
+                        <div class="flex h-10 w-10 items-center justify-center rounded bg-surface">
+                          <mat-icon class="text-sm">image</mat-icon>
+                        </div>
+                      }
+                      <span class="flex-1 truncate text-sm">{{ img.altText || img.mediaId }}</span>
+                      <button
+                        mat-icon-button
+                        type="button"
+                        aria-label="Move up"
+                        [disabled]="i === 0"
+                        (click)="moveGalleryImage(i, -1)"
+                      >
+                        <mat-icon>arrow_upward</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        type="button"
+                        aria-label="Move down"
+                        [disabled]="i === galleryImages().length - 1"
+                        (click)="moveGalleryImage(i, 1)"
+                      >
+                        <mat-icon>arrow_downward</mat-icon>
+                      </button>
+                      <button mat-icon-button type="button" aria-label="Remove image" (click)="removeGalleryImage(i)">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="py-4 text-center text-body text-text-muted">No gallery images</p>
+              }
+            </div>
+          </div>
+        </console-section-card>
+
+        <!-- Details -->
+        <console-section-card
+          id="section-details"
+          title="Details"
+          description="Source and project URLs, plus skills used on this project."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Source URL</mat-label>
+              <input matInput formControlName="sourceUrl" placeholder="https://github.com/..." />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Project URL</mat-label>
+              <input matInput formControlName="projectUrl" placeholder="https://..." />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Skills</mat-label>
+              <mat-select formControlName="skillIds" multiple>
+                @for (skill of skills(); track skill.id) {
+                  <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </console-section-card>
+
+        <!-- Publishing -->
+        <console-section-card
+          id="section-publishing"
+          title="Publishing"
+          description="Control status, featured flag, and ordering on the public site."
+          saveMode="atomic"
+        >
+          <div class="flex flex-wrap items-center gap-6">
+            <mat-slide-toggle formControlName="featured">Featured</mat-slide-toggle>
+
+            <div class="flex items-center gap-2">
+              <span class="text-sm">Status:</span>
+              <mat-slide-toggle
+                [checked]="form.controls.status.value === 'PUBLISHED'"
+                (change)="form.controls.status.setValue($event.checked ? 'PUBLISHED' : 'DRAFT'); form.markAsDirty()"
+              >
+                {{ form.controls.status.value === 'PUBLISHED' ? 'Published' : 'Draft' }}
+              </mat-slide-toggle>
+            </div>
+
+            <mat-form-field appearance="outline" class="w-28">
+              <mat-label>Order</mat-label>
+              <input matInput type="number" formControlName="displayOrder" />
+            </mat-form-field>
+          </div>
+        </console-section-card>
+
+        @if (serverError()) {
+          <p class="project-form-page__server-error">{{ serverError() }}</p>
+        }
+
+        <button type="submit" class="hidden" aria-hidden="true"></button>
+      </form>
+    </div>
+  </console-long-form-layout>
+
+  <console-sticky-save-bar
+    [dirty]="dirty"
+    [saving]="saving"
+    [disabled]="isInvalid"
+    (save)="submit()"
+    (discard)="discard()"
+  />
+</div>
