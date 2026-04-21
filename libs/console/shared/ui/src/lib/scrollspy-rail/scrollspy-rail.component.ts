@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   OnInit,
   PLATFORM_ID,
+  computed,
   inject,
   input,
   signal,
@@ -12,7 +12,7 @@ import {
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SectionDescriptor } from './scrollspy-rail.types';
+import { SectionDescriptor, SectionStatus } from './scrollspy-rail.types';
 
 const STATUS_ICONS: Record<string, string> = {
   saved: '✓',
@@ -34,15 +34,32 @@ export class ScrollspyRailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
-  private readonly el = inject(ElementRef);
 
-  /** Section descriptors with id, label, and reactive status */
   sections = input.required<SectionDescriptor[]>();
 
-  /** Currently active section id (driven by IntersectionObserver) */
-  activeId = signal<string>('');
+  /** When false, no active-section indicator is shown (use for atomic save forms) */
+  activeIndicator = input<boolean>(true);
+
+  private readonly fragment = signal<string | null>(null);
+  private readonly ioActiveId = signal<string>('');
+
+  /**
+   * Active section id: fragment takes priority when it matches a section,
+   * IO-driven otherwise (fallback for pages loaded without a fragment).
+   */
+  readonly activeId = computed(() => {
+    const frag = this.fragment();
+    const ids = this.sections().map((s) => s.id);
+    return frag && ids.includes(frag) ? frag : this.ioActiveId();
+  });
 
   private observer: IntersectionObserver | null = null;
+  private readonly intersecting = new Map<string, IntersectionObserverEntry>();
+
+  /** Resolves the section status value, or null if no status signal is provided */
+  resolveStatus(section: SectionDescriptor): SectionStatus | null {
+    return section.status ? section.status() : null;
+  }
 
   /** Map section status to display icon */
   statusIcon(status: string): string {
@@ -50,75 +67,69 @@ export class ScrollspyRailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+    this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((frag) => {
+      this.fragment.set(frag);
+      if (!isPlatformBrowser(this.platformId)) return;
+      if (
+        frag &&
+        this.sections()
+          .map((s) => s.id)
+          .includes(frag)
+      ) {
+        requestAnimationFrame(() => {
+          this.document.getElementById(frag)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    });
 
-    this.setupObserver();
-    this.handleInitialFragment();
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (this.activeIndicator()) {
+      this.setupObserver();
+    }
   }
 
-  /** Navigate to section on click */
   scrollTo(sectionId: string): void {
-    const el = this.document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
     this.router.navigate([], {
       relativeTo: this.route,
       fragment: sectionId,
       replaceUrl: true,
     });
+    this.document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private setupObserver(): void {
-    // Header is typically 64px; offset 16px below
     const rootMargin = '-80px 0px 0px 0px';
 
     this.observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry with the largest intersection ratio that is intersecting
-        let best: IntersectionObserverEntry | null = null;
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            if (!best || entry.intersectionRatio > best.intersectionRatio) {
-              best = entry;
-            }
+            this.intersecting.set(entry.target.id, entry);
+          } else {
+            this.intersecting.delete(entry.target.id);
+          }
+        }
+        let best: IntersectionObserverEntry | null = null;
+        for (const entry of this.intersecting.values()) {
+          if (!best || entry.boundingClientRect.top < best.boundingClientRect.top) {
+            best = entry;
           }
         }
         if (best) {
-          this.activeId.set(best.target.id);
+          this.ioActiveId.set(best.target.id);
         }
       },
-      { threshold: [0, 0.5, 1], rootMargin }
+      { threshold: 0, rootMargin }
     );
 
-    // Observe all section elements
     for (const section of this.sections()) {
       const el = this.document.getElementById(section.id);
-      if (el) {
-        this.observer.observe(el);
-      }
+      if (el) this.observer.observe(el);
     }
 
     this.destroyRef.onDestroy(() => {
       this.observer?.disconnect();
       this.observer = null;
-    });
-  }
-
-  private handleInitialFragment(): void {
-    this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fragment) => {
-      if (fragment) {
-        const sectionIds = this.sections().map((s) => s.id);
-        if (sectionIds.includes(fragment)) {
-          // Delay to let the page render first
-          requestAnimationFrame(() => {
-            const el = this.document.getElementById(fragment);
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          });
-        }
-      }
     });
   }
 }

@@ -3,7 +3,7 @@
 }
 
 .asset-filter-bar {
-  @apply flex flex-col gap-3 rounded-lg bg-surface px-4 py-3;
+  @apply flex flex-col gap-3 rounded-lg bg-surface pr-4 py-3;
 
   &__row {
     @apply flex flex-wrap items-center gap-3;
