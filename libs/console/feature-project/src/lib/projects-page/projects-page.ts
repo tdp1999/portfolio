@@ -1,6 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { filter, switchMap } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,6 +62,7 @@ export default class ProjectsPageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['thumbnail', 'title', 'status', 'featured', 'startDate', 'actions'];
@@ -98,31 +110,15 @@ export default class ProjectsPageComponent implements OnInit {
     this.router.navigate(['/projects', project.id]);
   }
 
-  async openCreateDialog(): Promise<void> {
-    const { default: ProjectDialogComponent } = await import('../project-dialog/project-dialog');
-    const dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-      data: { skills: this.skillsCache },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadProjects();
-    });
+  openCreateDialog(): void {
+    this.router.navigate(['/projects', 'new']);
   }
 
-  async openEditDialog(project: AdminProject): Promise<void> {
-    const { default: ProjectDialogComponent } = await import('../project-dialog/project-dialog');
-    const dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-      data: { project, skills: this.skillsCache },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadProjects();
-    });
+  openEditDialog(project: AdminProject): void {
+    this.router.navigate(['/projects', project.id, 'edit']);
   }
 
-  async confirmDelete(project: AdminProject): Promise<void> {
+  confirmDelete(project: AdminProject): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Delete Project',
@@ -130,17 +126,20 @@ export default class ProjectsPageComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.projectService.delete(project.id).subscribe({
-          next: () => {
-            this.toast.success('Project deleted');
-            this.loadProjects();
-          },
-          error: () => this.toast.error('Failed to delete project'),
-        });
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.projectService.delete(project.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Project deleted');
+          this.loadProjects();
+        },
+        error: () => this.toast.error('Failed to delete project'),
+      });
   }
 
   restoreProject(project: AdminProject): void {

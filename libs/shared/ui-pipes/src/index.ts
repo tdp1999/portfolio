@@ -5,3 +5,4 @@ export * from './lib/is-image.pipe';
 export * from './lib/date-range.pipe';
 export * from './lib/cloudinary-thumb.pipe';
 export * from './lib/initials.pipe';
+export * from './lib/translatable.pipe';

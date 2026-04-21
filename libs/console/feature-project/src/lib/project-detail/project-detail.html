@@ -35,7 +35,7 @@
           </div>
           <div class="detail-field">
             <span class="detail-field__label">One-Liner</span>
-            <span class="detail-field__value">{{ translatable(p.oneLiner) }}</span>
+            <span class="detail-field__value">{{ p.oneLiner | translatable }}</span>
           </div>
           <div class="detail-field">
             <span class="detail-field__label">Period</span>
@@ -75,27 +75,24 @@
             <span class="detail-field__label">Motivation</span>
             <span
               class="detail-field__value"
-              [class.detail-field__value--empty]="!translatable(p.motivation) || translatable(p.motivation) === '—'"
+              [class.detail-field__value--empty]="(p.motivation | translatable) === '—'"
             >
-              {{ translatable(p.motivation) }}
+              {{ p.motivation | translatable }}
             </span>
           </div>
           <div class="detail-field">
             <span class="detail-field__label">Description</span>
             <span
               class="detail-field__value"
-              [class.detail-field__value--empty]="!translatable(p.description) || translatable(p.description) === '—'"
+              [class.detail-field__value--empty]="(p.description | translatable) === '—'"
             >
-              {{ translatable(p.description) }}
+              {{ p.description | translatable }}
             </span>
           </div>
           <div class="detail-field">
             <span class="detail-field__label">Role</span>
-            <span
-              class="detail-field__value"
-              [class.detail-field__value--empty]="!translatable(p.role) || translatable(p.role) === '—'"
-            >
-              {{ translatable(p.role) }}
+            <span class="detail-field__value" [class.detail-field__value--empty]="(p.role | translatable) === '—'">
+              {{ p.role | translatable }}
             </span>
           </div>
         </div>
@@ -110,15 +107,15 @@
                 <p class="mb-2 text-sm font-medium text-text-muted">Highlight {{ i + 1 }}</p>
                 <div class="detail-field">
                   <span class="detail-field__label">Challenge</span>
-                  <span class="detail-field__value">{{ translatable(h.challenge) }}</span>
+                  <span class="detail-field__value">{{ h.challenge | translatable }}</span>
                 </div>
                 <div class="detail-field">
                   <span class="detail-field__label">Approach</span>
-                  <span class="detail-field__value">{{ translatable(h.approach) }}</span>
+                  <span class="detail-field__value">{{ h.approach | translatable }}</span>
                 </div>
                 <div class="detail-field">
                   <span class="detail-field__label">Outcome</span>
-                  <span class="detail-field__value">{{ translatable(h.outcome) }}</span>
+                  <span class="detail-field__value">{{ h.outcome | translatable }}</span>
                 </div>
                 @if (h.codeUrl) {
                   <div class="detail-field">

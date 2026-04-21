@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
+import { filter, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,25 +20,11 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import type { ExperienceDialogData } from '../experience-dialog/experience-dialog';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import { DateRangePipe } from '@portfolio/shared/ui-pipes';
-
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: 'Full Time',
-  PART_TIME: 'Part Time',
-  CONTRACT: 'Contract',
-  FREELANCE: 'Freelance',
-  INTERNSHIP: 'Internship',
-  SELF_EMPLOYED: 'Self Employed',
-};
-
-const LOCATION_TYPE_LABELS: Record<string, string> = {
-  REMOTE: 'Remote',
-  HYBRID: 'Hybrid',
-  ONSITE: 'Onsite',
-};
+import { EmploymentTypeLabelPipe } from '../employment-type-label.pipe';
+import { LocationTypeLabelPipe } from '../location-type-label.pipe';
 
 @Component({
   selector: 'console-experiences-page',
@@ -53,6 +41,9 @@ const LOCATION_TYPE_LABELS: Record<string, string> = {
     FilterSearchComponent,
     FilterSelectComponent,
     DateRangePipe,
+    EmploymentTypeLabelPipe,
+    LocationTypeLabelPipe,
+    RouterLink,
   ],
   templateUrl: './experiences-page.html',
   styleUrl: './experiences-page.scss',
@@ -63,6 +54,7 @@ export default class ExperiencesPageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['company', 'position', 'employmentType', 'locationType', 'dateRange', 'actions'];
@@ -109,44 +101,12 @@ export default class ExperiencesPageComponent implements OnInit {
     this.loadExperiences();
   }
 
-  getEmploymentTypeLabel(value: string): string {
-    return EMPLOYMENT_TYPE_LABELS[value] ?? value;
-  }
-
-  getLocationTypeLabel(value: string): string {
-    return LOCATION_TYPE_LABELS[value] ?? value;
-  }
-
   openCreateDialog(): void {
-    import('../experience-dialog/experience-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '720px',
-        maxHeight: '90vh',
-        data: {} satisfies ExperienceDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Experience created successfully');
-          this.loadExperiences();
-        }
-      });
-    });
+    this.router.navigate(['/experiences', 'new']);
   }
 
   openEditDialog(exp: AdminExperience): void {
-    import('../experience-dialog/experience-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '720px',
-        maxHeight: '90vh',
-        data: { experience: exp } satisfies ExperienceDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Experience updated successfully');
-          this.loadExperiences();
-        }
-      });
-    });
+    this.router.navigate(['/experiences', exp.id, 'edit']);
   }
 
   confirmDelete(exp: AdminExperience): void {
@@ -157,9 +117,20 @@ export default class ExperiencesPageComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) this.deleteExperience(exp.id);
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.experienceService.delete(exp.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Experience deleted');
+          this.loadExperiences();
+        },
+        error: () => this.toast.error('Failed to delete experience'),
+      });
   }
 
   confirmRestore(exp: AdminExperience): void {
@@ -170,9 +141,20 @@ export default class ExperiencesPageComponent implements OnInit {
         confirmLabel: 'Restore',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) this.restoreExperience(exp.id);
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.experienceService.restore(exp.id))
+      )
+      .subscribe({
+        next: () => {
+          this.toast.success('Experience restored');
+          this.loadExperiences();
+        },
+        error: () => this.toast.error('Failed to restore experience'),
+      });
   }
 
   private resetAndLoad(): void {
@@ -202,29 +184,5 @@ export default class ExperiencesPageComponent implements OnInit {
           this.toast.error('Failed to load experiences');
         },
       });
-  }
-
-  private deleteExperience(id: string): void {
-    this.experienceService.delete(id).subscribe({
-      next: () => {
-        this.toast.success('Experience deleted');
-        this.loadExperiences();
-      },
-      error: () => {
-        this.toast.error('Failed to delete experience');
-      },
-    });
-  }
-
-  private restoreExperience(id: string): void {
-    this.experienceService.restore(id).subscribe({
-      next: () => {
-        this.toast.success('Experience restored');
-        this.loadExperiences();
-      },
-      error: () => {
-        this.toast.error('Failed to restore experience');
-      },
-    });
   }
 }

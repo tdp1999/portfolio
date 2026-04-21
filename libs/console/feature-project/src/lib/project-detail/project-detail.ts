@@ -16,7 +16,7 @@ import {
 import { filter, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
-import { DateRangePipe } from '@portfolio/shared/ui-pipes';
+import { DateRangePipe, TranslatablePipe } from '@portfolio/shared/ui-pipes';
 
 @Component({
   selector: 'console-project-detail',
@@ -29,6 +29,7 @@ import { DateRangePipe } from '@portfolio/shared/ui-pipes';
     MatTooltipModule,
     SpinnerOverlayComponent,
     DateRangePipe,
+    TranslatablePipe,
   ],
   templateUrl: './project-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,18 +60,10 @@ export default class ProjectDetailComponent implements OnInit {
     this.router.navigate(['/projects']);
   }
 
-  async openEditDialog(): Promise<void> {
+  openEditDialog(): void {
     const p = this.project();
     if (!p) return;
-    const { default: ProjectDialogComponent } = await import('../project-dialog/project-dialog');
-    const dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-      data: { project: p, skills: this.skillsCache() },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadProject(p.id);
-    });
+    this.router.navigate(['/projects', p.id, 'edit']);
   }
 
   confirmDelete(): void {
@@ -97,11 +90,6 @@ export default class ProjectDetailComponent implements OnInit {
         },
         error: () => this.toast.error('Failed to delete project'),
       });
-  }
-
-  translatable(value: Record<string, string> | null | undefined): string {
-    if (!value) return '—';
-    return value['en'] || value['vi'] || '—';
   }
 
   private loadProject(id: string): void {

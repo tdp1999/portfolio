@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,23 +16,9 @@ import {
 import { filter, switchMap } from 'rxjs';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
-import type { ExperienceDialogData } from '../experience-dialog/experience-dialog';
 import { DateRangePipe } from '@portfolio/shared/ui-pipes';
-
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: 'Full Time',
-  PART_TIME: 'Part Time',
-  CONTRACT: 'Contract',
-  FREELANCE: 'Freelance',
-  INTERNSHIP: 'Internship',
-  SELF_EMPLOYED: 'Self Employed',
-};
-
-const LOCATION_TYPE_LABELS: Record<string, string> = {
-  REMOTE: 'Remote',
-  HYBRID: 'Hybrid',
-  ONSITE: 'Onsite',
-};
+import { EmploymentTypeLabelPipe } from '../employment-type-label.pipe';
+import { LocationTypeLabelPipe } from '../location-type-label.pipe';
 
 @Component({
   selector: 'console-experience-detail',
@@ -45,6 +31,8 @@ const LOCATION_TYPE_LABELS: Record<string, string> = {
     MatTooltipModule,
     SpinnerOverlayComponent,
     DateRangePipe,
+    EmploymentTypeLabelPipe,
+    LocationTypeLabelPipe,
   ],
   templateUrl: './experience-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +48,13 @@ export default class ExperienceDetailComponent implements OnInit {
   readonly experience = signal<AdminExperience | null>(null);
   readonly loading = signal(false);
 
+  readonly formattedLocation = computed(() => {
+    const exp = this.experience();
+    if (!exp) return '—';
+    const parts = [exp.locationCity, exp.locationCountry].filter(Boolean);
+    return parts.join(', ') || '—';
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.loadExperience(id);
@@ -69,18 +64,10 @@ export default class ExperienceDetailComponent implements OnInit {
     this.router.navigate(['/experiences']);
   }
 
-  async openEditDialog(): Promise<void> {
+  openEditDialog(): void {
     const exp = this.experience();
     if (!exp) return;
-    const { default: ExperienceDialogComponent } = await import('../experience-dialog/experience-dialog');
-    const dialogRef = this.dialog.open(ExperienceDialogComponent, {
-      width: '720px',
-      maxHeight: '90vh',
-      data: { experience: exp } satisfies ExperienceDialogData,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadExperience(exp.id);
-    });
+    this.router.navigate(['/experiences', exp.id, 'edit']);
   }
 
   confirmDelete(): void {
@@ -121,19 +108,6 @@ export default class ExperienceDetailComponent implements OnInit {
     });
   }
 
-  getEmploymentTypeLabel(type: string): string {
-    return EMPLOYMENT_TYPE_LABELS[type] ?? type;
-  }
-
-  getLocationTypeLabel(type: string): string {
-    return LOCATION_TYPE_LABELS[type] ?? type;
-  }
-
-  formatLocation(exp: AdminExperience): string {
-    const parts = [exp.locationCity, exp.locationCountry].filter(Boolean);
-    return parts.join(', ') || '—';
-  }
-
   private loadExperience(id: string): void {
     this.loading.set(true);
     this.experienceService.getById(id).subscribe({
@@ -142,7 +116,6 @@ export default class ExperienceDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load experience');
         this.loading.set(false);
         this.goBack();
       },

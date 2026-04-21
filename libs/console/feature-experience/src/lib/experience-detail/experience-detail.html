@@ -77,7 +77,7 @@
           <div class="detail-field">
             <span class="detail-field__label">Employment Type</span>
             <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ getEmploymentTypeLabel(exp.employmentType) }}</mat-chip>
+              <mat-chip class="chip-sm">{{ exp.employmentType | employmentTypeLabel }}</mat-chip>
             </span>
           </div>
           @if (exp.teamRole) {
@@ -105,12 +105,12 @@
           <div class="detail-field">
             <span class="detail-field__label">Location Type</span>
             <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ getLocationTypeLabel(exp.locationType) }}</mat-chip>
+              <mat-chip class="chip-sm">{{ exp.locationType | locationTypeLabel }}</mat-chip>
             </span>
           </div>
           <div class="detail-field">
             <span class="detail-field__label">Location</span>
-            <span class="detail-field__value">{{ formatLocation(exp) }}</span>
+            <span class="detail-field__value">{{ formattedLocation() }}</span>
           </div>
         </div>
 
