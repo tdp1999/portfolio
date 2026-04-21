@@ -98,7 +98,7 @@ export class ExperienceRepository implements IExperienceRepository {
 
   async findById(id: string): Promise<Experience | null> {
     const raw = await this.prisma.experience.findFirst({
-      where: { id, deletedAt: null },
+      where: { id },
       include: skillsInclude,
     });
     return raw ? ExperienceMapper.toDomain(raw) : null;
@@ -114,7 +114,7 @@ export class ExperienceRepository implements IExperienceRepository {
 
   async findBySlug(slug: string): Promise<Experience | null> {
     const raw = await this.prisma.experience.findFirst({
-      where: { slug, deletedAt: null },
+      where: { slug },
       include: skillsInclude,
     });
     return raw ? ExperienceMapper.toDomain(raw) : null;
