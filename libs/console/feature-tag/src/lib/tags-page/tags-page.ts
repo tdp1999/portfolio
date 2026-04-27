@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,13 +5,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatChipsModule } from '@angular/material/chips';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
   FilterBarComponent,
   FilterSearchComponent,
-  SpinnerOverlayComponent,
+  ProgressBarService,
+  RelativeTimeComponent,
+  SkeletonTableComponent,
   ToastService,
+  withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { TagDialogData } from '../tag-dialog/tag-dialog';
@@ -27,10 +31,12 @@ import { AdminTag, TagService } from '../tag.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    SpinnerOverlayComponent,
+    MatSortModule,
+    MatChipsModule,
+    SkeletonTableComponent,
+    RelativeTimeComponent,
     FilterBarComponent,
     FilterSearchComponent,
-    DatePipe,
   ],
   templateUrl: './tags-page.html',
   styleUrl: './tags-page.scss',
@@ -40,9 +46,10 @@ export default class TagsPageComponent implements OnInit {
   private readonly tagService = inject(TagService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly progress = inject(ProgressBarService);
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['name', 'slug', 'createdAt', 'actions'];
+  readonly displayedColumns = ['name', 'slug', 'updatedAt', 'actions'];
   readonly tags = signal<AdminTag[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
@@ -50,6 +57,9 @@ export default class TagsPageComponent implements OnInit {
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
+  readonly showDeleted = signal(false);
+  readonly sortBy = signal('updatedAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
     this.loadTags();
@@ -58,6 +68,19 @@ export default class TagsPageComponent implements OnInit {
   onSearchChange(value: string): void {
     this.search.set(value);
     this.resetAndLoad();
+  }
+
+  onShowDeletedChange(value: boolean): void {
+    this.showDeleted.set(value);
+    this.resetAndLoad();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active || 'updatedAt');
+    this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
+    this.pageIndex.set(0);
+    this.paginator().pageIndex = 0;
+    this.loadTags();
   }
 
   onPage(event: PageEvent): void {
@@ -72,7 +95,7 @@ export default class TagsPageComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this.toast.success('Tag created successfully');
-          this.loadTags();
+          this.loadTags({ silent: true });
         }
       });
     });
@@ -87,7 +110,7 @@ export default class TagsPageComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this.toast.success('Tag updated successfully');
-          this.loadTags();
+          this.loadTags({ silent: true });
         }
       });
     });
@@ -112,24 +135,23 @@ export default class TagsPageComponent implements OnInit {
     this.loadTags();
   }
 
-  private loadTags(): void {
-    this.loading.set(true);
+  private loadTags(opts: { silent?: boolean } = {}): void {
     this.tagService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
         search: this.search() || undefined,
+        includeDeleted: this.showDeleted() || undefined,
+        sortBy: this.sortBy(),
+        sortDir: this.sortDir(),
       })
+      .pipe(withListLoading({ silent: opts.silent, loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (res) => {
           this.tags.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
-        error: () => {
-          this.loading.set(false);
-          this.toast.error('Failed to load tags');
-        },
+        error: () => this.toast.error('Failed to load tags'),
       });
   }
 
@@ -137,7 +159,7 @@ export default class TagsPageComponent implements OnInit {
     this.tagService.delete(id).subscribe({
       next: () => {
         this.toast.success('Tag deleted successfully');
-        this.loadTags();
+        this.loadTags({ silent: true });
       },
       error: () => {
         // Error toast handled by global error interceptor

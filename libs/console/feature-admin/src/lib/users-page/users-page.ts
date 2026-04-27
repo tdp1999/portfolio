@@ -1,11 +1,21 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+  computed,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthStore } from '@portfolio/console/shared/data-access';
 import type { FilterOption } from '@portfolio/console/shared/ui';
 import {
@@ -14,8 +24,11 @@ import {
   FilterBarComponent,
   FilterSearchComponent,
   FilterSelectComponent,
-  SpinnerOverlayComponent,
+  ProgressBarService,
+  RelativeTimeComponent,
+  SkeletonTableComponent,
   ToastService,
+  withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { AdminUser, AdminUserService } from '../admin-user.service';
@@ -28,9 +41,10 @@ import { AdminUser, AdminUserService } from '../admin-user.service';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    SpinnerOverlayComponent,
+    MatSortModule,
+    SkeletonTableComponent,
+    RelativeTimeComponent,
     MatTooltipModule,
-    DatePipe,
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
@@ -44,10 +58,14 @@ export default class UsersPageComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly progress = inject(ProgressBarService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly currentUserId = computed(() => this.authStore.user()?.id ?? '');
 
   readonly paginator = viewChild.required(MatPaginator);
 
-  readonly displayedColumns = ['name', 'email', 'role', 'status', 'createdAt', 'actions'];
+  readonly displayedColumns = ['name', 'email', 'role', 'status', 'updatedAt', 'actions'];
 
   readonly statusOptions: FilterOption[] = [
     { value: 'active', label: 'Active' },
@@ -63,10 +81,8 @@ export default class UsersPageComponent implements OnInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly statusFilter = signal('');
-
-  private get currentUserId(): string {
-    return this.authStore.user()?.id ?? '';
-  }
+  readonly sortBy = signal('updatedAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
     this.loadUsers();
@@ -82,6 +98,14 @@ export default class UsersPageComponent implements OnInit {
     this.resetAndLoad();
   }
 
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active || 'updatedAt');
+    this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
+    this.pageIndex.set(0);
+    this.paginator().pageIndex = 0;
+    this.loadUsers();
+  }
+
   onPage(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
@@ -93,12 +117,15 @@ export default class UsersPageComponent implements OnInit {
       const dialogRef = this.dialog.open(m.default, {
         width: '520px',
       });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('User invited successfully');
-          this.loadUsers();
-        }
-      });
+      dialogRef
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((result) => {
+          if (result) {
+            this.toast.success('User invited successfully');
+            this.loadUsers({ silent: true });
+          }
+        });
     });
   }
 
@@ -110,19 +137,14 @@ export default class UsersPageComponent implements OnInit {
         confirmLabel: 'Delete',
       } satisfies ConfirmDialogData,
     });
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.deleteUser(user.id);
-      }
-    });
-  }
-
-  canDelete(user: AdminUser): boolean {
-    return user.id !== this.currentUserId && !user.deletedAt;
-  }
-
-  isDeleted(user: AdminUser): boolean {
-    return !!user.deletedAt;
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.deleteUser(user.id);
+        }
+      });
   }
 
   private resetAndLoad(): void {
@@ -131,25 +153,23 @@ export default class UsersPageComponent implements OnInit {
     this.loadUsers();
   }
 
-  private loadUsers(): void {
-    this.loading.set(true);
+  private loadUsers(opts: { silent?: boolean } = {}): void {
     this.adminUserService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
         search: this.search() || undefined,
         status: this.statusFilter() || undefined,
+        sortBy: this.sortBy(),
+        sortDir: this.sortDir(),
       })
+      .pipe(withListLoading({ silent: opts.silent, loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (res) => {
           this.users.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
-        error: () => {
-          this.loading.set(false);
-          this.toast.error('Failed to load users');
-        },
+        error: () => this.toast.error('Failed to load users'),
       });
   }
 
@@ -157,7 +177,7 @@ export default class UsersPageComponent implements OnInit {
     this.adminUserService.softDelete(id).subscribe({
       next: () => {
         this.toast.success('User deleted successfully');
-        this.loadUsers();
+        this.loadUsers({ silent: true });
       },
       error: () => {
         // Error toast handled by global error interceptor

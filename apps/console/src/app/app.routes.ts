@@ -25,58 +25,54 @@ export const appRoutes: Route[] = [
     children: [
       { path: '', loadComponent: () => import('./pages/home/home') },
       {
-        path: 'profile',
-        loadChildren: () => import('@portfolio/console/feature-profile').then((m) => m.profileRoutes),
-        canActivate: [adminGuard],
-      },
-      {
         path: 'settings',
         loadChildren: () => import('@portfolio/console/feature-settings').then((m) => m.settingsRoutes),
       },
       {
-        path: 'admin',
-        loadChildren: () => import('@portfolio/console/feature-admin').then((m) => m.adminRoutes),
+        path: '',
         canActivate: [adminGuard],
-      },
-      {
-        path: 'tags',
-        loadChildren: () => import('@portfolio/console/feature-tag').then((m) => m.tagRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'categories',
-        loadChildren: () => import('@portfolio/console/feature-category').then((m) => m.categoryRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'skills',
-        loadChildren: () => import('@portfolio/console/feature-skill').then((m) => m.skillRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'experiences',
-        loadChildren: () => import('@portfolio/console/feature-experience').then((m) => m.experienceRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'messages',
-        loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'projects',
-        loadChildren: () => import('@portfolio/console/feature-project').then((m) => m.projectRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'admin/blog',
-        loadChildren: () => import('@portfolio/console/feature-blog').then((m) => m.blogRoutes),
-        canActivate: [adminGuard],
-      },
-      {
-        path: 'media',
-        loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
-        canActivate: [adminGuard],
+        children: [
+          {
+            path: 'profile',
+            loadChildren: () => import('@portfolio/console/feature-profile').then((m) => m.profileRoutes),
+          },
+          {
+            path: 'admin',
+            loadChildren: () => import('@portfolio/console/feature-admin').then((m) => m.adminRoutes),
+          },
+          {
+            path: 'tags',
+            loadChildren: () => import('@portfolio/console/feature-tag').then((m) => m.tagRoutes),
+          },
+          {
+            path: 'categories',
+            loadChildren: () => import('@portfolio/console/feature-category').then((m) => m.categoryRoutes),
+          },
+          {
+            path: 'skills',
+            loadChildren: () => import('@portfolio/console/feature-skill').then((m) => m.skillRoutes),
+          },
+          {
+            path: 'experiences',
+            loadChildren: () => import('@portfolio/console/feature-experience').then((m) => m.experienceRoutes),
+          },
+          {
+            path: 'messages',
+            loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
+          },
+          {
+            path: 'projects',
+            loadChildren: () => import('@portfolio/console/feature-project').then((m) => m.projectRoutes),
+          },
+          {
+            path: 'admin/blog',
+            loadChildren: () => import('@portfolio/console/feature-blog').then((m) => m.blogRoutes),
+          },
+          {
+            path: 'media',
+            loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
+          },
+        ],
       },
       ...(environment.production
         ? []

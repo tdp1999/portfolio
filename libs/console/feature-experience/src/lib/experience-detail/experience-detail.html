@@ -77,7 +77,7 @@
           <div class="detail-field">
             <span class="detail-field__label">Employment Type</span>
             <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ exp.employmentType | employmentTypeLabel }}</mat-chip>
+              <mat-chip class="chip-sm">{{ exp.employmentType | enumLabel: employmentTypeLabels }}</mat-chip>
             </span>
           </div>
           @if (exp.teamRole) {
@@ -105,7 +105,7 @@
           <div class="detail-field">
             <span class="detail-field__label">Location Type</span>
             <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ exp.locationType | locationTypeLabel }}</mat-chip>
+              <mat-chip class="chip-sm">{{ exp.locationType | enumLabel: locationTypeLabels }}</mat-chip>
             </span>
           </div>
           <div class="detail-field">

@@ -13,7 +13,15 @@ import {
 export class ProjectService {
   private readonly api = inject(ApiService);
 
-  list(params: { page: number; limit: number; status?: string; includeDeleted?: boolean; search?: string }) {
+  list(params: {
+    page: number;
+    limit: number;
+    status?: string;
+    includeDeleted?: boolean;
+    search?: string;
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
+  }) {
     const queryParams: Record<string, string> = {
       page: String(params.page),
       limit: String(params.limit),
@@ -21,6 +29,8 @@ export class ProjectService {
     if (params.status) queryParams['status'] = params.status;
     if (params.includeDeleted) queryParams['includeDeleted'] = 'true';
     if (params.search) queryParams['search'] = params.search;
+    if (params.sortBy) queryParams['sortBy'] = params.sortBy;
+    if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<ProjectListResponse>('/projects/admin/list', { params: queryParams });
   }
 

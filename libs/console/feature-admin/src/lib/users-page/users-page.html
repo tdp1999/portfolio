@@ -16,88 +16,99 @@
   </console-filter-bar>
 
   <div class="crud-table-container relative">
-    <console-spinner-overlay [loading]="loading()" />
+    @if (loading()) {
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+    } @else {
+      <table
+        mat-table
+        matSort
+        matSortDisableClear
+        [dataSource]="users()"
+        [matSortActive]="sortBy()"
+        [matSortDirection]="sortDir()"
+        (matSortChange)="onSortChange($event)"
+        class="w-full"
+      >
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
+          <td mat-cell *matCellDef="let user" [class.opacity-50]="!!user.deletedAt">{{ user.name }}</td>
+        </ng-container>
 
-    <table mat-table [dataSource]="users()" class="w-full">
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">{{ user.name }}</td>
-      </ng-container>
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user" [class.opacity-50]="!!user.deletedAt">{{ user.email }}</td>
+        </ng-container>
 
-      <!-- Email Column -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">{{ user.email }}</td>
-      </ng-container>
-
-      <!-- Role Column -->
-      <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef>Role</th>
-        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-          <span
-            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
-            [class]="user.role === 'ADMIN' ? 'bg-primary/15 text-primary' : 'bg-surface-alt text-text-muted'"
-          >
-            {{ user.role }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let user">
-          @if (isDeleted(user)) {
-            <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-red-500/15 text-red-400">
-              Deleted
-            </span>
-          } @else if (!user.hasAcceptedInvite) {
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let user" [class.opacity-50]="!!user.deletedAt">
             <span
-              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-amber-500/15 text-amber-400"
+              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+              [class]="user.role === 'ADMIN' ? 'bg-primary/15 text-primary' : 'bg-surface-alt text-text-muted'"
             >
-              Invited
+              {{ user.role }}
             </span>
-          } @else {
-            <span
-              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-green-500/15 text-green-400"
-            >
-              Active
-            </span>
-          }
-        </td>
-      </ng-container>
+          </td>
+        </ng-container>
 
-      <!-- Created Date Column -->
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>Created</th>
-        <td mat-cell *matCellDef="let user" [class.opacity-50]="isDeleted(user)">
-          {{ user.createdAt | date: 'mediumDate' }}
-        </td>
-      </ng-container>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let user">
+            @if (!!user.deletedAt) {
+              <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-red-500/15 text-red-400">
+                Deleted
+              </span>
+            } @else if (!user.hasAcceptedInvite) {
+              <span
+                class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-amber-500/15 text-amber-400"
+              >
+                Invited
+              </span>
+            } @else {
+              <span
+                class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-green-500/15 text-green-400"
+              >
+                Active
+              </span>
+            }
+          </td>
+        </ng-container>
 
-      <!-- Actions Column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
-        <td mat-cell *matCellDef="let user" class="col-actions">
-          @if (canDelete(user)) {
-            <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(user)">
-              <mat-icon class="icon-sm text-red-400">delete</mat-icon>
-            </button>
-          }
-        </td>
-      </ng-container>
+        <!-- Last Updated Column -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="updatedAt">Last updated</th>
+          <td mat-cell *matCellDef="let user" [class.opacity-50]="!!user.deletedAt">
+            <console-relative-time [value]="user.updatedAt" />
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <td mat-cell *matCellDef="let user" class="col-actions">
+            @if (user.id !== currentUserId() && !user.deletedAt) {
+              <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(user)">
+                <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
 
-      <!-- No data row -->
-      <tr class="mat-mdc-row" *matNoDataRow>
-        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-          No users found
-        </td>
-      </tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <!-- No data row -->
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+            No users found
+          </td>
+        </tr>
+      </table>
+    }
   </div>
 
   <mat-paginator

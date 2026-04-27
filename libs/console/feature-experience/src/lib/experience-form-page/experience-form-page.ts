@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  HostListener,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,7 +33,8 @@ import {
   StickySaveBarComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges } from '@portfolio/console/shared/util';
+import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
 
@@ -79,20 +89,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   readonly skillSearchControl = new FormControl('');
   readonly filteredSkills = signal<SkillOption[]>([]);
 
-  readonly employmentTypeOptions = [
-    { value: 'FULL_TIME', label: 'Full Time' },
-    { value: 'PART_TIME', label: 'Part Time' },
-    { value: 'CONTRACT', label: 'Contract' },
-    { value: 'FREELANCE', label: 'Freelance' },
-    { value: 'INTERNSHIP', label: 'Internship' },
-    { value: 'SELF_EMPLOYED', label: 'Self Employed' },
-  ];
-
-  readonly locationTypeOptions = [
-    { value: 'REMOTE', label: 'Remote' },
-    { value: 'HYBRID', label: 'Hybrid' },
-    { value: 'ONSITE', label: 'Onsite' },
-  ];
+  readonly employmentTypeOptions = Object.entries(EMPLOYMENT_TYPE_LABELS).map(([value, label]) => ({ value, label }));
+  readonly locationTypeOptions = Object.entries(LOCATION_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 
   readonly form = this.fb.nonNullable.group({
     companyName: ['', [Validators.required, Validators.maxLength(200)]],
@@ -347,6 +345,11 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     this.form.markAsPristine();
     this.dirty.set(false);
     this.serverError.set('');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    onBeforeUnload(event, this.dirty());
   }
 
   hasUnsavedChanges() {

@@ -18,107 +18,132 @@
       [value]="status()"
       (selectionChange)="onStatusChange($event)"
     />
+    <mat-chip-listbox class="ml-auto filter-deleted-chip">
+      <mat-chip-option (selectionChange)="onShowDeletedChange($event.selected)">
+        <mat-icon>delete_sweep</mat-icon>
+        Show deleted
+      </mat-chip-option>
+    </mat-chip-listbox>
   </console-filter-bar>
 
   <div class="crud-table-container relative">
-    <console-spinner-overlay [loading]="loading()" />
+    @if (loading()) {
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+    } @else {
+      <table
+        mat-table
+        matSort
+        matSortDisableClear
+        [dataSource]="projects()"
+        [matSortActive]="sortBy()"
+        [matSortDirection]="sortDir()"
+        (matSortChange)="onSortChange($event)"
+        class="w-full"
+      >
+        <!-- Thumbnail -->
+        <ng-container matColumnDef="thumbnail">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let project">
+            @if (project.thumbnailUrl) {
+              <img [src]="project.thumbnailUrl" [alt]="project.title" class="h-12 w-12 rounded object-cover" />
+            } @else {
+              <div class="flex h-12 w-12 items-center justify-center rounded bg-surface">
+                <mat-icon class="text-text-muted">image</mat-icon>
+              </div>
+            }
+          </td>
+        </ng-container>
 
-    <table mat-table [dataSource]="projects()" class="w-full">
-      <!-- Thumbnail -->
-      <ng-container matColumnDef="thumbnail">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let project">
-          @if (project.thumbnailUrl) {
-            <img [src]="project.thumbnailUrl" [alt]="project.title" class="h-12 w-12 rounded object-cover" />
-          } @else {
-            <div class="flex h-12 w-12 items-center justify-center rounded bg-surface">
-              <mat-icon class="text-text-muted">image</mat-icon>
-            </div>
-          }
-        </td>
-      </ng-container>
+        <!-- Title (identity column — clickable to detail, Phase 4) -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="title">Title</th>
+          <td mat-cell *matCellDef="let project" class="col-identity" (click)="goToDetail(project)">
+            {{ project.title }}
+          </td>
+        </ng-container>
 
-      <!-- Title (identity column — clickable to detail, Phase 4) -->
-      <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef>Title</th>
-        <td mat-cell *matCellDef="let project" class="col-identity" (click)="goToDetail(project)">
-          {{ project.title }}
-        </td>
-      </ng-container>
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let project">
+            @if (project.deletedAt) {
+              <span
+                class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
+              >
+                Deleted
+              </span>
+            } @else if (project.status === 'PUBLISHED') {
+              <span
+                class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
+              >
+                Published
+              </span>
+            } @else {
+              <span
+                class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+              >
+                Draft
+              </span>
+            }
+          </td>
+        </ng-container>
 
-      <!-- Status -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let project">
-          @if (project.deletedAt) {
-            <span
-              class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
-            >
-              Deleted
-            </span>
-          } @else if (project.status === 'PUBLISHED') {
-            <span
-              class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
-            >
-              Published
-            </span>
-          } @else {
-            <span
-              class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-            >
-              Draft
-            </span>
-          }
-        </td>
-      </ng-container>
+        <!-- Featured -->
+        <ng-container matColumnDef="featured">
+          <th mat-header-cell *matHeaderCellDef>Featured</th>
+          <td mat-cell *matCellDef="let project">
+            @if (project.featured) {
+              <mat-icon class="text-yellow-500">star</mat-icon>
+            }
+          </td>
+        </ng-container>
 
-      <!-- Featured -->
-      <ng-container matColumnDef="featured">
-        <th mat-header-cell *matHeaderCellDef>Featured</th>
-        <td mat-cell *matCellDef="let project">
-          @if (project.featured) {
-            <mat-icon class="text-yellow-500">star</mat-icon>
-          }
-        </td>
-      </ng-container>
+        <!-- Start Date -->
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="startDate">Start Date</th>
+          <td mat-cell *matCellDef="let project">
+            {{ project.startDate | date: 'mediumDate' }}
+          </td>
+        </ng-container>
 
-      <!-- Start Date -->
-      <ng-container matColumnDef="startDate">
-        <th mat-header-cell *matHeaderCellDef>Start Date</th>
-        <td mat-cell *matCellDef="let project">
-          {{ project.startDate | date: 'mediumDate' }}
-        </td>
-      </ng-container>
+        <!-- Last Updated -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="updatedAt">Last updated</th>
+          <td mat-cell *matCellDef="let project">
+            <console-relative-time [value]="project.updatedAt" />
+          </td>
+        </ng-container>
 
-      <!-- Actions -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
-        <td mat-cell *matCellDef="let project" class="col-actions">
-          @if (isTrashTab()) {
-            <button mat-icon-button matTooltip="Restore" aria-label="Restore" (click)="restoreProject(project)">
-              <mat-icon class="icon-sm text-text-muted">restore_from_trash</mat-icon>
-            </button>
-          } @else {
-            <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(project)">
-              <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(project)">
-              <mat-icon class="icon-sm text-red-400">delete</mat-icon>
-            </button>
-          }
-        </td>
-      </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <td mat-cell *matCellDef="let project" class="col-actions">
+            @if (project.deletedAt) {
+              <button mat-icon-button matTooltip="Restore" aria-label="Restore" (click)="restoreProject(project)">
+                <mat-icon class="icon-sm text-text-muted">restore_from_trash</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(project)">
+                <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(project)">
+                <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
 
-      <!-- No data row -->
-      <tr class="mat-mdc-row" *matNoDataRow>
-        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-          No projects found
-        </td>
-      </tr>
+        <!-- No data row -->
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+            No projects found
+          </td>
+        </tr>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.opacity-50]="row.deletedAt"></tr>
+      </table>
+    }
   </div>
 
   <mat-paginator

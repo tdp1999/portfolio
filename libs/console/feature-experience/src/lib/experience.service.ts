@@ -23,6 +23,8 @@ export class ExperienceService {
     employmentType?: string;
     locationType?: string;
     includeDeleted?: boolean;
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
   }) {
     const queryParams: Record<string, string> = {
       page: String(params.page),
@@ -32,6 +34,8 @@ export class ExperienceService {
     if (params.employmentType) queryParams['employmentType'] = params.employmentType;
     if (params.locationType) queryParams['locationType'] = params.locationType;
     if (params.includeDeleted) queryParams['includeDeleted'] = 'true';
+    if (params.sortBy) queryParams['sortBy'] = params.sortBy;
+    if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<ExperiencesListResponse>('/experiences/admin/list', { params: queryParams });
   }
 

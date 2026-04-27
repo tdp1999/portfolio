@@ -19,6 +19,8 @@ export interface ListBlogPostsParams {
   language?: BlogLanguage;
   includeDeleted?: boolean;
   search?: string;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +36,8 @@ export class BlogService {
     if (params.language) queryParams['language'] = params.language;
     if (params.includeDeleted) queryParams['includeDeleted'] = 'true';
     if (params.search) queryParams['search'] = params.search;
+    if (params.sortBy) queryParams['sortBy'] = params.sortBy;
+    if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<BlogPostListResponse>('/admin/blog', { params: queryParams });
   }
 

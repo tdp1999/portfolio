@@ -17,8 +17,8 @@ import { filter, switchMap } from 'rxjs';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import { DateRangePipe } from '@portfolio/shared/ui-pipes';
-import { EmploymentTypeLabelPipe } from '../employment-type-label.pipe';
-import { LocationTypeLabelPipe } from '../location-type-label.pipe';
+import { EnumLabelPipe } from '@portfolio/console/shared/ui';
+import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 
 @Component({
   selector: 'console-experience-detail',
@@ -31,8 +31,7 @@ import { LocationTypeLabelPipe } from '../location-type-label.pipe';
     MatTooltipModule,
     SpinnerOverlayComponent,
     DateRangePipe,
-    EmploymentTypeLabelPipe,
-    LocationTypeLabelPipe,
+    EnumLabelPipe,
   ],
   templateUrl: './experience-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +46,9 @@ export default class ExperienceDetailComponent implements OnInit {
 
   readonly experience = signal<AdminExperience | null>(null);
   readonly loading = signal(false);
+
+  readonly employmentTypeLabels = EMPLOYMENT_TYPE_LABELS;
+  readonly locationTypeLabels = LOCATION_TYPE_LABELS;
 
   readonly formattedLocation = computed(() => {
     const exp = this.experience();

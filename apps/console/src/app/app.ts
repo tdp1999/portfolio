@@ -20,15 +20,15 @@ import { AuthStore } from '@portfolio/console/shared/data-access';
   `,
 })
 export class App {
-  constructor() {
-    const authStore = inject(AuthStore);
-    const spinnerService = inject(SpinnerService);
+  authStore = inject(AuthStore);
+  spinnerService = inject(SpinnerService);
 
+  constructor() {
     effect(() => {
-      if (authStore.isBootstrapping()) {
-        spinnerService.show();
+      if (this.authStore.isBootstrapping()) {
+        this.spinnerService.show();
       } else {
-        spinnerService.hide();
+        this.spinnerService.hide();
       }
     });
   }

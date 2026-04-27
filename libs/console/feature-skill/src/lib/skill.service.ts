@@ -17,6 +17,7 @@ export interface AdminSkill {
   displayOrder: number;
   createdAt: string;
   updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface SkillsListResponse {
@@ -56,13 +57,24 @@ export interface UpdateSkillPayload {
 export class SkillService {
   private readonly api = inject(ApiService);
 
-  list(params: { page: number; limit: number; search?: string; category?: string }) {
+  list(params: {
+    page: number;
+    limit: number;
+    search?: string;
+    category?: string;
+    includeDeleted?: boolean;
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
+  }) {
     const queryParams: Record<string, string> = {
       page: String(params.page),
       limit: String(params.limit),
     };
     if (params.search) queryParams['search'] = params.search;
     if (params.category) queryParams['category'] = params.category;
+    if (params.includeDeleted) queryParams['includeDeleted'] = 'true';
+    if (params.sortBy) queryParams['sortBy'] = params.sortBy;
+    if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<SkillsListResponse>('/skills', { params: queryParams });
   }
 

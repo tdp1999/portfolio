@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -16,15 +17,18 @@ import {
   type FilterOption,
   FilterSearchComponent,
   FilterSelectComponent,
-  SpinnerOverlayComponent,
+  ProgressBarService,
+  RelativeTimeComponent,
+  SkeletonTableComponent,
   ToastService,
+  withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import { DateRangePipe } from '@portfolio/shared/ui-pipes';
-import { EmploymentTypeLabelPipe } from '../employment-type-label.pipe';
-import { LocationTypeLabelPipe } from '../location-type-label.pipe';
+import { EnumLabelPipe } from '@portfolio/console/shared/ui';
+import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 
 @Component({
   selector: 'console-experiences-page',
@@ -36,13 +40,14 @@ import { LocationTypeLabelPipe } from '../location-type-label.pipe';
     MatIconModule,
     MatTooltipModule,
     MatChipsModule,
-    SpinnerOverlayComponent,
+    MatSortModule,
+    SkeletonTableComponent,
+    RelativeTimeComponent,
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
     DateRangePipe,
-    EmploymentTypeLabelPipe,
-    LocationTypeLabelPipe,
+    EnumLabelPipe,
     RouterLink,
   ],
   templateUrl: './experiences-page.html',
@@ -55,9 +60,21 @@ export default class ExperiencesPageComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly progress = inject(ProgressBarService);
+
+  readonly employmentTypeLabels = EMPLOYMENT_TYPE_LABELS;
+  readonly locationTypeLabels = LOCATION_TYPE_LABELS;
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['company', 'position', 'employmentType', 'locationType', 'dateRange', 'actions'];
+  readonly displayedColumns = [
+    'company',
+    'position',
+    'employmentType',
+    'locationType',
+    'dateRange',
+    'updatedAt',
+    'actions',
+  ];
   readonly experiences = signal<AdminExperience[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
@@ -66,7 +83,9 @@ export default class ExperiencesPageComponent implements OnInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly employmentType = signal('');
-  readonly includeDeleted = signal(true);
+  readonly showDeleted = signal(false);
+  readonly sortBy = signal('updatedAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   readonly employmentTypeOptions: FilterOption[] = [
     { value: 'FULL_TIME', label: 'Full Time' },
@@ -93,6 +112,19 @@ export default class ExperiencesPageComponent implements OnInit {
   onEmploymentTypeChange(value: string): void {
     this.employmentType.set(value);
     this.resetAndLoad();
+  }
+
+  onShowDeletedChange(value: boolean): void {
+    this.showDeleted.set(value);
+    this.resetAndLoad();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active || 'updatedAt');
+    this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
+    this.pageIndex.set(0);
+    this.paginator().pageIndex = 0;
+    this.loadExperiences();
   }
 
   onPage(event: PageEvent): void {
@@ -127,7 +159,7 @@ export default class ExperiencesPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Experience deleted');
-          this.loadExperiences();
+          this.loadExperiences({ silent: true });
         },
         error: () => this.toast.error('Failed to delete experience'),
       });
@@ -151,7 +183,7 @@ export default class ExperiencesPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Experience restored');
-          this.loadExperiences();
+          this.loadExperiences({ silent: true });
         },
         error: () => this.toast.error('Failed to restore experience'),
       });
@@ -163,26 +195,24 @@ export default class ExperiencesPageComponent implements OnInit {
     this.loadExperiences();
   }
 
-  private loadExperiences(): void {
-    this.loading.set(true);
+  private loadExperiences(opts: { silent?: boolean } = {}): void {
     this.experienceService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
         search: this.search() || undefined,
         employmentType: this.employmentType() || undefined,
-        includeDeleted: this.includeDeleted(),
+        includeDeleted: this.showDeleted() || undefined,
+        sortBy: this.sortBy(),
+        sortDir: this.sortDir(),
       })
+      .pipe(withListLoading({ silent: opts.silent, loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (res) => {
           this.experiences.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
-        error: () => {
-          this.loading.set(false);
-          this.toast.error('Failed to load experiences');
-        },
+        error: () => this.toast.error('Failed to load experiences'),
       });
   }
 }

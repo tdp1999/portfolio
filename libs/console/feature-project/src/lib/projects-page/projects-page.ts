@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
@@ -18,15 +9,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatChipsModule } from '@angular/material/chips';
 import {
   FilterBarComponent,
   FilterSearchComponent,
   FilterSelectComponent,
   type FilterOption,
-  SpinnerOverlayComponent,
+  SkeletonTableComponent,
+  RelativeTimeComponent,
+  ProgressBarService,
   ConfirmDialogComponent,
   type ConfirmDialogData,
   ToastService,
+  withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ProjectService } from '../project.service';
@@ -35,7 +31,6 @@ import { AdminProject, SkillOption } from '../project.types';
 const STATUS_OPTIONS: FilterOption[] = [
   { value: 'PUBLISHED', label: 'Published' },
   { value: 'DRAFT', label: 'Draft' },
-  { value: 'TRASH', label: 'Trash' },
 ];
 
 @Component({
@@ -48,10 +43,13 @@ const STATUS_OPTIONS: FilterOption[] = [
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatSortModule,
+    MatChipsModule,
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
-    SpinnerOverlayComponent,
+    SkeletonTableComponent,
+    RelativeTimeComponent,
   ],
   templateUrl: './projects-page.html',
   styleUrl: './projects-page.scss',
@@ -63,9 +61,10 @@ export default class ProjectsPageComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly progress = inject(ProgressBarService);
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['thumbnail', 'title', 'status', 'featured', 'startDate', 'actions'];
+  readonly displayedColumns = ['thumbnail', 'title', 'status', 'featured', 'startDate', 'updatedAt', 'actions'];
 
   readonly projects = signal<AdminProject[]>([]);
   readonly total = signal(0);
@@ -76,8 +75,9 @@ export default class ProjectsPageComponent implements OnInit {
   readonly search = signal('');
   readonly status = signal('');
   readonly statusOptions = STATUS_OPTIONS;
-
-  readonly isTrashTab = computed(() => this.status() === 'TRASH');
+  readonly showDeleted = signal(false);
+  readonly sortBy = signal('updatedAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   private skillsCache: SkillOption[] = [];
 
@@ -97,6 +97,20 @@ export default class ProjectsPageComponent implements OnInit {
   onSearchChange(value: string): void {
     this.search.set(value);
     this.pageIndex.set(0);
+    this.loadProjects();
+  }
+
+  onShowDeletedChange(value: boolean): void {
+    this.showDeleted.set(value);
+    this.pageIndex.set(0);
+    this.loadProjects();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active || 'updatedAt');
+    this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
+    this.pageIndex.set(0);
+    this.paginator().pageIndex = 0;
     this.loadProjects();
   }
 
@@ -136,7 +150,7 @@ export default class ProjectsPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Project deleted');
-          this.loadProjects();
+          this.loadProjects({ silent: true });
         },
         error: () => this.toast.error('Failed to delete project'),
       });
@@ -146,35 +160,30 @@ export default class ProjectsPageComponent implements OnInit {
     this.projectService.restore(project.id).subscribe({
       next: () => {
         this.toast.success('Project restored');
-        this.loadProjects();
+        this.loadProjects({ silent: true });
       },
       error: () => this.toast.error('Failed to restore project'),
     });
   }
 
-  private loadProjects(): void {
-    this.loading.set(true);
-    const isTrash = this.isTrashTab();
-    const statusValue = this.status();
+  private loadProjects(opts: { silent?: boolean } = {}): void {
     this.projectService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
-        status: isTrash ? undefined : statusValue || undefined,
-        includeDeleted: isTrash || undefined,
+        status: this.status() || undefined,
+        includeDeleted: this.showDeleted() || undefined,
         search: this.search() || undefined,
+        sortBy: this.sortBy(),
+        sortDir: this.sortDir(),
       })
+      .pipe(withListLoading({ silent: opts.silent, loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (res) => {
-          const data = isTrash ? res.data.filter((p) => p.deletedAt) : res.data;
-          this.projects.set(data);
+          this.projects.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
-        error: () => {
-          this.toast.error('Failed to load projects');
-          this.loading.set(false);
-        },
+        error: () => this.toast.error('Failed to load projects'),
       });
   }
 }

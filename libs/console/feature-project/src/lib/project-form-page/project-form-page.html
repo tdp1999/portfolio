@@ -263,8 +263,13 @@
           description="Control status, featured flag, and ordering on the public site."
           saveMode="atomic"
         >
-          <div class="flex flex-wrap items-center gap-6">
-            <mat-slide-toggle formControlName="featured">Featured</mat-slide-toggle>
+          <div class="flex flex-col flex-wrap gap-6">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">Featured:</span>
+              <mat-slide-toggle formControlName="featured">{{
+                form.controls.featured.value ? 'Yes' : 'No'
+              }}</mat-slide-toggle>
+            </div>
 
             <div class="flex items-center gap-2">
               <span class="text-sm">Status:</span>

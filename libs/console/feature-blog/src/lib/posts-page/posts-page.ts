@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
@@ -17,16 +8,24 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatChipsModule } from '@angular/material/chips';
+
 import {
+  EnumLabelPipe,
   FilterBarComponent,
   FilterSearchComponent,
   FilterSelectComponent,
   type FilterOption,
-  SpinnerOverlayComponent,
+  ProgressBarService,
+  RelativeTimeComponent,
+  SkeletonTableComponent,
   ConfirmDialogComponent,
   type ConfirmDialogData,
   ToastService,
+  withListLoading,
 } from '@portfolio/console/shared/ui';
+import { BLOG_POST_STATUS_LABELS } from '@portfolio/shared/enum-labels';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
@@ -37,7 +36,6 @@ const STATUS_OPTIONS: FilterOption[] = [
   { value: 'DRAFT', label: 'Draft' },
   { value: 'UNLISTED', label: 'Unlisted' },
   { value: 'PRIVATE', label: 'Private' },
-  { value: 'TRASH', label: 'Trash' },
 ];
 
 @Component({
@@ -50,10 +48,14 @@ const STATUS_OPTIONS: FilterOption[] = [
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatSortModule,
+    MatChipsModule,
     FilterBarComponent,
     FilterSearchComponent,
     FilterSelectComponent,
-    SpinnerOverlayComponent,
+    SkeletonTableComponent,
+    RelativeTimeComponent,
+    EnumLabelPipe,
   ],
   templateUrl: './posts-page.html',
   styleUrl: './posts-page.scss',
@@ -65,9 +67,10 @@ export default class PostsPageComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly progress = inject(ProgressBarService);
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'actions'];
+  readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'updatedAt', 'actions'];
 
   readonly posts = signal<AdminBlogPostListItem[]>([]);
   readonly total = signal(0);
@@ -79,7 +82,10 @@ export default class PostsPageComponent implements OnInit {
   readonly status = signal('');
   readonly statusOptions = STATUS_OPTIONS;
 
-  readonly isTrashTab = computed(() => this.status() === 'TRASH');
+  readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
+  readonly showDeleted = signal(false);
+  readonly sortBy = signal('updatedAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   ngOnInit(): void {
     this.loadPosts();
@@ -94,6 +100,20 @@ export default class PostsPageComponent implements OnInit {
   onSearchChange(value: string): void {
     this.search.set(value);
     this.pageIndex.set(0);
+    this.loadPosts();
+  }
+
+  onShowDeletedChange(value: boolean): void {
+    this.showDeleted.set(value);
+    this.pageIndex.set(0);
+    this.loadPosts();
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortBy.set(sort.active || 'updatedAt');
+    this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
+    this.pageIndex.set(0);
+    this.paginator().pageIndex = 0;
     this.loadPosts();
   }
 
@@ -148,7 +168,7 @@ export default class PostsPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Post deleted');
-          this.loadPosts();
+          this.loadPosts({ silent: true });
         },
         error: () => this.toast.error('Failed to delete post'),
       });
@@ -158,7 +178,7 @@ export default class PostsPageComponent implements OnInit {
     this.blogService.restore(post.id).subscribe({
       next: () => {
         this.toast.success('Post restored');
-        this.loadPosts();
+        this.loadPosts({ silent: true });
       },
       error: () => this.toast.error('Failed to restore post'),
     });
@@ -182,35 +202,30 @@ export default class PostsPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toast.success('Post permanently deleted');
-          this.loadPosts();
+          this.loadPosts({ silent: true });
         },
         error: () => this.toast.error('Failed to delete post'),
       });
   }
 
-  private loadPosts(): void {
-    this.loading.set(true);
-    const isTrash = this.isTrashTab();
-    const statusValue = this.status();
+  private loadPosts(opts: { silent?: boolean } = {}): void {
     this.blogService
       .list({
         page: this.pageIndex() + 1,
         limit: this.pageSize(),
-        status: (isTrash ? undefined : statusValue || undefined) as BlogStatus | undefined,
-        includeDeleted: isTrash || undefined,
+        status: (this.status() as BlogStatus | undefined) || undefined,
+        includeDeleted: this.showDeleted() || undefined,
         search: this.search() || undefined,
+        sortBy: this.sortBy(),
+        sortDir: this.sortDir(),
       })
+      .pipe(withListLoading({ silent: opts.silent, loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (res) => {
-          const data = isTrash ? res.data.filter((p) => p.deletedAt) : res.data;
-          this.posts.set(data);
+          this.posts.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
-        error: () => {
-          this.toast.error('Failed to load posts');
-          this.loading.set(false);
-        },
+        error: () => this.toast.error('Failed to load posts'),
       });
   }
 }

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  HostListener,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,7 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges } from '@portfolio/console/shared/util';
+import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
 import {
   LongFormLayoutComponent,
   MediaPickerDialogComponent,
@@ -208,14 +217,17 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         dataSource: this.mediaDataSource,
       } satisfies MediaPickerDialogData,
     });
-    dialogRef.afterClosed().subscribe((result: string | undefined) => {
-      if (result) {
-        this.thumbnailId.set(result);
-        this.thumbnailUrl.set(null);
-        this.form.markAsDirty();
-        this.dirty.set(true);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: string | undefined) => {
+        if (result) {
+          this.thumbnailId.set(result);
+          this.thumbnailUrl.set(null);
+          this.form.markAsDirty();
+          this.dirty.set(true);
+        }
+      });
   }
 
   clearThumbnail(): void {
@@ -236,16 +248,19 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         dataSource: this.mediaDataSource,
       } satisfies MediaPickerDialogData,
     });
-    dialogRef.afterClosed().subscribe((result: string[] | undefined) => {
-      if (result) {
-        const existing = this.galleryImages();
-        const existingMap = new Map(existing.map((img) => [img.mediaId, img]));
-        const updated = result.map((mediaId) => existingMap.get(mediaId) ?? { mediaId, url: '', altText: null });
-        this.galleryImages.set(updated);
-        this.form.markAsDirty();
-        this.dirty.set(true);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: string[] | undefined) => {
+        if (result) {
+          const existing = this.galleryImages();
+          const existingMap = new Map(existing.map((img) => [img.mediaId, img]));
+          const updated = result.map((mediaId) => existingMap.get(mediaId) ?? { mediaId, url: '', altText: null });
+          this.galleryImages.set(updated);
+          this.form.markAsDirty();
+          this.dirty.set(true);
+        }
+      });
   }
 
   removeGalleryImage(index: number): void {
@@ -376,6 +391,11 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     this.form.markAsPristine();
     this.dirty.set(false);
     this.serverError.set('');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    onBeforeUnload(event, this.dirty());
   }
 
   hasUnsavedChanges() {

@@ -18,74 +18,103 @@
       [value]="category()"
       (selectionChange)="onCategoryChange($event)"
     />
+    <mat-chip-listbox class="ml-auto filter-deleted-chip">
+      <mat-chip-option (selectionChange)="onShowDeletedChange($event.selected)">
+        <mat-icon>delete_sweep</mat-icon>
+        Show deleted
+      </mat-chip-option>
+    </mat-chip-listbox>
   </console-filter-bar>
 
   <div class="crud-table-container relative">
-    <console-spinner-overlay [loading]="loading()" />
+    @if (loading()) {
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+    } @else {
+      <table
+        mat-table
+        matSort
+        matSortDisableClear
+        [dataSource]="skills()"
+        [matSortActive]="sortBy()"
+        [matSortDirection]="sortDir()"
+        (matSortChange)="onSortChange($event)"
+        class="w-full"
+      >
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
+          <td mat-cell *matCellDef="let skill">
+            @if (skill.parentSkillId) {
+              <span class="text-text-muted mr-1">└</span>
+            }
+            {{ skill.name }}
+          </td>
+        </ng-container>
 
-    <table mat-table [dataSource]="skills()" class="w-full">
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let skill">
-          @if (skill.parentSkillId) {
-            <span class="text-text-muted mr-1">└</span>
-          }
-          {{ skill.name }}
-        </td>
-      </ng-container>
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let skill" class="text-text-muted">
+            {{ skill.category | enumLabel: skillCategoryLabels }}
+          </td>
+        </ng-container>
 
-      <!-- Category Column -->
-      <ng-container matColumnDef="category">
-        <th mat-header-cell *matHeaderCellDef>Category</th>
-        <td mat-cell *matCellDef="let skill" class="text-text-muted">{{ skill.category }}</td>
-      </ng-container>
+        <!-- Parent Column -->
+        <ng-container matColumnDef="parent">
+          <th mat-header-cell *matHeaderCellDef>Parent</th>
+          <td mat-cell *matCellDef="let skill" class="text-text-muted">{{ getParentName(skill.parentSkillId) }}</td>
+        </ng-container>
 
-      <!-- Parent Column -->
-      <ng-container matColumnDef="parent">
-        <th mat-header-cell *matHeaderCellDef>Parent</th>
-        <td mat-cell *matCellDef="let skill" class="text-text-muted">{{ getParentName(skill.parentSkillId) }}</td>
-      </ng-container>
+        <!-- isLibrary Column -->
+        <ng-container matColumnDef="isLibrary">
+          <th mat-header-cell *matHeaderCellDef>Library</th>
+          <td mat-cell *matCellDef="let skill">
+            @if (skill.isLibrary) {
+              <mat-icon class="icon-sm text-green-500">check</mat-icon>
+            }
+          </td>
+        </ng-container>
 
-      <!-- isLibrary Column -->
-      <ng-container matColumnDef="isLibrary">
-        <th mat-header-cell *matHeaderCellDef>Library</th>
-        <td mat-cell *matCellDef="let skill">
-          @if (skill.isLibrary) {
-            <mat-icon class="icon-sm text-green-500">check</mat-icon>
-          }
-        </td>
-      </ng-container>
+        <!-- Display Order Column -->
+        <ng-container matColumnDef="displayOrder">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="displayOrder">Order</th>
+          <td mat-cell *matCellDef="let skill">{{ skill.displayOrder }}</td>
+        </ng-container>
 
-      <!-- Display Order Column -->
-      <ng-container matColumnDef="displayOrder">
-        <th mat-header-cell *matHeaderCellDef>Order</th>
-        <td mat-cell *matCellDef="let skill">{{ skill.displayOrder }}</td>
-      </ng-container>
+        <!-- Last Updated Column -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="updatedAt">Last updated</th>
+          <td mat-cell *matCellDef="let skill">
+            <console-relative-time [value]="skill.updatedAt" />
+          </td>
+        </ng-container>
 
-      <!-- Actions Column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
-        <td mat-cell *matCellDef="let skill" class="col-actions">
-          <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(skill)">
-            <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(skill)">
-            <mat-icon class="icon-sm text-red-400">delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <td mat-cell *matCellDef="let skill" class="col-actions">
+            @if (!skill.deletedAt) {
+              <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(skill)">
+                <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(skill)">
+                <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.opacity-50]="row.deletedAt"></tr>
 
-      <!-- No data row -->
-      <tr class="mat-mdc-row" *matNoDataRow>
-        <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
-          No skills found
-        </td>
-      </tr>
-    </table>
+        <!-- No data row -->
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="mat-mdc-cell py-8 text-center text-text-muted" [attr.colspan]="displayedColumns.length">
+            No skills found
+          </td>
+        </tr>
+      </table>
+    }
   </div>
 
   <mat-paginator
