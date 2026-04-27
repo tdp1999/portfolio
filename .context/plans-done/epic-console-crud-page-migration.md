@@ -31,6 +31,12 @@ Dialogs cramp mid/long forms, can't deep-link, lose browser back/forward, and ma
 
 - **Strict "primary CRUD = page"** — even for Category and Tag with minimal fields
 - Dialogs **kept** for quick-create inline when calling from another form (e.g., `+ New Tag` button inside Project form opens dialog, not navigation)
+- **Drawer exception for Media** — list-as-destination + URL-synced drawer detail. Rationale: asset browsing is triage-style (scan many, peek, move on); detail is preview + short metadata, not a long form; drawer preserves grid context and enables keyboard navigation between assets.
+
+### URL semantics
+
+- **Page pattern** uses sub-routes (`/x/:id`, `/x/:id/edit`) — sub-routes mean "destination."
+- **Drawer pattern** uses a query param on the list route (`/media?selected=:id`) — query params mean "state on a destination." A drawer is transient state layered on the list, not a separate page; encoding it as a sub-route would lie about refresh / back-button / breadcrumb semantics.
 
 ## High-Level Requirements
 
@@ -65,28 +71,30 @@ All new pages follow Experience/Project:
 6. Keep `category-dialog` exported for quick-create from Blog / Project forms
 7. Fields: name (EN/VI), slug, description, color/icon (if any)
 
-#### D3. Media (Task 030)
+#### D3. Media (Task 030) — **drawer exception**
 
-8. Add `<media-detail>` at `/media/:id`
-9. Show preview, metadata (dimensions, size, mime, uploaded date, folder), usage references, alt/caption editable inline OR via Edit button → dialog
-10. Keep existing `media-dialog` for quick-edit
-11. Grid click → detail page (currently opens dialog — change)
+8. Add `<media-drawer>` overlay on `/media`, opened/closed by URL query param `?selected=:id` (deep-link + refresh-safe)
+9. Grid click → opens drawer (no navigation away from list); selecting another asset swaps drawer content; close clears the param
+10. Drawer content: preview, metadata (dimensions, size, mime, uploaded date, folder), usage references, alt/caption editable inline
+11. Keyboard: `↑/↓` move grid selection, `Enter` opens drawer, `Esc` closes; focus trap inside drawer when open, focus restored to row on close
+12. Mobile (<md): drawer becomes full-screen sheet
+13. Retire/repurpose existing `media-dialog` — drawer replaces it; if a heavier edit flow is needed later, escalate to a form page (out of scope here)
 
 #### D4. Skill (Task 040)
 
-12. Add `<skill-detail>` at `/skills/:id`
-13. Convert `skill-dialog` → `<skill-form-page>` at `/skills/new` + `/skills/:id/edit`
-14. Keep `skill-dialog` for quick-create from Project form
-15. Fields: name, slug, category, parent skill (autocomplete from list), description, icon, years of experience, proficiency note, isLibrary, isFeatured, displayOrder
+14. Add `<skill-detail>` at `/skills/:id`
+15. Convert `skill-dialog` → `<skill-form-page>` at `/skills/new` + `/skills/:id/edit`
+16. Keep `skill-dialog` for quick-create from Project form
+17. Fields: name, slug, category, parent skill (autocomplete from list), description, icon, years of experience, proficiency note, isLibrary, isFeatured, displayOrder
    - **Note:** `isLibrary` / `isFeatured` semantics audit is a deferred task (Stream E); for now keep fields but add TODO to revisit once audit complete
-16. Show children skills in detail page if skill has them
+18. Show children skills in detail page if skill has them
 
 #### D5. Tag (Task 050)
 
-17. Add `<tag-detail>` at `/tags/:id`
-18. Convert `tag-dialog` → `<tag-form-page>` at `/tags/new` + `/tags/:id/edit`
-19. Keep `tag-dialog` for quick-create from Blog / Project forms
-20. Fields: name (EN/VI), slug, optional color
+19. Add `<tag-detail>` at `/tags/:id`
+20. Convert `tag-dialog` → `<tag-form-page>` at `/tags/new` + `/tags/:id/edit`
+21. Keep `tag-dialog` for quick-create from Blog / Project forms
+22. Fields: name (EN/VI), slug, optional color
 
 ## Dependencies / Prerequisites
 
@@ -96,16 +104,27 @@ All new pages follow Experience/Project:
 
 ## Acceptance Criteria
 
-- Every listed module has detail + form pages at standard routes
-- List row click → detail page for every module
-- Edit button on detail → form page `/edit`; `+ New` button on list → form page `/new`
+### Page-pattern modules (Blog, Category, Skill, Tag)
+
+- Each module has detail + form pages at standard routes (`/x/:id`, `/x/new`, `/x/:id/edit`)
+- List row click → detail page; Edit button on detail → form page `/edit`; `+ New` on list → form page `/new`
 - Form pages implement `HasUnsavedChanges` (router guard + beforeunload)
 - Dialog forms retained only for quick-create contexts; documented where each is still used
 - Deep-linking works (refresh on detail/form page loads correctly, SSR-safe)
 - Breadcrumbs consistent across modules
 
+### Drawer-pattern module (Media)
+
+- Single route `/media`; drawer state encoded as `?selected=:id` (deep-link + refresh-safe)
+- Grid click toggles drawer; selecting another asset swaps content without closing
+- `Esc` and explicit close button clear `?selected=`; back button does the same
+- Keyboard navigation: `↑/↓` move grid selection, `Enter` opens drawer
+- Focus trap when drawer open; focus restored to originating row on close
+- Below `md` breakpoint, drawer renders as a full-screen sheet
+- Inline edits (alt/caption) follow `HasUnsavedChanges` if persisted via the drawer
+
 ## Open Questions
 
 - Blog post detail vs editor page — if editor already shows all content, is a separate "detail" page valuable? Possibly skip D1 or make it a lightweight preview (decide during breakdown)
-- Media detail page granularity — how much metadata to show before it duplicates the dialog?
-- Short-form page layout — `long-form-layout` with single section vs. minimal centered form for Category/Tag (decide during D2/D5)
+- ~~Media detail page granularity~~ — **resolved:** drawer pattern (see D3)
+- ~~Short-form page layout for Category/Tag~~ — **resolved:** strict page pattern, use `long-form-layout` with a single section for visual consistency across modules

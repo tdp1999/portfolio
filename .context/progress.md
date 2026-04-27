@@ -109,6 +109,13 @@
   - Deleted `EmploymentTypeLabelPipe` + `LocationTypeLabelPipe`; migrated all 4 call sites
   - Replaced raw enum renders: `{{ post.status }}` (posts-page) + `{{ skill.category }}` (skills-page)
   - Wired `@HostListener('window:beforeunload')` into `experience-form-page` + `project-form-page`; `post-editor-page` was already wired
+- [x] **Console CRUD Page Migration** (epic-console-crud-page-migration) - Completed 2026-04-27
+  - Implemented directly from epic (no task breakdown); part of console-feature-review
+  - 5 modules migrated: Blog, Category, Skill, Tag → list → detail → form pages; Media → URL-synced drawer (`?selected=`) as the documented exception
+  - All form pages implement `HasUnsavedChanges` (router guard + beforeunload); all navigation uses template `routerLink`
+  - Renamed `post-editor-page` → `post-form-page`; removed `media-dialog`; kept `category-/skill-/tag-dialog` for future inline quick-create
+  - Skill detail uses targeted `getById` + `getChildren` instead of bulk list; form-page uses `GET /skills/all` (no pagination cap)
+  - URL-semantics convention recorded in epic: sub-routes = destination, query params = state on a destination
 - [x] **Console Table Standardization** (epic-console-table-standardization) - Completed 2026-04-27
   - Implemented directly from epic (no task breakdown); part of console-feature-review Stream B
   - BE: `sortBy`/`sortDir` params added to all 7 modules (experience, skill, category, tag, project, blog-post, user); per-module field whitelists; dynamic `orderBy` replaces hardcoded sorts
@@ -168,7 +175,7 @@
 
 ## Up Next
 
-**Current:** Dashboard backend APIs (194, pending standalone) → Next epic: Console CRUD Page Migration (epic-console-crud-page-migration)
+**Current:** Dashboard backend APIs (194, pending standalone)
 
 
 ## Statistics
@@ -179,7 +186,7 @@
 | In Progress               | 0       |
 | Pending                   | 2       |
 | **Total Created**         | **285** |
-| Epics completed           | 21      |
+| Epics completed           | 22      |
 
 ## Notes
 
