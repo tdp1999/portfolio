@@ -3,6 +3,8 @@ export interface PaginatedQuery {
   limit: number;
   search?: string;
   includeDeleted?: boolean;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
 }
 
 export interface PaginatedResult<T> {

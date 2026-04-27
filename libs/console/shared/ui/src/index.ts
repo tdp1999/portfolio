@@ -8,7 +8,12 @@ export { ToastService } from './lib/toast/toast.service';
 export { ToastContainerComponent } from './lib/toast/toast-container.component';
 export type { Toast, ToastType } from './lib/toast/toast.model';
 export { LoadingBarComponent } from './lib/loading-bar/loading-bar.component';
+export { ProgressBarService, type ProgressBarHandle } from './lib/loading-bar/progress-bar.service';
+export { withListLoading, type ListLoadingOptions } from './lib/rx/with-list-loading';
 export { SkeletonComponent } from './lib/skeleton/skeleton.component';
+export { SkeletonRowComponent } from './lib/skeleton/skeleton-row.component';
+export { SkeletonTableComponent } from './lib/skeleton/skeleton-table.component';
+export { RelativeTimeComponent } from './lib/relative-time/relative-time.component';
 export { SpinnerService } from './lib/spinner/spinner.service';
 export { FullPageSpinnerComponent } from './lib/spinner/full-page-spinner.component';
 export { SpinnerOverlayComponent } from './lib/spinner/spinner-overlay.component';
@@ -53,3 +58,4 @@ export type {
 } from './lib/asset-upload-zone/asset-upload-zone.types';
 export { Editor as MarkdownEditorComponent } from './lib/markdown-editor/editor';
 export type { MarkdownEditorApi, MarkdownEditorChange } from './lib/markdown-editor/markdown-editor.types';
+export { EnumLabelPipe } from './lib/enum-label/enum-label.pipe';

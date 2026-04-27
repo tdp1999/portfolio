@@ -1,3 +1,4 @@
 export const FILTER_DEBOUNCE_MS = 300;
 export const LOADING_BAR_MIN_DISPLAY_MS = 250;
 export const MEDIA_PICKER_MIN_LOADING_MS = 400;
+export const SKELETON_MIN_DURATION_MS = 300;

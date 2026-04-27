@@ -1,8 +1,9 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LOADING_BAR_MIN_DISPLAY_MS as MIN_DISPLAY_MS } from '@portfolio/console/shared/util';
+import { ProgressBarHandle, ProgressBarService } from './progress-bar.service';
 
 @Component({
   selector: 'console-loading-bar',
@@ -13,6 +14,7 @@ import { LOADING_BAR_MIN_DISPLAY_MS as MIN_DISPLAY_MS } from '@portfolio/console
       class="fixed top-0 left-0 z-[9999] w-full transition-opacity duration-200"
       [class.opacity-0]="!visible()"
       [class.opacity-100]="visible()"
+      [attr.aria-hidden]="!visible()"
     >
       <mat-progress-bar mode="indeterminate" />
     </div>
@@ -21,24 +23,32 @@ import { LOADING_BAR_MIN_DISPLAY_MS as MIN_DISPLAY_MS } from '@portfolio/console
 export class LoadingBarComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly progress = inject(ProgressBarService);
 
-  readonly loading = signal(false);
   readonly visible = signal(false);
 
   private showTime = 0;
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
+  private routerHandle: ProgressBarHandle | null = null;
 
   constructor() {
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.show();
+        if (!this.routerHandle) this.routerHandle = this.progress.start();
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.hide();
+        this.routerHandle?.complete();
+        this.routerHandle = null;
       }
+    });
+
+    // React to active state from any source (router or manual)
+    effect(() => {
+      if (this.progress.active()) this.show();
+      else this.hide();
     });
   }
 
@@ -48,7 +58,6 @@ export class LoadingBarComponent {
       this.hideTimeout = null;
     }
     this.showTime = Date.now();
-    this.loading.set(true);
     this.visible.set(true);
   }
 
@@ -58,7 +67,6 @@ export class LoadingBarComponent {
 
     this.hideTimeout = setTimeout(() => {
       this.visible.set(false);
-      setTimeout(() => this.loading.set(false), 200);
       this.hideTimeout = null;
     }, remaining);
   }
