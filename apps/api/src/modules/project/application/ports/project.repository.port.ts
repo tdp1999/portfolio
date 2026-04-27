@@ -26,6 +26,7 @@ export interface ProjectUpdateInput {
 
 export interface ProjectFindAllOptions extends PaginatedQuery {
   status?: string;
+  sortBy?: string;
 }
 
 export interface IProjectRepository {

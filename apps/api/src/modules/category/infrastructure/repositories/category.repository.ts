@@ -56,7 +56,7 @@ export class CategoryRepository implements ICategoryRepository {
   }
 
   async findAll(options: CategoryFindAllOptions): Promise<PaginatedResult<Category>> {
-    const { page, limit, search, includeDeleted } = options;
+    const { page, limit, search, includeDeleted, sortBy, sortDir } = options;
     const where: Prisma.CategoryWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (search) {
@@ -66,12 +66,14 @@ export class CategoryRepository implements ICategoryRepository {
       ];
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.CategoryOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.category.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+        orderBy,
       }),
       this.prisma.category.count({ where }),
     ]);

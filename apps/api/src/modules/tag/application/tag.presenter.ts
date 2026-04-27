@@ -9,6 +9,7 @@ export class TagPresenter {
       slug: tag.slug,
       createdAt: tag.createdAt,
       updatedAt: tag.updatedAt,
+      deletedAt: tag.deletedAt ?? null,
     };
   }
 }

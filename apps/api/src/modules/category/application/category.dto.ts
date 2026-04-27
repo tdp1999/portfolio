@@ -27,7 +27,10 @@ const UpdateCategoryFieldsSchema = z.object({
 
 export const UpdateCategorySchema = nonEmptyPartial(UpdateCategoryFieldsSchema);
 
-export const CategoryQuerySchema = PaginatedQuerySchema;
+export const CategoryQuerySchema = PaginatedQuerySchema.extend({
+  includeDeleted: z.coerce.boolean().default(false),
+  sortBy: z.enum(['updatedAt', 'name', 'displayOrder']).default('updatedAt'),
+});
 
 export type CreateCategoryDto = z.infer<typeof CreateCategorySchema>;
 export type UpdateCategoryDto = z.infer<typeof UpdateCategorySchema>;
@@ -41,4 +44,5 @@ export type CategoryResponseDto = {
   displayOrder: number;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 };

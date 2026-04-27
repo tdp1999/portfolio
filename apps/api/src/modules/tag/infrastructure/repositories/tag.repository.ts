@@ -54,19 +54,21 @@ export class TagRepository implements ITagRepository {
   }
 
   async findAll(options: TagFindAllOptions): Promise<PaginatedResult<Tag>> {
-    const { page, limit, search, includeDeleted } = options;
+    const { page, limit, search, includeDeleted, sortBy, sortDir } = options;
     const where: Prisma.TagWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.TagOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.tag.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { name: 'asc' },
+        orderBy,
       }),
       this.prisma.tag.count({ where }),
     ]);

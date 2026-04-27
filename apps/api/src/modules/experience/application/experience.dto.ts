@@ -75,6 +75,7 @@ export const ListExperiencesSchema = PaginatedQuerySchema.extend({
   employmentType: z.nativeEnum(EmploymentType).optional(),
   locationType: z.nativeEnum(LocationType).optional(),
   includeDeleted: z.coerce.boolean().default(false),
+  sortBy: z.enum(['updatedAt', 'startDate', 'companyName', 'displayOrder']).default('updatedAt'),
 });
 
 export type ListExperiencesDto = z.infer<typeof ListExperiencesSchema>;

@@ -39,6 +39,7 @@ export const CreateUserByAdminSchema = z.object({
 
 export const PaginationSearchSchema = PaginatedQuerySchema.extend({
   status: z.enum(['active', 'invited', 'deleted']).optional(),
+  sortBy: z.enum(['updatedAt', 'name', 'createdAt']).default('updatedAt'),
 });
 
 export type UserPublicDto = {

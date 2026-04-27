@@ -72,6 +72,7 @@ export type UpdateProjectDto = z.infer<typeof UpdateProjectSchema>;
 export const ListProjectsSchema = PaginatedQuerySchema.extend({
   status: z.nativeEnum(ContentStatus).optional(),
   includeDeleted: z.coerce.boolean().default(false),
+  sortBy: z.enum(['updatedAt', 'startDate', 'title', 'displayOrder']).default('updatedAt'),
 });
 
 export type ListProjectsDto = z.infer<typeof ListProjectsSchema>;

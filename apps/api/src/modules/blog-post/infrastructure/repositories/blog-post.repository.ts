@@ -123,7 +123,7 @@ export class BlogPostRepository implements IBlogPostRepository {
   }
 
   async list(options: BlogPostFindAllOptions): Promise<PaginatedResult<BlogPostReadResult>> {
-    const { page, limit, search, includeDeleted, status, language } = options;
+    const { page, limit, search, includeDeleted, status, language, sortBy, sortDir } = options;
     const where: Prisma.BlogPostWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (status) {
@@ -138,12 +138,14 @@ export class BlogPostRepository implements IBlogPostRepository {
       where.OR = [{ title: { contains: search, mode: 'insensitive' } }];
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.BlogPostOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.blogPost.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ createdAt: 'desc' }],
+        orderBy,
         include: fullInclude,
       }),
       this.prisma.blogPost.count({ where }),

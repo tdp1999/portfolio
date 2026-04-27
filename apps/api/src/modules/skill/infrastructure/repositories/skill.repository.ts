@@ -119,7 +119,7 @@ export class SkillRepository implements ISkillRepository {
   }
 
   async findAll(options: SkillFindAllOptions): Promise<PaginatedResult<Skill>> {
-    const { page, limit, search, includeDeleted, category, isLibrary, parentSkillId } = options;
+    const { page, limit, search, includeDeleted, category, isLibrary, parentSkillId, sortBy, sortDir } = options;
     const where: Prisma.SkillWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (search) {
@@ -141,13 +141,15 @@ export class SkillRepository implements ISkillRepository {
       where.parentSkillId = parentSkillId;
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.SkillOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.skill.findMany({
         where,
         include: { icon: true },
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+        orderBy,
       }),
       this.prisma.skill.count({ where }),
     ]);

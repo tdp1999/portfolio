@@ -18,6 +18,7 @@ export interface BlogPostUpdateInput {
 export interface BlogPostFindAllOptions extends PaginatedQuery {
   status?: PostStatus;
   language?: 'EN' | 'VI';
+  sortBy?: string;
 }
 
 export interface BlogPostListPublicOptions extends PaginatedQuery {

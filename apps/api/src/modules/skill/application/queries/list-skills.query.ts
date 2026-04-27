@@ -32,6 +32,9 @@ export class ListSkillsHandler implements IQueryHandler<ListSkillsQuery> {
       category: data.category,
       isLibrary: data.isLibrary,
       parentSkillId: data.parentSkillId,
+      includeDeleted: data.includeDeleted,
+      sortBy: data.sortBy,
+      sortDir: data.sortDir,
     });
 
     return {

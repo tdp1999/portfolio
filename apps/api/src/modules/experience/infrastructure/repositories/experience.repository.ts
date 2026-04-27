@@ -121,7 +121,7 @@ export class ExperienceRepository implements IExperienceRepository {
   }
 
   async findAll(options: ExperienceFindAllOptions): Promise<PaginatedResult<Experience>> {
-    const { page, limit, search, employmentType, locationType, includeDeleted } = options;
+    const { page, limit, search, employmentType, locationType, includeDeleted, sortBy, sortDir } = options;
     const where: Prisma.ExperienceWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (employmentType) {
@@ -140,12 +140,14 @@ export class ExperienceRepository implements IExperienceRepository {
       ];
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.ExperienceOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.experience.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ displayOrder: 'asc' }, { startDate: 'desc' }],
+        orderBy,
         include: skillsInclude,
       }),
       this.prisma.experience.count({ where }),
@@ -167,7 +169,7 @@ export class ExperienceRepository implements IExperienceRepository {
   }
 
   async slugExists(slug: string): Promise<boolean> {
-    const count = await this.prisma.experience.count({ where: { slug } });
+    const count = await this.prisma.experience.count({ where: { slug, deletedAt: null } });
     return count > 0;
   }
 

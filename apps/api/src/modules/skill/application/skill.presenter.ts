@@ -19,6 +19,7 @@ export class SkillPresenter {
       displayOrder: skill.displayOrder,
       createdAt: skill.createdAt,
       updatedAt: skill.updatedAt,
+      deletedAt: skill.deletedAt ?? null,
     };
   }
 }

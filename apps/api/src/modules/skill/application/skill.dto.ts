@@ -55,6 +55,8 @@ export const SkillQuerySchema = PaginatedQuerySchema.extend({
     .union([z.boolean(), z.literal('true').transform(() => true), z.literal('false').transform(() => false)])
     .optional(),
   parentSkillId: z.uuid().optional(),
+  includeDeleted: z.coerce.boolean().default(false),
+  sortBy: z.enum(['updatedAt', 'name', 'displayOrder']).default('updatedAt'),
 });
 
 export type CreateSkillDto = z.infer<typeof CreateSkillSchema>;
@@ -77,4 +79,5 @@ export type SkillResponseDto = {
   displayOrder: number;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 };

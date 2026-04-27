@@ -9,6 +9,8 @@ export type FindAllOptions = {
   search?: string;
   includeDeleted?: boolean;
   status?: 'active' | 'invited' | 'deleted';
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
 };
 
 export type FindAllResult = {

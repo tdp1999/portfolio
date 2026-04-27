@@ -74,7 +74,7 @@ export const BlogPostQuerySchema = PaginatedQuerySchema.extend({
   language: LanguageSchema.optional(),
   categorySlug: z.string().optional(),
   tagSlug: z.string().optional(),
-  sortBy: z.enum(['publishedAt', 'createdAt']).default('createdAt'),
+  sortBy: z.enum(['updatedAt', 'publishedAt', 'createdAt', 'title']).default('updatedAt'),
   includeDeleted: z.coerce.boolean().default(false),
 });
 

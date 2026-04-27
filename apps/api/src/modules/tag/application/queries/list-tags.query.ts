@@ -27,6 +27,9 @@ export class ListTagsHandler implements IQueryHandler<ListTagsQuery> {
       page: data.page,
       limit: data.limit,
       search: data.search,
+      includeDeleted: data.includeDeleted,
+      sortBy: data.sortBy,
+      sortDir: data.sortDir,
     });
 
     return {

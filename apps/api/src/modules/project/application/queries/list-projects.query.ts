@@ -18,12 +18,12 @@ export class ListProjectsHandler implements IQueryHandler<ListProjectsQuery> {
     const { success, data, error } = ListProjectsSchema.safeParse(query.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: ProjectErrorCode.NOT_FOUND,
+        errorCode: ProjectErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'List projects validation failed',
       });
 
-    const result = await this.repo.findAll(data);
+    const result = await this.repo.findAll({ ...data, sortBy: data.sortBy, sortDir: data.sortDir });
 
     return {
       data: result.data.map(ProjectPresenter.toAdminResponse),

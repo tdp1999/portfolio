@@ -43,7 +43,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async findAll(options: FindAllOptions): Promise<FindAllResult> {
-    const { page, limit, search, includeDeleted, status } = options;
+    const { page, limit, search, includeDeleted, status, sortBy, sortDir } = options;
     const where: Prisma.UserWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (status === 'active') {
@@ -63,12 +63,14 @@ export class UserRepository implements IUserRepository {
       ];
     }
 
+    const orderBy = { [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.UserOrderByWithRelationInput;
+
     const [data, total] = await Promise.all([
       this.prisma.user.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
       }),
       this.prisma.user.count({ where }),
     ]);

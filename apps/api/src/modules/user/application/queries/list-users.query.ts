@@ -28,6 +28,8 @@ export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
       search: data.search,
       status: data.status,
       includeDeleted: true,
+      sortBy: data.sortBy,
+      sortDir: data.sortDir,
     });
 
     return {

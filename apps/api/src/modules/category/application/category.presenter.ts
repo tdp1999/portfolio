@@ -11,6 +11,7 @@ export class CategoryPresenter {
       displayOrder: category.displayOrder,
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
+      deletedAt: category.deletedAt ?? null,
     };
   }
 }

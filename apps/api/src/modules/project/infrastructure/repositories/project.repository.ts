@@ -139,7 +139,7 @@ export class ProjectRepository implements IProjectRepository {
   }
 
   async findAll(options: ProjectFindAllOptions): Promise<PaginatedResult<ProjectReadResult>> {
-    const { page, limit, search, includeDeleted, status } = options;
+    const { page, limit, search, includeDeleted, status, sortBy, sortDir } = options;
     const where: Prisma.ProjectWhereInput = includeDeleted ? {} : { deletedAt: null };
 
     if (status) {
@@ -150,12 +150,14 @@ export class ProjectRepository implements IProjectRepository {
       where.OR = [{ title: { contains: search, mode: 'insensitive' } }];
     }
 
+    const orderBy = [{ [sortBy ?? 'updatedAt']: sortDir ?? 'desc' } as Prisma.ProjectOrderByWithRelationInput];
+
     const [data, total] = await Promise.all([
       this.prisma.project.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
+        orderBy,
         include: fullInclude,
       }),
       this.prisma.project.count({ where }),

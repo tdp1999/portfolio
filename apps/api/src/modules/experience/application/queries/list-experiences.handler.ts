@@ -42,6 +42,8 @@ export class ListExperiencesHandler implements IQueryHandler<ListExperiencesQuer
       employmentType: data.employmentType,
       locationType: data.locationType,
       includeDeleted: data.includeDeleted,
+      sortBy: data.sortBy,
+      sortDir: data.sortDir,
     });
 
     const items = await Promise.all(

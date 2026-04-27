@@ -32,6 +32,8 @@ export class ListPostsHandler implements IQueryHandler<ListPostsQuery> {
       includeDeleted: data.includeDeleted,
       status: data.status,
       language: data.language,
+      sortBy: data.sortBy,
+      sortDir: data.sortDir,
     });
 
     return {

@@ -15,7 +15,10 @@ export const UpdateTagSchema = z.object({
   name: TagNameSchema,
 });
 
-export const TagQuerySchema = PaginatedQuerySchema;
+export const TagQuerySchema = PaginatedQuerySchema.extend({
+  includeDeleted: z.coerce.boolean().default(false),
+  sortBy: z.enum(['updatedAt', 'name']).default('updatedAt'),
+});
 
 export type CreateTagDto = z.infer<typeof CreateTagSchema>;
 export type UpdateTagDto = z.infer<typeof UpdateTagSchema>;
@@ -27,4 +30,5 @@ export type TagResponseDto = {
   slug: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 };
