@@ -95,6 +95,26 @@
   - Tasks 236-247 → archived in `tasks-done/epic-blog-post/`
   - Full vertical slice: schema, entity, repo, DTO, CQRS, controller, console editor + list page, public /blog + /blog/:slug, E2E
   - ProseMirror editor (textarea placeholder, swap-ready); Shiki syntax highlighting; TOC + reading progress bar
+- [x] **Console Loading + Time Foundation** (epic-console-loading-time-foundation) - Completed 2026-04-27
+  - Implemented directly from epic (no task breakdown); part of console-feature-review Stream A
+  - `.context/design/loading.md` taxonomy + decision flow
+  - Primitives: `ProgressBarService` (ref-counted), `<console-skeleton-row>` / `<console-skeleton-table>`, `<console-relative-time>` (relative + tooltip absolute, auto-refresh)
+  - RxJS operators: `withMinDuration` (util) + `withListLoading` (ui composite, replaces ad-hoc setTimeout settle pattern)
+  - Wired across 7 list pages: experiences, projects, skills, categories, tags, blog posts, users — `console-spinner-overlay` swapped for skeleton + silent reload via top progress bar after mutations
+  - 23 unit tests pass; type check clean
+- [x] **Console Enum Labels + beforeunload** (epic-console-enum-labels-beforeunload) - Completed 2026-04-27
+  - Implemented directly from epic (no task breakdown); part of console-feature-review Stream C
+  - New lib `libs/shared/enum-labels` — label constants for all current enums (EmploymentType, LocationType, SkillCategory, ProjectStatus, BlogPostStatus)
+  - Generic `EnumLabelPipe` added to `@portfolio/console/shared/ui` — `{{ value | enumLabel: LABELS }}`
+  - Deleted `EmploymentTypeLabelPipe` + `LocationTypeLabelPipe`; migrated all 4 call sites
+  - Replaced raw enum renders: `{{ post.status }}` (posts-page) + `{{ skill.category }}` (skills-page)
+  - Wired `@HostListener('window:beforeunload')` into `experience-form-page` + `project-form-page`; `post-editor-page` was already wired
+- [x] **Console Table Standardization** (epic-console-table-standardization) - Completed 2026-04-27
+  - Implemented directly from epic (no task breakdown); part of console-feature-review Stream B
+  - BE: `sortBy`/`sortDir` params added to all 7 modules (experience, skill, category, tag, project, blog-post, user); per-module field whitelists; dynamic `orderBy` replaces hardcoded sorts
+  - BE: `includeDeleted` + `deletedAt` response field added to skill, category, tag
+  - FE services: `sortBy`, `sortDir`, `includeDeleted` threaded through all 7 services; `deletedAt` field added to AdminSkill, AdminCategory, AdminTag types
+  - FE list pages (7): `matSort` + `mat-sort-header` wired on all tables; `mat-chip-option` "Show deleted" filter chip (replaces slide-toggle) in filter bars; `[class.opacity-50]` on deleted rows; read-only guards for skill/category/tag; restore action for experience/project/blog; `updatedAt` column replaces `createdAt` in users page
 
 ## In Progress
 
@@ -148,7 +168,7 @@
 
 ## Up Next
 
-**Current:** Dashboard backend APIs (194, pending standalone) → Next epic TBD (GitHubRepo / Analytics / Landing Integration)
+**Current:** Dashboard backend APIs (194, pending standalone) → Next epic: Console CRUD Page Migration (epic-console-crud-page-migration)
 
 
 ## Statistics
@@ -159,6 +179,7 @@
 | In Progress               | 0       |
 | Pending                   | 2       |
 | **Total Created**         | **285** |
+| Epics completed           | 21      |
 
 ## Notes
 
