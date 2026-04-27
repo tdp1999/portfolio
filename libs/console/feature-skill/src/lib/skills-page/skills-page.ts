@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
+import { RouterLink } from '@angular/router';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -23,8 +24,8 @@ import {
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { SKILL_CATEGORY_LABELS } from '@portfolio/shared/enum-labels';
-import { SkillDialogData } from '../skill-dialog/skill-dialog';
-import { AdminSkill, SkillService } from '../skill.service';
+import { SkillService } from '../skill.service';
+import { AdminSkill } from '../skill.types';
 
 @Component({
   selector: 'console-skills-page',
@@ -43,6 +44,7 @@ import { AdminSkill, SkillService } from '../skill.service';
     FilterSearchComponent,
     FilterSelectComponent,
     EnumLabelPipe,
+    RouterLink,
   ],
   templateUrl: './skills-page.html',
   styleUrl: './skills-page.scss',
@@ -76,7 +78,7 @@ export default class SkillsPageComponent implements OnInit {
     { value: 'ADDITIONAL', label: 'Additional' },
   ];
 
-  private parentMap = new Map<string, string>();
+  readonly parentMap = computed(() => new Map(this.skills().map((s) => [s.id, s.name])));
 
   ngOnInit(): void {
     this.loadSkills();
@@ -111,44 +113,6 @@ export default class SkillsPageComponent implements OnInit {
     this.loadSkills();
   }
 
-  getParentName(parentSkillId: string | null): string {
-    if (!parentSkillId) return '—';
-    return this.parentMap.get(parentSkillId) ?? '—';
-  }
-
-  openCreateDialog(): void {
-    import('../skill-dialog/skill-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '640px',
-        data: { parentSkills: this.getTopLevelSkills() } satisfies SkillDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Skill created successfully');
-          this.loadSkills({ silent: true });
-        }
-      });
-    });
-  }
-
-  openEditDialog(skill: AdminSkill): void {
-    import('../skill-dialog/skill-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '640px',
-        data: {
-          skill,
-          parentSkills: this.getTopLevelSkills().filter((s) => s.id !== skill.id),
-        } satisfies SkillDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Skill updated successfully');
-          this.loadSkills({ silent: true });
-        }
-      });
-    });
-  }
-
   confirmDelete(skill: AdminSkill): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -161,10 +125,6 @@ export default class SkillsPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) this.deleteSkill(skill.id);
     });
-  }
-
-  private getTopLevelSkills(): AdminSkill[] {
-    return this.skills().filter((s) => !s.parentSkillId);
   }
 
   private resetAndLoad(): void {
@@ -189,17 +149,9 @@ export default class SkillsPageComponent implements OnInit {
         next: (res) => {
           this.skills.set(res.data);
           this.total.set(res.total);
-          this.buildParentMap(res.data);
         },
         error: () => this.toast.error('Failed to load skills'),
       });
-  }
-
-  private buildParentMap(skills: AdminSkill[]): void {
-    this.parentMap.clear();
-    for (const skill of skills) {
-      this.parentMap.set(skill.id, skill.name);
-    }
   }
 
   private deleteSkill(id: string): void {

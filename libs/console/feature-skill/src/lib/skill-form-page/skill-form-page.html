@@ -1,0 +1,162 @@
+<div class="skill-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="skill-form-page__header">
+    <div>
+      <h1 class="text-page-title">{{ isEditMode() ? 'Edit Skill' : 'New Skill' }}</h1>
+      <p class="text-body text-text-secondary">
+        Skills shown on your portfolio. Group sub-skills under a parent for cleaner display.
+      </p>
+    </div>
+    <a mat-stroked-button routerLink="/skills">
+      <mat-icon class="icon-sm">arrow_back</mat-icon>
+      Back
+    </a>
+  </div>
+
+  <console-long-form-layout>
+    <div rail>
+      <console-scrollspy-rail [sections]="sections" [activeIndicator]="false" />
+    </div>
+
+    <div content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+        <!-- Identity -->
+        <console-section-card
+          id="section-identity"
+          title="Identity"
+          description="Display name and an optional description."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field>
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" placeholder="e.g. TypeScript" />
+              <mat-error>{{ form.controls.name | formError }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" placeholder="Optional description" rows="3"></textarea>
+              <mat-error>{{ form.controls.description | formError }}</mat-error>
+            </mat-form-field>
+          </div>
+        </console-section-card>
+
+        <!-- Classification -->
+        <console-section-card
+          id="section-classification"
+          title="Classification"
+          description="Pick a category and optionally nest under a parent skill."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field>
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                <mat-option value="TECHNICAL">Technical</mat-option>
+                <mat-option value="TOOLS">Tools</mat-option>
+                <mat-option value="ADDITIONAL">Additional</mat-option>
+              </mat-select>
+              <mat-error>{{ form.controls.category | formError }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Parent Skill</mat-label>
+              <mat-select formControlName="parentSkillId">
+                <mat-option [value]="null">None</mat-option>
+                @for (parent of parentSkillsForSelect(); track parent.id) {
+                  <mat-option [value]="parent.id">{{ parent.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox formControlName="isLibrary">Library / Framework</mat-checkbox>
+
+            <!--
+              TODO(stream-e): isLibrary / isFeatured semantics audit pending.
+              Revisit field labels and behavior once the audit lands.
+            -->
+          </div>
+        </console-section-card>
+
+        <!-- Experience -->
+        <console-section-card
+          id="section-experience"
+          title="Experience"
+          description="Years of experience and any qualitative notes."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field class="w-40">
+              <mat-label>Years of Experience</mat-label>
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Proficiency Note</mat-label>
+              <input matInput formControlName="proficiencyNote" placeholder="e.g. TOEIC 970" />
+            </mat-form-field>
+          </div>
+        </console-section-card>
+
+        <!-- Icon -->
+        <console-section-card
+          id="section-icon"
+          title="Icon"
+          description="Optional icon shown next to the skill on the public site."
+          saveMode="atomic"
+        >
+          <div class="flex items-center gap-3">
+            @if (iconPreviewUrl()) {
+              <img [src]="iconPreviewUrl()!" alt="Icon preview" class="w-12 h-12 object-contain rounded" />
+            } @else {
+              <div class="w-12 h-12 rounded border border-dashed border-text-muted flex items-center justify-center">
+                <mat-icon class="icon-md text-text-muted">image</mat-icon>
+              </div>
+            }
+            <button mat-stroked-button type="button" (click)="openIconPicker()">
+              {{ iconPreviewUrl() ? 'Change Icon' : 'Pick Icon' }}
+            </button>
+            @if (iconPreviewUrl()) {
+              <button mat-icon-button type="button" matTooltip="Remove icon" (click)="clearIcon()">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
+        </console-section-card>
+
+        <!-- Display -->
+        <console-section-card
+          id="section-display"
+          title="Display"
+          description="Featured flag and ordering on the public site."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-checkbox formControlName="isFeatured">Featured</mat-checkbox>
+
+            <mat-form-field class="w-40">
+              <mat-label>Display Order</mat-label>
+              <input matInput type="number" formControlName="displayOrder" min="0" />
+            </mat-form-field>
+          </div>
+        </console-section-card>
+
+        @if (serverError()) {
+          <p class="skill-form-page__server-error">{{ serverError() }}</p>
+        }
+
+        <button type="submit" class="hidden" aria-hidden="true"></button>
+      </form>
+    </div>
+  </console-long-form-layout>
+
+  <console-sticky-save-bar
+    [dirty]="dirty"
+    [saving]="submitting"
+    [disabled]="isInvalid"
+    (save)="submit()"
+    (discard)="discard()"
+  />
+</div>

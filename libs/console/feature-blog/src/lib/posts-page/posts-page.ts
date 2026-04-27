@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -56,6 +56,7 @@ const STATUS_OPTIONS: FilterOption[] = [
     SkeletonTableComponent,
     RelativeTimeComponent,
     EnumLabelPipe,
+    RouterLink,
   ],
   templateUrl: './posts-page.html',
   styleUrl: './posts-page.scss',
@@ -65,7 +66,6 @@ export default class PostsPageComponent implements OnInit {
   private readonly blogService = inject(BlogService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
-  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly progress = inject(ProgressBarService);
 
@@ -121,14 +121,6 @@ export default class PostsPageComponent implements OnInit {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadPosts();
-  }
-
-  goToNew(): void {
-    this.router.navigate(['/admin/blog/new']);
-  }
-
-  goToEdit(post: AdminBlogPostListItem): void {
-    this.router.navigate(['/admin/blog', post.id, 'edit']);
   }
 
   categoryNames(post: AdminBlogPostListItem): string {

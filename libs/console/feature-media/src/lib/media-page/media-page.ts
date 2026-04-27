@@ -15,7 +15,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   AssetFilterBarComponent,
   AssetGridComponent,
@@ -32,13 +32,13 @@ import {
 } from '@portfolio/console/shared/ui';
 import {
   DEFAULT_PAGE_SIZE,
-  extractApiError,
   MEDIA_PICKER_MIN_LOADING_MS,
   PAGE_SIZE_OPTIONS,
   STORAGE_KEYS,
 } from '@portfolio/console/shared/util';
-import { map, switchMap } from 'rxjs';
-import { MediaDialogData } from '../media-dialog/media-dialog.types';
+import { filter, forkJoin, map, of, switchMap } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { MediaDrawerComponent } from '../media-drawer/media-drawer';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
 import { MediaService } from '../media.service';
 import { MediaItem, MediaMimeGroup, StorageStats } from '../media.types';
@@ -57,6 +57,7 @@ const VIEW_MODE_KEY = STORAGE_KEYS.mediaPickerViewMode;
     AssetGridComponent,
     AssetFilterBarComponent,
     AssetUploadZoneComponent,
+    MediaDrawerComponent,
   ],
   templateUrl: './media-page.html',
   styleUrl: './media-page.scss',
@@ -68,6 +69,10 @@ export default class MediaPageComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  readonly selectedDetailId = signal<string | null>(null);
 
   // Data
   readonly media = signal<MediaItem[]>([]);
@@ -118,6 +123,29 @@ export default class MediaPageComponent implements OnInit {
       const saved = localStorage.getItem(VIEW_MODE_KEY) as AssetGridViewMode;
       if (saved === 'grid' || saved === 'list') this.viewMode.set(saved);
     }
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.selectedDetailId.set(params.get('selected'));
+    });
+    this.loadMedia();
+    this.loadStats();
+    this.loadTrashCount();
+  }
+
+  onDrawerClose(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { selected: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  onDrawerUpdated(): void {
+    this.loadMedia();
+  }
+
+  onDrawerDeleted(): void {
+    this.onDrawerClose();
     this.loadMedia();
     this.loadStats();
     this.loadTrashCount();
@@ -173,8 +201,11 @@ export default class MediaPageComponent implements OnInit {
   }
 
   onItemActivated(id: string): void {
-    const item = this.media().find((m) => m.id === id);
-    if (item) this.openEditDialog(item);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { selected: id },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onUploadsComplete(items: MediaItem[]): void {
@@ -201,58 +232,24 @@ export default class MediaPageComponent implements OnInit {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((confirmed) => {
-        if (!confirmed) return;
-        let completed = 0;
-        let failed = 0;
-        for (const id of ids) {
-          this.mediaService.delete(id).subscribe({
-            next: () => {
-              completed++;
-              if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
-            },
-            error: () => {
-              failed++;
-              if (completed + failed === ids.length) this.onBulkComplete(completed, failed);
-            },
-          });
-        }
-      });
-  }
-
-  openEditDialog(item: MediaItem): void {
-    import('../media-dialog/media-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '640px',
-        data: { item } satisfies MediaDialogData,
-      });
-      dialogRef
-        .afterClosed()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((result) => {
-          if (result) {
-            this.toast.success('Media updated');
-            this.loadMedia();
-          }
-        });
-    });
-  }
-
-  confirmDelete(item: MediaItem): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Delete Media',
-        message: `Move "${item.originalFilename}" to trash?`,
-        confirmLabel: 'Delete',
-      } satisfies ConfirmDialogData,
-    });
-
-    dialogRef
-      .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((confirmed) => {
-        if (confirmed) this.deleteMedia(item.id);
+      .pipe(
+        filter(Boolean),
+        switchMap(() =>
+          forkJoin(
+            ids.map((id) =>
+              this.mediaService.delete(id).pipe(
+                map(() => true as const),
+                catchError(() => of(false as const))
+              )
+            )
+          )
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((results) => {
+        const completed = results.filter(Boolean).length;
+        const failed = results.length - completed;
+        this.onBulkComplete(completed, failed);
       });
   }
 
@@ -326,21 +323,6 @@ export default class MediaPageComponent implements OnInit {
       next: (res) => this.trashCount.set(res.total),
       error: () => {
         // No op
-      },
-    });
-  }
-
-  private deleteMedia(id: string): void {
-    this.mediaService.delete(id).subscribe({
-      next: () => {
-        this.toast.success('Media moved to trash');
-        this.loadMedia();
-        this.loadStats();
-        this.loadTrashCount();
-      },
-      error: (err) => {
-        const apiError = extractApiError(err);
-        this.toast.error(apiError.message || 'Failed to delete media');
       },
     });
   }

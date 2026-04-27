@@ -1,0 +1,114 @@
+@if (selectedId()) {
+  <div class="media-drawer__scrim" (click)="close()"></div>
+  <aside
+    class="media-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Media details"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="media-drawer__header">
+      <h2 class="text-section-heading">Media details</h2>
+      <button mat-icon-button matTooltip="Close" aria-label="Close drawer" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <div class="media-drawer__body">
+      @if (loading()) {
+        <div class="flex items-center justify-center py-8">
+          <mat-spinner diameter="32" />
+        </div>
+      } @else if (item(); as it) {
+        <!-- Preview -->
+        <div class="media-drawer__preview">
+          @if (isImage()) {
+            <img [src]="it.url" [alt]="it.altText || it.originalFilename" />
+          } @else {
+            <div class="media-drawer__file-icon">
+              <mat-icon>insert_drive_file</mat-icon>
+              <span class="text-sm text-text-muted">{{ it.originalFilename }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Metadata -->
+        <dl class="media-drawer__meta">
+          <div class="media-drawer__field">
+            <dt>Filename</dt>
+            <dd class="truncate">{{ it.originalFilename }}</dd>
+          </div>
+          <div class="media-drawer__field">
+            <dt>Type</dt>
+            <dd>{{ typeBadge() }}</dd>
+          </div>
+          <div class="media-drawer__field">
+            <dt>Size</dt>
+            <dd>{{ fileSize() }}</dd>
+          </div>
+          @if (it.width && it.height) {
+            <div class="media-drawer__field">
+              <dt>Dimensions</dt>
+              <dd>{{ it.width }} × {{ it.height }}</dd>
+            </div>
+          }
+          @if (it.folder) {
+            <div class="media-drawer__field">
+              <dt>Folder</dt>
+              <dd>{{ it.folder }}</dd>
+            </div>
+          }
+          <div class="media-drawer__field">
+            <dt>Uploaded</dt>
+            <dd>{{ it.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="media-drawer__field">
+            <dt>URL</dt>
+            <dd>
+              <a [href]="it.url" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                Open original
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <!-- Editable fields -->
+        <form [formGroup]="form" class="media-drawer__form">
+          <mat-form-field>
+            <mat-label>Alt text</mat-label>
+            <input matInput formControlName="altText" placeholder="Describe the image for accessibility" />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Caption</mat-label>
+            <textarea matInput formControlName="caption" placeholder="Optional caption" rows="3"></textarea>
+          </mat-form-field>
+
+          @if (serverError()) {
+            <p class="text-sm text-red-500">{{ serverError() }}</p>
+          }
+        </form>
+      }
+    </div>
+
+    @if (item(); as it) {
+      <footer class="media-drawer__footer">
+        <button mat-stroked-button color="warn" (click)="confirmDelete()">
+          <mat-icon class="icon-sm">delete</mat-icon>
+          Delete
+        </button>
+        <span class="flex-1"></span>
+        <button mat-button (click)="close()">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="!dirty() || submitting()" (click)="save()">
+          @if (submitting()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Save
+          }
+        </button>
+      </footer>
+    }
+  </aside>
+}

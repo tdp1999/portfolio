@@ -1,0 +1,30 @@
+.category-form-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 96px;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__content {
+    max-width: 720px;
+  }
+
+  &__server-error {
+    color: var(--mat-sys-error);
+    font-size: 14px;
+    margin-top: 8px;
+  }
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

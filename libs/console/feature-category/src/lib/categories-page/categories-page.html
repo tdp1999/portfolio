@@ -4,10 +4,10 @@
       <h1 class="text-page-title">Category Management</h1>
       <p class="crud-header__subtitle">Manage content categories for blog posts and projects.</p>
     </div>
-    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <a mat-flat-button color="primary" routerLink="./new">
       <mat-icon class="icon-md">add</mat-icon>
       Create Category
-    </button>
+    </a>
   </div>
 
   <console-filter-bar>
@@ -37,7 +37,9 @@
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
-          <td mat-cell *matCellDef="let category">{{ category.name }}</td>
+          <td mat-cell *matCellDef="let category" class="col-identity">
+            <a [routerLink]="['./', category.id]">{{ category.name }}</a>
+          </td>
         </ng-container>
 
         <!-- Slug Column -->
@@ -73,9 +75,9 @@
           <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
           <td mat-cell *matCellDef="let category" class="col-actions">
             @if (!category.deletedAt) {
-              <button mat-icon-button matTooltip="Edit" aria-label="Edit" (click)="openEditDialog(category)">
+              <a mat-icon-button matTooltip="Edit" aria-label="Edit" [routerLink]="['./', category.id, 'edit']">
                 <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
-              </button>
+              </a>
               <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="confirmDelete(category)">
                 <mat-icon class="icon-sm text-red-400">delete</mat-icon>
               </button>

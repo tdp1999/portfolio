@@ -1,35 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from '@portfolio/console/shared/data-access';
-
-export interface AdminCategory {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  displayOrder: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
-export interface CategoriesListResponse {
-  data: AdminCategory[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
-export interface CreateCategoryPayload {
-  name: string;
-  description?: string;
-  displayOrder?: number;
-}
-
-export interface UpdateCategoryPayload {
-  name?: string;
-  description?: string | null;
-  displayOrder?: number;
-}
+import { AdminCategory, CategoriesListResponse, CreateCategoryPayload, UpdateCategoryPayload } from './category.types';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
@@ -52,6 +23,10 @@ export class CategoryService {
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<CategoriesListResponse>('/categories', { params: queryParams });
+  }
+
+  getById(id: string) {
+    return this.api.get<AdminCategory>(`/categories/${id}`);
   }
 
   create(data: CreateCategoryPayload) {

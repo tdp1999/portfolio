@@ -1,0 +1,56 @@
+<div class="category-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="category-form-page__header">
+    <div>
+      <h1 class="text-page-title">{{ isEditMode() ? 'Edit Category' : 'New Category' }}</h1>
+      <p class="text-body text-text-secondary">Categories group blog posts and projects on the public site.</p>
+    </div>
+    <a mat-stroked-button routerLink="/categories">
+      <mat-icon class="icon-sm">arrow_back</mat-icon>
+      Back
+    </a>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="category-form-page__content">
+    <console-section-card
+      id="section-details"
+      title="Details"
+      description="Display name, optional description, and ordering on the public site."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g. Frontend" />
+          <mat-error>{{ form.controls.name | formError }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" placeholder="Optional description" rows="3"></textarea>
+          <mat-error>{{ form.controls.description | formError }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-40">
+          <mat-label>Display Order</mat-label>
+          <input matInput type="number" formControlName="displayOrder" min="0" />
+        </mat-form-field>
+      </div>
+    </console-section-card>
+
+    @if (serverError()) {
+      <p class="category-form-page__server-error">{{ serverError() }}</p>
+    }
+
+    <button type="submit" class="hidden" aria-hidden="true"></button>
+  </form>
+
+  <console-sticky-save-bar
+    [dirty]="dirty"
+    [saving]="submitting"
+    [disabled]="isInvalid"
+    (save)="submit()"
+    (discard)="discard()"
+  />
+</div>

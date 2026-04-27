@@ -14,7 +14,8 @@ import { MediaService } from '@portfolio/console/shared/data-access';
 import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import { MediaPickerDialogComponent, MediaPickerDataSource, MediaPickerDialogData } from '@portfolio/console/shared/ui';
 import { of, switchMap } from 'rxjs';
-import { AdminSkill, SkillService } from '../skill.service';
+import { SkillService } from '../skill.service';
+import { AdminSkill } from '../skill.types';
 
 export interface SkillDialogData {
   skill?: AdminSkill;

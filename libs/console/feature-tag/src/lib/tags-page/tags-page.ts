@@ -7,6 +7,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
+import { RouterLink } from '@angular/router';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,8 +20,8 @@ import {
   withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import { TagDialogData } from '../tag-dialog/tag-dialog';
-import { AdminTag, TagService } from '../tag.service';
+import { TagService } from '../tag.service';
+import { AdminTag } from '../tag.types';
 
 @Component({
   selector: 'console-tags-page',
@@ -37,6 +38,7 @@ import { AdminTag, TagService } from '../tag.service';
     RelativeTimeComponent,
     FilterBarComponent,
     FilterSearchComponent,
+    RouterLink,
   ],
   templateUrl: './tags-page.html',
   styleUrl: './tags-page.scss',
@@ -87,33 +89,6 @@ export default class TagsPageComponent implements OnInit {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadTags();
-  }
-
-  openCreateDialog(): void {
-    import('../tag-dialog/tag-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, { width: '520px' });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Tag created successfully');
-          this.loadTags({ silent: true });
-        }
-      });
-    });
-  }
-
-  openEditDialog(tag: AdminTag): void {
-    import('../tag-dialog/tag-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '520px',
-        data: { tag } satisfies TagDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Tag updated successfully');
-          this.loadTags({ silent: true });
-        }
-      });
-    });
   }
 
   confirmDelete(tag: AdminTag): void {

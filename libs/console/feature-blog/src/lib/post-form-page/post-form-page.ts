@@ -12,7 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,6 +31,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
+import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 import { BlogService } from '../blog.service';
 import {
   AdminBlogPostDetail,
@@ -45,7 +46,7 @@ import { filter, map, switchMap, tap } from 'rxjs';
 import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPreview } from './markdown-utils';
 
 @Component({
-  selector: 'console-post-editor-page',
+  selector: 'console-post-form-page',
   standalone: true,
   imports: [
     CommonModule,
@@ -61,12 +62,13 @@ import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPrevie
     MatMenuModule,
     MatChipsModule,
     MatTooltipModule,
+    RouterLink,
   ],
-  templateUrl: './post-editor-page.html',
-  styleUrl: './post-editor-page.scss',
+  templateUrl: './post-form-page.html',
+  styleUrl: './post-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class PostEditorPageComponent implements OnInit {
+export default class PostFormPageComponent implements OnInit, HasUnsavedChanges {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly blogService = inject(BlogService);
@@ -327,11 +329,8 @@ export default class PostEditorPageComponent implements OnInit {
     }
   }
 
-  goBack(): void {
-    if (this.dirty() && !confirm('You have unsaved changes. Leave anyway?')) {
-      return;
-    }
-    this.router.navigate(['/admin/blog']);
+  hasUnsavedChanges() {
+    return this.dirty;
   }
 
   private loadPost(id: string): void {

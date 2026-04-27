@@ -1,21 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from '@portfolio/console/shared/data-access';
-
-export interface AdminTag {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
-export interface TagsListResponse {
-  data: AdminTag[];
-  total: number;
-  page: number;
-  limit: number;
-}
+import { AdminTag, TagsListResponse } from './tag.types';
 
 @Injectable({ providedIn: 'root' })
 export class TagService {
@@ -38,6 +23,10 @@ export class TagService {
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<TagsListResponse>('/tags', { params: queryParams });
+  }
+
+  getById(id: string) {
+    return this.api.get<AdminTag>(`/tags/${id}`);
   }
 
   create(data: { name: string }) {

@@ -7,7 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
-import { AdminCategory, CategoryService } from '../category.service';
+import { CategoryService } from '../category.service';
+import { AdminCategory } from '../category.types';
 
 export interface CategoryDialogData {
   category?: AdminCategory;

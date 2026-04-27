@@ -90,4 +90,11 @@
       </button>
     </div>
   }
+
+  <console-media-drawer
+    [selectedId]="selectedDetailId()"
+    (closed)="onDrawerClose()"
+    (updated)="onDrawerUpdated()"
+    (deleted)="onDrawerDeleted()"
+  />
 </div>

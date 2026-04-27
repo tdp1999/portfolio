@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
+import { RouterLink } from '@angular/router';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,8 +20,8 @@ import {
   withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import { CategoryDialogData } from '../category-dialog/category-dialog';
-import { AdminCategory, CategoryService } from '../category.service';
+import { CategoryService } from '../category.service';
+import { AdminCategory } from '../category.types';
 
 @Component({
   selector: 'console-categories-page',
@@ -37,6 +38,7 @@ import { AdminCategory, CategoryService } from '../category.service';
     RelativeTimeComponent,
     FilterBarComponent,
     FilterSearchComponent,
+    RouterLink,
   ],
   templateUrl: './categories-page.html',
   styleUrl: './categories-page.scss',
@@ -87,33 +89,6 @@ export default class CategoriesPageComponent implements OnInit {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadCategories();
-  }
-
-  openCreateDialog(): void {
-    import('../category-dialog/category-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, { width: '520px' });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Category created successfully');
-          this.loadCategories({ silent: true });
-        }
-      });
-    });
-  }
-
-  openEditDialog(category: AdminCategory): void {
-    import('../category-dialog/category-dialog').then((m) => {
-      const dialogRef = this.dialog.open(m.default, {
-        width: '520px',
-        data: { category } satisfies CategoryDialogData,
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.toast.success('Category updated successfully');
-          this.loadCategories({ silent: true });
-        }
-      });
-    });
   }
 
   confirmDelete(category: AdminCategory): void {

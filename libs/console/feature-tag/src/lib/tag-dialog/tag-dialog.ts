@@ -7,7 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
-import { AdminTag, TagService } from '../tag.service';
+import { TagService } from '../tag.service';
+import { AdminTag } from '../tag.types';
 
 export interface TagDialogData {
   tag?: AdminTag;

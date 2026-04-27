@@ -2,9 +2,9 @@
   <!-- Top bar -->
   <div class="top-bar">
     <div class="flex items-center gap-2">
-      <button mat-icon-button (click)="goBack()" aria-label="Back" matTooltip="Back to posts">
+      <a mat-icon-button routerLink="/admin/blog" aria-label="Back" matTooltip="Back to posts">
         <mat-icon>arrow_back</mat-icon>
-      </button>
+      </a>
       <h1 class="text-lg font-semibold">
         {{ isEditMode() ? 'Edit Post' : 'New Post' }}
         @if (dirty()) {

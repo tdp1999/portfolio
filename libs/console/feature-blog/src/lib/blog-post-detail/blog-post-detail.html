@@ -1,0 +1,163 @@
+<div class="detail-page">
+  <div class="detail-header">
+    <a mat-icon-button routerLink="/admin/blog" aria-label="Back to posts">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <h1 class="text-page-title ml-2">Blog Post</h1>
+  </div>
+
+  <div class="detail-content relative">
+    <console-spinner-overlay [loading]="loading()" />
+
+    @if (post(); as p) {
+      <!-- Action bar -->
+      <div class="detail-actions">
+        <a mat-stroked-button routerLink="./edit">
+          <mat-icon class="icon-sm">edit</mat-icon>
+          Edit
+        </a>
+        @if (!p.deletedAt) {
+          <button mat-stroked-button (click)="togglePublish()">
+            <mat-icon class="icon-sm">{{ p.status === 'PUBLISHED' ? 'unpublished' : 'public' }}</mat-icon>
+            {{ p.status === 'PUBLISHED' ? 'Unpublish' : 'Publish' }}
+          </button>
+        }
+        @if (p.deletedAt) {
+          <button mat-stroked-button (click)="confirmRestore()">
+            <mat-icon class="icon-sm">restore_from_trash</mat-icon>
+            Restore
+          </button>
+        } @else {
+          <button mat-stroked-button color="warn" (click)="confirmDelete()">
+            <mat-icon class="icon-sm">delete</mat-icon>
+            Delete
+          </button>
+        }
+      </div>
+
+      <div class="detail-card mt-4">
+        <!-- Identity -->
+        <div class="detail-section">
+          @if (p.featuredImageUrl) {
+            <img [src]="p.featuredImageUrl" [alt]="p.title" class="mb-4 w-full max-h-72 rounded object-cover" />
+          }
+
+          <h2 class="text-section-heading mb-2">
+            @if (p.featured) {
+              <mat-icon class="icon-sm text-yellow-500 align-middle mr-1">star</mat-icon>
+            }
+            {{ p.title }}
+          </h2>
+
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            @if (p.deletedAt) {
+              <span
+                class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
+              >
+                Deleted
+              </span>
+            } @else {
+              <span class="inline-block rounded-full px-2 py-0.5 text-xs" [class]="statusBadgeClass(p.status)">
+                {{ p.status | enumLabel: statusLabels }}
+              </span>
+            }
+            <mat-chip class="chip-sm">{{ p.language }}</mat-chip>
+          </div>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Slug</span>
+            <span class="detail-field__value font-mono text-sm">{{ p.slug }}</span>
+          </div>
+          @if (p.publishedAt) {
+            <div class="detail-field">
+              <span class="detail-field__label">Published</span>
+              <span class="detail-field__value">{{ p.publishedAt | date: 'medium' }}</span>
+            </div>
+          }
+          @if (p.readTimeMinutes) {
+            <div class="detail-field">
+              <span class="detail-field__label">Read time</span>
+              <span class="detail-field__value">{{ p.readTimeMinutes }} min</span>
+            </div>
+          }
+        </div>
+
+        <!-- Excerpt -->
+        @if (p.excerpt) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Excerpt</h3>
+            <p class="text-sm">{{ p.excerpt }}</p>
+          </div>
+        }
+
+        <!-- Categories & Tags -->
+        @if (p.categories.length > 0 || p.tags.length > 0) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Categories &amp; Tags</h3>
+
+            @if (p.categories.length > 0) {
+              <div class="detail-field">
+                <span class="detail-field__label">Categories</span>
+                <span class="detail-field__value">
+                  <div class="flex flex-wrap gap-1">
+                    @for (c of p.categories; track c.id) {
+                      <mat-chip class="chip-sm">{{ c.name }}</mat-chip>
+                    }
+                  </div>
+                </span>
+              </div>
+            }
+            @if (p.tags.length > 0) {
+              <div class="detail-field">
+                <span class="detail-field__label">Tags</span>
+                <span class="detail-field__value">
+                  <div class="flex flex-wrap gap-1">
+                    @for (t of p.tags; track t.id) {
+                      <mat-chip class="chip-sm">{{ t.name }}</mat-chip>
+                    }
+                  </div>
+                </span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Body preview -->
+        @if (p.content) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Body</h3>
+            <div class="markdown-preview" [innerHTML]="renderedBody()"></div>
+          </div>
+        }
+
+        <!-- SEO -->
+        @if (p.metaTitle || p.metaDescription) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">SEO</h3>
+            @if (p.metaTitle) {
+              <div class="detail-field">
+                <span class="detail-field__label">Meta title</span>
+                <span class="detail-field__value">{{ p.metaTitle }}</span>
+              </div>
+            }
+            @if (p.metaDescription) {
+              <div class="detail-field">
+                <span class="detail-field__label">Meta description</span>
+                <span class="detail-field__value">{{ p.metaDescription }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Timestamps -->
+        <div class="detail-timestamps">
+          <span>Created: {{ p.createdAt | date: 'medium' }}</span>
+          <span>Updated: {{ p.updatedAt | date: 'medium' }}</span>
+          @if (p.deletedAt) {
+            <span class="text-red-400">Deleted: {{ p.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

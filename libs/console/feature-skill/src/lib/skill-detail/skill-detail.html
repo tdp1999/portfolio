@@ -1,0 +1,137 @@
+<div class="detail-page">
+  <div class="detail-header">
+    <a mat-icon-button routerLink="/skills" aria-label="Back to skills">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <h1 class="text-page-title ml-2">Skill</h1>
+  </div>
+
+  <div class="detail-content relative">
+    <console-spinner-overlay [loading]="loading()" />
+
+    @if (skill(); as s) {
+      <div class="detail-actions">
+        <a mat-stroked-button routerLink="./edit">
+          <mat-icon class="icon-sm">edit</mat-icon>
+          Edit
+        </a>
+        @if (!s.deletedAt) {
+          <button mat-stroked-button color="warn" (click)="confirmDelete()">
+            <mat-icon class="icon-sm">delete</mat-icon>
+            Delete
+          </button>
+        }
+      </div>
+
+      <div class="detail-card mt-4">
+        <!-- Identity -->
+        <div class="detail-section">
+          <div class="flex items-center gap-3 mb-3">
+            @if (s.iconUrl) {
+              <img [src]="s.iconUrl" [alt]="s.name" class="w-10 h-10 object-contain rounded" />
+            }
+            <h2 class="text-section-heading m-0">{{ s.name }}</h2>
+            @if (s.isFeatured) {
+              <mat-icon class="icon-sm text-yellow-500" matTooltip="Featured">star</mat-icon>
+            }
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            @if (s.deletedAt) {
+              <span
+                class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
+              >
+                Deleted
+              </span>
+            }
+            <mat-chip class="chip-sm">{{ s.category | enumLabel: skillCategoryLabels }}</mat-chip>
+            @if (s.isLibrary) {
+              <mat-chip class="chip-sm">Library</mat-chip>
+            }
+          </div>
+
+          <div class="detail-field">
+            <span class="detail-field__label">Slug</span>
+            <span class="detail-field__value font-mono text-sm">{{ s.slug }}</span>
+          </div>
+          @if (s.description) {
+            <div class="detail-field">
+              <span class="detail-field__label">Description</span>
+              <span class="detail-field__value">{{ s.description }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Hierarchy -->
+        @if (parent() || hasChildren()) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Hierarchy</h3>
+
+            @if (parent(); as p) {
+              <div class="detail-field">
+                <span class="detail-field__label">Parent</span>
+                <span class="detail-field__value">
+                  <a [routerLink]="['/skills', p.id]" class="text-primary hover:underline">{{ p.name }}</a>
+                </span>
+              </div>
+            }
+            @if (hasChildren()) {
+              <div class="detail-field">
+                <span class="detail-field__label">Children</span>
+                <span class="detail-field__value">
+                  <div class="flex flex-wrap gap-1">
+                    @for (c of children(); track c.id) {
+                      <a [routerLink]="['/skills', c.id]">
+                        <mat-chip class="chip-sm">{{ c.name }}</mat-chip>
+                      </a>
+                    }
+                  </div>
+                </span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Experience -->
+        @if (s.yearsOfExperience !== null || s.proficiencyNote) {
+          <div class="detail-section">
+            <h3 class="detail-section__title">Experience</h3>
+            @if (s.yearsOfExperience !== null) {
+              <div class="detail-field">
+                <span class="detail-field__label">Years</span>
+                <span class="detail-field__value">{{ s.yearsOfExperience }}</span>
+              </div>
+            }
+            @if (s.proficiencyNote) {
+              <div class="detail-field">
+                <span class="detail-field__label">Proficiency</span>
+                <span class="detail-field__value">{{ s.proficiencyNote }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Display -->
+        <div class="detail-section">
+          <h3 class="detail-section__title">Display</h3>
+          <div class="detail-field">
+            <span class="detail-field__label">Display order</span>
+            <span class="detail-field__value">{{ s.displayOrder }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Featured</span>
+            <span class="detail-field__value">{{ s.isFeatured ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-timestamps">
+          <span>Created: {{ s.createdAt | date: 'medium' }}</span>
+          <span>Updated: {{ s.updatedAt | date: 'medium' }}</span>
+          @if (s.deletedAt) {
+            <span class="text-red-400">Deleted: {{ s.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
