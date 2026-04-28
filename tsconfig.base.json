@@ -46,6 +46,9 @@
       "@portfolio/landing/feature-experience": ["./libs/landing/feature-experience/src/index.ts"],
       "@portfolio/console/feature-project": ["libs/console/feature-project/src/index.ts"],
       "@portfolio/console/feature-blog": ["libs/console/feature-blog/src/index.ts"],
+      "@portfolio/console/feature-home": ["./libs/console/feature-home/src/index.ts"],
+      "@portfolio/console/feature-error": ["./libs/console/feature-error/src/index.ts"],
+      "@portfolio/console/feature-ddl": ["./libs/console/feature-ddl/src/index.ts"],
       "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"],
       "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
       "@portfolio/shared/ui-pipes": ["libs/shared/ui-pipes/src/index.ts"]

@@ -1,17 +1,17 @@
 {
-  "name": "landing-feature-home",
+  "name": "feature-home",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/landing/feature-home/src",
-  "prefix": "landing",
+  "sourceRoot": "libs/console/feature-home/src",
+  "prefix": "console",
   "projectType": "library",
-  "tags": ["scope:landing", "type:feature"],
+  "tags": ["scope:console", "type:feature"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/landing/feature-home/jest.config.cts",
-        "tsConfig": "libs/landing/feature-home/tsconfig.spec.json"
+        "jestConfig": "libs/console/feature-home/jest.config.cts",
+        "tsConfig": "libs/console/feature-home/tsconfig.spec.json"
       }
     },
     "lint": {

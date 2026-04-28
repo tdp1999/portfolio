@@ -1,7 +1,6 @@
 import { Route } from '@angular/router';
 import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
 import { LayoutShellComponent } from './layout-shell';
-import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 import { environment } from '../environments/environment';
 
 export const appRoutes: Route[] = [
@@ -14,7 +13,7 @@ export const appRoutes: Route[] = [
   // Error pages — no layout wrapper
   {
     path: 'error/:code',
-    loadComponent: () => import('./pages/error/error-page'),
+    loadComponent: () => import('@portfolio/console/feature-error').then((m) => m.ErrorPageComponent),
   },
 
   // Main routes — sidebar layout
@@ -23,7 +22,10 @@ export const appRoutes: Route[] = [
     component: LayoutShellComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', loadComponent: () => import('./pages/home/home') },
+      {
+        path: '',
+        loadComponent: () => import('@portfolio/console/feature-home').then((m) => m.HomeComponent),
+      },
       {
         path: 'settings',
         loadChildren: () => import('@portfolio/console/feature-settings').then((m) => m.settingsRoutes),
@@ -77,11 +79,9 @@ export const appRoutes: Route[] = [
       ...(environment.production
         ? []
         : [
-            { path: 'ddl', loadComponent: () => import('./pages/ddl/ddl') },
             {
-              path: 'ddl/long-form',
-              loadComponent: () => import('./pages/ddl/long-form/long-form'),
-              canDeactivate: [unsavedChangesGuard],
+              path: 'ddl',
+              loadChildren: () => import('@portfolio/console/feature-ddl').then((m) => m.ddlRoutes),
             },
           ]),
     ],
