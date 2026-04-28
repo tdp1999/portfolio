@@ -11,13 +11,20 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,19 +33,28 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   LongFormLayoutComponent,
+  MonthYearPickerComponent,
   ScrollspyRailComponent,
   SectionCardComponent,
   SectionDescriptor,
   SpinnerOverlayComponent,
   StickySaveBarComponent,
   ToastService,
+  TranslatableGroupComponent,
 } from '@portfolio/console/shared/ui';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import {
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
 
-type AchievementGroup = FormGroup<{ text: FormControl<string> }>;
+type BulletGroup = FormGroup<{ text: FormControl<string> }>;
+type LinkGroup = FormGroup<{ label: FormControl<string>; url: FormControl<string> }>;
 
 @Component({
   selector: 'console-experience-form-page',
@@ -52,17 +68,18 @@ type AchievementGroup = FormGroup<{ text: FormControl<string> }>;
     MatIconModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatDatepickerModule,
     MatChipsModule,
     MatAutocompleteModule,
     MatTabsModule,
     MatProgressSpinnerModule,
     FormErrorPipe,
     LongFormLayoutComponent,
+    MonthYearPickerComponent,
     ScrollspyRailComponent,
     SectionCardComponent,
     StickySaveBarComponent,
     SpinnerOverlayComponent,
+    TranslatableGroupComponent,
   ],
   templateUrl: './experience-form-page.html',
   styleUrl: './experience-form-page.scss',
@@ -97,12 +114,18 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     companyUrl: [''],
     companyLogoId: [''],
 
-    position_en: ['', [Validators.required]],
-    position_vi: ['', [Validators.required]],
-    description_en: [''],
-    description_vi: [''],
-    teamRole_en: [''],
-    teamRole_vi: [''],
+    position: this.fb.nonNullable.group({
+      en: ['', [Validators.required]],
+      vi: ['', [Validators.required]],
+    }),
+    description: this.fb.nonNullable.group({
+      en: [''],
+      vi: [''],
+    }),
+    teamRole: this.fb.nonNullable.group({
+      en: [''],
+      vi: [''],
+    }),
 
     employmentType: ['FULL_TIME', [Validators.required]],
 
@@ -111,21 +134,24 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     isCurrent: [true],
 
     locationType: ['ONSITE', [Validators.required]],
-    locationCountry: [''],
+    locationCountry: ['', [Validators.required]],
     locationCity: [''],
     locationPostalCode: [''],
     locationAddress1: [''],
     locationAddress2: [''],
 
     clientName: [''],
-    clientIndustry: [''],
     domain: [''],
     teamSize: [null as number | null],
 
     displayOrder: [0],
 
-    achievements_en: this.fb.array<AchievementGroup>([]),
-    achievements_vi: this.fb.array<AchievementGroup>([]),
+    responsibilities_en: this.fb.array<BulletGroup>([]),
+    responsibilities_vi: this.fb.array<BulletGroup>([]),
+    highlights_en: this.fb.array<BulletGroup>([]),
+    highlights_vi: this.fb.array<BulletGroup>([]),
+
+    links: this.fb.array<LinkGroup>([]),
   });
 
   readonly dirty = signal(false);
@@ -138,9 +164,11 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     { id: 'section-dates', label: 'Dates' },
     { id: 'section-location', label: 'Location' },
     { id: 'section-skills', label: 'Skills' },
-    { id: 'section-achievements', label: 'Achievements' },
+    { id: 'section-responsibilities', label: 'Responsibilities' },
+    { id: 'section-highlights', label: 'Highlights' },
+    { id: 'section-links', label: 'Links' },
     { id: 'section-context', label: 'Context' },
-    { id: 'section-display', label: 'Display' },
+    { id: 'section-settings', label: 'Settings' },
   ];
 
   ngOnInit(): void {
@@ -182,16 +210,38 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     return control as FormGroup;
   }
 
-  addAchievement(lang: 'en' | 'vi'): void {
-    const arr = lang === 'en' ? this.form.controls.achievements_en : this.form.controls.achievements_vi;
-    arr.push(this.createAchievementGroup());
+  addResponsibility(lang: 'en' | 'vi'): void {
+    const arr = lang === 'en' ? this.form.controls.responsibilities_en : this.form.controls.responsibilities_vi;
+    arr.push(this.createBulletGroup());
     arr.markAsDirty();
   }
 
-  removeAchievement(lang: 'en' | 'vi', index: number): void {
-    const arr = lang === 'en' ? this.form.controls.achievements_en : this.form.controls.achievements_vi;
+  removeResponsibility(lang: 'en' | 'vi', index: number): void {
+    const arr = lang === 'en' ? this.form.controls.responsibilities_en : this.form.controls.responsibilities_vi;
     arr.removeAt(index);
     arr.markAsDirty();
+  }
+
+  addHighlight(lang: 'en' | 'vi'): void {
+    const arr = lang === 'en' ? this.form.controls.highlights_en : this.form.controls.highlights_vi;
+    arr.push(this.createBulletGroup());
+    arr.markAsDirty();
+  }
+
+  removeHighlight(lang: 'en' | 'vi', index: number): void {
+    const arr = lang === 'en' ? this.form.controls.highlights_en : this.form.controls.highlights_vi;
+    arr.removeAt(index);
+    arr.markAsDirty();
+  }
+
+  addLink(): void {
+    this.form.controls.links.push(this.createLinkGroup());
+    this.form.controls.links.markAsDirty();
+  }
+
+  removeLink(index: number): void {
+    this.form.controls.links.removeAt(index);
+    this.form.controls.links.markAsDirty();
   }
 
   removeSkill(skill: SkillOption): void {
@@ -242,6 +292,7 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      scrollToFirstError();
       this.toast.error('Please fix validation errors before saving');
       return;
     }
@@ -252,19 +303,25 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     const v = this.form.getRawValue();
     const isCurrent = v.isCurrent;
 
-    const achievements = {
-      en: (v.achievements_en as Array<{ text: string }>).map((a) => a.text).filter(Boolean),
-      vi: (v.achievements_vi as Array<{ text: string }>).map((a) => a.text).filter(Boolean),
+    const responsibilities = {
+      en: v.responsibilities_en.map((a) => a.text).filter(Boolean),
+      vi: v.responsibilities_vi.map((a) => a.text).filter(Boolean),
     };
+    const highlights = {
+      en: v.highlights_en.map((a) => a.text).filter(Boolean),
+      vi: v.highlights_vi.map((a) => a.text).filter(Boolean),
+    };
+    const links = v.links.filter((l) => l.label && l.url);
 
     const basePayload = {
       companyName: v.companyName,
       companyUrl: v.companyUrl || undefined,
-      position: { en: v.position_en, vi: v.position_vi },
-      description:
-        v.description_en || v.description_vi ? { en: v.description_en || '', vi: v.description_vi || '' } : undefined,
-      achievements,
-      teamRole: v.teamRole_en || v.teamRole_vi ? { en: v.teamRole_en || '', vi: v.teamRole_vi || '' } : undefined,
+      position: v.position,
+      description: v.description.en || v.description.vi ? v.description : undefined,
+      responsibilities,
+      highlights,
+      teamRole: v.teamRole.en || v.teamRole.vi ? v.teamRole : undefined,
+      links,
       employmentType: v.employmentType,
       locationType: v.locationType,
       locationCountry: v.locationCountry || undefined,
@@ -273,7 +330,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
       locationAddress1: v.locationAddress1 || undefined,
       locationAddress2: v.locationAddress2 || undefined,
       clientName: v.clientName || undefined,
-      clientIndustry: v.clientIndustry || undefined,
       domain: v.domain || undefined,
       teamSize: v.teamSize ?? undefined,
       startDate: v.startDate?.toISOString() ?? '',
@@ -332,12 +388,19 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   }
 
   discard(): void {
-    const snapshot = this.initialSnapshot();
+    const snapshot = this.initialSnapshot() as {
+      responsibilities_en?: Array<{ text: string }>;
+      responsibilities_vi?: Array<{ text: string }>;
+      highlights_en?: Array<{ text: string }>;
+      highlights_vi?: Array<{ text: string }>;
+      links?: Array<{ label: string; url: string }>;
+    } | null;
     if (snapshot) {
-      this.rebuildAchievements(
-        (snapshot as { achievements_en?: Array<{ text: string }> }).achievements_en ?? [],
-        (snapshot as { achievements_vi?: Array<{ text: string }> }).achievements_vi ?? []
-      );
+      this.rebuildBullets(this.form.controls.responsibilities_en, snapshot.responsibilities_en ?? []);
+      this.rebuildBullets(this.form.controls.responsibilities_vi, snapshot.responsibilities_vi ?? []);
+      this.rebuildBullets(this.form.controls.highlights_en, snapshot.highlights_en ?? []);
+      this.rebuildBullets(this.form.controls.highlights_vi, snapshot.highlights_vi ?? []);
+      this.rebuildLinks(snapshot.links ?? []);
       this.form.reset(snapshot as never);
     } else {
       this.form.reset();
@@ -360,17 +423,26 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     this.initialSnapshot.set(this.form.getRawValue());
   }
 
-  private createAchievementGroup(text = ''): AchievementGroup {
-    return this.fb.nonNullable.group({ text: [text] }) as AchievementGroup;
+  private createBulletGroup(text = ''): BulletGroup {
+    return this.fb.nonNullable.group({ text: [text] }) as BulletGroup;
   }
 
-  private rebuildAchievements(en: Array<{ text: string }>, vi: Array<{ text: string }>): void {
-    this.form.controls.achievements_en.clear({ emitEvent: false });
-    this.form.controls.achievements_vi.clear({ emitEvent: false });
-    for (const a of en)
-      this.form.controls.achievements_en.push(this.createAchievementGroup(a.text), { emitEvent: false });
-    for (const a of vi)
-      this.form.controls.achievements_vi.push(this.createAchievementGroup(a.text), { emitEvent: false });
+  private createLinkGroup(label = '', url = ''): LinkGroup {
+    return this.fb.nonNullable.group({
+      label: [label, [Validators.required, Validators.maxLength(100)]],
+      url: [url, [Validators.required, Validators.maxLength(500)]],
+    }) as LinkGroup;
+  }
+
+  private rebuildBullets(arr: FormArray<BulletGroup>, items: Array<{ text: string }>): void {
+    arr.clear({ emitEvent: false });
+    for (const item of items) arr.push(this.createBulletGroup(item.text), { emitEvent: false });
+  }
+
+  private rebuildLinks(items: Array<{ label: string; url: string }>): void {
+    this.form.controls.links.clear({ emitEvent: false });
+    for (const item of items)
+      this.form.controls.links.push(this.createLinkGroup(item.label, item.url), { emitEvent: false });
   }
 
   private setupCurrentPositionToggle(): void {
@@ -409,12 +481,9 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
         companyName: exp.companyName,
         companyUrl: exp.companyUrl ?? '',
         companyLogoId: exp.companyLogoId ?? '',
-        position_en: exp.position?.en ?? '',
-        position_vi: exp.position?.vi ?? '',
-        description_en: exp.description?.en ?? '',
-        description_vi: exp.description?.vi ?? '',
-        teamRole_en: exp.teamRole?.en ?? '',
-        teamRole_vi: exp.teamRole?.vi ?? '',
+        position: { en: exp.position?.en ?? '', vi: exp.position?.vi ?? '' },
+        description: { en: exp.description?.en ?? '', vi: exp.description?.vi ?? '' },
+        teamRole: { en: exp.teamRole?.en ?? '', vi: exp.teamRole?.vi ?? '' },
         employmentType: exp.employmentType,
         startDate: exp.startDate ? new Date(exp.startDate) : null,
         endDate: exp.endDate ? new Date(exp.endDate) : null,
@@ -426,7 +495,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
         locationAddress1: exp.locationAddress1 ?? '',
         locationAddress2: exp.locationAddress2 ?? '',
         clientName: exp.clientName ?? '',
-        clientIndustry: exp.clientIndustry ?? '',
         domain: exp.domain ?? '',
         teamSize: exp.teamSize,
         displayOrder: exp.displayOrder,
@@ -434,9 +502,23 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
       { emitEvent: false }
     );
 
-    const en = (exp.achievements?.en ?? []).map((text) => ({ text }));
-    const vi = (exp.achievements?.vi ?? []).map((text) => ({ text }));
-    this.rebuildAchievements(en, vi);
+    this.rebuildBullets(
+      this.form.controls.responsibilities_en,
+      (exp.responsibilities?.en ?? []).map((text) => ({ text }))
+    );
+    this.rebuildBullets(
+      this.form.controls.responsibilities_vi,
+      (exp.responsibilities?.vi ?? []).map((text) => ({ text }))
+    );
+    this.rebuildBullets(
+      this.form.controls.highlights_en,
+      (exp.highlights?.en ?? []).map((text) => ({ text }))
+    );
+    this.rebuildBullets(
+      this.form.controls.highlights_vi,
+      (exp.highlights?.vi ?? []).map((text) => ({ text }))
+    );
+    this.rebuildLinks(exp.links ?? []);
 
     if (exp.companyLogoUrl) {
       this.logoPreview.set(exp.companyLogoUrl);

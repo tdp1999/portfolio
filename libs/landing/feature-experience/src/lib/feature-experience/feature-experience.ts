@@ -82,8 +82,12 @@ export class FeatureExperience {
     return getLocalized(exp.description, this.locale());
   }
 
-  getAchievements(exp: PublicExperience): string[] {
-    return exp.achievements?.[this.locale()] ?? [];
+  getResponsibilities(exp: PublicExperience): string[] {
+    return exp.responsibilities?.[this.locale()] ?? [];
+  }
+
+  getHighlights(exp: PublicExperience): string[] {
+    return exp.highlights?.[this.locale()] ?? [];
   }
 
   getTeamRole(exp: PublicExperience): string {

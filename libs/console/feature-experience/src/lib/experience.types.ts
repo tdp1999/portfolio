@@ -14,6 +14,11 @@ export interface ExperienceSkillDto {
   slug: string;
 }
 
+export interface ExperienceLink {
+  label: string;
+  url: string;
+}
+
 export interface AdminExperience {
   id: string;
   slug: string;
@@ -23,8 +28,10 @@ export interface AdminExperience {
   companyLogoId: string | null;
   position: TranslatableJson;
   description: TranslatableJson | null;
-  achievements: TranslatableStringArray;
+  responsibilities: TranslatableStringArray;
+  highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
+  links: ExperienceLink[];
   employmentType: string;
   locationType: string;
   locationCountry: string;
@@ -33,7 +40,6 @@ export interface AdminExperience {
   locationAddress1: string | null;
   locationAddress2: string | null;
   clientName: string | null;
-  clientIndustry: string | null;
   domain: string | null;
   teamSize: number | null;
   startDate: string;
@@ -58,8 +64,10 @@ export interface CreateExperiencePayload {
   companyLogoId?: string;
   position: TranslatableJson;
   description?: TranslatableJson;
-  achievements: TranslatableStringArray;
+  responsibilities: TranslatableStringArray;
+  highlights: TranslatableStringArray;
   teamRole?: TranslatableJson;
+  links: ExperienceLink[];
   employmentType: string;
   locationType: string;
   locationCountry?: string;
@@ -68,7 +76,6 @@ export interface CreateExperiencePayload {
   locationAddress1?: string;
   locationAddress2?: string;
   clientName?: string;
-  clientIndustry?: string;
   domain?: string;
   teamSize?: number;
   startDate: string;
@@ -83,8 +90,10 @@ export interface UpdateExperiencePayload {
   companyLogoId?: string | null;
   position?: TranslatableJson;
   description?: TranslatableJson;
-  achievements?: TranslatableStringArray;
+  responsibilities?: TranslatableStringArray;
+  highlights?: TranslatableStringArray;
   teamRole?: TranslatableJson;
+  links?: ExperienceLink[];
   employmentType?: string;
   locationType?: string;
   locationCountry?: string;
@@ -93,7 +102,6 @@ export interface UpdateExperiencePayload {
   locationAddress1?: string;
   locationAddress2?: string;
   clientName?: string;
-  clientIndustry?: string;
   domain?: string;
   teamSize?: number;
   startDate?: string;

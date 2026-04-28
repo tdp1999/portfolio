@@ -130,13 +130,43 @@
                     </p>
                   }
 
-                  <!-- Achievements -->
-                  @if (getAchievements(exp).length > 0) {
+                  <!-- Responsibilities -->
+                  @if (getResponsibilities(exp).length > 0) {
                     <ul class="flex flex-col gap-2">
-                      @for (achievement of getAchievements(exp); track $index) {
+                      @for (item of getResponsibilities(exp); track $index) {
                         <li class="flex items-start gap-2 text-text-secondary">
                           <landing-icon name="check" [size]="16" class="text-primary flex-shrink-0 mt-0.5" />
-                          <span>{{ achievement }}</span>
+                          <span>{{ item }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+
+                  <!-- Highlights -->
+                  @if (getHighlights(exp).length > 0) {
+                    <ul class="flex flex-col gap-2">
+                      @for (item of getHighlights(exp); track $index) {
+                        <li class="flex items-start gap-2 text-text-secondary">
+                          <landing-icon name="star" [size]="16" class="text-primary flex-shrink-0 mt-0.5" />
+                          <span>{{ item }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+
+                  <!-- Links -->
+                  @if (exp.links.length > 0) {
+                    <ul class="flex flex-wrap gap-x-4 gap-y-1">
+                      @for (link of exp.links; track $index) {
+                        <li>
+                          <a
+                            [href]="link.url"
+                            target="_blank"
+                            rel="noopener"
+                            class="text-primary hover:underline text-sm"
+                          >
+                            {{ link.label }}
+                          </a>
                         </li>
                       }
                     </ul>

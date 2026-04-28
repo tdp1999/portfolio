@@ -20,7 +20,11 @@
 
   <console-long-form-layout>
     <div rail>
-      <console-scrollspy-rail [sections]="sections" [activeIndicator]="false" />
+      <console-scrollspy-rail
+        [title]="isEdit() ? 'Edit Experience' : 'New Experience'"
+        [sections]="sections"
+        [activeIndicator]="false"
+      />
     </div>
 
     <div content>
@@ -28,6 +32,7 @@
         <!-- Company -->
         <console-section-card
           id="section-company"
+          bucket="PUBLIC"
           title="Company"
           description="The company or client for this role. Logo is optional."
           saveMode="atomic"
@@ -74,23 +79,17 @@
         <!-- Role -->
         <console-section-card
           id="section-role"
+          bucket="PUBLIC"
           title="Role"
           description="Position title, description, and employment type. Bilingual fields support English and Vietnamese."
           saveMode="atomic"
         >
           <div class="form-stack">
-            <div class="flex gap-4">
-              <mat-form-field class="flex-1">
-                <mat-label>Position (EN)</mat-label>
-                <input matInput formControlName="position_en" placeholder="e.g. Senior Software Engineer" />
-                <mat-error>{{ form.controls.position_en | formError }}</mat-error>
-              </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>Position (VI)</mat-label>
-                <input matInput formControlName="position_vi" placeholder="Kỹ sư phần mềm cao cấp" />
-                <mat-error>{{ form.controls.position_vi | formError }}</mat-error>
-              </mat-form-field>
-            </div>
+            <console-translatable-group
+              [group]="form.controls.position"
+              label="Position"
+              [placeholder]="{ en: 'e.g. Senior Software Engineer', vi: 'Kỹ sư phần mềm cao cấp' }"
+            />
 
             <mat-form-field>
               <mat-label>Employment Type</mat-label>
@@ -101,57 +100,44 @@
               </mat-select>
             </mat-form-field>
 
-            <div class="flex gap-4">
-              <mat-form-field class="flex-1">
-                <mat-label>Description (EN)</mat-label>
-                <textarea
-                  matInput
-                  formControlName="description_en"
-                  rows="3"
-                  placeholder="Describe your role..."
-                ></textarea>
-              </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>Description (VI)</mat-label>
-                <textarea matInput formControlName="description_vi" rows="3" placeholder="Mô tả vai trò..."></textarea>
-              </mat-form-field>
-            </div>
+            <console-translatable-group
+              [group]="form.controls.description"
+              label="Description"
+              type="textarea"
+              [rows]="3"
+              [placeholder]="{ en: 'Describe your role...', vi: 'Mô tả vai trò...' }"
+            />
 
-            <div class="flex gap-4">
-              <mat-form-field class="flex-1">
-                <mat-label>Team Role (EN)</mat-label>
-                <input matInput formControlName="teamRole_en" placeholder="e.g. Tech Lead" />
-              </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>Team Role (VI)</mat-label>
-                <input matInput formControlName="teamRole_vi" placeholder="Trưởng nhóm kỹ thuật" />
-              </mat-form-field>
-            </div>
+            <console-translatable-group
+              [group]="form.controls.teamRole"
+              label="Team Role"
+              [placeholder]="{ en: 'e.g. Tech Lead', vi: 'Trưởng nhóm kỹ thuật' }"
+            />
           </div>
         </console-section-card>
 
         <!-- Dates -->
         <console-section-card
           id="section-dates"
+          bucket="PUBLIC"
           title="Dates"
           description="When you started and ended this role. Toggle Current position if this is ongoing."
           saveMode="atomic"
         >
           <div class="form-stack">
             <div class="flex gap-4 items-start">
-              <mat-form-field class="flex-1">
-                <mat-label>Start Date</mat-label>
-                <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
-                <mat-datepicker-toggle matSuffix [for]="startPicker" />
-                <mat-datepicker #startPicker startView="multi-year" />
-                <mat-error>{{ form.controls.startDate | formError }}</mat-error>
-              </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>End Date</mat-label>
-                <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
-                <mat-datepicker-toggle matSuffix [for]="endPicker" />
-                <mat-datepicker #endPicker startView="multi-year" />
-              </mat-form-field>
+              <console-month-year-picker
+                class="flex-1"
+                label="Start Date"
+                controlName="startDate"
+                [control]="form.controls.startDate"
+              />
+              <console-month-year-picker
+                class="flex-1"
+                label="End Date"
+                controlName="endDate"
+                [control]="form.controls.endDate"
+              />
             </div>
             <mat-checkbox formControlName="isCurrent">Current position</mat-checkbox>
           </div>
@@ -160,6 +146,7 @@
         <!-- Location -->
         <console-section-card
           id="section-location"
+          bucket="PUBLIC"
           title="Location"
           description="Where the role was based. All fields other than type are optional."
           saveMode="atomic"
@@ -205,6 +192,7 @@
         <!-- Skills -->
         <console-section-card
           id="section-skills"
+          bucket="PUBLIC"
           title="Skills"
           description="Technologies and skills used in this role."
           saveMode="atomic"
@@ -240,48 +228,100 @@
           </div>
         </console-section-card>
 
-        <!-- Achievements -->
+        <!-- Responsibilities -->
         <console-section-card
-          id="section-achievements"
-          title="Achievements"
-          description="Key wins, metrics, and outcomes. Provide English and Vietnamese versions."
+          id="section-responsibilities"
+          bucket="PUBLIC"
+          title="Responsibilities"
+          description="What you did in this role. Provide English and Vietnamese versions."
           saveMode="atomic"
         >
           <mat-tab-group>
             <mat-tab label="English">
-              <div class="flex flex-col gap-2 pt-4">
-                @for (control of form.controls.achievements_en.controls; track $index) {
+              <div class="flex flex-col gap-4 py-4">
+                @for (control of form.controls.responsibilities_en.controls; track $index) {
                   <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
                     <mat-form-field class="flex-1">
-                      <mat-label>Achievement {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Describe an achievement..." />
+                      <mat-label>Responsibility {{ $index + 1 }}</mat-label>
+                      <input matInput formControlName="text" placeholder="Describe a responsibility..." />
                     </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeAchievement('en', $index)">
+                    <button type="button" mat-icon-button (click)="removeResponsibility('en', $index)">
                       <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
                     </button>
                   </div>
                 }
-                <button type="button" mat-stroked-button (click)="addAchievement('en')">
+                <button type="button" mat-stroked-button (click)="addResponsibility('en')">
                   <mat-icon class="icon-sm">add</mat-icon>
-                  Add Achievement
+                  Add Responsibility
                 </button>
               </div>
             </mat-tab>
 
             <mat-tab label="Vietnamese">
-              <div class="flex flex-col gap-2 pt-4">
-                @for (control of form.controls.achievements_vi.controls; track $index) {
+              <div class="flex flex-col gap-4 py-4">
+                @for (control of form.controls.responsibilities_vi.controls; track $index) {
                   <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
                     <mat-form-field class="flex-1">
-                      <mat-label>Achievement {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Mô tả thành tích..." />
+                      <mat-label>Responsibility {{ $index + 1 }}</mat-label>
+                      <input matInput formControlName="text" placeholder="Mô tả trách nhiệm..." />
                     </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeAchievement('vi', $index)">
+                    <button type="button" mat-icon-button (click)="removeResponsibility('vi', $index)">
                       <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
                     </button>
                   </div>
                 }
-                <button type="button" mat-stroked-button (click)="addAchievement('vi')">
+                <button type="button" mat-stroked-button (click)="addResponsibility('vi')">
+                  <mat-icon class="icon-sm">add</mat-icon>
+                  Thêm trách nhiệm
+                </button>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </console-section-card>
+
+        <!-- Highlights -->
+        <console-section-card
+          id="section-highlights"
+          bucket="PUBLIC"
+          title="Highlights"
+          description="Quantified outcomes and standout achievements (e.g. 'Reduced p99 latency 40%'). Distinct from responsibilities."
+          saveMode="atomic"
+        >
+          <mat-tab-group>
+            <mat-tab label="English">
+              <div class="flex flex-col gap-4 py-4">
+                @for (control of form.controls.highlights_en.controls; track $index) {
+                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
+                    <mat-form-field class="flex-1">
+                      <mat-label>Highlight {{ $index + 1 }}</mat-label>
+                      <input matInput formControlName="text" placeholder="Describe an outcome..." />
+                    </mat-form-field>
+                    <button type="button" mat-icon-button (click)="removeHighlight('en', $index)">
+                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+                <button type="button" mat-stroked-button (click)="addHighlight('en')">
+                  <mat-icon class="icon-sm">add</mat-icon>
+                  Add Highlight
+                </button>
+              </div>
+            </mat-tab>
+
+            <mat-tab label="Vietnamese">
+              <div class="flex flex-col gap-4 py-4">
+                @for (control of form.controls.highlights_vi.controls; track $index) {
+                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
+                    <mat-form-field class="flex-1">
+                      <mat-label>Highlight {{ $index + 1 }}</mat-label>
+                      <input matInput formControlName="text" placeholder="Mô tả thành tích nổi bật..." />
+                    </mat-form-field>
+                    <button type="button" mat-icon-button (click)="removeHighlight('vi', $index)">
+                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+                <button type="button" mat-stroked-button (click)="addHighlight('vi')">
                   <mat-icon class="icon-sm">add</mat-icon>
                   Thêm thành tích
                 </button>
@@ -290,11 +330,45 @@
           </mat-tab-group>
         </console-section-card>
 
+        <!-- Links -->
+        <console-section-card
+          id="section-links"
+          bucket="PUBLIC"
+          title="Links"
+          description="Case studies, repos, demos, press. Labels in English."
+          saveMode="atomic"
+        >
+          <div class="flex flex-col gap-4">
+            @for (control of form.controls.links.controls; track $index) {
+              <div class="flex gap-2 items-start" [formGroup]="asFormGroup(control)">
+                <mat-form-field class="flex-1">
+                  <mat-label>Label</mat-label>
+                  <input matInput formControlName="label" placeholder="e.g. Case Study" />
+                  <mat-error>{{ asFormGroup(control).controls['label'] | formError }}</mat-error>
+                </mat-form-field>
+                <mat-form-field class="flex-[2]">
+                  <mat-label>URL</mat-label>
+                  <input matInput formControlName="url" placeholder="https://..." type="url" />
+                  <mat-error>{{ asFormGroup(control).controls['url'] | formError }}</mat-error>
+                </mat-form-field>
+                <button type="button" mat-icon-button (click)="removeLink($index)" class="mt-2">
+                  <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                </button>
+              </div>
+            }
+            <button type="button" mat-stroked-button (click)="addLink()" class="self-start">
+              <mat-icon class="icon-sm">add</mat-icon>
+              Add Link
+            </button>
+          </div>
+        </console-section-card>
+
         <!-- Context -->
         <console-section-card
           id="section-context"
+          bucket="PUBLIC"
           title="Context"
-          description="Optional client, industry, and team details."
+          description="Optional client, work domain, and team details."
           saveMode="atomic"
         >
           <div class="form-stack">
@@ -304,29 +378,24 @@
                 <input matInput formControlName="clientName" placeholder="Optional" />
               </mat-form-field>
               <mat-form-field class="flex-1">
-                <mat-label>Client Industry</mat-label>
-                <input matInput formControlName="clientIndustry" placeholder="Optional" />
-              </mat-form-field>
-            </div>
-
-            <div class="flex gap-4">
-              <mat-form-field class="flex-1">
                 <mat-label>Domain</mat-label>
                 <input matInput formControlName="domain" placeholder="e.g. Fintech" />
               </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>Team Size</mat-label>
-                <input matInput type="number" formControlName="teamSize" placeholder="e.g. 8" min="1" />
-              </mat-form-field>
             </div>
+
+            <mat-form-field class="w-40">
+              <mat-label>Team Size</mat-label>
+              <input matInput type="number" formControlName="teamSize" placeholder="e.g. 8" min="1" />
+            </mat-form-field>
           </div>
         </console-section-card>
 
-        <!-- Display -->
+        <!-- Settings -->
         <console-section-card
-          id="section-display"
-          title="Display"
-          description="Controls the order this experience appears on the public site."
+          id="section-settings"
+          bucket="INTERNAL"
+          title="Settings"
+          description="Admin-only ordering. Doesn't render publicly."
           saveMode="atomic"
         >
           <mat-form-field class="w-40">
@@ -345,11 +414,5 @@
     </div>
   </console-long-form-layout>
 
-  <console-sticky-save-bar
-    [dirty]="dirty"
-    [saving]="saving"
-    [disabled]="isInvalid"
-    (save)="submit()"
-    (discard)="discard()"
-  />
+  <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="submit()" (discard)="discard()" />
 </div>
