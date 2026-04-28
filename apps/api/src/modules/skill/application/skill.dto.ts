@@ -1,50 +1,39 @@
 import { z } from 'zod/v4';
-import { stripHtmlTags, nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import {
+  DescriptionLongSchema,
+  DescriptionShortSchema,
+  DisplayOrderSchema,
+  NameSchema,
+  YearsOfExperienceSchema,
+} from '@portfolio/shared/validation/zod';
 
 const SkillCategoryEnum = z.enum(['TECHNICAL', 'TOOLS', 'ADDITIONAL']);
 
-const SkillNameSchema = z
-  .string()
-  .min(1)
-  .max(100)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const SkillDescriptionSchema = z
-  .string()
-  .min(1)
-  .max(1000)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const SkillProficiencyNoteSchema = z
-  .string()
-  .min(1)
-  .max(500)
-  .transform((v) => stripHtmlTags(v.trim()));
-
 export const CreateSkillSchema = z.object({
-  name: SkillNameSchema,
+  name: NameSchema,
   category: SkillCategoryEnum,
-  description: SkillDescriptionSchema.optional(),
+  description: DescriptionLongSchema.optional(),
   isLibrary: z.boolean().default(false),
   parentSkillId: z.uuid().optional(),
-  yearsOfExperience: z.number().int().min(0).max(50).optional(),
+  yearsOfExperience: YearsOfExperienceSchema.optional(),
   iconId: z.uuid().optional(),
-  proficiencyNote: SkillProficiencyNoteSchema.optional(),
+  proficiencyNote: DescriptionShortSchema.optional(),
   isFeatured: z.boolean().default(false),
-  displayOrder: z.number().int().default(0),
+  displayOrder: DisplayOrderSchema.default(0),
 });
 
 const UpdateSkillFieldsSchema = z.object({
-  name: SkillNameSchema,
+  name: NameSchema,
   category: SkillCategoryEnum,
-  description: SkillDescriptionSchema.nullable(),
+  description: DescriptionLongSchema.nullable(),
   isLibrary: z.boolean(),
   parentSkillId: z.uuid().nullable(),
-  yearsOfExperience: z.number().int().min(0).max(50).nullable(),
+  yearsOfExperience: YearsOfExperienceSchema.nullable(),
   iconId: z.uuid().nullable(),
-  proficiencyNote: SkillProficiencyNoteSchema.nullable(),
+  proficiencyNote: DescriptionShortSchema.nullable(),
   isFeatured: z.boolean(),
-  displayOrder: z.number().int(),
+  displayOrder: DisplayOrderSchema,
 });
 
 export const UpdateSkillSchema = nonEmptyPartial(UpdateSkillFieldsSchema);

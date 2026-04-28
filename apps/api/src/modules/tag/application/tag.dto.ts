@@ -1,11 +1,6 @@
 import { z } from 'zod/v4';
-import { stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
-
-const TagNameSchema = z
-  .string()
-  .min(1)
-  .max(50)
-  .transform((v) => stripHtmlTags(v.trim()));
+import { PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { TagNameSchema } from '@portfolio/shared/validation/zod';
 
 export const CreateTagSchema = z.object({
   name: TagNameSchema,

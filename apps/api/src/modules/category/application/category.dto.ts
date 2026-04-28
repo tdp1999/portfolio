@@ -1,28 +1,17 @@
 import { z } from 'zod/v4';
-import { stripHtmlTags, nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
-
-const CategoryNameSchema = z
-  .string()
-  .min(1)
-  .max(100)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const CategoryDescriptionSchema = z
-  .string()
-  .min(1)
-  .max(500)
-  .transform((v) => stripHtmlTags(v.trim()));
+import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { DescriptionShortSchema, DisplayOrderSchema, NameSchema } from '@portfolio/shared/validation/zod';
 
 export const CreateCategorySchema = z.object({
-  name: CategoryNameSchema,
-  description: CategoryDescriptionSchema.optional(),
-  displayOrder: z.number().int().default(0),
+  name: NameSchema,
+  description: DescriptionShortSchema.optional(),
+  displayOrder: DisplayOrderSchema.default(0),
 });
 
 const UpdateCategoryFieldsSchema = z.object({
-  name: CategoryNameSchema,
-  description: CategoryDescriptionSchema.nullable(),
-  displayOrder: z.number().int(),
+  name: NameSchema,
+  description: DescriptionShortSchema.nullable(),
+  displayOrder: DisplayOrderSchema,
 });
 
 export const UpdateCategorySchema = nonEmptyPartial(UpdateCategoryFieldsSchema);

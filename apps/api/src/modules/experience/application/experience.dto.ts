@@ -7,32 +7,49 @@ import {
   PaginatedQuerySchema,
   nonEmptyPartial,
 } from '@portfolio/shared/utils';
+import {
+  AddressLineSchema,
+  DisplayOrderSchema,
+  PostalCodeSchema,
+  TeamSizeSchema,
+  TitleSchema,
+  UrlSchema,
+  optionalShortText,
+  requiredShortText,
+} from '@portfolio/shared/validation/zod';
+import { LIMITS } from '@portfolio/shared/validation';
+
+const LinkSchema = z.object({
+  label: requiredShortText(LIMITS.NAME_MAX),
+  url: UrlSchema,
+});
 
 // --- CreateExperienceSchema ---
 
 export const CreateExperienceSchema = z.object({
-  companyName: z.string().min(1).max(200),
-  companyUrl: z.url().max(500).optional(),
+  companyName: TitleSchema,
+  companyUrl: UrlSchema.optional(),
   companyLogoId: z.uuid().optional(),
   position: TranslatableSchema,
   description: OptionalTranslatableSchema.optional(),
-  achievements: TranslatableStringArraySchema.default({ en: [], vi: [] }),
+  responsibilities: TranslatableStringArraySchema.default({ en: [], vi: [] }),
+  highlights: TranslatableStringArraySchema.default({ en: [], vi: [] }),
   teamRole: OptionalTranslatableSchema.optional(),
+  links: z.array(LinkSchema).default([]),
   employmentType: z.nativeEnum(EmploymentType).default('FULL_TIME'),
   locationType: z.nativeEnum(LocationType).default('ONSITE'),
-  locationCountry: z.string().min(1).max(100),
-  locationCity: z.string().max(100).optional(),
-  locationPostalCode: z.string().max(20).optional(),
-  locationAddress1: z.string().max(300).optional(),
-  locationAddress2: z.string().max(300).optional(),
-  clientName: z.string().max(200).optional(),
-  clientIndustry: z.string().max(100).optional(),
-  domain: z.string().max(100).optional(),
-  teamSize: z.number().int().min(1).optional(),
+  locationCountry: requiredShortText(LIMITS.NAME_MAX),
+  locationCity: optionalShortText(LIMITS.NAME_MAX).optional(),
+  locationPostalCode: PostalCodeSchema.optional(),
+  locationAddress1: AddressLineSchema.optional(),
+  locationAddress2: AddressLineSchema.optional(),
+  clientName: optionalShortText(LIMITS.TITLE_MAX).optional(),
+  domain: optionalShortText(LIMITS.NAME_MAX).optional(),
+  teamSize: TeamSizeSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   skillIds: z.array(z.uuid()).default([]),
-  displayOrder: z.number().int().min(0).default(0),
+  displayOrder: DisplayOrderSchema.default(0),
 });
 
 export type CreateExperienceDto = z.infer<typeof CreateExperienceSchema>;
@@ -41,28 +58,29 @@ export type CreateExperienceDto = z.infer<typeof CreateExperienceSchema>;
 // Uses a base schema without defaults so nonEmptyPartial correctly rejects empty objects.
 
 const UpdateExperienceBaseSchema = z.object({
-  companyName: z.string().min(1).max(200),
-  companyUrl: z.url().max(500).optional(),
+  companyName: TitleSchema,
+  companyUrl: UrlSchema.optional(),
   companyLogoId: z.uuid().nullable().optional(),
   position: TranslatableSchema,
   description: OptionalTranslatableSchema.optional(),
-  achievements: TranslatableStringArraySchema,
+  responsibilities: TranslatableStringArraySchema,
+  highlights: TranslatableStringArraySchema,
   teamRole: OptionalTranslatableSchema.optional(),
+  links: z.array(LinkSchema),
   employmentType: z.nativeEnum(EmploymentType),
   locationType: z.nativeEnum(LocationType),
-  locationCountry: z.string().min(1).max(100).optional(),
-  locationCity: z.string().max(100).optional(),
-  locationPostalCode: z.string().max(20).optional(),
-  locationAddress1: z.string().max(300).optional(),
-  locationAddress2: z.string().max(300).optional(),
-  clientName: z.string().max(200).optional(),
-  clientIndustry: z.string().max(100).optional(),
-  domain: z.string().max(100).optional(),
-  teamSize: z.number().int().min(1).optional(),
+  locationCountry: requiredShortText(LIMITS.NAME_MAX).optional(),
+  locationCity: optionalShortText(LIMITS.NAME_MAX).optional(),
+  locationPostalCode: PostalCodeSchema.optional(),
+  locationAddress1: AddressLineSchema.optional(),
+  locationAddress2: AddressLineSchema.optional(),
+  clientName: optionalShortText(LIMITS.TITLE_MAX).optional(),
+  domain: optionalShortText(LIMITS.NAME_MAX).optional(),
+  teamSize: TeamSizeSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   skillIds: z.array(z.uuid()),
-  displayOrder: z.number().int().min(0),
+  displayOrder: DisplayOrderSchema,
 });
 
 export const UpdateExperienceSchema = nonEmptyPartial(UpdateExperienceBaseSchema);
@@ -86,7 +104,7 @@ export const ReorderExperiencesSchema = z
   .array(
     z.object({
       id: z.uuid(),
-      displayOrder: z.number().int().min(0),
+      displayOrder: DisplayOrderSchema,
     })
   )
   .min(1);

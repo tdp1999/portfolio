@@ -1,29 +1,9 @@
 import { z } from 'zod/v4';
-import { stripHtmlTags, nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } from '@portfolio/shared/validation/zod';
 import { POST_STATUS } from '../domain/blog-post.types';
 
-const TitleSchema = z
-  .string()
-  .min(1)
-  .max(200)
-  .transform((v) => stripHtmlTags(v.trim()));
-
 const ContentSchema = z.string().min(1);
-
-const ExcerptSchema = z
-  .string()
-  .max(500)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const MetaTitleSchema = z
-  .string()
-  .max(200)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const MetaDescriptionSchema = z
-  .string()
-  .max(500)
-  .transform((v) => stripHtmlTags(v.trim()));
 
 const LanguageSchema = z.enum(['EN', 'VI']);
 

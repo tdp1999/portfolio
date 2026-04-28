@@ -1,20 +1,9 @@
 import { z } from 'zod/v4';
-import { nonEmptyPartial, stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { EmailSchema, NameSchema, PasswordSchema } from '@portfolio/shared/validation/zod';
 import { UserRole } from '../domain/user.types';
 
-const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-const PASSWORD_ERROR =
-  'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (#?!@$%^&*-)';
-
-export const PasswordSchema = z.string().regex(PASSWORD_REGEX, PASSWORD_ERROR);
-
-const NameSchema = z
-  .string()
-  .min(1)
-  .max(100)
-  .transform((v) => stripHtmlTags(v.trim()));
-
-const EmailSchema = z.email().transform((v) => v.toLowerCase());
+export { PasswordSchema };
 
 const UserFieldsSchema = z.object({
   email: EmailSchema,
