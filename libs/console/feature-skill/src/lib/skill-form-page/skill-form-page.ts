@@ -33,7 +33,13 @@ import {
   StickySaveBarComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import {
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { SkillService } from '../skill.service';
 import { AdminSkill } from '../skill.types';
@@ -96,7 +102,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
     { id: 'section-classification', label: 'Classification' },
     { id: 'section-experience', label: 'Experience' },
     { id: 'section-icon', label: 'Icon' },
-    { id: 'section-display', label: 'Display' },
+    { id: 'section-settings', label: 'Settings' },
   ];
 
   readonly form = this.fb.nonNullable.group({
@@ -197,6 +203,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      scrollToFirstError();
       return;
     }
 

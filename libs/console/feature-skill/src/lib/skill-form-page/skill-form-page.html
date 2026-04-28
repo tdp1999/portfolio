@@ -16,7 +16,11 @@
 
   <console-long-form-layout>
     <div rail>
-      <console-scrollspy-rail [sections]="sections" [activeIndicator]="false" />
+      <console-scrollspy-rail
+        [title]="isEditMode() ? 'Edit Skill' : 'New Skill'"
+        [sections]="sections"
+        [activeIndicator]="false"
+      />
     </div>
 
     <div content>
@@ -24,6 +28,7 @@
         <!-- Identity -->
         <console-section-card
           id="section-identity"
+          bucket="PUBLIC"
           title="Identity"
           description="Display name and an optional description."
           saveMode="atomic"
@@ -46,6 +51,7 @@
         <!-- Classification -->
         <console-section-card
           id="section-classification"
+          bucket="PUBLIC"
           title="Classification"
           description="Pick a category and optionally nest under a parent skill."
           saveMode="atomic"
@@ -83,6 +89,7 @@
         <!-- Experience -->
         <console-section-card
           id="section-experience"
+          bucket="PUBLIC"
           title="Experience"
           description="Years of experience and any qualitative notes."
           saveMode="atomic"
@@ -103,6 +110,7 @@
         <!-- Icon -->
         <console-section-card
           id="section-icon"
+          bucket="PUBLIC"
           title="Icon"
           description="Optional icon shown next to the skill on the public site."
           saveMode="atomic"
@@ -126,11 +134,12 @@
           </div>
         </console-section-card>
 
-        <!-- Display -->
+        <!-- Settings -->
         <console-section-card
-          id="section-display"
-          title="Display"
-          description="Featured flag and ordering on the public site."
+          id="section-settings"
+          bucket="INTERNAL"
+          title="Settings"
+          description="Admin-only flags and ordering."
           saveMode="atomic"
         >
           <div class="form-stack">
@@ -152,11 +161,5 @@
     </div>
   </console-long-form-layout>
 
-  <console-sticky-save-bar
-    [dirty]="dirty"
-    [saving]="submitting"
-    [disabled]="isInvalid"
-    (save)="submit()"
-    (discard)="discard()"
-  />
+  <console-sticky-save-bar [dirty]="dirty" [saving]="submitting" (save)="submit()" (discard)="discard()" />
 </div>

@@ -23,7 +23,13 @@ import {
   StickySaveBarComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import {
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
 import { TagService } from '../tag.service';
 
 @Component({
@@ -105,6 +111,7 @@ export default class TagFormPageComponent implements OnInit, HasUnsavedChanges {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      scrollToFirstError();
       return;
     }
 

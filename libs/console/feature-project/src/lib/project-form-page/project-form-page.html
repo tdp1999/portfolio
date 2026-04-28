@@ -20,7 +20,11 @@
 
   <console-long-form-layout>
     <div rail>
-      <console-scrollspy-rail [sections]="sections" [activeIndicator]="false" />
+      <console-scrollspy-rail
+        [title]="isEdit() ? 'Edit Project' : 'New Project'"
+        [sections]="sections"
+        [activeIndicator]="false"
+      />
     </div>
 
     <div content>
@@ -28,6 +32,7 @@
         <!-- Basic -->
         <console-section-card
           id="section-basic"
+          bucket="PUBLIC"
           title="Basic Info"
           description="Project title, one-liner, and date range."
           saveMode="atomic"
@@ -42,20 +47,18 @@
             <console-translatable-group [group]="form.controls.oneLiner" label="One-Liner" />
 
             <div class="flex gap-4">
-              <mat-form-field appearance="outline" class="flex-1">
-                <mat-label>Start Date</mat-label>
-                <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
-                <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
-                <mat-datepicker #startPicker />
-                <mat-error>{{ form.controls.startDate | formError }}</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="flex-1">
-                <mat-label>End Date</mat-label>
-                <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
-                <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
-                <mat-datepicker #endPicker />
-              </mat-form-field>
+              <console-month-year-picker
+                class="flex-1"
+                label="Start Date"
+                controlName="startDate"
+                [control]="form.controls.startDate"
+              />
+              <console-month-year-picker
+                class="flex-1"
+                label="End Date"
+                controlName="endDate"
+                [control]="form.controls.endDate"
+              />
             </div>
           </div>
         </console-section-card>
@@ -63,6 +66,7 @@
         <!-- Story -->
         <console-section-card
           id="section-story"
+          bucket="PUBLIC"
           title="Story"
           description="Motivation, description, and your role. Provide English and Vietnamese."
           saveMode="atomic"
@@ -77,6 +81,7 @@
         <!-- Highlights -->
         <console-section-card
           id="section-highlights"
+          bucket="PUBLIC"
           title="Technical Highlights"
           description="Up to 4 Challenge → Approach → Outcome blocks with an optional code link."
           saveMode="atomic"
@@ -145,6 +150,7 @@
         <!-- Media -->
         <console-section-card
           id="section-media"
+          bucket="PUBLIC"
           title="Media"
           description="Thumbnail and gallery images. Selections save when you click Save."
           saveMode="atomic"
@@ -230,6 +236,7 @@
         <!-- Details -->
         <console-section-card
           id="section-details"
+          bucket="PUBLIC"
           title="Details"
           description="Source and project URLs, plus skills used on this project."
           saveMode="atomic"
@@ -256,11 +263,12 @@
           </div>
         </console-section-card>
 
-        <!-- Publishing -->
+        <!-- Settings -->
         <console-section-card
-          id="section-publishing"
-          title="Publishing"
-          description="Control status, featured flag, and ordering on the public site."
+          id="section-settings"
+          bucket="INTERNAL"
+          title="Settings"
+          description="Status, featured flag, and ordering. Admin-only — these don't render on the public site."
           saveMode="atomic"
         >
           <div class="flex flex-col flex-wrap gap-6">
@@ -297,11 +305,5 @@
     </div>
   </console-long-form-layout>
 
-  <console-sticky-save-bar
-    [dirty]="dirty"
-    [saving]="saving"
-    [disabled]="isInvalid"
-    (save)="submit()"
-    (discard)="discard()"
-  />
+  <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="submit()" (discard)="discard()" />
 </div>

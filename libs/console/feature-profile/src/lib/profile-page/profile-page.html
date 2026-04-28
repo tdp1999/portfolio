@@ -10,13 +10,14 @@
 
   <console-long-form-layout>
     <div rail>
-      <console-scrollspy-rail [sections]="sections" />
+      <console-scrollspy-rail title="Profile Settings" [sections]="sections" />
     </div>
 
     <div content class="flex flex-col gap-8">
       <!-- ── Identity ────────────────────────────────────────────────────── -->
       <console-section-card
         id="section-identity"
+        bucket="PUBLIC"
         title="Identity"
         description="Display name, title, and bios. Avatar saves on upload."
         saveMode="per-section"
@@ -85,6 +86,7 @@
       <!-- ── Work & Availability ─────────────────────────────────────────── -->
       <console-section-card
         id="section-work-availability"
+        bucket="PUBLIC"
         title="Work & Availability"
         description="Experience, current availability, and what you're open to."
         saveMode="per-section"
@@ -131,8 +133,13 @@
       </console-section-card>
 
       <!-- ── Contact ─────────────────────────────────────────────────────── -->
+      <!-- TODO(form-system-design): split this section — `phone` is admin-only and breaks the
+           PUBLIC/INTERNAL bucket rule (see console-cookbook.md). Split requires a new form group +
+           save handler; tracked as a follow-up. Marked PUBLIC for now since email + preferred
+           contact dominate. -->
       <console-section-card
         id="section-contact"
+        bucket="PUBLIC"
         title="Contact"
         description="How people reach you."
         saveMode="per-section"
@@ -175,8 +182,12 @@
       </console-section-card>
 
       <!-- ── Location ────────────────────────────────────────────────────── -->
+      <!-- TODO(form-system-design): split this section — postal code + address lines are admin-only
+           and break the PUBLIC/INTERNAL bucket rule. Split requires a new form group + save handler;
+           tracked as a follow-up. Marked PUBLIC for now since country + city dominate. -->
       <console-section-card
         id="section-location"
+        bucket="PUBLIC"
         title="Location"
         description="Country and city are public. Address lines are internal only."
         saveMode="per-section"
@@ -220,6 +231,7 @@
       <!-- ── Social Links ────────────────────────────────────────────────── -->
       <console-section-card
         id="section-social-links"
+        bucket="PUBLIC"
         title="Social Links"
         description="Public links, resume URLs, and certifications."
         saveMode="per-section"
@@ -232,8 +244,8 @@
         (save)="saveSocialLinks()"
       >
         <div class="form-stack">
-          <div class="subsection">
-            <div class="subsection__header">
+          <div class="form-subsection">
+            <div class="form-subsection__header">
               <h4 class="text-card-title">Links</h4>
               <button mat-stroked-button type="button" (click)="addSocialLink()">
                 <mat-icon>add</mat-icon> Add Link
@@ -281,7 +293,7 @@
             </div>
           </div>
 
-          <div class="subsection">
+          <div class="form-subsection">
             <h4 class="text-card-title">Resume</h4>
             <div class="resume-rows">
               @for (locale of resumeLocales; track locale.key) {
@@ -315,8 +327,8 @@
             </div>
           </div>
 
-          <div class="subsection">
-            <div class="subsection__header">
+          <div class="form-subsection">
+            <div class="form-subsection__header">
               <h4 class="text-card-title">Certifications</h4>
               <button mat-stroked-button type="button" (click)="addCertification()">
                 <mat-icon>add</mat-icon> Add Certification
@@ -397,6 +409,7 @@
       <!-- ── SEO / OG ─────────────────────────────────────────────────────── -->
       <console-section-card
         id="section-seo-og"
+        bucket="PUBLIC"
         title="SEO / OG"
         description="Metadata for search engines and social preview. OG image saves on upload."
         saveMode="per-section"

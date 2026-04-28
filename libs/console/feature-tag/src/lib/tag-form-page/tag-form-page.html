@@ -15,6 +15,7 @@
   <form [formGroup]="form" (ngSubmit)="submit()" class="tag-form-page__content">
     <console-section-card
       id="section-details"
+      bucket="PUBLIC"
       title="Details"
       description="Tag name. Slug is generated automatically from the name."
       saveMode="atomic"
@@ -33,11 +34,5 @@
     <button type="submit" class="hidden" aria-hidden="true"></button>
   </form>
 
-  <console-sticky-save-bar
-    [dirty]="dirty"
-    [saving]="submitting"
-    [disabled]="isInvalid"
-    (save)="submit()"
-    (discard)="discard()"
-  />
+  <console-sticky-save-bar [dirty]="dirty" [saving]="submitting" (save)="submit()" (discard)="discard()" />
 </div>

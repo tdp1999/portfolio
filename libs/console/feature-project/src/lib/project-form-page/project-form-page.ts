@@ -14,7 +14,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,10 +23,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import {
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
 import {
   LongFormLayoutComponent,
   MediaPickerDialogComponent,
+  MonthYearPickerComponent,
   ScrollspyRailComponent,
   SectionCardComponent,
   SectionDescriptor,
@@ -74,7 +80,6 @@ interface GalleryImage {
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
@@ -84,6 +89,7 @@ interface GalleryImage {
     TranslatableGroupComponent,
     FormErrorPipe,
     LongFormLayoutComponent,
+    MonthYearPickerComponent,
     ScrollspyRailComponent,
     SectionCardComponent,
     StickySaveBarComponent,
@@ -154,7 +160,7 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     { id: 'section-highlights', label: 'Highlights' },
     { id: 'section-media', label: 'Media' },
     { id: 'section-details', label: 'Details' },
-    { id: 'section-publishing', label: 'Publishing' },
+    { id: 'section-settings', label: 'Settings' },
   ];
 
   ngOnInit(): void {
@@ -286,6 +292,7 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      scrollToFirstError();
       this.toast.error('Please fix validation errors before saving');
       return;
     }

@@ -16,34 +16,8 @@
   @apply gap-4;
 }
 
-.field-row {
-  display: flex;
-  flex-wrap: wrap;
-  @apply gap-4;
-  align-items: flex-start;
-}
-
-.field-block {
-  @apply mb-4;
-}
-
-.field-label {
-  @apply text-sm leading-normal mb-2;
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.subsection {
-  display: flex;
-  flex-direction: column;
-  @apply gap-6;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
+/* `.field-row`, `.field-block`, `.field-label`, `.form-subsection`
+ * now live in shared base/components.scss — see console-cookbook.md. */
 
 .rows {
   display: flex;

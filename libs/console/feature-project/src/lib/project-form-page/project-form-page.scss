@@ -43,8 +43,4 @@
   border-radius: 8px;
 }
 
-.field-label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
+/* `.field-label` lives in shared base/components.scss — see console-cookbook.md. */

@@ -24,7 +24,13 @@ import {
   StickySaveBarComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { extractApiError, FormErrorPipe, HasUnsavedChanges, onBeforeUnload } from '@portfolio/console/shared/util';
+import {
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
 import { CategoryService } from '../category.service';
 
 @Component({
@@ -109,6 +115,7 @@ export default class CategoryFormPageComponent implements OnInit, HasUnsavedChan
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      scrollToFirstError();
       return;
     }
 
