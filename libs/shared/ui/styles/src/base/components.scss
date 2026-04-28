@@ -59,4 +59,48 @@
     font-size: var(--text-2xs);
     @apply font-semibold uppercase leading-none;
   }
+
+  /* ─── Form layout primitives ─────────────────────────────────────────────
+   * Shared sub-grouping primitives used inside `console-section-card`.
+   * See `.context/design/console-cookbook.md` → "Field Labeling Hierarchy".
+   * Use these instead of redefining in feature SCSS. */
+
+  /* Sub-group inside a section card. Stacks rows of fields vertically.
+   * Use when a section has 2+ logical groupings (e.g. Profile Social Links
+   * → Links / Resume / Certifications). */
+  .form-subsection {
+    display: flex;
+    flex-direction: column;
+    @apply gap-6;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  /* Wrapper for a single non-`mat-form-field` control (custom widget,
+   * media picker, chip group, button group). Pairs a `.field-label` with
+   * the widget below it. */
+  .field-block {
+    display: flex;
+    flex-direction: column;
+    @apply gap-2;
+  }
+
+  /* Label for a non-`mat-form-field` control. Visually matches Material's
+   * floating label so custom widgets feel native. Do NOT use for
+   * `mat-form-field` content — Material owns that label. */
+  .field-label {
+    @apply text-sm font-medium leading-normal text-text;
+  }
+
+  /* Row of fields side-by-side inside a sub-group. */
+  .field-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    @apply gap-4;
+  }
 }
