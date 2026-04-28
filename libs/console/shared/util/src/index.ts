@@ -4,6 +4,7 @@ export * from './lib/errors';
 export * from './lib/types';
 export * from './lib/validators';
 export { withMinDuration } from './lib/rx/with-min-duration';
+export { scrollToFirstError } from './lib/scroll-to-first-error';
 export {
   unsavedChangesGuard,
   onBeforeUnload,

@@ -26,6 +26,7 @@ export { FormSnapshotDirective } from './lib/section-card/form-snapshot.directiv
 export { LongFormLayoutComponent } from './lib/long-form-layout/long-form-layout.component';
 export { StickySaveBarComponent } from './lib/sticky-save-bar/sticky-save-bar.component';
 export { TranslatableGroupComponent } from './lib/translatable-group/translatable-group';
+export { MonthYearPickerComponent } from './lib/month-year-picker/month-year-picker.component';
 export { ChipToggleGroupComponent } from './lib/chip-toggle-group/chip-toggle-group.component';
 export type { ChipOption } from './lib/chip-toggle-group/chip-toggle-group.component';
 export type { LanguageConfig } from './lib/translatable-group/translatable-group';
