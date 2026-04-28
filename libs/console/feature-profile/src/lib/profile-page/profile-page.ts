@@ -21,7 +21,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MediaService } from '@portfolio/console/shared/data-access';
-import { extractApiError, FormErrorPipe, maxDecimalsValidator } from '@portfolio/console/shared/util';
+import { baselineFor, extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import {
   ChipToggleGroupComponent,
   ConfirmDialogComponent,
@@ -41,7 +42,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 import { SidebarState } from '@portfolio/shared/ui/sidebar';
-import { Observable, of, startWith, switchMap } from 'rxjs';
+import { forkJoin, Observable, of, startWith, switchMap } from 'rxjs';
 import {
   AVAILABILITY_OPTIONS,
   OPEN_TO_OPTIONS,
@@ -123,16 +124,16 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   // ── Parent FormGroup composed of 6 child FormGroups ──────────────────────
   readonly identityForm = this.fb.group({
-    fullName: this.bilingualGroup({ required: true }),
-    title: this.bilingualGroup({ required: true }),
-    bioShort: this.bilingualGroup({ required: true, maxLength: 200 }),
-    bioLong: this.bilingualGroup({ required: false }),
+    fullName: this.bilingualGroup({ required: true, maxLength: LIMITS.NAME_MAX }),
+    title: this.bilingualGroup({ required: true, maxLength: LIMITS.TITLE_MAX }),
+    bioShort: this.bilingualGroup({ required: true, maxLength: LIMITS.BIO_SHORT_MAX }),
+    bioLong: this.bilingualGroup({ required: false, maxLength: LIMITS.DESCRIPTION_LONG_MAX }),
   });
 
   readonly workAvailabilityForm = this.fb.group({
     yearsOfExperience: this.fb.control(0, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(99), maxDecimalsValidator(1)],
+      validators: [Validators.required, ...baselineFor.yearsOfExperience()],
     }),
     availability: this.fb.control<string>('EMPLOYED', {
       nonNullable: true,
@@ -145,48 +146,63 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   readonly contactForm = this.fb.group({
     email: this.fb.control('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email],
+      validators: [Validators.required, ...baselineFor.email()],
     }),
-    phone: this.fb.control('', { nonNullable: true }),
     preferredContactPlatform: this.fb.control<string>('GITHUB', {
       nonNullable: true,
       validators: [Validators.required],
     }),
     preferredContactValue: this.fb.control('', {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.maxLength(LIMITS.URL_MAX)],
     }),
   });
 
   readonly locationForm = this.fb.group({
     locationCountry: this.fb.control('', {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)],
     }),
-    locationCity: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-    locationPostalCode: this.fb.control('', { nonNullable: true }),
-    locationAddress1: this.fb.control('', { nonNullable: true }),
-    locationAddress2: this.fb.control('', { nonNullable: true }),
+    locationCity: this.fb.control('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)],
+    }),
+  });
+
+  /**
+   * Admin-only contact + address fields. Per the public/internal bucketing rule
+   * (see `console-cookbook.md` § Section Bucketing), `phone` and the postal/address
+   * lines never render publicly and are grouped in a single INTERNAL section.
+   *
+   * Persisting still routes through `updateContact` (phone) and `updateLocation`
+   * (postal/address) — combined into a single FE save action.
+   */
+  readonly adminContactAddressForm = this.fb.group({
+    phone: this.fb.control('', { nonNullable: true, validators: baselineFor.phone() }),
+    locationPostalCode: this.fb.control('', { nonNullable: true, validators: baselineFor.postalCode() }),
+    locationAddress1: this.fb.control('', { nonNullable: true, validators: baselineFor.address() }),
+    locationAddress2: this.fb.control('', { nonNullable: true, validators: baselineFor.address() }),
   });
 
   readonly socialLinksForm = this.fb.group({
-    socialLinks: this.fb.array<FormGroup>([]),
-    resumeUrls: this.bilingualGroup({ required: false }),
-    certifications: this.fb.array<FormGroup>([]),
+    socialLinks: this.fb.array<FormGroup>([], {
+      validators: Validators.maxLength(LIMITS.SOCIAL_LINKS_ARRAY_MAX),
+    }),
+    resumeUrls: this.fb.group({
+      en: this.fb.control('', { nonNullable: true, validators: baselineFor.url() }),
+      vi: this.fb.control('', { nonNullable: true, validators: baselineFor.url() }),
+    }),
+    certifications: this.fb.array<FormGroup>([], {
+      validators: Validators.maxLength(LIMITS.CERTIFICATIONS_ARRAY_MAX),
+    }),
   });
 
   readonly resumeNames = signal<{ en: string | null; vi: string | null }>({ en: null, vi: null });
 
   readonly seoOgForm = this.fb.group({
-    metaTitle: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(70)],
-    }),
-    metaDescription: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(160)],
-    }),
-    canonicalUrl: this.fb.control('', { nonNullable: true }),
+    metaTitle: this.fb.control('', { nonNullable: true, validators: baselineFor.metaTitle() }),
+    metaDescription: this.fb.control('', { nonNullable: true, validators: baselineFor.metaDescription() }),
+    canonicalUrl: this.fb.control('', { nonNullable: true, validators: baselineFor.url() }),
   });
 
   readonly form = this.fb.group({
@@ -196,6 +212,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: this.locationForm,
     socialLinks: this.socialLinksForm,
     seoOg: this.seoOgForm,
+    adminContactAddress: this.adminContactAddressForm,
   });
 
   // ── Dedicated media state (not part of section save) ─────────────────────
@@ -216,6 +233,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: signal(false),
     socialLinks: signal(false),
     seoOg: signal(false),
+    adminContactAddress: signal(false),
   } satisfies Record<SectionKey, ReturnType<typeof signal<boolean>>>;
 
   private readonly lastSaved = {
@@ -225,6 +243,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: signal<Date | null>(null),
     socialLinks: signal<Date | null>(null),
     seoOg: signal<Date | null>(null),
+    adminContactAddress: signal<Date | null>(null),
   } satisfies Record<SectionKey, ReturnType<typeof signal<Date | null>>>;
 
   private readonly errors = {
@@ -234,6 +253,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: signal<string | null>(null),
     socialLinks: signal<string | null>(null),
     seoOg: signal<string | null>(null),
+    adminContactAddress: signal<string | null>(null),
   } satisfies Record<SectionKey, ReturnType<typeof signal<string | null>>>;
 
   /** Per-section dirty signal, updated from FormGroup events. */
@@ -244,6 +264,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: signal(false),
     socialLinks: signal(false),
     seoOg: signal(false),
+    adminContactAddress: signal(false),
   } satisfies Record<SectionKey, ReturnType<typeof signal<boolean>>>;
 
   /** Per-section validity signal, updated from FormGroup events. */
@@ -254,6 +275,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     location: signal(false),
     socialLinks: signal(false),
     seoOg: signal(false),
+    adminContactAddress: signal(false),
   } satisfies Record<SectionKey, ReturnType<typeof signal<boolean>>>;
 
   // ── Scrollspy rail section descriptors ───────────────────────────────────
@@ -278,6 +300,11 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     { id: 'section-location', label: 'Location', status: this.statusFor('location') },
     { id: 'section-social-links', label: 'Social Links', status: this.statusFor('socialLinks') },
     { id: 'section-seo-og', label: 'SEO / OG', status: this.statusFor('seoOg') },
+    {
+      id: 'section-admin-contact-address',
+      label: 'Admin Contact & Address',
+      status: this.statusFor('adminContactAddress'),
+    },
   ];
 
   constructor() {
@@ -288,6 +315,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       location: this.saving.location.asReadonly(),
       socialLinks: this.saving.socialLinks.asReadonly(),
       seoOg: this.saving.seoOg.asReadonly(),
+      adminContactAddress: this.saving.adminContactAddress.asReadonly(),
     };
     this.lastSavedSignals = {
       identity: this.lastSaved.identity.asReadonly(),
@@ -296,6 +324,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       location: this.lastSaved.location.asReadonly(),
       socialLinks: this.lastSaved.socialLinks.asReadonly(),
       seoOg: this.lastSaved.seoOg.asReadonly(),
+      adminContactAddress: this.lastSaved.adminContactAddress.asReadonly(),
     };
     this.errorSignals = {
       identity: this.errors.identity.asReadonly(),
@@ -304,6 +333,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       location: this.errors.location.asReadonly(),
       socialLinks: this.errors.socialLinks.asReadonly(),
       seoOg: this.errors.seoOg.asReadonly(),
+      adminContactAddress: this.errors.adminContactAddress.asReadonly(),
     };
 
     // Wire dirty/invalid signals from each child FormGroup's events.
@@ -313,6 +343,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     this.wireFormStateSignal('location', this.locationForm);
     this.wireFormStateSignal('socialLinks', this.socialLinksForm);
     this.wireFormStateSignal('seoOg', this.seoOgForm);
+    this.wireFormStateSignal('adminContactAddress', this.adminContactAddressForm);
   }
 
   ngOnInit(): void {
@@ -387,7 +418,6 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
     this.contactForm.reset({
       email: profile.email,
-      phone: profile.phone ?? '',
       preferredContactPlatform: profile.preferredContactPlatform,
       preferredContactValue: profile.preferredContactValue,
     });
@@ -395,6 +425,10 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     this.locationForm.reset({
       locationCountry: profile.locationCountry,
       locationCity: profile.locationCity,
+    });
+
+    this.adminContactAddressForm.reset({
+      phone: profile.phone ?? '',
       locationPostalCode: profile.locationPostalCode ?? '',
       locationAddress1: profile.locationAddress1 ?? '',
       locationAddress2: profile.locationAddress2 ?? '',
@@ -442,7 +476,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
       platform: this.fb.control(platform, { nonNullable: true, validators: [Validators.required] }),
       url: this.fb.control(url, {
         nonNullable: true,
-        validators: [Validators.required, Validators.pattern(/^https?:\/\/.+/)],
+        validators: [Validators.required, ...baselineFor.url()],
       }),
       handle: this.fb.control(handle, { nonNullable: true }),
     });
@@ -450,13 +484,19 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   private createCertificationGroup(name = '', issuer = '', year = new Date().getFullYear(), url = ''): FormGroup {
     return this.fb.group({
-      name: this.fb.control(name, { nonNullable: true, validators: [Validators.required] }),
-      issuer: this.fb.control(issuer, { nonNullable: true, validators: [Validators.required] }),
+      name: this.fb.control(name, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)],
+      }),
+      issuer: this.fb.control(issuer, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)],
+      }),
       year: this.fb.control(year, {
         nonNullable: true,
-        validators: [Validators.required, Validators.min(1990), Validators.max(2100)],
+        validators: [Validators.required, ...baselineFor.certificationYear()],
       }),
-      url: this.fb.control(url, { nonNullable: true }),
+      url: this.fb.control(url, { nonNullable: true, validators: baselineFor.url() }),
     });
   }
 
@@ -554,21 +594,67 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
 
   saveContact(): void {
     const v = this.contactForm.getRawValue();
+    const admin = this.adminContactAddressForm.getRawValue();
     this.runSectionSave('contact', this.contactForm, () =>
-      this.profileService.updateContact({ ...v, phone: v.phone || null })
+      this.profileService.updateContact({ ...v, phone: admin.phone || null })
     );
   }
 
   saveLocation(): void {
     const v = this.locationForm.getRawValue();
+    const admin = this.adminContactAddressForm.getRawValue();
     this.runSectionSave('location', this.locationForm, () =>
       this.profileService.updateLocation({
         ...v,
-        locationPostalCode: v.locationPostalCode || null,
-        locationAddress1: v.locationAddress1 || null,
-        locationAddress2: v.locationAddress2 || null,
+        locationPostalCode: admin.locationPostalCode || null,
+        locationAddress1: admin.locationAddress1 || null,
+        locationAddress2: admin.locationAddress2 || null,
       })
     );
+  }
+
+  /**
+   * Persists the admin-only contact + address fields. Backed by `updateContact`
+   * (phone) and `updateLocation` (postal/address) — the BE has no combined endpoint,
+   * so we issue both calls and report success once both resolve.
+   */
+  saveAdminContactAddress(): void {
+    if (this.adminContactAddressForm.invalid) {
+      this.adminContactAddressForm.markAllAsTouched();
+      this.errors.adminContactAddress.set('Fix errors before saving');
+      return;
+    }
+
+    const contact = this.contactForm.getRawValue();
+    const location = this.locationForm.getRawValue();
+    const admin = this.adminContactAddressForm.getRawValue();
+
+    this.saving.adminContactAddress.set(true);
+    this.errors.adminContactAddress.set(null);
+
+    forkJoin([
+      this.profileService.updateContact({ ...contact, phone: admin.phone || null }),
+      this.profileService.updateLocation({
+        ...location,
+        locationPostalCode: admin.locationPostalCode || null,
+        locationAddress1: admin.locationAddress1 || null,
+        locationAddress2: admin.locationAddress2 || null,
+      }),
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.saving.adminContactAddress.set(false);
+          this.adminContactAddressForm.markAsPristine();
+          this.lastSaved.adminContactAddress.set(new Date());
+          this.toast.success('Admin Contact & Address saved');
+        },
+        error: (err) => {
+          this.saving.adminContactAddress.set(false);
+          const apiError = extractApiError(err);
+          this.errors.adminContactAddress.set(apiError?.message ?? 'Failed to save Admin Contact & Address');
+        },
+      });
   }
 
   saveSocialLinks(): void {

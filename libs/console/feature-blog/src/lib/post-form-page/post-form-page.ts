@@ -5,13 +5,12 @@ import {
   HostListener,
   OnInit,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,19 +18,20 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import {
-  ToastService,
   MediaPickerDialogComponent,
+  SectionCardComponent,
+  StickySaveBarComponent,
+  ToastService,
   type MediaPickerDataSource,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
-import { HasUnsavedChanges } from '@portfolio/console/shared/util';
+import { baselineFor, FormErrorPipe, HasUnsavedChanges } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { BlogService } from '../blog.service';
 import {
   AdminBlogPostDetail,
@@ -52,17 +52,18 @@ import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPrevie
     CommonModule,
     DatePipe,
     DecimalPipe,
-    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatMenuModule,
-    MatChipsModule,
     MatTooltipModule,
     RouterLink,
+    FormErrorPipe,
+    SectionCardComponent,
+    StickySaveBarComponent,
   ],
   templateUrl: './post-form-page.html',
   styleUrl: './post-form-page.scss',
@@ -71,6 +72,7 @@ import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPrevie
 export default class PostFormPageComponent implements OnInit, HasUnsavedChanges {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
   private readonly blogService = inject(BlogService);
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(MatDialog);
@@ -86,21 +88,23 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
   readonly postId = signal<string | null>(null);
   readonly isEditMode = computed(() => this.postId() !== null);
 
-  // form state
-  readonly title = signal('');
-  readonly slug = signal('');
+  readonly form = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
+    slug: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
+    content: ['', [Validators.required]],
+    excerpt: ['', baselineFor.longText(LIMITS.DESCRIPTION_SHORT_MAX)],
+    language: ['EN' as BlogLanguage, [Validators.required]],
+    status: ['DRAFT' as BlogStatus, [Validators.required]],
+    featured: [false],
+    categoryIds: [[] as string[]],
+    tagIds: [[] as string[]],
+    metaTitle: ['', baselineFor.metaTitle()],
+    metaDescription: ['', baselineFor.metaDescription()],
+  });
+
   readonly slugManuallyEdited = signal(false);
-  readonly content = signal('');
-  readonly excerpt = signal('');
-  readonly language = signal<BlogLanguage>('EN');
-  readonly status = signal<BlogStatus>('DRAFT');
-  readonly featured = signal(false);
   readonly featuredImageId = signal<string | null>(null);
   readonly featuredImageUrl = signal<string | null>(null);
-  readonly categoryIds = signal<string[]>([]);
-  readonly tagIds = signal<string[]>([]);
-  readonly metaTitle = signal('');
-  readonly metaDescription = signal('');
   readonly readTimeMinutes = signal<number | null>(null);
   readonly publishedAt = signal<string | null>(null);
 
@@ -116,17 +120,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
 
   readonly dirty = signal(false);
 
-  readonly previewHtml = computed(() => renderMarkdownPreview(this.content()));
-
-  constructor() {
-    // auto-generate slug from title on create mode
-    effect(() => {
-      const t = this.title();
-      if (!this.isEditMode() && !this.slugManuallyEdited()) {
-        this.slug.set(this.slugify(t));
-      }
-    });
-  }
+  readonly previewHtml = computed(() => renderMarkdownPreview(this.form.controls.content.value));
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -137,6 +131,20 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
     });
     this.blogService.listAllTags().subscribe({
       next: (res) => this.tags.set(res.data),
+    });
+
+    // Mark dirty on any form change.
+    this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.dirty.set(true));
+
+    // Auto-generate slug from title in create mode until the user edits the slug field manually.
+    this.form.controls.title.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((title) => {
+      if (!this.isEditMode() && !this.slugManuallyEdited()) {
+        this.form.controls.slug.setValue(this.slugify(title), { emitEvent: false });
+      }
+    });
+    this.form.controls.slug.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Once the user touches the slug control, stop deriving it from title.
+      if (this.form.controls.slug.dirty) this.slugManuallyEdited.set(true);
     });
 
     if (idParam) {
@@ -152,38 +160,18 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
     }
   }
 
-  markDirty(): void {
-    this.dirty.set(true);
-  }
-
-  onTitleChange(value: string): void {
-    this.title.set(value);
-    this.markDirty();
-  }
-
-  onSlugChange(value: string): void {
-    this.slug.set(value);
-    this.slugManuallyEdited.set(true);
-    this.markDirty();
-  }
-
-  onContentChange(value: string): void {
-    this.content.set(value);
-    this.markDirty();
-  }
-
   togglePreview(): void {
     this.previewMode.update((v) => !v);
   }
 
   autoGenerateExcerpt(): void {
-    const plain = this.content()
+    const plain = this.form.controls.content.value
       .replace(/```[\s\S]*?```/g, '')
       .replace(/[#>*_`~\-![]()]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
-    this.excerpt.set(plain.slice(0, 200));
-    this.markDirty();
+    this.form.controls.excerpt.setValue(plain.slice(0, LIMITS.DESCRIPTION_SHORT_MAX));
+    this.form.controls.excerpt.markAsDirty();
   }
 
   openFeaturedImagePicker(): void {
@@ -205,7 +193,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         filter((id): id is string => !!id),
         tap((id) => {
           this.featuredImageId.set(id);
-          this.markDirty();
+          this.dirty.set(true);
         }),
         switchMap((id) => this.mediaService.getById(id))
       )
@@ -215,7 +203,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
   clearFeaturedImage(): void {
     this.featuredImageId.set(null);
     this.featuredImageUrl.set(null);
-    this.markDirty();
+    this.dirty.set(true);
   }
 
   insertImage(): void {
@@ -236,8 +224,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         next: (item: MediaItem) => {
           const alt = item.altText ?? item.originalFilename;
           const md = `\n![${alt}](${item.url})\n`;
-          this.content.update((c) => c + md);
-          this.markDirty();
+          this.form.controls.content.setValue(this.form.controls.content.value + md);
         },
       });
   }
@@ -251,43 +238,41 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
       const raw = String(reader.result ?? '');
       const { content: converted, warnings } = convertObsidianMarkdown(raw);
       const extractedTitle = extractTitleFromMarkdown(converted);
-      if (extractedTitle && !this.title()) {
-        this.title.set(extractedTitle);
+      if (extractedTitle && !this.form.controls.title.value) {
+        this.form.controls.title.setValue(extractedTitle);
       }
-      this.content.set(converted);
-      this.status.set('DRAFT');
+      this.form.controls.content.setValue(converted);
+      this.form.controls.status.setValue('DRAFT');
       this.importWarnings.set(warnings);
-      this.markDirty();
       input.value = '';
     };
     reader.readAsText(file);
   }
 
   save(): void {
-    if (!this.title().trim()) {
-      this.toast.error('Title is required');
-      return;
-    }
-    if (!this.content().trim()) {
-      this.toast.error('Content is required');
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.toast.error('Please fix validation errors before saving');
       return;
     }
 
     this.saving.set(true);
 
+    const raw = this.form.getRawValue();
+
     if (this.isEditMode()) {
       const payload: UpdateBlogPostPayload = {
-        title: this.title(),
-        content: this.content(),
-        language: this.language(),
-        excerpt: this.excerpt() || null,
-        categoryIds: this.categoryIds(),
-        tagIds: this.tagIds(),
+        title: raw.title,
+        content: raw.content,
+        language: raw.language,
+        excerpt: raw.excerpt || null,
+        categoryIds: raw.categoryIds,
+        tagIds: raw.tagIds,
         featuredImageId: this.featuredImageId(),
-        status: this.status(),
-        featured: this.featured(),
-        metaTitle: this.metaTitle() || null,
-        metaDescription: this.metaDescription() || null,
+        status: raw.status,
+        featured: raw.featured,
+        metaTitle: raw.metaTitle || null,
+        metaDescription: raw.metaDescription || null,
       };
       this.blogService.update(this.postId() as string, payload).subscribe({
         next: () => {
@@ -302,17 +287,17 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
       });
     } else {
       const payload: CreateBlogPostPayload = {
-        title: this.title(),
-        content: this.content(),
-        language: this.language(),
-        excerpt: this.excerpt() || undefined,
-        categoryIds: this.categoryIds(),
-        tagIds: this.tagIds(),
+        title: raw.title,
+        content: raw.content,
+        language: raw.language,
+        excerpt: raw.excerpt || undefined,
+        categoryIds: raw.categoryIds,
+        tagIds: raw.tagIds,
         featuredImageId: this.featuredImageId(),
-        status: this.status(),
-        featured: this.featured(),
-        metaTitle: this.metaTitle() || undefined,
-        metaDescription: this.metaDescription() || undefined,
+        status: raw.status,
+        featured: raw.featured,
+        metaTitle: raw.metaTitle || undefined,
+        metaDescription: raw.metaDescription || undefined,
       };
       this.blogService.create(payload).subscribe({
         next: (res) => {
@@ -333,24 +318,51 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
     return this.dirty;
   }
 
+  discard(): void {
+    const id = this.postId();
+    if (id) {
+      this.loadPost(id);
+    } else {
+      this.form.reset({
+        title: '',
+        slug: '',
+        content: '',
+        excerpt: '',
+        language: 'EN',
+        status: 'DRAFT',
+        featured: false,
+        categoryIds: [],
+        tagIds: [],
+        metaTitle: '',
+        metaDescription: '',
+      });
+      this.featuredImageId.set(null);
+      this.featuredImageUrl.set(null);
+      this.slugManuallyEdited.set(false);
+      this.dirty.set(false);
+    }
+  }
+
   private loadPost(id: string): void {
     this.loading.set(true);
     this.blogService.getById(id).subscribe({
       next: (post: AdminBlogPostDetail) => {
-        this.title.set(post.title);
-        this.slug.set(post.slug);
+        this.form.setValue({
+          title: post.title,
+          slug: post.slug,
+          content: post.content,
+          excerpt: post.excerpt ?? '',
+          language: post.language,
+          status: post.status,
+          featured: post.featured,
+          categoryIds: post.categories.map((c) => c.id),
+          tagIds: post.tags.map((t) => t.id),
+          metaTitle: post.metaTitle ?? '',
+          metaDescription: post.metaDescription ?? '',
+        });
         this.slugManuallyEdited.set(true);
-        this.content.set(post.content);
-        this.excerpt.set(post.excerpt ?? '');
-        this.language.set(post.language);
-        this.status.set(post.status);
-        this.featured.set(post.featured);
         this.featuredImageId.set(post.featuredImageId);
         this.featuredImageUrl.set(post.featuredImageUrl);
-        this.categoryIds.set(post.categories.map((c) => c.id));
-        this.tagIds.set(post.tags.map((t) => t.id));
-        this.metaTitle.set(post.metaTitle ?? '');
-        this.metaDescription.set(post.metaDescription ?? '');
         this.readTimeMinutes.set(post.readTimeMinutes);
         this.publishedAt.set(post.publishedAt);
         this.loading.set(false);
@@ -370,6 +382,6 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
       .replace(/[^\w\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
-      .slice(0, 100);
+      .slice(0, LIMITS.NAME_MAX);
   }
 }

@@ -132,16 +132,12 @@
         </div>
       </console-section-card>
 
-      <!-- ── Contact ─────────────────────────────────────────────────────── -->
-      <!-- TODO(form-system-design): split this section — `phone` is admin-only and breaks the
-           PUBLIC/INTERNAL bucket rule (see console-cookbook.md). Split requires a new form group +
-           save handler; tracked as a follow-up. Marked PUBLIC for now since email + preferred
-           contact dominate. -->
+      <!-- ── Contact (PUBLIC) ─────────────────────────────────────────────── -->
       <console-section-card
         id="section-contact"
         bucket="PUBLIC"
         title="Contact"
-        description="How people reach you."
+        description="Email and the preferred contact channel that visitors see on the public profile."
         saveMode="per-section"
         consoleFormSnapshot
         [formGroup]="contactForm"
@@ -151,17 +147,11 @@
         (save)="saveContact()"
       >
         <div class="form-stack">
-          <div class="field-row">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" />
-              <mat-error>{{ contactForm.controls.email | formError }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Phone (optional)</mat-label>
-              <input matInput formControlName="phone" />
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <mat-error>{{ contactForm.controls.email | formError }}</mat-error>
+          </mat-form-field>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="w-48">
@@ -181,15 +171,12 @@
         </div>
       </console-section-card>
 
-      <!-- ── Location ────────────────────────────────────────────────────── -->
-      <!-- TODO(form-system-design): split this section — postal code + address lines are admin-only
-           and break the PUBLIC/INTERNAL bucket rule. Split requires a new form group + save handler;
-           tracked as a follow-up. Marked PUBLIC for now since country + city dominate. -->
+      <!-- ── Location (PUBLIC) ────────────────────────────────────────────── -->
       <console-section-card
         id="section-location"
         bucket="PUBLIC"
         title="Location"
-        description="Country and city are public. Address lines are internal only."
+        description="Country and city render publicly on the profile and in metadata."
         saveMode="per-section"
         consoleFormSnapshot
         [formGroup]="locationForm"
@@ -210,21 +197,7 @@
               <input matInput formControlName="locationCity" />
               <mat-error>{{ locationForm.controls.locationCity | formError }}</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="w-36">
-              <mat-label>Postal Code</mat-label>
-              <input matInput formControlName="locationPostalCode" />
-            </mat-form-field>
           </div>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Address Line 1</mat-label>
-            <input matInput formControlName="locationAddress1" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Address Line 2</mat-label>
-            <input matInput formControlName="locationAddress2" />
-          </mat-form-field>
         </div>
       </console-section-card>
 
@@ -472,6 +445,44 @@
               <pre class="json-ld-preview">{{ jsonLd() | json }}</pre>
             }
           </div>
+        </div>
+      </console-section-card>
+
+      <!-- ── Admin Contact & Address (INTERNAL) ───────────────────────────── -->
+      <console-section-card
+        id="section-admin-contact-address"
+        bucket="INTERNAL"
+        title="Admin Contact & Address"
+        description="Phone, postal code, and address lines. Admin-only — never rendered on the public site."
+        saveMode="per-section"
+        consoleFormSnapshot
+        [formGroup]="adminContactAddressForm"
+        [saving]="savingSignals.adminContactAddress"
+        [lastSavedAt]="lastSavedSignals.adminContactAddress"
+        [errorMessage]="errorSignals.adminContactAddress"
+        (save)="saveAdminContactAddress()"
+      >
+        <div class="form-stack">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-36">
+              <mat-label>Postal Code</mat-label>
+              <input matInput formControlName="locationPostalCode" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Address Line 1</mat-label>
+            <input matInput formControlName="locationAddress1" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Address Line 2</mat-label>
+            <input matInput formControlName="locationAddress2" />
+          </mat-form-field>
         </div>
       </console-section-card>
     </div>

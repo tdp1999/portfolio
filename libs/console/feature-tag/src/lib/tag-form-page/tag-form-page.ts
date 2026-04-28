@@ -30,6 +30,7 @@ import {
   onBeforeUnload,
   scrollToFirstError,
 } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { TagService } from '../tag.service';
 
 @Component({
@@ -70,7 +71,7 @@ export default class TagFormPageComponent implements OnInit, HasUnsavedChanges {
   readonly isEditMode = computed(() => this.id() !== null);
 
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
+    name: ['', [Validators.required, Validators.maxLength(LIMITS.TAG_NAME_MAX)]],
   });
 
   ngOnInit(): void {

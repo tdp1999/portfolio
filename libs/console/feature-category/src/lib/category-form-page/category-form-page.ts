@@ -25,12 +25,14 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import {
+  baselineFor,
   extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
 } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { CategoryService } from '../category.service';
 
 @Component({
@@ -72,9 +74,9 @@ export default class CategoryFormPageComponent implements OnInit, HasUnsavedChan
   readonly isInvalid = signal(false);
 
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
-    description: ['', [Validators.maxLength(500)]],
-    displayOrder: [0],
+    name: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
+    description: ['', baselineFor.longText(LIMITS.DESCRIPTION_SHORT_MAX)],
+    displayOrder: [0, baselineFor.displayOrder()],
   });
 
   ngOnInit(): void {

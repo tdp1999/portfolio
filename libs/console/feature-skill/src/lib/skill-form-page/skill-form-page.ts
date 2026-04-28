@@ -34,12 +34,14 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import {
+  baselineFor,
   extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
 } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { SkillService } from '../skill.service';
 import { AdminSkill } from '../skill.types';
@@ -106,15 +108,15 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
   ];
 
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
-    description: ['', [Validators.maxLength(1000)]],
+    name: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
+    description: ['', baselineFor.longText(LIMITS.DESCRIPTION_LONG_MAX)],
     category: ['', [Validators.required]],
     parentSkillId: [null as string | null],
     isLibrary: [false],
-    yearsOfExperience: [null as number | null],
-    proficiencyNote: [''],
+    yearsOfExperience: [null as number | null, baselineFor.yearsOfExperience()],
+    proficiencyNote: ['', baselineFor.longText(LIMITS.DESCRIPTION_SHORT_MAX)],
     isFeatured: [false],
-    displayOrder: [0],
+    displayOrder: [0, baselineFor.displayOrder()],
   });
 
   private readonly mediaDataSource: MediaPickerDataSource = {

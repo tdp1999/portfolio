@@ -175,8 +175,8 @@ Notes:
 | Skill | ✅ migrated | 4 PUBLIC sections + INTERNAL `Settings` (isFeatured, displayOrder). `isLibrary` stays in `Classification` (PUBLIC) — it's a public-facing classification flag. |
 | Experience | ✅ migrated | All sections PUBLIC except trailing INTERNAL `Settings` (displayOrder). |
 | Project | ✅ migrated | All sections PUBLIC except trailing INTERNAL `Settings` (status, featured, displayOrder). |
-| Profile | ⚠️ partially migrated | Eyebrows applied to all 6 sections. **Contact** (phone is admin-only) and **Location** (postal/address1/2 are admin-only) currently mix buckets — split deferred because it requires new FormGroups + save handlers + updates to the per-section save endpoints. Tracked via inline `TODO(form-system-design)` in `profile-page.html`. |
-| Blog | ⏳ deferred to Thread B canonical migration | Blog has no section cards yet (sidebar/main editor layout). Full re-bucketing happens together with the labeling-hierarchy migration in Thread B. Coordinated with the FormGroup migration in Validation Centralization epic Wave 5. |
+| Profile | ✅ migrated | 6 PUBLIC sections (Identity, Work & Availability, Contact, Location, Social Links, SEO / OG) + 1 INTERNAL `Admin Contact & Address` (phone, postalCode, address1, address2). The INTERNAL section's save handler issues `updateContact` + `updateLocation` in parallel via `forkJoin`; no new BE endpoint was needed. |
+| Blog | ✅ migrated | 5 PUBLIC sections (Body, Identity, Excerpt, Taxonomy, SEO) + 1 INTERNAL `Settings` (status, featured, slug, readTime, publishedAt). 2-column editor layout preserved: the markdown editor lives in a `Body` section card on the left, all other metadata stacks as section cards in a sticky right sidebar. No scrollspy rail — the layout is wide enough already. |
 
 ### Going forward
 

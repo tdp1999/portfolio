@@ -43,6 +43,7 @@ import {
   TranslatableGroupComponent,
 } from '@portfolio/console/shared/ui';
 import {
+  baselineFor,
   extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
@@ -50,6 +51,7 @@ import {
   scrollToFirstError,
 } from '@portfolio/console/shared/util';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
+import { LIMITS } from '@portfolio/shared/validation';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
 
@@ -110,8 +112,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   readonly locationTypeOptions = Object.entries(LOCATION_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 
   readonly form = this.fb.nonNullable.group({
-    companyName: ['', [Validators.required, Validators.maxLength(200)]],
-    companyUrl: [''],
+    companyName: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
+    companyUrl: ['', baselineFor.url()],
     companyLogoId: [''],
 
     position: this.fb.nonNullable.group({
@@ -134,17 +136,17 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     isCurrent: [true],
 
     locationType: ['ONSITE', [Validators.required]],
-    locationCountry: ['', [Validators.required]],
-    locationCity: [''],
-    locationPostalCode: [''],
-    locationAddress1: [''],
-    locationAddress2: [''],
+    locationCountry: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
+    locationCity: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
+    locationPostalCode: ['', baselineFor.postalCode()],
+    locationAddress1: ['', baselineFor.address()],
+    locationAddress2: ['', baselineFor.address()],
 
-    clientName: [''],
-    domain: [''],
-    teamSize: [null as number | null],
+    clientName: ['', [Validators.maxLength(LIMITS.TITLE_MAX)]],
+    domain: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
+    teamSize: [null as number | null, [...baselineFor.integer(LIMITS.TEAM_SIZE_MIN)]],
 
-    displayOrder: [0],
+    displayOrder: [0, baselineFor.displayOrder()],
 
     responsibilities_en: this.fb.array<BulletGroup>([]),
     responsibilities_vi: this.fb.array<BulletGroup>([]),
@@ -429,8 +431,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
 
   private createLinkGroup(label = '', url = ''): LinkGroup {
     return this.fb.nonNullable.group({
-      label: [label, [Validators.required, Validators.maxLength(100)]],
-      url: [url, [Validators.required, Validators.maxLength(500)]],
+      label: [label, [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
+      url: [url, [Validators.required, ...baselineFor.url()]],
     }) as LinkGroup;
   }
 

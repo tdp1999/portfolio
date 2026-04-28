@@ -237,3 +237,19 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - FE landing renders highlights and links if present; responsibilities replaces achievements in render.
 - Discipline going forward: when CV generator (or other consumer) needs a new field, add a typed column with a migration — do not retrofit a generic blob.
 
+### ADR-016: Console Validation Limits — Canonical Caps for BE/FE Inconsistencies
+
+**Status:** Accepted
+**Context:** The console validation audit (`.context/investigations/inv-console-validation-audit.md`, 2026-04-28) surfaced a class of inconsistencies inside the BE itself — same concept, different cap across modules. With the new `libs/shared/validation` lib supplying a single `LIMITS` table consumed by both FE Validators and BE Zod atoms, every concept needs exactly one canonical value.
+**Decision:**
+1. **`yoe.max = 99`** site-wide. Skill (`max(50)`) was tightened to align with Profile (`max(99)`). Capping at 50 would have rejected legitimate seniority ranges; 99 is the practical upper bound.
+2. **`displayOrder.min = 0`** on every entity (Category, Skill, Experience, Project, Tag). Negative orders have no business meaning; a missing `min(0)` was an oversight, not a feature.
+3. **`metaTitle.max = 70`** site-wide (was Blog `200` / Profile `70`). 70 is the SEO-correct cap for SERP rendering — Blog was lax, not Profile.
+4. **`metaDescription.max = 160`** site-wide (was Blog `300` / Profile `160`). Same rationale — 160 matches search-result snippet truncation.
+5. **`Tag.name.max = 50`** (FE was `100`, BE was `50`). BE was canonical; tags are short labels, not titles.
+6. **Profile location strings**: required ones (`locationCountry`, `locationCity`) get `.min(1)`; optional ones (`locationPostalCode`, `locationAddress1`, `locationAddress2`) stay length-only.
+**Consequences:**
+- BE schema migrations are non-breaking widenings or tightenings on string lengths; no Prisma migration needed (values stored are already within the new caps).
+- FE forms apply baselines from `baselineFor` so future drift is impossible — FE and BE both read from `LIMITS`.
+- Future contributors changing a cap update `LIMITS` in one place; both runtimes follow.
+

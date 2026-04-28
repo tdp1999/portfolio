@@ -5,6 +5,7 @@ export const PROFILE_SECTIONS = [
   { value: 'location', label: 'Location' },
   { value: 'socialLinks', label: 'Social Links' },
   { value: 'seoOg', label: 'SEO & OG' },
+  { value: 'adminContactAddress', label: 'Admin Contact & Address' },
 ] as const;
 
 export const AVAILABILITY_OPTIONS = [

@@ -1,17 +1,16 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   HostListener,
-  OnInit,
-  computed,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,13 +22,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  extractApiError,
-  FormErrorPipe,
-  HasUnsavedChanges,
-  onBeforeUnload,
-  scrollToFirstError,
-} from '@portfolio/console/shared/util';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MediaService } from '@portfolio/console/shared/data-access';
 import {
   LongFormLayoutComponent,
   MediaPickerDialogComponent,
@@ -44,7 +38,15 @@ import {
   type MediaPickerDataSource,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
-import { MediaService } from '@portfolio/console/shared/data-access';
+import {
+  baselineFor,
+  extractApiError,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  onBeforeUnload,
+  scrollToFirstError,
+} from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { ProjectService } from '../project.service';
 import {
   AdminProject,
@@ -57,10 +59,10 @@ import {
 
 const EMPTY_TRANSLATABLE: TranslatableJson = { en: '', vi: '' };
 
-function translatableGroup(fb: FormBuilder, value: TranslatableJson = EMPTY_TRANSLATABLE): FormGroup {
+function requiredTranslatableGroup(fb: FormBuilder, value: TranslatableJson = EMPTY_TRANSLATABLE): FormGroup {
   return fb.group({
-    en: fb.control(value['en'] ?? '', { nonNullable: true }),
-    vi: fb.control(value['vi'] ?? '', { nonNullable: true }),
+    en: fb.control(value['en'] ?? '', { nonNullable: true, validators: [Validators.required] }),
+    vi: fb.control(value['vi'] ?? '', { nonNullable: true, validators: [Validators.required] }),
   });
 }
 
@@ -129,24 +131,24 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
   readonly galleryImages = signal<GalleryImage[]>([]);
 
   readonly form = this.fb.nonNullable.group({
-    title: ['', Validators.required],
-    oneLiner: translatableGroup(this.fb),
+    title: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
+    oneLiner: requiredTranslatableGroup(this.fb),
     startDate: [null as Date | null, Validators.required],
     endDate: [null as Date | null],
 
-    motivation: translatableGroup(this.fb),
-    description: translatableGroup(this.fb),
-    role: translatableGroup(this.fb),
+    motivation: requiredTranslatableGroup(this.fb),
+    description: requiredTranslatableGroup(this.fb),
+    role: requiredTranslatableGroup(this.fb),
 
-    highlights: this.fb.array<FormGroup>([], { validators: Validators.maxLength(4) }),
+    highlights: this.fb.array<FormGroup>([], { validators: Validators.maxLength(LIMITS.PROJECT_HIGHLIGHTS_ARRAY_MAX) }),
 
-    sourceUrl: [''],
-    projectUrl: [''],
+    sourceUrl: ['', baselineFor.url()],
+    projectUrl: ['', baselineFor.url()],
     skillIds: [[] as string[]],
 
     status: ['DRAFT' as 'DRAFT' | 'PUBLISHED'],
     featured: [false],
-    displayOrder: [0],
+    displayOrder: [0, baselineFor.displayOrder()],
   });
 
   readonly dirty = signal(false);
@@ -191,10 +193,10 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     codeUrl: string | null;
   }) {
     return this.fb.group({
-      challenge: translatableGroup(this.fb, data?.challenge ?? EMPTY_TRANSLATABLE),
-      approach: translatableGroup(this.fb, data?.approach ?? EMPTY_TRANSLATABLE),
-      outcome: translatableGroup(this.fb, data?.outcome ?? EMPTY_TRANSLATABLE),
-      codeUrl: [data?.codeUrl ?? ''],
+      challenge: requiredTranslatableGroup(this.fb, data?.challenge ?? EMPTY_TRANSLATABLE),
+      approach: requiredTranslatableGroup(this.fb, data?.approach ?? EMPTY_TRANSLATABLE),
+      outcome: requiredTranslatableGroup(this.fb, data?.outcome ?? EMPTY_TRANSLATABLE),
+      codeUrl: [data?.codeUrl ?? '', baselineFor.url()],
     });
   }
 

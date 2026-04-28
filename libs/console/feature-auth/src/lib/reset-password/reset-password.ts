@@ -12,6 +12,7 @@ import {
   ErrorDataService,
   FormErrorPipe,
   passwordsMatchValidator,
+  passwordValidator,
   ServerErrorDirective,
 } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
@@ -53,7 +54,7 @@ export default class ResetPasswordComponent implements OnInit {
     {
       password: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(8)],
+        validators: [Validators.required, passwordValidator()],
       }),
       confirmPassword: new FormControl('', {
         nonNullable: true,
