@@ -1,4 +1,4 @@
-import type { TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import type { ExperienceLink, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
 import { Experience } from '../domain/entities/experience.entity';
 import type { EmploymentType, LocationType } from '../domain/experience.types';
 
@@ -22,8 +22,10 @@ export type ExperiencePublicResponseDto = {
   companyLogoUrl: string | null;
   position: TranslatableJson;
   description: TranslatableJson | null;
-  achievements: TranslatableStringArray;
+  responsibilities: TranslatableStringArray;
+  highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
+  links: ExperienceLink[];
   employmentType: EmploymentType;
   locationType: LocationType;
   locationCountry: string;
@@ -37,7 +39,6 @@ export type ExperiencePublicResponseDto = {
 
 export type ExperienceAdminResponseDto = ExperiencePublicResponseDto & {
   clientName: string | null;
-  clientIndustry: string | null;
   locationPostalCode: string | null;
   locationAddress1: string | null;
   locationAddress2: string | null;
@@ -71,8 +72,10 @@ export class ExperiencePresenter {
       companyLogoUrl,
       position: entity.position,
       description: entity.description,
-      achievements: entity.achievements,
+      responsibilities: entity.responsibilities,
+      highlights: entity.highlights,
       teamRole: entity.teamRole,
+      links: entity.links,
       employmentType: entity.employmentType,
       locationType: entity.locationType,
       locationCountry: entity.locationCountry,
@@ -93,7 +96,6 @@ export class ExperiencePresenter {
     return {
       ...ExperiencePresenter.toPublicResponse(entity, skills, companyLogoUrl),
       clientName: entity.clientName,
-      clientIndustry: entity.clientIndustry,
       locationPostalCode: entity.locationPostalCode,
       locationAddress1: entity.locationAddress1,
       locationAddress2: entity.locationAddress2,

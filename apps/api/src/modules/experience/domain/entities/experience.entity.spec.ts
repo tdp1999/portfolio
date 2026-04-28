@@ -12,8 +12,10 @@ describe('Experience Entity', () => {
     companyLogoId: null,
     position: { en: 'Senior Frontend Engineer', vi: 'Kỹ sư Frontend cấp cao' },
     description: { en: 'Built enterprise apps', vi: 'Xây dựng ứng dụng doanh nghiệp' },
-    achievements: { en: ['Reduced load time by 40%'], vi: ['Giảm thời gian tải 40%'] },
+    responsibilities: { en: ['Reduced load time by 40%'], vi: ['Giảm thời gian tải 40%'] },
+    highlights: { en: [], vi: [] },
     teamRole: null,
+    links: [],
     employmentType: 'FULL_TIME',
     locationType: 'ONSITE',
     locationCountry: 'VN',
@@ -22,7 +24,6 @@ describe('Experience Entity', () => {
     locationAddress1: null,
     locationAddress2: null,
     clientName: null,
-    clientIndustry: null,
     domain: null,
     teamSize: null,
     startDate: new Date('2022-01-01'),
@@ -74,7 +75,7 @@ describe('Experience Entity', () => {
       expect(exp.slug).toBe('fpt-software-senior-frontend-engineer');
     });
 
-    it('should default achievements to { en: [], vi: [] }', () => {
+    it('should default responsibilities to { en: [], vi: [] }', () => {
       const exp = Experience.create(
         {
           companyName: 'Acme',
@@ -85,7 +86,7 @@ describe('Experience Entity', () => {
         userId
       );
 
-      expect(exp.achievements).toEqual({ en: [], vi: [] });
+      expect(exp.responsibilities).toEqual({ en: [], vi: [] });
     });
   });
 

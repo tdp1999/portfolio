@@ -31,8 +31,10 @@ function buildExperienceProps(overrides: Partial<IExperienceProps> = {}): IExper
     companyLogoId: null,
     position: { en: 'Software Engineer', vi: 'Kỹ sư phần mềm' },
     description: { en: 'Building great things', vi: 'Xây dựng những thứ tuyệt vời' },
-    achievements: { en: ['Built a feature'], vi: ['Xây dựng tính năng'] },
+    responsibilities: { en: ['Built a feature'], vi: ['Xây dựng tính năng'] },
+    highlights: { en: [], vi: [] },
     teamRole: null,
+    links: [],
     employmentType: 'FULL_TIME',
     locationType: 'REMOTE',
     locationCountry: 'Vietnam',
@@ -41,7 +43,6 @@ function buildExperienceProps(overrides: Partial<IExperienceProps> = {}): IExper
     locationAddress1: '123 Main St',
     locationAddress2: null,
     clientName: 'Big Client',
-    clientIndustry: 'Finance',
     domain: 'FinTech',
     teamSize: 8,
     startDate: new Date('2023-01-01'),
@@ -67,7 +68,7 @@ describe('CreateExperienceSchema', () => {
         companyUrl: 'https://acme.com',
         companyLogoId: '550e8400-e29b-41d4-a716-446655440000',
         description: { en: 'Great company', vi: 'Công ty tuyệt vời' },
-        achievements: { en: ['Led team'], vi: ['Dẫn dắt nhóm'] },
+        responsibilities: { en: ['Led team'], vi: ['Dẫn dắt nhóm'] },
         teamRole: { en: 'Tech Lead', vi: 'Trưởng nhóm kỹ thuật' },
         employmentType: 'CONTRACT',
         locationType: 'HYBRID',
@@ -98,12 +99,42 @@ describe('CreateExperienceSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should default achievements to { en: [], vi: [] } when omitted', () => {
+  it('should default responsibilities to { en: [], vi: [] } when omitted', () => {
     const result = CreateExperienceSchema.safeParse(buildValidCreatePayload());
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.achievements).toEqual({ en: [], vi: [] });
+      expect(result.data.responsibilities).toEqual({ en: [], vi: [] });
     }
+  });
+
+  it('should default highlights to { en: [], vi: [] } when omitted', () => {
+    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload());
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.highlights).toEqual({ en: [], vi: [] });
+    }
+  });
+
+  it('should default links to [] when omitted', () => {
+    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload());
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.links).toEqual([]);
+    }
+  });
+
+  it('should accept valid links array', () => {
+    const result = CreateExperienceSchema.safeParse(
+      buildValidCreatePayload({ links: [{ label: 'Case Study', url: 'https://example.com/case' }] })
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject link with invalid url', () => {
+    const result = CreateExperienceSchema.safeParse(
+      buildValidCreatePayload({ links: [{ label: 'Bad', url: 'not-a-url' }] })
+    );
+    expect(result.success).toBe(false);
   });
 
   it('should default employmentType to FULL_TIME when omitted', () => {
@@ -265,7 +296,6 @@ describe('ExperiencePresenter', () => {
     it('should exclude private fields', () => {
       const keys = Object.keys(result);
       expect(keys).not.toContain('clientName');
-      expect(keys).not.toContain('clientIndustry');
       expect(keys).not.toContain('locationPostalCode');
       expect(keys).not.toContain('locationAddress1');
       expect(keys).not.toContain('locationAddress2');
@@ -283,7 +313,6 @@ describe('ExperiencePresenter', () => {
     it('should include all public fields plus private ones', () => {
       expect(result.id).toBe(props.id);
       expect(result.clientName).toBe(props.clientName);
-      expect(result.clientIndustry).toBe(props.clientIndustry);
       expect(result.locationPostalCode).toBe(props.locationPostalCode);
       expect(result.locationAddress1).toBe(props.locationAddress1);
       expect(result.displayOrder).toBe(props.displayOrder);

@@ -406,10 +406,14 @@ model Experience {
   companyLogoId  String? @db.Uuid
 
   // Translatable (JSONB)
-  position     Json  @db.JsonB
-  description  Json? @db.JsonB
-  achievements Json  @default("{}") @db.JsonB
-  teamRole     Json? @db.JsonB
+  position         Json  @db.JsonB
+  description      Json? @db.JsonB
+  responsibilities Json  @default("{}") @db.JsonB
+  highlights       Json  @default("{}") @db.JsonB
+  teamRole         Json? @db.JsonB
+
+  // Links (non-translatable JSON array of { label, url })
+  links Json @default("[]") @db.JsonB
 
   // Employment
   employmentType EmploymentType @default(FULL_TIME)
@@ -423,10 +427,9 @@ model Experience {
   locationAddress2   String? @db.VarChar(300)
 
   // Client context
-  clientName     String? @db.VarChar(200)
-  clientIndustry String? @db.VarChar(100)
-  domain         String? @db.VarChar(100)
-  teamSize       Int?
+  clientName String? @db.VarChar(200)
+  domain     String? @db.VarChar(100)
+  teamSize   Int?
 
   // Dates
   startDate DateTime

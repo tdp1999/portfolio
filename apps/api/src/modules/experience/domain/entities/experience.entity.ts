@@ -1,4 +1,4 @@
-import { BaseCrudEntity, SlugValue, TranslatableStringArray } from '@portfolio/shared/types';
+import { BaseCrudEntity, ExperienceLink, SlugValue, TranslatableStringArray } from '@portfolio/shared/types';
 import {
   IExperienceProps,
   ICreateExperiencePayload,
@@ -36,12 +36,20 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
     return this.props.description;
   }
 
-  get achievements(): TranslatableStringArray {
-    return this.props.achievements;
+  get responsibilities(): TranslatableStringArray {
+    return this.props.responsibilities;
+  }
+
+  get highlights(): TranslatableStringArray {
+    return this.props.highlights;
   }
 
   get teamRole() {
     return this.props.teamRole;
+  }
+
+  get links(): ExperienceLink[] {
+    return this.props.links;
   }
 
   get employmentType(): EmploymentType {
@@ -74,10 +82,6 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
 
   get clientName(): string | null {
     return this.props.clientName;
-  }
-
-  get clientIndustry(): string | null {
-    return this.props.clientIndustry;
   }
 
   get domain(): string | null {
@@ -119,8 +123,10 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       companyLogoId: data.companyLogoId ?? null,
       position: data.position,
       description: data.description ?? null,
-      achievements: data.achievements ?? { en: [], vi: [] },
+      responsibilities: data.responsibilities ?? { en: [], vi: [] },
+      highlights: data.highlights ?? { en: [], vi: [] },
       teamRole: data.teamRole ?? null,
+      links: data.links ?? [],
       employmentType: data.employmentType ?? 'FULL_TIME',
       locationType: data.locationType ?? 'ONSITE',
       locationCountry: data.locationCountry,
@@ -129,7 +135,6 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       locationAddress1: data.locationAddress1 ?? null,
       locationAddress2: data.locationAddress2 ?? null,
       clientName: data.clientName ?? null,
-      clientIndustry: data.clientIndustry ?? null,
       domain: data.domain ?? null,
       teamSize: data.teamSize ?? null,
       startDate: data.startDate,
@@ -152,8 +157,10 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       companyLogoId: data.companyLogoId !== undefined ? data.companyLogoId : this.props.companyLogoId,
       position: data.position ?? this.props.position,
       description: data.description !== undefined ? data.description : this.props.description,
-      achievements: data.achievements ?? this.props.achievements,
+      responsibilities: data.responsibilities ?? this.props.responsibilities,
+      highlights: data.highlights ?? this.props.highlights,
       teamRole: data.teamRole !== undefined ? data.teamRole : this.props.teamRole,
+      links: data.links ?? this.props.links,
       employmentType: data.employmentType ?? this.props.employmentType,
       locationType: data.locationType ?? this.props.locationType,
       locationCountry: data.locationCountry ?? this.props.locationCountry,
@@ -163,7 +170,6 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       locationAddress1: data.locationAddress1 !== undefined ? data.locationAddress1 : this.props.locationAddress1,
       locationAddress2: data.locationAddress2 !== undefined ? data.locationAddress2 : this.props.locationAddress2,
       clientName: data.clientName !== undefined ? data.clientName : this.props.clientName,
-      clientIndustry: data.clientIndustry !== undefined ? data.clientIndustry : this.props.clientIndustry,
       domain: data.domain !== undefined ? data.domain : this.props.domain,
       teamSize: data.teamSize !== undefined ? data.teamSize : this.props.teamSize,
       startDate: data.startDate ?? this.props.startDate,

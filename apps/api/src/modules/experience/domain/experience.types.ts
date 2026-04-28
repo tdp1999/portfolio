@@ -1,4 +1,4 @@
-import { IBaseAuditProps, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import { ExperienceLink, IBaseAuditProps, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
 
 export const EMPLOYMENT_TYPE = {
   FULL_TIME: 'FULL_TIME',
@@ -31,8 +31,12 @@ export interface IExperienceProps extends IBaseAuditProps {
   // Translatable
   position: TranslatableJson;
   description: TranslatableJson | null;
-  achievements: TranslatableStringArray;
+  responsibilities: TranslatableStringArray;
+  highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
+
+  // Links (non-translatable)
+  links: ExperienceLink[];
 
   // Employment
   employmentType: EmploymentType;
@@ -47,7 +51,6 @@ export interface IExperienceProps extends IBaseAuditProps {
 
   // Client context
   clientName: string | null;
-  clientIndustry: string | null;
   domain: string | null;
   teamSize: number | null;
 
@@ -69,8 +72,11 @@ export interface ICreateExperiencePayload {
 
   position: TranslatableJson;
   description?: TranslatableJson;
-  achievements?: TranslatableStringArray;
+  responsibilities?: TranslatableStringArray;
+  highlights?: TranslatableStringArray;
   teamRole?: TranslatableJson;
+
+  links?: ExperienceLink[];
 
   employmentType?: EmploymentType;
   locationType?: LocationType;
@@ -82,7 +88,6 @@ export interface ICreateExperiencePayload {
   locationAddress2?: string;
 
   clientName?: string;
-  clientIndustry?: string;
   domain?: string;
   teamSize?: number;
 
@@ -99,8 +104,11 @@ export interface IUpdateExperiencePayload {
 
   position?: TranslatableJson;
   description?: TranslatableJson | null;
-  achievements?: TranslatableStringArray;
+  responsibilities?: TranslatableStringArray;
+  highlights?: TranslatableStringArray;
   teamRole?: TranslatableJson | null;
+
+  links?: ExperienceLink[];
 
   employmentType?: EmploymentType;
   locationType?: LocationType;
@@ -112,7 +120,6 @@ export interface IUpdateExperiencePayload {
   locationAddress2?: string | null;
 
   clientName?: string | null;
-  clientIndustry?: string | null;
   domain?: string | null;
   teamSize?: number | null;
 

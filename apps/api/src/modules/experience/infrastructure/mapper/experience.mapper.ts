@@ -1,5 +1,5 @@
 import { Prisma, Experience as PrismaExperience, ExperienceSkill } from '@prisma/client';
-import { TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import { ExperienceLink, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
 import { Experience } from '../../domain/entities/experience.entity';
 import { IExperienceProps, EmploymentType, LocationType } from '../../domain/experience.types';
 
@@ -17,8 +17,10 @@ export class ExperienceMapper {
       companyLogoId: raw.companyLogoId,
       position: raw.position as unknown as TranslatableJson,
       description: raw.description as unknown as TranslatableJson | null,
-      achievements: raw.achievements as unknown as TranslatableStringArray,
+      responsibilities: raw.responsibilities as unknown as TranslatableStringArray,
+      highlights: raw.highlights as unknown as TranslatableStringArray,
       teamRole: raw.teamRole as unknown as TranslatableJson | null,
+      links: raw.links as unknown as ExperienceLink[],
       employmentType: raw.employmentType as EmploymentType,
       locationType: raw.locationType as LocationType,
       locationCountry: raw.locationCountry,
@@ -27,7 +29,6 @@ export class ExperienceMapper {
       locationAddress1: raw.locationAddress1,
       locationAddress2: raw.locationAddress2,
       clientName: raw.clientName,
-      clientIndustry: raw.clientIndustry,
       domain: raw.domain,
       teamSize: raw.teamSize,
       startDate: raw.startDate,
@@ -54,8 +55,10 @@ export class ExperienceMapper {
       position: entity.position as unknown as Prisma.InputJsonValue,
       description:
         entity.description !== null ? (entity.description as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
-      achievements: entity.achievements as unknown as Prisma.InputJsonValue,
+      responsibilities: entity.responsibilities as unknown as Prisma.InputJsonValue,
+      highlights: entity.highlights as unknown as Prisma.InputJsonValue,
       teamRole: entity.teamRole !== null ? (entity.teamRole as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
+      links: entity.links as unknown as Prisma.InputJsonValue,
       employmentType: entity.employmentType,
       locationType: entity.locationType,
       locationCountry: entity.locationCountry,
@@ -64,7 +67,6 @@ export class ExperienceMapper {
       locationAddress1: entity.locationAddress1,
       locationAddress2: entity.locationAddress2,
       clientName: entity.clientName,
-      clientIndustry: entity.clientIndustry,
       domain: entity.domain,
       teamSize: entity.teamSize,
       startDate: entity.startDate,
