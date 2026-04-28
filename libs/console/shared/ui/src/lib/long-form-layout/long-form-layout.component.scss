@@ -1,11 +1,13 @@
 .long-form-layout {
   display: grid;
-  grid-template-columns: 208px 1fr;
+  grid-template-columns: 160px 1fr;
   gap: 24px;
   align-items: start;
   min-height: 0;
   max-width: var(--layout-long-form-max-width);
   margin: 0 auto;
+  // Reserve space for fixed sticky-save-bar (~64px) so last section isn't covered
+  padding-bottom: 80px;
 
   &__rail {
     position: sticky;

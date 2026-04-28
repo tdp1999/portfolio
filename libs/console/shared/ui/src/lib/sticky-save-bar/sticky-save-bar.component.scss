@@ -1,27 +1,39 @@
 .sticky-save-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: var(--console-sidebar-width, 0px);
+  // Right offset accounts for the scroll container's scrollbar so the bar visually
+  // aligns with the scroll-clipped content area, not the viewport edge.
+  right: var(--console-scrollbar-width, 0px);
   z-index: 100; // above content, below modals (CDK overlay = 1000)
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  padding: 12px 24px;
+  padding: 12px 32px; // matches console-content's p-8
+  transition: left 200ms ease-in-out; // matches sidebar collapse animation
 
   &__inner {
-    display: flex;
+    display: grid;
+    // Match long-form-layout grid (rail + gap + content) so inner edges line up
+    // with the rail label and the form card's right edge.
+    grid-template-columns: 160px 24px 1fr;
     align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
+    max-width: var(--layout-long-form-max-width);
     margin: 0 auto;
   }
 
   &__indicator {
+    grid-column: 1 / 2;
     display: flex;
     align-items: center;
     gap: 8px;
+    // Aligns with the rail label text (item padding 12px + ~2.4px from item flex layout)
+    padding-left: 14.4px;
     font-size: 14px;
     color: var(--color-text-secondary);
+
+    &--idle {
+      color: var(--color-text-muted);
+    }
   }
 
   &__dot {
@@ -33,6 +45,8 @@
   }
 
   &__actions {
+    grid-column: 3 / 4;
+    justify-self: end;
     display: flex;
     align-items: center;
     gap: 8px;

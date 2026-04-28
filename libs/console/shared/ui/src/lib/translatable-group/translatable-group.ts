@@ -30,8 +30,10 @@ const DEFAULT_LANGUAGES: LanguageConfig[] = [
           @if (type() === 'textarea') {
             <textarea
               matInput
+              class="translatable-textarea"
               [formControlName]="lang.key"
               [rows]="rows()"
+              [style.min-height.px]="rows() * 20"
               [attr.maxlength]="maxLength() ?? null"
               [attr.placeholder]="placeholder()[lang.key] ?? null"
             ></textarea>
@@ -59,13 +61,20 @@ const DEFAULT_LANGUAGES: LanguageConfig[] = [
   `,
   styles: `
     .translatable-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
       gap: 1rem;
     }
 
     .translatable-field {
-      width: 100%;
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
+
+    .translatable-textarea {
+      min-height: 60px;
+      resize: vertical;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, Signal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  PLATFORM_ID,
+  inject,
+  input,
+  output,
+  signal,
+  Signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
@@ -11,9 +23,15 @@ import ConfirmDialogComponent, { ConfirmDialogData } from '../confirm-dialog/con
   templateUrl: './sticky-save-bar.component.html',
   styleUrl: './sticky-save-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[style.--console-scrollbar-width.px]': 'scrollbarWidth()',
+  },
 })
-export class StickySaveBarComponent {
+export class StickySaveBarComponent implements AfterViewInit {
   private readonly dialog = inject(MatDialog);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  protected readonly scrollbarWidth = signal(0);
 
   /** Whether the form has unsaved changes */
   dirty = input.required<Signal<boolean>>();
@@ -21,16 +39,32 @@ export class StickySaveBarComponent {
   /** Whether a save request is in progress */
   saving = input.required<Signal<boolean>>();
 
-  /** Optional disabled override (e.g., form invalid) */
-  disabled = input<Signal<boolean>>();
-
-  /** Emitted when the user confirms save */
+  /** Emitted when the user clicks save. Parent handles validity (markAllAsTouched + scroll) and dispatch. */
   save = output<void>();
 
   /** Emitted when the user confirms discard */
   discard = output<void>();
 
-  readonly isSaveDisabled = computed(() => this.saving()() || (this.disabled()?.() ?? false));
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.measureScrollbar();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.measureScrollbar();
+  }
+
+  private measureScrollbar(): void {
+    // The scrollable container (.console-content) reserves space for its scrollbar;
+    // the fixed save bar uses this to subtract that width from its right edge so it
+    // visually aligns with the scroll-clipped content area.
+    const scroller = document.querySelector('.console-content') as HTMLElement | null;
+    if (!scroller) return;
+    const width = scroller.offsetWidth - scroller.clientWidth;
+    this.scrollbarWidth.set(width);
+  }
 
   onSave(): void {
     this.save.emit();

@@ -1,21 +1,25 @@
-@if (dirty()()) {
-  <div class="sticky-save-bar">
-    <div class="sticky-save-bar__inner">
+<div class="sticky-save-bar">
+  <div class="sticky-save-bar__inner">
+    @if (dirty()()) {
       <span class="sticky-save-bar__indicator">
         <span class="sticky-save-bar__dot"></span>
         Unsaved changes
       </span>
+    } @else {
+      <span class="sticky-save-bar__indicator sticky-save-bar__indicator--idle">No changes yet</span>
+    }
 
-      <div class="sticky-save-bar__actions">
+    <div class="sticky-save-bar__actions">
+      @if (dirty()()) {
         <button mat-button type="button" [disabled]="saving()()" (click)="onDiscard()">Discard</button>
-        <button mat-flat-button type="button" [disabled]="isSaveDisabled()" (click)="onSave()">
-          @if (saving()()) {
-            Saving…
-          } @else {
-            Save changes
-          }
-        </button>
-      </div>
+      }
+      <button mat-flat-button type="button" [disabled]="saving()()" (click)="onSave()">
+        @if (saving()()) {
+          Saving…
+        } @else {
+          Save changes
+        }
+      </button>
     </div>
   </div>
-}
+</div>

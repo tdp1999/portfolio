@@ -8,19 +8,12 @@ import { StickySaveBarComponent } from './sticky-save-bar.component';
   standalone: true,
   imports: [StickySaveBarComponent],
   template: `
-    <console-sticky-save-bar
-      [dirty]="dirty"
-      [saving]="saving"
-      [disabled]="disabled"
-      (save)="saved = true"
-      (discard)="discarded = true"
-    />
+    <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="saved = true" (discard)="discarded = true" />
   `,
 })
 class TestHostComponent {
   dirty = signal(true);
   saving = signal(false);
-  disabled = signal(false);
   saved = false;
   discarded = false;
 }
@@ -51,22 +44,34 @@ describe('StickySaveBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render when dirty is true', () => {
+  it('should always render the save bar', () => {
+    expect(el.querySelector('.sticky-save-bar')).toBeTruthy();
+    host.dirty.set(false);
+    fixture.detectChanges();
     expect(el.querySelector('.sticky-save-bar')).toBeTruthy();
   });
 
-  it('should not render when dirty is false', () => {
-    host.dirty.set(false);
-    fixture.detectChanges();
-    expect(el.querySelector('.sticky-save-bar')).toBeFalsy();
-  });
-
-  it('should show "Unsaved changes" indicator', () => {
+  it('should show "Unsaved changes" indicator when dirty', () => {
     expect(el.querySelector('.sticky-save-bar__indicator')?.textContent).toContain('Unsaved changes');
   });
 
-  it('should emit save on save click', () => {
-    const saveBtn = el.querySelectorAll('.sticky-save-bar__actions button')[1] as HTMLButtonElement;
+  it('should show idle indicator when not dirty', () => {
+    host.dirty.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector('.sticky-save-bar__indicator')?.textContent).toContain('No changes yet');
+  });
+
+  it('should hide discard button when not dirty', () => {
+    host.dirty.set(false);
+    fixture.detectChanges();
+    const buttons = el.querySelectorAll('.sticky-save-bar__actions button');
+    expect(buttons.length).toBe(1);
+  });
+
+  it('should emit save on save click even when not dirty', () => {
+    host.dirty.set(false);
+    fixture.detectChanges();
+    const saveBtn = el.querySelector('.sticky-save-bar__actions button') as HTMLButtonElement;
     saveBtn.click();
     expect(host.saved).toBe(true);
   });
@@ -87,18 +92,16 @@ describe('StickySaveBarComponent', () => {
     expect(host.discarded).toBe(false);
   });
 
-  it('should disable save button when saving', () => {
+  it('should disable save button while saving', () => {
     host.saving.set(true);
     fixture.detectChanges();
     const saveBtn = el.querySelectorAll('.sticky-save-bar__actions button')[1] as HTMLButtonElement;
     expect(saveBtn.disabled).toBe(true);
   });
 
-  it('should disable save button when disabled signal is true', () => {
-    host.disabled.set(true);
-    fixture.detectChanges();
+  it('should keep save button enabled when not saving (regardless of validity)', () => {
     const saveBtn = el.querySelectorAll('.sticky-save-bar__actions button')[1] as HTMLButtonElement;
-    expect(saveBtn.disabled).toBe(true);
+    expect(saveBtn.disabled).toBe(false);
   });
 
   it('should show "Saving…" text when saving', () => {

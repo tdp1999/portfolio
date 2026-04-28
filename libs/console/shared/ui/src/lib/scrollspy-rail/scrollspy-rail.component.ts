@@ -37,6 +37,9 @@ export class ScrollspyRailComponent implements OnInit {
 
   sections = input.required<SectionDescriptor[]>();
 
+  /** Optional rail header — shows the form/page name at the top of the rail. */
+  title = input<string>('');
+
   /** When false, no active-section indicator is shown (use for atomic save forms) */
   activeIndicator = input<boolean>(true);
 

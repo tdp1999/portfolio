@@ -1,4 +1,7 @@
 <nav class="scrollspy-rail" aria-label="Page sections">
+  @if (title()) {
+    <div class="scrollspy-rail__title">{{ title() }}</div>
+  }
   @for (section of sections(); track section.id) {
     <button
       class="scrollspy-rail__item"
