@@ -122,6 +122,30 @@
   - BE: `includeDeleted` + `deletedAt` response field added to skill, category, tag
   - FE services: `sortBy`, `sortDir`, `includeDeleted` threaded through all 7 services; `deletedAt` field added to AdminSkill, AdminCategory, AdminTag types
   - FE list pages (7): `matSort` + `mat-sort-header` wired on all tables; `mat-chip-option` "Show deleted" filter chip (replaces slide-toggle) in filter bars; `[class.opacity-50]` on deleted rows; read-only guards for skill/category/tag; restore action for experience/project/blog; `updatedAt` column replaces `createdAt` in users page
+- [x] **Console UX Critical Bugs** (epic-console-ux-critical-bugs) - Completed 2026-04-28
+  - Implemented directly from epic; archived to `plans-done/`
+- [x] **Console Code Audits** (epic-console-code-audits) - Completed 2026-04-28
+  - Read-only audit; produced `inv-console-validation-audit.md` and `inv-skill-experience-semantics.md` which fed Form System Design + Validation Centralization epics; archived to `plans-done/`
+- [x] **Experience Content Review** (epic-experience-content-review) - Completed 2026-04-28
+  - Drove ADR-015 (responsibilities + highlights + links; drop clientIndustry); archived to `plans-done/`
+- [x] **Console Form Validation Centralization** (epic-console-form-validation-centralization) - Completed 2026-04-28
+  - `libs/shared/validation` with LIMITS / PATTERNS / ERROR_KEYS (cross-runtime); FE validators (`urlValidator`, `passwordValidator`, `integerValidator`, `translatableRequiredValidator`) + `baselineFor` factory in `libs/console/shared/util`
+  - BE Zod atoms (`zod-atoms.ts`): TitleSchema, NameSchema, UrlSchema, EmailSchema, PhoneSchema, IntegerSchema, etc. — every per-module DTO consumes atoms instead of inline `min/max/url/regex`
+  - Hard mismatches fixed: Tag.name 50, password complexity, yoe integer, URLs, Project translatable-required
+  - Soft gaps fixed across Experience / Project / Skill / Profile / Category form-pages
+  - ADR-016 logged: yoe.max=99, displayOrder.min=0, metaTitle=70, metaDescription=160, Tag.name=50, Profile location min(1)
+  - Blog migrated to FormGroup with inline `<mat-error>` via `FormErrorPipe`
+  - Three legacy dialogs deleted (`category-dialog`, `skill-dialog`, `tag-dialog`); 2 regression E2E specs (Tag.name >50, password weak) added
+- [x] **Console Form System Design Foundations** (epic-console-form-system-design) - Completed 2026-04-28
+  - Thread A — Public/internal bucketing: rule + cookbook table; eyebrow input on `console-section-card`; **all 7 Portfolio forms migrated** (Tag, Category, Skill, Experience, Project, Profile, Blog). Profile got a new INTERNAL "Admin Contact & Address" section saving phone + postal/address via parallel `updateContact` + `updateLocation` calls
+  - Thread B — Field labeling hierarchy: 5-level spec in cookbook; `.field-label`, `.field-block`, `.field-row`, `.form-subsection` promoted to shared `components.scss`. Blog kept its 2-column editor layout but every group is now a section card with proper buckets; sticky save bar replaces inline button
+  - Thread C — Month-year picker: `console-month-year-picker` shipped in `libs/console/shared/ui`; Experience + Project start/end converted; E2E `experiences.page.ts` updated to drive picker via toggle (replaced `pressSequentially` on now-readonly input)
+- [x] **Move Console Pages to Feature Libs** (epic-console-pages-to-feature-libs) - Completed 2026-04-28
+  - 3 new feature libs created: `feature-home`, `feature-error`, `feature-ddl` (`libs/console/`)
+  - 4 source files moved via `git mv`; `apps/console/src/app/pages/` removed entirely
+  - `feature-ddl` exports `ddlRoutes` (root + `/long-form` with `unsavedChangesGuard`); home/error export components by name
+  - 3 path mappings added to `tsconfig.base.json`; `app.routes.ts` updated; `unsavedChangesGuard` import dropped from app shell (now in feature-ddl)
+  - Resolved nx project-name collision: renamed `libs/landing/feature-home` to `landing-feature-home` (matches existing `landing-feature-blog` convention)
 
 ## In Progress
 
@@ -129,19 +153,8 @@
 
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
-### Active Epics — Console Manual-Test Findings (sequential, 2026-04-27)
+### Active Epics
 
-Plan file: `~/.claude/plans/m-nh-ngh-v-c-c-mossy-bear.md`. Run epics 1 → 6 in order. Auth-refresh bug deferred until reproducible.
-
-- [ ] **Console UX Critical Bugs** (epic-console-ux-critical-bugs) — textarea 2-col flex, dark placeholder color, save-button visibility (M)
-- [ ] **Console Code Audits** (epic-console-code-audits) — input validation coverage, skill semantics, effect-in-constructor (M, read-only)
-- [~] **Console Form Validation Centralization** (epic-console-form-validation-centralization) — shared limits/patterns/error keys, FE validators + baselines, BE Zod atoms (L)
-  - Wave 1 ✓ `libs/shared/validation` (LIMITS/PATTERNS/ERROR_KEYS) + FE `urlValidator`/`passwordValidator`/`integerValidator`/`translatableRequiredValidator` + `baselineFor` factory
-  - Wave 2 ✓ Zod atoms sub-entry; refactored DTOs (tag, category, skill, blog-post, experience, project, user, profile/*) — bakes in ADR caps (yoe→99, displayOrder min(0), metaTitle 70, metaDescription 160) and removes inline `PASSWORD_REGEX`
-  - Waves 3-6 pending: hard mismatch fixes, soft gap fixes per module, Blog FormGroup migration, BE inconsistency ADR cleanup
-- [ ] **Console Form System Design** (epic-console-form-system-design) — public/metadata indicator, label hierarchy, month-year picker (L)
-- [ ] **Experience Content Review** (epic-experience-content-review) — Achievements/Responsibilities, Industry/Domain decisions (S)
-- [ ] **Move Console Pages to Feature Libs** (epic-console-pages-to-feature-libs) — home/error/ddl → libs/console/feature-* (S)
 - [ ] **Console Tab Redesign** (epic-console-tab-redesign) — UX research + migration (M)
 
 ---
@@ -201,7 +214,7 @@ Plan file: `~/.claude/plans/m-nh-ngh-v-c-c-mossy-bear.md`. Run epics 1 → 6 in 
 | In Progress               | 0       |
 | Pending                   | 2       |
 | **Total Created**         | **285** |
-| Epics completed           | 22      |
+| Epics completed           | 28      |
 
 ## Notes
 

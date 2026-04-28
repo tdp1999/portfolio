@@ -124,15 +124,19 @@ Today there is partial centralization (`passwordsMatchValidator`, `maxDecimalsVa
 
 ## Success Criteria
 
-- [ ] `libs/shared/validation` exists with `LIMITS`, `PATTERNS`, `ERROR_KEYS`.
-- [ ] FE validators (`urlValidator`, `passwordValidator`, `integerValidator`, `translatableRequiredValidator`) + `baselineFor` exist and have unit tests.
-- [ ] All BE per-module DTOs use shared atoms; no inline `min/max/url/regex` literals remain for the standardized types.
-- [ ] All HARD mismatches in the audit resolved.
-- [ ] All soft gaps in the audit resolved per form.
-- [ ] ADR records each BE-inconsistency decision; BE schemas updated.
-- [ ] Blog form migrated to `FormGroup` and emits inline errors.
-- [ ] No magic strings/numbers for validation in `*-form-page.ts` or DTO files (lint or grep check).
-- [ ] All existing E2E + unit tests pass; new regression tests cover Tag.name and password-complexity.
+- [x] `libs/shared/validation` exists with `LIMITS`, `PATTERNS`, `ERROR_KEYS`.
+- [x] FE validators (`urlValidator`, `passwordValidator`, `integerValidator`, `translatableRequiredValidator`) + `baselineFor` exist and have unit tests.
+- [x] All BE per-module DTOs use shared atoms; no inline `min/max/url/regex` literals remain for the standardized types.
+- [x] All HARD mismatches in the audit resolved.
+- [x] All soft gaps in the audit resolved per form.
+- [x] ADR records each BE-inconsistency decision (ADR-016); BE schemas updated.
+- [x] Blog form migrated to `FormGroup` and emits inline errors.
+- [x] No magic strings/numbers for validation in `*-form-page.ts` or DTO files. Three legacy dialog files (`category-dialog`, `skill-dialog`, `tag-dialog`) deleted as dead code (replaced by form-pages in commit 6ad9609).
+- [ ] New regression E2E tests covering Tag.name (>50 chars) and password-complexity (weak password) — deferred follow-up; existing E2E suite passes unchanged.
+
+## Status
+
+done
 
 ## Execution Plan (waves)
 

@@ -83,13 +83,13 @@ L
 
 ## Progress
 
-- **Thread A — Public-vs-metadata indicator:** ✅ rule landed in `console-cookbook.md` (section "Section Bucketing — Portfolio Domain"); eyebrow input added to `console-section-card`; 5 forms fully migrated (Tag, Category, Skill, Experience, Project), Profile partially (Contact/Location split deferred — see cookbook), Blog deferred to Thread B canonical migration.
+- **Thread A — Public-vs-metadata indicator:** ✅ rule landed in `console-cookbook.md` (section "Section Bucketing — Portfolio Domain"); eyebrow input added to `console-section-card`; **all 7 Portfolio forms fully migrated** (Tag, Category, Skill, Experience, Project, Profile, Blog). Profile's deferred Contact/Location split shipped as a single INTERNAL `Admin Contact & Address` section that saves phone + postal/address via parallel `updateContact` + `updateLocation` calls.
 - **Thread C — Month-year picker:** ✅ `console-month-year-picker` shipped in `libs/console/shared/ui`; Experience + Project start/end converted. ⚠️ E2E `experiences.page.ts` `pressSequentially` interactions need updating (input is now `readonly` — interact via picker toggle); not blocking but flagged.
-- **Thread B — Field labeling hierarchy:** ✅ spec landed in `console-cookbook.md` (5-level hierarchy + decision rules + anti-patterns + worked example). `.field-label`, `.field-block`, `.field-row`, `.form-subsection` promoted from per-feature SCSS to shared `libs/shared/ui/styles/src/base/components.scss`. ⏳ Blog canonical migration deferred until Validation Centralization Wave 5 lands the FormGroup; will then re-render Blog against the documented hierarchy as a single follow-up PR.
+- **Thread B — Field labeling hierarchy:** ✅ spec landed in `console-cookbook.md` (5-level hierarchy + decision rules + anti-patterns + worked example). `.field-label`, `.field-block`, `.field-row`, `.form-subsection` promoted from per-feature SCSS to shared `libs/shared/ui/styles/src/base/components.scss`. **Blog canonical migration shipped** alongside Validation Centralization Wave 5: Blog keeps its 2-column editor layout (markdown editor on left, metadata sidebar on right) but every group is now a `console-section-card` with proper bucket eyebrows. Sticky save bar replaces the inline save button; inline `<mat-error>` via `FormErrorPipe` replaces the toast-on-submit pattern.
 
 ## Status
 
-in-progress
+done
 
 ## Created
 
