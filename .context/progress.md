@@ -129,6 +129,21 @@
 
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
 
+### Active Epics — Console Manual-Test Findings (sequential, 2026-04-27)
+
+Plan file: `~/.claude/plans/m-nh-ngh-v-c-c-mossy-bear.md`. Run epics 1 → 6 in order. Auth-refresh bug deferred until reproducible.
+
+- [ ] **Console UX Critical Bugs** (epic-console-ux-critical-bugs) — textarea 2-col flex, dark placeholder color, save-button visibility (M)
+- [ ] **Console Code Audits** (epic-console-code-audits) — input validation coverage, skill semantics, effect-in-constructor (M, read-only)
+- [~] **Console Form Validation Centralization** (epic-console-form-validation-centralization) — shared limits/patterns/error keys, FE validators + baselines, BE Zod atoms (L)
+  - Wave 1 ✓ `libs/shared/validation` (LIMITS/PATTERNS/ERROR_KEYS) + FE `urlValidator`/`passwordValidator`/`integerValidator`/`translatableRequiredValidator` + `baselineFor` factory
+  - Wave 2 ✓ Zod atoms sub-entry; refactored DTOs (tag, category, skill, blog-post, experience, project, user, profile/*) — bakes in ADR caps (yoe→99, displayOrder min(0), metaTitle 70, metaDescription 160) and removes inline `PASSWORD_REGEX`
+  - Waves 3-6 pending: hard mismatch fixes, soft gap fixes per module, Blog FormGroup migration, BE inconsistency ADR cleanup
+- [ ] **Console Form System Design** (epic-console-form-system-design) — public/metadata indicator, label hierarchy, month-year picker (L)
+- [ ] **Experience Content Review** (epic-experience-content-review) — Achievements/Responsibilities, Industry/Domain decisions (S)
+- [ ] **Move Console Pages to Feature Libs** (epic-console-pages-to-feature-libs) — home/error/ddl → libs/console/feature-* (S)
+- [ ] **Console Tab Redesign** (epic-console-tab-redesign) — UX research + migration (M)
+
 ---
 
 #### Future Sprints (to be broken down when ready)

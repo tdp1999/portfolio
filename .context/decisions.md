@@ -220,3 +220,20 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - New modules: classify on creation as Settings vs Domain entity; pick mechanic accordingly
 - Section names live in domain (VO names for Settings; logical groupings for Domain entities) — keeps BE and FE labels in sync
 
+### ADR-015: Experience Content Model — Responsibilities, Highlights, Links, Drop ClientIndustry
+
+**Status:** Accepted
+**Context:** Reviewing the Experience form surfaced two domain-modeling problems and one extensibility question: (1) "Achievements" was rarely filled — the user's CV uses "Key Responsibilities" almost exclusively; (2) `clientIndustry` and `domain` were two free-text fields with no clear distinction, while the CV uses a single "Work Domain"; (3) the user plans future downstream consumers (CV/resume generator, AI feeds, third-party services) that need predictable, structured fields, ruling out flexible escape hatches like markdown notes, key-value properties, or schemaless JSON blobs (label drift makes them unparseable for downstream consumers).
+**Decision:**
+1. **Rename** `achievements` → `responsibilities` (translatable JSON, same `{ en: string[], vi: string[] }` shape). UI section "Achievements" becomes "Responsibilities".
+2. **Drop** `clientIndustry`. Keep `domain` as the single work-domain field.
+3. **Add** `highlights: { en: string[], vi: string[] }` (translatable JSON array) — quantified-impact bullets distinct from responsibilities (outcomes, not activities). High value for CV generators.
+4. **Add** `links: { label: string, url: string }[]` (non-translatable JSON array) — case studies, repos, demos, press. Labels in English only for v1.
+5. **No flexible escape hatch** (no markdown notes, key-value properties, or JSON extras). Future fields are added with explicit migrations as concrete needs emerge.
+**Consequences:**
+- One Prisma migration touches Experience table (rename column, drop column, add two columns). No production data — migration can be destructive.
+- BE entity, mapper, repository, DTO, presenter, command/query handlers + specs all updated.
+- FE console form gains `highlights` FormArray (mirrors responsibilities) and `links` FormArray ({ label, url } group). Form section count grows.
+- FE landing renders highlights and links if present; responsibilities replaces achievements in render.
+- Discipline going forward: when CV generator (or other consumer) needs a new field, add a typed column with a migration — do not retrofit a generic blob.
+

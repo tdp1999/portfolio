@@ -38,6 +38,8 @@ constructor() {
 }
 ```
 
+`effect()` must run in an injection context (constructor, class field initializer, or provider factory). **Convention in this codebase: constructor.** Field initializer is technically valid but not used here — keep effects in the constructor for consistency.
+
 ### linkedSignal (stable v21)
 
 Derived state that remains writable:
