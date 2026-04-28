@@ -11,6 +11,11 @@ export const DEFAULT_VALIDATION_MESSAGES: Record<string, ErrorMessage> = {
   pattern: 'Invalid format.',
   maxDecimals: (p) => `Use at most ${p['max']} decimal place${p['max'] === 1 ? '' : 's'}.`,
   passwordsMismatch: 'Passwords do not match.',
+  passwordWeak:
+    'Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character (#?!@$%^&*-).',
+  urlInvalid: 'Enter a valid URL starting with http:// or https://.',
+  integerOnly: 'Enter a whole number (no decimals).',
+  translatableEnViRequired: 'Both English and Vietnamese values are required.',
   server: (p) => `${p['message'] ?? p['value'] ?? 'Server error.'}`,
 };
 
