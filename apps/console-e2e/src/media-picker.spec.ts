@@ -1,5 +1,4 @@
-import { test, expect } from './fixtures/auth.fixture';
-import { MediaPickerPage } from './pages/media-picker.page';
+import { expect, test } from './fixtures/auth.fixture';
 
 test.describe('Media Picker Dialog', () => {
   test.describe('Core Picker Components & UX', () => {

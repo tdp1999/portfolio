@@ -74,6 +74,11 @@ test.describe('Blog Featured Image Picker (Regression)', () => {
       // Select single image
       const firstItem = picker.getGridItems().first();
       const selectedId = await firstItem.getAttribute('data-media-id');
+
+      if (!selectedId) {
+        throw new Error('Test media item does not have data-media-id attribute');
+      }
+
       await firstItem.click();
       await picker.clickInsert();
 
@@ -82,7 +87,7 @@ test.describe('Blog Featured Image Picker (Regression)', () => {
         'input[formControlName="featuredImageId"], input[formControlName="featuredMediaId"]'
       );
       if (await featuredIdControl.isVisible()) {
-        await expect(featuredIdControl).toHaveValue(selectedId!);
+        await expect(featuredIdControl).toHaveValue(selectedId);
       }
     });
 
@@ -137,7 +142,7 @@ test.describe('Blog Featured Image Picker (Regression)', () => {
 
       const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
-      const itemId = await picker.getGridItems().first().getAttribute('data-media-id');
+      //   const itemId = await picker.getGridItems().first().getAttribute('data-media-id');
       await picker.getGridItems().first().click();
       await picker.clickInsert();
 
@@ -177,7 +182,7 @@ test.describe('Blog Featured Image Picker (Regression)', () => {
         await firstPostLink.click();
 
         // Featured image should be visible on post detail
-        const featuredImg = page.locator('img[alt*="featured" i], [role="img"]').first();
+        // const featuredImg = page.locator('img[alt*="featured" i], [role="img"]').first();
         // Soft check - featured image may or may not be present depending on data
         const pageContent = await page.content();
         expect(pageContent).toBeTruthy();

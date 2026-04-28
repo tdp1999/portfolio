@@ -181,7 +181,7 @@ test.describe('Certification Dual-Mode Picker Migration', () => {
       const pickerButton = certRow.locator('button', { hasText: /pick|select/i });
       await pickerButton.click();
 
-      let picker = new MediaPickerPage(page);
+      const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
 
       const firstItem = picker.getGridItems().first();
@@ -293,7 +293,7 @@ test.describe('Certification Dual-Mode Picker Migration', () => {
 
       let certRow = certSection.locator('[role="group"]').first();
       let nameInput = certRow.locator('input[placeholder*="name" i]');
-      let urlInput = certRow.locator('input[type="url"], input[placeholder*="url" i]');
+      const urlInput = certRow.locator('input[type="url"], input[placeholder*="url" i]');
 
       await nameInput.fill('AWS Cert');
       await urlInput.fill('https://www.credly.com/aws');
@@ -310,7 +310,7 @@ test.describe('Certification Dual-Mode Picker Migration', () => {
       await nameInput.fill('GCP Cert');
       await pickerButton.click();
 
-      let picker = new MediaPickerPage(page);
+      const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
       await picker.getGridItems().first().click();
       await picker.clickInsert();

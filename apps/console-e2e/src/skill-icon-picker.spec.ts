@@ -64,12 +64,17 @@ test.describe('Skill Icon Picker Migration', () => {
 
       const firstItem = picker.getGridItems().first();
       const selectedId = await firstItem.getAttribute('data-media-id');
+
+      if (!selectedId) {
+        throw new Error('Test media item does not have data-media-id attribute');
+      }
+
       await firstItem.click();
       await picker.clickInsert();
 
       // iconId control should have the value
       const iconIdControl = dialog.locator('input[formControlName="iconId"]');
-      await expect(iconIdControl).toHaveValue(selectedId!);
+      await expect(iconIdControl).toHaveValue(selectedId);
     });
 
     test('create skill with icon → appears in landing with correct icon', async ({ adminPage: page }) => {
@@ -95,7 +100,7 @@ test.describe('Skill Icon Picker Migration', () => {
       const pickerButton = dialog.locator('button', { hasText: /pick/i });
       await pickerButton.click();
 
-      let picker = new MediaPickerPage(page);
+      const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
       await picker.getGridItems().first().click();
       await picker.clickInsert();
@@ -113,7 +118,7 @@ test.describe('Skill Icon Picker Migration', () => {
 
       // Skill should be visible with icon
       const skillCard = page.locator('[role="region"]', { has: page.getByText(skillName, { exact: false }) });
-      const skillIcon = skillCard.locator('img, svg, [role="img"]');
+      //   const skillIcon = skillCard.locator('img, svg, [role="img"]');
 
       // Soft check - icon should be rendered
       const skillContent = await skillCard.textContent();
@@ -135,7 +140,7 @@ test.describe('Skill Icon Picker Migration', () => {
 
       const categorySelect = dialog.locator('mat-select[formControlName="category"]');
       await categorySelect.click();
-      let option = page.locator('mat-option', { hasText: 'Technical' });
+      const option = page.locator('mat-option', { hasText: 'Technical' });
       await option.click();
 
       const pickerButton = dialog.locator('button', { hasText: /pick/i });
@@ -197,7 +202,7 @@ test.describe('Skill Icon Picker Migration', () => {
 
       const categorySelect = dialog.locator('mat-select[formControlName="category"]');
       await categorySelect.click();
-      let option = page.locator('mat-option', { hasText: 'Tools' });
+      const option = page.locator('mat-option', { hasText: 'Tools' });
       await option.click();
 
       const pickerButton = dialog.locator('button', { hasText: /pick/i });
@@ -207,12 +212,17 @@ test.describe('Skill Icon Picker Migration', () => {
       await picker.waitForOpen();
       const firstItem = picker.getGridItems().first();
       const mediaId = await firstItem.getAttribute('data-media-id');
+
+      if (!mediaId) {
+        throw new Error('Test media item does not have data-media-id attribute');
+      }
+
       await firstItem.click();
       await picker.clickInsert();
 
       // Verify form has iconId (not iconUrl)
       const iconIdField = dialog.locator('input[formControlName="iconId"]');
-      await expect(iconIdField).toHaveValue(mediaId!);
+      await expect(iconIdField).toHaveValue(mediaId);
 
       // Create
       await dialog.getByRole('button', { name: 'Create' }).click();

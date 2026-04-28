@@ -80,22 +80,49 @@ export class ExperiencesPage {
     companyName: string;
     positionEn: string;
     positionVi: string;
-    startDate: string;
+    startDate: string | Date;
     locationCountry?: string;
   }): Promise<void> {
     const d = this.dialog;
     await d.companyNameInput.fill(opts.companyName);
     await d.positionEnInput.fill(opts.positionEn);
     await d.positionViInput.fill(opts.positionVi);
-    // Material datepicker requires blur to parse typed text into a Date object.
-    // Clicking another field triggers blur on the date input which commits the parsed value.
-    await d.startDateInput.click();
-    await d.startDateInput.pressSequentially(opts.startDate, { delay: 30 });
-    await d.companyNameInput.click(); // blur datepicker → triggers DateAdapter.parse()
-    await this.page.waitForTimeout(150); // give Angular change detection a moment
+
+    // The start-date input is now wrapped in `console-month-year-picker` and
+    // marked `readonly`; typing into it has no effect. Drive the calendar instead:
+    // toggle → multi-year → year → month-year view → month.
+    const date = typeof opts.startDate === 'string' ? new Date(opts.startDate) : opts.startDate;
+    await this.pickMonthYear('startDate', date);
+
     // locationCountry is required by the backend — fill it (defaults to 'Vietnam')
     const locationCountry = opts.locationCountry ?? 'Vietnam';
     await d.locationCountryInput.fill(locationCountry);
+  }
+
+  /**
+   * Selects a month + year on a `console-month-year-picker` via its calendar
+   * popup. `controlName` is the `formControlName` mirrored onto the underlying
+   * `<input>` (e.g. `startDate`, `endDate`).
+   */
+  async pickMonthYear(controlName: string, date: Date): Promise<void> {
+    // The toggle button sits as a sibling of the input inside the same mat-form-field.
+    const field = this.page
+      .locator(`input[formControlName="${controlName}"]`)
+      .locator('xpath=ancestor::mat-form-field[1]');
+    await field.locator('mat-datepicker-toggle button').click();
+
+    // Material calendar opens in `multi-year` view (a grid of years). Click the year first.
+    const calendar = this.page.locator('.mat-datepicker-content');
+    await calendar
+      .locator('.mat-calendar-body-cell', { hasText: String(date.getFullYear()) })
+      .first()
+      .click();
+
+    // Calendar transitions to the year view (a grid of months). monthSelected fires on click.
+    const monthShort = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][
+      date.getMonth()
+    ];
+    await calendar.locator('.mat-calendar-body-cell', { hasText: monthShort }).first().click();
   }
 
   async selectSkill(skillName: string): Promise<void> {

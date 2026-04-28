@@ -1,5 +1,6 @@
 @if (selectedId()) {
-  <div class="media-drawer__scrim" (click)="close()"></div>
+  <div class="media-drawer__scrim" (click)="close()" (keydown.enter)="close()" tabindex="0"></div>
+
   <aside
     class="media-drawer"
     role="dialog"
@@ -8,6 +9,7 @@
     cdkTrapFocus
     [cdkTrapFocusAutoCapture]="true"
     (click)="$event.stopPropagation()"
+    (keydown.escape)="close()"
   >
     <header class="media-drawer__header">
       <h2 class="text-section-heading">Media details</h2>

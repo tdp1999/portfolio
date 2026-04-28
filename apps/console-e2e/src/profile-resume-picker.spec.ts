@@ -54,7 +54,7 @@ test.describe('Profile Resume Picker Migration', () => {
       const enRow = resumeSection.locator('[data-locale="en"]');
 
       // Preview should show either filename or URL (depending on implementation)
-      const preview = enRow.locator('.preview, [role="img"], img');
+      //   const preview = enRow.locator('.preview, [role="img"], img');
       // Soft check - preview may be a text field or image
       const previewContent = await enRow.textContent();
       expect(previewContent).toBeTruthy();
@@ -288,7 +288,7 @@ test.describe('Profile Resume Picker Migration', () => {
       const enChangeButton = enRow.locator('button', { hasText: 'Change' });
       await enChangeButton.click();
 
-      let picker = new MediaPickerPage(page);
+      const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
       await picker.getGridItems().first().click();
       await picker.clickInsert();

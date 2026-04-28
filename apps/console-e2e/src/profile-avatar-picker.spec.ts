@@ -67,7 +67,7 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
 
       // Select first image
       const firstItem = picker.getGridItems().first();
-      const mediaId = await firstItem.getAttribute('data-media-id');
+      //   const mediaId = await firstItem.getAttribute('data-media-id');
       await firstItem.click();
       await picker.clickInsert();
 
@@ -122,7 +122,7 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
       const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
       const firstItem = picker.getGridItems().first();
-      const selectedId = await firstItem.getAttribute('data-media-id');
+      //   const selectedId = await firstItem.getAttribute('data-media-id');
       await firstItem.click();
       await picker.clickInsert();
 
@@ -192,6 +192,11 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
       // Select first image
       const firstItem = picker.getGridItems().first();
       const selectedId = await firstItem.getAttribute('data-media-id');
+
+      if (!selectedId) {
+        throw new Error('Test media item does not have data-media-id attribute');
+      }
+
       await firstItem.click();
       await picker.clickInsert();
 
@@ -204,7 +209,7 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
 
       // OG image should be set (verify via form control or preview)
       const ogImageControl = profilePage.seoOg.root.locator('input[formControlName="ogImageId"]');
-      await expect(ogImageControl).toHaveValue(selectedId!);
+      await expect(ogImageControl).toHaveValue(selectedId);
     });
 
     test('og image change updates meta tags', async ({ adminPage: page }) => {
@@ -220,6 +225,11 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
       await picker.waitForOpen();
       const firstItem = picker.getGridItems().first();
       const mediaId = await firstItem.getAttribute('data-media-id');
+
+      if (!mediaId) {
+        throw new Error('Test media item does not have data-media-id attribute');
+      }
+
       await firstItem.click();
       await picker.clickInsert();
 
@@ -229,7 +239,7 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
       // Check meta og:image tag (may require server-side rendering verification)
       // For now, just verify form control has the value
       const ogImageControl = profilePage.seoOg.root.locator('input[formControlName="ogImageId"]');
-      await expect(ogImageControl).toHaveValue(mediaId!);
+      await expect(ogImageControl).toHaveValue(mediaId);
     });
   });
 
