@@ -252,12 +252,3 @@
 - **Markdown import with unsupported syntax:** Obsidian plugins (dataview, mermaid) produce syntax the editor can't render — stripped silently, user informed of what was removed
 - **Post with inline images deleted from Media:** Content references Cloudinary URLs that may be deleted — broken images display placeholder. No cascading delete from Media to post content.
 
-## Changelog
-- [2026-04-20] Updated Post glossary (single-language nature), updated Skill glossary (icon via Media). Added PST-009 (language-per-record rule). Confirmed Profile and BlogPost domain docs remain accurate post-implementation.
-- [2026-04-19] Added Media domain — glossary (Media, MediaFolder), Upload Media flow, rules MED-001 to MED-003. Fixed: folder stored as explicit DB column, not derived from publicId.
-- [2026-03-31] Expanded Post domain — added Import Markdown Post flow, added rules PST-006 to PST-008 (readTime, publishedAt, import=draft), added edge cases (unsupported markdown syntax, inline image deletion)
-- [2026-03-31] Added Project domain — updated glossary (Project expanded, removed ProjectDetail/Technology, added TechnicalHighlight, ProjectImage, ProjectSkill), added Manage Projects flow, added rules PRJ-001 to PRJ-007
-- [2026-03-29] Added Experience domain — updated glossary (Experience expanded, EmploymentType, LocationType, ExperienceSkill), added Manage Work History flow, added rules EXP-001 to EXP-006
-- [2026-03-29] Expanded Profile domain — updated glossary (Certification, SocialLink, TranslatableJson), refined Update Personal Info flow (upsert, JSON-LD), added rules PRF-002 to PRF-005, edge cases (profile not created, stale enum)
-- [2026-03-29] Added ContactMessage domain — glossary (ContactMessage, ContactPurpose, ContactMessageStatus, EmailTemplate), flows (Receive + Manage), rules (CTM-001 to CTM-005), invariants (public write, admin auth)
-- [2026-03-27] Created — initial domain model with content management and blog flows

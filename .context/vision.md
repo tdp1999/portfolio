@@ -96,13 +96,3 @@ Keeping animations minimal aligns with your "clear and simple" philosophy. Consi
 - Subtle hover states on interactive elements
 - Avoid complex scroll-triggered animations that can feel gimmicky
 
-## Changelog
-
-### [2026-02-01] Added Test-Driven Development Approach
-
-- **Added:** TDD development philosophy with pragmatic coverage targets
-- **Testing Stack:** Jest (unit/integration) + Playwright (E2E)
-- **Coverage Targets:** 80-90% for business logic, 90%+ for API endpoints, 70-80% for complex components
-- **Workflow:** Red-Green-Refactor cycle with tests written before implementation
-- **Reason:** Ensure code quality, prevent regressions, and maintain confidence during rapid development
-- **Impact:** All new features must follow TDD approach starting from next task

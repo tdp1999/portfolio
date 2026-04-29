@@ -709,10 +709,6 @@ All auditable entities include:
 
 ---
 
-## Created
-
-2025-02-03
-
 ## Related Documents
 
 - [Epic: Database Architecture](./plans/epic-database-architecture.md)

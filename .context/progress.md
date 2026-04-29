@@ -157,6 +157,11 @@
 
 - [ ] **Console Tab Redesign** (epic-console-tab-redesign) — UX research + migration (M)
 
+### Active Investigations
+
+- [ ] **inv-context-doc-bloat** — Reduce noise in `.context/`; identify ephemeral content drifting into evergreen docs
+- [ ] **inv-form-runtime-audit** — Form runtime behavior across Experience/Project (paste-of-letters, persisted state mismatches)
+
 ---
 
 #### Future Sprints (to be broken down when ready)
