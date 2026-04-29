@@ -43,4 +43,4 @@ bloat indicators surfaced. Spot-checked headings; content is rule-shaped.
 
 ## Status
 
-investigation
+completed

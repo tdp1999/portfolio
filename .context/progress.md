@@ -159,8 +159,8 @@
 
 ### Active Investigations
 
-- [ ] **inv-context-doc-bloat** — Reduce noise in `.context/`; identify ephemeral content drifting into evergreen docs
-- [ ] **inv-form-runtime-audit** — Form runtime behavior across Experience/Project (paste-of-letters, persisted state mismatches)
+- [x] **inv-context-doc-bloat** — Reduce noise in `.context/`; identify ephemeral content drifting into evergreen docs
+- [x] **inv-form-runtime-audit** — Form runtime behavior across Experience/Project (paste-of-letters, persisted state mismatches)
 
 ---
 
