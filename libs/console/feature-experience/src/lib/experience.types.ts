@@ -41,7 +41,8 @@ export interface AdminExperience {
   locationAddress2: string | null;
   clientName: string | null;
   domain: string | null;
-  teamSize: number | null;
+  teamSizeMin: number | null;
+  teamSizeMax: number | null;
   startDate: string;
   endDate: string | null;
   skills: ExperienceSkillDto[];
@@ -77,7 +78,8 @@ export interface CreateExperiencePayload {
   locationAddress2?: string;
   clientName?: string;
   domain?: string;
-  teamSize?: number;
+  teamSizeMin?: number;
+  teamSizeMax?: number;
   startDate: string;
   endDate?: string;
   skillIds: string[];
@@ -103,7 +105,8 @@ export interface UpdateExperiencePayload {
   locationAddress2?: string;
   clientName?: string;
   domain?: string;
-  teamSize?: number;
+  teamSizeMin?: number | null;
+  teamSizeMax?: number | null;
   startDate?: string;
   endDate?: string | null;
   skillIds?: string[];

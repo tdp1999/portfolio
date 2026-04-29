@@ -52,7 +52,8 @@ export interface IExperienceProps extends IBaseAuditProps {
   // Client context
   clientName: string | null;
   domain: string | null;
-  teamSize: number | null;
+  teamSizeMin: number | null;
+  teamSizeMax: number | null;
 
   // Dates
   startDate: Date;
@@ -89,7 +90,8 @@ export interface ICreateExperiencePayload {
 
   clientName?: string;
   domain?: string;
-  teamSize?: number;
+  teamSizeMin?: number;
+  teamSizeMax?: number;
 
   startDate: Date;
   endDate?: Date;
@@ -121,7 +123,8 @@ export interface IUpdateExperiencePayload {
 
   clientName?: string | null;
   domain?: string | null;
-  teamSize?: number | null;
+  teamSizeMin?: number | null;
+  teamSizeMax?: number | null;
 
   startDate?: Date;
   endDate?: Date | null;

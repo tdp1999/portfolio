@@ -191,7 +191,7 @@
         }
 
         <!-- Context -->
-        @if (exp.clientName || exp.domain || exp.teamSize) {
+        @if (exp.clientName || exp.domain || exp.teamSizeMin || exp.teamSizeMax) {
           <div class="detail-section">
             <h3 class="detail-section__title">Context</h3>
 
@@ -207,10 +207,16 @@
                 <span class="detail-field__value">{{ exp.domain }}</span>
               </div>
             }
-            @if (exp.teamSize) {
+            @if (exp.teamSizeMin || exp.teamSizeMax) {
               <div class="detail-field">
                 <span class="detail-field__label">Team Size</span>
-                <span class="detail-field__value">{{ exp.teamSize }}</span>
+                <span class="detail-field__value">
+                  @if (exp.teamSizeMin && exp.teamSizeMax && exp.teamSizeMin !== exp.teamSizeMax) {
+                    {{ exp.teamSizeMin }}–{{ exp.teamSizeMax }}
+                  } @else {
+                    {{ exp.teamSizeMin ?? exp.teamSizeMax }}
+                  }
+                </span>
               </div>
             }
           </div>

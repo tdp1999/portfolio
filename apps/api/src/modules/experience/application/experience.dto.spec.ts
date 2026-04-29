@@ -44,7 +44,8 @@ function buildExperienceProps(overrides: Partial<IExperienceProps> = {}): IExper
     locationAddress2: null,
     clientName: 'Big Client',
     domain: 'FinTech',
-    teamSize: 8,
+    teamSizeMin: 5,
+    teamSizeMax: 10,
     startDate: new Date('2023-01-01'),
     endDate: null,
     displayOrder: 0,
@@ -74,7 +75,8 @@ describe('CreateExperienceSchema', () => {
         locationType: 'HYBRID',
         locationCountry: 'Vietnam',
         locationCity: 'Hanoi',
-        teamSize: 5,
+        teamSizeMin: 5,
+        teamSizeMax: 5,
         endDate: '2024-01-01',
         skillIds: ['550e8400-e29b-41d4-a716-446655440000'],
         displayOrder: 1,
@@ -175,9 +177,19 @@ describe('CreateExperienceSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should reject teamSize less than 1', () => {
-    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ teamSize: 0 }));
+  it('should reject teamSizeMin less than 1', () => {
+    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ teamSizeMin: 0 }));
     expect(result.success).toBe(false);
+  });
+
+  it('should reject teamSizeMin greater than teamSizeMax', () => {
+    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ teamSizeMin: 10, teamSizeMax: 5 }));
+    expect(result.success).toBe(false);
+  });
+
+  it('should accept teamSizeMin equal to teamSizeMax (single team size)', () => {
+    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ teamSizeMin: 8, teamSizeMax: 8 }));
+    expect(result.success).toBe(true);
   });
 
   it('should reject companyName exceeding max length', () => {

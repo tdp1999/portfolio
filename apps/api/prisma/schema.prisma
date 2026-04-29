@@ -427,9 +427,10 @@ model Experience {
   locationAddress2   String? @db.VarChar(300)
 
   // Client context
-  clientName String? @db.VarChar(200)
-  domain     String? @db.VarChar(100)
-  teamSize   Int?
+  clientName  String? @db.VarChar(200)
+  domain      String? @db.VarChar(100)
+  teamSizeMin Int?
+  teamSizeMax Int?
 
   // Dates
   startDate DateTime

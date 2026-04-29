@@ -25,7 +25,8 @@ describe('Experience Entity', () => {
     locationAddress2: null,
     clientName: null,
     domain: null,
-    teamSize: null,
+    teamSizeMin: null,
+    teamSizeMax: null,
     startDate: new Date('2022-01-01'),
     endDate: new Date('2024-01-01'),
     displayOrder: 0,
@@ -121,11 +122,12 @@ describe('Experience Entity', () => {
         teamRole: { en: 'lead', vi: 'trưởng nhóm' },
         endDate: new Date('2024-01-01'),
         clientName: 'Client X',
-        teamSize: 10,
+        teamSizeMin: 5,
+        teamSizeMax: 10,
       });
 
       const updated = exp.update(
-        { description: null, teamRole: null, endDate: null, clientName: null, teamSize: null },
+        { description: null, teamRole: null, endDate: null, clientName: null, teamSizeMin: null, teamSizeMax: null },
         userId
       );
 
@@ -133,7 +135,8 @@ describe('Experience Entity', () => {
       expect(updated.teamRole).toBeNull();
       expect(updated.endDate).toBeNull();
       expect(updated.clientName).toBeNull();
-      expect(updated.teamSize).toBeNull();
+      expect(updated.teamSizeMin).toBeNull();
+      expect(updated.teamSizeMax).toBeNull();
     });
   });
 

@@ -113,8 +113,12 @@
                     @if (exp.domain) {
                       <landing-badge>{{ exp.domain }}</landing-badge>
                     }
-                    @if (exp.teamSize) {
-                      <landing-badge>Team of {{ exp.teamSize }}</landing-badge>
+                    @if (exp.teamSizeMin || exp.teamSizeMax) {
+                      @if (exp.teamSizeMin && exp.teamSizeMax && exp.teamSizeMin !== exp.teamSizeMax) {
+                        <landing-badge>Team of {{ exp.teamSizeMin }}–{{ exp.teamSizeMax }}</landing-badge>
+                      } @else {
+                        <landing-badge>Team of {{ exp.teamSizeMin ?? exp.teamSizeMax }}</landing-badge>
+                      }
                     }
                   </div>
 

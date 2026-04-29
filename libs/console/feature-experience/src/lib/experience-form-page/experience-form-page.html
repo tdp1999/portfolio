@@ -47,6 +47,7 @@
             <mat-form-field>
               <mat-label>Company URL</mat-label>
               <input matInput formControlName="companyUrl" placeholder="https://..." type="url" />
+              <mat-error>{{ form.controls.companyUrl | formError }}</mat-error>
             </mat-form-field>
 
             <div>
@@ -98,6 +99,7 @@
                   <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                 }
               </mat-select>
+              <mat-error>{{ form.controls.employmentType | formError }}</mat-error>
             </mat-form-field>
 
             <console-translatable-group
@@ -139,16 +141,19 @@
                 [control]="form.controls.endDate"
               />
             </div>
+            @if (form.errors?.['dateRange']) {
+              <p class="text-caption text-error mt-1">Start date must be before end date.</p>
+            }
             <mat-checkbox formControlName="isCurrent">Current position</mat-checkbox>
           </div>
         </console-section-card>
 
-        <!-- Location -->
+        <!-- Location (public) -->
         <console-section-card
           id="section-location"
           bucket="PUBLIC"
           title="Location"
-          description="Where the role was based. All fields other than type are optional."
+          description="Where the role was based. Country and city render publicly."
           saveMode="atomic"
         >
           <div class="form-stack">
@@ -159,33 +164,21 @@
                   <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                 }
               </mat-select>
+              <mat-error>{{ form.controls.locationType | formError }}</mat-error>
             </mat-form-field>
 
             <div class="flex gap-4">
               <mat-form-field class="flex-1">
                 <mat-label>Country</mat-label>
                 <input matInput formControlName="locationCountry" placeholder="e.g. Vietnam" />
+                <mat-error>{{ form.controls.locationCountry | formError }}</mat-error>
               </mat-form-field>
               <mat-form-field class="flex-1">
                 <mat-label>City</mat-label>
                 <input matInput formControlName="locationCity" placeholder="e.g. Ho Chi Minh City" />
+                <mat-error>{{ form.controls.locationCity | formError }}</mat-error>
               </mat-form-field>
             </div>
-
-            <mat-form-field>
-              <mat-label>Postal Code</mat-label>
-              <input matInput formControlName="locationPostalCode" placeholder="Optional" />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Address Line 1</mat-label>
-              <input matInput formControlName="locationAddress1" placeholder="Optional" />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Address Line 2</mat-label>
-              <input matInput formControlName="locationAddress2" placeholder="Optional" />
-            </mat-form-field>
           </div>
         </console-section-card>
 
@@ -376,32 +369,77 @@
               <mat-form-field class="flex-1">
                 <mat-label>Client Name</mat-label>
                 <input matInput formControlName="clientName" placeholder="Optional" />
+                <mat-error>{{ form.controls.clientName | formError }}</mat-error>
               </mat-form-field>
               <mat-form-field class="flex-1">
                 <mat-label>Domain</mat-label>
                 <input matInput formControlName="domain" placeholder="e.g. Fintech" />
+                <mat-error>{{ form.controls.domain | formError }}</mat-error>
               </mat-form-field>
             </div>
 
-            <mat-form-field class="w-40">
-              <mat-label>Team Size</mat-label>
-              <input matInput type="number" formControlName="teamSize" placeholder="e.g. 8" min="1" />
-            </mat-form-field>
+            <div class="field-block">
+              <p class="field-label">Team Size</p>
+              <div class="flex gap-3 items-start">
+                <mat-form-field class="w-32">
+                  <mat-label>Min</mat-label>
+                  <input matInput type="number" formControlName="teamSizeMin" placeholder="e.g. 5" min="1" />
+                  <mat-error>{{ form.controls.teamSizeMin | formError }}</mat-error>
+                </mat-form-field>
+                <mat-form-field class="w-32">
+                  <mat-label>Max</mat-label>
+                  <input matInput type="number" formControlName="teamSizeMax" placeholder="e.g. 10" min="1" />
+                  <mat-error>{{ form.controls.teamSizeMax | formError }}</mat-error>
+                </mat-form-field>
+              </div>
+              @if (form.errors?.['teamSizeRange']) {
+                <p class="text-caption text-error mt-1">Min must be ≤ Max.</p>
+              }
+              <p class="text-caption text-text-muted mt-1">
+                Leave blank if unknown. Set Min = Max for a fixed team size.
+              </p>
+            </div>
           </div>
         </console-section-card>
 
-        <!-- Settings -->
+        <!-- Settings (admin) -->
         <console-section-card
           id="section-settings"
           bucket="INTERNAL"
-          title="Settings"
-          description="Admin-only ordering. Doesn't render publicly."
+          title="Admin"
+          description="Admin-only address details and display ordering. Doesn't render publicly."
           saveMode="atomic"
         >
-          <mat-form-field class="w-40">
-            <mat-label>Display Order</mat-label>
-            <input matInput type="number" formControlName="displayOrder" min="0" />
-          </mat-form-field>
+          <div class="form-stack">
+            <div class="form-subsection">
+              <h4 class="text-card-title">Address</h4>
+              <div class="form-stack">
+                <mat-form-field>
+                  <mat-label>Postal Code</mat-label>
+                  <input matInput formControlName="locationPostalCode" placeholder="Optional" />
+                  <mat-error>{{ form.controls.locationPostalCode | formError }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Address Line 1</mat-label>
+                  <input matInput formControlName="locationAddress1" placeholder="Optional" />
+                  <mat-error>{{ form.controls.locationAddress1 | formError }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Address Line 2</mat-label>
+                  <input matInput formControlName="locationAddress2" placeholder="Optional" />
+                  <mat-error>{{ form.controls.locationAddress2 | formError }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-form-field class="w-40">
+              <mat-label>Display Order</mat-label>
+              <input matInput type="number" formControlName="displayOrder" min="0" />
+              <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
+            </mat-form-field>
+          </div>
         </console-section-card>
 
         @if (serverError()) {

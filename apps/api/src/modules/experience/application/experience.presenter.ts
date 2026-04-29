@@ -31,7 +31,8 @@ export type ExperiencePublicResponseDto = {
   locationCountry: string;
   locationCity: string | null;
   domain: string | null;
-  teamSize: number | null;
+  teamSizeMin: number | null;
+  teamSizeMax: number | null;
   startDate: Date;
   endDate: Date | null;
   skills: ExperienceSkillDto[];
@@ -81,7 +82,8 @@ export class ExperiencePresenter {
       locationCountry: entity.locationCountry,
       locationCity: entity.locationCity,
       domain: entity.domain,
-      teamSize: entity.teamSize,
+      teamSizeMin: entity.teamSizeMin,
+      teamSizeMax: entity.teamSizeMax,
       startDate: entity.startDate,
       endDate: entity.endDate,
       skills: skills.map((s) => ({ id: s.id, name: s.name, slug: s.slug })),

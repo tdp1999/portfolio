@@ -26,7 +26,8 @@ export type PublicExperience = {
   locationCountry: string;
   locationCity: string | null;
   domain: string | null;
-  teamSize: number | null;
+  teamSizeMin: number | null;
+  teamSizeMax: number | null;
   startDate: string;
   endDate: string | null;
   skills: PublicExperienceSkill[];

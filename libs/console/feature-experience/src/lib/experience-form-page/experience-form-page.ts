@@ -136,7 +136,7 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     isCurrent: [true],
 
     locationType: ['ONSITE', [Validators.required]],
-    locationCountry: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
+    locationCountry: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
     locationCity: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
     locationPostalCode: ['', baselineFor.postalCode()],
     locationAddress1: ['', baselineFor.address()],
@@ -144,7 +144,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
 
     clientName: ['', [Validators.maxLength(LIMITS.TITLE_MAX)]],
     domain: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
-    teamSize: [null as number | null, [...baselineFor.integer(LIMITS.TEAM_SIZE_MIN)]],
+    teamSizeMin: [null as number | null, [...baselineFor.integer(LIMITS.TEAM_SIZE_MIN)]],
+    teamSizeMax: [null as number | null, [...baselineFor.integer(LIMITS.TEAM_SIZE_MIN)]],
 
     displayOrder: [0, baselineFor.displayOrder()],
 
@@ -160,6 +161,22 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   readonly isInvalid = computed(() => this.form.invalid);
   private readonly initialSnapshot = signal<unknown>(null);
 
+  /** Cross-field: teamSizeMin must be <= teamSizeMax when both are set. Mirrors BE refine. */
+  private readonly teamSizeRangeValidator = (group: AbstractControl) => {
+    const min = group.get('teamSizeMin')?.value as number | null;
+    const max = group.get('teamSizeMax')?.value as number | null;
+    if (min == null || max == null || min <= max) return null;
+    return { teamSizeRange: true };
+  };
+
+  /** Cross-field: startDate must be before endDate when endDate is set. Mirrors BE refine. */
+  private readonly dateRangeValidator = (group: AbstractControl) => {
+    const start = group.get('startDate')?.value as Date | null;
+    const end = group.get('endDate')?.value as Date | null;
+    if (!start || !end || start < end) return null;
+    return { dateRange: true };
+  };
+
   readonly sections: SectionDescriptor[] = [
     { id: 'section-company', label: 'Company' },
     { id: 'section-role', label: 'Role' },
@@ -170,10 +187,13 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     { id: 'section-highlights', label: 'Highlights' },
     { id: 'section-links', label: 'Links' },
     { id: 'section-context', label: 'Context' },
-    { id: 'section-settings', label: 'Settings' },
+    { id: 'section-settings', label: 'Admin' },
   ];
 
   ngOnInit(): void {
+    this.form.addValidators(this.teamSizeRangeValidator);
+    this.form.addValidators(this.dateRangeValidator);
+    this.form.updateValueAndValidity({ emitEvent: false });
     this.setupCurrentPositionToggle();
     this.setupSkillSearch();
     this.form.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -333,7 +353,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
       locationAddress2: v.locationAddress2 || undefined,
       clientName: v.clientName || undefined,
       domain: v.domain || undefined,
-      teamSize: v.teamSize ?? undefined,
+      teamSizeMin: v.teamSizeMin ?? undefined,
+      teamSizeMax: v.teamSizeMax ?? undefined,
       startDate: v.startDate?.toISOString() ?? '',
       skillIds: this.selectedSkills().map((s) => s.id),
       displayOrder: v.displayOrder,
@@ -498,7 +519,8 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
         locationAddress2: exp.locationAddress2 ?? '',
         clientName: exp.clientName ?? '',
         domain: exp.domain ?? '',
-        teamSize: exp.teamSize,
+        teamSizeMin: exp.teamSizeMin,
+        teamSizeMax: exp.teamSizeMax,
         displayOrder: exp.displayOrder,
       },
       { emitEvent: false }

@@ -88,8 +88,12 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
     return this.props.domain;
   }
 
-  get teamSize(): number | null {
-    return this.props.teamSize;
+  get teamSizeMin(): number | null {
+    return this.props.teamSizeMin;
+  }
+
+  get teamSizeMax(): number | null {
+    return this.props.teamSizeMax;
   }
 
   get startDate(): Date {
@@ -136,7 +140,8 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       locationAddress2: data.locationAddress2 ?? null,
       clientName: data.clientName ?? null,
       domain: data.domain ?? null,
-      teamSize: data.teamSize ?? null,
+      teamSizeMin: data.teamSizeMin ?? null,
+      teamSizeMax: data.teamSizeMax ?? null,
       startDate: data.startDate,
       endDate: data.endDate ?? null,
       displayOrder: data.displayOrder ?? 0,
@@ -171,7 +176,8 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       locationAddress2: data.locationAddress2 !== undefined ? data.locationAddress2 : this.props.locationAddress2,
       clientName: data.clientName !== undefined ? data.clientName : this.props.clientName,
       domain: data.domain !== undefined ? data.domain : this.props.domain,
-      teamSize: data.teamSize !== undefined ? data.teamSize : this.props.teamSize,
+      teamSizeMin: data.teamSizeMin !== undefined ? data.teamSizeMin : this.props.teamSizeMin,
+      teamSizeMax: data.teamSizeMax !== undefined ? data.teamSizeMax : this.props.teamSizeMax,
       startDate: data.startDate ?? this.props.startDate,
       endDate: data.endDate !== undefined ? data.endDate : this.props.endDate,
       displayOrder: data.displayOrder ?? this.props.displayOrder,

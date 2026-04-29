@@ -26,31 +26,45 @@ const LinkSchema = z.object({
 
 // --- CreateExperienceSchema ---
 
-export const CreateExperienceSchema = z.object({
-  companyName: TitleSchema,
-  companyUrl: UrlSchema.optional(),
-  companyLogoId: z.uuid().optional(),
-  position: TranslatableSchema,
-  description: OptionalTranslatableSchema.optional(),
-  responsibilities: TranslatableStringArraySchema.default({ en: [], vi: [] }),
-  highlights: TranslatableStringArraySchema.default({ en: [], vi: [] }),
-  teamRole: OptionalTranslatableSchema.optional(),
-  links: z.array(LinkSchema).default([]),
-  employmentType: z.nativeEnum(EmploymentType).default('FULL_TIME'),
-  locationType: z.nativeEnum(LocationType).default('ONSITE'),
-  locationCountry: requiredShortText(LIMITS.NAME_MAX),
-  locationCity: optionalShortText(LIMITS.NAME_MAX).optional(),
-  locationPostalCode: PostalCodeSchema.optional(),
-  locationAddress1: AddressLineSchema.optional(),
-  locationAddress2: AddressLineSchema.optional(),
-  clientName: optionalShortText(LIMITS.TITLE_MAX).optional(),
-  domain: optionalShortText(LIMITS.NAME_MAX).optional(),
-  teamSize: TeamSizeSchema.optional(),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date().optional(),
-  skillIds: z.array(z.uuid()).default([]),
-  displayOrder: DisplayOrderSchema.default(0),
-});
+const teamSizeRangeRefine = (v: { teamSizeMin?: number; teamSizeMax?: number }) =>
+  v.teamSizeMin === undefined || v.teamSizeMax === undefined || v.teamSizeMin <= v.teamSizeMax;
+
+const dateRangeRefine = (v: { startDate?: Date | string; endDate?: Date | string | null }) => {
+  if (!v.endDate) return true;
+  const start = v.startDate instanceof Date ? v.startDate : new Date(v.startDate ?? '');
+  const end = v.endDate instanceof Date ? v.endDate : new Date(v.endDate);
+  return start < end;
+};
+
+export const CreateExperienceSchema = z
+  .object({
+    companyName: TitleSchema,
+    companyUrl: UrlSchema.optional(),
+    companyLogoId: z.uuid().optional(),
+    position: TranslatableSchema,
+    description: OptionalTranslatableSchema.optional(),
+    responsibilities: TranslatableStringArraySchema.default({ en: [], vi: [] }),
+    highlights: TranslatableStringArraySchema.default({ en: [], vi: [] }),
+    teamRole: OptionalTranslatableSchema.optional(),
+    links: z.array(LinkSchema).default([]),
+    employmentType: z.nativeEnum(EmploymentType).default('FULL_TIME'),
+    locationType: z.nativeEnum(LocationType).default('ONSITE'),
+    locationCountry: requiredShortText(LIMITS.NAME_MAX),
+    locationCity: optionalShortText(LIMITS.NAME_MAX).optional(),
+    locationPostalCode: PostalCodeSchema.optional(),
+    locationAddress1: AddressLineSchema.optional(),
+    locationAddress2: AddressLineSchema.optional(),
+    clientName: optionalShortText(LIMITS.TITLE_MAX).optional(),
+    domain: optionalShortText(LIMITS.NAME_MAX).optional(),
+    teamSizeMin: TeamSizeSchema.optional(),
+    teamSizeMax: TeamSizeSchema.optional(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    skillIds: z.array(z.uuid()).default([]),
+    displayOrder: DisplayOrderSchema.default(0),
+  })
+  .refine(teamSizeRangeRefine, { message: 'teamSizeMin must be <= teamSizeMax', path: ['teamSizeMax'] })
+  .refine(dateRangeRefine, { message: 'startDate must be before endDate', path: ['endDate'] });
 
 export type CreateExperienceDto = z.infer<typeof CreateExperienceSchema>;
 
@@ -76,14 +90,24 @@ const UpdateExperienceBaseSchema = z.object({
   locationAddress2: AddressLineSchema.optional(),
   clientName: optionalShortText(LIMITS.TITLE_MAX).optional(),
   domain: optionalShortText(LIMITS.NAME_MAX).optional(),
-  teamSize: TeamSizeSchema.optional(),
+  teamSizeMin: TeamSizeSchema.nullable().optional(),
+  teamSizeMax: TeamSizeSchema.nullable().optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   skillIds: z.array(z.uuid()),
   displayOrder: DisplayOrderSchema,
 });
 
-export const UpdateExperienceSchema = nonEmptyPartial(UpdateExperienceBaseSchema);
+export const UpdateExperienceSchema = nonEmptyPartial(UpdateExperienceBaseSchema)
+  .refine(
+    (v) => {
+      const min = v.teamSizeMin;
+      const max = v.teamSizeMax;
+      return min == null || max == null || min <= max;
+    },
+    { message: 'teamSizeMin must be <= teamSizeMax', path: ['teamSizeMax'] }
+  )
+  .refine(dateRangeRefine, { message: 'startDate must be before endDate', path: ['endDate'] });
 
 export type UpdateExperienceDto = z.infer<typeof UpdateExperienceSchema>;
 
