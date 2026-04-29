@@ -7,3 +7,11 @@
   flex-wrap: wrap;
   @apply gap-2;
 }
+
+.chip-select__chip {
+  cursor: pointer;
+
+  &--icon-only {
+    @apply px-2;
+  }
+}

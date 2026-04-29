@@ -1,0 +1,6 @@
+<mat-chip-option [selected]="value()" [disabled]="disabled()" [attr.aria-pressed]="value()" (click)="toggle()">
+  @if (icon()) {
+    <mat-icon class="icon-md">{{ icon() }}</mat-icon>
+  }
+  <span>{{ label() }}</span>
+</mat-chip-option>

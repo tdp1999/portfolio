@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
 
 export interface ChipOption {
   value: string;
@@ -9,6 +10,7 @@ export interface ChipOption {
 @Component({
   selector: 'console-chip-toggle-group',
   standalone: true,
+  imports: [MatChipsModule],
   templateUrl: './chip-toggle-group.component.html',
   styleUrl: './chip-toggle-group.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,7 +60,10 @@ export class ChipToggleGroupComponent implements ControlValueAccessor {
       next.add(value);
     }
     this.selected.set(next);
-    this.onChange([...next]);
+    const ordered = this.options()
+      .filter((o) => next.has(o.value))
+      .map((o) => o.value);
+    this.onChange(ordered);
     this.onTouched();
   }
 }

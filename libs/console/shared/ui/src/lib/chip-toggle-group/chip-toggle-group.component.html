@@ -1,13 +1,12 @@
-<div class="chip-row">
+<div class="chip-row" role="group">
   @for (opt of options(); track opt.value) {
-    <button
-      type="button"
-      class="chip-toggle"
-      [class.chip-toggle--selected]="selected().has(opt.value)"
+    <mat-chip-option
+      [selected]="selected().has(opt.value)"
       [disabled]="disabled()"
+      [attr.aria-pressed]="selected().has(opt.value)"
       (click)="toggle(opt.value)"
     >
       {{ opt.label }}
-    </button>
+    </mat-chip-option>
   }
 </div>

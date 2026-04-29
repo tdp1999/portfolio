@@ -1,0 +1,22 @@
+<div class="chip-row" role="radiogroup">
+  @for (opt of options(); track opt.value) {
+    <mat-chip-option
+      class="chip-select__chip"
+      [class.chip-select__chip--icon-only]="iconOnly()"
+      [selected]="value() === opt.value"
+      [disabled]="disabled()"
+      [attr.role]="'radio'"
+      [attr.aria-checked]="value() === opt.value"
+      [attr.aria-label]="iconOnly() ? opt.label : null"
+      (click)="select(opt.value)"
+      hideSingleSelectionIndicator
+    >
+      @if (opt.icon) {
+        <mat-icon class="icon-md">{{ opt.icon }}</mat-icon>
+      }
+      @if (!iconOnly()) {
+        <span>{{ opt.label }}</span>
+      }
+    </mat-chip-option>
+  }
+</div>

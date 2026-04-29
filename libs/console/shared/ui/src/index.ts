@@ -29,6 +29,9 @@ export { TranslatableGroupComponent } from './lib/translatable-group/translatabl
 export { MonthYearPickerComponent } from './lib/month-year-picker/month-year-picker.component';
 export { ChipToggleGroupComponent } from './lib/chip-toggle-group/chip-toggle-group.component';
 export type { ChipOption } from './lib/chip-toggle-group/chip-toggle-group.component';
+export { ChipSelectComponent } from './lib/chip-select/chip-select.component';
+export type { ChipSelectOption } from './lib/chip-select/chip-select.component';
+export { ChipBooleanComponent } from './lib/chip-boolean/chip-boolean.component';
 export type { LanguageConfig } from './lib/translatable-group/translatable-group';
 export { AssetGridComponent } from './lib/asset-grid/asset-grid.component';
 export type { AssetGridMode, AssetGridViewMode } from './lib/asset-grid/asset-grid.types';
