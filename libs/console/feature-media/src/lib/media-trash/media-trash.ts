@@ -11,7 +11,7 @@ import { SpinnerOverlayComponent, ToastService } from '@portfolio/console/shared
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { MediaService } from '../media.service';
 import { MediaItem } from '../media.types';
-import { MimeCategoryPipe, ReadableSizePipe } from '@portfolio/shared/ui-pipes';
+import { MimeCategoryPipe, ReadableSizePipe } from '@portfolio/shared/ui/pipes';
 
 @Component({
   selector: 'console-media-trash',

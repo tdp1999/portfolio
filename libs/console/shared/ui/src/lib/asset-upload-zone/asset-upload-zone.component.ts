@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 import { extractApiError, type MediaItem } from '@portfolio/console/shared/util';
-import { readableSize } from '@portfolio/shared/ui-pipes';
+import { readableSize } from '@portfolio/shared/ui/pipes';
 import { UploadRowComponent } from './upload-row.component';
 import type { UploadFn, UploadRowState } from './asset-upload-zone.types';
 import { HttpErrorResponse } from '@angular/common/http';

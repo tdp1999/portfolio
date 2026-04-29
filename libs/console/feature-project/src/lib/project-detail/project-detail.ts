@@ -16,7 +16,7 @@ import {
 import { filter, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
-import { DateRangePipe, TranslatablePipe } from '@portfolio/shared/ui-pipes';
+import { DateRangePipe, TranslatablePipe } from '@portfolio/shared/ui/pipes';
 
 @Component({
   selector: 'console-project-detail',

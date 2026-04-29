@@ -15,7 +15,7 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { CloudinaryThumbPipe, IsImagePipe, ReadableSizePipe } from '@portfolio/shared/ui-pipes';
+import { CloudinaryThumbPipe, IsImagePipe, ReadableSizePipe } from '@portfolio/shared/ui/pipes';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { AssetGridMode, AssetGridViewMode, MediaItem } from './asset-grid.types';
 

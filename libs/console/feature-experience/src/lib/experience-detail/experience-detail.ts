@@ -16,7 +16,7 @@ import {
 import { filter, switchMap } from 'rxjs';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
-import { DateRangePipe } from '@portfolio/shared/ui-pipes';
+import { DateRangePipe } from '@portfolio/shared/ui/pipes';
 import { EnumLabelPipe } from '@portfolio/console/shared/ui';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 

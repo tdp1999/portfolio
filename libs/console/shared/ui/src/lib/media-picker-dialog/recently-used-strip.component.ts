@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { CloudinaryThumbPipe, IsImagePipe } from '@portfolio/shared/ui-pipes';
+import { CloudinaryThumbPipe, IsImagePipe } from '@portfolio/shared/ui/pipes';
 import { MatIconModule } from '@angular/material/icon';
 import type { MediaItem } from '@portfolio/console/shared/util';
 

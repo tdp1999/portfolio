@@ -16,17 +16,17 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@portfolio/shared/testing": ["./libs/shared/testing/src/index.ts"],
+      "@portfolio/shared/testing": ["./libs/shared/utils/testing/src/index.ts"],
       "@portfolio/landing/shared/data-access": ["./libs/landing/shared/data-access/src/index.ts"],
-      "@portfolio/shared/types": ["./libs/shared/types/src/index.ts"],
-      "@portfolio/shared/utils": ["./libs/shared/utils/src/index.ts"],
-      "@portfolio/shared/validation": ["./libs/shared/validation/src/index.ts"],
-      "@portfolio/shared/validation/zod": ["./libs/shared/validation/src/zod.ts"],
-      "@portfolio/shared/enum-labels": ["./libs/shared/enum-labels/src/index.ts"],
+      "@portfolio/shared/types": ["./libs/shared/utils/types/src/index.ts"],
+      "@portfolio/shared/utils": ["./libs/shared/utils/core/src/index.ts"],
+      "@portfolio/shared/validation": ["./libs/shared/utils/validation/src/index.ts"],
+      "@portfolio/shared/validation/zod": ["./libs/shared/utils/validation/src/zod.ts"],
+      "@portfolio/shared/enum-labels": ["./libs/shared/utils/enum-labels/src/index.ts"],
       "@portfolio/landing/shared/ui": ["./libs/landing/shared/ui/src/index.ts"],
       "@portfolio/landing/shared/util": ["./libs/landing/shared/util/src/index.ts"],
       "@portfolio/landing/feature-home": ["./libs/landing/feature-home/src/index.ts"],
-      "@portfolio/shared/errors": ["./libs/shared/errors/src/index.ts"],
+      "@portfolio/shared/errors": ["./libs/shared/utils/errors/src/index.ts"],
       "@portfolio/shared/features/breakpoint-observer": ["./libs/shared/features/breakpoint-observer/src/index.ts"],
       "@portfolio/shared/ui/sidebar": ["./libs/shared/ui/sidebar/src/index.ts"],
       "@portfolio/console/shared/ui": ["./libs/console/shared/ui/src/index.ts"],
@@ -51,7 +51,7 @@
       "@portfolio/console/feature-ddl": ["./libs/console/feature-ddl/src/index.ts"],
       "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"],
       "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
-      "@portfolio/shared/ui-pipes": ["libs/shared/ui-pipes/src/index.ts"]
+      "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
