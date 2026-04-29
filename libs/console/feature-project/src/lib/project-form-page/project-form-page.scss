@@ -19,11 +19,8 @@
   }
 }
 
-.form-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* `.form-stack`, `.field-row`, `.field-block`, `.field-label`, `.form-subsection`
+ * live in shared base/components.scss — see console-cookbook.md. */
 
 .highlight-card {
   display: flex;

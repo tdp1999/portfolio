@@ -1,0 +1,111 @@
+@use '@angular/material' as mat;
+
+/* Console Material Component Token Overrides */
+/* Uses official mat.*-overrides() API for stable, type-checked token customization */
+
+:root {
+  /* Form Field */
+  @include mat.form-field-overrides(
+    (
+      filled-active-indicator-color: var(--color-border),
+      filled-focus-active-indicator-color: var(--color-primary),
+      filled-hover-active-indicator-color: var(--color-border-strong),
+      filled-container-color: var(--color-surface-alt),
+      filled-input-text-color: var(--color-text),
+      filled-input-text-placeholder-color: var(--color-placeholder),
+      filled-label-text-color: var(--color-text-muted),
+      filled-focus-label-text-color: var(--color-primary),
+      filled-hover-label-text-color: var(--color-text-secondary),
+      filled-error-focus-active-indicator-color: var(--color-error),
+      filled-error-active-indicator-color: var(--color-error),
+      filled-error-label-text-color: var(--color-error),
+      filled-error-focus-label-text-color: var(--color-error),
+      outlined-outline-color: var(--color-border),
+      outlined-focus-outline-color: var(--color-primary),
+      outlined-hover-outline-color: var(--color-border-strong),
+      outlined-input-text-color: var(--color-text),
+      outlined-input-text-placeholder-color: var(--color-placeholder),
+      outlined-label-text-color: var(--color-text-muted),
+      outlined-focus-label-text-color: var(--color-primary),
+      outlined-error-outline-color: var(--color-error),
+      outlined-error-focus-outline-color: var(--color-error),
+      outlined-error-label-text-color: var(--color-error),
+      outlined-error-focus-label-text-color: var(--color-error),
+    )
+  );
+
+  /* Button */
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--color-primary),
+      filled-label-text-color: var(--color-text-on-primary),
+      filled-hover-state-layer-opacity: 0.08,
+      filled-container-shape: 8px,
+      outlined-outline-color: var(--color-border),
+      outlined-label-text-color: var(--color-text),
+      outlined-hover-state-layer-opacity: 0.04,
+      outlined-container-shape: 8px,
+      text-container-shape: 8px,
+    )
+  );
+
+  /* Icon Button */
+  @include mat.icon-button-overrides(
+    (
+      state-layer-size: 40px,
+      icon-size: 24px,
+    )
+  );
+
+  /* Menu */
+  @include mat.menu-overrides(
+    (
+      container-color: var(--color-surface),
+      item-label-text-color: var(--color-text),
+      item-hover-state-layer-color: var(--color-surface-hover),
+    )
+  );
+
+  /* Checkbox */
+  @include mat.checkbox-overrides(
+    (
+      selected-checkmark-color: var(--color-text-on-primary),
+      selected-focus-icon-color: var(--color-primary),
+      selected-hover-icon-color: var(--color-primary),
+      selected-icon-color: var(--color-primary),
+      selected-pressed-icon-color: var(--color-primary),
+      unselected-focus-icon-color: var(--color-text-secondary),
+      unselected-hover-icon-color: var(--color-text),
+      unselected-icon-color: var(--color-text-muted),
+    )
+  );
+
+  /* Progress Spinner */
+  @include mat.progress-spinner-overrides(
+    (
+      active-indicator-color: var(--color-primary),
+    )
+  );
+
+  /* Dialog */
+  @include mat.dialog-overrides(
+    (
+      container-max-width: 1440px,
+      headline-padding: 16px 20px 8px,
+      content-padding: 16px 20px,
+      actions-padding: 12px 20px,
+      with-actions-content-padding: 16px,
+    )
+  );
+
+  /* Chips */
+  @include mat.chips-overrides(
+    (
+      disabled-label-text-color: orange,
+      disabled-outline-color: red,
+    )
+  );
+}
+
+/* Compact form fields — density -2 */
+@include mat.form-field-density(-2);

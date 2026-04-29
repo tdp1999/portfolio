@@ -36,10 +36,9 @@ export class SectionCardComponent {
   description = input.required<string>();
 
   /**
-   * Portfolio-domain bucket label rendered as an eyebrow above the title.
-   * `'PUBLIC'` — fields render on the landing page (or ship as `<head>` meta).
-   * `'INTERNAL'` — admin-only fields (sort order, feature flags, draft state, etc.).
-   * Omit on non-Portfolio forms (auth, settings, future domains).
+   * Portfolio-domain bucket. PUBLIC is editorial default and renders no eyebrow;
+   * only `'INTERNAL'` produces a visible marker above the title. Omit on
+   * non-Portfolio forms (auth, settings).
    * See `.context/design/console-cookbook.md` → "Section Bucketing — Portfolio Domain".
    */
   bucket = input<'PUBLIC' | 'INTERNAL'>();

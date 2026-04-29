@@ -1,0 +1,133 @@
+/* ─── CRUD page template ─────────────────────────────────────────────────── */
+
+/* Page layout */
+.crud-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+}
+
+/* Page header: title (left) + action button (right) */
+.crud-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.crud-header__subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Table container */
+.crud-table-container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+
+  .mat-mdc-table {
+    background: transparent;
+    width: 100%;
+  }
+
+  .mat-mdc-header-row {
+    background: transparent;
+  }
+
+  .mat-mdc-header-cell {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom-color: var(--color-border);
+  }
+
+  .mat-mdc-row {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--color-text);
+    border-bottom-color: var(--color-border);
+    font-size: 0.875rem;
+  }
+
+  /* Last row — no bottom border */
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+}
+
+/* Actions column — inline icon buttons with tooltips */
+.col-actions {
+  width: 96px;
+  padding-right: 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* 3+ action buttons need more space */
+.col-actions--wide {
+  width: 136px;
+}
+
+/* Identity column — clickable link to detail page */
+.col-identity {
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+/* Pagination bar — mat-paginator styled as sticky bottom bar */
+.crud-pagination {
+  position: sticky;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Compact search field — reusable class for topbar/toolbar search inputs */
+.console-search {
+  --mdc-outlined-text-field-outline-color: transparent;
+  --mdc-outlined-text-field-hover-outline-color: rgba(148, 163, 184, 0.2);
+  --mdc-outlined-text-field-focus-outline-color: rgba(99, 102, 241, 0.5);
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-input-text-placeholder-color: var(--color-text-muted);
+  --mdc-outlined-text-field-input-text-size: var(--text-xs);
+  --mat-form-field-container-height: 32px;
+  --mat-form-field-container-vertical-padding: 4px;
+  background: var(--color-surface-alt);
+  border-radius: 8px;
+
+  .mat-mdc-form-field-infix {
+    min-height: unset;
+  }
+
+  input.mat-mdc-input-element {
+    font-size: var(--text-xs);
+    line-height: 20px;
+  }
+
+  [matprefix] {
+    color: var(--color-text-muted);
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    margin-right: 4px;
+  }
+}

@@ -1,9 +1,20 @@
 import { ChangeDetectionStrategy, Component, input, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormErrorPipe } from '@portfolio/console/shared/util';
+
+const MONTH_YEAR_FORMATS = {
+  parse: { dateInput: { month: 'numeric', year: 'numeric' } },
+  display: {
+    dateInput: { month: '2-digit', year: 'numeric' },
+    monthYearLabel: { month: 'short', year: 'numeric' },
+    dateA11yLabel: { month: 'long', year: 'numeric' },
+    monthYearA11yLabel: { month: 'long', year: 'numeric' },
+  },
+};
 
 /**
  * Month-year picker for "duration / period" fields (Experience, Project start/end).
@@ -13,6 +24,7 @@ import { FormErrorPipe } from '@portfolio/console/shared/util';
 @Component({
   selector: 'console-month-year-picker',
   standalone: true,
+  providers: [{ provide: MAT_DATE_FORMATS, useValue: MONTH_YEAR_FORMATS }],
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, FormErrorPipe],
   template: `
     <mat-form-field appearance="outline" class="month-year-picker">
@@ -45,7 +57,7 @@ import { FormErrorPipe } from '@portfolio/console/shared/util';
 export class MonthYearPickerComponent {
   control = input.required<FormControl<Date | null>>();
   label = input.required<string>();
-  placeholder = input<string>('');
+  placeholder = input<string>('mm/yyyy');
   /** Optional control-name attribute mirrored onto the underlying `<input>` so test
    * selectors like `input[formControlName="startDate"]` keep working. Display-only. */
   controlName = input<string>('');

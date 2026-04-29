@@ -97,12 +97,14 @@
           <div class="form-stack">
             <mat-form-field class="w-40">
               <mat-label>Years of Experience</mat-label>
-              <input matInput type="number" formControlName="yearsOfExperience" min="0" />
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" />
+              <mat-error>{{ form.controls.yearsOfExperience | formError }}</mat-error>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Proficiency Note</mat-label>
               <input matInput formControlName="proficiencyNote" placeholder="e.g. TOEIC 970" />
+              <mat-error>{{ form.controls.proficiencyNote | formError }}</mat-error>
             </mat-form-field>
           </div>
         </console-section-card>
@@ -148,6 +150,7 @@
             <mat-form-field class="w-40">
               <mat-label>Display Order</mat-label>
               <input matInput type="number" formControlName="displayOrder" min="0" />
+              <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
             </mat-form-field>
           </div>
         </console-section-card>

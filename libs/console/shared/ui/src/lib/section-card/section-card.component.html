@@ -1,7 +1,7 @@
 <section class="section-card" [attr.id]="sectionId()">
   <div class="section-card__header">
-    @if (bucket(); as b) {
-      <p class="text-stat-label text-text-muted mb-1">{{ b }}</p>
+    @if (bucket() === 'INTERNAL') {
+      <p class="text-stat-label text-text-muted mb-1">INTERNAL</p>
     }
     <h3 class="text-section-heading">{{ title() }}</h3>
     <p class="text-body text-text-secondary mt-1">{{ description() }}</p>

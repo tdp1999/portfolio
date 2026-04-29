@@ -65,13 +65,20 @@
    * See `.context/design/console-cookbook.md` → "Field Labeling Hierarchy".
    * Use these instead of redefining in feature SCSS. */
 
+  /* Vertical stack of form fields inside a section card. Standard gap: 16px. */
+  .form-stack {
+    display: flex;
+    flex-direction: column;
+    @apply gap-4;
+  }
+
   /* Sub-group inside a section card. Stacks rows of fields vertically.
    * Use when a section has 2+ logical groupings (e.g. Profile Social Links
    * → Links / Resume / Certifications). */
   .form-subsection {
     display: flex;
     flex-direction: column;
-    @apply gap-6;
+    @apply gap-4;
 
     &__header {
       display: flex;

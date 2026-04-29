@@ -10,14 +10,8 @@
   }
 }
 
-.form-stack {
-  display: flex;
-  flex-direction: column;
-  @apply gap-4;
-}
-
-/* `.field-row`, `.field-block`, `.field-label`, `.form-subsection`
- * now live in shared base/components.scss — see console-cookbook.md. */
+/* `.form-stack`, `.field-row`, `.field-block`, `.field-label`, `.form-subsection`
+ * live in shared base/components.scss — see console-cookbook.md. */
 
 .rows {
   display: flex;
@@ -54,11 +48,6 @@
 
 .cert-mode-toggle {
   flex-shrink: 0;
-  height: 40px;
-
-  .mat-button-toggle {
-    @apply text-sm;
-  }
 }
 
 .cert-file-area {

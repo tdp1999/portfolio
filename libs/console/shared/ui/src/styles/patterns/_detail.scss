@@ -1,0 +1,89 @@
+/* ─── Detail page template ──────────────────────────────────────────────── */
+
+/* Page wrapper */
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+}
+
+/* Header: back button + title + action buttons */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Action bar below header */
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Content area */
+.detail-content {
+  min-height: 200px;
+}
+
+/* Card with sections */
+.detail-card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Section within a card */
+.detail-section {
+  padding: 16px 24px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.detail-section__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+/* Label-value field pair */
+.detail-field {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: 0.875rem;
+}
+
+.detail-field__label {
+  width: 140px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.detail-field__value {
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.detail-field__value--empty {
+  color: var(--color-text-muted);
+}
+
+/* Timestamps footer */
+.detail-timestamps {
+  padding: 12px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}

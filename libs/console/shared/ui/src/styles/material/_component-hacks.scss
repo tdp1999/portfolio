@@ -1,0 +1,77 @@
+@use '@angular/material' as mat;
+
+/* Styles not covered by the official token API */
+
+.mdc-icon-button.mat-mdc-icon-button {
+  display: inline-flex;
+  place-items: center;
+
+  .mat-icon {
+    margin: auto;
+  }
+}
+
+.mat-mdc-form-field {
+  --mat-form-field-error-text-color: var(--color-error);
+  width: 100%;
+}
+
+.mat-mdc-unelevated-button {
+  transition: all 0.15s ease;
+
+  &:hover {
+    --mdc-filled-button-container-color: var(--color-primary-hover);
+    filter: brightness(1.08);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none;
+  }
+}
+
+.mat-mdc-outlined-button {
+  transition: all 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.15);
+  }
+}
+
+.mdc-button .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.mat-mdc-menu-panel {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.mat-mdc-dialog-content {
+  padding-top: 12px !important;
+}
+
+/* Filter deleted chip — "Show deleted" toggle chip in filter bars */
+.filter-deleted-chip {
+  @include mat.chips-overrides(
+    (
+      container-height: 48px,
+    )
+  );
+}
+
+.mdc-evolution-chip__text-label {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+/* Filter field — compact dark style inside filter bars */
+.filter-field {
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-hover-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
+}
