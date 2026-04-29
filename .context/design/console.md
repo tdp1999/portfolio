@@ -25,17 +25,20 @@ Console supports light and dark mode via `ThemeService` (toggles `.dark` class o
 
 ## Component Inventory
 
-| Component | Description |
-|-----------|-------------|
-| `ConsoleMainLayoutComponent` | Sidebar + content layout with grain texture and radial glow overlay |
-| `ConsoleBlankLayoutComponent` | Auth layout: centered card, grain+glow background, logo, footer |
-| `FilterBarComponent` | Search + filter controls for list views |
-| `ToastContainerComponent` | Notification toasts (via `ToastService`) |
-| `LoadingBarComponent` | Top-of-page loading indicator |
-| `SkeletonComponent` | Content placeholder during loading |
-| `FullPageSpinnerComponent` | Blocking spinner overlay |
-| `ConfirmDialogComponent` | Material dialog for destructive action confirmation |
-| `ErrorMessageComponent` | Inline error display |
+Components with non-trivial design rules have their own docs under `components/<family>/`. This table is a flat catalog; `components/` is the source of truth for behavior, implementation rules, and quality checklists.
+
+| Component | Description | Doc |
+|-----------|-------------|-----|
+| `ConsoleMainLayoutComponent` | Sidebar + content layout with grain texture and radial glow overlay | — |
+| `ConsoleBlankLayoutComponent` | Auth layout: centered card, grain+glow background, logo, footer | — |
+| `FilterBarComponent` | Search + filter controls for list views | — |
+| `ToastContainerComponent` | Notification toasts (via `ToastService`) | — |
+| `LoadingBarComponent` | Top-of-page loading indicator | — |
+| `SkeletonComponent` | Content placeholder during loading | — |
+| `FullPageSpinnerComponent` | Blocking spinner overlay | — |
+| `ConfirmDialogComponent` | Material dialog for destructive action confirmation | — |
+| `ErrorMessageComponent` | Inline error display | — |
+| `ChipSelect` / `ChipToggleGroup` / `ChipBoolean` | Single-select / multi-select / boolean chip toggles | [`components/chips/`](components/chips/_overview.md) |
 
 ## Material Overrides
 
@@ -254,8 +257,3 @@ Centered card on full-page background:
 
 **Stitch reference:** screen `bbe44133aede44be` in project `17973930401225587522`
 
-## Changelog
-
-- [2026-03-27] Updated — added auth layout, visual effects, theme support, CRUD template, Stitch reference
-- [2026-04-13] Added — Long-form / Settings page layout contract (ADR-013, ADR-014). Sectioned cards + sticky scrollspy rail chassis, per-section vs atomic save mechanic, component inventory.
-- [2026-04-14] Added — Bilingual FormGroup convention: nested `{ en, vi }` FormGroup per field in FE forms; flat `*_en` / `*_vi` on HTTP DTO; mapper bridges the two. Demoed on `/ddl/long-form`.

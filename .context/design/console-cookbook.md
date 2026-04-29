@@ -91,13 +91,8 @@ If a section feels cramped: the problem is almost never field density. Check gap
 
 ---
 
-## Checklist Before Reporting Done (Console HTML/SCSS)
-
-- [ ] No hardcoded `gap:`, `padding:`, or `margin:` px values — use Tailwind spacing classes
-- [ ] Section card title uses `.text-section-heading`
-- [ ] Description text uses `.text-body text-text-secondary` (not muted)
-- [ ] No extra wrapper padding inside `console-section-card` — `p-6` is already there
-- [ ] Screenshot taken after non-trivial layout changes (see `visual-feedback.md`)
+<!-- Pre-report checklist merged into "New form checklist" below. -->
+<!-- Generic spacing/typography rules now covered by the per-field checklist + design-check gate. -->
 
 ---
 
@@ -122,24 +117,21 @@ A `console-section-card` is **wholly PUBLIC or wholly INTERNAL**. Never mix.
 
 If the natural section grouping mixes both (e.g. Profile location: city is public, postal code is admin-only), **split into two section cards**. Do not add a nested "Internal" subsection inside a public card.
 
-### Rule 2 — Eyebrow label on every Portfolio section
+### Rule 2 — Eyebrow label only on INTERNAL sections
 
-Every section card in a Portfolio form gets a one-word eyebrow above its title:
+PUBLIC is the editorial default — it gets **no eyebrow**. Only `INTERNAL` sections render an eyebrow above the title, so the marker functions as a "different from the default" cue rather than tagging every card.
 
-- `PUBLIC` — fields render on the landing page (visible body content or `<head>` meta).
-- `INTERNAL` — fields are admin-only (sort order, feature flags, draft/publish state, internal slugs/IDs).
-
-Spec:
+Spec for the INTERNAL eyebrow:
 
 | Slot | Value |
 |---|---|
-| Class | `.text-stat-label` (existing) |
+| Class | `.text-stat-label` |
 | Color | `text-text-muted` |
 | Spacing below eyebrow → section title | `mb-1` (4px) |
 | Position | First child of section header zone, above `.text-section-heading` |
-| Text | Always uppercase literal `PUBLIC` or `INTERNAL` |
+| Text | Always uppercase literal `INTERNAL` |
 
-Do not pluralize, do not abbreviate, do not add an icon next to the eyebrow. The eyebrow is the only indicator — keep it consistent.
+Do not pluralize, do not abbreviate, do not add an icon. Pass `bucket="INTERNAL"` to `console-section-card`; PUBLIC sections pass nothing (or `bucket="PUBLIC"` — both render no eyebrow).
 
 ### Rule 3 — INTERNAL sections sit at the bottom
 
@@ -165,22 +157,6 @@ Notes:
 - "Public" includes `<head>` meta (SEO/OG) — it ships to visitors and search engines even though it's not visible body content.
 - A field that is BE-generated/computed and only displayed (Blog `slug`, `readTimeMinutes`) belongs in INTERNAL — the editor sees it but the public surface uses it as a derived asset.
 - The exact PUBLIC sub-grouping above is a recommendation, not a contract — feel free to combine/split during migration as long as **Rule 1** holds.
-
-### Migration status (Form System Design Foundations · Thread A — applied 2026-04-28)
-
-| Form | Status | Notes |
-|---|---|---|
-| Tag | ✅ migrated | 1 PUBLIC section, no INTERNAL section. |
-| Category | ✅ migrated | Split into PUBLIC `Identity` + INTERNAL `Settings` (displayOrder). |
-| Skill | ✅ migrated | 4 PUBLIC sections + INTERNAL `Settings` (isFeatured, displayOrder). `isLibrary` stays in `Classification` (PUBLIC) — it's a public-facing classification flag. |
-| Experience | ✅ migrated | All sections PUBLIC except trailing INTERNAL `Settings` (displayOrder). |
-| Project | ✅ migrated | All sections PUBLIC except trailing INTERNAL `Settings` (status, featured, displayOrder). |
-| Profile | ✅ migrated | 6 PUBLIC sections (Identity, Work & Availability, Contact, Location, Social Links, SEO / OG) + 1 INTERNAL `Admin Contact & Address` (phone, postalCode, address1, address2). The INTERNAL section's save handler issues `updateContact` + `updateLocation` in parallel via `forkJoin`; no new BE endpoint was needed. |
-| Blog | ✅ migrated | 5 PUBLIC sections (Body, Identity, Excerpt, Taxonomy, SEO) + 1 INTERNAL `Settings` (status, featured, slug, readTime, publishedAt). 2-column editor layout preserved: the markdown editor lives in a `Body` section card on the left, all other metadata stacks as section cards in a sticky right sidebar. No scrollspy rail — the layout is wide enough already. |
-
-### Going forward
-
-New Portfolio forms must follow the rules from day one. Existing forms are migrated as above; the two deferrals are tracked work, not opportunistic.
 
 ---
 
@@ -216,6 +192,8 @@ A console form has at most **5 levels** of structural label. Each level has a fi
 ❌ **Using `.field-label` next to a `mat-form-field`.** Material's floating label is already a level-4 label — adding `.field-label` on top creates two labels for one control.
 
 ❌ **Using `.text-stat-label` for any purpose other than the section eyebrow** (Portfolio bucket marker) **or genuine stat-label slots in tables.** It is reserved.
+
+❌ **A `console-section-card` containing one simple field.** A section card is a level-2 structural element; spending it on a single `mat-form-field` is structural inflation and forces a redundant micro-label (the section title and the field label say the same thing). Either merge the field into a sibling section or group it with related fields under `.form-subsection`. Exception: a section whose body is a single complex widget that *is* the section's content (markdown editor, gallery, file uploader) is fine — the widget's chrome substitutes for field-level labeling.
 
 ### Worked example — Profile · Social Links section
 
@@ -264,13 +242,137 @@ For a non-Material widget inside the same form (e.g. the avatar uploader on Iden
 </div>
 ```
 
-### Promotion of shared classes
+### Shared primitives (do not redefine)
 
-The following classes were promoted from per-feature SCSS to `libs/shared/ui/styles/src/base/components.scss` (2026-04-28):
+These live in `libs/shared/ui/styles/src/base/components.scss`. Feature SCSS must not redeclare them:
 
-- `.form-subsection` + `.form-subsection__header` (was `.subsection` in profile)
-- `.field-block` (column wrapper for label + custom widget)
-- `.field-label` (level-4 label for non-Material controls)
-- `.field-row` (row of fields inside a sub-group)
+- `.form-subsection` + `.form-subsection__header` — level-3 wrapper
+- `.field-block` — column wrapper for label + custom widget
+- `.field-label` — level-4 label for non-Material controls
+- `.field-row` — row of fields inside a sub-group
 
-Feature SCSS files no longer redefine these. Any callsite using them must reach the shared sheet (already imported via the global console styles).
+---
+
+## Form Input Types
+
+> Pick the right widget + validator pair for each field. **Required-ness is per-field business logic**, decided at the call site — it is not a property of the input type and is intentionally not in this table. Add `Validators.required` (or omit) on top of the baseline below.
+>
+> Caps and patterns referenced as `LIMITS.*` / `PATTERNS.*` live in `libs/shared/validation`. FE composes via `baselineFor.*` in `libs/console/shared/util`; BE composes via Zod atoms in `libs/shared/validation/zod`.
+
+### Core text (single line)
+
+| Type | HTML / widget | FE validators (baseline) | BE Zod atom | Examples |
+|---|---|---|---|---|
+| short text | `<input matInput>` | `maxLength(LIMITS.<TITLE/NAME>_MAX)` | `TitleSchema` / `NameSchema` / `optionalShortText` | name, title, position |
+| long text | `<textarea matInput>` | `maxLength(LIMITS.DESCRIPTION_*_MAX)` | `DescriptionShortSchema` / `DescriptionLongSchema` | description, bio |
+| URL | `<input matInput type="url">` | `baselineFor.url()` (= `urlValidator()` + `maxLength(URL_MAX)`) | `UrlSchema` | sourceUrl, canonicalUrl |
+| email | `<input matInput type="email">` | `Validators.email` + `maxLength(EMAIL_MAX)` | `EmailSchema` (lowercases) | email |
+| phone | `<input matInput type="tel">` | `maxLength(PHONE_MAX)` | `PhoneSchema` | phone |
+| search | `<input matInput type="search">` | none | n/a (filter only) | filter bar input |
+| password | `<input matInput type="password">` | `passwordValidator()` (+ `passwordsMatchValidator` on confirm field) | `PasswordSchema` | password |
+| slug | `<input matInput>` | `slugValidator()` (kebab-case `PATTERNS.SLUG`) | `SlugSchema` | slug |
+| **digit-string** | `<input matInput type="text" inputmode="numeric" pattern="\d*">` | `maxLength(...)` | `z.string().max(...)` | postal code, OTP, credit card |
+
+### Numeric (quantities)
+
+These mean "an amount" — increment/decrement is meaningful, so use `type="number"`. Don't use `inputmode="numeric"` here (that is reserved for digit-strings).
+
+| Type | HTML / widget | FE validators (baseline) | BE Zod atom | Examples |
+|---|---|---|---|---|
+| integer:quantity | `<input matInput type="number" min max>` | `baselineFor.integer(min, max?)` | `integerSchema(min, max?)` / `TeamSizeSchema` / `DisplayOrderSchema` | yoe, displayOrder, teamSize |
+| integer:year | `<input matInput type="number" min max>` | `baselineFor.year()` | `CertificationYearSchema` | certification year |
+| integer:range | 2× `<input matInput type="number">` in a `.field-row` | per-input + cross-field `from ≤ to` | `z.object({ from, to }).refine(...)` | future: salary range, team-size range |
+| decimal | `<input matInput type="number" step="0.x">` | `maxDecimalsValidator(n)` + `min`/`max` | `z.number().min(...)`  | money, percentage |
+| slider | `<mat-slider min max>` | `min`/`max` | `z.number()` | rating, threshold |
+
+> ⚠️ `type="number"` rejects non-numeric input at the browser level — paste of "abc" yields an empty DOM value, validators see nothing to flag, no `<mat-error>` for "I typed letters". This is correct browser behavior. `<mat-error>` *does* render for actual validator failures (out of range, decimal in integer field, etc.). Don't switch to `type="text"` to "fix" the strip — that breaks the increment affordance and the mobile keyboard hint.
+
+### Choice
+
+| Type | HTML / widget | FE notes | BE Zod | Examples |
+|---|---|---|---|---|
+| enum (single, ≤7 options, exclusive) | `<mat-radio-group>` or `<console-chip-select>` | — | `z.nativeEnum(...)` / `z.enum([...])` | language |
+| enum (single, many options) | `<mat-select>` | — | same | timezone, parentSkill |
+| enum (single, segmented) | `<console-chip-select>` | see `components/chips/` | same | cert mode (link/file), grid/list view |
+| enum (multi) | `<mat-select multiple>` or `<console-chip-toggle-group>` | array `maxLength(N)` if capped — see `components/chips/` | `z.array(z.nativeEnum(...))` (+ `.max(N)`) | categoryIds, openTo |
+| boolean | `<console-chip-boolean>` (state: on/off, see `components/chips/`) **or** `<mat-checkbox>` (intent: opt-in) **or** `<mat-slide-toggle>` (settings switch) | — | `z.boolean()` | featured, isCurrent |
+| autocomplete (from a known set) | `<mat-autocomplete>` | id-based; final value is from set | `z.uuid()` / enum | skill picker |
+| tags input (free entry) | `<mat-chip-set>` + input | per-tag validators on the entry input | `z.array(z.string())` | n/a today |
+
+### Date & time
+
+| Type | HTML / widget | FE notes | BE Zod | Examples |
+|---|---|---|---|---|
+| date (full) | `<mat-datepicker>` | **set the input `readonly` OR add a date-format validator** — typed input accepts garbage like `13/2202` and stores `Invalid Date`. Picker-only is the safe default. | `z.coerce.date()` (rejects `Invalid Date`) | n/a today |
+| date-range | 2× `<mat-datepicker>` in a row, both `readonly` | cross-field `start ≤ end` validator | `z.object({...}).refine(...)` | n/a today |
+| **month-year** | `<console-month-year-picker>` | input is `readonly` by design — user must use the picker, no typed garbage possible | `z.coerce.date()` (BE stores first day of month) | Experience/Project start/end |
+| time / datetime | `<input matInput type="time">` / `datetime-local` | browser enforces format; still validate range if business rule applies | `z.coerce.date()` | n/a today |
+| duration | composite: `<input type="number">` + unit `<mat-select>` | `min ≥ 0` on amount; unit decided per field | `z.object({ amount, unit })` | n/a today |
+
+> ⚠️ **Typed date fields are a top source of silent corruption.** Material datepickers parse free-text via the configured locale adapter. `13/2202` may parse as `Invalid Date` (BE rejects), but `02/29/2025` (non-leap) silently rolls to March 1 in some adapters. Default to `readonly` on the input so the only way to set a value is via the picker. Only enable typing when there's a concrete reason, and add an explicit format validator when you do.
+
+### Bilingual / structured
+
+| Type | HTML / widget | FE notes | BE Zod | Examples |
+|---|---|---|---|---|
+| translatable | `<console-translatable-group>` | render mat-error per language inside the component | `TranslatableSchema` (both langs `min(1)`) or `OptionalTranslatableSchema` | position, motivation, bioLong |
+| array (max-N) | `FormArray` (manual + `add`/`remove` buttons) | array-level `maxLength(N)` validator | `z.array(...).max(N)` | socialLinks (≤20), highlights (≤4) |
+
+### Files / media
+
+| Type | HTML / widget | FE notes | BE Zod | Examples |
+|---|---|---|---|---|
+| file / image picker | `<console-media-picker>` / `<asset-grid>` / `<asset-upload-zone>` | widget owns its own validation (mime, size); form just stores the resulting `mediaId` | `z.uuid()` | avatar, ogImage, gallery |
+| markdown editor | `<console-markdown-editor>` (or `<textarea>` + preview) | `maxLength` + content rules per body type | `z.string().max(...)` | blog body |
+
+### Likely future (no callsite today — use these patterns when needed)
+
+- `<input type="color">` — color picker (HTML5 native)
+- rich-text editor (TipTap / ProseMirror) — only if WYSIWYG is required
+- map location picker (lat/lng or place search)
+- signature pad
+- key-value editor
+- code editor
+- rating (stars) — Material has no native; build on a chip listbox primitive or `<input type="range">`
+
+### Excluded from this table
+
+- `id:uuid` not user-editable (always a picker output → list as the picker's input type, not a separate row)
+- `hidden` / `submit` / `button` / `reset` / `image` — control affordances, not data inputs
+
+---
+
+## New form checklist (FE + BE in sync)
+
+Run through this when you scaffold a new form *and* before you mark a form epic done. Each row checked = a divergence class that has bitten us before.
+
+### Per field
+
+- [ ] Pick the row from "Form Input Types" above. **Don't reinvent** — if the row doesn't fit, propose a new row first, don't go off-pattern.
+- [ ] FE form-control declared with the **baseline validators from that row** (e.g. `baselineFor.url()`).
+- [ ] **Required**? Decide per field. If yes, add `Validators.required` (FE) AND ensure the BE atom has `min(1)` / no `.optional()`. If no, omit `required` (FE) AND mark `.optional()` (BE). Required-ness must agree on both sides.
+- [ ] BE Zod schema imports the corresponding atom (`TitleSchema`, `UrlSchema`, `integerSchema(...)`, etc.). No inline `min/max/regex` literals.
+- [ ] FE template renders `<mat-error>{{ form.controls.<name> | formError }}</mat-error>` (or the widget owns its own error rendering — see translatable-group, `components/chips/`).
+- [ ] HTML input attributes match the input type from the table (`type="number"` for quantities, `type="url"` for URLs, etc.). No `inputmode="numeric"` on quantity fields.
+- [ ] Limits and patterns reference `LIMITS.*` / `PATTERNS.*`. No magic numbers in form-page or DTO files.
+
+### Per section card
+
+- [ ] Section is wholly PUBLIC or wholly INTERNAL (cookbook Rule 1). PUBLIC sections render no eyebrow; only INTERNAL gets `bucket="INTERNAL"`.
+- [ ] No section card contains exactly one simple field (anti-pattern). If a single-field section is needed, the field must be a complex widget (markdown editor, gallery, file uploader).
+- [ ] Sub-sections (`.form-subsection` + `<h4 class="text-card-title">`) used for clusters of 2+ fields inside a section.
+- [ ] Section card title uses `.text-section-heading`; description uses `.text-body text-text-secondary`.
+- [ ] No hardcoded `gap:` / `padding:` / `margin:` px values — use Tailwind spacing classes from the spacing table.
+- [ ] No extra wrapper padding inside `console-section-card` (it already has `p-6`).
+
+### Cross-field
+
+- [ ] Date-range fields (`startDate`/`endDate`, `from`/`to`) have a cross-field validator enforcing `start ≤ end`.
+- [ ] Translatable required fields (`TranslatableSchema`) use `translatableRequiredValidator()` so FE blocks empty en or vi inline.
+- [ ] Array fields with a BE cap (`z.array(...).max(N)`) have a matching FE array-level `maxLength(N)` validator.
+
+### Verification before merge
+
+- [ ] `design-check` skill run against the form.
+- [ ] Browser pass: open the form, type invalid input into one field per type, confirm inline `<mat-error>` rendering. Type-checking and unit tests verify code, not UX.
+- [ ] No regression — existing E2E for the form passes.

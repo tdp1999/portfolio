@@ -442,17 +442,3 @@ Values in this system are validated against human factors research, accessibilit
 3. **For audits**: compare implementation against the Value Validation Summary table. Any mismatch = potential UX issue.
 4. **For stakeholder justification**: cite specific research when defending design decisions.
 
-## Architecture Changelog
-
-### [2026-02-02] Standardize Styling to SCSS
-
-- **Changed:** Styling approach for shared libraries
-- **From:** Mixed CSS and SCSS files across project
-- **To:** SCSS exclusively for all styling
-- **Reason:** Consistency across project - Angular landing app already uses SCSS, extending to all libraries
-- **Impact:**
-  - `libs/ui/` - Convert `.css` to `.scss`
-  - `libs/api-client/` - Convert `.css` to `.scss`
-  - Library project configurations may need `inlineStyleLanguage: "scss"`
-  - Future component styles will use `.scss` extension
-- **Decision:** See decisions.md [2026-02-02]

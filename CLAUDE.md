@@ -33,6 +33,7 @@ Use these skills for specific workflows. More will be added over time.
 | `design-ingest`  | Extracting design knowledge from articles/URLs into the bank               |
 | `design-check`   | Reviewing a component against design bank patterns                         |
 | `ng-lib`         | Creating new Nx Angular libraries (correct tags, directory, import paths)  |
+| `component-bank` | Creating or updating per-component design docs in `.context/design/components/` |
 
 ## Context Files (`.context/`)
 
@@ -40,6 +41,7 @@ Use these skills for specific workflows. More will be added over time.
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
 - `design/` - Design system (foundations, landing, console, shared)
 - `design/console-cookbook.md` - **Read before writing console HTML/SCSS.** Spacing decision table, typography class picker, surface/text pairings, pre-report checklist
+- `design/components/` - **Read before editing any documented component.** Per-component design bank (behavior contract, implementation rules, quality checklist). Each family has an `_overview.md` of family-wide rules; do not repeat those in component docs.
 - `design/visual-feedback.md` - Chrome DevTools MCP screenshot workflow for console pages (login snippet, when to screenshot, what to check)
 - `DESIGN-landing.md` - Stitch-compatible AI-readable spec for landing
 - `DESIGN-console.md` - Stitch-compatible AI-readable spec for console
@@ -96,6 +98,8 @@ Use these skills for specific workflows. More will be added over time.
 | **Typography classes**       | Use unified `.text-page-title`, `.text-section-heading`, `.text-stat-label`, etc. | See `base/components.scss` |
 | **Target test files**        | Run single-file tests with `npx jest --config apps/api/jest.config.cts <file> --no-coverage`. Never use `nx test api` for single files — it compiles the entire project. | ❌ `nx test api --testPathPattern=foo` ✅ `npx jest --config ... foo.spec.ts` |
 | **Angular style guide**     | Read `.context/angular-style-guide.md` before writing any Angular template or component logic | Every change touching `.ts`/`.html` in `libs/` or `apps/console/` |
+| **Component bank**          | Before editing a component listed in `.context/design/components/`, read its md and the family `_overview.md`. After a design discussion that yields a rule, suggest persisting via `/component-bank`. | Editing `chip-*`, future documented components |
+| **Guidance docs are timeless** | Reference docs in `.context/design/`, `.context/patterns-*`, `*-guide.md`, `vision.md`, `domain.md` describe the system as it is — no migration trackers, dated changelogs, or per-epic status. Status goes in the originating epic file or `progress.md`; one-shot decisions go in `decisions.md`. Sweep epic additions for ephemeral wording before closing. | ❌ "Migration status (applied YYYY-MM-DD)" inside cookbook ✅ same content in epic file |
 
 ## Angular Code Style
 
