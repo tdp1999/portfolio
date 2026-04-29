@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 const ERROR_CONFIG: Record<string, { title: string; description: string }> = {
@@ -21,12 +22,21 @@ const DEFAULT_ERROR = { title: 'Error', description: 'An unexpected error occurr
       <h1 class="text-6xl font-bold text-text-muted">{{ code() }}</h1>
       <h2 class="mt-4 text-2xl font-semibold text-text">{{ config().title }}</h2>
       <p class="mt-2 text-text-secondary">{{ config().description }}</p>
-      <a routerLink="/" class="mt-8 text-primary hover:underline">Go to Dashboard</a>
+      <div class="mt-8 flex items-center gap-4">
+        <a routerLink="/" class="text-primary hover:underline">Go to Dashboard</a>
+        <button (click)="refresh()" class="text-text-secondary hover:text-text hover:underline">Refresh</button>
+      </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ErrorPageComponent {
+  private readonly document = inject(DOCUMENT);
+
   code = input.required<string>();
   config = computed(() => ERROR_CONFIG[this.code()] ?? DEFAULT_ERROR);
+
+  refresh(): void {
+    this.document.location.reload();
+  }
 }
