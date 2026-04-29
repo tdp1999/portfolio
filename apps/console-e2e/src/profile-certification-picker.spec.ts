@@ -32,7 +32,7 @@ test.describe('Certification Dual-Mode Picker Migration', () => {
 
       // Find cert row
       const certRow = certSection.locator('[role="group"]').first();
-      const modeToggle = certRow.locator('[role="button"], mat-button-toggle, .toggle').first();
+      const modeToggle = certRow.locator('console-chip-select [role="radio"], [role="button"]').first();
 
       await expect(modeToggle).toBeVisible();
     });

@@ -20,11 +20,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import {
+  ChipBooleanComponent,
+  ChipSelectComponent,
+  type ChipSelectOption,
   LongFormLayoutComponent,
   MediaPickerDialogComponent,
   MonthYearPickerComponent,
@@ -84,10 +86,11 @@ interface GalleryImage {
     MatSelectModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSlideToggleModule,
     MatCheckboxModule,
     MatDividerModule,
     MatTooltipModule,
+    ChipBooleanComponent,
+    ChipSelectComponent,
     TranslatableGroupComponent,
     FormErrorPipe,
     LongFormLayoutComponent,
@@ -150,6 +153,11 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     featured: [false],
     displayOrder: [0, baselineFor.displayOrder()],
   });
+
+  readonly statusOptions: ChipSelectOption[] = [
+    { value: 'DRAFT', label: 'Draft' },
+    { value: 'PUBLISHED', label: 'Published' },
+  ];
 
   readonly dirty = signal(false);
   readonly isInvalid = computed(() => this.form.invalid);

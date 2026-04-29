@@ -138,6 +138,7 @@
                   <mat-form-field appearance="outline">
                     <mat-label>Code URL (optional)</mat-label>
                     <input matInput formControlName="codeUrl" placeholder="https://github.com/..." />
+                    <mat-error>{{ group.controls['codeUrl'] | formError }}</mat-error>
                   </mat-form-field>
                 </ng-container>
               </div>
@@ -245,11 +246,13 @@
             <mat-form-field appearance="outline">
               <mat-label>Source URL</mat-label>
               <input matInput formControlName="sourceUrl" placeholder="https://github.com/..." />
+              <mat-error>{{ form.controls.sourceUrl | formError }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Project URL</mat-label>
               <input matInput formControlName="projectUrl" placeholder="https://..." />
+              <mat-error>{{ form.controls.projectUrl | formError }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -274,24 +277,18 @@
           <div class="flex flex-col flex-wrap gap-6">
             <div class="flex items-center gap-2">
               <span class="text-sm">Featured:</span>
-              <mat-slide-toggle formControlName="featured">{{
-                form.controls.featured.value ? 'Yes' : 'No'
-              }}</mat-slide-toggle>
+              <console-chip-boolean formControlName="featured" label="Featured" />
             </div>
 
             <div class="flex items-center gap-2">
               <span class="text-sm">Status:</span>
-              <mat-slide-toggle
-                [checked]="form.controls.status.value === 'PUBLISHED'"
-                (change)="form.controls.status.setValue($event.checked ? 'PUBLISHED' : 'DRAFT'); form.markAsDirty()"
-              >
-                {{ form.controls.status.value === 'PUBLISHED' ? 'Published' : 'Draft' }}
-              </mat-slide-toggle>
+              <console-chip-select formControlName="status" [options]="statusOptions" />
             </div>
 
             <mat-form-field appearance="outline" class="w-28">
               <mat-label>Order</mat-label>
-              <input matInput type="number" formControlName="displayOrder" />
+              <input matInput type="number" formControlName="displayOrder" min="0" />
+              <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
             </mat-form-field>
           </div>
         </console-section-card>

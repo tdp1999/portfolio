@@ -101,7 +101,7 @@
           <div class="field-row">
             <mat-form-field appearance="outline" class="w-48">
               <mat-label>Years of Experience</mat-label>
-              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" step="0.5" />
+              <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" step="1" />
               <mat-error>{{ workAvailabilityForm.controls.yearsOfExperience | formError }}</mat-error>
             </mat-form-field>
 
@@ -112,6 +112,7 @@
                   <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                 }
               </mat-select>
+              <mat-error>{{ workAvailabilityForm.controls.availability | formError }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-48">
@@ -161,6 +162,7 @@
                   <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                 }
               </mat-select>
+              <mat-error>{{ contactForm.controls.preferredContactPlatform | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>Preferred Contact Value</mat-label>
@@ -237,6 +239,7 @@
                         <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                       }
                     </mat-select>
+                    <mat-error>{{ linkGroup.controls['platform'] | formError }}</mat-error>
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>URL</mat-label>
@@ -248,6 +251,7 @@
                   <mat-form-field appearance="outline" class="w-36">
                     <mat-label>Handle</mat-label>
                     <input matInput formControlName="handle" placeholder="@username" />
+                    <mat-error>{{ linkGroup.controls['handle'] | formError }}</mat-error>
                   </mat-form-field>
                   <button
                     mat-icon-button
@@ -340,15 +344,8 @@
                     </button>
                   </div>
                   <div class="cert-url-row">
-                    <mat-button-toggle-group
-                      class="cert-mode-toggle"
-                      [value]="certModes()[$index]"
-                      (change)="setCertMode($index, $event.value)"
-                    >
-                      <mat-button-toggle value="link">Link</mat-button-toggle>
-                      <mat-button-toggle value="file">File</mat-button-toggle>
-                    </mat-button-toggle-group>
-                    @if (certModes()[$index] === 'file') {
+                    <console-chip-select class="cert-mode-toggle" formControlName="mode" [options]="certModeOptions" />
+                    @if (certGroup.controls['mode'].value === 'file') {
                       <div class="cert-file-area">
                         @if (certGroup.controls['url'].value; as url) {
                           <a [href]="url" target="_blank" rel="noopener" class="cert-file-link">
@@ -366,6 +363,7 @@
                       <mat-form-field appearance="outline" class="flex-1">
                         <mat-label>URL</mat-label>
                         <input matInput formControlName="url" placeholder="https://" />
+                        <mat-error>{{ certGroup.controls['url'] | formError }}</mat-error>
                       </mat-form-field>
                     }
                   </div>
@@ -424,17 +422,20 @@
             <mat-label>Meta Title</mat-label>
             <input matInput formControlName="metaTitle" maxlength="70" />
             <mat-hint align="end">{{ seoOgForm.controls.metaTitle.value.length }}/70</mat-hint>
+            <mat-error>{{ seoOgForm.controls.metaTitle | formError }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Meta Description</mat-label>
             <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
             <mat-hint align="end">{{ seoOgForm.controls.metaDescription.value.length }}/160</mat-hint>
+            <mat-error>{{ seoOgForm.controls.metaDescription | formError }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Canonical URL</mat-label>
             <input matInput formControlName="canonicalUrl" placeholder="https://" />
+            <mat-error>{{ seoOgForm.controls.canonicalUrl | formError }}</mat-error>
           </mat-form-field>
 
           <div>
@@ -467,21 +468,25 @@
             <mat-form-field appearance="outline" class="flex-1">
               <mat-label>Phone</mat-label>
               <input matInput formControlName="phone" />
+              <mat-error>{{ adminContactAddressForm.controls.phone | formError }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-36">
               <mat-label>Postal Code</mat-label>
               <input matInput formControlName="locationPostalCode" />
+              <mat-error>{{ adminContactAddressForm.controls.locationPostalCode | formError }}</mat-error>
             </mat-form-field>
           </div>
 
           <mat-form-field appearance="outline">
             <mat-label>Address Line 1</mat-label>
             <input matInput formControlName="locationAddress1" />
+            <mat-error>{{ adminContactAddressForm.controls.locationAddress1 | formError }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Address Line 2</mat-label>
             <input matInput formControlName="locationAddress2" />
+            <mat-error>{{ adminContactAddressForm.controls.locationAddress2 | formError }}</mat-error>
           </mat-form-field>
         </div>
       </console-section-card>

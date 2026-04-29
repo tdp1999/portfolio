@@ -13,7 +13,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +23,8 @@ import { MediaService } from '@portfolio/console/shared/data-access';
 import { baselineFor, extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import {
+  ChipSelectComponent,
+  type ChipSelectOption,
   ChipToggleGroupComponent,
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -63,8 +64,8 @@ import { ProfileAdminResponse, SectionKey, UpdateSocialLinksPayload } from '../p
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatButtonToggleModule,
     MatIconModule,
+    ChipSelectComponent,
     ChipToggleGroupComponent,
     MatTooltipModule,
     SpinnerOverlayComponent,
@@ -120,7 +121,10 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   readonly ogImagePreview = signal<string | null>(null);
   readonly jsonLd = signal<unknown>(null);
   readonly showJsonLd = signal(false);
-  readonly certModes = signal<('file' | 'link')[]>([]);
+  readonly certModeOptions: ChipSelectOption[] = [
+    { value: 'link', label: 'Link' },
+    { value: 'file', label: 'File' },
+  ];
 
   // ── Parent FormGroup composed of 6 child FormGroups ──────────────────────
   readonly identityForm = this.fb.group({
@@ -446,7 +450,6 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
         this.createCertificationGroup(cert.name, cert.issuer, cert.year, cert.url ?? '')
       );
     }
-    this.certModes.set(profile.certifications.map((c) => this.inferCertMode(c.url ?? '')));
     this.socialLinksForm.controls.resumeUrls.reset({
       en: profile.resumeUrls.en?.url ?? '',
       vi: profile.resumeUrls.vi?.url ?? '',
@@ -497,6 +500,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
         validators: [Validators.required, ...baselineFor.certificationYear()],
       }),
       url: this.fb.control(url, { nonNullable: true, validators: baselineFor.url() }),
+      mode: this.fb.control<'link' | 'file'>(this.inferCertMode(url), { nonNullable: true }),
     });
   }
 
@@ -513,17 +517,11 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   addCertification(): void {
     this.socialLinksForm.controls.certifications.push(this.createCertificationGroup());
     this.socialLinksForm.controls.certifications.markAsDirty();
-    this.certModes.update((modes) => [...modes, 'link']);
   }
 
   removeCertification(index: number): void {
     this.socialLinksForm.controls.certifications.removeAt(index);
     this.socialLinksForm.controls.certifications.markAsDirty();
-    this.certModes.update((modes) => modes.filter((_, i) => i !== index));
-  }
-
-  setCertMode(index: number, mode: 'file' | 'link'): void {
-    this.certModes.update((modes) => modes.map((m, i) => (i === index ? mode : m)));
   }
 
   openCertPicker(index: number): void {
@@ -573,7 +571,6 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     for (const l of s.socialLinks) links.push(this.createSocialLinkGroup(l.platform, l.url, l.handle));
     certs.clear();
     for (const c of s.certifications) certs.push(this.createCertificationGroup(c.name, c.issuer, c.year, c.url));
-    this.certModes.set(s.certifications.map((c) => this.inferCertMode(c.url)));
     this.socialLinksForm.controls.resumeUrls.reset(s.resumeUrls);
   };
 
@@ -669,9 +666,9 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
         en: v.resumeUrls['en'] ? { url: v.resumeUrls['en'], name: names.en ?? v.resumeUrls['en'] } : undefined,
         vi: v.resumeUrls['vi'] ? { url: v.resumeUrls['vi'], name: names.vi ?? v.resumeUrls['vi'] } : undefined,
       },
-      certifications: (v.certifications as Array<{ name: string; issuer: string; year: number; url: string }>).map(
-        (c) => ({ ...c, url: c.url || undefined })
-      ),
+      certifications: (
+        v.certifications as Array<{ name: string; issuer: string; year: number; url: string; mode: 'link' | 'file' }>
+      ).map(({ mode: _mode, ...c }) => ({ ...c, url: c.url || undefined })),
     };
     this.runSectionSave('socialLinks', this.socialLinksForm, () => this.profileService.updateSocialLinks(payload));
   }

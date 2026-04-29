@@ -84,10 +84,10 @@
     <!-- RIGHT: metadata sidebar -->
     <aside class="post-form-page__sidebar">
       <console-section-card
-        id="section-identity"
+        id="section-overview"
         bucket="PUBLIC"
-        title="Identity"
-        description="Title, language, and the featured image."
+        title="Overview"
+        description="Title, language, excerpt, and the featured image shown publicly."
         saveMode="atomic"
       >
         <div class="form-stack">
@@ -103,10 +103,27 @@
               <mat-option value="EN">English</mat-option>
               <mat-option value="VI">Vietnamese</mat-option>
             </mat-select>
+            <mat-error>{{ form.controls.language | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Excerpt</mat-label>
+            <textarea matInput rows="3" formControlName="excerpt"></textarea>
+            <mat-hint>Short summary shown in lists and link previews.</mat-hint>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="autoGenerateExcerpt()"
+              matTooltip="Auto-generate from content"
+            >
+              <mat-icon class="icon-sm">auto_awesome</mat-icon>
+            </button>
+            <mat-error>{{ form.controls.excerpt | formError }}</mat-error>
           </mat-form-field>
 
           <div class="field-block">
-            <p class="field-label">Featured Image</p>
+            <p class="field-label">Featured image</p>
             @if (featuredImageUrl()) {
               <div class="featured-image-preview">
                 <img [src]="featuredImageUrl()" alt="Featured" />
@@ -130,76 +147,52 @@
       </console-section-card>
 
       <console-section-card
-        id="section-excerpt"
+        id="section-discovery"
         bucket="PUBLIC"
-        title="Excerpt"
-        description="Short summary shown in lists and link previews."
+        title="Discovery"
+        description="Taxonomy and search-engine metadata."
         saveMode="atomic"
       >
         <div class="form-stack">
-          <div class="field-block">
-            <div class="flex items-center justify-between">
-              <p class="field-label">Excerpt</p>
-              <button mat-button type="button" (click)="autoGenerateExcerpt()">
-                <mat-icon class="icon-sm">auto_awesome</mat-icon>
-                Auto
-              </button>
+          <div class="form-subsection">
+            <h4 class="text-card-title">Taxonomy</h4>
+            <div class="form-stack">
+              <mat-form-field appearance="outline">
+                <mat-label>Categories</mat-label>
+                <mat-select multiple formControlName="categoryIds">
+                  @for (cat of categories(); track cat.id) {
+                    <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Tags</mat-label>
+                <mat-select multiple formControlName="tagIds">
+                  @for (tag of tags(); track tag.id) {
+                    <mat-option [value]="tag.id">{{ tag.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             </div>
-            <mat-form-field appearance="outline">
-              <textarea matInput rows="3" formControlName="excerpt"></textarea>
-              <mat-error>{{ form.controls.excerpt | formError }}</mat-error>
-            </mat-form-field>
           </div>
-        </div>
-      </console-section-card>
 
-      <console-section-card
-        id="section-taxonomy"
-        bucket="PUBLIC"
-        title="Taxonomy"
-        description="Categories and tags shown alongside the post."
-        saveMode="atomic"
-      >
-        <div class="form-stack">
-          <mat-form-field appearance="outline">
-            <mat-label>Categories</mat-label>
-            <mat-select multiple formControlName="categoryIds">
-              @for (cat of categories(); track cat.id) {
-                <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+          <div class="form-subsection">
+            <h4 class="text-card-title">SEO</h4>
+            <div class="form-stack">
+              <mat-form-field appearance="outline">
+                <mat-label>Meta title</mat-label>
+                <input matInput formControlName="metaTitle" />
+                <mat-error>{{ form.controls.metaTitle | formError }}</mat-error>
+              </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Tags</mat-label>
-            <mat-select multiple formControlName="tagIds">
-              @for (tag of tags(); track tag.id) {
-                <mat-option [value]="tag.id">{{ tag.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </console-section-card>
-
-      <console-section-card
-        id="section-seo"
-        bucket="PUBLIC"
-        title="SEO"
-        description="Metadata for search engines and link previews."
-        saveMode="atomic"
-      >
-        <div class="form-stack">
-          <mat-form-field appearance="outline">
-            <mat-label>Meta Title</mat-label>
-            <input matInput formControlName="metaTitle" />
-            <mat-error>{{ form.controls.metaTitle | formError }}</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Meta Description</mat-label>
-            <textarea matInput rows="2" formControlName="metaDescription"></textarea>
-            <mat-error>{{ form.controls.metaDescription | formError }}</mat-error>
-          </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Meta description</mat-label>
+                <textarea matInput rows="2" formControlName="metaDescription"></textarea>
+                <mat-error>{{ form.controls.metaDescription | formError }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
         </div>
       </console-section-card>
 
@@ -219,10 +212,11 @@
               <mat-option value="UNLISTED">Unlisted</mat-option>
               <mat-option value="PRIVATE">Private</mat-option>
             </mat-select>
+            <mat-error>{{ form.controls.status | formError }}</mat-error>
           </mat-form-field>
 
           <div class="flex items-center">
-            <mat-slide-toggle formControlName="featured">Featured</mat-slide-toggle>
+            <console-chip-boolean formControlName="featured" label="Featured" />
           </div>
 
           <mat-form-field appearance="outline">

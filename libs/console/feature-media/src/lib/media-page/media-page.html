@@ -11,19 +11,13 @@
         }
       </a>
     </div>
-    <mat-button-toggle-group
+    <console-chip-select
       class="view-toggle"
-      [value]="viewMode()"
-      (change)="onViewModeChange($event.value)"
-      hideSingleSelectionIndicator
-    >
-      <mat-button-toggle value="grid" matTooltip="Grid view">
-        <mat-icon class="icon-md">grid_view</mat-icon>
-      </mat-button-toggle>
-      <mat-button-toggle value="list" matTooltip="List view">
-        <mat-icon class="icon-md">view_list</mat-icon>
-      </mat-button-toggle>
-    </mat-button-toggle-group>
+      iconOnly
+      [options]="viewModeOptions"
+      [ngModel]="viewMode()"
+      (ngModelChange)="onViewModeChange($event)"
+    />
   </div>
 
   <!-- Storage stats -->
@@ -37,7 +31,7 @@
         <p class="text-stat-label">Total Size</p>
         <p class="text-stat-value-sm">{{ stats.totalSize }}</p>
       </div>
-      @for (item of stats.breakdown; track item.type) {
+      @for (item of stats.breakdown; track $index) {
         <div class="breakdown-badge">
           <span class="text-stat-label">{{ item.type }}</span>
           <span class="text-stat-value-sm">{{ item.count }}</span>

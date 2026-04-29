@@ -17,10 +17,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import {
+  ChipBooleanComponent,
   MediaPickerDialogComponent,
   SectionCardComponent,
   StickySaveBarComponent,
@@ -58,7 +58,7 @@ import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPrevie
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSlideToggleModule,
+    ChipBooleanComponent,
     MatTooltipModule,
     RouterLink,
     FormErrorPipe,

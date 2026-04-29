@@ -25,8 +25,8 @@ export class MediaPage {
     this.table = page.locator('table');
     this.paginator = page.locator('mat-paginator');
     this.gridView = page.locator('.media-grid');
-    this.listToggle = page.locator('mat-button-toggle[value="list"]');
-    this.gridToggle = page.locator('mat-button-toggle[value="grid"]');
+    this.listToggle = page.getByRole('radio', { name: 'List view' });
+    this.gridToggle = page.getByRole('radio', { name: 'Grid view' });
     this.trashLink = page.getByRole('link', { name: 'Trash' });
     this.emptyState = page.locator('text=No media files');
     this.fileInput = page.locator('input[type="file"]');

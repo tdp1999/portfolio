@@ -10,8 +10,8 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +20,8 @@ import {
   AssetFilterBarComponent,
   AssetGridComponent,
   AssetUploadZoneComponent,
+  ChipSelectComponent,
+  type ChipSelectOption,
   ConfirmDialogComponent,
   DEFAULT_SORT,
   ToastService,
@@ -49,14 +51,15 @@ const VIEW_MODE_KEY = STORAGE_KEYS.mediaPickerViewMode;
   selector: 'console-media-page',
   standalone: true,
   imports: [
+    FormsModule,
     RouterLink,
     MatButtonModule,
-    MatButtonToggleModule,
     MatIconModule,
     MatTooltipModule,
     AssetGridComponent,
     AssetFilterBarComponent,
     AssetUploadZoneComponent,
+    ChipSelectComponent,
     MediaDrawerComponent,
   ],
   templateUrl: './media-page.html',
@@ -90,6 +93,10 @@ export default class MediaPageComponent implements OnInit {
   readonly folder = signal<UploadFolder | null>(null);
   readonly sort = signal<SortOption>(DEFAULT_SORT);
   readonly viewMode = signal<AssetGridViewMode>('grid');
+  readonly viewModeOptions: ChipSelectOption[] = [
+    { value: 'grid', label: 'Grid view', icon: 'grid_view' },
+    { value: 'list', label: 'List view', icon: 'view_list' },
+  ];
 
   // Selection
   readonly selectedIds = signal<string[]>([]);
@@ -151,10 +158,11 @@ export default class MediaPageComponent implements OnInit {
     this.loadTrashCount();
   }
 
-  onViewModeChange(mode: AssetGridViewMode): void {
-    this.viewMode.set(mode);
+  onViewModeChange(mode: string): void {
+    const next = mode as AssetGridViewMode;
+    this.viewMode.set(next);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(VIEW_MODE_KEY, mode);
+      localStorage.setItem(VIEW_MODE_KEY, next);
     }
   }
 
