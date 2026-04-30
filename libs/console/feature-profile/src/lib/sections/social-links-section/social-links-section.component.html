@@ -1,0 +1,162 @@
+<console-section-card
+  id="section-social-links"
+  bucket="PUBLIC"
+  title="Social Links"
+  description="Public links, resume URLs, and certifications."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [consoleFormSnapshotRebuild]="rebuildSnapshot"
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="form-subsection">
+      <div class="form-subsection__header">
+        <h4 class="text-card-title">Links</h4>
+        <button mat-stroked-button type="button" (click)="addSocialLink()"><mat-icon>add</mat-icon> Add Link</button>
+      </div>
+
+      <div formArrayName="socialLinks" class="rows">
+        @let socialLinksArray = form.controls.socialLinks;
+        @for (control of socialLinksArray.controls; track $index) {
+          @let linkGroup = asFormGroup(control);
+          <div [formGroup]="linkGroup" class="social-link-row">
+            <mat-form-field appearance="outline" class="w-40">
+              <mat-label>Platform</mat-label>
+              <mat-select formControlName="platform">
+                @for (opt of socialPlatformOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>{{ linkGroup.controls['platform'] | formError }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>URL</mat-label>
+              <input matInput formControlName="url" placeholder="https://" />
+              <mat-error>{{
+                linkGroup.controls['url'] | formError: { pattern: 'Must be a valid URL (https://...)' }
+              }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-36">
+              <mat-label>Handle</mat-label>
+              <input matInput formControlName="handle" placeholder="@username" />
+              <mat-error>{{ linkGroup.controls['handle'] | formError }}</mat-error>
+            </mat-form-field>
+            <button mat-icon-button color="warn" type="button" matTooltip="Remove" (click)="removeSocialLink($index)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        }
+        @if (socialLinksArray.length === 0) {
+          <p class="text-body text-text-secondary">No social links added yet.</p>
+        }
+      </div>
+    </div>
+
+    <div class="form-subsection">
+      <h4 class="text-card-title">Resume</h4>
+      <div class="resume-rows">
+        @for (locale of resumeLocales; track locale.key) {
+          @let ctrl = form.controls.resumeUrls.controls[locale.key];
+          <div class="resume-row">
+            <span class="locale-badge">{{ locale.label }}</span>
+            <span class="resume-url-preview text-body">
+              @if (ctrl.value; as url) {
+                @let label = resumeNames()[locale.key] ?? url;
+                <a [href]="url" target="_blank" rel="noopener" class="resume-link">{{ label }}</a>
+              } @else {
+                <span class="text-text-secondary">No file selected</span>
+              }
+            </span>
+            <button mat-stroked-button type="button" (click)="openResumePicker(locale.key)">Change</button>
+            @if (ctrl.value) {
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                matTooltip="Remove"
+                (click)="clearResumeUrl(locale.key)"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-subsection">
+      <div class="form-subsection__header">
+        <h4 class="text-card-title">Certifications</h4>
+        <button mat-stroked-button type="button" (click)="addCertification()">
+          <mat-icon>add</mat-icon> Add Certification
+        </button>
+      </div>
+
+      <div formArrayName="certifications" class="rows">
+        @let certificationsArray = form.controls.certifications;
+        @for (control of certificationsArray.controls; track $index) {
+          @let certGroup = asFormGroup(control);
+          <div [formGroup]="certGroup" class="cert-row">
+            <div class="cert-fields">
+              <mat-form-field appearance="outline" class="flex-1">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" />
+                <mat-error>{{ certGroup.controls['name'] | formError }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="flex-1">
+                <mat-label>Issuer</mat-label>
+                <input matInput formControlName="issuer" />
+                <mat-error>{{ certGroup.controls['issuer'] | formError }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-24">
+                <mat-label>Year</mat-label>
+                <input matInput type="number" formControlName="year" min="1990" max="2100" />
+                <mat-error>{{ certGroup.controls['year'] | formError }}</mat-error>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                matTooltip="Remove"
+                (click)="removeCertification($index)"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+            <div class="cert-url-row">
+              <console-chip-select class="cert-mode-toggle" formControlName="mode" [options]="certModeOptions" />
+              @if (certGroup.controls['mode'].value === 'file') {
+                <div class="cert-file-area">
+                  @if (certGroup.controls['url'].value; as url) {
+                    <a [href]="url" target="_blank" rel="noopener" class="cert-file-link">
+                      <mat-icon>picture_as_pdf</mat-icon>
+                      <span>{{ certFileLabel(url) }}</span>
+                    </a>
+                  } @else {
+                    <span class="text-body text-text-secondary">No file selected</span>
+                  }
+                  <button mat-stroked-button type="button" (click)="openCertPicker($index)">
+                    <mat-icon>upload_file</mat-icon> Choose file
+                  </button>
+                </div>
+              } @else {
+                <mat-form-field appearance="outline" class="flex-1">
+                  <mat-label>URL</mat-label>
+                  <input matInput formControlName="url" placeholder="https://" />
+                  <mat-error>{{ certGroup.controls['url'] | formError }}</mat-error>
+                </mat-form-field>
+              }
+            </div>
+          </div>
+        }
+        @if (certificationsArray.length === 0) {
+          <p class="text-body text-text-secondary">No certifications added yet.</p>
+        }
+      </div>
+    </div>
+  </div>
+</console-section-card>

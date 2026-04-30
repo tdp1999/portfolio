@@ -1,0 +1,68 @@
+<console-section-card
+  id="section-seo-og"
+  bucket="PUBLIC"
+  title="SEO / OG"
+  description="Metadata for search engines and social preview. OG image saves on upload."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="field-block">
+      <p class="field-label">OG Image</p>
+      <div class="media-upload">
+        <button
+          type="button"
+          class="media-trigger media-trigger--og"
+          [disabled]="ogImageSaving()"
+          (click)="openOgImagePicker()"
+        >
+          @if (ogImagePreview(); as src) {
+            <img [src]="src" alt="OG image preview" />
+          } @else {
+            <div class="media-default"><mat-icon>image</mat-icon></div>
+          }
+          <div class="media-overlay">
+            <mat-icon>photo_camera</mat-icon>
+          </div>
+        </button>
+        @if (ogImagePreview()) {
+          <button mat-button type="button" class="media-remove" (click)="confirmClearOgImage()">Remove image</button>
+        }
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Meta Title</mat-label>
+      <input matInput formControlName="metaTitle" maxlength="70" />
+      <mat-hint align="end">{{ form.controls.metaTitle.value.length }}/70</mat-hint>
+      <mat-error>{{ form.controls.metaTitle | formError }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Meta Description</mat-label>
+      <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
+      <mat-hint align="end">{{ form.controls.metaDescription.value.length }}/160</mat-hint>
+      <mat-error>{{ form.controls.metaDescription | formError }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Canonical URL</mat-label>
+      <input matInput formControlName="canonicalUrl" placeholder="https://" />
+      <mat-error>{{ form.controls.canonicalUrl | formError }}</mat-error>
+    </mat-form-field>
+
+    <div>
+      <button mat-stroked-button type="button" (click)="loadJsonLd()">
+        <mat-icon>data_object</mat-icon> Preview JSON-LD
+      </button>
+      @if (showJsonLd() && jsonLd()) {
+        <pre class="json-ld-preview">{{ jsonLd() | json }}</pre>
+      }
+    </div>
+  </div>
+</console-section-card>

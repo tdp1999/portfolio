@@ -1,0 +1,64 @@
+<console-section-card
+  id="section-identity"
+  bucket="PUBLIC"
+  title="Identity"
+  description="Display name, title, and bios. Avatar saves on upload."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="field-block">
+      <p class="field-label">Avatar</p>
+      <div class="media-upload">
+        <button
+          type="button"
+          class="media-trigger media-trigger--avatar"
+          [disabled]="avatarSaving()"
+          (click)="openAvatarPicker()"
+        >
+          @if (avatarPreview(); as src) {
+            <img [src]="src" alt="Avatar preview" />
+          } @else {
+            <div class="media-default"><mat-icon>person</mat-icon></div>
+          }
+          <div class="media-overlay">
+            <mat-icon>photo_camera</mat-icon>
+          </div>
+        </button>
+        @if (avatarPreview()) {
+          <button mat-button type="button" class="media-remove" (click)="confirmClearAvatar()">Remove photo</button>
+        }
+      </div>
+    </div>
+
+    <console-translatable-group [group]="form.controls.fullName" label="Full Name" />
+
+    <console-translatable-group
+      [group]="form.controls.title"
+      label="Title"
+      [placeholder]="{ en: 'e.g. Senior Software Engineer' }"
+    />
+
+    <console-translatable-group
+      [group]="form.controls.bioShort"
+      label="Short Bio"
+      type="textarea"
+      [rows]="3"
+      [maxLength]="200"
+      [showCounter]="true"
+    />
+
+    <console-translatable-group
+      [group]="form.controls.bioLong"
+      label="Long Bio"
+      type="textarea"
+      [rows]="5"
+      [showCounter]="true"
+    />
+  </div>
+</console-section-card>

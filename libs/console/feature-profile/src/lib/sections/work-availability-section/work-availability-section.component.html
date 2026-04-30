@@ -1,0 +1,48 @@
+<console-section-card
+  id="section-work-availability"
+  bucket="PUBLIC"
+  title="Work & Availability"
+  description="Experience, current availability, and what you're open to."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="field-row">
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Years of Experience</mat-label>
+        <input matInput type="number" formControlName="yearsOfExperience" min="0" max="99" step="1" />
+        <mat-error>{{ form.controls.yearsOfExperience | formError }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Availability</mat-label>
+        <mat-select formControlName="availability">
+          @for (opt of availabilityOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{ form.controls.availability | formError }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Timezone</mat-label>
+        <mat-select formControlName="timezone">
+          <mat-option value="">— None —</mat-option>
+          @for (tz of timezoneOptions; track tz) {
+            <mat-option [value]="tz">{{ tz }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <p class="field-label">Open To</p>
+      <console-chip-toggle-group formControlName="openTo" [options]="openToOptions" />
+    </div>
+  </div>
+</console-section-card>

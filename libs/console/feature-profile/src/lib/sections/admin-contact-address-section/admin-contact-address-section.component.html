@@ -1,0 +1,40 @@
+<console-section-card
+  id="section-admin-contact-address"
+  bucket="INTERNAL"
+  title="Admin Contact & Address"
+  description="Phone, postal code, and address lines. Admin-only — never rendered on the public site."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="field-row">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" />
+        <mat-error>{{ form.controls.phone | formError }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-36">
+        <mat-label>Postal Code</mat-label>
+        <input matInput formControlName="locationPostalCode" />
+        <mat-error>{{ form.controls.locationPostalCode | formError }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address Line 1</mat-label>
+      <input matInput formControlName="locationAddress1" />
+      <mat-error>{{ form.controls.locationAddress1 | formError }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address Line 2</mat-label>
+      <input matInput formControlName="locationAddress2" />
+      <mat-error>{{ form.controls.locationAddress2 | formError }}</mat-error>
+    </mat-form-field>
+  </div>
+</console-section-card>

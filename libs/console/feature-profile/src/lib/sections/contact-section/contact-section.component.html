@@ -1,0 +1,38 @@
+<console-section-card
+  id="section-contact"
+  bucket="PUBLIC"
+  title="Contact"
+  description="Email and the preferred contact channel that visitors see on the public profile."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+      <mat-error>{{ form.controls.email | formError }}</mat-error>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline" class="w-48">
+        <mat-label>Preferred Platform</mat-label>
+        <mat-select formControlName="preferredContactPlatform">
+          @for (opt of socialPlatformOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{ form.controls.preferredContactPlatform | formError }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Preferred Contact Value</mat-label>
+        <input matInput formControlName="preferredContactValue" placeholder="@handle or URL" />
+        <mat-error>{{ form.controls.preferredContactValue | formError }}</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+</console-section-card>

@@ -1,0 +1,28 @@
+<console-section-card
+  id="section-location"
+  bucket="PUBLIC"
+  title="Location"
+  description="Country and city render publicly on the profile and in metadata."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <div class="field-row">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="locationCountry" />
+        <mat-error>{{ form.controls.locationCountry | formError }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="locationCity" />
+        <mat-error>{{ form.controls.locationCity | formError }}</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+</console-section-card>
