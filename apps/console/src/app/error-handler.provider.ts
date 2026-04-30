@@ -6,7 +6,10 @@ import { ERROR_HANDLER, ErrorHandler } from '@portfolio/console/shared/data-acce
 import {
   ErrorDataService,
   extractApiError,
+  formatFieldErrors,
   resolveErrorMessage,
+  SERVER_ERROR_FALLBACK,
+  ServerErrorFallback,
   ValidationErrorService,
 } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
@@ -55,12 +58,21 @@ class ConsoleErrorHandler implements ErrorHandler {
     const apiError = extractApiError(error);
     const { errorCode } = apiError;
 
-    // Validation errors — push to ValidationErrorService, no toast
+    // Validation errors — route field errors to ServerErrorDirective (renders inline
+    // mat-error on each control) AND show a summary toast. The toast tells the user *why*
+    // their save failed in case they aren't looking at the form (e.g. dirty save bar).
+    // Toast resolution: dictionary > formatted field errors > BE message > hardcoded fallback.
     if (errorCode && isValidationCode(errorCode)) {
       const fieldErrors = apiError.data as Record<string, string[]> | undefined;
       if (fieldErrors && typeof fieldErrors === 'object') {
         this.validationErrorService.push(fieldErrors);
       }
+      const message =
+        resolveErrorMessage(errorCode) ??
+        formatFieldErrors(fieldErrors) ??
+        apiError.message ??
+        'Please fix the highlighted fields.';
+      this.toastService.error(message);
       return;
     }
 
@@ -84,6 +96,15 @@ class ConsoleErrorHandler implements ErrorHandler {
   }
 }
 
-export function provideErrorHandler(): Provider {
-  return { provide: ERROR_HANDLER, useClass: ConsoleErrorHandler };
+export function provideErrorHandler(): Provider[] {
+  return [
+    { provide: ERROR_HANDLER, useClass: ConsoleErrorHandler },
+    {
+      provide: SERVER_ERROR_FALLBACK,
+      useFactory: (toast: ToastService): ServerErrorFallback => ({
+        showError: (message) => toast.error(message),
+      }),
+      deps: [ToastService],
+    },
+  ];
 }

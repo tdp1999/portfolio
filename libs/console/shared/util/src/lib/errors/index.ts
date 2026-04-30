@@ -1,5 +1,5 @@
 export type { ApiError } from './api-error';
-export { extractApiError } from './api-error';
+export { extractApiError, formatFieldErrors } from './api-error';
 export { ErrorDataService } from './error-data.service';
 export { resolveErrorMessage, ERROR_DICTIONARY } from './error-dictionary';
 export { FormErrorPipe } from './form-error.pipe';

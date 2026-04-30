@@ -67,13 +67,19 @@ describe('ConsoleErrorHandler', () => {
     expect(router.navigate).not.toHaveBeenCalled();
   });
 
-  it('should show generic fallback toast for unknown errors', () => {
+  // When the BE returns a non-JSON string body, extractApiError wraps it as { message: <string> }
+  // and the handler toasts that string verbatim (BE-message fallback path). The hardcoded
+  // fallback in the handler only fires when no message can be derived at all — which
+  // extractApiError prevents by always producing 'An unexpected error occurred' as a default.
+  it('toasts the raw BE string when the body is plain text', () => {
     handler.handleHttpError(new HttpErrorResponse({ status: 422, error: 'plain text' }));
 
-    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred. Please try again.');
+    expect(toastService.error).toHaveBeenCalledWith('plain text');
   });
 
-  it('should show generic fallback when message is an object (not a string)', () => {
+  // When `message` is an object (not a string), extractApiError discards it and uses its own
+  // 'An unexpected error occurred' default. The handler then toasts that default.
+  it("toasts the extractor's default when message is an object (not a string)", () => {
     handler.handleHttpError(
       new HttpErrorResponse({
         status: 400,
@@ -81,6 +87,6 @@ describe('ConsoleErrorHandler', () => {
       })
     );
 
-    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred. Please try again.');
+    expect(toastService.error).toHaveBeenCalledWith('An unexpected error occurred');
   });
 });

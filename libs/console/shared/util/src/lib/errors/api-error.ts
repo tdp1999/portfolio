@@ -38,3 +38,21 @@ export function extractApiError(err: HttpErrorResponse): ApiError {
     data: isObject ? body.data : undefined,
   };
 }
+
+/**
+ * Joins a `{ field: ['msg', ...] }` field-error map into a human-readable string.
+ * Returns null if `data` isn't a field-errors map. Used by `SERVER_ERROR_FALLBACK`
+ * to surface unmatched validation errors as a toast.
+ */
+export function formatFieldErrors(data: unknown): string | null {
+  if (!data || typeof data !== 'object') return null;
+  const entries = Object.entries(data as Record<string, unknown>);
+  if (entries.length === 0) return null;
+  const parts: string[] = [];
+  for (const [field, value] of entries) {
+    const messages = Array.isArray(value) ? value.filter((m): m is string => typeof m === 'string') : [];
+    if (messages.length === 0) return null;
+    parts.push(`${field}: ${messages.join(', ')}`);
+  }
+  return parts.join('; ');
+}
