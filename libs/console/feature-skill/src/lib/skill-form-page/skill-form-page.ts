@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,14 +34,15 @@ import {
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
-  extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
+  ServerErrorDirective,
+  type MediaItem,
 } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { SkillService } from '../skill.service';
 import { AdminSkill } from '../skill.types';
 
@@ -66,6 +66,7 @@ import { AdminSkill } from '../skill.types';
     SpinnerOverlayComponent,
     StickySaveBarComponent,
     FormErrorPipe,
+    ServerErrorDirective,
   ],
   templateUrl: './skill-form-page.html',
   styleUrl: './skill-form-page.scss',
@@ -84,7 +85,6 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
   readonly id = signal<string | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
-  readonly serverError = signal('');
   readonly dirty = signal(false);
   readonly isInvalid = signal(false);
 
@@ -148,10 +148,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
           this.applySkill(skill);
         }
       },
-      error: () => {
-        this.toast.error('Failed to load skill data');
-        this.router.navigate(['/skills']);
-      },
+      error: () => this.router.navigate(['/skills']),
     });
   }
 
@@ -166,7 +163,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
 
   openIconPicker(): void {
     this.matDialog
-      .open<MediaPickerDialogComponent, MediaPickerDialogData, string | undefined>(MediaPickerDialogComponent, {
+      .open<MediaPickerDialogComponent, MediaPickerDialogData, MediaItem | undefined>(MediaPickerDialogComponent, {
         data: {
           mode: 'single',
           mimeFilter: 'image/svg+xml, image/png, image/webp',
@@ -178,7 +175,6 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
         width: '900px',
       })
       .afterClosed()
-      .pipe(switchMap((id) => (id ? this.mediaService.getById(id) : of(null))))
       .subscribe((item) => {
         if (!item) return;
         this.iconId.set(item.id);
@@ -210,15 +206,10 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
     }
 
     this.submitting.set(true);
-    this.serverError.set('');
     const raw = this.form.getRawValue();
     const editId = this.id();
 
-    const onError = (err: HttpErrorResponse) => {
-      this.submitting.set(false);
-      const apiError = extractApiError(err);
-      this.serverError.set(apiError?.message ?? 'Failed to save skill');
-    };
+    const onError = () => this.submitting.set(false);
 
     if (editId) {
       this.skillService

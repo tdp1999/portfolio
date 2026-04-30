@@ -2,17 +2,21 @@
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="category-form-page__header">
+    <a mat-icon-button routerLink="/categories" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
     <div>
       <h1 class="text-page-title">{{ isEditMode() ? 'Edit Category' : 'New Category' }}</h1>
       <p class="text-body text-text-secondary">Categories group blog posts and projects on the public site.</p>
     </div>
-    <a mat-stroked-button routerLink="/categories">
-      <mat-icon class="icon-sm">arrow_back</mat-icon>
-      Back
-    </a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="category-form-page__content flex flex-col gap-y-4">
+  <form
+    [formGroup]="form"
+    [consoleServerErrorMap]="{}"
+    (ngSubmit)="submit()"
+    class="category-form-page__content flex flex-col gap-y-4"
+  >
     <console-section-card
       id="section-identity"
       bucket="PUBLIC"
@@ -48,10 +52,6 @@
         <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
       </mat-form-field>
     </console-section-card>
-
-    @if (serverError()) {
-      <p class="category-form-page__server-error">{{ serverError() }}</p>
-    }
 
     <button type="submit" class="hidden" aria-hidden="true"></button>
   </form>

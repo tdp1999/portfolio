@@ -150,7 +150,6 @@ export default class SkillsPageComponent implements OnInit {
           this.skills.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load skills'),
       });
   }
 

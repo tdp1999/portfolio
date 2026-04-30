@@ -88,7 +88,6 @@ export default class ProjectDetailComponent implements OnInit {
           this.toast.success('Project deleted');
           this.goBack();
         },
-        error: () => this.toast.error('Failed to delete project'),
       });
   }
 
@@ -100,7 +99,6 @@ export default class ProjectDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load project');
         this.loading.set(false);
         this.goBack();
       },

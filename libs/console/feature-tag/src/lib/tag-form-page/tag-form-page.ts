@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +23,11 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import {
-  extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
+  ServerErrorDirective,
 } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import { TagService } from '../tag.service';
@@ -48,6 +47,7 @@ import { TagService } from '../tag.service';
     SpinnerOverlayComponent,
     StickySaveBarComponent,
     FormErrorPipe,
+    ServerErrorDirective,
   ],
   templateUrl: './tag-form-page.html',
   styleUrl: './tag-form-page.scss',
@@ -64,7 +64,6 @@ export default class TagFormPageComponent implements OnInit, HasUnsavedChanges {
   readonly id = signal<string | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
-  readonly serverError = signal('');
   readonly dirty = signal(false);
   readonly isInvalid = signal(false);
 
@@ -117,15 +116,10 @@ export default class TagFormPageComponent implements OnInit, HasUnsavedChanges {
     }
 
     this.submitting.set(true);
-    this.serverError.set('');
     const { name } = this.form.getRawValue();
     const editId = this.id();
 
-    const onError = (err: HttpErrorResponse) => {
-      this.submitting.set(false);
-      const apiError = extractApiError(err);
-      this.serverError.set(apiError?.message ?? 'Failed to save tag');
-    };
+    const onError = () => this.submitting.set(false);
 
     if (editId) {
       this.tagService.update(editId, { name }).subscribe({
@@ -157,7 +151,6 @@ export default class TagFormPageComponent implements OnInit, HasUnsavedChanges {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load tag');
         this.loading.set(false);
         this.router.navigate(['/tags']);
       },

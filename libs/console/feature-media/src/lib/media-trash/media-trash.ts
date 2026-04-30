@@ -132,10 +132,7 @@ export default class MediaTrashComponent implements OnInit {
         this.total.set(res.total);
         this.loading.set(false);
       },
-      error: () => {
-        this.loading.set(false);
-        this.toast.error('Failed to load trash');
-      },
+      error: () => this.loading.set(false),
     });
   }
 

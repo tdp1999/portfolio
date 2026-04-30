@@ -5,7 +5,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { extractApiError, FormErrorPipe } from '@portfolio/console/shared/util';
+import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { AdminUserService } from '../admin-user.service';
 
 @Component({
@@ -19,11 +19,12 @@ import { AdminUserService } from '../admin-user.service';
     MatButtonModule,
     MatProgressSpinnerModule,
     FormErrorPipe,
+    ServerErrorDirective,
   ],
   template: `
     <h2 mat-dialog-title>Invite User</h2>
     <mat-dialog-content>
-      <form [formGroup]="form" class="flex flex-col gap-4">
+      <form [formGroup]="form" [consoleServerErrorMap]="{}" class="flex flex-col gap-4">
         <mat-form-field>
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" />
@@ -35,10 +36,6 @@ import { AdminUserService } from '../admin-user.service';
           <input matInput formControlName="email" type="email" />
           <mat-error>{{ form.controls.email | formError }}</mat-error>
         </mat-form-field>
-
-        @if (serverError()) {
-          <p class="text-sm text-red-500">{{ serverError() }}</p>
-        }
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -65,7 +62,6 @@ export default class InviteDialogComponent {
   });
 
   readonly submitting = signal(false);
-  readonly serverError = signal('');
 
   submit(): void {
     if (this.form.invalid) {
@@ -74,16 +70,11 @@ export default class InviteDialogComponent {
     }
 
     this.submitting.set(true);
-    this.serverError.set('');
 
     const { name, email } = this.form.getRawValue();
     this.adminUserService.invite({ name, email }).subscribe({
       next: () => this.dialogRef.close(true),
-      error: (err) => {
-        this.submitting.set(false);
-        const apiError = extractApiError(err);
-        this.serverError.set(apiError?.message ?? 'Failed to invite user');
-      },
+      error: () => this.submitting.set(false),
     });
   }
 }

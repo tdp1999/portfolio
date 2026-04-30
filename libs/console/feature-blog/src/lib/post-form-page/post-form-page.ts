@@ -30,7 +30,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
-import { baselineFor, FormErrorPipe, HasUnsavedChanges } from '@portfolio/console/shared/util';
+import { baselineFor, FormErrorPipe, HasUnsavedChanges, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import { BlogService } from '../blog.service';
 import {
@@ -42,7 +42,6 @@ import {
   CreateBlogPostPayload,
   UpdateBlogPostPayload,
 } from '../blog.types';
-import { filter, map, switchMap, tap } from 'rxjs';
 import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPreview } from './markdown-utils';
 
 @Component({
@@ -62,6 +61,7 @@ import { convertObsidianMarkdown, extractTitleFromMarkdown, renderMarkdownPrevie
     MatTooltipModule,
     RouterLink,
     FormErrorPipe,
+    ServerErrorDirective,
     SectionCardComponent,
     StickySaveBarComponent,
   ],
@@ -175,29 +175,28 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
   }
 
   openFeaturedImagePicker(): void {
-    const ref = this.dialog.open(MediaPickerDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-      data: {
-        mode: 'single',
-        selectedIds: this.featuredImageId() ? [this.featuredImageId() as string] : [],
-        mimeFilter: 'image/',
-        dataSource: this.mediaDataSource,
-      } satisfies MediaPickerDialogData,
-    });
+    const ref = this.dialog.open<MediaPickerDialogComponent, MediaPickerDialogData, MediaItem | undefined>(
+      MediaPickerDialogComponent,
+      {
+        width: '900px',
+        maxHeight: '90vh',
+        data: {
+          mode: 'single',
+          selectedIds: this.featuredImageId() ? [this.featuredImageId() as string] : [],
+          mimeFilter: 'image/',
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+      }
+    );
     ref
       .afterClosed()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        map((result) => (Array.isArray(result) ? result[0] : result) as string | undefined),
-        filter((id): id is string => !!id),
-        tap((id) => {
-          this.featuredImageId.set(id);
-          this.dirty.set(true);
-        }),
-        switchMap((id) => this.mediaService.getById(id))
-      )
-      .subscribe({ next: (item: MediaItem) => this.featuredImageUrl.set(item.url) });
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((item) => {
+        if (!item) return;
+        this.featuredImageId.set(item.id);
+        this.featuredImageUrl.set(item.url);
+        this.dirty.set(true);
+      });
   }
 
   clearFeaturedImage(): void {
@@ -207,25 +206,26 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
   }
 
   insertImage(): void {
-    const ref = this.dialog.open(MediaPickerDialogComponent, {
-      width: '900px',
-      maxHeight: '90vh',
-      data: { mode: 'single', mimeFilter: 'image/', dataSource: this.mediaDataSource } satisfies MediaPickerDialogData,
-    });
+    const ref = this.dialog.open<MediaPickerDialogComponent, MediaPickerDialogData, MediaItem | undefined>(
+      MediaPickerDialogComponent,
+      {
+        width: '900px',
+        maxHeight: '90vh',
+        data: {
+          mode: 'single',
+          mimeFilter: 'image/',
+          dataSource: this.mediaDataSource,
+        } satisfies MediaPickerDialogData,
+      }
+    );
     ref
       .afterClosed()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        map((result) => (Array.isArray(result) ? result[0] : result) as string | undefined),
-        filter((id): id is string => !!id),
-        switchMap((id) => this.mediaService.getById(id))
-      )
-      .subscribe({
-        next: (item: MediaItem) => {
-          const alt = item.altText ?? item.originalFilename;
-          const md = `\n![${alt}](${item.url})\n`;
-          this.form.controls.content.setValue(this.form.controls.content.value + md);
-        },
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((item) => {
+        if (!item) return;
+        const alt = item.altText ?? item.originalFilename;
+        const md = `\n![${alt}](${item.url})\n`;
+        this.form.controls.content.setValue(this.form.controls.content.value + md);
       });
   }
 
@@ -280,10 +280,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
           this.saving.set(false);
           this.dirty.set(false);
         },
-        error: () => {
-          this.toast.error('Failed to update post');
-          this.saving.set(false);
-        },
+        error: () => this.saving.set(false),
       });
     } else {
       const payload: CreateBlogPostPayload = {
@@ -306,10 +303,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
           this.dirty.set(false);
           this.router.navigate(['/admin/blog', res.id, 'edit']);
         },
-        error: () => {
-          this.toast.error('Failed to create post');
-          this.saving.set(false);
-        },
+        error: () => this.saving.set(false),
       });
     }
   }
@@ -368,10 +362,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         this.loading.set(false);
         this.dirty.set(false);
       },
-      error: () => {
-        this.toast.error('Failed to load post');
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 

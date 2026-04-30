@@ -169,7 +169,6 @@ export default class UsersPageComponent implements OnInit {
           this.users.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load users'),
       });
   }
 

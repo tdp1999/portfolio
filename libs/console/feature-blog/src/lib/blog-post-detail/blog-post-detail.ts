@@ -88,7 +88,6 @@ export default class BlogPostDetailComponent implements OnInit {
         this.toast.success(`Post ${action.toLowerCase()}ed`);
         this.loadPost(p.id);
       },
-      error: () => this.toast.error(`Failed to ${action.toLowerCase()} post`),
     });
   }
 
@@ -114,7 +113,6 @@ export default class BlogPostDetailComponent implements OnInit {
           this.toast.success('Post deleted');
           this.goBack();
         },
-        error: () => this.toast.error('Failed to delete post'),
       });
   }
 
@@ -126,7 +124,6 @@ export default class BlogPostDetailComponent implements OnInit {
         this.toast.success('Post restored');
         this.loadPost(p.id);
       },
-      error: () => this.toast.error('Failed to restore post'),
     });
   }
 
@@ -138,7 +135,6 @@ export default class BlogPostDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load post');
         this.loading.set(false);
         this.goBack();
       },

@@ -94,7 +94,6 @@ export default class ExperienceDetailComponent implements OnInit {
           this.toast.success('Experience deleted');
           this.goBack();
         },
-        error: () => this.toast.error('Failed to delete experience'),
       });
   }
 
@@ -106,7 +105,6 @@ export default class ExperienceDetailComponent implements OnInit {
         this.toast.success('Experience restored');
         this.loadExperience(exp.id);
       },
-      error: () => this.toast.error('Failed to restore experience'),
     });
   }
 

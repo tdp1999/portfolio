@@ -61,7 +61,6 @@ export default class TagDetailComponent implements OnInit {
           this.toast.success('Tag deleted');
           this.router.navigate(['/tags']);
         },
-        error: () => this.toast.error('Failed to delete tag'),
       });
   }
 
@@ -73,7 +72,6 @@ export default class TagDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load tag');
         this.loading.set(false);
         this.router.navigate(['/tags']);
       },

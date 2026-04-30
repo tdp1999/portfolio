@@ -134,7 +134,6 @@ export default class MessageDetailComponent implements OnInit {
       .subscribe({
         error: () => {
           this.loading.set(false);
-          this.toast.error('Failed to load message');
           this.goBack();
         },
       });

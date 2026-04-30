@@ -126,7 +126,6 @@ export default class CategoriesPageComponent implements OnInit {
           this.categories.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load categories'),
       });
   }
 

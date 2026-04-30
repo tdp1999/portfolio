@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -30,9 +30,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
 import {
   LongFormLayoutComponent,
+  SegmentedControlComponent,
+  SegmentedControlOption,
   MonthYearPickerComponent,
   ScrollspyRailComponent,
   SectionCardComponent,
@@ -44,11 +45,11 @@ import {
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
-  extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
+  ServerErrorDirective,
 } from '@portfolio/console/shared/util';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 import { LIMITS } from '@portfolio/shared/validation';
@@ -63,6 +64,7 @@ type LinkGroup = FormGroup<{ label: FormControl<string>; url: FormControl<string
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
@@ -72,9 +74,10 @@ type LinkGroup = FormGroup<{ label: FormControl<string>; url: FormControl<string
     MatCheckboxModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatTabsModule,
     MatProgressSpinnerModule,
     FormErrorPipe,
+    ServerErrorDirective,
+    SegmentedControlComponent,
     LongFormLayoutComponent,
     MonthYearPickerComponent,
     ScrollspyRailComponent,
@@ -101,7 +104,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
   readonly saving = signal(false);
   readonly logoUploading = signal(false);
   readonly logoPreview = signal<string | null>(null);
-  readonly serverError = signal('');
 
   readonly allSkills = signal<SkillOption[]>([]);
   readonly selectedSkills = signal<SkillOption[]>([]);
@@ -110,6 +112,13 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
 
   readonly employmentTypeOptions = Object.entries(EMPLOYMENT_TYPE_LABELS).map(([value, label]) => ({ value, label }));
   readonly locationTypeOptions = Object.entries(LOCATION_TYPE_LABELS).map(([value, label]) => ({ value, label }));
+
+  readonly localeOptions: SegmentedControlOption[] = [
+    { value: 'en', label: 'English' },
+    { value: 'vi', label: 'Vietnamese' },
+  ];
+  readonly responsibilitiesLocale = signal<'en' | 'vi'>('en');
+  readonly highlightsLocale = signal<'en' | 'vi'>('en');
 
   readonly form = this.fb.nonNullable.group({
     companyName: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
@@ -136,7 +145,7 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     isCurrent: [true],
 
     locationType: ['ONSITE', [Validators.required]],
-    locationCountry: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
+    locationCountry: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
     locationCity: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
     locationPostalCode: ['', baselineFor.postalCode()],
     locationAddress1: ['', baselineFor.address()],
@@ -218,7 +227,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
           },
           error: () => {
             this.loading.set(false);
-            this.toast.error('Failed to load experience');
             this.router.navigate(['/experiences']);
           },
         });
@@ -298,10 +306,7 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
           this.form.controls.companyLogoId.markAsDirty();
           this.logoPreview.set(URL.createObjectURL(file));
         },
-        error: () => {
-          this.logoUploading.set(false);
-          this.toast.error('Failed to upload logo');
-        },
+        error: () => this.logoUploading.set(false),
       });
   }
 
@@ -320,7 +325,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     }
 
     this.saving.set(true);
-    this.serverError.set('');
 
     const v = this.form.getRawValue();
     const isCurrent = v.isCurrent;
@@ -360,13 +364,9 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
       displayOrder: v.displayOrder,
     };
 
-    const onError = (err: HttpErrorResponse) => {
-      this.saving.set(false);
-      const apiError = extractApiError(err);
-      const message = apiError?.message ?? 'Failed to save experience';
-      this.serverError.set(message);
-      this.toast.error(message);
-    };
+    // Global error handler toasts + routes field errors via ServerErrorDirective.
+    // Locally we only need to drop the saving spinner.
+    const onError = () => this.saving.set(false);
 
     const editId = this.experienceId();
     if (this.isEdit() && editId) {
@@ -430,7 +430,6 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     }
     this.form.markAsPristine();
     this.dirty.set(false);
-    this.serverError.set('');
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -566,9 +565,9 @@ export default class ExperienceFormPageComponent implements OnInit, HasUnsavedCh
     });
   }
 
-  private updateFilteredSkills(search: string): void {
+  private updateFilteredSkills(search: string | SkillOption | null): void {
     const selected = this.selectedSkills();
-    const lowerSearch = (search ?? '').toLowerCase();
+    const lowerSearch = (typeof search === 'string' ? search : '').toLowerCase();
     this.filteredSkills.set(
       this.allSkills().filter(
         (s) => !selected.find((sel) => sel.id === s.id) && s.name.toLowerCase().includes(lowerSearch)

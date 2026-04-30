@@ -300,7 +300,6 @@ export default class MediaPageComponent implements OnInit {
         error: () => {
           settle(() => undefined);
           this.loading.set(false);
-          this.toast.error('Failed to load media');
         },
       });
   }

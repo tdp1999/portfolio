@@ -29,22 +29,8 @@
   flex-shrink: 0;
 }
 
-.picker__tabs {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-
-  ::ng-deep .mat-mdc-tab-body-wrapper,
-  ::ng-deep .mat-mdc-tab-body,
-  ::ng-deep .mat-mdc-tab-body-content {
-    height: 100%;
-  }
-
-  ::ng-deep .mat-mdc-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
+.picker__mode {
+  padding: 0 20px 8px;
 }
 
 .picker__content {

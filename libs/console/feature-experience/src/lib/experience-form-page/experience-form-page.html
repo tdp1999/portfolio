@@ -2,6 +2,9 @@
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="experience-form-page__header">
+    <a mat-icon-button routerLink="/experiences" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
     <div>
       <h1 class="text-page-title">{{ isEdit() ? 'Edit Experience' : 'Add Experience' }}</h1>
       <p class="text-body text-text-secondary">
@@ -12,10 +15,6 @@
         }}
       </p>
     </div>
-    <a mat-stroked-button routerLink="/experiences">
-      <mat-icon class="icon-sm">arrow_back</mat-icon>
-      Back
-    </a>
   </div>
 
   <console-long-form-layout>
@@ -28,7 +27,7 @@
     </div>
 
     <div content>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+      <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
         <!-- Company -->
         <console-section-card
           id="section-company"
@@ -229,47 +228,55 @@
           description="What you did in this role. Provide English and Vietnamese versions."
           saveMode="atomic"
         >
-          <mat-tab-group>
-            <mat-tab label="English">
-              <div class="flex flex-col gap-4 py-4">
-                @for (control of form.controls.responsibilities_en.controls; track $index) {
-                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
-                    <mat-form-field class="flex-1">
-                      <mat-label>Responsibility {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Describe a responsibility..." />
-                    </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeResponsibility('en', $index)">
-                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
-                    </button>
-                  </div>
-                }
-                <button type="button" mat-stroked-button (click)="addResponsibility('en')">
-                  <mat-icon class="icon-sm">add</mat-icon>
-                  Add Responsibility
-                </button>
-              </div>
-            </mat-tab>
-
-            <mat-tab label="Vietnamese">
-              <div class="flex flex-col gap-4 py-4">
-                @for (control of form.controls.responsibilities_vi.controls; track $index) {
-                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
-                    <mat-form-field class="flex-1">
-                      <mat-label>Responsibility {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Mô tả trách nhiệm..." />
-                    </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeResponsibility('vi', $index)">
-                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
-                    </button>
-                  </div>
-                }
-                <button type="button" mat-stroked-button (click)="addResponsibility('vi')">
-                  <mat-icon class="icon-sm">add</mat-icon>
-                  Thêm trách nhiệm
-                </button>
-              </div>
-            </mat-tab>
-          </mat-tab-group>
+          <console-segmented-control
+            class="mb-4"
+            [options]="localeOptions"
+            [ngModel]="responsibilitiesLocale()"
+            (ngModelChange)="responsibilitiesLocale.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          @if (responsibilitiesLocale() === 'en') {
+            <div class="flex flex-col gap-4">
+              @for (control of form.controls.responsibilities_en.controls; track $index) {
+                <div class="flex gap-2 items-start" [formGroup]="asFormGroup(control)">
+                  <mat-form-field class="flex-1">
+                    <mat-label>Responsibility {{ $index + 1 }}</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="text"
+                      rows="2"
+                      placeholder="Describe a responsibility..."
+                    ></textarea>
+                  </mat-form-field>
+                  <button type="button" mat-icon-button class="mt-2" (click)="removeResponsibility('en', $index)">
+                    <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              <button type="button" mat-stroked-button (click)="addResponsibility('en')">
+                <mat-icon class="icon-sm">add</mat-icon>
+                Add Responsibility
+              </button>
+            </div>
+          } @else {
+            <div class="flex flex-col gap-4">
+              @for (control of form.controls.responsibilities_vi.controls; track $index) {
+                <div class="flex gap-2 items-start" [formGroup]="asFormGroup(control)">
+                  <mat-form-field class="flex-1">
+                    <mat-label>Responsibility {{ $index + 1 }}</mat-label>
+                    <textarea matInput formControlName="text" rows="2" placeholder="Mô tả trách nhiệm..."></textarea>
+                  </mat-form-field>
+                  <button type="button" mat-icon-button class="mt-2" (click)="removeResponsibility('vi', $index)">
+                    <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              <button type="button" mat-stroked-button (click)="addResponsibility('vi')">
+                <mat-icon class="icon-sm">add</mat-icon>
+                Thêm trách nhiệm
+              </button>
+            </div>
+          }
         </console-section-card>
 
         <!-- Highlights -->
@@ -280,47 +287,50 @@
           description="Quantified outcomes and standout achievements (e.g. 'Reduced p99 latency 40%'). Distinct from responsibilities."
           saveMode="atomic"
         >
-          <mat-tab-group>
-            <mat-tab label="English">
-              <div class="flex flex-col gap-4 py-4">
-                @for (control of form.controls.highlights_en.controls; track $index) {
-                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
-                    <mat-form-field class="flex-1">
-                      <mat-label>Highlight {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Describe an outcome..." />
-                    </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeHighlight('en', $index)">
-                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
-                    </button>
-                  </div>
-                }
-                <button type="button" mat-stroked-button (click)="addHighlight('en')">
-                  <mat-icon class="icon-sm">add</mat-icon>
-                  Add Highlight
-                </button>
-              </div>
-            </mat-tab>
-
-            <mat-tab label="Vietnamese">
-              <div class="flex flex-col gap-4 py-4">
-                @for (control of form.controls.highlights_vi.controls; track $index) {
-                  <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
-                    <mat-form-field class="flex-1">
-                      <mat-label>Highlight {{ $index + 1 }}</mat-label>
-                      <input matInput formControlName="text" placeholder="Mô tả thành tích nổi bật..." />
-                    </mat-form-field>
-                    <button type="button" mat-icon-button (click)="removeHighlight('vi', $index)">
-                      <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
-                    </button>
-                  </div>
-                }
-                <button type="button" mat-stroked-button (click)="addHighlight('vi')">
-                  <mat-icon class="icon-sm">add</mat-icon>
-                  Thêm thành tích
-                </button>
-              </div>
-            </mat-tab>
-          </mat-tab-group>
+          <console-segmented-control
+            class="mb-4"
+            [options]="localeOptions"
+            [ngModel]="highlightsLocale()"
+            (ngModelChange)="highlightsLocale.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+          />
+          @if (highlightsLocale() === 'en') {
+            <div class="flex flex-col gap-4">
+              @for (control of form.controls.highlights_en.controls; track $index) {
+                <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
+                  <mat-form-field class="flex-1">
+                    <mat-label>Highlight {{ $index + 1 }}</mat-label>
+                    <input matInput formControlName="text" placeholder="Describe an outcome..." />
+                  </mat-form-field>
+                  <button type="button" mat-icon-button (click)="removeHighlight('en', $index)">
+                    <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              <button type="button" mat-stroked-button (click)="addHighlight('en')">
+                <mat-icon class="icon-sm">add</mat-icon>
+                Add Highlight
+              </button>
+            </div>
+          } @else {
+            <div class="flex flex-col gap-4">
+              @for (control of form.controls.highlights_vi.controls; track $index) {
+                <div class="flex gap-2 items-center" [formGroup]="asFormGroup(control)">
+                  <mat-form-field class="flex-1">
+                    <mat-label>Highlight {{ $index + 1 }}</mat-label>
+                    <input matInput formControlName="text" placeholder="Mô tả thành tích nổi bật..." />
+                  </mat-form-field>
+                  <button type="button" mat-icon-button (click)="removeHighlight('vi', $index)">
+                    <mat-icon class="text-red-400">remove_circle_outline</mat-icon>
+                  </button>
+                </div>
+              }
+              <button type="button" mat-stroked-button (click)="addHighlight('vi')">
+                <mat-icon class="icon-sm">add</mat-icon>
+                Thêm thành tích
+              </button>
+            </div>
+          }
         </console-section-card>
 
         <!-- Links -->
@@ -365,18 +375,16 @@
           saveMode="atomic"
         >
           <div class="form-stack">
-            <div class="flex gap-4">
-              <mat-form-field class="flex-1">
-                <mat-label>Client Name</mat-label>
-                <input matInput formControlName="clientName" placeholder="Optional" />
-                <mat-error>{{ form.controls.clientName | formError }}</mat-error>
-              </mat-form-field>
-              <mat-form-field class="flex-1">
-                <mat-label>Domain</mat-label>
-                <input matInput formControlName="domain" placeholder="e.g. Fintech" />
-                <mat-error>{{ form.controls.domain | formError }}</mat-error>
-              </mat-form-field>
-            </div>
+            <mat-form-field>
+              <mat-label>Client Name</mat-label>
+              <input matInput formControlName="clientName" placeholder="Optional" />
+              <mat-error>{{ form.controls.clientName | formError }}</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Domain</mat-label>
+              <input matInput formControlName="domain" placeholder="e.g. Fintech, Real Estate, Healthcare" />
+              <mat-error>{{ form.controls.domain | formError }}</mat-error>
+            </mat-form-field>
 
             <div class="field-block">
               <p class="field-label">Team Size</p>
@@ -441,10 +449,6 @@
             </mat-form-field>
           </div>
         </console-section-card>
-
-        @if (serverError()) {
-          <p class="experience-form-page__server-error">{{ serverError() }}</p>
-        }
 
         <!-- Native submit hookup so Enter key submits the form. -->
         <button type="submit" class="hidden" aria-hidden="true"></button>

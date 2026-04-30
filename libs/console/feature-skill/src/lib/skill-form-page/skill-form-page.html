@@ -2,16 +2,15 @@
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="skill-form-page__header">
+    <a mat-icon-button routerLink="/skills" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
     <div>
       <h1 class="text-page-title">{{ isEditMode() ? 'Edit Skill' : 'New Skill' }}</h1>
       <p class="text-body text-text-secondary">
         Skills shown on your portfolio. Group sub-skills under a parent for cleaner display.
       </p>
     </div>
-    <a mat-stroked-button routerLink="/skills">
-      <mat-icon class="icon-sm">arrow_back</mat-icon>
-      Back
-    </a>
   </div>
 
   <console-long-form-layout>
@@ -24,7 +23,7 @@
     </div>
 
     <div content>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+      <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
         <!-- Identity -->
         <console-section-card
           id="section-identity"
@@ -154,10 +153,6 @@
             </mat-form-field>
           </div>
         </console-section-card>
-
-        @if (serverError()) {
-          <p class="skill-form-page__server-error">{{ serverError() }}</p>
-        }
 
         <button type="submit" class="hidden" aria-hidden="true"></button>
       </form>

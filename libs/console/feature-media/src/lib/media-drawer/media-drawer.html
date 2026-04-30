@@ -77,7 +77,7 @@
         </dl>
 
         <!-- Editable fields -->
-        <form [formGroup]="form" class="media-drawer__form">
+        <form [formGroup]="form" [consoleServerErrorMap]="{}" class="media-drawer__form">
           <mat-form-field>
             <mat-label>Alt text</mat-label>
             <input matInput formControlName="altText" placeholder="Describe the image for accessibility" />
@@ -87,10 +87,6 @@
             <mat-label>Caption</mat-label>
             <textarea matInput formControlName="caption" placeholder="Optional caption" rows="3"></textarea>
           </mat-form-field>
-
-          @if (serverError()) {
-            <p class="text-sm text-red-500">{{ serverError() }}</p>
-          }
         </form>
       }
     </div>

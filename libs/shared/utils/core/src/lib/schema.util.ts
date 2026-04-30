@@ -22,7 +22,7 @@ export function stripHtmlTags(value: string): string {
  */
 export const PaginatedQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(1000).default(20),
   search: z.string().optional(),
   sortDir: z.enum(['asc', 'desc']).default('desc'),
 });

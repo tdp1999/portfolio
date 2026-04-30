@@ -2,17 +2,16 @@
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="tag-form-page__header">
+    <a mat-icon-button routerLink="/tags" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
     <div>
       <h1 class="text-page-title">{{ isEditMode() ? 'Edit Tag' : 'New Tag' }}</h1>
       <p class="text-body text-text-secondary">Tags label blog posts and projects on the public site.</p>
     </div>
-    <a mat-stroked-button routerLink="/tags">
-      <mat-icon class="icon-sm">arrow_back</mat-icon>
-      Back
-    </a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="tag-form-page__content">
+  <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="tag-form-page__content">
     <console-section-card
       id="section-details"
       bucket="PUBLIC"
@@ -26,10 +25,6 @@
         <mat-error>{{ form.controls.name | formError }}</mat-error>
       </mat-form-field>
     </console-section-card>
-
-    @if (serverError()) {
-      <p class="tag-form-page__server-error">{{ serverError() }}</p>
-    }
 
     <button type="submit" class="hidden" aria-hidden="true"></button>
   </form>

@@ -105,7 +105,37 @@
       disabled-outline-color: red,
     )
   );
+
+  /* Button Toggle (segmented control) */
+  /* Two-step contrast: track sits above card surface; pill sits above track. */
+  @include mat.button-toggle-overrides(
+    (
+      background-color: var(--color-surface-hover),
+      text-color: var(--color-text-secondary),
+      selected-state-background-color: var(--color-primary-container),
+      selected-state-text-color: var(--color-primary),
+      divider-color: transparent,
+      shape: 12px,
+      height: 40px,
+      label-text-weight: 500,
+    )
+  );
 }
 
 /* Compact form fields — density -2 */
 @include mat.form-field-density(-2);
+
+/* Input/select text size — match system body text on desktop.
+ * Mobile (<768px) keeps Material's 16px default to prevent iOS auto-zoom on focus. */
+@media (min-width: 768px) {
+  :root {
+    --mdc-filled-text-field-input-text-size: var(--text-sm);
+    --mdc-filled-text-field-label-text-size: var(--text-sm);
+    --mdc-outlined-text-field-input-text-size: var(--text-sm);
+    --mdc-outlined-text-field-label-text-size: var(--text-sm);
+    --mat-form-field-container-text-size: var(--text-sm);
+    --mat-form-field-subscript-text-size: var(--text-xs);
+    --mat-select-trigger-text-size: var(--text-sm);
+    --mat-option-label-text-size: var(--text-sm);
+  }
+}

@@ -1,6 +1,9 @@
-<div class="post-form-page" [formGroup]="form">
+<div class="post-form-page" [formGroup]="form" [consoleServerErrorMap]="{}">
   <div class="post-form-page__header">
-    <div>
+    <a mat-icon-button routerLink="/admin/blog" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <div class="flex-1">
       <h1 class="text-page-title">{{ isEditMode() ? 'Edit Post' : 'New Post' }}</h1>
       <p class="text-body text-text-secondary">
         {{
@@ -14,10 +17,6 @@
         <mat-icon class="icon-sm">upload_file</mat-icon>
         Import Markdown
       </button>
-      <a mat-stroked-button routerLink="/admin/blog">
-        <mat-icon class="icon-sm">arrow_back</mat-icon>
-        Back
-      </a>
     </div>
   </div>
 

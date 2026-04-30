@@ -162,7 +162,6 @@ export default class PostsPageComponent implements OnInit {
           this.toast.success('Post deleted');
           this.loadPosts({ silent: true });
         },
-        error: () => this.toast.error('Failed to delete post'),
       });
   }
 
@@ -172,7 +171,6 @@ export default class PostsPageComponent implements OnInit {
         this.toast.success('Post restored');
         this.loadPosts({ silent: true });
       },
-      error: () => this.toast.error('Failed to restore post'),
     });
   }
 
@@ -196,7 +194,6 @@ export default class PostsPageComponent implements OnInit {
           this.toast.success('Post permanently deleted');
           this.loadPosts({ silent: true });
         },
-        error: () => this.toast.error('Failed to delete post'),
       });
   }
 
@@ -217,7 +214,6 @@ export default class PostsPageComponent implements OnInit {
           this.posts.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load posts'),
       });
   }
 }

@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,11 +25,11 @@ import {
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
-  extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
+  ServerErrorDirective,
 } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import { CategoryService } from '../category.service';
@@ -51,6 +50,7 @@ import { CategoryService } from '../category.service';
     SpinnerOverlayComponent,
     StickySaveBarComponent,
     FormErrorPipe,
+    ServerErrorDirective,
   ],
   templateUrl: './category-form-page.html',
   styleUrl: './category-form-page.scss',
@@ -67,7 +67,6 @@ export default class CategoryFormPageComponent implements OnInit, HasUnsavedChan
   readonly id = signal<string | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
-  readonly serverError = signal('');
   readonly dirty = signal(false);
 
   readonly isEditMode = computed(() => this.id() !== null);
@@ -122,16 +121,11 @@ export default class CategoryFormPageComponent implements OnInit, HasUnsavedChan
     }
 
     this.submitting.set(true);
-    this.serverError.set('');
 
     const { name, description, displayOrder } = this.form.getRawValue();
     const editId = this.id();
 
-    const onError = (err: HttpErrorResponse) => {
-      this.submitting.set(false);
-      const apiError = extractApiError(err);
-      this.serverError.set(apiError?.message ?? 'Failed to save category');
-    };
+    const onError = () => this.submitting.set(false);
 
     if (editId) {
       this.categoryService.update(editId, { name, description: description || null, displayOrder }).subscribe({
@@ -167,7 +161,6 @@ export default class CategoryFormPageComponent implements OnInit, HasUnsavedChan
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load category');
         this.loading.set(false);
         this.router.navigate(['/categories']);
       },

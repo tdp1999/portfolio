@@ -161,7 +161,6 @@ export default class ExperiencesPageComponent implements OnInit {
           this.toast.success('Experience deleted');
           this.loadExperiences({ silent: true });
         },
-        error: () => this.toast.error('Failed to delete experience'),
       });
   }
 
@@ -185,7 +184,6 @@ export default class ExperiencesPageComponent implements OnInit {
           this.toast.success('Experience restored');
           this.loadExperiences({ silent: true });
         },
-        error: () => this.toast.error('Failed to restore experience'),
       });
   }
 
@@ -212,7 +210,6 @@ export default class ExperiencesPageComponent implements OnInit {
           this.experiences.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load experiences'),
       });
   }
 }

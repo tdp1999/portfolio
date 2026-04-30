@@ -152,7 +152,6 @@ export default class ProjectsPageComponent implements OnInit {
           this.toast.success('Project deleted');
           this.loadProjects({ silent: true });
         },
-        error: () => this.toast.error('Failed to delete project'),
       });
   }
 
@@ -162,7 +161,6 @@ export default class ProjectsPageComponent implements OnInit {
         this.toast.success('Project restored');
         this.loadProjects({ silent: true });
       },
-      error: () => this.toast.error('Failed to restore project'),
     });
   }
 
@@ -183,7 +181,6 @@ export default class ProjectsPageComponent implements OnInit {
           this.projects.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load projects'),
       });
   }
 }

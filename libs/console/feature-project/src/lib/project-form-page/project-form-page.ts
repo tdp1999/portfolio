@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -23,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MediaService } from '@portfolio/console/shared/data-access';
+import type { MediaItem } from '@portfolio/console/shared/util';
 import {
   ChipBooleanComponent,
   ChipSelectComponent,
@@ -42,11 +42,11 @@ import {
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
-  extractApiError,
   FormErrorPipe,
   HasUnsavedChanges,
   onBeforeUnload,
   scrollToFirstError,
+  ServerErrorDirective,
 } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import { ProjectService } from '../project.service';
@@ -99,6 +99,7 @@ interface GalleryImage {
     SectionCardComponent,
     StickySaveBarComponent,
     SpinnerOverlayComponent,
+    ServerErrorDirective,
   ],
   templateUrl: './project-form-page.html',
   styleUrl: './project-form-page.scss',
@@ -125,7 +126,6 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
   readonly isEdit = computed(() => this.projectId() !== null);
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly serverError = signal('');
 
   readonly skills = signal<SkillOption[]>([]);
 
@@ -236,10 +236,10 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((result: string | undefined) => {
+      .subscribe((result: MediaItem | undefined) => {
         if (result) {
-          this.thumbnailId.set(result);
-          this.thumbnailUrl.set(null);
+          this.thumbnailId.set(result.id);
+          this.thumbnailUrl.set(result.url);
           this.form.markAsDirty();
           this.dirty.set(true);
         }
@@ -267,11 +267,13 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((result: string[] | undefined) => {
+      .subscribe((result: MediaItem[] | undefined) => {
         if (result) {
           const existing = this.galleryImages();
           const existingMap = new Map(existing.map((img) => [img.mediaId, img]));
-          const updated = result.map((mediaId) => existingMap.get(mediaId) ?? { mediaId, url: '', altText: null });
+          const updated = result.map(
+            (item) => existingMap.get(item.id) ?? { mediaId: item.id, url: item.url, altText: item.altText ?? null }
+          );
           this.galleryImages.set(updated);
           this.form.markAsDirty();
           this.dirty.set(true);
@@ -308,7 +310,6 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     }
 
     this.saving.set(true);
-    this.serverError.set('');
     const raw = this.form.getRawValue();
 
     const highlights: HighlightPayload[] = raw.highlights.map((h: Record<string, unknown>) => ({
@@ -320,13 +321,7 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
 
     const imageIds = this.galleryImages().map((img) => img.mediaId);
 
-    const onError = (err: HttpErrorResponse) => {
-      this.saving.set(false);
-      const apiError = extractApiError(err);
-      const message = apiError?.message ?? 'Failed to save project';
-      this.serverError.set(message);
-      this.toast.error(message);
-    };
+    const onError = () => this.saving.set(false);
 
     const editId = this.projectId();
     if (this.isEdit() && editId) {
@@ -407,7 +402,6 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     }
     this.form.markAsPristine();
     this.dirty.set(false);
-    this.serverError.set('');
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -438,7 +432,6 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         },
         error: () => {
           this.loading.set(false);
-          this.toast.error('Failed to load project');
           this.router.navigate(['/projects']);
         },
       });

@@ -61,7 +61,6 @@ export default class CategoryDetailComponent implements OnInit {
           this.toast.success('Category deleted');
           this.router.navigate(['/categories']);
         },
-        error: () => this.toast.error('Failed to delete category'),
       });
   }
 
@@ -73,7 +72,6 @@ export default class CategoryDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load category');
         this.loading.set(false);
         this.router.navigate(['/categories']);
       },

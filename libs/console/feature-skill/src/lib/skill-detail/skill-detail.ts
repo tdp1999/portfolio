@@ -79,7 +79,6 @@ export default class SkillDetailComponent implements OnInit {
           this.toast.success('Skill deleted');
           this.router.navigate(['/skills']);
         },
-        error: () => this.toast.error('Failed to delete skill'),
       });
   }
 
@@ -104,7 +103,6 @@ export default class SkillDetailComponent implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.toast.error('Failed to load skill');
           this.loading.set(false);
           this.router.navigate(['/skills']);
         },

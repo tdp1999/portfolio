@@ -68,6 +68,43 @@ export const DisplayOrderSchema = integerSchema(LIMITS.DISPLAY_ORDER_MIN);
 export const YearsOfExperienceSchema = integerSchema(LIMITS.YOE_MIN, LIMITS.YOE_MAX);
 export const CertificationYearSchema = integerSchema(LIMITS.CERT_YEAR_MIN, LIMITS.CERT_YEAR_MAX);
 
+// --- Dates ---
+
+/**
+ * Optional, nullable, coerced date.
+ *
+ * Use this for "end date" / "completed at" style fields. Plain `z.coerce.date().optional()`
+ * is a footgun — `new Date(null)` returns the epoch, so a `null` payload silently coerces
+ * to `1970-01-01` instead of being rejected or treated as absent.
+ */
+export const OptionalDateSchema = z.coerce.date().nullable().optional();
+
+/**
+ * Refines an object schema so `<start>` is strictly before `<end>` when both are set.
+ * `null`/`undefined` on either side short-circuits to true.
+ *
+ * Defaults to `startDate` / `endDate`. Override `start`/`end` for non-standard names.
+ * The error is attached at `path: [end]` so it surfaces on the end-date field.
+ */
+export const withDateRange = <T extends z.ZodTypeAny>(
+  schema: T,
+  opts: { start?: string; end?: string; message?: string } = {}
+) => {
+  const start = opts.start ?? 'startDate';
+  const end = opts.end ?? 'endDate';
+  return schema.refine(
+    (v) => {
+      const s = (v as Record<string, unknown>)[start];
+      const e = (v as Record<string, unknown>)[end];
+      if (!s || !e) return true;
+      const sd = s instanceof Date ? s : new Date(s as string);
+      const ed = e instanceof Date ? e : new Date(e as string);
+      return sd < ed;
+    },
+    { message: opts.message ?? `${start} must be before ${end}`, path: [end] }
+  );
+};
+
 // --- Password ---
 
 const PASSWORD_ERROR =

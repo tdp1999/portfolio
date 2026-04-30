@@ -8,81 +8,77 @@
     </button>
   </header>
 
-  <mat-tab-group
-    class="picker__tabs"
-    [selectedIndex]="activeTab() === 'library' ? 0 : 1"
-    (selectedIndexChange)="onTabChange($event)"
-  >
-    <mat-tab label="Library">
-      <mat-dialog-content class="picker__content">
-        <console-recently-used-strip
-          [items]="recentItems()"
-          [selectedIds]="selectedIdsArray()"
-          (pick)="onRecentPick($event)"
-        />
+  <div class="picker__mode">
+    <console-segmented-control [options]="tabOptions" [ngModel]="activeTab()" (ngModelChange)="activeTab.set($event)" />
+  </div>
 
-        <div class="picker__toolbar">
-          <console-asset-filter-bar
-            [search]="search()"
-            [mimeGroup]="mimeGroup()"
-            [folder]="folder()"
-            [sort]="sort()"
-            [showMimeChips]="!data.mimeFilter && !data.mimeGroup"
-            (searchChange)="onSearchChange($event)"
-            (mimeGroupChange)="onMimeGroupChange($event)"
-            (folderChange)="onFolderChange($event)"
-            (sortChange)="onSortChange($event)"
-            (clearAll)="onClearFilters()"
-          />
-          <button
-            type="button"
-            mat-icon-button
-            class="picker__view-toggle"
-            [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
-            (click)="onViewModeToggle()"
-          >
-            <mat-icon>{{ viewMode() === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
-          </button>
-        </div>
+  @if (activeTab() === 'library') {
+    <mat-dialog-content class="picker__content">
+      <console-recently-used-strip
+        [items]="recentItems()"
+        [selectedIds]="selectedIdsArray()"
+        (pick)="onRecentPick($event)"
+      />
 
-        <console-asset-grid
-          class="picker__grid"
-          [class.picker__grid--highlight]="highlightActive()"
-          [items]="items()"
-          [selectedIds]="selectedIdsArray()"
-          [mode]="data.mode"
-          [viewMode]="viewMode()"
-          [loading]="loading()"
-          [currentPage]="page()"
-          [totalPages]="totalPages()"
-          (selectionChange)="onSelectionChange($event)"
-          (itemActivated)="onItemActivated($event)"
-          (pageChange)="onPageChange($event)"
+      <div class="picker__toolbar">
+        <console-asset-filter-bar
+          [search]="search()"
+          [mimeGroup]="mimeGroup()"
+          [folder]="folder()"
+          [sort]="sort()"
+          [showMimeChips]="!data.mimeFilter && !data.mimeGroup"
+          (searchChange)="onSearchChange($event)"
+          (mimeGroupChange)="onMimeGroupChange($event)"
+          (folderChange)="onFolderChange($event)"
+          (sortChange)="onSortChange($event)"
+          (clearAll)="onClearFilters()"
         />
-      </mat-dialog-content>
-    </mat-tab>
+        <button
+          type="button"
+          mat-icon-button
+          class="picker__view-toggle"
+          [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+          (click)="onViewModeToggle()"
+        >
+          <mat-icon>{{ viewMode() === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
+        </button>
+      </div>
 
-    <mat-tab label="Upload">
-      <mat-dialog-content class="picker__content picker__content--upload">
-        <div class="picker__upload-folder">
-          <mat-form-field appearance="outline" class="picker__upload-folder-field">
-            <mat-label>Upload to folder</mat-label>
-            <mat-select [value]="uploadFolder()" (valueChange)="uploadFolder.set($event)">
-              @for (f of uploadFolders; track f) {
-                <mat-option [value]="f">{{ uploadFolderLabels[f] }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <console-asset-upload-zone
-          [uploadFn]="uploadFn"
-          [accept]="data.mimeFilter ?? '*/*'"
-          [multiple]="data.mode === 'multi'"
-          (uploadsComplete)="onUploadsComplete($event)"
-        />
-      </mat-dialog-content>
-    </mat-tab>
-  </mat-tab-group>
+      <console-asset-grid
+        class="picker__grid"
+        [class.picker__grid--highlight]="highlightActive()"
+        [items]="items()"
+        [selectedIds]="selectedIdsArray()"
+        [mode]="data.mode"
+        [viewMode]="viewMode()"
+        [loading]="loading()"
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        (selectionChange)="onSelectionChange($event)"
+        (itemActivated)="onItemActivated($event)"
+        (pageChange)="onPageChange($event)"
+      />
+    </mat-dialog-content>
+  } @else {
+    <mat-dialog-content class="picker__content picker__content--upload">
+      <div class="picker__upload-folder">
+        <mat-form-field appearance="outline" class="picker__upload-folder-field">
+          <mat-label>Upload to folder</mat-label>
+          <mat-select [value]="uploadFolder()" (valueChange)="uploadFolder.set($event)">
+            @for (f of uploadFolders; track f) {
+              <mat-option [value]="f">{{ uploadFolderLabels[f] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <console-asset-upload-zone
+        [uploadFn]="uploadFn"
+        [accept]="data.mimeFilter ?? '*/*'"
+        [multiple]="data.mode === 'multi'"
+        (uploadsComplete)="onUploadsComplete($event)"
+      />
+    </mat-dialog-content>
+  }
 
   <mat-dialog-actions class="picker__footer">
     <div class="picker__footer-left">

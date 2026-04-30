@@ -20,4 +20,4 @@ export interface MediaPickerDialogData {
   dataSource: MediaPickerDataSource;
 }
 
-export type MediaPickerDialogResult = string | string[] | undefined;
+export type MediaPickerDialogResult = MediaItem | MediaItem[] | undefined;

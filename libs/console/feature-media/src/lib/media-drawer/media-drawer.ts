@@ -13,7 +13,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { A11yModule } from '@angular/cdk/a11y';
 import { DatePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,7 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialogComponent, type ConfirmDialogData, ToastService } from '@portfolio/console/shared/ui';
-import { extractApiError } from '@portfolio/console/shared/util';
+import { ServerErrorDirective } from '@portfolio/console/shared/util';
 import { filter, switchMap } from 'rxjs';
 import { MediaService } from '../media.service';
 import { MediaItem } from '../media.types';
@@ -42,6 +41,7 @@ import { formatFileSize, getMimeTypeCategory } from '../media.constants';
     MatInputModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    ServerErrorDirective,
   ],
   templateUrl: './media-drawer.html',
   styleUrl: './media-drawer.scss',
@@ -64,7 +64,6 @@ export class MediaDrawerComponent {
   readonly item = signal<MediaItem | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
-  readonly serverError = signal('');
   readonly dirty = signal(false);
 
   readonly form = this.fb.nonNullable.group({
@@ -123,7 +122,6 @@ export class MediaDrawerComponent {
     const it = this.item();
     if (!it) return;
     this.submitting.set(true);
-    this.serverError.set('');
     const raw = this.form.getRawValue();
 
     this.mediaService
@@ -143,11 +141,7 @@ export class MediaDrawerComponent {
           this.toast.success('Media updated');
           this.updated.emit(fresh);
         },
-        error: (err: HttpErrorResponse) => {
-          this.submitting.set(false);
-          const apiError = extractApiError(err);
-          this.serverError.set(apiError?.message ?? 'Failed to update metadata');
-        },
+        error: () => this.submitting.set(false),
       });
   }
 
@@ -173,10 +167,7 @@ export class MediaDrawerComponent {
           this.toast.success('Media moved to trash');
           this.deleted.emit(it.id);
         },
-        error: (err) => {
-          const apiError = extractApiError(err);
-          this.toast.error(apiError.message || 'Failed to delete media');
-        },
+        // Global handler toasts via the error dictionary; nothing to do locally.
       });
   }
 
@@ -194,7 +185,6 @@ export class MediaDrawerComponent {
       },
       error: () => {
         this.loading.set(false);
-        this.toast.error('Failed to load media');
         this.closed.emit();
       },
     });

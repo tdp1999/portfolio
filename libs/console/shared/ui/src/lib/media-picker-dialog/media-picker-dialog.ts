@@ -1,11 +1,15 @@
 import { A11yModule } from '@angular/cdk/a11y';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
+import {
+  SegmentedControlComponent,
+  type SegmentedControlOption,
+} from '../segmented-control/segmented-control.component';
 import type { MediaFolder, MediaItem, MediaMimeGroup, MediaSort } from '@portfolio/console/shared/util';
 import { DEFAULT_PAGE_SIZE, MEDIA_PICKER_MIN_LOADING_MS } from '@portfolio/console/shared/util';
 import { catchError, finalize, forkJoin, map, of, startWith, switchMap } from 'rxjs';
@@ -32,13 +36,14 @@ import { RecentlyUsedStripComponent } from './recently-used-strip.component';
   standalone: true,
   imports: [
     A11yModule,
+    FormsModule,
     MatDialogContent,
     MatDialogActions,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
-    MatTabsModule,
+    SegmentedControlComponent,
     AssetGridComponent,
     AssetFilterBarComponent,
     AssetUploadZoneComponent,
@@ -59,6 +64,10 @@ export default class MediaPickerDialogComponent implements OnInit {
   readonly data = inject<MediaPickerDialogData>(MAT_DIALOG_DATA);
 
   readonly activeTab = signal<'library' | 'upload'>('library');
+  readonly tabOptions: SegmentedControlOption[] = [
+    { value: 'library', label: 'Library' },
+    { value: 'upload', label: 'Upload' },
+  ];
   readonly items = signal<MediaItem[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
@@ -113,10 +122,6 @@ export default class MediaPickerDialogComponent implements OnInit {
 
     this.loadRecent();
     this.loadMedia();
-  }
-
-  protected onTabChange(index: number): void {
-    this.activeTab.set(index === 0 ? 'library' : 'upload');
   }
 
   protected onSearchChange(value: string): void {
@@ -229,13 +234,27 @@ export default class MediaPickerDialogComponent implements OnInit {
   }
 
   protected confirm(): void {
-    pushRecentIds([...this.selected()]);
-    if (this.data.mode === 'single') {
-      const [first] = this.selected();
-      this.dialogRef.close(first);
-    } else {
-      this.dialogRef.close([...this.selected()]);
-    }
+    const ids = [...this.selected()];
+    pushRecentIds(ids);
+
+    const pool = new Map<string, MediaItem>();
+    for (const item of this.items()) pool.set(item.id, item);
+    for (const item of this.recentItems()) pool.set(item.id, item);
+
+    const missing = ids.filter((id) => !pool.has(id));
+    const hydrate$ = missing.length
+      ? forkJoin(missing.map((id) => this.data.dataSource.getByIdSilent(id).pipe(catchError(() => of(null)))))
+      : of([] as (MediaItem | null)[]);
+
+    hydrate$.subscribe((fetched) => {
+      for (const item of fetched) if (item) pool.set(item.id, item);
+      const resolved = ids.map((id) => pool.get(id)).filter((x): x is MediaItem => !!x);
+      if (this.data.mode === 'single') {
+        this.dialogRef.close(resolved[0]);
+      } else {
+        this.dialogRef.close(resolved);
+      }
+    });
   }
 
   private loadMedia(): void {

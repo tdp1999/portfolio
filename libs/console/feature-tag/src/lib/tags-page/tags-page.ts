@@ -126,7 +126,6 @@ export default class TagsPageComponent implements OnInit {
           this.tags.set(res.data);
           this.total.set(res.total);
         },
-        error: () => this.toast.error('Failed to load tags'),
       });
   }
 

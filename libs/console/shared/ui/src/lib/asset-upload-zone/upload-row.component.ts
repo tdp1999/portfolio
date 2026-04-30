@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import type { UploadState } from './asset-upload-zone.types';
 
 @Component({
   selector: 'console-upload-row',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="upload-row" [class]="'upload-row--' + state()">
@@ -21,7 +22,9 @@ import type { UploadState } from './asset-upload-zone.types';
       </div>
 
       <div class="upload-row__info">
-        <span class="upload-row__name text-body truncate" [title]="file().name">{{ file().name }}</span>
+        <span class="upload-row__name text-body truncate" [matTooltip]="file().name" matTooltipShowDelay="500">
+          {{ file().name }}
+        </span>
         <span class="text-caption text-text-muted">{{ sizeLabel() }}</span>
       </div>
 
