@@ -146,6 +146,11 @@
   - `feature-ddl` exports `ddlRoutes` (root + `/long-form` with `unsavedChangesGuard`); home/error export components by name
   - 3 path mappings added to `tsconfig.base.json`; `app.routes.ts` updated; `unsavedChangesGuard` import dropped from app shell (now in feature-ddl)
   - Resolved nx project-name collision: renamed `libs/landing/feature-home` to `landing-feature-home` (matches existing `landing-feature-blog` convention)
+- [x] **Profile Page Section Extraction** (epic-profile-page-section-extraction) - Completed 2026-04-30
+  - Split monolithic `profile-page` (~900 LOC) into 7 per-section standalone components under `libs/console/feature-profile/src/lib/sections/`
+  - Each section owns its FormGroup, save action, signals, and `ServerErrorDirective` wiring; parent reduced to thin shell (load + scrollspy)
+  - Fixed 2 long-standing failing tests in `apps/console/src/app/error-handler.provider.spec.ts` (assertions aligned with `extractApiError` actual output)
+  - Cleared the "Profile-page section extraction" bullet from `patterns-error-handling.md` deferred list
 
 ## In Progress
 
@@ -219,7 +224,7 @@
 | In Progress               | 0       |
 | Pending                   | 2       |
 | **Total Created**         | **285** |
-| Epics completed           | 28      |
+| Epics completed           | 29      |
 
 ## Notes
 

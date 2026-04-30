@@ -39,6 +39,7 @@ Use these skills for specific workflows. More will be added over time.
 
 - `vision.md` - Project goals and philosophy
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
+- `patterns-error-handling.md` - **Read before adding error codes or wiring submit forms.** BE throw → FE toast/inline-error flow, dictionary, ServerErrorDirective procedure
 - `design/` - Design system (foundations, landing, console, shared)
 - `design/console-cookbook.md` - **Read before writing console HTML/SCSS.** Spacing decision table, typography class picker, surface/text pairings, pre-report checklist
 - `design/components/` - **Read before editing any documented component.** Per-component design bank (behavior contract, implementation rules, quality checklist). Each family has an `_overview.md` of family-wide rules; do not repeat those in component docs.
