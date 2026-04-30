@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, BadRequestError, ErrorLayer, ProjectErrorCode } from '@portfolio/shared/errors';
+import { NotFoundError, BadRequestError, ConflictError, ErrorLayer, ProjectErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IProjectRepository } from '../ports/project.repository.port';
@@ -32,6 +32,12 @@ export class RestoreProjectHandler implements ICommandHandler<RestoreProjectComm
     if (!result.entity.isDeleted)
       throw BadRequestError('Project is not deleted', {
         errorCode: ProjectErrorCode.NOT_FOUND,
+        layer: ErrorLayer.APPLICATION,
+      });
+
+    if (await this.repo.slugExists(result.entity.slug))
+      throw ConflictError('Cannot restore: another active project already uses this slug', {
+        errorCode: ProjectErrorCode.SLUG_CONFLICT,
         layer: ErrorLayer.APPLICATION,
       });
 

@@ -20,7 +20,7 @@ import { BlogPostModule } from '../modules/blog-post';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-const isProduction = process.env['NODE_ENV'] === 'production';
+const isTest = process.env['NODE_ENV'] === 'test';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
     ProjectModule,
     BlogPostModule,
     ThrottlerModule.forRoot({
-      skipIf: () => !isProduction,
+      skipIf: () => isTest,
       throttlers: [{ ttl: 60000, limit: 60 }],
     }),
   ],

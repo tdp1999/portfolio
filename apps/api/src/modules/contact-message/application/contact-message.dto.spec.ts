@@ -173,8 +173,8 @@ describe('ContactMessageQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should fail when limit exceeds 100', () => {
-    const result = ContactMessageQuerySchema.safeParse({ limit: 101 });
+  it('should fail when limit exceeds 1000', () => {
+    const result = ContactMessageQuerySchema.safeParse({ limit: 1001 });
     expect(result.success).toBe(false);
   });
 });

@@ -201,6 +201,16 @@ describe('CreateExperienceSchema', () => {
     const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ description: null }));
     expect(result.success).toBe(true);
   });
+
+  // Regression: `z.coerce.date().optional()` coerces `null` to epoch (1970-01-01),
+  // which then fails the `start < end` refine. `OptionalDateSchema` is `.nullable().optional()`
+  // so `null` short-circuits the refine via `if (!v.endDate) return true`.
+  it('should accept null endDate without triggering date-range refine', () => {
+    const result = CreateExperienceSchema.safeParse(
+      buildValidCreatePayload({ startDate: new Date('2023-01-01'), endDate: null })
+    );
+    expect(result.success).toBe(true);
+  });
 });
 
 // --- UpdateExperienceSchema ---
@@ -213,6 +223,22 @@ describe('UpdateExperienceSchema', () => {
 
   it('should reject an empty object', () => {
     const result = UpdateExperienceSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it('should accept startDate + null endDate (clearing end date)', () => {
+    const result = UpdateExperienceSchema.safeParse({
+      startDate: new Date('2023-01-01'),
+      endDate: null,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject startDate after endDate', () => {
+    const result = UpdateExperienceSchema.safeParse({
+      startDate: new Date('2024-06-01'),
+      endDate: new Date('2024-01-01'),
+    });
     expect(result.success).toBe(false);
   });
 });

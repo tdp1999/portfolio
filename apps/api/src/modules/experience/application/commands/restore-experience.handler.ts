@@ -1,6 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, BadRequestError, ErrorLayer, ExperienceErrorCode } from '@portfolio/shared/errors';
+import {
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+  ErrorLayer,
+  ExperienceErrorCode,
+} from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IExperienceRepository } from '../ports/experience.repository.port';
@@ -32,6 +38,12 @@ export class RestoreExperienceHandler implements ICommandHandler<RestoreExperien
     if (!experience.isDeleted)
       throw BadRequestError('Experience is not deleted', {
         errorCode: ExperienceErrorCode.NOT_DELETED,
+        layer: ErrorLayer.APPLICATION,
+      });
+
+    if (await this.repo.slugExists(experience.slug))
+      throw ConflictError('Cannot restore: another active experience already uses this slug', {
+        errorCode: ExperienceErrorCode.SLUG_TAKEN,
         layer: ErrorLayer.APPLICATION,
       });
 

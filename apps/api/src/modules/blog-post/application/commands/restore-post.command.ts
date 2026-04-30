@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { NotFoundError, BadRequestError, ErrorLayer, BlogPostErrorCode } from '@portfolio/shared/errors';
+import { NotFoundError, BadRequestError, ConflictError, ErrorLayer, BlogPostErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
@@ -32,6 +32,12 @@ export class RestorePostHandler implements ICommandHandler<RestorePostCommand> {
     if (!existing.entity.isDeleted)
       throw BadRequestError('Blog post is not deleted', {
         errorCode: BlogPostErrorCode.NOT_FOUND,
+        layer: ErrorLayer.APPLICATION,
+      });
+
+    if (await this.repo.slugExists(existing.entity.slug))
+      throw ConflictError('Cannot restore: another active blog post already uses this slug', {
+        errorCode: BlogPostErrorCode.SLUG_CONFLICT,
         layer: ErrorLayer.APPLICATION,
       });
 

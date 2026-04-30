@@ -18,6 +18,10 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
+  const isProduction = process.env['NODE_ENV'] === 'production';
+  if (isProduction && !process.env.CORS_ORIGINS) {
+    throw new Error('CORS_ORIGINS is required in production');
+  }
   const corsOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',')
         .map((o) => o.trim())
