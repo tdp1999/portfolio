@@ -1,0 +1,25 @@
+:host {
+  display: inline-flex;
+}
+
+/* Material's button-toggle tokens cover color/shape/height but not these layout
+   primitives, so they live here. The token system still owns colors. */
+:host ::ng-deep .segmented-control.mat-button-toggle-group {
+  /* Inset padding so the active pill floats inside the track. */
+  padding: 4px;
+
+  /* Material does not expose a border-color token; a 1px border defines the
+     track edge clearly against any parent surface. */
+  border: 1px solid var(--color-border);
+}
+
+:host ::ng-deep .segmented-control .mat-button-toggle {
+  /* Each segment owns its pill radius so the active background is rounded. */
+  border-radius: 8px;
+  flex: 1;
+  min-width: 96px;
+}
+
+:host ::ng-deep .segmented-control .mat-button-toggle:not(.mat-button-toggle-checked) {
+  background: transparent;
+}

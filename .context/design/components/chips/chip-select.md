@@ -25,6 +25,8 @@ Native single-select chip listboxes (e.g. Material's `mat-chip-listbox`) allow t
 - Multiple values → `chip-toggle-group`.
 - "No selection" is a real state → use a dropdown or add an explicit "Any/All" option to `chip-select`.
 - ≥ 8 options or long labels that wrap → use a dropdown.
+- The options are *navigation* between different content (deep-linkable, route-aware, page-level) → use `mat-tab-group`.
+- The toggle must read unambiguously as a *switch* (single pill on a shared track, no check affordance) → use `console-segmented-control`. See `../segmented-control.md`.
 
 ## Behavior contract
 

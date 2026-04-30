@@ -32,6 +32,8 @@ export type { ChipOption } from './lib/chip-toggle-group/chip-toggle-group.compo
 export { ChipSelectComponent } from './lib/chip-select/chip-select.component';
 export type { ChipSelectOption } from './lib/chip-select/chip-select.component';
 export { ChipBooleanComponent } from './lib/chip-boolean/chip-boolean.component';
+export { SegmentedControlComponent } from './lib/segmented-control/segmented-control.component';
+export type { SegmentedControlOption } from './lib/segmented-control/segmented-control.component';
 export type { LanguageConfig } from './lib/translatable-group/translatable-group';
 export { AssetGridComponent } from './lib/asset-grid/asset-grid.component';
 export type { AssetGridMode, AssetGridViewMode } from './lib/asset-grid/asset-grid.types';

@@ -293,7 +293,8 @@ These mean "an amount" — increment/decrement is meaningful, so use `type="numb
 |---|---|---|---|---|
 | enum (single, ≤7 options, exclusive) | `<mat-radio-group>` or `<console-chip-select>` | — | `z.nativeEnum(...)` / `z.enum([...])` | language |
 | enum (single, many options) | `<mat-select>` | — | same | timezone, parentSkill |
-| enum (single, segmented) | `<console-chip-select>` | see `components/chips/` | same | cert mode (link/file), grid/list view |
+| enum (single, filter-chip vibe) | `<console-chip-select>` | see `components/chips/` | same | cert mode (link/file) |
+| enum (single, view-mode toggle in card/dialog) | `<console-segmented-control>` | track + inset pill, see `components/segmented-control.md` | same | locale picker (EN/VI), library/upload, day/week/month |
 | enum (multi) | `<mat-select multiple>` or `<console-chip-toggle-group>` | array `maxLength(N)` if capped — see `components/chips/` | `z.array(z.nativeEnum(...))` (+ `.max(N)`) | categoryIds, openTo |
 | boolean | `<console-chip-boolean>` (state: on/off, see `components/chips/`) **or** `<mat-checkbox>` (intent: opt-in) **or** `<mat-slide-toggle>` (settings switch) | — | `z.boolean()` | featured, isCurrent |
 | autocomplete (from a known set) | `<mat-autocomplete>` | id-based; final value is from set | `z.uuid()` / enum | skill picker |

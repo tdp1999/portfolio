@@ -1,0 +1,18 @@
+<mat-button-toggle-group
+  class="segmented-control"
+  hideSingleSelectionIndicator
+  [value]="value()"
+  [disabled]="disabled()"
+  (change)="onSelection($event)"
+>
+  @for (opt of options(); track opt.value) {
+    <mat-button-toggle [value]="opt.value" [attr.aria-label]="iconOnly() ? opt.label : null">
+      @if (opt.icon) {
+        <mat-icon class="icon-md">{{ opt.icon }}</mat-icon>
+      }
+      @if (!iconOnly()) {
+        <span>{{ opt.label }}</span>
+      }
+    </mat-button-toggle>
+  }
+</mat-button-toggle-group>

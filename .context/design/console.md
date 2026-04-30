@@ -39,6 +39,7 @@ Components with non-trivial design rules have their own docs under `components/<
 | `ConfirmDialogComponent` | Material dialog for destructive action confirmation | — |
 | `ErrorMessageComponent` | Inline error display | — |
 | `ChipSelect` / `ChipToggleGroup` / `ChipBoolean` | Single-select / multi-select / boolean chip toggles | [`components/chips/`](components/chips/_overview.md) |
+| `SegmentedControl` | Track + inset pill for view-mode toggle (locale, library/upload, list/grid). Replaces `mat-tab-group` inside cards/dialogs. | [`components/segmented-control.md`](components/segmented-control.md) |
 
 ## Material Overrides
 

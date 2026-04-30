@@ -36,6 +36,18 @@ These apply to every member; per-component docs do not repeat them.
 - **Options are passed in, not projected as content.** Members accept an `options` input (or `label` for boolean) so the component owns rendering rules. Content projection invites callsites to add styling that breaks the family look.
 - **Minimum 2 options** for `chip-select` and `chip-toggle-group`. A 1-option select is not a choice; a 1-option multi is a checkbox.
 
+## Relationship to tabs and segmented control
+
+Three patterns, three intents:
+
+- **Navigation** — each option reveals *different* content, route-aware, deep-linkable → `mat-tab-group`. Reserved for page-level only; do not put it inside cards or dialogs.
+- **View-mode toggle** — same content, different facet (locale, list/grid, library/upload). Two visual readings:
+  - *Track + sliding pill* (unambiguous "switch view") → `console-segmented-control`. See `../segmented-control.md`.
+  - *Filter chips* (separated rounded chips, check affordance) → `chip-select`.
+- **Filter** — narrow a list with a tick-to-apply vibe → `chip-select` (single) or `chip-toggle-group` (multi).
+
+If unsure between `chip-select` and `segmented-control` for a single-select view-mode: pick `segmented-control` when the user must clearly read "this is a switch, not a checkbox," and `chip-select` when separated chips with a check feel native to the surrounding UI.
+
 ## Non-goals
 
 - **Deselectable single-select** is not a chip pattern. If "no selection" is a valid state, that state needs its own chip ("All", "Any") inside `chip-select`, or use a dropdown with a clear button. Chips must not silently emit `null` from a click.
