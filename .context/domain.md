@@ -15,12 +15,15 @@
 | EmploymentType | The contract/engagement type of a work experience: Full-time, Part-time, Contract, Freelance, Internship, Self-employed | Value Object |
 | LocationType | The work arrangement of a role: Remote, Hybrid, On-site | Value Object |
 | ExperienceSkill | Junction linking an Experience to the Skills/technologies used in that role | Relation |
-| Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. | Entity |
+| Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. Has a displayGroup (Frontend, Backend, Tooling, Other) for grouped rendering on the landing page. | Entity |
 | Testimonial | A recommendation or quote from a colleague or client | Entity |
 | Project | A portfolio project showcasing personal or open-source work. Contains translatable fields (oneLiner, description, motivation, role), technical highlights, gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
 | TechnicalHighlight | A structured technical narrative (Challenge → Approach → Outcome) attached to a Project. 2-4 per project max. All fields translatable. Optional codeUrl links to specific file/PR. | Entity |
 | ProjectImage | Junction linking a Project to Media, with displayOrder. Layout decides contextual placement — no placement hints stored. | Relation |
 | ProjectSkill | Junction linking a Project to the Skills/technologies used in that project | Relation |
+| ProjectLink | An external link attached to a Project (label, url, type ∈ {repo, demo, case-study, doc, post}) — surfaced in D3.c sticky sidebar. | Value Object |
+| ProjectSection | A free-form body section in a Project's case-study page (anchor, heading, body markdown). Distinct from TechnicalHighlight (which is the structured C→A→O artifact). Used by D3.c reading column. | Value Object |
+| ProjectTocAnchor | A table-of-contents entry mapping an anchor id to a label, surfaced in D3.c sticky sidebar ToC. Derived from ProjectSection. | Value Object |
 | Post | A blog article with content, metadata, and publication status. Each Post exists in exactly one Language; the same content published in another language is a separate Post record with its own slug and independent lifecycle. | Aggregate |
 | Category | A grouping label for Posts | Entity |
 | Tag | A keyword associated with a Post for filtering | Value Object |
@@ -211,6 +214,9 @@
 - PRJ-005: Child records (highlights, images, skills) use replace-all strategy on update — delete existing, insert new, within transaction
 - PRJ-006: ProjectImage ordered by displayOrder; layout decides contextual placement (no placement hints in data)
 - PRJ-007: SEO meta tags auto-generated from title + oneLiner — no manual override fields
+- PRJ-008: ProjectLinks stored as JSON array; type enum constrains values; Owner manages via Console
+- PRJ-009: ProjectSections stored as JSON array preserving authored order; D3.c renders in array order
+- PRJ-010: ProjectTocAnchors derived from ProjectSection (anchor + heading.short or explicit label) — not separately authored unless override needed
 
 ### Profile
 - PRF-001: Only one Profile exists (single-owner site)

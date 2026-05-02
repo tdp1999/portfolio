@@ -209,11 +209,65 @@
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
 
+## Pending — Portfolio E5 Implementation (broken down 2026-05-02)
+
+From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
+
+### Phase 1 — Tokens & shell
+
+- [ ] 274-landing-tokens-and-fonts (M)
+- [ ] 275-landing-theme-toggle (M) — deps: 274
+- [ ] 276-landing-routing-and-shell (M) — deps: 274, 275
+
+### Phase 2 — Schema migrations
+
+- [ ] 277-portfolio-schema-migrations (L)
+
+### Phase 3 — Landing UI primitives
+
+- [ ] 278-landing-interactive-primitives (M) — deps: 274, 276
+- [ ] 279-landing-label-primitives (S) — deps: 274
+- [ ] 280-landing-content-primitives (S) — deps: 274
+
+### Phase 4 — Home page sections
+
+- [ ] 281-home-hero (M) — deps: 274, 278, 279, 277
+- [ ] 282-home-intro (S) — deps: 274, 280
+- [ ] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277
+- [ ] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277
+- [ ] 285-home-philosophy-strip (S) — deps: 274, 280
+- [ ] 286-home-get-in-touch (S) — deps: 274, 278
+- [ ] 287-home-footer-banner (S) — deps: 274, 278
+- [ ] 288-home-page-composition (S) — deps: 281–287
+
+### Phase 5 — Sub-pages
+
+- [ ] 289-projects-index-page (M) — deps: 274, 276, 278, 277
+- [ ] 290-project-detail-page (L) — deps: 274, 276, 278, 279, 280, 277
+- [ ] 291-uses-page (S) — deps: 274, 276, 278, 297
+- [ ] 292-colophon-page (S) — deps: 274, 276, 278, 298
+- [ ] 293-not-found-page (S) — deps: 274, 276, 278
+
+### Phase 6 — Content authoring (folded from descoped E3)
+
+- [ ] 294-content-console-mvp-case-study (L) — deps: 277, 290
+- [ ] 295-content-project-2-case-study (M) — deps: 277, 290, 294
+- [ ] 296-content-project-3-case-study (M) — deps: 277, 290, 294
+- [ ] 297-content-uses-page (S) — deps: 291
+- [ ] 298-content-colophon-page (S) — deps: 292
+- [ ] 299-content-profile-and-skills (S) — deps: 277
+
+### Phase 7 — SSR & perf gate
+
+- [ ] 300-landing-ssr-and-image-pipeline (M) — deps: 274–293
+- [ ] 301-landing-bundle-and-lighthouse-smoke (M) — deps: 300
+- [ ] 302-landing-sitemap-and-robots (S) — deps: 300
+
 ---
 
 ## Up Next
 
-**Current:** Dashboard backend APIs (194, pending standalone)
+**Current:** Portfolio E5 implementation. Recommended start: **274-landing-tokens-and-fonts** (no dependencies, foundation for everything else).
 
 
 ## Statistics
@@ -222,8 +276,8 @@
 | ------------------------- | ------- |
 | Done (archived)           | 283     |
 | In Progress               | 0       |
-| Pending                   | 2       |
-| **Total Created**         | **285** |
+| Pending                   | 31      |
+| **Total Created**         | **314** |
 | Epics completed           | 29      |
 
 ## Notes
