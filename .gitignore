@@ -49,6 +49,19 @@ static
 
 # Local configuration
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
+.claude/*.lock
 
 # Prisma migration backups (contain real data)
 prisma/backups/
+
+# Assets — whitelist approach
+# Default: ignore everything under /assets/
+# Track only what ships in production (project screenshots in V1).
+# Moodboard refs are planning artifacts (referenced from .context/plans/) — do not commit (third-party screenshots, gets stale post-launch).
+# /assets/private/ → personal files (CV, etc.)
+# /assets/scratch/ → ad-hoc paste during sessions
+# /assets/moodboard/ → design references; local-only
+/assets/*
+!/assets/projects/
+!/assets/projects/**
