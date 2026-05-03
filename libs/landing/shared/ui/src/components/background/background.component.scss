@@ -1,0 +1,120 @@
+:host {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+}
+
+/* ─────────────────────────────────────── 1. Blueprint — perspective grid floor ─── */
+.landing-bg--blueprint {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -25%;
+    right: -25%;
+    bottom: -10%;
+    height: 140%;
+    background-image:
+      linear-gradient(to right, rgba(155, 195, 235, 1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(155, 195, 235, 1) 1px, transparent 1px);
+    background-size: 56px 56px;
+    transform: rotateX(68deg);
+    transform-origin: 50% 100%;
+    mask-image: radial-gradient(ellipse 70% 80% at 50% 100%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 100%, black 20%, transparent 75%);
+    opacity: 0.18;
+  }
+}
+
+/* ─────────────────────────────────────────── 2. Topo — concentric contour ring ─── */
+.landing-bg--topo {
+  background-color: transparent;
+  background-image:
+    repeating-radial-gradient(
+      circle at 70% 30%,
+      transparent 0,
+      transparent 38px,
+      rgba(155, 195, 235, 0.22) 38px,
+      rgba(155, 195, 235, 0.22) 39px
+    ),
+    repeating-radial-gradient(
+      circle at 20% 80%,
+      transparent 0,
+      transparent 52px,
+      rgba(155, 195, 235, 0.16) 52px,
+      rgba(155, 195, 235, 0.16) 53px
+    );
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 90%);
+}
+
+/* ─────────────────────────────────────────────── 3. Hatch — diagonal pencil ─── */
+.landing-bg--hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 14px,
+    rgba(155, 195, 235, 0.16) 14px,
+    rgba(155, 195, 235, 0.16) 15px
+  );
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+}
+
+/* ─────────────────────────────────────────────── 4. Dots — dot matrix grid ─── */
+.landing-bg--dots {
+  background-image: radial-gradient(circle at center, rgba(155, 195, 235, 0.55) 1px, transparent 1.5px);
+  background-size: 28px 28px;
+  background-position: 0 0;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 60%, black 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 60%, black 20%, transparent 80%);
+}
+
+/* ────────────────────────────── 5. Crosshair — radar sweep / compass dial ─── */
+.landing-bg--crosshair {
+  background-image:
+    /* radial spokes */
+    conic-gradient(
+      from 0deg at 80% 75%,
+      transparent 0deg,
+      transparent 11deg,
+      rgba(155, 195, 235, 0.18) 11deg,
+      rgba(155, 195, 235, 0.18) 12deg,
+      transparent 12deg,
+      transparent 30deg,
+      rgba(155, 195, 235, 0.18) 30deg,
+      rgba(155, 195, 235, 0.18) 31deg,
+      transparent 31deg,
+      transparent 60deg,
+      rgba(155, 195, 235, 0.18) 60deg,
+      rgba(155, 195, 235, 0.18) 61deg,
+      transparent 61deg,
+      transparent 90deg,
+      rgba(155, 195, 235, 0.18) 90deg,
+      rgba(155, 195, 235, 0.18) 91deg,
+      transparent 91deg,
+      transparent 360deg
+    ),
+    /* concentric rings */
+      repeating-radial-gradient(
+        circle at 80% 75%,
+        transparent 0,
+        transparent 80px,
+        rgba(155, 195, 235, 0.18) 80px,
+        rgba(155, 195, 235, 0.18) 81px
+      );
+  mask-image: radial-gradient(circle at 80% 75%, black 0%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 80% 75%, black 0%, black 30%, transparent 80%);
+}
