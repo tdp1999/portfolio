@@ -31,6 +31,10 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
   },
   {
+    path: 'sandbox',
+    loadComponent: () => import('./pages/sandbox').then((m) => m.SandboxPage),
+  },
+  {
     path: '404',
     loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
   },

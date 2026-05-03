@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-background">
-  <div class="container mx-auto px-4 py-8">
+  <landing-container size="wide" class="block py-8">
     <header class="mb-8 flex items-start justify-between">
       <div>
         <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
@@ -23,6 +23,74 @@
         below will be removed as new primitives land.
       </p>
     </div>
+
+    <!-- E5 Container system showcase (3 sizes) -->
+    <div class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6 space-y-6">
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+          landing-container · 3 sizes
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-1">Container system</h2>
+        <p class="font-sans text-body-sm text-landing-text-500 max-w-2xl">
+          One shared <code>&lt;landing-container&gt;</code> with three sizes. Use <code>content</code> for prose and
+          forms, <code>wide</code> for hero/grids/header, <code>full</code> for edge-to-edge image strips and philosophy
+          bands.
+        </p>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="content" · max-w-6xl · 1152px (default)</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0">
+          <landing-container>
+            <div class="bg-landing-accent/15 border border-landing-accent/40 p-4 my-4 rounded text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-6xl</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="wide" · max-w-7xl · 1280px</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0">
+          <landing-container size="wide">
+            <div class="bg-landing-accent/15 border border-landing-accent/40 p-4 my-4 rounded text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-7xl</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="full" · 100% (full-bleed)</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0 overflow-hidden">
+          <landing-container size="full">
+            <div class="bg-landing-accent/15 border-y border-landing-accent/40 p-4 my-4 text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-none</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sandbox link card -->
+    <a
+      routerLink="/sandbox"
+      class="group mb-8 flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+    >
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+          prototype · /sandbox
+        </p>
+        <p class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors">
+          In-page navigation prototypes
+        </p>
+        <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+          Compare four nav patterns (FAB, TOC sidebar, section dots + reading bar, floating pill + mini-map) on a long
+          lorem-ipsum page.
+        </p>
+      </div>
+      <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+    </a>
 
     <section class="space-y-6 mb-12">
       <!-- Landing tokens sample (E5 task 274/275) -->
@@ -1036,8 +1104,8 @@
                 <p class="font-mono text-mono-md text-landing-text-500 mb-3">default · variant=apple · 3 segments</p>
                 <landing-segmented
                   [segments]="tabsWithPrototypes"
-                  [active]="segmentedTab()"
-                  (activeChange)="segmentedTab.set($event)"
+                  [active]="segDemoA()"
+                  (activeChange)="segDemoA.set($event)"
                   ariaLabel="Showcase example A"
                   idPrefix="seg-demo-a"
                 />
@@ -1048,8 +1116,8 @@
                 </p>
                 <landing-segmented
                   [segments]="tabsNoPrototypes"
-                  [active]="segmentedTab()"
-                  (activeChange)="segmentedTab.set($event)"
+                  [active]="segDemoB()"
+                  (activeChange)="segDemoB.set($event)"
                   ariaLabel="Showcase example B"
                   idPrefix="seg-demo-b"
                 />
@@ -1064,7 +1132,8 @@
                     { id: 's2', label: 'Week', disabled: true },
                     { id: 's3', label: 'Month' },
                   ]"
-                  [active]="'s1'"
+                  [active]="segDemoC()"
+                  (activeChange)="segDemoC.set($event)"
                   ariaLabel="Showcase example C"
                   idPrefix="seg-demo-c"
                 />
@@ -1487,35 +1556,6 @@
         </p>
 
         <div class="space-y-6">
-          <!-- Container Component -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Container</h3>
-            <div class="bg-background p-4 rounded-lg">
-              <landing-container>
-                <div class="bg-surface-elevated border border-border p-4 rounded">
-                  <p class="text-text-secondary">
-                    Default container with max-w-4xl constraint and horizontal padding. This container centers content
-                    and adds responsive padding.
-                  </p>
-                </div>
-              </landing-container>
-            </div>
-          </div>
-
-          <!-- Container Wide -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Container (Wide)</h3>
-            <div class="bg-background p-4 rounded-lg">
-              <landing-container [wide]="true">
-                <div class="bg-surface-elevated border border-border p-4 rounded">
-                  <p class="text-text-secondary">
-                    Wide container with max-w-6xl constraint. Useful for card grids and wider content layouts.
-                  </p>
-                </div>
-              </landing-container>
-            </div>
-          </div>
-
           <!-- Section Component -->
           <div>
             <h3 class="text-sm font-medium text-text-secondary mb-3">Section</h3>
@@ -1558,7 +1598,7 @@
             <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Card Grid in Wide Container</h3>
             <div class="bg-background rounded-lg overflow-hidden">
               <landing-section>
-                <landing-container [wide]="true">
+                <landing-container size="wide">
                   <h3 class="text-2xl font-semibold text-center mb-8 text-text">Featured Items</h3>
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <landing-card>
@@ -1601,5 +1641,5 @@
         </div>
       </div>
     </section>
-  </div>
+  </landing-container>
 </div>

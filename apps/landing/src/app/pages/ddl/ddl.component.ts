@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -43,6 +43,7 @@ const TABS_NO_PROTOTYPES: readonly SegmentOption[] = [
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -84,6 +85,9 @@ export class DdlComponent {
   readonly labelTab = this.makeTabSignal('label', 'showcase');
   readonly contentTab = this.makeTabSignal('content', 'showcase');
   readonly segmentedTab = this.makeTabSignal('segmented', 'showcase');
+  readonly segDemoA = signal('showcase');
+  readonly segDemoB = signal('showcase');
+  readonly segDemoC = signal('s1');
 
   toggleDark(): void {
     this.themeService.toggle();
