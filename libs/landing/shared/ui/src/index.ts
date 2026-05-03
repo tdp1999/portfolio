@@ -13,5 +13,7 @@ export * from './components/figure';
 export * from './components/pull-quote';
 export * from './components/section-rule';
 export * from './components/segmented';
+export * from './components/heading';
+export * from './components/in-page-nav';
 export * from './theme';
 export * from './shell';
