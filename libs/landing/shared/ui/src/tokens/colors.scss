@@ -29,6 +29,8 @@
   --landing-bg: var(--landing-ink-0);
   --landing-text: var(--landing-text-300);
   --landing-text-muted: var(--landing-text-500);
+  /* Translucent header background for sticky-on-scroll glass effect */
+  --landing-header-bg: rgb(10 13 18 / 0.72);
 }
 
 :root[data-theme='light'] {
@@ -58,6 +60,8 @@
   --landing-bg: var(--landing-ink-0);
   --landing-text: var(--landing-text-300);
   --landing-text-muted: var(--landing-text-500);
+  /* Translucent header background for sticky-on-scroll glass effect */
+  --landing-header-bg: rgb(255 255 255 / 0.72);
 }
 
 /* Default to dark when no attribute is set */
@@ -81,4 +85,6 @@
   --landing-bg: var(--landing-ink-0);
   --landing-text: var(--landing-text-300);
   --landing-text-muted: var(--landing-text-500);
+  /* Translucent header background for sticky-on-scroll glass effect */
+  --landing-header-bg: rgb(10 13 18 / 0.72);
 }

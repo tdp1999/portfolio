@@ -18,6 +18,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global anchor-scroll offset — accounts for sticky header (h-16 = 64px) + breathing room.
+   Affects every fragment-link click site-wide; reused by sandbox, DDL, blog post anchors, etc. */
+@layer base {
+  html {
+    scroll-padding-top: 5rem; /* 80px */
+  }
+}
+
 /* Global scrollbar styling */
 @layer base {
   * {

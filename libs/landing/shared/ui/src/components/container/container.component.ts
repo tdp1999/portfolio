@@ -1,8 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+
+export type ContainerSize = 'content' | 'wide' | 'full';
 
 @Component({
   selector: 'landing-container',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div [class]="containerClasses()">
       <ng-content />
@@ -11,7 +14,17 @@ import { Component, computed, input } from '@angular/core';
   styleUrl: './container.component.scss',
 })
 export class ContainerComponent {
-  wide = input(false);
+  size = input<ContainerSize>('content');
 
-  containerClasses = computed(() => `container ${this.wide() ? 'container--wide' : ''}`.trim());
+  containerClasses = computed(() => {
+    switch (this.size()) {
+      case 'wide':
+        return 'landing-container landing-container--wide';
+      case 'full':
+        return 'landing-container landing-container--full';
+      case 'content':
+      default:
+        return 'landing-container';
+    }
+  });
 }
