@@ -1,6 +1,6 @@
 # Task: Console form updates for new Profile + Project fields
 
-## Status: pending
+## Status: done
 
 ## Goal
 Update Console forms so Owner can edit the new Profile content blocks (tagline, stackIntro, contactIntro, footerTagline + multi-timezone) and the revised Project shape (links array + markdown body) entirely from the admin UI — fulfilling the "90% landing copy editable from console" goal.
@@ -9,19 +9,19 @@ Update Console forms so Owner can edit the new Profile content blocks (tagline, 
 Task 277 changes the schema and API. Without matching console forms, the new fields are invisible to the Owner. This task wires the admin UX so the Owner never has to touch code or DB to author landing copy.
 
 ## Acceptance Criteria
-- [ ] **Profile form (`libs/console/feature-profile/`):**
+- [x] **Profile form (`libs/console/feature-profile/`):**
   - Timezones: multi-select / chip-input bound to IANA zone list; existing single-zone value migrates to first chip; can add/remove freely
   - 4 new fields rendered in their own labeled block (e.g., "Landing copy"): tagline, stackIntro, contactIntro, footerTagline
   - Each is a markdown editor (reuse the same editor used for blog/post content) with EN/VI tab for translatable JSON
   - Helper text on each field explains *which surface* on landing it controls (e.g., tagline → "Hero sub-line on home page")
   - Optional/empty values supported — placeholder hint shown when null
-- [ ] **Project form (`libs/console/feature-project/`):**
+- [x] **Project form (`libs/console/feature-project/`):**
   - Links: array editor (add/remove/reorder rows) with fields: label (text), url (text, validated URL), type (select with 5 options: repo/demo/case-study/doc/post)
   - Existing single `sourceUrl` and `projectUrl` form fields **removed**
   - Body: markdown editor (EN/VI tabs) for the long-form D3.c case-study content; placeholder text suggests writing H2/H3 sections that become the ToC
   - Save flow validates link URLs and translatable JSON shape; surfaces errors per field per locale
-- [ ] No regression: existing Profile/Project save flows still work for unchanged fields
-- [ ] Console form types match the API DTOs from task 277 (no `as` casts, no `$any` per memory rule on template type discipline)
+- [x] No regression: existing Profile/Project save flows still work for unchanged fields
+- [x] Console form types match the API DTOs from task 277 (no `as` casts, no `$any` per memory rule on template type discipline)
 
 ## Technical Notes
 - Reuse existing markdown editor (whatever the blog post form uses) — do not introduce a second editor library.
@@ -41,3 +41,13 @@ Task 277 changes the schema and API. Without matching console forms, the new fie
 ## Complexity: M
 
 ## Progress Log
+
+- 2026-05-03 — Implemented:
+  - Profile types/service synced to API (timezones array + 4 landing blocks); added `updateLandingContent`.
+  - New `LandingContentSectionComponent` (4 markdown EN/VI fields with helper text); registered in profile-page + scrollspy rail.
+  - Work-availability section: timezone single-select → `chip-toggle-group` multi-select bound to `timezones` array.
+  - Shared `TranslatableMarkdownGroupComponent` (reuses MarkdownEditor for EN/VI per-locale stack).
+  - Project form: removed `sourceUrl`/`projectUrl`; added `links` FormArray editor (label/url/type with reorder + URL validation) + `body` markdown EN/VI in Story section.
+  - Project detail page: replaced URL fields with link list rendering.
+  - Updated specs (timezones, landing fields) so type checks pass.
+  - `nx run console:build` green.
