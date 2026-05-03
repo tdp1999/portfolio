@@ -54,6 +54,7 @@ import { ProfileAdminResponse, UpdateSocialLinksPayload } from '../../profile.ty
     ChipSelectComponent,
   ],
   templateUrl: './social-links-section.component.html',
+  styleUrl: './social-links-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialLinksSectionComponent {

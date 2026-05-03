@@ -49,6 +49,7 @@ import { ProfileAdminResponse } from '../../profile.types';
     TranslatableGroupComponent,
   ],
   templateUrl: './identity-section.component.html',
+  styleUrl: './identity-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IdentitySectionComponent {

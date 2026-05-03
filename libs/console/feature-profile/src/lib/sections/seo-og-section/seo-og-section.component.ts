@@ -49,6 +49,7 @@ import { ProfileAdminResponse } from '../../profile.types';
     FormErrorPipe,
   ],
   templateUrl: './seo-og-section.component.html',
+  styleUrl: './seo-og-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeoOgSectionComponent {
