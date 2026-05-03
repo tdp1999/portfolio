@@ -72,25 +72,50 @@
       </div>
     </div>
 
-    <!-- Sandbox link card -->
-    <a
-      routerLink="/sandbox"
-      class="group mb-8 flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-    >
-      <div>
-        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-          prototype · /sandbox
-        </p>
-        <p class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors">
-          In-page navigation prototypes
-        </p>
-        <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-          Compare four nav patterns (FAB, TOC sidebar, section dots + reading bar, floating pill + mini-map) on a long
-          lorem-ipsum page.
-        </p>
-      </div>
-      <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-    </a>
+    <!-- Sub-page link cards -->
+    <div class="mb-8 grid gap-4 md:grid-cols-2">
+      <a
+        routerLink="/ddl/fragment-navigation"
+        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+      >
+        <div>
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+            prototype · /ddl/fragment-navigation
+          </p>
+          <p
+            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+          >
+            Fragment navigation
+          </p>
+          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+            Compare four in-page nav patterns (FAB, TOC sidebar, section dots + reading bar, floating pill + mini-map)
+            on a long lorem-ipsum page.
+          </p>
+        </div>
+        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+      </a>
+
+      <a
+        routerLink="/ddl/backgrounds"
+        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+      >
+        <div>
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+            prototype · /ddl/backgrounds
+          </p>
+          <p
+            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+          >
+            Background patterns
+          </p>
+          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+            Five pure-CSS hero backgrounds — blueprint, topo, hatch, dot matrix, crosshair — rendered via the same
+            <code>landing-background</code> primitive.
+          </p>
+        </div>
+        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+      </a>
+    </div>
 
     <section class="space-y-6 mb-12">
       <!-- Landing tokens sample (E5 task 274/275) -->

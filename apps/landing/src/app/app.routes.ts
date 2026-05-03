@@ -28,11 +28,21 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'ddl',
-    loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
-  },
-  {
-    path: 'sandbox',
-    loadComponent: () => import('./pages/sandbox').then((m) => m.SandboxPage),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
+        pathMatch: 'full',
+      },
+      {
+        path: 'fragment-navigation',
+        loadComponent: () => import('./pages/ddl/fragment-navigation').then((m) => m.FragmentNavigationPage),
+      },
+      {
+        path: 'backgrounds',
+        loadComponent: () => import('./pages/ddl/backgrounds').then((m) => m.BackgroundsPage),
+      },
+    ],
   },
   {
     path: '404',

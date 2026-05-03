@@ -36,7 +36,7 @@ const PATTERN_OPTIONS = [
 ];
 
 @Component({
-  selector: 'landing-sandbox-page',
+  selector: 'landing-fragment-navigation-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [LandingScrollspyService],
@@ -61,7 +61,7 @@ const PATTERN_OPTIONS = [
         <div class="flex flex-col gap-3 py-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-              sandbox · in-page navigation
+              ddl · fragment navigation
             </p>
             <h1 class="font-display text-display-md text-landing-text-300">Navigation prototypes</h1>
             <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
@@ -74,7 +74,7 @@ const PATTERN_OPTIONS = [
             [active]="pattern()"
             (activeChange)="setPattern($event)"
             ariaLabel="Navigation pattern"
-            idPrefix="sandbox-pattern"
+            idPrefix="fragnav-pattern"
             class="block shrink-0"
           />
         </div>
@@ -131,7 +131,7 @@ const PATTERN_OPTIONS = [
     }
   `,
 })
-export class SandboxPage {
+export class FragmentNavigationPage {
   private readonly scrollspy = inject(LandingScrollspyService);
 
   readonly sections = SECTIONS;
