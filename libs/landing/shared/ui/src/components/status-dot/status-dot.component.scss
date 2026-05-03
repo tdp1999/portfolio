@@ -1,3 +1,7 @@
+:host {
+  display: inline-flex;
+}
+
 /* landing-status-dot — pill badge with 6px solid circle + label (E5 task 279). */
 /* The ONLY pill-radius usage in the design (per E4 C2 rule). */
 /* Hover B · Radar ring on `available` only (shipped from task 280b prototypes). */
@@ -5,16 +9,26 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 10px;
-  border: 1px solid var(--landing-border);
-  border-radius: 9999px;
-  background-color: transparent;
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-md);
   line-height: var(--landing-mono-md-lh);
   letter-spacing: var(--landing-tracking-mono);
   text-transform: uppercase;
   color: var(--landing-text-500);
+}
+
+.landing-status-dot--pill {
+  padding: 4px 10px;
+  border: 1px solid var(--landing-border);
+  border-radius: 9999px;
+  background-color: transparent;
+}
+
+.landing-status-dot--bare {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--landing-text-300);
 }
 
 .landing-status-dot__dot {

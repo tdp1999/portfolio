@@ -1,0 +1,49 @@
+<section class="home-hero" aria-label="Hero">
+  <landing-background pattern="blueprint" />
+
+  <landing-container size="wide" class="home-hero__top">
+    <div class="home-hero__headline">
+      <h1 class="home-hero__title">
+        <span class="home-hero__title-name">{{ fullName() }} —</span>
+        @if (title()) {
+          <span class="home-hero__title-role">{{ title() }}</span>
+        }
+      </h1>
+
+      @if (taglineLead()) {
+        <p class="home-hero__sub-lead">{{ taglineLead() }}</p>
+      }
+      @if (taglineEmphasis()) {
+        <p class="home-hero__sub-emphasis">{{ taglineEmphasis() }}</p>
+      }
+    </div>
+  </landing-container>
+
+  <landing-container size="wide" class="home-hero__bottom">
+    <dl class="home-hero__meta" aria-label="Hire status">
+      <div class="home-hero__meta-row">
+        <dt class="home-hero__meta-key">STATUS</dt>
+        <dd class="home-hero__meta-val">
+          <landing-status-dot
+            variant="bare"
+            [state]="available() ? 'available' : 'busy'"
+            [label]="statusLabel()"
+            ariaLabel="Hiring status"
+          />
+        </dd>
+      </div>
+      @if (coreStack().length > 0) {
+        <div class="home-hero__meta-row">
+          <dt class="home-hero__meta-key">CORE_STACK</dt>
+          <dd class="home-hero__meta-val home-hero__meta-val--mono">{{ stackDisplay() }}</dd>
+        </div>
+      }
+      @if (city()) {
+        <div class="home-hero__meta-row">
+          <dt class="home-hero__meta-key">LOCATION</dt>
+          <dd class="home-hero__meta-val home-hero__meta-val--mono">{{ city() }}</dd>
+        </div>
+      }
+    </dl>
+  </landing-container>
+</section>

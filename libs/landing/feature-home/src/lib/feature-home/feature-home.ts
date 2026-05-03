@@ -3,40 +3,30 @@ import { isPlatformServer, DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
-  ButtonComponent,
   ContainerComponent,
   SectionComponent,
   IconComponent,
   CardComponent,
   BadgeComponent,
 } from '@portfolio/landing/shared/ui';
+import { TranslatablePipe, DateRangePipe } from '@portfolio/shared/ui/pipes';
+import { HomeHeroComponent } from '../hero/home-hero.component';
 import { ProfileService, ExperienceService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
-import type { Locale, SocialPlatform } from '@portfolio/shared/types';
-import type { PublicExperience } from '@portfolio/landing/shared/data-access';
-
-const SOCIAL_ICON_MAP: Record<SocialPlatform, string> = {
-  GITHUB: 'github',
-  LINKEDIN: 'linkedin',
-  TWITTER: 'external-link',
-  BLUESKY: 'globe',
-  STACKOVERFLOW: 'code',
-  DEV_TO: 'code',
-  HASHNODE: 'code',
-  WEBSITE: 'globe',
-  OTHER: 'external-link',
-};
+import type { Locale } from '@portfolio/shared/types';
 
 @Component({
   selector: 'landing-feature-home',
   imports: [
     RouterLink,
-    ButtonComponent,
     ContainerComponent,
     SectionComponent,
     IconComponent,
     CardComponent,
     BadgeComponent,
+    HomeHeroComponent,
+    TranslatablePipe,
+    DateRangePipe,
   ],
   templateUrl: './feature-home.html',
   styleUrl: './feature-home.scss',
@@ -47,16 +37,17 @@ export class FeatureHome {
   private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
 
-  readonly socialIconMap = SOCIAL_ICON_MAP;
-
   locale = signal<Locale>('en');
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
   experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });
 
   recentExperiences = computed(() => this.experiences().slice(0, 3));
 
+  stackIntro = computed(() => getLocalized(this.profile()?.stackIntro, this.locale()));
+
   fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()) || 'Portfolio in progress');
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));
+  tagline = computed(() => getLocalized(this.profile()?.tagline, this.locale()));
   bioShort = computed(() => getLocalized(this.profile()?.bioShort, this.locale()));
   bioLong = computed(() => getLocalized(this.profile()?.bioLong, this.locale()));
   isOpenToWork = computed(() => this.profile()?.availability === 'OPEN_TO_WORK');
@@ -101,21 +92,5 @@ export class FeatureHome {
         this.document.head.appendChild(script);
       });
     }
-  }
-
-  getSocialIcon(platform: SocialPlatform): string {
-    return this.socialIconMap[platform] ?? 'external-link';
-  }
-
-  getExpPosition(exp: PublicExperience): string {
-    return getLocalized(exp.position, this.locale());
-  }
-
-  formatExpDateRange(exp: PublicExperience): string {
-    const start = new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    const end = exp.endDate
-      ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-      : 'Present';
-    return `${start} – ${end}`;
   }
 }

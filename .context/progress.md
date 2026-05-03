@@ -235,7 +235,7 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ### Phase 4 — Home page sections
 
-- [ ] 281-home-hero (M) — deps: 274, 278, 279, 277
+- [x] 281-home-hero (M) — deps: 274, 278, 279, 277 ✓
 - [ ] 282-home-intro (S) — deps: 274, 280
 - [ ] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277
 - [ ] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277
@@ -271,16 +271,16 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–3 complete (tokens, theme, shell, schema, console forms, landing primitives + segmented control). Recommended next: **Phase 4 home page sections** starting with **281-home-hero**.
+**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 started. **281-home-hero done** (B1.e type-led hero with blueprint background, console-driven copy). Recommended next: **282-home-intro**.
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 292     |
+| Done (archived)           | 293     |
 | In Progress               | 0       |
-| Pending                   | 24      |
+| Pending                   | 23      |
 | **Total Created**         | **316** |
 | Epics completed           | 29      |
 

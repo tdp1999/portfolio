@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 export type LandingStatusDotState = 'available' | 'busy' | 'away';
+export type LandingStatusDotVariant = 'pill' | 'bare';
 
 @Component({
   selector: 'landing-status-dot',
@@ -16,8 +17,11 @@ export type LandingStatusDotState = 'available' | 'busy' | 'away';
 })
 export class StatusDotComponent {
   readonly state = input<LandingStatusDotState>('available');
+  readonly variant = input<LandingStatusDotVariant>('pill');
   readonly label = input<string>('');
   readonly ariaLabel = input<string>('');
 
-  protected readonly rootClasses = computed(() => `landing-status-dot landing-status-dot--${this.state()}`);
+  protected readonly rootClasses = computed(
+    () => `landing-status-dot landing-status-dot--${this.state()} landing-status-dot--${this.variant()}`
+  );
 }

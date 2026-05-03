@@ -29,8 +29,12 @@ export type PublicProfileResponse = {
   ogImageUrl: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
-  timezone: string | null;
+  timezones: string[];
   canonicalUrl: string | null;
+  tagline: TranslatableJson | null;
+  stackIntro: TranslatableJson | null;
+  contactIntro: TranslatableJson | null;
+  footerTagline: TranslatableJson | null;
 };
 
 export type ProfileJsonLd = {
