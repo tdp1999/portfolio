@@ -6,6 +6,7 @@ import {
   ProfileAdminResponse,
   UpdateContactPayload,
   UpdateIdentityPayload,
+  UpdateLandingContentPayload,
   UpdateLocationPayload,
   UpdateSeoOgPayload,
   UpdateSocialLinksPayload,
@@ -46,6 +47,10 @@ export class ProfileService {
 
   updateSeoOg(payload: UpdateSeoOgPayload) {
     return this.api.patch<void>('/admin/profile/seo-og', payload);
+  }
+
+  updateLandingContent(payload: UpdateLandingContentPayload) {
+    return this.api.patch<void>('/admin/profile/landing-content', payload);
   }
 
   // ── Media (dedicated endpoints) ──────────────────────────────────────────

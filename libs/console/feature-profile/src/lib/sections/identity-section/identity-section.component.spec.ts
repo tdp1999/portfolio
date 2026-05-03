@@ -32,12 +32,16 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   certifications: [],
   metaTitle: null,
   metaDescription: null,
-  timezone: 'Asia/Ho_Chi_Minh',
+  timezones: ['Asia/Ho_Chi_Minh'],
   canonicalUrl: null,
   avatarId: null,
   ogImageId: null,
   avatarUrl: null,
   ogImageUrl: null,
+  tagline: null,
+  stackIntro: null,
+  contactIntro: null,
+  footerTagline: null,
 };
 
 const stubDataSource: MediaPickerDataSource = {

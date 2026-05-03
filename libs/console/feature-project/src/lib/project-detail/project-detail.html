@@ -174,34 +174,28 @@
           <h3 class="detail-section__title">Details</h3>
 
           <div class="detail-field">
-            <span class="detail-field__label">Source URL</span>
-            @if (p.sourceUrl) {
-              <a
-                class="detail-field__value text-primary hover:underline"
-                [href]="p.sourceUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ p.sourceUrl }}
-              </a>
-            } @else {
-              <span class="detail-field__value detail-field__value--empty">—</span>
-            }
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Project URL</span>
-            @if (p.projectUrl) {
-              <a
-                class="detail-field__value text-primary hover:underline"
-                [href]="p.projectUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ p.projectUrl }}
-              </a>
-            } @else {
-              <span class="detail-field__value detail-field__value--empty">—</span>
-            }
+            <span class="detail-field__label">Links</span>
+            <span class="detail-field__value">
+              @if (p.links.length > 0) {
+                <ul class="flex flex-col gap-1">
+                  @for (link of p.links; track link.url) {
+                    <li>
+                      <span class="text-text-muted">[{{ link.type }}]</span>
+                      <a
+                        class="text-primary hover:underline"
+                        [href]="link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ link.label }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <span class="detail-field__value--empty">—</span>
+              }
+            </span>
           </div>
           <div class="detail-field">
             <span class="detail-field__label">Skills</span>

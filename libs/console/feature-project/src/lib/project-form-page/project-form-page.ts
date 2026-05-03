@@ -37,6 +37,7 @@ import {
   StickySaveBarComponent,
   ToastService,
   TranslatableGroupComponent,
+  TranslatableMarkdownGroupComponent,
   type MediaPickerDataSource,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
@@ -54,6 +55,8 @@ import {
   AdminProject,
   CreateProjectPayload,
   HighlightPayload,
+  ProjectLink,
+  ProjectLinkType,
   SkillOption,
   TranslatableJson,
   UpdateProjectPayload,
@@ -92,6 +95,7 @@ interface GalleryImage {
     ChipBooleanComponent,
     ChipSelectComponent,
     TranslatableGroupComponent,
+    TranslatableMarkdownGroupComponent,
     FormErrorPipe,
     LongFormLayoutComponent,
     MonthYearPickerComponent,
@@ -142,11 +146,14 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
     motivation: requiredTranslatableGroup(this.fb),
     description: requiredTranslatableGroup(this.fb),
     role: requiredTranslatableGroup(this.fb),
+    body: this.fb.group({
+      en: this.fb.control('', { nonNullable: true }),
+      vi: this.fb.control('', { nonNullable: true }),
+    }),
 
     highlights: this.fb.array<FormGroup>([], { validators: Validators.maxLength(LIMITS.PROJECT_HIGHLIGHTS_ARRAY_MAX) }),
 
-    sourceUrl: ['', baselineFor.url()],
-    projectUrl: ['', baselineFor.url()],
+    links: this.fb.array<FormGroup>([]),
     skillIds: [[] as string[]],
 
     status: ['DRAFT' as 'DRAFT' | 'PUBLISHED'],
@@ -157,6 +164,14 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
   readonly statusOptions: ChipSelectOption[] = [
     { value: 'DRAFT', label: 'Draft' },
     { value: 'PUBLISHED', label: 'Published' },
+  ];
+
+  readonly linkTypeOptions: { value: ProjectLinkType; label: string }[] = [
+    { value: 'repo', label: 'Repository' },
+    { value: 'demo', label: 'Demo' },
+    { value: 'case-study', label: 'Case study' },
+    { value: 'doc', label: 'Doc' },
+    { value: 'post', label: 'Post' },
   ];
 
   readonly dirty = signal(false);
@@ -218,6 +233,36 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
   removeHighlight(index: number): void {
     this.form.controls.highlights.removeAt(index);
     this.form.controls.highlights.markAsDirty();
+  }
+
+  // --- Links ---
+
+  createLinkGroup(data?: ProjectLink) {
+    return this.fb.group({
+      label: [data?.label ?? '', [Validators.required, Validators.maxLength(80)]],
+      url: [data?.url ?? '', [Validators.required, ...baselineFor.url()]],
+      type: [data?.type ?? ('repo' as ProjectLinkType), Validators.required],
+    });
+  }
+
+  addLink(): void {
+    this.form.controls.links.push(this.createLinkGroup());
+    this.form.controls.links.markAsDirty();
+  }
+
+  removeLink(index: number): void {
+    this.form.controls.links.removeAt(index);
+    this.form.controls.links.markAsDirty();
+  }
+
+  moveLink(index: number, direction: -1 | 1): void {
+    const arr = this.form.controls.links;
+    const target = index + direction;
+    if (target < 0 || target >= arr.length) return;
+    const ctrl = arr.at(index);
+    arr.removeAt(index, { emitEvent: false });
+    arr.insert(target, ctrl);
+    arr.markAsDirty();
   }
 
   // --- Media ---
@@ -319,6 +364,14 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
       codeUrl: (h['codeUrl'] as string) || null,
     }));
 
+    const links: ProjectLink[] = raw.links.map((l: Record<string, unknown>) => ({
+      label: l['label'] as string,
+      url: l['url'] as string,
+      type: l['type'] as ProjectLinkType,
+    }));
+
+    const body: TranslatableJson | null = raw.body.en || raw.body.vi ? raw.body : null;
+
     const imageIds = this.galleryImages().map((img) => img.mediaId);
 
     const onError = () => this.saving.set(false);
@@ -331,11 +384,11 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         description: raw.description,
         motivation: raw.motivation,
         role: raw.role,
+        body,
         startDate: raw.startDate?.toISOString() ?? undefined,
         endDate: raw.endDate?.toISOString() ?? null,
         status: raw.status,
-        sourceUrl: raw.sourceUrl || null,
-        projectUrl: raw.projectUrl || null,
+        links,
         thumbnailId: this.thumbnailId(),
         featured: raw.featured,
         displayOrder: raw.displayOrder,
@@ -363,10 +416,10 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         description: raw.description,
         motivation: raw.motivation,
         role: raw.role,
+        body,
         startDate: raw.startDate?.toISOString() ?? '',
         endDate: raw.endDate?.toISOString() ?? null,
-        sourceUrl: raw.sourceUrl || null,
-        projectUrl: raw.projectUrl || null,
+        links,
         thumbnailId: this.thumbnailId(),
         featured: raw.featured,
         displayOrder: raw.displayOrder,
@@ -395,6 +448,7 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
       this.hydrateForm(this.loadedProject);
     } else {
       this.form.controls.highlights.clear();
+      this.form.controls.links.clear();
       this.galleryImages.set([]);
       this.thumbnailId.set(null);
       this.thumbnailUrl.set(null);
@@ -445,6 +499,13 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
       }
     }
 
+    this.form.controls.links.clear({ emitEvent: false });
+    if (p.links?.length) {
+      for (const l of p.links) {
+        this.form.controls.links.push(this.createLinkGroup(l), { emitEvent: false });
+      }
+    }
+
     this.form.patchValue(
       {
         title: p.title,
@@ -454,8 +515,7 @@ export default class ProjectFormPageComponent implements OnInit, HasUnsavedChang
         motivation: p.motivation ?? EMPTY_TRANSLATABLE,
         description: p.description ?? EMPTY_TRANSLATABLE,
         role: p.role ?? EMPTY_TRANSLATABLE,
-        sourceUrl: p.sourceUrl ?? '',
-        projectUrl: p.projectUrl ?? '',
+        body: p.body ?? EMPTY_TRANSLATABLE,
         skillIds: p.skills?.map((s) => s.id) ?? [],
         status: p.status,
         featured: p.featured,

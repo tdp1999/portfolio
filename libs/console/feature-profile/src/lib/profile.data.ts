@@ -4,6 +4,7 @@ export const PROFILE_SECTIONS = [
   { value: 'contact', label: 'Contact' },
   { value: 'location', label: 'Location' },
   { value: 'socialLinks', label: 'Social Links' },
+  { value: 'landingContent', label: 'Landing Content' },
   { value: 'seoOg', label: 'SEO & OG' },
   { value: 'adminContactAddress', label: 'Admin Contact & Address' },
 ] as const;

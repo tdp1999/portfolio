@@ -28,21 +28,17 @@
         </mat-select>
         <mat-error>{{ form.controls.availability | formError }}</mat-error>
       </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-48">
-        <mat-label>Timezone</mat-label>
-        <mat-select formControlName="timezone">
-          <mat-option value="">— None —</mat-option>
-          @for (tz of timezoneOptions; track tz) {
-            <mat-option [value]="tz">{{ tz }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
     </div>
 
     <div>
       <p class="field-label">Open To</p>
       <console-chip-toggle-group formControlName="openTo" [options]="openToOptions" />
+    </div>
+
+    <div>
+      <p class="field-label">Timezones</p>
+      <p class="text-sm text-text-muted mb-2">Select one or more zones you operate in. Shown on the landing footer.</p>
+      <console-chip-toggle-group formControlName="timezones" [options]="timezoneChipOptions" />
     </div>
   </div>
 </console-section-card>

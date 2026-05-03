@@ -32,6 +32,8 @@
         (saved)="onSectionSaved($event)"
       />
 
+      <console-profile-landing-content-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
+
       <console-profile-seo-og-section
         [initialData]="profile()"
         [mediaDataSource]="mediaDataSource"

@@ -26,12 +26,17 @@ export interface ProfileAdminResponse {
   certifications: Array<{ name: string; issuer: string; year: number; url?: string }>;
   metaTitle: string | null;
   metaDescription: string | null;
-  timezone: string | null;
+  timezones: string[];
   canonicalUrl: string | null;
   avatarId: string | null;
   ogImageId: string | null;
   avatarUrl: string | null;
   ogImageUrl: string | null;
+  // Landing content blocks
+  tagline: TranslatableJson | null;
+  stackIntro: TranslatableJson | null;
+  contactIntro: TranslatableJson | null;
+  footerTagline: TranslatableJson | null;
 }
 
 // ── Per-section PATCH payloads (mirror BE Update*Schema shapes) ────────────
@@ -47,7 +52,7 @@ export interface UpdateWorkAvailabilityPayload {
   yearsOfExperience: number;
   availability: string;
   openTo: string[];
-  timezone: string | null;
+  timezones: string[];
 }
 
 export interface UpdateContactPayload {
@@ -75,6 +80,13 @@ export interface UpdateSeoOgPayload {
   metaTitle: string | null;
   metaDescription: string | null;
   canonicalUrl: string | null;
+}
+
+export interface UpdateLandingContentPayload {
+  tagline: TranslatableJson | null;
+  stackIntro: TranslatableJson | null;
+  contactIntro: TranslatableJson | null;
+  footerTagline: TranslatableJson | null;
 }
 
 export type SectionKey = (typeof PROFILE_SECTIONS)[number]['value'];

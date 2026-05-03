@@ -1,0 +1,47 @@
+<console-section-card
+  id="section-landing-content"
+  bucket="PUBLIC"
+  title="Landing Content"
+  description="Translatable copy blocks rendered on the landing page. Markdown supported."
+  saveMode="per-section"
+  consoleFormSnapshot
+  [formGroup]="form"
+  [consoleServerErrorMap]="{}"
+  [saving]="saving"
+  [lastSavedAt]="lastSaved"
+  (save)="save()"
+>
+  <div class="form-stack">
+    <console-translatable-markdown-group
+      [group]="form.controls.tagline"
+      label="Tagline"
+      helperText="Hero sub-line on the home page (under the headline)."
+      [minHeight]="80"
+      [placeholder]="{ en: 'Designing reliable systems that scale', vi: 'Thiết kế hệ thống ổn định, dễ mở rộng' }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.stackIntro"
+      label="Stack Intro"
+      helperText="Intro paragraph for the bio + stack grid section."
+      [minHeight]="140"
+      [placeholder]="{ en: 'Tools I reach for first…', vi: 'Bộ công cụ tôi dùng đầu tiên…' }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.contactIntro"
+      label="Contact Intro"
+      helperText="Lead paragraph above the contact form / mailto block."
+      [minHeight]="140"
+      [placeholder]="{ en: 'Want to talk shop or hire?', vi: 'Muốn trao đổi hoặc làm việc cùng?' }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.footerTagline"
+      label="Footer Tagline"
+      helperText="One-line note rendered in the footer banner."
+      [minHeight]="80"
+      [placeholder]="{ en: 'Built with care, in Saigon.', vi: 'Làm tử tế, từ Sài Gòn.' }"
+    />
+  </div>
+</console-section-card>

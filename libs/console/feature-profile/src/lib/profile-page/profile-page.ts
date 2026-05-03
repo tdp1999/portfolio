@@ -24,6 +24,7 @@ import { SidebarState } from '@portfolio/shared/ui/sidebar';
 import { AdminContactAddressSectionComponent } from '../sections/admin-contact-address-section/admin-contact-address-section.component';
 import { ContactSectionComponent } from '../sections/contact-section/contact-section.component';
 import { IdentitySectionComponent } from '../sections/identity-section/identity-section.component';
+import { LandingContentSectionComponent } from '../sections/landing-content-section/landing-content-section.component';
 import { LocationSectionComponent } from '../sections/location-section/location-section.component';
 import { SeoOgSectionComponent } from '../sections/seo-og-section/seo-og-section.component';
 import { SocialLinksSectionComponent } from '../sections/social-links-section/social-links-section.component';
@@ -43,6 +44,7 @@ import { ProfileAdminResponse } from '../profile.types';
     ContactSectionComponent,
     LocationSectionComponent,
     SocialLinksSectionComponent,
+    LandingContentSectionComponent,
     SeoOgSectionComponent,
     AdminContactAddressSectionComponent,
   ],
@@ -73,6 +75,7 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
   private readonly contactSection = viewChild.required(ContactSectionComponent);
   private readonly locationSection = viewChild.required(LocationSectionComponent);
   private readonly socialLinksSection = viewChild.required(SocialLinksSectionComponent);
+  private readonly landingContentSection = viewChild.required(LandingContentSectionComponent);
   private readonly seoOgSection = viewChild.required(SeoOgSectionComponent);
   private readonly adminSection = viewChild.required(AdminContactAddressSectionComponent);
 
@@ -86,6 +89,11 @@ export default class ProfilePageComponent implements OnInit, OnDestroy, HasUnsav
     { id: 'section-contact', label: 'Contact', status: computed(() => this.contactSection().status()) },
     { id: 'section-location', label: 'Location', status: computed(() => this.locationSection().status()) },
     { id: 'section-social-links', label: 'Social Links', status: computed(() => this.socialLinksSection().status()) },
+    {
+      id: 'section-landing-content',
+      label: 'Landing Content',
+      status: computed(() => this.landingContentSection().status()),
+    },
     { id: 'section-seo-og', label: 'SEO / OG', status: computed(() => this.seoOgSection().status()) },
     {
       id: 'section-admin-contact-address',

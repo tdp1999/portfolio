@@ -59,7 +59,7 @@ describe('ProfileService', () => {
       yearsOfExperience: 10,
       availability: 'EMPLOYED',
       openTo: ['FREELANCE'],
-      timezone: 'Asia/Ho_Chi_Minh',
+      timezones: ['Asia/Ho_Chi_Minh'],
     };
     service.updateWorkAvailability(payload).subscribe();
     expect(api.patch).toHaveBeenCalledWith('/admin/profile/work-availability', payload);

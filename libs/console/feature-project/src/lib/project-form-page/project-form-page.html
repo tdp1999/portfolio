@@ -75,6 +75,16 @@
             <console-translatable-group [group]="form.controls.motivation" label="Motivation" type="textarea" />
             <console-translatable-group [group]="form.controls.description" label="Description" type="textarea" />
             <console-translatable-group [group]="form.controls.role" label="Role" type="textarea" />
+
+            <console-translatable-markdown-group
+              [group]="form.controls.body"
+              label="Long-form body"
+              helperText="Markdown body for the project case study. Use H2/H3 sections — they become the page ToC."
+              [placeholder]="{
+                en: '## Background\n\nWhat made this project worth doing…',
+                vi: '## Bối cảnh\n\nLý do dự án này đáng làm…',
+              }"
+            />
           </div>
         </console-section-card>
 
@@ -239,21 +249,68 @@
           id="section-details"
           bucket="PUBLIC"
           title="Details"
-          description="Source and project URLs, plus skills used on this project."
+          description="External links and skills used on this project."
           saveMode="atomic"
         >
           <div class="form-stack">
-            <mat-form-field appearance="outline">
-              <mat-label>Source URL</mat-label>
-              <input matInput formControlName="sourceUrl" placeholder="https://github.com/..." />
-              <mat-error>{{ form.controls.sourceUrl | formError }}</mat-error>
-            </mat-form-field>
+            <div>
+              <div class="flex items-center justify-between">
+                <p class="field-label">Links</p>
+                <button mat-stroked-button type="button" (click)="addLink()">
+                  <mat-icon>add</mat-icon>
+                  Add Link
+                </button>
+              </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Project URL</mat-label>
-              <input matInput formControlName="projectUrl" placeholder="https://..." />
-              <mat-error>{{ form.controls.projectUrl | formError }}</mat-error>
-            </mat-form-field>
+              @for (group of form.controls.links.controls; track $index; let i = $index) {
+                <div class="link-row" [formGroup]="group">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Label</mat-label>
+                    <input matInput formControlName="label" placeholder="Source code" />
+                    <mat-error>{{ group.controls['label'] | formError }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="flex-[2]">
+                    <mat-label>URL</mat-label>
+                    <input matInput formControlName="url" placeholder="https://" />
+                    <mat-error>{{ group.controls['url'] | formError }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-40">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="type">
+                      @for (opt of linkTypeOptions; track opt.value) {
+                        <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    aria-label="Move up"
+                    [disabled]="i === 0"
+                    (click)="moveLink(i, -1)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    aria-label="Move down"
+                    [disabled]="i === form.controls.links.length - 1"
+                    (click)="moveLink(i, 1)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" aria-label="Remove link" (click)="removeLink(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @empty {
+                <p class="py-4 text-center text-body text-text-muted">No links added yet</p>
+              }
+            </div>
 
             <mat-form-field appearance="outline">
               <mat-label>Skills</mat-label>

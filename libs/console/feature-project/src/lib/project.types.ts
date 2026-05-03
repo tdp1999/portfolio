@@ -2,6 +2,15 @@ export interface TranslatableJson {
   [key: string]: string;
 }
 
+export const PROJECT_LINK_TYPES = ['repo', 'demo', 'case-study', 'doc', 'post'] as const;
+export type ProjectLinkType = (typeof PROJECT_LINK_TYPES)[number];
+
+export interface ProjectLink {
+  label: string;
+  url: string;
+  type: ProjectLinkType;
+}
+
 // --- Admin response types (from ProjectPresenter.toAdminResponse) ---
 
 export interface AdminProject {
@@ -12,13 +21,13 @@ export interface AdminProject {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  body: TranslatableJson | null;
   startDate: string;
   endDate: string | null;
   status: 'DRAFT' | 'PUBLISHED';
   featured: boolean;
   displayOrder: number;
-  sourceUrl: string | null;
-  projectUrl: string | null;
+  links: ProjectLink[];
   thumbnailId: string | null;
   thumbnailUrl: string | null;
   createdAt: string;
@@ -79,10 +88,10 @@ export interface CreateProjectPayload {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  body?: TranslatableJson | null;
   startDate: string;
   endDate?: string | null;
-  sourceUrl?: string | null;
-  projectUrl?: string | null;
+  links?: ProjectLink[];
   thumbnailId?: string | null;
   featured?: boolean;
   displayOrder?: number;
@@ -97,11 +106,11 @@ export interface UpdateProjectPayload {
   description?: TranslatableJson;
   motivation?: TranslatableJson;
   role?: TranslatableJson;
+  body?: TranslatableJson | null;
   startDate?: string;
   endDate?: string | null;
   status?: 'DRAFT' | 'PUBLISHED';
-  sourceUrl?: string | null;
-  projectUrl?: string | null;
+  links?: ProjectLink[];
   thumbnailId?: string | null;
   featured?: boolean;
   displayOrder?: number;

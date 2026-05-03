@@ -64,4 +64,6 @@ export type {
 } from './lib/asset-upload-zone/asset-upload-zone.types';
 export { Editor as MarkdownEditorComponent } from './lib/markdown-editor/editor';
 export type { MarkdownEditorApi, MarkdownEditorChange } from './lib/markdown-editor/markdown-editor.types';
+export { TranslatableMarkdownGroupComponent } from './lib/translatable-markdown-group/translatable-markdown-group';
+export type { MarkdownLanguageConfig } from './lib/translatable-markdown-group/translatable-markdown-group';
 export { EnumLabelPipe } from './lib/enum-label/enum-label.pipe';
