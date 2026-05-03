@@ -215,13 +215,14 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ### Phase 1 — Tokens & shell
 
-- [ ] 274-landing-tokens-and-fonts (M)
-- [ ] 275-landing-theme-toggle (M) — deps: 274
-- [ ] 276-landing-routing-and-shell (M) — deps: 274, 275
+- [x] 274-landing-tokens-and-fonts (M) ✓
+- [x] 275-landing-theme-toggle (M) — deps: 274 ✓
+- [x] 276-landing-routing-and-shell (M) — deps: 274, 275 ✓
 
-### Phase 2 — Schema migrations
+### Phase 2 — Schema migrations + Console forms
 
-- [ ] 277-portfolio-schema-migrations (L)
+- [x] 277-portfolio-schema-migrations (L) — schema + API + types + seed ✓
+- [ ] 277b-console-content-forms (M) — deps: 277 — Profile + Project edit pages
 
 ### Phase 3 — Landing UI primitives
 
@@ -267,16 +268,16 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Recommended start: **274-landing-tokens-and-fonts** (no dependencies, foundation for everything else).
+**Current:** Portfolio E5 implementation. Phase 1 (tokens, theme, shell) complete; schema migrations done. Recommended next: **277b-console-content-forms** (Profile + Project edit pages) and Phase 3 landing primitives (278/279/280).
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 283     |
+| Done (archived)           | 287     |
 | In Progress               | 0       |
-| Pending                   | 31      |
+| Pending                   | 27      |
 | **Total Created**         | **314** |
 | Epics completed           | 29      |
 

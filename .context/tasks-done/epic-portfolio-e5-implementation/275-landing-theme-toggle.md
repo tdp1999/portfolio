@@ -1,6 +1,6 @@
 # Task: Landing theme toggle (dark-first with light parity)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Implement an SSR-safe theme toggle that defaults to dark, persists user choice, and avoids first-paint flash when a returning visitor preferred light.
@@ -34,3 +34,9 @@ E4 D2 rule: dark-first with toggle at parity with the console app. Theme is part
 ## Complexity: M
 
 ## Progress Log
+- 2026-05-02 — Implemented:
+  - `libs/landing/shared/ui/src/theme/theme.service.ts` — signal-based `LandingThemeService` with `theme()`, `setTheme()`, `toggle()`. Effect syncs `data-theme` attr + `.dark` class to `<html>` + writes `localStorage.landing_theme` + `landing_theme` cookie (1y, SameSite=Lax). SSR-safe via PLATFORM_ID.
+  - `libs/landing/shared/ui/src/theme/theme-toggle.component.ts` — `<landing-theme-toggle>` with sun/moon SVG, aria-label + aria-pressed, focus ring on indigo accent.
+  - Inline FOUC script in `apps/landing/src/index.html` `<head>` — reads cookie → localStorage → `prefers-color-scheme` → dark default, sets `data-theme` + `.dark` BEFORE Angular bootstrap.
+  - `/ddl` swapped to consume new toggle.
+- SSR cookie injection in `server.ts` deferred. The blocking inline-script approach prevents FOUC for client renders and post-hydration; SSR-rendered HTML still defaults to dark, so a returning light-mode user sees a ~50–100 ms flash on the first SSR response only. Acceptable for V1 portfolio scope. Revisit if metrics show it's noticeable.

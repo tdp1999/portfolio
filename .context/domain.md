@@ -4,26 +4,25 @@
 
 | Term | Definition | Type |
 |------|-----------|------|
-| Profile | Personal information of the site owner — composed of 6 section value objects (Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg). Single record with translatable JSON fields. | Aggregate |
+| Profile | Personal information of the site owner — composed of 6 section value objects (Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg) plus 4 optional landing content blocks (tagline, stackIntro, contactIntro, footerTagline). Single record; copy fields are translatable. | Aggregate |
 | Identity | Profile section: display name, full name (translatable), title (translatable), bio (translatable), avatar reference | Value Object |
-| WorkAvailability | Profile section: employment status, weekly hours, hourly rate, timezone, openTo flags (Freelance, Consulting, Side Project, Full-time, Speaking, Open Source) | Value Object |
+| WorkAvailability | Profile section: employment status, weekly hours, hourly rate, **timezones — one or more zones the Owner works across**, openTo flags (Freelance, Consulting, Side Project, Full-time, Speaking, Open Source) | Value Object |
 | Contact | Profile section: email, phone | Value Object |
 | Location | Profile section: city, country | Value Object |
 | SocialLinks | Profile section: collection of SocialLink entries (platform → URL/handle) | Value Object |
 | SeoOg | Profile section: OG image reference, meta title (translatable), meta description (translatable) | Value Object |
+| LandingContentBlocks | Optional voice-copy fields on Profile surfaced on the landing page: a hero tagline, a stack section intro, a contact section intro, and a footer banner line. Each piece of copy is optional and may be authored in any supported language. The layout decides whether and where each piece appears. | Value Object |
 | Experience | A professional career entry — company, role (translatable), employment type, location type, dates, achievements, skills used, and company logo. Single record per job with translatable JSON fields for position, description, achievements, teamRole | Entity |
 | EmploymentType | The contract/engagement type of a work experience: Full-time, Part-time, Contract, Freelance, Internship, Self-employed | Value Object |
 | LocationType | The work arrangement of a role: Remote, Hybrid, On-site | Value Object |
 | ExperienceSkill | Junction linking an Experience to the Skills/technologies used in that role | Relation |
-| Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. Has a displayGroup (Frontend, Backend, Tooling, Other) for grouped rendering on the landing page. | Entity |
+| Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. Grouping for landing display uses the parent-skill relationship: top-level skills (skills with no parent) act as group umbrellas (e.g., Frontend, Backend, Tooling, Library work, Languages, Workflow & AI), and each member skill belongs to one umbrella. | Entity |
 | Testimonial | A recommendation or quote from a colleague or client | Entity |
-| Project | A portfolio project showcasing personal or open-source work. Contains translatable fields (oneLiner, description, motivation, role), technical highlights, gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
+| Project | A portfolio project showcasing personal or open-source work. Contains translatable short-form fields (oneLiner, description, motivation, role) for cards and intros, an optional translatable long-form body for the case-study page, a list of external links, technical highlights (Challenge-Approach-Outcome), gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
 | TechnicalHighlight | A structured technical narrative (Challenge → Approach → Outcome) attached to a Project. 2-4 per project max. All fields translatable. Optional codeUrl links to specific file/PR. | Entity |
 | ProjectImage | Junction linking a Project to Media, with displayOrder. Layout decides contextual placement — no placement hints stored. | Relation |
 | ProjectSkill | Junction linking a Project to the Skills/technologies used in that project | Relation |
-| ProjectLink | An external link attached to a Project (label, url, type ∈ {repo, demo, case-study, doc, post}) — surfaced in D3.c sticky sidebar. | Value Object |
-| ProjectSection | A free-form body section in a Project's case-study page (anchor, heading, body markdown). Distinct from TechnicalHighlight (which is the structured C→A→O artifact). Used by D3.c reading column. | Value Object |
-| ProjectTocAnchor | A table-of-contents entry mapping an anchor id to a label, surfaced in D3.c sticky sidebar ToC. Derived from ProjectSection. | Value Object |
+| ProjectLink | An external link attached to a Project, with a label, URL, and a type chosen from {repo, demo, case-study, doc, post}. Replaces the older single source-URL and live-URL fields. Surfaced in the case-study sidebar. | Value Object |
 | Post | A blog article with content, metadata, and publication status. Each Post exists in exactly one Language; the same content published in another language is a separate Post record with its own slug and independent lifecycle. | Aggregate |
 | Category | A grouping label for Posts | Entity |
 | Tag | A keyword associated with a Post for filtering | Value Object |
@@ -214,9 +213,9 @@
 - PRJ-005: Child records (highlights, images, skills) use replace-all strategy on update — delete existing, insert new, within transaction
 - PRJ-006: ProjectImage ordered by displayOrder; layout decides contextual placement (no placement hints in data)
 - PRJ-007: SEO meta tags auto-generated from title + oneLiner — no manual override fields
-- PRJ-008: ProjectLinks stored as JSON array; type enum constrains values; Owner manages via Console
-- PRJ-009: ProjectSections stored as JSON array preserving authored order; D3.c renders in array order
-- PRJ-010: ProjectTocAnchors derived from ProjectSection (anchor + heading.short or explicit label) — not separately authored unless override needed
+- PRJ-008: A Project carries an ordered list of ProjectLinks; each link's type is one of the allowed values (repo, demo, case-study, doc, post). Replaces the older single source-URL and live-URL fields. Owner manages links via Console.
+- PRJ-009: A Project's long-form case-study content is one body field, optionally provided in each supported language. The case-study page renders this body and derives its table-of-contents from the body's section headings — no separately authored section list or anchor list.
+- PRJ-010: TechnicalHighlights remain a structured Challenge-Approach-Outcome artifact, distinct from the body. They render as their own block on the detail page and are not merged into the body.
 
 ### Profile
 - PRF-001: Only one Profile exists (single-owner site)
@@ -224,6 +223,9 @@
 - PRF-003: Public profile endpoint excludes private fields (phone, postal code, address lines)
 - PRF-004: Translatable fields fall back: requested locale → en → first available
 - PRF-005: Social links, certifications, and openTo are validated JSON arrays (not free-form)
+- PRF-006: WorkAvailability.timezones may hold one or more zones. An empty list means "not specified". The landing page renders each zone as a chip showing live local time.
+- PRF-007: LandingContentBlocks (tagline, stackIntro, contactIntro, footerTagline) are optional. When a block is empty, the landing page falls back to its layout default — typically hiding that surface entirely or showing only fixed chrome.
+- PRF-008: Skill grouping for landing follows the parent-skill umbrella convention: top-level skills (skills with no parent) define the groups; the group label is the umbrella skill's name; group order follows the umbrella's display order; member skills are the umbrella's direct children.
 
 ### Upload Media
 - **Trigger:** Owner wants to upload an asset (image, document, video)

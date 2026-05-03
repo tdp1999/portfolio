@@ -1,6 +1,6 @@
 # Task: Landing Tailwind tokens + font loading
 
-## Status: pending
+## Status: done
 
 ## Goal
 Establish the design-token foundation (palette, type scale, spacing, motion) and load the 3 font families so every landing component composes from a shared base.
@@ -36,3 +36,9 @@ None (foundation).
 ## Complexity: M
 
 ## Progress Log
+- 2026-05-02 — Implemented:
+  - `libs/landing/shared/ui/src/tokens/{colors,typography,motion,index}.scss` — ink (3) + slate text (300–700) + indigo accent (#6E66D9 + hover/active), display 56/48/40/32, body 17/15/13, mono 12/11 (all 4-grid lh), motion 150/200/250 + landing ease.
+  - Added `@fontsource/newsreader` (400/500/600 + 400-italic) to package.json + imported in `libs/landing/shared/ui/src/styles/index.scss`.
+  - Root `tailwind.config.js`: extended with `ink/landing-text/landing-accent/landing-border` color groups, `font-display: Newsreader`, fixed `display-*` / `body-*` / `mono-*` size scale, motion duration + landing-ease easing. `darkMode` widened to `['variant', ['.dark &', '[data-theme="dark"] &']]` so both apps' theme conventions still work.
+  - /ddl page: added "landing tokens · E4 D2 lock" sample showing all 3 families + ink/accent swatches + new theme toggle.
+- Per-app `apps/landing/tailwind.config.ts` not added — root config now serves both apps cleanly via the dual-selector darkMode. Revisit only if console gets utilities that pollute landing's bundle.
