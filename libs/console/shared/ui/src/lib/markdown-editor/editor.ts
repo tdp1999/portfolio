@@ -28,6 +28,7 @@ import { MarkdownEditorApi, MarkdownEditorChange } from './markdown-editor.types
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       [value]="content()"
+      [style.min-height.px]="minHeight()"
       (input)="onInput($event)"
       (blur)="onTouched()"
     ></textarea>
@@ -46,6 +47,8 @@ export class Editor implements ControlValueAccessor, MarkdownEditorApi {
   readonly initialContent = input<string>('');
   readonly placeholder = input<string>('Write your post in markdown…');
   readonly ariaLabel = input<string>('Markdown editor');
+  /** Minimum textarea height in px. The textarea is user-resizable beyond this. */
+  readonly minHeight = input<number>(320);
 
   readonly contentChange = output<MarkdownEditorChange>();
 

@@ -1,0 +1,36 @@
+/* landing-chip — mono caps, 1px hairline border (E5 task 279). */
+/* Hover B · Tonal fill (shipped from task 280b prototypes). */
+/* Cursor stays default — chips are metadata, not buttons; no active/click effect. */
+.landing-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--landing-border);
+  background-color: transparent;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--landing-tracking-mono);
+  border-radius: 4px;
+  white-space: nowrap;
+  cursor: default;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+
+  &:hover {
+    background-color: var(--landing-ink-2);
+    color: var(--landing-text-300);
+  }
+}
+
+.landing-chip--sm {
+  padding: 2px 6px;
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+}
+
+.landing-chip--md {
+  padding: 4px 8px;
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+}

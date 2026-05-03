@@ -1,0 +1,16 @@
+/* landing-eyebrow — mono caps slate label (E5 task 279) */
+.landing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.landing-eyebrow__sep {
+  color: var(--landing-text-600);
+}

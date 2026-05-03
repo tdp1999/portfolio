@@ -1,60 +1,157 @@
-.btn {
-  @apply inline-flex items-center justify-center gap-2;
-  @apply rounded-lg font-medium transition-colors duration-150;
-  @apply border-none outline-none cursor-pointer;
+/* landing-button — primitive for E5 landing per task 278 */
+/* Variants: solid (indigo), ghost (hairline border), link (inline text style) */
 
-  &--primary {
-    @apply bg-primary text-text-on-primary;
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* 8px */
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    filter 150ms ease;
 
-    &:hover:not(:disabled) {
-      @apply bg-primary-hover;
-    }
-
-    &:focus-visible {
-      @apply ring-2 ring-primary ring-offset-2;
-    }
-  }
-
-  &--secondary {
-    @apply bg-surface text-text border border-border;
-
-    &:hover:not(:disabled) {
-      @apply bg-surface-elevated border-border-strong;
-    }
-
-    &:focus-visible {
-      @apply ring-2 ring-border ring-offset-2;
-    }
-  }
-
-  &--ghost {
-    @apply bg-transparent text-primary;
-
-    &:hover:not(:disabled) {
-      @apply bg-primary-container;
-    }
-
-    &:focus-visible {
-      @apply ring-2 ring-primary ring-offset-2;
-    }
-  }
-
-  &--sm {
-    @apply px-3 py-2 text-sm;
-    min-height: 32px;
-  }
-
-  &--md {
-    @apply px-4 py-2.5 text-base;
-    min-height: 40px;
-  }
-
-  &--lg {
-    @apply px-6 py-3 text-lg;
-    min-height: 48px;
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 2px;
   }
 
   &:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.landing-btn--sm {
+  padding: 6px 12px;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  min-height: 32px;
+}
+
+.landing-btn--md {
+  padding: 10px 16px;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  min-height: 40px;
+}
+
+.landing-btn--solid {
+  background-color: var(--landing-accent);
+  color: #ffffff;
+  box-shadow: none;
+
+  &:hover:not(:disabled) {
+    /* Brighten accent ~10% per task spec */
+    background-color: var(--landing-accent-hover);
+    filter: brightness(1.1);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--landing-accent-active);
+    filter: none;
+  }
+}
+
+.landing-btn--ghost {
+  background-color: transparent;
+  border-color: var(--landing-border);
+  color: var(--landing-text);
+
+  &:hover:not(:disabled) {
+    border-color: var(--landing-border-strong);
+    color: var(--landing-accent-hover);
+  }
+
+  &:active:not(:disabled) {
+    color: var(--landing-accent);
+  }
+}
+
+.landing-btn--link {
+  background-color: transparent;
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+  min-height: auto;
+  color: var(--landing-text);
+
+  &:hover:not(:disabled) {
+    color: var(--landing-accent-hover);
+  }
+
+  &:active:not(:disabled) {
+    color: var(--landing-accent);
+  }
+}
+
+/* Lift-off arrow (effect "B" — vapor trail) — */
+/* lead arrow shoots in its direction; ghost copy fades indigo at origin */
+.landing-btn__text {
+  display: inline-flex;
+  align-items: center;
+}
+
+.landing-btn__arrow-stack {
+  position: relative;
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.landing-btn__arrow {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  line-height: 0;
+  transition:
+    transform 280ms cubic-bezier(0.34, 1.3, 0.64, 1),
+    opacity 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-btn__arrow--ghost {
+  color: var(--landing-accent);
+  opacity: 0;
+}
+
+/* For solid (indigo bg), the ghost should be light to be visible */
+.landing-btn--solid .landing-btn__arrow--ghost {
+  color: #ffffff;
+}
+
+.landing-btn__arrow--lead {
+  color: currentColor;
+  opacity: 1;
+}
+
+.landing-btn:hover:not(:disabled) .landing-btn__arrow--ghost {
+  opacity: 0.45;
+}
+
+.landing-btn--arrow-right:hover:not(:disabled) .landing-btn__arrow--lead {
+  transform: translateX(6px) scale(1.05);
+}
+
+.landing-btn--arrow-up-right:hover:not(:disabled) .landing-btn__arrow--lead {
+  transform: translate(4px, -4px) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-btn__arrow {
+    transition: none;
+  }
+  .landing-btn:hover:not(:disabled) .landing-btn__arrow--lead {
+    transform: none;
+  }
+  .landing-btn:hover:not(:disabled) .landing-btn__arrow--ghost {
+    opacity: 0;
   }
 }

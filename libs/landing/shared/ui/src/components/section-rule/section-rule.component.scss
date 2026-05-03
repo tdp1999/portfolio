@@ -1,0 +1,26 @@
+/* landing-section-rule — 1px hairline horizontal rule (E5 task 280). */
+/* `lift` variant: indigo top stripe + tonal lift on the section that follows */
+/* (sibling-selector pattern, per B2.c rule). */
+.landing-section-rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--landing-border);
+  border: 0;
+}
+
+.landing-section-rule--lift {
+  height: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--landing-accent) 0,
+    var(--landing-accent) 1px,
+    var(--landing-border) 1px,
+    var(--landing-border) 2px
+  );
+}
+
+/* Sibling section gets a tonal lift to ink-1 surface */
+.landing-section-rule--lift + * {
+  background-color: var(--landing-ink-1);
+}

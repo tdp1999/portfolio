@@ -8,28 +8,1175 @@
       <landing-theme-toggle class="mt-2" />
     </header>
 
-    <!-- Landing tokens sample (E5 task 274/275) -->
-    <section class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6">
-      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
-        landing tokens · E4 D2 lock
+    <!-- ────────────────────────────────────────────────────────── -->
+    <!-- NEW · E5 Portfolio landing primitives                      -->
+    <!-- Built for initiative-portfolio.md → E5 Implementation.     -->
+    <!-- Add new sections here. Replace legacy sections below       -->
+    <!-- as each new primitive lands.                               -->
+    <!-- ────────────────────────────────────────────────────────── -->
+    <div class="mb-8 border-l-2 border-landing-accent pl-4">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent">
+        new · e5 portfolio landing primitives
       </p>
-      <h2 class="font-display text-display-lg text-landing-text-300 mb-2">Newsreader display, 48 / 56</h2>
-      <p class="font-sans text-body-lg text-landing-text-400 mb-4">
-        Inter body large at 17/28 — the reading size for prose blocks. Quiet, slightly desaturated against the ink
-        background; the indigo accent stays reserved for one element per view.
+      <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-2xl">
+        Components built for the new landing surface (initiative-portfolio.md → E5 Implementation). Legacy equivalents
+        below will be removed as new primitives land.
       </p>
-      <p class="font-mono text-mono-md text-landing-text-500 mb-4">
-        font-mono · 12/16 · JetBrains Mono · meta labels and code
-      </p>
-      <div class="flex flex-wrap items-center gap-3">
-        <span class="inline-block h-6 w-6 rounded bg-ink-0 border border-landing-border" title="ink-0"></span>
-        <span class="inline-block h-6 w-6 rounded bg-ink-1 border border-landing-border" title="ink-1"></span>
-        <span class="inline-block h-6 w-6 rounded bg-ink-2 border border-landing-border" title="ink-2"></span>
-        <span class="inline-block h-6 w-6 rounded bg-landing-accent" title="indigo accent"></span>
-        <span class="inline-block h-6 w-6 rounded bg-landing-accent-hover" title="indigo hover"></span>
-        <span class="font-mono text-mono-sm text-landing-text-600"> ink-0/1/2 · accent · accent-hover </span>
+    </div>
+
+    <section class="space-y-6 mb-12">
+      <!-- Landing tokens sample (E5 task 274/275) -->
+      <div class="rounded-lg border border-landing-border bg-ink-1 p-6">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing tokens · E4 D2 lock
+        </p>
+        <h2 class="font-display text-display-lg text-landing-text-300 mb-2">Newsreader display, 48 / 56</h2>
+        <p class="font-sans text-body-lg text-landing-text-400 mb-4">
+          Inter body large at 17/28 — the reading size for prose blocks. Quiet, slightly desaturated against the ink
+          background; the indigo accent stays reserved for one element per view.
+        </p>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-4">
+          font-mono · 12/16 · JetBrains Mono · meta labels and code
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="inline-block h-6 w-6 rounded bg-ink-0 border border-landing-border" title="ink-0"></span>
+          <span class="inline-block h-6 w-6 rounded bg-ink-1 border border-landing-border" title="ink-1"></span>
+          <span class="inline-block h-6 w-6 rounded bg-ink-2 border border-landing-border" title="ink-2"></span>
+          <span class="inline-block h-6 w-6 rounded bg-landing-accent" title="indigo accent"></span>
+          <span class="inline-block h-6 w-6 rounded bg-landing-accent-hover" title="indigo hover"></span>
+          <span class="font-mono text-mono-sm text-landing-text-600"> ink-0/1/2 · accent · accent-hover </span>
+        </div>
+      </div>
+
+      <!-- E5 Landing Typography Reference -->
+      <!-- See .context/design/landing-typography.md for the full system. -->
+      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing typography · three voices, three jobs
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Newsreader · Inter · JetBrains Mono</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6 max-w-3xl">
+          One serif (Newsreader) for editorial moments, one sans (Inter) for everything readable, one mono (JetBrains)
+          for labels and metadata. A single text node should always have one obvious owner — never reach for "looks
+          nice", reach for the role.
+        </p>
+
+        <landing-segmented
+          [segments]="tabsNoPrototypes"
+          [active]="typographyTab()"
+          (activeChange)="typographyTab.set($event)"
+          ariaLabel="Typography sections"
+          idPrefix="typography"
+          class="block mb-8"
+        />
+
+        @switch (typographyTab()) {
+          @case ('showcase') {
+            <!-- Role table -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              <div class="bg-ink-0 border border-landing-border rounded p-4">
+                <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+                  newsreader · display
+                </p>
+                <p class="font-display text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+                <p class="font-sans text-body-sm text-landing-text-400 mb-1">
+                  Use for: hero h1, page titles, pull-quotes.
+                </p>
+                <p class="font-sans text-body-sm text-landing-text-600">Don't: buttons, body, repeated card titles.</p>
+              </div>
+              <div class="bg-ink-0 border border-landing-border rounded p-4">
+                <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+                  inter · body / ui
+                </p>
+                <p class="font-sans text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+                <p class="font-sans text-body-sm text-landing-text-400 mb-1">
+                  Use for: paragraphs, buttons, links, card bodies — anything the reader scans.
+                </p>
+                <p class="font-sans text-body-sm text-landing-text-600">Don't: tags, captions, hero phrase.</p>
+              </div>
+              <div class="bg-ink-0 border border-landing-border rounded p-4">
+                <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+                  jetbrains mono · meta
+                </p>
+                <p class="font-mono text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+                <p class="font-sans text-body-sm text-landing-text-400 mb-1">
+                  Use for: chips, eyebrows, captions, code, dates, status labels.
+                </p>
+                <p class="font-sans text-body-sm text-landing-text-600">Don't: full sentences, paragraphs.</p>
+              </div>
+            </div>
+
+            <!-- Display scale -->
+            <div class="mb-10">
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+                display scale · newsreader
+              </p>
+              <div class="space-y-4">
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">xl · 56/64</span>
+                  <span class="font-display text-display-xl text-landing-text-300 leading-none">Hero h1</span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 48/56</span>
+                  <span class="font-display text-display-lg text-landing-text-300 leading-none">Page h1</span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 40/48</span>
+                  <span class="font-display text-display-md text-landing-text-300 leading-none">Sub-hero</span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 32/40</span>
+                  <span class="font-display text-display-sm text-landing-text-300 leading-none">Section h2</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Body scale -->
+            <div class="mb-10">
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+                body scale · inter
+              </p>
+              <div class="space-y-3">
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 17/28</span>
+                  <span class="font-sans text-body-lg text-landing-text-300">
+                    Reading column body — long-form paragraphs sit at this size.
+                  </span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 15/24</span>
+                  <span class="font-sans text-body-md text-landing-text-400">
+                    Default UI text, card body, descriptions in dense layouts.
+                  </span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 13/20</span>
+                  <span class="font-sans text-body-sm text-landing-text-500">
+                    Small labels and helper text near captions.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mono scale -->
+            <div class="mb-10">
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+                mono scale · jetbrains mono · ALL CAPS · 0.06em
+              </p>
+              <div class="space-y-3">
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 12/16</span>
+                  <span class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
+                    EYEBROW · CHIP MD · FIG. 03 · CAPTION
+                  </span>
+                </div>
+                <div class="flex items-baseline gap-6">
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 11/16</span>
+                  <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500">
+                    CHIP SM · DENSE META STRIP · 2026
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pairing recipe -->
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+                canonical pairing · eyebrow + display + body
+              </p>
+              <div class="bg-ink-0 border border-landing-border rounded p-6 max-w-2xl">
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  Selected work
+                </p>
+                <h3 class="font-display text-display-md text-landing-text-300 leading-tight mb-4">
+                  Quiet ink, restrained accent.
+                </h3>
+                <p class="font-sans text-body-lg text-landing-text-400 mb-4">
+                  Inter at 17/28 — the reading size. Newsreader carries the headline, Inter carries the prose, mono caps
+                  flag the section above.
+                </p>
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
+                  FIG. 01 · canonical pairing
+                </p>
+              </div>
+            </div>
+          }
+          @case ('usage') {
+            <!-- Typography · Usage -->
+            <div class="space-y-8 max-w-4xl">
+              <div>
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  pairing rules
+                </p>
+                <ol class="font-sans text-body-md text-landing-text-400 space-y-3 list-decimal pl-6">
+                  <li>
+                    <strong>One display moment per view.</strong> A page gets one Newsreader headline. Sub-headings drop
+                    to Inter unless they're inside an editorial reading column.
+                  </li>
+                  <li>
+                    <strong>Eyebrow above display.</strong> Mono caps eyebrow + Newsreader headline is the canonical
+                    pattern (hero, section openers, project detail header).
+                  </li>
+                  <li>
+                    <strong>Chips never under headings of the same type.</strong> A chip cluster (mono caps) belongs in
+                    card meta or under a project title — not directly under another mono label.
+                  </li>
+                  <li>
+                    <strong>Pull-quote interrupts body.</strong> When using
+                    <code class="font-mono text-mono-sm text-landing-text-300">landing-pull-quote</code> inside reading
+                    copy, leave 24px padding above/below; the indigo border carries the "this is a moment" cue.
+                  </li>
+                  <li>
+                    <strong>Captions are always mono.</strong> Any text labeling a media element (image, code block,
+                    diagram) is Mono caps — not Inter italic, not Newsreader.
+                  </li>
+                </ol>
+              </div>
+
+              <div>
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  quick decision table
+                </p>
+                <div class="border border-landing-border rounded overflow-hidden">
+                  <table class="w-full font-sans text-body-md">
+                    <thead class="bg-ink-0 text-landing-text-500 font-mono text-mono-md uppercase tracking-[0.06em]">
+                      <tr>
+                        <th class="text-left p-3 border-b border-landing-border">Question</th>
+                        <th class="text-left p-3 border-b border-landing-border">Use</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-landing-text-400">
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this a page-defining headline or hero phrase?</td>
+                        <td class="p-3 font-display text-landing-text-300">Newsreader</td>
+                      </tr>
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this a paragraph the reader is meant to read fully?</td>
+                        <td class="p-3 font-sans text-landing-text-300">Inter</td>
+                      </tr>
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this a button, input, link, or card title?</td>
+                        <td class="p-3 font-sans text-landing-text-300">Inter</td>
+                      </tr>
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this labeling, tagging, or pointing at something?</td>
+                        <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+                      </tr>
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this a short ALL-CAPS metadata string?</td>
+                        <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+                      </tr>
+                      <tr class="border-b border-landing-border">
+                        <td class="p-3">Is this code or a file path?</td>
+                        <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+                      </tr>
+                      <tr>
+                        <td class="p-3">Is this a quote inside reading copy?</td>
+                        <td class="p-3 font-display italic text-landing-text-300">Newsreader italic</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="border-l-2 border-landing-accent pl-4">
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">reference</p>
+                <p class="font-sans text-body-md text-landing-text-400">
+                  Full system documented in
+                  <code class="font-mono text-mono-sm text-landing-text-300">.context/design/landing-typography.md</code
+                  >. Token source:
+                  <code class="font-mono text-mono-sm text-landing-text-300"
+                    >libs/landing/shared/ui/src/tokens/typography.scss</code
+                  >.
+                </p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- E5 Landing Primitives (task 278): button + link + icon-arrow -->
+      <div class="primitives-test bg-ink-1 border border-landing-border p-6 rounded-lg">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing primitives · E5 D1 lock
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Button · Link · Arrow</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6">
+          The three workhorses every landing surface composes from. Indigo accent stays reserved for one moment per
+          view.
+        </p>
+
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="interactiveTab()"
+          (activeChange)="interactiveTab.set($event)"
+          ariaLabel="Interactive primitives sections"
+          idPrefix="interactive"
+          class="block mb-8"
+        />
+
+        @switch (interactiveTab()) {
+          @case ('showcase') {
+            <div class="space-y-8">
+              <!-- Button variants -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-button · solid / ghost / link</p>
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                  <landing-button variant="solid" size="sm">Small solid</landing-button>
+                  <landing-button variant="solid" size="md">Medium solid</landing-button>
+                  <landing-button variant="ghost" size="sm">Small ghost</landing-button>
+                  <landing-button variant="ghost" size="md">Medium ghost</landing-button>
+                  <landing-button variant="link" size="md">Inline link button</landing-button>
+                  <landing-button variant="solid" size="md" [disabled]="true">Disabled</landing-button>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                  <landing-button variant="solid" size="md" arrow="right">Read more</landing-button>
+                  <landing-button variant="ghost" size="md" arrow="up-right">External</landing-button>
+                </div>
+              </div>
+
+              <!-- Link with arrows -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-link · color-only hover, no underline
+                </p>
+                <div class="space-y-2 mb-4">
+                  <div><landing-link href="/projects">Projects (router, internal)</landing-link></div>
+                  <div><landing-link href="/projects" [arrow]="true">Projects with arrow</landing-link></div>
+                  <div>
+                    <landing-link href="https://github.com" [external]="true" [arrow]="true">
+                      External resource
+                    </landing-link>
+                  </div>
+                  <div>
+                    <landing-link href="/projects" [active]="true">Active route (indigo)</landing-link>
+                  </div>
+                </div>
+                <p class="font-sans text-body-md text-landing-text-400">
+                  Inline prose example: read the
+                  <landing-link href="/projects" [arrow]="true">latest projects</landing-link>
+                  or jump to
+                  <landing-link href="https://github.com" [external]="true" [arrow]="true">my GitHub</landing-link>
+                  for source.
+                </p>
+              </div>
+
+              <!-- Arrow icon -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-icon-arrow · right / up-right</p>
+                <div class="flex flex-wrap items-center gap-6 text-landing-text-300">
+                  <span class="inline-flex items-center gap-2">
+                    <landing-icon-arrow direction="right" [size]="16" />
+                    <code class="font-mono text-mono-sm text-landing-text-500">right · 16</code>
+                  </span>
+                  <span class="inline-flex items-center gap-2">
+                    <landing-icon-arrow direction="up-right" [size]="16" />
+                    <code class="font-mono text-mono-sm text-landing-text-500">up-right · 16</code>
+                  </span>
+                  <span class="inline-flex items-center gap-2 text-landing-accent">
+                    <landing-icon-arrow direction="right" [size]="24" />
+                    <code class="font-mono text-mono-sm text-landing-text-500">currentColor · indigo · 24</code>
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+          @case ('prototypes') {
+            <!-- Arrow Hover Prototypes (task 278 — A & C kept as reference; B was promoted into landing-link/landing-button) -->
+            <div class="arrow-fx-test">
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+                arrow hover prototypes · reference
+              </p>
+              <h3 class="font-display text-display-sm text-landing-text-300 mb-2">Three takes on a tired pattern</h3>
+              <p class="font-sans text-body-md text-landing-text-400 mb-8">
+                Hover each row. B (Lift-off) is the chosen pattern, now live on landing-link & landing-button. A and C
+                are kept here as design references. Reduced-motion users get the static state.
+              </p>
+
+              <div class="space-y-10">
+                <!-- A: Connector line -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">A · Connector line</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Hairline indigo rail draws from text to arrow, arrow slides along it. The rail IS the indigo
+                      accent moment.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <a href="#" class="fx fx-a">
+                      <span class="fx__text">Read the case study</span>
+                      <span class="fx__rail" aria-hidden="true"></span>
+                      <landing-icon-arrow direction="right" [size]="14" class="fx__arrow" />
+                    </a>
+                    <a href="#" class="fx fx-a">
+                      <span class="fx__text">Open on GitHub</span>
+                      <span class="fx__rail" aria-hidden="true"></span>
+                      <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow" />
+                    </a>
+                  </div>
+                </div>
+
+                <!-- B: Lift-off (chosen) -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">B · Lift-off (with ghost) — shipped</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Arrow lifts in its direction + scales slightly. A ghost copy fades at the original spot — like a
+                      vapor trail. Promoted into landing-link & landing-button.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <a href="#" class="fx fx-b">
+                      <span class="fx__text">Read the case study</span>
+                      <span class="fx__stack" aria-hidden="true">
+                        <landing-icon-arrow direction="right" [size]="14" class="fx__arrow fx__arrow--ghost" />
+                        <landing-icon-arrow direction="right" [size]="14" class="fx__arrow fx__arrow--lead" />
+                      </span>
+                    </a>
+                    <a href="#" class="fx fx-b">
+                      <span class="fx__text">Open on GitHub</span>
+                      <span class="fx__stack" aria-hidden="true">
+                        <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow fx__arrow--ghost" />
+                        <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow fx__arrow--lead" />
+                      </span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- C: Letter-press hand-off -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">C · Letter-press hand-off</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Text shifts left 1px, arrow shifts right 3px. No new elements, no color change. Maximum restraint
+                      — feels tactile, almost imperceptible until you notice.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <a href="#" class="fx fx-c">
+                      <span class="fx__text">Read the case study</span>
+                      <landing-icon-arrow direction="right" [size]="14" class="fx__arrow" />
+                    </a>
+                    <a href="#" class="fx fx-c">
+                      <span class="fx__text">Open on GitHub</span>
+                      <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          @case ('usage') {
+            <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+              <p>
+                <strong class="text-landing-text-300">landing-button</strong> for any action that triggers something
+                (submit, toggle, navigate-after-confirm). Reach for
+                <code class="font-mono text-mono-sm text-landing-text-300">solid</code>
+                only when the action is the page's single primary moment — every other CTA is
+                <code class="font-mono text-mono-sm text-landing-text-300">ghost</code>.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">landing-link</strong> for plain navigation — internal routes,
+                external resources, inline prose. Never style it like a button. Color-only hover, never adds underline.
+                External links automatically get the up-right arrow +
+                <code class="font-mono text-mono-sm text-landing-text-300">target=_blank</code>.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">landing-icon-arrow</strong> is composed inside button / link, not
+                placed alone. The two glyphs (<code class="font-mono text-mono-sm text-landing-text-300">right</code>,
+                <code class="font-mono text-mono-sm text-landing-text-300">up-right</code>) carry semantic weight:
+                same-domain vs leaving the site. Don't mix.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Indigo budget.</strong> A page gets one indigo moment. The arrow's
+                lift-off animation, the active link state, and the solid button background all draw from the same budget
+                — pick one.
+              </p>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- E5 Landing Label Primitives (task 279): chip + eyebrow + status-dot -->
+      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing label primitives · E5 task 279
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Chip · Eyebrow · Status dot</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6">
+          Three small label surfaces composed everywhere a piece of metadata appears. Mono caps; one indigo accent rule
+          still applies — none of these claim it.
+        </p>
+
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="labelTab()"
+          (activeChange)="labelTab.set($event)"
+          ariaLabel="Label primitives sections"
+          idPrefix="label"
+          class="block mb-8"
+        />
+
+        @switch (labelTab()) {
+          @case ('showcase') {
+            <div class="space-y-8">
+              <!-- Chip variants -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-chip · sm / md, hairline border, no fill
+                </p>
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <landing-chip label="Angular" size="sm" />
+                  <landing-chip label="TypeScript" size="sm" />
+                  <landing-chip label="NestJS" size="sm" />
+                  <landing-chip label="Nx" size="sm" />
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <landing-chip label="Angular" />
+                  <landing-chip label="TypeScript" />
+                  <landing-chip label="NestJS" />
+                  <landing-chip label="TailwindCSS" />
+                  <landing-chip label="Nx" />
+                </div>
+              </div>
+
+              <!-- Eyebrow -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-eyebrow · single label or array with separator
+                </p>
+                <div class="space-y-3">
+                  <div><landing-eyebrow label="Selected work" /></div>
+                  <div><landing-eyebrow [label]="['Angular', 'TypeScript', 'NestJS']" /></div>
+                  <div><landing-eyebrow [label]="['2024', 'Case study', 'In progress']" /></div>
+                </div>
+              </div>
+
+              <!-- Status dot -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-status-dot · available / busy / away (only pill radius in design)
+                </p>
+                <div class="flex flex-wrap items-center gap-3">
+                  <landing-status-dot
+                    state="available"
+                    label="Available for work"
+                    ariaLabel="Currently available for new projects"
+                  />
+                  <landing-status-dot state="busy" label="In a sprint" ariaLabel="Booked through next month" />
+                  <landing-status-dot state="away" label="Off the grid" ariaLabel="Not currently available" />
+                </div>
+              </div>
+            </div>
+          }
+          @case ('prototypes') {
+            <!-- Chip + Status-dot interactions (research, not yet baked into the component) -->
+            <div class="interaction-fx-test">
+              <p class="font-sans text-body-md text-landing-text-400 mb-8 max-w-3xl">
+                Hover and click each row. Subtle by design — labels aren't buttons, they're metadata that occasionally
+                accepts a press. Once a winner is chosen these graduate into
+                <code class="font-mono text-mono-sm text-landing-text-300">landing-chip</code> /
+                <code class="font-mono text-mono-sm text-landing-text-300">landing-status-dot</code>; reduced-motion
+                users always get the static state.
+              </p>
+
+              <!-- ── CHIP ── -->
+              <h3 class="font-display text-display-sm text-landing-text-300 mb-4">Chip</h3>
+              <div class="space-y-8 mb-12">
+                <!-- A · Border lift -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">A · Border lift</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Border + label brighten one tier on hover. Press settles 1px down. Most restrained option —
+                      preserves the "no fill" rule strictly.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="chip-fx chip-fx--a">ANGULAR</span>
+                      <span class="chip-fx chip-fx--a">TYPESCRIPT</span>
+                      <span class="chip-fx chip-fx--a">NESTJS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- B · Tonal fill -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">B · Tonal fill — shipped</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Background fades from transparent to ink-2 on hover. Now live in
+                      <code class="font-mono text-mono-sm text-landing-text-300">landing-chip</code>. No cursor:pointer,
+                      no click effect — chips are metadata, not buttons; don't lie about clickability.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="chip-fx chip-fx--b">ANGULAR</span>
+                      <span class="chip-fx chip-fx--b">TYPESCRIPT</span>
+                      <span class="chip-fx chip-fx--b">NESTJS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- C · Letter shift -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">C · Letter shift</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Tracking widens from 0.06em to 0.1em on hover. Pure typographic micro-interaction — feels
+                      mechanical, deliberate; only really works on mono.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="chip-fx chip-fx--c">ANGULAR</span>
+                      <span class="chip-fx chip-fx--c">TYPESCRIPT</span>
+                      <span class="chip-fx chip-fx--c">NESTJS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── STATUS DOT ── -->
+              <h3 class="font-display text-display-sm text-landing-text-300 mb-4">Status dot</h3>
+              <div class="space-y-8">
+                <!-- A · Dot pulse -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">A · Dot pulse (always-on)</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      On the <em>available</em> state only, the dot pulses gently in a 2.4s loop — a subtle "live
+                      signal". No interaction needed; passive presence. Pauses on `prefers-reduced-motion`.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <span class="status-fx status-fx--a status-fx--available">
+                      <span class="status-fx__dot" aria-hidden="true"></span>
+                      <span class="status-fx__label">AVAILABLE FOR WORK</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- B · Radar ring on hover -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">B · Radar ring (on hover) — shipped</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Hover triggers a single concentric ring expanding outward from the dot, fading as it goes.
+                      One-shot, not a loop — feels like a ping rather than a heartbeat. Now live in
+                      <code class="font-mono text-mono-sm text-landing-text-300">landing-status-dot</code> on
+                      <code class="font-mono text-mono-sm text-landing-text-300">available</code> only.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <span class="status-fx status-fx--b status-fx--available">
+                      <span class="status-fx__dot" aria-hidden="true"></span>
+                      <span class="status-fx__label">AVAILABLE FOR WORK</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- C · Pill brighten -->
+                <div class="fx-row">
+                  <div class="fx-label">
+                    <p class="font-mono text-mono-md text-landing-accent">C · Pill brighten</p>
+                    <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+                      Pill border + label both shift one tier brighter on hover. Mirrors chip option A — the most
+                      consistent option if chip A is also the winner. No motion at all, ideal for reduced-motion
+                      contexts.
+                    </p>
+                  </div>
+                  <div class="fx-demos">
+                    <span class="status-fx status-fx--c status-fx--available">
+                      <span class="status-fx__dot" aria-hidden="true"></span>
+                      <span class="status-fx__label">AVAILABLE FOR WORK</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommendation -->
+              <div class="mt-10 border-l-2 border-landing-accent pl-4 max-w-3xl">
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">
+                  recommendation
+                </p>
+                <p class="font-sans text-body-md text-landing-text-400">
+                  Chip <strong>A · Border lift</strong> + Status dot <strong>B · Radar ring</strong> on
+                  <code class="font-mono text-mono-sm text-landing-text-300">available</code> — they share a hover
+                  language (one-tier brighten), and the radar adds just enough life to the bio card without a permanent
+                  loop. Falls back gracefully under reduced-motion: brighten still applies, ring is suppressed.
+                </p>
+              </div>
+            </div>
+          }
+          @case ('usage') {
+            <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+              <p>
+                <strong class="text-landing-text-300">landing-chip</strong> for tech tags, categories, topics — anything
+                you'd describe as a "label" rather than a "state". Always mono caps, hairline border, no fill. Cluster
+                them with <code class="font-mono text-mono-sm text-landing-text-300">gap-2</code>; let them wrap.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">landing-eyebrow</strong> sits ABOVE a heading to flag what the
+                section is about (Selected work, About, Now reading). Pass an array to chain related parts with
+                <code class="font-mono text-mono-sm text-landing-text-300">·</code> separators. Never used as a
+                standalone heading — it's always paired with a Newsreader display below.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">landing-status-dot</strong> for live operational state — am I
+                taking work, am I in a sprint, am I off the grid. The only pill-radius surface in the design (E4 C2
+                rule); reach for it sparingly. Use
+                <code class="font-mono text-mono-sm text-landing-text-300">ariaLabel</code>
+                to provide the full sentence for screen readers (the visible label is necessarily terse).
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Don't mix.</strong> A status indicator is a status-dot, never a
+                chip. A tech tag is a chip, never a status-dot. A section label is an eyebrow, never a chip. The grammar
+                holds the design together.
+              </p>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- E5 Landing Content Primitives (task 280): figure + pull-quote + section-rule -->
+      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing content primitives · E5 task 280
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Figure · Pull-quote · Section rule</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6">
+          Three editorial primitives used inside reading flows — project detail figures, quotes in column copy, and the
+          rule that separates home sections (with a B2.c lift variant for Selected Work / Get In Touch).
+        </p>
+
+        <landing-segmented
+          [segments]="tabsNoPrototypes"
+          [active]="contentTab()"
+          (activeChange)="contentTab.set($event)"
+          ariaLabel="Content primitives sections"
+          idPrefix="content"
+          class="block mb-8"
+        />
+
+        @switch (contentTab()) {
+          @case ('showcase') {
+            <div class="space-y-10">
+              <!-- Figure · standard pair -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-figure · numbered caption + lazy load (default)
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+                  <landing-figure
+                    src="https://placehold.co/640x400/1a2030/cbd5e1.png?text=Hero+shot"
+                    alt="Hero shot of a product page"
+                    caption="Hero treatment for the project detail header"
+                    [figureNumber]="1"
+                  />
+                  <landing-figure
+                    src="https://placehold.co/640x400/11151c/cbd5e1.png?text=System+map"
+                    alt="Architecture diagram"
+                    caption="System map without numbering"
+                  />
+                </div>
+              </div>
+
+              <!-- Figure · full-width breakout -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  full-width breakout · spans the reading column for hero shots / wide diagrams
+                </p>
+                <landing-figure
+                  src="https://placehold.co/1600x600/1a2030/e2e8f0.png?text=Full-width+breakout"
+                  alt="Wide hero shot breaking out of the reading column"
+                  caption="Full-width breakout — used at the top of project detail pages"
+                  [figureNumber]="2"
+                />
+              </div>
+
+              <!-- Figure · bg-matching colour (border carries the edge) -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  edge-matching surface · image colour ≈ ink-1; the 1px hairline is the only edge cue
+                </p>
+                <div class="bg-ink-1 p-6 rounded">
+                  <landing-figure
+                    src="https://placehold.co/960x420/11151c/64748b.png?text=Same+tone+as+background"
+                    alt="Diagram on a surface that matches the page background"
+                    caption="When the image tone matches the surface, the hairline border is what gives it edges"
+                    [figureNumber]="3"
+                  />
+                </div>
+              </div>
+
+              <!-- Figure · portrait inline pair -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  portrait inline pair · two narrow shots side by side (mobile screens, devices, posters)
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
+                  <landing-figure
+                    src="https://placehold.co/300x600/1a2030/cbd5e1.png?text=Mobile+1"
+                    alt="Mobile screen 1"
+                    caption="Onboarding"
+                    [figureNumber]="4"
+                  />
+                  <landing-figure
+                    src="https://placehold.co/300x600/11151c/cbd5e1.png?text=Mobile+2"
+                    alt="Mobile screen 2"
+                    caption="Editor"
+                    [figureNumber]="5"
+                  />
+                  <landing-figure
+                    src="https://placehold.co/300x600/1a2030/cbd5e1.png?text=Mobile+3"
+                    alt="Mobile screen 3"
+                    caption="Settings"
+                    [figureNumber]="6"
+                  />
+                  <landing-figure
+                    src="https://placehold.co/300x600/11151c/cbd5e1.png?text=Mobile+4"
+                    alt="Mobile screen 4"
+                    caption="Empty state"
+                    [figureNumber]="7"
+                  />
+                </div>
+              </div>
+
+              <!-- Figure · no caption -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  no caption · decorative or context-clear shots; figcaption is omitted entirely
+                </p>
+                <div class="max-w-md">
+                  <landing-figure
+                    src="https://placehold.co/480x320/1a2030/cbd5e1.png?text=Quiet+supporting+image"
+                    alt="Supporting image without caption"
+                  />
+                </div>
+              </div>
+
+              <!-- Figure · caption only, no number -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  caption-only · screenshots / quick refs that don't need to be cross-referenced
+                </p>
+                <div class="max-w-md">
+                  <landing-figure
+                    src="https://placehold.co/480x300/11151c/94a3b8.png?text=Plain+caption"
+                    alt="Image with caption but no number"
+                    caption="A quick reference shot — captioned but unnumbered"
+                  />
+                </div>
+              </div>
+
+              <!-- Figure · above-the-fold preload -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  preload override · above-the-fold use; drops <code>loading=lazy</code> and adds
+                  <code>fetchpriority=high</code>
+                </p>
+                <div class="max-w-md">
+                  <landing-figure
+                    src="https://placehold.co/480x280/1a2030/e2e8f0.png?text=Preloaded+hero"
+                    alt="Hero image preloaded for above-the-fold rendering"
+                    caption="Hero render with preload=true"
+                    [preload]="true"
+                    [figureNumber]="8"
+                  />
+                </div>
+              </div>
+
+              <!-- Pull-quote -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-pull-quote · Newsreader italic, 2px indigo border
+                </p>
+                <div class="max-w-2xl space-y-6">
+                  <landing-pull-quote>
+                    The interface should disappear behind the work — quiet ink, restrained accent, one indigo moment per
+                    page.
+                  </landing-pull-quote>
+                  <landing-pull-quote cite="Selected Work brief, 2026">
+                    A portfolio is not an inventory. It is a curated set of arguments about how I think.
+                  </landing-pull-quote>
+                </div>
+              </div>
+
+              <!-- Section rule · plain demo -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  variant: plain · "paragraph break" between equally-weighted sections
+                </p>
+                <div class="bg-ink-0 p-6 rounded">
+                  <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">About</p>
+                  <p class="font-sans text-body-md text-landing-text-400 mb-6">
+                    Section A — preceding content sits on ink-0.
+                  </p>
+                  <landing-section-rule />
+                  <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mt-6 mb-2">
+                    Writing
+                  </p>
+                  <p class="font-sans text-body-md text-landing-text-400">
+                    Section B — following content stays on ink-0. The hairline is the only signal of transition.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Section rule · lift demo -->
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  variant: lift · "chapter break" — indigo stripe + tonal lift on next section
+                </p>
+                <div class="bg-ink-0 rounded overflow-hidden">
+                  <div class="p-6">
+                    <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">Intro</p>
+                    <p class="font-sans text-body-md text-landing-text-400">
+                      Section above the rule sits on ink-0 (the page background).
+                    </p>
+                  </div>
+                  <landing-section-rule variant="lift" />
+                  <div class="p-6">
+                    <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">
+                      Selected work
+                    </p>
+                    <p class="font-sans text-body-md text-landing-text-400">
+                      Section below picks up the tonal lift to ink-1 — used by Selected Work and Get In Touch (per
+                      B2.c). The indigo stripe is the page's single accent moment for this transition.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          @case ('usage') {
+            <div class="space-y-8 max-w-3xl">
+              <div>
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  what is a section rule?
+                </p>
+                <div class="bg-ink-0 border border-landing-border rounded p-6">
+                  <p class="font-sans text-body-md text-landing-text-400 mb-3">
+                    A <strong>section rule</strong> is the 1px horizontal hairline that separates major content blocks
+                    down a long page — hero → about → selected work → contact. Without it, sections bleed into each
+                    other; with it, the page reads like a deliberate, paced document instead of a stack.
+                  </p>
+                  <p class="font-sans text-body-md text-landing-text-400 mb-3">
+                    The <code class="font-mono text-mono-sm text-landing-text-300">plain</code> variant is a quiet
+                    hairline that just says "section change". The
+                    <code class="font-mono text-mono-sm text-landing-text-300">lift</code> variant adds a 1px indigo
+                    stripe on top of the rule AND lifts the section that follows from
+                    <code class="font-mono text-mono-sm text-landing-text-300">ink-0</code> to
+                    <code class="font-mono text-mono-sm text-landing-text-300">ink-1</code> — a tonal step-up that says
+                    "what comes next is featured" (used between intro → Selected Work, and copy → Get In Touch, per
+                    B2.c).
+                  </p>
+                  <p class="font-sans text-body-sm text-landing-text-500">
+                    Mental model: <em>plain</em> = paragraph break · <em>lift</em> = chapter break.
+                  </p>
+                </div>
+              </div>
+
+              <div class="space-y-4 font-sans text-body-md text-landing-text-400">
+                <p>
+                  <strong class="text-landing-text-300">landing-figure</strong> for any image with non-trivial context —
+                  keep <code class="font-mono text-mono-sm text-landing-text-300">alt</code> meaningful, prefer numbered
+                  captions in long-form project detail (<code class="font-mono text-mono-sm text-landing-text-300"
+                    >FIG. 0X</code
+                  >) so prose can refer back. Default to
+                  <code class="font-mono text-mono-sm text-landing-text-300">loading="lazy"</code>; only set
+                  <code class="font-mono text-mono-sm text-landing-text-300">[preload]="true"</code> for the single hero
+                  shot above the fold.
+                </p>
+                <p>
+                  <strong class="text-landing-text-300">landing-pull-quote</strong> interrupts a reading column with one
+                  warm sentence in Newsreader italic. The 2px indigo left border is the accent moment for that block —
+                  don't pair with a solid button on the same screen. Cite is optional; when used it stays in mono caps,
+                  never serif.
+                </p>
+                <p>
+                  <strong class="text-landing-text-300">landing-section-rule</strong> separates major page sections. Use
+                  <code class="font-mono text-mono-sm text-landing-text-300">plain</code> by default; reach for
+                  <code class="font-mono text-mono-sm text-landing-text-300">lift</code> only when the section that
+                  follows deserves to read as a chapter break (Selected Work, Get In Touch). One lift per page is
+                  usually plenty.
+                </p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+      <!-- E5 Segmented Control (task 280b): primitive used by DDL itself for tabs -->
+      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing segmented · E5 task 280b
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Segmented control</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6">
+          The control DDL uses to switch between Showcase / Prototypes / Usage. Apple-classic by default — recessed
+          track, raised active segment via tone, no shadow. Three visual variants are available; pick per-context.
+        </p>
+
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="segmentedTab()"
+          (activeChange)="segmentedTab.set($event)"
+          ariaLabel="Segmented control sections"
+          idPrefix="segmented"
+          class="block mb-8"
+        />
+
+        @switch (segmentedTab()) {
+          @case ('showcase') {
+            <div class="space-y-8">
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">default · variant=apple · 3 segments</p>
+                <landing-segmented
+                  [segments]="tabsWithPrototypes"
+                  [active]="segmentedTab()"
+                  (activeChange)="segmentedTab.set($event)"
+                  ariaLabel="Showcase example A"
+                  idPrefix="seg-demo-a"
+                />
+              </div>
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  2 segments · the no-prototype shape (Showcase / Usage)
+                </p>
+                <landing-segmented
+                  [segments]="tabsNoPrototypes"
+                  [active]="segmentedTab()"
+                  (activeChange)="segmentedTab.set($event)"
+                  ariaLabel="Showcase example B"
+                  idPrefix="seg-demo-b"
+                />
+              </div>
+              <div>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  with disabled segment · the middle option is unavailable
+                </p>
+                <landing-segmented
+                  [segments]="[
+                    { id: 's1', label: 'Day' },
+                    { id: 's2', label: 'Week', disabled: true },
+                    { id: 's3', label: 'Month' },
+                  ]"
+                  [active]="'s1'"
+                  ariaLabel="Showcase example C"
+                  idPrefix="seg-demo-c"
+                />
+              </div>
+            </div>
+          }
+          @case ('prototypes') {
+            <div class="space-y-10 max-w-3xl">
+              <div>
+                <p class="font-mono text-mono-md text-landing-accent mb-2">A · Apple-classic (default)</p>
+                <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+                  Recessed ink-1 track inside a hairline border, raised ink-2 active segment. The "raised" feel comes
+                  from tone alone — no box-shadow, in line with the project rule.
+                </p>
+                <landing-segmented
+                  [segments]="tabsWithPrototypes"
+                  [active]="'showcase'"
+                  variant="apple"
+                  ariaLabel="Variant A demo"
+                  idPrefix="seg-var-a"
+                />
+              </div>
+              <div>
+                <p class="font-mono text-mono-md text-landing-accent mb-2">B · Hairline rectangle</p>
+                <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+                  Outlined group with vertical separators between segments. Active fills with ink-2. Less iOS, more
+                  technical-spec; pairs well with mono-heavy reading surfaces.
+                </p>
+                <landing-segmented
+                  [segments]="tabsWithPrototypes"
+                  [active]="'prototypes'"
+                  variant="hairline"
+                  ariaLabel="Variant B demo"
+                  idPrefix="seg-var-b"
+                />
+              </div>
+              <div>
+                <p class="font-mono text-mono-md text-landing-accent mb-2">C · Indigo underline</p>
+                <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+                  Flat row sitting on a single hairline. The active segment is marked by a 2px indigo underline — closer
+                  to editorial tabs. Spends the indigo budget; use sparingly.
+                </p>
+                <landing-segmented
+                  [segments]="tabsWithPrototypes"
+                  [active]="'usage'"
+                  variant="underline"
+                  ariaLabel="Variant C demo"
+                  idPrefix="seg-var-c"
+                />
+              </div>
+
+              <div class="border-l-2 border-landing-accent pl-4">
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">
+                  recommendation
+                </p>
+                <p class="font-sans text-body-md text-landing-text-400">
+                  <strong>A · Apple-classic</strong> is the default — neutral on indigo budget, works inside cards,
+                  reads as a control without claiming editorial weight. Reach for <strong>C · Underline</strong> only on
+                  a dedicated docs page where the indigo moment makes sense; <strong>B · Hairline</strong> for inline
+                  filters in tables / dense data views.
+                </p>
+              </div>
+            </div>
+          }
+          @case ('usage') {
+            <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+              <p>
+                <strong class="text-landing-text-300">landing-segmented</strong> for switching between mutually
+                exclusive views of the same conceptual unit (Day / Week / Month, Showcase / Prototypes / Usage, Software
+                / Hardware / Services). Don't use it as navigation between unrelated pages — that's a job for
+                <code class="font-mono text-mono-sm text-landing-text-300">landing-link</code> or a regular nav.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Cap segments at 4.</strong> Five or more reads as a list; switch
+                to a dropdown / select instead. Disabled segments are supported via the
+                <code class="font-mono text-mono-sm text-landing-text-300">disabled</code> flag on the segment object.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Use mono caps labels.</strong> Short, declarative — one or two
+                words. The visual rhythm matches the rest of the landing label vocabulary (eyebrow, chip, status-dot).
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Two-way bind active state to a signal.</strong> Pattern:
+                <code class="font-mono text-mono-sm text-landing-text-300"
+                  >[active]="tab()" (activeChange)="tab.set($event)"</code
+                >. On a multi-family page like DDL, every family owns its own signal so switching one tab doesn't move
+                the others.
+              </p>
+              <p>
+                <strong class="text-landing-text-300">Keyboard.</strong> Arrow keys move between segments; Home / End
+                jump to the first / last enabled segment; disabled segments are skipped. Roving tabindex follows the
+                ARIA tablist pattern.
+              </p>
+            </div>
+          }
+        }
       </div>
     </section>
+
+    <!-- ────────────────────────────────────────────────────────── -->
+    <!-- LEGACY · pre-E5 components, to be replaced                  -->
+    <!-- Console-side / pre-E5 demos using semantic tokens or        -->
+    <!-- Angular Material. Remove sections here as their landing     -->
+    <!-- equivalents ship in the NEW group above.                    -->
+    <!-- ────────────────────────────────────────────────────────── -->
+    <div class="mb-8 mt-4 border-l-2 border-landing-border pl-4">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-600">legacy · pre-e5 components</p>
+      <p class="font-sans text-body-sm text-landing-text-600 mt-1 max-w-2xl">
+        Console-side demos / generic semantic tokens / Angular Material. These will be removed as new landing primitives
+        replace them.
+      </p>
+    </div>
 
     <section class="space-y-6">
       <!-- (Removed: shared "Accent Color Palette" + "Semantic Color Tokens" sections — superseded by landing ink/indigo sample above. Per E5 task 274 / DDL replacement rule.) -->
@@ -138,68 +1285,6 @@
         </mat-form-field>
       </div>
 
-      <!-- Button Component Test -->
-      <div class="button-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Button Component</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Custom button component with variants and sizes using semantic tokens
-        </p>
-
-        <div class="space-y-6">
-          <!-- Primary Variant -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Primary Variant</h3>
-            <div class="flex gap-3 flex-wrap items-center">
-              <landing-button variant="primary" size="sm">Small</landing-button>
-              <landing-button variant="primary" size="md">Medium</landing-button>
-              <landing-button variant="primary" size="lg">Large</landing-button>
-              <landing-button variant="primary" size="md" [disabled]="true">Disabled</landing-button>
-            </div>
-          </div>
-
-          <!-- Secondary Variant -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Secondary Variant</h3>
-            <div class="flex gap-3 flex-wrap items-center">
-              <landing-button variant="secondary" size="sm">Small</landing-button>
-              <landing-button variant="secondary" size="md">Medium</landing-button>
-              <landing-button variant="secondary" size="lg">Large</landing-button>
-              <landing-button variant="secondary" size="md" [disabled]="true">Disabled</landing-button>
-            </div>
-          </div>
-
-          <!-- Ghost Variant -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Ghost Variant</h3>
-            <div class="flex gap-3 flex-wrap items-center">
-              <landing-button variant="ghost" size="sm">Small</landing-button>
-              <landing-button variant="ghost" size="md">Medium</landing-button>
-              <landing-button variant="ghost" size="lg">Large</landing-button>
-              <landing-button variant="ghost" size="md" [disabled]="true">Disabled</landing-button>
-            </div>
-          </div>
-
-          <!-- With Icons -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">With Icons</h3>
-            <div class="flex gap-3 flex-wrap items-center">
-              <landing-button variant="primary">
-                <landing-icon name="check" [size]="16" />
-                <span>Save</span>
-              </landing-button>
-              <landing-button variant="secondary">
-                <landing-icon name="download" [size]="16" />
-                <span>Download</span>
-              </landing-button>
-              <landing-button variant="ghost">
-                <landing-icon name="external-link" [size]="16" />
-                <span>Open</span>
-              </landing-button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Card Component Test -->
       <div class="card-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Card Component</h2>
@@ -242,7 +1327,7 @@
                 <div class="card__footer">
                   <div class="flex gap-2 justify-end">
                     <landing-button variant="ghost" size="sm">Cancel</landing-button>
-                    <landing-button variant="primary" size="sm">Confirm</landing-button>
+                    <landing-button variant="solid" size="sm">Confirm</landing-button>
                   </div>
                 </div>
               </landing-card>
@@ -394,80 +1479,6 @@
         </div>
       </div>
 
-      <!-- Badge Component Test -->
-      <div class="badge-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Badge Component</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Small, pill-shaped badges for tags, labels, and status indicators
-        </p>
-
-        <div class="space-y-6">
-          <!-- Color Variants -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Color Variants</h3>
-            <div class="flex gap-3 flex-wrap items-center">
-              <landing-badge>Primary</landing-badge>
-              <landing-badge color="success">Success</landing-badge>
-              <landing-badge color="warning">Warning</landing-badge>
-              <landing-badge color="error">Error</landing-badge>
-            </div>
-          </div>
-
-          <!-- Technology Tags Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Technology Tags</h3>
-            <div class="flex gap-2 flex-wrap">
-              <landing-badge>TypeScript</landing-badge>
-              <landing-badge>Angular</landing-badge>
-              <landing-badge>NestJS</landing-badge>
-              <landing-badge>TailwindCSS</landing-badge>
-              <landing-badge>Nx</landing-badge>
-            </div>
-          </div>
-
-          <!-- Status Indicators Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Status Indicators</h3>
-            <div class="space-y-2">
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-text w-24">Published:</span>
-                <landing-badge color="success">Live</landing-badge>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-text w-24">Draft:</span>
-                <landing-badge color="warning">In Progress</landing-badge>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-text w-24">Archived:</span>
-                <landing-badge color="error">Inactive</landing-badge>
-              </div>
-            </div>
-          </div>
-
-          <!-- In Project Card Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: In Project Card</h3>
-            <div class="max-w-sm">
-              <landing-card>
-                <div class="flex items-start gap-3 mb-3">
-                  <landing-icon name="code" class="text-accent-500" [size]="24" />
-                  <div class="flex-1">
-                    <h4 class="text-base font-semibold text-text mb-1">Portfolio Website</h4>
-                    <div class="flex gap-1.5 flex-wrap mb-2">
-                      <landing-badge>Angular</landing-badge>
-                      <landing-badge>TypeScript</landing-badge>
-                      <landing-badge>TDD</landing-badge>
-                    </div>
-                    <p class="text-sm text-text-secondary mb-3">Professional portfolio with design system and SSR.</p>
-                    <landing-badge color="success">Published</landing-badge>
-                  </div>
-                </div>
-              </landing-card>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Layout Components Test -->
       <div class="layout-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Layout Components</h2>
@@ -533,8 +1544,8 @@
                       (for horizontal constraints).
                     </p>
                     <div class="flex gap-3 justify-center">
-                      <landing-button variant="primary">Primary Action</landing-button>
-                      <landing-button variant="secondary">Secondary Action</landing-button>
+                      <landing-button variant="solid">Primary Action</landing-button>
+                      <landing-button variant="ghost">Secondary Action</landing-button>
                     </div>
                   </div>
                 </landing-container>
@@ -576,84 +1587,6 @@
                   </div>
                 </landing-container>
               </landing-section>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Link Directive Test -->
-      <div class="link-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Link Directive</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Styled navigation links with smooth hover transitions using semantic tokens
-        </p>
-
-        <div class="space-y-6">
-          <!-- Basic Links -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Links</h3>
-            <div class="space-y-2">
-              <div>
-                <a landingLink href="#">Regular link with hover underline</a>
-              </div>
-              <div>
-                <a landingLink href="https://github.com" [external]="true">
-                  External link with indicator
-                  <landing-icon name="external-link" [size]="14" class="inline" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- In Text -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">In Text Context</h3>
-            <div class="max-w-2xl">
-              <p class="text-text-secondary">
-                This is a paragraph with an
-                <a landingLink href="#">inline link</a>
-                that demonstrates the link styling in context. Links use semantic color tokens and smooth transitions.
-                You can also link to
-                <a landingLink href="https://example.com" [external]="true">
-                  external resources
-                  <landing-icon name="external-link" [size]="12" class="inline" />
-                </a>
-                with an indicator icon.
-              </p>
-            </div>
-          </div>
-
-          <!-- Navigation Links -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Navigation</h3>
-            <nav class="flex gap-4">
-              <a landingLink href="#">Home</a>
-              <a landingLink href="#">Projects</a>
-              <a landingLink href="#">About</a>
-              <a landingLink href="#">Contact</a>
-            </nav>
-          </div>
-
-          <!-- In Card Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Project Links</h3>
-            <div class="max-w-md">
-              <landing-card>
-                <h4 class="text-base font-semibold text-text mb-2">Portfolio Project</h4>
-                <p class="text-sm text-text-secondary mb-3">
-                  Check out the live demo and source code for this project.
-                </p>
-                <div class="flex gap-4">
-                  <a landingLink href="https://example.com" [external]="true">
-                    View Demo
-                    <landing-icon name="external-link" [size]="14" class="inline ml-1" />
-                  </a>
-                  <a landingLink href="https://github.com" [external]="true">
-                    Source Code
-                    <landing-icon name="github" [size]="14" class="inline ml-1" />
-                  </a>
-                </div>
-              </landing-card>
             </div>
           </div>
         </div>

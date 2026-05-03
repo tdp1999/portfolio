@@ -1,0 +1,79 @@
+/* landing-status-dot — pill badge with 6px solid circle + label (E5 task 279). */
+/* The ONLY pill-radius usage in the design (per E4 C2 rule). */
+/* Hover B · Radar ring on `available` only (shipped from task 280b prototypes). */
+.landing-status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--landing-border);
+  border-radius: 9999px;
+  background-color: transparent;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.landing-status-dot__dot {
+  display: inline-block;
+  position: relative;
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+}
+
+.landing-status-dot--available .landing-status-dot__dot {
+  background-color: #22c55e;
+}
+
+.landing-status-dot--busy .landing-status-dot__dot {
+  background-color: #f59e0b;
+}
+
+.landing-status-dot--away .landing-status-dot__dot {
+  background-color: var(--landing-text-600);
+}
+
+/* Radar ring — single concentric pulse on hover, available state only. */
+/* Explicit dimensions + center-anchored transform so the ring stays a perfect circle */
+/* regardless of how the parent flex layout sizes the dot. */
+.landing-status-dot--available .landing-status-dot__dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  border: 1px solid #22c55e;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1);
+}
+
+.landing-status-dot--available:hover .landing-status-dot__dot::after {
+  animation: landing-status-dot-radar 900ms ease-out 1;
+}
+
+@keyframes landing-status-dot-radar {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-status-dot--available:hover .landing-status-dot__dot::after {
+    animation: none;
+  }
+}

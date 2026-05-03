@@ -39,9 +39,9 @@ describe('FeatureHome', () => {
     const buttons = fixture.nativeElement.querySelectorAll('landing-button');
     expect(buttons.length).toBeGreaterThanOrEqual(1);
     expect(buttons[0].textContent).toContain('View Projects');
-    // Check for icon element
-    const icon = buttons[0].querySelector('landing-icon');
-    expect(icon).toBeTruthy();
+    // Arrow rendered via the button's `arrow` input now (lift-off effect)
+    const arrow = buttons[0].querySelector('landing-icon-arrow');
+    expect(arrow).toBeTruthy();
   });
 
   it('should render secondary action button', () => {

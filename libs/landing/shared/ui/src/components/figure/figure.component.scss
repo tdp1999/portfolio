@@ -1,0 +1,46 @@
+/* landing-figure — image with hairline border + mono caps caption (E5 task 280) */
+.landing-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-figure__frame {
+  border: 1px solid var(--landing-border);
+  background-color: var(--landing-ink-1);
+  overflow: hidden;
+  display: block;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.landing-figure__caption {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.landing-figure__number {
+  color: var(--landing-text-400);
+}
+
+.landing-figure__sep {
+  color: var(--landing-text-600);
+}
+
+.landing-figure__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}

@@ -1,0 +1,117 @@
+/* landing-segmented — Apple-classic / hairline / underline variants (E5 task 280b). */
+/* No box-shadow per project rule — Apple's "raised active" cue is rendered via tonal lift only. */
+
+.landing-segmented {
+  display: inline-flex;
+  align-items: stretch;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+.landing-segmented__btn {
+  appearance: none;
+  background-color: transparent;
+  border: 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--landing-text-500);
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+
+  &:hover:not(:disabled):not(.is-active) {
+    color: var(--landing-text-300);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 2px;
+    z-index: 1;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* ── A · Apple-classic ─────────────────────────────────── */
+/* Recessed ink-1 track, raised ink-2 active segment.       */
+.landing-segmented--apple {
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background-color: var(--landing-ink-1);
+  border: 1px solid var(--landing-border);
+
+  .landing-segmented__btn {
+    border-radius: 6px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &.is-active {
+      background-color: var(--landing-ink-2);
+      color: var(--landing-text-300);
+    }
+  }
+}
+
+/* ── B · Hairline rectangle ────────────────────────────── */
+/* Outlined group with vertical separators between segments. */
+.landing-segmented--hairline {
+  gap: 0;
+  border: 1px solid var(--landing-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: transparent;
+
+  .landing-segmented__btn {
+    border-radius: 0;
+    min-height: 32px;
+    padding: 6px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    & + & {
+      border-left: 1px solid var(--landing-border);
+    }
+
+    &.is-active {
+      background-color: var(--landing-ink-2);
+      color: var(--landing-text-300);
+    }
+  }
+}
+
+/* ── C · Indigo underline ──────────────────────────────── */
+/* Flat row, active marked by an indigo underline.          */
+.landing-segmented--underline {
+  gap: 24px;
+  border-bottom: 1px solid var(--landing-border);
+  border-radius: 0;
+  background-color: transparent;
+
+  .landing-segmented__btn {
+    border-radius: 0;
+    padding: 10px 0 8px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+
+    &.is-active {
+      color: var(--landing-text-300);
+      border-bottom-color: var(--landing-accent);
+    }
+  }
+}

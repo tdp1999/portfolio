@@ -13,9 +13,6 @@
 /* Landing-specific Material overrides */
 @use './material/overrides.scss';
 
-/* Component styles */
-@use '../components/link/link.directive.scss';
-
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;

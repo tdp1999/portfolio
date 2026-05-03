@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideIcons, lucideProvider } from '@portfolio/landing/shared/ui';
 import { DdlComponent } from './ddl.component';
 
@@ -9,7 +10,7 @@ describe('DdlComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DdlComponent],
-      providers: [provideIcons(lucideProvider)],
+      providers: [provideRouter([]), provideIcons(lucideProvider)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DdlComponent);

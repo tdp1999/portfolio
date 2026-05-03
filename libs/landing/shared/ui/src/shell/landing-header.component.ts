@@ -13,7 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Projects', path: '/projects' },
   { label: 'Uses', path: '/uses' },
   { label: 'Colophon', path: '/colophon' },
-  // Reserved slot — filled in a future task (e.g., /writing or /experience).
+  { label: 'DDL', path: '/ddl' },
 ];
 
 @Component({

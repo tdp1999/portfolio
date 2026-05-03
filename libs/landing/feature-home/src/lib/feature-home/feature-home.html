@@ -29,12 +29,9 @@
             </p>
           }
           <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <landing-button variant="primary" size="lg">
-              View Projects
-              <landing-icon name="arrow-right" [size]="20" class="ml-2" />
-            </landing-button>
+            <landing-button variant="solid" size="md" arrow="right"> View Projects </landing-button>
             @if (resumeUrl()) {
-              <landing-button variant="secondary" size="lg">
+              <landing-button variant="ghost" size="md">
                 <a
                   [href]="resumeUrl()"
                   target="_blank"
@@ -42,12 +39,12 @@
                   download
                   class="flex items-center gap-2"
                 >
-                  <landing-icon name="download" [size]="20" />
+                  <landing-icon name="download" [size]="16" />
                   Download Resume
                 </a>
               </landing-button>
             } @else {
-              <landing-button variant="secondary" size="lg">Contact Me</landing-button>
+              <landing-button variant="ghost" size="md">Contact Me</landing-button>
             }
           </div>
           @if (socialLinks().length > 0) {

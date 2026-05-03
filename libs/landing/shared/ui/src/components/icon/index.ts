@@ -3,3 +3,4 @@ export { ICON_PROVIDER } from './icon-provider.token';
 export { provideIcons } from './provide-icons';
 export { LucideIconProvider, lucideProvider } from './providers';
 export { IconComponent } from './icon.component';
+export { LandingIconArrowComponent, type ArrowDirection } from './landing-icon-arrow.component';

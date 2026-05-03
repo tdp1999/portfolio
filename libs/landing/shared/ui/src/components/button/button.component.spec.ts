@@ -19,85 +19,48 @@ describe('ButtonComponent', () => {
   });
 
   describe('default state', () => {
-    it('should have primary variant by default', () => {
+    it('uses solid variant and md size by default', () => {
       fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--primary');
-    });
-
-    it('should have md size by default', () => {
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--md');
-    });
-
-    it('should not be disabled by default', () => {
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+      expect(button.className).toContain('landing-btn--solid');
+      expect(button.className).toContain('landing-btn--md');
       expect(button.disabled).toBe(false);
+      expect(button.type).toBe('button');
     });
   });
 
   describe('variants', () => {
-    it('should apply primary variant class', () => {
-      fixture.componentRef.setInput('variant', 'primary');
+    it.each(['solid', 'ghost', 'link'] as const)('applies %s variant class', (variant) => {
+      fixture.componentRef.setInput('variant', variant);
       fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--primary');
-    });
-
-    it('should apply secondary variant class', () => {
-      fixture.componentRef.setInput('variant', 'secondary');
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--secondary');
-    });
-
-    it('should apply ghost variant class', () => {
-      fixture.componentRef.setInput('variant', 'ghost');
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--ghost');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+      expect(button.className).toContain(`landing-btn--${variant}`);
     });
   });
 
   describe('sizes', () => {
-    it('should apply sm size class', () => {
-      fixture.componentRef.setInput('size', 'sm');
+    it.each(['sm', 'md'] as const)('applies %s size class', (size) => {
+      fixture.componentRef.setInput('size', size);
       fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--sm');
-    });
-
-    it('should apply md size class', () => {
-      fixture.componentRef.setInput('size', 'md');
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--md');
-    });
-
-    it('should apply lg size class', () => {
-      fixture.componentRef.setInput('size', 'lg');
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--lg');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+      expect(button.className).toContain(`landing-btn--${size}`);
     });
   });
 
   describe('disabled state', () => {
-    it('should apply disabled attribute when disabled is true', () => {
+    it('applies disabled attribute', () => {
       fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
       expect(button.disabled).toBe(true);
     });
 
-    it('should not emit click event when disabled', () => {
+    it('does not emit click when disabled', () => {
       fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
       const emitSpy = jest.spyOn(component.buttonClick, 'emit');
-      const button = fixture.nativeElement.querySelector('button');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
       button.click();
 
       expect(emitSpy).not.toHaveBeenCalled();
@@ -105,53 +68,15 @@ describe('ButtonComponent', () => {
   });
 
   describe('click events', () => {
-    it('should emit buttonClick event when clicked', () => {
+    it('emits buttonClick when clicked and enabled', () => {
       fixture.detectChanges();
       const emitSpy = jest.spyOn(component.buttonClick, 'emit');
 
-      const button = fixture.nativeElement.querySelector('button');
+      const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
       button.click();
 
       expect(emitSpy).toHaveBeenCalledTimes(1);
       expect(emitSpy).toHaveBeenCalledWith(expect.any(MouseEvent));
-    });
-
-    it('should emit click event when not disabled', () => {
-      fixture.componentRef.setInput('disabled', false);
-      fixture.detectChanges();
-
-      const emitSpy = jest.spyOn(component.buttonClick, 'emit');
-      const button = fixture.nativeElement.querySelector('button');
-      button.click();
-
-      expect(emitSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('CSS classes', () => {
-    it('should always include base btn class', () => {
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn');
-    });
-
-    it('should combine variant and size classes', () => {
-      fixture.componentRef.setInput('variant', 'secondary');
-      fixture.componentRef.setInput('size', 'lg');
-      fixture.detectChanges();
-
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn--secondary');
-      expect(button.className).toContain('btn--lg');
-    });
-  });
-
-  describe('flexbox layout', () => {
-    it('should have inline-flex for icon + text layout', () => {
-      fixture.detectChanges();
-      const button = fixture.nativeElement.querySelector('button');
-      expect(button.className).toContain('btn');
-      // The btn class applies inline-flex via Tailwind
     });
   });
 });
