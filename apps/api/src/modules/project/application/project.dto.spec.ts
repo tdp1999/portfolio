@@ -1,4 +1,4 @@
-import { CreateProjectSchema, UpdateProjectSchema, TechnicalHighlightSchema } from './project.dto';
+import { CreateProjectSchema, UpdateProjectSchema, TechnicalHighlightSchema, ProjectLinkSchema } from './project.dto';
 
 const VALID_CREATE = {
   title: 'My Portfolio',
@@ -20,6 +20,7 @@ describe('CreateProjectSchema', () => {
       expect(result.data.skillIds).toEqual([]);
       expect(result.data.imageIds).toEqual([]);
       expect(result.data.highlights).toEqual([]);
+      expect(result.data.links).toEqual([]);
     }
   });
 
@@ -99,5 +100,41 @@ describe('UpdateProjectSchema', () => {
 
   it('should reject empty object', () => {
     expect(UpdateProjectSchema.safeParse({}).success).toBe(false);
+  });
+
+  it('should accept body=null to clear case-study body', () => {
+    expect(UpdateProjectSchema.safeParse({ body: null }).success).toBe(true);
+  });
+
+  it('should accept links array', () => {
+    const result = UpdateProjectSchema.safeParse({
+      links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('ProjectLinkSchema', () => {
+  it('should accept all 5 valid link types', () => {
+    const types = ['repo', 'demo', 'case-study', 'doc', 'post'] as const;
+    for (const type of types) {
+      const result = ProjectLinkSchema.safeParse({ label: 'L', url: 'https://example.com', type });
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it('should reject unknown type', () => {
+    const result = ProjectLinkSchema.safeParse({ label: 'L', url: 'https://example.com', type: 'wat' });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject empty label', () => {
+    const result = ProjectLinkSchema.safeParse({ label: '', url: 'https://example.com', type: 'repo' });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject invalid URL', () => {
+    const result = ProjectLinkSchema.safeParse({ label: 'L', url: 'not-a-url', type: 'repo' });
+    expect(result.success).toBe(false);
   });
 });

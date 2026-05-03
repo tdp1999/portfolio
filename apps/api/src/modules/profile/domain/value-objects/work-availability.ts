@@ -6,7 +6,7 @@ export interface WorkAvailabilityProps {
   yearsOfExperience: number;
   availability: Availability;
   openTo: OpenToValue[];
-  timezone: string | null;
+  timezones: string[];
 }
 
 export class WorkAvailability {
@@ -27,11 +27,11 @@ export class WorkAvailability {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    return new WorkAvailability({ ...props });
+    return new WorkAvailability({ ...props, timezones: [...props.timezones] });
   }
 
   static fromPersistence(props: WorkAvailabilityProps): WorkAvailability {
-    return new WorkAvailability({ ...props });
+    return new WorkAvailability({ ...props, timezones: [...props.timezones] });
   }
 
   get yearsOfExperience(): number {
@@ -46,8 +46,8 @@ export class WorkAvailability {
     return this.props.openTo;
   }
 
-  get timezone(): string | null {
-    return this.props.timezone;
+  get timezones(): string[] {
+    return this.props.timezones;
   }
 
   get isOpenToWork(): boolean {
@@ -63,11 +63,12 @@ export class WorkAvailability {
       this.props.availability === other.props.availability &&
       this.props.openTo.length === other.props.openTo.length &&
       this.props.openTo.every((v, i) => v === other.props.openTo[i]) &&
-      this.props.timezone === other.props.timezone
+      this.props.timezones.length === other.props.timezones.length &&
+      this.props.timezones.every((v, i) => v === other.props.timezones[i])
     );
   }
 
   toProps(): WorkAvailabilityProps {
-    return { ...this.props };
+    return { ...this.props, timezones: [...this.props.timezones] };
   }
 }

@@ -3,7 +3,15 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../infrastructure/prisma';
 import { IProfileRepository, ProfileWithMedia } from '../../application/ports/profile.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
-import { Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg } from '../../domain/value-objects';
+import {
+  Identity,
+  WorkAvailability,
+  Contact,
+  Location,
+  SocialLinks,
+  SeoOg,
+  LandingContentBlocks,
+} from '../../domain/value-objects';
 import { ProfileMapper } from '../mapper/profile.mapper';
 
 @Injectable()
@@ -67,7 +75,7 @@ export class ProfileRepository implements IProfileRepository {
         yearsOfExperience: workAvailability.yearsOfExperience,
         availability: workAvailability.availability,
         openTo: workAvailability.openTo as unknown as Prisma.InputJsonValue,
-        timezone: workAvailability.timezone,
+        timezones: workAvailability.timezones as unknown as Prisma.InputJsonValue,
         updatedById,
       },
     });
@@ -120,6 +128,19 @@ export class ProfileRepository implements IProfileRepository {
         metaDescription: seoOg.metaDescription,
         ogImageId: seoOg.ogImageId,
         canonicalUrl: seoOg.canonicalUrl,
+        updatedById,
+      },
+    });
+  }
+
+  async updateLandingContent(userId: string, landingContent: LandingContentBlocks, updatedById: string): Promise<void> {
+    await this.prisma.profile.update({
+      where: { userId },
+      data: {
+        tagline: (landingContent.tagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        stackIntro: (landingContent.stackIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        contactIntro: (landingContent.contactIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        footerTagline: (landingContent.footerTagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         updatedById,
       },
     });

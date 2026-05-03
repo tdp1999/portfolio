@@ -13,6 +13,7 @@ import {
   UpdateProfileLocationHandler,
   UpdateProfileSocialLinksHandler,
   UpdateProfileSeoOgHandler,
+  UpdateProfileLandingContentHandler,
 } from './application/commands';
 import { GetProfileHandler, GetPublicProfileHandler, GetJsonLdHandler } from './application/queries';
 import { ProfileRepository } from './infrastructure/repositories/profile.repository';
@@ -27,6 +28,7 @@ const CommandHandlers = [
   UpdateProfileLocationHandler,
   UpdateProfileSocialLinksHandler,
   UpdateProfileSeoOgHandler,
+  UpdateProfileLandingContentHandler,
 ];
 const QueryHandlers = [GetProfileHandler, GetPublicProfileHandler, GetJsonLdHandler];
 

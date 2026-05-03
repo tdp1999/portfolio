@@ -25,6 +25,32 @@ describe('Project Entity', () => {
       expect(project.createdById).toBe(USER_ID);
       expect(project.updatedById).toBe(USER_ID);
       expect(project.deletedAt).toBeNull();
+      expect(project.links).toEqual([]);
+      expect(project.body).toBeNull();
+    });
+
+    it('should accept body and links and validate them', () => {
+      const project = Project.create(
+        {
+          ...VALID_PAYLOAD,
+          body: { en: 'Long-form body', vi: 'Noi dung dai' },
+          links: [
+            { label: 'Source', url: 'https://github.com/example', type: 'repo' },
+            { label: 'Live', url: 'https://example.com', type: 'demo' },
+          ],
+        },
+        USER_ID
+      );
+
+      expect(project.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
+      expect(project.links).toHaveLength(2);
+      expect(project.links[0]).toEqual({ label: 'Source', url: 'https://github.com/example', type: 'repo' });
+    });
+
+    it('should reject invalid link via VO validation', () => {
+      expect(() =>
+        Project.create({ ...VALID_PAYLOAD, links: [{ label: 'Source', url: 'not-a-url', type: 'repo' }] }, USER_ID)
+      ).toThrow();
     });
   });
 
@@ -49,16 +75,41 @@ describe('Project Entity', () => {
       expect(updated.slug).toBe(originalSlug);
     });
 
-    it('should clear nullable fields via !== undefined pattern', () => {
+    it('should clear body via null', () => {
+      const project = Project.create({ ...VALID_PAYLOAD, body: { en: 'Old body', vi: 'Cu' } }, USER_ID);
+
+      const updated = project.update({ body: null }, USER_ID);
+
+      expect(updated.body).toBeNull();
+    });
+
+    it('should replace links array on update', () => {
       const project = Project.create(
-        { ...VALID_PAYLOAD, sourceUrl: 'https://github.com/example', projectUrl: 'https://example.com' },
+        {
+          ...VALID_PAYLOAD,
+          links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
+        },
         USER_ID
       );
 
-      const updated = project.update({ sourceUrl: null, projectUrl: null }, USER_ID);
+      const updated = project.update({ links: [{ label: 'Demo', url: 'https://example.com', type: 'demo' }] }, USER_ID);
 
-      expect(updated.sourceUrl).toBeNull();
-      expect(updated.projectUrl).toBeNull();
+      expect(updated.links).toHaveLength(1);
+      expect(updated.links[0].type).toBe('demo');
+    });
+
+    it('should preserve links when not provided', () => {
+      const project = Project.create(
+        {
+          ...VALID_PAYLOAD,
+          links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
+        },
+        USER_ID
+      );
+
+      const updated = project.update({ featured: true }, USER_ID);
+
+      expect(updated.links).toHaveLength(1);
     });
   });
 

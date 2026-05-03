@@ -36,9 +36,13 @@ describe('Profile Queries', () => {
     metaTitle: 'John Doe',
     metaDescription: 'A developer',
     ogImageId: null,
-    timezone: 'Asia/Ho_Chi_Minh',
+    timezones: ['Asia/Ho_Chi_Minh'],
     canonicalUrl: 'https://example.com',
     avatarId: null,
+    tagline: null,
+    stackIntro: null,
+    contactIntro: null,
+    footerTagline: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -64,6 +68,7 @@ describe('Profile Queries', () => {
       updateLocation: jest.fn(),
       updateSocialLinks: jest.fn(),
       updateSeoOg: jest.fn(),
+      updateLandingContent: jest.fn(),
     };
   });
 

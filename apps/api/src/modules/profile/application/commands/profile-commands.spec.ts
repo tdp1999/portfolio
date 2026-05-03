@@ -12,6 +12,10 @@ import {
   UpdateProfileSocialLinksHandler,
 } from './update-profile-social-links.command';
 import { UpdateProfileSeoOgCommand, UpdateProfileSeoOgHandler } from './update-profile-seo-og.command';
+import {
+  UpdateProfileLandingContentCommand,
+  UpdateProfileLandingContentHandler,
+} from './update-profile-landing-content.command';
 import { IProfileRepository } from '../ports/profile.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
@@ -50,9 +54,13 @@ describe('Profile Commands', () => {
     metaTitle: null,
     metaDescription: null,
     ogImageId: null,
-    timezone: null,
+    timezones: [],
     canonicalUrl: null,
     avatarId: null,
+    tagline: null,
+    stackIntro: null,
+    contactIntro: null,
+    footerTagline: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -75,6 +83,7 @@ describe('Profile Commands', () => {
       updateLocation: jest.fn(),
       updateSocialLinks: jest.fn(),
       updateSeoOg: jest.fn(),
+      updateLandingContent: jest.fn(),
     };
     mediaRepo = {
       findById: jest.fn(),
@@ -190,7 +199,7 @@ describe('Profile Commands', () => {
       yearsOfExperience: 8,
       availability: 'OPEN_TO_WORK',
       openTo: ['FULL_TIME'],
-      timezone: 'Asia/Ho_Chi_Minh',
+      timezones: ['Asia/Ho_Chi_Minh'],
     };
 
     it('should update work availability when valid', async () => {
@@ -332,6 +341,48 @@ describe('Profile Commands', () => {
         handler.execute(
           new UpdateProfileSeoOgCommand({ metaTitle: null, metaDescription: null, canonicalUrl: 'not-a-url' }, userId)
         )
+      ).rejects.toMatchObject({ errorCode: 'PROFILE_INVALID_INPUT' });
+      expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- Update Profile Landing Content ---
+
+  describe('UpdateProfileLandingContentHandler', () => {
+    let handler: UpdateProfileLandingContentHandler;
+    beforeEach(() => (handler = new UpdateProfileLandingContentHandler(profileRepo)));
+
+    const validDto = {
+      tagline: { en: 'Build delightful UIs', vi: 'Xay dung giao dien thu vi' },
+      stackIntro: null,
+      contactIntro: null,
+      footerTagline: null,
+    };
+
+    it('should update landing content when valid', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileLandingContentCommand(validDto, userId));
+
+      expect(profileRepo.updateLandingContent).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should accept all-null payload (clears every block)', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(
+        new UpdateProfileLandingContentCommand(
+          { tagline: null, stackIntro: null, contactIntro: null, footerTagline: null },
+          userId
+        )
+      );
+
+      expect(profileRepo.updateLandingContent).toHaveBeenCalledWith(userId, expect.anything(), userId);
+    });
+
+    it('should throw INVALID_INPUT when dto is invalid', async () => {
+      await expect(
+        handler.execute(new UpdateProfileLandingContentCommand({ tagline: 'not-an-object' }, userId))
       ).rejects.toMatchObject({ errorCode: 'PROFILE_INVALID_INPUT' });
       expect(profileRepo.findByUserId).not.toHaveBeenCalled();
     });

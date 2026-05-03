@@ -10,6 +10,7 @@ import {
 import { TranslatableJson } from '@portfolio/shared/types';
 import { Project } from '../../domain/entities/project.entity';
 import { IProjectProps, ContentStatus } from '../../domain/project.types';
+import { ProjectLinkProps, PROJECT_LINK_TYPES, ProjectLinkType } from '../../domain/value-objects';
 
 export type PrismaProjectWithRelations = PrismaProject & {
   highlights: TechnicalHighlight[];
@@ -53,6 +54,24 @@ export interface ProjectReadResult {
   thumbnailUrl: string | null;
 }
 
+const isLinkType = (v: unknown): v is ProjectLinkType =>
+  typeof v === 'string' && (PROJECT_LINK_TYPES as readonly string[]).includes(v);
+
+const parseLinks = (raw: unknown): ProjectLinkProps[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (l): l is { label: string; url: string; type: string } =>
+        l != null &&
+        typeof l === 'object' &&
+        typeof (l as { label?: unknown }).label === 'string' &&
+        typeof (l as { url?: unknown }).url === 'string' &&
+        typeof (l as { type?: unknown }).type === 'string'
+    )
+    .filter((l) => isLinkType(l.type))
+    .map((l) => ({ label: l.label, url: l.url, type: l.type as ProjectLinkType }));
+};
+
 export class ProjectMapper {
   static toDomain(raw: PrismaProjectWithRelations): Project {
     const props: IProjectProps = {
@@ -63,13 +82,13 @@ export class ProjectMapper {
       description: raw.description as unknown as TranslatableJson,
       motivation: raw.motivation as unknown as TranslatableJson,
       role: raw.role as unknown as TranslatableJson,
+      body: raw.body == null ? null : (raw.body as unknown as TranslatableJson),
       startDate: raw.startDate,
       endDate: raw.endDate,
       status: raw.status as ContentStatus,
       featured: raw.featured,
       displayOrder: raw.displayOrder,
-      sourceUrl: raw.sourceUrl,
-      projectUrl: raw.projectUrl,
+      links: parseLinks(raw.links),
       thumbnailId: raw.thumbnailId,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
@@ -127,13 +146,13 @@ export class ProjectMapper {
       description: entity.description as unknown as Prisma.InputJsonValue,
       motivation: entity.motivation as unknown as Prisma.InputJsonValue,
       role: entity.role as unknown as Prisma.InputJsonValue,
+      body: (entity.body as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       startDate: entity.startDate,
       endDate: entity.endDate,
       status: entity.status,
       featured: entity.featured,
       displayOrder: entity.displayOrder,
-      sourceUrl: entity.sourceUrl,
-      projectUrl: entity.projectUrl,
+      links: entity.links as unknown as Prisma.InputJsonValue,
       thumbnailId: entity.thumbnailId,
       createdById: entity.createdById,
       updatedById: entity.updatedById,

@@ -15,3 +15,6 @@ export type { SocialLinksProps } from './social-links';
 
 export { SeoOg } from './seo-og';
 export type { SeoOgProps } from './seo-og';
+
+export { LandingContentBlocks } from './landing-content-blocks';
+export type { LandingContentBlocksProps } from './landing-content-blocks';

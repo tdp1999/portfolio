@@ -1,5 +1,6 @@
 import type { TranslatableJson } from '@portfolio/shared/types';
 import { Project } from '../domain/entities/project.entity';
+import type { ProjectLinkProps } from '../domain/value-objects';
 import type {
   ProjectHighlightDto,
   ProjectImageDto,
@@ -38,10 +39,10 @@ export type ProjectDetailDto = {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  body: TranslatableJson | null;
   startDate: Date;
   endDate: Date | null;
-  sourceUrl: string | null;
-  projectUrl: string | null;
+  links: ProjectLinkProps[];
   thumbnailUrl: string | null;
   featured: boolean;
   highlights: ProjectHighlightResponseDto[];
@@ -94,10 +95,10 @@ export class ProjectPresenter {
       description: item.entity.description,
       motivation: item.entity.motivation,
       role: item.entity.role,
+      body: item.entity.body,
       startDate: item.entity.startDate,
       endDate: item.entity.endDate,
-      sourceUrl: item.entity.sourceUrl,
-      projectUrl: item.entity.projectUrl,
+      links: item.entity.links,
       thumbnailUrl: item.thumbnailUrl,
       featured: item.entity.featured,
       highlights: item.relations.highlights.map((h) => ({

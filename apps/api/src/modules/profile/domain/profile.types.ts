@@ -49,8 +49,14 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   metaDescription: string | null;
   ogImageId: string | null;
 
+  // Landing content blocks (optional translatable copy)
+  tagline: TranslatableJson | null;
+  stackIntro: TranslatableJson | null;
+  contactIntro: TranslatableJson | null;
+  footerTagline: TranslatableJson | null;
+
   // Misc
-  timezone: string | null;
+  timezones: string[];
   canonicalUrl: string | null;
 
   // Media
@@ -96,8 +102,14 @@ export interface ICreateProfilePayload {
   metaDescription?: string;
   ogImageId?: string;
 
+  // Landing content blocks (optional)
+  tagline?: TranslatableJson;
+  stackIntro?: TranslatableJson;
+  contactIntro?: TranslatableJson;
+  footerTagline?: TranslatableJson;
+
   // Misc
-  timezone?: string;
+  timezones?: string[];
   canonicalUrl?: string;
 
   // Media

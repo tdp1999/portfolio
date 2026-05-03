@@ -1,4 +1,5 @@
 import { IBaseAuditProps, TranslatableJson } from '@portfolio/shared/types';
+import type { ProjectLinkProps } from './value-objects';
 
 export const CONTENT_STATUS = {
   DRAFT: 'DRAFT',
@@ -17,6 +18,9 @@ export interface IProjectProps extends IBaseAuditProps {
   motivation: TranslatableJson;
   role: TranslatableJson;
 
+  // Long-form case-study body — translatable, optional
+  body: TranslatableJson | null;
+
   // Dates
   startDate: Date;
   endDate: Date | null;
@@ -26,9 +30,8 @@ export interface IProjectProps extends IBaseAuditProps {
   featured: boolean;
   displayOrder: number;
 
-  // Links
-  sourceUrl: string | null;
-  projectUrl: string | null;
+  // External links (replaces sourceUrl/projectUrl)
+  links: ProjectLinkProps[];
 
   // Media
   thumbnailId: string | null;
@@ -40,10 +43,10 @@ export interface ICreateProjectPayload {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  body?: TranslatableJson | null;
   startDate: Date;
   endDate?: Date;
-  sourceUrl?: string;
-  projectUrl?: string;
+  links?: ProjectLinkProps[];
   thumbnailId?: string;
   featured?: boolean;
   displayOrder?: number;
@@ -55,11 +58,11 @@ export interface IUpdateProjectPayload {
   description?: TranslatableJson;
   motivation?: TranslatableJson;
   role?: TranslatableJson;
+  body?: TranslatableJson | null;
   startDate?: Date;
   endDate?: Date | null;
   status?: ContentStatus;
-  sourceUrl?: string | null;
-  projectUrl?: string | null;
+  links?: ProjectLinkProps[];
   thumbnailId?: string | null;
   featured?: boolean;
   displayOrder?: number;

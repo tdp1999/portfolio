@@ -375,8 +375,14 @@ model Profile {
   metaDescription String? @db.VarChar(160)
   ogImageId       String? @db.Uuid
 
+  // Landing content blocks (translatable JSON markdown — nullable)
+  tagline       Json?
+  stackIntro    Json?
+  contactIntro  Json?
+  footerTagline Json?
+
   // Misc
-  timezone     String? @db.VarChar(50)
+  timezones    Json    @default("[]")  // Array<string> of IANA zones
   canonicalUrl String? @db.VarChar(500)
 
   // Media
@@ -498,9 +504,11 @@ model Project {
   featured     Boolean       @default(false)
   displayOrder Int           @default(0)
 
-  // Links
-  sourceUrl    String?       @db.VarChar(500)
-  projectUrl   String?       @db.VarChar(500)
+  // Links — Array<{label, url, type: 'repo'|'demo'|'case-study'|'doc'|'post'}>
+  links        Json          @default("[]")
+
+  // Long-form case-study body (translatable markdown for D3.c reading column)
+  body         Json?
 
   // Media
   thumbnailId  String?       @db.Uuid

@@ -8,7 +8,15 @@ import type {
   SocialPlatform,
 } from '@portfolio/shared/types';
 import { IProfileProps, ICreateProfilePayload, Availability } from '../profile.types';
-import { Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg } from '../value-objects';
+import {
+  Identity,
+  WorkAvailability,
+  Contact,
+  Location,
+  SocialLinks,
+  SeoOg,
+  LandingContentBlocks,
+} from '../value-objects';
 
 interface ProfileAggregateProps {
   id: string;
@@ -19,6 +27,7 @@ interface ProfileAggregateProps {
   location: Location;
   socialLinks: SocialLinks;
   seoOg: SeoOg;
+  landingContent: LandingContentBlocks;
   createdAt: Date;
   updatedAt: Date;
   createdById: string;
@@ -52,6 +61,10 @@ export class Profile {
 
   get seoOg(): SeoOg {
     return this.props.seoOg;
+  }
+
+  get landingContent(): LandingContentBlocks {
+    return this.props.landingContent;
   }
 
   // --- Flat Getters (backward compatibility for presenter/mapper) ---
@@ -96,8 +109,8 @@ export class Profile {
     return this.props.workAvailability.openTo;
   }
 
-  get timezone(): string | null {
-    return this.props.workAvailability.timezone;
+  get timezones(): string[] {
+    return this.props.workAvailability.timezones;
   }
 
   get email(): string {
@@ -164,6 +177,22 @@ export class Profile {
     return this.props.seoOg.canonicalUrl;
   }
 
+  get tagline(): TranslatableJson | null {
+    return this.props.landingContent.tagline;
+  }
+
+  get stackIntro(): TranslatableJson | null {
+    return this.props.landingContent.stackIntro;
+  }
+
+  get contactIntro(): TranslatableJson | null {
+    return this.props.landingContent.contactIntro;
+  }
+
+  get footerTagline(): TranslatableJson | null {
+    return this.props.landingContent.footerTagline;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -202,7 +231,7 @@ export class Profile {
         yearsOfExperience: data.yearsOfExperience,
         availability: data.availability ?? 'EMPLOYED',
         openTo: data.openTo ?? [],
-        timezone: data.timezone ?? null,
+        timezones: data.timezones ?? [],
       }),
       contact: Contact.create({
         email: data.email,
@@ -228,6 +257,12 @@ export class Profile {
         ogImageId: data.ogImageId ?? null,
         canonicalUrl: data.canonicalUrl ?? null,
       }),
+      landingContent: LandingContentBlocks.create({
+        tagline: data.tagline ?? null,
+        stackIntro: data.stackIntro ?? null,
+        contactIntro: data.contactIntro ?? null,
+        footerTagline: data.footerTagline ?? null,
+      }),
       createdAt: now,
       updatedAt: now,
       createdById: userId,
@@ -250,7 +285,7 @@ export class Profile {
         yearsOfExperience: props.yearsOfExperience,
         availability: props.availability,
         openTo: props.openTo,
-        timezone: props.timezone,
+        timezones: props.timezones,
       }),
       contact: Contact.fromPersistence({
         email: props.email,
@@ -275,6 +310,12 @@ export class Profile {
         metaDescription: props.metaDescription,
         ogImageId: props.ogImageId,
         canonicalUrl: props.canonicalUrl,
+      }),
+      landingContent: LandingContentBlocks.fromPersistence({
+        tagline: props.tagline,
+        stackIntro: props.stackIntro,
+        contactIntro: props.contactIntro,
+        footerTagline: props.footerTagline,
       }),
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
@@ -339,6 +380,15 @@ export class Profile {
     });
   }
 
+  withLandingContent(landingContent: LandingContentBlocks, userId: string): Profile {
+    return new Profile({
+      ...this.props,
+      landingContent,
+      updatedAt: TemporalValue.now(),
+      updatedById: userId,
+    });
+  }
+
   // --- Convenience Mutators (dedicated command flows) ---
 
   updateAvatar(avatarId: string | null, userId: string): Profile {
@@ -365,7 +415,7 @@ export class Profile {
       yearsOfExperience: this.props.workAvailability.yearsOfExperience,
       availability: this.props.workAvailability.availability,
       openTo: this.props.workAvailability.openTo,
-      timezone: this.props.workAvailability.timezone,
+      timezones: this.props.workAvailability.timezones,
       email: this.props.contact.email,
       phone: this.props.contact.phone,
       preferredContactPlatform: this.props.contact.preferredContactPlatform,
@@ -382,6 +432,10 @@ export class Profile {
       metaDescription: this.props.seoOg.metaDescription,
       ogImageId: this.props.seoOg.ogImageId,
       canonicalUrl: this.props.seoOg.canonicalUrl,
+      tagline: this.props.landingContent.tagline,
+      stackIntro: this.props.landingContent.stackIntro,
+      contactIntro: this.props.landingContent.contactIntro,
+      footerTagline: this.props.landingContent.footerTagline,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
       createdById: this.props.createdById,

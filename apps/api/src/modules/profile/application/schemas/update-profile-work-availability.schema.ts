@@ -7,7 +7,7 @@ export const UpdateProfileWorkAvailabilitySchema = z.object({
   yearsOfExperience: YearsOfExperienceSchema,
   availability: z.nativeEnum(Availability),
   openTo: OpenToSchema,
-  timezone: TimezoneSchema.nullable(),
+  timezones: z.array(TimezoneSchema).default([]),
 });
 
 export type UpdateProfileWorkAvailabilityDto = z.infer<typeof UpdateProfileWorkAvailabilitySchema>;

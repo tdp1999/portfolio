@@ -16,6 +16,14 @@ type PrismaProfileWithMedia = PrismaProfile & {
   ogImage: Media | null;
 };
 
+const parseTranslatableNullable = (raw: unknown): TranslatableJson | null =>
+  raw == null ? null : (PersistenceTranslatableSchema.parse(raw) as TranslatableJson);
+
+const parseTimezones = (raw: unknown): string[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((v): v is string => typeof v === 'string');
+};
+
 export class ProfileMapper {
   static toDomain(raw: PrismaProfile): Profile {
     const props: IProfileProps = {
@@ -24,7 +32,7 @@ export class ProfileMapper {
       fullName: PersistenceTranslatableSchema.parse(raw.fullName),
       title: PersistenceTranslatableSchema.parse(raw.title),
       bioShort: PersistenceTranslatableSchema.parse(raw.bioShort),
-      bioLong: raw.bioLong != null ? (PersistenceTranslatableSchema.parse(raw.bioLong) as TranslatableJson) : null,
+      bioLong: parseTranslatableNullable(raw.bioLong),
       yearsOfExperience: raw.yearsOfExperience,
       availability: raw.availability as Availability,
       openTo: OpenToSchema.parse(raw.openTo) as OpenToValue[],
@@ -43,7 +51,11 @@ export class ProfileMapper {
       metaTitle: raw.metaTitle,
       metaDescription: raw.metaDescription,
       ogImageId: raw.ogImageId,
-      timezone: raw.timezone,
+      tagline: parseTranslatableNullable(raw.tagline),
+      stackIntro: parseTranslatableNullable(raw.stackIntro),
+      contactIntro: parseTranslatableNullable(raw.contactIntro),
+      footerTagline: parseTranslatableNullable(raw.footerTagline),
+      timezones: parseTimezones(raw.timezones),
       canonicalUrl: raw.canonicalUrl,
       avatarId: raw.avatarId,
       createdAt: raw.createdAt,
@@ -80,7 +92,11 @@ export class ProfileMapper {
       metaTitle: profile.metaTitle,
       metaDescription: profile.metaDescription,
       ogImageId: profile.ogImageId,
-      timezone: profile.timezone,
+      tagline: (profile.tagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      stackIntro: (profile.stackIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      contactIntro: (profile.contactIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      footerTagline: (profile.footerTagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      timezones: profile.timezones as unknown as Prisma.InputJsonValue,
       canonicalUrl: profile.canonicalUrl,
       avatarId: profile.avatarId,
       createdById: profile.createdById,

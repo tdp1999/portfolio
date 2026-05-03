@@ -12,3 +12,7 @@ export {
   UpdateProfileSocialLinksHandler,
 } from './update-profile-social-links.command';
 export { UpdateProfileSeoOgCommand, UpdateProfileSeoOgHandler } from './update-profile-seo-og.command';
+export {
+  UpdateProfileLandingContentCommand,
+  UpdateProfileLandingContentHandler,
+} from './update-profile-landing-content.command';

@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 config({ path: resolve(__dirname, '../../../.env') });
 
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role, SkillCategory } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -85,9 +85,30 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
       id: uuidv7(),
       userId: user.id,
       fullName: { en: name, vi: name },
-      title: { en: 'Full-stack Developer', vi: 'Lập trình viên Full-stack' },
-      bioShort: { en: 'Portfolio in progress', vi: 'Portfolio đang được cập nhật' },
-      yearsOfExperience: 0,
+      title: { en: 'Senior Frontend Engineer', vi: 'Kỹ sư Frontend Cao cấp' },
+      bioShort: {
+        en: 'Five years in, four with a Singapore-based product team. I have come to like the feature work nobody asks me to brag about — the design system before the screen, the test before the bug, the workflow before the task. Less glamorous; more durable.',
+        vi: '',
+      },
+      // Landing content blocks (E2 §1, §4, §5, §7 locked copy)
+      tagline: {
+        en: 'Four years shipping fintech tools for the Singapore market. Document engines, loan systems, permission frameworks.',
+        vi: '',
+      },
+      stackIntro: {
+        en: "Daily, I reach for **Angular**, **TypeScript**, and **Angular Material**.\n\nBeyond that: **RxJS** when I need streams, **signals** when I don't, a custom **TipTap** extension when the editor work goes deep.\n\nWhen the work needs a backend too, **NestJS** + **Prisma** + **Postgres** with DDD. Tests in **Jest** and **Playwright**. I write the design system before reaching for a UI library.",
+        vi: '',
+      },
+      contactIntro: {
+        en: "I'm in HCMC, working with the Singapore market. Open to full-time roles, and a small slice of freelance on the side, full-stack with frontend depth.",
+        vi: '',
+      },
+      footerTagline: {
+        en: "There's more, if you're still here.",
+        vi: '',
+      },
+      yearsOfExperience: 5,
+      timezones: ['Asia/Ho_Chi_Minh'],
       email,
       preferredContactValue: email,
       locationCountry: 'Vietnam',
@@ -100,6 +121,53 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
   console.log(`Profile seeded for: ${email}`);
 }
 
+// 6 umbrella skills for landing Tier 2 grouping (E2 §4 / domain rule PRF-008)
+// Each is a top-level skill (parentSkillId = null) acting as a group anchor.
+// Member skills attach to one umbrella by setting parentSkillId.
+const UMBRELLA_SKILLS = [
+  { slug: 'languages', name: 'Languages', category: SkillCategory.TECHNICAL, displayOrder: 1 },
+  { slug: 'frontend', name: 'Frontend', category: SkillCategory.TECHNICAL, displayOrder: 2 },
+  { slug: 'library-work', name: 'Library work', category: SkillCategory.TECHNICAL, displayOrder: 3 },
+  { slug: 'backend', name: 'Backend', category: SkillCategory.TECHNICAL, displayOrder: 4 },
+  { slug: 'tooling', name: 'Tooling', category: SkillCategory.TOOLS, displayOrder: 5 },
+  { slug: 'workflow-and-ai', name: 'Workflow & AI', category: SkillCategory.TOOLS, displayOrder: 6 },
+];
+
+export async function seedSkillUmbrellas(prisma: Pick<PrismaClient, 'user' | 'skill'>, env: SeedEnv): Promise<void> {
+  const email = env.ADMIN_EMAIL;
+  if (!email) throw new Error('Missing ADMIN_EMAIL');
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    console.log('Admin user not found — skipping umbrella seed');
+    return;
+  }
+
+  for (const u of UMBRELLA_SKILLS) {
+    const existing = await prisma.skill.findFirst({
+      where: { slug: u.slug, parentSkillId: null, deletedAt: null },
+    });
+    if (existing) {
+      console.log(`Umbrella "${u.name}" already exists — skipping`);
+      continue;
+    }
+    await prisma.skill.create({
+      data: {
+        id: uuidv7(),
+        slug: u.slug,
+        name: u.name,
+        category: u.category,
+        parentSkillId: null,
+        displayOrder: u.displayOrder,
+        isFeatured: false,
+        createdById: user.id,
+        updatedById: user.id,
+      },
+    });
+    console.log(`Umbrella skill seeded: ${u.name}`);
+  }
+}
+
 async function main() {
   const adapter = new PrismaPg({ connectionString: process.env['DATABASE_URL'] });
   const prisma = new PrismaClient({ adapter });
@@ -107,6 +175,7 @@ async function main() {
   try {
     await seedAdmin(prisma, process.env as SeedEnv);
     await seedProfile(prisma, process.env as SeedEnv);
+    await seedSkillUmbrellas(prisma, process.env as SeedEnv);
   } finally {
     await prisma.$disconnect();
   }

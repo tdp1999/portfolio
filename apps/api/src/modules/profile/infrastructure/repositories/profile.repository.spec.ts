@@ -1,7 +1,15 @@
 import { Prisma } from '@prisma/client';
 import { ProfileRepository } from './profile.repository';
 import { PrismaService } from '../../../../infrastructure/prisma';
-import { Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg } from '../../domain/value-objects';
+import {
+  Identity,
+  WorkAvailability,
+  Contact,
+  Location,
+  SocialLinks,
+  SeoOg,
+  LandingContentBlocks,
+} from '../../domain/value-objects';
 
 describe('ProfileRepository — section updates', () => {
   let repo: ProfileRepository;
@@ -66,14 +74,16 @@ describe('ProfileRepository — section updates', () => {
       yearsOfExperience: 8,
       availability: 'OPEN_TO_WORK',
       openTo: ['FULL_TIME'],
-      timezone: 'Asia/Ho_Chi_Minh',
+      timezones: ['Asia/Ho_Chi_Minh'],
     });
 
     it('writes only WorkAvailability columns + updatedById', async () => {
       await repo.updateWorkAvailability(userId, work, updatedById);
 
       expect(whereOf(update)).toEqual({ userId });
-      expect(keysOf(update)).toEqual(['availability', 'openTo', 'timezone', 'updatedById', 'yearsOfExperience'].sort());
+      expect(keysOf(update)).toEqual(
+        ['availability', 'openTo', 'timezones', 'updatedById', 'yearsOfExperience'].sort()
+      );
     });
   });
 
@@ -133,7 +143,7 @@ describe('ProfileRepository — section updates', () => {
   describe('updateSocialLinks', () => {
     const links = SocialLinks.fromPersistence({
       socialLinks: [{ platform: 'GITHUB', url: 'https://github.com/jane' }],
-      resumeUrls: { en: 'https://example.com/cv-en.pdf' },
+      resumeUrls: { en: { url: 'https://example.com/cv-en.pdf', name: 'CV-EN' } },
       certifications: [],
     });
 
@@ -162,6 +172,30 @@ describe('ProfileRepository — section updates', () => {
       expect(keysOf(update)).toEqual(
         ['canonicalUrl', 'metaDescription', 'metaTitle', 'ogImageId', 'updatedById'].sort()
       );
+    });
+  });
+
+  // --- updateLandingContent ---
+
+  describe('updateLandingContent', () => {
+    const tagline = { en: 'Build delightful UIs', vi: 'Xay dung giao dien thu vi' };
+    const blocks = LandingContentBlocks.fromPersistence({
+      tagline,
+      stackIntro: null,
+      contactIntro: null,
+      footerTagline: null,
+    });
+
+    it('writes only landing-content columns + updatedById', async () => {
+      await repo.updateLandingContent(userId, blocks, updatedById);
+
+      expect(whereOf(update)).toEqual({ userId });
+      expect(keysOf(update)).toEqual(['contactIntro', 'footerTagline', 'stackIntro', 'tagline', 'updatedById'].sort());
+      const data = dataOf(update);
+      expect(data.tagline).toEqual(tagline);
+      expect(data.stackIntro).toBe(Prisma.DbNull);
+      expect(data.contactIntro).toBe(Prisma.DbNull);
+      expect(data.footerTagline).toBe(Prisma.DbNull);
     });
   });
 });

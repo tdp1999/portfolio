@@ -12,8 +12,9 @@ function createTestProject() {
       description: { en: 'Full description', vi: 'Mo ta day du' },
       motivation: { en: 'To learn new tech', vi: 'De hoc cong nghe moi' },
       role: { en: 'Full-stack dev', vi: 'Lap trinh vien' },
+      body: { en: 'Long-form body', vi: 'Noi dung dai' },
       startDate: new Date('2025-01-01'),
-      sourceUrl: 'https://github.com/example',
+      links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
     },
     USER_ID
   );
@@ -73,6 +74,18 @@ describe('ProjectPresenter', () => {
       expect(result.highlights[0].challenge).toEqual({ en: 'Challenge', vi: 'Thach thuc' });
       expect(result.images[0]).toEqual({ url: 'https://cdn.example.com/screenshot.png', alt: 'Screenshot' });
       expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript' }]);
+    });
+
+    it('should expose body and links', () => {
+      const entity = createTestProject();
+      const result = ProjectPresenter.toDetail({
+        entity,
+        relations: TEST_RELATIONS,
+        thumbnailUrl: null,
+      });
+
+      expect(result.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
+      expect(result.links).toEqual([{ label: 'Source', url: 'https://github.com/example', type: 'repo' }]);
     });
 
     it('should handle empty relations', () => {

@@ -15,3 +15,6 @@ export type { UpdateProfileSocialLinksDto } from './update-profile-social-links.
 
 export { UpdateProfileSeoOgSchema } from './update-profile-seo-og.schema';
 export type { UpdateProfileSeoOgDto } from './update-profile-seo-og.schema';
+
+export { UpdateProfileLandingContentSchema } from './update-profile-landing-content.schema';
+export type { UpdateProfileLandingContentDto } from './update-profile-landing-content.schema';

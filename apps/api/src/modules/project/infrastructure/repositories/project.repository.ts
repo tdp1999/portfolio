@@ -85,8 +85,8 @@ export class ProjectRepository implements IProjectRepository {
           status: entity.status,
           featured: entity.featured,
           displayOrder: entity.displayOrder,
-          sourceUrl: entity.sourceUrl,
-          projectUrl: entity.projectUrl,
+          body: (entity.body as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+          links: entity.links as unknown as Prisma.InputJsonValue,
           thumbnailId: entity.thumbnailId,
           updatedById: entity.updatedById,
           highlights: {

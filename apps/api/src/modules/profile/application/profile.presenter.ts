@@ -29,8 +29,12 @@ export class ProfilePresenter {
       ogImageUrl,
       metaTitle: profile.metaTitle,
       metaDescription: profile.metaDescription,
-      timezone: profile.timezone,
+      timezones: profile.timezones,
       canonicalUrl: profile.canonicalUrl,
+      tagline: profile.tagline,
+      stackIntro: profile.stackIntro,
+      contactIntro: profile.contactIntro,
+      footerTagline: profile.footerTagline,
     };
   }
 

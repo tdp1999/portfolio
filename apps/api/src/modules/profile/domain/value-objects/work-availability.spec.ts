@@ -5,7 +5,7 @@ describe('WorkAvailability VO', () => {
     yearsOfExperience: 8,
     availability: 'EMPLOYED' as const,
     openTo: ['FREELANCE' as const],
-    timezone: null,
+    timezones: [],
   };
 
   describe('create() — validation guards', () => {
@@ -49,6 +49,37 @@ describe('WorkAvailability VO', () => {
       const vo = WorkAvailability.create({ ...validProps, availability: 'NOT_AVAILABLE', openTo: ['FREELANCE'] });
 
       expect(vo.isOpenToWork).toBe(false);
+    });
+  });
+
+  describe('timezones', () => {
+    it('should default to empty list when none specified', () => {
+      const vo = WorkAvailability.create({ ...validProps, timezones: [] });
+
+      expect(vo.timezones).toEqual([]);
+    });
+
+    it('should preserve multiple timezones', () => {
+      const vo = WorkAvailability.create({
+        ...validProps,
+        timezones: ['Asia/Ho_Chi_Minh', 'Europe/London'],
+      });
+
+      expect(vo.timezones).toEqual(['Asia/Ho_Chi_Minh', 'Europe/London']);
+    });
+
+    it('should treat different timezone lists as not equal', () => {
+      const a = WorkAvailability.create({ ...validProps, timezones: ['Asia/Ho_Chi_Minh'] });
+      const b = WorkAvailability.create({ ...validProps, timezones: ['Europe/London'] });
+
+      expect(a.equals(b)).toBe(false);
+    });
+
+    it('should treat same timezone lists as equal', () => {
+      const a = WorkAvailability.create({ ...validProps, timezones: ['Asia/Ho_Chi_Minh'] });
+      const b = WorkAvailability.create({ ...validProps, timezones: ['Asia/Ho_Chi_Minh'] });
+
+      expect(a.equals(b)).toBe(true);
     });
   });
 

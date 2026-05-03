@@ -12,6 +12,7 @@ import {
   UpdateProfileLocationCommand,
   UpdateProfileSocialLinksCommand,
   UpdateProfileSeoOgCommand,
+  UpdateProfileLandingContentCommand,
 } from '../application/commands';
 import { GetProfileQuery, GetPublicProfileQuery, GetJsonLdQuery } from '../application/queries';
 
@@ -77,6 +78,11 @@ export class AdminProfileController {
   @Patch('seo-og')
   async updateSeoOg(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<void> {
     return await this.commandBus.execute(new UpdateProfileSeoOgCommand(body, req.user.id));
+  }
+
+  @Patch('landing-content')
+  async updateLandingContent(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<void> {
+    return await this.commandBus.execute(new UpdateProfileLandingContentCommand(body, req.user.id));
   }
 
   @Patch('avatar')

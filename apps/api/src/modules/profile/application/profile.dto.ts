@@ -44,8 +44,13 @@ export type ProfilePublicResponseDto = {
   ogImageUrl: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
-  timezone: string | null;
+  timezones: string[];
   canonicalUrl: string | null;
+  // Landing content blocks
+  tagline: TranslatableJson | null;
+  stackIntro: TranslatableJson | null;
+  contactIntro: TranslatableJson | null;
+  footerTagline: TranslatableJson | null;
 };
 
 export type ProfileAdminResponseDto = ProfilePublicResponseDto & {

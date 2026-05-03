@@ -3,6 +3,7 @@ import { TranslatableSchema, PaginatedQuerySchema, nonEmptyPartial } from '@port
 import { ContentStatus } from '@prisma/client';
 import { DisplayOrderSchema, TitleSchema, UrlSchema } from '@portfolio/shared/validation/zod';
 import { LIMITS } from '@portfolio/shared/validation';
+import { PROJECT_LINK_TYPES } from '../domain/value-objects';
 
 // --- TechnicalHighlightSchema ---
 
@@ -13,6 +14,14 @@ export const TechnicalHighlightSchema = z.object({
   codeUrl: UrlSchema.nullable().optional(),
 });
 
+// --- ProjectLinkSchema ---
+
+export const ProjectLinkSchema = z.object({
+  label: z.string().min(1).max(80),
+  url: UrlSchema,
+  type: z.enum(PROJECT_LINK_TYPES),
+});
+
 // --- CreateProjectSchema ---
 
 export const CreateProjectSchema = z.object({
@@ -21,10 +30,10 @@ export const CreateProjectSchema = z.object({
   description: TranslatableSchema,
   motivation: TranslatableSchema,
   role: TranslatableSchema,
+  body: TranslatableSchema.nullable().optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
-  sourceUrl: UrlSchema.nullable().optional(),
-  projectUrl: UrlSchema.nullable().optional(),
+  links: z.array(ProjectLinkSchema).default([]),
   thumbnailId: z.uuid().nullable().optional(),
   featured: z.boolean().default(false),
   displayOrder: DisplayOrderSchema.default(0),
@@ -43,11 +52,11 @@ const UpdateProjectBaseSchema = z.object({
   description: TranslatableSchema,
   motivation: TranslatableSchema,
   role: TranslatableSchema,
+  body: TranslatableSchema.nullable(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   status: z.nativeEnum(ContentStatus),
-  sourceUrl: UrlSchema.nullable().optional(),
-  projectUrl: UrlSchema.nullable().optional(),
+  links: z.array(ProjectLinkSchema),
   thumbnailId: z.uuid().nullable().optional(),
   featured: z.boolean(),
   displayOrder: DisplayOrderSchema,

@@ -1,5 +1,6 @@
 import { BaseCrudEntity, SlugValue, TranslatableJson } from '@portfolio/shared/types';
 import { IProjectProps, ICreateProjectPayload, IUpdateProjectPayload, ContentStatus } from '../project.types';
+import { ProjectLink, ProjectLinkProps } from '../value-objects';
 
 export class Project extends BaseCrudEntity<IProjectProps> {
   private constructor(props: IProjectProps) {
@@ -30,6 +31,10 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     return this.props.role;
   }
 
+  get body(): TranslatableJson | null {
+    return this.props.body;
+  }
+
   get startDate(): Date {
     return this.props.startDate;
   }
@@ -50,12 +55,8 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     return this.props.displayOrder;
   }
 
-  get sourceUrl(): string | null {
-    return this.props.sourceUrl;
-  }
-
-  get projectUrl(): string | null {
-    return this.props.projectUrl;
+  get links(): ProjectLinkProps[] {
+    return this.props.links;
   }
 
   get thumbnailId(): string | null {
@@ -64,6 +65,12 @@ export class Project extends BaseCrudEntity<IProjectProps> {
 
   get isPublished(): boolean {
     return this.props.status === 'PUBLISHED' && !this.isDeleted;
+  }
+
+  /** Validate links via the VO and return their plain props for storage. */
+  private static normalizeLinks(links: ProjectLinkProps[] | undefined): ProjectLinkProps[] {
+    if (!links || links.length === 0) return [];
+    return links.map((l) => ProjectLink.create(l).toProps());
   }
 
   static create(data: ICreateProjectPayload, userId: string): Project {
@@ -75,13 +82,13 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       description: data.description,
       motivation: data.motivation,
       role: data.role,
+      body: data.body ?? null,
       startDate: data.startDate,
       endDate: data.endDate ?? null,
       status: 'DRAFT',
       featured: data.featured ?? false,
       displayOrder: data.displayOrder ?? 0,
-      sourceUrl: data.sourceUrl ?? null,
-      projectUrl: data.projectUrl ?? null,
+      links: Project.normalizeLinks(data.links),
       thumbnailId: data.thumbnailId ?? null,
     });
   }
@@ -102,11 +109,11 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       description: data.description ?? this.props.description,
       motivation: data.motivation ?? this.props.motivation,
       role: data.role ?? this.props.role,
+      body: data.body !== undefined ? data.body : this.props.body,
       startDate: data.startDate ?? this.props.startDate,
       endDate: data.endDate !== undefined ? data.endDate : this.props.endDate,
       status: data.status ?? this.props.status,
-      sourceUrl: data.sourceUrl !== undefined ? data.sourceUrl : this.props.sourceUrl,
-      projectUrl: data.projectUrl !== undefined ? data.projectUrl : this.props.projectUrl,
+      links: data.links !== undefined ? Project.normalizeLinks(data.links) : this.props.links,
       thumbnailId: data.thumbnailId !== undefined ? data.thumbnailId : this.props.thumbnailId,
       featured: data.featured ?? this.props.featured,
       displayOrder: data.displayOrder ?? this.props.displayOrder,

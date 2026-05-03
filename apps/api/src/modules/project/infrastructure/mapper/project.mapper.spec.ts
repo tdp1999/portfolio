@@ -13,8 +13,8 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
   status: 'DRAFT',
   featured: false,
   displayOrder: 0,
-  sourceUrl: 'https://github.com/example',
-  projectUrl: null,
+  body: { en: 'Long-form body', vi: 'Noi dung dai' },
+  links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
   thumbnailId: null,
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-01-01'),
@@ -34,6 +34,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
     height: 300,
     altText: 'Thumbnail',
     caption: null,
+    folder: null,
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
     createdById: '00000000-0000-0000-0000-000000000099',
@@ -79,6 +80,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
         height: 600,
         altText: 'Screenshot',
         caption: null,
+        folder: null,
         createdAt: new Date('2025-01-01'),
         updatedAt: new Date('2025-01-01'),
         createdById: '00000000-0000-0000-0000-000000000099',
@@ -101,7 +103,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
         isLibrary: false,
         parentSkillId: null,
         yearsOfExperience: 5,
-        iconUrl: null,
+        iconId: null,
         proficiencyNote: null,
         isFeatured: true,
         displayOrder: 0,
@@ -117,6 +119,37 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
 };
 
 describe('ProjectMapper', () => {
+  describe('toDomain', () => {
+    it('should map body and links from raw row', () => {
+      const entity = ProjectMapper.toDomain(RAW_PROJECT);
+
+      expect(entity.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
+      expect(entity.links).toEqual([{ label: 'Source', url: 'https://github.com/example', type: 'repo' }]);
+    });
+
+    it('should default links to [] when raw is not an array', () => {
+      const entity = ProjectMapper.toDomain({ ...RAW_PROJECT, links: null as unknown as never });
+      expect(entity.links).toEqual([]);
+    });
+
+    it('should drop links with unknown type', () => {
+      const entity = ProjectMapper.toDomain({
+        ...RAW_PROJECT,
+        links: [
+          { label: 'OK', url: 'https://example.com', type: 'repo' },
+          { label: 'Bad', url: 'https://example.com', type: 'unknown' },
+        ] as unknown as never,
+      });
+      expect(entity.links).toHaveLength(1);
+      expect(entity.links[0].label).toBe('OK');
+    });
+
+    it('should map body=null', () => {
+      const entity = ProjectMapper.toDomain({ ...RAW_PROJECT, body: null });
+      expect(entity.body).toBeNull();
+    });
+  });
+
   describe('toRelations', () => {
     it('should sort highlights by displayOrder', () => {
       const relations = ProjectMapper.toRelations(RAW_PROJECT);
