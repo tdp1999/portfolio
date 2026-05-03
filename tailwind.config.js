@@ -7,10 +7,32 @@ module.exports = {
     './libs/console/**/*.{html,ts}',
     './libs/shared/**/*.{html,ts}',
   ],
-  darkMode: 'class',
+  darkMode: ['variant', ['.dark &', '[data-theme="dark"] &']],
   theme: {
     extend: {
       colors: {
+        // Landing palette (E4 lock — technical-cool with indigo accent)
+        ink: {
+          0: 'var(--landing-ink-0)',
+          1: 'var(--landing-ink-1)',
+          2: 'var(--landing-ink-2)',
+        },
+        'landing-text': {
+          300: 'var(--landing-text-300)',
+          400: 'var(--landing-text-400)',
+          500: 'var(--landing-text-500)',
+          600: 'var(--landing-text-600)',
+          700: 'var(--landing-text-700)',
+        },
+        'landing-accent': {
+          DEFAULT: 'var(--landing-accent)',
+          hover: 'var(--landing-accent-hover)',
+          active: 'var(--landing-accent-active)',
+        },
+        'landing-border': {
+          DEFAULT: 'var(--landing-border)',
+          strong: 'var(--landing-border-strong)',
+        },
         accent: {
           50: 'hsl(var(--accent-hue) var(--accent-saturation) 97%)',
           100: 'hsl(var(--accent-hue) var(--accent-saturation) 94%)',
@@ -49,8 +71,10 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        display: ['Newsreader', 'ui-serif', 'Georgia', 'serif'],
       },
       fontSize: {
+        // Shared (console + landing) — fluid scale via CSS vars
         '2xs': ['var(--text-2xs)', { lineHeight: 'var(--leading-normal)' }],
         xs: ['var(--text-xs)', { lineHeight: 'var(--leading-normal)' }],
         sm: ['var(--text-sm)', { lineHeight: 'var(--leading-normal)' }],
@@ -61,6 +85,24 @@ module.exports = {
         '3xl': ['var(--text-3xl)', { lineHeight: 'var(--leading-tight)' }],
         '4xl': ['var(--text-4xl)', { lineHeight: 'var(--leading-tight)' }],
         '5xl': ['var(--text-5xl)', { lineHeight: 'var(--leading-tight)' }],
+        // Landing — fixed display/body/mono scale (E4 D2 lock, 4-grid aligned)
+        'display-xl': ['56px', { lineHeight: '64px', letterSpacing: '-0.02em' }],
+        'display-lg': ['48px', { lineHeight: '56px', letterSpacing: '-0.02em' }],
+        'display-md': ['40px', { lineHeight: '48px', letterSpacing: '-0.02em' }],
+        'display-sm': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em' }],
+        'body-lg': ['17px', { lineHeight: '28px' }],
+        'body-md': ['15px', { lineHeight: '24px' }],
+        'body-sm': ['13px', { lineHeight: '20px' }],
+        'mono-md': ['12px', { lineHeight: '16px', letterSpacing: '0.06em' }],
+        'mono-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.06em' }],
+      },
+      transitionDuration: {
+        'motion-fast': '150ms',
+        'motion-base': '200ms',
+        'motion-slow': '250ms',
+      },
+      transitionTimingFunction: {
+        'landing-ease': 'cubic-bezier(0.2, 0, 0, 1)',
       },
     },
   },

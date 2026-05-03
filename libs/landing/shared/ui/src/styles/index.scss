@@ -7,6 +7,9 @@
 @use 'base/components' as component-classes;
 @use 'material/icons' as icon-overrides;
 
+/* Landing-specific tokens (E4 lock — ink/slate/indigo, Newsreader display scale, motion) */
+@use '../tokens' as landing-tokens;
+
 /* Landing-specific Material overrides */
 @use './material/overrides.scss';
 
@@ -51,3 +54,9 @@
 @import '@fontsource/inter/700.css';
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/500.css';
+
+/* Newsreader — display serif (E4 D2). Variable font, latin subset. */
+@import '@fontsource/newsreader/400.css';
+@import '@fontsource/newsreader/500.css';
+@import '@fontsource/newsreader/600.css';
+@import '@fontsource/newsreader/400-italic.css';

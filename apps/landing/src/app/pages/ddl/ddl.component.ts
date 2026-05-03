@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DOCUMENT, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,8 @@ import {
   LinkDirective,
   ContainerComponent,
   SectionComponent,
+  LandingThemeService,
+  LandingThemeToggleComponent,
 } from '@portfolio/landing/shared/ui';
 
 @Component({
@@ -33,24 +35,19 @@ import {
     LinkDirective,
     ContainerComponent,
     SectionComponent,
+    LandingThemeToggleComponent,
   ],
   templateUrl: './ddl.component.html',
   styleUrl: './ddl.component.scss',
 })
 export class DdlComponent {
-  isDark = signal(false);
-  private readonly document = inject(DOCUMENT);
+  private readonly themeService = inject(LandingThemeService);
   private readonly iconProvider = inject(ICON_PROVIDER);
 
   readonly iconNames = this.iconProvider.getSupportedIcons();
+  readonly isDark = computed(() => this.themeService.theme() === 'dark');
 
-  constructor() {
-    effect(() => {
-      this.document.documentElement.classList.toggle('dark', this.isDark());
-    });
-  }
-
-  toggleDark() {
-    this.isDark.update((v) => !v);
+  toggleDark(): void {
+    this.themeService.toggle();
   }
 }

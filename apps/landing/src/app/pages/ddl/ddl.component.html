@@ -3,96 +3,42 @@
     <header class="mb-8 flex items-start justify-between">
       <div>
         <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
-        <p class="text-lg text-text-secondary mt-2">
-          Component showcase and design system documentation
-        </p>
+        <p class="text-lg text-text-secondary mt-2">Component showcase and design system documentation</p>
       </div>
-      <button
-        (click)="toggleDark()"
-        class="mt-2 px-4 py-2 rounded-lg border border-border text-text-secondary hover:text-text hover:border-border-strong transition-colors flex items-center gap-2"
-      >
-        <span>{{ isDark() ? '☀️' : '🌙' }}</span>
-        <span class="text-sm">{{ isDark() ? 'Light' : 'Dark' }}</span>
-      </button>
+      <landing-theme-toggle class="mt-2" />
     </header>
 
-    <section class="space-y-6">
-      <!-- Accent Color Palette Test -->
-      <div class="color-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Accent Color Palette</h2>
-        <div class="grid grid-cols-5 gap-4">
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-50 rounded-lg border border-border"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-50</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-100 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-100</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-200 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-200</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-300 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-300</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-400 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-400</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-500 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-500</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-600 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-600</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-700 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-700</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-800 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-800</p>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-20 bg-accent-900 rounded-lg"></div>
-            <p class="text-xs mt-2 text-text-secondary">accent-900</p>
-          </div>
-        </div>
+    <!-- Landing tokens sample (E5 task 274/275) -->
+    <section class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+        landing tokens · E4 D2 lock
+      </p>
+      <h2 class="font-display text-display-lg text-landing-text-300 mb-2">Newsreader display, 48 / 56</h2>
+      <p class="font-sans text-body-lg text-landing-text-400 mb-4">
+        Inter body large at 17/28 — the reading size for prose blocks. Quiet, slightly desaturated against the ink
+        background; the indigo accent stays reserved for one element per view.
+      </p>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-4">
+        font-mono · 12/16 · JetBrains Mono · meta labels and code
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="inline-block h-6 w-6 rounded bg-ink-0 border border-landing-border" title="ink-0"></span>
+        <span class="inline-block h-6 w-6 rounded bg-ink-1 border border-landing-border" title="ink-1"></span>
+        <span class="inline-block h-6 w-6 rounded bg-ink-2 border border-landing-border" title="ink-2"></span>
+        <span class="inline-block h-6 w-6 rounded bg-landing-accent" title="indigo accent"></span>
+        <span class="inline-block h-6 w-6 rounded bg-landing-accent-hover" title="indigo hover"></span>
+        <span class="font-mono text-mono-sm text-landing-text-600"> ink-0/1/2 · accent · accent-hover </span>
       </div>
+    </section>
 
-      <!-- Semantic Color Tokens Test -->
-      <div class="semantic-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Semantic Color Tokens</h2>
-        <div class="flex gap-4 flex-wrap">
-          <button
-            class="px-4 py-2 bg-primary text-text-on-primary rounded-lg hover:bg-primary-hover transition-colors"
-          >
-            Primary Button
-          </button>
-          <button
-            class="px-4 py-2 bg-surface-elevated text-text rounded-lg border border-border hover:border-border-strong transition-colors"
-          >
-            Secondary Button
-          </button>
-          <button
-            class="px-4 py-2 border border-border rounded-lg hover:bg-background transition-colors text-text"
-          >
-            Outline Button
-          </button>
-        </div>
-      </div>
+    <section class="space-y-6">
+      <!-- (Removed: shared "Accent Color Palette" + "Semantic Color Tokens" sections — superseded by landing ink/indigo sample above. Per E5 task 274 / DDL replacement rule.) -->
 
       <!-- Feedback Colors Test -->
       <div class="feedback-test p-6 bg-surface rounded-lg shadow-sm border border-border">
         <h2 class="text-2xl font-semibold mb-4 text-text">Feedback Colors</h2>
         <div class="space-y-3">
-          <div class="p-3 bg-info-container border-l-4 border-info text-text">
-            Info message using semantic tokens
-          </div>
+          <div class="p-3 bg-info-container border-l-4 border-info text-text">Info message using semantic tokens</div>
           <div class="p-3 bg-success-container border-l-4 border-success text-text">
             Success message using semantic tokens
           </div>
@@ -148,12 +94,8 @@
           <hr class="border-border my-4" />
           <div class="space-y-2">
             <p class="text-sm font-medium text-text-secondary">Font Families</p>
-            <p class="font-sans text-base text-text">
-              Inter (sans): The quick brown fox jumps over the lazy dog
-            </p>
-            <p class="font-mono text-base text-text">
-              JetBrains Mono: const greeting = "Hello, World!";
-            </p>
+            <p class="font-sans text-base text-text">Inter (sans): The quick brown fox jumps over the lazy dog</p>
+            <p class="font-mono text-base text-text">JetBrains Mono: const greeting = "Hello, World!";</p>
           </div>
         </div>
       </div>
@@ -163,9 +105,7 @@
         <h2 class="text-2xl font-semibold mb-4 text-text">Angular Material</h2>
 
         <!-- Buttons -->
-        <p class="text-sm text-text-secondary mb-3">
-          M3 buttons — flat uses primary fill, raised uses surface
-        </p>
+        <p class="text-sm text-text-secondary mb-3">M3 buttons — flat uses primary fill, raised uses surface</p>
         <div class="flex gap-4 flex-wrap items-center mb-6">
           <button mat-flat-button>Flat</button>
           <button mat-raised-button>Raised</button>
@@ -213,9 +153,7 @@
               <landing-button variant="primary" size="sm">Small</landing-button>
               <landing-button variant="primary" size="md">Medium</landing-button>
               <landing-button variant="primary" size="lg">Large</landing-button>
-              <landing-button variant="primary" size="md" [disabled]="true"
-                >Disabled</landing-button
-              >
+              <landing-button variant="primary" size="md" [disabled]="true">Disabled</landing-button>
             </div>
           </div>
 
@@ -226,9 +164,7 @@
               <landing-button variant="secondary" size="sm">Small</landing-button>
               <landing-button variant="secondary" size="md">Medium</landing-button>
               <landing-button variant="secondary" size="lg">Large</landing-button>
-              <landing-button variant="secondary" size="md" [disabled]="true"
-                >Disabled</landing-button
-              >
+              <landing-button variant="secondary" size="md" [disabled]="true">Disabled</landing-button>
             </div>
           </div>
 
@@ -278,25 +214,19 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
               <landing-card>
                 <h3 class="text-lg font-semibold text-text mb-2">Default Card</h3>
-                <p class="text-text-secondary">
-                  This is a basic card with default shadow and hover transition.
-                </p>
+                <p class="text-text-secondary">This is a basic card with default shadow and hover transition.</p>
               </landing-card>
 
               <landing-card [elevated]="true">
                 <h3 class="text-lg font-semibold text-text mb-2">Elevated Card</h3>
-                <p class="text-text-secondary">
-                  This card has stronger shadow with the elevated prop.
-                </p>
+                <p class="text-text-secondary">This card has stronger shadow with the elevated prop.</p>
               </landing-card>
             </div>
           </div>
 
           <!-- Cards with Sub-components -->
           <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">
-              Card with Header, Content, Footer
-            </h3>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Card with Header, Content, Footer</h3>
             <div class="max-w-md">
               <landing-card>
                 <div class="card__header">
@@ -354,9 +284,7 @@
                     <p class="text-xs text-text-muted">React • Node.js</p>
                   </div>
                 </div>
-                <p class="text-sm text-text-secondary mb-4">
-                  Full-stack e-commerce solution with payment integration.
-                </p>
+                <p class="text-sm text-text-secondary mb-4">Full-stack e-commerce solution with payment integration.</p>
                 <div class="flex gap-2">
                   <landing-button variant="ghost" size="sm">
                     <landing-icon name="external-link" [size]="14" />
@@ -377,9 +305,7 @@
                     <p class="text-xs text-text-muted">Vue • Python</p>
                   </div>
                 </div>
-                <p class="text-sm text-text-secondary mb-4">
-                  Collaborative task management with real-time updates.
-                </p>
+                <p class="text-sm text-text-secondary mb-4">Collaborative task management with real-time updates.</p>
                 <div class="flex gap-2">
                   <landing-button variant="ghost" size="sm">
                     <landing-icon name="external-link" [size]="14" />
@@ -404,9 +330,7 @@
         </p>
         <div class="grid grid-cols-6 gap-4 sm:grid-cols-8 md:grid-cols-10">
           @for (name of iconNames; track name) {
-            <div
-              class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-background transition-colors"
-            >
+            <div class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-background transition-colors">
               <landing-icon [name]="name" class="text-text" [size]="24" />
               <span class="text-xs text-text-muted text-center leading-tight">{{ name }}</span>
             </div>
@@ -438,27 +362,17 @@
             <h3 class="text-sm font-medium text-text-secondary mb-3">States</h3>
             <div class="space-y-3">
               <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-normal"
-                  >Normal State</label
-                >
+                <label class="block text-sm text-text mb-1" for="ddl-input-normal">Normal State</label>
                 <landing-input placeholder="Normal input" id="ddl-input-normal" />
               </div>
               <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-error"
-                  >Error State</label
-                >
+                <label class="block text-sm text-text mb-1" for="ddl-input-error">Error State</label>
                 <landing-input placeholder="Error input" [error]="true" id="ddl-input-error" />
                 <p class="text-xs text-error mt-1">This field is required</p>
               </div>
               <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-disabled"
-                  >Disabled State</label
-                >
-                <landing-input
-                  placeholder="Disabled input"
-                  [disabled]="true"
-                  id="ddl-input-disabled"
-                />
+                <label class="block text-sm text-text mb-1" for="ddl-input-disabled">Disabled State</label>
+                <landing-input placeholder="Disabled input" [disabled]="true" id="ddl-input-disabled" />
               </div>
             </div>
           </div>
@@ -468,15 +382,11 @@
             <h3 class="text-sm font-medium text-text-secondary mb-3">With Labels</h3>
             <div class="space-y-3">
               <div>
-                <label for="name" class="block text-sm font-medium text-text mb-1">
-                  Full Name
-                </label>
+                <label for="name" class="block text-sm font-medium text-text mb-1"> Full Name </label>
                 <landing-input type="text" placeholder="John Doe" />
               </div>
               <div>
-                <label for="email" class="block text-sm font-medium text-text mb-1">
-                  Email Address
-                </label>
+                <label for="email" class="block text-sm font-medium text-text mb-1"> Email Address </label>
                 <landing-input type="email" placeholder="john@example.com" />
               </div>
             </div>
@@ -548,9 +458,7 @@
                       <landing-badge>TypeScript</landing-badge>
                       <landing-badge>TDD</landing-badge>
                     </div>
-                    <p class="text-sm text-text-secondary mb-3">
-                      Professional portfolio with design system and SSR.
-                    </p>
+                    <p class="text-sm text-text-secondary mb-3">Professional portfolio with design system and SSR.</p>
                     <landing-badge color="success">Published</landing-badge>
                   </div>
                 </div>
@@ -575,8 +483,8 @@
               <landing-container>
                 <div class="bg-surface-elevated border border-border p-4 rounded">
                   <p class="text-text-secondary">
-                    Default container with max-w-4xl constraint and horizontal padding. This
-                    container centers content and adds responsive padding.
+                    Default container with max-w-4xl constraint and horizontal padding. This container centers content
+                    and adds responsive padding.
                   </p>
                 </div>
               </landing-container>
@@ -590,8 +498,7 @@
               <landing-container [wide]="true">
                 <div class="bg-surface-elevated border border-border p-4 rounded">
                   <p class="text-text-secondary">
-                    Wide container with max-w-6xl constraint. Useful for card grids and wider
-                    content layouts.
+                    Wide container with max-w-6xl constraint. Useful for card grids and wider content layouts.
                   </p>
                 </div>
               </landing-container>
@@ -605,8 +512,8 @@
               <landing-section>
                 <div class="bg-surface-elevated border border-border p-4 rounded">
                   <p class="text-text-secondary">
-                    Section component adds responsive vertical padding (py-16 md:py-24 lg:py-32).
-                    Use sections to separate major page areas.
+                    Section component adds responsive vertical padding (py-16 md:py-24 lg:py-32). Use sections to
+                    separate major page areas.
                   </p>
                 </div>
               </landing-section>
@@ -615,17 +522,15 @@
 
           <!-- Combined Example -->
           <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">
-              Example: Section + Container
-            </h3>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Section + Container</h3>
             <div class="bg-background rounded-lg overflow-hidden">
               <landing-section>
                 <landing-container>
                   <div class="text-center">
                     <h3 class="text-2xl font-semibold text-text mb-3">Page Section Title</h3>
                     <p class="text-text-secondary mb-6">
-                      This demonstrates the typical pattern of combining Section (for vertical
-                      spacing) with Container (for horizontal constraints).
+                      This demonstrates the typical pattern of combining Section (for vertical spacing) with Container
+                      (for horizontal constraints).
                     </p>
                     <div class="flex gap-3 justify-center">
                       <landing-button variant="primary">Primary Action</landing-button>
@@ -639,9 +544,7 @@
 
           <!-- Card Grid Example -->
           <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">
-              Example: Card Grid in Wide Container
-            </h3>
+            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Card Grid in Wide Container</h3>
             <div class="bg-background rounded-lg overflow-hidden">
               <landing-section>
                 <landing-container [wide]="true">
@@ -661,18 +564,14 @@
                         <landing-icon name="package" [size]="20" class="text-primary" />
                         <h4 class="text-base font-semibold text-text">Item Two</h4>
                       </div>
-                      <p class="text-sm text-text-secondary">
-                        Section adds vertical breathing room.
-                      </p>
+                      <p class="text-sm text-text-secondary">Section adds vertical breathing room.</p>
                     </landing-card>
                     <landing-card>
                       <div class="flex items-center gap-2 mb-2">
                         <landing-icon name="gift" [size]="20" class="text-primary" />
                         <h4 class="text-base font-semibold text-text">Item Three</h4>
                       </div>
-                      <p class="text-sm text-text-secondary">
-                        Cards respond to grid breakpoints automatically.
-                      </p>
+                      <p class="text-sm text-text-secondary">Cards respond to grid breakpoints automatically.</p>
                     </landing-card>
                   </div>
                 </landing-container>
@@ -713,8 +612,8 @@
               <p class="text-text-secondary">
                 This is a paragraph with an
                 <a landingLink href="#">inline link</a>
-                that demonstrates the link styling in context. Links use semantic color tokens and
-                smooth transitions. You can also link to
+                that demonstrates the link styling in context. Links use semantic color tokens and smooth transitions.
+                You can also link to
                 <a landingLink href="https://example.com" [external]="true">
                   external resources
                   <landing-icon name="external-link" [size]="12" class="inline" />
@@ -765,9 +664,7 @@
         <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>
         <div class="space-y-3">
           <div class="p-3 border border-border rounded-lg">Default border using border-border</div>
-          <div class="p-3 border border-border-strong rounded-lg">
-            Strong border using border-border-strong
-          </div>
+          <div class="p-3 border border-border-strong rounded-lg">Strong border using border-border-strong</div>
         </div>
       </div>
     </section>

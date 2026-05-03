@@ -1,0 +1,41 @@
+/* Landing typography — Newsreader (display), Inter (body), JetBrains Mono (code/labels). */
+/* All sizes/line-heights are multiples of 4 px. */
+
+:root {
+  --landing-font-display: 'Newsreader', ui-serif, Georgia, serif;
+  --landing-font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --landing-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Display scale — px values are 4-grid aligned */
+  --landing-display-xl: 56px; /* line-height: 64px */
+  --landing-display-lg: 48px; /* line-height: 56px */
+  --landing-display-md: 40px; /* line-height: 48px */
+  --landing-display-sm: 32px; /* line-height: 40px */
+
+  --landing-display-xl-lh: 64px;
+  --landing-display-lg-lh: 56px;
+  --landing-display-md-lh: 48px;
+  --landing-display-sm-lh: 40px;
+
+  /* Body scale */
+  --landing-body-lg: 17px; /* lh 28 */
+  --landing-body-md: 15px; /* lh 24 */
+  --landing-body-sm: 13px; /* lh 20 */
+
+  --landing-body-lg-lh: 28px;
+  --landing-body-md-lh: 24px;
+  --landing-body-sm-lh: 20px;
+
+  /* Mono scale */
+  --landing-mono-md: 12px; /* lh 16 */
+  --landing-mono-sm: 11px; /* lh 16 */
+
+  --landing-mono-md-lh: 16px;
+  --landing-mono-sm-lh: 16px;
+
+  /* Tracking */
+  --landing-tracking-tight: -0.02em;
+  --landing-tracking-normal: 0;
+  --landing-tracking-wide: 0.04em;
+  --landing-tracking-mono: 0.06em;
+}

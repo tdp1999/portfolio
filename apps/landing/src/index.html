@@ -7,6 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script>
+      // No-FOUC theme bootstrap. Runs before paint, before Angular bootstrap.
+      // Order: cookie → localStorage → system preference → dark default.
+      (function () {
+        try {
+          var t = null;
+          var m = document.cookie.match(/(?:^|;\s*)landing_theme=(dark|light)/);
+          if (m) t = m[1];
+          if (!t) {
+            var ls = localStorage.getItem('landing_theme');
+            if (ls === 'dark' || ls === 'light') t = ls;
+          }
+          if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          var root = document.documentElement;
+          root.setAttribute('data-theme', t);
+          if (t === 'dark') root.classList.add('dark');
+        } catch (_) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

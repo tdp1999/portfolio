@@ -6,3 +6,5 @@ export * from './components/badge';
 export * from './components/link';
 export * from './components/container';
 export * from './components/section';
+export * from './theme';
+export * from './shell';
