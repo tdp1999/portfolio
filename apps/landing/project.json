@@ -2,7 +2,7 @@
   "name": "landing",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "app",
+  "prefix": "landing",
   "sourceRoot": "apps/landing/src",
   "tags": ["scope:landing"],
   "targets": {

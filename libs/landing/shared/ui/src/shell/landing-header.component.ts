@@ -15,7 +15,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Uses', path: '/uses' },
   { label: 'Colophon', path: '/colophon' },
   { label: 'DDL', path: '/ddl' },
-  { label: 'Sandbox', path: '/sandbox' },
 ];
 
 const SCROLL_THRESHOLD = 8;
@@ -49,9 +48,9 @@ const SCROLL_THRESHOLD = 8;
                 @for (item of navItems; track item.path) {
                   <a
                     [routerLink]="item.path"
-                    routerLinkActive="text-landing-accent"
+                    routerLinkActive="nav-link--active"
                     [routerLinkActiveOptions]="{ exact: !!item.exact }"
-                    class="font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                    class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
                   >
                     {{ item.label }}
                   </a>
@@ -82,30 +81,30 @@ const SCROLL_THRESHOLD = 8;
           </div>
         </div>
       } @else {
-        <!-- Top state: original 3-cluster layout -->
+        <!-- Top state: 3-column grid so the centre nav stays page-centred regardless of side widths -->
         <landing-container size="wide">
-          <div class="flex h-16 items-center justify-between header-fade-in">
+          <div class="grid h-16 items-center header-fade-in grid-cols-[1fr_auto_1fr]">
             <a
               routerLink="/"
-              class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
+              class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent justify-self-start"
             >
               tdp.
             </a>
 
-            <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+            <nav class="hidden items-center gap-8 md:flex justify-self-center" aria-label="Primary">
               @for (item of navItems; track item.path) {
                 <a
                   [routerLink]="item.path"
-                  routerLinkActive="text-landing-accent"
+                  routerLinkActive="nav-link--active"
                   [routerLinkActiveOptions]="{ exact: !!item.exact }"
-                  class="font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                  class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
                 >
                   {{ item.label }}
                 </a>
               }
             </nav>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 justify-self-end">
               <button
                 type="button"
                 class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"

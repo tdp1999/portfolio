@@ -41,3 +41,21 @@
 .header-fade-in {
   animation: header-fade-in 200ms ease-out;
 }
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link--active {
+  color: var(--landing-accent);
+}
+
+.nav-link--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background-color: var(--landing-accent);
+}
