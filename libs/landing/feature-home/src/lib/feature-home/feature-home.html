@@ -1,5 +1,5 @@
 <div class="flex flex-col min-h-screen">
-  <!-- Hero Section (B1.e Type + Blueprint Background) -->
+  <!-- §2 Hero (B1.e Type + Blueprint Background) -->
   <landing-home-hero
     [fullName]="fullName()"
     [title]="title()"
@@ -9,70 +9,21 @@
     [stackIntro]="stackIntro()"
   />
 
-  <!-- Experience Overview Section -->
-  @if (recentExperiences().length > 0) {
-    <landing-section>
-      <landing-container size="wide">
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="text-section-heading text-text">Experience</h2>
-          <a routerLink="/experience" class="text-primary hover:underline text-sm font-medium flex items-center gap-1">
-            View full career history
-            <landing-icon name="arrow-right" [size]="16" />
-          </a>
-        </div>
-        <div class="flex flex-col divide-y divide-border">
-          @for (exp of recentExperiences(); track exp.id) {
-            <div class="py-4 flex items-start gap-4">
-              @if (exp.companyLogoUrl) {
-                <img
-                  [src]="exp.companyLogoUrl"
-                  [alt]="exp.companyName"
-                  width="40"
-                  height="40"
-                  class="w-10 h-10 rounded-md object-contain border border-border bg-surface flex-shrink-0"
-                />
-              } @else {
-                <div
-                  class="w-10 h-10 rounded-md bg-primary-container flex items-center justify-center text-primary font-semibold flex-shrink-0"
-                >
-                  {{ exp.companyName.charAt(0) }}
-                </div>
-              }
-              <div class="flex-1 min-w-0">
-                <p class="font-medium text-text">{{ exp.position | translatable: locale() }}</p>
-                <p class="text-sm text-text-secondary">{{ exp.companyName }}</p>
-                <p class="text-xs text-text-secondary mt-0.5">{{ exp | dateRange }}</p>
-              </div>
-              @if (!exp.endDate) {
-                <span class="text-xs text-primary font-medium flex-shrink-0">Current</span>
-              }
-            </div>
-          }
-        </div>
-      </landing-container>
-    </landing-section>
-  }
+  <!-- §3 Bio Card Grid — placeholder, replaced by task 284 -->
+  <landing-home-section-placeholder label="Bio Card Grid" task="task 284" />
 
-  <!-- Featured Projects Section -->
-  <landing-section>
-    <landing-container size="wide">
-      <h2 class="text-3xl font-semibold text-center mb-12 text-text">Featured Projects</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        @for (project of projects; track project.id) {
-          <landing-card>
-            <div class="flex items-center gap-2 mb-3">
-              <landing-icon [name]="project.icon" [size]="24" class="text-primary" />
-              <h3 class="text-xl font-medium text-text">{{ project.title }}</h3>
-            </div>
-            <p class="text-text-secondary mb-4">{{ project.description }}</p>
-            <div class="flex flex-wrap gap-2">
-              @for (tech of project.technologies; track tech) {
-                <landing-badge>{{ tech }}</landing-badge>
-              }
-            </div>
-          </landing-card>
-        }
-      </div>
-    </landing-container>
-  </landing-section>
+  <!-- §4 Selected Work — placeholder, replaced by task 283 -->
+  <landing-home-section-placeholder label="Selected Work" task="task 283" />
+
+  <!-- §5 The Stack — placeholder, replaced by future stack task (E5 P4 gap, see epic) -->
+  <landing-home-section-placeholder label="The Stack" task="E5 P4 gap" />
+
+  <!-- §6 The Story — bioLong from API, voice re-questioned 2026-05-04 -->
+  <landing-home-intro [bioLong]="bioLong()" />
+
+  <!-- §7 Get in Touch — placeholder, replaced by task 286 -->
+  <landing-home-section-placeholder label="Get in Touch" task="task 286" />
+
+  <!-- §8 Footer Banner — placeholder, replaced by task 287 -->
+  <landing-home-section-placeholder label="Footer Banner" task="task 287" />
 </div>

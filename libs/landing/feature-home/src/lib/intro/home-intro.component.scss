@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.home-intro {
+  padding-block: 96px;
+}
+
+.home-intro__column {
+  max-width: 680px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.home-intro__column landing-eyebrow {
+  margin-bottom: 8px;
+}
+
+.home-intro__paragraph {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-400);
+}
+
+.home-intro__emphasis {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+@media (max-width: 768px) {
+  .home-intro {
+    padding-block: 64px;
+  }
+}

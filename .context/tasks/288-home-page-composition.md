@@ -9,7 +9,8 @@ Compose all home sections (281–287) under `apps/landing` route `/` and verify 
 After every home section component lands (281–287), this task wires them into one page and runs the visual feedback workflow.
 
 ## Acceptance Criteria
-- [ ] `<home-page>` component renders sections in E2-locked order: hero → intro → selected-work → bio-card-grid → philosophy-strip → get-in-touch → footer-banner
+- [ ] `<home-page>` component renders sections in E2 §9 locked order: hero → bio-card-grid → selected-work → stack → story (intro) → get-in-touch → footer-banner. (Note: task 282 originally bridged hero → intro directly via placeholders; this task verifies the full 7-section composition with no placeholders left)
+- [ ] All 5 placeholder slots from task 282 (`<landing-home-section-placeholder>`) are replaced by their real components (284 / 283 / 285b / 286 / 287); zero placeholders rendered on `/`
 - [ ] Section spacing follows the 4px grid; B2.c lifts only on Selected Work + Get In Touch
 - [ ] Page passes `chrome-devtools` MCP screenshot pass per `.context/design/visual-feedback.md`
 - [ ] No console errors / SSR warnings on initial render
@@ -24,7 +25,7 @@ After every home section component lands (281–287), this task wires them into 
 - `apps/landing/src/app/app.routes.ts` (wire home as default)
 
 ## Dependencies
-- 281–287
+- 281–287, 285b
 
 ## Complexity: S
 
