@@ -1,0 +1,35 @@
+# Task: Landing — Blog Post Detail Renders Rich-Text Content
+
+## Status: pending
+
+## Goal
+Replace `marked.parse(content)` in the blog post detail page with `<redoc-rte-render>` consuming `BlogPost.contentHtml`.
+
+## Context
+Third wave of landing parser cleanup. Blog posts already render server-side; the swap is read-only on the FE.
+
+Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 6.
+
+## Acceptance Criteria
+- [ ] `post-detail.component.ts` no longer imports `marked` or any Markdown utility for the body. `marked` may stay in `package.json` for the Obsidian importer (task 318) but not in the runtime page bundle.
+- [ ] Template uses `<redoc-rte-render [html]="post().contentHtml">`.
+- [ ] Existing TOC + reading-progress-bar (Blog Post epic, Apr 2026) keep working. ToC selector should target the rendered headings (h2/h3) inside the RTE output container.
+- [ ] Shiki syntax highlighting for code blocks: decide same as task 313 — write-time (in `RichTextService`) or read-time. If write-time, applied during BE pipeline; if read-time, a small client-side pass after render.
+- [ ] No regression in /blog/:slug Lighthouse Perf score (existing E5 gate ≥ 80).
+
+## Technical Notes
+- Mark `marked` as a dynamic import only inside the Obsidian importer module so it's tree-shaken from the landing route bundle.
+- The existing reading-progress-bar uses the page scroll height — no change needed.
+- ToC scroll-spy uses heading IDs — confirm RTE headings include them (via task 313's `id` whitelist extension).
+
+## Files to Touch
+- `libs/landing/feature-blog/**/post-detail.component.{ts,html}`
+- `libs/landing/feature-blog/**/post-detail.component.spec.ts` (regression: no `marked` import)
+- `libs/landing/data-access/**` (BlogPost type: drop `content` markdown reads, use `contentHtml`)
+
+## Dependencies
+- 305 / 308 / 310 / 311
+
+## Complexity: S
+
+## Progress Log
