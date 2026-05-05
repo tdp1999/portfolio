@@ -13,6 +13,10 @@ export class ProjectDataService {
     return this.http.get<ProjectListItem[]>(`${this.baseUrl}/api/projects`).pipe(catchError(() => of([])));
   }
 
+  getFeatured(): Observable<ProjectDetail[]> {
+    return this.http.get<ProjectDetail[]>(`${this.baseUrl}/api/projects/featured`).pipe(catchError(() => of([])));
+  }
+
   getBySlug(slug: string): Observable<ProjectDetail | null> {
     return this.http.get<ProjectDetail>(`${this.baseUrl}/api/projects/${slug}`).pipe(catchError(() => of(null)));
   }

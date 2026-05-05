@@ -1,0 +1,108 @@
+/* Home — Selected Work section (B3.d Tabbed + mini gallery, B2.c lift). */
+
+.home-selected-work {
+  position: relative;
+  padding: 64px 0 80px;
+  background-color: var(--landing-ink-1);
+  border-top: 1px solid var(--landing-accent);
+
+  @media (min-width: 960px) {
+    padding: 96px 0 112px;
+  }
+}
+
+.home-selected-work__header {
+  margin-bottom: 32px;
+
+  @media (min-width: 960px) {
+    margin-bottom: 48px;
+  }
+}
+
+/* Variant E — mono rule row + sans bold heading + Newsreader italic deck. */
+
+.home-selected-work__rule-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.home-selected-work__num {
+  color: var(--landing-accent);
+}
+
+.home-selected-work__label {
+  color: var(--landing-text-400);
+}
+
+.home-selected-work__rule-sep {
+  color: var(--landing-text-600);
+}
+
+.home-selected-work__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: var(--landing-border);
+  margin-left: 8px;
+}
+
+.home-selected-work__heading {
+  display: block;
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  margin-bottom: 8px;
+}
+
+.home-selected-work__deck {
+  margin: 0;
+  max-width: 56ch;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-weight: 400;
+  /* 20/28 — sits between body-lg (17/28) and display-sm (32/40); on the 4-grid. */
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--landing-text-400);
+}
+
+.home-selected-work__tabs {
+  display: block;
+  border-bottom: 1px solid var(--landing-border);
+  margin-bottom: 32px;
+
+  @media (min-width: 960px) {
+    margin-bottom: 48px;
+  }
+}
+
+.home-selected-work__panel {
+  /* Soft cross-fade on tab switch — honors the Considered motion tier. */
+  animation: home-selected-work-fade 180ms ease;
+}
+
+@keyframes home-selected-work-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-selected-work__footer {
+  margin: 48px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--landing-border);
+}

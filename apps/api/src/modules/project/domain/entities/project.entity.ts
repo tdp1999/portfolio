@@ -1,6 +1,12 @@
-import { BaseCrudEntity, SlugValue, TranslatableJson } from '@portfolio/shared/types';
+import { BaseCrudEntity, SlugValue, TranslatableJson, PartialTranslatableJson } from '@portfolio/shared/types';
 import { IProjectProps, ICreateProjectPayload, IUpdateProjectPayload, ContentStatus } from '../project.types';
 import { ProjectLink, ProjectLinkProps } from '../value-objects';
+
+/** Per-locale merge: undefined patch keeps current; partial patch overlays current. */
+function mergeTranslatable(current: TranslatableJson, patch: PartialTranslatableJson | undefined): TranslatableJson {
+  if (!patch) return current;
+  return { ...current, ...patch };
+}
 
 export class Project extends BaseCrudEntity<IProjectProps> {
   private constructor(props: IProjectProps) {
@@ -105,11 +111,16 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       ...this.props,
       title,
       slug,
-      oneLiner: data.oneLiner ?? this.props.oneLiner,
-      description: data.description ?? this.props.description,
-      motivation: data.motivation ?? this.props.motivation,
-      role: data.role ?? this.props.role,
-      body: data.body !== undefined ? data.body : this.props.body,
+      oneLiner: mergeTranslatable(this.props.oneLiner, data.oneLiner),
+      description: mergeTranslatable(this.props.description, data.description),
+      motivation: mergeTranslatable(this.props.motivation, data.motivation),
+      role: mergeTranslatable(this.props.role, data.role),
+      body:
+        data.body === undefined
+          ? this.props.body
+          : data.body === null
+            ? null
+            : mergeTranslatable(this.props.body ?? { en: '', vi: '' }, data.body),
       startDate: data.startDate ?? this.props.startDate,
       endDate: data.endDate !== undefined ? data.endDate : this.props.endDate,
       status: data.status ?? this.props.status,

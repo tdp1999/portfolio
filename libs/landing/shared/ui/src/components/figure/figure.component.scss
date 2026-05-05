@@ -19,6 +19,13 @@
   }
 }
 
+/* Cropped variant — image fills the aspect-ratio frame (gallery cells). */
+.landing-figure--cropped .landing-figure__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .landing-figure__caption {
   display: inline-flex;
   flex-wrap: wrap;

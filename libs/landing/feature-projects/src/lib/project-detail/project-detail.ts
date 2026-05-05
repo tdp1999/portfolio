@@ -6,8 +6,8 @@ import { switchMap } from 'rxjs';
 import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
+import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
 import type { Locale } from '@portfolio/shared/types';
-import type { ProjectHighlight } from '@portfolio/landing/shared/data-access';
 
 function formatMonth(dateStr: string): string {
   const date = new Date(dateStr);
@@ -22,7 +22,7 @@ function formatDateRange(startDate: string, endDate: string | null): string {
 
 @Component({
   selector: 'landing-project-detail',
-  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent],
+  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent, TranslatablePipe],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
 })
@@ -61,12 +61,6 @@ export class ProjectDetailComponent {
     });
   }
 
-  getLocalized(field: { en: string; vi: string } | null): string {
-    if (!field) return '';
-    return getLocalized(field, this.locale());
-  }
-
-  getHighlightField(highlight: ProjectHighlight, field: 'challenge' | 'approach' | 'outcome'): string {
-    return getLocalized(highlight[field], this.locale());
-  }
+  sourceUrl = computed(() => this.project()?.links?.find((l) => l.type === 'repo')?.url ?? null);
+  projectUrl = computed(() => this.project()?.links?.find((l) => l.type === 'demo')?.url ?? null);
 }

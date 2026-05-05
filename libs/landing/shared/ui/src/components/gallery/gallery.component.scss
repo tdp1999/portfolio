@@ -1,0 +1,60 @@
+/* landing-gallery — count-aware curated layouts (1–4 images). */
+/* Cell aspect-ratios are passed through `<landing-figure [aspectRatio]>`; */
+/* this stylesheet only owns grid-track shape per count. */
+
+.landing-gallery {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.landing-gallery[data-count='1'] {
+  grid-template-columns: 1fr;
+  grid-template-areas: 'cell-1';
+}
+
+.landing-gallery[data-count='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: 'cell-1 cell-2';
+}
+
+/* Image 1 spans both rows in the left column; 2 & 3 stack on the right. */
+.landing-gallery[data-count='3'] {
+  grid-template-columns: 3fr 2fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'cell-1 cell-2'
+    'cell-1 cell-3';
+}
+
+.landing-gallery[data-count='4'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'cell-1 cell-2'
+    'cell-3 cell-4';
+}
+
+/* Make the figure (and its frame) fill the grid cell so 4:3 ratios in layout-3 */
+/* layout-3's hero stretch to both rows. */
+.landing-gallery__cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Mobile collapse — single column, taller cells. */
+@media (max-width: 639px) {
+  .landing-gallery,
+  .landing-gallery[data-count='1'],
+  .landing-gallery[data-count='2'],
+  .landing-gallery[data-count='3'],
+  .landing-gallery[data-count='4'] {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+  }
+
+  .landing-gallery__cell {
+    grid-area: auto !important;
+  }
+}

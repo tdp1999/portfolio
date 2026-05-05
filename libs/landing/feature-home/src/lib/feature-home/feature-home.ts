@@ -4,13 +4,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HomeHeroComponent } from '../hero/home-hero.component';
 import { HomeIntroComponent } from '../intro/home-intro.component';
 import { HomeSectionPlaceholderComponent } from '../placeholders/home-section-placeholder.component';
+import { HomeSelectedWorkComponent } from '../selected-work/home-selected-work.component';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale } from '@portfolio/shared/types';
 
 @Component({
   selector: 'landing-feature-home',
-  imports: [HomeHeroComponent, HomeIntroComponent, HomeSectionPlaceholderComponent],
+  imports: [HomeHeroComponent, HomeIntroComponent, HomeSectionPlaceholderComponent, HomeSelectedWorkComponent],
   templateUrl: './feature-home.html',
   styleUrl: './feature-home.scss',
 })

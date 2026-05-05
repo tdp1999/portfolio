@@ -4,8 +4,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   selector: 'landing-figure',
   standalone: true,
   template: `
-    <figure class="landing-figure">
-      <div class="landing-figure__frame">
+    <figure class="landing-figure" [class.landing-figure--cropped]="!!aspectRatio()">
+      <div class="landing-figure__frame" [style.aspect-ratio]="aspectRatio() || null">
         <img
           [attr.src]="src()"
           [attr.srcset]="srcset() || null"
@@ -36,6 +36,12 @@ export class FigureComponent {
   readonly figureNumber = input<number | null>(null);
   readonly srcset = input<string>('');
   readonly preload = input<boolean>(false);
+  /**
+   * Optional CSS aspect-ratio for the frame (e.g. `'4 / 3'`, `'16 / 9'`).
+   * When set, the image fills the frame via `object-fit: cover` (used by gallery
+   * layouts that need uniform cells). Default: unset → natural image ratio.
+   */
+  readonly aspectRatio = input<string>('');
 
   protected readonly hasCaption = computed(() => this.caption().length > 0);
 

@@ -1,5 +1,10 @@
 import { z } from 'zod/v4';
-import { TranslatableSchema, PaginatedQuerySchema, nonEmptyPartial } from '@portfolio/shared/utils';
+import {
+  TranslatableSchema,
+  PartialTranslatableSchema,
+  PaginatedQuerySchema,
+  nonEmptyPartial,
+} from '@portfolio/shared/utils';
 import { ContentStatus } from '@prisma/client';
 import { DisplayOrderSchema, TitleSchema, UrlSchema } from '@portfolio/shared/validation/zod';
 import { LIMITS } from '@portfolio/shared/validation';
@@ -46,13 +51,16 @@ export type CreateProjectDto = z.infer<typeof CreateProjectSchema>;
 
 // --- UpdateProjectSchema ---
 
+// UPDATE allows partial-locale edits (PATCH semantics): user can save only `en`
+// or only `vi` for any translatable field without re-sending the other locale.
+// CREATE still requires both locales below.
 const UpdateProjectBaseSchema = z.object({
   title: TitleSchema,
-  oneLiner: TranslatableSchema,
-  description: TranslatableSchema,
-  motivation: TranslatableSchema,
-  role: TranslatableSchema,
-  body: TranslatableSchema.nullable(),
+  oneLiner: PartialTranslatableSchema,
+  description: PartialTranslatableSchema,
+  motivation: PartialTranslatableSchema,
+  role: PartialTranslatableSchema,
+  body: PartialTranslatableSchema.nullable(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   status: z.nativeEnum(ContentStatus),

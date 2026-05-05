@@ -2,13 +2,17 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { ViewportScroller } from '@angular/common';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideIcons, lucideProvider } from '@portfolio/landing/shared/ui';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(
+      withEventReplay(),
+      // Reuse SSR-fetched HTTP responses on client → no double GET on hydration.
+      withHttpTransferCacheOptions({ includePostRequests: false, filter: () => true })
+    ),
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       appRoutes,

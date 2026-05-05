@@ -1,0 +1,68 @@
+<div class="selected-work-fallback">
+  <div class="selected-work-fallback__left">
+    @if (eyebrow().length > 0) {
+      <landing-eyebrow [label]="eyebrow()" />
+    }
+
+    <h3 class="selected-work-fallback__title">{{ title() }}</h3>
+
+    @if (descriptionRuns().length > 0) {
+      <p class="selected-work-fallback__desc">
+        @for (run of descriptionRuns(); track $index) {
+          @if (run.italic) {
+            <em class="selected-work-fallback__desc-em">{{ run.text }}</em>
+          } @else {
+            <span>{{ run.text }}</span>
+          }
+        }
+      </p>
+    }
+
+    @if (links().length > 0) {
+      <ul class="selected-work-fallback__links">
+        @for (link of links(); track link.href) {
+          <li>
+            <landing-link [href]="link.href" [external]="link.external" [arrow]="true">
+              {{ link.label }}
+            </landing-link>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (skills().length > 0) {
+      <ul class="selected-work-fallback__chips">
+        @for (skill of skills(); track skill.slug) {
+          <li>
+            <landing-chip [label]="skill.name" size="sm" />
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="selected-work-fallback__right">
+    @if (extendedRuns().length > 0) {
+      <p class="selected-work-fallback__extended">
+        @for (run of extendedRuns(); track $index) {
+          @if (run.italic) {
+            <em class="selected-work-fallback__desc-em">{{ run.text }}</em>
+          } @else {
+            <span>{{ run.text }}</span>
+          }
+        }
+      </p>
+    }
+
+    @if (decisions().length > 0) {
+      <dl class="selected-work-fallback__decisions">
+        @for (item of decisions(); track $index) {
+          <div class="selected-work-fallback__decision-row">
+            <dt class="selected-work-fallback__decision-key">{{ item.label }}</dt>
+            <dd class="selected-work-fallback__decision-val">{{ item.text }}</dd>
+          </div>
+        }
+      </dl>
+    }
+  </div>
+</div>

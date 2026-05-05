@@ -22,6 +22,14 @@ export type ProjectImage = {
   alt: string | null;
 };
 
+export type ProjectLinkType = 'repo' | 'demo' | 'case-study' | 'doc' | 'post';
+
+export type ProjectLink = {
+  label: string;
+  url: string;
+  type: ProjectLinkType;
+};
+
 export type ProjectDetail = {
   slug: string;
   title: string;
@@ -29,10 +37,10 @@ export type ProjectDetail = {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  body: TranslatableJson | null;
   startDate: string;
   endDate: string | null;
-  sourceUrl: string | null;
-  projectUrl: string | null;
+  links: ProjectLink[];
   thumbnailUrl: string | null;
   featured: boolean;
   highlights: ProjectHighlight[];

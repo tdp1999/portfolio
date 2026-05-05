@@ -8,6 +8,12 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  /* Mono is the canonical link family for landing — terminal/path-style voice */
+  /* matches the rest of the system (eyebrows, captions, segmented, footer). */
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  letter-spacing: var(--landing-tracking-mono);
   color: var(--landing-text);
   text-decoration: none;
   transition: color 150ms ease;
@@ -57,8 +63,10 @@
   opacity: 0;
 }
 
+/* Indigo lead arrow at rest — the link affordance (project rule: no underlines, */
+/* color/iconography only). At hover the lift animation + ghost trail take over. */
 .landing-link__arrow--lead {
-  color: currentColor;
+  color: var(--landing-accent);
   opacity: 1;
 }
 

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -73,6 +73,7 @@ export class DdlComponent {
   private readonly iconProvider = inject(ICON_PROVIDER);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
 
   readonly iconNames = this.iconProvider.getSupportedIcons();
   readonly isDark = computed(() => this.themeService.theme() === 'dark');
@@ -100,12 +101,16 @@ export class DdlComponent {
       const value = sig();
       const current = this.route.snapshot.queryParamMap.get(key);
       if (current === value) return;
-      void this.router.navigate([], {
+      // Use Location.replaceState — router.navigate triggers
+      // `withInMemoryScrolling`'s scrollPositionRestoration which jumps to top
+      // on every query-param change, even with replaceUrl. We only need the URL
+      // to mirror state, not a full navigation.
+      const tree = this.router.createUrlTree([], {
         relativeTo: this.route,
         queryParams: { [key]: value },
         queryParamsHandling: 'merge',
-        replaceUrl: true,
       });
+      this.location.replaceState(this.router.serializeUrl(tree));
     });
     return sig;
   }

@@ -10,6 +10,7 @@ export * from './components/chip';
 export * from './components/eyebrow';
 export * from './components/status-dot';
 export * from './components/figure';
+export * from './components/gallery';
 export * from './components/pull-quote';
 export * from './components/section-rule';
 export * from './components/segmented';

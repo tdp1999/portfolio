@@ -1,0 +1,71 @@
+/* Selected Work — gallery tab content (B3.d 40/60 split). */
+
+.selected-work-tab {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @media (min-width: 960px) {
+    grid-template-columns: 40fr 60fr;
+    gap: 48px;
+  }
+}
+
+.selected-work-tab__left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.selected-work-tab__title {
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-lg);
+  line-height: var(--landing-display-lg-lh);
+  color: var(--landing-text-300);
+  margin: 0;
+  letter-spacing: var(--landing-tracking-tight);
+}
+
+.selected-work-tab__desc {
+  font-family: var(--landing-font-body);
+  /* body-md (15/24) — supporting copy in a 40% column reads at hero scale (17/28) */
+  /* otherwise; that competes with the project title and feels denser than hero text. */
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.selected-work-tab__desc-em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+.selected-work-tab__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selected-work-tab__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selected-work-tab__right {
+  min-width: 0;
+}

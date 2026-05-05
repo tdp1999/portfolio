@@ -27,14 +27,14 @@
 
         <!-- Title block -->
         <h1 class="text-page-title text-text mb-2">{{ project.title }}</h1>
-        <p class="text-lg text-text-secondary mb-4">{{ getLocalized(project.oneLiner) }}</p>
+        <p class="text-lg text-text-secondary mb-4">{{ project.oneLiner | translatable: locale() : '' }}</p>
 
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
           <span class="text-sm text-text-secondary">{{ dateRange() }}</span>
 
-          @if (project.sourceUrl) {
+          @if (sourceUrl()) {
             <a
-              [href]="project.sourceUrl"
+              [href]="sourceUrl()"
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-primary hover:underline flex items-center gap-1"
@@ -44,9 +44,9 @@
             </a>
           }
 
-          @if (project.projectUrl) {
+          @if (projectUrl()) {
             <a
-              [href]="project.projectUrl"
+              [href]="projectUrl()"
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-primary hover:underline flex items-center gap-1"
@@ -67,23 +67,23 @@
         }
 
         <!-- Motivation -->
-        @if (getLocalized(project.motivation)) {
+        @if (project.motivation | translatable: locale() : ''; as motivation) {
           <div class="mb-12">
             <h2 class="text-section-heading text-text mb-4">Why I built this</h2>
-            <p class="text-text-secondary leading-relaxed">{{ getLocalized(project.motivation) }}</p>
+            <p class="text-text-secondary leading-relaxed">{{ motivation }}</p>
           </div>
         }
 
         <!-- Overview + Role -->
         <div class="mb-12">
-          @if (getLocalized(project.description)) {
+          @if (project.description | translatable: locale() : ''; as description) {
             <h2 class="text-section-heading text-text mb-4">Overview</h2>
-            <p class="text-text-secondary leading-relaxed mb-6">{{ getLocalized(project.description) }}</p>
+            <p class="text-text-secondary leading-relaxed mb-6">{{ description }}</p>
           }
 
-          @if (getLocalized(project.role)) {
+          @if (project.role | translatable: locale() : ''; as role) {
             <h3 class="text-base font-medium text-text mb-2">My Role</h3>
-            <p class="text-text-secondary leading-relaxed">{{ getLocalized(project.role) }}</p>
+            <p class="text-text-secondary leading-relaxed">{{ role }}</p>
           }
         </div>
       </div>
@@ -105,17 +105,23 @@
               <div class="highlight-card">
                 <div class="mb-4">
                   <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Challenge</h3>
-                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'challenge') }}</p>
+                  <p class="text-text-secondary leading-relaxed">
+                    {{ highlight.challenge | translatable: locale() : '' }}
+                  </p>
                 </div>
 
                 <div class="mb-4">
                   <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Approach</h3>
-                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'approach') }}</p>
+                  <p class="text-text-secondary leading-relaxed">
+                    {{ highlight.approach | translatable: locale() : '' }}
+                  </p>
                 </div>
 
                 <div class="mb-4">
                   <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Outcome</h3>
-                  <p class="text-text-secondary leading-relaxed">{{ getHighlightField(highlight, 'outcome') }}</p>
+                  <p class="text-text-secondary leading-relaxed">
+                    {{ highlight.outcome | translatable: locale() : '' }}
+                  </p>
                 </div>
 
                 @if (highlight.codeUrl) {

@@ -1,4 +1,4 @@
-import { IBaseAuditProps, TranslatableJson } from '@portfolio/shared/types';
+import { IBaseAuditProps, TranslatableJson, PartialTranslatableJson } from '@portfolio/shared/types';
 import type { ProjectLinkProps } from './value-objects';
 
 export const CONTENT_STATUS = {
@@ -54,11 +54,13 @@ export interface ICreateProjectPayload {
 
 export interface IUpdateProjectPayload {
   title?: string;
-  oneLiner?: TranslatableJson;
-  description?: TranslatableJson;
-  motivation?: TranslatableJson;
-  role?: TranslatableJson;
-  body?: TranslatableJson | null;
+  // Translatable fields accept partial-locale payloads on update — `{ en: 'X' }`
+  // merges with stored `vi`. Empty object `{}` is rejected at the DTO layer.
+  oneLiner?: PartialTranslatableJson;
+  description?: PartialTranslatableJson;
+  motivation?: PartialTranslatableJson;
+  role?: PartialTranslatableJson;
+  body?: PartialTranslatableJson | null;
   startDate?: Date;
   endDate?: Date | null;
   status?: ContentStatus;
