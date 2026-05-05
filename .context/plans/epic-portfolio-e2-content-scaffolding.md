@@ -101,7 +101,9 @@ When choosing, ask:
 
 ## 2. 90s Story Arc
 
-### Status: **LOCKED 2026-05-01.**
+### Status: **LOCKED 2026-05-01 — voice re-questioned 2026-05-04 (rewrite pending).**
+
+> **Voice re-review note (2026-05-04):** Owner re-read the locked copy during E5 implementation and flagged it as too literary / "văn vẻ" — doesn't match natural register. Specific phrases under suspicion: opener "the same instinct shows up", closing hedge "if there is one... share a way of working", and the "earned the breath" framing. Copy still renders unchanged from `Profile.bioLong` until rewrite lands. New variants needed before re-lock.
 
 ### Locked
 
@@ -433,3 +435,4 @@ The api/console schema mostly supports v1 content. Three small additive migratio
 - 2026-05-01 — Section 7 (Get in Touch) LOCKED. V2 with author edits — dropped "better" (no-resentment) and explicit hours (negotiable).
 - 2026-05-01 — Section 8 (Footer Banner) LOCKED. V2 — "There's more, if you're still here." + 5 page links.
 - 2026-05-01 — **E2 closed.** All home-page sections drafted and locked. Colophon section content deferred to E5/E6 (depends on E4 visual outcome). Other v1 pages (Experience, Projects detail, Blog, Uses, Contact form) get their own minor copy passes during implementation; bulk of content lift is done.
+- 2026-05-04 — **§2 voice re-opened (E2 partially un-closed).** Owner flagged 90s Story Arc as too literary during E5 task 282. Code renders from `Profile.bioLong` unchanged; rewrite pending. Italic emphasis convention adopted: `*phrase*` in markdown source → Newsreader serif italic at render. Note also: factual prose readout (plain CV-flavor "name, role, years, location") was discussed and **deferred** — Hero + Bio Card Grid Card A judged sufficient for v1; revisit after home complete.

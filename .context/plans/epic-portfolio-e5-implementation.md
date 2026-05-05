@@ -37,6 +37,15 @@ Pulled here as one-glance context. Source of truth lives in `epic-portfolio-e4-u
 - Imagery: real screenshots only, beautified via mockup tool with palette-constrained backgrounds. Annotated figures via Excalidraw.
 - Hero: B1.e Type + blueprint background. Header: H2 Plain Text transparent. Section transitions: B2.c Mixed. Selected Work: B3.d Tabbed + Mini Gallery (B3.b fallback). Project detail: D3.c Sticky Sidebar.
 
+## Content authoring rule (applies to every task in E5+)
+
+**All landing prose must come from API fields, not hardcoded strings in components.** Source of truth is `Profile.*` / `Project.*` JSONB columns (translatable EN/VI), edited by Owner in Console (per task 277b). Components own structure, typography classes, and inline-emphasis parsing only.
+
+- Italic emphasis convention: author writes `*phrase*` in the markdown source; component renders it as Newsreader serif italic. Bold convention TBD (likely `**phrase**` once a section needs it).
+- New copy = new field on schema → `prisma-migrate` skill → Console form (task 277b) → render. Never paste copy into a `*.copy.ts` constant.
+- Reviewers must reject any task PR that ships hardcoded landing prose.
+- The "90% landing copy editable from Console" goal in task 277b depends on this rule holding everywhere.
+
 ## Phases
 
 Each phase produces something runnable and reviewable. Phases run sequentially because later phases depend on earlier scaffolding, but tasks **inside** a phase parallelize where called out.
@@ -92,6 +101,10 @@ Compose from primitives. Order matches scroll order. Each section is its own com
 - **P4.6** `home-get-in-touch` — indigo top-border lift (B2.c important section).
 - **P4.7** `home-footer-banner` ("There's more, if you're still here" — multi-page entry).
 - **P4.8** `home-footer-signature` (mono caps line).
+
+- **P4.5b** `home-stack` (E2 §4 / layout §5) — Tier 1 situated prose from `Profile.stackIntro` + Tier 2 grouped pills under 6 Skill umbrellas. Filed as task `285b-home-stack.md` on 2026-05-04 to close the gap discovered during task 282.
+
+Task 282 currently uses `<landing-home-section-placeholder>` to reserve the §5 slot; replace it when 285b lands.
 
 Verify against `.context/design/visual-feedback.md` workflow (chrome-devtools MCP screenshot per section).
 
@@ -163,3 +176,5 @@ Exit: `pnpm build:landing` produces a deployable artifact, all routes prerender 
 
 - 2026-05-02 — Epic created. Phases 1–7 outlined. E3 descoped and folded into Phase 6 (content authoring). Direction inputs from E4 referenced. 5 schema migrations enumerated. Exit criteria + risks logged. Content-store decision deferred to start of Phase 6 with Markdown-in-repo as default.
 - 2026-05-02 — Broken down via `/breakdown` skill. 29 tasks created (`.context/tasks/274-...` through `302-...`). Domain.md updated with new VOs (ProjectLink, ProjectSection, ProjectTocAnchor) + Skill.displayGroup field + 3 new PRJ rules (PRJ-008/009/010). Recommended start: 274-landing-tokens-and-fonts.
+- 2026-05-04 — Content authoring rule formalized (see top of epic). Triggered by task 282 (home-intro) initially shipping hardcoded copy; refactored to consume `Profile.bioLong` from API. Italic-emphasis convention `*phrase*` adopted. P4 gap surfaced: `home-stack` section missing from task list — flagged inline in Phase 4 outline.
+- 2026-05-04 — Task `285b-home-stack.md` created to close the P4 stack gap. Bold convention `**phrase**` to be formalized in this epic's content rule when 285b lands (Stack is the first section that uses it).

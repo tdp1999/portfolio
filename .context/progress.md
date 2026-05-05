@@ -236,13 +236,14 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 ### Phase 4 — Home page sections
 
 - [x] 281-home-hero (M) — deps: 274, 278, 279, 277 ✓
-- [ ] 282-home-intro (S) — deps: 274, 280
-- [ ] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277
+- [x] 282-home-intro (S) — deps: 274, 280 ✓
+- [x] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277 ✓
 - [ ] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277
 - [ ] 285-home-philosophy-strip (S) — deps: 274, 280
+- [ ] 285b-home-stack (M) — deps: 274, 278, 279, 277, 277b
 - [ ] 286-home-get-in-touch (S) — deps: 274, 278
 - [ ] 287-home-footer-banner (S) — deps: 274, 278
-- [ ] 288-home-page-composition (S) — deps: 281–287
+- [ ] 288-home-page-composition (S) — deps: 281–287, 285b
 
 ### Phase 5 — Sub-pages
 
@@ -267,21 +268,56 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [ ] 301-landing-bundle-and-lighthouse-smoke (M) — deps: 300
 - [ ] 302-landing-sitemap-and-robots (S) — deps: 300
 
+## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
+
+From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v0.1.0) blocks tasks 305–319 below.
+
+### Phase 2 — Schema migrations
+- [ ] 305-rte-prisma-migrations (L)
+
+### Phase 3 — `redoc-rte` shared libs
+- [ ] 306-rte-contract-lib (S) — deps: ext doc-engine v0.1.0
+- [ ] 307-rte-tiptap-concrete (M) — deps: 306, ext doc-engine v0.1.0
+- [ ] 308-rte-renderer-lib (S) — deps: 306
+- [ ] 309-rte-textarea-fallback (S) — deps: 306
+
+### Phase 4 — BE pipeline
+- [ ] 310-rte-be-service (M) — deps: 305, 307, 308
+
+### Phase 5 — Console swap
+- [ ] 311-rte-console-editor-swap (L) — deps: 307, 310
+
+### Phase 6 — Landing renderer
+- [ ] 312-rte-landing-home-intro-render (S) — deps: 305, 308, 310, 311
+- [ ] 313-rte-landing-project-detail-render (M) — deps: 290, 305, 308, 310, 311
+- [ ] 314-rte-landing-blog-post-render (S) — deps: 305, 308, 310, 311
+
+### Phase 7 — Image-ref + MediaPicker
+- [ ] 315-rte-image-ref-mediapicker (M) — deps: 311
+- [ ] 316-rte-landing-image-ref-hydrate (M) — deps: 308, 315
+
+### Phase 8 — Markdown short fields + Obsidian importer
+- [ ] 317-rte-markdown-pipe-and-parser-cleanup (M) — deps: 312, 313, 314, 285b
+- [ ] 318-rte-obsidian-importer-migration (S) — deps: 307, 310, 317
+
+### Cross-cutting — Migration script
+- [ ] 319-rte-migrate-editor-script (S) — deps: 305, 307, 310
+
 ---
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 started. **281-home-hero done** (B1.e type-led hero with blueprint background, console-driven copy). Recommended next: **282-home-intro**.
+**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 in progress. **281/282/283 done** (283 = home Selected Work tabs + 40/60 mini-gallery with B3.b text-only fallback). Recommended next: any of 284/285/285b.
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 293     |
+| Done (archived)           | 295     |
 | In Progress               | 0       |
-| Pending                   | 23      |
-| **Total Created**         | **316** |
+| Pending                   | 37      |
+| **Total Created**         | **332** |
 | Epics completed           | 29      |
 
 ## Notes
