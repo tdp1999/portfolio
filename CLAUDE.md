@@ -47,6 +47,7 @@ Use these skills for specific workflows. More will be added over time.
 - `DESIGN-landing.md` - Stitch-compatible AI-readable spec for landing
 - `DESIGN-console.md` - Stitch-compatible AI-readable spec for console
 - `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)
+- `landing-ssr.md` - **Read before touching landing data services, fonts, or nav links.** SSR hydration rules: HTTP transfer cache, FOUT preload recipe, `HydrationSafeActiveDirective` usage
 - `testing-guide.md` - TDD workflow and patterns
 - `commands.md` - All dev/build/test commands
 - `getting-started.md` - Prerequisites, setup, and common tasks
