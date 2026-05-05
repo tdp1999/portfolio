@@ -1,12 +1,13 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { HydrationSafeActiveDirective } from '@portfolio/landing/shared/ui';
 import { SidebarModule } from '@portfolio/shared/ui/sidebar';
 
 @Component({
   selector: 'app-ddl-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, SidebarModule],
+  imports: [RouterLink, HydrationSafeActiveDirective, SidebarModule],
   host: { class: 'block h-dvh' },
   template: `
     <ui-sidebar-provider class="h-dvh bg-background">
@@ -46,7 +47,8 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                 <a
                   ui-sidebar-menu-button
                   routerLink="/ddl/layout"
-                  routerLinkActive="font-semibold"
+                  [hydrationSafeActive]="'/ddl/layout'"
+                  [hydrationSafeActiveClass]="'font-semibold'"
                   tooltip="Dashboard"
                   data-testid="menu-dashboard"
                 >
@@ -210,9 +212,7 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
                     <button ui-sidebar-menu-sub-button>Monthly Overview</button>
                   </li>
                   <li uiSidebarMenuSubItem>
-                    <button ui-sidebar-menu-sub-button>
-                      Quarterly Performance and Revenue Analysis Report
-                    </button>
+                    <button ui-sidebar-menu-sub-button>Quarterly Performance and Revenue Analysis Report</button>
                   </li>
                   <li uiSidebarMenuSubItem>
                     <button ui-sidebar-menu-sub-button>Annual Summary</button>
@@ -390,10 +390,9 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
         </div>
         <div class="p-6">
           <p class="text-text-secondary" data-testid="main-content">
-            This demo stress-tests the sidebar library with a realistic app layout: workspace
-            selector, multiple menu groups, submenus with badges, collapsible groups, team members
-            with status indicators, and a user profile footer. Try toggling via the trigger button,
-            the rail, or resize to mobile.
+            This demo stress-tests the sidebar library with a realistic app layout: workspace selector, multiple menu
+            groups, submenus with badges, collapsible groups, team members with status indicators, and a user profile
+            footer. Try toggling via the trigger button, the rail, or resize to mobile.
           </p>
         </div>
       </ui-sidebar-inset>

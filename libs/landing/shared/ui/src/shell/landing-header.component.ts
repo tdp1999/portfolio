@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { LandingThemeToggleComponent } from '../theme';
 import { ContainerComponent } from '../components/container';
+import { HydrationSafeActiveDirective } from './hydration-safe-active.directive';
 
 interface NavItem {
   label: string;
@@ -23,7 +24,7 @@ const SCROLL_THRESHOLD = 8;
   selector: 'landing-header',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, LandingThemeToggleComponent, ContainerComponent],
+  imports: [RouterLink, HydrationSafeActiveDirective, LandingThemeToggleComponent, ContainerComponent],
   styleUrl: './landing-header.component.scss',
   host: {
     class: 'sticky top-0 z-50 block w-full',
@@ -48,8 +49,8 @@ const SCROLL_THRESHOLD = 8;
                 @for (item of navItems; track item.path) {
                   <a
                     [routerLink]="item.path"
-                    routerLinkActive="nav-link--active"
-                    [routerLinkActiveOptions]="{ exact: !!item.exact }"
+                    [hydrationSafeActive]="item.path"
+                    [hydrationSafeActiveExact]="!!item.exact"
                     class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
                   >
                     {{ item.label }}
@@ -95,8 +96,8 @@ const SCROLL_THRESHOLD = 8;
               @for (item of navItems; track item.path) {
                 <a
                   [routerLink]="item.path"
-                  routerLinkActive="nav-link--active"
-                  [routerLinkActiveOptions]="{ exact: !!item.exact }"
+                  [hydrationSafeActive]="item.path"
+                  [hydrationSafeActiveExact]="!!item.exact"
                   class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
                 >
                   {{ item.label }}
