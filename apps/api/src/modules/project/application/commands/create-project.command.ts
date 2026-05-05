@@ -26,7 +26,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
     const { success, data, error } = CreateProjectSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: ProjectErrorCode.NOT_FOUND,
+        errorCode: ProjectErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Project creation validation failed',
       });

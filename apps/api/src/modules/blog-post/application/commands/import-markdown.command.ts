@@ -32,7 +32,7 @@ export class ImportMarkdownHandler implements ICommandHandler<ImportMarkdownComm
     const { success, data, error } = ImportMarkdownSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: BlogPostErrorCode.NOT_FOUND,
+        errorCode: BlogPostErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Import markdown validation failed',
       });

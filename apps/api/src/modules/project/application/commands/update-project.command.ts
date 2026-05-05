@@ -29,7 +29,7 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProjectComman
     const { success, data, error } = UpdateProjectSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: ProjectErrorCode.NOT_FOUND,
+        errorCode: ProjectErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Project update validation failed',
       });

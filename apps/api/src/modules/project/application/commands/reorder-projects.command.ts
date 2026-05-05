@@ -23,7 +23,7 @@ export class ReorderProjectsHandler implements ICommandHandler<ReorderProjectsCo
     const { success, data, error } = ReorderProjectsSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: ProjectErrorCode.NOT_FOUND,
+        errorCode: ProjectErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Reorder validation failed',
       });

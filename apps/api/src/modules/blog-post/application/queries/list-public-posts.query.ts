@@ -28,7 +28,7 @@ export class ListPublicPostsHandler implements IQueryHandler<ListPublicPostsQuer
     const { success, data, error } = PublicBlogPostQuerySchema.safeParse(query.params);
     if (!success)
       throw ValidationError(error, {
-        errorCode: BlogPostErrorCode.NOT_FOUND,
+        errorCode: BlogPostErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'List public blog posts validation failed',
       });

@@ -25,7 +25,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     const { success, data, error } = CreateBlogPostSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: BlogPostErrorCode.NOT_FOUND,
+        errorCode: BlogPostErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Blog post creation validation failed',
       });

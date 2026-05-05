@@ -27,7 +27,7 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
     const { success, data, error } = UpdateBlogPostSchema.safeParse(command.dto);
     if (!success)
       throw ValidationError(error, {
-        errorCode: BlogPostErrorCode.NOT_FOUND,
+        errorCode: BlogPostErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'Blog post update validation failed',
       });

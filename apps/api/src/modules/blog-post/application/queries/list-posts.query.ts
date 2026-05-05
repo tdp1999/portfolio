@@ -20,7 +20,7 @@ export class ListPostsHandler implements IQueryHandler<ListPostsQuery> {
     const { success, data, error } = BlogPostQuerySchema.safeParse(query.params);
     if (!success)
       throw ValidationError(error, {
-        errorCode: BlogPostErrorCode.NOT_FOUND,
+        errorCode: BlogPostErrorCode.INVALID_INPUT,
         layer: ErrorLayer.APPLICATION,
         remarks: 'List blog posts validation failed',
       });
