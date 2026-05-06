@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HydrationSafeActiveDirective } from '@portfolio/landing/shared/ui';
 import { SidebarModule } from '@portfolio/shared/ui/sidebar';
@@ -380,13 +379,6 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
         <div class="flex items-center gap-2 border-b border-border px-4 py-2">
           <ui-sidebar-trigger data-testid="inset-trigger" />
           <h2 class="text-lg font-semibold text-text">Sidebar Layout Demo</h2>
-          <button
-            class="ml-auto px-3 py-1 rounded border border-border text-sm text-text-secondary hover:text-text"
-            (click)="toggleDark()"
-            data-testid="dark-toggle"
-          >
-            {{ isDark() ? 'Light' : 'Dark' }}
-          </button>
         </div>
         <div class="p-6">
           <p class="text-text-secondary" data-testid="main-content">
@@ -400,9 +392,6 @@ import { SidebarModule } from '@portfolio/shared/ui/sidebar';
   `,
 })
 export class DdlLayoutComponent {
-  isDark = signal(false);
-  private readonly document = inject(DOCUMENT);
-
   readonly teamMembers = [
     { name: 'Alice Chen', initials: 'AC', color: '#6366f1', online: true },
     { name: 'Bob Martinez', initials: 'BM', color: '#ec4899', online: true },
@@ -411,9 +400,4 @@ export class DdlLayoutComponent {
     { name: 'Eve Johnson', initials: 'EJ', color: '#8b5cf6', online: false },
     { name: 'Frank Lee', initials: 'FL', color: '#ef4444', online: true },
   ];
-
-  toggleDark(): void {
-    this.isDark.update((v) => !v);
-    this.document.documentElement.classList.toggle('dark', this.isDark());
-  }
 }

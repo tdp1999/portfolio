@@ -42,6 +42,10 @@ export const appRoutes: Route[] = [
         path: 'backgrounds',
         loadComponent: () => import('./pages/ddl/backgrounds').then((m) => m.BackgroundsPage),
       },
+      {
+        path: 'bio-card-grid',
+        loadComponent: () => import('./pages/ddl/bio-card-grid').then((m) => m.BioCardGridPage),
+      },
     ],
   },
   {

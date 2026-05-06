@@ -70,7 +70,7 @@ const SCROLL_THRESHOLD = 8;
               </button>
 
               <span
-                class="hidden items-center gap-1 rounded border border-landing-border px-2 py-1 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
+                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
                 aria-hidden="true"
               >
                 <kbd class="font-mono">⌘</kbd>
@@ -124,7 +124,7 @@ const SCROLL_THRESHOLD = 8;
               </a>
 
               <span
-                class="hidden items-center gap-1 rounded border border-landing-border px-2 py-1 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
+                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
                 aria-hidden="true"
               >
                 <kbd class="font-mono">⌘</kbd>

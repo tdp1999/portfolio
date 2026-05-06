@@ -1,0 +1,464 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+        ddl · bio card grid (task 284)
+      </p>
+      <h1 class="font-display text-display-md text-landing-text-300">§3 Bio Card Grid prototypes</h1>
+      <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
+        Ten visual register options for the home page §3 (3-card grid: identity · philosophy · contact). Sample content
+        only. Pick one (or combo) before implementing in <code>feature-home</code>.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<landing-container size="wide">
+  <!-- Picker -->
+  <div class="py-8">
+    <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">scenes</p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+      @for (p of protos; track p.id) {
+        <button
+          type="button"
+          class="proto-pick"
+          [class.proto-pick--active]="p.id === active()"
+          (click)="setActive(p.id)"
+          [attr.aria-pressed]="p.id === active()"
+        >
+          <span class="proto-pick__label">{{ p.label }}</span>
+        </button>
+      }
+    </div>
+    <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600 mt-3">
+      active · {{ entry().combo }}
+    </p>
+    <p class="font-sans text-body-sm text-landing-text-400 mt-1">{{ entry().hint }}</p>
+  </div>
+</landing-container>
+
+<!-- Single-scene preview at full width -->
+<section class="proto-preview" [attr.data-proto]="active()" [class.proto-preview--fancy]="active().startsWith('pf')">
+  <!-- Section-level backgrounds -->
+  @if (active() === 'pf2-aurora') {
+    <div class="proto-bg proto-bg--aurora" aria-hidden="true">
+      <span class="proto-bg__blob proto-bg__blob--1"></span>
+      <span class="proto-bg__blob proto-bg__blob--2"></span>
+      <span class="proto-bg__blob proto-bg__blob--3"></span>
+    </div>
+  }
+  @if (active() === 'p5-asia-outline') {
+    <div class="proto-bg proto-bg--asia" aria-hidden="true">
+      <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+        <!-- Stylised SE-Asia outline (very faint) -->
+        <path
+          d="M 120 80 L 180 90 L 230 70 L 290 110 L 340 95 L 380 130 L 410 170 L 460 195
+             L 500 220 L 540 250 L 560 285 L 540 320 L 500 340 L 450 335 L 400 315 L 360 290
+             L 320 270 L 280 235 L 240 210 L 200 180 L 170 150 L 140 120 Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+          stroke-dasharray="3 5"
+        />
+        <!-- HCMC marker -->
+        <circle cx="380" cy="240" r="4" fill="currentColor" />
+        <circle cx="380" cy="240" r="14" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" />
+        <text x="392" y="245" font-family="monospace" font-size="10" fill="currentColor" opacity="0.7">HCMC</text>
+      </svg>
+    </div>
+  }
+  @if (active() === 'p6-graticule') {
+    <div class="proto-bg proto-bg--graticule" aria-hidden="true"></div>
+  }
+
+  <landing-container size="wide">
+    <!-- Section header (varies by proto) -->
+    @switch (active()) {
+      @case ('p2-section-mark') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('p4-asymmetric') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('p5-asia-outline') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('p6-graticule') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('p9-header-band') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('p10-spine') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf1-spotlight') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf2-aurora') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf4-showcase') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf5-boundary') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf7-dimensional') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+    }
+
+    @if (active() === 'pf3-editorial') {
+      <!-- ============================ PF3 · Editorial Magazine ============================ -->
+      <div class="proto-editorial">
+        <div class="proto-editorial__head">
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">§3 / WHO</p>
+        </div>
+        <div class="proto-editorial__grid">
+          <div class="proto-editorial__lede">
+            <h2 class="font-display text-display-xl text-landing-text-300 leading-[1.05]">
+              Five years in, four with a Singapore-based product team. I've come to like the feature work
+              <span class="italic text-landing-text-200">nobody asks me to brag about</span> — the design system before
+              the screen, the test before the bug.
+            </h2>
+            <p class="font-sans text-body-md text-landing-text-500 mt-6 max-w-md">Less glamorous; more durable.</p>
+          </div>
+          <aside class="proto-editorial__data">
+            <dl class="proto-editorial__rows">
+              <div>
+                <dt>NAME</dt>
+                <dd class="font-display">Phuong Tran</dd>
+              </div>
+              <div>
+                <dt>ROLE</dt>
+                <dd>Senior Frontend Engineer</dd>
+              </div>
+              <div>
+                <dt>BASE</dt>
+                <dd>HCMC, Vietnam</dd>
+              </div>
+              <div>
+                <dt>LOCAL</dt>
+                <dd class="font-mono">14:32 · GMT+7</dd>
+              </div>
+              <div>
+                <dt>HOURS</dt>
+                <dd class="font-mono">09–18 ICT</dd>
+              </div>
+              <div>
+                <dt>STATUS</dt>
+                <dd class="text-landing-accent">Available for work</dd>
+              </div>
+              <div>
+                <dt>EMAIL</dt>
+                <dd class="font-mono break-all">hello&#64;phuongtran.dev</dd>
+              </div>
+            </dl>
+            <div class="mt-6">
+              <landing-link href="#get-in-touch" [arrow]="true">Connect now</landing-link>
+            </div>
+          </aside>
+        </div>
+      </div>
+    } @else if (active() === 'pf6-brutalist') {
+      <!-- ============================ PF6 · Brutalist Mono ============================ -->
+      <div class="proto-brutal">
+        <div class="proto-brutal__head">
+          <span>// §3 ── WHO ──────────────────────────────────────────────</span>
+        </div>
+        <div class="proto-brutal__grid">
+          <article class="proto-brutal__card">
+            <p class="proto-brutal__tag">[01/IDENTITY]</p>
+            <pre class="proto-brutal__ascii">
+ ____  _   _ _   _  ___  _   _  ____
+|  _ \| | | | | | |/ _ \| \ | |/ ___|
+| |_) | |_| | | | | | | |  \| | |  _
+|  __/|  _  | |_| | |_| | |\  | |_| |
+|_|   |_| |_|\___/ \___/|_| \_|\____|
+                                                </pre
+            >
+            <pre class="proto-brutal__pre">
+&gt; SENIOR FE ENGINEER
+&gt; HCMC :: VN :: ASIA/HO_CHI_MINH
+&gt; LOCAL = 14:32 ICT (GMT+7)
+&gt; HOURS = 09:00..18:00 [WEEKDAYS]
+&gt; REMOTE = SG-MARKET
+            </pre>
+          </article>
+          <article class="proto-brutal__card">
+            <p class="proto-brutal__tag">[02/OUTLOOK]</p>
+            <pre class="proto-brutal__pre proto-brutal__pre--quote">
+"Five years in, four with a Singapore-based
+ product team. I've come to like the feature
+ work nobody asks me to brag about --
+
+  the design system before the screen,
+  the test before the bug,
+  the workflow before the task.
+
+ Less glamorous; more durable."
+            </pre>
+          </article>
+          <article class="proto-brutal__card">
+            <p class="proto-brutal__tag">[03/CONTACT]</p>
+            <pre class="proto-brutal__pre">
+&gt; STATUS = AVAILABLE_FOR_WORK [●]
+&gt; OPEN_TO = FT, FREELANCE
+&gt; ENGAGEMENTS_FROM = 2026-06
+&gt;
+&gt; mailto: hello&#64;phuongtran.dev
+&gt; ↗ /#get-in-touch
+            </pre>
+            <button class="proto-brutal__cta">[ CONNECT NOW ↗ ]</button>
+          </article>
+        </div>
+      </div>
+    } @else {
+      <!-- 3-card grid (default + most fancy variants) -->
+      <div [class]="'proto-grid proto-grid--' + active()" [class.proto-grid--bento]="active() === 'pf1-spotlight'">
+        @if (active() === 'pf5-boundary') {
+          <!-- Overflow analog clock breaking grid boundary -->
+          <div class="proto-overflow proto-overflow--clock" aria-hidden="true">
+            <svg viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5" />
+              <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25" />
+              @for (m of clockMarks; track $index) {
+                <line
+                  [attr.x1]="m.x1"
+                  [attr.y1]="m.y1"
+                  [attr.x2]="m.x2"
+                  [attr.y2]="m.y2"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              }
+              <!-- Hour hand (14:32 → ~14*30 + 32*0.5 = 436 → 76°) -->
+              <line x1="100" y1="100" x2="155" y2="80" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              <!-- Minute hand (32min → 192°) -->
+              <line
+                x1="100"
+                y1="100"
+                x2="68"
+                y2="180"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="100" cy="100" r="3" fill="currentColor" />
+            </svg>
+          </div>
+        }
+
+        <!-- ============================== Card A — IDENTITY ============================== -->
+        <article [class]="'proto-card proto-card--a proto-card--' + active()">
+          @if (active() === 'p3-numbered') {
+            <span class="proto-card__index">01</span>
+          }
+          @if (active() === 'p7-bracketed') {
+            <ng-container *ngTemplateOutlet="brackets" />
+          }
+          @if (active() === 'p8-vertical-tabs') {
+            <span class="proto-card__vtab">IDENTITY</span>
+          }
+          @if (
+            active() === 'p2-section-mark' ||
+            active() === 'p4-asymmetric' ||
+            active() === 'p5-asia-outline' ||
+            active() === 'p6-graticule' ||
+            active() === 'p10-spine' ||
+            active() === 'pf1-spotlight' ||
+            active() === 'pf2-aurora' ||
+            active() === 'pf4-showcase' ||
+            active() === 'pf5-boundary' ||
+            active() === 'pf7-dimensional'
+          ) {
+            <p class="proto-card__eyebrow">§3.1 IDENTITY</p>
+          }
+          @if (active() === 'p9-header-band') {
+            <header class="proto-card__band">
+              <p class="proto-card__eyebrow">§3.1 IDENTITY</p>
+            </header>
+          }
+
+          <div class="proto-card__body">
+            <p class="font-display text-display-sm text-landing-text-300 leading-tight">Phuong Tran</p>
+            <p class="font-sans text-body-md text-landing-text-400 mt-1">Senior Frontend Engineer</p>
+
+            <div class="proto-card__rows">
+              <div class="proto-card__row">
+                <span class="proto-card__row-key">LOCAL</span>
+                <span class="proto-card__row-val font-mono">14:32 · GMT+7</span>
+              </div>
+              <div class="proto-card__row">
+                <span class="proto-card__row-key">HOURS</span>
+                <span class="proto-card__row-val font-mono">09:00–18:00 ICT</span>
+              </div>
+              <div class="proto-card__row">
+                <span class="proto-card__row-key">REMOTE</span>
+                <span class="proto-card__row-val font-mono">SG market · HCMC</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ============================== Card B — PHILOSOPHY ============================== -->
+        <article [class]="'proto-card proto-card--b proto-card--' + active()">
+          @if (active() === 'p3-numbered') {
+            <span class="proto-card__index">02</span>
+          }
+          @if (active() === 'p7-bracketed') {
+            <ng-container *ngTemplateOutlet="brackets" />
+          }
+          @if (active() === 'p8-vertical-tabs') {
+            <span class="proto-card__vtab">OUTLOOK</span>
+          }
+          @if (
+            active() === 'p2-section-mark' ||
+            active() === 'p4-asymmetric' ||
+            active() === 'p5-asia-outline' ||
+            active() === 'p6-graticule' ||
+            active() === 'p10-spine' ||
+            active() === 'pf1-spotlight' ||
+            active() === 'pf2-aurora' ||
+            active() === 'pf4-showcase' ||
+            active() === 'pf5-boundary' ||
+            active() === 'pf7-dimensional'
+          ) {
+            <p class="proto-card__eyebrow">§3.2 OUTLOOK</p>
+          }
+          @if (active() === 'p9-header-band') {
+            <header class="proto-card__band">
+              <p class="proto-card__eyebrow">§3.2 OUTLOOK</p>
+            </header>
+          }
+
+          <div class="proto-card__body">
+            @if (active() === 'pf4-showcase') {
+              <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                SHIPPED · 2024
+              </p>
+              <div class="proto-showcase">
+                <div class="proto-showcase__chrome">
+                  <span></span><span></span><span></span>
+                  <em class="font-mono">document-engine.app</em>
+                </div>
+                <div class="proto-showcase__viewport">
+                  <div class="proto-showcase__sidebar">
+                    <span class="proto-showcase__nav"></span>
+                    <span class="proto-showcase__nav proto-showcase__nav--active"></span>
+                    <span class="proto-showcase__nav"></span>
+                    <span class="proto-showcase__nav"></span>
+                  </div>
+                  <div class="proto-showcase__main">
+                    <span class="proto-showcase__bar proto-showcase__bar--lg"></span>
+                    <span class="proto-showcase__bar"></span>
+                    <span class="proto-showcase__bar"></span>
+                    <span class="proto-showcase__bar proto-showcase__bar--md"></span>
+                  </div>
+                </div>
+              </div>
+              <p class="font-sans text-body-sm text-landing-text-400 mt-3">
+                Document Engine — rich-text platform for the Singapore market.
+              </p>
+            } @else {
+              <blockquote
+                class="proto-card__quote font-display text-body-lg text-landing-text-300 italic leading-relaxed"
+              >
+                "Five years in, four with a Singapore-based product team. I've come to like the feature work nobody asks
+                me to brag about — the design system before the screen, the test before the bug, the workflow before the
+                task.
+                <span class="text-landing-text-200 not-italic">Less glamorous; more durable.</span>"
+              </blockquote>
+            }
+          </div>
+        </article>
+
+        <!-- ============================== Card C — CONTACT ============================== -->
+        <article [class]="'proto-card proto-card--c proto-card--' + active()">
+          @if (active() === 'p3-numbered') {
+            <span class="proto-card__index">03</span>
+          }
+          @if (active() === 'p7-bracketed') {
+            <ng-container *ngTemplateOutlet="brackets" />
+          }
+          @if (active() === 'p8-vertical-tabs') {
+            <span class="proto-card__vtab">CONTACT</span>
+          }
+          @if (
+            active() === 'p2-section-mark' ||
+            active() === 'p4-asymmetric' ||
+            active() === 'p5-asia-outline' ||
+            active() === 'p6-graticule' ||
+            active() === 'p10-spine' ||
+            active() === 'pf1-spotlight' ||
+            active() === 'pf2-aurora' ||
+            active() === 'pf4-showcase' ||
+            active() === 'pf5-boundary' ||
+            active() === 'pf7-dimensional'
+          ) {
+            <p class="proto-card__eyebrow">§3.3 CONTACT</p>
+          }
+          @if (active() === 'p9-header-band') {
+            <header class="proto-card__band">
+              <p class="proto-card__eyebrow">§3.3 CONTACT</p>
+            </header>
+          }
+
+          <div class="proto-card__body">
+            <landing-status-dot state="available" variant="bare" label="AVAILABLE FOR WORK" />
+            <p class="font-mono text-body-md text-landing-text-300 mt-3 break-all">hello&#64;phuongtran.dev</p>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1">Open to talks · engagements from June</p>
+            <div class="mt-4">
+              <landing-link href="#get-in-touch" [arrow]="true">Connect now</landing-link>
+            </div>
+          </div>
+        </article>
+      </div>
+    }
+  </landing-container>
+</section>
+
+<!-- Templates -->
+<ng-template #hSectionMark>
+  <div class="proto-section-head">
+    <span class="proto-section-head__rule"></span>
+    <span class="proto-section-head__mark font-mono">§3 / WHO</span>
+    <span class="proto-section-head__rule"></span>
+  </div>
+</ng-template>
+
+<ng-template #brackets>
+  <span class="proto-card__bracket proto-card__bracket--tl"></span>
+  <span class="proto-card__bracket proto-card__bracket--tr"></span>
+  <span class="proto-card__bracket proto-card__bracket--bl"></span>
+  <span class="proto-card__bracket proto-card__bracket--br"></span>
+</ng-template>
+
+<!-- Side-by-side compact thumb gallery -->
+<div class="border-t border-landing-border mt-12">
+  <landing-container size="wide">
+    <div class="py-12">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+        gallery · all seventeen at a glance
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        @for (p of protos; track p.id) {
+          <button
+            type="button"
+            class="proto-thumb"
+            [class.proto-thumb--active]="p.id === active()"
+            (click)="setActive(p.id)"
+          >
+            <span class="proto-thumb__mini">
+              <span class="proto-thumb__c1"></span>
+              <span class="proto-thumb__c2"></span>
+              <span class="proto-thumb__c3"></span>
+            </span>
+            <span class="proto-thumb__label font-mono">{{ p.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </landing-container>
+</div>

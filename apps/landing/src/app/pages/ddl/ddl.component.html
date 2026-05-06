@@ -1,11 +1,8 @@
 <div class="min-h-screen bg-background">
   <landing-container size="wide" class="block py-8">
-    <header class="mb-8 flex items-start justify-between">
-      <div>
-        <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
-        <p class="text-lg text-text-secondary mt-2">Component showcase and design system documentation</p>
-      </div>
-      <landing-theme-toggle class="mt-2" />
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
+      <p class="text-lg text-text-secondary mt-2">Component showcase and design system documentation</p>
     </header>
 
     <!-- ────────────────────────────────────────────────────────── -->
@@ -111,6 +108,27 @@
           <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
             Five pure-CSS hero backgrounds — blueprint, topo, hatch, dot matrix, crosshair — rendered via the same
             <code>landing-background</code> primitive.
+          </p>
+        </div>
+        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+      </a>
+
+      <a
+        routerLink="/ddl/bio-card-grid"
+        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+      >
+        <div>
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+            prototype · /ddl/bio-card-grid
+          </p>
+          <p
+            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+          >
+            Bio card grid (task 284)
+          </p>
+          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+            Ten visual register options for §3 (identity · philosophy · contact) — section-mark eyebrow, asymmetric
+            read-zone, geographic backgrounds, header bands. Pick before implementing.
           </p>
         </div>
         <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>

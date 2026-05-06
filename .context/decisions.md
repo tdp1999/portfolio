@@ -253,3 +253,18 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - FE forms apply baselines from `baselineFor` so future drift is impossible — FE and BE both read from `LIMITS`.
 - Future contributors changing a cap update `LIMITS` in one place; both runtimes follow.
 
+
+
+### ADR-017: Unlock E4-C Lock for §3 Bio Card Grid (Task 284)
+
+**Status:** Accepted (2026-05-05)
+**Context:** E4 §C locked card visual register at "1px hairline · 4px radius · no shadow · considered motion · real screenshots only · no code/terminal decoration." Prototyping §3 Bio Card Grid against these constraints yielded austere options (PROTO-1..10) that author judged too passive for the only "live signal" surface on the home page. Reference comparison: parthh.in bio grid uses spotlight gradients, soft 16-24px radius, breaking-boundary overflow elements — at a polish level the constraint blocks. Author asked for higher-fidelity options.
+**Decision:**
+1. **§3 Bio Card Grid is now a sanctioned exception to E4-C.** Cards in this section may use: rounded corners > 4px, inner gradient/spotlight, gradient hairlines, ambient mesh backgrounds, breaking-boundary overflow elements, embedded artifact previews, hover transforms.
+2. **E4-C remains the default** for all other landing sections (Selected Work, Stack, Story, Get in Touch, Footer Banner). §3 is the *one* section where richer surface treatment is permitted, justified by it being the identity/availability/contact glance-zone where craft visibly matters.
+3. **Palette discipline preserved.** No new colors introduced — indigo accent + ink-0/1/2 + landing-text-300..600 only. No rainbow/saturated gradients. Aurora/glow uses existing accent at low opacity.
+4. **Motion still considered.** Any animation must be subtle, optional, and respect `prefers-reduced-motion`.
+**Consequences:**
+- Task 284 prototype gallery extends with 7 PF-* options (spotlight bento, aurora mesh, editorial magazine, showcase artifact, breaking-boundary, brutalist mono, dimensional layers).
+- Once §3 register is picked, may seed shared primitives (e.g. spotlight-card variant) — promote only if the pattern recurs.
+- E4 epic file gets a footnote referencing this ADR; the lock text itself stays as default policy.
