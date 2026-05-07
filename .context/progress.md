@@ -207,6 +207,7 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [ ] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone)
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
+- [ ] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone)
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
