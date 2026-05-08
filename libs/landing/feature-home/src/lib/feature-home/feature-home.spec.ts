@@ -42,11 +42,15 @@ describe('FeatureHome', () => {
 
   it('renders placeholders for sister sections still pending', () => {
     const placeholders = fixture.nativeElement.querySelectorAll('landing-home-section-placeholder');
-    // §3 Bio Card Grid · §5 Stack · §7 Get in Touch · §8 Footer Banner
-    expect(placeholders.length).toBe(4);
+    // §5 Stack · §7 Get in Touch · §8 Footer Banner
+    expect(placeholders.length).toBe(3);
   });
 
   it('renders the selected work section', () => {
     expect(fixture.nativeElement.querySelector('landing-home-selected-work')).toBeTruthy();
+  });
+
+  it('renders the §3 bio card grid', () => {
+    expect(fixture.nativeElement.querySelector('landing-home-bio-card-grid')).toBeTruthy();
   });
 });

@@ -9,21 +9,31 @@
     [stackIntro]="stackIntro()"
   />
 
-  <!-- §3 Bio Card Grid — placeholder, replaced by task 284 -->
-  <landing-home-section-placeholder label="Bio Card Grid" task="task 284" />
+  <!-- §3 Bio Card Grid — PF2 Aurora Mesh + PF7 hover (task 284) -->
+  <landing-home-bio-card-grid
+    [fullName]="fullName()"
+    [title]="title()"
+    [city]="locationCity() ?? ''"
+    [email]="email()"
+    [available]="isOpenToWork()"
+    [timezones]="timezones()"
+    [philosophyLead]="philosophyLead()"
+    [philosophyEmphasis]="philosophyEmphasis()"
+    [contactNote]="contactNote()"
+  />
 
   <!-- §4 Selected Work (B3.d Tabbed + Mini Gallery, B2.c lift) -->
   <landing-home-selected-work [locale]="locale()" />
 
   <!-- §5 The Stack — placeholder, replaced by future stack task (E5 P4 gap, see epic) -->
-  <landing-home-section-placeholder label="The Stack" task="E5 P4 gap" />
+  <landing-home-section-placeholder number="05" label="The Stack" task="E5 P4 gap" />
 
   <!-- §6 The Story — bioLong from API, voice re-questioned 2026-05-04 -->
   <landing-home-intro [bioLong]="bioLong()" />
 
   <!-- §7 Get in Touch — placeholder, replaced by task 286 -->
-  <landing-home-section-placeholder label="Get in Touch" task="task 286" />
+  <landing-home-section-placeholder number="07" label="Get in Touch" task="task 286" />
 
   <!-- §8 Footer Banner — placeholder, replaced by task 287 -->
-  <landing-home-section-placeholder label="Footer Banner" task="task 287" />
+  <landing-home-section-placeholder number="08" label="Footer Banner" task="task 287" />
 </div>

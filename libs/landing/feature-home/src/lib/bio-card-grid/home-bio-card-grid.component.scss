@@ -1,0 +1,74 @@
+/* §3 Bio Card Grid · PF2 Aurora Mesh + PF7 Dimensional hover
+ *
+ * Surface + hover come from `<landing-card variant="glass" [tilt]="true">`.
+ * Background comes from `<landing-background pattern="aurora">`.
+ * This file only owns: the section frame, the 3-column grid, and the
+ * card-body content layout (rows / quote) that are bespoke to §3.
+ */
+
+:host {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  background-color: var(--landing-ink-0);
+  border-block: 1px solid var(--landing-border);
+}
+
+.bio-grid {
+  position: relative;
+  z-index: 1;
+  padding-block: 64px;
+  @media (min-width: 1024px) {
+    padding-block: 96px;
+  }
+}
+
+.bio-grid__head {
+  margin-bottom: 32px;
+}
+
+.bio-grid__cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card body fills the glass card column; quote resets default <blockquote> margin. */
+.bio-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.bio-card__quote {
+  margin: 0;
+}
+
+/* Card A — key/value rows */
+.bio-card__rows {
+  margin: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--landing-border);
+  padding-top: 16px;
+}
+.bio-card__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: var(--landing-mono-sm);
+}
+.bio-card__row-key {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--landing-text-600);
+}
+.bio-card__row-val {
+  margin: 0;
+  color: var(--landing-text-300);
+}
