@@ -108,6 +108,50 @@ globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
 
 > Why both relative AND absolute self-URL rewrites: Angular SSR resolves relative URLs against the incoming request's host *before* calling fetch. So services using `this.http.get('/api/foo')` actually fetch `https://<own-host>/api/foo` on server. Both shapes need rewriting.
 
+### 4b. Browser-side `/api/*` reverse proxy (when landing & API are separate services)
+
+The step-4 fetch patch only fixes the **SSR** side. The browser has no `API_URL` env var — it just hits `https://<DOMAIN>/api/*` on the same origin. That request lands on the SSR Express server, falls through to the Angular catch-all, and returns `302 → /404`. After the first hydration succeeds, every subsequent client-side navigation that re-fetches the API gets the 302 → empty data → fallback placeholders stick.
+
+Mount a tiny proxy in `apps/<APP>/src/server.ts` BEFORE `express.static` and the Angular catch-all:
+
+```ts
+const apiBase = (process.env['API_URL'] || 'http://localhost:3000').replace(/\/$/, '');
+
+app.use('/api', async (req, res) => {
+  const targetUrl = `${apiBase}${req.originalUrl}`;
+  try {
+    const headers = new Headers();
+    for (const [k, v] of Object.entries(req.headers)) {
+      if (v === undefined) continue;
+      if (['host', 'connection', 'content-length', 'transfer-encoding'].includes(k.toLowerCase())) continue;
+      Array.isArray(v) ? v.forEach((x) => headers.append(k, x)) : headers.set(k, v);
+    }
+    const hasBody = !['GET', 'HEAD'].includes(req.method.toUpperCase());
+    const upstream = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: hasBody ? (Readable.toWeb(req) as ReadableStream) : undefined,
+      ...(hasBody ? { duplex: 'half' } : {}),
+      redirect: 'manual',
+    } as RequestInit);
+    res.status(upstream.status);
+    upstream.headers.forEach((v, k) => {
+      if (['transfer-encoding', 'connection'].includes(k.toLowerCase())) return;
+      res.setHeader(k, v);
+    });
+    if (upstream.body) Readable.fromWeb(upstream.body as never).pipe(res);
+    else res.end();
+  } catch (err) {
+    console.error('[api-proxy]', req.method, targetUrl, err);
+    res.status(502).json({ error: 'Bad Gateway', detail: String(err) });
+  }
+});
+```
+
+Both halves (SSR fetch rewrite + browser proxy) keep the URL `/api/...` identical from Angular's perspective → transfer cache key matches → no refetch on hydration.
+
+If you serve the API from a different subdomain (`api.<DOMAIN>`) and call it directly from the browser, you must (a) deal with CORS and (b) accept that the SSR fetch rewrite + the browser absolute URL will produce **different** transfer-cache keys → guaranteed flash on hydration. The same-origin proxy is the simpler path.
+
 ### 5. Server render mode for routes that need API
 
 If a route's resolver/component fetches from API at render time, do **not** prerender it — the API isn't reachable at build time. In `apps/<APP>/src/app/app.routes.server.ts`:
