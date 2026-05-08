@@ -37,7 +37,7 @@ const SCROLL_THRESHOLD = 8;
         <div class="relative h-full">
           <a
             routerLink="/"
-            class="pointer-events-auto absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
+            class="pointer-events-auto absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 inline-flex items-center rounded-full px-4 py-2 font-display text-body-lg font-medium text-landing-text-300 backdrop-blur-md transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
           >
             tdp.
           </a>
@@ -146,8 +146,7 @@ export class LandingHeaderComponent {
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
-    const y = typeof window === 'undefined' ? 0 : window.scrollY;
-    const next = y > SCROLL_THRESHOLD;
+    const next = window.scrollY > SCROLL_THRESHOLD;
     if (next !== this.scrolled()) {
       this.scrolled.set(next);
     }

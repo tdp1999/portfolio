@@ -40,10 +40,9 @@ describe('FeatureHome', () => {
     expect(fixture.nativeElement.querySelector('landing-home-intro')).toBeTruthy();
   });
 
-  it('renders placeholders for sister sections still pending', () => {
+  it('has no remaining section placeholders (all real components landed)', () => {
     const placeholders = fixture.nativeElement.querySelectorAll('landing-home-section-placeholder');
-    // §5 Stack · §7 Get in Touch · §8 Footer Banner
-    expect(placeholders.length).toBe(3);
+    expect(placeholders.length).toBe(0);
   });
 
   it('renders the selected work section', () => {
@@ -52,5 +51,9 @@ describe('FeatureHome', () => {
 
   it('renders the §3 bio card grid', () => {
     expect(fixture.nativeElement.querySelector('landing-home-bio-card-grid')).toBeTruthy();
+  });
+
+  it('renders the §7 get in touch section', () => {
+    expect(fixture.nativeElement.querySelector('landing-home-get-in-touch')).toBeTruthy();
   });
 });

@@ -1,0 +1,100 @@
+/* Site-wide footer banner (Parth-style fat site map).
+ * Brand block + nav columns. Signature row is the sibling `landing-footer-signature`. */
+
+:host {
+  display: block;
+}
+
+.landing-footer-banner {
+  position: relative;
+  isolation: isolate;
+  padding-block: 64px;
+  //   border-top: 1px solid var(--landing-accent);
+
+  @media (min-width: 768px) {
+    padding-block: 96px;
+  }
+}
+
+.landing-footer-banner__inner {
+  background-color: var(--landing-ink-1);
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  padding: 32px;
+
+  @media (min-width: 768px) {
+    padding: 48px;
+  }
+}
+
+.landing-footer-banner__grid {
+  display: grid;
+  gap: 40px 32px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: 32px 48px;
+  }
+}
+
+.landing-footer-banner__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: 640px) {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 960px) {
+    grid-column: 1 / 2;
+    max-width: 32ch;
+  }
+}
+
+.landing-footer-banner__wordmark {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-weight: 700;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-200);
+}
+
+.landing-footer-banner__tagline {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+.landing-footer-banner__column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.landing-footer-banner__column-title {
+  display: block;
+}
+
+.landing-footer-banner__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.landing-footer-banner__list li {
+  display: inline-flex;
+}

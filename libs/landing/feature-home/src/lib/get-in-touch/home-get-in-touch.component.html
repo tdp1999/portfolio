@@ -1,0 +1,36 @@
+<section id="get-in-touch" class="home-get-in-touch" aria-labelledby="home-get-in-touch-heading">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['06', 'Get in Touch']"
+      [accentFirst]="true"
+      [trailingRule]="true"
+      class="home-get-in-touch__eyebrow"
+    />
+
+    <landing-heading [level]="2" id="home-get-in-touch-heading" [anchor]="false" class="home-get-in-touch__heading">
+      Let's talk.
+    </landing-heading>
+
+    @if (contactCopy()) {
+      <p class="home-get-in-touch__copy">{{ contactCopy() }}</p>
+    }
+
+    @if (mailto()) {
+      <div class="home-get-in-touch__cta">
+        <landing-button variant="solid" arrow="right" (buttonClick)="sendMail()"> Send a message </landing-button>
+      </div>
+    }
+
+    @if (channels().length > 0) {
+      <ul class="home-get-in-touch__channels" role="list">
+        @for (channel of channels(); track channel.url) {
+          <li>
+            <landing-link [href]="channel.url" [external]="true" [arrow]="true">
+              {{ channel.label }}
+            </landing-link>
+          </li>
+        }
+      </ul>
+    }
+  </landing-container>
+</section>

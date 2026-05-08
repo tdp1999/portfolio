@@ -1,3 +1,8 @@
-<landing-shell>
+<landing-shell
+  [fullName]="fullName()"
+  [email]="email()"
+  [footerTagline]="footerTagline()"
+  [socialLinks]="socialLinks()"
+>
   <router-outlet />
 </landing-shell>

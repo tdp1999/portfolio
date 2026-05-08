@@ -1,0 +1,44 @@
+<section class="landing-footer-banner" aria-label="Site map">
+  <landing-background pattern="hatch" />
+  <landing-container size="wide">
+    <div class="landing-footer-banner__inner">
+      <div class="landing-footer-banner__grid">
+        <!-- Brand block -->
+        <div class="landing-footer-banner__brand">
+          <p class="landing-footer-banner__wordmark">{{ fullName() || 'Portfolio' }}</p>
+          <p class="landing-footer-banner__tagline">{{ tagline() || fallbackTagline }}</p>
+        </div>
+
+        <!-- Nav columns -->
+        @for (column of columns; track column.title) {
+          <nav class="landing-footer-banner__column" [attr.aria-label]="column.title">
+            <landing-eyebrow [label]="column.title" class="landing-footer-banner__column-title" />
+            <ul class="landing-footer-banner__list" role="list">
+              @for (route of column.routes; track route.href) {
+                <li>
+                  <landing-link [href]="route.href">{{ route.label }}</landing-link>
+                </li>
+              }
+            </ul>
+          </nav>
+        }
+
+        <!-- Connect column -->
+        @if (connectRoutes().length > 0) {
+          <nav class="landing-footer-banner__column" aria-label="Connect">
+            <landing-eyebrow label="Connect" class="landing-footer-banner__column-title" />
+            <ul class="landing-footer-banner__list" role="list">
+              @for (route of connectRoutes(); track route.href) {
+                <li>
+                  <landing-link [href]="route.href" [external]="route.external ?? false">
+                    {{ route.label }}
+                  </landing-link>
+                </li>
+              }
+            </ul>
+          </nav>
+        }
+      </div>
+    </div>
+  </landing-container>
+</section>

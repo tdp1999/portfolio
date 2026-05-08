@@ -1,0 +1,74 @@
+/* Home — §7 Get in Touch (B2.c lift: indigo top + tonal surface). */
+
+:host {
+  display: block;
+}
+
+.home-get-in-touch {
+  position: relative;
+  padding: 64px 0 80px;
+  background-color: var(--landing-ink-1);
+  border-top: 1px solid var(--landing-accent);
+  scroll-margin-top: 80px;
+
+  @media (min-width: 960px) {
+    padding: 96px 0 112px;
+  }
+}
+
+.home-get-in-touch__eyebrow {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.home-get-in-touch__heading {
+  display: block;
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  margin-bottom: 12px;
+}
+
+.home-get-in-touch__copy {
+  margin: 0;
+  max-width: 56ch;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-weight: 400;
+  /* Mirrors home-selected-work__deck — sits between body-lg and display-sm. */
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--landing-text-400);
+}
+
+.home-get-in-touch__cta {
+  margin-top: 32px;
+}
+
+.home-get-in-touch__channels {
+  list-style: none;
+  margin: 48px 0 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--landing-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.home-get-in-touch__channels li {
+  display: inline-flex;
+}
+
+@media (max-width: 768px) {
+  .home-get-in-touch {
+    padding: 48px 0 64px;
+  }
+
+  .home-get-in-touch__channels {
+    margin-top: 32px;
+    gap: 12px 24px;
+  }
+}

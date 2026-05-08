@@ -1,3 +1,5 @@
+import { type SocialPlatform } from '@portfolio/shared/types';
+
 export const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   FULL_TIME: 'Full Time',
   PART_TIME: 'Part Time',
@@ -29,4 +31,20 @@ export const BLOG_POST_STATUS_LABELS: Record<string, string> = {
   PUBLISHED: 'Published',
   PRIVATE: 'Private',
   UNLISTED: 'Unlisted',
+};
+
+/**
+ * Display label for each `SocialPlatform`. Single source of truth — landing UI
+ * (footer banner, footer signature, get-in-touch) all read from this map.
+ */
+export const SOCIAL_PLATFORM_LABELS: Record<SocialPlatform, string> = {
+  GITHUB: 'GitHub',
+  LINKEDIN: 'LinkedIn',
+  TWITTER: 'X / Twitter',
+  BLUESKY: 'Bluesky',
+  STACKOVERFLOW: 'Stack Overflow',
+  DEV_TO: 'Dev.to',
+  HASHNODE: 'Hashnode',
+  WEBSITE: 'Website',
+  OTHER: 'External link',
 };

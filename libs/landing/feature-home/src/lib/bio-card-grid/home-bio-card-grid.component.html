@@ -4,13 +4,13 @@
   <landing-container size="wide">
     <header class="bio-grid__head">
       <h2 id="bio-grid-heading" class="sr-only">Who</h2>
-      <landing-eyebrow [label]="['03', 'Who']" [accentFirst]="true" [trailingRule]="true" />
+      <landing-eyebrow [label]="['02', 'Who']" [accentFirst]="true" [trailingRule]="true" />
     </header>
 
     <div class="bio-grid__cards">
       <!-- ============================== Card A — IDENTITY ============================== -->
       <landing-card variant="glass" [tilt]="true">
-        <landing-eyebrow label="§3.1 IDENTITY" />
+        <landing-eyebrow label="§2.1 IDENTITY" />
         <div class="bio-card__body">
           <p class="font-display text-display-sm text-landing-text-300 leading-tight">{{ fullName() }}</p>
           <p class="font-sans text-body-md text-landing-text-400 mt-1">{{ title() }}</p>
@@ -33,7 +33,7 @@
 
       <!-- ============================== Card B — OUTLOOK ============================== -->
       <landing-card variant="glass" [tilt]="true">
-        <landing-eyebrow label="§3.2 OUTLOOK" />
+        <landing-eyebrow label="§2.2 OUTLOOK" />
         <div class="bio-card__body">
           <blockquote class="bio-card__quote font-display text-body-lg text-landing-text-300 italic leading-relaxed">
             "{{ philosophyLead() }} <span class="text-landing-text-200 not-italic">{{ philosophyEmphasis() }}</span
@@ -44,7 +44,7 @@
 
       <!-- ============================== Card C — CONTACT ============================== -->
       <landing-card variant="glass" [tilt]="true">
-        <landing-eyebrow label="§3.3 CONTACT" />
+        <landing-eyebrow label="§2.3 CONTACT" />
         <div class="bio-card__body">
           <landing-status-dot [state]="statusState()" variant="bare" [label]="statusLabel()" />
           <p class="font-mono text-body-md text-landing-text-300 mt-3 break-all">{{ email() }}</p>
