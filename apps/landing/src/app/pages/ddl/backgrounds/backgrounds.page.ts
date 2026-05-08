@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/c
 import {
   ContainerComponent,
   LandingBackgroundComponent,
+  LandingBreadcrumbComponent,
   SegmentedComponent,
+  type BreadcrumbItem,
   type LandingBackgroundPattern,
 } from '@portfolio/landing/shared/ui';
 
@@ -79,14 +81,12 @@ const PATTERNS: readonly PatternEntry[] = [
   selector: 'landing-backgrounds-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ContainerComponent, LandingBackgroundComponent, SegmentedComponent],
+  imports: [ContainerComponent, LandingBackgroundComponent, LandingBreadcrumbComponent, SegmentedComponent],
   template: `
     <div class="border-b border-landing-border bg-ink-1/60">
       <landing-container size="wide">
         <div class="py-6">
-          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-            ddl · background patterns
-          </p>
+          <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
           <h1 class="font-display text-display-md text-landing-text-300">Hero background variants</h1>
           <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
             Pure-CSS decorative backgrounds rendered via one <code>landing-background</code> primitive. Pick a pattern,
@@ -250,6 +250,7 @@ const PATTERNS: readonly PatternEntry[] = [
 export class BackgroundsPage {
   readonly patterns = PATTERNS;
   readonly segments = PATTERNS.map((p) => ({ id: p.id, label: p.label }));
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Backgrounds' }];
   readonly active = signal<LandingBackgroundPattern>('blueprint');
   readonly entry = computed(() => PATTERNS.find((p) => p.id === this.active()) ?? PATTERNS[0]);
 

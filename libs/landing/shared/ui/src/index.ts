@@ -17,5 +17,6 @@ export * from './components/segmented';
 export * from './components/heading';
 export * from './components/in-page-nav';
 export * from './components/background';
+export * from './components/breadcrumb';
 export * from './theme';
 export * from './shell';

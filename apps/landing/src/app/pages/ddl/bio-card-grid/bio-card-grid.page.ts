@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Location, NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ContainerComponent, StatusDotComponent, LandingLinkComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  LandingBreadcrumbComponent,
+  LandingLinkComponent,
+  StatusDotComponent,
+  type BreadcrumbItem,
+} from '@portfolio/landing/shared/ui';
 
 /**
  * /ddl/bio-card-grid — Prototype gallery for task 284 §3 Bio Card Grid.
@@ -185,7 +191,7 @@ function readCardsParam(value: string | null): 3 | 4 {
   selector: 'landing-bio-card-grid-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, ContainerComponent, StatusDotComponent, LandingLinkComponent],
+  imports: [NgTemplateOutlet, ContainerComponent, LandingBreadcrumbComponent, LandingLinkComponent, StatusDotComponent],
   templateUrl: './bio-card-grid.page.html',
   styleUrl: './bio-card-grid.page.scss',
 })
@@ -195,6 +201,7 @@ export class BioCardGridPage {
   private readonly location = inject(Location);
 
   readonly protos = PROTOS;
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Bio Card Grid' }];
 
   /** Active proto, seeded from `?proto=` query param so reload preserves it. */
   readonly active = signal<ProtoId>(readProtoParam(this.route.snapshot.queryParamMap.get('proto')));
