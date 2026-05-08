@@ -8,12 +8,8 @@
 }
 
 .placeholder__inner {
-  max-width: 1080px;
-  margin-inline: auto;
-  padding-inline: 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);
@@ -22,17 +18,23 @@
   color: var(--landing-text-500);
 }
 
-.placeholder__label {
-  color: var(--landing-text-400);
+.placeholder__inner landing-eyebrow {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .placeholder__task {
+  flex: 0 0 auto;
   opacity: 0.7;
 }
 
 @media (max-width: 768px) {
   .placeholder__inner {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .placeholder__task {
+    align-self: flex-start;
   }
 }

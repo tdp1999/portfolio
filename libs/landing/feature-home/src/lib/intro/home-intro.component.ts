@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { EyebrowComponent } from '@portfolio/landing/shared/ui';
+import { ContainerComponent, EyebrowComponent } from '@portfolio/landing/shared/ui';
 
 type Run = { readonly text: string; readonly italic: boolean };
 type Paragraph = readonly Run[];
@@ -43,7 +43,7 @@ function parseBioLong(source: string): readonly Paragraph[] {
 @Component({
   selector: 'landing-home-intro',
   standalone: true,
-  imports: [EyebrowComponent],
+  imports: [ContainerComponent, EyebrowComponent],
   templateUrl: './home-intro.component.html',
   styleUrl: './home-intro.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

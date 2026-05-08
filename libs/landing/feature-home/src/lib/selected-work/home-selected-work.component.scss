@@ -21,35 +21,9 @@
 
 /* Variant E — mono rule row + sans bold heading + Newsreader italic deck. */
 
-.home-selected-work__rule-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-md);
-  line-height: var(--landing-mono-md-lh);
-  letter-spacing: var(--landing-tracking-mono);
-  text-transform: uppercase;
+.home-selected-work__eyebrow {
+  display: block;
   margin-bottom: 16px;
-}
-
-.home-selected-work__num {
-  color: var(--landing-accent);
-}
-
-.home-selected-work__label {
-  color: var(--landing-text-400);
-}
-
-.home-selected-work__rule-sep {
-  color: var(--landing-text-600);
-}
-
-.home-selected-work__rule {
-  flex: 1 1 auto;
-  height: 1px;
-  background-color: var(--landing-border);
-  margin-left: 8px;
 }
 
 .home-selected-work__heading {

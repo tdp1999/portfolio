@@ -1,14 +1,12 @@
 <section class="home-selected-work" aria-labelledby="home-selected-work-heading">
   <landing-container size="wide">
     <header class="home-selected-work__header">
-      <div class="home-selected-work__rule-row">
-        <span class="home-selected-work__num">04</span>
-        <span class="home-selected-work__rule-sep" aria-hidden="true">·</span>
-        <span class="home-selected-work__label">Selected</span>
-        <span class="home-selected-work__rule-sep" aria-hidden="true">·</span>
-        <span class="home-selected-work__label">Work</span>
-        <span class="home-selected-work__rule" aria-hidden="true"></span>
-      </div>
+      <landing-eyebrow
+        [label]="['04', 'Selected Work']"
+        [accentFirst]="true"
+        [trailingRule]="true"
+        class="home-selected-work__eyebrow"
+      />
       <landing-heading [level]="2" id="home-selected-work-heading" [anchor]="false" class="home-selected-work__heading">
         Three projects.
       </landing-heading>

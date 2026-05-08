@@ -20,6 +20,7 @@ const MAX_TABS = 3;
   standalone: true,
   imports: [
     ContainerComponent,
+    EyebrowComponent,
     LandingHeadingComponent,
     LandingLinkComponent,
     SegmentedComponent,

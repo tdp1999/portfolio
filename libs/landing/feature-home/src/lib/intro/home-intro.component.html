@@ -1,16 +1,18 @@
 <section class="home-intro" aria-label="The Story">
-  <div class="home-intro__column">
-    <landing-eyebrow [label]="['§ 06', 'The Story']" />
-    @for (paragraph of paragraphs(); track $index) {
-      <p class="home-intro__paragraph">
-        @for (run of paragraph; track $index) {
-          @if (run.italic) {
-            <em class="home-intro__emphasis">{{ run.text }}</em>
-          } @else {
-            <span>{{ run.text }}</span>
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['06', 'The Story']" [accentFirst]="true" [trailingRule]="true" />
+    <div class="home-intro__column">
+      @for (paragraph of paragraphs(); track $index) {
+        <p class="home-intro__paragraph">
+          @for (run of paragraph; track $index) {
+            @if (run.italic) {
+              <em class="home-intro__emphasis">{{ run.text }}</em>
+            } @else {
+              <span>{{ run.text }}</span>
+            }
           }
-        }
-      </p>
-    }
-  </div>
+        </p>
+      }
+    </div>
+  </landing-container>
 </section>
