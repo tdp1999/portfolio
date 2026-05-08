@@ -25,11 +25,14 @@
   <!-- §4 Selected Work (B3.d Tabbed + Mini Gallery, B2.c lift) -->
   <landing-home-selected-work [locale]="locale()" />
 
-  <!-- §5 The Stack — placeholder, replaced by future stack task (E5 P4 gap, see epic) -->
-  <landing-home-section-placeholder number="05" label="The Stack" task="E5 P4 gap" />
+  <!-- §5 The Stack — Tier 1 prose + Tier 2 grouped pills (task 285b) -->
+  <landing-home-stack [stackIntro]="stackIntro()" [groups]="skillGroups()" />
 
   <!-- §6 The Story — bioLong from API, voice re-questioned 2026-05-04 -->
   <landing-home-intro [bioLong]="bioLong()" />
+
+  <!-- §6b Philosophy strip — quiet voice transition before §7 lift (task 285) -->
+  <landing-home-philosophy-strip [philosophy]="bioShort()" />
 
   <!-- §7 Get in Touch — placeholder, replaced by task 286 -->
   <landing-home-section-placeholder number="07" label="Get in Touch" task="task 286" />

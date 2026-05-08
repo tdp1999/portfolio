@@ -4,9 +4,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HomeBioCardGridComponent } from '../bio-card-grid/home-bio-card-grid.component';
 import { HomeHeroComponent } from '../hero/home-hero.component';
 import { HomeIntroComponent } from '../intro/home-intro.component';
+import { HomePhilosophyStripComponent } from '../philosophy/home-philosophy-strip.component';
 import { HomeSectionPlaceholderComponent } from '../placeholders/home-section-placeholder.component';
 import { HomeSelectedWorkComponent } from '../selected-work/home-selected-work.component';
-import { ProfileService } from '@portfolio/landing/shared/data-access';
+import { HomeStackComponent } from '../stack/home-stack.component';
+import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale } from '@portfolio/shared/types';
 
@@ -16,19 +18,23 @@ import type { Locale } from '@portfolio/shared/types';
     HomeBioCardGridComponent,
     HomeHeroComponent,
     HomeIntroComponent,
+    HomePhilosophyStripComponent,
     HomeSectionPlaceholderComponent,
     HomeSelectedWorkComponent,
+    HomeStackComponent,
   ],
   templateUrl: './feature-home.html',
   styleUrl: './feature-home.scss',
 })
 export class FeatureHome {
   private profileService = inject(ProfileService);
+  private skillService = inject(SkillService);
   private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
 
   locale = signal<Locale>('en');
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
+  skillGroups = toSignal(this.skillService.getGroupedSkills(), { initialValue: [] });
 
   fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()) || 'Portfolio in progress');
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));

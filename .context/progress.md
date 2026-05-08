@@ -240,8 +240,8 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 282-home-intro (S) — deps: 274, 280 ✓
 - [x] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277 ✓
 - [x] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277 ✓
-- [ ] 285-home-philosophy-strip (S) — deps: 274, 280
-- [ ] 285b-home-stack (M) — deps: 274, 278, 279, 277, 277b
+- [x] 285-home-philosophy-strip (S) — deps: 274, 280 ✓
+- [x] 285b-home-stack (M) — deps: 274, 278, 279, 277, 277b ✓
 - [ ] 286-home-get-in-touch (S) — deps: 274, 278
 - [ ] 287-home-footer-banner (S) — deps: 274, 278
 - [ ] 288-home-page-composition (S) — deps: 281–287, 285b
@@ -308,16 +308,18 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 in progress. **281/282/283/284 done** (284 = home §3 Bio Card Grid, PF2 Aurora + PF7 hover with shared `landing-card variant=glass tilt` + `landing-background pattern=aurora` extracted along the way). Recommended next: any of 285/285b/286/287.
+**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 nearly complete. **281/282/283/284/285/285b done** (285 = §6b philosophy strip; 285b = §5 The Stack with Tier 1 prose + Tier 2 grouped pills, introduced `SkillService` + `**bold**` parse). Recommended next: 286 (Get in Touch) or 287 (Footer Banner), then 288 page composition closes Phase 4.
+
+**SSR/hydration hardening (2026-05-08, alongside 285/285b):** Fixed post-hydration data flash on home re-mount (back-nav from /ddl) — root cause was cold observables in landing data services. Added `shareReplay({ refCount: false })` to `Profile/Skill/Experience/Project` services + a tiny native-fetch reverse proxy on `/api/*` in `apps/landing/src/server.ts` so browser same-origin `/api/...` reaches the API service (was 302→/404 in prod where landing & API are separate Railway services). Bumped landing `anyComponentStyle` budget 8/16kB→16/32kB and refactored `bio-card-grid` orbit SCSS (3-prototype selector list → shared `.proto-grid--orbit` / `.proto-card--orbit`). New rules captured in `landing-ssr.md` + `guides/deploy-railway-ssr.md` (§4b browser proxy).
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 296     |
+| Done (archived)           | 298     |
 | In Progress               | 0       |
-| Pending                   | 36      |
+| Pending                   | 34      |
 | **Total Created**         | **332** |
 | Epics completed           | 29      |
 

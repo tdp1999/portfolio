@@ -7,3 +7,5 @@ export * from './lib/experience.service';
 export * from './lib/project.service';
 export * from './lib/blog.types';
 export * from './lib/blog.service';
+export * from './lib/skill.types';
+export * from './lib/skill.service';

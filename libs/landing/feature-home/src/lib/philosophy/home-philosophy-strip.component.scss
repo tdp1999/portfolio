@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.home-philosophy {
+  padding-block: 96px;
+}
+
+.home-philosophy__line {
+  margin: 0 auto;
+  max-width: 680px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-400);
+}
+
+.home-philosophy__emphasis {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+@media (max-width: 768px) {
+  .home-philosophy {
+    padding-block: 64px;
+  }
+}

@@ -1,0 +1,42 @@
+<section class="home-stack" aria-label="The Stack">
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['05', 'The Stack']" [accentFirst]="true" [trailingRule]="true" />
+
+    <div class="home-stack__column">
+      @for (paragraph of paragraphs(); track $index) {
+        <p class="home-stack__paragraph">
+          @for (run of paragraph; track $index) {
+            @switch (run.emphasis) {
+              @case ('bold') {
+                <strong class="home-stack__bold">{{ run.text }}</strong>
+              }
+              @case ('italic') {
+                <em class="home-stack__italic">{{ run.text }}</em>
+              }
+              @default {
+                <span>{{ run.text }}</span>
+              }
+            }
+          }
+        </p>
+      }
+    </div>
+
+    @if (populatedGroups().length > 0) {
+      <ul class="home-stack__groups" role="list">
+        @for (group of populatedGroups(); track group.slug) {
+          <li class="home-stack__group">
+            <landing-eyebrow [label]="group.label" />
+            <ul class="home-stack__pills" role="list">
+              @for (skill of group.members; track skill.id) {
+                <li>
+                  <landing-chip [label]="skill.name" />
+                </li>
+              }
+            </ul>
+          </li>
+        }
+      </ul>
+    }
+  </landing-container>
+</section>

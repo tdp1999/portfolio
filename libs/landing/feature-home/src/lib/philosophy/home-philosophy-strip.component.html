@@ -1,0 +1,13 @@
+<section class="home-philosophy" aria-label="Philosophy">
+  <landing-container size="wide">
+    <p class="home-philosophy__line">
+      @for (run of runs(); track $index) {
+        @if (run.italic) {
+          <em class="home-philosophy__emphasis">{{ run.text }}</em>
+        } @else {
+          <span>{{ run.text }}</span>
+        }
+      }
+    </p>
+  </landing-container>
+</section>
