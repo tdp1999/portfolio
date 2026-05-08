@@ -28,6 +28,7 @@ const SCROLL_THRESHOLD = 8;
   styleUrl: './landing-header.component.scss',
   host: {
     class: 'sticky top-0 z-50 block w-full',
+    '[class.pointer-events-none]': 'scrolled()',
   },
   template: `
     <header class="block h-16 w-full bg-transparent" role="banner">
@@ -36,14 +37,14 @@ const SCROLL_THRESHOLD = 8;
         <div class="relative h-full">
           <a
             routerLink="/"
-            class="absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
+            class="pointer-events-auto absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
           >
             tdp.
           </a>
 
           <div class="flex h-full items-center justify-center">
             <div
-              class="header-pill flex items-center gap-4 rounded-full border border-landing-border bg-[var(--landing-header-bg)] px-5 py-2 backdrop-blur-md shadow-sm"
+              class="header-pill pointer-events-auto flex items-center gap-4 rounded-full border border-landing-border bg-[var(--landing-header-bg)] px-5 py-2 backdrop-blur-md shadow-sm"
             >
               <nav class="hidden items-center gap-6 md:flex" aria-label="Primary">
                 @for (item of navItems; track item.path) {
