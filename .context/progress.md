@@ -239,7 +239,7 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 281-home-hero (M) — deps: 274, 278, 279, 277 ✓
 - [x] 282-home-intro (S) — deps: 274, 280 ✓
 - [x] 283-home-selected-work (L) — deps: 274, 278, 279, 280, 277 ✓
-- [ ] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277
+- [x] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277 ✓
 - [ ] 285-home-philosophy-strip (S) — deps: 274, 280
 - [ ] 285b-home-stack (M) — deps: 274, 278, 279, 277, 277b
 - [ ] 286-home-get-in-touch (S) — deps: 274, 278
@@ -308,16 +308,16 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 in progress. **281/282/283 done** (283 = home Selected Work tabs + 40/60 mini-gallery with B3.b text-only fallback). Recommended next: any of 284/285/285b.
+**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 in progress. **281/282/283/284 done** (284 = home §3 Bio Card Grid, PF2 Aurora + PF7 hover with shared `landing-card variant=glass tilt` + `landing-background pattern=aurora` extracted along the way). Recommended next: any of 285/285b/286/287.
 
 
 ## Statistics
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 295     |
+| Done (archived)           | 296     |
 | In Progress               | 0       |
-| Pending                   | 37      |
+| Pending                   | 36      |
 | **Total Created**         | **332** |
 | Epics completed           | 29      |
 
