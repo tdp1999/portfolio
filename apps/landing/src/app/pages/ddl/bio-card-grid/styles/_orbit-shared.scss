@@ -1,27 +1,24 @@
 /* ──────────────────────────────────────────────────────────────────────────
  * Centerpiece-orbit family · PF8 / PF9 / PF10
  *
- * Shared layout: aurora-glass cards orbit a centerpiece disc that carves a
- * pie shape out of each card's center-facing corner. Disc is a real visible
- * surface (page-bg fill + hairline border) — its edge is the same circle
- * that masks each card, so the carved outline reads as one continuous shape.
+ * Shared via `proto-grid--orbit` / `proto-card--orbit` (set by the page
+ * component when isOrbit() is true). Per-prototype centerpiece visuals
+ * live in `_orbit-art.scss`.
+ *
+ * Aurora-glass cards orbit a centerpiece disc that carves a pie shape out
+ * of each card's center-facing corner. The disc is a real visible surface
+ * (page-bg fill + hairline border) — its edge is the same circle that
+ * masks each card, so the carved outline reads as one continuous shape.
  *
  * Two card-count layouts toggleable via [data-cards]:
  *   3 → 1-big-top (Card A spans 2 cols) + 2-small-bottom (B, C)
- *       Disc straddles row 1 / row 2 boundary, centered.
  *   4 → 2 × 2 grid (A B / C D)
- *       Disc at grid center; each card pie-cut at its center-facing corner.
  *
- * Mobile (<768px): centerpiece is hidden, cards stack in a single column
- * with no carving — content stays first-class on small screens.
+ * Mobile (<768px): centerpiece hidden, cards stack — content stays
+ * first-class on small screens.
  * ────────────────────────────────────────────────────────────────────────── */
 
-.proto-grid--pf8-doc-engine,
-.proto-grid--pf9-compass,
-.proto-grid--pf10-constellation {
-  /* Carve geometry. Centerpiece size; cut-clearance = the depth the bite
-     reaches into a card from its cut edge. Used as min-height boost for
-     bottom-anchored cards and as padding-bottom for top-anchored ones. */
+.proto-grid--orbit {
   --carve-r: clamp(140px, 14vw, 180px);
   --gap-half: 12px;
   --cut-clearance: calc(var(--carve-r) - var(--gap-half));
@@ -37,81 +34,68 @@
     'b'
     'c'
     'd';
+
+  & .proto-card--a {
+    grid-area: a;
+  }
+  & .proto-card--b {
+    grid-area: b;
+  }
+  & .proto-card--c {
+    grid-area: c;
+  }
+  & .proto-card--d {
+    grid-area: d;
+  }
 }
 
-.proto-card--pf8-doc-engine.proto-card--a,
-.proto-card--pf9-compass.proto-card--a,
-.proto-card--pf10-constellation.proto-card--a {
-  grid-area: a;
-}
-.proto-card--pf8-doc-engine.proto-card--b,
-.proto-card--pf9-compass.proto-card--b,
-.proto-card--pf10-constellation.proto-card--b {
-  grid-area: b;
-}
-.proto-card--pf8-doc-engine.proto-card--c,
-.proto-card--pf9-compass.proto-card--c,
-.proto-card--pf10-constellation.proto-card--c {
-  grid-area: c;
-}
-.proto-card--pf8-doc-engine.proto-card--d,
-.proto-card--pf9-compass.proto-card--d,
-.proto-card--pf10-constellation.proto-card--d {
-  grid-area: d;
-}
-
-/* Section-level aurora bleed. Tinted accent gradients on top of an
-   ink-1 surface so light theme reads as ink-1 with a soft indigo wash and
-   dark theme reads as deep with the same tint. */
+/* Section-level aurora bleed — tinted accent gradients on top of an
+   ink-1 surface so light theme reads as ink-1 with a soft indigo wash. */
 .proto-preview[data-proto='pf8-doc-engine'],
 .proto-preview[data-proto='pf9-compass'],
 .proto-preview[data-proto='pf10-constellation'] {
   background-color: var(--landing-ink-1);
-}
-.proto-preview[data-proto='pf8-doc-engine']::before,
-.proto-preview[data-proto='pf9-compass']::before,
-.proto-preview[data-proto='pf10-constellation']::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 60vw 50vh at 18% 20%,
-      color-mix(in oklab, var(--landing-accent) 30%, transparent) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 65vw 55vh at 82% 78%,
-      color-mix(in oklab, var(--landing-accent) 22%, transparent) 0%,
-      transparent 70%
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse 60vw 50vh at 18% 20%,
+        color-mix(in oklab, var(--landing-accent) 30%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 65vw 55vh at 82% 78%,
+        color-mix(in oklab, var(--landing-accent) 22%, transparent) 0%,
+        transparent 70%
+      );
+    filter: blur(60px);
+    mask-image: linear-gradient(to bottom, transparent 0, black 60px, black calc(100% - 60px), transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black 60px,
+      black calc(100% - 60px),
+      transparent 100%
     );
-  filter: blur(60px);
-  mask-image: linear-gradient(to bottom, transparent 0, black 60px, black calc(100% - 60px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 60px, black calc(100% - 60px), transparent 100%);
+  }
 }
 
-/* Shared orbit card — aurora glass + perspective hover. Uses semantic
-   tokens so it adapts in light theme. */
-.proto-card--pf8-doc-engine,
-.proto-card--pf9-compass,
-.proto-card--pf10-constellation {
+/* Shared orbit card — aurora glass + perspective hover. */
+.proto-card--orbit {
   position: relative;
   z-index: 2;
   border: 1px solid var(--landing-border);
   border-radius: 16px;
-  /* Translucent surface — slightly more opaque than other glass variants
-     so text contrast stays readable in light theme. */
   background-color: color-mix(in srgb, var(--landing-ink-0) 78%, transparent);
   backdrop-filter: blur(28px) saturate(130%);
   -webkit-backdrop-filter: blur(28px) saturate(130%);
   padding: 20px;
   min-height: 240px;
-  @media (min-width: 1024px) {
-    padding: 28px;
-    min-height: 280px;
-  }
   transform-style: preserve-3d;
   transition:
     transform 320ms ease,
@@ -120,21 +104,24 @@
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--landing-text-300) 4%, transparent) inset,
     0 8px 20px rgba(0, 0, 0, 0.18);
-}
-.proto-card--pf8-doc-engine .proto-card__eyebrow,
-.proto-card--pf9-compass .proto-card__eyebrow,
-.proto-card--pf10-constellation .proto-card__eyebrow {
-  color: var(--landing-text-500);
-}
-.proto-card--pf8-doc-engine:hover,
-.proto-card--pf9-compass:hover,
-.proto-card--pf10-constellation:hover {
-  transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-3px);
-  border-color: var(--landing-border-strong);
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--landing-text-300) 8%, transparent) inset,
-    0 14px 28px rgba(0, 0, 0, 0.25),
-    0 36px 64px rgba(0, 0, 0, 0.28);
+
+  @media (min-width: 1024px) {
+    padding: 28px;
+    min-height: 280px;
+  }
+
+  & .proto-card__eyebrow {
+    color: var(--landing-text-500);
+  }
+
+  &:hover {
+    transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-3px);
+    border-color: var(--landing-border-strong);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--landing-text-300) 8%, transparent) inset,
+      0 14px 28px rgba(0, 0, 0, 0.25),
+      0 36px 64px rgba(0, 0, 0, 0.28);
+  }
 }
 
 /* ============================================================
@@ -151,301 +138,185 @@
   aspect-ratio: 1;
   z-index: 4;
   overflow: visible;
+
+  /* Disc — page-bg fill + visible hairline draws the curved portion of
+     the carved outline. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: var(--landing-bg);
+    border: 1px solid var(--landing-border-strong);
+    z-index: 5;
+  }
+
+  /* Animation art floats above the disc fill */
+  & > * {
+    position: relative;
+    z-index: 6;
+  }
 }
 
-/* The disc itself — fills the wrapper bounds. Page-bg fill + visible
-   hairline border draws the curved portion of the carved outline. */
-.proto-orbit-center::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background-color: var(--landing-bg);
-  border: 1px solid var(--landing-border-strong);
-  z-index: 5;
-}
-
-/* Animation art floats above the disc fill */
-.proto-orbit-center > * {
-  position: relative;
-  z-index: 6;
+/* Reusable masks. Cards mask themselves so the disc edge and card mask
+   coincide on the gap centreline. */
+@mixin orbit-mask($x, $y) {
+  mask: radial-gradient(circle at $x $y, transparent var(--carve-r), black calc(var(--carve-r) + 1px));
+  -webkit-mask: radial-gradient(circle at $x $y, transparent var(--carve-r), black calc(var(--carve-r) + 1px));
 }
 
 /* ============================================================
- *  Layout: 3 cards (1-big-top + 2-small-bottom)
+ *  Desktop: orbit layouts (3- and 4-card) live behind 1024px MQ.
  * ============================================================ */
 @media (min-width: 1024px) {
-  .proto-grid--pf8-doc-engine[data-cards='3'],
-  .proto-grid--pf9-compass[data-cards='3'],
-  .proto-grid--pf10-constellation[data-cards='3'] {
+  /* ── 3 cards: 1-big-top + 2-small-bottom ────────────────── */
+  .proto-grid--orbit[data-cards='3'] {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-template-areas:
       'a a'
       'b c';
+
+    /* Disc straddles row1/row2 boundary, centered. */
+    & .proto-orbit-center {
+      display: flex;
+      grid-row: 1;
+      grid-column: 1 / 3;
+      align-self: end;
+      justify-self: center;
+      margin-bottom: calc(-1 * (var(--carve-r) + var(--gap-half)));
+    }
+
+    /* Card A — full-width top, half-moon cut at bottom-center */
+    & .proto-card--a {
+      @include orbit-mask(50%, calc(100% + var(--gap-half)));
+      padding-bottom: var(--cut-clearance);
+
+      & .proto-card__rows {
+        margin-top: auto;
+      }
+    }
+
+    /* Card B — bottom-left, pie cut at top-right */
+    & .proto-card--b {
+      @include orbit-mask(calc(100% + var(--gap-half)), calc(0% - var(--gap-half)));
+      align-self: start;
+      min-height: calc(160px + var(--cut-clearance));
+
+      & > .proto-card__eyebrow {
+        align-self: flex-start;
+        max-width: calc(100% - var(--carve-r));
+      }
+      & .proto-card__body {
+        justify-content: flex-end;
+      }
+    }
+
+    /* Card C — bottom-right, pie cut at top-left */
+    & .proto-card--c {
+      @include orbit-mask(calc(0% - var(--gap-half)), calc(0% - var(--gap-half)));
+      align-self: start;
+      min-height: calc(160px + var(--cut-clearance));
+
+      & > .proto-card__eyebrow {
+        align-self: flex-end;
+        text-align: right;
+        max-width: calc(100% - var(--carve-r));
+      }
+      & .proto-card__body {
+        justify-content: flex-end;
+        align-items: flex-end;
+        text-align: right;
+      }
+    }
+
+    /* Card D — never visible in 3-card layout */
+    & .proto-card--d {
+      display: none;
+    }
+
+    /* Card A meta column right-aligns in 3-card layout */
+    & .proto-card__meta {
+      text-align: right;
+    }
   }
 
-  /* Disc placed in row 1, anchored to row 1's bottom edge, then shifted
-     down by (carve_r + gap_half) so its center sits on the row 1 / row 2
-     boundary, horizontally centered across the grid. */
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-orbit-center,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-orbit-center,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-orbit-center {
-    display: flex;
-    grid-row: 1;
-    grid-column: 1 / 3;
-    align-self: end;
-    justify-self: center;
-    margin-bottom: calc(-1 * (var(--carve-r) + var(--gap-half)));
-  }
-
-  /* Card A — full-width top, half-moon cut at bottom-center */
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--a,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--a,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--a {
-    mask: radial-gradient(
-      circle at 50% calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at 50% calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    /* Reserve depth for the half-moon bite so rows don't bleed under it.
-       No extra min-height boost — let the card grow with its content. */
-    padding-bottom: var(--cut-clearance);
-  }
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--a .proto-card__rows,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--a .proto-card__rows,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--a .proto-card__rows {
-    margin-top: auto;
-  }
-
-  /* Card B — bottom-left, pie cut at top-right.
-     min-height ensures the card is tall enough for cut zone (top) +
-     bottom-anchored body content. Eyebrow stays at top-left, kept clear
-     of the cut by max-width. Body bottom-anchors the quote like C. */
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--b,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--b,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--b {
-    mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    align-self: start;
-    min-height: calc(160px + var(--cut-clearance));
-  }
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--b > .proto-card__eyebrow,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--b > .proto-card__eyebrow,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--b > .proto-card__eyebrow {
-    align-self: flex-start;
-    max-width: calc(100% - var(--carve-r));
-  }
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--b .proto-card__body,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--b .proto-card__body,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--b .proto-card__body {
-    justify-content: flex-end;
-  }
-
-  /* Card C — bottom-right, pie cut at top-left.
-     Eyebrow top-right, body anchored bottom-right (text-align right).
-     min-height matches Card B so the row reads as a balanced pair. */
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--c,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--c,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--c {
-    mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    align-self: start;
-    min-height: calc(160px + var(--cut-clearance));
-  }
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--c > .proto-card__eyebrow,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--c > .proto-card__eyebrow,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--c > .proto-card__eyebrow {
-    align-self: flex-end;
-    text-align: right;
-    max-width: calc(100% - var(--carve-r));
-  }
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--c .proto-card__body,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--c .proto-card__body,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--c .proto-card__body {
-    justify-content: flex-end;
-    align-items: flex-end;
-    text-align: right;
-  }
-
-  /* Card D — never visible in 3-card layout */
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card--d,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card--d,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card--d {
-    display: none;
-  }
-}
-
-/* ============================================================
- *  Layout: 4 cards (2 × 2)
- *  Each card sized to (default + carve_r) so cut zone is dedicated
- *  empty space and content fills the opposite corner.
- * ============================================================ */
-@media (min-width: 1024px) {
-  .proto-grid--pf8-doc-engine[data-cards='4'],
-  .proto-grid--pf9-compass[data-cards='4'],
-  .proto-grid--pf10-constellation[data-cards='4'] {
+  /* ── 4 cards: 2 × 2 ─────────────────────────────────────── */
+  .proto-grid--orbit[data-cards='4'] {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-template-areas:
       'a b'
       'c d';
-  }
 
-  /* Disc at the row 1 / row 2 boundary, horizontally centered across the
-     grid. Anchored to row 1's bottom edge then shifted down by
-     (carve_r + gap_half) so its center lands exactly on the boundary —
-     independent of row heights, which avoids the bug where place-self
-     drifts when rows are unequal (e.g. Card A short, Card B tall). */
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-orbit-center,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-orbit-center,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-orbit-center {
-    display: flex;
-    grid-row: 1;
-    grid-column: 1 / 3;
-    align-self: end;
-    justify-self: center;
-    margin-bottom: calc(-1 * (var(--carve-r) + var(--gap-half)));
-  }
+    & .proto-orbit-center {
+      display: flex;
+      grid-row: 1;
+      grid-column: 1 / 3;
+      align-self: end;
+      justify-self: center;
+      margin-bottom: calc(-1 * (var(--carve-r) + var(--gap-half)));
+    }
 
-  /* Card A (TL) — pie cut at bottom-right.
-     Content top-left: padding-right + padding-bottom carve content out
-     of the cut quadrant. */
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--a,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--a,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--a {
-    mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    padding-bottom: var(--cut-clearance);
-  }
+    /* Card A (TL) — pie cut at bottom-right */
+    & .proto-card--a {
+      @include orbit-mask(calc(100% + var(--gap-half)), calc(100% + var(--gap-half)));
+      padding-bottom: var(--cut-clearance);
+    }
 
-  /* Card B (TR) — pie cut at bottom-left.
-     Content top-right: padding-left + padding-bottom carve content out. */
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--b,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--b,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--b {
-    mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(100% + var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    padding-bottom: var(--cut-clearance);
-  }
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--b > .proto-card__eyebrow,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--b > .proto-card__eyebrow,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--b > .proto-card__eyebrow {
-    align-self: flex-end;
-    text-align: right;
-  }
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--b .proto-card__body,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--b .proto-card__body,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--b .proto-card__body {
-    align-items: flex-end;
-    text-align: right;
-  }
+    /* Card B (TR) — pie cut at bottom-left */
+    & .proto-card--b {
+      @include orbit-mask(calc(0% - var(--gap-half)), calc(100% + var(--gap-half)));
+      padding-bottom: var(--cut-clearance);
 
-  /* Card C (BL) — pie cut at top-right.
-     Content bottom-left: padding-top pushes content past the cut. */
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--c,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--c,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--c {
-    mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(100% + var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    padding-top: var(--cut-clearance);
-  }
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--c > .proto-card__eyebrow,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--c > .proto-card__eyebrow,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--c > .proto-card__eyebrow {
-    align-self: flex-start;
-    max-width: calc(100% - var(--carve-r));
-  }
+      & > .proto-card__eyebrow {
+        align-self: flex-end;
+        text-align: right;
+      }
+      & .proto-card__body {
+        align-items: flex-end;
+        text-align: right;
+      }
+    }
 
-  /* Card D (BR) — pie cut at top-left.
-     Content bottom-right: padding-top + flex-end anchoring. */
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--d,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--d,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--d {
-    mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    -webkit-mask: radial-gradient(
-      circle at calc(0% - var(--gap-half)) calc(0% - var(--gap-half)),
-      transparent var(--carve-r),
-      black calc(var(--carve-r) + 1px)
-    );
-    padding-top: var(--cut-clearance);
-  }
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--d > .proto-card__eyebrow,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--d > .proto-card__eyebrow,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--d > .proto-card__eyebrow {
-    align-self: flex-end;
-    text-align: right;
-    max-width: calc(100% - var(--carve-r));
-  }
-  .proto-grid--pf8-doc-engine[data-cards='4'] .proto-card--d .proto-card__body,
-  .proto-grid--pf9-compass[data-cards='4'] .proto-card--d .proto-card__body,
-  .proto-grid--pf10-constellation[data-cards='4'] .proto-card--d .proto-card__body {
-    justify-content: flex-end;
-    align-items: flex-end;
-    text-align: right;
+    /* Card C (BL) — pie cut at top-right */
+    & .proto-card--c {
+      @include orbit-mask(calc(100% + var(--gap-half)), calc(0% - var(--gap-half)));
+      padding-top: var(--cut-clearance);
+
+      & > .proto-card__eyebrow {
+        align-self: flex-start;
+        max-width: calc(100% - var(--carve-r));
+      }
+    }
+
+    /* Card D (BR) — pie cut at top-left */
+    & .proto-card--d {
+      @include orbit-mask(calc(0% - var(--gap-half)), calc(0% - var(--gap-half)));
+      padding-top: var(--cut-clearance);
+
+      & > .proto-card__eyebrow {
+        align-self: flex-end;
+        text-align: right;
+        max-width: calc(100% - var(--carve-r));
+      }
+      & .proto-card__body {
+        justify-content: flex-end;
+        align-items: flex-end;
+        text-align: right;
+      }
+    }
   }
 }
 
-/* Legacy spacer from an earlier shape-outside experiment. Bottom-anchor
-   layout makes it unnecessary — keep hidden in case it remains in DOM. */
+/* Legacy spacer from an earlier shape-outside experiment — keep hidden
+   in case it remains in DOM. */
 .proto-card__cut-spacer {
   display: none;
 }
 
 /* ============================================================
- *  Card A · orbit-family content (replaces the 2-col rows table)
- *  Heading on the left, mono meta list on the right. On narrow
- *  cards (4-card mode) the meta wraps below the heading naturally
- *  via flex-wrap.
+ *  Card A · orbit-family content
  * ============================================================ */
 .proto-card__orbit-content {
   display: flex;
@@ -471,42 +342,22 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--landing-text-500);
-  /* Default left-align — used on mobile (single column) and in 4-card
-     mode where meta wraps below the heading. Right-align only kicks in
-     for the 3-card desktop layout where Card A is full-width and meta
-     sits as a side column on the right. */
   text-align: left;
-}
-.proto-card__meta li {
-  white-space: nowrap;
-}
 
-@media (min-width: 1024px) {
-  .proto-grid--pf8-doc-engine[data-cards='3'] .proto-card__meta,
-  .proto-grid--pf9-compass[data-cards='3'] .proto-card__meta,
-  .proto-grid--pf10-constellation[data-cards='3'] .proto-card__meta {
-    text-align: right;
+  & li {
+    white-space: nowrap;
   }
-  /* Cards stretch to their grid row height (default align-self) so cards
-     in the same row share a baseline. This is required for the disc cut
-     to align — the disc sits on the row 1 / row 2 boundary, and each
-     card's mask circle is anchored at its own corner, so the disc edge
-     and mask circle only coincide when every card in row 1 ends at the
-     same y (and row 2 starts at the same y). */
 }
 
 /* ============================================================
  *  Reduced-motion
  * ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .proto-card--pf8-doc-engine,
-  .proto-card--pf9-compass,
-  .proto-card--pf10-constellation {
+  .proto-card--orbit {
     transition: none;
-  }
-  .proto-card--pf8-doc-engine:hover,
-  .proto-card--pf9-compass:hover,
-  .proto-card--pf10-constellation:hover {
-    transform: none;
+
+    &:hover {
+      transform: none;
+    }
   }
 }

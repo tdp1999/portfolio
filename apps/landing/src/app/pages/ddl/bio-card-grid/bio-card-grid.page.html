@@ -254,6 +254,7 @@
       <div
         [class]="'proto-grid proto-grid--' + active()"
         [class.proto-grid--bento]="active() === 'pf1-spotlight'"
+        [class.proto-grid--orbit]="isOrbit()"
         [attr.data-cards]="isOrbit() ? cardCount() : null"
       >
         @if (active() === 'pf5-boundary') {
@@ -380,7 +381,7 @@
         }
 
         <!-- ============================== Card A — IDENTITY ============================== -->
-        <article [class]="'proto-card proto-card--a proto-card--' + active()">
+        <article [class]="'proto-card proto-card--a proto-card--' + active() + (isOrbit() ? ' proto-card--orbit' : '')">
           @if (active() === 'p3-numbered') {
             <span class="proto-card__index">01</span>
           }
@@ -449,7 +450,7 @@
         </article>
 
         <!-- ============================== Card B — PHILOSOPHY ============================== -->
-        <article [class]="'proto-card proto-card--b proto-card--' + active()">
+        <article [class]="'proto-card proto-card--b proto-card--' + active() + (isOrbit() ? ' proto-card--orbit' : '')">
           @if (active() === 'p3-numbered') {
             <span class="proto-card__index">02</span>
           }
@@ -525,7 +526,7 @@
         </article>
 
         <!-- ============================== Card C — CONTACT ============================== -->
-        <article [class]="'proto-card proto-card--c proto-card--' + active()">
+        <article [class]="'proto-card proto-card--c proto-card--' + active() + (isOrbit() ? ' proto-card--orbit' : '')">
           @if (active() === 'p3-numbered') {
             <span class="proto-card__index">03</span>
           }
@@ -570,7 +571,9 @@
 
         <!-- ============================== Card D — NOW (orbit · 4-card only) ============================== -->
         @if (isOrbit() && cardCount() === 4) {
-          <article [class]="'proto-card proto-card--d proto-card--' + active()">
+          <article
+            [class]="'proto-card proto-card--d proto-card--' + active() + (isOrbit() ? ' proto-card--orbit' : '')"
+          >
             <p class="proto-card__eyebrow">§3.4 NOW</p>
             <div class="proto-card__body">
               <p class="font-sans text-body-md text-landing-text-300 leading-relaxed">
