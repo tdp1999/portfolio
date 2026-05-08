@@ -11,6 +11,26 @@
   color: var(--landing-text-500);
 }
 
+.landing-eyebrow--accent-first .landing-eyebrow__part {
+  color: var(--landing-text-400);
+}
+.landing-eyebrow--accent-first .landing-eyebrow__part:first-child {
+  color: var(--landing-accent);
+}
+
+.landing-eyebrow--with-rule {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
 .landing-eyebrow__sep {
   color: var(--landing-text-600);
+}
+
+.landing-eyebrow__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: var(--landing-border);
+  margin-left: 8px;
 }

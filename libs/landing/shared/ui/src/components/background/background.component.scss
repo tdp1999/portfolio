@@ -118,3 +118,40 @@
   mask-image: radial-gradient(circle at 80% 75%, black 0%, black 30%, transparent 80%);
   -webkit-mask-image: radial-gradient(circle at 80% 75%, black 0%, black 30%, transparent 80%);
 }
+
+/* ─────────────────────────────────── 6. Aurora — blurred accent blob mesh ─── */
+.landing-bg--aurora {
+  /* anchors the absolute blob children to the bg layer, not the :host stacking context */
+  position: absolute;
+  inset: 0;
+}
+.landing-bg__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+}
+.landing-bg__blob--1 {
+  top: -10%;
+  left: 10%;
+  width: 480px;
+  height: 480px;
+  background-color: var(--landing-accent);
+  opacity: 0.22;
+}
+.landing-bg__blob--2 {
+  bottom: -20%;
+  right: 5%;
+  width: 520px;
+  height: 520px;
+  background-color: var(--landing-accent);
+  opacity: 0.16;
+}
+/* Solid bg + explicit opacity (rather than color-mix) so old Safari (<16.2) still renders the blob. */
+.landing-bg__blob--3 {
+  top: 30%;
+  right: 35%;
+  width: 360px;
+  height: 360px;
+  background-color: var(--landing-text-300);
+  opacity: 0.04;
+}

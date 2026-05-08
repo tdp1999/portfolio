@@ -146,4 +146,39 @@ describe('CardComponent', () => {
       expect(component.cardClasses()).toBe('card');
     });
   });
+
+  describe('glass variant', () => {
+    it('should default variant to plain', () => {
+      expect(component.variant()).toBe('plain');
+    });
+
+    it('should not apply card--glass by default', () => {
+      expect(fixture.nativeElement.querySelector('.card--glass')).toBeFalsy();
+    });
+
+    it('should apply card--glass class when variant is glass', () => {
+      fixture.componentRef.setInput('variant', 'glass');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.card--glass')).toBeTruthy();
+    });
+
+    it('should compose classes with glass + tilt', () => {
+      fixture.componentRef.setInput('variant', 'glass');
+      fixture.componentRef.setInput('tilt', true);
+      fixture.detectChanges();
+      expect(component.cardClasses()).toBe('card card--glass card--tilt');
+    });
+  });
+
+  describe('tilt modifier', () => {
+    it('should default tilt to false', () => {
+      expect(component.tilt()).toBe(false);
+    });
+
+    it('should apply card--tilt class when tilt is true', () => {
+      fixture.componentRef.setInput('tilt', true);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.card--tilt')).toBeTruthy();
+    });
+  });
 });
