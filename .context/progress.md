@@ -242,9 +242,9 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 284-home-bio-card-grid (M) — deps: 274, 278, 279, 277 ✓
 - [x] 285-home-philosophy-strip (S) — deps: 274, 280 ✓
 - [x] 285b-home-stack (M) — deps: 274, 278, 279, 277, 277b ✓
-- [ ] 286-home-get-in-touch (S) — deps: 274, 278
-- [ ] 287-home-footer-banner (S) — deps: 274, 278
-- [ ] 288-home-page-composition (S) — deps: 281–287, 285b
+- [x] 286-home-get-in-touch (S) — deps: 274, 278 ✓
+- [x] 287-home-footer-banner (S) — deps: 274, 278 ✓
+- [x] 288-home-page-composition (S) — deps: 281–287, 285b ✓
 
 ### Phase 5 — Sub-pages
 
@@ -308,7 +308,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–3 complete + Phase 4 nearly complete. **281/282/283/284/285/285b done** (285 = §6b philosophy strip; 285b = §5 The Stack with Tier 1 prose + Tier 2 grouped pills, introduced `SkillService` + `**bold**` parse). Recommended next: 286 (Get in Touch) or 287 (Footer Banner), then 288 page composition closes Phase 4.
+**Current:** Portfolio E5 implementation. Phases 1–4 complete. **All home sections + composition shipped (281–288).** 286 Get-in-Touch + 287 Footer Banner + 288 Page Composition closed in one sweep on 2026-05-08 — footer banner promoted into `landing-shell` (mounted globally, hatch DDL background), floating pill nav gained `hideOnSelector` / `hideWhileActiveIn` configs + outside-click + `lg:`-only gating, eyebrow numbering re-aligned to displayed order (02 Who → 06 Get in Touch). Lighthouse smoke on prod build: A11y 97 / BP 100 / SEO 83 pass; Performance 61 deferred to E6 perf-polish epic per task 288 spec ("full polish in E6"). **Next:** Phase 5 sub-pages — 289 (projects index), 290 (project detail), 291 (uses), 292 (colophon), 293 (404).
 
 **SSR/hydration hardening (2026-05-08, alongside 285/285b):** Fixed post-hydration data flash on home re-mount (back-nav from /ddl) — root cause was cold observables in landing data services. Added `shareReplay({ refCount: false })` to `Profile/Skill/Experience/Project` services + a tiny native-fetch reverse proxy on `/api/*` in `apps/landing/src/server.ts` so browser same-origin `/api/...` reaches the API service (was 302→/404 in prod where landing & API are separate Railway services). Bumped landing `anyComponentStyle` budget 8/16kB→16/32kB and refactored `bio-card-grid` orbit SCSS (3-prototype selector list → shared `.proto-grid--orbit` / `.proto-card--orbit`). New rules captured in `landing-ssr.md` + `guides/deploy-railway-ssr.md` (§4b browser proxy).
 
@@ -317,9 +317,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 298     |
+| Done (archived)           | 301     |
 | In Progress               | 0       |
-| Pending                   | 34      |
+| Pending                   | 31      |
 | **Total Created**         | **332** |
 | Epics completed           | 29      |
 
