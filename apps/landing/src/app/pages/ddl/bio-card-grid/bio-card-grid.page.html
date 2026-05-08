@@ -34,6 +34,32 @@
       active · {{ entry().combo }}
     </p>
     <p class="font-sans text-body-sm text-landing-text-400 mt-1">{{ entry().hint }}</p>
+
+    @if (isOrbit()) {
+      <div class="mt-4 flex items-center gap-3">
+        <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">cards</span>
+        <div class="proto-toggle" role="group" aria-label="Card count">
+          <button
+            type="button"
+            class="proto-toggle__btn"
+            [class.proto-toggle__btn--active]="cardCount() === 3"
+            (click)="setCardCount(3)"
+            [attr.aria-pressed]="cardCount() === 3"
+          >
+            3 cards
+          </button>
+          <button
+            type="button"
+            class="proto-toggle__btn"
+            [class.proto-toggle__btn--active]="cardCount() === 4"
+            (click)="setCardCount(4)"
+            [attr.aria-pressed]="cardCount() === 4"
+          >
+            4 cards
+          </button>
+        </div>
+      </div>
+    }
   </div>
 </landing-container>
 
@@ -105,6 +131,15 @@
         <ng-container *ngTemplateOutlet="hSectionMark" />
       }
       @case ('pf7-dimensional') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf8-doc-engine') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf9-compass') {
+        <ng-container *ngTemplateOutlet="hSectionMark" />
+      }
+      @case ('pf10-constellation') {
         <ng-container *ngTemplateOutlet="hSectionMark" />
       }
     }
@@ -215,8 +250,12 @@
         </div>
       </div>
     } @else {
-      <!-- 3-card grid (default + most fancy variants) -->
-      <div [class]="'proto-grid proto-grid--' + active()" [class.proto-grid--bento]="active() === 'pf1-spotlight'">
+      <!-- Card grid (default + most fancy variants) -->
+      <div
+        [class]="'proto-grid proto-grid--' + active()"
+        [class.proto-grid--bento]="active() === 'pf1-spotlight'"
+        [attr.data-cards]="isOrbit() ? cardCount() : null"
+      >
         @if (active() === 'pf5-boundary') {
           <!-- Overflow analog clock breaking grid boundary -->
           <div class="proto-overflow proto-overflow--clock" aria-hidden="true">
@@ -250,6 +289,96 @@
           </div>
         }
 
+        @if (active() === 'pf8-doc-engine') {
+          <!-- Centerpiece: animated Document Engine wireframe behind Card B -->
+          <div class="proto-orbit-center proto-orbit-center--doc" aria-hidden="true">
+            <div class="proto-doc">
+              <div class="proto-doc__chrome">
+                <span></span><span></span><span></span>
+                <em class="font-mono">document-engine</em>
+              </div>
+              <div class="proto-doc__viewport">
+                <div class="proto-doc__sidebar">
+                  <span class="proto-doc__nav"></span>
+                  <span class="proto-doc__nav proto-doc__nav--active"></span>
+                  <span class="proto-doc__nav"></span>
+                  <span class="proto-doc__nav"></span>
+                  <span class="proto-doc__nav"></span>
+                </div>
+                <div class="proto-doc__main">
+                  <span class="proto-doc__bar proto-doc__bar--lg"></span>
+                  <span class="proto-doc__bar"></span>
+                  <span class="proto-doc__bar proto-doc__bar--shift"></span>
+                  <span class="proto-doc__bar proto-doc__bar--md"></span>
+                  <span class="proto-doc__cursor"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (active() === 'pf9-compass') {
+          <!-- Centerpiece: HCMC compass — concentric rings + pulsing coordinate -->
+          <div class="proto-orbit-center proto-orbit-center--compass" aria-hidden="true">
+            <svg viewBox="0 0 240 240" class="proto-compass">
+              <circle cx="120" cy="120" r="110" fill="none" stroke="currentColor" stroke-width="1" opacity="0.18" />
+              <circle cx="120" cy="120" r="86" fill="none" stroke="currentColor" stroke-width="1" opacity="0.28" />
+              <circle
+                cx="120"
+                cy="120"
+                r="60"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="2 6"
+                opacity="0.4"
+                class="proto-compass__ring-rotating"
+              />
+              <line x1="120" y1="10" x2="120" y2="30" stroke="currentColor" stroke-width="1" opacity="0.5" />
+              <line x1="120" y1="210" x2="120" y2="230" stroke="currentColor" stroke-width="1" opacity="0.5" />
+              <line x1="10" y1="120" x2="30" y2="120" stroke="currentColor" stroke-width="1" opacity="0.5" />
+              <line x1="210" y1="120" x2="230" y2="120" stroke="currentColor" stroke-width="1" opacity="0.5" />
+              <text x="120" y="14" text-anchor="middle" class="proto-compass__cardinal">N</text>
+              <text x="120" y="234" text-anchor="middle" class="proto-compass__cardinal">S</text>
+              <text x="6" y="124" class="proto-compass__cardinal">W</text>
+              <text x="234" y="124" text-anchor="end" class="proto-compass__cardinal">E</text>
+              <circle cx="120" cy="120" r="4" fill="currentColor" class="proto-compass__dot" />
+              <circle
+                cx="120"
+                cy="120"
+                r="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                class="proto-compass__pulse"
+              />
+              <text x="120" y="154" text-anchor="middle" class="proto-compass__coord">10.776°N · 106.700°E</text>
+              <text x="120" y="170" text-anchor="middle" class="proto-compass__label">HCMC</text>
+            </svg>
+          </div>
+        }
+
+        @if (active() === 'pf10-constellation') {
+          <!-- Centerpiece: stack constellation — 8 tag nodes on 2 rotating rings -->
+          <div class="proto-orbit-center proto-orbit-center--constellation" aria-hidden="true">
+            <div class="proto-constellation">
+              <span class="proto-constellation__ring proto-constellation__ring--inner"></span>
+              <span class="proto-constellation__ring proto-constellation__ring--outer"></span>
+              <span class="proto-constellation__core font-mono">STACK</span>
+              @for (n of stackNodes; track n.label) {
+                <span
+                  class="proto-constellation__node font-mono"
+                  [class.proto-constellation__node--inner]="n.ring === 'inner'"
+                  [class.proto-constellation__node--outer]="n.ring === 'outer'"
+                  [style.--angle.deg]="n.angle"
+                >
+                  {{ n.label }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+
         <!-- ============================== Card A — IDENTITY ============================== -->
         <article [class]="'proto-card proto-card--a proto-card--' + active()">
           @if (active() === 'p3-numbered') {
@@ -271,7 +400,10 @@
             active() === 'pf2-aurora' ||
             active() === 'pf4-showcase' ||
             active() === 'pf5-boundary' ||
-            active() === 'pf7-dimensional'
+            active() === 'pf7-dimensional' ||
+            active() === 'pf8-doc-engine' ||
+            active() === 'pf9-compass' ||
+            active() === 'pf10-constellation'
           ) {
             <p class="proto-card__eyebrow">§3.1 IDENTITY</p>
           }
@@ -282,23 +414,37 @@
           }
 
           <div class="proto-card__body">
-            <p class="font-display text-display-sm text-landing-text-300 leading-tight">Phuong Tran</p>
-            <p class="font-sans text-body-md text-landing-text-400 mt-1">Senior Frontend Engineer</p>
+            @if (isOrbit()) {
+              <div class="proto-card__orbit-content">
+                <div class="proto-card__heading">
+                  <p class="font-display text-display-sm text-landing-text-300 leading-tight">Phuong Tran</p>
+                  <p class="font-sans text-body-md text-landing-text-400 mt-1">Senior Frontend Engineer</p>
+                </div>
+                <ul class="proto-card__meta">
+                  <li>HCMC · GMT+7</li>
+                  <li>09:00–18:00 ICT</li>
+                  <li>Open to SG market</li>
+                </ul>
+              </div>
+            } @else {
+              <p class="font-display text-display-sm text-landing-text-300 leading-tight">Phuong Tran</p>
+              <p class="font-sans text-body-md text-landing-text-400 mt-1">Senior Frontend Engineer</p>
 
-            <div class="proto-card__rows">
-              <div class="proto-card__row">
-                <span class="proto-card__row-key">LOCAL</span>
-                <span class="proto-card__row-val font-mono">14:32 · GMT+7</span>
+              <div class="proto-card__rows">
+                <div class="proto-card__row">
+                  <span class="proto-card__row-key">LOCAL</span>
+                  <span class="proto-card__row-val font-mono">14:32 · GMT+7</span>
+                </div>
+                <div class="proto-card__row">
+                  <span class="proto-card__row-key">HOURS</span>
+                  <span class="proto-card__row-val font-mono">09:00–18:00 ICT</span>
+                </div>
+                <div class="proto-card__row">
+                  <span class="proto-card__row-key">REMOTE</span>
+                  <span class="proto-card__row-val font-mono">SG market · HCMC</span>
+                </div>
               </div>
-              <div class="proto-card__row">
-                <span class="proto-card__row-key">HOURS</span>
-                <span class="proto-card__row-val font-mono">09:00–18:00 ICT</span>
-              </div>
-              <div class="proto-card__row">
-                <span class="proto-card__row-key">REMOTE</span>
-                <span class="proto-card__row-val font-mono">SG market · HCMC</span>
-              </div>
-            </div>
+            }
           </div>
         </article>
 
@@ -323,7 +469,10 @@
             active() === 'pf2-aurora' ||
             active() === 'pf4-showcase' ||
             active() === 'pf5-boundary' ||
-            active() === 'pf7-dimensional'
+            active() === 'pf7-dimensional' ||
+            active() === 'pf8-doc-engine' ||
+            active() === 'pf9-compass' ||
+            active() === 'pf10-constellation'
           ) {
             <p class="proto-card__eyebrow">§3.2 OUTLOOK</p>
           }
@@ -365,6 +514,7 @@
               <blockquote
                 class="proto-card__quote font-display text-body-lg text-landing-text-300 italic leading-relaxed"
               >
+                <span class="proto-card__cut-spacer" aria-hidden="true"></span>
                 "Five years in, four with a Singapore-based product team. I've come to like the feature work nobody asks
                 me to brag about — the design system before the screen, the test before the bug, the workflow before the
                 task.
@@ -395,7 +545,10 @@
             active() === 'pf2-aurora' ||
             active() === 'pf4-showcase' ||
             active() === 'pf5-boundary' ||
-            active() === 'pf7-dimensional'
+            active() === 'pf7-dimensional' ||
+            active() === 'pf8-doc-engine' ||
+            active() === 'pf9-compass' ||
+            active() === 'pf10-constellation'
           ) {
             <p class="proto-card__eyebrow">§3.3 CONTACT</p>
           }
@@ -414,6 +567,24 @@
             </div>
           </div>
         </article>
+
+        <!-- ============================== Card D — NOW (orbit · 4-card only) ============================== -->
+        @if (isOrbit() && cardCount() === 4) {
+          <article [class]="'proto-card proto-card--d proto-card--' + active()">
+            <p class="proto-card__eyebrow">§3.4 NOW</p>
+            <div class="proto-card__body">
+              <p class="font-sans text-body-md text-landing-text-300 leading-relaxed">
+                Reading <span class="italic text-landing-text-200">A Philosophy of Software Design</span>.
+              </p>
+              <p class="font-sans text-body-md text-landing-text-300 leading-relaxed mt-2">
+                Learning <span class="italic text-landing-text-200">Rust</span> after hours.
+              </p>
+              <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mt-4">
+                updated · this week
+              </p>
+            </div>
+          </article>
+        }
       </div>
     }
   </landing-container>

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { Location, NgTemplateOutlet } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContainerComponent, StatusDotComponent, LandingLinkComponent } from '@portfolio/landing/shared/ui';
 
 /**
@@ -31,7 +32,10 @@ type ProtoId =
   | 'pf4-showcase'
   | 'pf5-boundary'
   | 'pf6-brutalist'
-  | 'pf7-dimensional';
+  | 'pf7-dimensional'
+  | 'pf8-doc-engine'
+  | 'pf9-compass'
+  | 'pf10-constellation';
 
 type ProtoEntry = {
   id: ProtoId;
@@ -145,7 +149,37 @@ const PROTOS: readonly ProtoEntry[] = [
     hint: 'CSS perspective + multi-layer drop-shadow + paper noise.',
     combo: 'pseudo-3d · layered-shadow',
   },
+
+  // ── Centerpiece-orbit family (PF2 glass + PF5 hover + full-bleed) ───────────
+  {
+    id: 'pf8-doc-engine',
+    label: 'PF8 · Doc Engine Orbit',
+    hint: 'Centerpiece: animated Document Engine wireframe. Cards orbit in C-L2.',
+    combo: 'orbit · proof-of-work · glass · full-bleed',
+  },
+  {
+    id: 'pf9-compass',
+    label: 'PF9 · HCMC Compass Orbit',
+    hint: 'Centerpiece: concentric rings + coordinates 10.776°N · 106.700°E pulsing.',
+    combo: 'orbit · geographic · glass · full-bleed',
+  },
+  {
+    id: 'pf10-constellation',
+    label: 'PF10 · Stack Constellation Orbit',
+    hint: 'Centerpiece: stack tags on slow rotating rings around STACK label.',
+    combo: 'orbit · stack-as-solar-system · glass · full-bleed',
+  },
 ];
+
+const PROTO_IDS = new Set<string>(PROTOS.map((p) => p.id));
+
+function readProtoParam(value: string | null): ProtoId {
+  return value && PROTO_IDS.has(value) ? (value as ProtoId) : 'p1-plain';
+}
+
+function readCardsParam(value: string | null): 3 | 4 {
+  return value === '4' ? 4 : 3;
+}
 
 @Component({
   selector: 'landing-bio-card-grid-page',
@@ -156,9 +190,39 @@ const PROTOS: readonly ProtoEntry[] = [
   styleUrl: './bio-card-grid.page.scss',
 })
 export class BioCardGridPage {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+
   readonly protos = PROTOS;
-  readonly active = signal<ProtoId>('p1-plain');
+
+  /** Active proto, seeded from `?proto=` query param so reload preserves it. */
+  readonly active = signal<ProtoId>(readProtoParam(this.route.snapshot.queryParamMap.get('proto')));
   readonly entry = computed(() => PROTOS.find((p) => p.id === this.active()) ?? PROTOS[0]);
+
+  /** 3- vs 4-card layout — only meaningful for the orbit family (PF8/9/10).
+   *  Seeded from `?cards=` so reload preserves it. */
+  readonly cardCount = signal<3 | 4>(readCardsParam(this.route.snapshot.queryParamMap.get('cards')));
+  readonly isOrbit = computed(() => {
+    const id = this.active();
+    return id === 'pf8-doc-engine' || id === 'pf9-compass' || id === 'pf10-constellation';
+  });
+
+  /** Sync state → URL without triggering a router navigation, otherwise
+   *  Angular's scroll-position-restoration would jump the page back to the
+   *  top each time. `Location.replaceState` updates the address bar in
+   *  place via the History API. */
+  private readonly syncQueryParams = effect(() => {
+    const proto = this.active();
+    const cards = this.cardCount();
+    const isOrbit = this.isOrbit();
+    const tree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { proto, cards: isOrbit ? cards : null },
+      queryParamsHandling: 'merge',
+    });
+    this.location.replaceState(tree.toString());
+  });
 
   /**
    * Precomputed clock-face hour marks for PF5 boundary clock SVG.
@@ -176,7 +240,26 @@ export class BioCardGridPage {
     };
   });
 
+  /**
+   * Stack constellation nodes for PF10. Two rings; each node positioned by angle.
+   * Inner ring = 4 core langs/frameworks; outer ring = 4 supporting tools.
+   */
+  protected readonly stackNodes = [
+    { ring: 'inner' as const, angle: 0, label: 'Angular' },
+    { ring: 'inner' as const, angle: 90, label: 'NestJS' },
+    { ring: 'inner' as const, angle: 180, label: 'TypeScript' },
+    { ring: 'inner' as const, angle: 270, label: 'RxJS' },
+    { ring: 'outer' as const, angle: 45, label: 'Prisma' },
+    { ring: 'outer' as const, angle: 135, label: 'Tailwind' },
+    { ring: 'outer' as const, angle: 225, label: 'Nx' },
+    { ring: 'outer' as const, angle: 315, label: 'Postgres' },
+  ];
+
   setActive(id: ProtoId): void {
     this.active.set(id);
+  }
+
+  setCardCount(n: 3 | 4): void {
+    this.cardCount.set(n);
   }
 }

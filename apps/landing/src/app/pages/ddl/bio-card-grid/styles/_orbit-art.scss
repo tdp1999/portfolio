@@ -1,0 +1,257 @@
+/* PF8 / PF9 / PF10 centerpiece animation art */
+
+/* ─────────────── PF8 · Document Engine wireframe ─────────────── */
+.proto-orbit-center--doc .proto-doc {
+  width: 78%;
+}
+.proto-doc {
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--landing-ink-1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+.proto-doc__chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--landing-border);
+  background-color: var(--landing-ink-2);
+}
+.proto-doc__chrome span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--landing-text-300) 18%, transparent);
+}
+.proto-doc__chrome em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--landing-text-500);
+}
+.proto-doc__viewport {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  height: 220px;
+}
+.proto-doc__sidebar {
+  border-right: 1px solid var(--landing-border);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.proto-doc__nav {
+  height: 8px;
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--landing-text-300) 12%, transparent);
+}
+.proto-doc__nav--active {
+  background-color: var(--landing-accent);
+  opacity: 0.7;
+}
+.proto-doc__main {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.proto-doc__bar {
+  height: 10px;
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--landing-text-300) 12%, transparent);
+  width: 80%;
+}
+.proto-doc__bar--lg {
+  height: 18px;
+  width: 60%;
+  background-color: color-mix(in srgb, var(--landing-text-300) 22%, transparent);
+}
+.proto-doc__bar--md {
+  width: 45%;
+}
+.proto-doc__bar--shift {
+  animation: proto-doc-shift 4.8s ease-in-out infinite;
+}
+.proto-doc__cursor {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  width: 2px;
+  height: 16px;
+  background-color: var(--landing-accent);
+  animation: proto-doc-blink 1.1s steps(2, start) infinite;
+}
+@keyframes proto-doc-shift {
+  0%,
+  40%,
+  100% {
+    transform: translateX(0);
+    width: 80%;
+  }
+  60%,
+  85% {
+    transform: translateX(8%);
+    width: 70%;
+  }
+}
+@keyframes proto-doc-blink {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ─────────────── PF9 · HCMC compass ─────────────── */
+.proto-orbit-center--compass {
+  color: var(--landing-text-400);
+}
+.proto-orbit-center--compass .proto-compass {
+  width: 78%;
+}
+.proto-compass {
+  width: 100%;
+  height: auto;
+}
+.proto-compass__cardinal {
+  font-family: var(--landing-font-mono);
+  font-size: 10px;
+  fill: currentColor;
+  opacity: 0.5;
+  letter-spacing: 0.06em;
+}
+.proto-compass__coord {
+  font-family: var(--landing-font-mono);
+  font-size: 11px;
+  fill: currentColor;
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+}
+.proto-compass__label {
+  font-family: var(--landing-font-mono);
+  font-size: 9px;
+  fill: currentColor;
+  opacity: 0.5;
+  letter-spacing: 0.18em;
+}
+.proto-compass__ring-rotating {
+  transform-origin: 120px 120px;
+  animation: proto-compass-spin 28s linear infinite;
+}
+.proto-compass__pulse {
+  transform-origin: 120px 120px;
+  animation: proto-compass-pulse 2.4s ease-out infinite;
+}
+.proto-compass__dot {
+  fill: var(--landing-accent);
+}
+@keyframes proto-compass-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes proto-compass-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ─────────────── PF10 · Stack constellation ─────────────── */
+.proto-orbit-center--constellation .proto-constellation {
+  width: 92%;
+  height: 92%;
+}
+.proto-constellation {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.proto-constellation__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px dashed color-mix(in srgb, var(--landing-text-300) 14%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.proto-constellation__ring--inner {
+  width: 50%;
+  height: 50%;
+  animation: proto-constellation-spin 36s linear infinite;
+}
+.proto-constellation__ring--outer {
+  width: 92%;
+  height: 92%;
+  animation: proto-constellation-spin 60s linear infinite reverse;
+}
+.proto-constellation__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--landing-mono-md);
+  letter-spacing: 0.2em;
+  color: var(--landing-text-500);
+}
+.proto-constellation__node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 4px 10px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--landing-ink-0) 70%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-400);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.proto-constellation__node--inner {
+  --r: 25%;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translate(var(--r)) rotate(calc(-1 * var(--angle)));
+  animation: proto-constellation-node-inner 36s linear infinite;
+}
+.proto-constellation__node--outer {
+  --r: 46%;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translate(var(--r)) rotate(calc(-1 * var(--angle)));
+  animation: proto-constellation-node-outer 60s linear infinite reverse;
+}
+@keyframes proto-constellation-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+@keyframes proto-constellation-node-inner {
+  to {
+    transform: translate(-50%, -50%) rotate(calc(var(--angle) + 360deg)) translate(var(--r))
+      rotate(calc(-1 * (var(--angle) + 360deg)));
+  }
+}
+@keyframes proto-constellation-node-outer {
+  to {
+    transform: translate(-50%, -50%) rotate(calc(var(--angle) + 360deg)) translate(var(--r))
+      rotate(calc(-1 * (var(--angle) + 360deg)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proto-doc__bar--shift,
+  .proto-doc__cursor,
+  .proto-compass__ring-rotating,
+  .proto-compass__pulse,
+  .proto-constellation__ring--inner,
+  .proto-constellation__ring--outer,
+  .proto-constellation__node--inner,
+  .proto-constellation__node--outer {
+    animation: none;
+  }
+}
