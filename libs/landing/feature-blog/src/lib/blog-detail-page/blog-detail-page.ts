@@ -15,12 +15,20 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, from, of, map } from 'rxjs';
-import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  SectionComponent,
+  IconComponent,
+  BadgeComponent,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+  LandingLinkComponent,
+  LandingReadingProgressComponent,
+} from '@portfolio/landing/shared/ui';
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
 import type { BlogPostDetail } from '@portfolio/landing/shared/data-access';
 import { MarkdownService, type RenderedMarkdown } from '../services/markdown.service';
 import { TocComponent } from './toc.component';
-import { ReadingProgressComponent } from './reading-progress.component';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
 
@@ -39,7 +47,10 @@ type DetailState = {
     IconComponent,
     BadgeComponent,
     TocComponent,
-    ReadingProgressComponent,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
+    LandingLinkComponent,
+    LandingReadingProgressComponent,
   ],
   templateUrl: './blog-detail-page.html',
   styleUrl: './blog-detail-page.scss',

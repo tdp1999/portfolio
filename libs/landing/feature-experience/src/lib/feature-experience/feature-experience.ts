@@ -1,13 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
-import { ExperienceService } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
-import { DateRangePipe, InitialsPipe } from '@portfolio/shared/ui/pipes';
-import type { Locale } from '@portfolio/shared/types';
+import { Meta, Title } from '@angular/platform-browser';
 import type { EmploymentType, LocationType, PublicExperience } from '@portfolio/landing/shared/data-access';
+import { ExperienceService } from '@portfolio/landing/shared/data-access';
+import {
+  BadgeComponent,
+  ContainerComponent,
+  IconComponent,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+  SectionComponent,
+} from '@portfolio/landing/shared/ui';
+import type { Locale } from '@portfolio/shared/types';
+import { DateRangePipe, InitialsPipe } from '@portfolio/shared/ui/pipes';
+import { getLocalized } from '@portfolio/shared/utils';
 
 const EMPLOYMENT_TYPE_LABEL: Record<EmploymentType, string> = {
   FULL_TIME: 'Full-time',
@@ -47,13 +53,14 @@ function formatDuration(startStr: string, endStr: string | null): string {
 @Component({
   selector: 'landing-feature-experience',
   imports: [
-    RouterLink,
     ContainerComponent,
     SectionComponent,
     IconComponent,
     BadgeComponent,
     DateRangePipe,
     InitialsPipe,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
   ],
   templateUrl: './feature-experience.html',
   styleUrl: './feature-experience.scss',

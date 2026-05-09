@@ -12,7 +12,7 @@
 }
 
 .blog-filter {
-  @apply px-4 py-2 rounded-full border border-border text-sm text-text-secondary;
+  @apply px-4 py-2 rounded-full border border-border text-body-sm text-text-secondary;
   @apply hover:border-primary hover:text-primary transition-colors cursor-pointer;
 
   &--active {
@@ -21,7 +21,7 @@
 }
 
 .blog-page-btn {
-  @apply flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-text;
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-body-sm text-text;
   @apply hover:border-primary hover:text-primary transition-colors;
   @apply disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-text;
 }

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type ArrowDirection = 'right' | 'up-right';
+export type ArrowDirection = 'right' | 'up-right' | 'left';
 
 @Component({
   selector: 'landing-icon-arrow',
@@ -19,12 +19,19 @@ export type ArrowDirection = 'right' | 'up-right';
       [attr.aria-hidden]="ariaHidden() ? 'true' : null"
       focusable="false"
     >
-      @if (direction() === 'right') {
-        <line x1="5" y1="12" x2="19" y2="12" />
-        <polyline points="13 6 19 12 13 18" />
-      } @else {
-        <line x1="7" y1="17" x2="17" y2="7" />
-        <polyline points="9 7 17 7 17 15" />
+      @switch (direction()) {
+        @case ('right') {
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="13 6 19 12 13 18" />
+        }
+        @case ('left') {
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="11 6 5 12 11 18" />
+        }
+        @default {
+          <line x1="7" y1="17" x2="17" y2="7" />
+          <polyline points="9 7 17 7 17 15" />
+        }
       }
     </svg>
   `,

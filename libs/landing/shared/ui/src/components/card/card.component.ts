@@ -1,17 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-export type LandingCardVariant = 'plain' | 'glass';
-
 /**
- * Generic card surface. Two visual variants:
- * - `plain` (default) — solid surface, soft shadow, used in console / dashboard contexts.
- * - `glass`            — translucent + backdrop-blur, used on landing sections that sit
- *                        above decorative backgrounds (aurora, blueprint).
+ * Landing card surface — translucent (glass) + backdrop-blur, sized for landing
+ * sections that sit above decorative backgrounds (aurora, blueprint).
  *
- * Optional modifiers:
- * - `elevated`         — bumps shadow + border weight (plain only).
- * - `tilt`             — 3D rotate-on-hover with a deeper shadow stack; honours
- *                        `prefers-reduced-motion`. Pairs with `glass` for landing.
+ * Optional `tilt` modifier: 3D rotate-on-hover with a deeper shadow stack.
+ * Honours `prefers-reduced-motion`.
  */
 @Component({
   selector: 'landing-card',
@@ -25,15 +19,7 @@ export type LandingCardVariant = 'plain' | 'glass';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent {
-  readonly variant = input<LandingCardVariant>('plain');
-  readonly elevated = input<boolean>(false);
   readonly tilt = input<boolean>(false);
 
-  readonly cardClasses = computed(() => {
-    const classes = ['card'];
-    if (this.variant() === 'glass') classes.push('card--glass');
-    if (this.elevated()) classes.push('card--elevated');
-    if (this.tilt()) classes.push('card--tilt');
-    return classes.join(' ');
-  });
+  readonly cardClasses = computed(() => (this.tilt() ? 'card card--tilt' : 'card'));
 }

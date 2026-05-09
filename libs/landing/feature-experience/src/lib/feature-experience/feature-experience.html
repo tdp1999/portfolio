@@ -2,23 +2,14 @@
   <landing-section>
     <landing-container>
       <div class="mb-8">
-        <a
-          routerLink="/"
-          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
-        >
-          <landing-icon name="arrow-left" [size]="16" />
-          Back to home
-        </a>
+        <landing-back-link href="/">Back to home</landing-back-link>
       </div>
 
-      <h1 class="text-page-title text-text mb-2">Career History</h1>
+      <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">Career History</h1>
       <p class="text-text-secondary mb-12">My professional experience and journey</p>
 
       @if (experiences().length === 0) {
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <landing-icon name="briefcase" [size]="48" class="text-text-secondary mb-4" />
-          <p class="text-text-secondary text-lg">Career history coming soon</p>
-        </div>
+        <landing-empty-state icon="briefcase" message="Career history coming soon" />
       } @else {
         <div class="relative">
           <!-- Timeline line -->
@@ -60,7 +51,7 @@
                         />
                       } @else {
                         <div
-                          class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary font-semibold text-lg"
+                          class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary font-semibold text-body-lg"
                         >
                           {{ exp.companyName | initials }}
                         </div>
@@ -75,25 +66,25 @@
                             [href]="exp.companyUrl"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-section-heading text-text hover:text-primary transition-colors"
+                            class="text-body-xl font-semibold text-text hover:text-primary transition-colors"
                           >
                             {{ exp.companyName }}
                             <landing-icon name="external-link" [size]="14" class="inline ml-1 opacity-60" />
                           </a>
                         } @else {
-                          <span class="text-section-heading text-text">{{ exp.companyName }}</span>
+                          <span class="text-body-xl font-semibold text-text">{{ exp.companyName }}</span>
                         }
                         @if (!exp.endDate) {
-                          <span class="flex items-center gap-1 text-xs text-primary font-medium">
+                          <span class="flex items-center gap-1 text-body-sm text-primary font-medium">
                             <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
                             Current
                           </span>
                         }
                       </div>
 
-                      <p class="text-base font-medium text-text mb-1">{{ getPosition(exp) }}</p>
+                      <p class="text-body-md font-medium text-text mb-1">{{ getPosition(exp) }}</p>
 
-                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-secondary">
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-text-secondary">
                         <span>{{ exp | dateRange }}</span>
                         <span class="opacity-40">·</span>
                         <span>{{ durationFor(exp) }}</span>
@@ -129,7 +120,7 @@
 
                   <!-- Team role -->
                   @if (getTeamRole(exp)) {
-                    <p class="text-sm text-text-secondary">
+                    <p class="text-body-sm text-text-secondary">
                       <span class="font-medium text-text">Role: </span>{{ getTeamRole(exp) }}
                     </p>
                   }
@@ -167,7 +158,7 @@
                             [href]="link.url"
                             target="_blank"
                             rel="noopener"
-                            class="text-primary hover:underline text-sm"
+                            class="text-primary hover:underline text-body-sm"
                           >
                             {{ link.label }}
                           </a>

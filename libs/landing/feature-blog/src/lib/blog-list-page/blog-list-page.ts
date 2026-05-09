@@ -3,7 +3,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, switchMap } from 'rxjs';
-import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  SectionComponent,
+  IconComponent,
+  BadgeComponent,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+} from '@portfolio/landing/shared/ui';
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
 import type { BlogPostListResponse } from '@portfolio/landing/shared/data-access';
 
@@ -12,7 +19,15 @@ const EMPTY: BlogPostListResponse = { data: [], total: 0, page: 1, limit: PAGE_S
 
 @Component({
   selector: 'landing-blog-list-page',
-  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent],
+  imports: [
+    RouterLink,
+    ContainerComponent,
+    SectionComponent,
+    IconComponent,
+    BadgeComponent,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
+  ],
   templateUrl: './blog-list-page.html',
   styleUrl: './blog-list-page.scss',
 })

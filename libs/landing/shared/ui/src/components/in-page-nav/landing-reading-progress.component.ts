@@ -1,8 +1,12 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, input, signal } from '@angular/core';
 
 /**
  * Thin reading-progress bar fixed to the top edge of the viewport.
- * Width tracks document scroll progress (0–100%).
+ *
+ * Two modes:
+ * - **Document mode (default)** — width tracks document scroll progress (0–100%).
+ * - **Target mode** — pass `[target]="<HTMLElement>"` to track scroll progress through
+ *   a specific article/container (used by blog-detail to ignore header/footer).
  */
 @Component({
   selector: 'landing-reading-progress',
@@ -15,12 +19,26 @@ import { ChangeDetectionStrategy, Component, HostListener, computed, signal } fr
   `,
 })
 export class LandingReadingProgressComponent {
+  readonly target = input<HTMLElement | null>(null);
+
   private readonly scrollY = signal(0);
 
   readonly progress = computed(() => {
     if (typeof document === 'undefined' || typeof window === 'undefined') return 0;
+    // Read scrollY() so the computed re-evaluates on scroll events.
+    this.scrollY();
+
+    const el = this.target();
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      if (total <= 0) return 100;
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      return (scrolled / total) * 100;
+    }
+
     const max = document.documentElement.scrollHeight - window.innerHeight;
-    return max > 0 ? Math.min(100, (this.scrollY() / max) * 100) : 0;
+    return max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
   });
 
   @HostListener('window:scroll')

@@ -1,6 +1,6 @@
 /* §3 Bio Card Grid · PF2 Aurora Mesh + PF7 Dimensional hover
  *
- * Surface + hover come from `<landing-card variant="glass" [tilt]="true">`.
+ * Surface + hover come from `<landing-card [tilt]="true">`.
  * Background comes from `<landing-background pattern="aurora">`.
  * This file only owns: the section frame, the 3-column grid, and the
  * card-body content layout (rows / quote) that are bespoke to §3.

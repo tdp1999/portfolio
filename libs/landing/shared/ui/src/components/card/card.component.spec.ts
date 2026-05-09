@@ -1,6 +1,6 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CardComponent } from './card.component';
-import { Component } from '@angular/core';
 
 describe('CardComponent', () => {
   let component: CardComponent;
@@ -21,34 +21,31 @@ describe('CardComponent', () => {
   });
 
   describe('default state', () => {
-    it('should have elevated input default to false', () => {
-      expect(component.elevated()).toBe(false);
+    it('should render the base card class', () => {
+      expect(fixture.nativeElement.querySelector('.card')).toBeTruthy();
     });
 
-    it('should render with base card class', () => {
-      const cardElement = fixture.nativeElement.querySelector('.card');
-      expect(cardElement).toBeTruthy();
+    it('should default tilt to false', () => {
+      expect(component.tilt()).toBe(false);
     });
 
-    it('should not have elevated class by default', () => {
-      const cardElement = fixture.nativeElement.querySelector('.card--elevated');
-      expect(cardElement).toBeFalsy();
+    it('should not apply card--tilt by default', () => {
+      expect(fixture.nativeElement.querySelector('.card--tilt')).toBeFalsy();
     });
   });
 
-  describe('elevated state', () => {
+  describe('tilt modifier', () => {
     beforeEach(() => {
-      fixture.componentRef.setInput('elevated', true);
+      fixture.componentRef.setInput('tilt', true);
       fixture.detectChanges();
     });
 
-    it('should apply elevated class when elevated is true', () => {
-      const cardElement = fixture.nativeElement.querySelector('.card--elevated');
-      expect(cardElement).toBeTruthy();
+    it('should apply card--tilt class when tilt is true', () => {
+      expect(fixture.nativeElement.querySelector('.card--tilt')).toBeTruthy();
     });
 
-    it('should compute cardClasses correctly with elevated true', () => {
-      expect(component.cardClasses()).toBe('card card--elevated');
+    it('should compose classes as "card card--tilt"', () => {
+      expect(component.cardClasses()).toBe('card card--tilt');
     });
   });
 
@@ -67,118 +64,9 @@ describe('CardComponent', () => {
       const hostFixture = TestBed.createComponent(TestHostComponent);
       hostFixture.detectChanges();
 
-      const projectedContent = hostFixture.nativeElement.querySelector('.test-content');
-      expect(projectedContent).toBeTruthy();
-      expect(projectedContent.textContent).toContain('Test Content');
-    });
-  });
-
-  describe('BEM sub-component classes', () => {
-    @Component({
-      imports: [CardComponent],
-      template: `
-        <landing-card>
-          <div class="card__header">Header</div>
-          <div class="card__content">Content</div>
-          <div class="card__footer">Footer</div>
-        </landing-card>
-      `,
-    })
-    class TestCardWithSubComponentsComponent {}
-
-    it('should support card__header class', () => {
-      const hostFixture = TestBed.createComponent(TestCardWithSubComponentsComponent);
-      hostFixture.detectChanges();
-
-      const header = hostFixture.nativeElement.querySelector('.card__header');
-      expect(header).toBeTruthy();
-      expect(header.textContent).toContain('Header');
-    });
-
-    it('should support card__content class', () => {
-      const hostFixture = TestBed.createComponent(TestCardWithSubComponentsComponent);
-      hostFixture.detectChanges();
-
-      const content = hostFixture.nativeElement.querySelector('.card__content');
-      expect(content).toBeTruthy();
-      expect(content.textContent).toContain('Content');
-    });
-
-    it('should support card__footer class', () => {
-      const hostFixture = TestBed.createComponent(TestCardWithSubComponentsComponent);
-      hostFixture.detectChanges();
-
-      const footer = hostFixture.nativeElement.querySelector('.card__footer');
-      expect(footer).toBeTruthy();
-      expect(footer.textContent).toContain('Footer');
-    });
-  });
-
-  describe('cardClasses computed signal', () => {
-    it('should return only "card" when elevated is false', () => {
-      fixture.componentRef.setInput('elevated', false);
-      fixture.detectChanges();
-
-      expect(component.cardClasses()).toBe('card');
-    });
-
-    it('should return "card card--elevated" when elevated is true', () => {
-      fixture.componentRef.setInput('elevated', true);
-      fixture.detectChanges();
-
-      expect(component.cardClasses()).toBe('card card--elevated');
-    });
-
-    it('should react to input changes', () => {
-      // Start with false
-      fixture.componentRef.setInput('elevated', false);
-      fixture.detectChanges();
-      expect(component.cardClasses()).toBe('card');
-
-      // Change to true
-      fixture.componentRef.setInput('elevated', true);
-      fixture.detectChanges();
-      expect(component.cardClasses()).toBe('card card--elevated');
-
-      // Change back to false
-      fixture.componentRef.setInput('elevated', false);
-      fixture.detectChanges();
-      expect(component.cardClasses()).toBe('card');
-    });
-  });
-
-  describe('glass variant', () => {
-    it('should default variant to plain', () => {
-      expect(component.variant()).toBe('plain');
-    });
-
-    it('should not apply card--glass by default', () => {
-      expect(fixture.nativeElement.querySelector('.card--glass')).toBeFalsy();
-    });
-
-    it('should apply card--glass class when variant is glass', () => {
-      fixture.componentRef.setInput('variant', 'glass');
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.card--glass')).toBeTruthy();
-    });
-
-    it('should compose classes with glass + tilt', () => {
-      fixture.componentRef.setInput('variant', 'glass');
-      fixture.componentRef.setInput('tilt', true);
-      fixture.detectChanges();
-      expect(component.cardClasses()).toBe('card card--glass card--tilt');
-    });
-  });
-
-  describe('tilt modifier', () => {
-    it('should default tilt to false', () => {
-      expect(component.tilt()).toBe(false);
-    });
-
-    it('should apply card--tilt class when tilt is true', () => {
-      fixture.componentRef.setInput('tilt', true);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.card--tilt')).toBeTruthy();
+      const projected = hostFixture.nativeElement.querySelector('.test-content');
+      expect(projected).toBeTruthy();
+      expect(projected.textContent).toContain('Test Content');
     });
   });
 });

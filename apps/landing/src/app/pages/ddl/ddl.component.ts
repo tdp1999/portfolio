@@ -1,10 +1,6 @@
 import { CommonModule, Location } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import {
   ICON_PROVIDER,
   IconComponent,
@@ -23,6 +19,11 @@ import {
   SectionRuleComponent,
   SegmentedComponent,
   SegmentOption,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+  LandingFloatingPillNavComponent,
+  LandingScrollspyService,
+  type InPageSection,
 } from '@portfolio/landing/shared/ui';
 
 const TABS_WITH_PROTOTYPES: readonly SegmentOption[] = [
@@ -36,24 +37,32 @@ const TABS_NO_PROTOTYPES: readonly SegmentOption[] = [
   { id: 'usage', label: 'Usage' },
 ];
 
+const DDL_SECTIONS: readonly InPageSection[] = [
+  { id: 'container', title: 'Container system' },
+  { id: 'prototypes', title: 'Prototype pages' },
+  { id: 'tokens', title: 'Landing tokens' },
+  { id: 'typography', title: 'Typography' },
+  { id: 'primitives', title: 'Button · Link · Arrow' },
+  { id: 'labels', title: 'Chip · Eyebrow · Status dot' },
+  { id: 'content', title: 'Figure · Pull-quote · Rule' },
+  { id: 'segmented', title: 'Segmented control' },
+  { id: 'icon-input', title: 'Icon & Input' },
+  { id: 'utilities', title: 'Back link & empty state' },
+  { id: 'headings', title: 'Section heading variants' },
+];
+
 @Component({
   selector: 'app-ddl',
   standalone: true,
   imports: [
     CommonModule,
     RouterLink,
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
     IconComponent,
     ButtonComponent,
-    CardComponent,
     InputComponent,
     LandingLinkComponent,
     LandingIconArrowComponent,
     ContainerComponent,
-    SectionComponent,
     ChipComponent,
     EyebrowComponent,
     StatusDotComponent,
@@ -61,7 +70,11 @@ const TABS_NO_PROTOTYPES: readonly SegmentOption[] = [
     PullQuoteComponent,
     SectionRuleComponent,
     SegmentedComponent,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
+    LandingFloatingPillNavComponent,
   ],
+  providers: [LandingScrollspyService],
   templateUrl: './ddl.component.html',
   styleUrl: './ddl.component.scss',
 })
@@ -70,8 +83,14 @@ export class DdlComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly scrollspy = inject(LandingScrollspyService);
 
   readonly iconNames = this.iconProvider.getSupportedIcons();
+  readonly sections = DDL_SECTIONS;
+
+  constructor() {
+    this.scrollspy.setSections(DDL_SECTIONS);
+  }
 
   readonly tabsWithPrototypes = TABS_WITH_PROTOTYPES;
   readonly tabsNoPrototypes = TABS_NO_PROTOTYPES;

@@ -2,7 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  SectionComponent,
+  IconComponent,
+  BadgeComponent,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+} from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale } from '@portfolio/shared/types';
@@ -15,7 +22,15 @@ function formatMonth(dateStr: string): string {
 
 @Component({
   selector: 'landing-projects-page',
-  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent],
+  imports: [
+    RouterLink,
+    ContainerComponent,
+    SectionComponent,
+    IconComponent,
+    BadgeComponent,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
+  ],
   templateUrl: './projects-page.html',
   styleUrl: './projects-page.scss',
 })

@@ -9,7 +9,7 @@
 
     <div class="bio-grid__cards">
       <!-- ============================== Card A — IDENTITY ============================== -->
-      <landing-card variant="glass" [tilt]="true">
+      <landing-card [tilt]="true">
         <landing-eyebrow label="§2.1 IDENTITY" />
         <div class="bio-card__body">
           <p class="font-display text-display-sm text-landing-text-300 leading-tight">{{ fullName() }}</p>
@@ -32,7 +32,7 @@
       </landing-card>
 
       <!-- ============================== Card B — OUTLOOK ============================== -->
-      <landing-card variant="glass" [tilt]="true">
+      <landing-card [tilt]="true">
         <landing-eyebrow label="§2.2 OUTLOOK" />
         <div class="bio-card__body">
           <blockquote class="bio-card__quote font-display text-body-lg text-landing-text-300 italic leading-relaxed">
@@ -43,7 +43,7 @@
       </landing-card>
 
       <!-- ============================== Card C — CONTACT ============================== -->
-      <landing-card variant="glass" [tilt]="true">
+      <landing-card [tilt]="true">
         <landing-eyebrow label="§2.3 CONTACT" />
         <div class="bio-card__body">
           <landing-status-dot [state]="statusState()" variant="bare" [label]="statusLabel()" />

@@ -2,23 +2,14 @@
   <landing-section>
     <landing-container>
       <div class="mb-8">
-        <a
-          routerLink="/"
-          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
-        >
-          <landing-icon name="arrow-left" [size]="16" />
-          Back to home
-        </a>
+        <landing-back-link href="/">Back to home</landing-back-link>
       </div>
 
-      <h1 class="text-page-title text-text mb-2">Projects</h1>
+      <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">Projects</h1>
       <p class="text-text-secondary mb-12">Side projects and open-source work</p>
 
       @if (projects().length === 0) {
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <landing-icon name="folder-open" [size]="48" class="text-text-secondary mb-4" />
-          <p class="text-text-secondary text-lg">No projects published yet</p>
-        </div>
+        <landing-empty-state icon="folder-open" message="No projects published yet" />
       } @else {
         <div class="flex flex-col gap-8">
           @for (project of projects(); track project.slug) {
@@ -36,7 +27,7 @@
 
               <!-- Content -->
               <div class="project-row__content">
-                <h2 class="text-section-heading text-text group-hover:text-primary transition-colors mb-1">
+                <h2 class="text-body-xl font-semibold text-text group-hover:text-primary transition-colors mb-1">
                   {{ project.title }}
                 </h2>
                 <p class="text-text-secondary mb-3 line-clamp-2">
@@ -49,7 +40,7 @@
                   }
                 </div>
 
-                <span class="text-sm text-text-secondary">
+                <span class="text-body-sm text-text-secondary">
                   {{ formatDate(project.startDate) }}
                 </span>
               </div>

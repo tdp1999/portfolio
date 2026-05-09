@@ -3,7 +3,14 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
-import { ContainerComponent, SectionComponent, IconComponent, BadgeComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  SectionComponent,
+  IconComponent,
+  BadgeComponent,
+  LandingBackLinkComponent,
+  LandingEmptyStateComponent,
+} from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
@@ -22,7 +29,16 @@ function formatDateRange(startDate: string, endDate: string | null): string {
 
 @Component({
   selector: 'landing-project-detail',
-  imports: [RouterLink, ContainerComponent, SectionComponent, IconComponent, BadgeComponent, TranslatablePipe],
+  imports: [
+    RouterLink,
+    ContainerComponent,
+    SectionComponent,
+    IconComponent,
+    BadgeComponent,
+    TranslatablePipe,
+    LandingBackLinkComponent,
+    LandingEmptyStateComponent,
+  ],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
 })

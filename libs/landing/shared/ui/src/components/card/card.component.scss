@@ -1,22 +1,5 @@
-/* Plain variant (default) — preserves prior behaviour for console / dashboard callsites. */
-.card:not(.card--glass) {
-  @apply bg-surface rounded-xl p-6 shadow-md border border-border transition-all duration-150;
-
-  &:hover {
-    @apply shadow-lg border-border-strong;
-  }
-}
-
-.card--elevated:not(.card--glass) {
-  @apply shadow-lg border-border-strong;
-
-  &:hover {
-    @apply shadow-xl;
-  }
-}
-
-/* Glass variant — translucent surface for landing sections over decorative backgrounds. */
-.card--glass {
+/* Landing card — translucent glass surface for landing sections over decorative backgrounds. */
+.card {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -51,15 +34,4 @@
   .card--tilt:hover {
     transform: none;
   }
-}
-
-/* Optional sub-component classes — usable with any variant. */
-.card__header {
-  @apply mb-4 pb-4 border-b border-border;
-}
-.card__content {
-  @apply text-text;
-}
-.card__footer {
-  @apply mt-4 pt-4 border-t border-border;
 }

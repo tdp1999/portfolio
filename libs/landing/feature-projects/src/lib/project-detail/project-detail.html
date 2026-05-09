@@ -16,28 +16,22 @@
       <div class="text-column">
         <!-- Back link -->
         <div class="mb-8">
-          <a
-            routerLink="/projects"
-            class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
-          >
-            <landing-icon name="arrow-left" [size]="16" />
-            Back to projects
-          </a>
+          <landing-back-link href="/projects">Back to projects</landing-back-link>
         </div>
 
         <!-- Title block -->
-        <h1 class="text-page-title text-text mb-2">{{ project.title }}</h1>
-        <p class="text-lg text-text-secondary mb-4">{{ project.oneLiner | translatable: locale() : '' }}</p>
+        <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">{{ project.title }}</h1>
+        <p class="text-body-lg text-text-secondary mb-4">{{ project.oneLiner | translatable: locale() : '' }}</p>
 
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-          <span class="text-sm text-text-secondary">{{ dateRange() }}</span>
+          <span class="text-body-sm text-text-secondary">{{ dateRange() }}</span>
 
           @if (sourceUrl()) {
             <a
               [href]="sourceUrl()"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm text-primary hover:underline flex items-center gap-1"
+              class="text-body-sm text-primary hover:underline flex items-center gap-1"
             >
               <landing-icon name="github" [size]="16" />
               Source
@@ -49,7 +43,7 @@
               [href]="projectUrl()"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm text-primary hover:underline flex items-center gap-1"
+              class="text-body-sm text-primary hover:underline flex items-center gap-1"
             >
               <landing-icon name="external-link" [size]="16" />
               Live
@@ -69,7 +63,7 @@
         <!-- Motivation -->
         @if (project.motivation | translatable: locale() : ''; as motivation) {
           <div class="mb-12">
-            <h2 class="text-section-heading text-text mb-4">Why I built this</h2>
+            <h2 class="text-body-xl font-semibold text-text mb-4">Why I built this</h2>
             <p class="text-text-secondary leading-relaxed">{{ motivation }}</p>
           </div>
         }
@@ -77,12 +71,12 @@
         <!-- Overview + Role -->
         <div class="mb-12">
           @if (project.description | translatable: locale() : ''; as description) {
-            <h2 class="text-section-heading text-text mb-4">Overview</h2>
+            <h2 class="text-body-xl font-semibold text-text mb-4">Overview</h2>
             <p class="text-text-secondary leading-relaxed mb-6">{{ description }}</p>
           }
 
           @if (project.role | translatable: locale() : ''; as role) {
-            <h3 class="text-base font-medium text-text mb-2">My Role</h3>
+            <h3 class="text-body-md font-medium text-text mb-2">My Role</h3>
             <p class="text-text-secondary leading-relaxed">{{ role }}</p>
           }
         </div>
@@ -98,27 +92,27 @@
       <!-- Technical Highlights -->
       @if (project.highlights.length > 0) {
         <div class="text-column mb-12">
-          <h2 class="text-section-heading text-text mb-8">Technical Highlights</h2>
+          <h2 class="text-body-xl font-semibold text-text mb-8">Technical Highlights</h2>
 
           <div class="flex flex-col gap-8">
             @for (highlight of project.highlights; track $index) {
               <div class="highlight-card">
                 <div class="mb-4">
-                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Challenge</h3>
+                  <h3 class="text-body-sm font-semibold text-primary uppercase tracking-wide mb-2">Challenge</h3>
                   <p class="text-text-secondary leading-relaxed">
                     {{ highlight.challenge | translatable: locale() : '' }}
                   </p>
                 </div>
 
                 <div class="mb-4">
-                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Approach</h3>
+                  <h3 class="text-body-sm font-semibold text-primary uppercase tracking-wide mb-2">Approach</h3>
                   <p class="text-text-secondary leading-relaxed">
                     {{ highlight.approach | translatable: locale() : '' }}
                   </p>
                 </div>
 
                 <div class="mb-4">
-                  <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">Outcome</h3>
+                  <h3 class="text-body-sm font-semibold text-primary uppercase tracking-wide mb-2">Outcome</h3>
                   <p class="text-text-secondary leading-relaxed">
                     {{ highlight.outcome | translatable: locale() : '' }}
                   </p>
@@ -129,7 +123,7 @@
                     [href]="highlight.codeUrl"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-sm text-primary hover:underline flex items-center gap-1"
+                    class="text-body-sm text-primary hover:underline flex items-center gap-1"
                   >
                     <landing-icon name="code" [size]="16" />
                     View code
@@ -170,11 +164,9 @@
   <div class="flex flex-col min-h-screen">
     <landing-section>
       <landing-container>
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <landing-icon name="folder-open" [size]="48" class="text-text-secondary mb-4" />
-          <p class="text-text-secondary text-lg mb-4">Project not found</p>
-          <a routerLink="/projects" class="text-primary hover:underline"> Back to projects </a>
-        </div>
+        <landing-empty-state icon="folder-open" message="Project not found">
+          <landing-back-link href="/projects" class="mt-4">Back to projects</landing-back-link>
+        </landing-empty-state>
       </landing-container>
     </landing-section>
   </div>

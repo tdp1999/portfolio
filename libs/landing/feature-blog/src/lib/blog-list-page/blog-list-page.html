@@ -2,16 +2,10 @@
   <landing-section>
     <landing-container>
       <div class="mb-8">
-        <a
-          routerLink="/"
-          class="text-text-secondary hover:text-primary transition-colors text-sm flex items-center gap-1"
-        >
-          <landing-icon name="arrow-left" [size]="16" />
-          Back to home
-        </a>
+        <landing-back-link href="/">Back to home</landing-back-link>
       </div>
 
-      <h1 class="text-page-title text-text mb-2">Blog</h1>
+      <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">Blog</h1>
       <p class="text-text-secondary mb-8">Articles, notes, and explorations</p>
 
       @if (categories().length > 0) {
@@ -38,10 +32,7 @@
       }
 
       @if (posts().length === 0) {
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <landing-icon name="file-text" [size]="48" class="text-text-secondary mb-4" />
-          <p class="text-text-secondary text-lg">No posts yet</p>
-        </div>
+        <landing-empty-state icon="file-text" message="No posts yet" />
       } @else {
         <div class="flex flex-col gap-8">
           @for (post of posts(); track post.slug) {
@@ -62,11 +53,11 @@
                     <landing-badge>{{ cat.name }}</landing-badge>
                   }
                   @if (post.readTimeMinutes) {
-                    <span class="text-sm text-text-secondary"> · {{ post.readTimeMinutes }} min read </span>
+                    <span class="text-body-sm text-text-secondary"> · {{ post.readTimeMinutes }} min read </span>
                   }
                 </div>
 
-                <h2 class="text-section-heading text-text group-hover:text-primary transition-colors mb-2">
+                <h2 class="text-body-xl font-semibold text-text group-hover:text-primary transition-colors mb-2">
                   {{ post.title }}
                 </h2>
 
@@ -75,7 +66,7 @@
                 }
 
                 @if (post.publishedAt) {
-                  <span class="text-sm text-text-secondary">
+                  <span class="text-body-sm text-text-secondary">
                     {{ formatDate(post.publishedAt) }}
                   </span>
                 }
@@ -90,7 +81,7 @@
               <landing-icon name="arrow-left" [size]="16" />
               Previous
             </button>
-            <span class="text-sm text-text-secondary"> Page {{ page() }} of {{ totalPages() }} </span>
+            <span class="text-body-sm text-text-secondary"> Page {{ page() }} of {{ totalPages() }} </span>
             <button type="button" class="blog-page-btn" [disabled]="page() >= totalPages()" (click)="nextPage()">
               Next
               <landing-icon name="arrow-right" [size]="16" />
