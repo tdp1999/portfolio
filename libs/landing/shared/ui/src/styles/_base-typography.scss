@@ -1,0 +1,88 @@
+/* Landing base typography — element-level defaults bound to landing tokens.
+   Mirrors the shape of `libs/shared/ui/styles/src/base/typography.scss` but
+   uses --landing-* vars so landing has no dependency on the shared --text-*
+   fluid scale. Bare <h1>..<h6>/<p>/<small>/<code> in landing pages render
+   from this file; component-scoped classes still override as needed. */
+
+@layer base {
+  html,
+  body {
+    background-color: var(--landing-bg, var(--color-background));
+  }
+
+  body {
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+    color: var(--landing-text);
+  }
+
+  h1 {
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-xl);
+    line-height: var(--landing-display-xl-lh);
+    letter-spacing: var(--landing-tracking-tight);
+    font-weight: 600;
+  }
+
+  h2 {
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-lg);
+    line-height: var(--landing-display-lg-lh);
+    letter-spacing: var(--landing-tracking-tight);
+    font-weight: 600;
+  }
+
+  h3 {
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-md);
+    line-height: var(--landing-display-md-lh);
+    letter-spacing: var(--landing-tracking-tight);
+    font-weight: 500;
+  }
+
+  h4 {
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-sm);
+    line-height: var(--landing-display-sm-lh);
+    letter-spacing: var(--landing-tracking-tight);
+    font-weight: 500;
+  }
+
+  h5 {
+    font-size: var(--landing-body-xl);
+    line-height: var(--landing-body-xl-lh);
+    font-weight: 600;
+  }
+
+  h6 {
+    font-size: var(--landing-body-lg);
+    line-height: var(--landing-body-lg-lh);
+    font-weight: 600;
+  }
+
+  p {
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+  }
+
+  small {
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
+  }
+
+  code,
+  kbd,
+  samp {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    letter-spacing: var(--landing-tracking-mono);
+  }
+
+  pre {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    line-height: var(--landing-mono-md-lh);
+    letter-spacing: var(--landing-tracking-mono);
+  }
+}

@@ -18,10 +18,12 @@
   --landing-display-sm-lh: 40px;
 
   /* Body scale */
+  --landing-body-xl: 20px; /* lh 28 — bridges body-lg (17) and display-sm (32) */
   --landing-body-lg: 17px; /* lh 28 */
   --landing-body-md: 15px; /* lh 24 */
   --landing-body-sm: 13px; /* lh 20 */
 
+  --landing-body-xl-lh: 28px;
   --landing-body-lg-lh: 28px;
   --landing-body-md-lh: 24px;
   --landing-body-sm-lh: 20px;

@@ -39,8 +39,8 @@
   font-style: italic;
   font-weight: 400;
   /* Mirrors home-selected-work__deck — sits between body-lg and display-sm. */
-  font-size: 20px;
-  line-height: 28px;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
   color: var(--landing-text-400);
 }
 

@@ -44,8 +44,8 @@
   font-style: italic;
   font-weight: 400;
   /* 20/28 — sits between body-lg (17/28) and display-sm (32/40); on the 4-grid. */
-  font-size: 20px;
-  line-height: 28px;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
   color: var(--landing-text-400);
 }
 

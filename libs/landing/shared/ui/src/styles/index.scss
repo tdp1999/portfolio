@@ -1,17 +1,18 @@
-/* SCSS module imports — shared foundation */
+/* SCSS module imports — shared foundation. Landing intentionally skips:
+     • `tokens/typography` — fluid `--text-*` scale is console-only.
+     • `base/typography`   — replaced by `_base-typography.scss` below.
+     • `base/components`   — `.text-page-title`, `.form-stack` etc. are
+                             console role classes that depend on the shared
+                             scale. Landing uses none of them. */
 @use 'tokens/colors' as colors-tokens;
-@use 'tokens/typography' as typography-tokens;
 @use 'tokens/layout' as layout-tokens;
 @use 'themes/dark' as dark-theme;
-@use 'base/typography' as typography-base;
-@use 'base/components' as component-classes;
-@use 'material/icons' as icon-overrides;
 
 /* Landing-specific tokens (E4 lock — ink/slate/indigo, Newsreader display scale, motion) */
 @use '../tokens' as landing-tokens;
 
-/* Landing-specific Material overrides */
-@use './material/overrides.scss';
+/* Landing element-level typography (h1..h6, p, small, code…) */
+@use 'base-typography' as landing-base-typography;
 
 /* Tailwind CSS v3 directives */
 @tailwind base;

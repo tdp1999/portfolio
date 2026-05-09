@@ -90,6 +90,7 @@ module.exports = {
         'display-lg': ['48px', { lineHeight: '56px', letterSpacing: '-0.02em' }],
         'display-md': ['40px', { lineHeight: '48px', letterSpacing: '-0.02em' }],
         'display-sm': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em' }],
+        'body-xl': ['20px', { lineHeight: '28px' }],
         'body-lg': ['17px', { lineHeight: '28px' }],
         'body-md': ['15px', { lineHeight: '24px' }],
         'body-sm': ['13px', { lineHeight: '20px' }],

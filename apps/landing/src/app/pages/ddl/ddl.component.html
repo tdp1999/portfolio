@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-background">
   <landing-container size="wide" class="block py-8">
     <header class="mb-8">
-      <h1 class="text-4xl font-bold text-text">Design Definition Language</h1>
-      <p class="text-lg text-text-secondary mt-2">Component showcase and design system documentation</p>
+      <h1 class="text-display-md font-bold text-text">Design Definition Language</h1>
+      <p class="text-body-lg text-text-secondary mt-2">Component showcase and design system documentation</p>
     </header>
 
     <!-- ────────────────────────────────────────────────────────── -->
@@ -22,7 +22,7 @@
     </div>
 
     <!-- E5 Container system showcase (3 sizes) -->
-    <div class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6 space-y-6">
+    <div id="container" class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6 space-y-6 scroll-mt-8">
       <div>
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
           landing-container · 3 sizes
@@ -70,7 +70,7 @@
     </div>
 
     <!-- Sub-page link cards -->
-    <div class="mb-8 grid gap-4 md:grid-cols-2">
+    <div id="prototypes" class="mb-8 grid gap-4 md:grid-cols-2 scroll-mt-8">
       <a
         routerLink="/ddl/fragment-navigation"
         class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
@@ -137,7 +137,7 @@
 
     <section class="space-y-6 mb-12">
       <!-- Landing tokens sample (E5 task 274/275) -->
-      <div class="rounded-lg border border-landing-border bg-ink-1 p-6">
+      <div id="tokens" class="rounded-lg border border-landing-border bg-ink-1 p-6 scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing tokens · E4 D2 lock
         </p>
@@ -161,7 +161,7 @@
 
       <!-- E5 Landing Typography Reference -->
       <!-- See .context/design/landing-typography.md for the full system. -->
-      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+      <div id="typography" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing typography · three voices, three jobs
         </p>
@@ -407,7 +407,7 @@
       </div>
 
       <!-- E5 Landing Primitives (task 278): button + link + icon-arrow -->
-      <div class="primitives-test bg-ink-1 border border-landing-border p-6 rounded-lg">
+      <div id="primitives" class="primitives-test bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing primitives · E5 D1 lock
         </p>
@@ -474,7 +474,9 @@
 
               <!-- Arrow icon -->
               <div>
-                <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-icon-arrow · right / up-right</p>
+                <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+                  landing-icon-arrow · right / up-right / left
+                </p>
                 <div class="flex flex-wrap items-center gap-6 text-landing-text-300">
                   <span class="inline-flex items-center gap-2">
                     <landing-icon-arrow direction="right" [size]="16" />
@@ -483,6 +485,10 @@
                   <span class="inline-flex items-center gap-2">
                     <landing-icon-arrow direction="up-right" [size]="16" />
                     <code class="font-mono text-mono-sm text-landing-text-500">up-right · 16</code>
+                  </span>
+                  <span class="inline-flex items-center gap-2">
+                    <landing-icon-arrow direction="left" [size]="16" />
+                    <code class="font-mono text-mono-sm text-landing-text-500">left · 16</code>
                   </span>
                   <span class="inline-flex items-center gap-2 text-landing-accent">
                     <landing-icon-arrow direction="right" [size]="24" />
@@ -610,7 +616,7 @@
       </div>
 
       <!-- E5 Landing Label Primitives (task 279): chip + eyebrow + status-dot -->
-      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+      <div id="labels" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing label primitives · E5 task 279
         </p>
@@ -854,7 +860,7 @@
       </div>
 
       <!-- E5 Landing Content Primitives (task 280): figure + pull-quote + section-rule -->
-      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+      <div id="content" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing content primitives · E5 task 280
         </p>
@@ -1121,7 +1127,7 @@
         }
       </div>
       <!-- E5 Segmented Control (task 280b): primitive used by DDL itself for tabs -->
-      <div class="bg-ink-1 border border-landing-border p-6 rounded-lg">
+      <div id="segmented" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing segmented · E5 task 280b
         </p>
@@ -1274,6 +1280,107 @@
           }
         }
       </div>
+      <!-- E5 Foundation primitives (icon + input) -->
+      <div id="icon-input" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing icon · landing input · foundation
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Icon system &amp; input</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6 max-w-2xl">
+          The Lucide-backed <code>&lt;landing-icon&gt;</code> sprite is what every other primitive composes against
+          (button, link, breadcrumb, back-link, empty-state). <code>&lt;landing-input&gt;</code> is parked here pending
+          a dedicated landing form pass — the current visual is a placeholder, not the final design.
+        </p>
+
+        <div class="space-y-8">
+          <!-- Icon system -->
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-icon · all available glyphs</p>
+            <div
+              class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-3 p-6 bg-ink-0 border border-landing-border rounded"
+            >
+              @for (name of iconNames; track name) {
+                <div
+                  class="flex flex-col items-center gap-1.5 p-2 rounded transition-colors hover:bg-landing-border/30"
+                >
+                  <landing-icon [name]="name" class="text-landing-text-300" [size]="22" />
+                  <span class="font-mono text-mono-sm text-landing-text-500 text-center leading-tight">{{ name }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Input — placeholder pending redesign -->
+          <div>
+            <div class="flex items-baseline gap-3 mb-3">
+              <p class="font-mono text-mono-md text-landing-text-500">landing-input · placeholder design</p>
+              <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent"
+                >redesign pending</span
+              >
+            </div>
+            <div class="space-y-4 p-6 bg-ink-0 border border-landing-border rounded max-w-xl">
+              <landing-input placeholder="Enter text..." />
+              <landing-input type="email" placeholder="email@example.com" />
+              <landing-input placeholder="Error state" [error]="true" />
+              <landing-input placeholder="Disabled state" [disabled]="true" />
+            </div>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-3 max-w-2xl">
+              Currently inherits console-side input surface. Will be redesigned alongside the contact form / future
+              search treatments — keep here so the API (signal inputs, ControlValueAccessor) stays exercised.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- E5 Sub-page utility primitives (back-link + empty-state) -->
+      <div id="utilities" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing back-link + empty-state · sub-page utilities
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Back link &amp; empty state</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6 max-w-2xl">
+          Two small utilities used at the top and middle of feed sub-pages (blog, projects, experience). Hoisted from
+          inline markup that had drifted into 4 callsites; the same components now power "Back to home", "All Articles",
+          empty feeds, and the "Post not found" fallback.
+        </p>
+
+        <div class="space-y-8">
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+              landing-back-link · mono caps · indigo lift-off (mirror of landing-link, hover to see ghost trail)
+            </p>
+            <div class="space-y-3 p-6 bg-ink-0 border border-landing-border rounded">
+              <div><landing-back-link href="/">Back to home</landing-back-link></div>
+              <div><landing-back-link href="/blog">All Articles</landing-back-link></div>
+              <div><landing-back-link href="/projects">All Projects</landing-back-link></div>
+            </div>
+          </div>
+
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+              landing-empty-state · icon + message (feed empty)
+            </p>
+            <div class="p-6 bg-ink-0 border border-landing-border rounded">
+              <landing-empty-state icon="folder-open" message="No projects published yet" />
+            </div>
+          </div>
+
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+              landing-empty-state · with title + projected CTA (404 / not-found shape)
+            </p>
+            <div class="p-6 bg-ink-0 border border-landing-border rounded">
+              <landing-empty-state
+                icon="file-x"
+                title="Post not found"
+                message="This article may have been moved, unpublished, or never existed."
+              >
+                <landing-link href="/blog" [arrow]="true" class="mt-4">Browse all articles</landing-link>
+              </landing-empty-state>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ────────────────────────────────────────────────────────── -->
@@ -1283,7 +1390,7 @@
     <!-- Translate to `--landing-display-*` / `--landing-body-*`     -->
     <!-- token vars before promoting any variant to a real component.-->
     <!-- ────────────────────────────────────────────────────────── -->
-    <section class="space-y-6 mb-12">
+    <section id="headings" class="space-y-6 mb-12 scroll-mt-8">
       <div class="mb-2">
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
           PROTOTYPES · SECTION HEADING
@@ -1304,7 +1411,7 @@
         </div>
         <header class="space-y-2">
           <landing-eyebrow [label]="['§ 04', 'Selected Work']" />
-          <h2 class="m-0 text-[40px] leading-[48px] tracking-tight text-landing-text-300">
+          <h2 class="m-0 text-display-md tracking-tight text-landing-text-300">
             <span class="font-body font-bold mr-2">Three projects,</span
             ><em
               class="font-display not-italic-fix italic font-normal text-landing-text-400 text-[1.06em]"
@@ -1327,10 +1434,12 @@
           <span class="font-display italic font-light text-[88px] leading-none text-landing-accent">04</span>
           <div class="flex-1">
             <landing-eyebrow [label]="['SELECTED WORK', '03 of 12 in archive']" />
-            <h2 class="m-0 mt-2 font-body font-bold text-[40px] leading-[44px] tracking-tight text-landing-text-300">
+            <h2
+              class="m-0 mt-2 font-body font-bold text-display-md leading-[44px] tracking-tight text-landing-text-300"
+            >
               Three projects,
             </h2>
-            <p class="m-0 font-display italic font-normal text-[20px] leading-[28px] text-landing-text-400">
+            <p class="m-0 font-display italic font-normal text-body-xl text-landing-text-400">
               each one a question I had to answer.
             </p>
           </div>
@@ -1350,11 +1459,9 @@
             <span class="text-landing-text-500">INDEX <span class="text-landing-accent">04</span> / 08</span>
             <span class="text-landing-text-600">PUBLISHED · 2025</span>
           </div>
-          <h2 class="m-0 font-body font-bold text-[48px] leading-[56px] tracking-tight text-landing-text-300">
-            Selected work.
-          </h2>
+          <h2 class="m-0 font-body font-bold text-display-lg tracking-tight text-landing-text-300">Selected work.</h2>
           <div class="h-px w-16 bg-landing-accent"></div>
-          <p class="m-0 font-display italic text-[18px] leading-[28px] text-landing-text-400 max-w-xl">
+          <p class="m-0 font-display italic text-body-lg text-landing-text-400 max-w-xl">
             Three deep cuts — the rest live at <span class="font-mono not-italic">/projects</span>.
           </p>
         </header>
@@ -1370,7 +1477,7 @@
         </div>
         <header class="space-y-3 max-w-3xl">
           <landing-eyebrow [label]="['§ 04', 'Selected Work']" />
-          <h2 class="m-0 font-display text-[56px] leading-[60px] tracking-tight text-landing-text-300">
+          <h2 class="m-0 font-display text-display-xl leading-[60px] tracking-tight text-landing-text-300">
             Selected <em class="italic font-light text-landing-text-400">projects</em>,
             <br />
             <em class="italic font-light text-landing-accent">deeper than a tile.</em>
@@ -1386,8 +1493,10 @@
         <div class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">VARIANT E · Deck-led</div>
         <header class="space-y-2 max-w-3xl">
           <div class="flex items-baseline gap-3">
-            <span class="font-mono text-[14px] uppercase tracking-[0.08em] text-landing-accent">04</span>
-            <span class="font-mono text-[14px] uppercase tracking-[0.08em] text-landing-text-400">SELECTED · WORK</span>
+            <span class="font-mono text-mono-md uppercase tracking-[0.08em] text-landing-accent">04</span>
+            <span class="font-mono text-mono-md uppercase tracking-[0.08em] text-landing-text-400"
+              >SELECTED · WORK</span
+            >
             <span class="flex-1 h-px bg-landing-border ml-2"></span>
           </div>
           <h2 class="m-0 font-body font-bold text-[44px] leading-[52px] tracking-tight text-landing-text-300">
@@ -1402,414 +1511,7 @@
         </p>
       </div>
     </section>
-
-    <!-- ────────────────────────────────────────────────────────── -->
-    <!-- LEGACY · pre-E5 components, to be replaced                  -->
-    <!-- Console-side / pre-E5 demos using semantic tokens or        -->
-    <!-- Angular Material. Remove sections here as their landing     -->
-    <!-- equivalents ship in the NEW group above.                    -->
-    <!-- ────────────────────────────────────────────────────────── -->
-    <div class="mb-8 mt-4 border-l-2 border-landing-border pl-4">
-      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-600">legacy · pre-e5 components</p>
-      <p class="font-sans text-body-sm text-landing-text-600 mt-1 max-w-2xl">
-        Console-side demos / generic semantic tokens / Angular Material. These will be removed as new landing primitives
-        replace them.
-      </p>
-    </div>
-
-    <section class="space-y-6">
-      <!-- (Removed: shared "Accent Color Palette" + "Semantic Color Tokens" sections — superseded by landing ink/indigo sample above. Per E5 task 274 / DDL replacement rule.) -->
-
-      <!-- Feedback Colors Test -->
-      <div class="feedback-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Feedback Colors</h2>
-        <div class="space-y-3">
-          <div class="p-3 bg-info-container border-l-4 border-info text-text">Info message using semantic tokens</div>
-          <div class="p-3 bg-success-container border-l-4 border-success text-text">
-            Success message using semantic tokens
-          </div>
-          <div class="p-3 bg-warning-container border-l-4 border-warning text-text">
-            Warning message using semantic tokens
-          </div>
-          <div class="p-3 bg-error-container border-l-4 border-error text-text">
-            Error message using semantic tokens
-          </div>
-        </div>
-      </div>
-
-      <!-- Typography Scale Test -->
-      <div class="typography-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Typography Scale</h2>
-        <div class="space-y-4">
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-5xl</span>
-            <span class="text-5xl font-semibold text-text">Heading 1</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-4xl</span>
-            <span class="text-4xl font-semibold text-text">Heading 2</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-3xl</span>
-            <span class="text-3xl font-medium text-text">Heading 3</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-2xl</span>
-            <span class="text-2xl font-medium text-text">Heading 4</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-xl</span>
-            <span class="text-xl font-medium text-text">Heading 5</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-lg</span>
-            <span class="text-lg text-text">Large body text</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-base</span>
-            <span class="text-base text-text">Regular body text</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-sm</span>
-            <span class="text-sm text-text-secondary">Small text</span>
-          </div>
-          <div class="flex items-baseline gap-4">
-            <span class="text-xs text-text-muted w-16 shrink-0">text-xs</span>
-            <span class="text-xs text-text-muted">Extra small text</span>
-          </div>
-          <hr class="border-border my-4" />
-          <div class="space-y-2">
-            <p class="text-sm font-medium text-text-secondary">Font Families</p>
-            <p class="font-sans text-base text-text">Inter (sans): The quick brown fox jumps over the lazy dog</p>
-            <p class="font-mono text-base text-text">JetBrains Mono: const greeting = "Hello, World!";</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Angular Material Integration Test -->
-      <div class="material-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Angular Material</h2>
-
-        <!-- Buttons -->
-        <p class="text-sm text-text-secondary mb-3">M3 buttons — flat uses primary fill, raised uses surface</p>
-        <div class="flex gap-4 flex-wrap items-center mb-6">
-          <button mat-flat-button>Flat</button>
-          <button mat-raised-button>Raised</button>
-          <button mat-stroked-button>Stroked</button>
-          <button mat-button>Text</button>
-        </div>
-
-        <!-- Card -->
-        <p class="text-sm text-text-secondary mb-3">mat-card with surface color</p>
-        <div class="max-w-xs mb-6">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Material Card</mat-card-title>
-              <mat-card-subtitle>Uses surface tokens</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="mt-2">Card content renders on the surface color.</p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-button>Action</button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-
-        <!-- Input -->
-        <p class="text-sm text-text-secondary mb-3">mat-input with focus colors</p>
-        <mat-form-field>
-          <mat-label>Sample input</mat-label>
-          <input matInput placeholder="Type here..." />
-        </mat-form-field>
-      </div>
-
-      <!-- Card Component Test -->
-      <div class="card-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Card Component</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Custom card component for content containers with optional elevation
-        </p>
-
-        <div class="space-y-6">
-          <!-- Basic Cards -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Card</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
-              <landing-card>
-                <h3 class="text-lg font-semibold text-text mb-2">Default Card</h3>
-                <p class="text-text-secondary">This is a basic card with default shadow and hover transition.</p>
-              </landing-card>
-
-              <landing-card [elevated]="true">
-                <h3 class="text-lg font-semibold text-text mb-2">Elevated Card</h3>
-                <p class="text-text-secondary">This card has stronger shadow with the elevated prop.</p>
-              </landing-card>
-            </div>
-          </div>
-
-          <!-- Cards with Sub-components -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Card with Header, Content, Footer</h3>
-            <div class="max-w-md">
-              <landing-card>
-                <div class="card__header">
-                  <h3 class="text-lg font-semibold text-text">Card Header</h3>
-                  <p class="text-sm text-text-muted">Subtitle or meta information</p>
-                </div>
-                <div class="card__content">
-                  <p class="text-text-secondary mb-2">
-                    The card supports BEM-style sub-component classes for flexible layouts.
-                  </p>
-                  <p class="text-text-secondary">Content area uses the card__content class.</p>
-                </div>
-                <div class="card__footer">
-                  <div class="flex gap-2 justify-end">
-                    <landing-button variant="ghost" size="sm">Cancel</landing-button>
-                    <landing-button variant="solid" size="sm">Confirm</landing-button>
-                  </div>
-                </div>
-              </landing-card>
-            </div>
-          </div>
-
-          <!-- Project Card Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Project Card</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <landing-card>
-                <div class="flex items-start gap-3 mb-3">
-                  <landing-icon name="code" class="text-accent-500" [size]="24" />
-                  <div>
-                    <h4 class="text-base font-semibold text-text">Portfolio Site</h4>
-                    <p class="text-xs text-text-muted">Angular • NestJS</p>
-                  </div>
-                </div>
-                <p class="text-sm text-text-secondary mb-4">
-                  Personal portfolio with SSR, design system, and TDD workflow.
-                </p>
-                <div class="flex gap-2">
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="external-link" [size]="14" />
-                    <span>View</span>
-                  </landing-button>
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="github" [size]="14" />
-                    <span>Code</span>
-                  </landing-button>
-                </div>
-              </landing-card>
-
-              <landing-card [elevated]="true">
-                <div class="flex items-start gap-3 mb-3">
-                  <landing-icon name="globe" class="text-accent-500" [size]="24" />
-                  <div>
-                    <h4 class="text-base font-semibold text-text">E-commerce Platform</h4>
-                    <p class="text-xs text-text-muted">React • Node.js</p>
-                  </div>
-                </div>
-                <p class="text-sm text-text-secondary mb-4">Full-stack e-commerce solution with payment integration.</p>
-                <div class="flex gap-2">
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="external-link" [size]="14" />
-                    <span>View</span>
-                  </landing-button>
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="github" [size]="14" />
-                    <span>Code</span>
-                  </landing-button>
-                </div>
-              </landing-card>
-
-              <landing-card>
-                <div class="flex items-start gap-3 mb-3">
-                  <landing-icon name="briefcase" class="text-accent-500" [size]="24" />
-                  <div>
-                    <h4 class="text-base font-semibold text-text">Task Manager</h4>
-                    <p class="text-xs text-text-muted">Vue • Python</p>
-                  </div>
-                </div>
-                <p class="text-sm text-text-secondary mb-4">Collaborative task management with real-time updates.</p>
-                <div class="flex gap-2">
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="external-link" [size]="14" />
-                    <span>View</span>
-                  </landing-button>
-                  <landing-button variant="ghost" size="sm">
-                    <landing-icon name="github" [size]="14" />
-                    <span>Code</span>
-                  </landing-button>
-                </div>
-              </landing-card>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Icon System Test -->
-      <div class="icon-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Icon System (Lucide)</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Icons via unified &lt;landing-icon&gt; component with LucideIconProvider
-        </p>
-        <div class="grid grid-cols-6 gap-4 sm:grid-cols-8 md:grid-cols-10">
-          @for (name of iconNames; track name) {
-            <div class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-background transition-colors">
-              <landing-icon [name]="name" class="text-text" [size]="24" />
-              <span class="text-xs text-text-muted text-center leading-tight">{{ name }}</span>
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Input Component Test -->
-      <div class="input-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Input Component</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Custom input component with validation states and Angular Forms integration
-        </p>
-
-        <div class="space-y-6 max-w-2xl">
-          <!-- Basic Inputs -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Basic Inputs</h3>
-            <div class="space-y-3">
-              <landing-input placeholder="Enter text..." />
-              <landing-input type="email" placeholder="Enter email..." />
-              <landing-input type="password" placeholder="Enter password..." />
-              <landing-input type="number" placeholder="Enter number..." />
-            </div>
-          </div>
-
-          <!-- States -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">States</h3>
-            <div class="space-y-3">
-              <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-normal">Normal State</label>
-                <landing-input placeholder="Normal input" id="ddl-input-normal" />
-              </div>
-              <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-error">Error State</label>
-                <landing-input placeholder="Error input" [error]="true" id="ddl-input-error" />
-                <p class="text-xs text-error mt-1">This field is required</p>
-              </div>
-              <div>
-                <label class="block text-sm text-text mb-1" for="ddl-input-disabled">Disabled State</label>
-                <landing-input placeholder="Disabled input" [disabled]="true" id="ddl-input-disabled" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Labeled Inputs -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">With Labels</h3>
-            <div class="space-y-3">
-              <div>
-                <label for="name" class="block text-sm font-medium text-text mb-1"> Full Name </label>
-                <landing-input type="text" placeholder="John Doe" />
-              </div>
-              <div>
-                <label for="email" class="block text-sm font-medium text-text mb-1"> Email Address </label>
-                <landing-input type="email" placeholder="john@example.com" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Layout Components Test -->
-      <div class="layout-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Layout Components</h2>
-        <p class="text-sm text-text-secondary mb-4">
-          Container and Section components for consistent page structure and spacing
-        </p>
-
-        <div class="space-y-6">
-          <!-- Section Component -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Section</h3>
-            <div class="bg-background rounded-lg overflow-hidden">
-              <landing-section>
-                <div class="bg-surface-elevated border border-border p-4 rounded">
-                  <p class="text-text-secondary">
-                    Section component adds responsive vertical padding (py-16 md:py-24 lg:py-32). Use sections to
-                    separate major page areas.
-                  </p>
-                </div>
-              </landing-section>
-            </div>
-          </div>
-
-          <!-- Combined Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Section + Container</h3>
-            <div class="bg-background rounded-lg overflow-hidden">
-              <landing-section>
-                <landing-container>
-                  <div class="text-center">
-                    <h3 class="text-2xl font-semibold text-text mb-3">Page Section Title</h3>
-                    <p class="text-text-secondary mb-6">
-                      This demonstrates the typical pattern of combining Section (for vertical spacing) with Container
-                      (for horizontal constraints).
-                    </p>
-                    <div class="flex gap-3 justify-center">
-                      <landing-button variant="solid">Primary Action</landing-button>
-                      <landing-button variant="ghost">Secondary Action</landing-button>
-                    </div>
-                  </div>
-                </landing-container>
-              </landing-section>
-            </div>
-          </div>
-
-          <!-- Card Grid Example -->
-          <div>
-            <h3 class="text-sm font-medium text-text-secondary mb-3">Example: Card Grid in Wide Container</h3>
-            <div class="bg-background rounded-lg overflow-hidden">
-              <landing-section>
-                <landing-container size="wide">
-                  <h3 class="text-2xl font-semibold text-center mb-8 text-text">Featured Items</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <landing-card>
-                      <div class="flex items-center gap-2 mb-2">
-                        <landing-icon name="box" [size]="20" class="text-primary" />
-                        <h4 class="text-base font-semibold text-text">Item One</h4>
-                      </div>
-                      <p class="text-sm text-text-secondary">
-                        Wide container allows more horizontal space for card grids.
-                      </p>
-                    </landing-card>
-                    <landing-card>
-                      <div class="flex items-center gap-2 mb-2">
-                        <landing-icon name="package" [size]="20" class="text-primary" />
-                        <h4 class="text-base font-semibold text-text">Item Two</h4>
-                      </div>
-                      <p class="text-sm text-text-secondary">Section adds vertical breathing room.</p>
-                    </landing-card>
-                    <landing-card>
-                      <div class="flex items-center gap-2 mb-2">
-                        <landing-icon name="gift" [size]="20" class="text-primary" />
-                        <h4 class="text-base font-semibold text-text">Item Three</h4>
-                      </div>
-                      <p class="text-sm text-text-secondary">Cards respond to grid breakpoints automatically.</p>
-                    </landing-card>
-                  </div>
-                </landing-container>
-              </landing-section>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Border Tokens Test -->
-      <div class="border-test p-6 bg-surface rounded-lg shadow-sm border border-border">
-        <h2 class="text-2xl font-semibold mb-4 text-text">Border Tokens</h2>
-        <div class="space-y-3">
-          <div class="p-3 border border-border rounded-lg">Default border using border-border</div>
-          <div class="p-3 border border-border-strong rounded-lg">Strong border using border-border-strong</div>
-        </div>
-      </div>
-    </section>
   </landing-container>
+
+  <landing-floating-pill-nav [sections]="sections" />
 </div>
