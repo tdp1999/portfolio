@@ -41,6 +41,7 @@ export class UpdateProfileLandingContentHandler implements ICommandHandler<Updat
       stackIntro: data.stackIntro,
       contactIntro: data.contactIntro,
       footerTagline: data.footerTagline,
+      coreStack: data.coreStack,
     });
     const updated = profile.withLandingContent(newLandingContent, command.userId);
     await this.repo.updateLandingContent(command.userId, updated.landingContent, command.userId);

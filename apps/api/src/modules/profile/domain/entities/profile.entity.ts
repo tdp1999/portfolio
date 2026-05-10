@@ -193,6 +193,10 @@ export class Profile {
     return this.props.landingContent.footerTagline;
   }
 
+  get coreStack(): string[] {
+    return this.props.landingContent.coreStack;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -262,6 +266,7 @@ export class Profile {
         stackIntro: data.stackIntro ?? null,
         contactIntro: data.contactIntro ?? null,
         footerTagline: data.footerTagline ?? null,
+        coreStack: data.coreStack ?? [],
       }),
       createdAt: now,
       updatedAt: now,
@@ -316,6 +321,7 @@ export class Profile {
         stackIntro: props.stackIntro,
         contactIntro: props.contactIntro,
         footerTagline: props.footerTagline,
+        coreStack: props.coreStack ?? [],
       }),
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
@@ -436,6 +442,7 @@ export class Profile {
       stackIntro: this.props.landingContent.stackIntro,
       contactIntro: this.props.landingContent.contactIntro,
       footerTagline: this.props.landingContent.footerTagline,
+      coreStack: this.props.landingContent.coreStack,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
       createdById: this.props.createdById,

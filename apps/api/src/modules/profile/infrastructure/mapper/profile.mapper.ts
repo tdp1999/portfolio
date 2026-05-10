@@ -24,6 +24,11 @@ const parseTimezones = (raw: unknown): string[] => {
   return raw.filter((v): v is string => typeof v === 'string');
 };
 
+const parseStringArray = (raw: unknown): string[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((v): v is string => typeof v === 'string');
+};
+
 export class ProfileMapper {
   static toDomain(raw: PrismaProfile): Profile {
     const props: IProfileProps = {
@@ -55,6 +60,7 @@ export class ProfileMapper {
       stackIntro: parseTranslatableNullable(raw.stackIntro),
       contactIntro: parseTranslatableNullable(raw.contactIntro),
       footerTagline: parseTranslatableNullable(raw.footerTagline),
+      coreStack: parseStringArray(raw.coreStack),
       timezones: parseTimezones(raw.timezones),
       canonicalUrl: raw.canonicalUrl,
       avatarId: raw.avatarId,
@@ -96,6 +102,7 @@ export class ProfileMapper {
       stackIntro: (profile.stackIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       contactIntro: (profile.contactIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       footerTagline: (profile.footerTagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      coreStack: profile.coreStack as unknown as Prisma.InputJsonValue,
       timezones: profile.timezones as unknown as Prisma.InputJsonValue,
       canonicalUrl: profile.canonicalUrl,
       avatarId: profile.avatarId,

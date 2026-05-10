@@ -5,6 +5,7 @@ export interface LandingContentBlocksProps {
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 }
 
 export class LandingContentBlocks {
@@ -13,11 +14,11 @@ export class LandingContentBlocks {
   }
 
   static create(props: LandingContentBlocksProps): LandingContentBlocks {
-    return new LandingContentBlocks({ ...props });
+    return new LandingContentBlocks({ ...props, coreStack: [...(props.coreStack ?? [])] });
   }
 
   static fromPersistence(props: LandingContentBlocksProps): LandingContentBlocks {
-    return new LandingContentBlocks({ ...props });
+    return new LandingContentBlocks({ ...props, coreStack: [...(props.coreStack ?? [])] });
   }
 
   static empty(): LandingContentBlocks {
@@ -26,6 +27,7 @@ export class LandingContentBlocks {
       stackIntro: null,
       contactIntro: null,
       footerTagline: null,
+      coreStack: [],
     });
   }
 
@@ -45,16 +47,21 @@ export class LandingContentBlocks {
     return this.props.footerTagline;
   }
 
+  get coreStack(): string[] {
+    return [...this.props.coreStack];
+  }
+
   equals(other: LandingContentBlocks): boolean {
     return (
       JSON.stringify(this.props.tagline) === JSON.stringify(other.props.tagline) &&
       JSON.stringify(this.props.stackIntro) === JSON.stringify(other.props.stackIntro) &&
       JSON.stringify(this.props.contactIntro) === JSON.stringify(other.props.contactIntro) &&
-      JSON.stringify(this.props.footerTagline) === JSON.stringify(other.props.footerTagline)
+      JSON.stringify(this.props.footerTagline) === JSON.stringify(other.props.footerTagline) &&
+      JSON.stringify(this.props.coreStack) === JSON.stringify(other.props.coreStack)
     );
   }
 
   toProps(): LandingContentBlocksProps {
-    return { ...this.props };
+    return { ...this.props, coreStack: [...this.props.coreStack] };
   }
 }

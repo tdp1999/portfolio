@@ -107,6 +107,7 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
         en: "There's more, if you're still here.",
         vi: '',
       },
+      coreStack: ['Angular', 'TypeScript', 'Angular Material'],
       yearsOfExperience: 5,
       timezones: ['Asia/Ho_Chi_Minh'],
       email,

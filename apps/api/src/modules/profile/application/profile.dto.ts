@@ -51,6 +51,7 @@ export type ProfilePublicResponseDto = {
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 };
 
 export type ProfileAdminResponseDto = ProfilePublicResponseDto & {

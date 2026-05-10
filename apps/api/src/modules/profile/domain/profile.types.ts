@@ -54,6 +54,7 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 
   // Misc
   timezones: string[];
@@ -107,6 +108,7 @@ export interface ICreateProfilePayload {
   stackIntro?: TranslatableJson;
   contactIntro?: TranslatableJson;
   footerTagline?: TranslatableJson;
+  coreStack?: string[];
 
   // Misc
   timezones?: string[];

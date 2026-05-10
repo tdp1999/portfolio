@@ -35,6 +35,7 @@ export class ProfilePresenter {
       stackIntro: profile.stackIntro,
       contactIntro: profile.contactIntro,
       footerTagline: profile.footerTagline,
+      coreStack: profile.coreStack,
     };
   }
 
