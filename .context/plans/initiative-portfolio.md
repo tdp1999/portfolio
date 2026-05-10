@@ -115,13 +115,15 @@ Sequence and dependencies. Each sub-epic gets its own file when it opens.
 | E0 | Author Databank | ✅ closed (living doc) | — | — (foundation) |
 | E1 | Audience & Narrative Discovery | ✅ closed | E0 | 1, 11 |
 | E2 | Content & Story Scaffolding | ✅ closed (home-page copy locked) | E0, E1 | 2, 3, 4, 7, 8, 12 |
-| E3 | Dummy Data Enrichment for Console Case Study | 🚫 descoped (folded into E5) | E2 | 2, 3 |
+| E3 | Data Enrichment for Landing & Console Case Study | ✅ closed (2026-05-10) | E2, E5 P1–P4 | 2, 3 |
 | E4 | UI/UX Direction & Moodboard | ✅ closed | E2 | 4, 5, 12 |
 | E5 | Implementation | 🟢 open | E4 | — (execution) |
 | E6 | QA, Polish, Accessibility, SEO | ⏸ blocked | E5 | — (execution) |
 | E7 | Launch & Lightweight Promotion | ⏸ blocked | E6 | 11, 12 |
 
 **E3 descoped 2026-05-02:** data structure changes from E4 (D3.c sticky sidebar adds `Project.sections`, `Project.tocAnchors`) make a separate data-enrichment epic redundant. Console MVP case-study content will be authored inline during E5 implementation, against the final schema. E5 unblocked.
+
+**E3 re-opened 2026-05-09:** with home page composed (E5 Phase 4 done) and schema stabilized for the in-scope routes, the records / volume work is back as its own epic. Scope narrowed to home + `/projects` index + `/experience` (D3.c detail page out of scope, so P2.4/P2.5 migrations not required). See [E3 playbook](./epic-portfolio-e3-data-enrichment.md).
 
 **Notes on sequencing:**
 
@@ -161,3 +163,5 @@ Items to be resolved as sub-epics open. Empty entries are placeholders for the r
 - 2026-05-01 — E0 (Author Databank) created and closed (living doc). E1 (Audience & Narrative) closed. E2 (Content & Story Scaffolding) closed: all home-page copy locked. Layout extended to 9 sections with 2 new (Bio Card Grid, Footer Banner). Multi-page list expanded to 8 routes + `/uses` buffer page. 3 system migrations queued for E5 (Profile.timezone, Project.links, Skill.displayGroup). Next: E3 (data enrichment) and/or E4 (visual direction), parallel-able.
 - 2026-05-02 — **E3 descoped, folded into E5.** Schema changes from E4 (`Project.sections`, `Project.tocAnchors`) make a standalone data-enrichment epic redundant. Console MVP case-study content authored during E5 against the final schema.
 - 2026-05-02 — **E4 (UI/UX Direction & Moodboard) closed.** All 4 groups locked: A (technical+quiet, dark-first+toggle, technical-cool palette with indigo accent ~#6E66D9, editorial-serif display + sans body + mono labels, medium density), B (B1.e blueprint hero, B2.c mixed transitions, B3.d tabbed gallery with B3.b fallback, H2 plain-text transparent header), C (1px hairline, 4px radius, considered motion, real screenshots only, no code/terminal decoration), D (sub-pages quieter, /uses & /colophon same as home, D3.c sticky-sidebar project detail). Stitch project `11488078708947813219` retained as composition reference. Tool candidates documented: screenshot beautifiers (`assets/moodboard/screenshot-tools.md`) + annotation (Excalidraw primary). Additional E5 migrations queued: `Project.sections`, `Project.tocAnchors`. Next: **E3 (data enrichment) opens** (E5 still blocked on E3).
+- 2026-05-09 — **E3 re-opened with narrowed scope.** Home + `/projects` index + `/experience` only; D3.c detail / `/uses` / `/colophon` out of scope. Persona = real (Phuong/Redoc); image strategy = mix (real thumbnails + placeholder gallery). Playbook drafted in `epic-portfolio-e3-data-enrichment.md`: 6 paths, ~30 form submissions via Console UI. Migrations P2.4/P2.5 deferred — not required for in-scope routes.
+- 2026-05-10 — **E3 closed.** All 6 paths executed via authenticated `/api/*` Node scripts (same Admin JWT as the Console UI): 20 media uploads, profile bilingual (EN+VI) restoration of E2-locked copy + media re-link, 16 member skills + 10 legacy soft-deleted (22 left), 3 featured + 5 minor projects PUBLISHED, 3 experiences (Redoc / Skyfox / BachKhoa) replacing dummy duplicates. Home verified end-to-end (8/8 sections, 0 errors). Hero CORE_STACK regression fixed alongside via new `Profile.coreStack` field (additive Prisma migration + entity/VO/mapper/repo/DTO/presenter + Console form + Hero 3-tier fallback parser); domain rule PRF-007 extended. Epic file moved to `plans-done/`. Out-of-scope: real thumbnail screenshots, resume PDF cleanup, `/projects` & `/experience` page rendering verification (those landing routes don't exist yet — folded into E5 Phase 5 tasks 289–293).

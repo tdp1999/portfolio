@@ -4,14 +4,14 @@
 
 | Term | Definition | Type |
 |------|-----------|------|
-| Profile | Personal information of the site owner — composed of 6 section value objects (Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg) plus 4 optional landing content blocks (tagline, stackIntro, contactIntro, footerTagline). Single record; copy fields are translatable. | Aggregate |
+| Profile | Personal information of the site owner — composed of 6 section value objects (Identity, WorkAvailability, Contact, Location, SocialLinks, SeoOg) plus the LandingContentBlocks group (4 translatable copy fields + a `coreStack` chip array). Single record; translatable fields are translatable. | Aggregate |
 | Identity | Profile section: display name, full name (translatable), title (translatable), bio (translatable), avatar reference | Value Object |
 | WorkAvailability | Profile section: employment status, weekly hours, hourly rate, **timezones — one or more zones the Owner works across**, openTo flags (Freelance, Consulting, Side Project, Full-time, Speaking, Open Source) | Value Object |
 | Contact | Profile section: email, phone | Value Object |
 | Location | Profile section: city, country | Value Object |
 | SocialLinks | Profile section: collection of SocialLink entries (platform → URL/handle) | Value Object |
 | SeoOg | Profile section: OG image reference, meta title (translatable), meta description (translatable) | Value Object |
-| LandingContentBlocks | Optional voice-copy fields on Profile surfaced on the landing page: a hero tagline, a stack section intro, a contact section intro, and a footer banner line. Each piece of copy is optional and may be authored in any supported language. The layout decides whether and where each piece appears. | Value Object |
+| LandingContentBlocks | Voice-copy and chip fields on Profile surfaced on the landing page: optional translatable copy blocks (hero tagline, stack section intro, contact section intro, footer banner line) plus `coreStack` — a non-translatable string array (3–4 short tokens) rendered as the hero's CORE_STACK chip strip. Each translatable block is optional and may be authored in any supported language; coreStack is shared across locales (uppercased on render). The layout decides whether and where each piece appears. | Value Object |
 | Experience | A professional career entry — company, role (translatable), employment type, location type, dates, achievements, skills used, and company logo. Single record per job with translatable JSON fields for position, description, achievements, teamRole | Entity |
 | EmploymentType | The contract/engagement type of a work experience: Full-time, Part-time, Contract, Freelance, Internship, Self-employed | Value Object |
 | LocationType | The work arrangement of a role: Remote, Hybrid, On-site | Value Object |
@@ -224,7 +224,7 @@
 - PRF-004: Translatable fields fall back: requested locale → en → first available
 - PRF-005: Social links, certifications, and openTo are validated JSON arrays (not free-form)
 - PRF-006: WorkAvailability.timezones may hold one or more zones. An empty list means "not specified". The landing page renders each zone as a chip showing live local time.
-- PRF-007: LandingContentBlocks (tagline, stackIntro, contactIntro, footerTagline) are optional. When a block is empty, the landing page falls back to its layout default — typically hiding that surface entirely or showing only fixed chrome.
+- PRF-007: LandingContentBlocks copy fields (tagline, stackIntro, contactIntro, footerTagline) are optional. When a block is empty, the landing page falls back to its layout default — typically hiding that surface entirely or showing only fixed chrome. `coreStack` (string array) is also optional; when empty, the hero CORE_STACK strip falls back to extracting bold runs from `stackIntro` paragraph 1, then to a slash-split fallback.
 - PRF-008: Skill grouping for landing follows the parent-skill umbrella convention: top-level skills (skills with no parent) define the groups; the group label is the umbrella skill's name; group order follows the umbrella's display order; member skills are the umbrella's direct children.
 
 ### Upload Media

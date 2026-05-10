@@ -151,6 +151,19 @@
   - Each section owns its FormGroup, save action, signals, and `ServerErrorDirective` wiring; parent reduced to thin shell (load + scrollspy)
   - Fixed 2 long-standing failing tests in `apps/console/src/app/error-handler.provider.spec.ts` (assertions aligned with `extractApiError` actual output)
   - Cleared the "Profile-page section extraction" bullet from `patterns-error-handling.md` deferred list
+- [x] **Portfolio E3 — Data Enrichment** (epic-portfolio-e3-data-enrichment) - Completed 2026-05-10
+  - Executed via authenticated `/api/*` Node scripts (same Admin JWT the Console UI uses) — no Prisma seed mutation, no UI form clicking; manifests at `tmp/e3-{media,skills,projects}-manifest.json`
+  - Path 1 — 20 Media uploaded: avatar, OG, 3×thumb + 12 gallery for featured projects, 3 company logos (picsum placeholders)
+  - Path 2 — Profile bilingual (EN+VI) for identity / bioShort / bioLong / tagline / stackIntro / contactIntro / footerTagline; restored E2-locked copy that had been overwritten by garbage placeholders; avatar + OG re-linked to Path 1 media
+  - Path 3 — 16 member skills under 6 umbrellas; 10 legacy umbrellas/children soft-deleted (22 left)
+  - Path 4 — 3 featured projects (Document Engine, Portfolio Monorepo, TDP Plugins) created + PUBLISHED; legacy `redoc-document-engine` un-featured
+  - Path 5 — 5 minor projects (Permission Framework, Loan Mgmt Dashboard, Design Bank Generator, Console MVP, Contract Compare Engine)
+  - Path 6 — 3 experiences (Redoc / Skyfox / BachKhoa Web Lab) replacing 3 dummy duplicates
+  - Verified home page: 8/8 sections render, 0 console errors, 0 broken images, 0 failed requests; Selected Work tab switching across all 3 featured projects works
+  - **Hero CORE_STACK fix shipped alongside** (issue surfaced during verify): added `Profile.coreStack: string[]` field end-to-end (Prisma migration `add_profile_core_stack` additive `JSONB DEFAULT '[]'`; entity / VO / mapper / repo / DTO / presenter / landing types / Console form). Hero parser rewritten to 3-tier fallback (authored chips → bold runs → slash split). Domain rule PRF-007 extended. Data set to `["Angular","TypeScript","Angular Material"]`.
+  - Doc updates: `openTo` enum value clarified to UPPERCASE; Media folder enum explicit (`avatars / projects / logos / general` — earlier `profile` / `experiences` were not in the enum)
+  - Out-of-scope deferrals: real thumbnail screenshots (placeholder kept per Owner); resume PDF cleanup (legacy filename kept per Owner); `redoc-document-engine` legacy still on `/projects` index (un-featured only); Selected Work link-label cosmetics
+  - Epic file moved to `plans-done/`
 
 ## In Progress
 
@@ -308,7 +321,11 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Up Next
 
-**Current:** Portfolio E5 implementation. Phases 1–4 complete. **All home sections + composition shipped (281–288).** 286 Get-in-Touch + 287 Footer Banner + 288 Page Composition closed in one sweep on 2026-05-08 — footer banner promoted into `landing-shell` (mounted globally, hatch DDL background), floating pill nav gained `hideOnSelector` / `hideWhileActiveIn` configs + outside-click + `lg:`-only gating, eyebrow numbering re-aligned to displayed order (02 Who → 06 Get in Touch). Lighthouse smoke on prod build: A11y 97 / BP 100 / SEO 83 pass; Performance 61 deferred to E6 perf-polish epic per task 288 spec ("full polish in E6"). **Next:** Phase 5 sub-pages — 289 (projects index), 290 (project detail), 291 (uses), 292 (colophon), 293 (404).
+**Current:** Portfolio E5 implementation. Phases 1–4 complete. **All home sections + composition shipped (281–288).** 286 Get-in-Touch + 287 Footer Banner + 288 Page Composition closed in one sweep on 2026-05-08 — footer banner promoted into `landing-shell` (mounted globally, hatch DDL background), floating pill nav gained `hideOnSelector` / `hideWhileActiveIn` configs + outside-click + `lg:`-only gating, eyebrow numbering re-aligned to displayed order (02 Who → 06 Get in Touch). Lighthouse smoke on prod build: A11y 97 / BP 100 / SEO 83 pass; Performance 61 deferred to E6 perf-polish epic per task 288 spec ("full polish in E6").
+
+**E3 — Data Enrichment closed (2026-05-10).** All 6 paths run via authenticated API scripts; home renders end-to-end as a credible portfolio. Hero CORE_STACK regression fixed alongside via new `Profile.coreStack` field (additive Prisma migration + entity/VO/mapper/repo/DTO/presenter + Console form + Hero 3-tier fallback parser). Domain rule PRF-007 extended.
+
+**Next:** Phase 5 sub-pages — 289 (projects index), 290 (project detail), 291 (uses), 292 (colophon), 293 (404). E3 data is already in place to consume.
 
 **SSR/hydration hardening (2026-05-08, alongside 285/285b):** Fixed post-hydration data flash on home re-mount (back-nav from /ddl) — root cause was cold observables in landing data services. Added `shareReplay({ refCount: false })` to `Profile/Skill/Experience/Project` services + a tiny native-fetch reverse proxy on `/api/*` in `apps/landing/src/server.ts` so browser same-origin `/api/...` reaches the API service (was 302→/404 in prod where landing & API are separate Railway services). Bumped landing `anyComponentStyle` budget 8/16kB→16/32kB and refactored `bio-card-grid` orbit SCSS (3-prototype selector list → shared `.proto-grid--orbit` / `.proto-card--orbit`). New rules captured in `landing-ssr.md` + `guides/deploy-railway-ssr.md` (§4b browser proxy).
 
@@ -321,7 +338,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 | In Progress               | 0       |
 | Pending                   | 31      |
 | **Total Created**         | **332** |
-| Epics completed           | 29      |
+| Epics completed           | 30      |
 
 ## Notes
 
