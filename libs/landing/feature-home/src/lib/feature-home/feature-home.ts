@@ -59,6 +59,7 @@ export class FeatureHome {
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));
   tagline = computed(() => getLocalized(this.profile()?.tagline, this.locale()));
   stackIntro = computed(() => getLocalized(this.profile()?.stackIntro, this.locale()));
+  coreStack = computed<readonly string[]>(() => this.profile()?.coreStack ?? []);
   bioLong = computed(() => getLocalized(this.profile()?.bioLong, this.locale()));
   bioShort = computed(() => getLocalized(this.profile()?.bioShort, this.locale()));
   isOpenToWork = computed(() => this.profile()?.availability === 'OPEN_TO_WORK');

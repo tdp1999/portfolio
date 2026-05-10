@@ -37,6 +37,7 @@ export interface ProfileAdminResponse {
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 }
 
 // ── Per-section PATCH payloads (mirror BE Update*Schema shapes) ────────────
@@ -87,6 +88,7 @@ export interface UpdateLandingContentPayload {
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 }
 
 export type SectionKey = (typeof PROFILE_SECTIONS)[number]['value'];

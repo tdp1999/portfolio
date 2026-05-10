@@ -16,6 +16,8 @@ export class HomeHeroComponent {
   readonly city = input<string>('');
   readonly available = input<boolean>(false);
   readonly stackIntro = input<string>('');
+  /** Authored hero chips (3–4 short tokens). Falls back to tokenizing `stackIntro` when empty. */
+  readonly coreStackChips = input<readonly string[]>([]);
 
   protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE_FOR_HIRE' : 'BUSY'));
 
@@ -42,15 +44,26 @@ export class HomeHeroComponent {
   protected readonly taglineEmphasis = computed(() => this.taglineSplit()[1]);
 
   /**
-   * Splits the Owner-authored `stackIntro` markdown into 3-ish core-stack tokens.
-   * Accepts `·`, `/`, `,`, `|` or whitespace as separators; uppercases each item.
+   * Hero chip tokens. Prefers the Owner-authored `coreStackChips` array when present;
+   * otherwise pulls the first paragraph of `stackIntro` and extracts its `**bold**` runs
+   * (matching the §5 prose convention so the hero stays in sync without a duplicate field
+   * round-trip). Final fallback: split the first paragraph by `· / , |`.
    */
   protected readonly coreStack = computed<readonly string[]>(() => {
+    const authored = this.coreStackChips();
+    if (authored && authored.length > 0) {
+      return authored.map((s) => s.trim().toUpperCase()).filter((s) => s.length > 0);
+    }
+
     const raw = this.stackIntro().trim();
     if (!raw) return [];
-    return raw
+    const firstPara = raw.split(/\n\s*\n/, 1)[0] ?? '';
+    const bolds = [...firstPara.matchAll(/\*\*(.+?)\*\*/g)].map((m) => m[1].trim());
+    if (bolds.length > 0) return bolds.map((s) => s.toUpperCase());
+
+    return firstPara
       .replace(/[*_`]/g, '')
-      .split(/[·/,|\n]+/)
+      .split(/[·/,|]+/)
       .map((item) => item.trim().toUpperCase())
       .filter((item) => item.length > 0);
   });

@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { startWith } from 'rxjs';
 import {
   FormSnapshotDirective,
@@ -32,6 +34,8 @@ function isEmpty(t: { en: string; vi: string }): boolean {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
     SectionCardComponent,
     FormSnapshotDirective,
     ServerErrorDirective,
@@ -54,6 +58,7 @@ export class LandingContentSectionComponent {
     stackIntro: this.bilingualGroup(),
     contactIntro: this.bilingualGroup(),
     footerTagline: this.bilingualGroup(),
+    coreStack: this.fb.control('', { nonNullable: true }),
   });
 
   readonly saving = signal(false);
@@ -79,6 +84,7 @@ export class LandingContentSectionComponent {
         stackIntro: { en: data.stackIntro?.en ?? '', vi: data.stackIntro?.vi ?? '' },
         contactIntro: { en: data.contactIntro?.en ?? '', vi: data.contactIntro?.vi ?? '' },
         footerTagline: { en: data.footerTagline?.en ?? '', vi: data.footerTagline?.vi ?? '' },
+        coreStack: (data.coreStack ?? []).join(', '),
       });
       this.hydrated = true;
     });
@@ -95,11 +101,16 @@ export class LandingContentSectionComponent {
     }
     this.saving.set(true);
     const v = this.form.getRawValue();
+    const coreStack = v.coreStack
+      .split(/[,\n]/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
     const payload = {
       tagline: isEmpty(v.tagline) ? null : v.tagline,
       stackIntro: isEmpty(v.stackIntro) ? null : v.stackIntro,
       contactIntro: isEmpty(v.contactIntro) ? null : v.contactIntro,
       footerTagline: isEmpty(v.footerTagline) ? null : v.footerTagline,
+      coreStack,
     };
     this.profileService
       .updateLandingContent(payload)

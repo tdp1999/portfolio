@@ -43,5 +43,21 @@
       [minHeight]="80"
       [placeholder]="{ en: 'Built with care, in Saigon.', vi: 'Làm tử tế, từ Sài Gòn.' }"
     />
+
+    <div class="field-block">
+      <label class="field-label" for="profile-core-stack-input">Core stack chips</label>
+      <span class="text-caption">
+        Hero chip strip — 3–4 short tokens, comma- or newline-separated. Rendered uppercase.
+      </span>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <input
+          id="profile-core-stack-input"
+          matInput
+          type="text"
+          [formControl]="form.controls.coreStack"
+          placeholder="Angular, TypeScript, Angular Material"
+        />
+      </mat-form-field>
+    </div>
   </div>
 </console-section-card>

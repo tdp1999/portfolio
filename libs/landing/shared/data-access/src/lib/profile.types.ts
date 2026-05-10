@@ -35,6 +35,7 @@ export type PublicProfileResponse = {
   stackIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  coreStack: string[];
 };
 
 export type ProfileJsonLd = {
