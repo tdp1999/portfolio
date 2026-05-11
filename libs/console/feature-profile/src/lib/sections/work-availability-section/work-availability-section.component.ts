@@ -20,10 +20,12 @@ import {
   FormSnapshotDirective,
   SectionCardComponent,
   SectionStatus,
+  TimePickerComponent,
+  TimezonePickerComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { baselineFor, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
-import { AVAILABILITY_OPTIONS, OPEN_TO_OPTIONS, TIMEZONE_OPTIONS } from '../../profile.data';
+import { AVAILABILITY_OPTIONS, OPEN_TO_OPTIONS } from '../../profile.data';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse } from '../../profile.types';
 
@@ -40,6 +42,8 @@ import { ProfileAdminResponse } from '../../profile.types';
     ServerErrorDirective,
     FormErrorPipe,
     ChipToggleGroupComponent,
+    TimePickerComponent,
+    TimezonePickerComponent,
   ],
   templateUrl: './work-availability-section.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,7 +59,6 @@ export class WorkAvailabilitySectionComponent {
 
   readonly availabilityOptions = AVAILABILITY_OPTIONS;
   readonly openToOptions = OPEN_TO_OPTIONS;
-  readonly timezoneChipOptions = TIMEZONE_OPTIONS.map((tz) => ({ value: tz, label: tz }));
 
   readonly form = this.fb.group({
     yearsOfExperience: this.fb.control(0, {
@@ -65,6 +68,8 @@ export class WorkAvailabilitySectionComponent {
     availability: this.fb.control<string>('EMPLOYED', { nonNullable: true, validators: [Validators.required] }),
     openTo: this.fb.control<string[]>([], { nonNullable: true }),
     timezones: this.fb.control<string[]>([], { nonNullable: true }),
+    workingHoursStart: this.fb.control<string | null>(null),
+    workingHoursEnd: this.fb.control<string | null>(null),
   });
 
   readonly saving = signal(false);
@@ -90,6 +95,8 @@ export class WorkAvailabilitySectionComponent {
         availability: data.availability,
         openTo: data.openTo,
         timezones: data.timezones ?? [],
+        workingHoursStart: data.workingHours?.start ?? null,
+        workingHoursEnd: data.workingHours?.end ?? null,
       });
       this.hydrated = true;
     });
@@ -106,8 +113,17 @@ export class WorkAvailabilitySectionComponent {
     }
     this.saving.set(true);
     const v = this.form.getRawValue();
+    const workingHours =
+      v.workingHoursStart && v.workingHoursEnd ? { start: v.workingHoursStart, end: v.workingHoursEnd } : null;
+    const payload = {
+      yearsOfExperience: v.yearsOfExperience,
+      availability: v.availability,
+      openTo: v.openTo,
+      timezones: v.timezones,
+      workingHours,
+    };
     this.profileService
-      .updateWorkAvailability(v)
+      .updateWorkAvailability(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -115,12 +131,7 @@ export class WorkAvailabilitySectionComponent {
           this.form.markAsPristine();
           this.lastSaved.set(new Date());
           this.toast.success('Work & Availability saved');
-          this.saved.emit({
-            yearsOfExperience: v.yearsOfExperience,
-            availability: v.availability,
-            openTo: v.openTo,
-            timezones: v.timezones,
-          });
+          this.saved.emit(payload);
         },
         error: () => this.saving.set(false),
       });

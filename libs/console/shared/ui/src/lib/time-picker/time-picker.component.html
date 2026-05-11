@@ -1,0 +1,49 @@
+<mat-form-field
+  [appearance]="'outline'"
+  [class.dense]="size() === 'dense'"
+  [subscriptSizing]="hint() ? 'fixed' : 'dynamic'"
+  class="time-picker"
+>
+  @if (label()) {
+    <mat-label>{{ label() }}</mat-label>
+  }
+  <mat-select
+    [value]="value()"
+    (selectionChange)="onSelect($event.value)"
+    (closed)="onPanelClosed()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [disableOptionCentering]="true"
+    panelClass="time-picker-panel"
+  >
+    @if (value()) {
+      <mat-select-trigger>{{ triggerLabel() }}</mat-select-trigger>
+    }
+    <div class="tp-search" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+      <mat-icon class="tp-search__icon" aria-hidden="true">schedule</mat-icon>
+      <input
+        type="text"
+        class="tp-search__input"
+        [value]="filterText()"
+        (input)="onFilter($any($event.target).value)"
+        placeholder="Type to jump (e.g. 23 or 11:30)"
+        aria-label="Filter times"
+        inputmode="numeric"
+      />
+    </div>
+    @for (opt of filteredOptions(); track opt.value) {
+      <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+    } @empty {
+      <div class="tp-empty">No times match "{{ filterText() }}"</div>
+    }
+  </mat-select>
+  @if (clearable() && value()) {
+    <button matSuffix type="button" class="clear-btn" aria-label="Clear time" (click)="clear($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  @if (hint()) {
+    <mat-hint>{{ hint() }}</mat-hint>
+  }
+</mat-form-field>

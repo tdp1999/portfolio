@@ -36,9 +36,23 @@
     </div>
 
     <div>
-      <p class="field-label">Timezones</p>
-      <p class="text-sm text-text-muted mb-2">Select one or more zones you operate in. Shown on the landing footer.</p>
-      <console-chip-toggle-group formControlName="timezones" [options]="timezoneChipOptions" />
+      <console-timezone-picker
+        formControlName="timezones"
+        label="Timezones"
+        hint="Zones you operate in. The first one drives the landing §3 hours converter."
+        clearable
+      />
+    </div>
+
+    <div>
+      <p class="field-label">Working hours</p>
+      <p class="text-sm text-text-muted mb-2">
+        Hours you're typically available in your primary timezone. Leave both empty to hide on landing.
+      </p>
+      <div class="field-row">
+        <console-time-picker formControlName="workingHoursStart" label="Start" [step]="15" format="24h" clearable />
+        <console-time-picker formControlName="workingHoursEnd" label="End" [step]="15" format="24h" clearable />
+      </div>
     </div>
   </div>
 </console-section-card>

@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+.timezone-picker {
+  width: 100%;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 0;
+  color: var(--mat-sys-on-surface-variant, currentColor);
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+.clear-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Search row inside the mat-select panel. Targets the global panelClass.
+   `disableOptionCentering` on mat-select keeps the panel docked below the
+   trigger so this sticky header stays flush with the panel top edge. */
+::ng-deep .timezone-picker-panel {
+  /* Kill default panel padding so the sticky search sits flush — otherwise
+     the panel background peeks through between the field and the search bar. */
+  padding-top: 0 !important;
+
+  .tz-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 0;
+    background: var(--mat-sys-surface-container, #fff);
+    border-bottom: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.08));
+  }
+  .tz-search__icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--mat-sys-on-surface-variant, currentColor);
+    opacity: 0.7;
+  }
+  .tz-search__input {
+    flex: 1 1 auto;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    padding: 4px 0;
+  }
+  .tz-empty {
+    padding: 12px 16px;
+    color: var(--mat-sys-on-surface-variant, currentColor);
+    opacity: 0.7;
+    font-size: 13px;
+  }
+  .mat-mdc-optgroup-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+  }
+}

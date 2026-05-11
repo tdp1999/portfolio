@@ -36,18 +36,3 @@ export const SOCIAL_PLATFORM_OPTIONS = [
   { value: 'WEBSITE', label: 'Website' },
   { value: 'OTHER', label: 'Other' },
 ] as const;
-
-export const TIMEZONE_OPTIONS = [
-  'UTC',
-  'Asia/Ho_Chi_Minh',
-  'America/New_York',
-  'America/Los_Angeles',
-  'America/Chicago',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Asia/Tokyo',
-  'Asia/Singapore',
-  'Asia/Bangkok',
-  'Australia/Sydney',
-] as const;

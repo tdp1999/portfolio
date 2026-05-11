@@ -1,0 +1,53 @@
+<mat-form-field
+  [appearance]="'outline'"
+  [class.dense]="dense()"
+  [subscriptSizing]="hint() ? 'fixed' : 'dynamic'"
+  class="timezone-picker"
+>
+  @if (label()) {
+    <mat-label>{{ label() }}</mat-label>
+  }
+  <mat-select
+    [value]="singleMode() ? selection()[0] : selection()"
+    (selectionChange)="onSelectionChange($event.value)"
+    (closed)="onPanelClosed()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [multiple]="!singleMode()"
+    [disableOptionCentering]="true"
+    panelClass="timezone-picker-panel"
+  >
+    @if (selection().length > 0) {
+      <mat-select-trigger>{{ triggerLabel() }}</mat-select-trigger>
+    }
+    <div class="tz-search" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+      <mat-icon class="tz-search__icon" aria-hidden="true">search</mat-icon>
+      <input
+        type="text"
+        class="tz-search__input"
+        [value]="filterText()"
+        (input)="onFilter($any($event.target).value)"
+        placeholder="Search city or zone"
+        aria-label="Search timezones"
+      />
+    </div>
+    @for (group of groups(); track group.region) {
+      <mat-optgroup [label]="group.region">
+        @for (z of group.zones; track z.value) {
+          <mat-option [value]="z.value">{{ z.label }}</mat-option>
+        }
+      </mat-optgroup>
+    } @empty {
+      <div class="tz-empty">No timezones match "{{ filterText() }}"</div>
+    }
+  </mat-select>
+  @if (clearable() && selection().length > 0) {
+    <button matSuffix type="button" class="clear-btn" aria-label="Clear selection" (click)="clear($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  @if (hint()) {
+    <mat-hint>{{ hint() }}</mat-hint>
+  }
+</mat-form-field>
