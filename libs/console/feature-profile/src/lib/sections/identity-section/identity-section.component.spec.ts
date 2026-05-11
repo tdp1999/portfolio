@@ -41,8 +41,10 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   ogImageUrl: null,
   tagline: null,
   stackIntro: null,
+  selectedWorkIntro: null,
   contactIntro: null,
   footerTagline: null,
+  coreStack: [],
 };
 
 const stubDataSource: MediaPickerDataSource = {

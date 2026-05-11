@@ -29,6 +29,17 @@
     />
 
     <console-translatable-markdown-group
+      [group]="form.controls.selectedWorkIntro"
+      label="Selected Work Intro"
+      helperText="Heading + deck for §4 (lead sentence becomes the heading, the rest becomes the deck)."
+      [minHeight]="100"
+      [placeholder]="{
+        en: 'Three projects. A console, a fintech engine, an editor I had to ship myself.',
+        vi: 'Ba dự án. Một console, một fintech engine, một editor tôi tự ship.',
+      }"
+    />
+
+    <console-translatable-markdown-group
       [group]="form.controls.contactIntro"
       label="Contact Intro"
       helperText="Lead paragraph above the contact form / mailto block."

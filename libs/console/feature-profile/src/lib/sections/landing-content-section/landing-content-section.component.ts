@@ -56,6 +56,7 @@ export class LandingContentSectionComponent {
   readonly form = this.fb.group({
     tagline: this.bilingualGroup(),
     stackIntro: this.bilingualGroup(),
+    selectedWorkIntro: this.bilingualGroup(),
     contactIntro: this.bilingualGroup(),
     footerTagline: this.bilingualGroup(),
     coreStack: this.fb.control('', { nonNullable: true }),
@@ -82,6 +83,10 @@ export class LandingContentSectionComponent {
       this.form.reset({
         tagline: { en: data.tagline?.en ?? '', vi: data.tagline?.vi ?? '' },
         stackIntro: { en: data.stackIntro?.en ?? '', vi: data.stackIntro?.vi ?? '' },
+        selectedWorkIntro: {
+          en: data.selectedWorkIntro?.en ?? '',
+          vi: data.selectedWorkIntro?.vi ?? '',
+        },
         contactIntro: { en: data.contactIntro?.en ?? '', vi: data.contactIntro?.vi ?? '' },
         footerTagline: { en: data.footerTagline?.en ?? '', vi: data.footerTagline?.vi ?? '' },
         coreStack: (data.coreStack ?? []).join(', '),
@@ -108,6 +113,7 @@ export class LandingContentSectionComponent {
     const payload = {
       tagline: isEmpty(v.tagline) ? null : v.tagline,
       stackIntro: isEmpty(v.stackIntro) ? null : v.stackIntro,
+      selectedWorkIntro: isEmpty(v.selectedWorkIntro) ? null : v.selectedWorkIntro,
       contactIntro: isEmpty(v.contactIntro) ? null : v.contactIntro,
       footerTagline: isEmpty(v.footerTagline) ? null : v.footerTagline,
       coreStack,

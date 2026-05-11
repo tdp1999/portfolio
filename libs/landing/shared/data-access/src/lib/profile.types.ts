@@ -39,6 +39,7 @@ export type PublicProfileResponse = {
   canonicalUrl: string | null;
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];

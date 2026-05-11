@@ -36,6 +36,7 @@ export interface ProfileAdminResponse {
   // Landing content blocks
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];
@@ -88,6 +89,7 @@ export interface UpdateSeoOgPayload {
 export interface UpdateLandingContentPayload {
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];
