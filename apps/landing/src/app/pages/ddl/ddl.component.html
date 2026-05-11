@@ -120,6 +120,27 @@
             </div>
             <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
           </a>
+
+          <a
+            routerLink="/ddl/selected-work-transitions"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+          >
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/selected-work-transitions
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Selected Work · transition variants
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Four motion strategies for the panel swap when the active project changes — V1 crossfade, V2 text
+                fade-up + gallery, V3 staggered cascade, V4 directional slide. Switch tabs to feel each one.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
         </div>
       </div>
 
@@ -554,9 +575,11 @@
                 </div>
                 <p class="font-sans text-body-md text-landing-text-400">
                   Inline prose example: read the
-                  <landing-link href="/projects" [arrow]="true">latest projects</landing-link>
+                  <landing-link href="/projects" [arrow]="true" [inline]="true">latest projects</landing-link>
                   or jump to
-                  <landing-link href="https://github.com" [external]="true" [arrow]="true">my GitHub</landing-link>
+                  <landing-link href="https://github.com" [external]="true" [arrow]="true" [inline]="true"
+                    >my GitHub</landing-link
+                  >
                   for source.
                 </p>
               </div>

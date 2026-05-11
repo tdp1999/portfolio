@@ -4,8 +4,9 @@
       <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
       <h1 class="font-display text-display-md text-landing-text-300">Subtle interactions · wishlist</h1>
       <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
-        {{ totalItems }} micro-interaction candidates grouped by trigger category. Each is a candidate — not a
-        commitment. Mark ★ to open a task. Always cap to ≤1 motion per viewport to avoid feeling busy.
+        {{ totalItems }} micro-interaction candidates with live previews. Click ★ to mark for selection. Picks are
+        remembered locally so the list survives a refresh. Currently picked: <strong>{{ pickedCount() }}</strong
+        >.
       </p>
     </div>
   </landing-container>
@@ -21,16 +22,290 @@
         </header>
 
         <ul class="ix-group__items" role="list">
-          @for (item of group.items; track item.title) {
-            <li class="ix-item">
+          @for (item of group.items; track item.id) {
+            @let picked = picks().has(item.id);
+            <li class="ix-item" [class.is-picked]="picked">
               <div class="ix-item__head">
                 <p class="ix-item__title">{{ item.title }}</p>
                 <div class="ix-item__tags">
                   <span class="ix-item__tag ix-item__tag--scope">{{ item.scope }}</span>
                   <span class="ix-item__tag ix-item__tag--effort">{{ item.effort }}</span>
+                  <button
+                    type="button"
+                    class="ix-item__star"
+                    [class.is-on]="picked"
+                    [attr.aria-pressed]="picked"
+                    [attr.aria-label]="(picked ? 'Unpick ' : 'Pick ') + item.title"
+                    (click)="togglePick(item.id)"
+                  >
+                    {{ picked ? '★' : '☆' }}
+                  </button>
                 </div>
               </div>
               <p class="ix-item__detail">{{ item.detail }}</p>
+
+              <div class="ix-demo" [class.ix-demo--descriptive]="item.demoKind === 'descriptive'">
+                @switch (item.id) {
+                  @case ('eyebrow-tick') {
+                    <div class="demo-eyebrow">
+                      <span class="demo-eyebrow__row">
+                        <span class="demo-eyebrow__num">02</span>
+                        <span class="demo-eyebrow__sep">·</span>
+                        <span class="demo-eyebrow__label">Who I Am</span>
+                      </span>
+                      <span class="demo-eyebrow__row">
+                        <span class="demo-eyebrow__num">03</span>
+                        <span class="demo-eyebrow__sep">·</span>
+                        <span class="demo-eyebrow__label">Selected Work</span>
+                      </span>
+                      <p class="demo-hint">Hover an eyebrow</p>
+                    </div>
+                  }
+
+                  @case ('chip-underline') {
+                    <div class="demo-chips">
+                      <span class="demo-chip">Angular</span>
+                      <span class="demo-chip">TypeScript</span>
+                      <span class="demo-chip">Material</span>
+                      <span class="demo-chip">RxJS</span>
+                      <p class="demo-hint">Hover any chip</p>
+                    </div>
+                  }
+
+                  @case ('project-tab-direction') {
+                    <div class="demo-tabs">
+                      @for (i of [0, 1, 2]; track i) {
+                        <button
+                          type="button"
+                          class="demo-tabs__btn"
+                          [class.is-active]="activeTab() === i"
+                          [attr.data-dir]="i < activeTab() ? 'right' : i > activeTab() ? 'left' : 'self'"
+                          (click)="setActiveTab(i)"
+                        >
+                          <span class="demo-tabs__num">{{ '0' + (i + 1) }}</span>
+                          <span class="demo-tabs__label">
+                            {{ ['Web', 'Mobile', 'CLI'][i] }}
+                          </span>
+                        </button>
+                      }
+                      <p class="demo-hint">Hover an inactive tab — index ticks toward the active</p>
+                    </div>
+                  }
+
+                  @case ('spotlight-bloom') {
+                    <div class="demo-spotlight" #spotlightZone (mousemove)="(null)">
+                      <button type="button" class="demo-spotlight__cta">Connect now →</button>
+                      <p class="demo-hint">Move cursor near the CTA</p>
+                    </div>
+                  }
+
+                  @case ('copy-check-swap') {
+                    <div class="demo-copy">
+                      <button
+                        type="button"
+                        class="demo-copy__btn"
+                        [landingCopyToClipboard]="'hello@thunderphong.com'"
+                        #copyRef="landingCopyToClipboard"
+                      >
+                        <span class="demo-copy__email">hello&#64;thunderphong.com</span>
+                        <landing-icon
+                          [name]="copyRef.state() === 'copied' ? 'check' : 'copy'"
+                          class="demo-copy__icon"
+                        />
+                      </button>
+                      <p class="demo-hint">Click → icon swaps to ✓ for 1.5s</p>
+                    </div>
+                  }
+
+                  @case ('theme-crossfade') {
+                    <div class="demo-theme" [attr.data-theme]="demoTheme()">
+                      <div class="demo-theme__card">
+                        <p class="demo-theme__title">Sample surface</p>
+                        <p class="demo-theme__body">Background, text, and borders crossfade for 280ms.</p>
+                      </div>
+                      <button type="button" class="demo-theme__btn" (click)="toggleDemoTheme()">Toggle theme</button>
+                    </div>
+                  }
+
+                  @case ('anchor-pulse') {
+                    <div class="demo-anchor">
+                      <button type="button" class="demo-anchor__link" (click)="pulseAnchor()">02 · Who I Am</button>
+                      <div class="demo-anchor__target">
+                        <span
+                          class="demo-anchor__rule"
+                          [class.is-pulsing]="anchorPulseKey()"
+                          [attr.data-key]="anchorPulseKey()"
+                        ></span>
+                        <span class="demo-anchor__heading">target section</span>
+                      </div>
+                      <p class="demo-hint">Click the anchor link</p>
+                    </div>
+                  }
+
+                  @case ('button-press-inset') {
+                    <div class="demo-press">
+                      <button type="button" class="demo-press__btn demo-press__btn--primary">Primary CTA</button>
+                      <button type="button" class="demo-press__btn">Secondary</button>
+                      <p class="demo-hint">Press &amp; hold</p>
+                    </div>
+                  }
+
+                  @case ('blueprint-parallax') {
+                    <div class="demo-parallax">
+                      <div class="demo-parallax__viewport" #parallaxBox (scroll)="onParallaxScroll($event)">
+                        <div class="demo-parallax__grid" [style.--offset.px]="parallaxOffset()"></div>
+                        <div class="demo-parallax__content">
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                          <p>Hero content</p>
+                        </div>
+                      </div>
+                      <p class="demo-hint">Scroll inside the viewport — grid translates 0→24px</p>
+                    </div>
+                  }
+
+                  @case ('rule-line-draw') {
+                    <div class="demo-rule">
+                      <div class="demo-rule__viewport">
+                        @for (s of [1, 2, 3]; track s) {
+                          <div class="demo-rule__section">
+                            <span class="demo-rule__line"></span>
+                            <p class="demo-rule__heading">Section {{ s }}</p>
+                            <p class="demo-rule__body">Scroll past 80% to draw the rule.</p>
+                          </div>
+                        }
+                      </div>
+                      <p class="demo-hint">Scroll inside — rules draw left→right once</p>
+                    </div>
+                  }
+
+                  @case ('toc-active-dim') {
+                    <div class="demo-toc">
+                      <ul class="demo-toc__list">
+                        <li class="demo-toc__item">Overview</li>
+                        <li class="demo-toc__item is-active">Architecture</li>
+                        <li class="demo-toc__item">Challenges</li>
+                        <li class="demo-toc__item">Outcome</li>
+                      </ul>
+                      <div class="demo-toc__body">
+                        <p class="demo-toc__heading">Architecture</p>
+                        <p class="demo-toc__copy">
+                          Active item brightens to accent; inactives dim to text-700 with 0.6 opacity.
+                        </p>
+                      </div>
+                    </div>
+                  }
+
+                  @case ('card-focus-rim') {
+                    <div class="demo-focus">
+                      <button type="button" class="demo-focus__card">Card A</button>
+                      <button type="button" class="demo-focus__card">Card B</button>
+                      <button type="button" class="demo-focus__card">Card C</button>
+                      <p class="demo-hint">Press Tab — accent rim + 2px lift on focus</p>
+                    </div>
+                  }
+
+                  @case ('skip-to-content') {
+                    <div class="demo-skip">
+                      <a href="javascript:void(0)" class="demo-skip__link" (click)="$event.preventDefault()">
+                        Skip to content →
+                      </a>
+                      <div class="demo-skip__frame">
+                        <p>Press Tab inside this frame — skip link slides in from top.</p>
+                      </div>
+                    </div>
+                  }
+
+                  @case ('palette-focus-trap') {
+                    <div class="demo-palette">
+                      <div class="demo-palette__mock">
+                        <p class="demo-palette__hint">⌘K</p>
+                        <input class="demo-palette__input" placeholder="Search…" readonly />
+                        <ul class="demo-palette__list">
+                          <li>↳ Home</li>
+                          <li>↳ Projects</li>
+                          <li>↳ Story</li>
+                        </ul>
+                      </div>
+                      <p class="demo-hint">
+                        Descriptive only — depends on the ⌘K palette being built first. Tab cycles within; Esc closes.
+                      </p>
+                    </div>
+                  }
+
+                  @case ('status-dot-pulse') {
+                    <div class="demo-status">
+                      <span class="demo-status__row">
+                        <landing-status-dot state="available" />
+                        <span class="demo-status__label">Available for work</span>
+                      </span>
+                      <span class="demo-status__row">
+                        <landing-status-dot state="busy" />
+                        <span class="demo-status__label">Currently busy</span>
+                      </span>
+                      <p class="demo-hint">Available pulses 3s loop · busy is static</p>
+                    </div>
+                  }
+
+                  @case ('clock-minute-tick') {
+                    <div class="demo-clock" (mouseenter)="startClockDemo()">
+                      <span class="demo-clock__time">
+                        <span class="demo-clock__digits">12:{{ clockMinute().toString().padStart(2, '0') }}</span>
+                        <span
+                          class="demo-clock__under"
+                          [class.is-blinking]="clockTickKey()"
+                          [attr.data-key]="clockTickKey()"
+                        ></span>
+                      </span>
+                      <p class="demo-hint">Hover to start — minute ticks every 6s (real impl: 1× per minute)</p>
+                    </div>
+                  }
+
+                  @case ('aurora-drift') {
+                    <div class="demo-aurora">
+                      <span class="demo-aurora__blob demo-aurora__blob--1"></span>
+                      <span class="demo-aurora__blob demo-aurora__blob--2"></span>
+                      <span class="demo-aurora__blob demo-aurora__blob--3"></span>
+                      <p class="demo-hint">3 blobs drift on a 12s loop</p>
+                    </div>
+                  }
+
+                  @case ('router-fade') {
+                    <div class="demo-router">
+                      <button type="button" class="demo-router__btn" (click)="flipRouterPage()">
+                        Navigate ({{ routerPage() === 'A' ? '→ B' : '→ A' }})
+                      </button>
+                      <div class="demo-router__outlet">
+                        <div class="demo-router__page" [attr.data-key]="routerFadeKey()">
+                          @if (routerPage() === 'A') {
+                            <p>Page A — Welcome.</p>
+                            <p>Click to navigate to B.</p>
+                          } @else {
+                            <p>Page B — Projects.</p>
+                            <p>Click to go back to A.</p>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+
+                  @case ('detail-mask-reveal') {
+                    <div class="demo-mask">
+                      <div class="demo-mask__frame">
+                        <div class="demo-mask__image" [attr.data-key]="maskRevealKey()">
+                          <span class="demo-mask__label">Project hero image</span>
+                        </div>
+                      </div>
+                      <button type="button" class="demo-mask__btn" (click)="replayMaskReveal()">Replay reveal</button>
+                    </div>
+                  }
+                }
+              </div>
             </li>
           }
         </ul>

@@ -58,6 +58,10 @@ export const appRoutes: Route[] = [
         path: 'hero-variants',
         loadComponent: () => import('./pages/ddl/hero-variants').then((m) => m.HeroVariantsPage),
       },
+      {
+        path: 'selected-work-transitions',
+        loadComponent: () => import('./pages/ddl/selected-work-transitions').then((m) => m.SelectedWorkTransitionsPage),
+      },
     ],
   },
   {
