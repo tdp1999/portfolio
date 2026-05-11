@@ -175,11 +175,6 @@
 
 - [ ] **Console Tab Redesign** (epic-console-tab-redesign) — UX research + migration (M)
 
-### Active Investigations
-
-- [x] **inv-context-doc-bloat** — Reduce noise in `.context/`; identify ephemeral content drifting into evergreen docs
-- [x] **inv-form-runtime-audit** — Form runtime behavior across Experience/Project (paste-of-letters, persisted state mismatches)
-
 ---
 
 #### Future Sprints (to be broken down when ready)
@@ -221,6 +216,7 @@
 - [ ] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone)
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
 - [ ] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone)
+- [ ] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3)
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
@@ -336,8 +332,8 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 | ------------------------- | ------- |
 | Done (archived)           | 301     |
 | In Progress               | 0       |
-| Pending                   | 31      |
-| **Total Created**         | **332** |
+| Pending                   | 32      |
+| **Total Created**         | **333** |
 | Epics completed           | 30      |
 
 ## Notes
