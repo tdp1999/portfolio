@@ -26,6 +26,19 @@
   object-fit: cover;
 }
 
+/* Fill variant — figure stretches to parent height; caption keeps its natural
+ * height, frame consumes the remaining space. Use inside a height-locked
+ * container (e.g. one with `aspect-ratio` or fixed `height`). */
+.landing-figure--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+.landing-figure--fill .landing-figure__frame {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .landing-figure__caption {
   display: inline-flex;
   flex-wrap: wrap;

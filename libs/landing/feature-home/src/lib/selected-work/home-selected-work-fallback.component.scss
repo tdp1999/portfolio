@@ -18,6 +18,26 @@
   min-width: 0;
 }
 
+/* Two-row meta: year (small sub-label) above role (primary eyebrow). */
+.selected-work-fallback__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--landing-font-mono);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+.selected-work-fallback__meta-year {
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-600);
+}
+.selected-work-fallback__meta-role {
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  color: var(--landing-accent);
+}
+
 .selected-work-fallback__title {
   font-family: var(--landing-font-body);
   font-weight: 700;
@@ -34,10 +54,6 @@
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .selected-work-fallback__desc-em {
@@ -46,6 +62,16 @@
   color: var(--landing-text-300);
 }
 
+/* Inline "read more" — landing-link sitting at the end of the description prose. */
+.selected-work-fallback__read-more {
+  margin-left: 8px;
+}
+
+.selected-work-fallback__link-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .selected-work-fallback__links {
   list-style: none;
   margin: 0;
@@ -53,6 +79,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+.selected-work-fallback__link-rule {
+  height: 1px;
+  background-color: var(--landing-border);
+  opacity: 0.6;
 }
 
 .selected-work-fallback__chips {

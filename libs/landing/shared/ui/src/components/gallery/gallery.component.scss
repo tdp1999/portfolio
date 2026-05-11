@@ -42,6 +42,30 @@
   min-width: 0;
 }
 
+/* Fill-container mode — gallery stretches to parent height. Grid tracks become
+ * equal 1fr rows so 1, 2, 3, or 4 images all distribute through the same area. */
+.landing-gallery--fill {
+  height: 100%;
+  width: 100%;
+}
+.landing-gallery--fill[data-count='1'] {
+  grid-template-rows: 1fr;
+}
+.landing-gallery--fill[data-count='2'] {
+  grid-template-rows: 1fr;
+}
+.landing-gallery--fill[data-count='3'] {
+  /* hero left spans both rows; right column splits → already covered by parent rules,
+   * but tracks need explicit 1fr so they share parent height. */
+  grid-template-rows: 1fr 1fr;
+}
+.landing-gallery--fill[data-count='4'] {
+  grid-template-rows: 1fr 1fr;
+}
+.landing-gallery--fill .landing-gallery__cell {
+  min-height: 0;
+}
+
 /* Mobile collapse — single column, taller cells. */
 @media (max-width: 639px) {
   .landing-gallery,

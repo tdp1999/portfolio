@@ -35,6 +35,20 @@
   color: var(--landing-accent);
 }
 
+/* Inline-prose mode — link sits inside a sans paragraph. Mono glyphs run wider
+ * and taller than Inter at the same px size, so we scale to `0.9em` (the
+ * GitHub / MDN inline-code convention) which visually balances x-height
+ * against the surrounding prose while keeping mono's "terminal/path" voice.
+ * Line-height inherits from the paragraph so the baseline stays aligned. */
+.landing-link--inline {
+  font-size: 0.9em;
+  line-height: inherit;
+  align-items: baseline;
+  /* A whisker tighter than the default mono tracking — prose context doesn't
+   * want the same caps-style spacing eyebrows get. */
+  letter-spacing: 0.02em;
+}
+
 .landing-link__text {
   display: inline-block;
 }

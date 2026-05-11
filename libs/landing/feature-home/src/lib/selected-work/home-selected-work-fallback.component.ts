@@ -1,24 +1,40 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { ChipComponent, EyebrowComponent, LandingLinkComponent } from '@portfolio/landing/shared/ui';
-import type { ProjectDetail, ProjectHighlight, ProjectLink } from '@portfolio/landing/shared/data-access';
+import { ChipComponent, LandingLinkComponent } from '@portfolio/landing/shared/ui';
+import type {
+  ProjectDetail,
+  ProjectHighlight,
+  ProjectLink,
+  ProjectLinkType,
+} from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale } from '@portfolio/shared/types';
 import { parseItalicRuns } from './bio-long-runs';
 
-type FallbackLink = { readonly label: string; readonly href: string; readonly external: boolean };
+type GroupedLink = { readonly label: string; readonly href: string; readonly external: boolean };
+type LinkGroupKey = 'visit' | 'source' | 'read';
+type LinkGroup = { readonly key: LinkGroupKey; readonly links: readonly GroupedLink[] };
 type Decision = { readonly label: string; readonly text: string };
 
-const LINK_LABELS: Record<ProjectLink['type'], string> = {
-  repo: 'SOURCE CODE',
-  demo: 'LIVE PROJECT',
-  'case-study': 'CASE STUDY',
-  doc: 'DOCS',
-  post: 'WRITE-UP',
+const LINK_LABELS: Record<ProjectLinkType, string> = {
+  repo: 'Source code',
+  demo: 'Live project',
+  'case-study': 'Case study',
+  doc: 'Docs',
+  post: 'Write-up',
 };
 
-function toFallbackLink(link: ProjectLink): FallbackLink {
+const LINK_GROUP: Record<Exclude<ProjectLinkType, 'case-study'>, LinkGroupKey> = {
+  demo: 'visit',
+  repo: 'source',
+  doc: 'read',
+  post: 'read',
+};
+
+const GROUP_ORDER: readonly LinkGroupKey[] = ['visit', 'source', 'read'];
+
+function toGroupedLink(link: ProjectLink): GroupedLink {
   return {
-    label: link.label?.toUpperCase() || LINK_LABELS[link.type],
+    label: link.label || LINK_LABELS[link.type],
     href: link.url,
     external: /^https?:\/\//i.test(link.url),
   };
@@ -27,7 +43,7 @@ function toFallbackLink(link: ProjectLink): FallbackLink {
 @Component({
   selector: 'landing-home-selected-work-fallback',
   standalone: true,
-  imports: [ChipComponent, EyebrowComponent, LandingLinkComponent],
+  imports: [ChipComponent, LandingLinkComponent],
   templateUrl: './home-selected-work-fallback.component.html',
   styleUrl: './home-selected-work-fallback.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,12 +54,12 @@ export class HomeSelectedWorkFallbackComponent {
 
   protected readonly title = computed(() => this.project().title);
 
-  protected readonly eyebrow = computed<readonly string[]>(() => {
-    const p = this.project();
-    const year = p.startDate ? new Date(p.startDate).getFullYear().toString() : '';
-    const role = getLocalized(p.role, this.locale());
-    return [year, role].filter((part) => part.length > 0);
+  protected readonly year = computed(() => {
+    const start = this.project().startDate;
+    return start ? new Date(start).getFullYear().toString() : '';
   });
+
+  protected readonly role = computed(() => getLocalized(this.project().role, this.locale()));
 
   protected readonly descriptionRuns = computed(() => {
     const text = getLocalized(this.project().description, this.locale());
@@ -55,11 +71,16 @@ export class HomeSelectedWorkFallbackComponent {
     return parseItalicRuns(text);
   });
 
-  protected readonly links = computed<readonly FallbackLink[]>(() => {
-    const p = this.project();
-    const out: FallbackLink[] = [{ label: 'CASE STUDY', href: `/projects/${p.slug}`, external: false }];
-    for (const l of p.links ?? []) out.push(toFallbackLink(l));
-    return out;
+  protected readonly caseStudyHref = computed(() => `/projects/${this.project().slug}`);
+
+  protected readonly linkGroups = computed<readonly LinkGroup[]>(() => {
+    const buckets: Record<LinkGroupKey, GroupedLink[]> = { visit: [], source: [], read: [] };
+    for (const l of this.project().links ?? []) {
+      if (l.type === 'case-study') continue;
+      const key = LINK_GROUP[l.type];
+      buckets[key].push(toGroupedLink(l));
+    }
+    return GROUP_ORDER.map((key) => ({ key, links: buckets[key] })).filter((g) => g.links.length > 0);
   });
 
   protected readonly skills = computed(() => this.project().skills);

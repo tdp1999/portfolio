@@ -1,7 +1,14 @@
 <div class="selected-work-fallback">
   <div class="selected-work-fallback__left">
-    @if (eyebrow().length > 0) {
-      <landing-eyebrow [label]="eyebrow()" />
+    @if (year() || role()) {
+      <div class="selected-work-fallback__meta">
+        @if (year()) {
+          <span class="selected-work-fallback__meta-year">{{ year() }}</span>
+        }
+        @if (role()) {
+          <span class="selected-work-fallback__meta-role">{{ role() }}</span>
+        }
+      </div>
     }
 
     <h3 class="selected-work-fallback__title">{{ title() }}</h3>
@@ -15,19 +22,10 @@
             <span>{{ run.text }}</span>
           }
         }
+        <landing-link [href]="caseStudyHref()" [arrow]="true" [inline]="true" class="selected-work-fallback__read-more">
+          Read more
+        </landing-link>
       </p>
-    }
-
-    @if (links().length > 0) {
-      <ul class="selected-work-fallback__links">
-        @for (link of links(); track link.href) {
-          <li>
-            <landing-link [href]="link.href" [external]="link.external" [arrow]="true">
-              {{ link.label }}
-            </landing-link>
-          </li>
-        }
-      </ul>
     }
 
     @if (skills().length > 0) {
@@ -38,6 +36,25 @@
           </li>
         }
       </ul>
+    }
+
+    @if (linkGroups().length > 0) {
+      <div class="selected-work-fallback__link-groups">
+        @for (group of linkGroups(); track group.key; let last = $last) {
+          <ul class="selected-work-fallback__links">
+            @for (link of group.links; track link.href) {
+              <li>
+                <landing-link [href]="link.href" [external]="link.external" [arrow]="true">
+                  {{ link.label }}
+                </landing-link>
+              </li>
+            }
+          </ul>
+          @if (!last) {
+            <span class="selected-work-fallback__link-rule" aria-hidden="true"></span>
+          }
+        }
+      </div>
     }
   </div>
 

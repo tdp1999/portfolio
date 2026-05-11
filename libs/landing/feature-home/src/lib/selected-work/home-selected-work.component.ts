@@ -33,8 +33,25 @@ const MAX_TABS = 3;
 })
 export class HomeSelectedWorkComponent {
   readonly locale = input<Locale>('en');
+  /**
+   * Owner-authored §4 intro (TranslatableJson markdown). Split at the first
+   * sentence boundary: lead sentence → heading, remainder → deck. Empty string
+   * (profile not loaded) hides both lines.
+   */
+  readonly intro = input<string>('');
 
   private readonly projectService = inject(ProjectDataService);
+
+  private readonly introSplit = computed<readonly [string, string]>(() => {
+    const raw = this.intro().trim();
+    if (!raw) return ['', ''];
+    const match = raw.match(/^([\s\S]+?[.!?])\s+([\s\S]+)$/);
+    if (match) return [match[1].trim(), match[2].replace(/\s+/g, ' ').trim()];
+    return [raw, ''];
+  });
+
+  protected readonly introHeading = computed(() => this.introSplit()[0]);
+  protected readonly introDeck = computed(() => this.introSplit()[1]);
 
   protected readonly projects = toSignal(this.projectService.getFeatured(), {
     initialValue: [] as ProjectDetail[],

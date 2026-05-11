@@ -4,8 +4,12 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   selector: 'landing-figure',
   standalone: true,
   template: `
-    <figure class="landing-figure" [class.landing-figure--cropped]="!!aspectRatio()">
-      <div class="landing-figure__frame" [style.aspect-ratio]="aspectRatio() || null">
+    <figure
+      class="landing-figure"
+      [class.landing-figure--cropped]="!!aspectRatio() || fill()"
+      [class.landing-figure--fill]="fill()"
+    >
+      <div class="landing-figure__frame" [style.aspect-ratio]="!fill() ? aspectRatio() || null : null">
         <img
           [attr.src]="src()"
           [attr.srcset]="srcset() || null"
@@ -42,6 +46,13 @@ export class FigureComponent {
    * layouts that need uniform cells). Default: unset → natural image ratio.
    */
   readonly aspectRatio = input<string>('');
+  /**
+   * Fill the parent container vertically (image uses `object-fit: cover`, frame
+   * stretches via flex). Use when the parent locks the height/aspect — e.g.
+   * Selected Work tab keeps a fixed 4:3 container so swapping projects doesn't
+   * shift layout. Aspect-ratio input is ignored when `fill` is true.
+   */
+  readonly fill = input<boolean>(false);
 
   protected readonly hasCaption = computed(() => this.caption().length > 0);
 

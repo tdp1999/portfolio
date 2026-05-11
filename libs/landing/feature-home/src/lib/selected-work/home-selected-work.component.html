@@ -7,10 +7,19 @@
         [trailingRule]="true"
         class="home-selected-work__eyebrow"
       />
-      <landing-heading [level]="2" id="home-selected-work-heading" [anchor]="false" class="home-selected-work__heading">
-        Three projects.
-      </landing-heading>
-      <p class="home-selected-work__deck">A console, a fintech engine, an editor I had to ship myself.</p>
+      @if (introHeading()) {
+        <landing-heading
+          [level]="2"
+          id="home-selected-work-heading"
+          [anchor]="false"
+          class="home-selected-work__heading"
+        >
+          {{ introHeading() }}
+        </landing-heading>
+      }
+      @if (introDeck()) {
+        <p class="home-selected-work__deck">{{ introDeck() }}</p>
+      }
     </header>
 
     @if (segments().length > 0 && activeProject(); as project) {

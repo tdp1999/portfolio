@@ -36,7 +36,7 @@ type Cell = {
   imports: [FigureComponent],
   template: `
     @if (cells().length > 0) {
-      <div class="landing-gallery" [attr.data-count]="layoutCount()">
+      <div class="landing-gallery" [class.landing-gallery--fill]="fillContainer()" [attr.data-count]="layoutCount()">
         @for (cell of cells(); track $index; let i = $index) {
           <landing-figure
             class="landing-gallery__cell"
@@ -45,7 +45,8 @@ type Cell = {
             [alt]="cell.img.alt ?? ''"
             [caption]="cell.img.caption ?? ''"
             [figureNumber]="numbered() ? i + 1 : null"
-            [aspectRatio]="cell.ratio"
+            [aspectRatio]="fillContainer() ? '' : cell.ratio"
+            [fill]="fillContainer()"
           />
         }
       </div>
@@ -58,6 +59,13 @@ export class LandingGalleryComponent {
   readonly images = input.required<readonly GalleryImage[]>();
   /** Show `FIG. 0X` numbering on each caption. Default: true. */
   readonly numbered = input<boolean>(true);
+  /**
+   * Stretch the gallery vertically to fill its parent. Cells lose their fixed
+   * per-count aspect-ratio and use flex 1fr rows to consume the available
+   * height. Pair with a parent that locks the height (`aspect-ratio` or `height`)
+   * so swapping content with different image counts doesn't shift layout.
+   */
+  readonly fillContainer = input<boolean>(false);
 
   protected readonly layoutCount = computed<1 | 2 | 3 | 4>(() => {
     const n = Math.min(this.images().length, 4);

@@ -18,6 +18,26 @@
   min-width: 0;
 }
 
+/* Two-row meta: year (small sub-label) above role (primary eyebrow). */
+.selected-work-tab__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--landing-font-mono);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+.selected-work-tab__meta-year {
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-600);
+}
+.selected-work-tab__meta-role {
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  color: var(--landing-accent);
+}
+
 .selected-work-tab__title {
   font-family: var(--landing-font-body);
   font-weight: 700;
@@ -36,10 +56,6 @@
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .selected-work-tab__desc-em {
@@ -48,6 +64,18 @@
   color: var(--landing-text-300);
 }
 
+/* Inline "read more" — landing-link sitting at the end of the description prose.
+ * Mono within sans prose creates a visual handle without underlines. */
+.selected-work-tab__read-more {
+  margin-left: 8px;
+}
+
+/* Grouped links — VISIT / SOURCE / READ, separated by a subtle hairline rule. */
+.selected-work-tab__link-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .selected-work-tab__links {
   list-style: none;
   margin: 0;
@@ -55,6 +83,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+.selected-work-tab__link-rule {
+  height: 1px;
+  background-color: var(--landing-border);
+  opacity: 0.6;
 }
 
 .selected-work-tab__chips {
@@ -66,6 +99,15 @@
   gap: 8px;
 }
 
+/* Right column: lock aspect-ratio so the gallery never shifts the layout when
+ * the active project changes. `<landing-gallery [fillContainer]="true">`
+ * stretches its cells to fill the container; the per-count aspect-ratios on
+ * cells are disabled in fill mode. */
 .selected-work-tab__right {
   min-width: 0;
+
+  @media (min-width: 960px) {
+    aspect-ratio: 4 / 3;
+    display: flex;
+  }
 }

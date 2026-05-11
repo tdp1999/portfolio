@@ -41,6 +41,13 @@ export class LandingLinkComponent {
   readonly external = input<boolean>(false);
   readonly arrow = input<boolean>(false);
   readonly active = input<boolean>(false);
+  /**
+   * Inline-prose mode — the link inherits `font-size` and `line-height` from
+   * its parent paragraph so it sits on the same baseline as the surrounding
+   * text. Font-family stays mono so the "terminal/path" voice is preserved.
+   * Use whenever a `<landing-link>` is embedded inside body prose.
+   */
+  readonly inline = input<boolean>(false);
 
   private readonly router = inject(Router);
 
@@ -54,6 +61,7 @@ export class LandingLinkComponent {
   protected readonly linkClasses = computed(() => {
     const parts = ['landing-link', `landing-link--arrow-${this.arrowDirection()}`];
     if (this.active()) parts.push('landing-link--active');
+    if (this.inline()) parts.push('landing-link--inline');
     return parts.join(' ');
   });
 
