@@ -58,6 +58,7 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   // Landing content blocks (optional translatable copy)
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];
@@ -113,6 +114,7 @@ export interface ICreateProfilePayload {
   // Landing content blocks (optional)
   tagline?: TranslatableJson;
   stackIntro?: TranslatableJson;
+  selectedWorkIntro?: TranslatableJson;
   contactIntro?: TranslatableJson;
   footerTagline?: TranslatableJson;
   coreStack?: string[];

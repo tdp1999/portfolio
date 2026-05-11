@@ -60,8 +60,10 @@ describe('Profile Commands', () => {
     avatarId: null,
     tagline: null,
     stackIntro: null,
+    selectedWorkIntro: null,
     contactIntro: null,
     footerTagline: null,
+    coreStack: [],
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -356,8 +358,10 @@ describe('Profile Commands', () => {
     const validDto = {
       tagline: { en: 'Build delightful UIs', vi: 'Xay dung giao dien thu vi' },
       stackIntro: null,
+      selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
+      coreStack: [],
     };
 
     it('should update landing content when valid', async () => {
@@ -373,7 +377,14 @@ describe('Profile Commands', () => {
 
       await handler.execute(
         new UpdateProfileLandingContentCommand(
-          { tagline: null, stackIntro: null, contactIntro: null, footerTagline: null },
+          {
+            tagline: null,
+            stackIntro: null,
+            selectedWorkIntro: null,
+            contactIntro: null,
+            footerTagline: null,
+            coreStack: [],
+          },
           userId
         )
       );

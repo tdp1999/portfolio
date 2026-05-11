@@ -39,6 +39,7 @@ export class UpdateProfileLandingContentHandler implements ICommandHandler<Updat
     const newLandingContent = LandingContentBlocks.create({
       tagline: data.tagline,
       stackIntro: data.stackIntro,
+      selectedWorkIntro: data.selectedWorkIntro,
       contactIntro: data.contactIntro,
       footerTagline: data.footerTagline,
       coreStack: data.coreStack,

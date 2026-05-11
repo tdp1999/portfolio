@@ -140,6 +140,7 @@ export class ProfileRepository implements IProfileRepository {
       data: {
         tagline: (landingContent.tagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         stackIntro: (landingContent.stackIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        selectedWorkIntro: (landingContent.selectedWorkIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         contactIntro: (landingContent.contactIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         footerTagline: (landingContent.footerTagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         coreStack: landingContent.coreStack as unknown as Prisma.InputJsonValue,

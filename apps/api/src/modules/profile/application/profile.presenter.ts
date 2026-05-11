@@ -34,6 +34,7 @@ export class ProfilePresenter {
       canonicalUrl: profile.canonicalUrl,
       tagline: profile.tagline,
       stackIntro: profile.stackIntro,
+      selectedWorkIntro: profile.selectedWorkIntro,
       contactIntro: profile.contactIntro,
       footerTagline: profile.footerTagline,
       coreStack: profile.coreStack,

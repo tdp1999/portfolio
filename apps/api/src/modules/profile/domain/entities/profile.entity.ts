@@ -189,6 +189,10 @@ export class Profile {
     return this.props.landingContent.stackIntro;
   }
 
+  get selectedWorkIntro(): TranslatableJson | null {
+    return this.props.landingContent.selectedWorkIntro;
+  }
+
   get contactIntro(): TranslatableJson | null {
     return this.props.landingContent.contactIntro;
   }
@@ -269,6 +273,7 @@ export class Profile {
       landingContent: LandingContentBlocks.create({
         tagline: data.tagline ?? null,
         stackIntro: data.stackIntro ?? null,
+        selectedWorkIntro: data.selectedWorkIntro ?? null,
         contactIntro: data.contactIntro ?? null,
         footerTagline: data.footerTagline ?? null,
         coreStack: data.coreStack ?? [],
@@ -325,6 +330,7 @@ export class Profile {
       landingContent: LandingContentBlocks.fromPersistence({
         tagline: props.tagline,
         stackIntro: props.stackIntro,
+        selectedWorkIntro: props.selectedWorkIntro,
         contactIntro: props.contactIntro,
         footerTagline: props.footerTagline,
         coreStack: props.coreStack ?? [],
@@ -447,6 +453,7 @@ export class Profile {
       canonicalUrl: this.props.seoOg.canonicalUrl,
       tagline: this.props.landingContent.tagline,
       stackIntro: this.props.landingContent.stackIntro,
+      selectedWorkIntro: this.props.landingContent.selectedWorkIntro,
       contactIntro: this.props.landingContent.contactIntro,
       footerTagline: this.props.landingContent.footerTagline,
       coreStack: this.props.landingContent.coreStack,

@@ -376,10 +376,11 @@ model Profile {
   ogImageId       String? @db.Uuid
 
   // Landing content blocks (translatable JSON markdown — nullable)
-  tagline       Json?
-  stackIntro    Json?
-  contactIntro  Json?
-  footerTagline Json?
+  tagline            Json?
+  stackIntro         Json?
+  selectedWorkIntro  Json?
+  contactIntro       Json?
+  footerTagline      Json?
 
   // Hero core-stack chips: Array<string> (3–4 short tokens, rendered uppercase).
   // Decoupled from `stackIntro` (which is prose for §5) so the hero strip stays terse.

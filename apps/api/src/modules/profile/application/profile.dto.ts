@@ -50,6 +50,7 @@ export type ProfilePublicResponseDto = {
   // Landing content blocks
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];

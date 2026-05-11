@@ -3,6 +3,7 @@ import type { TranslatableJson } from '@portfolio/shared/types';
 export interface LandingContentBlocksProps {
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;
+  selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
   coreStack: string[];
@@ -25,6 +26,7 @@ export class LandingContentBlocks {
     return new LandingContentBlocks({
       tagline: null,
       stackIntro: null,
+      selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
       coreStack: [],
@@ -37,6 +39,10 @@ export class LandingContentBlocks {
 
   get stackIntro(): TranslatableJson | null {
     return this.props.stackIntro;
+  }
+
+  get selectedWorkIntro(): TranslatableJson | null {
+    return this.props.selectedWorkIntro;
   }
 
   get contactIntro(): TranslatableJson | null {
@@ -55,6 +61,7 @@ export class LandingContentBlocks {
     return (
       JSON.stringify(this.props.tagline) === JSON.stringify(other.props.tagline) &&
       JSON.stringify(this.props.stackIntro) === JSON.stringify(other.props.stackIntro) &&
+      JSON.stringify(this.props.selectedWorkIntro) === JSON.stringify(other.props.selectedWorkIntro) &&
       JSON.stringify(this.props.contactIntro) === JSON.stringify(other.props.contactIntro) &&
       JSON.stringify(this.props.footerTagline) === JSON.stringify(other.props.footerTagline) &&
       JSON.stringify(this.props.coreStack) === JSON.stringify(other.props.coreStack)

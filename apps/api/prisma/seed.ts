@@ -99,6 +99,10 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
         en: "Daily, I reach for **Angular**, **TypeScript**, and **Angular Material**.\n\nBeyond that: **RxJS** when I need streams, **signals** when I don't, a custom **TipTap** extension when the editor work goes deep.\n\nWhen the work needs a backend too, **NestJS** + **Prisma** + **Postgres** with DDD. Tests in **Jest** and **Playwright**. I write the design system before reaching for a UI library.",
         vi: '',
       },
+      selectedWorkIntro: {
+        en: 'Three projects. A console, a fintech engine, an editor I had to ship myself.',
+        vi: '',
+      },
       contactIntro: {
         en: "I'm in HCMC, working with the Singapore market. Open to full-time roles, and a small slice of freelance on the side, full-stack with frontend depth.",
         vi: '',

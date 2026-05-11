@@ -183,20 +183,34 @@ describe('ProfileRepository — section updates', () => {
     const blocks = LandingContentBlocks.fromPersistence({
       tagline,
       stackIntro: null,
+      selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
+      coreStack: [],
     });
 
     it('writes only landing-content columns + updatedById', async () => {
       await repo.updateLandingContent(userId, blocks, updatedById);
 
       expect(whereOf(update)).toEqual({ userId });
-      expect(keysOf(update)).toEqual(['contactIntro', 'footerTagline', 'stackIntro', 'tagline', 'updatedById'].sort());
+      expect(keysOf(update)).toEqual(
+        [
+          'contactIntro',
+          'coreStack',
+          'footerTagline',
+          'selectedWorkIntro',
+          'stackIntro',
+          'tagline',
+          'updatedById',
+        ].sort()
+      );
       const data = dataOf(update);
       expect(data.tagline).toEqual(tagline);
       expect(data.stackIntro).toBe(Prisma.DbNull);
+      expect(data.selectedWorkIntro).toBe(Prisma.DbNull);
       expect(data.contactIntro).toBe(Prisma.DbNull);
       expect(data.footerTagline).toBe(Prisma.DbNull);
+      expect(data.coreStack).toEqual([]);
     });
   });
 });
