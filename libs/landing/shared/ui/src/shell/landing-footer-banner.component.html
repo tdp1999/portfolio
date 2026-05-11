@@ -6,7 +6,9 @@
         <!-- Brand block -->
         <div class="landing-footer-banner__brand">
           <p class="landing-footer-banner__wordmark">{{ fullName() || 'Portfolio' }}</p>
-          <p class="landing-footer-banner__tagline">{{ tagline() || fallbackTagline }}</p>
+          @if (tagline()) {
+            <p class="landing-footer-banner__tagline">{{ tagline() }}</p>
+          }
         </div>
 
         <!-- Nav columns -->

@@ -9,6 +9,7 @@
     [available]="isOpenToWork()"
     [stackIntro]="stackIntro()"
     [coreStackChips]="coreStack()"
+    [profileLoaded]="profileLoaded()"
   />
 
   <!-- §3 Bio Card Grid — PF2 Aurora Mesh + E3 glow hover (task 284 + improvements pass) -->
@@ -25,10 +26,11 @@
     [philosophyEmphasis]="philosophyEmphasis()"
     [contactNote]="contactNote()"
     [socialLinks]="socialLinks()"
+    [profileLoaded]="profileLoaded()"
   />
 
   <!-- §4 Selected Work (B3.d Tabbed + Mini Gallery, B2.c lift) -->
-  <landing-home-selected-work id="work" [locale]="locale()" />
+  <landing-home-selected-work id="work" [locale]="locale()" [intro]="selectedWorkIntro()" />
 
   <!-- §5 The Stack — Tier 1 prose + Tier 2 grouped pills (task 285b) -->
   <landing-home-stack id="stack" [stackIntro]="stackIntro()" [groups]="skillGroups()" />

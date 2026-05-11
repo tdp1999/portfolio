@@ -28,8 +28,6 @@ export class LandingFooterBannerComponent {
   readonly email = input<string>('');
   readonly socialLinks = input<readonly SocialLink[]>([]);
 
-  protected readonly fallbackTagline = "There's more, if you're still here.";
-
   protected readonly columns: readonly FooterColumn[] = [
     {
       title: 'General',

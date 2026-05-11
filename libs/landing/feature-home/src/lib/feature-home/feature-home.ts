@@ -55,10 +55,13 @@ export class FeatureHome {
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
   skillGroups = toSignal(this.skillService.getGroupedSkills(), { initialValue: [] });
 
+  profileLoaded = computed(() => this.profile() !== null);
+
   fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()) || 'Portfolio in progress');
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));
   tagline = computed(() => getLocalized(this.profile()?.tagline, this.locale()));
   stackIntro = computed(() => getLocalized(this.profile()?.stackIntro, this.locale()));
+  selectedWorkIntro = computed(() => getLocalized(this.profile()?.selectedWorkIntro, this.locale()));
   coreStack = computed<readonly string[]>(() => this.profile()?.coreStack ?? []);
   bioLong = computed(() => getLocalized(this.profile()?.bioLong, this.locale()));
   bioShort = computed(() => getLocalized(this.profile()?.bioShort, this.locale()));

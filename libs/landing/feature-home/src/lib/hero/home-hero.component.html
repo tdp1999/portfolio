@@ -19,17 +19,19 @@
 
   <landing-container size="wide" class="home-hero__bottom">
     <dl class="home-hero__meta" aria-label="Hire status">
-      <div class="home-hero__meta-row">
-        <dt class="home-hero__meta-key">STATUS</dt>
-        <dd class="home-hero__meta-val">
-          <landing-status-dot
-            variant="bare"
-            [state]="available() ? 'available' : 'busy'"
-            [label]="statusLabel()"
-            ariaLabel="Hiring status"
-          />
-        </dd>
-      </div>
+      @if (profileLoaded()) {
+        <div class="home-hero__meta-row">
+          <dt class="home-hero__meta-key">STATUS</dt>
+          <dd class="home-hero__meta-val">
+            <landing-status-dot
+              variant="bare"
+              [state]="available() ? 'available' : 'busy'"
+              [label]="statusLabel()"
+              ariaLabel="Hiring status"
+            />
+          </dd>
+        </div>
+      }
       @if (coreStack().length > 0) {
         <div class="home-hero__meta-row">
           <dt class="home-hero__meta-key">CORE STACK</dt>

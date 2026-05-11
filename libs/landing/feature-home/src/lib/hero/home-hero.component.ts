@@ -23,6 +23,8 @@ export class HomeHeroComponent {
   readonly stackIntro = input<string>('');
   /** Authored hero chips (3–4 short tokens). Falls back to tokenizing `stackIntro` when empty. */
   readonly coreStackChips = input<readonly string[]>([]);
+  /** True once the public profile HTTP call has resolved (success or fail). Drives the STATUS row visibility. */
+  readonly profileLoaded = input<boolean>(false);
 
   protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE FOR HIRE' : 'BUSY'));
 

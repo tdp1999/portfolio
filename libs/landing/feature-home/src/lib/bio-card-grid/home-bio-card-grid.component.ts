@@ -76,6 +76,8 @@ export class HomeBioCardGridComponent {
   readonly socialLinks = input<readonly SocialLink[]>([]);
   /** Owner's working hours — sourced from `Profile.workingHours`. Null = fallback to defaults. */
   readonly workingHours = input<WorkingHours | null>(null);
+  /** True once the public profile HTTP call has resolved. When false, card bodies are hidden but shells + eyebrows remain. */
+  readonly profileLoaded = input<boolean>(false);
 
   protected readonly primaryTimezone = computed(() => this.timezones()[0] ?? 'Asia/Ho_Chi_Minh');
   protected readonly localTime = liveClock(this.primaryTimezone);
