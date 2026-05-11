@@ -14,6 +14,9 @@
 /* Landing element-level typography (h1..h6, p, small, code…) */
 @use 'base-typography' as landing-base-typography;
 
+/* Motion library — one file per effect. See libs/landing/shared/ui/src/motion/. */
+@use '../motion/motion' as landing-motion;
+
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;

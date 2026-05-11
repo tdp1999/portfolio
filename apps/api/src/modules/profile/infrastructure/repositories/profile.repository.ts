@@ -76,6 +76,7 @@ export class ProfileRepository implements IProfileRepository {
         availability: workAvailability.availability,
         openTo: workAvailability.openTo as unknown as Prisma.InputJsonValue,
         timezones: workAvailability.timezones as unknown as Prisma.InputJsonValue,
+        workingHours: (workAvailability.workingHours?.toJSON() as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         updatedById,
       },
     });

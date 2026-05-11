@@ -66,6 +66,7 @@ export class FeatureHome {
   locationCity = computed(() => this.profile()?.locationCity ?? null);
   email = computed(() => this.profile()?.email ?? '');
   timezones = computed<readonly string[]>(() => this.profile()?.timezones ?? []);
+  workingHours = computed(() => this.profile()?.workingHours ?? null);
   /** Splits bioShort at the first sentence boundary so the Outlook card has
    *  a lead clause + an italicized emphasis tail. Mirrors the hero tagline split. */
   private readonly bioShortSplit = computed<readonly [string, string]>(() => {

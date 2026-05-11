@@ -1,3 +1,9 @@
+/* Host stretches to grid/flex cell so multi-card rows align at equal height. */
+:host {
+  display: block;
+  height: 100%;
+}
+
 /* Landing card — translucent glass surface for landing sections over decorative backgrounds. */
 .card {
   position: relative;
@@ -5,6 +11,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 28px;
+  height: 100%;
   min-height: 300px;
   background-color: color-mix(in srgb, var(--landing-text-300) 3%, transparent);
   backdrop-filter: blur(24px) saturate(120%);
@@ -13,23 +20,30 @@
   border-radius: 16px;
 }
 
-/* Tilt modifier — 3D rotate + deeper shadow on hover. */
+/* Tilt modifier — 3D rotate + theme-mixed accent glow on hover.
+   The glow uses `color-mix` against `--landing-accent`, which auto-adapts
+   to the active theme (dark→indigo, light→deeper indigo) without dark drop-shadows
+   that overpowered light surfaces. */
 .card--tilt {
   transform-style: preserve-3d;
   transition:
     transform 300ms ease,
-    box-shadow 300ms ease;
+    box-shadow 300ms ease,
+    border-color 300ms ease;
 }
 .card--tilt:hover {
   transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
+  border-color: color-mix(in srgb, var(--landing-accent) 60%, transparent);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 16px 32px rgba(0, 0, 0, 0.3),
-    0 40px 72px rgba(0, 0, 0, 0.4);
+    0 0 0 1px color-mix(in srgb, var(--landing-accent) 30%, transparent),
+    0 12px 40px color-mix(in srgb, var(--landing-accent) 22%, transparent);
 }
+
 @media (prefers-reduced-motion: reduce) {
   .card--tilt {
-    transition: none;
+    transition:
+      box-shadow 300ms ease,
+      border-color 300ms ease;
   }
   .card--tilt:hover {
     transform: none;

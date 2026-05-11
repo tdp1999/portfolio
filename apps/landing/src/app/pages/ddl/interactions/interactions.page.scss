@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+.ix-section {
+  padding-block: 64px;
+}
+
+.ix-group {
+  margin-bottom: 48px;
+}
+.ix-group:last-child {
+  margin-bottom: 0;
+}
+
+.ix-group__header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--landing-border);
+}
+.ix-group__category {
+  margin: 0 0 4px 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+.ix-group__description {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-500);
+  max-width: 56rem;
+}
+
+.ix-group__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ix-item {
+  padding: 20px;
+  background: var(--landing-ink-1);
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 150ms ease;
+}
+.ix-item:hover {
+  border-color: color-mix(in srgb, var(--landing-accent) 40%, transparent);
+}
+
+.ix-item__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.ix-item__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-md);
+  color: var(--landing-text-300);
+  line-height: 1.35;
+}
+.ix-item__tags {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.ix-item__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-family: var(--landing-font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  border-radius: 4px;
+  border: 1px solid var(--landing-border);
+  color: var(--landing-text-500);
+}
+.ix-item__tag--effort {
+  background: var(--landing-ink-2);
+  color: var(--landing-text-400);
+}
+.ix-item__detail {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}

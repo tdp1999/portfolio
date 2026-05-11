@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { ContainerComponent, StatusDotComponent, LandingBackgroundComponent } from '@portfolio/landing/shared/ui';
+import {
+  ContainerComponent,
+  StatusDotComponent,
+  LandingBackgroundComponent,
+  StaggerCharsDirective,
+} from '@portfolio/landing/shared/ui';
 
 @Component({
   selector: 'landing-home-hero',
   standalone: true,
-  imports: [ContainerComponent, StatusDotComponent, LandingBackgroundComponent],
+  imports: [ContainerComponent, StatusDotComponent, LandingBackgroundComponent, StaggerCharsDirective],
   templateUrl: './home-hero.component.html',
   styleUrl: './home-hero.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +24,7 @@ export class HomeHeroComponent {
   /** Authored hero chips (3–4 short tokens). Falls back to tokenizing `stackIntro` when empty. */
   readonly coreStackChips = input<readonly string[]>([]);
 
-  protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE_FOR_HIRE' : 'BUSY'));
+  protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE FOR HIRE' : 'BUSY'));
 
   /**
    * Splits the tagline at the first sentence boundary into two display blocks.

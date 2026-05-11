@@ -27,6 +27,7 @@ export interface ProfileAdminResponse {
   metaTitle: string | null;
   metaDescription: string | null;
   timezones: string[];
+  workingHours: { start: string; end: string } | null;
   canonicalUrl: string | null;
   avatarId: string | null;
   ogImageId: string | null;
@@ -54,6 +55,7 @@ export interface UpdateWorkAvailabilityPayload {
   availability: string;
   openTo: string[];
   timezones: string[];
+  workingHours: { start: string; end: string } | null;
 }
 
 export interface UpdateContactPayload {

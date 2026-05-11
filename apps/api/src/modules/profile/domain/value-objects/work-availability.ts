@@ -1,16 +1,21 @@
 import { BadRequestError, ErrorLayer, ProfileErrorCode } from '@portfolio/shared/errors';
 import type { OpenToValue } from '@portfolio/shared/types';
 import type { Availability } from '../profile.types';
+import { WorkingHours, type WorkingHoursProps } from './working-hours';
 
 export interface WorkAvailabilityProps {
   yearsOfExperience: number;
   availability: Availability;
   openTo: OpenToValue[];
   timezones: string[];
+  workingHours: WorkingHoursProps | null;
 }
 
 export class WorkAvailability {
+  private readonly workingHoursVo: WorkingHours | null;
+
   private constructor(private readonly props: WorkAvailabilityProps) {
+    this.workingHoursVo = props.workingHours ? WorkingHours.fromPersistence(props.workingHours) : null;
     Object.freeze(this);
   }
 
@@ -27,11 +32,17 @@ export class WorkAvailability {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    return new WorkAvailability({ ...props, timezones: [...props.timezones] });
+    // Run WorkingHours validation when present so invalid persistence input is rejected at create time.
+    const workingHours = props.workingHours ? WorkingHours.create(props.workingHours).toProps() : null;
+    return new WorkAvailability({ ...props, timezones: [...props.timezones], workingHours });
   }
 
   static fromPersistence(props: WorkAvailabilityProps): WorkAvailability {
-    return new WorkAvailability({ ...props, timezones: [...props.timezones] });
+    return new WorkAvailability({
+      ...props,
+      timezones: [...props.timezones],
+      workingHours: props.workingHours ? { ...props.workingHours } : null,
+    });
   }
 
   get yearsOfExperience(): number {
@@ -50,6 +61,10 @@ export class WorkAvailability {
     return this.props.timezones;
   }
 
+  get workingHours(): WorkingHours | null {
+    return this.workingHoursVo;
+  }
+
   get isOpenToWork(): boolean {
     return (
       this.props.availability === 'OPEN_TO_WORK' ||
@@ -58,17 +73,25 @@ export class WorkAvailability {
   }
 
   equals(other: WorkAvailability): boolean {
+    const wh = this.props.workingHours;
+    const ow = other.props.workingHours;
+    const workingHoursEqual = wh === ow || (!!wh && !!ow && wh.start === ow.start && wh.end === ow.end);
     return (
       this.props.yearsOfExperience === other.props.yearsOfExperience &&
       this.props.availability === other.props.availability &&
       this.props.openTo.length === other.props.openTo.length &&
       this.props.openTo.every((v, i) => v === other.props.openTo[i]) &&
       this.props.timezones.length === other.props.timezones.length &&
-      this.props.timezones.every((v, i) => v === other.props.timezones[i])
+      this.props.timezones.every((v, i) => v === other.props.timezones[i]) &&
+      workingHoursEqual
     );
   }
 
   toProps(): WorkAvailabilityProps {
-    return { ...this.props, timezones: [...this.props.timezones] };
+    return {
+      ...this.props,
+      timezones: [...this.props.timezones],
+      workingHours: this.props.workingHours ? { ...this.props.workingHours } : null,
+    };
   }
 }

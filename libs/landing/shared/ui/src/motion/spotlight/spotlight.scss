@@ -1,0 +1,46 @@
+/* Spotlight effect — companion CSS to SpotlightDirective.
+   Loaded via libs/landing/shared/ui/src/motion/_motion.scss → styles/index.scss. */
+
+/* Theme-aware spotlight color (RGB triplet, used inside rgb(... / alpha)).
+   Default + dark theme: white tint (brightens the dark surface).
+   Light theme: dark slate tint (subtle reading-lamp / scanner shadow). */
+:root,
+:root[data-theme='dark'] {
+  --fx-spotlight-color: 255 255 255;
+}
+
+:root[data-theme='light'] {
+  --fx-spotlight-color: 15 23 42; /* slate-900 */
+}
+
+.fx-spotlight__overlay {
+  pointer-events: none;
+  background: radial-gradient(
+    var(--fx-spotlight-radius, 40px) circle at var(--fx-cursor-x, 50%) var(--fx-cursor-y, 50%),
+    rgb(var(--fx-spotlight-color) / calc(var(--fx-spotlight-intensity, 0.15))),
+    rgb(var(--fx-spotlight-color) / calc(var(--fx-spotlight-intensity, 0.15) * 0.2)) 60%,
+    transparent 100%
+  );
+  opacity: var(--fx-cursor-opacity, 0);
+  transition: opacity 240ms ease;
+}
+
+/* Per-section: overlay sits inside its host box. */
+.fx-spotlight__overlay--host {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Site-wide: overlay covers the viewport regardless of host placement. */
+.fx-spotlight__overlay--viewport {
+  position: fixed;
+  inset: 0;
+  z-index: 1; /* above background, below interactive content (which sits in flow) */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-spotlight__overlay {
+    transition: none;
+  }
+}

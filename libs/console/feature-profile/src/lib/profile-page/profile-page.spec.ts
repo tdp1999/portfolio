@@ -34,6 +34,7 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   metaTitle: null,
   metaDescription: null,
   timezones: ['Asia/Ho_Chi_Minh'],
+  workingHours: null,
   canonicalUrl: null,
   avatarId: null,
   ogImageId: null,

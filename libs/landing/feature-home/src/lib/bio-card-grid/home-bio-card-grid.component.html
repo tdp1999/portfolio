@@ -1,10 +1,10 @@
 <section class="bio-grid" aria-labelledby="bio-grid-heading">
-  <landing-background pattern="aurora" />
+  <landing-background pattern="aurora" [bleedDown]="true" />
 
   <landing-container size="wide">
     <header class="bio-grid__head">
-      <h2 id="bio-grid-heading" class="sr-only">Who</h2>
-      <landing-eyebrow [label]="['02', 'Who']" [accentFirst]="true" [trailingRule]="true" />
+      <h2 id="bio-grid-heading" class="sr-only">Who I Am</h2>
+      <landing-eyebrow [label]="['02', 'Who I Am']" [accentFirst]="true" [trailingRule]="true" />
     </header>
 
     <div class="bio-grid__cards">
@@ -21,7 +21,21 @@
             </div>
             <div class="bio-card__row">
               <dt class="bio-card__row-key">HOURS</dt>
-              <dd class="bio-card__row-val font-mono">09:00–18:00 ICT</dd>
+              <dd class="bio-card__row-val bio-card__row-val--with-action font-mono">
+                <span fxTypeOut [text]="hoursDisplay()" [charDelay]="36" class="bio-card__hours-text"></span>
+                @if (showHoursToggle()) {
+                  <button
+                    type="button"
+                    class="bio-card__hours-trigger"
+                    [attr.aria-label]="
+                      hoursMode() === 'owner' ? 'Show hours in your local timezone' : 'Show hours in owner timezone'
+                    "
+                    (click)="toggleHours()"
+                  >
+                    <landing-icon name="rotate-cw" [size]="14" />
+                  </button>
+                }
+              </dd>
             </div>
             <div class="bio-card__row">
               <dt class="bio-card__row-key">BASE</dt>
@@ -47,11 +61,38 @@
         <landing-eyebrow label="§2.3 CONTACT" />
         <div class="bio-card__body">
           <landing-status-dot [state]="statusState()" variant="bare" [label]="statusLabel()" />
-          <p class="font-mono text-body-md text-landing-text-300 mt-3 break-all">{{ email() }}</p>
-          <p class="font-sans text-body-sm text-landing-text-500 mt-1">{{ contactNote() }}</p>
-          <div class="mt-4">
+
+          @if (email()) {
+            <button
+              type="button"
+              class="bio-card__email"
+              [landingCopyToClipboard]="email()"
+              #copyEmail="landingCopyToClipboard"
+              [attr.aria-label]="'Copy ' + email()"
+            >
+              <span class="bio-card__email-value font-mono text-body-md break-all">{{ email() }}</span>
+              <span class="bio-card__email-icon" aria-hidden="true">
+                @if (copyEmail.state() === 'copied') {
+                  <landing-icon name="check" [size]="16" />
+                } @else {
+                  <landing-icon name="copy" [size]="16" />
+                }
+              </span>
+              @if (copyEmail.state() === 'copied') {
+                <span class="bio-card__email-label">Copied</span>
+              }
+            </button>
+          }
+
+          <p class="font-sans text-body-sm text-landing-text-500 bio-card__contact-note">{{ contactNote() }}</p>
+
+          <div class="bio-card__connect">
             <landing-link href="#get-in-touch" [arrow]="true">Connect now</landing-link>
           </div>
+
+          @if (socialLinks().length > 0) {
+            <landing-social-row [socialLinks]="socialLinks()" [iconSize]="18" [max]="4" class="bio-card__socials" />
+          }
         </div>
       </landing-card>
     </div>

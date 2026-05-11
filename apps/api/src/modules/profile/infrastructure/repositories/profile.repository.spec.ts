@@ -75,6 +75,7 @@ describe('ProfileRepository — section updates', () => {
       availability: 'OPEN_TO_WORK',
       openTo: ['FULL_TIME'],
       timezones: ['Asia/Ho_Chi_Minh'],
+      workingHours: null,
     });
 
     it('writes only WorkAvailability columns + updatedById', async () => {
@@ -82,7 +83,7 @@ describe('ProfileRepository — section updates', () => {
 
       expect(whereOf(update)).toEqual({ userId });
       expect(keysOf(update)).toEqual(
-        ['availability', 'openTo', 'timezones', 'updatedById', 'yearsOfExperience'].sort()
+        ['availability', 'openTo', 'timezones', 'updatedById', 'workingHours', 'yearsOfExperience'].sort()
       );
     });
   });

@@ -3,6 +3,7 @@ import { LandingHeaderComponent } from './landing-header.component';
 import { LandingFooterBannerComponent } from './landing-footer-banner.component';
 import { LandingFooterSignatureComponent } from './landing-footer-signature.component';
 import { LandingScrollToTopComponent } from './landing-scroll-to-top.component';
+import { SpotlightDirective } from '../motion';
 import { type SocialLink } from '@portfolio/shared/types';
 
 @Component({
@@ -14,9 +15,10 @@ import { type SocialLink } from '@portfolio/shared/types';
     LandingFooterBannerComponent,
     LandingFooterSignatureComponent,
     LandingScrollToTopComponent,
+    SpotlightDirective,
   ],
   template: `
-    <div class="flex min-h-screen flex-col bg-ink-0 text-landing-text-300">
+    <div class="flex min-h-screen flex-col bg-ink-0 text-landing-text-300" fxSpotlight scope="viewport">
       <landing-header />
       <main class="flex-1">
         <ng-content />

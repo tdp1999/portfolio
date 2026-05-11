@@ -3,12 +3,10 @@
 
   <landing-container size="wide" class="home-hero__top">
     <div class="home-hero__headline">
-      <h1 class="home-hero__title">
-        <span class="home-hero__title-name">{{ fullName() }} —</span>
-        @if (title()) {
-          <span class="home-hero__title-role">{{ title() }}</span>
-        }
-      </h1>
+      <h1 class="home-hero__title" fxStaggerChars [attr.aria-label]="fullName()">{{ fullName() }}</h1>
+      @if (title()) {
+        <p class="home-hero__role">— {{ title() }}</p>
+      }
 
       @if (taglineLead()) {
         <p class="home-hero__sub-lead">{{ taglineLead() }}</p>
@@ -34,7 +32,7 @@
       </div>
       @if (coreStack().length > 0) {
         <div class="home-hero__meta-row">
-          <dt class="home-hero__meta-key">CORE_STACK</dt>
+          <dt class="home-hero__meta-key">CORE STACK</dt>
           <dd class="home-hero__meta-val home-hero__meta-val--mono">{{ stackDisplay() }}</dd>
         </div>
       }

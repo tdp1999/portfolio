@@ -13,6 +13,11 @@ export type LandingBackgroundPattern = 'blueprint' | 'topo' | 'hatch' | 'dots' |
  * - `dots`      — dot matrix at intersections, star-field feel.
  * - `crosshair` — radial crosshair sweep, radar / compass feel.
  * - `aurora`    — three blurred accent blobs, glass / mesh feel.
+ *
+ * `bleedDown` modifier: lifts the bottom clip so the pattern extends below
+ * the host section, useful for soft transitions into the next section.
+ * The receiving section needs a transparent top band for the bleed to be
+ * visible (e.g. `linear-gradient(transparent 0, ink-1 120px)`).
  */
 @Component({
   selector: 'landing-background',
@@ -28,9 +33,18 @@ export type LandingBackgroundPattern = 'blueprint' | 'topo' | 'hatch' | 'dots' |
   `,
   styleUrl: './background.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.is-bleed-down]': 'bleedDown()',
+  },
 })
 export class LandingBackgroundComponent {
   readonly pattern = input<LandingBackgroundPattern>('blueprint');
+  /** Allow the pattern to extend below the host section bounds. Default false. */
+  readonly bleedDown = input<boolean>(false);
 
-  protected readonly rootClass = computed(() => `landing-bg landing-bg--${this.pattern()}`);
+  protected readonly rootClass = computed(() => {
+    const parts = ['landing-bg', `landing-bg--${this.pattern()}`];
+    if (this.bleedDown()) parts.push('landing-bg--bleed-down');
+    return parts.join(' ');
+  });
 }

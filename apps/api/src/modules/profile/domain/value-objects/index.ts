@@ -4,6 +4,9 @@ export type { IdentityProps } from './identity';
 export { WorkAvailability } from './work-availability';
 export type { WorkAvailabilityProps } from './work-availability';
 
+export { WorkingHours } from './working-hours';
+export type { WorkingHoursProps } from './working-hours';
+
 export { Contact } from './contact';
 export type { ContactProps } from './contact';
 

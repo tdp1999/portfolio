@@ -37,6 +37,7 @@ describe('Profile Queries', () => {
     metaDescription: 'A developer',
     ogImageId: null,
     timezones: ['Asia/Ho_Chi_Minh'],
+    workingHours: null,
     canonicalUrl: 'https://example.com',
     avatarId: null,
     tagline: null,

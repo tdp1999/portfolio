@@ -1,0 +1,40 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
+      <h1 class="font-display text-display-md text-landing-text-300">Subtle interactions · wishlist</h1>
+      <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
+        {{ totalItems }} micro-interaction candidates grouped by trigger category. Each is a candidate — not a
+        commitment. Mark ★ to open a task. Always cap to ≤1 motion per viewport to avoid feeling busy.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<section class="ix-section">
+  <landing-container size="wide">
+    @for (group of groups; track group.category) {
+      <article class="ix-group">
+        <header class="ix-group__header">
+          <p class="ix-group__category">{{ group.category }}</p>
+          <p class="ix-group__description">{{ group.description }}</p>
+        </header>
+
+        <ul class="ix-group__items" role="list">
+          @for (item of group.items; track item.title) {
+            <li class="ix-item">
+              <div class="ix-item__head">
+                <p class="ix-item__title">{{ item.title }}</p>
+                <div class="ix-item__tags">
+                  <span class="ix-item__tag ix-item__tag--scope">{{ item.scope }}</span>
+                  <span class="ix-item__tag ix-item__tag--effort">{{ item.effort }}</span>
+                </div>
+              </div>
+              <p class="ix-item__detail">{{ item.detail }}</p>
+            </li>
+          }
+        </ul>
+      </article>
+    }
+  </landing-container>
+</section>

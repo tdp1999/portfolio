@@ -42,6 +42,7 @@ export class UpdateProfileWorkAvailabilityHandler implements ICommandHandler<Upd
       availability: data.availability,
       openTo: data.openTo as OpenToValue[],
       timezones: data.timezones,
+      workingHours: data.workingHours,
     });
     const updated = profile.withWorkAvailability(newWorkAvailability, command.userId);
     await this.repo.updateWorkAvailability(command.userId, updated.workAvailability, command.userId);

@@ -32,6 +32,7 @@ describe('Profile Entity', () => {
     metaDescription: null,
     ogImageId: null,
     timezones: [],
+    workingHours: null,
     canonicalUrl: null,
     avatarId: null,
     tagline: null,

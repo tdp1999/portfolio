@@ -32,6 +32,7 @@ function buildProfileProps(overrides: Partial<IProfileProps> = {}): IProfileProp
     metaDescription: 'John Doe is a software engineer',
     ogImageId: 'ffffffff-0000-1111-2222-333333333333',
     timezones: ['Asia/Ho_Chi_Minh'],
+    workingHours: null,
     canonicalUrl: 'https://johndoe.com',
     avatarId: 'eeeeeeee-0000-1111-2222-333333333333',
     tagline: null,

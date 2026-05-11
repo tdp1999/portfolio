@@ -1,0 +1,43 @@
+/* Stagger-chars effect — companion CSS to StaggerCharsDirective.
+   Loaded via libs/landing/shared/ui/src/motion/_motion.scss → styles/index.scss. */
+
+.fx-stagger-chars {
+  /* SSR / pre-hydration: hide raw text node so chars don't flash before split. */
+  visibility: hidden;
+}
+
+.fx-stagger-chars--ready {
+  visibility: visible;
+}
+
+.fx-stagger-chars__char {
+  display: inline-block;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(calc(var(--fx-y, 0) * 1px));
+  animation-name: fx-stagger-chars-settle;
+  animation-timing-function: cubic-bezier(0.2, 0, 0.1, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes fx-stagger-chars-settle {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--fx-y, 0) * 1px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-stagger-chars {
+    visibility: visible;
+  }
+  .fx-stagger-chars__char {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

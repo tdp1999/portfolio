@@ -1,6 +1,6 @@
 import { Profile as PrismaProfile, Media, Prisma } from '@prisma/client';
 import { Profile } from '../../domain/entities/profile.entity';
-import { IProfileProps, Availability } from '../../domain/profile.types';
+import { IProfileProps, Availability, WorkingHoursValue } from '../../domain/profile.types';
 import type { ProfileWithMedia } from '../../application/ports/profile.repository.port';
 import type { TranslatableJson, SocialLink, OpenToValue, SocialPlatform } from '@portfolio/shared/types';
 import {
@@ -29,6 +29,17 @@ const parseStringArray = (raw: unknown): string[] => {
   return raw.filter((v): v is string => typeof v === 'string');
 };
 
+const HHMM = /^([01]\d|2[0-3]):([0-5]\d)$/;
+const parseWorkingHours = (raw: unknown): WorkingHoursValue | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const obj = raw as Record<string, unknown>;
+  const start = obj['start'];
+  const end = obj['end'];
+  if (typeof start !== 'string' || typeof end !== 'string') return null;
+  if (!HHMM.test(start) || !HHMM.test(end)) return null;
+  return { start, end };
+};
+
 export class ProfileMapper {
   static toDomain(raw: PrismaProfile): Profile {
     const props: IProfileProps = {
@@ -41,6 +52,7 @@ export class ProfileMapper {
       yearsOfExperience: raw.yearsOfExperience,
       availability: raw.availability as Availability,
       openTo: OpenToSchema.parse(raw.openTo) as OpenToValue[],
+      workingHours: parseWorkingHours(raw.workingHours),
       email: raw.email,
       phone: raw.phone,
       preferredContactPlatform: raw.preferredContactPlatform as SocialPlatform,
@@ -83,6 +95,7 @@ export class ProfileMapper {
       yearsOfExperience: profile.yearsOfExperience,
       availability: profile.availability,
       openTo: profile.openTo as unknown as Prisma.InputJsonValue,
+      workingHours: (profile.workingHours as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       email: profile.email,
       phone: profile.phone,
       preferredContactPlatform: profile.preferredContactPlatform,

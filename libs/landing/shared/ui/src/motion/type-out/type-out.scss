@@ -1,0 +1,28 @@
+/* Type-out effect — companion CSS to TypeOutDirective.
+   Loaded via libs/landing/shared/ui/src/motion/_motion.scss → styles/index.scss. */
+
+.fx-type-out--animating::after {
+  content: '▎';
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--landing-accent);
+  animation: fx-type-out-caret 600ms steps(2, end) infinite;
+  vertical-align: baseline;
+}
+
+@keyframes fx-type-out-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-type-out--animating::after {
+    animation: none;
+    opacity: 0;
+  }
+}

@@ -1,0 +1,288 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
+      <h1 class="font-display text-display-md text-landing-text-300">§3 Bio Card Grid — improvements</h1>
+      <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
+        Option staging cho 6 vấn đề trong §3. Picks đã chốt được đánh dấu
+        <span class="bi-badge bi-badge--inline">PICKED</span>. Wishlist micro-interactions chuyển sang
+        <a class="bi-link" routerLink="/ddl/interactions">/ddl/interactions</a>.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ §A · Title -->
+<section class="bi-section" aria-labelledby="bi-section-a">
+  <landing-container size="wide">
+    <h2 id="bi-section-a" class="bi-section__heading">§A · Section title</h2>
+    <p class="bi-section__intro">
+      Eyebrow visible label. Cần rõ hơn nhưng giữ format <code>NN · Label</code> cho consistent với 03/04/05/06.
+    </p>
+
+    <div class="bi-title-grid">
+      @for (v of titleVariants; track v.id) {
+        <article class="bi-title-card" [class.bi-card--picked]="v.picked">
+          @if (v.picked) {
+            <span class="bi-badge">PICKED</span>
+          }
+          <div class="bi-title-card__mock">
+            <landing-eyebrow [label]="[v.num, v.text]" [accentFirst]="true" [trailingRule]="true" />
+          </div>
+          <p class="bi-title-card__id">{{ v.num }} · {{ v.text }}</p>
+          <p class="bi-title-card__hint">{{ v.hint }}</p>
+        </article>
+      }
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ §B · Bleed -->
+<section class="bi-section" aria-labelledby="bi-section-b">
+  <landing-container size="wide">
+    <h2 id="bi-section-b" class="bi-section__heading">§B · Background bleed</h2>
+    <p class="bi-section__intro">
+      Aurora hiện bị cắt cứng. Chọn variant để preview transition giữa hero (blueprint) → bio (aurora) → selected-work
+      (ink-1 + accent top border).
+    </p>
+
+    <!-- Segmented control -->
+    <div class="bi-segmented" role="tablist" aria-label="Background bleed variants">
+      @for (v of bleedVariants; track v.id) {
+        <button
+          type="button"
+          role="tab"
+          class="bi-segmented__btn"
+          [class.is-active]="activeBleed() === v.id"
+          [class.is-picked]="v.picked"
+          [attr.aria-selected]="activeBleed() === v.id"
+          (click)="activeBleed.set(v.id)"
+        >
+          <span class="bi-segmented__label">{{ v.label }}</span>
+          @if (v.picked) {
+            <span class="bi-badge bi-badge--xs">PICKED</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Active hint -->
+    @for (v of bleedVariants; track v.id) {
+      @if (activeBleed() === v.id) {
+        <p class="bi-bleed__hint">{{ v.hint }}</p>
+      }
+    }
+
+    <!-- Single live preview -->
+    <div class="bi-bleed-stack" [attr.data-bleed]="activeBleed()">
+      <!-- Hero stub -->
+      <div class="bi-bleed-hero">
+        <landing-background pattern="blueprint" />
+        <landing-container size="wide" class="bi-bleed-hero__inner">
+          <p class="bi-bleed-stub-label">[fake hero · blueprint grid]</p>
+        </landing-container>
+      </div>
+
+      <!-- Bio stub w/ aurora -->
+      <div class="bi-bleed-bio">
+        <landing-background pattern="aurora" />
+        <landing-container size="wide" class="bi-bleed-bio__inner">
+          <landing-eyebrow [label]="['02', 'Who I Am']" [accentFirst]="true" [trailingRule]="true" />
+          <div class="bi-bleed-bio__cards">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="bi-bleed-bio__card-stub">
+                <p class="bi-bleed-stub-label">card {{ i }}</p>
+              </div>
+            }
+          </div>
+        </landing-container>
+      </div>
+
+      <!-- Selected work stub -->
+      <div class="bi-bleed-work">
+        <landing-container size="wide" class="bi-bleed-work__inner">
+          <p class="bi-bleed-stub-label">[fake selected-work · ink-1 + accent top border]</p>
+        </landing-container>
+      </div>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ §C · HOURS -->
+<section class="bi-section" aria-labelledby="bi-section-c">
+  <landing-container size="wide">
+    <h2 id="bi-section-c" class="bi-section__heading">§C · HOURS roulette text effect</h2>
+    <p class="bi-section__intro">
+      Default: <code>09:00–18:00 ICT</code>. Click rotate icon (kế bên value) → animate to
+      <code>08:00–17:00 GMT-1</code>. Layout match production: <code>HOURS</code> key trái, value + button group phải
+      (space-between).
+    </p>
+
+    <div class="bi-hours-grid">
+      @for (v of hoursVariants; track v.id) {
+        <article class="bi-hours-card" [class.bi-card--picked]="v.picked">
+          @if (v.picked) {
+            <span class="bi-badge">PICKED</span>
+          }
+          <p class="bi-hours-card__id">{{ v.label }}</p>
+          <p class="bi-hours-card__hint">{{ v.hint }}</p>
+
+          <div class="bi-hours-row">
+            <span class="bi-hours-row__key">HOURS</span>
+            <span class="bi-hours-row__group">
+              <span
+                class="bi-hours-row__val"
+                [attr.data-variant]="v.id"
+                [class.is-animating]="hoursAnimating() === v.id"
+              >
+                {{ hoursState[v.id]() }}
+              </span>
+              <button
+                type="button"
+                class="bi-hours-row__trigger"
+                [attr.aria-label]="'Trigger ' + v.label"
+                (click)="triggerHours(v.id)"
+              >
+                <landing-icon name="rotate-cw" [size]="14" />
+              </button>
+            </span>
+          </div>
+        </article>
+      }
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ §D · Email copy -->
+<section class="bi-section" aria-labelledby="bi-section-d">
+  <landing-container size="wide">
+    <h2 id="bi-section-d" class="bi-section__heading">§D · Email copy + inline check feedback</h2>
+    <p class="bi-section__intro">
+      <span class="bi-badge bi-badge--inline">PICKED</span> Hover row → reveal copy icon. Click → copy, icon swap copy →
+      check 1.5s, revert. Áp dụng pattern này cho tất cả copy-to-clipboard trên landing — sẽ tách thành reusable
+      service/directive khi graduate.
+    </p>
+
+    <div class="bi-email-demo">
+      <landing-card>
+        <landing-eyebrow label="§2.3 CONTACT" />
+        <div class="bi-email-demo__body">
+          <landing-status-dot state="available" variant="bare" label="AVAILABLE FOR WORK" />
+
+          <button type="button" class="bi-email-row" [attr.aria-label]="'Copy ' + demo.email" (click)="copyEmail()">
+            <span class="bi-email-row__value">{{ demo.email }}</span>
+            <span class="bi-email-row__icon" aria-hidden="true">
+              @if (emailCopyState() === 'copied') {
+                <landing-icon name="check" [size]="16" />
+              } @else {
+                <landing-icon name="copy" [size]="16" />
+              }
+            </span>
+            @if (emailCopyState() === 'copied') {
+              <span class="bi-email-row__label">Copied</span>
+            }
+          </button>
+
+          <p class="bi-email-demo__note">{{ demo.contactNote }}</p>
+        </div>
+      </landing-card>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ §E · Hover shadow -->
+<section class="bi-section bi-section--has-aurora" aria-labelledby="bi-section-e">
+  <landing-background pattern="aurora" />
+  <landing-container size="wide">
+    <h2 id="bi-section-e" class="bi-section__heading">§E · Card hover shadow (theme-aware)</h2>
+    <p class="bi-section__intro">Hover từng card để so. Test cả light + dark theme (theme toggle ở header).</p>
+
+    <div class="bi-shadow-grid">
+      @for (v of shadowVariants; track v.id) {
+        <div class="bi-shadow-cell">
+          <div class="bi-shadow-card" [ngClass]="'bi-shadow-card--' + v.id" [class.bi-card--picked]="v.picked">
+            @if (v.picked) {
+              <span class="bi-badge">PICKED</span>
+            }
+            <p class="bi-hours-card__id">{{ v.label }}</p>
+            <p class="bi-shadow-card__body">Hover me to compare the shadow treatment.</p>
+          </div>
+          <p class="bi-shadow-cell__hint">{{ v.hint }}</p>
+        </div>
+      }
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ §F · Social icons -->
+<section class="bi-section bi-section--has-aurora" aria-labelledby="bi-section-f">
+  <landing-background pattern="aurora" />
+  <landing-container size="wide">
+    <h2 id="bi-section-f" class="bi-section__heading">§F · Social icons in Card C</h2>
+    <p class="bi-section__intro">Task 284 defer item. Icon row max 4 platforms (match footer-signature palette).</p>
+
+    <div class="bi-social-grid">
+      @for (v of socialVariants; track v.id) {
+        <div class="bi-social-cell">
+          <div class="bi-social-cell__card-wrap" [class.bi-card--picked]="v.picked">
+            @if (v.picked) {
+              <span class="bi-badge">PICKED</span>
+            }
+            <landing-card>
+              <landing-eyebrow label="§2.3 CONTACT" />
+              <div class="bi-email-demo__body">
+                <landing-status-dot state="available" variant="bare" label="AVAILABLE FOR WORK" />
+                <p class="bi-social-card__email">{{ demo.email }}</p>
+                <p class="bi-social-card__note">{{ demo.contactNote }}</p>
+
+                @switch (v.id) {
+                  @case ('f1') {
+                    <div class="bi-social-card__connect">
+                      <landing-link href="#" [arrow]="true">Connect now</landing-link>
+                    </div>
+                    <ul class="bi-social-row" role="list">
+                      @for (s of socialIcons; track s.url) {
+                        <li>
+                          <a class="bi-social-row__icon" [attr.href]="s.url" [attr.aria-label]="s.label">
+                            <landing-icon [name]="s.icon" [size]="18" />
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  }
+                  @case ('f2') {
+                    <ul class="bi-social-row bi-social-row--primary" role="list">
+                      @for (s of socialIcons; track s.url) {
+                        <li>
+                          <a class="bi-social-row__icon" [attr.href]="s.url" [attr.aria-label]="s.label">
+                            <landing-icon [name]="s.icon" [size]="18" />
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  }
+                  @case ('f3') {
+                    <ul class="bi-social-row bi-social-row--primary" role="list">
+                      @for (s of socialIcons; track s.url) {
+                        <li>
+                          <a class="bi-social-row__icon" [attr.href]="s.url" [attr.aria-label]="s.label">
+                            <landing-icon [name]="s.icon" [size]="18" />
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                    <div class="bi-social-card__connect bi-social-card__connect--fallback">
+                      <landing-link href="#" [arrow]="true">Connect now</landing-link>
+                    </div>
+                  }
+                }
+              </div>
+            </landing-card>
+          </div>
+          <p class="bi-social-cell__id">{{ v.label }}</p>
+          <p class="bi-social-cell__hint">{{ v.hint }}</p>
+        </div>
+      }
+    </div>
+  </landing-container>
+</section>

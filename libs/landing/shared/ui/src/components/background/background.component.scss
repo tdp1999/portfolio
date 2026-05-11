@@ -7,6 +7,16 @@
   isolation: isolate;
 }
 
+/* `bleedDown` lifts the bottom clip so the pattern extends below the section.
+   The receiving section needs a transparent top band for the bleed to show. */
+:host(.is-bleed-down) {
+  inset: 0 0 -160px 0;
+  overflow: visible;
+}
+:host(.is-bleed-down) .landing-bg {
+  overflow: visible;
+}
+
 .landing-bg {
   position: absolute;
   inset: 0;

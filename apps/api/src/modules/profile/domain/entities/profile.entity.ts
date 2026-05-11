@@ -7,7 +7,7 @@ import type {
   OpenToValue,
   SocialPlatform,
 } from '@portfolio/shared/types';
-import { IProfileProps, ICreateProfilePayload, Availability } from '../profile.types';
+import { IProfileProps, ICreateProfilePayload, Availability, WorkingHoursValue } from '../profile.types';
 import {
   Identity,
   WorkAvailability,
@@ -111,6 +111,10 @@ export class Profile {
 
   get timezones(): string[] {
     return this.props.workAvailability.timezones;
+  }
+
+  get workingHours(): WorkingHoursValue | null {
+    return this.props.workAvailability.workingHours?.toJSON() ?? null;
   }
 
   get email(): string {
@@ -236,6 +240,7 @@ export class Profile {
         availability: data.availability ?? 'EMPLOYED',
         openTo: data.openTo ?? [],
         timezones: data.timezones ?? [],
+        workingHours: data.workingHours ?? null,
       }),
       contact: Contact.create({
         email: data.email,
@@ -291,6 +296,7 @@ export class Profile {
         availability: props.availability,
         openTo: props.openTo,
         timezones: props.timezones,
+        workingHours: props.workingHours,
       }),
       contact: Contact.fromPersistence({
         email: props.email,
@@ -422,6 +428,7 @@ export class Profile {
       availability: this.props.workAvailability.availability,
       openTo: this.props.workAvailability.openTo,
       timezones: this.props.workAvailability.timezones,
+      workingHours: this.props.workAvailability.workingHours?.toJSON() ?? null,
       email: this.props.contact.email,
       phone: this.props.contact.phone,
       preferredContactPlatform: this.props.contact.preferredContactPlatform,

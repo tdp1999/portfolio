@@ -110,6 +110,7 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
       coreStack: ['Angular', 'TypeScript', 'Angular Material'],
       yearsOfExperience: 5,
       timezones: ['Asia/Ho_Chi_Minh'],
+      workingHours: { start: '09:00', end: '18:00' },
       email,
       preferredContactValue: email,
       locationCountry: 'Vietnam',

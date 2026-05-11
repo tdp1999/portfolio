@@ -387,6 +387,9 @@ model Profile {
 
   // Misc
   timezones    Json    @default("[]")  // Array<string> of IANA zones
+  // Owner's working hours, expressed as { start: "HH:mm", end: "HH:mm" }.
+  // The trailing TZ short label is derived from `timezones[0]` (no duplicate field).
+  workingHours Json?
   canonicalUrl String? @db.VarChar(500)
 
   // Media

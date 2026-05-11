@@ -6,6 +6,7 @@ describe('WorkAvailability VO', () => {
     availability: 'EMPLOYED' as const,
     openTo: ['FREELANCE' as const],
     timezones: [],
+    workingHours: null,
   };
 
   describe('create() — validation guards', () => {

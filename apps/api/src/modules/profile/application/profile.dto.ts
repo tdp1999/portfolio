@@ -7,7 +7,7 @@ import type {
   OpenToValue,
   SocialPlatform as SocialPlatformType,
 } from '@portfolio/shared/types';
-import type { Availability as AvailabilityType } from '../domain/profile.types';
+import type { Availability as AvailabilityType, WorkingHoursValue } from '../domain/profile.types';
 
 // --- Update Avatar / OG Image Schemas ---
 
@@ -45,6 +45,7 @@ export type ProfilePublicResponseDto = {
   metaTitle: string | null;
   metaDescription: string | null;
   timezones: string[];
+  workingHours: WorkingHoursValue | null;
   canonicalUrl: string | null;
   // Landing content blocks
   tagline: TranslatableJson | null;

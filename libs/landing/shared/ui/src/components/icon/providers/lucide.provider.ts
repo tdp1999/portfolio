@@ -37,6 +37,8 @@ import {
   BarChart,
   FolderOpen,
   Image,
+  Copy,
+  RotateCw,
   LucideIconData,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
@@ -81,6 +83,8 @@ const ICON_MAP: Record<string, LucideIconData> = {
   'bar-chart': BarChart,
   'folder-open': FolderOpen,
   image: Image,
+  copy: Copy,
+  'rotate-cw': RotateCw,
 };
 
 export class LucideIconProvider implements IconProvider {

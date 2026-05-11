@@ -30,6 +30,7 @@ export class ProfilePresenter {
       metaTitle: profile.metaTitle,
       metaDescription: profile.metaDescription,
       timezones: profile.timezones,
+      workingHours: profile.workingHours,
       canonicalUrl: profile.canonicalUrl,
       tagline: profile.tagline,
       stackIntro: profile.stackIntro,

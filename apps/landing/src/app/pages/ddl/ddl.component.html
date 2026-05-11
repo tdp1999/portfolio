@@ -69,70 +69,159 @@
       </div>
     </div>
 
-    <!-- Sub-page link cards -->
-    <div id="prototypes" class="mb-8 grid gap-4 md:grid-cols-2 scroll-mt-8">
-      <a
-        routerLink="/ddl/fragment-navigation"
-        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-      >
-        <div>
-          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-            prototype · /ddl/fragment-navigation
-          </p>
-          <p
-            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- DDL subroutes — grouped by purpose                                    -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <div id="prototypes" class="mb-8 scroll-mt-8 space-y-8">
+      <!-- Group A · Compositions: page-level section explorations -->
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-3">
+          compositions · page-level section explorations
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <a
+            routerLink="/ddl/hero-variants"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
           >
-            Fragment navigation
-          </p>
-          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-            Compare four in-page nav patterns (FAB, TOC sidebar, section dots + reading bar, floating pill + mini-map)
-            on a long lorem-ipsum page.
-          </p>
-        </div>
-        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-      </a>
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/hero-variants
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Hero direction variants
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Six hero compositions side-by-side — V1 fallback, V2 cursor-lit, plus research candidates: α stagger, β
+                marquee, γ mask wipe, δ magnetic. α picked.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
 
-      <a
-        routerLink="/ddl/backgrounds"
-        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-      >
-        <div>
-          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-            prototype · /ddl/backgrounds
-          </p>
-          <p
-            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+          <a
+            routerLink="/ddl/bio-improvements"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
           >
-            Background patterns
-          </p>
-          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-            Five pure-CSS hero backgrounds — blueprint, topo, hatch, dot matrix, crosshair — rendered via the same
-            <code>landing-background</code> primitive.
-          </p>
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/bio-improvements
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Bio card grid · improvements pass
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Option staging for §3 refinement — title, background bleed, HOURS roulette, email copy feedback, card
+                hover shadow, social icons. Picks flagged inline.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
         </div>
-        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-      </a>
+      </div>
 
-      <a
-        routerLink="/ddl/bio-card-grid"
-        class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-      >
-        <div>
-          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-            prototype · /ddl/bio-card-grid
-          </p>
-          <p
-            class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+      <!-- Group B · Patterns & primitives: reusable building blocks -->
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-3">
+          patterns & primitives · reusable building blocks
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <a
+            routerLink="/ddl/backgrounds"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
           >
-            Bio card grid (task 284)
-          </p>
-          <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-            Ten visual register options for §3 (identity · philosophy · contact) — section-mark eyebrow, asymmetric
-            read-zone, geographic backgrounds, header bands. Pick before implementing.
-          </p>
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/backgrounds
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Background patterns
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Six pure-CSS section backgrounds — blueprint, topo, hatch, dot matrix, crosshair, aurora — via the same
+                <code>landing-background</code> primitive.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
+
+          <a
+            routerLink="/ddl/fragment-navigation"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+          >
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/fragment-navigation
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Fragment navigation
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Compare four in-page nav patterns — FAB, TOC sidebar, section dots + reading bar, floating pill +
+                mini-map — on a long lorem-ipsum page.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
+
+          <a
+            routerLink="/ddl/interactions"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
+          >
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/interactions
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Subtle interactions · wishlist
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Landing-wide micro-interaction candidates grouped by trigger category (hover, click, scroll, focus,
+                idle, page transition). Each item is a candidate, not a commitment.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
         </div>
-        <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-      </a>
+      </div>
+
+      <!-- Group C · Legacy: superseded explorations kept for reference -->
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-600 mb-3">
+          legacy · superseded; safe to delete in a cleanup pass
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <a
+            routerLink="/ddl/bio-card-grid"
+            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1/60 p-5 opacity-70 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent hover:opacity-100"
+          >
+            <div>
+              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
+                /ddl/bio-card-grid
+              </p>
+              <p
+                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
+              >
+                Bio card grid · task 284 PROTOs
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
+                Original ten visual register options for §3. PF2 + PF7 was picked and graduated. Kept as reference until
+                next cleanup sweep.
+              </p>
+            </div>
+            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
+          </a>
+        </div>
+      </div>
     </div>
 
     <section class="space-y-6 mb-12">

@@ -10,6 +10,11 @@ import type {
 
 export type Availability = 'OPEN_TO_WORK' | 'EMPLOYED' | 'FREELANCING' | 'NOT_AVAILABLE';
 
+export interface WorkingHoursValue {
+  start: string;
+  end: string;
+}
+
 export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'deletedById'> {
   userId: string;
 
@@ -23,6 +28,7 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   yearsOfExperience: number;
   availability: Availability;
   openTo: OpenToValue[];
+  workingHours: WorkingHoursValue | null;
 
   // Contact
   email: string;
@@ -77,6 +83,7 @@ export interface ICreateProfilePayload {
   yearsOfExperience: number;
   availability?: Availability;
   openTo?: OpenToValue[];
+  workingHours?: WorkingHoursValue | null;
 
   // Contact
   email: string;

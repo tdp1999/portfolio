@@ -20,5 +20,8 @@ export * from './components/background';
 export * from './components/breadcrumb';
 export * from './components/back-link';
 export * from './components/empty-state';
+export * from './components/social-row';
+export * from './motion';
+export * from './directives';
 export * from './theme';
 export * from './shell';

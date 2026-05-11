@@ -13,6 +13,17 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 - **Package Manager:** pnpm | **Node:** 20+ LTS
 - **Zod:** v4 — Use latest Zod v4 syntax (e.g., `z.email()` not `z.string().email()`)
 
+## Quick Start
+
+```bash
+pnpm dev:landing          # Angular landing + SSR (port 4200)
+pnpm dev:api              # NestJS API (port 3000)
+pnpm dev:console          # Console app (port 4300)
+npx tsc --noEmit          # Type-check after edits
+```
+
+Full command list in `.context/commands.md`.
+
 ## References
 
 - **Architecture:** Backend (NestJS: Controllers → Services → Repositories), FE (Angular Signals/SSR). See `.context/patterns-architecture.md`
@@ -95,7 +106,7 @@ Use these skills for specific workflows. More will be added over time.
 | **Read don't assume**      | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
 | **Forward slashes**        | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
 | **Type check after edits** | If a `watch-servers` Monitor is active, skip manual `tsc` — the build output is the type check. Otherwise run `npx tsc --noEmit` after modifying `.ts` or `.html` files. | Also enforced in CI pipeline |
-| **Never read .env files**  |                                                                       |                                                                    |
+| **Never read .env files**  | Do not Read, Grep, or cat any `.env*` file — they hold secrets        | Ask the user for any value you need from `.env` instead of opening it |
 | **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
 | **4px grid**                 | All fixed px values must be multiples of 4. Even non-multiples (6, 10, 18) sparingly. Odd px banned. | ❌ `text-[13px]` ✅ `text-xs`; see `.context/design/scale-contract.md` |
 | **Typography classes (console)** | Use unified `.text-page-title`, `.text-section-heading`, `.text-stat-label`, etc. **Console only** — landing has its own scale (next row). | See `base/components.scss` |

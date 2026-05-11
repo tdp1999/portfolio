@@ -1,9 +1,13 @@
 /* Home — Selected Work section (B3.d Tabbed + mini gallery, B2.c lift). */
 
+/* Top 120px is transparent so §3's aurora bleed (B5 background-bleed pick) shows
+   through below the accent line. The accent line still paints — it lives on
+   the border, not the background. */
 .home-selected-work {
   position: relative;
   padding: 64px 0 80px;
-  background-color: var(--landing-ink-1);
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, transparent 0%, var(--landing-ink-1) 120px, var(--landing-ink-1) 100%);
   border-top: 1px solid var(--landing-accent);
 
   @media (min-width: 960px) {

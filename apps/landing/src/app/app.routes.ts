@@ -46,6 +46,18 @@ export const appRoutes: Route[] = [
         path: 'bio-card-grid',
         loadComponent: () => import('./pages/ddl/bio-card-grid').then((m) => m.BioCardGridPage),
       },
+      {
+        path: 'bio-improvements',
+        loadComponent: () => import('./pages/ddl/bio-improvements').then((m) => m.BioImprovementsPage),
+      },
+      {
+        path: 'interactions',
+        loadComponent: () => import('./pages/ddl/interactions').then((m) => m.InteractionsPage),
+      },
+      {
+        path: 'hero-variants',
+        loadComponent: () => import('./pages/ddl/hero-variants').then((m) => m.HeroVariantsPage),
+      },
     ],
   },
   {

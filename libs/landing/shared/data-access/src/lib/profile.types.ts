@@ -9,6 +9,11 @@ import type {
 
 export type ProfileAvailability = 'OPEN_TO_WORK' | 'EMPLOYED' | 'FREELANCING' | 'NOT_AVAILABLE';
 
+export interface WorkingHours {
+  start: string;
+  end: string;
+}
+
 export type PublicProfileResponse = {
   fullName: TranslatableJson;
   title: TranslatableJson;
@@ -30,6 +35,7 @@ export type PublicProfileResponse = {
   metaTitle: string | null;
   metaDescription: string | null;
   timezones: string[];
+  workingHours: WorkingHours | null;
   canonicalUrl: string | null;
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;

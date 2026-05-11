@@ -1,0 +1,6 @@
+/* Motion library aggregator — one file per effect.
+   Add @use entries here as effects are introduced. */
+
+@use './stagger-chars/stagger-chars';
+@use './spotlight/spotlight';
+@use './type-out/type-out';

@@ -1,9 +1,11 @@
-/* §3 Bio Card Grid · PF2 Aurora Mesh + PF7 Dimensional hover
+/* §3 Bio Card Grid · PF2 Aurora Mesh + E3 theme-mixed glow hover (via shared card)
  *
  * Surface + hover come from `<landing-card [tilt]="true">`.
- * Background comes from `<landing-background pattern="aurora">`.
+ * Background comes from `<landing-background pattern="aurora" [bleedDown]="true">`.
+ * Aurora bleeds downward into §4 (B5 background-bleed pick); the receiving
+ * section `home-selected-work` exposes a transparent top band so the bleed shows.
  * This file only owns: the section frame, the 3-column grid, and the
- * card-body content layout (rows / quote) that are bespoke to §3.
+ * card-body content layout (rows / quote / email button / socials) bespoke to §3.
  */
 
 :host {
@@ -11,7 +13,9 @@
   position: relative;
   isolation: isolate;
   background-color: var(--landing-ink-0);
-  border-block: 1px solid var(--landing-border);
+  /* B5 · hard cut up · bleed down: keep top divider with hero, drop bottom so
+     aurora can flow into §4. */
+  border-top: 1px solid var(--landing-border);
 }
 
 .bio-grid {
@@ -71,4 +75,113 @@
 .bio-card__row-val {
   margin: 0;
   color: var(--landing-text-300);
+}
+
+/* HOURS row — value + inline rotate trigger sit together, right-aligned via row's space-between. */
+.bio-card__row-val--with-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bio-card__hours-text {
+  display: inline-block;
+}
+.bio-card__hours-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--landing-text-600);
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bio-card__hours-trigger:hover,
+.bio-card__hours-trigger:focus-visible {
+  color: var(--landing-accent);
+  border-color: color-mix(in srgb, var(--landing-accent) 40%, transparent);
+  outline: none;
+}
+.bio-card__hours-trigger:active {
+  transform: rotate(360deg);
+}
+
+/* Card C — email copy button + socials */
+.bio-card__email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px -12px 0;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  align-self: flex-start;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+.bio-card__email:hover,
+.bio-card__email:focus-visible {
+  background: color-mix(in srgb, var(--landing-accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--landing-accent) 30%, transparent);
+  outline: none;
+}
+.bio-card__email-value {
+  color: var(--landing-text-300);
+}
+.bio-card__email-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--landing-text-500);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+.bio-card__email:hover .bio-card__email-icon,
+.bio-card__email:focus-visible .bio-card__email-icon,
+.bio-card__email:has(.bio-card__email-label) .bio-card__email-icon {
+  opacity: 1;
+}
+.bio-card__email-icon landing-icon[name='check'] {
+  color: var(--landing-accent);
+}
+.bio-card__email-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+  animation: bio-card-fade-in 200ms ease both;
+}
+@keyframes bio-card-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.bio-card__contact-note {
+  margin: 4px 0 0;
+}
+.bio-card__connect {
+  margin-top: 16px;
+}
+.bio-card__socials {
+  margin-top: 12px;
 }
