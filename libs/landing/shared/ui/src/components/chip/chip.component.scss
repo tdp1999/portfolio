@@ -34,3 +34,62 @@
   font-size: var(--landing-mono-md);
   line-height: var(--landing-mono-md-lh);
 }
+
+.landing-chip--lg {
+  padding: 6px 12px;
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+}
+
+/* Icon slot — inline image before the label. Keeps source colors (brand-color SVG). */
+.landing-chip__icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  margin-right: 6px;
+  /* Hairline ink2 backplate so light brand SVGs (e.g. tiptap white) keep contrast on ink-0 */
+  border-radius: 2px;
+}
+
+.landing-chip--with-icon.landing-chip--sm {
+  padding-left: 6px;
+}
+.landing-chip--with-icon.landing-chip--md {
+  padding-left: 6px;
+}
+.landing-chip--with-icon.landing-chip--lg {
+  padding-left: 8px;
+}
+
+.landing-chip__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Prominence ladder — Ladder A (fill backplate) + Effect 3 (Fill tint, indigo wash on hover).
+   Picked on /ddl/labels prototypes tab. Used by home Stack to encode tier. */
+.landing-chip--strongest {
+  background-color: var(--landing-ink-2);
+  border-color: var(--landing-text-300);
+  color: var(--landing-text-100);
+}
+.landing-chip--strongest:hover {
+  background-color: color-mix(in srgb, var(--landing-ink-2) 72%, var(--landing-accent));
+  border-color: color-mix(in srgb, var(--landing-text-200) 50%, var(--landing-accent));
+  color: var(--landing-text-100);
+}
+
+.landing-chip--strong {
+  background-color: color-mix(in srgb, var(--landing-ink-2) 60%, transparent);
+  border-color: var(--landing-text-500);
+  color: var(--landing-text-300);
+}
+.landing-chip--strong:hover {
+  background-color: var(--landing-ink-2);
+  border-color: var(--landing-text-400);
+  color: var(--landing-text-100);
+}
+
+/* `default` inherits the canonical hairline — no override needed. */

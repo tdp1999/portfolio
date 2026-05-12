@@ -43,7 +43,11 @@
 .landing-link--inline {
   font-size: 0.9em;
   line-height: inherit;
-  align-items: baseline;
+  /* `baseline` left the 14px arrow box (no baseline of its own) hanging at the
+   * line-box bottom — the arrow visibly sat below the text x-height. `center`
+   * aligns the arrow optically with the text without changing the link's own
+   * baseline relative to surrounding prose (that comes from the text glyphs). */
+  align-items: center;
   /* A whisker tighter than the default mono tracking — prose context doesn't
    * want the same caps-style spacing eyebrows get. */
   letter-spacing: 0.02em;

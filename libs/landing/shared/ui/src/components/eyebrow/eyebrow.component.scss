@@ -18,6 +18,14 @@
   color: var(--landing-accent);
 }
 
+.landing-eyebrow--accent,
+.landing-eyebrow--accent .landing-eyebrow__part {
+  color: var(--landing-accent);
+}
+.landing-eyebrow--accent .landing-eyebrow__sep {
+  color: color-mix(in srgb, var(--landing-accent) 50%, transparent);
+}
+
 .landing-eyebrow--with-rule {
   display: flex;
   width: 100%;
@@ -33,4 +41,18 @@
   height: 1px;
   background-color: var(--landing-border);
   margin-left: 8px;
+}
+
+.landing-eyebrow--with-leading-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-eyebrow__rule--leading {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 1px;
+  background-color: var(--landing-border);
+  margin: 0;
 }

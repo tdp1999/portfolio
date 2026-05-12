@@ -15,6 +15,8 @@ export * from './components/pull-quote';
 export * from './components/section-rule';
 export * from './components/segmented';
 export * from './components/heading';
+export * from './components/section-header';
+export * from './components/emphasis-text';
 export * from './components/in-page-nav';
 export * from './components/background';
 export * from './components/breadcrumb';
