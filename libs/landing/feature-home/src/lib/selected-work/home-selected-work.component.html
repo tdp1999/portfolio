@@ -1,21 +1,15 @@
 <section class="home-selected-work" aria-labelledby="home-selected-work-heading">
   <landing-container size="wide">
     <header class="home-selected-work__header">
-      <landing-eyebrow
-        [label]="['03', 'Selected Work']"
-        [accentFirst]="true"
-        [trailingRule]="true"
-        class="home-selected-work__eyebrow"
-      />
       @if (introHeading()) {
-        <landing-heading
-          [level]="2"
+        <landing-section-header
+          [eyebrowLabel]="['03', 'Selected Work']"
+          align="left"
           id="home-selected-work-heading"
-          [anchor]="false"
           class="home-selected-work__heading"
         >
-          {{ introHeading() }}
-        </landing-heading>
+          <landing-emphasis-text [text]="introHeading()" />
+        </landing-section-header>
       }
       @if (introDeck()) {
         <p class="home-selected-work__deck">{{ introDeck() }}</p>
@@ -38,10 +32,12 @@
         [attr.id]="'selected-work-panel-' + project.slug"
         [attr.aria-labelledby]="'selected-work-tab-' + project.slug"
       >
-        @if (useFallback()) {
-          <landing-home-selected-work-fallback [project]="project" [locale]="locale()" />
-        } @else {
-          <landing-home-selected-work-tab [project]="project" [locale]="locale()" />
+        @for (p of [project]; track p.slug) {
+          @if (useFallback()) {
+            <landing-home-selected-work-fallback [project]="p" [locale]="locale()" />
+          } @else {
+            <landing-home-selected-work-tab [project]="p" [locale]="locale()" />
+          }
         }
       </div>
 

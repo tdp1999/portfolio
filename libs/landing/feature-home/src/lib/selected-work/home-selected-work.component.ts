@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSign
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ContainerComponent,
-  EyebrowComponent,
-  LandingHeadingComponent,
+  LandingEmphasisTextComponent,
   LandingLinkComponent,
+  LandingSectionHeaderComponent,
   SegmentedComponent,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
@@ -20,9 +20,9 @@ const MAX_TABS = 3;
   standalone: true,
   imports: [
     ContainerComponent,
-    EyebrowComponent,
-    LandingHeadingComponent,
+    LandingEmphasisTextComponent,
     LandingLinkComponent,
+    LandingSectionHeaderComponent,
     SegmentedComponent,
     HomeSelectedWorkTabComponent,
     HomeSelectedWorkFallbackComponent,

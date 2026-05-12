@@ -39,8 +39,8 @@
 }
 
 .selected-work-tab__title {
-  font-family: var(--landing-font-body);
-  font-weight: 700;
+  font-family: var(--landing-font-display);
+  font-weight: 500;
   font-size: var(--landing-display-lg);
   line-height: var(--landing-display-lg-lh);
   color: var(--landing-text-300);
@@ -109,5 +109,60 @@
   @media (min-width: 960px) {
     aspect-ratio: 4 / 3;
     display: flex;
+  }
+}
+
+/* V3 entrance — staggered text cascade + gallery crossfade. The parent
+ * `home-selected-work__panel` re-creates this component via `@for ... track
+ * p.slug`, so each tab swap re-plays the keyframes below without needing
+ * Angular animations. Tuned to the DDL transition sandbox (see
+ * `apps/landing/src/app/pages/ddl/selected-work-transitions`). */
+.selected-work-tab__meta {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+.selected-work-tab__title {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 140ms both;
+}
+.selected-work-tab__desc {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 220ms both;
+}
+.selected-work-tab__chips {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 300ms both;
+}
+.selected-work-tab__link-groups {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 380ms both;
+}
+.selected-work-tab__right {
+  animation: home-sw-fade 360ms cubic-bezier(0.2, 0, 0.1, 1) 80ms both;
+}
+
+@keyframes home-sw-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes home-sw-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selected-work-tab__meta,
+  .selected-work-tab__title,
+  .selected-work-tab__desc,
+  .selected-work-tab__chips,
+  .selected-work-tab__link-groups,
+  .selected-work-tab__right {
+    animation: none;
   }
 }

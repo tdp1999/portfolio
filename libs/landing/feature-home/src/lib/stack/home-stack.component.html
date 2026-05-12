@@ -1,6 +1,8 @@
 <section class="home-stack" aria-label="The Stack">
   <landing-container size="wide">
-    <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" [trailingRule]="true" />
+    <landing-section-header [eyebrowLabel]="['04', 'The Stack']" class="home-stack__header">
+      The <em>toolkit</em>.
+    </landing-section-header>
 
     <div class="home-stack__column">
       @for (paragraph of paragraphs(); track $index) {
@@ -24,19 +26,31 @@
 
     @if (populatedGroups().length > 0) {
       <ul class="home-stack__groups" role="list">
-        @for (group of populatedGroups(); track group.slug) {
+        @for (group of populatedGroups(); track group.tier) {
           <li class="home-stack__group">
             <landing-eyebrow [label]="group.label" />
             <ul class="home-stack__pills" role="list">
               @for (skill of group.members; track skill.id) {
                 <li>
-                  <landing-chip [label]="skill.name" />
+                  <landing-chip
+                    [label]="skill.name"
+                    [iconUrl]="skill.iconUrl"
+                    [prominence]="tierProminence[group.tier]"
+                  />
                 </li>
               }
             </ul>
           </li>
         }
       </ul>
+
+      <p class="home-stack__credit">
+        <span>icons</span>
+        <span class="home-stack__credit-sep" aria-hidden="true">·</span>
+        <a class="home-stack__credit-link" href="https://devicons.io" target="_blank" rel="noopener noreferrer">
+          devicons.io
+        </a>
+      </p>
     }
   </landing-container>
 </section>

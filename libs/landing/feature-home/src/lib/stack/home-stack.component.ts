@@ -1,6 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { ChipComponent, ContainerComponent, EyebrowComponent } from '@portfolio/landing/shared/ui';
-import type { SkillGroup } from '@portfolio/landing/shared/data-access';
+import {
+  ChipComponent,
+  ContainerComponent,
+  EyebrowComponent,
+  LandingSectionHeaderComponent,
+  type LandingChipProminence,
+} from '@portfolio/landing/shared/ui';
+import type { SkillTier, SkillTierGroup } from '@portfolio/landing/shared/data-access';
+
+const TIER_PROMINENCE: Record<SkillTier, LandingChipProminence> = {
+  DAILY: 'strongest',
+  FREQUENT: 'strong',
+  SHIPPED: 'default',
+};
 
 type Run = { readonly text: string; readonly emphasis: 'plain' | 'bold' | 'italic' };
 type Paragraph = readonly Run[];
@@ -49,15 +61,16 @@ function parseStackIntro(source: string): readonly Paragraph[] {
 @Component({
   selector: 'landing-home-stack',
   standalone: true,
-  imports: [ChipComponent, ContainerComponent, EyebrowComponent],
+  imports: [ChipComponent, ContainerComponent, EyebrowComponent, LandingSectionHeaderComponent],
   templateUrl: './home-stack.component.html',
   styleUrl: './home-stack.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeStackComponent {
   readonly stackIntro = input<string>('');
-  readonly groups = input<readonly SkillGroup[]>([]);
+  readonly tierGroups = input<readonly SkillTierGroup[]>([]);
 
   protected readonly paragraphs = computed(() => parseStackIntro(this.stackIntro()));
-  protected readonly populatedGroups = computed(() => this.groups().filter((g) => g.members.length > 0));
+  protected readonly populatedGroups = computed(() => this.tierGroups().filter((g) => g.members.length > 0));
+  protected readonly tierProminence = TIER_PROMINENCE;
 }

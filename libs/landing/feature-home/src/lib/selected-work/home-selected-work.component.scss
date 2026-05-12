@@ -23,21 +23,10 @@
   }
 }
 
-/* Variant E — mono rule row + sans bold heading + Newsreader italic deck. */
-
-.home-selected-work__eyebrow {
-  display: block;
-  margin-bottom: 16px;
-}
-
+/* Section header (cii pattern, left-anchored). Spacing only — typography lives
+   inside <landing-section-header>. */
 .home-selected-work__heading {
   display: block;
-  font-family: var(--landing-font-body);
-  font-weight: 700;
-  font-size: var(--landing-display-md);
-  line-height: var(--landing-display-md-lh);
-  letter-spacing: var(--landing-tracking-tight);
-  color: var(--landing-text-300);
   margin-bottom: 8px;
 }
 

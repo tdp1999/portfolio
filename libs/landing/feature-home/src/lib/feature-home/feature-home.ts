@@ -53,7 +53,7 @@ export class FeatureHome {
 
   locale = signal<Locale>('en');
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
-  skillGroups = toSignal(this.skillService.getGroupedSkills(), { initialValue: [] });
+  skillTierGroups = toSignal(this.skillService.getSkillsByTier(), { initialValue: [] });
 
   profileLoaded = computed(() => this.profile() !== null);
 

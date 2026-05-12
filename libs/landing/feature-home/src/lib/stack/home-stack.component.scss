@@ -13,9 +13,12 @@
 
 .home-stack__column {
   max-width: 680px;
+  margin-top: 32px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  text-align: center;
 }
 
 .home-stack__paragraph {
@@ -39,16 +42,18 @@
 
 .home-stack__groups {
   list-style: none;
-  margin: 64px 0 0;
+  max-width: 760px;
+  margin: 32px auto 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 32px;
 }
 
 .home-stack__group {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
 }
 
@@ -65,12 +70,38 @@
   gap: 8px;
 }
 
-@media (min-width: 768px) {
-  .home-stack__groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 48px;
-    row-gap: 32px;
-  }
+/* Subtle attribution line for the SVG icons rendered inside each chip.
+   Mono caps small, text-700 (one tier below default eyebrow muted), centered
+   under the chip rack. Graduates to a /colophon page if more credits land. */
+.home-stack__credit {
+  margin: 48px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-600);
+}
+
+.home-stack__credit-sep {
+  color: color-mix(in srgb, var(--landing-text-600) 50%, transparent);
+}
+
+.home-stack__credit-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--landing-text-600) 40%, transparent);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.home-stack__credit-link:hover {
+  color: var(--landing-text-400);
+  border-bottom-color: var(--landing-text-400);
 }
 
 @media (max-width: 768px) {

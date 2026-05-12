@@ -1,3 +1,7 @@
+export type SkillTier = 'DAILY' | 'FREQUENT' | 'SHIPPED';
+
+export const SKILL_TIERS = ['DAILY', 'FREQUENT', 'SHIPPED'] as const satisfies readonly SkillTier[];
+
 export type PublicSkill = {
   id: string;
   name: string;
@@ -11,6 +15,7 @@ export type PublicSkill = {
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;
+  tier: SkillTier;
 };
 
 /** Slugs for the 6 umbrella skills seeded in `apps/api/prisma/seed.ts`. */
@@ -27,6 +32,13 @@ export type UmbrellaSlug = (typeof UMBRELLA_SLUGS)[number];
 
 export type SkillGroup = {
   readonly slug: UmbrellaSlug;
+  readonly label: string;
+  readonly members: readonly PublicSkill[];
+};
+
+/** Tier-axis grouping for the cii stack proposal — action-voice labels. */
+export type SkillTierGroup = {
+  readonly tier: SkillTier;
   readonly label: string;
   readonly members: readonly PublicSkill[];
 };

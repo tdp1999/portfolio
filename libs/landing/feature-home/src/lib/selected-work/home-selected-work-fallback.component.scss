@@ -152,3 +152,55 @@
   color: var(--landing-text-300);
   margin: 0;
 }
+
+/* V3 entrance — same cascade as the gallery tab. Right column is text-only here
+ * (no gallery), so it gets a crossfade in place to mirror the gallery branch. */
+.selected-work-fallback__meta {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+.selected-work-fallback__title {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 140ms both;
+}
+.selected-work-fallback__desc {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 220ms both;
+}
+.selected-work-fallback__chips {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 300ms both;
+}
+.selected-work-fallback__link-groups {
+  animation: home-sw-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 380ms both;
+}
+.selected-work-fallback__right {
+  animation: home-sw-fade 360ms cubic-bezier(0.2, 0, 0.1, 1) 80ms both;
+}
+
+@keyframes home-sw-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes home-sw-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selected-work-fallback__meta,
+  .selected-work-fallback__title,
+  .selected-work-fallback__desc,
+  .selected-work-fallback__chips,
+  .selected-work-fallback__link-groups,
+  .selected-work-fallback__right {
+    animation: none;
+  }
+}
