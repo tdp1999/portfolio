@@ -67,6 +67,17 @@
             </mat-form-field>
 
             <mat-form-field>
+              <mat-label>Tier</mat-label>
+              <mat-select formControlName="tier">
+                @for (opt of tierOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>How often you reach for this skill — drives the home stack grouping.</mat-hint>
+              <mat-error>{{ form.controls.tier | formError }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
               <mat-label>Parent Skill</mat-label>
               <mat-select formControlName="parentSkillId">
                 <mat-option [value]="null">None</mat-option>

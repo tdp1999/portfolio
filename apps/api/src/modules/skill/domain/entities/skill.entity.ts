@@ -56,6 +56,10 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
     return this.props.displayOrder;
   }
 
+  get tier(): string {
+    return this.props.tier;
+  }
+
   static create(data: ICreateSkillPayload, userId: string): Skill {
     return new Skill({
       ...BaseCrudEntity.createBaseProps(userId),
@@ -71,6 +75,7 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
       proficiencyNote: data.proficiencyNote ?? null,
       isFeatured: data.isFeatured ?? false,
       displayOrder: data.displayOrder ?? 0,
+      tier: data.tier ?? 'FREQUENT',
     });
   }
 
@@ -96,6 +101,7 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
       proficiencyNote: data.proficiencyNote !== undefined ? (data.proficiencyNote ?? null) : this.props.proficiencyNote,
       isFeatured: data.isFeatured ?? this.props.isFeatured,
       displayOrder: data.displayOrder ?? this.props.displayOrder,
+      tier: data.tier ?? this.props.tier,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }

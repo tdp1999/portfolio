@@ -17,6 +17,7 @@ export class SkillPresenter {
       proficiencyNote: skill.proficiencyNote,
       isFeatured: skill.isFeatured,
       displayOrder: skill.displayOrder,
+      tier: skill.tier,
       createdAt: skill.createdAt,
       updatedAt: skill.updatedAt,
       deletedAt: skill.deletedAt ?? null,

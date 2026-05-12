@@ -1,3 +1,11 @@
+export type SkillTier = 'DAILY' | 'FREQUENT' | 'SHIPPED';
+
+export const SKILL_TIER_OPTIONS: readonly { value: SkillTier; label: string }[] = [
+  { value: 'DAILY', label: 'Daily drivers' },
+  { value: 'FREQUENT', label: 'Frequent' },
+  { value: 'SHIPPED', label: 'Shipped with' },
+];
+
 export interface AdminSkill {
   id: string;
   name: string;
@@ -12,6 +20,7 @@ export interface AdminSkill {
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;
+  tier: SkillTier;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -35,6 +44,7 @@ export interface CreateSkillPayload {
   proficiencyNote?: string;
   isFeatured?: boolean;
   displayOrder?: number;
+  tier?: SkillTier;
 }
 
 export interface UpdateSkillPayload {
@@ -48,4 +58,5 @@ export interface UpdateSkillPayload {
   proficiencyNote?: string | null;
   isFeatured?: boolean;
   displayOrder?: number;
+  tier?: SkillTier;
 }

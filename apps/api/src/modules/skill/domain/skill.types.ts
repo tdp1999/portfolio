@@ -1,6 +1,7 @@
 import { IBaseAuditProps } from '@portfolio/shared/types';
 
 export type SkillCategory = 'TECHNICAL' | 'TOOLS' | 'ADDITIONAL';
+export type SkillTier = 'DAILY' | 'FREQUENT' | 'SHIPPED';
 
 export interface ISkillProps extends IBaseAuditProps {
   name: string;
@@ -15,6 +16,7 @@ export interface ISkillProps extends IBaseAuditProps {
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;
+  tier: SkillTier;
 }
 
 export interface ICreateSkillPayload {
@@ -27,6 +29,7 @@ export interface ICreateSkillPayload {
   proficiencyNote?: string;
   isFeatured?: boolean;
   displayOrder?: number;
+  tier?: SkillTier;
 }
 
 export interface IUpdateSkillPayload {
@@ -39,4 +42,5 @@ export interface IUpdateSkillPayload {
   proficiencyNote?: string | null;
   isFeatured?: boolean;
   displayOrder?: number;
+  tier?: SkillTier;
 }

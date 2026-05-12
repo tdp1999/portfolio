@@ -23,7 +23,7 @@ import {
   withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import { SKILL_CATEGORY_LABELS } from '@portfolio/shared/enum-labels';
+import { SKILL_CATEGORY_LABELS, SKILL_TIER_LABELS } from '@portfolio/shared/enum-labels';
 import { SkillService } from '../skill.service';
 import { AdminSkill } from '../skill.types';
 
@@ -57,7 +57,16 @@ export default class SkillsPageComponent implements OnInit {
   private readonly progress = inject(ProgressBarService);
 
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['name', 'category', 'parent', 'isLibrary', 'displayOrder', 'updatedAt', 'actions'];
+  readonly displayedColumns = [
+    'name',
+    'category',
+    'tier',
+    'parent',
+    'isLibrary',
+    'displayOrder',
+    'updatedAt',
+    'actions',
+  ];
   readonly skills = signal<AdminSkill[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
@@ -71,6 +80,7 @@ export default class SkillsPageComponent implements OnInit {
   readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   readonly skillCategoryLabels = SKILL_CATEGORY_LABELS;
+  readonly skillTierLabels = SKILL_TIER_LABELS;
 
   readonly categoryOptions: FilterOption[] = [
     { value: 'TECHNICAL', label: 'Technical' },

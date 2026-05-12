@@ -45,6 +45,7 @@
               </span>
             }
             <mat-chip class="chip-sm">{{ s.category | enumLabel: skillCategoryLabels }}</mat-chip>
+            <mat-chip class="chip-sm">{{ s.tier | enumLabel: skillTierLabels }}</mat-chip>
             @if (s.isLibrary) {
               <mat-chip class="chip-sm">Library</mat-chip>
             }

@@ -21,6 +21,12 @@ export const SKILL_CATEGORY_LABELS: Record<string, string> = {
   ADDITIONAL: 'Additional',
 };
 
+export const SKILL_TIER_LABELS: Record<string, string> = {
+  DAILY: 'Daily',
+  FREQUENT: 'Frequent',
+  SHIPPED: 'Shipped',
+};
+
 export const PROJECT_STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Draft',
   PUBLISHED: 'Published',

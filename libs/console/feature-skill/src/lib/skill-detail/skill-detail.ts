@@ -14,7 +14,7 @@ import {
   SpinnerOverlayComponent,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { SKILL_CATEGORY_LABELS } from '@portfolio/shared/enum-labels';
+import { SKILL_CATEGORY_LABELS, SKILL_TIER_LABELS } from '@portfolio/shared/enum-labels';
 import { filter, forkJoin, of, switchMap } from 'rxjs';
 import { SkillService } from '../skill.service';
 import { AdminSkill } from '../skill.types';
@@ -49,6 +49,7 @@ export default class SkillDetailComponent implements OnInit {
   readonly loading = signal(false);
 
   readonly skillCategoryLabels = SKILL_CATEGORY_LABELS;
+  readonly skillTierLabels = SKILL_TIER_LABELS;
 
   readonly hasChildren = computed(() => this.children().length > 0);
 

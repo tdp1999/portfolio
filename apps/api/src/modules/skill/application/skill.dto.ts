@@ -9,6 +9,7 @@ import {
 } from '@portfolio/shared/validation/zod';
 
 const SkillCategoryEnum = z.enum(['TECHNICAL', 'TOOLS', 'ADDITIONAL']);
+const SkillTierEnum = z.enum(['DAILY', 'FREQUENT', 'SHIPPED']);
 
 export const CreateSkillSchema = z.object({
   name: NameSchema,
@@ -21,6 +22,7 @@ export const CreateSkillSchema = z.object({
   proficiencyNote: DescriptionShortSchema.optional(),
   isFeatured: z.boolean().default(false),
   displayOrder: DisplayOrderSchema.default(0),
+  tier: SkillTierEnum.default('FREQUENT'),
 });
 
 const UpdateSkillFieldsSchema = z.object({
@@ -34,6 +36,7 @@ const UpdateSkillFieldsSchema = z.object({
   proficiencyNote: DescriptionShortSchema.nullable(),
   isFeatured: z.boolean(),
   displayOrder: DisplayOrderSchema,
+  tier: SkillTierEnum,
 });
 
 export const UpdateSkillSchema = nonEmptyPartial(UpdateSkillFieldsSchema);
@@ -66,6 +69,7 @@ export type SkillResponseDto = {
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;
+  tier: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

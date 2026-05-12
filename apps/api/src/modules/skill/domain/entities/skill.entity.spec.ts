@@ -19,6 +19,7 @@ describe('Skill Entity', () => {
     proficiencyNote: 'Advanced',
     isFeatured: true,
     displayOrder: 1,
+    tier: 'FREQUENT',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,

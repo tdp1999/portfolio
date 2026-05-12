@@ -44,6 +44,7 @@ export class SkillRepository implements ISkillRepository {
           proficiencyNote: skill.proficiencyNote,
           isFeatured: skill.isFeatured,
           displayOrder: skill.displayOrder,
+          tier: skill.tier as Prisma.EnumSkillTierFieldUpdateOperationsInput['set'],
           updatedById: skill.updatedById,
         },
       });

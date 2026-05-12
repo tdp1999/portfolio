@@ -48,6 +48,12 @@ enum SkillCategory {
   ADDITIONAL
 }
 
+enum SkillTier {
+  DAILY
+  FREQUENT
+  SHIPPED
+}
+
 enum ProjectCategory {
   LANDING_PAGE
   CMS
@@ -240,6 +246,7 @@ model Skill {
   proficiencyNote   String?
   isFeatured        Boolean       @default(false)
   displayOrder      Int           @default(0)
+  tier              SkillTier     @default(FREQUENT)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   createdById       String        @db.Uuid

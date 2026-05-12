@@ -44,7 +44,7 @@ import {
 import { LIMITS } from '@portfolio/shared/validation';
 import { forkJoin, of } from 'rxjs';
 import { SkillService } from '../skill.service';
-import { AdminSkill } from '../skill.types';
+import { AdminSkill, SKILL_TIER_OPTIONS, type SkillTier } from '../skill.types';
 
 @Component({
   selector: 'console-skill-form-page',
@@ -107,10 +107,13 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
     { id: 'section-settings', label: 'Settings' },
   ];
 
+  readonly tierOptions = SKILL_TIER_OPTIONS;
+
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
     description: ['', baselineFor.longText(LIMITS.DESCRIPTION_LONG_MAX)],
     category: ['', [Validators.required]],
+    tier: ['FREQUENT' as SkillTier, [Validators.required]],
     parentSkillId: [null as string | null],
     isLibrary: [false],
     yearsOfExperience: [null as number | null, baselineFor.yearsOfExperience()],
@@ -224,6 +227,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
           displayOrder: raw.displayOrder,
           iconId: this.iconId(),
           proficiencyNote: raw.proficiencyNote || null,
+          tier: raw.tier,
         })
         .subscribe({
           next: () => {
@@ -246,6 +250,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
           displayOrder: raw.displayOrder,
           iconId: this.iconId() ?? undefined,
           proficiencyNote: raw.proficiencyNote || undefined,
+          tier: raw.tier,
         })
         .subscribe({
           next: (res) => {
@@ -263,6 +268,7 @@ export default class SkillFormPageComponent implements OnInit, HasUnsavedChanges
       name: skill.name,
       description: skill.description ?? '',
       category: skill.category,
+      tier: skill.tier,
       parentSkillId: skill.parentSkillId,
       isLibrary: skill.isLibrary,
       yearsOfExperience: skill.yearsOfExperience,

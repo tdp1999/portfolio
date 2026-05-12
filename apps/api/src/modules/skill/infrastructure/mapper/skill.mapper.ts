@@ -1,6 +1,6 @@
 import { Skill as PrismaSkill } from '@prisma/client';
 import { Skill } from '../../domain/entities/skill.entity';
-import { ISkillProps, SkillCategory } from '../../domain/skill.types';
+import { ISkillProps, SkillCategory, SkillTier } from '../../domain/skill.types';
 
 type PrismaSkillWithIcon = PrismaSkill & { icon?: { url: string } | null };
 
@@ -20,6 +20,7 @@ export class SkillMapper {
       proficiencyNote: raw.proficiencyNote,
       isFeatured: raw.isFeatured,
       displayOrder: raw.displayOrder,
+      tier: raw.tier as SkillTier,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
       createdById: raw.createdById,
@@ -44,6 +45,7 @@ export class SkillMapper {
       proficiencyNote: skill.proficiencyNote,
       isFeatured: skill.isFeatured,
       displayOrder: skill.displayOrder,
+      tier: skill.tier as PrismaSkill['tier'],
       createdById: skill.createdById,
       updatedById: skill.updatedById,
       deletedAt: skill.deletedAt,
