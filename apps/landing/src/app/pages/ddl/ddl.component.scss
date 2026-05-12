@@ -2,6 +2,126 @@
 // Component-scoped styles only. Most layout uses Tailwind utilities in the template.
 
 // ─────────────────────────────────────────────────────────
+// Compact DDL subroute nav (replaces card grid)
+// 1 row per subpage · grid: path | title+desc | arrow
+// ─────────────────────────────────────────────────────────
+.ddl-nav {
+  display: grid;
+  gap: 32px;
+
+  &__group--muted {
+    opacity: 0.7;
+    transition: opacity 180ms ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__label {
+    color: var(--landing-accent);
+    margin: 0 0 8px 0;
+
+    .ddl-nav__group--muted & {
+      color: var(--landing-text-600);
+    }
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--landing-border);
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 220px 1fr 24px;
+    grid-template-areas:
+      'path  title  arrow'
+      '.     desc   .';
+    column-gap: 24px;
+    row-gap: 2px;
+    align-items: baseline;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--landing-border);
+    text-decoration: none;
+    position: relative;
+    transition:
+      background-color 160ms ease,
+      padding-left 160ms ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--landing-accent);
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform 180ms ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--landing-ink-1);
+      padding-left: 20px;
+      outline: none;
+
+      &::before {
+        transform: scaleY(1);
+      }
+
+      .ddl-nav__title {
+        color: var(--landing-accent);
+      }
+    }
+  }
+
+  &__path {
+    grid-area: path;
+    color: var(--landing-text-500);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__title {
+    grid-area: title;
+    color: var(--landing-text-300);
+    font-weight: 500;
+    transition: color 160ms ease;
+  }
+
+  &__desc {
+    grid-area: desc;
+    color: var(--landing-text-500);
+  }
+
+  &__arrow {
+    grid-area: arrow;
+    color: var(--landing-accent);
+    justify-self: end;
+    align-self: center;
+  }
+
+  @media (max-width: 768px) {
+    &__row {
+      grid-template-columns: 1fr 24px;
+      grid-template-areas:
+        'path  arrow'
+        'title arrow'
+        'desc  desc';
+      column-gap: 12px;
+      row-gap: 4px;
+      padding: 12px 8px;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────
 // Chip + Status-dot interaction prototypes (research)
 // Three takes each. None are baked into the components yet —
 // this is the surface where we pick the winner.
@@ -59,6 +179,25 @@
   .chip-fx--c:hover {
     letter-spacing: 0.1em;
     color: var(--landing-text-300);
+  }
+
+  // ── Chip prominence row labels ──────────────────────────
+  // Reused by the shipped prominence ladder showcase below the hover prototypes.
+  .chip-prom-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 0;
+  }
+  .chip-prom-row__label {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: 16px;
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-600);
+    width: 96px;
+    flex-shrink: 0;
   }
 
   // ── Status dot prototypes ───────────────────────────────

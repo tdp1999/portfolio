@@ -62,6 +62,14 @@ export const appRoutes: Route[] = [
         path: 'selected-work-transitions',
         loadComponent: () => import('./pages/ddl/selected-work-transitions').then((m) => m.SelectedWorkTransitionsPage),
       },
+      {
+        path: 'stack',
+        loadComponent: () => import('./pages/ddl/stack').then((m) => m.StackPage),
+      },
+      {
+        path: 'section-header',
+        loadComponent: () => import('./pages/ddl/section-header').then((m) => m.SectionHeaderPage),
+      },
     ],
   },
   {

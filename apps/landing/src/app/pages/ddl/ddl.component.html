@@ -21,6 +21,30 @@
       </p>
     </div>
 
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- DDL subroutes — compact nav list, grouped by purpose                  -->
+    <!-- Moved above container demo: nav is what visitors actually scan for.   -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <nav id="prototypes" class="ddl-nav mb-12 scroll-mt-8" aria-label="DDL prototype pages">
+      @for (group of subrouteGroups; track group.id) {
+        <div class="ddl-nav__group" [class.ddl-nav__group--muted]="group.tone === 'muted'">
+          <p class="ddl-nav__label font-mono text-mono-md uppercase tracking-[0.06em]">{{ group.label }}</p>
+          <ul class="ddl-nav__list" role="list">
+            @for (r of group.routes; track r.path) {
+              <li>
+                <a [routerLink]="r.path" class="ddl-nav__row group">
+                  <span class="ddl-nav__path font-mono text-mono-sm uppercase tracking-[0.06em]">{{ r.path }}</span>
+                  <span class="ddl-nav__title font-sans text-body-md">{{ r.title }}</span>
+                  <span class="ddl-nav__desc font-sans text-body-sm">{{ r.desc }}</span>
+                  <span class="ddl-nav__arrow font-mono text-mono-md" aria-hidden="true">→</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+
     <!-- E5 Container system showcase (3 sizes) -->
     <div id="container" class="mb-8 rounded-lg border border-landing-border bg-ink-1 p-6 space-y-6 scroll-mt-8">
       <div>
@@ -65,182 +89,6 @@
               <p class="font-mono text-mono-md text-landing-text-300">max-w-none</p>
             </div>
           </landing-container>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <!-- DDL subroutes — grouped by purpose                                    -->
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <div id="prototypes" class="mb-8 scroll-mt-8 space-y-8">
-      <!-- Group A · Compositions: page-level section explorations -->
-      <div>
-        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-3">
-          compositions · page-level section explorations
-        </p>
-        <div class="grid gap-4 md:grid-cols-2">
-          <a
-            routerLink="/ddl/hero-variants"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/hero-variants
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Hero direction variants
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Six hero compositions side-by-side — V1 fallback, V2 cursor-lit, plus research candidates: α stagger, β
-                marquee, γ mask wipe, δ magnetic. α picked.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-
-          <a
-            routerLink="/ddl/bio-improvements"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/bio-improvements
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Bio card grid · improvements pass
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Option staging for §3 refinement — title, background bleed, HOURS roulette, email copy feedback, card
-                hover shadow, social icons. Picks flagged inline.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-
-          <a
-            routerLink="/ddl/selected-work-transitions"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/selected-work-transitions
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Selected Work · transition variants
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Four motion strategies for the panel swap when the active project changes — V1 crossfade, V2 text
-                fade-up + gallery, V3 staggered cascade, V4 directional slide. Switch tabs to feel each one.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group B · Patterns & primitives: reusable building blocks -->
-      <div>
-        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-3">
-          patterns & primitives · reusable building blocks
-        </p>
-        <div class="grid gap-4 md:grid-cols-2">
-          <a
-            routerLink="/ddl/backgrounds"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/backgrounds
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Background patterns
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Six pure-CSS section backgrounds — blueprint, topo, hatch, dot matrix, crosshair, aurora — via the same
-                <code>landing-background</code> primitive.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-
-          <a
-            routerLink="/ddl/fragment-navigation"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/fragment-navigation
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Fragment navigation
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Compare four in-page nav patterns — FAB, TOC sidebar, section dots + reading bar, floating pill +
-                mini-map — on a long lorem-ipsum page.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-
-          <a
-            routerLink="/ddl/interactions"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1 p-5 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/interactions
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Subtle interactions · wishlist
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Landing-wide micro-interaction candidates grouped by trigger category (hover, click, scroll, focus,
-                idle, page transition). Each item is a candidate, not a commitment.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group C · Legacy: superseded explorations kept for reference -->
-      <div>
-        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-600 mb-3">
-          legacy · superseded; safe to delete in a cleanup pass
-        </p>
-        <div class="grid gap-4 md:grid-cols-2">
-          <a
-            routerLink="/ddl/bio-card-grid"
-            class="group flex items-center justify-between gap-4 rounded-lg border border-landing-border bg-ink-1/60 p-5 opacity-70 transition-colors duration-motion-base ease-landing-ease hover:border-landing-accent hover:opacity-100"
-          >
-            <div>
-              <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-1">
-                /ddl/bio-card-grid
-              </p>
-              <p
-                class="font-display text-display-sm text-landing-text-300 group-hover:text-landing-accent transition-colors"
-              >
-                Bio card grid · task 284 PROTOs
-              </p>
-              <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-xl">
-                Original ten visual register options for §3. PF2 + PF7 was picked and graduated. Kept as reference until
-                next cleanup sweep.
-              </p>
-            </div>
-            <span class="font-mono text-mono-md text-landing-accent shrink-0">→</span>
-          </a>
         </div>
       </div>
     </div>
@@ -865,6 +713,47 @@
                       <span class="chip-fx chip-fx--c">TYPESCRIPT</span>
                       <span class="chip-fx chip-fx--c">NESTJS</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── CHIP PROMINENCE · shipped ── -->
+              <h4 class="font-display text-display-sm text-landing-text-300 mt-12 mb-2">Prominence ladder · shipped</h4>
+              <p class="font-sans text-body-md text-landing-text-400 mb-8 max-w-3xl">
+                Picked combo:
+                <span class="font-mono text-landing-text-300">Ladder A · Fill backplate</span> static +
+                <span class="font-mono text-landing-text-300">Effect 3 · Fill tint (indigo wash)</span> on hover. Wired
+                into <code class="font-mono text-mono-sm text-landing-text-300">landing-chip[prominence]</code>. Used by
+                home Stack — DAILY = strongest, FREQUENT = strong, SHIPPED = default. Hover any chip below to see the
+                indigo wash on strongest / promotion to ink-2 on strong.
+              </p>
+
+              <div class="mb-12">
+                <div class="chip-prom-row">
+                  <span class="chip-prom-row__label">strongest</span>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <landing-chip label="Angular" prominence="strongest" />
+                    <landing-chip label="TypeScript" prominence="strongest" />
+                    <landing-chip label="Angular Material" prominence="strongest" />
+                    <landing-chip label="RxJS" prominence="strongest" />
+                  </div>
+                </div>
+                <div class="chip-prom-row">
+                  <span class="chip-prom-row__label">strong</span>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <landing-chip label="Claude Code" prominence="strong" />
+                    <landing-chip label="NestJS" prominence="strong" />
+                    <landing-chip label="Nx" prominence="strong" />
+                    <landing-chip label="Playwright" prominence="strong" />
+                  </div>
+                </div>
+                <div class="chip-prom-row">
+                  <span class="chip-prom-row__label">default</span>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <landing-chip label="TipTap" />
+                    <landing-chip label="Jest" />
+                    <landing-chip label="Prisma" />
+                    <landing-chip label="SSR" />
                   </div>
                 </div>
               </div>
