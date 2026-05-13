@@ -1,18 +1,137 @@
-<section class="home-intro" aria-label="The Story">
+<section class="home-intro" [class.is-lamp-on]="isLampOn()" aria-label="The Story" (click)="onSectionClick()">
   <landing-container size="wide">
-    <landing-eyebrow [label]="['05', 'The Story']" [accentFirst]="true" [trailingRule]="true" />
-    <div class="home-intro__column">
-      @for (paragraph of paragraphs(); track $index) {
-        <p class="home-intro__paragraph">
-          @for (run of paragraph; track $index) {
-            @if (run.italic) {
-              <em class="home-intro__emphasis">{{ run.text }}</em>
-            } @else {
-              <span>{{ run.text }}</span>
-            }
-          }
-        </p>
-      }
+    <landing-eyebrow
+      [label]="['05', 'The Story']"
+      [accentFirst]="true"
+      [trailingRule]="true"
+      class="home-intro__eyebrow"
+    />
+
+    <div class="home-intro__grid">
+      <div class="home-intro__prose">
+        @for (paragraph of paragraphs(); track $index; let i = $index) {
+          <div class="home-intro__p-block">
+            <p
+              #storyPara
+              class="home-intro__paragraph"
+              [class.is-active]="active() === i"
+              [class.is-dim]="isLampOn() && active() !== i"
+              (click)="onParagraphClick(i, $event)"
+              (keydown.enter)="onParagraphClick(i, $event)"
+              tabindex="0"
+              role="button"
+              [attr.aria-pressed]="active() === i"
+            >
+              @for (run of paragraph; track $index) {
+                @if (run.italic) {
+                  <em class="home-intro__emphasis">{{ run.text }}</em>
+                } @else {
+                  <span>{{ run.text }}</span>
+                }
+              }
+            </p>
+            <!-- Mobile-only ink underline beneath the active paragraph. -->
+            <svg class="home-intro__underline" viewBox="0 0 600 10" preserveAspectRatio="none" aria-hidden="true">
+              <path
+                d="M 4 6 Q 150 2 300 6 T 596 5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+        }
+      </div>
+
+      <div class="home-intro__aside" aria-hidden="true">
+        <svg
+          #lampSvg
+          class="home-intro__lamp"
+          viewBox="0 0 474 474"
+          overflow="visible"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <linearGradient id="home-intro-cone" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.30" />
+              <stop offset="50%" stop-color="#f6cc6a" stop-opacity="0.10" />
+              <stop offset="100%" stop-color="#f6cc6a" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="home-intro-cone-halo" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.14" />
+              <stop offset="60%" stop-color="#f6cc6a" stop-opacity="0.04" />
+              <stop offset="100%" stop-color="#f6cc6a" stop-opacity="0" />
+            </linearGradient>
+            <filter id="home-intro-cone-blur" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="8" />
+            </filter>
+            <filter id="home-intro-cone-blur-strong" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="18" />
+            </filter>
+            <filter id="home-intro-bulb-blur" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="10" />
+            </filter>
+          </defs>
+
+          <!-- Static parts: base + pedestal + arm + joint disk. Click target. -->
+          <g class="home-intro__rig home-intro__hit" (click)="onLampClick($event)">
+            <path
+              class="home-intro__base"
+              d="M301.721,436.861h-57.51V402.47c0-6.408,5.194-11.602,11.602-11.602h34.305c6.408,0,11.602,5.195,11.602,11.602v34.391H301.721z"
+            />
+            <path
+              class="home-intro__base-dark"
+              d="M404.221,474.363H226.244c-13.807,0-25-11.193-25-25s11.193-25,25-25h177.977c13.807,0,25,11.193,25,25S418.028,474.363,404.221,474.363z"
+            />
+            <path
+              class="home-intro__arm"
+              d="M379.191,454.005l-38.907-9.284l41.87-175.463L252.686,141.371l28.11-28.457l137.48,135.801c4.975,4.914,7.021,12.07,5.398,18.871L379.191,454.005z"
+            />
+            <circle class="home-intro__joint" cx="263.105" cy="48.85" r="48.85" />
+          </g>
+
+          <!-- Rotating head: shade + cone + light pool. Pivots at the joint. -->
+          <g class="home-intro__head" [attr.transform]="lampRotate()">
+            <path
+              class="home-intro__cone-halo"
+              d="M 120.64 191.25 L -1800 -100 L -1800 600 Z"
+              fill="url(#home-intro-cone-halo)"
+              filter="url(#home-intro-cone-blur-strong)"
+            />
+            <path
+              class="home-intro__cone"
+              d="M 120.64 191.25 L -1500 30 L -1500 550 Z"
+              fill="url(#home-intro-cone)"
+              filter="url(#home-intro-cone-blur)"
+            />
+
+            <path
+              class="home-intro__shade home-intro__hit"
+              (click)="onLampClick($event)"
+              d="M292.544,78.524l-59.349-59.348c-5.917-5.918-13.786-9.177-22.154-9.177c-8.369,0-16.237,3.259-22.155,9.177l-39.231,39.231L69.707,73.592c-11.02,2.094-19.917,10.054-23.219,20.773c-3.302,10.72-0.426,22.306,7.505,30.238l133.123,133.123c5.703,5.703,13.285,8.843,21.351,8.844h0.001c3.014,0,6.004-0.451,8.887-1.338c10.721-3.302,18.681-12.2,20.774-23.22l15.185-79.948l39.231-39.23c5.918-5.918,9.177-13.786,9.177-22.155C301.721,92.31,298.462,84.441,292.544,78.524z"
+            />
+            <path
+              class="home-intro__shade-shadow"
+              d="M238.127,242.012l15.185-79.948l39.231-39.231c5.918-5.917,9.177-13.786,9.177-22.155s-3.259-16.237-9.177-22.155L262.87,48.85L120.555,191.165l66.562,66.562c5.703,5.703,13.285,8.843,21.351,8.844l0,0c3.014,0,6.004-0.451,8.887-1.338C228.075,261.93,236.035,253.032,238.127,242.012z"
+            />
+
+            <circle class="home-intro__light" cx="120.64" cy="191.25" r="48.85" filter="url(#home-intro-bulb-blur)" />
+            <path
+              class="home-intro__light-shadow"
+              d="M137.239,237.203c18.807-6.795,32.251-24.802,32.251-45.952c0-26.979-21.871-48.85-48.85-48.85c-21.151,0-39.157,13.444-45.952,32.251C95.538,195.502,116.389,216.352,137.239,237.203z"
+              filter="url(#home-intro-bulb-blur)"
+            />
+          </g>
+        </svg>
+
+        <figcaption class="home-intro__credit">
+          <span class="home-intro__credit-line">illustration · svgrepo.com</span>
+          <span class="home-intro__credit-line home-intro__credit-hint" [class.is-visible]="isLampOn()">
+            ↳ click lamp to dim
+          </span>
+        </figcaption>
+      </div>
     </div>
   </landing-container>
 </section>

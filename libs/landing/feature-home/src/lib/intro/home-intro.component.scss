@@ -3,27 +3,71 @@
 }
 
 .home-intro {
+  position: relative;
+  isolation: isolate;
   padding-block: 96px;
+  cursor: default;
 }
 
-.home-intro landing-eyebrow {
+.home-intro__eyebrow {
   display: block;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 2;
 }
 
-.home-intro__column {
-  max-width: 680px;
-  display: flex;
-  flex-direction: column;
+.home-intro__grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   gap: 24px;
+  align-items: stretch;
+}
+
+.home-intro__prose {
+  max-width: 640px;
+}
+
+.home-intro__p-block {
+  margin-bottom: 8px;
 }
 
 .home-intro__paragraph {
   margin: 0;
+  padding: 10px 24px;
+  /* Pull the soft highlight outside the prose's max-width slightly so the
+     ellipse-gradient feels generous rather than constrained. */
+  margin-inline: -24px;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-lg);
   line-height: var(--landing-body-lg-lh);
   color: var(--landing-text-400);
+  cursor: default;
+  outline: none;
+  transition:
+    color 240ms ease-out,
+    opacity 240ms ease-out,
+    background 360ms ease-out;
+}
+.home-intro__paragraph.is-dim {
+  color: var(--landing-text-500);
+  opacity: 0.55;
+}
+/* Soft radial wash — fades to transparent at the box edges so the highlight
+   has no corners or hard borders. */
+.home-intro__paragraph.is-active {
+  color: var(--landing-text-300);
+  background-image: radial-gradient(
+    ellipse 120% 130% at 50% 50%,
+    color-mix(in srgb, #f6cc6a 9%, transparent) 0%,
+    color-mix(in srgb, #f6cc6a 4%, transparent) 45%,
+    transparent 100%
+  );
+}
+.home-intro__paragraph:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--landing-accent) 60%, transparent);
+  border-radius: 4px;
 }
 
 .home-intro__emphasis {
@@ -32,8 +76,163 @@
   color: var(--landing-text-300);
 }
 
-@media (max-width: 768px) {
+/* Mobile-only ink underline (hidden on desktop). */
+.home-intro__underline {
+  display: none;
+}
+
+/* ─── Aside (right column, holds the lamp + caption) ─────────────── */
+.home-intro__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  overflow: visible;
+}
+
+.home-intro__lamp {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.home-intro__credit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+.home-intro__credit-line {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+.home-intro__credit-hint {
+  color: var(--landing-accent);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+}
+.home-intro__credit-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-intro__hit {
+  pointer-events: auto;
+  cursor: pointer; /* lamp is always a switch */
+}
+.home-intro__hit:hover .home-intro__shade {
+  fill: var(--landing-text-500);
+}
+
+/* Static body in muted slate — recedes into the dark BG so the warm light
+   pool reads as the dominant accent when on. */
+.home-intro__base {
+  fill: var(--landing-text-600);
+}
+.home-intro__base-dark {
+  fill: var(--landing-text-700);
+}
+.home-intro__arm {
+  fill: var(--landing-text-600);
+}
+.home-intro__joint {
+  fill: var(--landing-text-700);
+}
+
+.home-intro__head {
+  transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-intro__shade {
+  fill: var(--landing-text-600);
+  transition: fill 180ms ease-out;
+}
+.home-intro__shade-shadow {
+  fill: var(--landing-text-700);
+}
+
+/* Light pool — hidden when off; gentle blurred glow when on. Blur is via the
+   SVG element's filter attribute so it stays "ambient", not a sharp disc. */
+.home-intro__light {
+  fill: #f6cc6a;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.home-intro__light-shadow {
+  fill: #d6a83a;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.home-intro.is-lamp-on .home-intro__light {
+  opacity: 0.55;
+}
+.home-intro.is-lamp-on .home-intro__light-shadow {
+  opacity: 0.4;
+}
+
+/* Cone — wide, softly blurred wedge. Hidden by default; gentle bloom when on. */
+.home-intro__cone,
+.home-intro__cone-halo {
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.home-intro.is-lamp-on .home-intro__cone {
+  opacity: 0.7;
+}
+.home-intro.is-lamp-on .home-intro__cone-halo {
+  opacity: 0.4;
+}
+
+/* ─── Tablet & below (≤ 980px) ─── Lamp hidden; ink underline replaces it.
+   Single centered column. */
+@media (max-width: 980px) {
   .home-intro {
     padding-block: 64px;
+  }
+  .home-intro__grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    justify-items: center;
+  }
+  .home-intro__aside {
+    display: none;
+  }
+  .home-intro__prose {
+    margin-inline: auto;
+    width: 100%;
+  }
+  .home-intro__eyebrow {
+    text-align: center;
+  }
+  .home-intro__paragraph {
+    margin-inline: 0;
+    padding-inline: 16px;
+  }
+  .home-intro__underline {
+    display: block;
+    width: 100%;
+    height: 10px;
+    color: var(--landing-accent);
+    stroke-dasharray: 650;
+    stroke-dashoffset: 650;
+    opacity: 0;
+    transition:
+      stroke-dashoffset 480ms cubic-bezier(0.5, 0, 0.4, 1),
+      opacity 200ms ease-out;
+  }
+  .home-intro__p-block:has(.home-intro__paragraph.is-active) .home-intro__underline {
+    stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
