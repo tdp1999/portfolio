@@ -92,6 +92,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Stack · consolidated proposal',
         desc: 'Tier grouping · brand icons · L3 stagger (no bg). Three center intros — pick one. BE punch list.',
       },
+      {
+        path: '/ddl/story-variants',
+        title: '§05 The Story · direction variants',
+        desc: 'Four directions to escape the empty-right-side problem — A manuscript, B journal, C spotlight (portrait + abstract), D artifact.',
+      },
     ],
   },
   {

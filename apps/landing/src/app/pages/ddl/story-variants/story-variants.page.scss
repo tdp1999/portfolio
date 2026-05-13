@@ -1,0 +1,1042 @@
+:host {
+  display: block;
+}
+
+/* ═══ Intro bar ════════════════════════════════════════════════════════ */
+.sv-intro {
+  border-bottom: 1px solid var(--landing-border);
+  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
+}
+.sv-intro__inner {
+  padding-block: 32px;
+}
+.sv-intro__crumb {
+  display: block;
+  margin-bottom: 16px;
+}
+.sv-intro__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  font-weight: 500;
+}
+.sv-intro__title em {
+  font-style: italic;
+  color: var(--landing-accent);
+}
+.sv-intro__lede {
+  margin: 0;
+  max-width: 64rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+/* ═══ Section label between variants ══════════════════════════════════ */
+.sv-label {
+  padding-block: 32px 8px;
+  border-top: 1px solid var(--landing-border);
+  margin-top: 48px;
+}
+.sv-label__inner {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sv-label__tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.sv-label__tools-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.sv-label__tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background-color: transparent;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  color: var(--landing-text-500);
+  cursor: pointer;
+  transition:
+    color 180ms ease-out,
+    border-color 180ms ease-out,
+    background-color 180ms ease-out;
+}
+.sv-label__tool-btn:hover {
+  color: var(--landing-text-300);
+  border-color: var(--landing-border-strong);
+}
+.sv-label__tool-btn.is-active {
+  color: var(--landing-text-300);
+  border-color: var(--landing-accent);
+  background-color: color-mix(in srgb, var(--landing-accent) 14%, transparent);
+}
+.sv-label__letter {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--landing-accent);
+}
+.sv-label__name {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-300);
+}
+.sv-label__hint {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+/* Each variant wrapper — shared padding so the variants feel comparable. */
+.sv-variant {
+  padding-block: 32px 80px;
+}
+
+/* ─── shared prose tokens for in-section paragraphs ──────────────────── */
+%prose-paragraph {
+  margin: 0 0 24px 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-400);
+}
+%prose-em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION A — MANUSCRIPT / EDITORIAL
+   centered narrow column · drop cap · pull-quote breakout · roman markers
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-a {
+  position: relative;
+  isolation: isolate;
+}
+.sv-opt-a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.5 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: -1;
+}
+.sv-opt-a__column {
+  max-width: 640px;
+  margin-inline: auto;
+  padding-left: 56px;
+  counter-reset: chapter;
+  position: relative;
+}
+.sv-opt-a__eyebrow {
+  display: block;
+  margin-bottom: 32px;
+  margin-left: -56px;
+  text-align: center;
+}
+.sv-opt-a__p {
+  @extend %prose-paragraph;
+  position: relative;
+  counter-increment: chapter;
+  margin-bottom: 28px;
+}
+.sv-opt-a__p::before {
+  content: counter(chapter, upper-roman);
+  position: absolute;
+  left: -56px;
+  top: 8px;
+  width: 40px;
+  text-align: right;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+.sv-opt-a__em {
+  @extend %prose-em;
+}
+.sv-opt-a__drop {
+  float: left;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 80px;
+  line-height: 64px;
+  padding-right: 12px;
+  padding-top: 4px;
+  color: var(--landing-accent);
+}
+.sv-opt-a__quote {
+  position: relative;
+  margin: 8px 0 32px;
+  padding: 8px 0 8px 24px;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+}
+.sv-opt-a__quote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background-color: var(--landing-accent);
+}
+.sv-opt-a__quote em {
+  color: var(--landing-accent);
+}
+.sv-opt-a__quote-mark {
+  font-size: 1.4em;
+  vertical-align: -0.05em;
+  color: var(--landing-accent);
+  margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+  .sv-opt-a__column {
+    padding-left: 32px;
+  }
+  .sv-opt-a__p::before {
+    left: -32px;
+    width: 20px;
+  }
+  .sv-opt-a__drop {
+    font-size: 56px;
+    line-height: 48px;
+  }
+  .sv-opt-a__quote {
+    font-size: var(--landing-display-sm);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION B — ENGINEER'S JOURNAL / MARGINALIA
+   text-left + sticky annotations · dot grid · scroll-synced chip activation
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-b__bg {
+  position: relative;
+  isolation: isolate;
+}
+.sv-opt-b__bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--landing-text-600) 28%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+.sv-opt-b__eyebrow {
+  display: block;
+  margin-bottom: 32px;
+}
+.sv-opt-b__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 80px;
+  align-items: start;
+}
+.sv-opt-b__prose {
+  max-width: 640px;
+}
+.sv-opt-b__p {
+  @extend %prose-paragraph;
+}
+.sv-opt-b__em {
+  @extend %prose-em;
+}
+.sv-opt-b__rail {
+  position: sticky;
+  top: 96px;
+  padding-left: 24px;
+  border-left: 1px solid var(--landing-border);
+  align-self: start;
+}
+.sv-opt-b__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+.sv-opt-b__meta-line {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.sv-opt-b__meta-line:first-child {
+  color: var(--landing-accent);
+}
+.sv-opt-b__rail-divider {
+  height: 1px;
+  background: var(--landing-border);
+  margin-block: 24px;
+}
+.sv-opt-b__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sv-opt-b__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  background-color: transparent;
+}
+.sv-opt-b__sign {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-display-sm);
+  color: var(--landing-text-300);
+}
+
+@media (max-width: 980px) {
+  .sv-opt-b__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .sv-opt-b__rail {
+    position: static;
+    padding-left: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION C — CINEMATIC SPOTLIGHT (portrait + abstract sub-variants)
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-c__spotlight {
+  position: relative;
+  isolation: isolate;
+  padding-block: 64px;
+  background-image: radial-gradient(
+    ellipse 80% 70% at 78% 50%,
+    color-mix(in srgb, var(--landing-accent) 14%, transparent),
+    transparent 70%
+  );
+}
+.sv-opt-c__eyebrow {
+  display: block;
+  margin-bottom: 32px;
+}
+.sv-opt-c__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+}
+.sv-opt-c__prose {
+  max-width: 560px;
+}
+.sv-opt-c__p {
+  @extend %prose-paragraph;
+}
+.sv-opt-c__em {
+  @extend %prose-em;
+}
+.sv-opt-c__anchor {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sv-opt-c__glow {
+  position: absolute;
+  inset: -8%;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--landing-accent) 32%, transparent) 0%,
+    transparent 60%
+  );
+  filter: blur(48px);
+  z-index: 0;
+}
+.sv-opt-c__ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 96px;
+  line-height: 0.96;
+  letter-spacing: var(--landing-tracking-tight);
+  color: color-mix(in srgb, var(--landing-text-300) 7%, transparent);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.sv-opt-c__mark {
+  position: relative;
+  width: 70%;
+  height: auto;
+  color: var(--landing-text-300);
+  z-index: 1;
+}
+
+/* C₁ portrait — real placeholder via pravatar, duotone-treated */
+.sv-opt-c__portrait {
+  position: relative;
+  width: 72%;
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 4px;
+  background-color: var(--landing-ink-2);
+  overflow: hidden;
+  z-index: 1;
+}
+.sv-opt-c__portrait-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* B&W base — production swap-in will use the source photo as-is or a darkroom export. */
+  filter: grayscale(1) contrast(1.08) brightness(0.82);
+}
+.sv-opt-c__portrait-tint {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--landing-accent) 30%, transparent) 0%,
+      color-mix(in srgb, var(--landing-accent) 8%, transparent) 45%,
+      transparent 75%
+    ),
+    linear-gradient(to bottom, transparent 55%, color-mix(in srgb, var(--landing-ink-0) 60%, transparent) 100%);
+  pointer-events: none;
+}
+.sv-opt-c__portrait-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: color-mix(in srgb, var(--landing-text-300) 80%, transparent);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+@media (max-width: 980px) {
+  .sv-opt-c__grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .sv-opt-c__anchor {
+    max-width: 360px;
+    margin-inline: auto;
+    width: 100%;
+  }
+  .sv-opt-c__ghost {
+    font-size: 64px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION D — PERSONAL ARTIFACT / LETTER
+   tilted card · timestamp + sign-off · vertical timeline
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-d__paper {
+  position: relative;
+  isolation: isolate;
+  padding-block: 32px 16px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 30%, transparent);
+}
+.sv-opt-d__paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='np'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.85  0 0 0 0.45 0'/></filter><rect width='240' height='240' filter='url(%23np)'/></svg>");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: -1;
+}
+.sv-opt-d__eyebrow {
+  display: block;
+  margin-bottom: 24px;
+}
+.sv-opt-d__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 72px;
+  align-items: start;
+}
+.sv-opt-d__card {
+  position: relative;
+  transform: rotate(-0.35deg);
+  border: 1px solid var(--landing-border-strong);
+  background-color: color-mix(in srgb, var(--landing-ink-1) 70%, transparent);
+  padding: 64px 56px 48px;
+  border-radius: 4px;
+  max-width: 680px;
+}
+.sv-opt-d__stamp {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+.sv-opt-d__p {
+  @extend %prose-paragraph;
+}
+.sv-opt-d__em {
+  @extend %prose-em;
+}
+.sv-opt-d__signoff {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--landing-border);
+}
+.sv-opt-d__sign {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+
+.sv-opt-d__timeline {
+  position: sticky;
+  top: 96px;
+  padding-left: 16px;
+  border-left: 1px solid var(--landing-border);
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sv-opt-d__event {
+  display: grid;
+  grid-template-columns: 48px 12px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding-block: 8px;
+}
+.sv-opt-d__year {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+.sv-opt-d__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--landing-border-strong);
+  background-color: transparent;
+}
+.sv-opt-d__event-label {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+/* "You are here" — only the latest event reads as filled, the rest are passive markers. */
+.sv-opt-d__event.is-current .sv-opt-d__dot {
+  background-color: var(--landing-accent);
+  border-color: var(--landing-accent);
+}
+.sv-opt-d__event.is-current .sv-opt-d__year,
+.sv-opt-d__event.is-current .sv-opt-d__event-label {
+  color: var(--landing-text-300);
+}
+
+@media (max-width: 980px) {
+  .sv-opt-d__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .sv-opt-d__timeline {
+    position: static;
+  }
+  .sv-opt-d__card {
+    padding: 56px 32px 40px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION E — ANGLEPOISE LAMP · click-to-spotlight
+   Desktop: lamp + warm cone overlay; click a paragraph to focus; click the lamp
+   or anywhere outside a paragraph to dim. Mobile: lamp hidden; active paragraph
+   gets an ink underline below it.
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-e {
+  position: relative;
+  isolation: isolate;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 30%, transparent);
+  cursor: default;
+}
+/* Lamp SVG now lives inside the aside column (right). overflow: visible lets
+   the cone-of-light paths bleed leftward across the prose. */
+.sv-opt-e__lamp {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+/* Multi-color anglepoise lamp (svgrepo file 4). Asset has separated paths so the
+   shade head can actually articulate around the joint at (263.105, 48.85) in its
+   own viewBox. Recoloured to fit the dark-ink palette: gray body + warm yellow light. */
+.sv-opt-e__hit {
+  pointer-events: auto;
+  cursor: pointer; /* Lamp is always a switch — pointer cursor at all times */
+}
+
+/* Static parts: body uses ink-tinted slate so the lamp recedes into the section's
+   dark background and the warm light pool reads as the dominant accent when on. */
+.sv-opt-e__base {
+  fill: var(--landing-text-600);
+}
+.sv-opt-e__base-dark {
+  fill: var(--landing-text-700);
+}
+.sv-opt-e__arm {
+  fill: var(--landing-text-600);
+}
+.sv-opt-e__joint {
+  fill: var(--landing-text-700);
+}
+
+/* Rotating head — wraps shade + light + cone. */
+.sv-opt-e__head {
+  transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sv-opt-e__shade {
+  fill: var(--landing-text-600);
+}
+.sv-opt-e__shade-shadow {
+  fill: var(--landing-text-700);
+}
+
+/* Light pool — hidden when off; soft warm glow when active. Blur lives on the
+   SVG element's filter attribute (feGaussianBlur), so the circle never reads
+   as a hard yellow disc. Active opacity stays well below 1 so the bulb feels
+   like ambient light rather than a stage spotlight. */
+.sv-opt-e__light {
+  fill: #f6cc6a;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.sv-opt-e__light-shadow {
+  fill: #d6a83a;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.sv-opt-e.is-active .sv-opt-e__light {
+  opacity: 0.55;
+}
+.sv-opt-e.is-active .sv-opt-e__light-shadow {
+  opacity: 0.4;
+}
+
+/* Cone of light — wide, softly blurred wedge. Hidden by default; gentle bloom
+   when active. Lower opacity than before so the cone feels like a hint of
+   illumination rather than a stage beam. */
+.sv-opt-e__cone,
+.sv-opt-e__cone-halo {
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.sv-opt-e.is-active .sv-opt-e__cone {
+  opacity: 0.7;
+}
+.sv-opt-e.is-active .sv-opt-e__cone-halo {
+  opacity: 0.4;
+}
+
+/* Hover affordance when active. */
+.sv-opt-e__hit:hover .sv-opt-e__shade {
+  fill: var(--landing-text-500);
+}
+
+.sv-opt-e__eyebrow {
+  display: block;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 2;
+}
+.sv-opt-e__grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  gap: 24px;
+  align-items: stretch;
+}
+.sv-opt-e__prose {
+  max-width: 640px;
+}
+.sv-opt-e__p-block {
+  margin-bottom: 8px;
+}
+.sv-opt-e__p {
+  @extend %prose-paragraph;
+  cursor: default; /* paragraphs read like prose; the lamp is the affordance */
+  padding: 10px 24px;
+  margin: 0 -24px;
+  outline: none;
+  transition:
+    color 240ms ease-out,
+    opacity 240ms ease-out,
+    background 360ms ease-out;
+}
+.sv-opt-e__p.is-dim {
+  color: var(--landing-text-500);
+  opacity: 0.55;
+}
+/* Radial wash fading to transparent at the bounds — no corners, no border to
+   read as a sharp rectangle. Wider-than-100% radii let the falloff happen
+   inside the visible area. */
+.sv-opt-e__p.is-active {
+  color: var(--landing-text-300);
+  background-image: radial-gradient(
+    ellipse 120% 130% at 50% 50%,
+    color-mix(in srgb, #f6cc6a 9%, transparent) 0%,
+    color-mix(in srgb, #f6cc6a 4%, transparent) 45%,
+    transparent 100%
+  );
+}
+.sv-opt-e__p:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--landing-accent) 60%, transparent);
+}
+.sv-opt-e__em {
+  @extend %prose-em;
+}
+/* Desktop: underline hidden — ink underline is a mobile-only treatment. */
+.sv-opt-e__underline {
+  display: none;
+}
+
+/* Aside: lamp on top, caption directly below. Both centered horizontally. */
+.sv-opt-e__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  /* Allow the cone (rendered via SVG overflow: visible) to bleed leftward. */
+  overflow: visible;
+}
+.sv-opt-e__credit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+.sv-opt-e__credit-line {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+.sv-opt-e__credit-hint {
+  color: var(--landing-accent);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+}
+.sv-opt-e__credit-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Tablet & below (≤ 980px) ─── Lamp hidden; underline replaces it.
+   Prose centers in the (now single-column) grid so the section reads as one
+   focused column instead of left-anchored next to an empty right edge. */
+@media (max-width: 980px) {
+  .sv-opt-e {
+    min-height: auto;
+  }
+  .sv-opt-e__lamp,
+  .sv-opt-e__aside {
+    display: none;
+  }
+  .sv-opt-e__grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    justify-items: center;
+  }
+  .sv-opt-e__prose {
+    margin-inline: auto;
+    width: 100%;
+  }
+  .sv-opt-e__eyebrow {
+    text-align: center;
+  }
+  .sv-opt-e__underline {
+    display: block;
+    width: 100%;
+    height: 10px;
+    color: var(--landing-accent);
+    stroke-dasharray: 650;
+    stroke-dashoffset: 650;
+    opacity: 0;
+    transition:
+      stroke-dashoffset 480ms cubic-bezier(0.5, 0, 0.4, 1),
+      opacity 200ms ease-out;
+  }
+  .sv-opt-e__p-block:has(.sv-opt-e__p.is-active) .sv-opt-e__underline {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OPTION G — FOUNTAIN PEN · ink underline (sample of underline pattern)
+   Same interaction rules as E: default off; click paragraph to activate;
+   click pen or outside to dim. Hand-drawn placeholder pen.
+═══════════════════════════════════════════════════════════════════════ */
+.sv-opt-g {
+  background-color: color-mix(in srgb, var(--landing-ink-1) 26%, transparent);
+}
+.sv-opt-g__eyebrow {
+  display: block;
+  margin-bottom: 32px;
+}
+.sv-opt-g__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 64px;
+  align-items: start;
+}
+.sv-opt-g__prose {
+  max-width: 620px;
+}
+.sv-opt-g__p-block {
+  margin-bottom: 8px;
+}
+.sv-opt-g__p {
+  @extend %prose-paragraph;
+  cursor: pointer;
+  padding: 8px 0 4px;
+  margin: 0;
+  outline: none;
+  transition:
+    color 200ms ease-out,
+    opacity 200ms ease-out;
+}
+.sv-opt-g__p.is-dim {
+  color: var(--landing-text-500);
+  opacity: 0.55;
+}
+.sv-opt-g__p.is-active {
+  color: var(--landing-text-300);
+}
+.sv-opt-g__p:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--landing-accent) 60%, transparent);
+  border-radius: 4px;
+}
+.sv-opt-g__em {
+  @extend %prose-em;
+}
+.sv-opt-g__underline {
+  display: block;
+  width: 100%;
+  height: 10px;
+  color: var(--landing-accent);
+  stroke-dasharray: 650;
+  stroke-dashoffset: 650;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 480ms cubic-bezier(0.5, 0, 0.4, 1),
+    opacity 200ms ease-out;
+}
+.sv-opt-g__p-block:has(.sv-opt-g__p.is-active) .sv-opt-g__underline {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+.sv-opt-g__pen-area {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 24px;
+}
+.sv-opt-g__pen {
+  width: 120px;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
+  transition:
+    transform 380ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 220ms ease-out;
+  opacity: 0.55;
+  pointer-events: auto;
+}
+.sv-opt-g.is-active .sv-opt-g__pen {
+  opacity: 1;
+  cursor: pointer;
+}
+.sv-opt-g[data-active='0'] .sv-opt-g__pen {
+  transform: translateY(0);
+}
+.sv-opt-g[data-active='1'] .sv-opt-g__pen {
+  transform: translateY(110px);
+}
+.sv-opt-g[data-active='2'] .sv-opt-g__pen {
+  transform: translateY(200px);
+}
+.sv-opt-g__hit {
+  /* SVG itself is the click target — already set via pointer-events: auto. */
+}
+
+.sv-opt-g__credit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+.sv-opt-g__credit-line {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+.sv-opt-g__credit-hint {
+  color: var(--landing-accent);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+}
+.sv-opt-g__credit-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 980px) {
+  .sv-opt-g__grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .sv-opt-g__pen-area {
+    display: none;
+  }
+}
+
+/* ═══ Selection guide ═════════════════════════════════════════════════ */
+.sv-summary {
+  border-top: 1px solid var(--landing-border);
+  background-color: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+}
+.sv-summary__inner {
+  padding-block: 64px;
+  max-width: 56rem;
+}
+.sv-summary__title {
+  margin: 0 0 24px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  font-weight: 500;
+}
+.sv-summary__list {
+  margin: 0;
+  display: grid;
+  gap: 20px;
+}
+.sv-summary__row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--landing-border);
+}
+.sv-summary__row:last-child {
+  border-bottom: none;
+}
+.sv-summary__row dt {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+.sv-summary__row dd {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+@media (max-width: 768px) {
+  .sv-summary__row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

@@ -70,6 +70,10 @@ export const appRoutes: Route[] = [
         path: 'section-header',
         loadComponent: () => import('./pages/ddl/section-header').then((m) => m.SectionHeaderPage),
       },
+      {
+        path: 'story-variants',
+        loadComponent: () => import('./pages/ddl/story-variants').then((m) => m.StoryVariantsPage),
+      },
     ],
   },
   {
