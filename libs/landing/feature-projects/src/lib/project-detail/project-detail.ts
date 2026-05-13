@@ -7,7 +7,7 @@ import {
   ContainerComponent,
   SectionComponent,
   IconComponent,
-  BadgeComponent,
+  ChipComponent,
   LandingBackLinkComponent,
   LandingEmptyStateComponent,
 } from '@portfolio/landing/shared/ui';
@@ -34,7 +34,7 @@ function formatDateRange(startDate: string, endDate: string | null): string {
     ContainerComponent,
     SectionComponent,
     IconComponent,
-    BadgeComponent,
+    ChipComponent,
     TranslatablePipe,
     LandingBackLinkComponent,
     LandingEmptyStateComponent,

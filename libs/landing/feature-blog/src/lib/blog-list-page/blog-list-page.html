@@ -50,7 +50,7 @@
               <div class="blog-row__content">
                 <div class="flex flex-wrap items-center gap-2 mb-2">
                   @for (cat of post.categories; track cat.slug) {
-                    <landing-badge>{{ cat.name }}</landing-badge>
+                    <landing-chip [label]="cat.name" size="sm" />
                   }
                   @if (post.readTimeMinutes) {
                     <span class="text-body-sm text-text-secondary"> · {{ post.readTimeMinutes }} min read </span>

@@ -46,7 +46,7 @@ Import from `@portfolio/landing/shared/ui`.
   <p class="text-text-secondary">Card content goes here</p>
 </landing-card>
 
-<!-- Card with icon and badges (project showcase pattern) -->
+<!-- Card with icon and chips (project showcase pattern) -->
 <landing-card>
   <div class="flex items-center gap-2 mb-3">
     <landing-icon name="shopping-cart" [size]="24" class="text-primary" />
@@ -54,9 +54,9 @@ Import from `@portfolio/landing/shared/ui`.
   </div>
   <p class="text-text-secondary mb-4">A full-stack e-commerce solution with real-time inventory.</p>
   <div class="flex flex-wrap gap-2">
-    <landing-badge>Angular</landing-badge>
-    <landing-badge>NestJS</landing-badge>
-    <landing-badge>PostgreSQL</landing-badge>
+    <landing-chip label="Angular" size="sm" />
+    <landing-chip label="NestJS" size="sm" />
+    <landing-chip label="PostgreSQL" size="sm" />
   </div>
 </landing-card>
 ```
@@ -82,19 +82,24 @@ Import from `@portfolio/landing/shared/ui`.
 <landing-input label="Readonly" [disabled]="true" value="Cannot edit" />
 ```
 
-### Badge
+### Chip
 
 ```html
-<!-- Default badge -->
-<landing-badge>Angular</landing-badge>
+<!-- Default chip (metadata tag, hairline-rectangle radius) -->
+<landing-chip label="Angular" size="sm" />
 
-<!-- Technology badges in card -->
+<!-- Technology chips in card -->
 <div class="flex flex-wrap gap-2">
-  <landing-badge>React</landing-badge>
-  <landing-badge>Node.js</landing-badge>
-  <landing-badge>MongoDB</landing-badge>
+  <landing-chip label="React" size="sm" />
+  <landing-chip label="Node.js" size="sm" />
+  <landing-chip label="MongoDB" size="sm" />
 </div>
+
+<!-- Stronger visual weight (e.g., primary employment type, DAILY tier) -->
+<landing-chip label="Full-time" size="sm" prominence="strong" />
 ```
+
+For live/draft/archived **status** (not a tag), use `<landing-status-dot>` instead.
 
 ### Link
 
@@ -254,7 +259,7 @@ import { NewIcon } from 'lucide-angular';
         <p class="text-text-secondary mb-4">{{ project.description }}</p>
         <div class="flex flex-wrap gap-2">
           @for (tech of project.technologies; track tech) {
-          <landing-badge>{{ tech }}</landing-badge>
+          <landing-chip [label]="tech" size="sm" />
           }
         </div>
       </landing-card>

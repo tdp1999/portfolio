@@ -105,9 +105,9 @@ test.describe('Landing Page - Profile Display', () => {
     );
   });
 
-  test('open to work badges are visible', async ({ page }) => {
-    const badges = page.locator('landing-badge');
-    await expect(badges.first()).toBeVisible();
+  test('open to work status dot is visible', async ({ page }) => {
+    const statusDot = page.locator('landing-status-dot').first();
+    await expect(statusDot).toBeVisible();
   });
 
   test('experience and location displayed', async ({ page }) => {

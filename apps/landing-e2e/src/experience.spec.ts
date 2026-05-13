@@ -179,8 +179,8 @@ test.describe('Landing Page - Experience Display', () => {
       })
       .first();
 
-    // CONTRACT → "Contract" badge
-    await expect(pastEntry.locator('landing-badge', { hasText: 'Contract' })).toBeVisible();
+    // CONTRACT → "Contract" chip
+    await expect(pastEntry.locator('landing-chip', { hasText: 'Contract' })).toBeVisible();
   });
 
   test('no console errors on experience page load', async ({ page }) => {

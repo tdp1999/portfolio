@@ -6,7 +6,7 @@ import {
   ContainerComponent,
   SectionComponent,
   IconComponent,
-  BadgeComponent,
+  ChipComponent,
   LandingBackLinkComponent,
   LandingEmptyStateComponent,
 } from '@portfolio/landing/shared/ui';
@@ -27,7 +27,7 @@ function formatMonth(dateStr: string): string {
     ContainerComponent,
     SectionComponent,
     IconComponent,
-    BadgeComponent,
+    ChipComponent,
     LandingBackLinkComponent,
     LandingEmptyStateComponent,
   ],

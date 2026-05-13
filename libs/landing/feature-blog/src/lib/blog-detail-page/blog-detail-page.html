@@ -12,7 +12,7 @@
           <header class="mb-8">
             <div class="flex flex-wrap items-center gap-2 mb-4">
               @for (cat of p.categories; track cat.slug) {
-                <landing-badge>{{ cat.name }}</landing-badge>
+                <landing-chip [label]="cat.name" size="sm" />
               }
               @if (p.readTimeMinutes) {
                 <span class="text-body-sm text-text-secondary"> · {{ p.readTimeMinutes }} min read </span>
@@ -57,7 +57,7 @@
             <div class="flex flex-wrap gap-2 mt-12 pt-6 border-t border-border">
               @for (tag of p.tags; track tag.slug) {
                 <a [routerLink]="['/blog']" [queryParams]="{ tag: tag.slug }">
-                  <landing-badge>#{{ tag.name }}</landing-badge>
+                  <landing-chip [label]="'#' + tag.name" size="sm" />
                 </a>
               }
             </div>

@@ -92,23 +92,23 @@
                     </div>
                   </div>
 
-                  <!-- Badges row -->
+                  <!-- Meta chips row -->
                   <div class="flex flex-wrap gap-2">
-                    <landing-badge variant="primary">{{ getEmploymentLabel(exp.employmentType) }}</landing-badge>
-                    <landing-badge>{{ getLocationLabel(exp.locationType) }}</landing-badge>
+                    <landing-chip [label]="getEmploymentLabel(exp.employmentType)" size="sm" prominence="strong" />
+                    <landing-chip [label]="getLocationLabel(exp.locationType)" size="sm" />
                     @if (exp.locationCity) {
-                      <landing-badge>{{ exp.locationCity }}, {{ exp.locationCountry }}</landing-badge>
+                      <landing-chip [label]="exp.locationCity + ', ' + exp.locationCountry" size="sm" />
                     } @else {
-                      <landing-badge>{{ exp.locationCountry }}</landing-badge>
+                      <landing-chip [label]="exp.locationCountry" size="sm" />
                     }
                     @if (exp.domain) {
-                      <landing-badge>{{ exp.domain }}</landing-badge>
+                      <landing-chip [label]="exp.domain" size="sm" />
                     }
                     @if (exp.teamSizeMin || exp.teamSizeMax) {
                       @if (exp.teamSizeMin && exp.teamSizeMax && exp.teamSizeMin !== exp.teamSizeMax) {
-                        <landing-badge>Team of {{ exp.teamSizeMin }}–{{ exp.teamSizeMax }}</landing-badge>
+                        <landing-chip [label]="'Team of ' + exp.teamSizeMin + '–' + exp.teamSizeMax" size="sm" />
                       } @else {
-                        <landing-badge>Team of {{ exp.teamSizeMin ?? exp.teamSizeMax }}</landing-badge>
+                        <landing-chip [label]="'Team of ' + (exp.teamSizeMin ?? exp.teamSizeMax)" size="sm" />
                       }
                     }
                   </div>
@@ -171,7 +171,7 @@
                   @if (exp.skills.length > 0) {
                     <div class="flex flex-wrap gap-2">
                       @for (skill of exp.skills; track skill.id) {
-                        <landing-badge>{{ getSkillName(skill.name) }}</landing-badge>
+                        <landing-chip [label]="getSkillName(skill.name)" size="sm" />
                       }
                     </div>
                   }

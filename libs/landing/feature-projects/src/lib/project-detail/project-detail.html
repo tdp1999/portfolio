@@ -55,7 +55,7 @@
         @if (project.skills.length > 0) {
           <div class="flex flex-wrap gap-2 mb-12">
             @for (skill of project.skills; track skill.slug) {
-              <landing-badge>{{ skill.name }}</landing-badge>
+              <landing-chip [label]="skill.name" size="sm" />
             }
           </div>
         }

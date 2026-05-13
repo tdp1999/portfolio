@@ -7,7 +7,7 @@ import {
   ContainerComponent,
   SectionComponent,
   IconComponent,
-  BadgeComponent,
+  ChipComponent,
   LandingBackLinkComponent,
   LandingEmptyStateComponent,
 } from '@portfolio/landing/shared/ui';
@@ -24,7 +24,7 @@ const EMPTY: BlogPostListResponse = { data: [], total: 0, page: 1, limit: PAGE_S
     ContainerComponent,
     SectionComponent,
     IconComponent,
-    BadgeComponent,
+    ChipComponent,
     LandingBackLinkComponent,
     LandingEmptyStateComponent,
   ],

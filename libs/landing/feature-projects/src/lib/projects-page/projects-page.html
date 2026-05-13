@@ -36,7 +36,7 @@
 
                 <div class="flex flex-wrap items-center gap-2 mb-3">
                   @for (skill of project.skills; track skill.slug) {
-                    <landing-badge>{{ skill.name }}</landing-badge>
+                    <landing-chip [label]="skill.name" size="sm" />
                   }
                 </div>
 

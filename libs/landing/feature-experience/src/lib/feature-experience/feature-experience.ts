@@ -4,7 +4,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import type { EmploymentType, LocationType, PublicExperience } from '@portfolio/landing/shared/data-access';
 import { ExperienceService } from '@portfolio/landing/shared/data-access';
 import {
-  BadgeComponent,
+  ChipComponent,
   ContainerComponent,
   IconComponent,
   LandingBackLinkComponent,
@@ -56,7 +56,7 @@ function formatDuration(startStr: string, endStr: string | null): string {
     ContainerComponent,
     SectionComponent,
     IconComponent,
-    BadgeComponent,
+    ChipComponent,
     DateRangePipe,
     InitialsPipe,
     LandingBackLinkComponent,
