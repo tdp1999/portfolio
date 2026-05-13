@@ -1,7 +1,6 @@
 import { Route } from '@angular/router';
 import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
 import { LayoutShellComponent } from './layout-shell';
-import { environment } from '../environments/environment';
 
 export const appRoutes: Route[] = [
   // Auth routes — delegated to feature-auth library
@@ -76,14 +75,10 @@ export const appRoutes: Route[] = [
           },
         ],
       },
-      ...(environment.production
-        ? []
-        : [
-            {
-              path: 'ddl',
-              loadChildren: () => import('@portfolio/console/feature-ddl').then((m) => m.ddlRoutes),
-            },
-          ]),
+      {
+        path: 'ddl',
+        loadChildren: () => import('@portfolio/console/feature-ddl').then((m) => m.ddlRoutes),
+      },
     ],
   },
 
