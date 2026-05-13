@@ -2,7 +2,7 @@
 
 ## Status
 
-pending
+done
 
 ## Source
 
@@ -14,13 +14,13 @@ Backfill unit tests for the additive `Profile.coreStack` feature so future refac
 
 ## Acceptance Criteria
 
-- [ ] `LandingContentBlocks` VO spec covers `equals()` returning `false` when only `coreStack` differs (e.g., `["A","B"]` vs `["A","B","C"]`, and order-sensitive `["A","B"]` vs `["B","A"]`)
-- [ ] `LandingContentBlocks.create` / `fromPersistence` defensive copy verified — mutating the input array does not leak into the VO state
-- [ ] `LandingContentBlocks.empty()` returns an instance whose `coreStack` is `[]`
-- [ ] Mapper spec (`profile.mapper.spec.ts`) covers `parseStringArray` edge cases — non-array JSONB value (e.g. `null`, `{}`, `"foo"`) all coerce to `[]`; mixed-type array filters out non-strings
-- [ ] Mapper round-trip test: `toDomain → toPrisma` preserves `coreStack` exactly
-- [ ] Profile entity `toProps()` round-trip preserves `coreStack`
-- [ ] No regression in existing profile specs (run `npx jest --config apps/api/jest.config.cts profile --no-coverage`)
+- [x] `LandingContentBlocks` VO spec covers `equals()` returning `false` when only `coreStack` differs (e.g., `["A","B"]` vs `["A","B","C"]`, and order-sensitive `["A","B"]` vs `["B","A"]`)
+- [x] `LandingContentBlocks.create` / `fromPersistence` defensive copy verified — mutating the input array does not leak into the VO state
+- [x] `LandingContentBlocks.empty()` returns an instance whose `coreStack` is `[]` (already covered pre-task; left in place)
+- [x] Mapper spec (`profile.mapper.spec.ts`) covers `parseStringArray` edge cases — non-array JSONB value (e.g. `null`, `{}`, `"foo"`) all coerce to `[]`; mixed-type array filters out non-strings
+- [x] Mapper round-trip test: `toDomain → toPrisma` preserves `coreStack` exactly
+- [x] Profile entity `toProps()` round-trip preserves `coreStack`
+- [x] No regression in existing profile specs (119/119 pass)
 
 ## Files to Touch
 

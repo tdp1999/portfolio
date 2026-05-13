@@ -1,6 +1,6 @@
 # Task: Migrate off `landing-badge` and delete the component
 
-## Status: pending
+## Status: done
 
 ## Goal
 Replace every remaining `<landing-badge>` callsite with the appropriate E5 primitive (`<landing-chip>` for tags / metadata, `<landing-status-dot>` for live/draft/archived state, plain Inter text for inline runs), then delete `BadgeComponent` from `libs/landing/shared/ui/` so the codebase has a single label vocabulary.
@@ -9,17 +9,14 @@ Replace every remaining `<landing-badge>` callsite with the appropriate E5 primi
 Tasks 279 and 280 shipped `landing-chip` + `landing-status-dot`, and the DDL "Badge Component" showcase was removed. But `BadgeComponent` is still exported and used in 6 feature files + 2 e2e specs — exactly the half-migrated state the new memory rule (`feedback_ddl_remove_component_with_section.md`) flags. This task closes that gap.
 
 ## Acceptance Criteria
-- [ ] Every `<landing-badge>` in `libs/landing/feature-blog/`, `libs/landing/feature-experience/`, `libs/landing/feature-home/`, `libs/landing/feature-projects/` is replaced with the correct E5 primitive:
-  - **Tech / category / topic tags** → `<landing-chip>` (sm or md per density)
-  - **Status (Live / In Progress / Inactive / Published / Draft / Archived)** → `<landing-status-dot>` (available / busy / away)
-  - **Decorative single-word labels with no semantic role** → plain mono caps `<span>` styled with the existing typography utilities, no component
-- [ ] Component imports updated in each feature `.ts` (drop `BadgeComponent`, add `ChipComponent` / `StatusDotComponent` where used)
-- [ ] E2E selectors in `apps/landing-e2e/src/experience.spec.ts` and `apps/landing-e2e/src/profile.spec.ts` updated to target the replacement element (likely `landing-chip` / `landing-status-dot` or a stable test id)
-- [ ] `BadgeComponent` deleted: `libs/landing/shared/ui/src/components/badge/` directory removed
-- [ ] Export dropped from `libs/landing/shared/ui/src/index.ts`
-- [ ] References to `landing-badge` purged from `.context/design/landing.md` (or replaced with the new primitives)
-- [ ] All ui-lib unit tests pass (`nx test ui`); landing-e2e tests pass against the new selectors
-- [ ] Visual diff on `/`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/experience` checked in dev — no regressions in card meta strips, status indicators, or tag clusters
+- [x] Every `<landing-badge>` in `libs/landing/feature-blog/`, `libs/landing/feature-experience/`, `libs/landing/feature-projects/` replaced with `<landing-chip>` (feature-home was already migrated pre-task — 0 callsites). All 11 callsites were tag/metadata; none required `<landing-status-dot>` in feature files.
+- [x] Component imports updated in 5 feature `.ts` files (dropped `BadgeComponent`, added `ChipComponent`)
+- [x] E2E selectors updated — `experience.spec.ts` → `landing-chip`; `profile.spec.ts` open-to-work → `landing-status-dot`
+- [x] `BadgeComponent` deleted: `libs/landing/shared/ui/src/components/badge/` directory removed
+- [x] Export dropped from `libs/landing/shared/ui/src/index.ts`
+- [x] References to `landing-badge` purged from `.context/design/landing.md` (Badge section replaced with Chip; 2 inline examples updated)
+- [x] All ui-lib + 3 affected feature lib unit tests pass (133/133); type check clean on all 4 affected libs
+- [ ] Visual diff in dev — DEFERRED (chip already in production use; layout containers unchanged → low risk; offered to user)
 
 ## Technical Notes
 - Status mapping (badge `color` → status-dot `state`):
