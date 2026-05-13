@@ -129,4 +129,15 @@ describe('Profile Entity', () => {
       expect((profile as any).update).toBeUndefined();
     });
   });
+
+  describe('toProps() — coreStack round-trip', () => {
+    it('should preserve coreStack values and order through load → toProps', () => {
+      const coreStack = ['Angular', 'TypeScript', 'Angular Material'];
+
+      const profile = Profile.load({ ...validProps, coreStack });
+
+      expect(profile.coreStack).toEqual(coreStack);
+      expect(profile.toProps().coreStack).toEqual(coreStack);
+    });
+  });
 });

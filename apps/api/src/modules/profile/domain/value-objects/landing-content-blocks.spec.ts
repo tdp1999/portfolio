@@ -113,6 +113,98 @@ describe('LandingContentBlocks VO', () => {
 
       expect(a.equals(b)).toBe(false);
     });
+
+    it('should return false when only coreStack length differs', () => {
+      const a = LandingContentBlocks.empty();
+      const b = LandingContentBlocks.create({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: ['Angular', 'TypeScript'],
+      });
+      const c = LandingContentBlocks.create({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: ['Angular', 'TypeScript', 'Material'],
+      });
+
+      expect(b.equals(c)).toBe(false);
+      expect(a.equals(b)).toBe(false);
+    });
+
+    it('should return false when coreStack items are reordered (order-sensitive)', () => {
+      const a = LandingContentBlocks.create({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: ['Angular', 'TypeScript'],
+      });
+      const b = LandingContentBlocks.create({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: ['TypeScript', 'Angular'],
+      });
+
+      expect(a.equals(b)).toBe(false);
+    });
+  });
+
+  describe('defensive copy', () => {
+    it('create() should not let later input-array mutation leak into the VO', () => {
+      const input = ['Angular', 'TypeScript'];
+      const vo = LandingContentBlocks.create({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: input,
+      });
+
+      input.push('Leaked');
+      input[0] = 'Mutated';
+
+      expect(vo.coreStack).toEqual(['Angular', 'TypeScript']);
+    });
+
+    it('fromPersistence() should not let later input-array mutation leak into the VO', () => {
+      const input = ['Angular', 'TypeScript'];
+      const vo = LandingContentBlocks.fromPersistence({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: input,
+      });
+
+      input.push('Leaked');
+
+      expect(vo.coreStack).toEqual(['Angular', 'TypeScript']);
+    });
+
+    it('fromPersistence() should coerce a missing coreStack (undefined) to []', () => {
+      const vo = LandingContentBlocks.fromPersistence({
+        tagline: null,
+        stackIntro: null,
+        selectedWorkIntro: null,
+        contactIntro: null,
+        footerTagline: null,
+        coreStack: undefined as unknown as string[],
+      });
+
+      expect(vo.coreStack).toEqual([]);
+    });
   });
 
   describe('immutability', () => {
