@@ -22,6 +22,7 @@ export * from './components/breadcrumb';
 export * from './components/back-link';
 export * from './components/empty-state';
 export * from './components/social-row';
+export * from './components/globe';
 export * from './motion';
 export * from './directives';
 export * from './theme';

@@ -1,0 +1,26 @@
+<div class="globe-wrap" [class.globe-wrap--interactive]="interactive()">
+  <canvas
+    #canvas
+    class="globe-canvas"
+    [class.globe-canvas--hidden]="!hasGlobe()"
+    width="800"
+    height="800"
+    role="img"
+    [attr.aria-label]="interactive() ? 'Globe — drag to rotate' : 'Globe showing locations'"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  ></canvas>
+  @if (hasGlobe()) {
+    <div class="globe-labels" aria-hidden="true">
+      @for (l of labels(); track l.id) {
+        @if (l.visible) {
+          <span class="globe-label" [style.left.%]="l.left" [style.top.%]="l.top">
+            {{ l.label }}
+          </span>
+        }
+      }
+    </div>
+  }
+</div>
