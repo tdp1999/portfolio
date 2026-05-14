@@ -146,7 +146,7 @@ Defined in `libs/landing/shared/ui/src/styles/tokens/typography.scss`, mapped in
 
 ## Spacing System
 
-Uses Tailwind's default 4px base unit. All spacing should be multiples of 4px, following an **8px grid** for layout-level spacing.
+All fixed px values must be multiples of 4 (4px grid). For layout-level spacing, prefer 8px increments. See `.context/design/scale-contract.md` for the canonical rule and tolerated exceptions.
 
 ### Spacing Scale
 

@@ -43,7 +43,7 @@ git revert <commit-hash>
 git push origin master
 ```
 
-- Railway redeploy: ~2 minutes (Docker build + startup + migration check) — measured 2026-03-06
+- Railway redeploy: ~2 minutes (Docker build + startup + migration check)
 - CF Pages redeploy: ~1-2 minutes (build + CDN propagation)
 - Total rollback time from revert push to API live: ~2 minutes
 

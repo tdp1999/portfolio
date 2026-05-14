@@ -18,24 +18,6 @@ export type PublicSkill = {
   tier: SkillTier;
 };
 
-/** Slugs for the 6 umbrella skills seeded in `apps/api/prisma/seed.ts`. */
-export const UMBRELLA_SLUGS = [
-  'languages',
-  'frontend',
-  'library-work',
-  'backend',
-  'tooling',
-  'workflow-and-ai',
-] as const;
-
-export type UmbrellaSlug = (typeof UMBRELLA_SLUGS)[number];
-
-export type SkillGroup = {
-  readonly slug: UmbrellaSlug;
-  readonly label: string;
-  readonly members: readonly PublicSkill[];
-};
-
 /** Tier-axis grouping for the cii stack proposal — action-voice labels. */
 export type SkillTierGroup = {
   readonly tier: SkillTier;

@@ -57,7 +57,7 @@ See [`atomic-save.md`](atomic-save.md) for the full atomic-save UX pattern.
 - Sticky nav without scrollspy (user loses orientation when scrolling)
 - Accordion as primary structure when 1-line summary doesn't carry enough info
 
-## Project Decision (Console — adopted 2026-04-13)
+## Project Decision (Console)
 
 **Universal chassis: sectioned cards + sticky scrollspy left rail. No tabs inside a page.**
 

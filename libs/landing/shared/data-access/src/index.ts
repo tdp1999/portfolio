@@ -1,4 +1,3 @@
-export * from './lib/data-access/data-access';
 export * from './lib/profile.types';
 export * from './lib/experience.types';
 export * from './lib/project.types';
