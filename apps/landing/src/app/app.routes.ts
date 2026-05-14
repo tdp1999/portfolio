@@ -79,6 +79,10 @@ export const appRoutes: Route[] = [
         path: 'philosophy-strip',
         loadComponent: () => import('./pages/ddl/philosophy-strip').then((m) => m.PhilosophyStripPage),
       },
+      {
+        path: 'get-in-touch',
+        loadComponent: () => import('./pages/ddl/get-in-touch').then((m) => m.GetInTouchPage),
+      },
     ],
   },
   {

@@ -1,4 +1,6 @@
-/* Home — §7 Get in Touch (B2.c lift: indigo top + tonal surface). */
+/* Home — §7 Get in Touch. Mirrors /ddl/get-in-touch V2 spec:
+   eyebrow spans full container, then a 2-col grid (text | interactive globe)
+   with three split-intent CTAs. */
 
 :host {
   display: block;
@@ -7,8 +9,6 @@
 .home-get-in-touch {
   position: relative;
   padding: 64px 0 80px;
-  background-color: var(--landing-ink-1);
-  border-top: 1px solid var(--landing-accent);
   scroll-margin-top: 80px;
 
   @media (min-width: 960px) {
@@ -18,7 +18,27 @@
 
 .home-get-in-touch__eyebrow {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
+}
+
+.home-get-in-touch__grid {
+  display: grid;
+  gap: 64px 48px;
+  align-items: center;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  }
+}
+
+.home-get-in-touch__left {
+  min-width: 0;
+}
+
+.home-get-in-touch__right {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .home-get-in-touch__heading {
@@ -29,46 +49,29 @@
   line-height: var(--landing-display-md-lh);
   letter-spacing: var(--landing-tracking-tight);
   color: var(--landing-text-300);
-  margin-bottom: 12px;
+  margin: 0 0 12px;
 }
 
 .home-get-in-touch__copy {
-  margin: 0;
+  margin: 0 0 32px;
   max-width: 56ch;
   font-family: var(--landing-font-display);
   font-style: italic;
   font-weight: 400;
-  /* Mirrors home-selected-work__deck — sits between body-lg and display-sm. */
   font-size: var(--landing-body-xl);
   line-height: var(--landing-body-xl-lh);
   color: var(--landing-text-400);
 }
 
-.home-get-in-touch__cta {
-  margin-top: 32px;
-}
-
-.home-get-in-touch__channels {
-  list-style: none;
-  margin: 48px 0 0;
-  padding: 24px 0 0;
-  border-top: 1px solid var(--landing-border);
+.home-get-in-touch__ctas {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 32px;
-}
-
-.home-get-in-touch__channels li {
-  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
   .home-get-in-touch {
     padding: 48px 0 64px;
-  }
-
-  .home-get-in-touch__channels {
-    margin-top: 32px;
-    gap: 12px 24px;
   }
 }

@@ -4,18 +4,15 @@ import {
   ButtonComponent,
   ContainerComponent,
   EyebrowComponent,
+  LandingGlobeComponent,
   LandingHeadingComponent,
-  LandingLinkComponent,
 } from '@portfolio/landing/shared/ui';
-import { SOCIAL_PLATFORM_LABELS } from '@portfolio/shared/enum-labels';
 import { type SocialLink } from '@portfolio/shared/types';
-
-type Channel = { readonly label: string; readonly url: string };
 
 @Component({
   selector: 'landing-home-get-in-touch',
   standalone: true,
-  imports: [ButtonComponent, ContainerComponent, EyebrowComponent, LandingHeadingComponent, LandingLinkComponent],
+  imports: [ButtonComponent, ContainerComponent, EyebrowComponent, LandingGlobeComponent, LandingHeadingComponent],
   templateUrl: './home-get-in-touch.component.html',
   styleUrl: './home-get-in-touch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,27 +20,20 @@ type Channel = { readonly label: string; readonly url: string };
 export class HomeGetInTouchComponent {
   readonly email = input<string>('');
   readonly contactCopy = input<string>('');
+  /** Parent still passes these; the V2 layout drops the channel row, so they
+   *  are accepted but unused until the CV placement is decided. */
   readonly socialLinks = input<readonly SocialLink[]>([]);
-  /** Pre-localized resume entry — parent picks `resumeUrls.en` / `.vi`. */
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV PDF');
 
   private readonly document = inject(DOCUMENT);
 
-  protected readonly channels = computed<readonly Channel[]>(() => {
-    const list: Channel[] = this.socialLinks().map((s) => ({
-      label: SOCIAL_PLATFORM_LABELS[s.platform] ?? s.platform,
-      url: s.url,
-    }));
-    const resume = this.resumeUrl();
-    if (resume) list.push({ label: this.resumeName(), url: resume });
-    return list;
-  });
-
   protected readonly mailto = computed(() => (this.email() ? `mailto:${this.email()}` : ''));
 
-  protected sendMail(): void {
-    const target = this.mailto();
-    if (target) this.document.defaultView?.location.assign(target);
+  protected sendMail(subject?: string): void {
+    const base = this.mailto();
+    if (!base) return;
+    const url = subject ? `${base}?subject=${encodeURIComponent(subject)}` : base;
+    this.document.defaultView?.location.assign(url);
   }
 }

@@ -102,6 +102,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: '§06b Philosophy strip · direction variants',
         desc: 'V0 baseline · V1 cut · V2 ornament pause · V3 sign-off · V4 coda pen-at-rest. Story-tail → variant → CTA sandwich.',
       },
+      {
+        path: '/ddl/get-in-touch',
+        title: '§07 Get in Touch · direction variants',
+        desc: 'V1 SVG globe constellation · V2 drag-rotate globe · V3 info panel. Split-intent CTAs + CV placement comparison.',
+      },
     ],
   },
   {

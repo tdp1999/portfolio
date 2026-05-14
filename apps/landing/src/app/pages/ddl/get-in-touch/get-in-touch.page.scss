@@ -1,0 +1,413 @@
+:host {
+  display: block;
+}
+
+/* ═══ Intro bar (shared pattern) ═══════════════════════════════════════ */
+.gt-intro {
+  border-bottom: 1px solid var(--landing-border);
+  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
+}
+.gt-intro__inner {
+  padding-block: 32px;
+}
+.gt-intro__crumb {
+  display: block;
+  margin-bottom: 16px;
+}
+.gt-intro__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  font-weight: 500;
+}
+.gt-intro__title em {
+  font-style: italic;
+  color: var(--landing-accent);
+}
+.gt-intro__lede {
+  margin: 0;
+  max-width: 64rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+/* ═══ Variant label (shared pattern) ═══════════════════════════════════ */
+.gt-label {
+  padding-block: 32px 8px;
+  border-top: 1px solid var(--landing-border);
+  margin-top: 48px;
+}
+.gt-label--secondary {
+  margin-top: 64px;
+}
+.gt-label__inner {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.gt-label__letter {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--landing-accent);
+}
+.gt-label__name {
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+.gt-label__hint {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  max-width: 56rem;
+}
+
+/* ═══ Variant frame (shared) ═══════════════════════════════════════════ */
+.gt-frame {
+  border-top: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+  margin-top: 16px;
+}
+
+/* ═══ Shared variant layout (V1, V2, V3) ═══════════════════════════════
+   Two-column grid: prose+CTAs on the left, illustration/panel on the right.
+   At ≤960px collapses to single column with right column above the CTAs
+   (illustration is the visual anchor, CTAs read better after copy). */
+%gt-variant-section {
+  padding-block: 80px;
+
+  @media (min-width: 960px) {
+    padding-block: 96px 112px;
+  }
+}
+%gt-variant-grid {
+  display: grid;
+  gap: 64px 48px;
+  align-items: center;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  }
+}
+%gt-variant-heading {
+  display: block;
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  margin: 16px 0 12px;
+}
+%gt-variant-copy {
+  margin: 0 0 32px;
+  max-width: 56ch;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
+  color: var(--landing-text-400);
+}
+%gt-variant-ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.gt-v1 {
+  @extend %gt-variant-section;
+}
+.gt-v1__grid {
+  @extend %gt-variant-grid;
+}
+.gt-v1__heading {
+  @extend %gt-variant-heading;
+}
+.gt-v1__copy {
+  @extend %gt-variant-copy;
+}
+.gt-v1__ctas {
+  @extend %gt-variant-ctas;
+}
+
+.gt-v2 {
+  @extend %gt-variant-section;
+}
+.gt-v2__grid {
+  @extend %gt-variant-grid;
+}
+.gt-v2__heading {
+  @extend %gt-variant-heading;
+}
+.gt-v2__copy {
+  @extend %gt-variant-copy;
+}
+.gt-v2__ctas {
+  @extend %gt-variant-ctas;
+}
+
+.gt-v3 {
+  @extend %gt-variant-section;
+}
+.gt-v3__grid {
+  @extend %gt-variant-grid;
+}
+.gt-v3__heading {
+  @extend %gt-variant-heading;
+}
+.gt-v3__copy {
+  @extend %gt-variant-copy;
+}
+.gt-v3__ctas {
+  @extend %gt-variant-ctas;
+}
+
+/* ═══ V3 — Info panel ═════════════════════════════════════════════════ */
+.gt-v3__right {
+  width: 100%;
+}
+.gt-panel {
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  padding: 24px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.gt-panel__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gt-panel__key {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.gt-panel__val {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  color: var(--landing-text-300);
+}
+.gt-panel__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4ade80;
+  box-shadow: 0 0 8px color-mix(in srgb, #4ade80 60%, transparent);
+}
+.gt-panel__rule {
+  height: 1px;
+  background-color: color-mix(in srgb, var(--landing-border) 80%, transparent);
+}
+.gt-panel__served {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gt-panel__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gt-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid color-mix(in srgb, var(--landing-accent) 40%, transparent);
+  border-radius: 999px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-300);
+  background-color: color-mix(in srgb, var(--landing-accent) 8%, transparent);
+}
+
+/* ═══ CV placement comparison ══════════════════════════════════════════ */
+.gt-frame--cv {
+  padding-block: 48px 64px;
+}
+.gt-cv-grid {
+  display: grid;
+  gap: 32px;
+
+  @media (min-width: 880px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.gt-cv-option {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.gt-cv-option__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gt-cv-option__letter {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--landing-accent);
+}
+.gt-cv-option__title {
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-body-xl);
+  line-height: 1.3;
+  color: var(--landing-text-300);
+}
+.gt-cv-option__hint {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  line-height: 1.5;
+}
+
+/* CV card (option a + c) */
+.gt-cv-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 40%, transparent);
+}
+.gt-cv-card--compact {
+  padding: 12px 16px;
+  gap: 12px;
+}
+.gt-cv-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--landing-accent) 16%, transparent);
+  color: var(--landing-accent);
+}
+.gt-cv-card--compact .gt-cv-card__icon {
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
+}
+.gt-cv-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.gt-cv-card__title {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  font-weight: 500;
+  color: var(--landing-text-300);
+}
+.gt-cv-card__meta {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+
+/* CV option (b) — CTA stack with resume as link */
+.gt-cv-ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.gt-cv-ctas__resume {
+  margin-top: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+}
+
+/* CV option (c) — right-column aside */
+.gt-cv-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.gt-cv-aside__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  border: 1px dashed color-mix(in srgb, var(--landing-border) 80%, transparent);
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 30%, transparent);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+
+/* ═══ Notes (shared pattern) ═══════════════════════════════════════════ */
+.gt-notes {
+  padding-block: 64px 96px;
+  border-top: 1px solid var(--landing-border);
+  margin-top: 64px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 40%, transparent);
+}
+.gt-notes__heading {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+.gt-notes__list {
+  margin: 0;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 64rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+.gt-notes__list strong {
+  color: var(--landing-text-300);
+}
+.gt-notes__list em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+@media (max-width: 768px) {
+  .gt-panel {
+    padding: 20px;
+  }
+}
