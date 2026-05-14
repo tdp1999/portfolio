@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import type { EmploymentType, LocationType, PublicExperience } from '@portfolio/landing/shared/data-access';
@@ -30,11 +30,6 @@ const LOCATION_TYPE_LABEL: Record<LocationType, string> = {
   ONSITE: 'On-site',
 };
 
-function formatMonth(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-}
-
 function diffMonths(startStr: string, endStr: string | null): number {
   const start = new Date(startStr);
   const end = endStr ? new Date(endStr) : new Date();
@@ -50,8 +45,21 @@ function formatDuration(startStr: string, endStr: string | null): string {
   return `${months} mo`;
 }
 
+type ExperienceVm = PublicExperience & {
+  displayPosition: string;
+  displayDescription: string;
+  displayResponsibilities: string[];
+  displayHighlights: string[];
+  displayTeamRole: string;
+  displayDuration: string;
+  employmentLabel: string;
+  locationLabel: string;
+  skillNames: { id: string; name: string }[];
+};
+
 @Component({
   selector: 'landing-feature-experience',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ContainerComponent,
     SectionComponent,
@@ -81,39 +89,24 @@ export class FeatureExperience {
   locale = signal<Locale>('en');
   experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });
 
-  getPosition(exp: PublicExperience): string {
-    return getLocalized(exp.position, this.locale());
-  }
+  experienceVms = computed<ExperienceVm[]>(() => {
+    const lang = this.locale();
+    return this.experiences().map((exp) => ({
+      ...exp,
+      displayPosition: getLocalized(exp.position, lang),
+      displayDescription: getLocalized(exp.description, lang),
+      displayResponsibilities: exp.responsibilities?.[lang] ?? [],
+      displayHighlights: exp.highlights?.[lang] ?? [],
+      displayTeamRole: getLocalized(exp.teamRole, lang),
+      displayDuration: formatDuration(exp.startDate, exp.endDate),
+      employmentLabel: EMPLOYMENT_TYPE_LABEL[exp.employmentType] ?? exp.employmentType,
+      locationLabel: LOCATION_TYPE_LABEL[exp.locationType] ?? exp.locationType,
+      skillNames: exp.skills.map((s) => ({ id: s.id, name: getLocalized(s.name, lang) })),
+    }));
+  });
 
-  getDescription(exp: PublicExperience): string {
-    return getLocalized(exp.description, this.locale());
-  }
-
-  getResponsibilities(exp: PublicExperience): string[] {
-    return exp.responsibilities?.[this.locale()] ?? [];
-  }
-
-  getHighlights(exp: PublicExperience): string[] {
-    return exp.highlights?.[this.locale()] ?? [];
-  }
-
-  getTeamRole(exp: PublicExperience): string {
-    return getLocalized(exp.teamRole, this.locale());
-  }
-
-  getSkillName(name: { en: string; vi: string }): string {
-    return getLocalized(name, this.locale());
-  }
-
-  getEmploymentLabel(type: EmploymentType): string {
-    return EMPLOYMENT_TYPE_LABEL[type] ?? type;
-  }
-
-  getLocationLabel(type: LocationType): string {
-    return LOCATION_TYPE_LABEL[type] ?? type;
-  }
-
-  durationFor(exp: PublicExperience): string {
-    return formatDuration(exp.startDate, exp.endDate);
+  hideBrokenImage(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLElement) target.style.display = 'none';
   }
 }

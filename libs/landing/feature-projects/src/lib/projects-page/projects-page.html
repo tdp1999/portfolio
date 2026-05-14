@@ -31,7 +31,7 @@
                   {{ project.title }}
                 </h2>
                 <p class="text-text-secondary mb-3 line-clamp-2">
-                  {{ getOneLiner(project) }}
+                  {{ project.oneLiner | translatable: locale() : '' }}
                 </p>
 
                 <div class="flex flex-wrap items-center gap-2 mb-3">
@@ -41,7 +41,7 @@
                 </div>
 
                 <span class="text-body-sm text-text-secondary">
-                  {{ formatDate(project.startDate) }}
+                  {{ project.startDate | monthYear }}
                 </span>
               </div>
             </a>

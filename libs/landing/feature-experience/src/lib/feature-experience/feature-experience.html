@@ -8,7 +8,7 @@
       <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">Career History</h1>
       <p class="text-text-secondary mb-12">My professional experience and journey</p>
 
-      @if (experiences().length === 0) {
+      @if (experienceVms().length === 0) {
         <landing-empty-state icon="briefcase" message="Career history coming soon" />
       } @else {
         <div class="relative">
@@ -16,7 +16,7 @@
           <div class="absolute left-6 top-0 bottom-0 w-px bg-border hidden md:block"></div>
 
           <div class="flex flex-col gap-12">
-            @for (exp of experiences(); track exp.id) {
+            @for (exp of experienceVms(); track exp.id) {
               <div class="md:pl-20 relative">
                 <!-- Timeline dot -->
                 <div class="absolute left-0 top-0 hidden md:flex items-center justify-center">
@@ -47,7 +47,7 @@
                           width="48"
                           height="48"
                           class="w-12 h-12 rounded-lg object-contain border border-border bg-surface"
-                          (error)="$any($event.target).style.display = 'none'"
+                          (error)="hideBrokenImage($event)"
                         />
                       } @else {
                         <div
@@ -82,20 +82,20 @@
                         }
                       </div>
 
-                      <p class="text-body-md font-medium text-text mb-1">{{ getPosition(exp) }}</p>
+                      <p class="text-body-md font-medium text-text mb-1">{{ exp.displayPosition }}</p>
 
                       <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-text-secondary">
                         <span>{{ exp | dateRange }}</span>
                         <span class="opacity-40">·</span>
-                        <span>{{ durationFor(exp) }}</span>
+                        <span>{{ exp.displayDuration }}</span>
                       </div>
                     </div>
                   </div>
 
                   <!-- Meta chips row -->
                   <div class="flex flex-wrap gap-2">
-                    <landing-chip [label]="getEmploymentLabel(exp.employmentType)" size="sm" prominence="strong" />
-                    <landing-chip [label]="getLocationLabel(exp.locationType)" size="sm" />
+                    <landing-chip [label]="exp.employmentLabel" size="sm" prominence="strong" />
+                    <landing-chip [label]="exp.locationLabel" size="sm" />
                     @if (exp.locationCity) {
                       <landing-chip [label]="exp.locationCity + ', ' + exp.locationCountry" size="sm" />
                     } @else {
@@ -114,21 +114,21 @@
                   </div>
 
                   <!-- Description -->
-                  @if (getDescription(exp)) {
-                    <p class="text-text-secondary leading-relaxed">{{ getDescription(exp) }}</p>
+                  @if (exp.displayDescription) {
+                    <p class="text-text-secondary leading-relaxed">{{ exp.displayDescription }}</p>
                   }
 
                   <!-- Team role -->
-                  @if (getTeamRole(exp)) {
+                  @if (exp.displayTeamRole) {
                     <p class="text-body-sm text-text-secondary">
-                      <span class="font-medium text-text">Role: </span>{{ getTeamRole(exp) }}
+                      <span class="font-medium text-text">Role: </span>{{ exp.displayTeamRole }}
                     </p>
                   }
 
                   <!-- Responsibilities -->
-                  @if (getResponsibilities(exp).length > 0) {
+                  @if (exp.displayResponsibilities.length > 0) {
                     <ul class="flex flex-col gap-2">
-                      @for (item of getResponsibilities(exp); track $index) {
+                      @for (item of exp.displayResponsibilities; track $index) {
                         <li class="flex items-start gap-2 text-text-secondary">
                           <landing-icon name="check" [size]="16" class="text-primary flex-shrink-0 mt-0.5" />
                           <span>{{ item }}</span>
@@ -138,9 +138,9 @@
                   }
 
                   <!-- Highlights -->
-                  @if (getHighlights(exp).length > 0) {
+                  @if (exp.displayHighlights.length > 0) {
                     <ul class="flex flex-col gap-2">
-                      @for (item of getHighlights(exp); track $index) {
+                      @for (item of exp.displayHighlights; track $index) {
                         <li class="flex items-start gap-2 text-text-secondary">
                           <landing-icon name="star" [size]="16" class="text-primary flex-shrink-0 mt-0.5" />
                           <span>{{ item }}</span>
@@ -168,10 +168,10 @@
                   }
 
                   <!-- Skills -->
-                  @if (exp.skills.length > 0) {
+                  @if (exp.skillNames.length > 0) {
                     <div class="flex flex-wrap gap-2">
-                      @for (skill of exp.skills; track skill.id) {
-                        <landing-chip [label]="getSkillName(skill.name)" size="sm" />
+                      @for (skill of exp.skillNames; track skill.id) {
+                        <landing-chip [label]="skill.name" size="sm" />
                       }
                     </div>
                   }

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, effect } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -29,6 +29,7 @@ function formatDateRange(startDate: string, endDate: string | null): string {
 
 @Component({
   selector: 'landing-project-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     ContainerComponent,

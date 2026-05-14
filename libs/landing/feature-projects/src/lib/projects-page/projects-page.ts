@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -11,17 +11,12 @@ import {
   LandingEmptyStateComponent,
 } from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
+import { MonthYearPipe, TranslatablePipe } from '@portfolio/shared/ui/pipes';
 import type { Locale } from '@portfolio/shared/types';
-import type { ProjectListItem } from '@portfolio/landing/shared/data-access';
-
-function formatMonth(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-}
 
 @Component({
   selector: 'landing-projects-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     ContainerComponent,
@@ -30,6 +25,8 @@ function formatMonth(dateStr: string): string {
     ChipComponent,
     LandingBackLinkComponent,
     LandingEmptyStateComponent,
+    MonthYearPipe,
+    TranslatablePipe,
   ],
   templateUrl: './projects-page.html',
   styleUrl: './projects-page.scss',
@@ -49,12 +46,4 @@ export class ProjectsPage {
 
   locale = signal<Locale>('en');
   projects = toSignal(this.projectService.getPublicProjects(), { initialValue: [] });
-
-  getOneLiner(project: ProjectListItem): string {
-    return getLocalized(project.oneLiner, this.locale());
-  }
-
-  formatDate(dateStr: string): string {
-    return formatMonth(dateStr);
-  }
 }
