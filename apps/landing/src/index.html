@@ -29,8 +29,12 @@
         color: #e3e2e6;
         margin: 0;
       }
-      [data-theme='light'] html,
-      [data-theme='light'] body {
+      /* data-theme is set on <html> itself by the inline script below — so the
+         selector must be `html[data-theme='light']`, NOT `[data-theme='light'] html`
+         (the latter looks for an html descendant, which never exists since html is
+         the root). Same fix applies to body via the descendant combinator. */
+      html[data-theme='light'],
+      html[data-theme='light'] body {
         background-color: #faf9fd;
         color: #1a1b1f;
       }
