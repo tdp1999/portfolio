@@ -1,9 +1,10 @@
 import { Route } from '@angular/router';
+import { FeatureHome } from '@portfolio/landing/feature-home';
 
 export const appRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('@portfolio/landing/feature-home').then((m) => m.FeatureHome),
+    component: FeatureHome,
     pathMatch: 'full',
   },
   {
