@@ -5,7 +5,10 @@
 .home-intro {
   position: relative;
   isolation: isolate;
-  padding-block: 96px;
+  /* Asymmetric padding: bottom is tighter so the prose→squiggle distance
+     mirrors the eyebrow→prose distance (the §6b squiggle adds its own
+     padding-block, doubling the bottom gap otherwise). */
+  padding: 96px 0 64px;
   cursor: default;
 }
 
@@ -14,15 +17,20 @@
   margin-bottom: 32px;
   position: relative;
   z-index: 2;
+  margin-inline: auto;
 }
 
 .home-intro__grid {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
-  gap: 24px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 640px) minmax(0, 280px);
+  gap: 120px;
+  align-items: center;
+  justify-content: center;
+  max-width: 1040px;
+  margin-inline: auto;
+  margin-top: 80px;
 }
 
 .home-intro__prose {
@@ -65,6 +73,10 @@
     transparent 100%
   );
 }
+/* Light theme: ink underline + flying pen carry emphasis; drop the warmth wash. */
+:host-context([data-theme='light']) .home-intro__paragraph.is-active {
+  background-image: none;
+}
 .home-intro__paragraph:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--landing-accent) 60%, transparent);
   border-radius: 4px;
@@ -76,9 +88,33 @@
   color: var(--landing-text-300);
 }
 
-/* Mobile-only ink underline (hidden on desktop). */
+/* Ink underline — hidden on dark-desktop (lamp cone does the work); shown
+   on mobile (any theme) and on light-desktop (pen + ink). Per-block, fades
+   in beneath the active paragraph. */
 .home-intro__underline {
   display: none;
+  width: 100%;
+  height: 10px;
+  color: var(--landing-accent);
+  stroke-dasharray: 650;
+  stroke-dashoffset: 650;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 480ms cubic-bezier(0.5, 0, 0.4, 1),
+    opacity 200ms ease-out;
+}
+.home-intro__p-block:has(.home-intro__paragraph.is-active) .home-intro__underline {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+/* Light theme (any width): ink-on-paper underline beneath the active paragraph. */
+:host-context([data-theme='light']) .home-intro__underline {
+  display: block;
+  color: #0f172a;
+}
+:host-context([data-theme='light']) .home-intro__p-block:has(.home-intro__paragraph.is-active) .home-intro__underline {
+  opacity: 0.6;
 }
 
 /* ─── Aside (right column, holds the lamp + caption) ─────────────── */
@@ -100,36 +136,51 @@
   pointer-events: none;
 }
 
+/* Credit block — matches the stack-module attribution pattern (mono caps,
+   middle-dot separator, border-bottom link with subtle hover). */
 .home-intro__credit {
+  margin: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
-  margin: 0;
-  text-align: center;
 }
 .home-intro__credit-line {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);
-  line-height: 16px;
+  line-height: var(--landing-mono-sm-lh);
   letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
   color: var(--landing-text-600);
+}
+.home-intro__credit-sep {
+  color: color-mix(in srgb, var(--landing-text-600) 50%, transparent);
+}
+.home-intro__credit-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--landing-text-600) 40%, transparent);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.home-intro__credit-link:hover {
+  color: var(--landing-text-400);
+  border-bottom-color: var(--landing-text-400);
 }
 .home-intro__credit-hint {
   color: var(--landing-accent);
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    opacity 220ms ease-out,
-    transform 220ms ease-out;
-}
-.home-intro__credit-hint.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+  transition: color 220ms ease-out;
 }
 
 .home-intro__hit {
   pointer-events: auto;
-  cursor: pointer; /* lamp is always a switch */
+  cursor: pointer; /* light source is always a switch */
 }
 .home-intro__hit:hover .home-intro__shade {
   fill: var(--landing-text-500);
@@ -143,11 +194,22 @@
 .home-intro__base-dark {
   fill: var(--landing-text-700);
 }
+/* Indigo accent stripe along the base — primary system-color identity cue. */
+.home-intro__base-trim {
+  fill: var(--landing-accent);
+  opacity: 0.85;
+}
 .home-intro__arm {
   fill: var(--landing-text-600);
 }
 .home-intro__joint {
-  fill: var(--landing-text-700);
+  fill: var(--landing-accent);
+}
+.home-intro__joint-ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--landing-accent-active) 70%, transparent);
+  stroke-width: 2;
+  opacity: 0.6;
 }
 
 .home-intro__head {
@@ -162,50 +224,150 @@
   fill: var(--landing-text-700);
 }
 
-/* Light pool — hidden when off; gentle blurred glow when on. Blur is via the
-   SVG element's filter attribute so it stays "ambient", not a sharp disc. */
-.home-intro__light {
-  fill: #f6cc6a;
-  opacity: 0;
-  transition: opacity 280ms ease-out;
-}
-.home-intro__light-shadow {
-  fill: #d6a83a;
-  opacity: 0;
-  transition: opacity 280ms ease-out;
-}
-.home-intro.is-lamp-on .home-intro__light {
-  opacity: 0.55;
-}
-.home-intro.is-lamp-on .home-intro__light-shadow {
-  opacity: 0.4;
-}
-
-/* Cone — wide, softly blurred wedge. Hidden by default; gentle bloom when on. */
+/* Light pool + cone — gated by BOTH opacity (smooth fade) AND visibility (so
+   the wide gaussian-blur filters can't leak a faint halo outside the shade
+   when off). Visibility flips after the fade-out so the transition still
+   looks smooth, and flips immediately on the fade-in so the glow appears
+   from the first frame of the animation. */
+.home-intro__light,
+.home-intro__light-shadow,
 .home-intro__cone,
 .home-intro__cone-halo {
   opacity: 0;
-  transition: opacity 280ms ease-out;
+  visibility: hidden;
+  transition:
+    opacity 280ms ease-out,
+    visibility 0s linear 280ms;
 }
-.home-intro.is-lamp-on .home-intro__cone {
-  opacity: 0.7;
+.home-intro__light {
+  fill: #f6cc6a;
 }
+.home-intro__light-shadow {
+  fill: #d6a83a;
+}
+.home-intro.is-lamp-on .home-intro__light,
+.home-intro.is-lamp-on .home-intro__light-shadow,
+.home-intro.is-lamp-on .home-intro__cone,
 .home-intro.is-lamp-on .home-intro__cone-halo {
+  visibility: visible;
+  transition:
+    opacity 280ms ease-out,
+    visibility 0s linear 0s;
+}
+.home-intro.is-lamp-on .home-intro__light {
   opacity: 0.4;
 }
+.home-intro.is-lamp-on .home-intro__light-shadow {
+  opacity: 0.3;
+}
+.home-intro.is-lamp-on .home-intro__cone {
+  opacity: 0.55;
+}
+.home-intro.is-lamp-on .home-intro__cone-halo {
+  opacity: 0.55;
+}
 
-/* ─── Tablet & below (≤ 980px) ─── Lamp hidden; ink underline replaces it.
-   Single centered column. */
+/* ─── Light theme: inkwell + flying pen ────────────────────────────
+   Dark theme shows lamp art + cone; light theme shows inkwell + the floating
+   pen (which lives at the section root, not inside the lamp SVG). */
+.home-intro__inkwell,
+.home-intro__pen-floater {
+  display: none;
+}
+:host-context([data-theme='light']) .home-intro__rig,
+:host-context([data-theme='light']) .home-intro__head {
+  display: none;
+}
+:host-context([data-theme='light']) .home-intro__inkwell {
+  display: block;
+}
+:host-context([data-theme='light']) .home-intro__pen-floater.is-positioned {
+  display: block;
+}
+
+/* Floating pen — absolutely positioned over the section. Transform is signal-
+   driven so the nib lands at the inkwell mouth (off) or at the active
+   paragraph's underline finishing point (on). Hidden until anchors are
+   measured (otherwise it'd flash at top-left during SSR/early hydration). */
+.home-intro__pen-floater {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: auto;
+  will-change: transform;
+  transition: transform 480ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pen body — slate-and-indigo classic fountain pen on white paper. */
+.home-intro__pen-cap {
+  fill: #1e293b;
+}
+.home-intro__pen-clip {
+  fill: #475569;
+}
+.home-intro__pen-cap-ring {
+  fill: var(--landing-accent);
+}
+.home-intro__pen-barrel {
+  fill: #334155;
+}
+.home-intro__pen-band {
+  fill: var(--landing-accent);
+}
+.home-intro__pen-grip {
+  fill: #1e293b;
+}
+.home-intro__pen-nib {
+  fill: #475569;
+}
+.home-intro__pen-nib-slit {
+  stroke: #0f172a;
+  stroke-width: 0.8;
+  fill: none;
+}
+.home-intro__pen-breather {
+  fill: #0f172a;
+}
+
+/* Inkwell — squat bottle with visible ink at the mouth. */
+.home-intro__well-shadow {
+  fill: rgba(15, 23, 42, 0.12);
+}
+.home-intro__well-body {
+  fill: #334155;
+}
+.home-intro__well-shoulder {
+  fill: #1e293b;
+}
+.home-intro__well-neck {
+  fill: #1e293b;
+}
+.home-intro__well-mouth {
+  fill: #0f172a;
+}
+.home-intro__well-ink {
+  fill: #1a2030;
+}
+
+/* ─── Tablet & below (≤ 980px) ─── Aside + flying pen hidden; ink underline
+   replaces them. Single centered column. */
 @media (max-width: 980px) {
   .home-intro {
-    padding-block: 64px;
+    /* Aside hidden — no phantom row-centering. Tighten both ends and shrink
+       eyebrow→prose so the gap matches the §6b strip's mobile padding. */
+    padding: 64px 0 32px;
   }
   .home-intro__grid {
     grid-template-columns: 1fr;
     gap: 0;
     justify-items: center;
+    margin-top: 32px;
   }
   .home-intro__aside {
+    display: none;
+  }
+  :host-context([data-theme='light']) .home-intro__pen-floater {
     display: none;
   }
   .home-intro__prose {
@@ -221,18 +383,5 @@
   }
   .home-intro__underline {
     display: block;
-    width: 100%;
-    height: 10px;
-    color: var(--landing-accent);
-    stroke-dasharray: 650;
-    stroke-dashoffset: 650;
-    opacity: 0;
-    transition:
-      stroke-dashoffset 480ms cubic-bezier(0.5, 0, 0.4, 1),
-      opacity 200ms ease-out;
-  }
-  .home-intro__p-block:has(.home-intro__paragraph.is-active) .home-intro__underline {
-    stroke-dashoffset: 0;
-    opacity: 1;
   }
 }

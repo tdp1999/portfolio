@@ -1,4 +1,5 @@
 <section
+  #section
   class="home-intro"
   [class.is-lamp-on]="isLampOn()"
   aria-label="The Story"
@@ -37,7 +38,8 @@
                 }
               }
             </p>
-            <!-- Mobile-only ink underline beneath the active paragraph. -->
+            <!-- Ink underline beneath the active paragraph (mobile any theme,
+                 and desktop in light theme as primary feedback for the pen). -->
             <svg class="home-intro__underline" viewBox="0 0 600 10" preserveAspectRatio="none" aria-hidden="true">
               <path
                 d="M 4 6 Q 150 2 300 6 T 596 5"
@@ -60,29 +62,57 @@
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
-            <linearGradient id="home-intro-cone" x1="100%" y1="50%" x2="0%" y2="50%">
-              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.30" />
-              <stop offset="50%" stop-color="#f6cc6a" stop-opacity="0.10" />
+            <!-- Gradients run from the apex corner (top-right of the wedge's
+                 bounding box) toward the far corner (bottom-left). Stops are
+                 softer than a typical spotlight (lower starting opacity) and
+                 hold their warmth deeper into the cone (peak at 60%, not 50%)
+                 so the bright region reads as a long ambient wash, not a hot
+                 spot at the bulb. */ -->
+            <linearGradient id="home-intro-cone" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.18" />
+              <stop offset="60%" stop-color="#f6cc6a" stop-opacity="0.08" />
               <stop offset="100%" stop-color="#f6cc6a" stop-opacity="0" />
             </linearGradient>
-            <linearGradient id="home-intro-cone-halo" x1="100%" y1="50%" x2="0%" y2="50%">
-              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.14" />
-              <stop offset="60%" stop-color="#f6cc6a" stop-opacity="0.04" />
+            <linearGradient id="home-intro-cone-halo" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff4d4" stop-opacity="0.10" />
+              <stop offset="70%" stop-color="#f6cc6a" stop-opacity="0.04" />
               <stop offset="100%" stop-color="#f6cc6a" stop-opacity="0" />
             </linearGradient>
+            <!-- Stronger gaussian deviations on every blur — softens the cone
+                 edge, melts the bulb glow into the surrounding wash. -->
             <filter id="home-intro-cone-blur" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="8" />
+              <feGaussianBlur stdDeviation="16" />
             </filter>
             <filter id="home-intro-cone-blur-strong" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="18" />
+              <feGaussianBlur stdDeviation="28" />
             </filter>
             <filter id="home-intro-bulb-blur" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="10" />
+              <feGaussianBlur stdDeviation="18" />
             </filter>
           </defs>
 
-          <!-- Static parts: base + pedestal + arm + joint disk. Click target. -->
+          <!-- ─── Dark theme: desk lamp ──────────────────────────────── -->
+          <!-- Static parts: base + pedestal + arm. The joint disk lives inside
+               the rotating head group (below) so it stays glued to the shade
+               at every rotation — a circle centered at the rotation pivot is
+               invariant under rotation, so it doesn't actually appear to move. -->
           <g class="home-intro__rig home-intro__hit" (click)="onLampClick($event)">
+            <!-- Render order matters in SVG (later = on top). Arm goes FIRST
+                 so the base pieces below can paint over it where the arm meets
+                 the desk — otherwise the arm's lower vertices visibly clip
+                 across the base pedestal. -->
+            <!-- Arm — original SVG had its top edge at y≈113-141, leaving a
+                 visible gap to the joint disk (bottom at y≈98) when the shade
+                 rotates away from native pose. The top two vertices have been
+                 lifted by 50 units (L 252.686,91.371 / l 28.11,-28.457 ending
+                 at 280.796,62.914) so the tip slides INTO the joint disk and
+                 reads as one continuous piece of hardware at every rotation.
+                 The right edge anchor is pinned absolute (L 418.276,248.715)
+                 so lengthening the top doesn't drag the rest of the arm. -->
+            <path
+              class="home-intro__arm"
+              d="M379.191,454.005l-38.907-9.284l41.87-175.463L252.686,91.371l28.11-28.457L418.276,248.715c4.975,4.914,7.021,12.07,5.398,18.871L379.191,454.005z"
+            />
             <path
               class="home-intro__base"
               d="M301.721,436.861h-57.51V402.47c0-6.408,5.194-11.602,11.602-11.602h34.305c6.408,0,11.602,5.195,11.602,11.602v34.391H301.721z"
@@ -91,24 +121,30 @@
               class="home-intro__base-dark"
               d="M404.221,474.363H226.244c-13.807,0-25-11.193-25-25s11.193-25,25-25h177.977c13.807,0,25,11.193,25,25S418.028,474.363,404.221,474.363z"
             />
-            <path
-              class="home-intro__arm"
-              d="M379.191,454.005l-38.907-9.284l41.87-175.463L252.686,141.371l28.11-28.457l137.48,135.801c4.975,4.914,7.021,12.07,5.398,18.871L379.191,454.005z"
-            />
-            <circle class="home-intro__joint" cx="263.105" cy="48.85" r="48.85" />
+            <!-- Indigo accent stripe along the base for system-color identity. -->
+            <rect class="home-intro__base-trim" x="226" y="446" width="178" height="4" rx="2" />
           </g>
 
-          <!-- Rotating head: shade + cone + light pool. Pivots at the joint. -->
+          <!-- Rotating head: shade + cone + light pool. Pivots at the joint.
+               Native cone axis is 135° (SW) — COLLINEAR with the joint→bulb
+               axis of the shade, so the light always pours out in the same
+               direction the lamp head is pointing. The cone and shade rotate
+               together as one rigid head. -->
           <g class="home-intro__head" [attr.transform]="lampRotate()">
+            <!-- Joint disk + ring — drawn first so the shade can overlap them
+                 cleanly. Centered at the rotation pivot, so rotation leaves
+                 their visual position unchanged. -->
+            <circle class="home-intro__joint" cx="263.105" cy="48.85" r="48.85" />
+            <circle class="home-intro__joint-ring" cx="263.105" cy="48.85" r="32" />
             <path
               class="home-intro__cone-halo"
-              d="M 120.64 191.25 L -1800 -100 L -1800 600 Z"
+              d="M 120.64 191.25 L -1488 1297 L -984 1801 Z"
               fill="url(#home-intro-cone-halo)"
               filter="url(#home-intro-cone-blur-strong)"
             />
             <path
               class="home-intro__cone"
-              d="M 120.64 191.25 L -1500 30 L -1500 550 Z"
+              d="M 120.64 191.25 L -1206 1155 L -843 1518 Z"
               fill="url(#home-intro-cone)"
               filter="url(#home-intro-cone-blur)"
             />
@@ -130,15 +166,74 @@
               filter="url(#home-intro-bulb-blur)"
             />
           </g>
+
+          <!-- ─── Light theme: inkwell ──────────────────────────────────
+               Centered horizontally in the 474 viewBox; pen flies in/out
+               from the well's mouth (see the floating pen below). -->
+          <g class="home-intro__inkwell">
+            <ellipse class="home-intro__well-shadow" cx="237" cy="296" rx="62" ry="7" />
+            <path
+              class="home-intro__well-body"
+              d="M194 226 L194 274 Q194 290 210 290 L264 290 Q280 290 280 274 L280 226 Z"
+            />
+            <rect class="home-intro__well-shoulder" x="209" y="209" width="56" height="20" rx="3" />
+            <rect class="home-intro__well-neck" x="217" y="199" width="40" height="14" rx="2" />
+            <ellipse #inkwellMouth class="home-intro__well-mouth" cx="237" cy="199" rx="20" ry="5" />
+            <ellipse class="home-intro__well-ink" cx="237" cy="199" rx="14" ry="3" />
+          </g>
         </svg>
 
-        <figcaption class="home-intro__credit">
-          <span class="home-intro__credit-line">illustration · svgrepo.com</span>
-          <span class="home-intro__credit-line home-intro__credit-hint" [class.is-visible]="isLampOn()">
-            ↳ click lamp to dim
-          </span>
+        <figcaption class="home-intro__credit" (click)="$event.stopPropagation()">
+          <p class="home-intro__credit-line">
+            @if (isLightTheme()) {
+              <span>sketch</span>
+              <span class="home-intro__credit-sep" aria-hidden="true">·</span>
+              <span>pen on paper</span>
+            } @else {
+              <span>illustration</span>
+              <span class="home-intro__credit-sep" aria-hidden="true">·</span>
+              <a
+                class="home-intro__credit-link"
+                href="https://www.svgrepo.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >svgrepo.com</a
+              >
+            }
+          </p>
+          <p class="home-intro__credit-line home-intro__credit-hint">↳ {{ hintText() }}</p>
         </figcaption>
       </div>
     </div>
   </landing-container>
+
+  <!-- ─── Floating fountain pen (light theme only) ─────────────────────
+       Position is signal-driven; nib lands at the inkwell mouth when off
+       and at the right edge of the active paragraph's underline when on,
+       so the pen reads as having "just written" the line. -->
+  <svg
+    class="home-intro__pen-floater home-intro__hit"
+    [class.is-positioned]="penPositioned()"
+    [style.transform]="penTransform()"
+    viewBox="0 0 200 220"
+    width="100"
+    height="110"
+    overflow="visible"
+    aria-hidden="true"
+    (click)="onLampClick($event)"
+  >
+    <g transform="translate(15 200) rotate(-60)">
+      <!-- Nib pointing outward along -x (the pen body lays along +x). -->
+      <path class="home-intro__pen-nib" d="M -16 0 L 0 -7 L 0 7 Z" />
+      <line class="home-intro__pen-nib-slit" x1="-12" y1="-3" x2="-2" y2="0" />
+      <line class="home-intro__pen-nib-slit" x1="-12" y1="3" x2="-2" y2="0" />
+      <circle class="home-intro__pen-breather" cx="-3" cy="0" r="1.2" />
+      <path class="home-intro__pen-grip" d="M 0 -8 L 22 -10 L 22 10 L 0 8 Z" />
+      <rect class="home-intro__pen-band" x="22" y="-9" width="4" height="18" />
+      <rect class="home-intro__pen-barrel" x="26" y="-10" width="104" height="20" rx="2" />
+      <rect class="home-intro__pen-cap-ring" x="130" y="-11" width="6" height="22" />
+      <path class="home-intro__pen-cap" d="M 136 -11 L 178 -11 Q 188 -11 188 0 Q 188 11 178 11 L 136 11 Z" />
+      <rect class="home-intro__pen-clip" x="148" y="-15" width="32" height="4" rx="1.5" />
+    </g>
+  </svg>
 </section>
