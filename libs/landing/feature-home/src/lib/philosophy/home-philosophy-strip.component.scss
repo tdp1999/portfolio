@@ -3,26 +3,28 @@
 }
 
 .home-philosophy {
-  padding-block: 96px;
+  /* Tuned to mirror §6 intro's bottom padding so the squiggle sits at an
+     equal distance above and below — see also home-intro padding. */
+  padding-block: 48px;
 }
 
-.home-philosophy__line {
-  margin: 0 auto;
-  max-width: 680px;
-  font-family: var(--landing-font-body);
-  font-size: var(--landing-body-lg);
-  line-height: var(--landing-body-lg-lh);
-  color: var(--landing-text-400);
+.home-philosophy__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--landing-accent);
 }
 
-.home-philosophy__emphasis {
-  font-family: var(--landing-font-display);
-  font-style: italic;
-  color: var(--landing-text-300);
+.home-philosophy__squiggle {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  opacity: 0.85;
 }
 
 @media (max-width: 768px) {
   .home-philosophy {
-    padding-block: 64px;
+    padding-block: 32px;
   }
 }

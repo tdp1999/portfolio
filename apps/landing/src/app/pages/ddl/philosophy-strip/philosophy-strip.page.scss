@@ -1,0 +1,400 @@
+:host {
+  display: block;
+}
+
+/* ═══ Intro bar ════════════════════════════════════════════════════════ */
+.ps-intro {
+  border-bottom: 1px solid var(--landing-border);
+  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
+}
+.ps-intro__inner {
+  padding-block: 32px;
+}
+.ps-intro__crumb {
+  display: block;
+  margin-bottom: 16px;
+}
+.ps-intro__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  font-weight: 500;
+}
+.ps-intro__title em {
+  font-style: italic;
+  color: var(--landing-accent);
+}
+.ps-intro__lede {
+  margin: 0;
+  max-width: 64rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+/* ═══ Variant label ═══════════════════════════════════════════════════ */
+.ps-label {
+  padding-block: 32px 8px;
+  border-top: 1px solid var(--landing-border);
+  margin-top: 48px;
+}
+.ps-label__inner {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ps-label__letter {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--landing-accent);
+}
+.ps-label__name {
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+.ps-label__hint {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  max-width: 56rem;
+}
+
+/* ═══ Variant frame — Story-tail → variant → CTA preview ═════════════ */
+.ps-frame {
+  border-top: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+  margin-top: 16px;
+}
+
+/* ─── Story tail (shared across variants) ───────────────────────────── */
+.ps-story-tail {
+  padding-block: 64px 32px;
+}
+.ps-story-tail__p {
+  margin: 0;
+  max-width: 720px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-300);
+}
+.ps-story-tail__p em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-200);
+}
+
+/* ─── CTA preview (shared across variants) ──────────────────────────── */
+.ps-cta-preview {
+  position: relative;
+  padding-block: 56px 80px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--landing-accent) 8%, transparent) 0%,
+    color-mix(in srgb, var(--landing-accent) 4%, transparent) 100%
+  );
+  border-top: 1px solid color-mix(in srgb, var(--landing-accent) 40%, transparent);
+}
+.ps-cta-preview__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ps-cta-preview__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-200);
+  letter-spacing: var(--landing-tracking-tight);
+}
+.ps-cta-preview__btn {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 12px 20px;
+  border: 1px solid var(--landing-accent);
+  border-radius: 4px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  color: var(--landing-text-200);
+  background-color: color-mix(in srgb, var(--landing-accent) 16%, transparent);
+}
+
+/* ═══ V0 — current production strip ═══════════════════════════════════ */
+.ps-v0 {
+  padding-block: 96px;
+}
+.ps-v0__line {
+  margin: 0 auto;
+  max-width: 680px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-400);
+  text-align: left;
+}
+.ps-v0__line em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
+}
+
+/* ═══ V2 — Ornament pause (hand-drawn squiggle, section-rule:lift cousin) ═
+   Squiggle spans the container width and uses indigo accent so it reads as
+   "section-rule equivalent" — the inked, hand-drawn analogue of the 1px
+   indigo top stripe in `landing-section-rule--lift`. The lifted CTA below
+   completes the lift cue. */
+.ps-v2 {
+  padding-block: 96px;
+}
+.ps-v2__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--landing-accent);
+}
+.ps-v2__squiggle {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  opacity: 0.85;
+}
+
+/* ═══ V3 — Sign-off ══════════════════════════════════════════════════ */
+.ps-v3 {
+  padding-block: 80px 96px;
+}
+.ps-v3__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 720px;
+  margin-left: auto;
+}
+.ps-v3__signature {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: 1.1;
+  color: var(--landing-text-200);
+}
+.ps-v3__dash {
+  color: var(--landing-text-500);
+  font-style: normal;
+}
+.ps-v3__name {
+  font-style: italic;
+}
+.ps-v3__flourish {
+  width: 240px;
+  height: 14px;
+  color: var(--landing-accent);
+  opacity: 0.8;
+}
+.ps-v3__meta {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+
+/* ═══ V4 — Coda micro-scene (pen at rest) ════════════════════════════ */
+.ps-v4 {
+  padding-block: 80px;
+}
+.ps-v4__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.ps-v4__scene {
+  color: var(--landing-text-300);
+  fill: currentColor;
+}
+.ps-v4__nib {
+  fill: color-mix(in srgb, var(--landing-text-300) 90%, transparent);
+}
+.ps-v4__nib-slit {
+  stroke: var(--landing-bg);
+  stroke-width: 0.6;
+}
+.ps-v4__grip {
+  fill: color-mix(in srgb, var(--landing-text-300) 65%, transparent);
+}
+.ps-v4__band {
+  fill: var(--landing-accent);
+}
+.ps-v4__barrel {
+  fill: color-mix(in srgb, var(--landing-text-300) 80%, transparent);
+}
+.ps-v4__cap-ring {
+  fill: var(--landing-accent);
+  opacity: 0.7;
+}
+.ps-v4__cap {
+  fill: color-mix(in srgb, var(--landing-text-300) 90%, transparent);
+}
+.ps-v4__clip {
+  fill: color-mix(in srgb, var(--landing-text-300) 60%, transparent);
+}
+.ps-v4__drop {
+  fill: var(--landing-accent);
+  opacity: 0.75;
+}
+.ps-v4__drop-shadow {
+  fill: color-mix(in srgb, var(--landing-text-500) 40%, transparent);
+}
+.ps-v4__caption {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-body-md);
+  line-height: 1.5;
+  color: var(--landing-text-500);
+}
+
+/* ═══ V5a — Stamped seal ═════════════════════════════════════════════ */
+.ps-v5a {
+  padding-block: 72px 80px;
+}
+.ps-v5a__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ps-v5a__seal {
+  display: block;
+  filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--landing-accent) 30%, transparent));
+}
+.ps-v5a__wax {
+  fill: var(--landing-accent);
+  opacity: 0.9;
+}
+.ps-v5a__ring {
+  stroke: color-mix(in srgb, white 55%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.ps-v5a__monogram {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 500;
+  fill: color-mix(in srgb, white 92%, transparent);
+  letter-spacing: -0.02em;
+}
+
+/* ═══ V5b — Marginalia datemark ══════════════════════════════════════ */
+.ps-v5b {
+  padding-block: 64px 72px;
+}
+.ps-v5b__mark {
+  margin: 0;
+  text-align: center;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 1.6;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+/* ═══ V5c — Chapter end (fin.) ═══════════════════════════════════════ */
+.ps-v5c {
+  padding-block: 72px 88px;
+}
+.ps-v5c__inner {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 16px;
+}
+.ps-v5c__dash {
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: 1;
+  color: var(--landing-text-500);
+}
+.ps-v5c__fin {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-display-lg);
+  line-height: 1;
+  color: var(--landing-text-200);
+  letter-spacing: -0.02em;
+}
+
+/* ═══ Notes ══════════════════════════════════════════════════════════ */
+.ps-notes {
+  padding-block: 64px 96px;
+  border-top: 1px solid var(--landing-border);
+  margin-top: 64px;
+  background-color: color-mix(in srgb, var(--landing-ink-1) 40%, transparent);
+}
+.ps-notes__heading {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+.ps-notes__list {
+  margin: 0;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 64rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+@media (max-width: 768px) {
+  .ps-v0 {
+    padding-block: 64px;
+  }
+  .ps-v2 {
+    padding-block: 56px;
+  }
+  .ps-v3 {
+    padding-block: 56px 72px;
+  }
+  .ps-v3__inner {
+    align-items: flex-start;
+    margin-left: 0;
+  }
+  .ps-v4 {
+    padding-block: 56px;
+  }
+  .ps-v5a {
+    padding-block: 56px 64px;
+  }
+  .ps-v5b {
+    padding-block: 48px 56px;
+  }
+  .ps-v5b__mark {
+    font-size: var(--landing-mono-sm);
+    letter-spacing: 0.08em;
+  }
+  .ps-v5c {
+    padding-block: 56px 72px;
+  }
+}

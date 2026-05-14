@@ -1,13 +1,25 @@
-<section class="home-philosophy" aria-label="Philosophy">
+<section class="home-philosophy" aria-hidden="true">
   <landing-container size="wide">
-    <p class="home-philosophy__line">
-      @for (run of runs(); track $index) {
-        @if (run.italic) {
-          <em class="home-philosophy__emphasis">{{ run.text }}</em>
-        } @else {
-          <span>{{ run.text }}</span>
-        }
-      }
-    </p>
+    <div class="home-philosophy__inner">
+      <svg
+        class="home-philosophy__squiggle"
+        viewBox="0 0 760 16"
+        height="16"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
+        <!-- Hand-drawn wave: a Q seed primes the oscillation, chained T
+             commands mirror the control point so the curve reads as one
+             continuous inked stroke. Stroke-cap round = ink pooling at the
+             endpoints. -->
+        <path
+          d="M 4 8 Q 28 0 52 8 T 100 8 T 148 8 T 196 8 T 244 8 T 292 8 T 340 8 T 388 8 T 436 8 T 484 8 T 532 8 T 580 8 T 628 8 T 676 8 T 724 8 T 756 8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+        />
+      </svg>
+    </div>
   </landing-container>
 </section>

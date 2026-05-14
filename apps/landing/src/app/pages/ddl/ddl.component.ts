@@ -97,6 +97,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: '§05 The Story · direction variants',
         desc: 'Four directions to escape the empty-right-side problem — A manuscript, B journal, C spotlight (portrait + abstract), D artifact.',
       },
+      {
+        path: '/ddl/philosophy-strip',
+        title: '§06b Philosophy strip · direction variants',
+        desc: 'V0 baseline · V1 cut · V2 ornament pause · V3 sign-off · V4 coda pen-at-rest. Story-tail → variant → CTA sandwich.',
+      },
     ],
   },
   {

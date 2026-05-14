@@ -75,6 +75,10 @@ export const appRoutes: Route[] = [
         path: 'story-variants',
         loadComponent: () => import('./pages/ddl/story-variants').then((m) => m.StoryVariantsPage),
       },
+      {
+        path: 'philosophy-strip',
+        loadComponent: () => import('./pages/ddl/philosophy-strip').then((m) => m.PhilosophyStripPage),
+      },
     ],
   },
   {
