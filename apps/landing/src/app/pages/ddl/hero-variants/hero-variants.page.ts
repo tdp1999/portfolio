@@ -845,9 +845,7 @@ export class HeroVariantsPage {
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Hero variants' }];
 
   protected replay(host: HTMLElement): void {
-    const animations = (
-      host as HTMLElement & { getAnimations?: (opts?: { subtree?: boolean }) => Animation[] }
-    ).getAnimations?.({ subtree: true });
+    const animations = host.getAnimations?.({ subtree: true });
     if (!animations) return;
     for (const a of animations) {
       a.cancel();

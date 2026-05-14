@@ -1,6 +1,7 @@
 import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
 import { DOCUMENT, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY } from 'rxjs';
 import { HomeBioCardGridComponent } from '../bio-card-grid/home-bio-card-grid.component';
 import { HomeGetInTouchComponent } from '../get-in-touch/home-get-in-touch.component';
 import { HomeHeroComponent } from '../hero/home-hero.component';
@@ -97,12 +98,15 @@ export class FeatureHome {
     this.scrollspy.setSections(this.navSections);
 
     if (isPlatformServer(this.platformId)) {
-      this.profileService.getJsonLd(this.locale()).subscribe((jsonLd) => {
-        const script = this.document.createElement('script');
-        script.setAttribute('type', 'application/ld+json');
-        script.textContent = JSON.stringify(jsonLd);
-        this.document.head.appendChild(script);
-      });
+      this.profileService
+        .getJsonLd(this.locale())
+        .pipe(catchError(() => EMPTY))
+        .subscribe((jsonLd) => {
+          const script = this.document.createElement('script');
+          script.setAttribute('type', 'application/ld+json');
+          script.textContent = JSON.stringify(jsonLd);
+          this.document.head.appendChild(script);
+        });
     }
   }
 }

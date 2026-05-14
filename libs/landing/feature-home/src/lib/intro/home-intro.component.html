@@ -1,4 +1,11 @@
-<section class="home-intro" [class.is-lamp-on]="isLampOn()" aria-label="The Story" (click)="onSectionClick()">
+<section
+  class="home-intro"
+  [class.is-lamp-on]="isLampOn()"
+  aria-label="The Story"
+  (click)="onSectionClick()"
+  tabindex="0"
+  (keydown.enter)="onSectionClick()"
+>
   <landing-container size="wide">
     <landing-eyebrow
       [label]="['05', 'The Story']"

@@ -200,7 +200,7 @@
     <div class="bi-shadow-grid">
       @for (v of shadowVariants; track v.id) {
         <div class="bi-shadow-cell">
-          <div class="bi-shadow-card" [ngClass]="'bi-shadow-card--' + v.id" [class.bi-card--picked]="v.picked">
+          <div class="bi-shadow-card" [class]="'bi-shadow-card--' + v.id" [class.bi-card--picked]="v.picked">
             @if (v.picked) {
               <span class="bi-badge">PICKED</span>
             }

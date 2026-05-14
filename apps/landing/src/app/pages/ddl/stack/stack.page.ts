@@ -728,9 +728,7 @@ export class StackPage {
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Stack — proposal' }];
 
   protected replay(host: HTMLElement): void {
-    const animations = (
-      host as HTMLElement & { getAnimations?: (opts?: { subtree?: boolean }) => Animation[] }
-    ).getAnimations?.({ subtree: true });
+    const animations = host.getAnimations?.({ subtree: true });
     if (!animations) return;
     for (const a of animations) {
       a.cancel();

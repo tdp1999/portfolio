@@ -179,8 +179,12 @@ const PROTOS: readonly ProtoEntry[] = [
 
 const PROTO_IDS = new Set<string>(PROTOS.map((p) => p.id));
 
+function isProtoId(value: string): value is ProtoId {
+  return PROTO_IDS.has(value);
+}
+
 function readProtoParam(value: string | null): ProtoId {
-  return value && PROTO_IDS.has(value) ? (value as ProtoId) : 'p1-plain';
+  return value && isProtoId(value) ? value : 'p1-plain';
 }
 
 function readCardsParam(value: string | null): 3 | 4 {

@@ -147,7 +147,7 @@ export class StoryVariantsPage {
       }
 
       ro.disconnect();
-      paragraphs.forEach((p) => ro!.observe(p.nativeElement));
+      for (const p of paragraphs) ro.observe(p.nativeElement);
       ro.observe(svg.nativeElement);
       schedule();
     });

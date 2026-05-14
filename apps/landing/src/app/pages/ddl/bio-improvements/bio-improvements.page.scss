@@ -29,6 +29,8 @@
 }
 .bi-card--picked {
   position: relative;
+  /* !important: this modifier rides on 4 different base cards (.bi-title-card, .bi-hours-card,
+     .bi-shadow-card, .bi-social-cell__card-wrap), each with its own higher-specificity border rule. */
   border-color: color-mix(in srgb, var(--landing-accent) 50%, transparent) !important;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--landing-accent) 25%, transparent);
 }
@@ -131,7 +133,7 @@
   margin-bottom: 16px;
   background: var(--landing-ink-1);
   border: 1px solid var(--landing-border);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .bi-segmented__btn {
   display: inline-flex;
@@ -144,7 +146,7 @@
   color: var(--landing-text-500);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   transition:
     color 150ms ease,
@@ -374,7 +376,7 @@
   padding: 0;
   background: transparent;
   border: 1px solid var(--landing-border);
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--landing-text-500);
   cursor: pointer;
   transition:

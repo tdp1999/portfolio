@@ -128,7 +128,7 @@ export class HomeIntroComponent {
       }
 
       ro.disconnect();
-      paragraphs.forEach((p) => ro!.observe(p.nativeElement));
+      for (const p of paragraphs) ro.observe(p.nativeElement);
       ro.observe(svg.nativeElement);
       afterNextRender(() => this.recomputeAngles(), { injector: this.injector });
     });

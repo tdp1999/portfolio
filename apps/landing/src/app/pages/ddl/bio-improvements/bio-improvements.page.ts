@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, PLATFORM_ID, signal } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import {
   CardComponent,
@@ -41,7 +41,6 @@ const HOURS_TO = '08:00–17:00 GMT-1';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
     RouterLink,
     CardComponent,
     ContainerComponent,
