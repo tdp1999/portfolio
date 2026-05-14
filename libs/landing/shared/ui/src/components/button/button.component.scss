@@ -30,14 +30,14 @@
 }
 
 .landing-btn--sm {
-  padding: 6px 12px;
+  padding: 4px 12px;
   font-size: var(--landing-body-sm);
   line-height: var(--landing-body-sm-lh);
   min-height: 32px;
 }
 
 .landing-btn--md {
-  padding: 10px 16px;
+  padding: 8px 16px;
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
   min-height: 40px;
@@ -102,8 +102,8 @@
 .landing-btn__arrow-stack {
   position: relative;
   display: inline-flex;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
 }
 
