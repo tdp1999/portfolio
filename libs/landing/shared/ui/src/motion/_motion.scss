@@ -1,6 +1,7 @@
 /* Motion library aggregator — one file per effect.
    Add @use entries here as effects are introduced. */
 
-@use './stagger-chars/stagger-chars';
+/* stagger-text styles are component-scoped (loaded via styleUrl) — no global
+   registration needed here. */
 @use './spotlight/spotlight';
 @use './type-out/type-out';

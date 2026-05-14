@@ -3,13 +3,13 @@ import {
   ContainerComponent,
   StatusDotComponent,
   LandingBackgroundComponent,
-  StaggerCharsDirective,
+  LandingStaggerTextComponent,
 } from '@portfolio/landing/shared/ui';
 
 @Component({
   selector: 'landing-home-hero',
   standalone: true,
-  imports: [ContainerComponent, StatusDotComponent, LandingBackgroundComponent, StaggerCharsDirective],
+  imports: [ContainerComponent, StatusDotComponent, LandingBackgroundComponent, LandingStaggerTextComponent],
   templateUrl: './home-hero.component.html',
   styleUrl: './home-hero.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

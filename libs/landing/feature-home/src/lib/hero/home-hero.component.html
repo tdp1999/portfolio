@@ -3,7 +3,9 @@
 
   <landing-container size="wide" class="home-hero__top">
     <div class="home-hero__headline">
-      <h1 class="home-hero__title" fxStaggerChars [attr.aria-label]="fullName()">{{ fullName() }}</h1>
+      <h1 class="home-hero__title">
+        <landing-stagger-text [text]="fullName()" />
+      </h1>
       @if (title()) {
         <p class="home-hero__role">— {{ title() }}</p>
       }

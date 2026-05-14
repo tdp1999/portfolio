@@ -1,0 +1,36 @@
+/* Per-character stagger entrance. The host is `display: contents` so it doesn't
+   create a layout box — the spans flow inline within whatever element wraps
+   this component (h1, h2, etc.). */
+
+:host {
+  display: contents;
+}
+
+.fx-stagger-text__char {
+  display: inline-block;
+  white-space: pre;
+  opacity: 0;
+  transform: translateY(calc(var(--fx-y, 0) * 1px));
+  animation-name: fx-stagger-text-settle;
+  animation-timing-function: cubic-bezier(0.2, 0, 0.1, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes fx-stagger-text-settle {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--fx-y, 0) * 1px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-stagger-text__char {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

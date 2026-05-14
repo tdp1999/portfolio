@@ -4,7 +4,7 @@ import {
   ContainerComponent,
   LandingBackgroundComponent,
   LandingBreadcrumbComponent,
-  StaggerCharsDirective,
+  LandingStaggerTextComponent,
   StatusDotComponent,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
@@ -28,7 +28,7 @@ const DEMO = {
     ContainerComponent,
     LandingBackgroundComponent,
     LandingBreadcrumbComponent,
-    StaggerCharsDirective,
+    LandingStaggerTextComponent,
     StatusDotComponent,
   ],
   template: `
@@ -39,9 +39,9 @@ const DEMO = {
           <h1 class="font-display text-display-md text-landing-text-300">Hero direction variants</h1>
           <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
             <strong class="text-landing-text-300">α picked.</strong> Graduated to <code>landing-home-hero</code> with
-            <code>fxStaggerChars</code>. The spotlight (<code>fxSpotlight scope="viewport"</code>) is now applied once
-            on <code>landing-shell</code> — follows the cursor across every page, theme-aware (white tint on dark, slate
-            tint on light). β / γ kept for visual reference; safe to delete next sweep.
+            <code>landing-stagger-text</code>. The spotlight (<code>fxSpotlight scope="viewport"</code>) is now applied
+            once on <code>landing-shell</code> — follows the cursor across every page, theme-aware (white tint on dark,
+            slate tint on light). β / γ kept for visual reference; safe to delete next sweep.
           </p>
         </div>
       </landing-container>
@@ -115,8 +115,8 @@ const DEMO = {
       <landing-background pattern="blueprint" />
       <landing-container size="wide" class="hv__top">
         <div class="hv__headline">
-          <h2 class="hv__title hv--alpha-title" fxStaggerChars [attr.aria-label]="demo.fullName">
-            {{ demo.fullName }}
+          <h2 class="hv__title hv--alpha-title">
+            <landing-stagger-text [text]="demo.fullName" />
           </h2>
           <p class="hv--alpha-dash">— {{ demo.role }}</p>
           <p class="hv__sub-lead hv--alpha-lead">{{ demo.lead }}</p>
@@ -214,14 +214,14 @@ const DEMO = {
         <div class="hv-summary">
           <p class="hv-notes__label">how to pick</p>
           <ul class="hv-summary__list">
-            <li><strong>α</strong> → live in <code>landing-home-hero</code> via <code>fxStaggerChars</code>.</li>
+            <li><strong>α</strong> → live in <code>landing-home-hero</code> via <code>landing-stagger-text</code>.</li>
             <li>
               <strong>Spotlight</strong> → site-wide via <code>fxSpotlight scope="viewport"</code> on
               <code>landing-shell</code>. Theme-aware.
             </li>
             <li>
-              <strong>fxStaggerChars</strong> — per-character entrance. SSR-safe. Inputs: <code>charDelay</code>,
-              <code>duration</code>.
+              <strong>landing-stagger-text</strong> — per-character entrance, SSR-pre-rendered (no JS needed for first
+              paint). Inputs: <code>text</code>, <code>charDelay</code>, <code>duration</code>.
             </li>
             <li>
               <strong>fxSpotlight</strong> — cursor-tracking overlay. Inputs: <code>radius</code>,
@@ -432,7 +432,7 @@ const DEMO = {
         letter-spacing: var(--landing-tracking-tight);
         color: var(--landing-text-300);
       }
-      /* α stagger handled by fxStaggerChars directive (motion/stagger-chars). */
+      /* α stagger handled by landing-stagger-text (motion/stagger-text). */
       .hv--alpha-dash {
         margin: 4px 0 0 0;
         padding-bottom: 12px;
