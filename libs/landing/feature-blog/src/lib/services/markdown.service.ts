@@ -1,19 +1,9 @@
 import { Injectable } from '@angular/core';
-import { marked } from 'marked';
-import { codeToHtml, type BundledLanguage } from 'shiki';
+import { marked, type Renderer } from 'marked';
+import { codeToHtml, type BundledLanguage, type SpecialLanguage } from 'shiki';
+import type { RenderedMarkdown, TocEntry } from './markdown.types';
 
-export type TocEntry = {
-  id: string;
-  text: string;
-  level: 2 | 3;
-};
-
-export type RenderedMarkdown = {
-  html: string;
-  toc: TocEntry[];
-};
-
-const SUPPORTED_LANGS: BundledLanguage[] = [
+const SUPPORTED_LANGS = new Set<BundledLanguage>([
   'typescript',
   'javascript',
   'tsx',
@@ -28,7 +18,11 @@ const SUPPORTED_LANGS: BundledLanguage[] = [
   'json',
   'yaml',
   'markdown',
-];
+]);
+
+function isSupportedLang(value: string | undefined): value is BundledLanguage {
+  return value !== undefined && SUPPORTED_LANGS.has(value as BundledLanguage);
+}
 
 function slugify(text: string): string {
   return text
@@ -39,14 +33,23 @@ function slugify(text: string): string {
     .slice(0, 80);
 }
 
+type ConfiguredRenderer = { renderer: Renderer; toc: TocEntry[] };
+
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
   async render(markdown: string): Promise<RenderedMarkdown> {
     if (!markdown) return { html: '', toc: [] };
 
+    const { renderer, toc } = this.configureRenderer();
+    const parsed = await this.parse(markdown, renderer);
+    const html = await this.highlightCodeBlocks(parsed);
+
+    return { html, toc };
+  }
+
+  private configureRenderer(): ConfiguredRenderer {
     const toc: TocEntry[] = [];
     const usedIds = new Set<string>();
-
     const renderer = new marked.Renderer();
 
     renderer.heading = ({ tokens, depth }) => {
@@ -75,31 +78,34 @@ export class MarkdownService {
       return `<img src="${href}" alt="${text ?? ''}"${titleAttr} loading="lazy" />`;
     };
 
+    return { renderer, toc };
+  }
+
+  private async parse(markdown: string, renderer: Renderer): Promise<string> {
     marked.use({ renderer, async: true });
+    return marked.parse(markdown, { async: true });
+  }
 
-    // Pre-render to get HTML, then post-process code blocks via shiki.
-    let html = await marked.parse(markdown, { async: true });
-
-    // Replace <pre><code class="language-xxx">...</code></pre> with shiki output.
+  private async highlightCodeBlocks(html: string): Promise<string> {
     const codeBlockRegex = /<pre><code(?:\s+class="language-([^"]+)")?>([\s\S]*?)<\/code><\/pre>/g;
     const matches = Array.from(html.matchAll(codeBlockRegex));
 
+    let result = html;
     for (const match of matches) {
       const [full, lang, rawCode] = match;
       const code = decodeHtml(rawCode);
-      const language = (SUPPORTED_LANGS.includes(lang as BundledLanguage) ? lang : 'text') as BundledLanguage;
+      const language: BundledLanguage | SpecialLanguage = isSupportedLang(lang) ? lang : 'text';
       try {
         const highlighted = await codeToHtml(code, {
           lang: language,
           theme: 'github-dark',
         });
-        html = html.replace(full, highlighted);
+        result = result.replace(full, highlighted);
       } catch {
         // leave original block if highlighting fails
       }
     }
-
-    return { html, toc };
+    return result;
   }
 }
 

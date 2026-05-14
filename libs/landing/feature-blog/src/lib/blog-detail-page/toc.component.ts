@@ -1,16 +1,26 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AfterViewInit, Component, Input, OnDestroy, PLATFORM_ID, inject, signal } from '@angular/core';
-import type { TocEntry } from '../services/markdown.service';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  PLATFORM_ID,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import type { TocEntry } from '../services/markdown.types';
 
 @Component({
   selector: 'landing-toc',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
-    @if (entries.length > 0) {
+    @if (entries().length > 0) {
       <nav class="toc">
         <p class="toc__title">On this page</p>
         <ul>
-          @for (entry of entries; track entry.id) {
+          @for (entry of entries(); track entry.id) {
             <li [class.toc__item--h3]="entry.level === 3" [class.toc__item--active]="activeId() === entry.id">
               <a [href]="'#' + entry.id">{{ entry.text }}</a>
             </li>
@@ -29,13 +39,13 @@ import type { TocEntry } from '../services/markdown.service';
       .toc__title {
         font-weight: 600;
         margin-bottom: 0.75rem;
-        color: var(--color-text);
+        color: var(--landing-text);
       }
       .toc ul {
         list-style: none;
         padding: 0;
         margin: 0;
-        border-left: 2px solid var(--color-border, #2a2a2a);
+        border-left: 2px solid var(--landing-border);
       }
       .toc li {
         padding: 0.25rem 0 0.25rem 0.75rem;
@@ -46,24 +56,24 @@ import type { TocEntry } from '../services/markdown.service';
         padding-left: 1.5rem;
       }
       .toc li.toc__item--active {
-        border-left-color: var(--color-primary, #6366f1);
+        border-left-color: var(--landing-accent);
       }
       .toc a {
-        color: var(--color-text-secondary);
+        color: var(--landing-text-400);
         text-decoration: none;
         transition: color 0.2s;
       }
       .toc li.toc__item--active a {
-        color: var(--color-primary, #6366f1);
+        color: var(--landing-accent);
       }
       .toc a:hover {
-        color: var(--color-primary, #6366f1);
+        color: var(--landing-accent);
       }
     `,
   ],
 })
 export class TocComponent implements AfterViewInit, OnDestroy {
-  @Input() entries: TocEntry[] = [];
+  readonly entries = input<TocEntry[]>([]);
   activeId = signal<string>('');
 
   private platformId = inject(PLATFORM_ID);
@@ -71,7 +81,8 @@ export class TocComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
-    if (this.entries.length === 0) return;
+    const entries = this.entries();
+    if (entries.length === 0) return;
 
     this.observer = new IntersectionObserver(
       (records) => {
@@ -83,7 +94,7 @@ export class TocComponent implements AfterViewInit, OnDestroy {
       { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
     );
 
-    for (const entry of this.entries) {
+    for (const entry of entries) {
       const el = document.getElementById(entry.id);
       if (el) this.observer.observe(el);
     }

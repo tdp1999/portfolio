@@ -17,8 +17,8 @@
               @if (p.readTimeMinutes) {
                 <span class="text-body-sm text-text-secondary"> · {{ p.readTimeMinutes }} min read </span>
               }
-              @if (p.publishedAt) {
-                <span class="text-body-sm text-text-secondary">· {{ formatDate(p.publishedAt) }}</span>
+              @if (publishedDate()) {
+                <span class="text-body-sm text-text-secondary">· {{ publishedDate() }}</span>
               }
             </div>
 

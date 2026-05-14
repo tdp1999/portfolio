@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -19,6 +19,7 @@ const EMPTY: BlogPostListResponse = { data: [], total: 0, page: 1, limit: PAGE_S
 
 @Component({
   selector: 'landing-blog-list-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     ContainerComponent,
@@ -70,6 +71,12 @@ export class BlogListPage {
   );
 
   posts = computed(() => this.response().data);
+  postVms = computed(() =>
+    this.posts().map((post) => ({
+      ...post,
+      displayDate: formatBlogDate(post.publishedAt),
+    }))
+  );
   total = computed(() => this.response().total);
   totalPages = computed(() => Math.max(1, Math.ceil(this.total() / PAGE_SIZE)));
 
@@ -99,13 +106,13 @@ export class BlogListPage {
       queryParamsHandling: 'merge',
     });
   }
+}
 
-  formatDate(dateStr: string | null): string {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  }
+function formatBlogDate(dateStr: string | null): string {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }

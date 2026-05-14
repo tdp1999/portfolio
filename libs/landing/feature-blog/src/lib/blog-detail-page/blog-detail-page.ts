@@ -1,5 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   PLATFORM_ID,
@@ -27,7 +28,8 @@ import {
 } from '@portfolio/landing/shared/ui';
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
 import type { BlogPostDetail } from '@portfolio/landing/shared/data-access';
-import { MarkdownService, type RenderedMarkdown } from '../services/markdown.service';
+import { MarkdownService } from '../services/markdown.service';
+import type { RenderedMarkdown } from '../services/markdown.types';
 import { TocComponent } from './toc.component';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
@@ -39,6 +41,7 @@ type DetailState = {
 
 @Component({
   selector: 'landing-blog-detail-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,
@@ -86,8 +89,8 @@ export class BlogDetailPage {
           switchMap((post) => {
             if (!post) return of<DetailState>({ post: null, rendered: EMPTY_RENDER });
             return from(this.markdown.render(post.content)).pipe(
-              map((rendered) => {
-                const next = { post, rendered } as DetailState;
+              map((rendered): DetailState => {
+                const next: DetailState = { post, rendered };
                 if (!isPlatformBrowser(this.platformId)) {
                   this.transferState.set(stateKey, next);
                 }
@@ -98,7 +101,7 @@ export class BlogDetailPage {
         );
       })
     ),
-    { initialValue: { post: null, rendered: EMPTY_RENDER } as DetailState }
+    { initialValue: { post: null, rendered: EMPTY_RENDER } satisfies DetailState }
   );
 
   post = computed(() => this.state().post);
@@ -107,6 +110,15 @@ export class BlogDetailPage {
   notFound = computed(() => {
     // After first emission, if state has no post and slug present
     return this.state().post === null && this.route.snapshot.paramMap.has('slug');
+  });
+  publishedDate = computed(() => {
+    const published = this.post()?.publishedAt;
+    if (!published) return '';
+    return new Date(published).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
   });
 
   constructor() {
@@ -126,15 +138,6 @@ export class BlogDetailPage {
       if (p.publishedAt) {
         this.meta.updateTag({ property: 'article:published_time', content: p.publishedAt });
       }
-    });
-  }
-
-  formatDate(dateStr: string | null): string {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
     });
   }
 
