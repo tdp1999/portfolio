@@ -69,7 +69,8 @@ export class LandingGalleryComponent {
 
   protected readonly layoutCount = computed<1 | 2 | 3 | 4>(() => {
     const n = Math.min(this.images().length, 4);
-    return (n < 1 ? 1 : (n as 1 | 2 | 3 | 4)) as 1 | 2 | 3 | 4;
+    if (n < 1) return 1;
+    return n as 1 | 2 | 3 | 4;
   });
 
   protected readonly cells = computed<readonly Cell[]>(() => {

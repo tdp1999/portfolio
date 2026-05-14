@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, HostListener, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 
 @Component({
   selector: 'landing-scroll-to-top',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:scroll)': 'onScroll()',
+  },
   template: `
     @if (visible()) {
       <button
@@ -23,7 +26,6 @@ export class LandingScrollToTopComponent {
   readonly threshold = input(400);
   readonly visible = signal(false);
 
-  @HostListener('window:scroll')
   onScroll(): void {
     if (typeof window === 'undefined') return;
     const next = window.scrollY > this.threshold();

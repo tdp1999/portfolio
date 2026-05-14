@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 
 /**
  * Thin reading-progress bar fixed to the top edge of the viewport.
@@ -12,6 +12,9 @@ import { ChangeDetectionStrategy, Component, HostListener, computed, input, sign
   selector: 'landing-reading-progress',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:scroll)': 'onScroll()',
+  },
   template: `
     <div class="fixed inset-x-0 top-0 z-40 h-1 bg-landing-border/40" role="progressbar" aria-label="Reading progress">
       <div class="h-full bg-landing-accent transition-[width] duration-150 ease-out" [style.width.%]="progress()"></div>
@@ -41,7 +44,6 @@ export class LandingReadingProgressComponent {
     return max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
   });
 
-  @HostListener('window:scroll')
   onScroll(): void {
     if (typeof window === 'undefined') return;
     this.scrollY.set(window.scrollY);

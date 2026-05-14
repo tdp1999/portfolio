@@ -3,7 +3,6 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  HostListener,
   PLATFORM_ID,
   computed,
   effect,
@@ -30,6 +29,10 @@ import { InPageSection } from './section.types';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
+  host: {
+    '(document:pointerdown)': 'onDocumentPointerDown($event.target)',
+    '(document:keydown.escape)': 'onEscape()',
+  },
   template: `
     @if (visible()) {
       <!-- Pill: bottom-center. Desktop-only (≥lg) — tablets and below get the
@@ -182,7 +185,6 @@ export class LandingFloatingPillNavComponent {
   /** Close the dropdown when the user clicks anywhere outside the pill container.
    *  The pill toggle's own click handler runs first and stops here via the contains() check,
    *  so the menu still opens on toggle and closes on any outside pointer event. */
-  @HostListener('document:pointerdown', ['$event.target'])
   onDocumentPointerDown(target: EventTarget | null): void {
     if (!this.open()) return;
     const host = this.pillContainer()?.nativeElement;
@@ -192,7 +194,6 @@ export class LandingFloatingPillNavComponent {
   }
 
   /** Escape key closes the dropdown — standard popup a11y. */
-  @HostListener('document:keydown.escape')
   onEscape(): void {
     if (this.open()) this.open.set(false);
   }

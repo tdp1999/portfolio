@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LandingThemeToggleComponent } from '../theme';
 import { ContainerComponent } from '../components/container';
@@ -29,6 +29,7 @@ const SCROLL_THRESHOLD = 8;
   host: {
     class: 'sticky top-0 z-50 block w-full',
     '[class.pointer-events-none]': 'scrolled()',
+    '(window:scroll)': 'onWindowScroll()',
   },
   template: `
     <header class="block h-16 w-full bg-transparent" role="banner">
@@ -144,8 +145,8 @@ export class LandingHeaderComponent {
   readonly navItems = NAV_ITEMS;
   readonly scrolled = signal(false);
 
-  @HostListener('window:scroll')
   onWindowScroll(): void {
+    if (typeof window === 'undefined') return;
     const next = window.scrollY > SCROLL_THRESHOLD;
     if (next !== this.scrolled()) {
       this.scrolled.set(next);

@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Directive, HostListener, inject, input, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
+import { Directive, inject, input, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
 
 export type CopyState = 'idle' | 'copied' | 'error';
 
@@ -30,6 +30,9 @@ export type CopyState = 'idle' | 'copied' | 'error';
   selector: '[landingCopyToClipboard]',
   standalone: true,
   exportAs: 'landingCopyToClipboard',
+  host: {
+    '(click)': 'onClick()',
+  },
 })
 export class CopyToClipboardDirective implements OnDestroy {
   private readonly document = inject(DOCUMENT);
@@ -43,7 +46,6 @@ export class CopyToClipboardDirective implements OnDestroy {
   readonly state = signal<CopyState>('idle');
   private timer: ReturnType<typeof setTimeout> | null = null;
 
-  @HostListener('click')
   async onClick(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
     const target = this.text();

@@ -79,6 +79,8 @@
   }
 
   .landing-gallery__cell {
+    /* Overrides inline [style.grid-area] binding from the template — !important is the only way
+       to win against an inline style for the mobile collapse. */
     grid-area: auto !important;
   }
 }
