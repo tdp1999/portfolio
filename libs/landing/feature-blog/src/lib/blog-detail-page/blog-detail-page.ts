@@ -26,10 +26,8 @@ import {
   LandingLinkComponent,
   LandingReadingProgressComponent,
 } from '@portfolio/landing/shared/ui';
-import { BlogDataService } from '@portfolio/landing/shared/data-access';
-import type { BlogPostDetail } from '@portfolio/landing/shared/data-access';
-import { MarkdownService } from '../services/markdown.service';
-import type { RenderedMarkdown } from '../services/markdown.types';
+import { BlogDataService, MarkdownService } from '@portfolio/landing/shared/data-access';
+import type { BlogPostDetail, RenderedMarkdown } from '@portfolio/landing/shared/data-access';
 import { TocComponent } from './toc.component';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };

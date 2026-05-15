@@ -9,7 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import type { TocEntry } from '../services/markdown.types';
+import type { TocEntry } from '@portfolio/landing/shared/data-access';
 
 @Component({
   selector: 'landing-toc',
