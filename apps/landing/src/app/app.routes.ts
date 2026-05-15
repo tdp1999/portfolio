@@ -83,6 +83,18 @@ export const appRoutes: Route[] = [
         path: 'get-in-touch',
         loadComponent: () => import('./pages/ddl/get-in-touch').then((m) => m.GetInTouchPage),
       },
+      {
+        path: 'feed-item-variants',
+        loadComponent: () => import('./pages/ddl/feed-item-variants').then((m) => m.FeedItemVariantsPage),
+      },
+      {
+        path: 'feed-filter-bar',
+        loadComponent: () => import('./pages/ddl/feed-filter-bar').then((m) => m.FeedFilterBarPage),
+      },
+      {
+        path: 'feed-pagination',
+        loadComponent: () => import('./pages/ddl/feed-pagination').then((m) => m.FeedPaginationPage),
+      },
     ],
   },
   {

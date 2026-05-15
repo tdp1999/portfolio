@@ -87,10 +87,18 @@ export class SelectedWorkTransitionsPage {
   protected readonly activeV3 = linkedSignal<string>(() => this.projects[0]?.slug ?? '');
   protected readonly activeV4 = linkedSignal<string>(() => this.projects[0]?.slug ?? '');
 
-  protected readonly projectV1 = computed(() => this.projects.find((p) => p.slug === this.activeV1())!);
-  protected readonly projectV2 = computed(() => this.projects.find((p) => p.slug === this.activeV2())!);
-  protected readonly projectV3 = computed(() => this.projects.find((p) => p.slug === this.activeV3())!);
-  protected readonly projectV4 = computed(() => this.projects.find((p) => p.slug === this.activeV4())!);
+  protected readonly projectV1 = computed(
+    () => this.projects.find((p) => p.slug === this.activeV1()) ?? this.projects[0]
+  );
+  protected readonly projectV2 = computed(
+    () => this.projects.find((p) => p.slug === this.activeV2()) ?? this.projects[0]
+  );
+  protected readonly projectV3 = computed(
+    () => this.projects.find((p) => p.slug === this.activeV3()) ?? this.projects[0]
+  );
+  protected readonly projectV4 = computed(
+    () => this.projects.find((p) => p.slug === this.activeV4()) ?? this.projects[0]
+  );
 
   /** Index of the active project per variant — used by V4 to decide slide direction (forward vs back). */
   protected readonly indexV4 = computed(() => this.projects.findIndex((p) => p.slug === this.activeV4()));

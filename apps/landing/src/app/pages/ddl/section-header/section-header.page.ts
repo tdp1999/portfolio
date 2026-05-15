@@ -60,6 +60,50 @@ const SECTIONS: readonly SectionPreview[] = [
       </landing-container>
     </div>
 
+    <!-- ═══ Size comparison ═══════════════════════════════════════════ -->
+    <section class="sh-block sh-block--sizes" aria-label="Size variants">
+      <landing-container size="wide">
+        <landing-eyebrow
+          [label]="['size variants', 'three nấcs', 'lg · md · sm']"
+          tone="accent"
+          class="sh-block__eyebrow"
+        />
+        <p class="sh-block__intro">
+          Primitive offers <strong>3 size variants</strong>. Desktop sizes shown below — each variant collapses one step
+          down at <code>≤768px</code> (md → md, lg → md, sm → display-sm). Pick by section weight, not by gut:
+          <strong>lg</strong> for hero-equivalent statements (rare), <strong>md</strong> for top-level home sections
+          (§03–§07 default), <strong>sm</strong> for sub-page page-titles (/projects, /uses, /colophon) and in-page
+          sub-sections.
+        </p>
+
+        <div class="sh-sizes">
+          <div class="sh-sizes__row">
+            <span class="sh-sizes__tag">lg · 56 / 64 (default)</span>
+            <span class="sh-sizes__use">display-xl · home top-level sections §03–§07</span>
+            <div class="sh-sizes__body">
+              <landing-section-header size="lg"> The <em>loudest</em>. </landing-section-header>
+            </div>
+          </div>
+
+          <div class="sh-sizes__row">
+            <span class="sh-sizes__tag">md · 48 / 56</span>
+            <span class="sh-sizes__use">display-lg · sub-page page titles (/projects, /uses, /colophon)</span>
+            <div class="sh-sizes__body">
+              <landing-section-header size="md"> The <em>middle</em>. </landing-section-header>
+            </div>
+          </div>
+
+          <div class="sh-sizes__row">
+            <span class="sh-sizes__tag">sm · 40 / 48</span>
+            <span class="sh-sizes__use">display-md · nested in-page sub-sections inside long-form pages</span>
+            <div class="sh-sizes__body">
+              <landing-section-header size="sm"> The <em>quieter</em>. </landing-section-header>
+            </div>
+          </div>
+        </div>
+      </landing-container>
+    </section>
+
     <!-- ═══ Primitive — use cases ══════════════════════════════════════ -->
     <section class="sh-block" aria-label="Primitive use cases">
       <landing-container size="wide">
@@ -319,6 +363,67 @@ const SECTIONS: readonly SectionPreview[] = [
       .sh-block--candidates {
         background-color: var(--landing-ink-1);
       }
+      .sh-block--sizes {
+        background-color: var(--landing-ink-0);
+      }
+
+      /* ─── Size comparison rows ───────────────────────────────────── */
+      .sh-sizes {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .sh-sizes__row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 24px 32px;
+        padding-block: 24px;
+        border-top: 1px dashed var(--landing-border);
+        align-items: start;
+      }
+      .sh-sizes__row:first-child {
+        border-top: none;
+      }
+      .sh-sizes__tag {
+        grid-column: 1;
+        grid-row: 1;
+        font-family: var(--landing-font-mono);
+        font-size: var(--landing-mono-sm);
+        line-height: 16px;
+        letter-spacing: var(--landing-tracking-mono);
+        text-transform: uppercase;
+        color: var(--landing-accent);
+      }
+      .sh-sizes__use {
+        grid-column: 1;
+        grid-row: 2;
+        font-family: var(--landing-font-body);
+        font-size: var(--landing-body-sm);
+        line-height: var(--landing-body-sm-lh);
+        color: var(--landing-text-500);
+        max-width: 24ch;
+      }
+      .sh-sizes__body {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        background-color: var(--landing-ink-1);
+        border: 1px solid var(--landing-border);
+        border-radius: 4px;
+        padding: 48px 32px;
+      }
+      @media (max-width: 768px) {
+        .sh-sizes__row {
+          grid-template-columns: 1fr;
+        }
+        .sh-sizes__use,
+        .sh-sizes__body {
+          grid-column: 1;
+        }
+        .sh-sizes__body {
+          grid-row: auto;
+        }
+      }
+
       .sh-block__eyebrow {
         display: block;
         margin-bottom: 24px;

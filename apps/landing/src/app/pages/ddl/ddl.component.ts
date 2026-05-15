@@ -5,12 +5,10 @@ import {
   ICON_PROVIDER,
   IconComponent,
   ButtonComponent,
-  CardComponent,
   InputComponent,
   LandingLinkComponent,
   LandingIconArrowComponent,
   ContainerComponent,
-  SectionComponent,
   ChipComponent,
   EyebrowComponent,
   StatusDotComponent,
@@ -51,7 +49,7 @@ const DDL_SECTIONS: readonly InPageSection[] = [
   { id: 'headings', title: 'Section heading variants' },
 ];
 
-type DdlSubrouteGroupId = 'compositions' | 'patterns' | 'legacy';
+type DdlSubrouteGroupId = 'compositions' | 'blocks' | 'patterns' | 'legacy';
 
 type DdlSubroute = {
   readonly path: string;
@@ -110,6 +108,28 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
     ],
   },
   {
+    id: 'blocks',
+    label: 'blocks · multi-primitive compositions for feed/index pages',
+    tone: 'accent',
+    routes: [
+      {
+        path: '/ddl/feed-item-variants',
+        title: 'Feed · item layout variants',
+        desc: 'Row (3 sub-variants) · Card · Timeline — side-by-side on same fake data. Pick default for /projects + /blog.',
+      },
+      {
+        path: '/ddl/feed-filter-bar',
+        title: 'Feed · filter bar variants',
+        desc: 'V1 chip-row · V2 dropdown-per-facet · V3 sidebar · V4 search+autocomplete. Year + status + stack filter UX.',
+      },
+      {
+        path: '/ddl/feed-pagination',
+        title: 'Feed · pagination strategies',
+        desc: 'V1 render-all · V2 load-more · V3 paged. When to switch + scroll/SSR/footer trade-offs.',
+      },
+    ],
+  },
+  {
     id: 'patterns',
     label: 'patterns & primitives · reusable building blocks',
     tone: 'accent',
@@ -151,7 +171,7 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
 ];
 
 @Component({
-  selector: 'app-ddl',
+  selector: 'landing-ddl',
   standalone: true,
   imports: [
     CommonModule,

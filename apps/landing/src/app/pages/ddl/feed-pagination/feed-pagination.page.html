@@ -1,0 +1,118 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
+      <landing-section-header align="left" size="sm" [level]="1"> Feed — <em>pagination</em>. </landing-section-header>
+      <p class="ap__intro">
+        Pagination strategies for any feed/index page (/projects, /blog, future). Three strategies on the same 8-item
+        dataset (page size = 3). All are wired — click around to feel the rhythm. Marks: 🟢 <em>recommend</em>, 💡
+        <em>fallback</em>, ⚠ <em>do not ship</em>.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<!-- ═══ V1 — render-all ═════════════════════════════════════════ -->
+<section class="ap-block" aria-label="V1 render all">
+  <landing-container size="wide">
+    <div class="ap-variant__head">
+      <span class="ap-variant__tag">V1 · render-all (no pagination)</span>
+      <span class="ap-variant__note">
+        🟢 recommend for now · &lt;12 projects = render-all wins. No extra UI, scroll is the affordance, SSR prerenders
+        the whole list, footer is always reachable. Add load-more when count crosses ~12.
+      </span>
+    </div>
+
+    <landing-results-count [visible]="total" [total]="total" unit="project" />
+
+    <ul class="ap-list" role="list">
+      @for (project of all; track project.slug) {
+        <li class="ap-row">
+          <span class="ap-row__title">{{ project.title }}</span>
+          <span class="ap-row__year">{{ project.startDate.slice(0, 4) }}</span>
+        </li>
+      }
+    </ul>
+  </landing-container>
+</section>
+
+<!-- ═══ V2 — load-more ══════════════════════════════════════════ -->
+<section class="ap-block ap-block--alt" aria-label="V2 load more">
+  <landing-container size="wide">
+    <div class="ap-variant__head">
+      <span class="ap-variant__tag">V2 · load-more</span>
+      <span class="ap-variant__note">
+        💡 fallback (ship when count &gt; 12) · single button at the bottom. Preserves footer access, back-from-detail
+        keeps position, SSR ships first chunk. Avoid: full pagination is overkill, infinite-scroll buries footer.
+      </span>
+    </div>
+
+    <landing-results-count [visible]="loadMoreVisible().length" [total]="total" unit="project" />
+
+    <ul class="ap-list" role="list">
+      @for (project of loadMoreVisible(); track project.slug) {
+        <li class="ap-row">
+          <span class="ap-row__title">{{ project.title }}</span>
+          <span class="ap-row__year">{{ project.startDate.slice(0, 4) }}</span>
+        </li>
+      }
+    </ul>
+
+    <landing-load-more [loaded]="loadMoreVisible().length" [total]="total" (loadMore)="loadMore()" />
+  </landing-container>
+</section>
+
+<!-- ═══ V3 — paged ══════════════════════════════════════════════ -->
+<section class="ap-block" aria-label="V3 paged">
+  <landing-container size="wide">
+    <div class="ap-variant__head">
+      <span class="ap-variant__tag">V3 · paged (Page 1 of N)</span>
+      <span class="ap-variant__note">
+        ⚠ do not ship · overkill for portfolio scale. Designed for catalogs with 100+ items where users need to jump
+        pages. Forces user to commit to a chunk size, breaks scroll position on each click, SEO needs canonical URLs for
+        each page.
+      </span>
+    </div>
+
+    <landing-results-count [visible]="pagedVisible().length" [total]="total" unit="project" />
+
+    <ul class="ap-list" role="list">
+      @for (project of pagedVisible(); track project.slug) {
+        <li class="ap-row">
+          <span class="ap-row__title">{{ project.title }}</span>
+          <span class="ap-row__year">{{ project.startDate.slice(0, 4) }}</span>
+        </li>
+      }
+    </ul>
+
+    <landing-pagination [page]="currentPage()" [total]="totalPages()" (pageChange)="goToPage($event)" />
+    <p class="ap-meta">
+      Component: <code>&lt;landing-pagination&gt;</code> · auto-ellipsis when total &gt; window (default 7). Tested
+      below with the 8-item dataset — 3 pages × size 3.
+    </p>
+  </landing-container>
+</section>
+
+<!-- ═══ Summary ═════════════════════════════════════════════════ -->
+<section class="ap-summary">
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['adoption', 'recommendation', 'when to switch']" tone="accent" class="ap-eyebrow" />
+    <dl class="ap-pick">
+      <div class="ap-pick__row">
+        <dt>Now (≤ 12 projects)</dt>
+        <dd><strong>V1 · render-all</strong>. Zero ceremony, SSR-friendly, scroll is the only affordance needed.</dd>
+      </div>
+      <div class="ap-pick__row">
+        <dt>When count exceeds 12</dt>
+        <dd><strong>V2 · load-more</strong>. First 12 prerender, "Load more" reveals next chunk. Chunk size = 12.</dd>
+      </div>
+      <div class="ap-pick__row">
+        <dt>Never</dt>
+        <dd>
+          <strong>V3 · paged</strong>, <strong>infinite-scroll</strong> — wrong tools for portfolio. Per session rule
+          "infinite scroll: do not ship".
+        </dd>
+      </div>
+    </dl>
+  </landing-container>
+</section>

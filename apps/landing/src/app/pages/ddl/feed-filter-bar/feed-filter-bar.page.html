@@ -1,0 +1,350 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
+      <landing-section-header align="left" size="sm" [level]="1"> Feed — <em>filter bar</em>. </landing-section-header>
+      <p class="afb__intro">
+        Filter UX for any feed/index page (/projects, /blog, future). Four UI strategies on the same filter set (year ·
+        status · stack). V1 is fully wired; V2–V4 are visual mocks. Marks: 🟢 <em>recommend</em>, 💡 <em>candidate</em>,
+        ⚠ <em>not recommended</em>.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<!-- ═══ V1 — chip-row inline (collapsed by default) ══════════════ -->
+<section class="afb-block" aria-label="V1 chip-row inline">
+  <landing-container size="wide">
+    <div class="afb-variant__head">
+      <span class="afb-variant__tag">V1 · chip-row inline (collapsed by default)</span>
+      <span class="afb-variant__note">
+        🟢 recommend · "Filters" toggle in the toolbar reveals chip groups. Multi-select OR within group, AND across
+        groups. Active filters count shown on the toggle. The fake feed list updates live as you tick chips below.
+      </span>
+    </div>
+
+    <!-- Toolbar: results-count (left) · clear · filter-toggle (right) -->
+    <div class="afb-toolbar">
+      <landing-results-count [visible]="filteredCount()" [total]="total" unit="project" />
+
+      @if (activeFilterCount() > 0) {
+        <button type="button" class="afb-toolbar__clear" (click)="clearAll()">Clear all</button>
+      }
+
+      <button
+        type="button"
+        class="afb-toolbar__toggle"
+        [class.afb-toolbar__toggle--open]="v1FiltersOpen()"
+        [attr.aria-expanded]="v1FiltersOpen() ? 'true' : 'false'"
+        (click)="toggleV1Filters()"
+      >
+        <landing-icon name="filter" [size]="14" />
+        <span>Filters</span>
+        @if (activeFilterCount() > 0) {
+          <span class="afb-toolbar__count">{{ activeFilterCount() }}</span>
+        }
+        <landing-icon [name]="v1FiltersOpen() ? 'chevron-up' : 'chevron-down'" [size]="14" />
+      </button>
+    </div>
+
+    @if (v1FiltersOpen()) {
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-group__label">Year</span>
+          <div class="filter-group__chips">
+            @for (year of years; track year) {
+              <landing-filter-chip
+                [label]="year.toString()"
+                [selected]="selectedYears().has(year)"
+                (selectionChange)="toggleYear(year, $event)"
+              />
+            }
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-group__label">Status</span>
+          <div class="filter-group__chips">
+            @for (status of statuses; track status) {
+              <landing-filter-chip
+                [label]="status"
+                [selected]="selectedStatuses().has(status)"
+                (selectionChange)="toggleStatus(status, $event)"
+              />
+            }
+          </div>
+        </div>
+
+        @for (group of skillGroups; track group.category) {
+          <div class="filter-group">
+            <span class="filter-group__label">{{ group.category }}</span>
+            <div class="filter-group__chips">
+              @for (skill of group.skills; track skill.skill.slug) {
+                <landing-filter-chip
+                  [label]="skill.skill.name"
+                  [count]="skill.count"
+                  [selected]="selectedSkills().has(skill.skill.slug)"
+                  (selectionChange)="toggleSkill(skill.skill.slug, $event)"
+                />
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Fake feed list — responds live to filters above (renders C2 item variant) -->
+    <ul class="afb-feed" role="list">
+      @for (project of filteredProjects(); track project.slug) {
+        <li class="afb-feed__row">
+          <span class="afb-feed__year">{{ yearOf(project.startDate) }}</span>
+          <div class="afb-feed__thumb">
+            @if (project.thumbnailUrl) {
+              <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+            } @else {
+              <span class="afb-feed__thumb-empty">—</span>
+            }
+          </div>
+          <div class="afb-feed__body">
+            <span class="afb-feed__title">{{ project.title }}</span>
+            <span class="afb-feed__sum">{{ project.oneLiner.en }}</span>
+            <div class="afb-feed__chips">
+              @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                <landing-chip [label]="skill.name" size="sm" />
+              }
+            </div>
+          </div>
+          <landing-icon-arrow direction="right" [size]="14" class="afb-feed__arrow" />
+        </li>
+      }
+      @if (filteredProjects().length === 0) {
+        <li class="afb-feed__empty">
+          <span>No projects match these filters. </span>
+          <button type="button" class="afb-toolbar__clear" (click)="clearAll()">Clear all</button>
+        </li>
+      }
+    </ul>
+
+    <!-- Notes: when to use chip vs other components -->
+    <div class="afb-notes">
+      <landing-eyebrow [label]="['note', 'chip vs other components', 'when does V1 break?']" tone="accent" />
+      <p>
+        Chips are right for <strong>finite enum sets of 5–15 options</strong>. For other shapes the bar should mix
+        component types — chips alone are not enough. Examples:
+      </p>
+      <ul>
+        <li>
+          <strong>Year</strong> · chips fine for 5–10 years. For 15+ → group as <em>decade chips</em>
+          ("2020s", "2010s") or a range slider.
+        </li>
+        <li><strong>Status (enum, 5 values)</strong> · chips perfect.</li>
+        <li>
+          <strong>Stack (~20 distinct)</strong> · chips OK when category-grouped (top-N per category, as this demo
+          does). Becomes noisy at 50+ → autocomplete combobox.
+        </li>
+        <li>
+          <strong>Free-text search</strong> · <code>&lt;input&gt;</code>, not chips. Could complement chips (search +
+          filter pills side-by-side).
+        </li>
+        <li><strong>Date range</strong> · date picker (e.g., a future <code>&lt;landing-date-range&gt;</code>).</li>
+        <li>
+          <strong>Boolean toggle</strong> ("Featured only", "Has source code") ·
+          <code>&lt;input type="checkbox"&gt;</code> styled as a switch, not a chip.
+        </li>
+      </ul>
+      <p>
+        For V1 portfolio scale, <strong>everything is chips</strong>. Mixed component support gets added when /blog
+        (tag/category facets) or future search lands.
+      </p>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ V2 — dropdown-per-facet ═══════════════════════════════════ -->
+<section class="afb-block afb-block--alt" aria-label="V2 dropdown-per-facet">
+  <landing-container size="wide">
+    <div class="afb-variant__head">
+      <span class="afb-variant__tag">V2 · dropdown-per-facet (Linear style)</span>
+      <span class="afb-variant__note">
+        💡 candidate · single horizontal row of facet buttons. Click → dropdown of options. Compact, but affordance is
+        hidden — user must click each facet to see what is filterable.
+      </span>
+    </div>
+
+    <div class="dropdown-bar">
+      <button
+        type="button"
+        class="dropdown-btn"
+        [class.dropdown-btn--open]="v2OpenFacet() === 'year'"
+        (click)="toggleV2Facet('year')"
+      >
+        Year
+        <landing-icon name="chevron-down" [size]="14" />
+      </button>
+      <button
+        type="button"
+        class="dropdown-btn"
+        [class.dropdown-btn--open]="v2OpenFacet() === 'status'"
+        (click)="toggleV2Facet('status')"
+      >
+        Status
+        <landing-icon name="chevron-down" [size]="14" />
+      </button>
+      <button
+        type="button"
+        class="dropdown-btn"
+        [class.dropdown-btn--open]="v2OpenFacet() === 'stack'"
+        (click)="toggleV2Facet('stack')"
+      >
+        Stack
+        <landing-icon name="chevron-down" [size]="14" />
+      </button>
+    </div>
+
+    @if (v2OpenFacet(); as facet) {
+      <div class="dropdown-panel">
+        @switch (facet) {
+          @case ('year') {
+            @for (year of years; track year) {
+              <label class="dropdown-option"> <input type="checkbox" /> {{ year }} </label>
+            }
+          }
+          @case ('status') {
+            @for (status of statuses; track status) {
+              <label class="dropdown-option"> <input type="checkbox" /> {{ status }} </label>
+            }
+          }
+          @case ('stack') {
+            @for (group of skillGroups; track group.category) {
+              <div class="dropdown-section">
+                <span class="dropdown-section__title">{{ group.category }}</span>
+                @for (skill of group.skills; track skill.skill.slug) {
+                  <label class="dropdown-option">
+                    <input type="checkbox" /> {{ skill.skill.name }} ({{ skill.count }})
+                  </label>
+                }
+              </div>
+            }
+          }
+        }
+      </div>
+    }
+  </landing-container>
+</section>
+
+<!-- ═══ V3 — sidebar facets ═════════════════════════════════════ -->
+<section class="afb-block" aria-label="V3 sidebar facets">
+  <landing-container size="wide">
+    <div class="afb-variant__head">
+      <span class="afb-variant__tag">V3 · sidebar facets (Algolia / Shopify style)</span>
+      <span class="afb-variant__note">
+        ⚠ not recommended · best for e-commerce with 50+ facets, overkill for &lt;20 projects. Steals 240px width that
+        could be content. Mobile becomes a separate sheet drawer.
+      </span>
+    </div>
+
+    <div class="sidebar-demo">
+      <aside class="sidebar-facets">
+        <div class="sidebar-section">
+          <button type="button" class="sidebar-section__header" (click)="toggleV3Section('year')">
+            <span>YEAR</span>
+            <landing-icon [name]="v3SectionExpanded('year') ? 'chevron-down' : 'chevron-right'" [size]="14" />
+          </button>
+          @if (v3SectionExpanded('year')) {
+            <div class="sidebar-section__body">
+              @for (year of years; track year) {
+                <label class="sidebar-option"> <input type="checkbox" /> {{ year }} </label>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="sidebar-section">
+          <button type="button" class="sidebar-section__header" (click)="toggleV3Section('status')">
+            <span>STATUS</span>
+            <landing-icon [name]="v3SectionExpanded('status') ? 'chevron-down' : 'chevron-right'" [size]="14" />
+          </button>
+          @if (v3SectionExpanded('status')) {
+            <div class="sidebar-section__body">
+              @for (status of statuses; track status) {
+                <label class="sidebar-option"> <input type="checkbox" /> {{ status }} </label>
+              }
+            </div>
+          }
+        </div>
+
+        @for (group of skillGroups; track group.category) {
+          <div class="sidebar-section">
+            <button type="button" class="sidebar-section__header" (click)="toggleV3Section(group.category)">
+              <span>{{ group.category }}</span>
+              <landing-icon [name]="v3SectionExpanded(group.category) ? 'chevron-down' : 'chevron-right'" [size]="14" />
+            </button>
+            @if (v3SectionExpanded(group.category)) {
+              <div class="sidebar-section__body">
+                @for (skill of group.skills; track skill.skill.slug) {
+                  <label class="sidebar-option">
+                    <input type="checkbox" /> {{ skill.skill.name }} ({{ skill.count }})
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        }
+      </aside>
+      <div class="sidebar-results">
+        <span class="sidebar-results__placeholder">[ project list goes here — 240px sidebar steals space ]</span>
+      </div>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ V4 — search + auto-chips ═════════════════════════════════ -->
+<section class="afb-block afb-block--alt" aria-label="V4 search + auto-chips">
+  <landing-container size="wide">
+    <div class="afb-variant__head">
+      <span class="afb-variant__tag">V4 · search + auto-chips</span>
+      <span class="afb-variant__note">
+        💡 candidate · single search input, type → suggests chips, click to add. Selected chips appear below. Power-user
+        UX but no visible affordance until typed — bad for new visitors.
+      </span>
+    </div>
+
+    <div class="search-bar">
+      <landing-icon name="search" [size]="16" class="search-bar__icon" />
+      <input type="text" class="search-bar__input" placeholder="Filter by year, status, stack…" />
+    </div>
+    @if (v4Search().length === 0) {
+      <p class="search-bar__hint">Try: <code>2025</code>, <code>live</code>, <code>typescript</code></p>
+    }
+
+    <div class="search-chips">
+      <span class="search-chip search-chip--mock">2026 ✕</span>
+      <span class="search-chip search-chip--mock">live ✕</span>
+      <span class="search-chip search-chip--mock">typescript ✕</span>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ Pick summary ═════════════════════════════════════════════ -->
+<section class="afb-summary">
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['adoption', 'recommendation', 'pick one for prod']" tone="accent" class="afb-eyebrow" />
+    <dl class="afb-pick">
+      <div class="afb-pick__row">
+        <dt>Ship</dt>
+        <dd>
+          <strong>V1 · chip-row inline</strong>. Most affordance-visible, matches editorial voice. Mobile collapse:
+          groups stack vertically, chips scroll-x.
+        </dd>
+      </div>
+      <div class="afb-pick__row">
+        <dt>If too noisy</dt>
+        <dd><strong>V2 · dropdown-per-facet</strong>. Add only if V1 visibly clutters on mobile.</dd>
+      </div>
+      <div class="afb-pick__row">
+        <dt>Drop</dt>
+        <dd><strong>V3 (sidebar) · V4 (search)</strong> — wrong tool for portfolio scale.</dd>
+      </div>
+    </dl>
+  </landing-container>
+</section>
