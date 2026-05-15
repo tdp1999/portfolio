@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { EyebrowComponent, type EyebrowInput } from '../eyebrow';
 
 export type LandingSectionHeaderAlign = 'center' | 'left';
-export type LandingSectionHeaderSize = 'md' | 'sm';
+export type LandingSectionHeaderSize = 'lg' | 'md' | 'sm';
+export type LandingSectionHeaderLevel = 1 | 2;
 
 /**
  * Canonical section header: eyebrow + display heading with optional italic accent word.
@@ -15,21 +17,45 @@ export type LandingSectionHeaderSize = 'md' | 'sm';
  * </landing-section-header>
  * ```
  *
- * Defaults to centered alignment + md size (56/64 desktop, 40/48 mobile). Pass `align="left"`
- * for left-aligned variants and `size="sm"` for compact sections.
+ * **Size scale** (each collapses one step at ≤768px):
+ * - `lg` (default) — display-xl, 56/64 → 40/48. Home top-level sections (§03–§07).
+ * - `md` — display-lg, 48/56 → 40/48. Sub-page page titles (/projects, /uses, etc.).
+ * - `sm` — display-md, 40/48 → 32/40. Nested in-page sub-sections inside long-form pages.
+ *
+ * Pass `align="left"` for left-aligned variants and `level="1"` when used as a page title hero.
  */
 @Component({
   selector: 'landing-section-header',
   standalone: true,
-  imports: [EyebrowComponent],
+  imports: [EyebrowComponent, NgTemplateOutlet],
   template: `
+    <ng-template #headingContent>
+      <ng-content />
+    </ng-template>
+
     <div class="lsh" [class.lsh--left]="align() === 'left'">
       @if (showEyebrow()) {
         <landing-eyebrow [label]="eyebrowLabel()!" [accentFirst]="accentFirst()" />
       }
-      <h2 [attr.id]="id() || null" class="lsh__heading" [class.lsh__heading--sm]="size() === 'sm'">
-        <ng-content />
-      </h2>
+      @if (level() === 1) {
+        <h1
+          [attr.id]="id() || null"
+          class="lsh__heading"
+          [class.lsh__heading--md]="size() === 'md'"
+          [class.lsh__heading--sm]="size() === 'sm'"
+        >
+          <ng-container [ngTemplateOutlet]="headingContent" />
+        </h1>
+      } @else {
+        <h2
+          [attr.id]="id() || null"
+          class="lsh__heading"
+          [class.lsh__heading--md]="size() === 'md'"
+          [class.lsh__heading--sm]="size() === 'sm'"
+        >
+          <ng-container [ngTemplateOutlet]="headingContent" />
+        </h2>
+      }
     </div>
   `,
   styles: [
@@ -60,6 +86,10 @@ export type LandingSectionHeaderSize = 'md' | 'sm';
       .lsh__heading[id] {
         scroll-margin-top: 80px;
       }
+      .lsh__heading--md {
+        font-size: var(--landing-display-lg);
+        line-height: var(--landing-display-lg-lh);
+      }
       .lsh__heading--sm {
         font-size: var(--landing-display-md);
         line-height: var(--landing-display-md-lh);
@@ -76,6 +106,10 @@ export type LandingSectionHeaderSize = 'md' | 'sm';
       }
       @media (max-width: 768px) {
         .lsh__heading {
+          font-size: var(--landing-display-md);
+          line-height: var(--landing-display-md-lh);
+        }
+        .lsh__heading--md {
           font-size: var(--landing-display-md);
           line-height: var(--landing-display-md-lh);
         }
@@ -96,7 +130,10 @@ export class LandingSectionHeaderComponent {
   readonly eyebrowLabel = input<EyebrowInput | null>(null);
   readonly accentFirst = input(true);
   readonly align = input<LandingSectionHeaderAlign>('center');
-  readonly size = input<LandingSectionHeaderSize>('md');
+  readonly size = input<LandingSectionHeaderSize>('lg');
+  /** Heading level for the rendered element. Defaults to `2` for in-page section headers;
+   * pass `1` when using this primitive as the page-title hero (e.g. /uses, /colophon, /projects, /404). */
+  readonly level = input<LandingSectionHeaderLevel>(2);
   readonly id = input<string>('');
 
   protected readonly showEyebrow = computed(() => {

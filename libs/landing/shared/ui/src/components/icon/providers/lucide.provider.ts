@@ -39,6 +39,11 @@ import {
   Image,
   Copy,
   RotateCw,
+  Filter,
+  SlidersHorizontal,
+  LayoutGrid,
+  List,
+  History,
   LucideIconData,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
@@ -85,6 +90,11 @@ const ICON_MAP: Record<string, LucideIconData> = {
   image: Image,
   copy: Copy,
   'rotate-cw': RotateCw,
+  filter: Filter,
+  'sliders-horizontal': SlidersHorizontal,
+  'layout-grid': LayoutGrid,
+  list: List,
+  history: History,
 };
 
 export class LucideIconProvider implements IconProvider {
