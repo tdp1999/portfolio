@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-colophon-page',
+  selector: 'landing-colophon-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

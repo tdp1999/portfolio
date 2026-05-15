@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-uses-page',
+  selector: 'landing-uses-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

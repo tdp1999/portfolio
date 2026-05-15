@@ -7,7 +7,7 @@ import { getLocalized } from '@portfolio/shared/utils';
 
 @Component({
   imports: [RouterModule, LandingShellComponent],
-  selector: 'app-root',
+  selector: 'landing-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
