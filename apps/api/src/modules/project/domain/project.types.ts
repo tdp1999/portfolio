@@ -8,6 +8,16 @@ export const CONTENT_STATUS = {
 
 export type ContentStatus = (typeof CONTENT_STATUS)[keyof typeof CONTENT_STATUS];
 
+export const PROJECT_LIFECYCLE_STATUS = {
+  LIVE: 'LIVE',
+  SHIPPED: 'SHIPPED',
+  ARCHIVED: 'ARCHIVED',
+  BETA: 'BETA',
+  ONGOING: 'ONGOING',
+} as const;
+
+export type ProjectLifecycleStatus = (typeof PROJECT_LIFECYCLE_STATUS)[keyof typeof PROJECT_LIFECYCLE_STATUS];
+
 export interface IProjectProps extends IBaseAuditProps {
   slug: string;
   title: string;
@@ -27,6 +37,8 @@ export interface IProjectProps extends IBaseAuditProps {
 
   // Status & Display
   status: ContentStatus;
+  /** Audience-facing lifecycle state. Independent of `status` publishing flag. */
+  lifecycleStatus: ProjectLifecycleStatus;
   featured: boolean;
   displayOrder: number;
 
@@ -50,6 +62,7 @@ export interface ICreateProjectPayload {
   thumbnailId?: string;
   featured?: boolean;
   displayOrder?: number;
+  lifecycleStatus?: ProjectLifecycleStatus;
 }
 
 export interface IUpdateProjectPayload {
@@ -64,6 +77,7 @@ export interface IUpdateProjectPayload {
   startDate?: Date;
   endDate?: Date | null;
   status?: ContentStatus;
+  lifecycleStatus?: ProjectLifecycleStatus;
   links?: ProjectLinkProps[];
   thumbnailId?: string | null;
   featured?: boolean;

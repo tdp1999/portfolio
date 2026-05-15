@@ -11,6 +11,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
   startDate: new Date('2025-01-01'),
   endDate: null,
   status: 'DRAFT',
+  lifecycleStatus: 'LIVE',
   featured: false,
   displayOrder: 0,
   body: { en: 'Long-form body', vi: 'Noi dung dai' },
@@ -100,6 +101,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
         slug: 'typescript',
         description: null,
         category: 'TECHNICAL',
+        tier: 'DAILY',
         isLibrary: false,
         parentSkillId: null,
         yearsOfExperience: 5,
@@ -167,11 +169,11 @@ describe('ProjectMapper', () => {
       expect(relations.images[0].altText).toBe('Screenshot');
     });
 
-    it('should flatten skills with name and slug', () => {
+    it('should flatten skills with name, slug, and category', () => {
       const relations = ProjectMapper.toRelations(RAW_PROJECT);
 
       expect(relations.skills).toEqual([
-        { id: '00000000-0000-0000-0000-000000000040', name: 'TypeScript', slug: 'typescript' },
+        { id: '00000000-0000-0000-0000-000000000040', name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' },
       ]);
     });
   });

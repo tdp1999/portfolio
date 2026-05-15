@@ -82,6 +82,16 @@ enum ProjectSize {
   ENTERPRISE
 }
 
+/// Audience-facing lifecycle state for a project.
+/// Distinct from `Project.status` (DRAFT/PUBLISHED publishing flag).
+enum ProjectLifecycleStatus {
+  LIVE      // Active in production, still maintained
+  SHIPPED   // Completed and delivered, no longer actively iterated
+  ARCHIVED  // Sunset / deprecated
+  BETA      // Released but not at v1 quality bar
+  ONGOING   // In active development, not yet shipped
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -515,9 +525,11 @@ model Project {
   endDate      DateTime?     @db.Date
 
   // Status & Display
-  status       ContentStatus @default(DRAFT)
-  featured     Boolean       @default(false)
-  displayOrder Int           @default(0)
+  status          ContentStatus          @default(DRAFT)
+  /// Audience-facing lifecycle (LIVE/SHIPPED/ARCHIVED/BETA/ONGOING) — distinct from `status` publishing flag.
+  lifecycleStatus ProjectLifecycleStatus @default(SHIPPED)
+  featured        Boolean                @default(false)
+  displayOrder    Int                    @default(0)
 
   // Links — Array<{label, url, type: 'repo'|'demo'|'case-study'|'doc'|'post'}>
   links        Json          @default("[]")
@@ -547,6 +559,7 @@ model Project {
 
   @@index([status, deletedAt])
   @@index([featured, status, deletedAt])
+  @@index([lifecycleStatus, status, deletedAt])
   @@index([displayOrder])
   @@index([slug])
   @@map("projects")

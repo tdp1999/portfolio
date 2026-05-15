@@ -1,5 +1,11 @@
 import { BaseCrudEntity, SlugValue, TranslatableJson, PartialTranslatableJson } from '@portfolio/shared/types';
-import { IProjectProps, ICreateProjectPayload, IUpdateProjectPayload, ContentStatus } from '../project.types';
+import {
+  IProjectProps,
+  ICreateProjectPayload,
+  IUpdateProjectPayload,
+  ContentStatus,
+  ProjectLifecycleStatus,
+} from '../project.types';
 import { ProjectLink, ProjectLinkProps } from '../value-objects';
 
 /** Per-locale merge: undefined patch keeps current; partial patch overlays current. */
@@ -53,6 +59,10 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     return this.props.status;
   }
 
+  get lifecycleStatus(): ProjectLifecycleStatus {
+    return this.props.lifecycleStatus;
+  }
+
   get featured(): boolean {
     return this.props.featured;
   }
@@ -92,6 +102,7 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       startDate: data.startDate,
       endDate: data.endDate ?? null,
       status: 'DRAFT',
+      lifecycleStatus: data.lifecycleStatus ?? 'LIVE',
       featured: data.featured ?? false,
       displayOrder: data.displayOrder ?? 0,
       links: Project.normalizeLinks(data.links),
@@ -124,6 +135,7 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       startDate: data.startDate ?? this.props.startDate,
       endDate: data.endDate !== undefined ? data.endDate : this.props.endDate,
       status: data.status ?? this.props.status,
+      lifecycleStatus: data.lifecycleStatus ?? this.props.lifecycleStatus,
       links: data.links !== undefined ? Project.normalizeLinks(data.links) : this.props.links,
       thumbnailId: data.thumbnailId !== undefined ? data.thumbnailId : this.props.thumbnailId,
       featured: data.featured ?? this.props.featured,

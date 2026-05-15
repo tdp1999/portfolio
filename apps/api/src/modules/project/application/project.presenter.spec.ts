@@ -40,7 +40,9 @@ const TEST_RELATIONS: ProjectRelations = {
       displayOrder: 0,
     },
   ],
-  skills: [{ id: '00000000-0000-0000-0000-000000000040', name: 'TypeScript', slug: 'typescript' }],
+  skills: [
+    { id: '00000000-0000-0000-0000-000000000040', name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' },
+  ],
 };
 
 describe('ProjectPresenter', () => {
@@ -56,7 +58,8 @@ describe('ProjectPresenter', () => {
       expect(result.slug).toBe(entity.slug);
       expect(result.title).toBe('My Portfolio');
       expect(result.thumbnailUrl).toBe('https://cdn.example.com/thumb.png');
-      expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript' }]);
+      expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' }]);
+      expect(result.lifecycleStatus).toBe('LIVE');
       expect(result).not.toHaveProperty('description');
       expect(result).not.toHaveProperty('highlights');
     });
@@ -73,7 +76,8 @@ describe('ProjectPresenter', () => {
 
       expect(result.highlights[0].challenge).toEqual({ en: 'Challenge', vi: 'Thach thuc' });
       expect(result.images[0]).toEqual({ url: 'https://cdn.example.com/screenshot.png', alt: 'Screenshot' });
-      expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript' }]);
+      expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' }]);
+      expect(result.lifecycleStatus).toBe('LIVE');
     });
 
     it('should expose body and links', () => {

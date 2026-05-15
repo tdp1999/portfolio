@@ -1,6 +1,7 @@
 import type { TranslatableJson } from '@portfolio/shared/types';
 import { Project } from '../domain/entities/project.entity';
 import type { ProjectLinkProps } from '../domain/value-objects';
+import type { ProjectLifecycleStatus } from '../domain/project.types';
 import type {
   ProjectHighlightDto,
   ProjectImageDto,
@@ -15,9 +16,11 @@ export type ProjectListItemDto = {
   title: string;
   oneLiner: TranslatableJson;
   startDate: Date;
+  endDate: Date | null;
   thumbnailUrl: string | null;
-  skills: { name: string; slug: string }[];
+  skills: { name: string; slug: string; category: string }[];
   featured: boolean;
+  lifecycleStatus: ProjectLifecycleStatus;
 };
 
 export type ProjectHighlightResponseDto = {
@@ -45,9 +48,10 @@ export type ProjectDetailDto = {
   links: ProjectLinkProps[];
   thumbnailUrl: string | null;
   featured: boolean;
+  lifecycleStatus: ProjectLifecycleStatus;
   highlights: ProjectHighlightResponseDto[];
   images: ProjectImageResponseDto[];
-  skills: { name: string; slug: string }[];
+  skills: { name: string; slug: string; category: string }[];
 };
 
 export type ProjectAdminResponseDto = Omit<ProjectDetailDto, 'highlights' | 'images' | 'skills'> & {
@@ -81,9 +85,11 @@ export class ProjectPresenter {
       title: item.entity.title,
       oneLiner: item.entity.oneLiner,
       startDate: item.entity.startDate,
+      endDate: item.entity.endDate,
       thumbnailUrl: item.thumbnailUrl,
-      skills: item.relations.skills.map((s) => ({ name: s.name, slug: s.slug })),
+      skills: item.relations.skills.map((s) => ({ name: s.name, slug: s.slug, category: s.category })),
       featured: item.entity.featured,
+      lifecycleStatus: item.entity.lifecycleStatus,
     };
   }
 
@@ -101,6 +107,7 @@ export class ProjectPresenter {
       links: item.entity.links,
       thumbnailUrl: item.thumbnailUrl,
       featured: item.entity.featured,
+      lifecycleStatus: item.entity.lifecycleStatus,
       highlights: item.relations.highlights.map((h) => ({
         challenge: h.challenge,
         approach: h.approach,
@@ -111,7 +118,7 @@ export class ProjectPresenter {
         url: i.url,
         alt: i.altText,
       })),
-      skills: item.relations.skills.map((s) => ({ name: s.name, slug: s.slug })),
+      skills: item.relations.skills.map((s) => ({ name: s.name, slug: s.slug, category: s.category })),
     };
   }
 

@@ -5,7 +5,7 @@ import {
   PaginatedQuerySchema,
   nonEmptyPartial,
 } from '@portfolio/shared/utils';
-import { ContentStatus } from '@prisma/client';
+import { ContentStatus, ProjectLifecycleStatus } from '@prisma/client';
 import { DisplayOrderSchema, TitleSchema, UrlSchema } from '@portfolio/shared/validation/zod';
 import { LIMITS } from '@portfolio/shared/validation';
 import { PROJECT_LINK_TYPES } from '../domain/value-objects';
@@ -42,6 +42,7 @@ export const CreateProjectSchema = z.object({
   thumbnailId: z.uuid().nullable().optional(),
   featured: z.boolean().default(false),
   displayOrder: DisplayOrderSchema.default(0),
+  lifecycleStatus: z.nativeEnum(ProjectLifecycleStatus).default(ProjectLifecycleStatus.LIVE),
   skillIds: z.array(z.uuid()).default([]),
   imageIds: z.array(z.uuid()).default([]),
   highlights: z.array(TechnicalHighlightSchema).max(LIMITS.PROJECT_HIGHLIGHTS_ARRAY_MAX).default([]),
@@ -64,6 +65,7 @@ const UpdateProjectBaseSchema = z.object({
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   status: z.nativeEnum(ContentStatus),
+  lifecycleStatus: z.nativeEnum(ProjectLifecycleStatus),
   links: z.array(ProjectLinkSchema),
   thumbnailId: z.uuid().nullable().optional(),
   featured: z.boolean(),

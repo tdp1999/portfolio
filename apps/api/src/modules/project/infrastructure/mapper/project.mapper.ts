@@ -9,7 +9,7 @@ import {
 } from '@prisma/client';
 import { TranslatableJson } from '@portfolio/shared/types';
 import { Project } from '../../domain/entities/project.entity';
-import { IProjectProps, ContentStatus } from '../../domain/project.types';
+import { IProjectProps, ContentStatus, ProjectLifecycleStatus } from '../../domain/project.types';
 import { ProjectLinkProps, PROJECT_LINK_TYPES, ProjectLinkType } from '../../domain/value-objects';
 
 export type PrismaProjectWithRelations = PrismaProject & {
@@ -40,6 +40,7 @@ export interface ProjectSkillDto {
   id: string;
   name: string;
   slug: string;
+  category: string;
 }
 
 export interface ProjectRelations {
@@ -86,6 +87,7 @@ export class ProjectMapper {
       startDate: raw.startDate,
       endDate: raw.endDate,
       status: raw.status as ContentStatus,
+      lifecycleStatus: raw.lifecycleStatus as ProjectLifecycleStatus,
       featured: raw.featured,
       displayOrder: raw.displayOrder,
       links: parseLinks(raw.links),
@@ -125,6 +127,7 @@ export class ProjectMapper {
         id: s.skill.id,
         name: s.skill.name,
         slug: s.skill.slug,
+        category: s.skill.category,
       })),
     };
   }
@@ -150,6 +153,7 @@ export class ProjectMapper {
       startDate: entity.startDate,
       endDate: entity.endDate,
       status: entity.status,
+      lifecycleStatus: entity.lifecycleStatus,
       featured: entity.featured,
       displayOrder: entity.displayOrder,
       links: entity.links as unknown as Prisma.InputJsonValue,
