@@ -1,18 +1,76 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
 import {
   ContainerComponent,
   SectionComponent,
-  IconComponent,
   ChipComponent,
-  LandingBackLinkComponent,
+  IconComponent,
+  LandingBreadcrumbComponent,
   LandingEmptyStateComponent,
+  LandingFilterChipComponent,
+  LandingIconArrowComponent,
+  LandingResultsCountComponent,
+  LandingSectionHeaderComponent,
+  LandingViewToggleComponent,
+  type BreadcrumbItem,
+  type ViewToggleOption,
 } from '@portfolio/landing/shared/ui';
-import { ProjectDataService } from '@portfolio/landing/shared/data-access';
-import { MonthYearPipe, TranslatablePipe } from '@portfolio/shared/ui/pipes';
+import {
+  PROJECTS_QUERY_PORT,
+  PROJECT_LIFECYCLE_STATUSES,
+  distinctYears,
+  groupedTopSkills,
+  type ProjectListItem,
+  type ProjectLifecycleStatus,
+  type ProjectsQuery,
+} from '@portfolio/landing/shared/data-access';
+import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
 import type { Locale } from '@portfolio/shared/types';
+
+const QUERY = { YEAR: 'year', STATUS: 'status', STACK: 'stack', VIEW: 'view' } as const;
+
+const VIEW_MODES = ['row', 'grid', 'timeline'] as const;
+type ViewMode = (typeof VIEW_MODES)[number];
+
+const VIEW_OPTIONS: readonly ViewToggleOption[] = [
+  {
+    id: 'row',
+    label: 'Row',
+    icon: 'list',
+    description: 'List View.',
+  },
+  {
+    id: 'grid',
+    label: 'Grid',
+    icon: 'layout-grid',
+    description: 'Grid View.',
+  },
+  {
+    id: 'timeline',
+    label: 'Timeline',
+    icon: 'history',
+    description: 'Timeline View, grouped by year.',
+  },
+];
+
+type ProjectRow = ProjectListItem & { readonly year: string };
+
+function parseCsvSet<T>(raw: string | null, parse: (s: string) => T | null): Set<T> {
+  if (!raw) return new Set();
+  const out = new Set<T>();
+  for (const part of raw.split(',')) {
+    const v = parse(part.trim());
+    if (v !== null) out.add(v);
+  }
+  return out;
+}
+
+function isViewMode(v: string | null): v is ViewMode {
+  return v != null && (VIEW_MODES as readonly string[]).includes(v);
+}
 
 @Component({
   selector: 'landing-projects-page',
@@ -21,29 +79,159 @@ import type { Locale } from '@portfolio/shared/types';
     RouterLink,
     ContainerComponent,
     SectionComponent,
-    IconComponent,
     ChipComponent,
-    LandingBackLinkComponent,
+    IconComponent,
+    LandingBreadcrumbComponent,
     LandingEmptyStateComponent,
-    MonthYearPipe,
+    LandingFilterChipComponent,
+    LandingIconArrowComponent,
+    LandingResultsCountComponent,
+    LandingSectionHeaderComponent,
+    LandingViewToggleComponent,
     TranslatablePipe,
   ],
   templateUrl: './projects-page.html',
   styleUrl: './projects-page.scss',
 })
 export class ProjectsPage {
-  private projectService = inject(ProjectDataService);
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private readonly queryPort = inject(PROJECTS_QUERY_PORT);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   constructor() {
     this.title.setTitle('Projects | Phuong Tran');
     this.meta.updateTag({
       name: 'description',
-      content: 'Side projects and open-source work by Phuong Tran — design, code, and technical highlights.',
+      content: 'Full archive of projects by Phuong Tran — what I have shipped, built, and learned from.',
     });
   }
 
-  locale = signal<Locale>('en');
-  projects = toSignal(this.projectService.getPublicProjects(), { initialValue: [] });
+  readonly locale = signal<Locale>('en');
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Projects' }];
+  readonly viewOptions = VIEW_OPTIONS;
+  readonly statuses: readonly ProjectLifecycleStatus[] = PROJECT_LIFECYCLE_STATUSES;
+
+  // ─── URL-derived state ───────────────────────────────────────
+  private readonly queryParams = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
+
+  readonly selectedYears = computed(() =>
+    parseCsvSet(this.queryParams().get(QUERY.YEAR), (s) => {
+      const n = Number(s);
+      return Number.isFinite(n) && s.length > 0 ? n : null;
+    })
+  );
+  readonly selectedStatuses = computed(() =>
+    parseCsvSet(this.queryParams().get(QUERY.STATUS), (s) =>
+      (PROJECT_LIFECYCLE_STATUSES as readonly string[]).includes(s) ? (s as ProjectLifecycleStatus) : null
+    )
+  );
+  readonly selectedSkills = computed(() => parseCsvSet(this.queryParams().get(QUERY.STACK), (s) => (s ? s : null)));
+  readonly viewMode = computed<ViewMode>(() => {
+    const raw = this.queryParams().get(QUERY.VIEW);
+    return isViewMode(raw) ? raw : 'row';
+  });
+
+  readonly activeFilterCount = computed(
+    () => this.selectedYears().size + this.selectedStatuses().size + this.selectedSkills().size
+  );
+
+  // ─── Query the port (today FE adapter; tomorrow could be BE) ─
+  private readonly queryShape = computed<ProjectsQuery>(() => ({
+    years: [...this.selectedYears()],
+    statuses: [...this.selectedStatuses()],
+    skills: [...this.selectedSkills()],
+    sort: 'startDate-desc',
+  }));
+
+  private readonly result = toSignal(toObservable(this.queryShape).pipe(switchMap((q) => this.queryPort.query(q))), {
+    initialValue: { items: [] as readonly ProjectListItem[], total: 0, hasMore: false },
+  });
+
+  readonly rows = computed<readonly ProjectRow[]>(() =>
+    this.result().items.map((p) => ({ ...p, year: yearOf(p.startDate) }))
+  );
+  readonly visibleCount = computed(() => this.rows().length);
+
+  // ─── Facets — full list for year + top-N skill chips ─────────
+  private readonly facets = toSignal(this.queryPort.facetsSource(), { initialValue: [] as readonly ProjectListItem[] });
+
+  readonly years = computed(() => distinctYears(this.facets()));
+  readonly skillGroups = computed(() => groupedTopSkills(this.facets(), { perCategory: 4 }));
+  readonly totalCount = computed(() => this.facets().length);
+
+  // ─── Timeline grouping — year buckets, sorted year desc ──────
+  readonly groupedByYear = computed(() => {
+    const map = new Map<string, ProjectRow[]>();
+    for (const r of this.rows()) {
+      const list = map.get(r.year) ?? [];
+      list.push(r);
+      map.set(r.year, list);
+    }
+    return [...map.entries()]
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .map(([year, items]) => ({ year, items: items as readonly ProjectRow[] }));
+  });
+
+  // ─── Filter panel collapse ───────────────────────────────────
+  readonly filtersOpen = signal(false);
+
+  toggleFilters(): void {
+    this.filtersOpen.update((v) => !v);
+  }
+
+  // ─── Mutations → URL ─────────────────────────────────────────
+  toggleYear(year: number, on: boolean): void {
+    const next = new Set(this.selectedYears());
+    if (on) next.add(year);
+    else next.delete(year);
+    this.writeQuery(QUERY.YEAR, [...next].sort((a, b) => b - a).map(String));
+  }
+
+  toggleStatus(status: ProjectLifecycleStatus, on: boolean): void {
+    const next = new Set(this.selectedStatuses());
+    if (on) next.add(status);
+    else next.delete(status);
+    this.writeQuery(QUERY.STATUS, [...next]);
+  }
+
+  toggleSkill(slug: string, on: boolean): void {
+    const next = new Set(this.selectedSkills());
+    if (on) next.add(slug);
+    else next.delete(slug);
+    this.writeQuery(QUERY.STACK, [...next]);
+  }
+
+  setView(mode: string): void {
+    const next = isViewMode(mode) ? mode : 'row';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [QUERY.VIEW]: next === 'row' ? null : next },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  clearAll(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [QUERY.YEAR]: null, [QUERY.STATUS]: null, [QUERY.STACK]: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private writeQuery(key: string, values: readonly string[]): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [key]: values.length > 0 ? values.join(',') : null },
+      queryParamsHandling: 'merge',
+    });
+  }
+}
+
+function yearOf(iso: string): string {
+  const y = new Date(iso).getFullYear();
+  return Number.isFinite(y) ? String(y) : '';
 }
