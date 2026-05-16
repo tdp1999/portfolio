@@ -4,7 +4,7 @@ export const serverRoutes: ServerRoute[] = [
   // Static-content pages — safe to prerender
   { path: 'uses', renderMode: RenderMode.Prerender },
   { path: 'colophon', renderMode: RenderMode.Prerender },
-  { path: '404', renderMode: RenderMode.Prerender },
+  { path: '404', renderMode: RenderMode.Server, status: 404 },
   { path: 'ddl', renderMode: RenderMode.Prerender },
 
   // Data-driven — SSR at runtime (Railway)
@@ -15,5 +15,5 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'blog', renderMode: RenderMode.Server },
   { path: 'blog/**', renderMode: RenderMode.Server },
 
-  { path: '**', renderMode: RenderMode.Server },
+  { path: '**', renderMode: RenderMode.Server, status: 404 },
 ];

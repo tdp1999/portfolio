@@ -1,23 +1,36 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
+import {
+  ContainerComponent,
+  LandingBreadcrumbComponent,
+  LandingLinkComponent,
+  LandingSectionHeaderComponent,
+  SectionComponent,
+  type BreadcrumbItem,
+} from '@portfolio/landing/shared/ui';
 
 @Component({
   selector: 'landing-not-found-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
-  template: `
-    <div class="mx-auto max-w-3xl px-6 py-24 text-center">
-      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">404</p>
-      <h1 class="mt-3 font-display text-display-lg text-landing-text-300">Page not found</h1>
-      <p class="mt-4 font-sans text-body-md text-landing-text-500">That URL does not match anything on this site.</p>
-      <a
-        routerLink="/"
-        class="mt-8 inline-block font-sans text-body-md text-landing-accent transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent-hover"
-      >
-        ← Back to home
-      </a>
-    </div>
-  `,
+  imports: [
+    ContainerComponent,
+    SectionComponent,
+    LandingBreadcrumbComponent,
+    LandingSectionHeaderComponent,
+    LandingLinkComponent,
+  ],
+  templateUrl: './not-found.page.html',
+  styleUrls: ['./not-found.page.scss'],
 })
-export class NotFoundPage {}
+export class NotFoundPage {
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
+
+  constructor() {
+    this.title.setTitle('Not found · Phuong Tran');
+    this.meta.updateTag({ name: 'robots', content: 'noindex' });
+  }
+
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Not found' }];
+}

@@ -115,6 +115,6 @@ export const appRoutes: Route[] = [
   },
   {
     path: '**',
-    redirectTo: '/404',
+    loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
   },
 ];

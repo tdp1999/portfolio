@@ -1,0 +1,18 @@
+<landing-section>
+  <landing-container>
+    <div class="not-found-page__head">
+      <landing-breadcrumb [items]="breadcrumb" />
+
+      <landing-section-header size="md" [level]="1" [accentFirst]="true">
+        This page doesn't <em>exist</em> (yet).
+      </landing-section-header>
+
+      <p class="not-found-page__sub">Probably a typo in the URL — or something I haven't written yet.</p>
+    </div>
+
+    <nav class="not-found-page__actions" aria-label="Recovery links">
+      <landing-link href="/" [arrow]="true">Back to home</landing-link>
+      <landing-link href="/projects" [arrow]="true">Browse projects</landing-link>
+    </nav>
+  </landing-container>
+</landing-section>

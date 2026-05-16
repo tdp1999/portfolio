@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.not-found-page__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.not-found-page__sub {
+  margin: 8px 0 0 0;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
+  color: var(--landing-text-500);
+  max-width: 56ch;
+}
+
+.not-found-page__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
