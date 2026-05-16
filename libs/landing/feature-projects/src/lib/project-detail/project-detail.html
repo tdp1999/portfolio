@@ -5,7 +5,7 @@
         <landing-breadcrumb [items]="breadcrumb()" />
       </div>
 
-      <!-- Hero — beautified screenshot in browser-window chrome -->
+      <!-- Hero — 16:9 cover in browser-window chrome, capped to fit above-fold -->
       <div class="project-hero">
         @if (project.thumbnailUrl) {
           <landing-browser-window
@@ -16,36 +16,21 @@
             [eager]="true"
           />
         } @else {
-          <landing-browser-window class="project-hero__frame" [url]="project.slug">
+          <landing-browser-window class="project-hero__frame project-hero__frame--placeholder" [url]="project.slug">
             <div class="project-hero__placeholder">Screenshot pending</div>
           </landing-browser-window>
         }
       </div>
 
-      <!-- 2-col body: sticky sidebar + reading column -->
+      <!-- 3-col body: meta · content · TOC -->
       <div class="project-body">
-        <aside class="project-sidebar">
-          @if (tocSections().length > 0) {
-            <nav class="project-sidebar__block" aria-label="On this page">
-              <landing-eyebrow [label]="['on this page']" tone="accent" />
-              <ul class="project-sidebar__toc" role="list">
-                @for (section of tocSections(); track section.id) {
-                  <li
-                    class="project-sidebar__toc-item"
-                    [class.project-sidebar__toc-item--active]="activeAnchor() === section.id"
-                  >
-                    <a [href]="'#' + section.id">{{ section.title }}</a>
-                  </li>
-                }
-              </ul>
-            </nav>
-          }
-
-          <div class="project-sidebar__block">
+        <!-- LEFT: metadata + links -->
+        <aside class="project-aside project-aside--left">
+          <div class="project-aside__block">
             <landing-eyebrow [label]="['metadata']" tone="accent" />
-            <dl class="project-sidebar__meta">
+            <dl class="project-meta-list">
               @for (row of metadataRows(); track row.label) {
-                <div class="project-sidebar__meta-row">
+                <div class="project-meta-list__row">
                   <dt>{{ row.label }}</dt>
                   <dd>{{ row.value }}</dd>
                 </div>
@@ -54,9 +39,9 @@
           </div>
 
           @if (sortedLinks().length > 0) {
-            <div class="project-sidebar__block">
+            <div class="project-aside__block">
               <landing-eyebrow [label]="['links']" tone="accent" />
-              <ul class="project-sidebar__links" role="list">
+              <ul class="project-aside__links" role="list">
                 @for (link of sortedLinks(); track link.url) {
                   <li>
                     <landing-link [href]="link.url" [external]="true" [arrow]="true">
@@ -69,44 +54,40 @@
           }
         </aside>
 
+        <!-- MIDDLE: reading column -->
         <article class="project-reading">
           <header class="project-reading__head">
             <landing-eyebrow [label]="['case study', project.title]" tone="accent" />
-            <landing-section-header align="left" [level]="1" size="sm">
-              {{ project.title }}
-            </landing-section-header>
+            <h1 class="project-reading__title">{{ project.title }}</h1>
             @if (oneLiner()) {
               <p class="project-reading__deck">{{ oneLiner() }}</p>
             }
-            <hr class="project-reading__rule" />
           </header>
 
           @if (contentHtml(); as html) {
-            <!-- Markdown body wins when project.body is populated -->
             @if (toc().length > 0) {
-              <div class="project-reading__prose prose" [innerHTML]="html"></div>
+              <!-- Markdown body wins when project.body is populated -->
+              <div class="landing-prose" [innerHTML]="html"></div>
             } @else {
-              <!-- Body markdown missing — synthesize sections from existing fields -->
-              <div class="project-reading__prose">
+              <!-- No markdown body — synthesize sections from existing fields -->
+              <div class="landing-prose">
                 @if (description(); as text) {
-                  <h2 id="overview" class="project-reading__heading">Overview</h2>
+                  <landing-heading id="overview" [level]="2">Overview</landing-heading>
                   <p>{{ text }}</p>
                 }
 
                 @if (motivation(); as text) {
-                  <h2 id="motivation" class="project-reading__heading">Motivation</h2>
-                  <blockquote class="project-reading__quote">
-                    <p>{{ text }}</p>
-                  </blockquote>
+                  <landing-heading id="motivation" [level]="2">Motivation</landing-heading>
+                  <blockquote>{{ text }}</blockquote>
                 }
 
                 @if (role(); as text) {
-                  <h2 id="role" class="project-reading__heading">My role</h2>
+                  <landing-heading id="role" [level]="2">My role</landing-heading>
                   <p>{{ text }}</p>
                 }
 
                 @if (project.highlights.length > 0) {
-                  <h2 id="highlights" class="project-reading__heading">Highlights</h2>
+                  <landing-heading id="highlights" [level]="2">Highlights</landing-heading>
                   @for (h of project.highlights; track $index; let i = $index) {
                     <div class="project-reading__highlight">
                       <h3 class="project-reading__sub">// {{ i + 1 | number: '2.0-0' }}</h3>
@@ -128,7 +109,7 @@
 
                 @if (project.images.length > 0) {
                   @for (img of project.images; track img.url; let i = $index) {
-                    <figure class="project-reading__figure">
+                    <figure>
                       <img [src]="img.url" [alt]="img.alt ?? project.title" loading="lazy" />
                       <figcaption>
                         <span class="project-reading__fig-num">FIG. {{ i + 1 | number: '2.0-0' }}</span>
@@ -154,6 +135,13 @@
             </footer>
           }
         </article>
+
+        <!-- RIGHT: TOC -->
+        @if (tocSections().length > 0) {
+          <aside class="project-aside project-aside--right">
+            <landing-toc-sidebar [sections]="tocSections()" label="On this page" />
+          </aside>
+        }
       </div>
     </landing-container>
   </landing-section>

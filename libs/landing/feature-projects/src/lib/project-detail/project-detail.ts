@@ -18,8 +18,10 @@ import {
   ContainerComponent,
   SectionComponent,
   LandingEmptyStateComponent,
+  LandingHeadingComponent,
   LandingLinkComponent,
-  LandingSectionHeaderComponent,
+  LandingScrollspyService,
+  LandingTocSidebarComponent,
   EyebrowComponent,
   LandingBreadcrumbComponent,
   LandingBrowserWindowComponent,
@@ -47,6 +49,9 @@ type DetailState = {
   readonly project: ProjectDetail | null;
   readonly rendered: RenderedMarkdown;
   readonly index: readonly ProjectIndexEntry[];
+  /** `false` for the toSignal initial value, `true` for every emission from the fetch
+   *  pipeline. Lets `notFound` distinguish "still loading" from "loaded with no match". */
+  readonly loaded: boolean;
 };
 
 const LINK_ORDER: readonly ProjectLinkType[] = ['repo', 'demo', 'case-study', 'doc', 'post'];
@@ -75,8 +80,9 @@ const LIFECYCLE_STATUS_LABEL: Record<'LIVE' | 'SHIPPED' | 'ARCHIVED' | 'BETA' | 
     ContainerComponent,
     SectionComponent,
     LandingEmptyStateComponent,
+    LandingHeadingComponent,
     LandingLinkComponent,
-    LandingSectionHeaderComponent,
+    LandingTocSidebarComponent,
     LandingBreadcrumbComponent,
     LandingBrowserWindowComponent,
     EyebrowComponent,
@@ -94,6 +100,7 @@ export class ProjectDetailComponent {
   private readonly meta = inject(Meta);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly transferState = inject(TransferState);
+  private readonly scrollspy = inject(LandingScrollspyService);
 
   readonly locale = signal<Locale>('en');
 
@@ -105,19 +112,19 @@ export class ProjectDetailComponent {
         const cached = this.transferState.get(stateKey, null);
         if (cached) {
           this.transferState.remove(stateKey);
-          return of(cached);
+          return of<DetailState>({ ...cached, loaded: true });
         }
         return combineLatest([this.projectService.getBySlug(slug), this.projectService.getPublicProjects()]).pipe(
           switchMap(([project, list]) => {
             const index = sortedIndex(list);
             if (!project) {
-              return of<DetailState>({ project: null, rendered: EMPTY_RENDER, index });
+              return of<DetailState>({ project: null, rendered: EMPTY_RENDER, index, loaded: true });
             }
             const md = getLocalized(project.body, this.locale());
             const render$ = md ? from(this.markdown.render(md)) : of(EMPTY_RENDER);
             return render$.pipe(
               map((rendered): DetailState => {
-                const next: DetailState = { project, rendered, index };
+                const next: DetailState = { project, rendered, index, loaded: true };
                 if (!isPlatformBrowser(this.platformId)) {
                   this.transferState.set(stateKey, next);
                 }
@@ -128,14 +135,23 @@ export class ProjectDetailComponent {
         );
       })
     ),
-    { initialValue: { project: null, rendered: EMPTY_RENDER, index: [] } satisfies DetailState }
+    { initialValue: { project: null, rendered: EMPTY_RENDER, index: [], loaded: false } satisfies DetailState }
   );
 
   readonly project = computed(() => this.state().project);
   readonly toc = computed<readonly TocEntry[]>(() => this.state().rendered.toc);
+  // Markdown source is repo-controlled (lives in project content fields written by the site
+  // owner, not user input), so the `marked` output is trusted as-is without DOMPurify. If
+  // user-submitted markdown ever flows through this path, add sanitization here first.
   readonly contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
 
-  readonly notFound = computed(() => this.state().project === null && this.route.snapshot.paramMap.has('slug'));
+  // Derived from reactive state, NOT route.snapshot — `state.loaded` flips true on the first
+  // emission from the fetch pipeline, so we only show "not found" after the pipeline has
+  // actually resolved (avoids a flash of the not-found screen on initial render).
+  readonly notFound = computed(() => {
+    const s = this.state();
+    return s.loaded && s.project === null;
+  });
 
   readonly oneLiner = computed(() => {
     const p = this.project();
@@ -186,11 +202,6 @@ export class ProjectDetailComponent {
     return FALLBACK_TOC.filter((s) => this.hasFallbackSection(s.id));
   });
 
-  /** Active section id — tracked client-side by an IntersectionObserver wired in the ctor. */
-  readonly activeAnchor = signal<string>('');
-
-  private observer: IntersectionObserver | null = null;
-
   readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
     const p = this.project();
     return [{ label: 'Home', href: '/' }, { label: 'Projects', href: '/projects' }, { label: p?.title ?? '…' }];
@@ -221,31 +232,9 @@ export class ProjectDetailComponent {
       }
     });
 
-    // Scrollspy — observe section anchors once hydrated; re-wire when sections change.
-    effect((onCleanup) => {
-      if (!isPlatformBrowser(this.platformId)) return;
-      const sections = this.tocSections();
-      if (sections.length === 0) return;
-      // Wait a tick so [innerHTML]-rendered headings exist in the DOM.
-      const id = requestAnimationFrame(() => {
-        this.observer?.disconnect();
-        this.observer = new IntersectionObserver(
-          (records) => {
-            const visible = records.filter((r) => r.isIntersecting);
-            if (visible.length > 0) this.activeAnchor.set(visible[0].target.id);
-          },
-          { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
-        );
-        for (const s of sections) {
-          const el = document.getElementById(s.id);
-          if (el) this.observer.observe(el);
-        }
-      });
-      onCleanup(() => {
-        cancelAnimationFrame(id);
-        this.observer?.disconnect();
-        this.observer = null;
-      });
+    // Register TOC sections with the shared scrollspy service.
+    effect(() => {
+      this.scrollspy.setSections(this.tocSections());
     });
   }
 
