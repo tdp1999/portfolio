@@ -1,0 +1,33 @@
+<section class="uses-section" [id]="section().id">
+  <header class="uses-section__head">
+    <!-- <landing-eyebrow [label]="[section().num, section().title]" [accentFirst]="true" /> -->
+    <h2 class="uses-section__title">
+      <a class="uses-section__anchor" [href]="'#' + section().id">{{ section().title }}</a>
+    </h2>
+  </header>
+
+  <div class="uses-grid">
+    @for (entry of section().entries; track entry.name) {
+      @if (entry.href) {
+        <a class="uses-card uses-card--linked" [href]="entry.href" target="_blank" rel="noopener noreferrer">
+          <span class="uses-card__monogram" aria-hidden="true">{{ entry.monogram }}</span>
+          <div class="uses-card__body">
+            <span class="uses-card__name">
+              {{ entry.name }}
+              <landing-icon-arrow direction="up-right" [size]="12" class="uses-card__arrow" />
+            </span>
+            <p class="uses-card__reason">{{ entry.reason }}</p>
+          </div>
+        </a>
+      } @else {
+        <div class="uses-card">
+          <span class="uses-card__monogram" aria-hidden="true">{{ entry.monogram }}</span>
+          <div class="uses-card__body">
+            <span class="uses-card__name">{{ entry.name }}</span>
+            <p class="uses-card__reason">{{ entry.reason }}</p>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

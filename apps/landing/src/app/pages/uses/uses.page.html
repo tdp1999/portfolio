@@ -1,0 +1,15 @@
+<landing-section>
+  <landing-container>
+    <div class="uses-page__head">
+      <landing-breadcrumb [items]="breadcrumb" />
+
+      <landing-section-header size="md" [level]="1"> <em>Uses</em>.</landing-section-header>
+
+      <p class="uses-page__sub">What I reach for daily — the specific kit, not generic categories.</p>
+    </div>
+
+    @for (section of sections; track section.id) {
+      <landing-uses-section [section]="section" class="mb-12" />
+    }
+  </landing-container>
+</landing-section>

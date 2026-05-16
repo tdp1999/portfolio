@@ -139,6 +139,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Prose flow · vertical rhythm spec',
         desc: 'Source of truth for .landing-prose — h1/h2/h3 leading-larger-than-trailing, blockquote/figure/code/lists with explicit halos. Applied to project-detail, blog-detail.',
       },
+      {
+        path: '/ddl/uses-card-variants',
+        title: 'Uses · card variants',
+        desc: 'Three mini-card directions × two section-separation strategies for /uses tool entries. V2 monogram + S1 picked → graduated.',
+      },
     ],
   },
   {

@@ -103,6 +103,10 @@ export const appRoutes: Route[] = [
         path: 'prose-flow',
         loadComponent: () => import('./pages/ddl/prose-flow').then((m) => m.ProseFlowPage),
       },
+      {
+        path: 'uses-card-variants',
+        loadComponent: () => import('./pages/ddl/uses-card-variants').then((m) => m.UsesCardVariantsPage),
+      },
     ],
   },
   {
