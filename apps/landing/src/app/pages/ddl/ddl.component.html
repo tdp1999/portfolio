@@ -198,6 +198,41 @@
                   <span class="font-display text-display-sm text-landing-text-300 leading-none">Section h2</span>
                 </div>
               </div>
+
+              <!-- Element default mapping + prose override (locked) -->
+              <div class="mt-6 p-4 border border-landing-border rounded bg-ink-0 max-w-2xl">
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  element default · outside prose
+                </p>
+                <ul class="font-sans text-body-sm text-landing-text-400 space-y-1 list-disc pl-5 mb-4">
+                  <li>
+                    Bare <code class="font-mono">&lt;h1&gt;</code> → display-lg (Page h1). Hero overrides via utility
+                    class to xl.
+                  </li>
+                  <li>Bare <code class="font-mono">&lt;h2&gt;</code> → display-md (Sub-hero).</li>
+                  <li>Bare <code class="font-mono">&lt;h3&gt;</code> → display-sm.</li>
+                  <li>Bare <code class="font-mono">&lt;h4&gt;</code> → body-xl (20/28). Below display scale.</li>
+                </ul>
+
+                <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+                  prose override · inside .landing-prose
+                </p>
+                <ul class="font-sans text-body-sm text-landing-text-400 space-y-1 list-disc pl-5">
+                  <li>
+                    Font switches from Newsreader → <strong>Inter 600</strong>. Newsreader stays for h1 page titles
+                    OUTSIDE prose (e.g. project header).
+                  </li>
+                  <li>
+                    Every level downsizes one step: h1 → md, <strong>h2 → sm</strong> (Section h2 role), h3 → body-xl,
+                    h4 → body-lg.
+                  </li>
+                  <li>Long-form reading doesn't compete with display-scale headings.</li>
+                  <li>
+                    See <a href="/ddl/prose-flow" class="text-landing-accent hover:underline">/ddl/prose-flow</a> for
+                    full spec.
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <!-- Body scale -->
@@ -279,8 +314,10 @@
                 </p>
                 <ol class="font-sans text-body-md text-landing-text-400 space-y-3 list-decimal pl-6">
                   <li>
-                    <strong>One display moment per view.</strong> A page gets one Newsreader headline. Sub-headings drop
-                    to Inter unless they're inside an editorial reading column.
+                    <strong>One display moment per view.</strong> A page gets one Newsreader headline. Outside prose
+                    (page titles, hero, project header) Newsreader carries display headings. Inside
+                    <code class="font-mono text-mono-sm">.landing-prose</code> editorial columns, sub-headings
+                    (h2/h3/h4) switch to Inter 600 for sustained readability.
                   </li>
                   <li>
                     <strong>Eyebrow above display.</strong> Mono caps eyebrow + Newsreader headline is the canonical
@@ -1379,6 +1416,59 @@
                 <landing-link href="/blog" [arrow]="true" class="mt-4">Browse all articles</landing-link>
               </landing-empty-state>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading affordances (router progress + post-hydration spinner) -->
+      <div id="loading" class="bg-ink-1 border border-landing-border p-6 rounded-lg scroll-mt-8 mt-6">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+          landing loading affordances · navigation + post-hydration
+        </p>
+        <h2 class="font-display text-display-sm text-landing-text-300 mb-2">Loading spinner &amp; router progress</h2>
+        <p class="font-sans text-body-md text-landing-text-400 mb-6 max-w-2xl">
+          Two layers of feedback for slow networks. The router progress bar sits on every page (mounted in app shell)
+          and shows the moment Angular Router starts a navigation — covers the gap while a lazy chunk downloads. The
+          block-level spinner lives inside a feed/page when post-hydration data fetches haven't resolved yet — pairs
+          with <code class="font-mono text-mono-sm text-landing-text-300">asyncResource()</code> from
+          <code class="font-mono text-mono-sm text-landing-text-300">&#64;portfolio/shared/async-state</code>.
+        </p>
+
+        <div class="space-y-8">
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+              landing-router-progress · top 2px bar · accent · slide animation
+            </p>
+            <div class="p-6 bg-ink-0 border border-landing-border rounded">
+              <p class="font-sans text-body-sm text-landing-text-400 mb-3">
+                Auto-wired to <code class="font-mono text-mono-sm">Router.events</code>. Shows on
+                <code class="font-mono text-mono-sm">NavigationStart</code>, hides on
+                <code class="font-mono text-mono-sm">NavigationEnd/Cancel/Error</code> with min-display 250ms (no
+                flicker on fast navs).
+              </p>
+              <p class="font-sans text-body-sm text-landing-text-500">
+                Live on every page — throttle network in DevTools (Slow 3G) and click a route link to see the bar at
+                viewport top.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+              landing-loading-spinner · block · rotating ring · optional message
+            </p>
+            <div class="p-6 bg-ink-0 border border-landing-border rounded">
+              <landing-loading-spinner message="Loading projects…" />
+            </div>
+            <p class="font-sans text-body-sm text-landing-text-400 mt-3 max-w-2xl">
+              Pair with
+              <code class="font-mono text-mono-sm text-landing-text-300">asyncResource(source$, opts)</code>. The helper
+              exposes <code class="font-mono text-mono-sm">showSpinner()</code> with deliberate timing — don't show
+              under 200ms (avoid flash on fast responses), once shown stay 500ms (avoid flicker). Template:
+            </p>
+            <pre
+              class="font-mono text-mono-sm text-landing-text-400 mt-3 p-4 bg-ink-1 border border-landing-border rounded overflow-x-auto"
+            ><code [innerText]="loadingSnippet"></code></pre>
           </div>
         </div>
       </div>

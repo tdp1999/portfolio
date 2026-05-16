@@ -1,0 +1,175 @@
+<landing-section>
+  <landing-container size="content">
+    <landing-breadcrumb [items]="breadcrumb" class="mb-6 block" />
+
+    <landing-section-header size="md" [level]="1"> Prose flow · <em>spec</em>. </landing-section-header>
+
+    <p class="text-landing-text-400 text-body-md mt-4 max-w-2xl">
+      Vertical rhythm spec for long-form content. Every element below sits inside
+      <code class="font-mono">.landing-prose</code> — what you see is the source of truth applied to project-detail,
+      blog-detail, and any future long-form page.
+    </p>
+
+    <div class="prose-flow__legend mt-8">
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">h1</span>
+        <span>mt 96 · mb 24</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">h2</span>
+        <span>mt 72 · mb 16</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">h3</span>
+        <span>mt 48 · mb 12</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">h4</span>
+        <span>mt 32 · mb 8</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">p</span>
+        <span>mt 0 · mb 16</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">blockquote</span>
+        <span>mt/mb 24</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">figure</span>
+        <span>mt/mb 32</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">hr</span>
+        <span>mt/mb 48</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">ul / ol</span>
+        <span>mt 0 · mb 16 · li gap 8</span>
+      </span>
+      <span class="prose-flow__legend-row">
+        <span class="prose-flow__legend-tag">font</span>
+        <span>Inter 600 (Newsreader only h1 outside prose)</span>
+      </span>
+    </div>
+  </landing-container>
+</landing-section>
+
+<landing-section>
+  <landing-container size="content">
+    <article class="landing-prose">
+      <landing-heading id="overview" [level]="2">Overview — h2 leading 72, trailing 16</landing-heading>
+
+      <p>
+        First paragraph after the h2. Notice the gap between the heading and this paragraph is
+        <strong>16px</strong>, which feels tightly bound — the heading owns this paragraph. The h2's own
+        <em>72px top margin</em> creates the section break above (here against the first-child reset).
+      </p>
+
+      <p>
+        Second paragraph. Paragraph-to-paragraph rhythm is <strong>16px</strong> (the previous paragraph's
+        <code>margin-bottom</code>). Long-form reading at this rhythm scans naturally without feeling cramped.
+      </p>
+
+      <p>
+        Third paragraph to establish the default rhythm clearly. After this paragraph, an h3 will follow — note the
+        leading-larger-than-trailing pattern means the h3 gets <strong>48px</strong> top (collapsed with the prev p's 16
+        bottom → max wins → 48).
+      </p>
+
+      <landing-heading id="sub-section" [level]="3">A sub-section — h3 leading 48, trailing 12</landing-heading>
+
+      <p>
+        Paragraph immediately after the h3. Gap is <strong>12px</strong>, even tighter than h2 since h3 represents a
+        smaller break in flow.
+      </p>
+
+      <h4>An h4 — leading 32, trailing 8</h4>
+
+      <p>
+        Paragraph after h4. The hierarchy of breaks creates a clear visual outline: h2 = biggest section break, h3 =
+        sub-section, h4 = paragraph-group label.
+      </p>
+
+      <landing-heading id="content-blocks" [level]="2">Content blocks — blockquote, figure, code</landing-heading>
+
+      <p>Each standout block declares its own halo. Margin collapsing handles the joining.</p>
+
+      <blockquote>
+        Blockquote with <strong>24px</strong> top and bottom margin. Standout from running prose — italic Newsreader,
+        accent border on the left. Use for direct quotes, callouts, or emphasized passages.
+      </blockquote>
+
+      <p>
+        Paragraph after a blockquote. The 24 bottom of the quote + 0 top of this p → 24px gap. Larger than normal
+        paragraph rhythm, signaling we're returning to flow after a pause.
+      </p>
+
+      <figure>
+        <div class="prose-flow__figure-placeholder">
+          <span>FIGURE PLACEHOLDER</span>
+        </div>
+        <figcaption>
+          Figure caption — sits below the visual content. Figures get 32px halo for visual breathing.
+        </figcaption>
+      </figure>
+
+      <p>
+        Inline code looks like <code>this</code> — keyed Mono font, ink background, accent text. Block code follows:
+      </p>
+
+      <pre><code>function asyncResource&lt;T&gt;(source$: Observable&lt;T&gt;) &#123;
+  // 24px halo · 16/20 padding · scrollable horizontally
+  return source$.pipe(...);
+&#125;</code></pre>
+
+      <landing-heading id="lists" [level]="2">Lists</landing-heading>
+
+      <p>Unordered list — 8px between items, 16px after the list as a whole:</p>
+
+      <ul>
+        <li>First item, on the 24px indent.</li>
+        <li>Second item, with 8px above it from the previous item's margin-bottom.</li>
+        <li>
+          Third item — long enough to wrap. Item text wraps consistently with the indent, the line-height of the body,
+          and the rhythm of surrounding paragraphs.
+        </li>
+      </ul>
+
+      <p>Ordered list, same rhythm:</p>
+
+      <ol>
+        <li>Item one.</li>
+        <li>Item two.</li>
+        <li>Item three.</li>
+      </ol>
+
+      <hr />
+
+      <p>
+        Above is an <code>&lt;hr&gt;</code> — 48px above and below, single horizontal rule in border color. Used for
+        major thematic breaks within a long-form post.
+      </p>
+
+      <landing-heading id="inline" [level]="2">Inline emphasis</landing-heading>
+
+      <p>
+        Inline <strong>strong</strong> uses text-300 + weight 600 (slightly bolder against body color). Inline
+        <em>emphasis</em> uses font-style italic — Inter italic by default. <a href="#overview">Inline link</a> uses
+        accent color with subtle underline (1px thick, offset 4px). Combine all three:
+        <strong>strong with <em>nested em</em> and a <a href="#">link</a></strong
+        >.
+      </p>
+
+      <landing-heading id="back-to-back" [level]="2">Back-to-back headings</landing-heading>
+
+      <landing-heading id="immediate-h3" [level]="3">Edge case — h3 right after h2</landing-heading>
+
+      <p>
+        When an h3 follows an h2 with no paragraph between them, the gap is <code>max(h2.mb 16, h3.mt 48) = 48px</code>.
+        This is intentional — a "section header → sub-section header" sequence should feel like a tightly bound title
+        block, not jarring.
+      </p>
+    </article>
+  </landing-container>
+</landing-section>

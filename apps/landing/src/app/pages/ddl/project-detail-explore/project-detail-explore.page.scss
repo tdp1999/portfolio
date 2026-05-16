@@ -1,0 +1,212 @@
+:host {
+  display: block;
+}
+
+/* ─── Hero: browser-window with aspect-ratio variants ─────────── */
+
+.project-hero {
+  padding-block: 16px 32px;
+  background: linear-gradient(180deg, transparent, var(--landing-ink-1) 50%, transparent);
+}
+
+.project-hero__frame {
+  display: block;
+  max-width: 1280px;
+  margin-inline: auto;
+  // Cap so hero always fits above-the-fold on common screens.
+  // 64px header + 56px breadcrumb/controls + 32px safety ≈ 152px.
+  max-height: calc(100svh - 152px);
+}
+
+// Force aspect by pinning the browser-window AND its image. Image fills via object-fit.
+:host ::ng-deep .project-hero__frame .lbw {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:host ::ng-deep .project-hero__frame .lbw__shot {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 0;
+}
+
+// Variant: 4:3 — almost-square (current baseline)
+.project-hero--4-3 .project-hero__frame {
+  aspect-ratio: 4 / 3;
+}
+
+// Variant: 3:2 — classic photography
+.project-hero--3-2 .project-hero__frame {
+  aspect-ratio: 3 / 2;
+}
+
+// Variant: 16:9 — standard widescreen
+.project-hero--16-9 .project-hero__frame {
+  aspect-ratio: 16 / 9;
+}
+
+// Variant: 21:9 — cinematic letterbox
+.project-hero--21-9 .project-hero__frame {
+  aspect-ratio: 21 / 9;
+}
+
+// Variant: natural · capped — free aspect with height ceiling
+.project-hero--natural-capped .project-hero__frame {
+  aspect-ratio: auto;
+}
+.project-hero--natural-capped :host ::ng-deep .project-hero__frame .lbw__shot {
+  height: auto;
+  object-fit: contain;
+  max-height: calc(100svh - 152px - 56px); // -56 to leave room for chrome strip
+}
+
+/* ─── Meta strip (horizontal, below hero) ─────────────────────── */
+
+.project-meta-strip {
+  margin: 24px auto 0;
+  padding: 16px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  border-block: 1px solid var(--landing-border);
+}
+
+.project-meta-strip__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-meta-strip__row dt {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.project-meta-strip__row dd {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  color: var(--landing-text-300);
+}
+
+/* ─── Body layouts ───────────────────────────────────────────── */
+
+.project-body {
+  display: grid;
+  gap: 80px;
+  padding-block: 48px 96px;
+  align-items: start;
+}
+
+// V1: current — meta+TOC left, content right
+.project-body--current {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+// V2: TOC right, meta as strip above
+.project-body--toc-right-strip {
+  grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+// V3: TOC right with meta bundled above it
+.project-body--toc-right-bundled {
+  grid-template-columns: minmax(0, 1fr) 240px;
+}
+
+// V4: 3-col — meta left, content middle, TOC right
+.project-body--three-col {
+  grid-template-columns: 220px minmax(0, 1fr) 220px;
+  gap: 64px;
+}
+
+/* DOM order: left aside → article → right aside.
+   For TOC-right variants we hide the left aside slot so article spans col 1. */
+.project-body--toc-right-strip .project-aside--left,
+.project-body--toc-right-bundled .project-aside--left {
+  display: none;
+}
+
+.project-aside {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-self: start;
+}
+
+.project-aside__block landing-eyebrow {
+  display: block;
+  margin-bottom: 12px;
+}
+
+/* ─── Sidebar meta list (used in current / 3-col / bundled) ────── */
+
+.project-meta-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-meta-list__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-meta-list__row dt {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.project-meta-list__row dd {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  color: var(--landing-text-300);
+}
+
+/* ─── Content ─────────────────────────────────────────────────── */
+
+.project-content {
+  min-width: 0; // allow grid child to shrink — prevents prose overflow
+}
+
+.project-section {
+  scroll-margin-top: 96px; // sticky-header offset for fragment scroll
+}
+
+.project-section + .project-section {
+  margin-top: 64px;
+}
+
+/* ─── Below lg breakpoint: collapse to single column ──────────── */
+
+@media (max-width: 1023px) {
+  // Chain variant class for specificity (0,2,0) to beat the per-variant rules above
+  // without using !important.
+  .project-body.project-body--current,
+  .project-body.project-body--toc-right-strip,
+  .project-body.project-body--toc-right-bundled,
+  .project-body.project-body--three-col {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+  }
+  .project-aside {
+    position: static;
+  }
+  .project-body--toc-right-strip .project-aside--left,
+  .project-body--toc-right-bundled .project-aside--left {
+    display: flex;
+  }
+}

@@ -1,4 +1,4 @@
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -19,6 +19,7 @@ import {
   SegmentOption,
   LandingBackLinkComponent,
   LandingEmptyStateComponent,
+  LandingLoadingSpinnerComponent,
   LandingFloatingPillNavComponent,
   LandingScrollspyService,
   type InPageSection,
@@ -46,6 +47,7 @@ const DDL_SECTIONS: readonly InPageSection[] = [
   { id: 'segmented', title: 'Segmented control' },
   { id: 'icon-input', title: 'Icon & Input' },
   { id: 'utilities', title: 'Back link & empty state' },
+  { id: 'loading', title: 'Loading spinner & router progress' },
   { id: 'headings', title: 'Section heading variants' },
 ];
 
@@ -127,6 +129,16 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Feed · pagination strategies',
         desc: 'V1 render-all · V2 load-more · V3 paged. When to switch + scroll/SSR/footer trade-offs.',
       },
+      {
+        path: '/ddl/project-detail-explore',
+        title: 'Project detail · cover + layout explore',
+        desc: '5 cover aspect ratios × 4 body layouts. Compare hero crop and TOC/meta placement before graduating picks to project-detail.',
+      },
+      {
+        path: '/ddl/prose-flow',
+        title: 'Prose flow · vertical rhythm spec',
+        desc: 'Source of truth for .landing-prose — h1/h2/h3 leading-larger-than-trailing, blockquote/figure/code/lists with explicit halos. Applied to project-detail, blog-detail.',
+      },
     ],
   },
   {
@@ -174,7 +186,6 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
   selector: 'landing-ddl',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     IconComponent,
     ButtonComponent,
@@ -191,6 +202,7 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
     SegmentedComponent,
     LandingBackLinkComponent,
     LandingEmptyStateComponent,
+    LandingLoadingSpinnerComponent,
     LandingFloatingPillNavComponent,
   ],
   providers: [LandingScrollspyService],
@@ -206,6 +218,16 @@ export class DdlComponent {
 
   readonly iconNames = this.iconProvider.getSupportedIcons();
   readonly sections = DDL_SECTIONS;
+
+  // Raw snippet bound via [innerText] so the Angular template parser doesn't
+  // try to interpret @if / @else / { } as control flow.
+  readonly loadingSnippet = `@if (resource.showSpinner()) {
+  <landing-loading-spinner message="Loading projects…" />
+} @else if (resource.isEmpty()) {
+  <landing-empty-state ... />
+} @else {
+  <!-- content -->
+}`;
   readonly subrouteGroups = DDL_SUBROUTES;
 
   constructor() {

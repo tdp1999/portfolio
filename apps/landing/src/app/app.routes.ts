@@ -95,6 +95,14 @@ export const appRoutes: Route[] = [
         path: 'feed-pagination',
         loadComponent: () => import('./pages/ddl/feed-pagination').then((m) => m.FeedPaginationPage),
       },
+      {
+        path: 'project-detail-explore',
+        loadComponent: () => import('./pages/ddl/project-detail-explore').then((m) => m.ProjectDetailExplorePage),
+      },
+      {
+        path: 'prose-flow',
+        loadComponent: () => import('./pages/ddl/prose-flow').then((m) => m.ProseFlowPage),
+      },
     ],
   },
   {
