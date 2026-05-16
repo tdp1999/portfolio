@@ -1,6 +1,6 @@
 # Task: /projects index page (B3.c stacked editorial)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Render the `/projects` index showing the full archive in B3.c stacked-editorial layout: each project a row with year, name, role, 1-line summary, link to detail page.
@@ -9,12 +9,12 @@ Render the `/projects` index showing the full archive in B3.c stacked-editorial 
 B3.c was reserved in E4 for this route specifically — the home only shows 3 curated projects via B3.d, full archive lives here.
 
 ## Acceptance Criteria
-- [ ] Page header: eyebrow + H1 ("Projects" or per E2 label) + 1-line page subline
-- [ ] List: each project a row with year (mono caps left), project name (sans bold), role/employer (slate), 1-line summary (Newsreader italic if E2 specifies), `→` link to `/projects/:slug`
-- [ ] 1px hairline rule between rows
-- [ ] Sub-page tone: quieter (D1 rule) — no B2.c lift, accent restricted to row-link arrow on hover
-- [ ] All projects from API listed regardless of `featured` flag — full archive
-- [ ] Empty state if no projects: "No projects yet" copy
+- [x] Page header: eyebrow + H1 ("Projects" or per E2 label) + 1-line page subline
+- [x] List: each project a row with year (mono caps left), project name (sans bold), role/employer (slate), 1-line summary (Newsreader italic if E2 specifies), `→` link to `/projects/:slug`
+- [x] 1px hairline rule between rows
+- [x] Sub-page tone: quieter (D1 rule) — no B2.c lift, accent restricted to row-link arrow on hover
+- [x] All projects from API listed regardless of `featured` flag — full archive
+- [x] Empty state if no projects: "No projects yet" copy
 
 ## Technical Notes
 - Pull projects via `ProjectService.list()`; sort by year desc by default.
@@ -31,3 +31,4 @@ B3.c was reserved in E4 for this route specifically — the home only shows 3 cu
 ## Complexity: M
 
 ## Progress Log
+- 2026-05-16 Done — implementation shipped in earlier `feat(landing/projects)` commits (projects-page.ts/html/scss + feature-projects.routes.ts); user confirmed all ACs satisfied. Archived during sync.

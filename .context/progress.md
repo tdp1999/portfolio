@@ -257,9 +257,9 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ### Phase 5 — Sub-pages
 
-- [ ] 289-projects-index-page (M) — deps: 274, 276, 278, 277
-- [ ] 290-project-detail-page (L) — deps: 274, 276, 278, 279, 280, 277
-- [ ] 291-uses-page (S) — deps: 274, 276, 278, 297
+- [x] 289-projects-index-page (M) — deps: 274, 276, 278, 277 ✓
+- [x] 290-project-detail-page (L) — deps: 274, 276, 278, 279, 280, 277 ✓
+- [x] 291-uses-page (S) — deps: 274, 276, 278, 297 ✓
 - [ ] 292-colophon-page (S) — deps: 274, 276, 278, 298
 - [ ] 293-not-found-page (S) — deps: 274, 276, 278
 
@@ -330,9 +330,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 303     |
+| Done (archived)           | 306     |
 | In Progress               | 0       |
-| Pending                   | 30      |
+| Pending                   | 27      |
 | **Total Created**         | **333** |
 | Epics completed           | 30      |
 
