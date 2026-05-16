@@ -1,6 +1,6 @@
 # Task: /colophon page (how this site was made)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Build the `/colophon` page describing how the site was made — stack, tools, sources, credits — in the author's voice.

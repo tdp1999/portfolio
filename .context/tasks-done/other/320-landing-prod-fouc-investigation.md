@@ -1,6 +1,6 @@
 # Task: Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR)
 
-## Status: pending
+## Status: done
 
 ## Goal
 Remove the brief unstyled-content flash visible on first load of `thunderphong.com` SSR routes, so the page paints with final fonts, background, and layout from the very first frame.

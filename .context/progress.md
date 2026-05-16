@@ -215,7 +215,7 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
-- [ ] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone)
+- [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
@@ -260,7 +260,7 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 289-projects-index-page (M) — deps: 274, 276, 278, 277 ✓
 - [x] 290-project-detail-page (L) — deps: 274, 276, 278, 279, 280, 277 ✓
 - [x] 291-uses-page (S) — deps: 274, 276, 278, 297 ✓
-- [ ] 292-colophon-page (S) — deps: 274, 276, 278, 298
+- [x] 292-colophon-page (S) — deps: 274, 276, 278, 298 ✓
 - [ ] 293-not-found-page (S) — deps: 274, 276, 278
 
 ### Phase 6 — Content authoring (folded from descoped E3)
@@ -330,9 +330,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 306     |
+| Done (archived)           | 308     |
 | In Progress               | 0       |
-| Pending                   | 27      |
+| Pending                   | 25      |
 | **Total Created**         | **333** |
 | Epics completed           | 30      |
 
