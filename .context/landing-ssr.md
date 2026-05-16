@@ -65,6 +65,32 @@ Currently preloaded:
 
 Inter and JetBrains Mono fallbacks are metric-close to system fonts → only preload weights when the FOUT swap is visually obvious (typically Newsreader serif vs. Georgia, or any heavy/display weight).
 
+## 2b. Post-hydration loading — use `asyncResource()`
+
+**Cause:** An HTTP call fired after hydration (e.g. client-side nav from `/` into `/projects`, where the SSR transfer cache hasn't pre-warmed the service for that page) lands in a signal whose `initialValue` is an empty payload (`{ items: [] }`, `null`, etc.). The template can't distinguish "still loading" from "loaded but empty" — it renders the empty state for a few frames, then snaps to the real list when the response arrives. Slow networks make the empty state visible; fast ones make it flash.
+
+**Fix in place:** `asyncResource()` (from `@portfolio/shared/async-state`) wraps any `Observable<T>` into a structured `{ status, data, error, isLoading, showSpinner, isEmpty }` resource. `showSpinner` has deliberate timing — it stays `false` for the first 200ms (so fast responses never show a spinner), and once shown stays `true` for at least 500ms (so a late response doesn't make the spinner flicker for one frame). Template branches on `showSpinner()` → `isEmpty()` → list, never on `items.length === 0` directly.
+
+**Rules for new landing data pages:**
+
+- `asyncResource()` must be called in an injection context (field initializer or constructor). It uses `inject(DestroyRef)` internally to dispose timers. Calling it from `ngOnInit` or an event handler throws `NG0203`.
+- Whenever a page fetches data after hydration (anything not pre-rendered SSR-only), wrap the source in `asyncResource()` instead of raw `toSignal(source$, { initialValue })`:
+
+  ```ts
+  private readonly resource = asyncResource<ProjectsQueryResult>(
+    toObservable(this.queryShape).pipe(switchMap((q) => this.queryPort.query(q))),
+    {
+      initialValue: { items: [], total: 0, hasMore: false },
+      isEmpty: (r) => r.items.length === 0,
+    }
+  );
+  ```
+
+- Render with `@if (resource.showSpinner()) { <landing-loading-spinner /> } @else if (resource.isEmpty()) { <landing-empty-state .../> } @else { ...list }`. Never gate on `items.length === 0` alone — that pattern is what produced the flash in the first place.
+- SSR-safe: when the SSR HTTP request resolves through transfer cache, the source emits synchronously inside the first change-detection tick. `showSpinner` never flips to `true` on the server, so no spinner is rendered in the SSR HTML.
+- Re-fetch on input change (e.g. filter chip click): if your underlying service uses `shareReplay` (see section 1b) the re-fetch is synchronous from cache — no spinner needed and the helper correctly stays in `ready`. If the re-fetch is a real network call and you want a spinner, the **caller** must inject a loading marker inside the switchMap: `switchMap((q) => this.service.fetch(q).pipe(startWith(LOADING_MARKER)))` — the helper only auto-emits `loading` on initial subscription, not on each downstream switch.
+- Defaults `delayMs: 200` and `minMs: 500` are tuned for the "is this loading?" perception threshold from Nielsen Norman. Override only when the page has a clear reason (e.g. always-slow endpoint → `delayMs: 0` to show spinner immediately).
+
 ## 3. Active route flash — use `HydrationSafeActiveDirective`
 
 **Cause:** Angular's `routerLinkActive` subscribes to `Router.events` in `ngOnInit` with `isActive=false`, then waits for the next `NavigationEnd` to re-apply its class. After SSR hydration that creates a flash: the SSR HTML has the active class → directive `ngOnInit` strips it → router replays `NavigationEnd` → class re-added.

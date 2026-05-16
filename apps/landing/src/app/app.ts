@@ -1,12 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LandingShellComponent } from '@portfolio/landing/shared/ui';
+import { LandingRouterProgressComponent, LandingShellComponent } from '@portfolio/landing/shared/ui';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils';
 
 @Component({
-  imports: [RouterModule, LandingShellComponent],
+  imports: [RouterModule, LandingShellComponent, LandingRouterProgressComponent],
   selector: 'landing-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

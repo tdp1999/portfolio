@@ -1,0 +1,21 @@
+{
+  "name": "shared-async-state",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/utils/async-state/src",
+  "prefix": "shared",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:utils"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/utils/async-state/jest.config.cts",
+        "tsConfig": "libs/shared/utils/async-state/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

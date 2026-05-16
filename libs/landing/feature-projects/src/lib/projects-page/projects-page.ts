@@ -12,6 +12,7 @@ import {
   LandingEmptyStateComponent,
   LandingFilterChipComponent,
   LandingIconArrowComponent,
+  LandingLoadingSpinnerComponent,
   LandingResultsCountComponent,
   LandingSectionHeaderComponent,
   LandingViewToggleComponent,
@@ -26,7 +27,9 @@ import {
   type ProjectListItem,
   type ProjectLifecycleStatus,
   type ProjectsQuery,
+  type ProjectsQueryResult,
 } from '@portfolio/landing/shared/data-access';
+import { asyncResource } from '@portfolio/shared/async-state';
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
 import type { Locale } from '@portfolio/shared/types';
 
@@ -85,6 +88,7 @@ function isViewMode(v: string | null): v is ViewMode {
     LandingEmptyStateComponent,
     LandingFilterChipComponent,
     LandingIconArrowComponent,
+    LandingLoadingSpinnerComponent,
     LandingResultsCountComponent,
     LandingSectionHeaderComponent,
     LandingViewToggleComponent,
@@ -147,12 +151,21 @@ export class ProjectsPage {
     sort: 'startDate-desc',
   }));
 
-  private readonly result = toSignal(toObservable(this.queryShape).pipe(switchMap((q) => this.queryPort.query(q))), {
-    initialValue: { items: [] as readonly ProjectListItem[], total: 0, hasMore: false },
-  });
+  // `startWith({ kind: 'loading' })` inside the switchMap is what lets `asyncResource`
+  // distinguish "still fetching" from "loaded but empty" so the spinner shows on cold loads
+  // (e.g. client-side nav into /projects) instead of flashing the empty state.
+  private readonly resource = asyncResource<ProjectsQueryResult>(
+    toObservable(this.queryShape).pipe(switchMap((q) => this.queryPort.query(q))),
+    {
+      initialValue: { items: [] as readonly ProjectListItem[], total: 0, hasMore: false },
+      isEmpty: (r) => r.items.length === 0,
+    }
+  );
+
+  readonly showSpinner = this.resource.showSpinner;
 
   readonly rows = computed<readonly ProjectRow[]>(() =>
-    this.result().items.map((p) => ({ ...p, year: yearOf(p.startDate) }))
+    this.resource.data().items.map((p) => ({ ...p, year: yearOf(p.startDate) }))
   );
   readonly visibleCount = computed(() => this.rows().length);
 

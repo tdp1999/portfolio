@@ -21,6 +21,8 @@ export * from './components/background';
 export * from './components/breadcrumb';
 export * from './components/back-link';
 export * from './components/empty-state';
+export * from './components/loading-spinner';
+export * from './components/router-progress';
 export * from './components/social-row';
 export * from './components/filter-chip';
 export * from './components/results-count';

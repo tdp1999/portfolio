@@ -89,8 +89,10 @@
       </div>
     }
 
-    <!-- Empty states (same for all view modes) -->
-    @if (rows().length === 0) {
+    <!-- Loading / empty / list -->
+    @if (showSpinner()) {
+      <landing-loading-spinner message="Loading projects…" />
+    } @else if (rows().length === 0) {
       @if (activeFilterCount() > 0) {
         <div class="projects-empty">
           <landing-empty-state icon="folder-open" message="No projects match these filters" />
