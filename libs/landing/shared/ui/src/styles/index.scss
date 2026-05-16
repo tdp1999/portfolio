@@ -14,6 +14,9 @@
 /* Landing element-level typography (h1..h6, p, small, code…) */
 @use 'base-typography' as landing-base-typography;
 
+/* Landing prose — `.landing-prose` class with vertical rhythm for long-form. */
+@use 'prose' as landing-prose;
+
 /* Motion library — one file per effect. See libs/landing/shared/ui/src/motion/. */
 @use '../motion/motion' as landing-motion;
 

@@ -6,7 +6,8 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * Section heading with a hover-revealed anchor link (`#`), like modern docs sites
- * (Docusaurus, MDN, GitHub READMEs). Clicking copies a deep-link to the section to the URL.
+ * (Docusaurus, MDN, GitHub READMEs). When `[id]` is set, the heading text itself is
+ * also a fragment link — clicking anywhere on the heading deep-links to the section.
  *
  * Usage:
  * ```html
@@ -18,22 +19,34 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  * Apply visual classes (font-display, text-..., margin/etc) directly to `<landing-heading>` —
  * they apply to the host wrapper and the inner heading inherits font/color via CSS.
  *
- * Set `[anchor]="false"` to suppress the link icon (useful for h1 page titles).
+ * Set `[anchor]="false"` to suppress the `#` icon (useful for h1 page titles).
+ * Set `[clickable]="false"` to keep the heading text non-clickable (link stays only on `#`).
  */
 @Component({
   selector: 'landing-heading',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, NgTemplateOutlet],
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
   template: `
     <ng-template #content>
-      <ng-content />
+      <a
+        [routerLink]="linkTarget()"
+        [fragment]="fragmentTarget()"
+        class="landing-heading__link text-inherit no-underline hover:text-landing-accent transition-colors duration-motion-base"
+      >
+        <ng-content />
+      </a>
       @if (anchor() && id()) {
         <a
           [routerLink]="[]"
           [fragment]="id()"
           [attr.aria-label]="ariaLabel()"
-          [title]="title()"
+          [title]="titleText()"
           class="opacity-0 group-hover/heading:opacity-100 text-landing-text-500 hover:text-landing-accent transition-opacity duration-motion-base font-mono text-body-md no-underline ml-2"
           >#</a
         >
@@ -78,7 +91,14 @@ export class LandingHeadingComponent {
   readonly level = input<HeadingLevel>(2);
   readonly id = input<string>('');
   readonly anchor = input(true);
+  readonly clickable = input(true);
 
   readonly ariaLabel = computed(() => `Anchor link to ${this.id()}`);
-  readonly title = computed(() => 'Copy link to this section');
+  readonly titleText = computed(() => 'Copy link to this section');
+
+  // `routerLink=null` produces an <a> without href — treated as plain text, not a link.
+  // `fragment` rejects `null`, so use `undefined` there. Keeps a single `<ng-content>` slot
+  // so projection always lands.
+  readonly linkTarget = computed<unknown[] | null>(() => (this.clickable() && this.id() ? [] : null));
+  readonly fragmentTarget = computed<string | undefined>(() => (this.clickable() && this.id() ? this.id() : undefined));
 }

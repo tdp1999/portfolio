@@ -17,15 +17,23 @@
     color: var(--landing-text);
   }
 
-  h1 {
-    font-family: var(--landing-font-display);
-    font-size: var(--landing-display-xl);
-    line-height: var(--landing-display-xl-lh);
-    letter-spacing: var(--landing-tracking-tight);
-    font-weight: 600;
+  // Heading scale = DDL display chart (single source of truth).
+  // Hero h1 → xl (56/64) · Page h1 → lg (48/56) · Sub-hero h3 → md (40/48) · Section h2 → sm (32/40).
+  // Bare <h1> defaults to "Page h1" — hero components override via utility class (text-display-xl).
+  // No uppercase, no accent color — those are label-only treatments (use .text-mono-* / chip / eyebrow instead).
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    scroll-margin-top: 96px; // offset sticky header on fragment scroll
   }
 
-  h2 {
+  // Natural hierarchy h1 > h2 > h3 > h4 — applies OUTSIDE .landing-prose.
+  // DDL chart roles map as: Hero h1 (xl, via explicit utility class), Page h1 = lg,
+  // Sub-hero = md, Section h2 = sm. Prose context downsizes further (see _prose.scss).
+  h1 {
     font-family: var(--landing-font-display);
     font-size: var(--landing-display-lg);
     line-height: var(--landing-display-lg-lh);
@@ -33,18 +41,26 @@
     font-weight: 600;
   }
 
-  h3 {
+  h2 {
     font-family: var(--landing-font-display);
     font-size: var(--landing-display-md);
     line-height: var(--landing-display-md-lh);
+    letter-spacing: var(--landing-tracking-tight);
+    font-weight: 600;
+  }
+
+  h3 {
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-sm);
+    line-height: var(--landing-display-sm-lh);
     letter-spacing: var(--landing-tracking-tight);
     font-weight: 500;
   }
 
   h4 {
     font-family: var(--landing-font-display);
-    font-size: var(--landing-display-sm);
-    line-height: var(--landing-display-sm-lh);
+    font-size: var(--landing-body-xl);
+    line-height: var(--landing-body-xl-lh);
     letter-spacing: var(--landing-tracking-tight);
     font-weight: 500;
   }
