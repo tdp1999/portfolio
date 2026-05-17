@@ -55,6 +55,11 @@ static
 # Prisma migration backups (contain real data)
 prisma/backups/
 
+# Lighthouse + bundle analysis output (regenerated on demand)
+.lighthouseci/
+.lighthouseci-mobile/
+dist/apps/landing/bundle-report.html
+
 # Assets — whitelist approach
 # Default: ignore everything under /assets/
 # Track only what ships in production (project screenshots in V1).

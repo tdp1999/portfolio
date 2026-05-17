@@ -50,6 +50,23 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "analyze": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "2mb"
+            }
+          ],
+          "outputHashing": "none",
+          "sourceMap": {
+            "scripts": true,
+            "styles": false,
+            "hidden": false,
+            "vendor": true
+          },
+          "namedChunks": true
         }
       },
       "defaultConfiguration": "production"
