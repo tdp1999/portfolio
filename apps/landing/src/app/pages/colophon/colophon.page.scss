@@ -1,0 +1,65 @@
+.colophon-page__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.colophon-page__sub {
+  margin: 8px 0 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-500);
+  max-width: 56ch;
+}
+
+/* Inline prose blocks ("This site", "Updates") match content-section's
+   heading rhythm but render a single paragraph instead of a card grid. */
+.colophon-prose {
+  scroll-margin-top: 80px;
+  margin-top: 64px;
+  max-width: 64ch;
+}
+
+.colophon-prose__head {
+  margin-bottom: 12px;
+}
+
+.colophon-prose__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+
+.colophon-prose__anchor {
+  color: inherit;
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+.colophon-prose__anchor:hover {
+  color: var(--landing-accent);
+}
+
+.colophon-prose p {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+.colophon-page__updated {
+  margin: 48px 0 0 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-600);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
