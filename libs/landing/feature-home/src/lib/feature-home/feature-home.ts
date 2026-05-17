@@ -10,7 +10,7 @@ import { HomePhilosophyStripComponent } from '../philosophy/home-philosophy-stri
 import { HomeSelectedWorkComponent } from '../selected-work/home-selected-work.component';
 import { HomeStackComponent } from '../stack/home-stack.component';
 import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { Locale } from '@portfolio/shared/types';
 import {
   LandingFloatingPillNavComponent,

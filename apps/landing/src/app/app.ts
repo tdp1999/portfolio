@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LandingRouterProgressComponent, LandingShellComponent } from '@portfolio/landing/shared/ui';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 
 @Component({
   imports: [RouterModule, LandingShellComponent, LandingRouterProgressComponent],

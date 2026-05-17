@@ -6,7 +6,7 @@ import {
   type GalleryImage,
 } from '@portfolio/landing/shared/ui';
 import type { ProjectDetail } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { Locale } from '@portfolio/shared/types';
 import { parseItalicRuns } from './bio-long-runs';
 import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-shared';

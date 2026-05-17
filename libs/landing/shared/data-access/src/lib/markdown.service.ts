@@ -1,7 +1,18 @@
 import { Injectable } from '@angular/core';
-import { marked, type Renderer } from 'marked';
-import { codeToHtml, type BundledLanguage, type SpecialLanguage } from 'shiki';
+import type { Renderer } from 'marked';
+import type { BundledLanguage, SpecialLanguage, codeToHtml as CodeToHtml } from 'shiki';
 import type { MarkdownRenderOptions, RenderedMarkdown, TocEntry } from './markdown.types';
+
+/**
+ * `marked` and `shiki` together weigh ~140 KB gzipped. They are only needed when
+ * a route actually renders markdown (project-detail, blog-detail — both lazy).
+ * Importing them at module top level would land in the initial bundle because
+ * `@Injectable({ providedIn: 'root' })` is a side effect that esbuild cannot
+ * tree-shake away even when no consumer injects this service. We cache the
+ * dynamic-imported modules on the singleton service so each is fetched once.
+ */
+type MarkedModule = typeof import('marked');
+type ShikiCodeToHtml = typeof CodeToHtml;
 
 const SUPPORTED_LANGS = new Set<BundledLanguage>([
   'typescript',
@@ -45,21 +56,38 @@ type ConfiguredRenderer = { renderer: Renderer; toc: TocEntry[] };
 
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
+  private markedMod?: MarkedModule;
+  private codeToHtmlFn?: ShikiCodeToHtml;
+
   async render(markdown: string, options: MarkdownRenderOptions = {}): Promise<RenderedMarkdown> {
     if (!markdown) return { html: '', toc: [] };
 
-    const { renderer, toc } = this.configureRenderer(options);
-    const parsed = await this.parse(markdown, renderer);
+    const markedMod = await this.loadMarked();
+    const { renderer, toc } = this.configureRenderer(markedMod, options);
+    const parsed = await this.parse(markedMod, renderer, markdown);
     const html = await this.highlightCodeBlocks(parsed);
 
     return { html, toc };
   }
 
-  private configureRenderer(options: MarkdownRenderOptions): ConfiguredRenderer {
+  private async loadMarked(): Promise<MarkedModule> {
+    if (!this.markedMod) this.markedMod = await import('marked');
+    return this.markedMod;
+  }
+
+  private async loadShikiCodeToHtml(): Promise<ShikiCodeToHtml> {
+    if (!this.codeToHtmlFn) {
+      const mod = await import('shiki');
+      this.codeToHtmlFn = mod.codeToHtml;
+    }
+    return this.codeToHtmlFn;
+  }
+
+  private configureRenderer(markedMod: MarkedModule, options: MarkdownRenderOptions): ConfiguredRenderer {
     const basePath = options.basePath ?? '';
     const toc: TocEntry[] = [];
     const usedIds = new Set<string>();
-    const renderer = new marked.Renderer();
+    const renderer = new markedMod.Renderer();
 
     renderer.heading = ({ tokens, depth }) => {
       const text = tokens.map((t: { raw?: string; text?: string }) => t.text ?? t.raw ?? '').join('');
@@ -129,15 +157,21 @@ export class MarkdownService {
     return { renderer, toc };
   }
 
-  private async parse(markdown: string, renderer: Renderer): Promise<string> {
-    marked.use({ renderer, async: true });
-    return marked.parse(markdown, { async: true });
+  private async parse(markedMod: MarkedModule, renderer: Renderer, markdown: string): Promise<string> {
+    // `new Marked()` creates an isolated instance so concurrent renders (e.g. parallel
+    // SSR requests) don't race on the global `marked` singleton's renderer state.
+    // Using the singleton's `marked.use({ renderer })` would let one request's renderer
+    // overwrite another's mid-parse.
+    const instance = new markedMod.Marked({ renderer, async: true });
+    return instance.parse(markdown, { async: true });
   }
 
   private async highlightCodeBlocks(html: string): Promise<string> {
     const codeBlockRegex = /<pre><code(?:\s+class="language-([^"]+)")?>([\s\S]*?)<\/code><\/pre>/g;
     const matches = Array.from(html.matchAll(codeBlockRegex));
+    if (matches.length === 0) return html;
 
+    const codeToHtml = await this.loadShikiCodeToHtml();
     let result = html;
     for (const match of matches) {
       const [full, lang, rawCode] = match;

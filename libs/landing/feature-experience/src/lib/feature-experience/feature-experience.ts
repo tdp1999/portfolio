@@ -13,7 +13,7 @@ import {
 } from '@portfolio/landing/shared/ui';
 import type { Locale } from '@portfolio/shared/types';
 import { DateRangePipe, InitialsPipe } from '@portfolio/shared/ui/pipes';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 
 const EMPLOYMENT_TYPE_LABEL: Record<EmploymentType, string> = {
   FULL_TIME: 'Full-time',

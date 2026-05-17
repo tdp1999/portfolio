@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ChipComponent, LandingLinkComponent } from '@portfolio/landing/shared/ui';
 import type { ProjectDetail, ProjectHighlight } from '@portfolio/landing/shared/data-access';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { Locale } from '@portfolio/shared/types';
 import { parseItalicRuns } from './bio-long-runs';
 import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-shared';

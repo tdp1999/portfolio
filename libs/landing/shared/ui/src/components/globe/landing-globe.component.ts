@@ -12,8 +12,23 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import createGlobe, { type COBEOptions, type Globe } from 'cobe';
+import type { COBEOptions, Globe } from 'cobe';
 import { LandingThemeService, type LandingTheme } from '../../theme';
+
+/**
+ * `cobe` is ~30 KB and only needed once we're past `afterNextRender`. Importing
+ * at module top level would land it in the initial bundle even though it isn't
+ * used until the home Get-in-Touch section is in the DOM. Dynamic-import keeps it
+ * in a separate lazy chunk so initial JS gzipped stays under the 150 KB budget.
+ */
+type CreateGlobeFn = (canvas: HTMLCanvasElement, opts: COBEOptions) => Globe;
+let createGlobePromise: Promise<CreateGlobeFn> | null = null;
+function loadCreateGlobe(): Promise<CreateGlobeFn> {
+  if (!createGlobePromise) {
+    createGlobePromise = import('cobe').then((m) => m.default as unknown as CreateGlobeFn);
+  }
+  return createGlobePromise;
+}
 
 /** Fixed backing-buffer size — decouples cobe init from CSS layout timing.
  *  Browser scales the rendered canvas to fit its CSS width. */
@@ -91,6 +106,7 @@ export class LandingGlobeComponent implements OnDestroy {
   protected readonly hasGlobe = signal(true);
   private rafId: number | null = null;
   private lastTheme: LandingTheme | null = null;
+  private destroyed = false;
 
   /** Label positions are derived from current phi (signal-driven so the
    *  template repaints on drag; outside drag, phi is stable). */
@@ -136,12 +152,26 @@ export class LandingGlobeComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     this.globe?.destroy();
   }
 
-  private initGlobe(): void {
+  private async initGlobe(): Promise<void> {
     const canvas = this.canvasRef().nativeElement;
+
+    let createGlobe: CreateGlobeFn;
+    try {
+      createGlobe = await loadCreateGlobe();
+    } catch {
+      this.hasGlobe.set(false);
+      return;
+    }
+
+    // Component may have been destroyed while waiting for the cobe chunk to load
+    // (fast back-nav). Bail before allocating WebGL state to avoid a leaked Globe
+    // instance + rAF loop that ngOnDestroy already ran past.
+    if (this.destroyed) return;
 
     try {
       this.globe = createGlobe(canvas, {
