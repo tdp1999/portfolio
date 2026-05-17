@@ -261,7 +261,7 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 290-project-detail-page (L) — deps: 274, 276, 278, 279, 280, 277 ✓
 - [x] 291-uses-page (S) — deps: 274, 276, 278, 297 ✓
 - [x] 292-colophon-page (S) — deps: 274, 276, 278, 298 ✓
-- [ ] 293-not-found-page (S) — deps: 274, 276, 278
+- [x] 293-not-found-page (S) — deps: 274, 276, 278 ✓
 
 ### Phase 6 — Content authoring (folded from descoped E3)
 
@@ -274,8 +274,8 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ### Phase 7 — SSR & perf gate
 
-- [ ] 300-landing-ssr-and-image-pipeline (M) — deps: 274–293
-- [ ] 301-landing-bundle-and-lighthouse-smoke (M) — deps: 300
+- [x] 300-landing-ssr-and-image-pipeline (M) — deps: 274–293 ✓
+- [x] 301-landing-bundle-and-lighthouse-smoke (M) — deps: 300 ✓
 - [ ] 302-landing-sitemap-and-robots (S) — deps: 300
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
@@ -323,6 +323,8 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 **Next:** Phase 5 sub-pages — 289 (projects index), 290 (project detail), 291 (uses), 292 (colophon), 293 (404). E3 data is already in place to consume.
 
+**E5 Phase 7 SSR + perf gate (2026-05-17):** Tasks 300 + 301 done. Landing initial JS gz: **289 → 147.6 KB** (49% cut) via 3 code-splits: (a) `MarkdownService` dynamic-imports `marked` + `shiki`; (b) `@portfolio/shared/utils` → new `lite` subpath so landing doesn't drag Zod via barrel side effects; (c) `<landing-globe>` dynamic-imports `cobe`. Lighthouse smoke (4 routes × desktop+mobile): A11y/BP/SEO ≥ 80 everywhere; Desktop Perf 93-97; Mobile Perf 30-68 (defer to E6 perf-polish per progress.md note). Cloudinary 1×/2× srcset wired through `<landing-figure>` + `<landing-browser-window>` + new `cloudinarySrcset` pipe. Project-detail hero gets `<link rel="preload" as="image" imagesrcset>` injected during SSR. New tooling: `pnpm bundle:analyze` (source-map-explorer treemap) + `pnpm lhci:autorun` (desktop + mobile Lighthouse).
+
 **SSR/hydration hardening (2026-05-08, alongside 285/285b):** Fixed post-hydration data flash on home re-mount (back-nav from /ddl) — root cause was cold observables in landing data services. Added `shareReplay({ refCount: false })` to `Profile/Skill/Experience/Project` services + a tiny native-fetch reverse proxy on `/api/*` in `apps/landing/src/server.ts` so browser same-origin `/api/...` reaches the API service (was 302→/404 in prod where landing & API are separate Railway services). Bumped landing `anyComponentStyle` budget 8/16kB→16/32kB and refactored `bio-card-grid` orbit SCSS (3-prototype selector list → shared `.proto-grid--orbit` / `.proto-card--orbit`). New rules captured in `landing-ssr.md` + `guides/deploy-railway-ssr.md` (§4b browser proxy).
 
 
@@ -330,9 +332,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 308     |
+| Done (archived)           | 311     |
 | In Progress               | 0       |
-| Pending                   | 25      |
+| Pending                   | 22      |
 | **Total Created**         | **333** |
 | Epics completed           | 30      |
 
