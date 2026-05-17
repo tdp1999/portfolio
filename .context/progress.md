@@ -265,12 +265,12 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 ### Phase 6 — Content authoring (folded from descoped E3)
 
-- [ ] 294-content-console-mvp-case-study (L) — deps: 277, 290
-- [ ] 295-content-project-2-case-study (M) — deps: 277, 290, 294
-- [ ] 296-content-project-3-case-study (M) — deps: 277, 290, 294
-- [ ] 297-content-uses-page (S) — deps: 291
-- [ ] 298-content-colophon-page (S) — deps: 292
-- [ ] 299-content-profile-and-skills (S) — deps: 277
+- [x] 294-content-console-mvp-case-study (L) — deps: 277, 290 ✓
+- [x] 295-content-project-2-case-study (M) — deps: 277, 290, 294 ✓
+- [x] 296-content-project-3-case-study (M) — deps: 277, 290, 294 ✓
+- [x] 297-content-uses-page (S) — deps: 291 ✓
+- [x] 298-content-colophon-page (S) — deps: 292 ✓
+- [x] 299-content-profile-and-skills (S) — deps: 277 ✓
 
 ### Phase 7 — SSR & perf gate
 

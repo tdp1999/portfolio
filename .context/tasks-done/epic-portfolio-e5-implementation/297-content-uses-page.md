@@ -1,6 +1,6 @@
 # Task: Content — /uses page
 
-## Status: pending
+## Status: done
 
 ## Goal
 Write the `/uses` content with specific, opinionated entries — name + 1-line reason per item — covering hardware, editor, terminal, CLI, browser, fonts, and other daily tools.

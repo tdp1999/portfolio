@@ -1,6 +1,6 @@
 # Task: Content — Profile + Skills seed
 
-## Status: pending
+## Status: done
 
 ## Goal
 Populate the Profile record and the Skill set with accurate values reflecting the author today — including the new `Profile.timezone` and `Skill.displayGroup` fields.
