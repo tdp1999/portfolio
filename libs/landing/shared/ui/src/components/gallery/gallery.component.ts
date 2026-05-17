@@ -47,6 +47,7 @@ type Cell = {
             [figureNumber]="numbered() ? i + 1 : null"
             [aspectRatio]="fillContainer() ? '' : cell.ratio"
             [fill]="fillContainer()"
+            [cloudinaryWidth]="cellWidth()"
           />
         }
       </div>
@@ -82,6 +83,12 @@ export class LandingGalleryComponent {
       ratio: ratioFor(count, i),
     }));
   });
+
+  /** Approximate rendered cell width. The gallery sits in a wide container (max
+   * ~960px); for layout-1 a cell fills the row, for layout-2/3/4 a cell takes
+   * roughly half. 720 is a safe upper bound that still gives a useful 2× variant
+   * without serving full-resolution screenshots to every visitor. */
+  protected readonly cellWidth = computed<number>(() => (this.layoutCount() === 1 ? 960 : 720));
 }
 
 /** Aspect-ratio per cell index, per layout count. See `landing-gallery` doc above. */

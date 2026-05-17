@@ -1,4 +1,4 @@
-import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,6 +26,7 @@ import {
   EyebrowComponent,
   LandingBreadcrumbComponent,
   LandingBrowserWindowComponent,
+  CloudinarySrcsetPipe,
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
@@ -39,8 +40,11 @@ import {
   type TocEntry,
 } from '@portfolio/landing/shared/data-access';
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
-import { getLocalized } from '@portfolio/shared/utils';
+import { getLocalized } from '@portfolio/shared/utils/lite';
+import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 import type { Locale } from '@portfolio/shared/types';
+
+const HERO_WIDTH = 960;
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
 
@@ -89,6 +93,7 @@ const LIFECYCLE_STATUS_LABEL: Record<'LIVE' | 'SHIPPED' | 'ARCHIVED' | 'BETA' | 
     LandingBrowserWindowComponent,
     EyebrowComponent,
     TranslatablePipe,
+    CloudinarySrcsetPipe,
   ],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
@@ -103,6 +108,7 @@ export class ProjectDetailComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly transferState = inject(TransferState);
   private readonly scrollspy = inject(LandingScrollspyService);
+  private readonly document = inject(DOCUMENT);
 
   readonly locale = signal<Locale>('en');
 
@@ -233,6 +239,7 @@ export class ProjectDetailComponent {
       this.meta.updateTag({ name: 'description', content: this.oneLiner() });
       if (p.thumbnailUrl) {
         this.meta.updateTag({ property: 'og:image', content: p.thumbnailUrl });
+        this.injectHeroPreload(p.thumbnailUrl);
       }
     });
 
@@ -240,6 +247,35 @@ export class ProjectDetailComponent {
     effect(() => {
       this.scrollspy.setSections(this.tocSections());
     });
+  }
+
+  /**
+   * Inject `<link rel="preload" as="image">` for the hero thumbnail so the browser
+   * starts fetching it before the bundled JS even parses. Lives in `<head>` and is
+   * idempotent — repeated re-renders update the existing element. SSR-friendly:
+   * runs during the change-detection tick and the resulting `<link>` is serialized
+   * into the response HTML.
+   */
+  private injectHeroPreload(thumbnailUrl: string): void {
+    const head = this.document.head;
+    if (!head) return;
+    const { src, srcset } = buildCloudinarySrcset(thumbnailUrl, HERO_WIDTH);
+    const id = 'landing-hero-preload';
+    let link = head.querySelector(`link#${id}`) as HTMLLinkElement | null;
+    if (!link) {
+      link = this.document.createElement('link');
+      link.id = id;
+      link.rel = 'preload';
+      link.setAttribute('as', 'image');
+      link.setAttribute('fetchpriority', 'high');
+      head.appendChild(link);
+    }
+    link.href = src;
+    if (srcset) {
+      link.setAttribute('imagesrcset', srcset);
+    } else {
+      link.removeAttribute('imagesrcset');
+    }
   }
 
   private hasFallbackSection(id: string): boolean {

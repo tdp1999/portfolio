@@ -112,8 +112,15 @@
 
                 @if (project.images.length > 0) {
                   @for (img of project.images; track img.url; let i = $index) {
+                    @let imgSet = img.url | cloudinarySrcset: 720;
                     <figure>
-                      <img [src]="img.url" [alt]="img.alt ?? project.title" loading="lazy" />
+                      <img
+                        [src]="imgSet.src"
+                        [attr.srcset]="imgSet.srcset || null"
+                        [alt]="img.alt ?? project.title"
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <figcaption>
                         <span class="project-reading__fig-num">FIG. {{ i + 1 | number: '2.0-0' }}</span>
                         @if (img.alt) {

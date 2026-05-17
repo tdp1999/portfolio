@@ -16,6 +16,7 @@ import {
   LandingResultsCountComponent,
   LandingSectionHeaderComponent,
   LandingViewToggleComponent,
+  CloudinarySrcsetPipe,
   type BreadcrumbItem,
   type ViewToggleOption,
 } from '@portfolio/landing/shared/ui';
@@ -93,6 +94,7 @@ function isViewMode(v: string | null): v is ViewMode {
     LandingSectionHeaderComponent,
     LandingViewToggleComponent,
     TranslatablePipe,
+    CloudinarySrcsetPipe,
   ],
   templateUrl: './projects-page.html',
   styleUrl: './projects-page.scss',

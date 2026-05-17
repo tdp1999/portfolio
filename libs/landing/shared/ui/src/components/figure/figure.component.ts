@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 
 @Component({
   selector: 'landing-figure',
@@ -11,8 +12,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
     >
       <div class="landing-figure__frame" [style.aspect-ratio]="!fill() ? aspectRatio() || null : null">
         <img
-          [attr.src]="src()"
-          [attr.srcset]="srcset() || null"
+          [attr.src]="resolvedSrc()"
+          [attr.srcset]="resolvedSrcset() || null"
           [attr.alt]="alt()"
           [attr.loading]="preload() ? null : 'lazy'"
           [attr.fetchpriority]="preload() ? 'high' : null"
@@ -53,8 +54,28 @@ export class FigureComponent {
    * shift layout. Aspect-ratio input is ignored when `fill` is true.
    */
   readonly fill = input<boolean>(false);
+  /**
+   * Rendered CSS width of the image in px. When set AND `srcset` is empty AND the
+   * `src` is a Cloudinary URL, emit a 1×/2× `srcset` (via Cloudinary's `w_`
+   * transform). Explicit `srcset` input wins; non-Cloudinary URLs fall back to
+   * plain `src`. Default `0` (auto = no srcset).
+   */
+  readonly cloudinaryWidth = input<number>(0);
 
   protected readonly hasCaption = computed(() => this.caption().length > 0);
+
+  private readonly autoSet = computed(() => {
+    const explicit = this.srcset();
+    if (explicit) return null;
+    const w = this.cloudinaryWidth();
+    if (!w) return null;
+    const s = this.src();
+    if (!s) return null;
+    return buildCloudinarySrcset(s, w);
+  });
+
+  protected readonly resolvedSrc = computed(() => this.autoSet()?.src || this.src());
+  protected readonly resolvedSrcset = computed(() => this.srcset() || this.autoSet()?.srcset || '');
 
   protected formatNumber(n: number): string {
     return n < 10 ? `0${n}` : String(n);

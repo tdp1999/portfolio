@@ -37,3 +37,4 @@ export * from './motion';
 export * from './directives';
 export * from './theme';
 export * from './shell';
+export * from './pipes/cloudinary-srcset.pipe';

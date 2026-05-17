@@ -113,7 +113,14 @@
 
                   <div class="projects-row__thumb">
                     @if (project.thumbnailUrl) {
-                      <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+                      @let rowSet = project.thumbnailUrl | cloudinarySrcset: 160;
+                      <img
+                        [src]="rowSet.src"
+                        [attr.srcset]="rowSet.srcset || null"
+                        [alt]="project.title"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     } @else {
                       <span class="projects-row__thumb-empty" aria-hidden="true">—</span>
                     }
@@ -159,7 +166,14 @@
                 <a [routerLink]="['/projects', project.slug]" class="projects-card__link">
                   <div class="projects-card__media">
                     @if (project.thumbnailUrl) {
-                      <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+                      @let cardSet = project.thumbnailUrl | cloudinarySrcset: 480;
+                      <img
+                        [src]="cardSet.src"
+                        [attr.srcset]="cardSet.srcset || null"
+                        [alt]="project.title"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     } @else {
                       <span class="projects-card__media-empty" aria-hidden="true">{{ project.title }}</span>
                     }

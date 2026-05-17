@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 
 /**
  * Browser-window chrome (3-dot traffic lights + URL bar) wrapping a screenshot or
@@ -31,10 +32,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       @if (src()) {
         <img
           class="lbw__shot"
-          [src]="src()!"
+          [src]="resolvedSrc()"
+          [attr.srcset]="resolvedSrcset() || null"
           [alt]="alt()"
-          [attr.loading]="eager() ? null : 'lazy'"
+          [attr.loading]="eager() ? 'eager' : 'lazy'"
           [attr.fetchpriority]="eager() ? 'high' : null"
+          [attr.decoding]="eager() ? 'sync' : 'async'"
         />
       } @else {
         <div class="lbw__body">
@@ -107,4 +110,14 @@ export class LandingBrowserWindowComponent {
   readonly url = input<string>('');
   /** Mark as above-the-fold for priority loading. Default `false` (lazy). */
   readonly eager = input<boolean>(false);
+  /**
+   * Rendered CSS width of the image in px (max). Used to compute a 1×/2× Cloudinary
+   * `srcset`. Non-Cloudinary URLs fall back to the plain `src` (empty srcset).
+   * Default 960 — the wide-container cap used by the project-detail hero.
+   */
+  readonly width = input<number>(960);
+
+  protected readonly resolvedSet = computed(() => buildCloudinarySrcset(this.src(), this.width()));
+  protected readonly resolvedSrc = computed(() => this.resolvedSet().src || this.src() || '');
+  protected readonly resolvedSrcset = computed(() => this.resolvedSet().srcset);
 }
