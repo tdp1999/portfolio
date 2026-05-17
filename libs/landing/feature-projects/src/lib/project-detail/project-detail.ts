@@ -20,6 +20,7 @@ import {
   LandingEmptyStateComponent,
   LandingHeadingComponent,
   LandingLinkComponent,
+  LandingProseAnchorsDirective,
   LandingScrollspyService,
   LandingTocSidebarComponent,
   EyebrowComponent,
@@ -82,6 +83,7 @@ const LIFECYCLE_STATUS_LABEL: Record<'LIVE' | 'SHIPPED' | 'ARCHIVED' | 'BETA' | 
     LandingEmptyStateComponent,
     LandingHeadingComponent,
     LandingLinkComponent,
+    LandingProseAnchorsDirective,
     LandingTocSidebarComponent,
     LandingBreadcrumbComponent,
     LandingBrowserWindowComponent,
@@ -121,7 +123,9 @@ export class ProjectDetailComponent {
               return of<DetailState>({ project: null, rendered: EMPTY_RENDER, index, loaded: true });
             }
             const md = getLocalized(project.body, this.locale());
-            const render$ = md ? from(this.markdown.render(md)) : of(EMPTY_RENDER);
+            const render$ = md
+              ? from(this.markdown.render(md, { basePath: `/projects/${project.slug}` }))
+              : of(EMPTY_RENDER);
             return render$.pipe(
               map((rendered): DetailState => {
                 const next: DetailState = { project, rendered, index, loaded: true };

@@ -173,6 +173,91 @@
       }
     }
 
+    /* Markdown-rendered headings come from marked, not <landing-heading>, so the
+       generic `& a` rule above (color: accent, text-decoration: underline) wins on
+       specificity over Tailwind's `no-underline`. Re-establish parity with the
+       Angular component: no underline, inherit color, switch to accent on hover. */
+    & :is(h1, h2, h3, h4, h5, h6) a {
+      text-decoration: none;
+      color: inherit;
+    }
+    & :is(h1, h2, h3, h4, h5, h6) a:hover {
+      color: var(--landing-accent);
+    }
+
+    /* Markdown <figure> primitive — wraps every prose image. The __frame reserves
+       a fixed 16:9 box from initial paint so anchor-scroll lands stay accurate even
+       before images load. Placeholder sits underneath the <img>: img is invisible
+       while loading (opacity 0), fades in on `is-loaded`, hides on `onerror` to let
+       the placeholder show through. Loaded / loading / broken states share the same
+       outer dimensions → zero layout shift. */
+    & figure.landing-figure {
+      margin: 32px 0;
+
+      & .landing-figure__frame {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--landing-border);
+        background: var(--landing-ink-1);
+      }
+
+      & img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 200ms ease;
+        background: var(--landing-ink-1);
+        z-index: 1;
+      }
+      & img.is-loaded {
+        opacity: 1;
+      }
+
+      & .landing-figure__placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: repeating-linear-gradient(
+          45deg,
+          transparent 0 12px,
+          color-mix(in srgb, var(--landing-border) 30%, transparent) 12px 14px
+        );
+        color: var(--landing-text-600);
+        font-family: var(--landing-font-mono);
+        font-size: var(--landing-mono-sm);
+        line-height: var(--landing-mono-sm-lh);
+        letter-spacing: var(--landing-tracking-mono);
+        text-transform: uppercase;
+        z-index: 0;
+      }
+
+      & .landing-figure__placeholder-label {
+        padding: 4px 12px;
+        border: 1px solid var(--landing-border);
+        background: var(--landing-bg);
+        border-radius: 4px;
+      }
+
+      & figcaption {
+        margin-top: 12px;
+        font-family: var(--landing-font-mono);
+        font-size: var(--landing-mono-sm);
+        line-height: var(--landing-mono-sm-lh);
+        letter-spacing: var(--landing-tracking-mono);
+        color: var(--landing-text-500);
+        text-align: center;
+      }
+    }
+
     & code {
       font-family: var(--landing-font-mono);
       font-size: 0.92em;

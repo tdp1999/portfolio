@@ -17,7 +17,10 @@
           />
         } @else {
           <landing-browser-window class="project-hero__frame project-hero__frame--placeholder" [url]="project.slug">
-            <div class="project-hero__placeholder">Screenshot pending</div>
+            <div class="project-hero__placeholder">
+              <span class="project-hero__placeholder-label">image pending</span>
+              <span class="project-hero__placeholder-sub">cover screenshot not yet captured</span>
+            </div>
           </landing-browser-window>
         }
       </div>
@@ -67,7 +70,7 @@
           @if (contentHtml(); as html) {
             @if (toc().length > 0) {
               <!-- Markdown body wins when project.body is populated -->
-              <div class="landing-prose" [innerHTML]="html"></div>
+              <div class="landing-prose" landingProseAnchors [innerHTML]="html"></div>
             } @else {
               <!-- No markdown body — synthesize sections from existing fields -->
               <div class="landing-prose">
