@@ -3,15 +3,15 @@ import { Meta, Title } from '@angular/platform-browser';
 import {
   ContainerComponent,
   LandingBreadcrumbComponent,
+  LandingContentSectionComponent,
   LandingSectionHeaderComponent,
   SectionComponent,
   type BreadcrumbItem,
+  type ContentSection,
 } from '@portfolio/landing/shared/ui';
-import { UsesSectionComponent, type UsesSection } from './uses-section.component';
 
-// Seed entries — Procida Rule 4 (specific, not generic). Task 297 replaces or
-// refines this content; the page shell + section component here are the deliverables.
-const USES_SECTIONS: readonly UsesSection[] = [
+// Procida Rule 4 (specific, not generic). Tool name + 1-line reason + link per entry.
+const USES_SECTIONS: readonly ContentSection[] = [
   {
     num: '01',
     id: 'hardware',
@@ -156,7 +156,7 @@ const USES_SECTIONS: readonly UsesSection[] = [
     SectionComponent,
     LandingBreadcrumbComponent,
     LandingSectionHeaderComponent,
-    UsesSectionComponent,
+    LandingContentSectionComponent,
   ],
   templateUrl: './uses.page.html',
   styleUrls: ['./uses.page.scss'],
@@ -175,4 +175,5 @@ export class UsesPage {
 
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Uses' }];
   readonly sections = USES_SECTIONS;
+  readonly lastUpdated = '2026-05';
 }

@@ -9,7 +9,9 @@
     </div>
 
     @for (section of sections; track section.id) {
-      <landing-uses-section [section]="section" class="mb-12" />
+      <landing-content-section [section]="section" class="mb-12" />
     }
+
+    <p class="uses-page__updated">Last updated {{ lastUpdated }}.</p>
   </landing-container>
 </landing-section>

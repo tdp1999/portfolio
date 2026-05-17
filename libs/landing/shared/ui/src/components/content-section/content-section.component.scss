@@ -5,18 +5,18 @@
   margin-top: 64px;
 }
 
-.uses-section {
+.content-section {
   scroll-margin-top: 80px;
 }
 
-.uses-section__head {
+.content-section__head {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 12px;
 }
 
-.uses-section__title {
+.content-section__title {
   margin: 0;
   font-family: var(--landing-font-body);
   font-weight: 600;
@@ -25,22 +25,22 @@
   color: var(--landing-text-300);
 }
 
-.uses-section__anchor {
+.content-section__anchor {
   color: inherit;
   text-decoration: none;
   transition: color 220ms ease;
 }
-.uses-section__anchor:hover {
+.content-section__anchor:hover {
   color: var(--landing-accent);
 }
 
-.uses-grid {
+.content-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 12px;
 }
 
-.uses-card {
+.content-card {
   display: flex;
   align-items: flex-start;
   gap: 16px;
@@ -53,23 +53,23 @@
     transform 220ms ease;
 }
 
-.uses-card--linked {
+.content-card--linked {
   cursor: pointer;
 }
-.uses-card--linked:hover {
+.content-card--linked:hover {
   border-color: color-mix(in srgb, var(--landing-accent) 50%, var(--landing-border));
   transform: translateY(-1px);
 }
-.uses-card--linked:hover .uses-card__monogram {
+.content-card--linked:hover .content-card__monogram {
   border-color: color-mix(in srgb, var(--landing-accent) 60%, transparent);
   color: var(--landing-accent);
 }
-.uses-card--linked:hover .uses-card__arrow {
+.content-card--linked:hover .content-card__arrow {
   transform: translate(2px, -2px);
   color: var(--landing-accent);
 }
 
-.uses-card__monogram {
+.content-card__monogram {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
@@ -89,14 +89,14 @@
     color 220ms ease;
 }
 
-.uses-card__body {
+.content-card__body {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
 }
 
-.uses-card__name {
+.content-card__name {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -106,14 +106,14 @@
   color: var(--landing-text-300);
 }
 
-.uses-card__arrow {
+.content-card__arrow {
   color: var(--landing-text-500);
   transition:
     transform 220ms ease,
     color 220ms ease;
 }
 
-.uses-card__reason {
+.content-card__reason {
   margin: 0;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-sm);
@@ -122,12 +122,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .uses-card,
-  .uses-card__monogram,
-  .uses-card__arrow {
+  .content-card,
+  .content-card__monogram,
+  .content-card__arrow {
     transition: none;
   }
-  .uses-card--linked:hover {
+  .content-card--linked:hover {
     transform: none;
   }
 }

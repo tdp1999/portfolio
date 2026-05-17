@@ -15,3 +15,13 @@
   color: var(--landing-text-500);
   max-width: 56ch;
 }
+
+.uses-page__updated {
+  margin: 48px 0 0 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-600);
+  text-align: center;
+  letter-spacing: 0.02em;
+}

@@ -1,0 +1,32 @@
+<section class="content-section" [id]="section().id">
+  <header class="content-section__head">
+    <h2 class="content-section__title">
+      <a class="content-section__anchor" [routerLink]="[]" [fragment]="section().id">{{ section().title }}</a>
+    </h2>
+  </header>
+
+  <div class="content-grid">
+    @for (entry of section().entries; track entry.name) {
+      @if (entry.href) {
+        <a class="content-card content-card--linked" [href]="entry.href" target="_blank" rel="noopener noreferrer">
+          <span class="content-card__monogram" aria-hidden="true">{{ entry.monogram }}</span>
+          <div class="content-card__body">
+            <span class="content-card__name">
+              {{ entry.name }}
+              <landing-icon-arrow direction="up-right" [size]="12" class="content-card__arrow" />
+            </span>
+            <p class="content-card__reason">{{ entry.reason }}</p>
+          </div>
+        </a>
+      } @else {
+        <div class="content-card">
+          <span class="content-card__monogram" aria-hidden="true">{{ entry.monogram }}</span>
+          <div class="content-card__body">
+            <span class="content-card__name">{{ entry.name }}</span>
+            <p class="content-card__reason">{{ entry.reason }}</p>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>
