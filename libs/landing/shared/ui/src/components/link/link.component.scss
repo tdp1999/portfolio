@@ -48,6 +48,11 @@
    * aligns the arrow optically with the text without changing the link's own
    * baseline relative to surrounding prose (that comes from the text glyphs). */
   align-items: center;
+  /* Inline-flex's own baseline derives from its centered children, which puts
+   * the box-midline above the surrounding Inter baseline. `middle` aligns the
+   * link's center with the parent font's x-height mid → icon + mono text sit
+   * on the same optical midline as the surrounding sans run. */
+  vertical-align: middle;
   /* A whisker tighter than the default mono tracking — prose context doesn't
    * want the same caps-style spacing eyebrows get. */
   letter-spacing: 0.02em;
@@ -55,6 +60,24 @@
 
 .landing-link__text {
   display: inline-block;
+}
+
+/* Action icon (mail/tel/download) — leading the text, indigo accent at rest so it
+ * reads as the semantic marker (color is the affordance per the project no-underline rule).
+ * On hover it shifts to accent-hover to match the text color transition.
+ *
+ * Extra 4px margin on top of the flex parent's 4px gap → 8px between glyph and text.
+ * Action icons benefit from more breathing room than the arrow stack because they
+ * carry semantic weight (envelope/phone/download), unlike the directional arrow. */
+.landing-link__action-icon {
+  flex-shrink: 0;
+  margin-right: 2px;
+  color: var(--landing-accent);
+  transition: color 220ms ease;
+}
+
+.landing-link:hover .landing-link__action-icon {
+  color: var(--landing-accent-hover);
 }
 
 .landing-link__arrow-stack {
