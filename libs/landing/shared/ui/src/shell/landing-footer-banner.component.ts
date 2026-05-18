@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { type SocialLink } from '@portfolio/shared/types';
 import { LandingBackgroundComponent } from '../components/background';
 import { ContainerComponent } from '../components/container';
 import { EyebrowComponent } from '../components/eyebrow';
 import { LandingLinkComponent } from '../components/link';
-import { SOCIAL_PLATFORM_LABELS } from '@portfolio/shared/enum-labels';
-import { type SocialLink } from '@portfolio/shared/types';
 
 type FooterRoute = { readonly label: string; readonly href: string; readonly external?: boolean };
 type FooterColumn = { readonly title: string; readonly routes: readonly FooterRoute[] };
@@ -46,18 +45,12 @@ export class LandingFooterBannerComponent {
         { label: 'Contact', href: '/#get-in-touch' },
       ],
     },
+    {
+      title: 'Legal',
+      routes: [
+        { label: 'Privacy', href: '/privacy' },
+        { label: 'Terms', href: '/terms' },
+      ],
+    },
   ];
-
-  protected readonly mailto = computed(() => (this.email() ? `mailto:${this.email()}` : ''));
-
-  /** Connect column: email (mailto) first, then named social rows. */
-  protected readonly connectRoutes = computed<readonly FooterRoute[]>(() => {
-    const list: FooterRoute[] = [];
-    const m = this.mailto();
-    if (m) list.push({ label: 'Email', href: m });
-    for (const s of this.socialLinks()) {
-      list.push({ label: SOCIAL_PLATFORM_LABELS[s.platform] ?? 'External', href: s.url, external: true });
-    }
-    return list;
-  });
 }

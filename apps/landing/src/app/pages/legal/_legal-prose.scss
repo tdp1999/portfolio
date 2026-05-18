@@ -1,0 +1,30 @@
+/* Local layout extensions for /privacy and /terms.
+   Content rhythm and table styling come from `.landing-prose`
+   (libs/landing/shared/ui/src/styles/_prose.scss). Only the page-level chrome
+   (header gap, reading-column width) lives here. */
+
+.legal-page__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.legal-page__meta {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: 0.02em;
+  color: var(--landing-text-600);
+}
+
+/* Reading column — mirrors `.project-reading` width so legal pages share the
+   established editorial measure. Centered inside the outer container. */
+.legal-reading {
+  max-width: 720px;
+  margin-inline: auto;
+  min-width: 0;
+}

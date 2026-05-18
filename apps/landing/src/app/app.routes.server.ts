@@ -4,6 +4,10 @@ export const serverRoutes: ServerRoute[] = [
   // Static-content pages — safe to prerender
   { path: 'uses', renderMode: RenderMode.Prerender },
   { path: 'colophon', renderMode: RenderMode.Prerender },
+  // Legal pages are static, but content varies by `?lang=` query → SSR so the
+  // server can render the right language without a separate URL per locale.
+  { path: 'privacy', renderMode: RenderMode.Server },
+  { path: 'terms', renderMode: RenderMode.Server },
   { path: '404', renderMode: RenderMode.Server, status: 404 },
   { path: 'ddl', renderMode: RenderMode.Prerender },
 

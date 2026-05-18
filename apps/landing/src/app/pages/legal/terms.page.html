@@ -1,0 +1,380 @@
+<landing-section>
+  <landing-container size="content">
+    <header class="legal-page__head">
+      <landing-breadcrumb [items]="locale() === 'vi' ? breadcrumbVi : breadcrumbEn" />
+      <p class="legal-page__meta">
+        {{ locale() === 'vi' ? lastUpdatedVi : lastUpdatedEn }}
+      </p>
+      <landing-section-header size="md" [level]="1">
+        @if (locale() === 'vi') {
+          Điều khoản Sử dụng.
+        } @else {
+          Terms of Use.
+        }
+      </landing-section-header>
+    </header>
+
+    <article class="legal-reading" [attr.lang]="locale()">
+      <div class="landing-prose">
+        @switch (locale()) {
+          @case ('vi') {
+            <p>
+              Điều khoản Sử dụng này ("Điều khoản") chi phối việc bạn truy cập và sử dụng
+              <landing-link href="https://thunderphong.com" [arrow]="true" [inline]="true"
+                >thunderphong.com</landing-link
+              >
+              ("Website"), vận hành bởi Trần Đức Phương ("tôi").
+            </p>
+            <p>
+              Bằng việc sử dụng Website, bạn đồng ý với Điều khoản này. Nếu không đồng ý, vui lòng không sử dụng
+              Website.
+            </p>
+
+            <h2 id="the-site">1. Về Website</h2>
+            <p>
+              Website là portfolio cá nhân/chuyên môn của tôi. Nó giới thiệu công việc, bài viết và cách liên hệ với
+              tôi. Website được cung cấp miễn phí cho mục đích thông tin. Không có tài khoản người dùng và không có dịch
+              vụ trả phí trên Website.
+            </p>
+            <p>
+              Điều khoản này <strong>chỉ</strong> áp dụng cho trang landing công khai tại
+              <code>thunderphong.com</code> (domain gốc). Các subdomain như <code>console.thunderphong.com</code> hoặc
+              bất kỳ sản phẩm/dịch vụ nào khác vận hành dưới subdomain được điều chỉnh bởi điều khoản riêng của chúng.
+            </p>
+
+            <h2 id="ip">2. Quyền sở hữu trí tuệ</h2>
+
+            <h3 id="ip-my-content">2.1 Nội dung của tôi</h3>
+            <p>
+              Toàn bộ nội dung trên Website — bao gồm văn bản, bài viết, bài blog, đoạn mã, thiết kế, bố cục, hình minh
+              hoạ, ảnh chụp, và mã nguồn tạo ra các trang công khai — thuộc sở hữu của tôi trừ khi có ghi chú khác, và
+              được bảo hộ bởi luật bản quyền của Việt Nam và quốc tế.
+            </p>
+
+            <h3 id="ip-allowed">2.2 Bạn được làm gì mà không cần xin phép</h3>
+            <ul>
+              <li><strong>Đọc, xem, và chia sẻ link</strong> bất kỳ trang nào.</li>
+              <li>
+                <strong>Trích dẫn đoạn ngắn</strong> bài viết để bình luận, đánh giá, hoặc giáo dục, miễn là ghi rõ tên
+                tôi và link tới bài gốc.
+              </li>
+              <li><strong>Tham khảo đoạn mã</strong> để học, có ghi nguồn.</li>
+            </ul>
+
+            <h3 id="ip-permission">2.3 Cần xin phép</h3>
+            <ul>
+              <li>Đăng lại toàn văn bài viết, bản dịch, hoặc trích dẫn dài trên website khác hoặc trên ấn bản in.</li>
+              <li>
+                Sử dụng bài viết, hình ảnh, mã, hoặc thiết kế của tôi trong sản phẩm thương mại, tập dữ liệu huấn luyện,
+                hoặc fine-tune mô hình AI.
+              </li>
+              <li>Đóng khung (frame) Website hoặc phần lớn nội dung Website bên trong website khác.</li>
+            </ul>
+            <p>
+              Để xin phép, email
+              <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
+                >hello&#64;thunderphong.com</landing-link
+              >.
+            </p>
+
+            <h3 id="ip-third-party">2.4 Nội dung của bên thứ ba</h3>
+            <p>
+              Khi tôi trích dẫn, nhúng, hoặc tham chiếu nội dung của bên thứ ba (logo, ảnh chụp màn hình, tài liệu tham
+              khảo), quyền gốc thuộc về chủ sở hữu tương ứng. Tôi sử dụng các nội dung này theo nguyên tắc sử dụng hợp
+              lý (fair use/fair dealing) hoặc có sự cho phép khi áp dụng.
+            </p>
+
+            <h2 id="acceptable-use">3. Sử dụng được chấp nhận</h2>
+            <p>Khi sử dụng Website hoặc biểu mẫu liên hệ, bạn cam kết <strong>không</strong>:</p>
+            <ul>
+              <li>Gửi nội dung trái pháp luật, gây hại, đe doạ, phỉ báng, quấy rối, hoặc phân biệt đối xử.</li>
+              <li>Gửi spam, chào mời thương mại đại trà, hoặc nội dung quảng bá lừa đảo.</li>
+              <li>
+                Cố gắng phá rối, thăm dò, hoặc truy cập trái phép Website hoặc hạ tầng (bao gồm quét, brute-force,
+                scrape ở mức lạm dụng, hoặc cố vượt qua biện pháp bảo mật).
+              </li>
+              <li>
+                Sử dụng công cụ tự động để thu thập nội dung cho huấn luyện AI, xây dựng tập dữ liệu, hoặc scrape cạnh
+                tranh mà không có sự cho phép rõ ràng.
+              </li>
+              <li>Khai báo sai danh tính hoặc tổ chức khi liên hệ tôi.</li>
+            </ul>
+            <p>Tôi có quyền chặn IP hoặc từ chối phục vụ bất kỳ ai vi phạm các quy tắc trên.</p>
+
+            <h2 id="contact-form">4. Biểu mẫu liên hệ</h2>
+            <p>
+              Khi có biểu mẫu liên hệ, bạn xác nhận thông tin gửi đi là đúng và bạn có quyền chia sẻ. Tôi sẽ chỉ sử dụng
+              thông tin của bạn để phản hồi yêu cầu, phù hợp với
+              <landing-link href="/privacy?lang=vi" [arrow]="true" [inline]="true">Chính sách Bảo mật</landing-link>.
+            </p>
+
+            <h2 id="links">5. Liên kết tới website khác</h2>
+            <p>
+              Website có thể liên kết tới các website bên thứ ba. Tôi không xác nhận, kiểm soát, hay chịu trách nhiệm về
+              nội dung, điều khoản, hoặc thực hành bảo mật của họ. Truy cập là rủi ro của bạn.
+            </p>
+
+            <h2 id="no-warranty">6. Không bảo đảm</h2>
+            <p>
+              Website được cung cấp <strong>"như hiện trạng" và "khi sẵn có"</strong>. Trong phạm vi tối đa pháp luật
+              cho phép, tôi không đưa ra bất kỳ bảo đảm nào — minh thị hay ngụ ý — bao gồm bảo đảm về tính thương mại,
+              phù hợp cho mục đích cụ thể, độ chính xác, đầy đủ, sẵn có, hoặc không vi phạm.
+            </p>
+            <p>
+              Thông tin trên Website, kể cả bài blog và đoạn mã, phản ánh quan điểm của tôi tại thời điểm viết và có thể
+              đã lỗi thời. Không phải tư vấn chuyên môn. Bạn tự chịu trách nhiệm kiểm chứng bất cứ điều gì bạn dựa vào.
+            </p>
+
+            <h2 id="liability">7. Giới hạn trách nhiệm</h2>
+            <p>
+              Trong phạm vi tối đa pháp luật cho phép, tôi không chịu trách nhiệm về bất kỳ thiệt hại gián tiếp, ngẫu
+              nhiên, đặc biệt, hậu quả, hoặc mang tính trừng phạt nào, hoặc tổn thất lợi nhuận, doanh thu, dữ liệu, hoặc
+              uy tín, phát sinh từ việc bạn sử dụng hoặc không thể sử dụng Website, kể cả khi tôi đã được cảnh báo về
+              khả năng xảy ra thiệt hại.
+            </p>
+            <p>
+              Không gì trong Điều khoản này giới hạn trách nhiệm không thể bị giới hạn theo luật (ví dụ trách nhiệm do
+              gian lận hoặc cố ý nghiêm trọng).
+            </p>
+
+            <h2 id="privacy">8. Bảo mật</h2>
+            <p>
+              Việc sử dụng Website của bạn cũng được điều chỉnh bởi
+              <landing-link href="/privacy?lang=vi" [arrow]="true" [inline]="true">Chính sách Bảo mật</landing-link>,
+              giải thích dữ liệu được thu thập và sử dụng như thế nào.
+            </p>
+
+            <h2 id="changes">9. Thay đổi Website và Điều khoản</h2>
+            <p>
+              Tôi có thể thay đổi, tạm dừng, hoặc ngưng Website, hoặc bất kỳ phần nào, vào bất cứ lúc nào mà không cần
+              thông báo. Tôi cũng có thể cập nhật Điều khoản; ngày "Cập nhật lần cuối" phản ánh phiên bản mới nhất. Việc
+              tiếp tục sử dụng Website sau khi có thay đổi đồng nghĩa với việc bạn chấp nhận Điều khoản đã cập nhật.
+            </p>
+
+            <h2 id="governing-law">10. Luật áp dụng và giải quyết tranh chấp</h2>
+            <p>
+              Điều khoản này được điều chỉnh bởi pháp luật của nước Cộng hoà Xã hội Chủ nghĩa Việt Nam, không xét đến
+              nguyên tắc xung đột pháp luật.
+            </p>
+            <p>
+              Mọi tranh chấp phát sinh từ hoặc liên quan đến Website hoặc Điều khoản này sẽ được giải quyết tại toà án
+              có thẩm quyền của Việt Nam, trừ khi luật bảo vệ người tiêu dùng bắt buộc tại quốc gia cư trú của bạn trao
+              cho bạn quyền khởi kiện ở toà án khác.
+            </p>
+
+            <h2 id="indemnification">11. Bồi hoàn</h2>
+            <p>
+              Bạn đồng ý bảo vệ và giữ cho tôi không phải chịu thiệt hại từ bất kỳ khiếu nại, thiệt hại, hoặc chi phí
+              nào của bên thứ ba (bao gồm phí pháp lý hợp lý) phát sinh từ:
+            </p>
+            <ul>
+              <li>vi phạm Điều khoản này của bạn,</li>
+              <li>việc sử dụng sai Website của bạn, hoặc</li>
+              <li>nội dung bạn gửi qua biểu mẫu liên hệ (kể cả vi phạm quyền của bên thứ ba).</li>
+            </ul>
+            <p>
+              Tôi sẽ thông báo cho bạn kịp thời về mọi khiếu nại như vậy và bạn có thể tham gia bảo vệ với chi phí của
+              mình.
+            </p>
+
+            <h2 id="severability">12. Hiệu lực từng phần</h2>
+            <p>
+              Nếu bất kỳ điều khoản nào trong Điều khoản này bị toà án có thẩm quyền tuyên vô hiệu hoặc không thể thi
+              hành, các điều khoản còn lại vẫn giữ nguyên hiệu lực. Điều khoản vô hiệu sẽ được sửa đổi ở mức tối thiểu
+              cần thiết để có hiệu lực và thi hành được, đồng thời giữ được ý nghĩa ban đầu.
+            </p>
+
+            <h2 id="contact">13. Liên hệ</h2>
+            <ul>
+              <li>
+                <strong class="mr-1">Email:</strong>
+                <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
+                  >hello&#64;thunderphong.com</landing-link
+                >
+              </li>
+            </ul>
+            <p>
+              Xem thêm
+              <landing-link href="/privacy?lang=vi" [arrow]="true" [inline]="true">Chính sách Bảo mật</landing-link>.
+            </p>
+          }
+
+          @case ('en') {
+            <p>
+              These Terms of Use ("Terms") govern your access to and use of
+              <landing-link href="https://thunderphong.com" [arrow]="true" [inline]="true"
+                >thunderphong.com</landing-link
+              >
+              (the "Site"), operated by Phuong Tran ("I", "me", "my").
+            </p>
+            <p>By using the Site you agree to these Terms. If you do not agree, please do not use the Site.</p>
+
+            <h2 id="the-site">1. The Site</h2>
+            <p>
+              The Site is a personal/professional portfolio. It presents my work, writing, and ways to get in touch. It
+              is provided free of charge for informational purposes. There are no user accounts and no paid services on
+              the Site.
+            </p>
+            <p>
+              These Terms apply <strong>only</strong> to the public landing site at <code>thunderphong.com</code> (the
+              root domain). Subdomains such as <code>console.thunderphong.com</code> or any other product/service
+              operated under a subdomain are governed by their own separate terms.
+            </p>
+
+            <h2 id="ip">2. Intellectual property</h2>
+
+            <h3 id="ip-my-content">2.1 My content</h3>
+            <p>
+              All content on the Site — including text, articles, blog posts, code samples, design, layout,
+              illustrations, photographs, and the underlying source code that produces the public-facing pages — is
+              owned by me unless otherwise credited, and is protected by Vietnamese and international copyright law.
+            </p>
+
+            <h3 id="ip-allowed">2.2 What you may do without asking</h3>
+            <ul>
+              <li><strong>Read, view, and share</strong> links to any page.</li>
+              <li>
+                <strong>Quote short excerpts</strong> of articles for commentary, review, or educational purposes,
+                provided you credit me with my name and link to the original page.
+              </li>
+              <li><strong>Reference code snippets</strong> for learning, with attribution.</li>
+            </ul>
+
+            <h3 id="ip-permission">2.3 What requires permission</h3>
+            <ul>
+              <li>Republishing full articles, translations, or substantial excerpts on another site or in print.</li>
+              <li>
+                Using my writing, images, code, or design in commercial products, training datasets, or AI model
+                fine-tuning.
+              </li>
+              <li>Framing the Site or substantial portions of it inside another site.</li>
+            </ul>
+            <p>
+              For permissions, email
+              <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
+                >hello&#64;thunderphong.com</landing-link
+              >.
+            </p>
+
+            <h3 id="ip-third-party">2.4 Third-party content</h3>
+            <p>
+              Where I quote, embed, or reference third-party material (logos, screenshots, references), the original
+              rights remain with the respective owners. I use such material under fair use, fair dealing, or with
+              permission as applicable.
+            </p>
+
+            <h2 id="acceptable-use">3. Acceptable use</h2>
+            <p>When using the Site or the contact form, you agree <strong>not</strong> to:</p>
+            <ul>
+              <li>Submit unlawful, harmful, threatening, defamatory, harassing, or discriminatory content.</li>
+              <li>Send spam, mass commercial solicitation, or content promoting fraud.</li>
+              <li>
+                Attempt to disrupt, probe, or gain unauthorized access to the Site or its infrastructure (including
+                scanning, brute-forcing, scraping at abusive rates, or attempting to bypass security measures).
+              </li>
+              <li>
+                Use automated tools to harvest content for AI training, dataset construction, or competitive scraping
+                without explicit permission.
+              </li>
+              <li>Misrepresent your identity or affiliation when contacting me.</li>
+            </ul>
+            <p>I reserve the right to block IPs or refuse service to anyone who violates these rules.</p>
+
+            <h2 id="contact-form">4. Contact form</h2>
+            <p>
+              If and when a contact form is provided, you confirm that the information you submit is true and that you
+              have the right to share it. I will use your submission only to respond to your inquiry, in line with the
+              <landing-link href="/privacy" [arrow]="true" [inline]="true">Privacy Policy</landing-link>.
+            </p>
+
+            <h2 id="links">5. Links to other sites</h2>
+            <p>
+              The Site may link to third-party websites. I do not endorse, control, or accept responsibility for their
+              content, terms, or privacy practices. Visiting them is at your own risk.
+            </p>
+
+            <h2 id="no-warranty">6. No warranty</h2>
+            <p>
+              The Site is provided <strong>"as is" and "as available"</strong>. To the maximum extent permitted by law,
+              I make no warranties — express or implied — including warranties of merchantability, fitness for a
+              particular purpose, accuracy, completeness, availability, or non-infringement.
+            </p>
+            <p>
+              Information on the Site, including blog posts and code samples, reflects my opinion at the time of writing
+              and may become outdated. It is not professional advice. You are responsible for verifying anything you
+              rely on.
+            </p>
+
+            <h2 id="liability">7. Limitation of liability</h2>
+            <p>
+              To the maximum extent permitted by law, I will not be liable for any indirect, incidental, special,
+              consequential, or punitive damages, or any loss of profits, revenue, data, or goodwill, arising from your
+              use of or inability to use the Site, even if I have been advised of the possibility of such damages.
+            </p>
+            <p>
+              Nothing in these Terms limits liability that cannot be limited by law (for example, liability for fraud or
+              gross negligence).
+            </p>
+
+            <h2 id="privacy">8. Privacy</h2>
+            <p>
+              Your use of the Site is also governed by the
+              <landing-link href="/privacy" [arrow]="true" [inline]="true">Privacy Policy</landing-link>, which explains
+              what data is collected and how it is used.
+            </p>
+
+            <h2 id="changes">9. Changes to the Site and the Terms</h2>
+            <p>
+              I may change, suspend, or discontinue the Site, or any part of it, at any time without notice. I may also
+              update these Terms; the "Last updated" date reflects the latest revision. Continued use of the Site after
+              changes means you accept the updated Terms.
+            </p>
+
+            <h2 id="governing-law">10. Governing law and disputes</h2>
+            <p>
+              These Terms are governed by the laws of the Socialist Republic of Vietnam, without regard to
+              conflict-of-laws principles.
+            </p>
+            <p>
+              Any dispute arising from or related to the Site or these Terms will be submitted to the competent courts
+              of Vietnam, unless mandatory consumer protection law in your country of residence grants you the right to
+              bring the dispute before another court.
+            </p>
+
+            <h2 id="indemnification">11. Indemnification</h2>
+            <p>
+              You agree to defend and hold me harmless from any third-party claim, damage, or expense (including
+              reasonable legal fees) arising from:
+            </p>
+            <ul>
+              <li>your breach of these Terms,</li>
+              <li>your misuse of the Site, or</li>
+              <li>content you submit through the contact form (including infringement of third-party rights).</li>
+            </ul>
+            <p>I will notify you promptly of any such claim and you may participate in its defense at your own cost.</p>
+
+            <h2 id="severability">12. Severability</h2>
+            <p>
+              If any provision of these Terms is held invalid or unenforceable by a competent court, the remaining
+              provisions shall continue in full force and effect. The invalid provision shall be modified to the minimum
+              extent necessary to make it valid and enforceable while preserving its original intent.
+            </p>
+
+            <h2 id="contact">13. Contact</h2>
+            <ul>
+              <li>
+                <strong class="mr-1">Email:</strong>
+                <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
+                  >hello&#64;thunderphong.com</landing-link
+                >
+              </li>
+            </ul>
+            <p>
+              See also the <landing-link href="/privacy" [arrow]="true" [inline]="true">Privacy Policy</landing-link>.
+            </p>
+          }
+        }
+      </div>
+    </article>
+  </landing-container>
+</landing-section>

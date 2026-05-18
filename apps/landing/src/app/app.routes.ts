@@ -28,6 +28,14 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/colophon/colophon.page').then((m) => m.ColophonPage),
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./pages/legal/terms.page').then((m) => m.TermsPage),
+  },
+  {
     path: 'ddl',
     children: [
       {
