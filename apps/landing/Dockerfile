@@ -11,8 +11,10 @@ COPY . .
 # Install all dependencies (dev + prod needed for nx build)
 RUN pnpm install --frozen-lockfile
 
-# Build Landing SSR — outputs dist/apps/landing/ with server/ and browser/ bundles
-RUN pnpm exec nx build landing --configuration=production
+# Build Landing SSR — outputs dist/apps/landing/ with server/ and browser/ bundles.
+# `generate-sitemap` dependsOn `build` and writes sitemap.xml into the browser dist.
+RUN pnpm exec nx build landing --configuration=production \
+ && pnpm exec tsx apps/landing/scripts/generate-sitemap.ts
 
 # Stage 2: Production
 FROM node:20-alpine

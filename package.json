@@ -9,7 +9,7 @@
     "dev:api": "nx serve api --no-tui",
     "dev:console": "nx serve console --port=4300",
     "dev": "nx run-many -t serve --projects=landing,api --parallel=2",
-    "build:landing": "nx build landing",
+    "build:landing": "nx generate-sitemap landing",
     "build:api": "nx build api",
     "build": "nx run-many -t build --projects=landing,api",
     "test:landing": "nx test landing",

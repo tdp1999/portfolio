@@ -18,6 +18,11 @@
           {
             "glob": "**/*",
             "input": "apps/landing/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/landing/public/.well-known",
+            "output": ".well-known"
           }
         ],
         "styles": ["apps/landing/src/styles.scss"],
@@ -105,6 +110,13 @@
         "buildTarget": "landing:build",
         "staticFilePath": "dist/apps/landing/browser",
         "spa": true
+      }
+    },
+    "generate-sitemap": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "tsx apps/landing/scripts/generate-sitemap.ts"
       }
     }
   }

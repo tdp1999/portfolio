@@ -1,0 +1,68 @@
+# robots.txt — thunderphong.com
+# Public portfolio. Indexing is the goal — both classic search and AI assistants.
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Default policy: allow all crawlers, everywhere except internal/sandbox routes.
+# ──────────────────────────────────────────────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /ddl/
+Disallow: /404
+
+# ──────────────────────────────────────────────────────────────────────────────
+# AI assistants — answer / search-time bots.
+# Intentionally allowed: when a recruiter or peer asks ChatGPT / Claude /
+# Perplexity / Siri about my work, this site should be a citable source.
+# ──────────────────────────────────────────────────────────────────────────────
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ──────────────────────────────────────────────────────────────────────────────
+# AI training crawlers.
+# Intentionally allowed: portfolio content entering model weights is a net win
+# for discoverability over the model's lifetime.
+# ──────────────────────────────────────────────────────────────────────────────
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Sitemap
+# ──────────────────────────────────────────────────────────────────────────────
+Sitemap: https://thunderphong.com/sitemap.xml

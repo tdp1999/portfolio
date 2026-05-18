@@ -1,0 +1,4 @@
+Contact: mailto:hello@thunderphong.com
+Expires: 2027-05-17T00:00:00.000Z
+Preferred-Languages: en, vi
+Canonical: https://thunderphong.com/.well-known/security.txt
