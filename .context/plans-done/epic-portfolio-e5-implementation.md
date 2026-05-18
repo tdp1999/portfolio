@@ -1,7 +1,7 @@
 # Epic E5: Implementation
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: broken-down (2026-05-02). 29 tasks created (274–302) in `.context/tasks/`.
+> Status: completed (2026-05-18). All 29 tasks (274–302) shipped.
 > Depends on: E2 (content), E4 (direction).
 > Feeds: E6 (QA/polish/a11y/SEO).
 

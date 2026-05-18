@@ -276,7 +276,18 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 - [x] 300-landing-ssr-and-image-pipeline (M) — deps: 274–293 ✓
 - [x] 301-landing-bundle-and-lighthouse-smoke (M) — deps: 300 ✓
-- [ ] 302-landing-sitemap-and-robots (S) — deps: 300
+- [x] 302-landing-sitemap-and-robots (S) — deps: 300 ✓
+
+## Done — Landing follow-up (post-E5)
+
+- [x] 325-landing-legal-pages (M) — Privacy + Terms pages, VN/EN i18n, sitemap hreflang. Side effects: shared `.landing-prose` extended (list markers + table styling); `landing-link` gained semantic kinds (mail/tel/download/anchor) auto-detected from href, exposed in DDL.
+
+## Pending — Landing follow-up
+
+- [ ] 323-landing-llms-txt (S)
+- [ ] 324-landing-pwa-manifest-and-icons (M)
+- [ ] 326-landing-analytics-umami-self-host (M)
+- [ ] 327-landing-contact-form (M)
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 
