@@ -136,6 +136,9 @@
     }
 
     /* ── Lists ────────────────────────────────────────────────── */
+    /* Top-level lists own the trailing margin like other flow elements;
+       nested lists tuck under their parent <li> with tighter rhythm.
+       Markers re-enabled (Tailwind preflight strips them). */
 
     & > ul,
     & > ol {
@@ -143,12 +146,83 @@
       padding-left: 24px;
     }
 
-    & > ul > li,
-    & > ol > li {
+    & ul {
+      list-style: disc;
+    }
+    & ol {
+      list-style: decimal;
+    }
+    & :is(ul, ol) :is(ul, ol) {
+      margin: 8px 0 0;
+      padding-left: 24px;
+    }
+    & :is(ul, ol) ul {
+      list-style: circle;
+    }
+    & :is(ul, ol) ol {
+      list-style: lower-alpha;
+    }
+
+    & li {
       margin-bottom: 8px;
 
       &:last-child {
         margin-bottom: 0;
+      }
+
+      &::marker {
+        color: var(--landing-text-500);
+      }
+    }
+
+    /* ── Tables ────────────────────────────────────────────────── */
+    /* Wrap a <table> in `.landing-prose__table-wrap` for horizontal scroll on
+       narrow viewports — the wrap becomes the flow element from prose's POV.
+       Bare <table> inside .landing-prose is styled here as well so the shape is
+       consistent whether or not the wrap is used. */
+
+    & > .landing-prose__table-wrap {
+      margin: 16px 0;
+      overflow-x: auto;
+      border: 1px solid var(--landing-border);
+      border-radius: 8px;
+
+      & > table {
+        margin: 0;
+      }
+    }
+
+    & table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--landing-body-sm);
+      line-height: var(--landing-body-sm-lh);
+      margin: 16px 0;
+
+      th,
+      td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--landing-border);
+        vertical-align: top;
+      }
+
+      tbody tr:last-child :is(th, td) {
+        border-bottom: none;
+      }
+
+      th {
+        font-family: var(--landing-font-mono);
+        font-size: var(--landing-mono-sm);
+        letter-spacing: var(--landing-tracking-mono);
+        text-transform: uppercase;
+        color: var(--landing-text-500);
+        font-weight: 500;
+        background-color: var(--landing-ink-1);
+      }
+
+      td {
+        color: var(--landing-text-400);
       }
     }
 
