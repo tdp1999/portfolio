@@ -1,0 +1,196 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.landing-select {
+  &__trigger {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-400);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled),
+    &--open {
+      color: var(--landing-text-300);
+      background-color: color-mix(in srgb, var(--landing-text-500) 8%, transparent);
+      outline: none;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--icon-only {
+      padding: 4px;
+    }
+  }
+
+  &__icon {
+    color: inherit;
+  }
+
+  &__value {
+    line-height: 1;
+  }
+
+  &__chevron {
+    transition: transform 160ms ease;
+    color: inherit;
+  }
+
+  &__trigger--open &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    min-width: 180px;
+    z-index: 60;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--landing-border);
+    background:
+      linear-gradient(
+        0deg,
+        color-mix(in srgb, var(--landing-ink-1) 70%, transparent),
+        color-mix(in srgb, var(--landing-ink-1) 70%, transparent)
+      ),
+      var(--landing-ink-0);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.48);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    animation: landing-select-pop 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+
+    // Bridge so hover doesn't break in narrow gap
+    &::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: transparent;
+    }
+
+    &--align-left {
+      left: 0;
+      right: auto;
+      transform-origin: top left;
+    }
+    &--align-right {
+      right: 0;
+      left: auto;
+      transform-origin: top right;
+    }
+  }
+
+  &__option {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-align: left;
+    color: var(--landing-text-400);
+    transition:
+      background-color 140ms ease,
+      color 140ms ease;
+
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled),
+    &--active {
+      background-color: color-mix(in srgb, var(--landing-text-500) 8%, transparent);
+      color: var(--landing-text-300);
+      outline: none;
+    }
+
+    &--selected {
+      color: var(--landing-text-300);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__option-icon {
+    color: var(--landing-text-500);
+    flex-shrink: 0;
+  }
+
+  &__option-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__option-name {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  &__option-sub {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    color: var(--landing-text-500);
+    text-transform: lowercase;
+  }
+
+  &__check {
+    color: var(--landing-accent);
+    flex-shrink: 0;
+  }
+}
+
+@keyframes landing-select-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-select__panel,
+  .landing-select__chevron,
+  .landing-select__option,
+  .landing-select__trigger {
+    animation: none !important;
+    transition: none !important;
+  }
+}

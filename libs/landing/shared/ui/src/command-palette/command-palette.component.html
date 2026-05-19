@@ -1,0 +1,75 @@
+@if (visible()) {
+  <div
+    #backdrop
+    class="cp-backdrop"
+    (click)="onBackdropClick($event, backdrop)"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search"
+  >
+    <div class="cp-modal" role="document">
+      <!-- ─── Input bar ───────────────────────────────────────────── -->
+      <div class="cp-modal__bar">
+        <landing-icon name="search" [size]="16" class="cp-modal__search-icon" aria-hidden="true" />
+        <input
+          #searchInput
+          type="text"
+          class="cp-modal__input"
+          placeholder="Search pages, projects, actions…"
+          spellcheck="false"
+          autocomplete="off"
+          [value]="query()"
+          (input)="onQueryInput($event)"
+          aria-label="Search query"
+        />
+        <button type="button" class="cp-modal__esc" (click)="close()" aria-label="Close">esc</button>
+      </div>
+
+      <!-- ─── Results ─────────────────────────────────────────────── -->
+      <div class="cp-modal__body">
+        @if (flatRows().length === 0) {
+          <div class="cp-modal__empty">
+            <p>
+              No matches for "<strong>{{ query() }}</strong
+              >"
+            </p>
+            <p class="cp-modal__empty-hint">Try a page name, a section, or an action.</p>
+          </div>
+        } @else {
+          <ul class="cp-list" role="listbox">
+            @for (row of flatRows(); track row.result.id; let i = $index) {
+              @if (row.groupHeader) {
+                <li class="cp-list__group" role="presentation">{{ row.groupHeader }}</li>
+              }
+              <li
+                #rowEl
+                class="cp-row"
+                [class.cp-row--selected]="cursor() === i"
+                role="option"
+                [attr.aria-selected]="cursor() === i"
+                (click)="activate(row.result)"
+                (mouseenter)="cursor.set(i)"
+              >
+                <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>
+                <span class="cp-row__title">{{ row.result.title }}</span>
+                @if (row.result.description) {
+                  <span class="cp-row__desc">{{ row.result.description }}</span>
+                }
+                @if (row.result.hint) {
+                  <kbd class="cp-row__hint">{{ row.result.hint }}</kbd>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <!-- ─── Footer hints ────────────────────────────────────────── -->
+      <div class="cp-modal__footer">
+        <span class="cp-modal__hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span class="cp-modal__hint"><kbd>↵</kbd> open</span>
+        <span class="cp-modal__hint"><kbd>esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,257 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.landing-mega-menu {
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--landing-text-400);
+    cursor: pointer;
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
+    transition: color var(--motion-duration-base) var(--landing-ease, ease-out);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--landing-text-300);
+    }
+
+    &--open {
+      color: var(--landing-text-300);
+    }
+  }
+
+  &__chevron {
+    display: inline-flex;
+    transition: transform var(--motion-duration-base) var(--landing-ease, ease-out);
+  }
+
+  &__trigger--open &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    z-index: 60;
+    width: 360px;
+    max-width: min(92vw, 380px);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-radius: 16px;
+    border: 1px solid var(--landing-border);
+    // Opaque background — content underneath shouldn't bleed through.
+    background:
+      linear-gradient(
+        0deg,
+        color-mix(in srgb, var(--landing-ink-1) 70%, transparent),
+        color-mix(in srgb, var(--landing-ink-1) 70%, transparent)
+      ),
+      var(--landing-ink-0);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.48);
+    animation: mega-menu-pop 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+
+    // Transparent bridge that fills the 12px gap between trigger and panel,
+    // so hover-out doesn't fire when the mouse traverses the gap.
+    &::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 0;
+      right: 0;
+      height: 12px;
+      background: transparent;
+    }
+
+    &--align-left {
+      left: 0;
+      right: auto;
+      transform-origin: top left;
+    }
+
+    &--align-center {
+      left: 50%;
+      transform: translateX(-50%);
+      transform-origin: top center;
+      animation: mega-menu-pop-center 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &--align-right {
+      right: 0;
+      left: auto;
+      transform-origin: top right;
+    }
+  }
+
+  // ─── Featured hero card ──────────────────────────────────────────
+  &__hero {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    background-color: color-mix(in srgb, var(--landing-accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--landing-accent) 25%, var(--landing-border));
+    text-decoration: none;
+    color: inherit;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  &__hero:hover,
+  &__hero:focus-visible {
+    background-color: color-mix(in srgb, var(--landing-accent) 16%, transparent);
+    border-color: color-mix(in srgb, var(--landing-accent) 40%, var(--landing-border));
+    outline: none;
+  }
+
+  &__hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background-color: var(--landing-ink-0);
+    border: 1px solid color-mix(in srgb, var(--landing-accent) 35%, var(--landing-border));
+    color: var(--landing-accent);
+  }
+
+  &__hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  &__hero-title {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-md);
+    font-weight: 600;
+    color: var(--landing-text-300);
+    text-align: left;
+  }
+
+  &__hero-desc {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    line-height: 1.35;
+    color: var(--landing-text-500);
+    text-align: left;
+  }
+
+  &__hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background-color: var(--landing-accent);
+    color: var(--landing-ink-0);
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  // ─── Compact row list ────────────────────────────────────────────
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__item {
+    display: contents;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 160ms ease;
+  }
+
+  &__row:hover,
+  &__row:focus-visible {
+    background-color: color-mix(in srgb, var(--landing-text-500) 8%, transparent);
+    outline: none;
+  }
+
+  &__row:hover &__row-label,
+  &__row:focus-visible &__row-label {
+    color: var(--landing-accent);
+  }
+
+  &__row-label {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-md);
+    font-weight: 500;
+    color: var(--landing-text-300);
+    text-align: left;
+    transition: color 160ms ease;
+  }
+
+  &__row-hint {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    color: var(--landing-text-500);
+    text-align: right;
+  }
+}
+
+@keyframes mega-menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mega-menu-pop-center {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-mega-menu__chevron,
+  .landing-mega-menu__panel,
+  .landing-mega-menu__hero,
+  .landing-mega-menu__row {
+    animation: none !important;
+    transition: none !important;
+  }
+}
