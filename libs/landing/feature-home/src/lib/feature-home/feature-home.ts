@@ -1,4 +1,4 @@
-import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY } from 'rxjs';
@@ -11,9 +11,9 @@ import { HomeSelectedWorkComponent } from '../selected-work/home-selected-work.c
 import { HomeStackComponent } from '../stack/home-stack.component';
 import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-import type { Locale } from '@portfolio/shared/types';
 import {
   LandingFloatingPillNavComponent,
+  LandingLocaleService,
   LandingScrollspyService,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
@@ -40,6 +40,7 @@ export class FeatureHome {
   private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
   private scrollspy = inject(LandingScrollspyService);
+  private localeService = inject(LandingLocaleService);
 
   /** Sections fed to the floating pill + minimap. Skipping philosophy strip
    *  (transition) and footer banner (terminus) keeps the trail to 6 stops. */
@@ -52,7 +53,7 @@ export class FeatureHome {
     { id: 'get-in-touch', title: 'Get in Touch' },
   ];
 
-  locale = signal<Locale>('en');
+  locale = this.localeService.locale;
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
   skillTierGroups = toSignal(this.skillService.getSkillsByTier(), { initialValue: [] });
 

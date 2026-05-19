@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import type { EmploymentType, LocationType, PublicExperience } from '@portfolio/landing/shared/data-access';
@@ -9,9 +9,9 @@ import {
   IconComponent,
   LandingBackLinkComponent,
   LandingEmptyStateComponent,
+  LandingLocaleService,
   SectionComponent,
 } from '@portfolio/landing/shared/ui';
-import type { Locale } from '@portfolio/shared/types';
 import { DateRangePipe, InitialsPipe } from '@portfolio/shared/ui/pipes';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 
@@ -86,7 +86,8 @@ export class FeatureExperience {
     });
   }
 
-  locale = signal<Locale>('en');
+  private localeService = inject(LandingLocaleService);
+  locale = this.localeService.locale;
   experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });
 
   experienceVms = computed<ExperienceVm[]>(() => {

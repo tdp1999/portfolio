@@ -13,6 +13,7 @@ import {
   LandingFilterChipComponent,
   LandingIconArrowComponent,
   LandingLoadingSpinnerComponent,
+  LandingLocaleService,
   LandingResultsCountComponent,
   LandingSectionHeaderComponent,
   LandingViewToggleComponent,
@@ -32,7 +33,6 @@ import {
 } from '@portfolio/landing/shared/data-access';
 import { asyncResource } from '@portfolio/shared/async-state';
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
-import type { Locale } from '@portfolio/shared/types';
 
 const QUERY = { YEAR: 'year', STATUS: 'status', STACK: 'stack', VIEW: 'view' } as const;
 
@@ -114,7 +114,8 @@ export class ProjectsPage {
     });
   }
 
-  readonly locale = signal<Locale>('en');
+  private readonly localeService = inject(LandingLocaleService);
+  readonly locale = this.localeService.locale;
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Projects' }];
   readonly viewOptions = VIEW_OPTIONS;
   readonly statuses: readonly ProjectLifecycleStatus[] = PROJECT_LIFECYCLE_STATUSES;

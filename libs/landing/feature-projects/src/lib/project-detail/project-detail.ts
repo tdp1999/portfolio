@@ -8,7 +8,6 @@ import {
   effect,
   inject,
   makeStateKey,
-  signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta, DomSanitizer, type SafeHtml } from '@angular/platform-browser';
@@ -20,6 +19,7 @@ import {
   LandingEmptyStateComponent,
   LandingHeadingComponent,
   LandingLinkComponent,
+  LandingLocaleService,
   LandingProseAnchorsDirective,
   LandingScrollspyService,
   LandingTocSidebarComponent,
@@ -42,7 +42,6 @@ import {
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
-import type { Locale } from '@portfolio/shared/types';
 
 const HERO_WIDTH = 960;
 
@@ -109,8 +108,9 @@ export class ProjectDetailComponent {
   private readonly transferState = inject(TransferState);
   private readonly scrollspy = inject(LandingScrollspyService);
   private readonly document = inject(DOCUMENT);
+  private readonly localeService = inject(LandingLocaleService);
 
-  readonly locale = signal<Locale>('en');
+  readonly locale = this.localeService.locale;
 
   private readonly state = toSignal(
     this.route.paramMap.pipe(
