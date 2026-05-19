@@ -1,0 +1,385 @@
+<div class="cp-page-head">
+  <landing-container size="wide">
+    <div class="cp-page-head__inner">
+      <landing-breadcrumb [items]="breadcrumb" class="cp-page-head__crumbs" />
+      <landing-section-header align="left" size="sm">
+        Command palette — <em>Cmd+K</em> directions
+      </landing-section-header>
+      <p class="cp-page-head__intro">
+        Four directions for the Cmd+K (Ctrl+K on Win/Linux) search experience. Each variant uses the same mock dataset
+        (pages · sections · projects · actions) and the same keyboard model (↑↓ navigate, ↵ activate, Esc close).
+        Differences are visual chrome, density, and how the action category is positioned. Press <kbd>⌘K</kbd> /
+        <kbd>Ctrl+K</kbd> anywhere on this page — it opens <strong>variant 1</strong>.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<!-- ═══ Search architecture ════════════════════════════════════════ -->
+<section class="cp-block cp-block--research" aria-label="Search architecture">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['architecture', 'how search works', 'hybrid static + API']"
+      tone="accent"
+      class="cp-block__eyebrow"
+    />
+    <p class="cp-block__intro">
+      The chosen direction is <strong>Hybrid</strong> — a static manifest ships in the bundle (Pages, Sections, Actions)
+      so search feels instant from first keystroke; the BE <code>/api/search</code> endpoint adds Projects + Blog later
+      when content exists. Below shows what each category looks like and where it comes from.
+    </p>
+
+    <ul class="cp-arch">
+      <li class="cp-arch__row">
+        <span class="cp-arch__tag">pages</span>
+        <span class="cp-arch__body">
+          Build-time manifest. Home, About, Projects, Blog, Uses, Colophon, DDL. Always present. ~7 entries · ~1 KB.
+        </span>
+      </li>
+      <li class="cp-arch__row">
+        <span class="cp-arch__tag">sections</span>
+        <span class="cp-arch__body">
+          Each page declares its anchor sections (eg. <code>/#stack</code>, <code>/#get-in-touch</code>) in a shared
+          registry. ~10–20 entries.
+        </span>
+      </li>
+      <li class="cp-arch__row">
+        <span class="cp-arch__tag">actions</span>
+        <span class="cp-arch__body">
+          Client-side definitions: toggle theme, switch language, copy email, download CV, open GitHub, scroll to top.
+          Execute on activation. ~5–10 entries.
+        </span>
+      </li>
+      <li class="cp-arch__row">
+        <span class="cp-arch__tag">projects</span>
+        <span class="cp-arch__body">
+          Lazy — debounced fetch to <code>/api/search?q=…&amp;kind=project</code> on input. Returns title, slug, year,
+          stack chips.
+        </span>
+      </li>
+      <li class="cp-arch__row">
+        <span class="cp-arch__tag">blog</span>
+        <span class="cp-arch__body"> Same shape as projects — lazy API. Empty until first post ships. </span>
+      </li>
+    </ul>
+
+    <p class="cp-block__intro">
+      Filter algorithm: case-insensitive substring on <code>title + description + kind</code>. Production should upgrade
+      to a fuzzy matcher (Fuse.js / minisearch / a custom trigram index) — gives typo tolerance and substring scoring.
+    </p>
+  </landing-container>
+</section>
+
+<!-- ═══ Side-by-side variant launchers ═══════════════════════════════ -->
+<section class="cp-block" aria-label="Variants">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['variants', 'four directions', 'click to preview']"
+      tone="accent"
+      class="cp-block__eyebrow"
+    />
+
+    <div class="cp-variants">
+      <!-- V1 · Linear-style -->
+      <article class="cp-variant">
+        <div class="cp-variant__head">
+          <span class="cp-variant__tag">v1 · linear-style (recommended)</span>
+          <p class="cp-variant__desc">
+            Centered modal, top-third position. Section headers above each group ("Pages", "Projects", "Actions").
+            Subtle hover + selected states. Keyboard hint footer (↑↓ ↵ esc). Standard pattern most users recognize.
+          </p>
+          <button type="button" class="cp-variant__cta" (click)="open('v1')">Open variant 1 · <kbd>⌘K</kbd></button>
+        </div>
+        <div class="cp-variant__schematic cp-variant__schematic--v1" aria-hidden="true">
+          <div class="cp-schematic__bar"></div>
+          <div class="cp-schematic__group-header"></div>
+          <div class="cp-schematic__row cp-schematic__row--selected"></div>
+          <div class="cp-schematic__row"></div>
+          <div class="cp-schematic__group-header"></div>
+          <div class="cp-schematic__row"></div>
+          <div class="cp-schematic__footer"></div>
+        </div>
+      </article>
+
+      <!-- V2 · Spotlight-style -->
+      <article class="cp-variant">
+        <div class="cp-variant__head">
+          <span class="cp-variant__tag">v2 · spotlight (flat)</span>
+          <p class="cp-variant__desc">
+            Top-third position like macOS Spotlight. No section headers — flat list with a small uppercase mono "kind"
+            chip on the right of each row. Less chrome, more speed. No footer.
+          </p>
+          <button type="button" class="cp-variant__cta" (click)="open('v2')">Open variant 2</button>
+        </div>
+        <div class="cp-variant__schematic cp-variant__schematic--v2" aria-hidden="true">
+          <div class="cp-schematic__bar"></div>
+          <div class="cp-schematic__row cp-schematic__row--selected">
+            <span class="cp-schematic__chip"></span>
+          </div>
+          <div class="cp-schematic__row"><span class="cp-schematic__chip"></span></div>
+          <div class="cp-schematic__row"><span class="cp-schematic__chip"></span></div>
+          <div class="cp-schematic__row"><span class="cp-schematic__chip"></span></div>
+        </div>
+      </article>
+
+      <!-- V3 · Raycast-style -->
+      <article class="cp-variant">
+        <div class="cp-variant__head">
+          <span class="cp-variant__tag">v3 · raycast (rich rows)</span>
+          <p class="cp-variant__desc">
+            Wider modal. Each row has a framed icon on the left, two-line content (title + description), and a hint on
+            the right. Sections have subdued mono headers. Best when items have meaningful descriptions to disambiguate.
+          </p>
+          <button type="button" class="cp-variant__cta" (click)="open('v3')">Open variant 3</button>
+        </div>
+        <div class="cp-variant__schematic cp-variant__schematic--v3" aria-hidden="true">
+          <div class="cp-schematic__bar"></div>
+          <div class="cp-schematic__group-header"></div>
+          <div class="cp-schematic__row cp-schematic__row--rich cp-schematic__row--selected">
+            <span class="cp-schematic__icon-frame"></span>
+            <span class="cp-schematic__two-line">
+              <span class="cp-schematic__line cp-schematic__line--title"></span>
+              <span class="cp-schematic__line cp-schematic__line--desc"></span>
+            </span>
+          </div>
+          <div class="cp-schematic__row cp-schematic__row--rich">
+            <span class="cp-schematic__icon-frame"></span>
+            <span class="cp-schematic__two-line">
+              <span class="cp-schematic__line cp-schematic__line--title"></span>
+              <span class="cp-schematic__line cp-schematic__line--desc"></span>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- V4 · Minimal -->
+      <article class="cp-variant">
+        <div class="cp-variant__head">
+          <span class="cp-variant__tag">v4 · minimal</span>
+          <p class="cp-variant__desc">
+            Centered modal, narrower. Just the input and a flat list of titles. No icons, no descriptions, no chips, no
+            footer. Closest to a Linear-clone with all chrome stripped. Quiet, fast, opinionated.
+          </p>
+          <button type="button" class="cp-variant__cta" (click)="open('v4')">Open variant 4</button>
+        </div>
+        <div class="cp-variant__schematic cp-variant__schematic--v4" aria-hidden="true">
+          <div class="cp-schematic__bar"></div>
+          <div class="cp-schematic__row cp-schematic__row--bare cp-schematic__row--selected"></div>
+          <div class="cp-schematic__row cp-schematic__row--bare"></div>
+          <div class="cp-schematic__row cp-schematic__row--bare"></div>
+          <div class="cp-schematic__row cp-schematic__row--bare"></div>
+          <div class="cp-schematic__row cp-schematic__row--bare"></div>
+        </div>
+      </article>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ Decision matrix ══════════════════════════════════════════════ -->
+<section class="cp-block cp-block--matrix" aria-label="Decision matrix">
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['decision matrix', 'when each variant wins']" tone="accent" class="cp-block__eyebrow" />
+    <table class="cp-matrix">
+      <thead>
+        <tr>
+          <th scope="col">Variant</th>
+          <th scope="col">Density</th>
+          <th scope="col">Chrome</th>
+          <th scope="col">Vibe</th>
+          <th scope="col">Pick when</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">v1 · linear</th>
+          <td>medium</td>
+          <td>medium</td>
+          <td>standard · trusted</td>
+          <td>Default. Familiar pattern. Section headers help when items span many categories.</td>
+        </tr>
+        <tr>
+          <th scope="row">v2 · spotlight</th>
+          <td>high</td>
+          <td>low</td>
+          <td>fast · OS-native</td>
+          <td>Power-user vibe. Few items per query. Kind chip on the right disambiguates without group headers.</td>
+        </tr>
+        <tr>
+          <th scope="row">v3 · raycast</th>
+          <td>low (tall rows)</td>
+          <td>high</td>
+          <td>rich · expressive</td>
+          <td>
+            Descriptions add meaningful context. Best when items overlap by name (multiple "Stack" entries, etc.).
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">v4 · minimal</th>
+          <td>highest</td>
+          <td>zero</td>
+          <td>editorial · quiet</td>
+          <td>You know your data well; you want the palette to disappear visually and just deliver results.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="cp-block__intro">
+      <strong>My recommendation:</strong> <em>v1 (Linear-style)</em> as the canonical pick. It pays off the
+      bilingualism/category richness of the underlying data (pages, sections, actions, projects) without committing to
+      tall rows. <em>v2 (Spotlight)</em> is the strong alternative if you want the palette to feel like an OS tool.
+    </p>
+  </landing-container>
+</section>
+
+<!-- ═══ Active modal ═════════════════════════════════════════════════ -->
+@if (active(); as which) {
+  <!-- prettier-ignore -->
+  <div
+    #backdrop
+    class="cp-backdrop"
+    [class.cp-backdrop--top]="which === 'v1' || which === 'v2' || which === 'v4'"
+    (click)="onBackdropClick($event, backdrop)"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search"
+  >
+    <div class="cp-modal" [class.cp-modal--v1]="which === 'v1'" [class.cp-modal--v2]="which === 'v2'"
+      [class.cp-modal--v3]="which === 'v3'" [class.cp-modal--v4]="which === 'v4'">
+
+      <!-- ─── Input bar ───────────────────────────────────────────── -->
+      <div class="cp-modal__bar">
+        @if (which !== 'v4') {
+          <landing-icon name="search" [size]="16" class="cp-modal__search-icon" aria-hidden="true" />
+        }
+        <input
+          #searchInput
+          type="text"
+          class="cp-modal__input"
+          placeholder="Search pages, projects, actions…"
+          spellcheck="false"
+          autocomplete="off"
+          [value]="query()"
+          (input)="onQueryInput($event)"
+          aria-label="Search query"
+        />
+        @if (which === 'v1' || which === 'v2') {
+          <button type="button" class="cp-modal__esc" (click)="close()" aria-label="Close">esc</button>
+        }
+      </div>
+
+      <!-- ─── Results body ────────────────────────────────────────── -->
+      <div class="cp-modal__body">
+        @if (flatRows().length === 0) {
+          <div class="cp-modal__empty">
+            <p>No matches for "<strong>{{ query() }}</strong>"</p>
+            <p class="cp-modal__empty-hint">Try a page name, a section, or an action.</p>
+          </div>
+        } @else {
+          @if (which === 'v1') {
+            <!-- Linear-style: section headers + medium rows -->
+            <ul class="cp-list cp-list--v1" role="listbox">
+              @for (row of flatRows(); track row.result.id; let i = $index) {
+                @if (row.groupHeader) {
+                  <li class="cp-list__group" role="presentation">{{ row.groupHeader }}</li>
+                }
+                <li
+                  #rowEl
+                  class="cp-row cp-row--v1"
+                  [class.cp-row--selected]="cursor() === i"
+                  role="option"
+                  [attr.aria-selected]="cursor() === i"
+                  (click)="activate(row.result)"
+                  (mouseenter)="cursor.set(i)"
+                >
+                  <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>
+                  <span class="cp-row__title">{{ row.result.title }}</span>
+                  @if (row.result.description) {
+                    <span class="cp-row__desc">{{ row.result.description }}</span>
+                  }
+                  @if (row.result.hint) {
+                    <kbd class="cp-row__hint">{{ row.result.hint }}</kbd>
+                  }
+                </li>
+              }
+            </ul>
+          } @else if (which === 'v2') {
+            <!-- Spotlight-style: flat with kind chip -->
+            <ul class="cp-list cp-list--v2" role="listbox">
+              @for (row of flatRows(); track row.result.id; let i = $index) {
+                <li
+                  #rowEl
+                  class="cp-row cp-row--v2"
+                  [class.cp-row--selected]="cursor() === i"
+                  role="option"
+                  [attr.aria-selected]="cursor() === i"
+                  (click)="activate(row.result)"
+                  (mouseenter)="cursor.set(i)"
+                >
+                  <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>
+                  <span class="cp-row__title">{{ row.result.title }}</span>
+                  <span class="cp-row__kind-chip">{{ row.result.kind.toUpperCase() }}</span>
+                </li>
+              }
+            </ul>
+          } @else if (which === 'v3') {
+            <!-- Raycast-style: framed icon + two-line + section headers -->
+            <ul class="cp-list cp-list--v3" role="listbox">
+              @for (row of flatRows(); track row.result.id; let i = $index) {
+                @if (row.groupHeader) {
+                  <li class="cp-list__group cp-list__group--v3" role="presentation">{{ row.groupHeader }}</li>
+                }
+                <li
+                  #rowEl
+                  class="cp-row cp-row--v3"
+                  [class.cp-row--selected]="cursor() === i"
+                  role="option"
+                  [attr.aria-selected]="cursor() === i"
+                  (click)="activate(row.result)"
+                  (mouseenter)="cursor.set(i)"
+                >
+                  <span class="cp-row__icon-frame">
+                    <landing-icon [name]="row.result.iconName" [size]="16" />
+                  </span>
+                  <span class="cp-row__two-line">
+                    <span class="cp-row__title">{{ row.result.title }}</span>
+                    @if (row.result.description) {
+                      <span class="cp-row__desc">{{ row.result.description }}</span>
+                    }
+                  </span>
+                  @if (row.result.hint) {
+                    <kbd class="cp-row__hint">{{ row.result.hint }}</kbd>
+                  }
+                </li>
+              }
+            </ul>
+          } @else if (which === 'v4') {
+            <!-- Minimal: bare titles -->
+            <ul class="cp-list cp-list--v4" role="listbox">
+              @for (row of flatRows(); track row.result.id; let i = $index) {
+                <li
+                  #rowEl
+                  class="cp-row cp-row--v4"
+                  [class.cp-row--selected]="cursor() === i"
+                  role="option"
+                  [attr.aria-selected]="cursor() === i"
+                  (click)="activate(row.result)"
+                  (mouseenter)="cursor.set(i)"
+                >
+                  <span class="cp-row__title">{{ row.result.title }}</span>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+
+      <!-- ─── Footer hints (V1 + V3) ──────────────────────────────── -->
+      @if (which === 'v1' || which === 'v3') {
+        <div class="cp-modal__footer">
+          <span class="cp-modal__hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+          <span class="cp-modal__hint"><kbd>↵</kbd> open</span>
+          <span class="cp-modal__hint"><kbd>esc</kbd> close</span>
+        </div>
+      }
+    </div>
+  </div>
+}

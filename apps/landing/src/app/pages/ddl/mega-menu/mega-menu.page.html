@@ -1,0 +1,429 @@
+<div class="mm-page-head">
+  <landing-container size="wide">
+    <div class="mm-page-head__inner">
+      <landing-breadcrumb [items]="breadcrumb" class="mm-page-head__crumbs" />
+      <landing-section-header align="left" size="sm">
+        Mega-menu — <em>More</em> dropdown variants
+      </landing-section-header>
+      <p class="mm-page-head__intro">
+        Current implementation has 3 visible issues:
+        <strong>title is center-aligned while description is left-aligned</strong> (CSS inheritance leak),
+        <strong>the icon-frame box adds visual weight</strong> without earning it, and
+        <strong>5 items in a 2-col grid leaves the Resume cell stranded</strong> next to empty space. Below are 6
+        directions exploring different solutions — all rendered as always-open panels for side-by-side comparison.
+      </p>
+    </div>
+  </landing-container>
+</div>
+
+<!-- ═══ Research stepback ═══════════════════════════════════════════ -->
+<section class="mm-block mm-block--research" aria-label="Research stepback">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['research', 'stepback', 'what other sites do']"
+      tone="accent"
+      class="mm-block__eyebrow"
+    />
+    <p class="mm-block__intro">Surveyed sites with notable mega-menus / nav dropdowns. Three style families emerged:</p>
+
+    <ul class="mm-research">
+      <li class="mm-research__item">
+        <span class="mm-research__tag">A · icon + text-column</span>
+        <span class="mm-research__body">
+          Side-icon row with title above description. Used by <strong>GitHub</strong>, <strong>Mintlify</strong>,
+          <strong>Raycast</strong>. Iconography earns its weight when items overlap by name (Settings, Settings &
+          billing, User settings…). For 5 distinct items like ours, the icon is decorative weight — but can be redeemed
+          with tighter typography. <em>(V1)</em>
+        </span>
+      </li>
+      <li class="mm-research__item">
+        <span class="mm-research__tag">B · centered icon card</span>
+        <span class="mm-research__body">
+          Icon centered above title, all-center text in a card. Used by <strong>Vercel</strong>,
+          <strong>Cal.com</strong>, <strong>Notion</strong>. Feels premium, doubles per-item height, and works best with
+          bold colored icons + 2-3 cells in a row. With 5 items we'd need a hero row. <em>(V2)</em>
+        </span>
+      </li>
+      <li class="mm-research__item">
+        <span class="mm-research__tag">C · typography-only</span>
+        <span class="mm-research__body">
+          No icons. Bold title + 1-line description, or eyebrow + title. Used by <strong>Stripe</strong>,
+          <strong>Linear</strong>, <strong>Apple docs</strong>. Editorial register; fits portfolios that favor type over
+          chrome. Best when descriptions are confident one-liners. <em>(V3, V4)</em>
+        </span>
+      </li>
+      <li class="mm-research__item">
+        <span class="mm-research__tag">D · hero + list</span>
+        <span class="mm-research__body">
+          One item gets full-card hero treatment (the Resume CTA), others sit as compact rows. Used by
+          <strong>Railway</strong> (the original reference — their "Enterprise" panel with the train illustration is the
+          hero, the other items are compact cards). Solves the 5-items-in-2-col problem and signals what matters most.
+          <em>(V5)</em>
+        </span>
+      </li>
+      <li class="mm-research__item">
+        <span class="mm-research__tag">E · inline-glyph reveal</span>
+        <span class="mm-research__body">
+          Icon-as-inline-glyph (text-sized, monochrome). Description hidden by default, surfaces on hover. Used by
+          <strong>Vue docs</strong>, <strong>Astro</strong>, indie portfolios. Dense, quiet — earns the icon by treating
+          it as a tiny typographic accent rather than a card element. <em>(V6)</em>
+        </span>
+      </li>
+    </ul>
+
+    <p class="mm-block__intro">
+      <strong>NN/g findings worth respecting</strong>: <em>(1)</em> mega-menus work because users see options at a
+      glance — don't hide the description for items where it's load-bearing. <em>(2)</em> hover-open is consistently
+      frustrating — click-to-open + click-outside + Esc is the gold-standard. <em>(3)</em> don't take over the whole
+      viewport — keep panel ≤ 560–640px wide for 1-col, ≤ 720px for 2-col with hero.
+      <br />
+      <strong>Approaches explicitly rejected:</strong> flag/illustration grid (overkill for 5 utility links), full-bleed
+      slide-down panel (too aggressive for a portfolio), country/locale picker (the language switcher handles this
+      separately).
+    </p>
+  </landing-container>
+</section>
+
+<!-- ═══ Variants ═══════════════════════════════════════════════════ -->
+<section class="mm-block" aria-label="Variants">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['variants', 'always-open panels', 'compare side-by-side']"
+      tone="accent"
+      class="mm-block__eyebrow"
+    />
+
+    <div class="mm-grid">
+      <!-- ─── V1 · Refined side-icon row ─────────────────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v1 · refined side-icon row</span>
+          <p class="mm-variant__desc">
+            Fix-current direction. Icon as 14px glyph (no border-frame), <strong>vertically centered</strong> to text,
+            text-align: left (explicit), single column. Description text wraps cleanly. Hover: subtle bg fill + title
+            color shifts to accent. The simplest evolution from current.
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v1-panel">
+            @for (item of items; track item.label) {
+              <a class="v1-item" href="#" (click)="$event.preventDefault()">
+                <landing-icon [name]="item.iconName" [size]="14" class="v1-item__glyph" aria-hidden="true" />
+                <span class="v1-item__text">
+                  <span class="v1-item__title">{{ item.label }}</span>
+                  <span class="v1-item__desc">{{ item.description }}</span>
+                </span>
+              </a>
+            }
+          </div>
+        </div>
+      </article>
+
+      <!-- ─── V2 · Vercel-style centered cards ───────────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v2 · vercel-style centered cards</span>
+          <p class="mm-variant__desc">
+            Each item is a card with the icon framed at center-top, title + description centered below. 2-col grid; the
+            <strong>5th item spans both columns</strong> as a featured row so no cell is orphaned. Premium register —
+            doubles per-item height.
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v2-panel">
+            @for (item of nonFeatured; track item.label) {
+              <a class="v2-item" href="#" (click)="$event.preventDefault()">
+                <span class="v2-item__icon-frame">
+                  <landing-icon [name]="item.iconName" [size]="18" />
+                </span>
+                <span class="v2-item__title">{{ item.label }}</span>
+                <span class="v2-item__desc">{{ item.description }}</span>
+              </a>
+            }
+            <a class="v2-item v2-item--featured" href="#" (click)="$event.preventDefault()">
+              <span class="v2-item__icon-frame v2-item__icon-frame--featured">
+                <landing-icon [name]="featured.iconName" [size]="20" />
+              </span>
+              <span class="v2-item__text-row">
+                <span class="v2-item__title">{{ featured.label }}</span>
+                <span class="v2-item__desc">{{ featured.description }}</span>
+              </span>
+              <landing-icon name="arrow-right" [size]="14" class="v2-item__arrow" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- ─── V3 · Stripe-style typography only ──────────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v3 · typography only · stripe / linear</span>
+          <p class="mm-variant__desc">
+            No icons. Title in display sans, description in muted body sans below. Single column, dense. Hover reveals a
+            <strong>left-accent bar that slides in</strong> + title color shifts to accent. Editorial, confident.
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v3-panel">
+            @for (item of items; track item.label) {
+              <a class="v3-item" href="#" (click)="$event.preventDefault()">
+                <span class="v3-item__accent" aria-hidden="true"></span>
+                <span class="v3-item__title">{{ item.label }}</span>
+                <span class="v3-item__desc">{{ item.description }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      </article>
+
+      <!-- ─── V4 · Editorial eyebrow ─────────────────────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v4 · editorial eyebrow</span>
+          <p class="mm-variant__desc">
+            Each item: tiny mono eyebrow (<code>01 · tools</code>) above the title, no description, no icon. Newspaper /
+            specimen sheet voice. Quietest of all variants. Best when descriptions feel like filler and titles are
+            self-evident.
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v4-panel">
+            @for (item of items; track item.label; let i = $index) {
+              <a class="v4-item" href="#" (click)="$event.preventDefault()">
+                <span class="v4-item__eyebrow">{{ (i + 1).toString().padStart(2, '0') }} · {{ item.hint }}</span>
+                <span class="v4-item__title">{{ item.label }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      </article>
+
+      <!-- ─── V5 · Featured + compact (Railway-style) ────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v5 · featured hero + compact rows</span>
+          <p class="mm-variant__desc">
+            Top is the <strong>Resume CTA as a hero card</strong> with big icon, bold title, supporting text and an
+            explicit "Download" affordance. Below are the 4 utility links as compact single-column rows (title + 3-word
+            hint in mono). Solves the empty-cell problem and signals "Resume is what you came here for."
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v5-panel">
+            <a class="v5-hero" href="#" (click)="$event.preventDefault()">
+              <span class="v5-hero__icon-frame">
+                <landing-icon [name]="featured.iconName" [size]="22" />
+              </span>
+              <span class="v5-hero__text">
+                <span class="v5-hero__title">{{ featured.label }}</span>
+                <span class="v5-hero__desc">{{ featured.description }}</span>
+              </span>
+              <span class="v5-hero__cta">
+                Download
+                <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+              </span>
+            </a>
+            <div class="v5-list">
+              @for (item of nonFeatured; track item.label) {
+                <a class="v5-item" href="#" (click)="$event.preventDefault()">
+                  <span class="v5-item__title">{{ item.label }}</span>
+                  <span class="v5-item__hint">{{ item.hint }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ─── V6 · Inline-glyph row with hover-reveal ────────────── -->
+      <article class="mm-variant">
+        <header class="mm-variant__head">
+          <span class="mm-variant__tag">v6 · inline-glyph row · hover-reveal</span>
+          <p class="mm-variant__desc">
+            Icon is an inline glyph in the title row (text-color, no frame). Default state shows only the title row —
+            description fades in from below on hover. Densest layout; the description still exists for users who need it
+            but doesn't shout at first glance.
+          </p>
+        </header>
+        <div class="mm-stage">
+          <div class="v6-panel">
+            @for (item of items; track item.label) {
+              <a class="v6-item" href="#" (click)="$event.preventDefault()">
+                <span class="v6-item__line">
+                  <landing-icon [name]="item.iconName" [size]="12" class="v6-item__glyph" aria-hidden="true" />
+                  <span class="v6-item__title">{{ item.label }}</span>
+                  <span class="v6-item__hint">{{ item.hint }}</span>
+                </span>
+                <span class="v6-item__desc">{{ item.description }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      </article>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ Side-by-side in scrolled header context ═══════════════════ -->
+<section class="mm-block mm-block--context" aria-label="In-header context">
+  <landing-container size="wide">
+    <landing-eyebrow
+      [label]="['context check', 'how each sits below the scrolled pill']"
+      tone="accent"
+      class="mm-block__eyebrow"
+    />
+    <p class="mm-block__intro">
+      Each variant rendered below a mock of the scrolled header pill so you can see proportions and visual weight in
+      situ. Cells anchored under the "More" position.
+    </p>
+    <div class="mm-context-grid">
+      <!-- v1 -->
+      <div class="mm-context-cell">
+        <div class="mm-context-pill">
+          tdp. · Home · About · Projects · Blog · <span class="mm-context-pill__more">More</span> · ⌘K · ☀
+        </div>
+        <div class="mm-context-anchor">
+          <div class="v1-panel v1-panel--scaled">
+            @for (item of items.slice(0, 3); track item.label) {
+              <a class="v1-item" href="#" (click)="$event.preventDefault()">
+                <landing-icon [name]="item.iconName" [size]="14" class="v1-item__glyph" aria-hidden="true" />
+                <span class="v1-item__text">
+                  <span class="v1-item__title">{{ item.label }}</span>
+                  <span class="v1-item__desc">{{ item.description }}</span>
+                </span>
+              </a>
+            }
+            <p class="mm-context-note">… +2 more · V1</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- v3 -->
+      <div class="mm-context-cell">
+        <div class="mm-context-pill">
+          tdp. · Home · About · Projects · Blog · <span class="mm-context-pill__more">More</span> · ⌘K · ☀
+        </div>
+        <div class="mm-context-anchor">
+          <div class="v3-panel v3-panel--scaled">
+            @for (item of items.slice(0, 3); track item.label) {
+              <a class="v3-item" href="#" (click)="$event.preventDefault()">
+                <span class="v3-item__accent" aria-hidden="true"></span>
+                <span class="v3-item__title">{{ item.label }}</span>
+                <span class="v3-item__desc">{{ item.description }}</span>
+              </a>
+            }
+            <p class="mm-context-note">… +2 more · V3</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- v5 -->
+      <div class="mm-context-cell">
+        <div class="mm-context-pill">
+          tdp. · Home · About · Projects · Blog · <span class="mm-context-pill__more">More</span> · ⌘K · ☀
+        </div>
+        <div class="mm-context-anchor">
+          <div class="v5-panel v5-panel--scaled">
+            <a class="v5-hero" href="#" (click)="$event.preventDefault()">
+              <span class="v5-hero__icon-frame">
+                <landing-icon [name]="featured.iconName" [size]="22" />
+              </span>
+              <span class="v5-hero__text">
+                <span class="v5-hero__title">{{ featured.label }}</span>
+                <span class="v5-hero__desc">{{ featured.description }}</span>
+              </span>
+              <span class="v5-hero__cta">
+                Download
+                <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+              </span>
+            </a>
+            <div class="v5-list">
+              @for (item of nonFeatured; track item.label) {
+                <a class="v5-item" href="#" (click)="$event.preventDefault()">
+                  <span class="v5-item__title">{{ item.label }}</span>
+                  <span class="v5-item__hint">{{ item.hint }}</span>
+                </a>
+              }
+            </div>
+            <p class="mm-context-note">V5</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </landing-container>
+</section>
+
+<!-- ═══ Decision matrix ═══════════════════════════════════════════ -->
+<section class="mm-block mm-block--matrix" aria-label="Decision matrix">
+  <landing-container size="wide">
+    <landing-eyebrow [label]="['decision matrix', 'when each variant wins']" tone="accent" class="mm-block__eyebrow" />
+    <table class="mm-matrix">
+      <thead>
+        <tr>
+          <th scope="col">Variant</th>
+          <th scope="col">Icon</th>
+          <th scope="col">Description</th>
+          <th scope="col">Density</th>
+          <th scope="col">Voice</th>
+          <th scope="col">Pick when</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">v1 · refined row</th>
+          <td>14px glyph</td>
+          <td>always visible</td>
+          <td>medium</td>
+          <td>utilitarian · clean</td>
+          <td>Lowest-effort fix. Keep icons, keep descriptions, ship.</td>
+        </tr>
+        <tr>
+          <th scope="row">v2 · centered cards</th>
+          <td>framed, centered</td>
+          <td>always visible</td>
+          <td>low (tall)</td>
+          <td>premium · spacious</td>
+          <td>You want each item to feel like a destination, not a link. Resume gets a hero row.</td>
+        </tr>
+        <tr>
+          <th scope="row">v3 · typography</th>
+          <td>none</td>
+          <td>always visible</td>
+          <td>medium</td>
+          <td>editorial · confident</td>
+          <td>Site voice already favors type over chrome. Stripe-style accent bar on hover.</td>
+        </tr>
+        <tr>
+          <th scope="row">v4 · eyebrow</th>
+          <td>none</td>
+          <td>hidden (3-word hint)</td>
+          <td>highest</td>
+          <td>editorial · specimen</td>
+          <td>Title carries the meaning; hints are voice flavor. Quietest direction.</td>
+        </tr>
+        <tr>
+          <th scope="row">v5 · hero + list</th>
+          <td>only on hero</td>
+          <td>only on hero</td>
+          <td>medium</td>
+          <td>marketing-aware · CTA-led</td>
+          <td>You want recruiters/visitors to land on Resume first. Strongest information hierarchy.</td>
+        </tr>
+        <tr>
+          <th scope="row">v6 · inline-glyph reveal</th>
+          <td>12px inline</td>
+          <td>on hover only</td>
+          <td>highest</td>
+          <td>dense · quiet</td>
+          <td>You like Vue/Astro-style dense menus. Description is rescue copy, not first-glance content.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="mm-block__intro">
+      <strong>My recommendation:</strong> <em>v5 (hero + list)</em> if the dropdown's job is to push visitors toward
+      Resume — strongest hierarchy, solves the 5-cells problem cleanly. <em>v3 (typography only)</em> if the portfolio
+      voice should stay type-led — most aligned with the existing display/serif accents on hero. Avoid v2 unless you're
+      ready to fill each card's description with confident copy; otherwise it feels half-finished.
+    </p>
+  </landing-container>
+</section>

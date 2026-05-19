@@ -1,0 +1,74 @@
+:host {
+  display: block;
+}
+
+.coming-soon-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  padding-block: 40px;
+}
+
+.coming-soon-page__status {
+  margin-top: 8px;
+}
+
+.coming-soon-page__sub {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
+  color: var(--landing-text-500);
+  max-width: 56ch;
+}
+
+.coming-soon-page__cursor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+}
+
+.coming-soon-page__cursor-glyph {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  line-height: 1;
+  color: var(--landing-accent);
+  animation: coming-soon-blink 1.1s steps(2, end) infinite;
+}
+
+@keyframes coming-soon-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.coming-soon-page__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+  .coming-soon-page__actions {
+    flex-direction: row;
+    gap: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coming-soon-page__cursor-glyph {
+    animation: none;
+    opacity: 1;
+  }
+}

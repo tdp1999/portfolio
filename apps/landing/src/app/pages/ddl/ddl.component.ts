@@ -171,6 +171,21 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Section header · cii propagation',
         desc: 'New primitive (eyebrow + center display + italic accent) applied to 5 home sections — pick copy.',
       },
+      {
+        path: '/ddl/language-switcher',
+        title: 'Language switcher · direction variants',
+        desc: 'Six EN/VI toggle directions in-header — segmented, mono inline, dropdown, globe, flip pill, marquee swap. Decision matrix + research stepback.',
+      },
+      {
+        path: '/ddl/command-palette',
+        title: 'Command palette · Cmd+K directions',
+        desc: 'Four Cmd+K UX directions — Linear, Spotlight, Raycast, Minimal. Mock data (Pages · Sections · Actions · Projects), keyboard nav, hybrid static+API architecture note.',
+      },
+      {
+        path: '/ddl/mega-menu',
+        title: 'Mega-menu · More dropdown variants',
+        desc: 'Six layout directions for the header "More" panel — refined row, centered cards, typography-only, editorial eyebrow, hero+list, inline-glyph reveal. Research stepback + decision matrix.',
+      },
     ],
   },
   {

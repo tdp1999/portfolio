@@ -1,0 +1,26 @@
+<landing-section>
+  <landing-container>
+    <div class="coming-soon-page">
+      <landing-breadcrumb [items]="breadcrumb()" />
+
+      <div class="coming-soon-page__status">
+        <landing-status-dot state="busy" variant="pill" label="In progress" />
+      </div>
+
+      <landing-section-header size="md" [level]="1" [accentFirst]="true">
+        {{ section() }} is <em>in the works</em>.
+      </landing-section-header>
+
+      <p class="coming-soon-page__sub">{{ blurb() }}</p>
+
+      <div class="coming-soon-page__cursor" aria-hidden="true">
+        <span class="coming-soon-page__cursor-glyph">_</span>
+      </div>
+
+      <nav class="coming-soon-page__actions" aria-label="Recovery links">
+        <landing-link href="/" [arrow]="true">Back to home</landing-link>
+        <landing-link href="/projects" [arrow]="true">Browse projects</landing-link>
+      </nav>
+    </div>
+  </landing-container>
+</landing-section>

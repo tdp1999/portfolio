@@ -12,12 +12,21 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('@portfolio/landing/feature-experience').then((m) => m.FeatureExperience),
   },
   {
+    path: 'about',
+    loadComponent: () => import('./pages/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage),
+    data: {
+      section: 'About',
+      blurb: "I'm shaping this section — voice, story, and what I'm about. It'll land here soon.",
+    },
+  },
+  {
     path: 'projects',
     loadChildren: () => import('@portfolio/landing/feature-projects').then((m) => m.PROJECTS_ROUTES),
   },
   {
     path: 'blog',
-    loadChildren: () => import('@portfolio/landing/feature-blog').then((m) => m.BLOG_ROUTES),
+    loadComponent: () => import('./pages/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage),
+    data: { section: 'Blog', blurb: "I'm drafting the first posts. Subscribe nowhere — just check back." },
   },
   {
     path: 'uses',
@@ -114,6 +123,18 @@ export const appRoutes: Route[] = [
       {
         path: 'uses-card-variants',
         loadComponent: () => import('./pages/ddl/uses-card-variants').then((m) => m.UsesCardVariantsPage),
+      },
+      {
+        path: 'language-switcher',
+        loadComponent: () => import('./pages/ddl/language-switcher').then((m) => m.LanguageSwitcherPage),
+      },
+      {
+        path: 'command-palette',
+        loadComponent: () => import('./pages/ddl/command-palette').then((m) => m.CommandPalettePage),
+      },
+      {
+        path: 'mega-menu',
+        loadComponent: () => import('./pages/ddl/mega-menu').then((m) => m.MegaMenuDdlPage),
       },
     ],
   },

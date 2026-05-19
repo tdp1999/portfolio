@@ -1,8 +1,19 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LandingThemeToggleComponent } from '../theme';
 import { ContainerComponent } from '../components/container';
+import { MegaMenuComponent, type MegaMenuItem } from '../components/mega-menu';
+import { LandingSelectComponent, type SelectOption } from '../components/select';
+import { CommandPaletteService } from '../command-palette/command-palette.service';
+import { KeyboardShortcutService } from '../keyboard/keyboard-shortcut.service';
+import { LandingLocaleService } from '../locale/landing-locale.service';
 import { HydrationSafeActiveDirective } from './hydration-safe-active.directive';
+import type { Locale } from '@portfolio/shared/types';
+
+const LANGUAGES: readonly SelectOption<Locale>[] = [
+  { value: 'en', label: 'English', sublabel: 'en', iconName: 'globe' },
+  { value: 'vi', label: 'Tiếng Việt', sublabel: 'vi', iconName: 'globe' },
+];
 
 interface NavItem {
   label: string;
@@ -10,12 +21,11 @@ interface NavItem {
   exact?: boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
+const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Home', path: '/', exact: true },
+  { label: 'About', path: '/about' },
   { label: 'Projects', path: '/projects' },
-  { label: 'Uses', path: '/uses' },
-  { label: 'Colophon', path: '/colophon' },
-  { label: 'DDL', path: '/ddl' },
+  { label: 'Blog', path: '/blog' },
 ];
 
 const SCROLL_THRESHOLD = 8;
@@ -24,7 +34,14 @@ const SCROLL_THRESHOLD = 8;
   selector: 'landing-header',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, HydrationSafeActiveDirective, LandingThemeToggleComponent, ContainerComponent],
+  imports: [
+    RouterLink,
+    HydrationSafeActiveDirective,
+    LandingThemeToggleComponent,
+    ContainerComponent,
+    MegaMenuComponent,
+    LandingSelectComponent,
+  ],
   styleUrl: './landing-header.component.scss',
   host: {
     class: 'sticky top-0 z-50 block w-full',
@@ -58,26 +75,31 @@ const SCROLL_THRESHOLD = 8;
                     {{ item.label }}
                   </a>
                 }
+                <landing-mega-menu triggerLabel="More" align="center" [items]="moreItems()" />
               </nav>
 
               <span class="hidden h-4 w-px bg-landing-border md:inline-block" aria-hidden="true"></span>
 
+              <landing-select
+                [options]="languages"
+                [value]="lang()"
+                (valueChange)="setLang($event)"
+                triggerIconName="globe"
+                triggerValue="code"
+                [showChevron]="false"
+                align="right"
+                ariaLabel="Switch language"
+              />
+
               <button
                 type="button"
-                class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
-                aria-label="Switch language (coming soon)"
-                disabled
+                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300 hover:border-landing-text-500 lg:inline-flex"
+                (click)="palette.show()"
+                [attr.aria-label]="paletteAriaLabel()"
               >
-                EN
+                <kbd class="font-mono pointer-events-none">{{ kbdMod() }}</kbd>
+                <kbd class="font-mono pointer-events-none">K</kbd>
               </button>
-
-              <span
-                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
-                aria-hidden="true"
-              >
-                <kbd class="font-mono">⌘</kbd>
-                <kbd class="font-mono">K</kbd>
-              </span>
 
               <landing-theme-toggle />
             </div>
@@ -105,33 +127,30 @@ const SCROLL_THRESHOLD = 8;
                   {{ item.label }}
                 </a>
               }
+              <landing-mega-menu triggerLabel="More" align="center" [columns]="2" [items]="moreItems()" />
             </nav>
 
             <div class="flex items-center gap-4 justify-self-end">
+              <landing-select
+                [options]="languages"
+                [value]="lang()"
+                (valueChange)="setLang($event)"
+                triggerIconName="globe"
+                triggerValue="code"
+                [showChevron]="false"
+                align="right"
+                ariaLabel="Switch language"
+              />
+
               <button
                 type="button"
-                class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
-                aria-label="Switch language (coming soon)"
-                disabled
+                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300 hover:border-landing-text-500 lg:inline-flex"
+                (click)="palette.show()"
+                [attr.aria-label]="paletteAriaLabel()"
               >
-                EN
+                <kbd class="font-mono pointer-events-none">{{ kbdMod() }}</kbd>
+                <kbd class="font-mono pointer-events-none">K</kbd>
               </button>
-
-              <a
-                routerLink="/"
-                fragment="contact"
-                class="hidden font-sans text-body-sm text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent md:inline"
-              >
-                Get in touch
-              </a>
-
-              <span
-                class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 lg:inline-flex"
-                aria-hidden="true"
-              >
-                <kbd class="font-mono">⌘</kbd>
-                <kbd class="font-mono">K</kbd>
-              </span>
 
               <landing-theme-toggle />
             </div>
@@ -142,8 +161,66 @@ const SCROLL_THRESHOLD = 8;
   `,
 })
 export class LandingHeaderComponent {
+  readonly resumeUrl = input<string>('');
+  readonly resumeName = input<string>('CV');
+
   readonly navItems = NAV_ITEMS;
+  readonly languages = LANGUAGES;
   readonly scrolled = signal(false);
+
+  private readonly localeService = inject(LandingLocaleService);
+  /** Current locale — bound to {@link LandingLocaleService}. */
+  readonly lang = this.localeService.locale;
+
+  protected readonly palette = inject(CommandPaletteService);
+  private readonly shortcuts = inject(KeyboardShortcutService);
+
+  setLang(lang: Locale): void {
+    this.localeService.setLocale(lang);
+  }
+
+  protected readonly kbdMod = computed(() => (this.shortcuts.isMac() ? '⌘' : 'Ctrl'));
+  protected readonly paletteAriaLabel = computed(() => `Open command palette (${this.kbdMod()}+K)`);
+
+  readonly moreItems = computed<readonly MegaMenuItem[]>(() => {
+    const items: MegaMenuItem[] = [];
+    const resume = this.resumeUrl();
+    if (resume) {
+      items.push({
+        label: 'Resume',
+        description: `Download my CV — ${this.resumeName() || 'PDF'}.`,
+        href: resume,
+        kind: 'download',
+        iconName: 'download',
+        featured: true,
+        cta: 'Download',
+      });
+    }
+    items.push(
+      {
+        label: 'Uses',
+        hint: 'tools',
+        href: '/uses',
+      },
+      {
+        label: 'Contact',
+        hint: 'reach me',
+        href: '/',
+        fragment: 'get-in-touch',
+      },
+      {
+        label: 'Colophon',
+        hint: 'behind the build',
+        href: '/colophon',
+      },
+      {
+        label: 'DDL',
+        hint: 'sandbox',
+        href: '/ddl',
+      }
+    );
+    return items;
+  });
 
   onWindowScroll(): void {
     if (typeof window === 'undefined') return;
