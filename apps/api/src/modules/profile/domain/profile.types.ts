@@ -33,6 +33,7 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   // Contact
   email: string;
   phone: string | null;
+  phoneZalo: string | null;
   preferredContactPlatform: SocialPlatform;
   preferredContactValue: string;
 
@@ -89,6 +90,7 @@ export interface ICreateProfilePayload {
   // Contact
   email: string;
   phone?: string;
+  phoneZalo?: string;
   preferredContactPlatform?: SocialPlatform;
   preferredContactValue: string;
 

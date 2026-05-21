@@ -20,6 +20,7 @@ import {
 import { ListMessagesHandler, GetMessageByIdHandler, GetUnreadCountHandler } from './application/queries';
 import { MessagePurgeJob } from './application/jobs/message-purge.job';
 import { ContactMessageRepository } from './infrastructure/repositories/contact-message.repository';
+import { TURNSTILE_VERIFIER, TurnstileVerifyService } from './infrastructure/services/turnstile-verify.service';
 import { ContactMessageController } from './presentation/contact-message.controller';
 
 const CommandHandlers = [
@@ -42,6 +43,10 @@ const QueryHandlers = [ListMessagesHandler, GetMessageByIdHandler, GetUnreadCoun
     {
       provide: CONTACT_MESSAGE_REPOSITORY,
       useClass: ContactMessageRepository,
+    },
+    {
+      provide: TURNSTILE_VERIFIER,
+      useClass: TurnstileVerifyService,
     },
     ...CommandHandlers,
     ...QueryHandlers,

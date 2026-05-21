@@ -51,6 +51,8 @@ export const SOCIAL_PLATFORM_LABELS: Record<SocialPlatform, string> = {
   STACKOVERFLOW: 'Stack Overflow',
   DEV_TO: 'Dev.to',
   HASHNODE: 'Hashnode',
+  TELEGRAM: 'Telegram',
+  ZALO: 'Zalo',
   WEBSITE: 'Website',
   OTHER: 'External link',
 };

@@ -13,6 +13,8 @@ const SOCIAL_ICON: Record<SocialPlatform, string> = {
   STACKOVERFLOW: 'external-link',
   DEV_TO: 'external-link',
   HASHNODE: 'external-link',
+  TELEGRAM: 'external-link',
+  ZALO: 'external-link',
   WEBSITE: 'globe',
   OTHER: 'external-link',
 };

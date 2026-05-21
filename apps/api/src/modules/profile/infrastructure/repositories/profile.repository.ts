@@ -88,6 +88,7 @@ export class ProfileRepository implements IProfileRepository {
       data: {
         email: contact.email,
         phone: contact.phone,
+        phoneZalo: contact.phoneZalo,
         preferredContactPlatform: contact.preferredContactPlatform,
         preferredContactValue: contact.preferredContactValue,
         updatedById,

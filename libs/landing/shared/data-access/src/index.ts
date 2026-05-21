@@ -12,3 +12,7 @@ export * from './lib/markdown.types';
 export * from './lib/markdown.service';
 export * from './lib/skill-grouping';
 export * from './lib/projects-query.port';
+export * from './lib/contact-form.types';
+export * from './lib/contact-form.service';
+export * from './lib/contact-form.error-messages';
+export * from './lib/landing-meta.service';

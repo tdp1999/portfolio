@@ -4,6 +4,7 @@ describe('Contact VO', () => {
   const validProps = {
     email: 'john@example.com',
     phone: null,
+    phoneZalo: null,
     preferredContactPlatform: 'LINKEDIN' as const,
     preferredContactValue: 'https://linkedin.com/in/john',
   };
@@ -36,6 +37,14 @@ describe('Contact VO', () => {
       const b = Contact.create({ ...validProps, email: 'other@example.com' });
 
       expect(a.equals(b)).toBe(false);
+    });
+
+    it('should return false when phoneZalo differs (and remain reflexive)', () => {
+      const a = Contact.create(validProps);
+      const b = Contact.create({ ...validProps, phoneZalo: '+84901234567' });
+
+      expect(a.equals(b)).toBe(false);
+      expect(b.equals(b)).toBe(true);
     });
   });
 });

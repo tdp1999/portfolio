@@ -14,6 +14,7 @@ const RAW_PROFILE: PrismaProfile = {
   workingHours: null,
   email: 'john@example.com',
   phone: null,
+  phoneZalo: null,
   preferredContactPlatform: 'LINKEDIN',
   preferredContactValue: 'https://linkedin.com/in/johndoe',
   locationCountry: 'Vietnam',
@@ -83,6 +84,21 @@ describe('ProfileMapper', () => {
       const prisma = ProfileMapper.toPrisma(domain);
 
       expect(prisma.coreStack).toEqual(['Angular', 'TypeScript', 'Angular Material']);
+    });
+
+    it('should preserve a null phoneZalo through both directions', () => {
+      const domain = ProfileMapper.toDomain(RAW_PROFILE);
+      const prisma = ProfileMapper.toPrisma(domain);
+      expect(domain.phoneZalo).toBeNull();
+      expect(prisma.phoneZalo).toBeNull();
+    });
+
+    it('should preserve a non-null phoneZalo through both directions', () => {
+      const raw: PrismaProfile = { ...RAW_PROFILE, phoneZalo: '+84901234567' };
+      const domain = ProfileMapper.toDomain(raw);
+      const prisma = ProfileMapper.toPrisma(domain);
+      expect(domain.phoneZalo).toBe('+84901234567');
+      expect(prisma.phoneZalo).toBe('+84901234567');
     });
   });
 });

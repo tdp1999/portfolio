@@ -33,6 +33,8 @@ export const SOCIAL_PLATFORM_OPTIONS = [
   { value: 'STACKOVERFLOW', label: 'Stack Overflow' },
   { value: 'DEV_TO', label: 'Dev.to' },
   { value: 'HASHNODE', label: 'Hashnode' },
+  { value: 'TELEGRAM', label: 'Telegram' },
+  { value: 'ZALO', label: 'Zalo' },
   { value: 'WEBSITE', label: 'Website' },
   { value: 'OTHER', label: 'Other' },
 ] as const;

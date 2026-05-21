@@ -18,6 +18,12 @@
       <mat-error>{{ form.controls.email | formError }}</mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="outline">
+      <mat-label>Zalo phone</mat-label>
+      <input matInput formControlName="phoneZalo" placeholder="+84… (optional, shown on /contact for VN visitors)" />
+      <mat-error>{{ form.controls.phoneZalo | formError }}</mat-error>
+    </mat-form-field>
+
     <div class="field-row">
       <mat-form-field appearance="outline" class="w-48">
         <mat-label>Preferred Platform</mat-label>

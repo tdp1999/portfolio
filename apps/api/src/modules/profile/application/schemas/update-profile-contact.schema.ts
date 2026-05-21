@@ -6,6 +6,7 @@ import { LIMITS } from '@portfolio/shared/validation';
 export const UpdateProfileContactSchema = z.object({
   email: EmailSchema,
   phone: PhoneSchema.nullable(),
+  phoneZalo: PhoneSchema.nullable(),
   preferredContactPlatform: z.nativeEnum(SocialPlatform),
   preferredContactValue: z.string().max(LIMITS.DESCRIPTION_SHORT_MAX),
 });

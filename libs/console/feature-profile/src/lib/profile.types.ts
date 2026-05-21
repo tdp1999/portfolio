@@ -14,6 +14,8 @@ export interface ProfileAdminResponse {
   openTo: string[];
   email: string;
   phone: string | null;
+  /** Public Zalo phone — surfaced on /contact as a VN-locale channel. */
+  phoneZalo: string | null;
   preferredContactPlatform: string;
   preferredContactValue: string;
   locationCountry: string;
@@ -62,6 +64,7 @@ export interface UpdateWorkAvailabilityPayload {
 export interface UpdateContactPayload {
   email: string;
   phone: string | null;
+  phoneZalo: string | null;
   preferredContactPlatform: string;
   preferredContactValue: string;
 }

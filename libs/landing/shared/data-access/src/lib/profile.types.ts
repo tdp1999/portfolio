@@ -23,6 +23,8 @@ export type PublicProfileResponse = {
   availability: ProfileAvailability;
   openTo: OpenToValue[];
   email: string;
+  /** Public Zalo phone — surfaced on /contact as a VN-locale channel. Null when not set. */
+  phoneZalo: string | null;
   preferredContactPlatform: SocialPlatform;
   preferredContactValue: string;
   locationCountry: string;

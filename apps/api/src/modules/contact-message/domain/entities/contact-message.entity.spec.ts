@@ -54,14 +54,14 @@ describe('ContactMessage', () => {
       expect(message.status).toBe(ContactMessageStatus.UNREAD);
     });
 
-    it('should compute expiresAt 12 months ahead', () => {
+    it('should compute expiresAt 18 months ahead', () => {
       const before = Date.now();
       const message = ContactMessage.create(validPayload);
       const after = Date.now();
 
-      const oneYearMs = 365 * 24 * 60 * 60 * 1000;
-      expect(message.expiresAt.getTime()).toBeGreaterThanOrEqual(before + oneYearMs);
-      expect(message.expiresAt.getTime()).toBeLessThanOrEqual(after + oneYearMs);
+      const eighteenMonthsMs = 18 * 30 * 24 * 60 * 60 * 1000;
+      expect(message.expiresAt.getTime()).toBeGreaterThanOrEqual(before + eighteenMonthsMs);
+      expect(message.expiresAt.getTime()).toBeLessThanOrEqual(after + eighteenMonthsMs);
     });
 
     it('should hash ipAddress with SHA-256', () => {

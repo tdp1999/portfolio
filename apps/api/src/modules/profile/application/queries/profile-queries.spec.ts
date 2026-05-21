@@ -23,6 +23,7 @@ describe('Profile Queries', () => {
     openTo: [],
     email: 'john@example.com',
     phone: '+84123456789',
+    phoneZalo: null,
     preferredContactPlatform: 'LINKEDIN',
     preferredContactValue: 'linkedin.com/in/john',
     locationCountry: 'Vietnam',

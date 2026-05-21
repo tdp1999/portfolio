@@ -10,7 +10,7 @@ export class MessagePurgeJob {
 
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Cron('0 3 * * *')
+  @Cron('0 3 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async handlePurge(): Promise<void> {
     this.logger.log('Starting contact message purge');
 

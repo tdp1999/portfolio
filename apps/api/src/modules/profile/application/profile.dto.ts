@@ -33,6 +33,8 @@ export type ProfilePublicResponseDto = {
   availability: AvailabilityType;
   openTo: OpenToValue[];
   email: string;
+  /** Public Zalo phone number — surfaced as a contact channel on `/contact` (VN locale). */
+  phoneZalo: string | null;
   preferredContactPlatform: SocialPlatformType;
   preferredContactValue: string;
   locationCountry: string;

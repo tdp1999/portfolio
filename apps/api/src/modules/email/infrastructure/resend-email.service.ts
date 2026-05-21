@@ -3,27 +3,42 @@ import { Resend } from 'resend';
 
 import { IEmailService, SendEmailOptions } from '../application/email.port';
 
+/**
+ * `RESEND_API_KEY` is treated as "real" when it's set and doesn't match an
+ * obvious placeholder. With a real key we always attempt to send (dev or prod);
+ * with a missing/placeholder key we log the email and return — so local dev
+ * can opt-in to real sending just by setting the env var.
+ */
+function isRealResendApiKey(apiKey: string | undefined): apiKey is string {
+  if (!apiKey) return false;
+  if (apiKey === 're_dev_placeholder') return false;
+  if (apiKey.includes('xxxx')) return false; // catches .env.example "re_xxxxxxxxxxxx"
+  return apiKey.startsWith('re_');
+}
+
 @Injectable()
 export class ResendEmailService implements IEmailService {
   private readonly resend: Resend;
   private readonly from: string;
+  private readonly isLive: boolean;
   private readonly logger = new Logger(ResendEmailService.name);
 
   constructor() {
     const apiKey = process.env['RESEND_API_KEY'];
-    if (!apiKey && process.env['NODE_ENV'] === 'production') {
-      throw new Error('RESEND_API_KEY environment variable is required');
+    this.isLive = isRealResendApiKey(apiKey);
+    if (!this.isLive && process.env['NODE_ENV'] === 'production') {
+      throw new Error('RESEND_API_KEY environment variable is required in production');
     }
-    this.resend = new Resend(apiKey || 're_dev_placeholder');
+    this.resend = new Resend(this.isLive ? apiKey : 're_dev_placeholder');
     this.from = process.env['EMAIL_FROM'] ?? 'noreply@example.com';
+    if (!this.isLive) {
+      this.logger.warn('Resend API key not configured — emails will be logged, not sent.');
+    }
   }
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
-    if (process.env['NODE_ENV'] !== 'production') {
-      if (!process.env['NODE_ENV']) {
-        this.logger.warn('NODE_ENV is not set — skipping email send. Set NODE_ENV=production to enable.');
-      }
-      this.logger.log(`[DEV] Email to=${options.to} subject="${options.subject}"`);
+    if (!this.isLive) {
+      this.logger.log(`[DEV] Email to=${options.to} subject="${options.subject}" (not sent — placeholder key)`);
       return;
     }
 
@@ -32,6 +47,7 @@ export class ResendEmailService implements IEmailService {
       to: options.to,
       subject: options.subject,
       html: options.html,
+      ...(options.replyTo ? { replyTo: options.replyTo } : {}),
     });
 
     if (error) {

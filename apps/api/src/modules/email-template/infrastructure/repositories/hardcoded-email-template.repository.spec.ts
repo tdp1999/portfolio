@@ -71,7 +71,7 @@ describe('HardcodedEmailTemplateRepository', () => {
       });
 
       expect(result.subject).toContain('Test subject');
-      expect(result.bodyHtml).toContain('New Contact Message');
+      expect(result.bodyHtml).toContain('just wrote in');
     });
 
     it('should throw NotFoundError when template key does not exist', () => {

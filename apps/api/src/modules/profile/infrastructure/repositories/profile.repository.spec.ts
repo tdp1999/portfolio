@@ -94,6 +94,7 @@ describe('ProfileRepository — section updates', () => {
     const contact = Contact.fromPersistence({
       email: 'jane@example.com',
       phone: null,
+      phoneZalo: null,
       preferredContactPlatform: 'LINKEDIN',
       preferredContactValue: 'linkedin.com/in/jane',
     });
@@ -103,7 +104,7 @@ describe('ProfileRepository — section updates', () => {
 
       expect(whereOf(update)).toEqual({ userId });
       expect(keysOf(update)).toEqual(
-        ['email', 'phone', 'preferredContactPlatform', 'preferredContactValue', 'updatedById'].sort()
+        ['email', 'phone', 'phoneZalo', 'preferredContactPlatform', 'preferredContactValue', 'updatedById'].sort()
       );
     });
   });

@@ -105,6 +105,8 @@ export class AdminContactAddressSectionComponent {
         preferredContactPlatform: data.preferredContactPlatform,
         preferredContactValue: data.preferredContactValue,
         phone: v.phone || null,
+        // Preserve sibling field (managed by ContactSection) across this fan-out save.
+        phoneZalo: data.phoneZalo ?? null,
       }),
       this.profileService.updateLocation({
         locationCountry: data.locationCountry,

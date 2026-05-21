@@ -31,6 +31,8 @@ enum SocialPlatform {
   STACKOVERFLOW
   DEV_TO
   HASHNODE
+  TELEGRAM
+  ZALO
   WEBSITE
   OTHER
 }
@@ -119,6 +121,7 @@ enum ContactPurpose {
   FREELANCE
   COLLABORATION
   BUG_REPORT
+  PRESS
   OTHER
 }
 
@@ -370,6 +373,7 @@ model Profile {
   // Contact
   email                    String       @db.VarChar(320)
   phone                    String?      @db.VarChar(20)
+  phoneZalo                String?      @db.VarChar(20)
   preferredContactPlatform SocialPlatform @default(LINKEDIN)
   preferredContactValue    String       @db.VarChar(500)
 

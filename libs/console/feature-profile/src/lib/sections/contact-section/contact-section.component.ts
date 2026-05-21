@@ -51,6 +51,8 @@ export class ContactSectionComponent {
 
   readonly form = this.fb.group({
     email: this.fb.control('', { nonNullable: true, validators: [Validators.required, ...baselineFor.email()] }),
+    /** Public Zalo phone (VN-locale channel on /contact). Optional. */
+    phoneZalo: this.fb.control('', { nonNullable: true, validators: baselineFor.phone() }),
     preferredContactPlatform: this.fb.control<string>('GITHUB', {
       nonNullable: true,
       validators: [Validators.required],
@@ -81,6 +83,7 @@ export class ContactSectionComponent {
       if (!data || this.hydrated) return;
       this.form.reset({
         email: data.email,
+        phoneZalo: data.phoneZalo ?? '',
         preferredContactPlatform: data.preferredContactPlatform,
         preferredContactValue: data.preferredContactValue,
       });
@@ -101,9 +104,16 @@ export class ContactSectionComponent {
     if (!data) return;
     this.saving.set(true);
     const v = this.form.getRawValue();
-    // updateContact endpoint expects phone too — pull from last server-saved profile data.
+    const phoneZalo = v.phoneZalo || null;
+    // updateContact endpoint expects sibling phone too — pull from last server-saved profile data.
     this.profileService
-      .updateContact({ ...v, phone: data.phone ?? null })
+      .updateContact({
+        email: v.email,
+        phone: data.phone ?? null,
+        phoneZalo,
+        preferredContactPlatform: v.preferredContactPlatform,
+        preferredContactValue: v.preferredContactValue,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -113,6 +123,7 @@ export class ContactSectionComponent {
           this.toast.success('Contact saved');
           this.saved.emit({
             email: v.email,
+            phoneZalo,
             preferredContactPlatform: v.preferredContactPlatform,
             preferredContactValue: v.preferredContactValue,
           });

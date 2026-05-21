@@ -39,6 +39,7 @@ export class UpdateProfileContactHandler implements ICommandHandler<UpdateProfil
     const newContact = Contact.create({
       email: data.email,
       phone: data.phone,
+      phoneZalo: data.phoneZalo,
       preferredContactPlatform: data.preferredContactPlatform,
       preferredContactValue: data.preferredContactValue,
     });

@@ -18,6 +18,7 @@ function buildProfileProps(overrides: Partial<IProfileProps> = {}): IProfileProp
     openTo: ['FREELANCE'],
     email: 'john@example.com',
     phone: '+84123456789',
+    phoneZalo: null,
     preferredContactPlatform: 'LINKEDIN',
     preferredContactValue: 'linkedin.com/in/john',
     locationCountry: 'Vietnam',
@@ -112,6 +113,17 @@ describe('ProfilePresenter', () => {
       expect(keys).not.toContain('updatedById');
       expect(keys).not.toContain('id');
       expect(keys).not.toContain('userId');
+    });
+
+    it('should expose phoneZalo on the public surface (null when unset)', () => {
+      expect(Object.keys(result)).toContain('phoneZalo');
+      expect(result.phoneZalo).toBeNull();
+    });
+
+    it('should pass a non-null phoneZalo through to the public surface', () => {
+      const profileWithZalo = Profile.load(buildProfileProps({ phoneZalo: '+84901234567' }));
+      const withZalo = ProfilePresenter.toPublicResponse(profileWithZalo, avatarUrl, ogImageUrl);
+      expect(withZalo.phoneZalo).toBe('+84901234567');
     });
   });
 

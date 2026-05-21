@@ -18,6 +18,7 @@ export class ProfilePresenter {
       availability: profile.availability,
       openTo: profile.openTo,
       email: profile.email,
+      phoneZalo: profile.phoneZalo,
       preferredContactPlatform: profile.preferredContactPlatform,
       preferredContactValue: profile.preferredContactValue,
       locationCountry: profile.locationCountry,

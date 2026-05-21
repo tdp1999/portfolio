@@ -16,7 +16,7 @@ describe('ResendEmailService', () => {
     jest.clearAllMocks();
     process.env = {
       ...originalEnv,
-      RESEND_API_KEY: 'test-key',
+      RESEND_API_KEY: 're_test_abcd1234',
       EMAIL_FROM: 'test@example.com',
       NODE_ENV: 'production',
     };
@@ -46,15 +46,30 @@ describe('ResendEmailService', () => {
     });
   });
 
+  it('should forward replyTo when provided', async () => {
+    mockSend.mockResolvedValue({ data: { id: '123' }, error: null });
+
+    await service.sendEmail({ ...emailOptions, replyTo: 'reply@example.com' });
+
+    expect(mockSend).toHaveBeenCalledWith(expect.objectContaining({ replyTo: 'reply@example.com' }));
+  });
+
+  it('should omit replyTo when not provided', async () => {
+    mockSend.mockResolvedValue({ data: { id: '123' }, error: null });
+
+    await service.sendEmail(emailOptions);
+
+    expect(mockSend).toHaveBeenCalledWith(expect.not.objectContaining({ replyTo: expect.anything() }));
+  });
+
   it('should throw when Resend returns an error', async () => {
     mockSend.mockResolvedValue({ data: null, error: { message: 'Invalid API key' } });
 
-    await expect(service.sendEmail(emailOptions)).rejects.toThrow(
-      'Email sending failed: Invalid API key'
-    );
+    await expect(service.sendEmail(emailOptions)).rejects.toThrow('Email sending failed: Invalid API key');
   });
 
-  it('should log instead of sending in development mode', async () => {
+  it('should log instead of sending when API key is the placeholder', async () => {
+    process.env['RESEND_API_KEY'] = 're_xxxxxxxxxxxx';
     process.env['NODE_ENV'] = 'development';
     service = new ResendEmailService();
 
@@ -63,13 +78,21 @@ describe('ResendEmailService', () => {
     expect(mockSend).not.toHaveBeenCalled();
   });
 
+  it('should send even in development when a real API key is provided', async () => {
+    process.env['NODE_ENV'] = 'development';
+    service = new ResendEmailService();
+    mockSend.mockResolvedValue({ data: { id: '123' }, error: null });
+
+    await service.sendEmail(emailOptions);
+
+    expect(mockSend).toHaveBeenCalled();
+  });
+
   it('should throw if RESEND_API_KEY is missing in non-dev environment', () => {
     delete process.env['RESEND_API_KEY'];
     process.env['NODE_ENV'] = 'production';
 
-    expect(() => new ResendEmailService()).toThrow(
-      'RESEND_API_KEY environment variable is required'
-    );
+    expect(() => new ResendEmailService()).toThrow('RESEND_API_KEY environment variable is required in production');
   });
 
   it('should allow missing RESEND_API_KEY in development mode', () => {

@@ -10,7 +10,7 @@ export const SubmitContactMessageSchema = z.object({
     .transform((v) => stripHtmlTags(v.trim())),
   email: z.email().max(320),
   purpose: z
-    .enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'OTHER'])
+    .enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER'])
     .default('GENERAL'),
   subject: z
     .string()
@@ -25,6 +25,13 @@ export const SubmitContactMessageSchema = z.object({
   locale: z.enum(['en', 'vi']).default('en'),
   consentGivenAt: z.iso.datetime(),
   website: z.string().optional(),
+  /**
+   * Cloudflare Turnstile token captured by the FE widget. Server-side verified
+   * in {@link SubmitContactMessageHandler} before any DB write. Optional so
+   * non-browser callers (admin tooling, integration tests) can opt out when a
+   * dev-mode skip flag is configured.
+   */
+  turnstileToken: z.string().min(1).optional(),
 });
 
 export const ContactMessageQuerySchema = PaginatedQuerySchema.extend({
@@ -36,8 +43,8 @@ export const ContactMessageQuerySchema = PaginatedQuerySchema.extend({
     .optional(),
   purpose: z
     .union([
-      z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'OTHER']),
-      z.array(z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'OTHER'])),
+      z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER']),
+      z.array(z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER'])),
     ])
     .optional(),
   includeDeleted: z.coerce.boolean().default(false),

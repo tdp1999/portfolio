@@ -3,6 +3,7 @@ import { DomainError } from '@portfolio/shared/errors';
 import { IContactMessageRepository } from '../ports/contact-message.repository.port';
 import { IEmailTemplateRepository } from '../../../email-template';
 import { IEmailService } from '../../../email';
+import { ITurnstileVerifier } from '../../infrastructure/services/turnstile-verify.service';
 
 import { SubmitContactMessageCommand, SubmitContactMessageHandler } from './submit-contact-message.command';
 
@@ -11,6 +12,7 @@ describe('SubmitContactMessageHandler', () => {
   let repo: jest.Mocked<IContactMessageRepository>;
   let templateRepo: jest.Mocked<IEmailTemplateRepository>;
   let emailService: jest.Mocked<IEmailService>;
+  let turnstile: jest.Mocked<ITurnstileVerifier>;
   const originalEnv = process.env;
 
   const validDto = {
@@ -56,7 +58,11 @@ describe('SubmitContactMessageHandler', () => {
       sendEmail: jest.fn().mockResolvedValue(undefined),
     };
 
-    handler = new SubmitContactMessageHandler(repo, templateRepo, emailService);
+    turnstile = {
+      verify: jest.fn().mockResolvedValue(true),
+    };
+
+    handler = new SubmitContactMessageHandler(repo, templateRepo, emailService, turnstile);
   });
 
   afterEach(() => {
@@ -69,6 +75,22 @@ describe('SubmitContactMessageHandler', () => {
     expect(result.id).toBeDefined();
     expect(repo.add).toHaveBeenCalled();
     expect(emailService.sendEmail).toHaveBeenCalledTimes(2);
+  });
+
+  it('should set replyTo on admin notification to the submitter email', async () => {
+    await handler.execute(new SubmitContactMessageCommand(validDto));
+
+    const adminCall = emailService.sendEmail.mock.calls.find(([opts]) => opts.to === 'admin@example.com');
+    expect(adminCall).toBeDefined();
+    expect(adminCall?.[0].replyTo).toBe(validDto.email);
+  });
+
+  it('should not set replyTo on the auto-reply email', async () => {
+    await handler.execute(new SubmitContactMessageCommand(validDto));
+
+    const autoReplyCall = emailService.sendEmail.mock.calls.find(([opts]) => opts.to === validDto.email);
+    expect(autoReplyCall).toBeDefined();
+    expect(autoReplyCall?.[0].replyTo).toBeUndefined();
   });
 
   it('should silently accept honeypot submissions without storing or emailing', async () => {
@@ -105,6 +127,22 @@ describe('SubmitContactMessageHandler', () => {
 
     expect(caughtError).toBeInstanceOf(DomainError);
     expect((caughtError as DomainError).message).toContain('Too many messages');
+  });
+
+  it('should throw when Turnstile verification fails', async () => {
+    turnstile.verify.mockResolvedValue(false);
+
+    let caughtError: unknown;
+    try {
+      await handler.execute(new SubmitContactMessageCommand({ ...validDto, turnstileToken: 'bad-token' }));
+    } catch (e) {
+      caughtError = e;
+    }
+
+    expect(caughtError).toBeInstanceOf(DomainError);
+    expect((caughtError as DomainError).message).toContain('Bot challenge failed');
+    expect(repo.add).not.toHaveBeenCalled();
+    expect(emailService.sendEmail).not.toHaveBeenCalled();
   });
 
   it('should throw DISPOSABLE_EMAIL for disposable email addresses', async () => {

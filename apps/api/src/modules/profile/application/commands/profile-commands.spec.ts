@@ -41,6 +41,7 @@ describe('Profile Commands', () => {
     openTo: [],
     email: 'john@example.com',
     phone: null,
+    phoneZalo: null,
     preferredContactPlatform: 'LINKEDIN',
     preferredContactValue: 'linkedin.com/in/john',
     locationCountry: 'Vietnam',
@@ -230,6 +231,7 @@ describe('Profile Commands', () => {
     const validDto = {
       email: 'jane@example.com',
       phone: null,
+      phoneZalo: null,
       preferredContactPlatform: 'LINKEDIN',
       preferredContactValue: 'linkedin.com/in/jane',
     };

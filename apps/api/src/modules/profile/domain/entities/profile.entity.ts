@@ -125,6 +125,10 @@ export class Profile {
     return this.props.contact.phone;
   }
 
+  get phoneZalo(): string | null {
+    return this.props.contact.phoneZalo;
+  }
+
   get preferredContactPlatform(): SocialPlatform {
     return this.props.contact.preferredContactPlatform;
   }
@@ -249,6 +253,7 @@ export class Profile {
       contact: Contact.create({
         email: data.email,
         phone: data.phone ?? null,
+        phoneZalo: data.phoneZalo ?? null,
         preferredContactPlatform: data.preferredContactPlatform ?? 'LINKEDIN',
         preferredContactValue: data.preferredContactValue,
       }),
@@ -306,6 +311,7 @@ export class Profile {
       contact: Contact.fromPersistence({
         email: props.email,
         phone: props.phone,
+        phoneZalo: props.phoneZalo,
         preferredContactPlatform: props.preferredContactPlatform,
         preferredContactValue: props.preferredContactValue,
       }),
@@ -437,6 +443,7 @@ export class Profile {
       workingHours: this.props.workAvailability.workingHours?.toJSON() ?? null,
       email: this.props.contact.email,
       phone: this.props.contact.phone,
+      phoneZalo: this.props.contact.phoneZalo,
       preferredContactPlatform: this.props.contact.preferredContactPlatform,
       preferredContactValue: this.props.contact.preferredContactValue,
       locationCountry: this.props.location.country,

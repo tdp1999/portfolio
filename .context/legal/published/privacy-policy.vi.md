@@ -1,7 +1,7 @@
 # Chính sách Bảo mật
 
-**Cập nhật lần cuối:** 18/05/2026
-**Ngày hiệu lực:** 18/05/2026
+**Cập nhật lần cuối:** 19/05/2026
+**Ngày hiệu lực:** 19/05/2026
 
 Chính sách này giải thích cách Trần Đức Phương ("tôi") thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân khi bạn truy cập [thunderphong.com](https://thunderphong.com) ("Website").
 
@@ -67,6 +67,7 @@ Khi bạn gửi biểu mẫu liên hệ, tôi thu thập:
 
 - Họ tên của bạn
 - Địa chỉ email
+- Mục đích liên hệ (ví dụ: tuyển dụng, freelance, hợp tác, báo chí, chào hỏi) — dùng để phân loại phản hồi
 - Nội dung tin nhắn
 - Thời điểm gửi và địa chỉ IP (để chống spam)
 

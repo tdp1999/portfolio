@@ -4,6 +4,8 @@ import type { SocialPlatform } from '@portfolio/shared/types';
 export interface ContactProps {
   email: string;
   phone: string | null;
+  /** Zalo is a phone number (not a URL), surfaced as a public contact channel on `/contact`. */
+  phoneZalo: string | null;
   preferredContactPlatform: SocialPlatform;
   preferredContactValue: string;
 }
@@ -41,6 +43,10 @@ export class Contact {
     return this.props.phone;
   }
 
+  get phoneZalo(): string | null {
+    return this.props.phoneZalo;
+  }
+
   get preferredContactPlatform(): SocialPlatform {
     return this.props.preferredContactPlatform;
   }
@@ -53,6 +59,7 @@ export class Contact {
     return (
       this.props.email === other.props.email &&
       this.props.phone === other.props.phone &&
+      this.props.phoneZalo === other.props.phoneZalo &&
       this.props.preferredContactPlatform === other.props.preferredContactPlatform &&
       this.props.preferredContactValue === other.props.preferredContactValue
     );

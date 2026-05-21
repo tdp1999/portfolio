@@ -1,7 +1,7 @@
 # Privacy Policy
 
-**Last updated:** 2026-05-18
-**Effective date:** 2026-05-18
+**Last updated:** 2026-05-19
+**Effective date:** 2026-05-19
 
 This Privacy Policy explains how Phuong Tran ("I", "me", "my") collects, uses, stores, and protects personal data when you visit [thunderphong.com](https://thunderphong.com) (the "Site").
 
@@ -67,6 +67,7 @@ When you submit the contact form, I collect:
 
 - Your name
 - Your email address
+- The purpose of your message (e.g. hire, freelance, collaboration, press, just saying hi) — used to triage replies
 - The message you write
 - Submission timestamp and IP address (for spam protection)
 

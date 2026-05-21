@@ -7,7 +7,8 @@ import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
 
 import { IContactMessageProps, ICreateContactMessagePayload } from '../contact-message.types';
 
-const TWELVE_MONTHS_MS = 365 * 24 * 60 * 60 * 1000;
+/** Privacy-policy retention: contact submissions auto-purged 18 months after intake. */
+const EIGHTEEN_MONTHS_MS = 18 * 30 * 24 * 60 * 60 * 1000;
 
 export class ContactMessage {
   private constructor(private readonly props: IContactMessageProps) {}
@@ -112,7 +113,7 @@ export class ContactMessage {
       readAt: null,
       repliedAt: null,
       archivedAt: null,
-      expiresAt: new Date(now.getTime() + TWELVE_MONTHS_MS),
+      expiresAt: new Date(now.getTime() + EIGHTEEN_MONTHS_MS),
       deletedAt: null,
     });
   }
@@ -216,6 +217,12 @@ export class ContactMessage {
   }
 }
 
-function hashIp(ip: string): string {
+/**
+ * SHA-256 of the submitter's IP. Single source of truth so the command-side
+ * rate-limit lookup and the entity-side persistence write produce the same
+ * digest; double-hashing the value silently breaks the IP rate-limit because
+ * stored hash and lookup hash never match.
+ */
+export function hashIp(ip: string): string {
   return createHash('sha256').update(ip).digest('hex');
 }

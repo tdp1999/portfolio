@@ -18,6 +18,7 @@ describe('Profile Entity', () => {
     openTo: ['FREELANCE'],
     email: 'john@example.com',
     phone: null,
+    phoneZalo: null,
     preferredContactPlatform: 'LINKEDIN',
     preferredContactValue: 'https://linkedin.com/in/johndoe',
     locationCountry: 'Vietnam',
@@ -81,6 +82,7 @@ describe('Profile Entity', () => {
       const newContact = Contact.create({
         email: 'new@example.com',
         phone: null,
+        phoneZalo: null,
         preferredContactPlatform: 'GITHUB',
         preferredContactValue: 'github.com/john',
       });
@@ -111,6 +113,7 @@ describe('Profile Entity', () => {
       const newContact = Contact.create({
         email: 'changed@example.com',
         phone: null,
+        phoneZalo: null,
         preferredContactPlatform: 'LINKEDIN',
         preferredContactValue: 'https://linkedin.com/in/johndoe',
       });
