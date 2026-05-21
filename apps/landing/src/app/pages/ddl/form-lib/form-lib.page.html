@@ -1,0 +1,96 @@
+<landing-section>
+  <landing-container>
+    <header class="fl-ddl__intro">
+      <h1 class="fl-ddl__title">Form lib · shipped suite (C21)</h1>
+      <p class="fl-ddl__lede">
+        Live playground for the landing form primitives. The form is a real
+        <code>FormGroup</code> — fields validate, the meta row swaps between hint and error, the radio group
+        deduplicates via <code>name</code>, the checkbox carries the consent flow. Click
+        <strong>Validate all</strong> to fire validators without typing.
+      </p>
+      <p class="fl-ddl__note">
+        <strong>Components shipped:</strong> <code>landing-input</code>, <code>landing-textarea</code>,
+        <code>landing-checkbox</code>, <code>landing-radio</code> + <code>landing-radio-group</code>,
+        <code>landing-form-field</code>. Existing <code>landing-select</code> already covers dropdown.
+      </p>
+    </header>
+
+    <section class="fl-ddl__stage">
+      <form [formGroup]="form" novalidate class="fl-form">
+        <landing-form-field
+          label="Name"
+          hint="As you'd like to be addressed."
+          [error]="nameError()"
+          [required]="true"
+          inputId="fl-name"
+        >
+          <landing-input inputId="fl-name" formControlName="name" type="text" [hasError]="!!nameError()" />
+        </landing-form-field>
+
+        <landing-form-field
+          label="Email"
+          hint="We won't share it."
+          [error]="emailError()"
+          [required]="true"
+          inputId="fl-email"
+        >
+          <landing-input
+            inputId="fl-email"
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            [hasError]="!!emailError()"
+          />
+        </landing-form-field>
+
+        <landing-form-field label="Audience" hint="Pick the closest match." inputId="fl-audience">
+          <landing-radio-group formControlName="audience" name="fl-audience" ariaLabel="Audience">
+            <landing-radio value="recruiter" label="Recruiter" />
+            <landing-radio value="client" label="Freelance client" />
+            <landing-radio value="press" label="Press / podcast" />
+          </landing-radio-group>
+        </landing-form-field>
+
+        <landing-form-field
+          label="Message"
+          hint="10 characters minimum."
+          [error]="messageError()"
+          [required]="true"
+          inputId="fl-message"
+        >
+          <landing-textarea inputId="fl-message" formControlName="message" [rows]="6" [hasError]="!!messageError()" />
+        </landing-form-field>
+
+        <landing-form-field [error]="consentError()">
+          <landing-checkbox formControlName="consent" inputId="fl-consent" [hasError]="!!consentError()">
+            I agree to the
+            <landing-link href="/privacy" [inline]="true">Privacy Policy</landing-link>.
+          </landing-checkbox>
+        </landing-form-field>
+
+        <div class="fl-form__actions">
+          <button type="button" class="fl-form__btn fl-form__btn--ghost" (click)="reset()">Reset</button>
+          <button type="button" class="fl-form__btn" (click)="validateAll()">Validate all</button>
+        </div>
+      </form>
+
+      <aside class="fl-debug">
+        <h2 class="fl-debug__title">Form state</h2>
+        <p class="fl-debug__status">
+          Status: <code>{{ formStatus() }}</code>
+        </p>
+        <pre class="fl-debug__json">{{ submittedJson() }}</pre>
+      </aside>
+    </section>
+
+    <section class="fl-ddl__notes">
+      <h2>Hint / error layout contract</h2>
+      <ul>
+        <li><strong>Hint</strong> sits on the right of the meta row.</li>
+        <li><strong>Error</strong> sits on the left.</li>
+        <li>When both are present, <strong>error wins</strong> — never split user attention.</li>
+        <li>When neither is set, the meta row collapses (no reserved height).</li>
+      </ul>
+    </section>
+  </landing-container>
+</landing-section>

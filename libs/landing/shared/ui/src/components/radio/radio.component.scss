@@ -1,0 +1,74 @@
+/* `landing-radio` — sunken outer ring, accent dot on check. */
+
+.rad {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-300);
+}
+
+.rad--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Native radio overlays the visual dot (transparent, full hit area). Sized
+   to the 18×18 dot so Playwright + assistive tech can target it. */
+.rad__native {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.rad__native:disabled {
+  cursor: not-allowed;
+}
+
+.rad__dot {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.rad__dot-fill {
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  background: var(--landing-accent);
+  transform: scale(0);
+  transition: transform 140ms ease;
+}
+
+.rad__native:checked + .rad__dot {
+  border-color: var(--landing-accent);
+}
+
+.rad__native:checked + .rad__dot .rad__dot-fill {
+  transform: scale(1);
+}
+
+.rad__native:focus-visible + .rad__dot {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--landing-accent) 30%, transparent);
+}

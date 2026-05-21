@@ -1,0 +1,124 @@
+<div class="email-templates-page">
+  <landing-container size="wide">
+    <div class="email-templates-page__intro">
+      <landing-breadcrumb [items]="breadcrumb" class="email-templates-page__crumb" />
+      <h1 class="email-templates-page__title">Contact-flow email templates — direction variants</h1>
+      <p class="email-templates-page__lede">
+        Three takes each for the <code>auto-reply</code> (sent to the submitter) and the <code>admin-notification</code>
+        (sent to me, EN by design). Each variant renders inside a sandboxed
+        <code>&lt;iframe srcdoc&gt;</code> so its CSS behaves like a real email — no inheritance from the host page,
+        inline styles, table-based layout for Gmail/Outlook compatibility. Web fonts are declared but most clients will
+        fall back to the system stack; that fallback is what's actually shown.
+      </p>
+      <p class="email-templates-page__lede">
+        V0 in each row is the current production output (baseline reference, not a candidate). V1 / V2 are the two
+        directions to pick between. Pick one per template, or mix-and-match (e.g. V1 auto-reply + V2 admin).
+      </p>
+    </div>
+  </landing-container>
+
+  <!-- ═══ AUTO-REPLY ═════════════════════════════════════════════════════ -->
+  <section class="email-templates-page__section" aria-labelledby="auto-reply-heading">
+    <landing-container size="wide">
+      <header class="email-templates-page__section-head">
+        <h2 class="email-templates-page__section-title" id="auto-reply-heading">Auto-reply · sent to submitter</h2>
+        <p class="email-templates-page__section-meta">
+          Subject template: <code>Thank you for reaching out, &lt;name&gt;</code> · Both EN + VI shipped. DDL renders EN
+          only — the VI template follows the same scaffold with translated copy.
+        </p>
+      </header>
+
+      <div class="email-grid">
+        @for (variant of autoReplyVariants; track variant.id) {
+          <article class="email-card">
+            <header class="email-card__head">
+              <span class="email-card__letter">{{ variant.id }}</span>
+              <span class="email-card__title">{{ variant.title }}</span>
+            </header>
+            <p class="email-card__summary">{{ variant.summary }}</p>
+            <div class="email-card__preview">
+              <iframe
+                class="email-card__iframe"
+                [srcdoc]="srcdoc(variant, 'autoReply')"
+                title="{{ variant.title }} preview"
+                sandbox=""
+                loading="lazy"
+              ></iframe>
+            </div>
+          </article>
+        }
+      </div>
+    </landing-container>
+  </section>
+
+  <!-- ═══ ADMIN NOTIFICATION ═════════════════════════════════════════════ -->
+  <section class="email-templates-page__section" aria-labelledby="admin-heading">
+    <landing-container size="wide">
+      <header class="email-templates-page__section-head">
+        <h2 class="email-templates-page__section-title" id="admin-heading">Admin notification · sent to me</h2>
+        <p class="email-templates-page__section-meta">
+          Subject template: <code>New contact message: &lt;subject&gt;</code> · EN-only by design (no VI variant — it's
+          for my own triage). Should scan well in a busy inbox.
+        </p>
+      </header>
+
+      <div class="email-grid">
+        @for (variant of adminVariants; track variant.id) {
+          <article class="email-card">
+            <header class="email-card__head">
+              <span class="email-card__letter">{{ variant.id }}</span>
+              <span class="email-card__title">{{ variant.title }}</span>
+            </header>
+            <p class="email-card__summary">{{ variant.summary }}</p>
+            <div class="email-card__preview">
+              <iframe
+                class="email-card__iframe"
+                [srcdoc]="srcdoc(variant, 'admin')"
+                title="{{ variant.title }} preview"
+                sandbox=""
+                loading="lazy"
+              ></iframe>
+            </div>
+          </article>
+        }
+      </div>
+    </landing-container>
+  </section>
+
+  <!-- ═══ NOTES ══════════════════════════════════════════════════════════ -->
+  <section class="email-templates-page__section" aria-label="Notes">
+    <landing-container size="wide">
+      <div class="email-templates-page__notes">
+        <h2 class="email-templates-page__notes-heading">Notes</h2>
+        <ul>
+          <li>
+            <strong>Email clients are CSS hell.</strong> Outlook on Windows ignores half of modern CSS, Gmail strips
+            <code>&lt;style&gt;</code> blocks in some configurations. Inline styles + table layout is the
+            lowest-common-denominator that survives. Don't measure against the marketing site — aim for "scannable and
+            on-brand," not "pixel-perfect."
+          </li>
+          <li>
+            <strong>Web fonts are aspirational.</strong> Most clients fall back to the system stack. The fallback is
+            what shows for 80% of recipients — design for that, treat the web-font render as a bonus.
+          </li>
+          <li>
+            <strong>Dark mode</strong> not staged here. Worth adding via
+            <code>&#64;media (prefers-color-scheme: dark)</code> inside a <code>&lt;style&gt;</code> block once a winner
+            is picked (works in Apple Mail, native iOS, recent Gmail).
+          </li>
+          <li>
+            <strong>Future signature use</strong> — these mockups also double as a reference if I ever need a manual
+            signature, an HTML log entry, or a marketing-style transactional template. Keep the file even after a winner
+            graduates.
+          </li>
+          <li>
+            <strong>Graduating a winner</strong> — once picked, the chosen HTML goes into
+            <code>apps/api/src/modules/email-template/infrastructure/templates/contact-auto-reply.template.ts</code>
+            (and the VI variant) and <code>admin-notification.template.ts</code>. <code>bodyText</code> stays as the
+            plain-text alternative for clients that don't render HTML.
+          </li>
+        </ul>
+      </div>
+    </landing-container>
+  </section>
+</div>

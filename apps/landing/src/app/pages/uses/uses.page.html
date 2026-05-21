@@ -3,9 +3,10 @@
     <div class="uses-page__head">
       <landing-breadcrumb [items]="breadcrumb" />
 
-      <landing-section-header size="md" [level]="1"> <em>Uses</em>.</landing-section-header>
-
-      <p class="uses-page__sub">What I reach for daily — the specific kit, not generic categories.</p>
+      <landing-page-hero [eyebrowLabel]="['01', 'Uses']" align="center">
+        <em>Uses</em>.
+        <p hero-lede>What I reach for daily — the specific kit, not generic categories.</p>
+      </landing-page-hero>
     </div>
 
     @for (section of sections; track section.id) {

@@ -1,0 +1,264 @@
+:host {
+  display: block;
+}
+
+/* ─── Intro ──────────────────────────────────────────────────────────── */
+.fi-ddl__title {
+  margin: 0 0 12px 0;
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-300);
+}
+
+.fi-ddl__lede {
+  margin: 0 0 16px 0;
+  max-width: 64ch;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+.fi-ddl__note {
+  margin: 0 0 48px 0;
+  max-width: 64ch;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-500);
+}
+
+.fi-ddl__lede code,
+.fi-ddl__variant-head code {
+  font-family: var(--landing-font-mono);
+  font-size: 0.92em;
+  color: var(--landing-text-300);
+}
+
+/* ─── Variant card ──────────────────────────────────────────────────── */
+.fi-ddl__variant {
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+}
+
+.fi-ddl__variant:last-of-type {
+  border-bottom: none;
+}
+
+.fi-ddl__variant-head h2 {
+  margin: 0 0 8px 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
+  color: var(--landing-text-300);
+}
+
+.fi-ddl__variant-head p {
+  margin: 0 0 24px 0;
+  max-width: 60ch;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+.fi-ddl__variant-head em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-accent);
+}
+
+.fi-ddl__picked {
+  font-family: var(--landing-font-mono);
+  font-size: 0.78em;
+  font-weight: 500;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+  margin-left: 8px;
+}
+
+.fi-ddl__stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 32px;
+  border: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--landing-surface-100) 30%, transparent);
+
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─── Shared field bits ────────────────────────────────────────────── */
+.fi-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fi-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.fi-label--error {
+  color: #f87171;
+}
+
+.fi-help {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-600);
+}
+
+.fi-help--error {
+  color: #f87171;
+}
+
+.fi-input {
+  width: 100%;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-100);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.fi-input::placeholder {
+  color: var(--landing-text-600);
+}
+
+.fi-textarea {
+  min-height: 96px;
+  resize: vertical;
+  /* Drop the line-height drift textareas inherit from prose lede paragraphs */
+  font-family: var(--landing-font-body);
+}
+
+/* ═══════════════ Variant A · Hairline → underline focus ══════════════ */
+.fi-input--a {
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--landing-border);
+  border-radius: 0;
+  outline: none;
+}
+
+.fi-input--a:focus,
+.fi-input--a.is-focused {
+  border-bottom: 2px solid var(--landing-accent);
+  /* Compensate the 1→2 px height jump so labels don't twitch */
+  padding-bottom: 9px;
+}
+
+.fi-input--a.is-error {
+  border-bottom-color: #f87171;
+}
+
+.fi-input--a:disabled {
+  border-bottom-style: dashed;
+  color: var(--landing-text-600);
+  cursor: not-allowed;
+}
+
+/* ═══════════════ Variant B · Sunken card ═══════════════════════════ */
+.fi-input--b {
+  padding: 12px 16px;
+  border: 1px solid var(--landing-border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+  outline: none;
+}
+
+.fi-input--b:focus,
+.fi-input--b.is-focused {
+  border-color: var(--landing-accent);
+  background: color-mix(in srgb, var(--landing-ink-1) 70%, transparent);
+}
+
+.fi-input--b.is-error {
+  border-color: #f87171;
+}
+
+.fi-input--b:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--landing-ink-1) 30%, transparent);
+}
+
+/* ═══════════════ Variant C · Outline + soft accent glow ═══════════ */
+.fi-input--c {
+  padding: 12px 16px;
+  border: 1.5px solid var(--landing-border);
+  border-radius: 8px;
+  background: transparent;
+  outline: none;
+}
+
+.fi-input--c:focus,
+.fi-input--c.is-focused {
+  border-color: var(--landing-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--landing-accent) 22%, transparent);
+}
+
+.fi-input--c.is-error {
+  border-color: #f87171;
+  box-shadow: 0 0 0 4px color-mix(in srgb, #f87171 22%, transparent);
+}
+
+.fi-input--c:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+/* ─── Notes section ──────────────────────────────────────────────── */
+.fi-ddl__notes {
+  margin-top: 64px;
+  padding: 24px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--landing-surface-100) 50%, transparent);
+}
+
+.fi-ddl__notes h2 {
+  margin: 0 0 12px 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-xl);
+  color: var(--landing-text-300);
+}
+
+.fi-ddl__notes ul {
+  margin: 0;
+  padding-left: 20px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+
+.fi-ddl__notes li {
+  margin-bottom: 8px;
+}
+
+.fi-ddl__notes code {
+  font-family: var(--landing-font-mono);
+  font-size: 0.92em;
+  color: var(--landing-text-300);
+}

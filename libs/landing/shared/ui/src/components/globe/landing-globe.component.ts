@@ -56,6 +56,12 @@ const CITIES: readonly GlobeCity[] = [
  *  Cobe's default `scale: 1` renders the sphere at ~85% of the canvas; half = ~42%. */
 const PROJECTED_RADIUS_PCT = 41;
 
+/** Radians per frame at 60fps — slow enough to read city labels (~30s per
+ *  rotation). */
+const AUTO_ROTATE_STEP = 0.0035;
+/** After a drag ends, hold position this long before resuming auto-rotate. */
+const AUTO_ROTATE_RESUME_MS = 2000;
+
 type GlobePalette = Pick<
   COBEOptions,
   'dark' | 'baseColor' | 'markerColor' | 'glowColor' | 'mapBrightness' | 'mapBaseBrightness' | 'diffuse' | 'opacity'
@@ -97,6 +103,10 @@ export class LandingGlobeComponent implements OnDestroy {
   private readonly zone = inject(NgZone);
 
   readonly interactive = input<boolean>(false);
+  /** Spin the globe automatically when the user isn't dragging it. Idle-pauses
+   *  for `AUTO_ROTATE_RESUME_MS` after a drag so the user can land where they
+   *  meant to. */
+  readonly autoRotate = input<boolean>(false);
 
   protected readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
 
@@ -135,6 +145,8 @@ export class LandingGlobeComponent implements OnDestroy {
   private isDragging = false;
   private dragStartX = 0;
   private dragStartPhi = 0;
+  /** Timestamp until which auto-rotate is suppressed (post-drag idle hold). */
+  private autoRotatePauseUntil = 0;
 
   constructor() {
     afterNextRender(() => this.initGlobe());
@@ -198,6 +210,12 @@ export class LandingGlobeComponent implements OnDestroy {
     // change detection every frame.
     this.zone.runOutsideAngular(() => {
       const tick = (): void => {
+        if (this.autoRotate() && !this.isDragging && performance.now() >= this.autoRotatePauseUntil) {
+          this.phi += AUTO_ROTATE_STEP;
+          // Mirror into the signal so projected city labels track the rotation,
+          // but skip when stationary so we don't churn change detection.
+          this.phiSig.set(this.phi);
+        }
         this.globe?.update({ phi: this.phi });
         this.rafId = requestAnimationFrame(tick);
       };
@@ -225,6 +243,7 @@ export class LandingGlobeComponent implements OnDestroy {
   protected onPointerUp(event: PointerEvent): void {
     if (!this.isDragging) return;
     this.isDragging = false;
+    this.autoRotatePauseUntil = performance.now() + AUTO_ROTATE_RESUME_MS;
     (event.currentTarget as Element | null)?.releasePointerCapture?.(event.pointerId);
   }
 }

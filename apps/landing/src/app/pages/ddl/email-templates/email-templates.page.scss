@@ -1,0 +1,193 @@
+.email-templates-page {
+  display: block;
+  padding: 48px 0 96px;
+  color: var(--landing-text-300);
+}
+
+.email-templates-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+  max-width: 76ch;
+}
+
+.email-templates-page__crumb {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.email-templates-page__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+}
+
+.email-templates-page__lede {
+  margin: 0;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+
+  code {
+    font-family: var(--landing-font-mono);
+    font-size: 0.9em;
+    background: var(--landing-surface-100);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--landing-text-300);
+  }
+}
+
+.email-templates-page__section {
+  margin-top: 48px;
+}
+
+.email-templates-page__section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.email-templates-page__section-title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-xs);
+  line-height: var(--landing-display-xs-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+}
+
+.email-templates-page__section-meta {
+  margin: 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+
+  code {
+    font-family: var(--landing-font-mono);
+    font-size: 0.9em;
+    color: var(--landing-text-400);
+  }
+}
+
+.email-grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.email-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--landing-surface-50);
+  border: 1px solid var(--landing-border-200);
+  border-radius: 12px;
+}
+
+.email-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.email-card__letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--landing-surface-100);
+  font-family: var(--landing-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--landing-text-300);
+  text-transform: uppercase;
+}
+
+.email-card__title {
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-300);
+}
+
+.email-card__summary {
+  margin: 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+.email-card__preview {
+  position: relative;
+  height: 640px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f4f4f5;
+  border: 1px solid var(--landing-border-100);
+}
+
+.email-card__iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #f4f4f5;
+}
+
+.email-templates-page__notes {
+  max-width: 76ch;
+  padding: 24px 28px;
+  border-radius: 12px;
+  background: var(--landing-surface-50);
+  border: 1px solid var(--landing-border-200);
+}
+
+.email-templates-page__notes-heading {
+  margin: 0 0 12px 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-300);
+}
+
+.email-templates-page__notes ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+
+  code {
+    font-family: var(--landing-font-mono);
+    font-size: 0.9em;
+    background: var(--landing-surface-100);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--landing-text-300);
+  }
+
+  strong {
+    color: var(--landing-text-300);
+    font-weight: 600;
+  }
+}

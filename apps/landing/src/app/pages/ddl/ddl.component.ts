@@ -105,7 +105,7 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
       {
         path: '/ddl/get-in-touch',
         title: '§07 Get in Touch · direction variants',
-        desc: 'V1 SVG globe constellation · V2 drag-rotate globe · V3 info panel. Split-intent CTAs + CV placement comparison.',
+        desc: 'Globe graduated to /contact. Seven 1-col home variants (A–G) route into /contact?purpose=… — variant G (centered, 3-purpose + email fallback) shipped to home. Comparison sandbox retained.',
       },
     ],
   },
@@ -144,6 +144,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Uses · card variants',
         desc: 'Three mini-card directions × two section-separation strategies for /uses tool entries. V2 monogram + S1 picked → graduated.',
       },
+      {
+        path: '/ddl/email-templates',
+        title: 'Contact email templates · direction variants',
+        desc: 'Three takes each for auto-reply (sent to submitter) and admin-notification. Rendered in sandboxed iframes so email-client CSS constraints (tables, inline styles, system font fallback) are visible. V0 baseline + V1 / V2 candidates per row.',
+      },
     ],
   },
   {
@@ -170,6 +175,21 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         path: '/ddl/section-header',
         title: 'Section header · cii propagation',
         desc: 'New primitive (eyebrow + center display + italic accent) applied to 5 home sections — pick copy.',
+      },
+      {
+        path: '/ddl/page-hero',
+        title: 'Page hero · child-page composition',
+        desc: 'Eyebrow + heading + lede bundle used across /contact, /uses, /colophon. Left/center variants, size scale, italic-em accent.',
+      },
+      {
+        path: '/ddl/form-input',
+        title: 'Form input · primitive variants (historical)',
+        desc: 'Three visual directions for landing-input + landing-textarea. Variant B picked + shipped 2026-05-21; A/C kept as historical record.',
+      },
+      {
+        path: '/ddl/form-lib',
+        title: 'Form lib · shipped suite (C21)',
+        desc: 'Live reactive-form playground for the shipped landing form primitives — input · textarea · checkbox · radio · form-field. Hint/error meta-row contract documented.',
       },
       {
         path: '/ddl/language-switcher',

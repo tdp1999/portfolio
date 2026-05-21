@@ -37,6 +37,10 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/colophon/colophon.page').then((m) => m.ColophonPage),
   },
   {
+    path: 'contact',
+    loadComponent: () => import('./pages/contact').then((m) => m.ContactPage),
+  },
+  {
     path: 'privacy',
     loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
   },
@@ -89,6 +93,18 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/ddl/section-header').then((m) => m.SectionHeaderPage),
       },
       {
+        path: 'page-hero',
+        loadComponent: () => import('./pages/ddl/page-hero').then((m) => m.PageHeroPage),
+      },
+      {
+        path: 'form-input',
+        loadComponent: () => import('./pages/ddl/form-input').then((m) => m.FormInputPage),
+      },
+      {
+        path: 'form-lib',
+        loadComponent: () => import('./pages/ddl/form-lib').then((m) => m.FormLibPage),
+      },
+      {
         path: 'story-variants',
         loadComponent: () => import('./pages/ddl/story-variants').then((m) => m.StoryVariantsPage),
       },
@@ -135,6 +151,10 @@ export const appRoutes: Route[] = [
       {
         path: 'mega-menu',
         loadComponent: () => import('./pages/ddl/mega-menu').then((m) => m.MegaMenuDdlPage),
+      },
+      {
+        path: 'email-templates',
+        loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
       },
     ],
   },

@@ -6,7 +6,7 @@ import {
   LandingRouterProgressComponent,
   LandingShellComponent,
 } from '@portfolio/landing/shared/ui';
-import { ProfileService } from '@portfolio/landing/shared/data-access';
+import { LandingMetaService, ProfileService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 
 @Component({
@@ -21,6 +21,12 @@ export class App {
 
   /** Reactive locale — switching the language switcher in the header triggers re-localization here. */
   readonly locale = this.localeService.locale;
+
+  constructor() {
+    // Reset <title>/description to defaults on every navigation, so a page
+    // that doesn't explicitly set them won't inherit the previous page's.
+    inject(LandingMetaService).start();
+  }
 
   private readonly profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
 

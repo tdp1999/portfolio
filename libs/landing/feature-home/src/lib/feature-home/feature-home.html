@@ -41,14 +41,9 @@
   <!-- §6b Section break — hand-drawn squiggle as section-rule:lift cousin -->
   <landing-home-philosophy-strip />
 
-  <!-- §7 Get in Touch — B2.c lift (indigo top + tonal surface), task 286 -->
-  <landing-home-get-in-touch
-    [email]="email()"
-    [contactCopy]="contactCopy()"
-    [socialLinks]="socialLinks()"
-    [resumeUrl]="resumeEntry()?.url ?? ''"
-    [resumeName]="resumeEntry()?.name ?? 'CV PDF'"
-  />
+  <!-- §07 Get in Touch — Variant G centered router (locked 2026-05-19, epic-portfolio-contact C10).
+       Pulls its own data from ProfileService. -->
+  <landing-home-get-in-touch />
 
   <!-- §8 Footer banner + §9 signature line are mounted globally by `landing-shell`. -->
 

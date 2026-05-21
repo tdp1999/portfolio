@@ -1,0 +1,51 @@
+/* `landing-form-field` — the canonical label + control + meta-row stack.
+   Hint sits on the right; error on the left. Error always wins when both
+   are set (handled in the component template). */
+
+.ff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ff__label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.ff__required {
+  margin-left: 4px;
+  color: var(--landing-accent);
+}
+
+.ff__control {
+  min-width: 0;
+}
+
+.ff__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.ff__error {
+  margin: 0;
+  flex: 1 1 auto;
+  text-align: left;
+  color: #f87171;
+}
+
+.ff__hint {
+  margin: 0;
+  flex: 1 1 auto;
+  text-align: right;
+  color: var(--landing-text-600);
+}

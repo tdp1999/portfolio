@@ -1,0 +1,312 @@
+:host {
+  display: block;
+}
+
+/* ═══ Hero ═══════════════════════════════════════════════════════════════ */
+.contact-page__hero {
+  padding-block: 64px 32px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+
+  @media (min-width: 960px) {
+    padding-block: 96px 48px;
+  }
+}
+
+/* ═══ Main grid ══════════════════════════════════════════════════════════ */
+.contact-page__main {
+  padding-block: 48px 64px;
+
+  @media (min-width: 960px) {
+    padding-block: 64px 96px;
+  }
+}
+.contact-page__grid {
+  display: grid;
+  gap: 48px;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 64px;
+  }
+}
+.contact-page__form-col {
+  min-width: 0;
+}
+.contact-page__channels-col {
+  min-width: 0;
+}
+
+/* ═══ Form ═══════════════════════════════════════════════════════════════ */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+/* The purpose-chip "field" still wraps the segmented control with its mono label;
+   the real form fields below are owned by `landing-form-field`. */
+.contact-form__field--purpose {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.contact-form__label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+/* Honeypot — visually hidden but still in the layout for bots */
+.contact-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Turnstile widget slot — full-bleed, sized by widget when mounted */
+.contact-form__turnstile-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.contact-form__turnstile {
+  min-height: 0; /* grows to widget height when mounted */
+}
+.contact-form__turnstile-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--landing-surface-100) 80%, transparent);
+  border: 1px dashed var(--landing-border-200);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+.contact-form__turnstile-message {
+  flex: 1;
+}
+.contact-form__turnstile-retry {
+  appearance: none;
+  border: 1px solid var(--landing-border-300);
+  background: transparent;
+  color: var(--landing-text-300);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+
+  &:hover {
+    background: var(--landing-surface-100);
+    border-color: var(--landing-text-500);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-text-400);
+    outline-offset: 2px;
+  }
+}
+
+/* Error banner above submit */
+.contact-form__banner {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+.contact-form__banner--error {
+  background-color: color-mix(in srgb, #f87171 16%, transparent);
+  border: 1px solid color-mix(in srgb, #f87171 40%, transparent);
+  color: #fecaca;
+}
+
+/* Submit */
+.contact-form__actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+.contact-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 32px;
+  border: 1px solid var(--landing-accent);
+  border-radius: 999px;
+  background-color: var(--landing-accent);
+  color: var(--landing-ink-1, #0a0a0a);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+.contact-form__submit:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--landing-accent) 80%, white);
+}
+.contact-form__submit:focus-visible {
+  outline: 2px solid var(--landing-accent);
+  outline-offset: 4px;
+}
+.contact-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ═══ Success state ══════════════════════════════════════════════════════ */
+.contact-success {
+  padding: 32px;
+  border: 1px solid color-mix(in srgb, var(--landing-accent) 40%, transparent);
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--landing-accent) 8%, transparent);
+}
+.contact-success__heading {
+  margin: 0 0 12px;
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-100);
+}
+.contact-success__copy {
+  margin: 0 0 24px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+.contact-success__again {
+  padding: 8px 20px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--landing-text-300);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.contact-success__again:hover {
+  border-color: var(--landing-accent);
+  color: var(--landing-text-100);
+}
+
+/* ═══ Channels column ════════════════════════════════════════════════════ */
+.contact-channels__heading {
+  margin: 0 0 24px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.contact-channels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.contact-channels__row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--landing-border) 60%, transparent);
+}
+.contact-channels__row:last-child {
+  border-bottom: none;
+}
+.contact-channels__label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+.contact-channels__value {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  color: var(--landing-text-300);
+  text-decoration: none;
+  transition: color 160ms ease;
+  word-break: break-word;
+}
+.contact-channels__value:hover {
+  color: var(--landing-accent);
+}
+.contact-channels__copy {
+  padding: 4px 12px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.contact-channels__copy:hover {
+  border-color: var(--landing-accent);
+  color: var(--landing-text-100);
+}
+
+/* ═══ Globe section ══════════════════════════════════════════════════════ */
+.contact-page__globe-section {
+  padding-block: 48px 80px;
+  border-top: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
+
+  @media (min-width: 960px) {
+    padding-block: 64px 112px;
+  }
+}
+.contact-page__globe {
+  display: flex;
+  justify-content: center;
+  min-height: 280px;
+
+  @media (min-width: 960px) {
+    min-height: 480px;
+  }
+}
+.contact-page__globe-caption {
+  margin: 24px auto 0;
+  max-width: 52ch;
+  text-align: center;
+  font-family: var(--landing-font-body);
+  font-style: italic;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-500);
+}
+
+/* ═══ Mobile tweaks ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .contact-page__hero {
+    padding-block: 48px 24px;
+  }
+  .contact-channels__row {
+    grid-template-columns: 72px 1fr auto;
+    gap: 8px;
+  }
+}

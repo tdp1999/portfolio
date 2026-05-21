@@ -17,6 +17,7 @@ import {
   LandingScrollspyService,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'landing-feature-home',
@@ -41,6 +42,9 @@ export class FeatureHome {
   private document = inject(DOCUMENT);
   private scrollspy = inject(LandingScrollspyService);
   private localeService = inject(LandingLocaleService);
+
+  private readonly browserTitle = inject(Title);
+  private readonly browserMeta = inject(Meta);
 
   /** Sections fed to the floating pill + minimap. Skipping philosophy strip
    *  (transition) and footer banner (terminus) keeps the trail to 6 stops. */
@@ -87,16 +91,17 @@ export class FeatureHome {
     const intro = getLocalized(this.profile()?.contactIntro, this.locale());
     return intro || 'Open to talks · engagements from June';
   });
-  contactCopy = computed(() => getLocalized(this.profile()?.contactIntro, this.locale()));
   socialLinks = computed(() => this.profile()?.socialLinks ?? []);
-  resumeEntry = computed(() => {
-    const urls = this.profile()?.resumeUrls;
-    if (!urls) return null;
-    return this.locale() === 'vi' ? (urls.vi ?? urls.en ?? null) : (urls.en ?? urls.vi ?? null);
-  });
 
   constructor() {
     this.scrollspy.setSections(this.navSections);
+
+    this.browserTitle.setTitle('Phuong Tran - Software Engineer');
+    this.browserMeta.updateTag({
+      name: 'description',
+      content:
+        'A software engineer specializing in TypeScript and Angular, with a passion for crafting performant and accessible web applications.',
+    });
 
     if (isPlatformServer(this.platformId)) {
       this.profileService

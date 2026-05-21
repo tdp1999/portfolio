@@ -1,0 +1,42 @@
+/* Variant B "sunken card" — same as `landing-input`, multi-line variant. */
+
+.textarea {
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 144px;
+  border: 1px solid var(--landing-border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+  color: var(--landing-text-100);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  outline: none;
+  resize: vertical;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.textarea::placeholder {
+  color: var(--landing-text-600);
+}
+
+.textarea:focus {
+  border-color: var(--landing-accent);
+  background: color-mix(in srgb, var(--landing-ink-1) 70%, transparent);
+}
+
+.textarea--error {
+  border-color: #f87171;
+}
+
+.textarea--error:focus {
+  border-color: #f87171;
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--landing-ink-1) 30%, transparent);
+}

@@ -1,0 +1,243 @@
+<main class="contact-page">
+  <section class="contact-page__hero">
+    <!-- <landing-breadcrumb [items]="breadcrumb" /> -->
+    <landing-container size="wide">
+      <landing-page-hero align="center">
+        @if (locale() === 'vi') {
+          Hãy nói <em>chuyện</em>.
+        } @else {
+          Let's <em>talk</em>.
+        }
+        <p hero-lede>{{ heroCopy() }}</p>
+      </landing-page-hero>
+    </landing-container>
+  </section>
+
+  <section class="contact-page__main">
+    <landing-container size="wide">
+      <div class="contact-page__grid">
+        <!-- ═══ Form column ═══ -->
+        <div class="contact-page__form-col">
+          @if (state() === 'success') {
+            <div class="contact-success" role="status" aria-live="polite">
+              <h2 class="contact-success__heading">
+                @if (locale() === 'vi') {
+                  Đã gửi — sẽ phản hồi sớm.
+                } @else {
+                  Sent — talk soon.
+                }
+              </h2>
+              <p class="contact-success__copy">
+                @if (locale() === 'vi') {
+                  Mình sẽ phản hồi trong vài ngày. Kiểm tra hộp thư (và thư mục spam, để chắc chắn).
+                } @else {
+                  I'll reply within a few days. Check your inbox (and spam folder, just in case).
+                }
+              </p>
+              <button type="button" class="contact-success__again" (click)="dismissSuccess()">
+                @if (locale() === 'vi') {
+                  Gửi tin nhắn khác
+                } @else {
+                  Send another message
+                }
+              </button>
+            </div>
+          } @else {
+            <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="contact-form" autocomplete="on">
+              <!-- Purpose chips -->
+              <div class="contact-form__field contact-form__field--purpose">
+                <span class="contact-form__label" id="contact-purpose-label">
+                  @if (locale() === 'vi') {
+                    Lý do liên hệ
+                  } @else {
+                    What's this about?
+                  }
+                </span>
+                <landing-segmented
+                  [segments]="purposeSegments()"
+                  [active]="purpose()"
+                  (activeChange)="onPurposeChange($event)"
+                  variant="hairline"
+                  idPrefix="contact-purpose"
+                  [ariaLabel]="locale() === 'vi' ? 'Lý do liên hệ' : 'Reason for contact'"
+                />
+              </div>
+
+              <!-- Name -->
+              <landing-form-field
+                [label]="locale() === 'vi' ? 'Tên' : 'Name'"
+                [error]="nameError()"
+                [required]="true"
+                inputId="contact-name"
+                metaId="contact-name-error"
+              >
+                <landing-input
+                  inputId="contact-name"
+                  formControlName="name"
+                  type="text"
+                  autocomplete="name"
+                  [maxLength]="100"
+                  [hasError]="!!nameError()"
+                  ariaDescribedBy="contact-name-error"
+                />
+              </landing-form-field>
+
+              <!-- Email -->
+              <landing-form-field
+                label="Email"
+                [error]="emailError()"
+                [required]="true"
+                inputId="contact-email"
+                metaId="contact-email-error"
+              >
+                <landing-input
+                  inputId="contact-email"
+                  formControlName="email"
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  [hasError]="!!emailError()"
+                  ariaDescribedBy="contact-email-error"
+                />
+              </landing-form-field>
+
+              <!-- Message -->
+              <landing-form-field
+                [label]="locale() === 'vi' ? 'Tin nhắn' : 'Message'"
+                [hint]="messageHint()"
+                [error]="messageError()"
+                [required]="true"
+                inputId="contact-message"
+                metaId="contact-message-error"
+              >
+                <landing-textarea
+                  inputId="contact-message"
+                  formControlName="message"
+                  [rows]="6"
+                  [maxLength]="5000"
+                  [hasError]="!!messageError()"
+                  ariaDescribedBy="contact-message-error"
+                />
+              </landing-form-field>
+
+              <!-- Consent -->
+              <landing-form-field [error]="consentError()">
+                <landing-checkbox formControlName="consent" inputId="contact-consent" [hasError]="!!consentError()">
+                  {{ consentLabel() }}
+                  <landing-link href="/privacy" [inline]="true">
+                    @if (locale() === 'vi') {
+                      Chính sách bảo mật
+                    } @else {
+                      Privacy Policy
+                    }</landing-link
+                  >.
+                </landing-checkbox>
+              </landing-form-field>
+
+              <!-- Honeypot — hidden field for bot filtering -->
+              <div class="contact-form__honeypot" aria-hidden="true">
+                <label for="contact-website">Website</label>
+                <input id="contact-website" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+              </div>
+
+              <!-- Turnstile widget slot + retry affordance when the challenge fails or expires. -->
+              <div class="contact-form__turnstile-wrap">
+                <div class="contact-form__turnstile" data-turnstile-slot></div>
+                @if (turnstileStatus() === 'error' || turnstileStatus() === 'expired') {
+                  <div class="contact-form__turnstile-fallback" role="status">
+                    <span class="contact-form__turnstile-message">{{ turnstileMessage() }}</span>
+                    <button type="button" class="contact-form__turnstile-retry" (click)="refreshTurnstile()">
+                      {{ turnstileRetryLabel() }}
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <!-- Error banner -->
+              @if (state() === 'error' && errorMessage()) {
+                <div class="contact-form__banner contact-form__banner--error" role="alert">
+                  {{ errorMessage() }}
+                </div>
+              }
+
+              <!-- Submit -->
+              <div class="contact-form__actions">
+                <button
+                  type="submit"
+                  class="contact-form__submit"
+                  [disabled]="state() === 'submitting'"
+                  [attr.aria-busy]="state() === 'submitting' ? 'true' : null"
+                >
+                  {{ submitLabel() }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+
+        <!-- ═══ Channels column ═══ -->
+        <aside class="contact-page__channels-col" aria-labelledby="contact-channels-heading">
+          <h2 class="contact-channels__heading" id="contact-channels-heading">
+            @if (locale() === 'vi') {
+              Các kênh khác
+            } @else {
+              Other ways
+            }
+          </h2>
+          <ul class="contact-channels" role="list">
+            @for (channel of channels(); track channel.id) {
+              <li class="contact-channels__row">
+                <span class="contact-channels__label">{{ channel.label }}</span>
+                <a
+                  class="contact-channels__value"
+                  [attr.href]="channel.href"
+                  [attr.target]="channel.href.startsWith('http') ? '_blank' : null"
+                  [attr.rel]="channel.href.startsWith('http') ? 'noopener noreferrer' : null"
+                >
+                  {{ channel.value }}
+                </a>
+                @if (channel.id === 'email') {
+                  <button
+                    type="button"
+                    class="contact-channels__copy"
+                    (click)="copyChannel(channel.id, channel.value)"
+                    [attr.aria-label]="locale() === 'vi' ? 'Sao chép email' : 'Copy email'"
+                  >
+                    @if (copiedChannel() === channel.id) {
+                      @if (locale() === 'vi') {
+                        Đã chép
+                      } @else {
+                        Copied
+                      }
+                    } @else {
+                      @if (locale() === 'vi') {
+                        Sao chép
+                      } @else {
+                        Copy
+                      }
+                    }
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        </aside>
+      </div>
+    </landing-container>
+  </section>
+
+  <section class="contact-page__globe-section" aria-labelledby="contact-globe-caption">
+    <landing-container size="wide">
+      <div class="contact-page__globe">
+        <landing-globe [interactive]="true" [autoRotate]="true" />
+      </div>
+      <p class="contact-page__globe-caption" id="contact-globe-caption">
+        @if (locale() === 'vi') {
+          Mình ở TP.HCM, làm việc thoải mái với các đội ngũ trên khắp APAC và xa hơn. Kéo để xoay địa cầu.
+        } @else {
+          Based in Ho Chi Minh City, working comfortably with teams across APAC and beyond. Drag to spin the globe.
+        }
+      </p>
+    </landing-container>
+  </section>
+</main>

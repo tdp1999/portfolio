@@ -3,11 +3,12 @@
     <div class="colophon-page__head">
       <landing-breadcrumb [items]="breadcrumb" />
 
-      <landing-section-header size="md" [level]="1"> <em>Colophon</em>.</landing-section-header>
-
-      <p class="colophon-page__sub">
-        What this site is made of — the stack, the tools, and the people whose work shaped the direction.
-      </p>
+      <landing-page-hero align="center">
+        <em>Colophon</em>.
+        <p hero-lede>
+          What this site is made of — the stack, the tools, and the people whose work shaped the direction.
+        </p>
+      </landing-page-hero>
     </div>
 
     @for (section of sections; track section.id) {

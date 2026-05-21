@@ -1,38 +1,38 @@
 <section id="get-in-touch" class="home-get-in-touch" aria-labelledby="home-get-in-touch-heading">
   <landing-container size="wide">
-    <landing-eyebrow
-      [label]="['06', 'Get in Touch']"
-      [accentFirst]="true"
-      [trailingRule]="true"
-      class="home-get-in-touch__eyebrow"
-    />
+    <div class="home-get-in-touch__inner">
+      <landing-eyebrow
+        [label]="['06', 'Get in Touch']"
+        [accentFirst]="true"
+        [trailingRule]="true"
+        class="home-get-in-touch__eyebrow"
+      />
 
-    <div class="home-get-in-touch__grid">
-      <div class="home-get-in-touch__left">
-        <landing-heading [level]="2" id="home-get-in-touch-heading" [anchor]="false" class="home-get-in-touch__heading">
-          Let's talk.
-        </landing-heading>
+      <landing-heading [level]="2" id="home-get-in-touch-heading" [anchor]="false" class="home-get-in-touch__heading">
+        Let's talk.
+      </landing-heading>
 
-        @if (contactCopy()) {
-          <p class="home-get-in-touch__copy">{{ contactCopy() }}</p>
-        }
+      <p class="home-get-in-touch__copy">{{ copy() }}</p>
 
-        @if (mailto()) {
-          <div class="home-get-in-touch__ctas">
-            <landing-button variant="ghost" arrow="right" (buttonClick)="sendMail('Full-time role')">
-              Let's talk about a full-time role
-            </landing-button>
-            <landing-button variant="ghost" arrow="right" (buttonClick)="sendMail('Freelance project')">
-              Tell me about a freelance project
-            </landing-button>
-            <landing-button variant="link" arrow="right" (buttonClick)="sendMail()"> Or just say hi </landing-button>
-          </div>
+      <div class="home-get-in-touch__ctas">
+        @for (cta of ctas(); track cta.purpose) {
+          <landing-link
+            [href]="'/contact?purpose=' + cta.purpose"
+            [arrow]="true"
+            [class.home-get-in-touch__cta--quiet]="cta.quiet"
+            class="home-get-in-touch__cta"
+          >
+            {{ cta.label }}
+          </landing-link>
         }
       </div>
 
-      <div class="home-get-in-touch__right">
-        <landing-globe [interactive]="true" />
-      </div>
+      @if (mailtoHref()) {
+        <p class="home-get-in-touch__fallback">
+          {{ fallbackPrompt() }}
+          <landing-link [href]="mailtoHref()" [inline]="true">{{ email() }}</landing-link>
+        </p>
+      }
     </div>
   </landing-container>
 </section>

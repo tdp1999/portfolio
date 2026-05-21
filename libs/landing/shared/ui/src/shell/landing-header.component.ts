@@ -205,8 +205,7 @@ export class LandingHeaderComponent {
       {
         label: 'Contact',
         hint: 'reach me',
-        href: '/',
-        fragment: 'get-in-touch',
+        href: '/contact',
       },
       {
         label: 'Colophon',

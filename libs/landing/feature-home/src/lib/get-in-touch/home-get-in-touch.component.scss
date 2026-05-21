@@ -1,6 +1,6 @@
-/* Home — §7 Get in Touch. Mirrors /ddl/get-in-touch V2 spec:
-   eyebrow spans full container, then a 2-col grid (text | interactive globe)
-   with three split-intent CTAs. */
+/* Home — §07 Get in Touch · centered 1-col router (Variant G, locked 2026-05-19).
+   The globe + right column moved to /contact. Section is a closing-moment
+   centered stack: eyebrow → heading → copy → 3 deep-links → mailto fallback. */
 
 :host {
   display: block;
@@ -14,31 +14,25 @@
   @media (min-width: 960px) {
     padding: 96px 0 112px;
   }
+
+  @media (max-width: 768px) {
+    padding: 48px 0 64px;
+  }
+}
+
+.home-get-in-touch__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  //   max-width: 720px;
+  margin-inline: auto;
 }
 
 .home-get-in-touch__eyebrow {
   display: block;
+  width: 100%;
   margin-bottom: 32px;
-}
-
-.home-get-in-touch__grid {
-  display: grid;
-  gap: 64px 48px;
-  align-items: center;
-
-  @media (min-width: 960px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
-  }
-}
-
-.home-get-in-touch__left {
-  min-width: 0;
-}
-
-.home-get-in-touch__right {
-  min-width: 0;
-  display: flex;
-  justify-content: center;
 }
 
 .home-get-in-touch__heading {
@@ -66,12 +60,21 @@
 .home-get-in-touch__ctas {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
 }
 
-@media (max-width: 768px) {
-  .home-get-in-touch {
-    padding: 48px 0 64px;
-  }
+.home-get-in-touch__cta {
+  display: inline-flex;
+}
+
+.home-get-in-touch__cta--quiet {
+  opacity: 0.78;
+}
+
+.home-get-in-touch__fallback {
+  margin: 32px 0 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
 }

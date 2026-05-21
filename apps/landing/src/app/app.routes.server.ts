@@ -8,6 +8,7 @@ export const serverRoutes: ServerRoute[] = [
   // server can render the right language without a separate URL per locale.
   { path: 'privacy', renderMode: RenderMode.Server },
   { path: 'terms', renderMode: RenderMode.Server },
+  { path: 'contact', renderMode: RenderMode.Server },
   { path: '404', renderMode: RenderMode.Server, status: 404 },
   { path: 'ddl', renderMode: RenderMode.Prerender },
 

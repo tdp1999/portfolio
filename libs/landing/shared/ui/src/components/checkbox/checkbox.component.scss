@@ -1,0 +1,86 @@
+/* Variant B-flavored checkbox — sunken box at rest, accent fill on check. */
+
+.cbx {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+
+.cbx--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Native input lives on top of the visual box (transparent) so it stays the
+   click target and the focus owner. Sized to the 18×18 visual hit area, plus
+   the matching `margin-top` so it stacks with `.cbx__box`. Visible to AT and
+   automation tools (e.g. Playwright `.check()`) — only visually overlaid. */
+.cbx__native {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.cbx__native:disabled {
+  cursor: not-allowed;
+}
+
+.cbx__box {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+  color: var(--landing-ink-1, #0a0a0a);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.cbx__check {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.cbx__native:checked + .cbx__box {
+  background: var(--landing-accent);
+  border-color: var(--landing-accent);
+}
+
+.cbx__native:checked + .cbx__box .cbx__check {
+  opacity: 1;
+}
+
+.cbx__native:focus-visible + .cbx__box {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--landing-accent) 30%, transparent);
+}
+
+.cbx__box--error {
+  border-color: #f87171;
+}
+
+.cbx__label {
+  min-width: 0;
+}
