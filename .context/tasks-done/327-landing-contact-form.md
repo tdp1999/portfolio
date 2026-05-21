@@ -1,6 +1,12 @@
 # Task: Landing contact form with Resend, consent, and 18-month auto-delete
 
-## Status: pending
+## Status: superseded (archived 2026-05-19)
+
+> **Superseded by** [`epic-portfolio-contact.md`](../plans/epic-portfolio-contact.md).
+>
+> This task described an inline contact form on the home `#get-in-touch` section. The epic split that intent into a dedicated `/contact` page (form + channels + globe) and a 1-col centered router on home (Variant G). All acceptance criteria below were either satisfied by the epic or explicitly superseded (e.g. endpoint became `POST /api/contact-messages` not `POST /api/landing/contact`; module is `contact-message` not `contact`; retention/Turnstile/Resend wiring landed via `epic-contact-message` + this epic).
+>
+> Kept here as historical context — do not implement against this spec.
 
 ## Goal
 Replace (or augment) the existing `mailto:` CTAs in the landing Get-in-touch section with a real contact form that: validates input, requires explicit consent, blocks bots via Cloudflare Turnstile, persists submissions to a database, delivers email via Resend to `hello@thunderphong.com`, and automatically deletes submissions older than 18 months per the privacy policy.
