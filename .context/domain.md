@@ -39,6 +39,8 @@
 | TranslatableJson | A JSON object with locale keys (en, vi) for multilingual content display | Value Object |
 | Media | An uploaded asset (image, document, video) stored externally. Belongs to a named Folder for organization. Supports soft delete and metadata (alt text, caption). | Entity |
 | MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
+| Home (root page) | The landing app's entry route `/` — the only page that owns the full marketing hero (portrait, large display heading, hero CTAs, marquee sections). Composition rules differ from feature pages: home does NOT use the canonical sub-page header (breadcrumb + page-hero); it has its own hero composition. | UI Concept |
+| Feature page (subpage) | Any non-home landing route: `/about`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/uses`, `/contact`, `/colophon`, `/privacy`, `/terms`. All feature pages SHARE one canonical structure: `<article>` > `<header>` (breadcrumb + `landing-page-hero` + optional meta strip) > one-or-more `<section aria-labelledby>` body blocks > optional `<footer>` (CTA / last-updated). Variants are additive inside the header slot, never structural deviations. | UI Concept |
 
 ## Flows
 

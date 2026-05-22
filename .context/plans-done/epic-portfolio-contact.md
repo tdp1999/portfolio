@@ -1,7 +1,7 @@
 # Epic: Contact module — `/contact` hub + home retreat + BE hardening
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: in-progress (created 2026-05-19). FE page + BE Turnstile extension already landed in-session; remaining tasks listed below.
+> Status: completed (closed 2026-05-21). All launch-critical FE + BE + privacy work shipped. C19 (`/now` page) extracted to standalone task 328 — not part of this epic. C28c (orphan-const sweep) dropped by user; pattern guidance retained for new code.
 > Depends on: `epic-contact-message` (BE backbone, done), `epic-portfolio-e5-implementation` (landing platform).
 > Feeds: launch readiness — contact is the conversion endpoint for both hiring and freelance audiences.
 
@@ -161,15 +161,10 @@ Already declared in §3.3 of `.context/legal/published/privacy-policy.{en,vi}.md
 | ✅ C16 | Resend `replyTo` wired on admin notification | `SendEmailOptions.replyTo?` added; `ResendEmailService` forwards it to Resend's `replyTo` field when set; `submit-contact-message.command.ts` passes `replyTo: data.email` on the admin notification call so hitting "Reply" in the admin inbox lands a draft addressed to the submitter. Auto-reply stays without `replyTo` (recipient already is the submitter). 4 new specs lock the behavior — resend service spec asserts pass-through + omission, command spec asserts admin gets `replyTo` and auto-reply does not. 19/19 affected specs pass. |
 | ✅ DDL get-in-touch | Restored 2026-05-19 | Earlier rule had said "delete DDL section once a variant graduates" — reversed. DDL pages stay as a historical record of how the section reached its current shape. The restored page (V1/V2/V3 globe sandbox from the prior commit) carries a new `Historical sandbox` lede noting the decision evolved past it. **Memory updated**: `feedback_ddl_replace_old_sections.md` deleted; new rule `feedback_ddl_keep_after_graduate.md` added in its place. |
 
-### Pending — pick / decide / feedback
+### Closed out 2026-05-21
 
-The remaining work is sequenced and tagged by what blocks it. Use this section as the picklist.
-
-| ID | Item | Blocked by | Notes |
-|---|---|---|---|
-| 🟢 C19 | `/now` page (standalone, outside epic) | none | Markdown-driven Derek-Sivers-style. User confirmed monthly-update commitment 2026-05-19. Lowest priority — do after launch. |
-
-Tag legend: 🔴 unblocks deploy · 🟡 needs user decision/input · 🟢 ready to start · ⚪ deferred polish.
+- **C19** — extracted to standalone task `328-landing-now-page` (post-launch, not contact-coupled).
+- **C28c** — dropped per user. The F8 inventory in C28b stands as guidance for new code; no sweep scheduled.
 
 ## Review pass feedback — 2026-05-19
 
@@ -244,9 +239,9 @@ Captured from first review of the in-session work. Documented here for the next 
 
 | ID | Item | Blocked by | Notes |
 |---|---|---|---|
-| 🟡 C20 | F1 — Sync hero pattern across `/contact`, `/uses`, `/colophon` | needs investigation pass first | Extract canonical pattern, either as shared `landing-page-hero` component or as a documented composition. Component-bank entry once locked. |
-| 🟡 C27 | F7 — Redesign email templates (auto-reply + admin notification) | UI direction sign-off | Current `apps/api/src/modules/email-template/infrastructure/templates/contact-auto-reply.template.ts` + `admin-notification.template.ts` are bare HTML tables / inline sans-serif — looks like a 2008 transactional email. Need: branded header (logo + accent line), proper typography (font-stack Inter web-safe fallback), spacing rhythm, branded footer w/ unsubscribe-style legal line + privacy link, dark-mode-aware where supported. **Note**: VN locale missing for `admin-notification` (admin notification is always EN — that's intentional, don't add VN). Auto-reply needs both locales reviewed. **Approach (locked 2026-05-19)**: stage 2–3 variants per template on a new `/ddl/email-templates` DDL page — render the real email HTML inside inline-styled iframes so email-client constraints (tables, inline styles, font-stack fallback) are visible side-by-side. Even though email can never match the marketing-site polish, the user wants visual confirmation before commit (and a future reference for signatures / logging). UI gate: pick variants on DDL → ship the winner. |
-| ⚪ C28c | F8 — Execute the orphan-const sweep | C28b inventory above | Punch list lives in the C28b row. Highest-value targets: Bucket 1 (lift 5 env reads into `InjectionToken` / config service) and Bucket 3 (create `apps/api/src/shared/constants/durations.constants.ts` for the 2 duplicated duration consts + per-module `contact-message.config.ts` for rate-limit window). Bundle when there's bandwidth — none of this gates launch. |
+| ✅ C20 | F1 — Sync hero pattern across `/contact`, `/uses`, `/colophon` | done (shipped as `landing-page-hero` — see "Done in-session" table) |
+| ✅ C27 | F7 — Redesign email templates (auto-reply + admin notification) | done (V1 picked + shipped, see C27 row above) |
+| — C28c | F8 — Execute the orphan-const sweep | dropped 2026-05-21 per user. Inventory in C28b stands as guidance for new code only. |
 
 ## Open questions for the user
 

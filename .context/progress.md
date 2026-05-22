@@ -164,6 +164,15 @@
   - Doc updates: `openTo` enum value clarified to UPPERCASE; Media folder enum explicit (`avatars / projects / logos / general` — earlier `profile` / `experiences` were not in the enum)
   - Out-of-scope deferrals: real thumbnail screenshots (placeholder kept per Owner); resume PDF cleanup (legacy filename kept per Owner); `redoc-document-engine` legacy still on `/projects` index (un-featured only); Selected Work link-label cosmetics
   - Epic file moved to `plans-done/`
+- [x] **Contact Module** (epic-portfolio-contact) - Completed 2026-05-21
+  - Task 327 → archived in `tasks-done/epic-portfolio-contact/` (superseded by the epic itself); all other work tracked inline (C1–C35)
+  - FE: dedicated `/contact` hub (hero + 5-purpose chips form + channels + globe), home `#get-in-touch` retreat to 1-col router (variant G), `?purpose=` deep-link preselect, profile-driven channel list (Email, GH, LinkedIn, Telegram, Zalo VN-only), auto-rotating globe with caption
+  - BE hardening of `contact-message`: added `PRESS` enum, retention bumped 12 → 18 months, daily purge cron pinned to `Asia/Ho_Chi_Minh`, Cloudflare Turnstile server-verify, Resend `replyTo`, subject auto-derived, purpose humanized in emails, dev-send gate fixed, disposable-email + rate-limit + honeypot stack
+  - Schema: `SocialPlatform` enum extended with `TELEGRAM` + `ZALO`; new `Profile.phoneZalo` column (proper modelling, threaded end-to-end through VO/entity/repo/mapper/DTO/console/landing)
+  - Shared FE primitives shipped: `landing-page-hero` (sync'd `/contact`, `/uses`, `/colophon`), `landing-form` lib (input, textarea, checkbox, radio, radio-group, form-field — variant B "sunken card")
+  - Privacy policy §3.3 updated with `purpose` field; email templates V1 graduated (auto-reply EN+VI, admin notification EN-only); E2E `contact.spec.ts` covers chip preselect / default / valid submit / payload shape / validation gate
+  - C19 (`/now` page) extracted to standalone task 328; C28c (orphan-const sweep) dropped — F8 inventory retained as guidance for new code
+- [x] **327-landing-contact-form** (M) — superseded by epic-portfolio-contact and archived; original draft kept in `tasks-done/epic-portfolio-contact/327-landing-contact-form.md` for traceability
 
 ## In Progress
 
@@ -287,7 +296,33 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [ ] 323-landing-llms-txt (S)
 - [ ] 324-landing-pwa-manifest-and-icons (M)
 - [ ] 326-landing-analytics-umami-self-host (M)
-- [ ] 327-landing-contact-form (M)
+- [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2; blocks task 336**)
+
+## Pending — Portfolio About (broken down 2026-05-22)
+
+From: `epic-portfolio-about`. `/about` becomes single source of truth for work history + persona surfaces (hero, manifesto, depth-map, failures, currently-shipping). `/experience` route retired via 301 redirect.
+
+### Foundation
+- [ ] 329-about-feature-lib-and-route (S) — feature-about lib + /about route + /experience 301
+- [ ] 330-about-hero (S) — deps: 329
+- [ ] 331-about-sticky-tab-experience (M) — deps: 329 — Chiang v4 two-col + mobile accordion + component-bank doc
+- [ ] 332-about-how-i-think-manifesto (S) — deps: 329
+
+### DDL signature staging
+- [ ] 333-ddl-about-signatures-scaffold (S) — deps: 329
+- [ ] 334-ddl-depth-map-variants (M) — deps: 333
+- [ ] 335-ddl-failures-variants (M) — deps: 333
+- [ ] 336-ddl-currently-shipping-variants (M) — deps: 333, **task 328 v2 (/now content shape)**
+
+### Composition + polish
+- [ ] 337-about-graduate-signatures (S) — deps: 334, 335, 336
+- [ ] 338-about-cta-and-page-composition (S) — deps: 330, 331, 332, 337
+- [ ] 339-about-seo-meta-and-jsonld (S) — deps: 330, 338
+
+### Content + locale + verify
+- [ ] 340-about-content-authoring (M) — author task, parallel to build
+- [ ] 341-about-bilingual-vi-translation (S) — deps: 340
+- [ ] 342-about-e2e-test-pass (M) — deps: 338, 339; uses aqa-expert skill
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 
