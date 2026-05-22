@@ -1,45 +1,47 @@
-<main class="contact-page">
-  <section class="contact-page__hero">
-    <!-- <landing-breadcrumb [items]="breadcrumb" /> -->
-    <landing-container size="wide">
-      <landing-page-hero align="center">
-        @if (locale() === 'vi') {
-          Hãy nói <em>chuyện</em>.
-        } @else {
-          Let's <em>talk</em>.
-        }
-        <p hero-lede>{{ heroCopy() }}</p>
-      </landing-page-hero>
-    </landing-container>
-  </section>
+<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+  <span hero-heading>
+    <landing-t>
+      <ng-container en>Let's <em>talk</em>.</ng-container>
+      <ng-container vi>Hãy nói <em>chuyện</em>.</ng-container>
+    </landing-t>
+  </span>
+  <p hero-lede>{{ heroCopy() }}</p>
 
-  <section class="contact-page__main">
+  <!-- ═══ Form + channels grid ════════════════════════════════════════════ -->
+  <section class="contact-page__main" aria-labelledby="contact-form-h">
     <landing-container size="wide">
+      <h2 id="contact-form-h" class="sr-only">
+        <landing-t>
+          <ng-container en>Send a message</ng-container>
+          <ng-container vi>Gửi tin nhắn</ng-container>
+        </landing-t>
+      </h2>
       <div class="contact-page__grid">
         <!-- ═══ Form column ═══ -->
         <div class="contact-page__form-col">
           @if (state() === 'success') {
             <div class="contact-success" role="status" aria-live="polite">
-              <h2 class="contact-success__heading">
-                @if (locale() === 'vi') {
-                  Đã gửi — sẽ phản hồi sớm.
-                } @else {
-                  Sent — talk soon.
-                }
-              </h2>
+              <h3 class="contact-success__heading">
+                <landing-t>
+                  <ng-container en>Sent — talk soon.</ng-container>
+                  <ng-container vi>Đã gửi — sẽ phản hồi sớm.</ng-container>
+                </landing-t>
+              </h3>
               <p class="contact-success__copy">
-                @if (locale() === 'vi') {
-                  Mình sẽ phản hồi trong vài ngày. Kiểm tra hộp thư (và thư mục spam, để chắc chắn).
-                } @else {
-                  I'll reply within a few days. Check your inbox (and spam folder, just in case).
-                }
+                <landing-t>
+                  <ng-container en
+                    >I'll reply within a few days. Check your inbox (and spam folder, just in case).</ng-container
+                  >
+                  <ng-container vi
+                    >Mình sẽ phản hồi trong vài ngày. Kiểm tra hộp thư (và thư mục spam, để chắc chắn).</ng-container
+                  >
+                </landing-t>
               </p>
               <button type="button" class="contact-success__again" (click)="dismissSuccess()">
-                @if (locale() === 'vi') {
-                  Gửi tin nhắn khác
-                } @else {
-                  Send another message
-                }
+                <landing-t>
+                  <ng-container en>Send another message</ng-container>
+                  <ng-container vi>Gửi tin nhắn khác</ng-container>
+                </landing-t>
               </button>
             </div>
           } @else {
@@ -47,11 +49,10 @@
               <!-- Purpose chips -->
               <div class="contact-form__field contact-form__field--purpose">
                 <span class="contact-form__label" id="contact-purpose-label">
-                  @if (locale() === 'vi') {
-                    Lý do liên hệ
-                  } @else {
-                    What's this about?
-                  }
+                  <landing-t>
+                    <ng-container en>What's this about?</ng-container>
+                    <ng-container vi>Lý do liên hệ</ng-container>
+                  </landing-t>
                 </span>
                 <landing-segmented
                   [segments]="purposeSegments()"
@@ -59,13 +60,13 @@
                   (activeChange)="onPurposeChange($event)"
                   variant="hairline"
                   idPrefix="contact-purpose"
-                  [ariaLabel]="locale() === 'vi' ? 'Lý do liên hệ' : 'Reason for contact'"
+                  [ariaLabel]="purposeAriaLabel()"
                 />
               </div>
 
               <!-- Name -->
               <landing-form-field
-                [label]="locale() === 'vi' ? 'Tên' : 'Name'"
+                [label]="nameLabel()"
                 [error]="nameError()"
                 [required]="true"
                 inputId="contact-name"
@@ -103,7 +104,7 @@
 
               <!-- Message -->
               <landing-form-field
-                [label]="locale() === 'vi' ? 'Tin nhắn' : 'Message'"
+                [label]="messageLabel()"
                 [hint]="messageHint()"
                 [error]="messageError()"
                 [required]="true"
@@ -125,11 +126,10 @@
                 <landing-checkbox formControlName="consent" inputId="contact-consent" [hasError]="!!consentError()">
                   {{ consentLabel() }}
                   <landing-link href="/privacy" [inline]="true">
-                    @if (locale() === 'vi') {
-                      Chính sách bảo mật
-                    } @else {
-                      Privacy Policy
-                    }</landing-link
+                    <landing-t>
+                      <ng-container en>Privacy Policy</ng-container>
+                      <ng-container vi>Chính sách bảo mật</ng-container>
+                    </landing-t></landing-link
                   >.
                 </landing-checkbox>
               </landing-form-field>
@@ -177,13 +177,12 @@
 
         <!-- ═══ Channels column ═══ -->
         <aside class="contact-page__channels-col" aria-labelledby="contact-channels-heading">
-          <h2 class="contact-channels__heading" id="contact-channels-heading">
-            @if (locale() === 'vi') {
-              Các kênh khác
-            } @else {
-              Other ways
-            }
-          </h2>
+          <h3 class="contact-channels__heading" id="contact-channels-heading">
+            <landing-t>
+              <ng-container en>Other ways</ng-container>
+              <ng-container vi>Các kênh khác</ng-container>
+            </landing-t>
+          </h3>
           <ul class="contact-channels" role="list">
             @for (channel of channels(); track channel.id) {
               <li class="contact-channels__row">
@@ -201,20 +200,18 @@
                     type="button"
                     class="contact-channels__copy"
                     (click)="copyChannel(channel.id, channel.value)"
-                    [attr.aria-label]="locale() === 'vi' ? 'Sao chép email' : 'Copy email'"
+                    [attr.aria-label]="copyAriaLabel()"
                   >
                     @if (copiedChannel() === channel.id) {
-                      @if (locale() === 'vi') {
-                        Đã chép
-                      } @else {
-                        Copied
-                      }
+                      <landing-t>
+                        <ng-container en>Copied</ng-container>
+                        <ng-container vi>Đã chép</ng-container>
+                      </landing-t>
                     } @else {
-                      @if (locale() === 'vi') {
-                        Sao chép
-                      } @else {
-                        Copy
-                      }
+                      <landing-t>
+                        <ng-container en>Copy</ng-container>
+                        <ng-container vi>Sao chép</ng-container>
+                      </landing-t>
                     }
                   </button>
                 }
@@ -226,18 +223,24 @@
     </landing-container>
   </section>
 
+  <!-- ═══ Globe section ════════════════════════════════════════════════════ -->
   <section class="contact-page__globe-section" aria-labelledby="contact-globe-caption">
     <landing-container size="wide">
       <div class="contact-page__globe">
         <landing-globe [interactive]="true" [autoRotate]="true" />
       </div>
       <p class="contact-page__globe-caption" id="contact-globe-caption">
-        @if (locale() === 'vi') {
-          Mình ở TP.HCM, làm việc thoải mái với các đội ngũ trên khắp APAC và xa hơn. Kéo để xoay địa cầu.
-        } @else {
-          Based in Ho Chi Minh City, working comfortably with teams across APAC and beyond. Drag to spin the globe.
-        }
+        <landing-t>
+          <ng-container en
+            >Based in Ho Chi Minh City, working comfortably with teams across APAC and beyond. Drag to spin the
+            globe.</ng-container
+          >
+          <ng-container vi
+            >Mình ở TP.HCM, làm việc thoải mái với các đội ngũ trên khắp APAC và xa hơn. Kéo để xoay địa
+            cầu.</ng-container
+          >
+        </landing-t>
       </p>
     </landing-container>
   </section>
-</main>
+</landing-page-shell>

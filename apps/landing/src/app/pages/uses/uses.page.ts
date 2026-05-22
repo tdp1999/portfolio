@@ -2,10 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import {
   ContainerComponent,
-  LandingBreadcrumbComponent,
   LandingContentSectionComponent,
-  LandingPageHeroComponent,
-  SectionComponent,
+  LandingPageShellComponent,
   type BreadcrumbItem,
   type ContentSection,
 } from '@portfolio/landing/shared/ui';
@@ -151,13 +149,7 @@ const USES_SECTIONS: readonly ContentSection[] = [
   selector: 'landing-uses-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ContainerComponent,
-    SectionComponent,
-    LandingBreadcrumbComponent,
-    LandingPageHeroComponent,
-    LandingContentSectionComponent,
-  ],
+  imports: [ContainerComponent, LandingPageShellComponent, LandingContentSectionComponent],
   templateUrl: './uses.page.html',
   styleUrls: ['./uses.page.scss'],
 })

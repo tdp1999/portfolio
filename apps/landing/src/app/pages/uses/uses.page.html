@@ -1,18 +1,17 @@
-<landing-section>
-  <landing-container>
-    <div class="uses-page__head">
-      <landing-breadcrumb [items]="breadcrumb" />
+<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+  <span hero-heading><em>Uses</em>.</span>
+  <p hero-lede>What I reach for daily — the specific kit, not generic categories.</p>
+  <p meta-strip>
+    Last updated <time [attr.datetime]="lastUpdated">{{ lastUpdated }}</time
+    >.
+  </p>
 
-      <landing-page-hero [eyebrowLabel]="['01', 'Uses']" align="center">
-        <em>Uses</em>.
-        <p hero-lede>What I reach for daily — the specific kit, not generic categories.</p>
-      </landing-page-hero>
-    </div>
-
-    @for (section of sections; track section.id) {
-      <landing-content-section [section]="section" class="mb-12" />
-    }
-
-    <p class="uses-page__updated">Last updated {{ lastUpdated }}.</p>
-  </landing-container>
-</landing-section>
+  <section aria-labelledby="uses-inventory-h">
+    <landing-container>
+      <h2 id="uses-inventory-h" class="sr-only">Uses inventory</h2>
+      @for (section of sections; track section.id) {
+        <landing-content-section [section]="section" class="mb-12" />
+      }
+    </landing-container>
+  </section>
+</landing-page-shell>

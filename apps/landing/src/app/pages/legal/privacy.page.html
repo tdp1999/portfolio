@@ -1,23 +1,23 @@
-<landing-section>
-  <landing-container size="content">
-    <header class="legal-page__head">
-      <landing-breadcrumb [items]="locale() === 'vi' ? breadcrumbVi : breadcrumbEn" />
-      <p class="legal-page__meta">
-        {{ locale() === 'vi' ? lastUpdatedVi : lastUpdatedEn }}
-      </p>
-      <landing-section-header size="md" [level]="1">
-        @if (locale() === 'vi') {
-          Chính sách Bảo mật.
-        } @else {
-          Privacy Policy.
-        }
-      </landing-section-header>
-    </header>
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>
+    <landing-t [locale]="locale()">
+      <ng-container en>Privacy Policy.</ng-container>
+      <ng-container vi>Chính sách Bảo mật.</ng-container>
+    </landing-t>
+  </span>
+  <p meta-strip>
+    <landing-t [locale]="locale()">
+      <ng-container en>Last updated <time datetime="2026-05-18">18 May 2026</time>.</ng-container>
+      <ng-container vi>Cập nhật lần cuối <time datetime="2026-05-18">18/05/2026</time>.</ng-container>
+    </landing-t>
+  </p>
 
-    <article class="legal-reading" [attr.lang]="locale()">
-      <div class="landing-prose">
-        @switch (locale()) {
-          @case ('vi') {
+  <section class="legal-page__body" aria-labelledby="legal-content-h">
+    <landing-container size="content">
+      <h2 id="legal-content-h" class="sr-only">Privacy Policy</h2>
+      <article class="legal-reading" [attr.lang]="locale()">
+        <landing-t [locale]="locale()">
+          <div vi class="landing-prose">
             <p>
               Chính sách này giải thích cách Trần Đức Phương ("tôi") thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá
               nhân khi bạn truy cập
@@ -292,9 +292,9 @@
               Xem thêm
               <landing-link href="/terms?lang=vi" [arrow]="true" [inline]="true">Điều khoản Sử dụng</landing-link>.
             </p>
-          }
+          </div>
 
-          @case ('en') {
+          <div en class="landing-prose">
             <p>
               This Privacy Policy explains how Phuong Tran ("I", "me", "my") collects, uses, stores, and protects
               personal data when you visit
@@ -565,9 +565,9 @@
               </li>
             </ul>
             <p>See also the <landing-link href="/terms" [arrow]="true" [inline]="true">Terms of Use</landing-link>.</p>
-          }
-        }
-      </div>
-    </article>
-  </landing-container>
-</landing-section>
+          </div>
+        </landing-t>
+      </article>
+    </landing-container>
+  </section>
+</landing-page-shell>

@@ -5,10 +5,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import {
   ContainerComponent,
-  LandingBreadcrumbComponent,
   LandingLinkComponent,
-  LandingSectionHeaderComponent,
-  SectionComponent,
+  LandingPageShellComponent,
   StatusDotComponent,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
@@ -22,14 +20,7 @@ interface ComingSoonRouteData {
   selector: 'landing-coming-soon-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ContainerComponent,
-    SectionComponent,
-    LandingBreadcrumbComponent,
-    LandingSectionHeaderComponent,
-    LandingLinkComponent,
-    StatusDotComponent,
-  ],
+  imports: [ContainerComponent, LandingPageShellComponent, LandingLinkComponent, StatusDotComponent],
   templateUrl: './coming-soon.page.html',
   styleUrls: ['./coming-soon.page.scss'],
 })

@@ -20,6 +20,8 @@ export * from './components/segmented';
 export * from './components/heading';
 export * from './components/section-header';
 export * from './components/page-hero';
+export * from './components/page-shell';
+export * from './components/t';
 export * from './components/emphasis-text';
 export * from './components/in-page-nav';
 export * from './components/mega-menu';

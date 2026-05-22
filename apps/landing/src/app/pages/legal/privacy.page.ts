@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import {
-  ContainerComponent,
-  LandingBreadcrumbComponent,
   LandingLinkComponent,
-  LandingSectionHeaderComponent,
-  SectionComponent,
+  LandingPageShellComponent,
+  LandingTComponent,
+  ContainerComponent,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 import { useLegalPage } from './use-legal-page';
@@ -13,13 +12,7 @@ import { useLegalPage } from './use-legal-page';
   selector: 'landing-privacy-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ContainerComponent,
-    SectionComponent,
-    LandingBreadcrumbComponent,
-    LandingLinkComponent,
-    LandingSectionHeaderComponent,
-  ],
+  imports: [ContainerComponent, LandingLinkComponent, LandingPageShellComponent, LandingTComponent],
   templateUrl: './privacy.page.html',
   styleUrls: ['./privacy.page.scss'],
 })
@@ -38,12 +31,8 @@ export class PrivacyPage {
 
   protected readonly locale = this.state.locale;
 
-  protected readonly breadcrumbEn: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Privacy' }];
-  protected readonly breadcrumbVi: readonly BreadcrumbItem[] = [
-    { label: 'Trang chủ', href: '/' },
-    { label: 'Bảo mật' },
-  ];
+  private readonly breadcrumbEn: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Privacy' }];
+  private readonly breadcrumbVi: readonly BreadcrumbItem[] = [{ label: 'Trang chủ', href: '/' }, { label: 'Bảo mật' }];
 
-  protected readonly lastUpdatedEn = 'Last updated 2026-05-18';
-  protected readonly lastUpdatedVi = 'Cập nhật lần cuối 18/05/2026';
+  protected readonly breadcrumb = computed(() => (this.locale() === 'vi' ? this.breadcrumbVi : this.breadcrumbEn));
 }

@@ -2,27 +2,25 @@
   display: block;
 }
 
-.coming-soon-page {
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.coming-soon-page__body {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 24px;
-  padding-block: 40px;
-}
-
-.coming-soon-page__status {
-  margin-top: 8px;
-}
-
-.coming-soon-page__sub {
-  margin: 0;
-  font-family: var(--landing-font-display);
-  font-style: italic;
-  font-size: var(--landing-body-xl);
-  line-height: var(--landing-body-xl-lh);
-  color: var(--landing-text-500);
-  max-width: 56ch;
+  padding-block: 24px 80px;
 }
 
 .coming-soon-page__cursor {
@@ -56,7 +54,6 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-top: 16px;
 }
 
 @media (min-width: 640px) {

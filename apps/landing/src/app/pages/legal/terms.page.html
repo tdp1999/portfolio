@@ -1,23 +1,23 @@
-<landing-section>
-  <landing-container size="content">
-    <header class="legal-page__head">
-      <landing-breadcrumb [items]="locale() === 'vi' ? breadcrumbVi : breadcrumbEn" />
-      <p class="legal-page__meta">
-        {{ locale() === 'vi' ? lastUpdatedVi : lastUpdatedEn }}
-      </p>
-      <landing-section-header size="md" [level]="1">
-        @if (locale() === 'vi') {
-          Điều khoản Sử dụng.
-        } @else {
-          Terms of Use.
-        }
-      </landing-section-header>
-    </header>
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>
+    <landing-t [locale]="locale()">
+      <ng-container en>Terms of Use.</ng-container>
+      <ng-container vi>Điều khoản Sử dụng.</ng-container>
+    </landing-t>
+  </span>
+  <p meta-strip>
+    <landing-t [locale]="locale()">
+      <ng-container en>Last updated <time datetime="2026-05-18">18 May 2026</time>.</ng-container>
+      <ng-container vi>Cập nhật lần cuối <time datetime="2026-05-18">18/05/2026</time>.</ng-container>
+    </landing-t>
+  </p>
 
-    <article class="legal-reading" [attr.lang]="locale()">
-      <div class="landing-prose">
-        @switch (locale()) {
-          @case ('vi') {
+  <section class="legal-page__body" aria-labelledby="legal-content-h">
+    <landing-container size="content">
+      <h2 id="legal-content-h" class="sr-only">Terms of Use</h2>
+      <article class="legal-reading" [attr.lang]="locale()">
+        <landing-t [locale]="locale()">
+          <div vi class="landing-prose">
             <p>
               Điều khoản Sử dụng này ("Điều khoản") chi phối việc bạn truy cập và sử dụng
               <landing-link href="https://thunderphong.com" [arrow]="true" [inline]="true"
@@ -197,9 +197,9 @@
               Xem thêm
               <landing-link href="/privacy?lang=vi" [arrow]="true" [inline]="true">Chính sách Bảo mật</landing-link>.
             </p>
-          }
+          </div>
 
-          @case ('en') {
+          <div en class="landing-prose">
             <p>
               These Terms of Use ("Terms") govern your access to and use of
               <landing-link href="https://thunderphong.com" [arrow]="true" [inline]="true"
@@ -372,9 +372,9 @@
             <p>
               See also the <landing-link href="/privacy" [arrow]="true" [inline]="true">Privacy Policy</landing-link>.
             </p>
-          }
-        }
-      </div>
-    </article>
-  </landing-container>
-</landing-section>
+          </div>
+        </landing-t>
+      </article>
+    </landing-container>
+  </section>
+</landing-page-shell>

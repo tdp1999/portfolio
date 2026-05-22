@@ -1,17 +1,11 @@
-.uses-page__head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 40px;
-}
-
-.uses-page__updated {
-  margin: 48px 0 0 0;
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-sm);
-  line-height: var(--landing-mono-sm-lh);
-  color: var(--landing-text-600);
-  text-align: center;
-  letter-spacing: 0.02em;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

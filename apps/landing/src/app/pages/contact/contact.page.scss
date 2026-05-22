@@ -2,22 +2,24 @@
   display: block;
 }
 
-/* ═══ Hero ═══════════════════════════════════════════════════════════════ */
-.contact-page__hero {
-  padding-block: 64px 32px;
-  border-bottom: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
-
-  @media (min-width: 960px) {
-    padding-block: 96px 48px;
-  }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* ═══ Main grid ══════════════════════════════════════════════════════════ */
+/* ═══ Main grid (form + channels) ════════════════════════════════════════ */
 .contact-page__main {
-  padding-block: 48px 64px;
+  padding-block: 32px 64px;
 
   @media (min-width: 960px) {
-    padding-block: 64px 96px;
+    padding-block: 48px 96px;
   }
 }
 .contact-page__grid {
@@ -302,9 +304,6 @@
 
 /* ═══ Mobile tweaks ══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .contact-page__hero {
-    padding-block: 48px 24px;
-  }
   .contact-channels__row {
     grid-template-columns: 72px 1fr auto;
     gap: 8px;

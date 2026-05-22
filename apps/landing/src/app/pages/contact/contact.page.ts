@@ -31,9 +31,11 @@ import {
   LandingGlobeComponent,
   LandingLinkComponent,
   LandingLocaleService,
-  LandingPageHeroComponent,
+  LandingPageShellComponent,
+  LandingTComponent,
   SegmentedComponent,
   TextareaComponent,
+  type BreadcrumbItem,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
 import type { SocialPlatform } from '@portfolio/shared/types';
@@ -96,7 +98,8 @@ declare global {
     ContainerComponent,
     LandingGlobeComponent,
     LandingLinkComponent,
-    LandingPageHeroComponent,
+    LandingPageShellComponent,
+    LandingTComponent,
     SegmentedComponent,
     InputComponent,
     TextareaComponent,
@@ -191,6 +194,18 @@ export class ContactPage {
   protected readonly messageHint = computed(() =>
     this.locale() === 'vi' ? 'Tối thiểu 10 ký tự, tối đa 5000.' : '10–5000 characters.'
   );
+
+  /**
+   * Attribute-bound strings — `<landing-t>` is for content projection; attributes
+   * (label, aria-label) can't host a component, so a TS computed is the lightest
+   * pattern. Pulled together so future translation extraction has one home.
+   */
+  protected readonly purposeAriaLabel = computed(() =>
+    this.locale() === 'vi' ? 'Lý do liên hệ' : 'Reason for contact'
+  );
+  protected readonly nameLabel = computed(() => (this.locale() === 'vi' ? 'Tên' : 'Name'));
+  protected readonly messageLabel = computed(() => (this.locale() === 'vi' ? 'Tin nhắn' : 'Message'));
+  protected readonly copyAriaLabel = computed(() => (this.locale() === 'vi' ? 'Sao chép email' : 'Copy email'));
 
   protected readonly purposeSegments = computed<readonly SegmentOption[]>(() => {
     const isVi = this.locale() === 'vi';
@@ -289,6 +304,8 @@ export class ContactPage {
   });
 
   protected readonly copiedChannel = signal<string | null>(null);
+
+  protected readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Contact' }];
 
   constructor() {
     this.title.setTitle('Get in touch — Phuong Tran');

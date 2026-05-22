@@ -2,10 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import {
   ContainerComponent,
-  LandingBreadcrumbComponent,
   LandingLinkComponent,
-  LandingSectionHeaderComponent,
-  SectionComponent,
+  LandingPageShellComponent,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 
@@ -13,13 +11,7 @@ import {
   selector: 'landing-not-found-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ContainerComponent,
-    SectionComponent,
-    LandingBreadcrumbComponent,
-    LandingSectionHeaderComponent,
-    LandingLinkComponent,
-  ],
+  imports: [ContainerComponent, LandingPageShellComponent, LandingLinkComponent],
   templateUrl: './not-found.page.html',
   styleUrls: ['./not-found.page.scss'],
 })

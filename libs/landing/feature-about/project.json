@@ -1,0 +1,21 @@
+{
+  "name": "landing-feature-about",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/landing/feature-about/src",
+  "prefix": "landing",
+  "projectType": "library",
+  "tags": ["scope:landing", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/landing/feature-about/jest.config.cts",
+        "tsConfig": "libs/landing/feature-about/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

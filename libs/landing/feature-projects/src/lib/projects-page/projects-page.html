@@ -1,256 +1,253 @@
-<landing-section>
-  <landing-container>
-    <div class="projects-page__head">
-      <landing-breadcrumb [items]="breadcrumb" />
+<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+  <span hero-heading>The <em>archive</em>.</span>
+  <p hero-lede>Everything I have shipped — newest first. The home page shows three; this is the rest.</p>
 
-      <landing-section-header size="md" [level]="1"> The <em>archive</em>. </landing-section-header>
-      <p class="projects-page__sub">
-        Everything I have shipped — newest first. The home page shows three; this is the rest.
-      </p>
-    </div>
+  <section class="projects-page__body" aria-labelledby="projects-list-h">
+    <landing-container>
+      <h2 id="projects-list-h" class="sr-only">Projects list</h2>
+      <!-- Toolbar: count (left) · clear · view-toggle · filters (right) -->
+      <div class="projects-toolbar">
+        <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="project" />
 
-    <!-- Toolbar: count (left) · clear · view-toggle · filters (right) -->
-    <div class="projects-toolbar">
-      <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="project" />
-
-      @if (activeFilterCount() > 0) {
-        <button type="button" class="projects-toolbar__clear" (click)="clearAll()">Clear all</button>
-      }
-
-      <landing-view-toggle
-        class="projects-toolbar__view"
-        [options]="viewOptions"
-        [value]="viewMode()"
-        (valueChange)="setView($event)"
-      />
-
-      <button
-        type="button"
-        class="projects-toolbar__toggle"
-        [class.projects-toolbar__toggle--open]="filtersOpen()"
-        [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
-        (click)="toggleFilters()"
-      >
-        <landing-icon name="filter" [size]="14" />
-        <span>Filters</span>
         @if (activeFilterCount() > 0) {
-          <span class="projects-toolbar__count">{{ activeFilterCount() }}</span>
-        }
-        <landing-icon [name]="filtersOpen() ? 'chevron-up' : 'chevron-down'" [size]="14" />
-      </button>
-    </div>
-
-    <!-- Filter panel — collapsed by default, expands on toggle -->
-    @if (filtersOpen()) {
-      <div class="projects-filter-bar">
-        @if (years().length > 0) {
-          <div class="projects-filter-group">
-            <span class="projects-filter-group__label">Year</span>
-            <div class="projects-filter-group__chips">
-              @for (year of years(); track year) {
-                <landing-filter-chip
-                  [label]="year.toString()"
-                  [selected]="selectedYears().has(year)"
-                  (selectionChange)="toggleYear(year, $event)"
-                />
-              }
-            </div>
-          </div>
+          <button type="button" class="projects-toolbar__clear" (click)="clearAll()">Clear all</button>
         }
 
-        <div class="projects-filter-group">
-          <span class="projects-filter-group__label">Status</span>
-          <div class="projects-filter-group__chips">
-            @for (status of statuses; track status) {
-              <landing-filter-chip
-                [label]="status"
-                [selected]="selectedStatuses().has(status)"
-                (selectionChange)="toggleStatus(status, $event)"
-              />
-            }
-          </div>
-        </div>
+        <landing-view-toggle
+          class="projects-toolbar__view"
+          [options]="viewOptions"
+          [value]="viewMode()"
+          (valueChange)="setView($event)"
+        />
 
-        @for (group of skillGroups(); track group.category) {
-          <div class="projects-filter-group">
-            <span class="projects-filter-group__label">{{ group.category }}</span>
-            <div class="projects-filter-group__chips">
-              @for (skill of group.skills; track skill.skill.slug) {
-                <landing-filter-chip
-                  [label]="skill.skill.name"
-                  [count]="skill.count"
-                  [selected]="selectedSkills().has(skill.skill.slug)"
-                  (selectionChange)="toggleSkill(skill.skill.slug, $event)"
-                />
-              }
-            </div>
-          </div>
-        }
+        <button
+          type="button"
+          class="projects-toolbar__toggle"
+          [class.projects-toolbar__toggle--open]="filtersOpen()"
+          [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
+          (click)="toggleFilters()"
+        >
+          <landing-icon name="filter" [size]="14" />
+          <span>Filters</span>
+          @if (activeFilterCount() > 0) {
+            <span class="projects-toolbar__count">{{ activeFilterCount() }}</span>
+          }
+          <landing-icon [name]="filtersOpen() ? 'chevron-up' : 'chevron-down'" [size]="14" />
+        </button>
       </div>
-    }
 
-    <!-- Loading / empty / list -->
-    @if (showSpinner()) {
-      <landing-loading-spinner message="Loading projects…" />
-    } @else if (rows().length === 0) {
-      @if (activeFilterCount() > 0) {
-        <div class="projects-empty">
-          <landing-empty-state icon="folder-open" message="No projects match these filters" />
-          <button type="button" class="projects-empty__clear" (click)="clearAll()">Clear all filters</button>
+      <!-- Filter panel — collapsed by default, expands on toggle -->
+      @if (filtersOpen()) {
+        <div class="projects-filter-bar">
+          @if (years().length > 0) {
+            <div class="projects-filter-group">
+              <span class="projects-filter-group__label">Year</span>
+              <div class="projects-filter-group__chips">
+                @for (year of years(); track year) {
+                  <landing-filter-chip
+                    [label]="year.toString()"
+                    [selected]="selectedYears().has(year)"
+                    (selectionChange)="toggleYear(year, $event)"
+                  />
+                }
+              </div>
+            </div>
+          }
+
+          <div class="projects-filter-group">
+            <span class="projects-filter-group__label">Status</span>
+            <div class="projects-filter-group__chips">
+              @for (status of statuses; track status) {
+                <landing-filter-chip
+                  [label]="status"
+                  [selected]="selectedStatuses().has(status)"
+                  (selectionChange)="toggleStatus(status, $event)"
+                />
+              }
+            </div>
+          </div>
+
+          @for (group of skillGroups(); track group.category) {
+            <div class="projects-filter-group">
+              <span class="projects-filter-group__label">{{ group.category }}</span>
+              <div class="projects-filter-group__chips">
+                @for (skill of group.skills; track skill.skill.slug) {
+                  <landing-filter-chip
+                    [label]="skill.skill.name"
+                    [count]="skill.count"
+                    [selected]="selectedSkills().has(skill.skill.slug)"
+                    (selectionChange)="toggleSkill(skill.skill.slug, $event)"
+                  />
+                }
+              </div>
+            </div>
+          }
         </div>
-      } @else {
-        <landing-empty-state icon="folder-open" message="No projects published yet" />
       }
-    } @else {
-      @switch (viewMode()) {
-        <!-- ═══ Row view (C3 default) ═══════════════════════════ -->
-        @case ('row') {
-          <ul class="projects-list" role="list">
-            @for (project of rows(); track project.slug) {
-              <li class="projects-row">
-                <a [routerLink]="['/projects', project.slug]" class="projects-row__link">
-                  <span class="projects-row__year">{{ project.year }}</span>
 
-                  <div class="projects-row__thumb">
-                    @if (project.thumbnailUrl) {
-                      @let rowSet = project.thumbnailUrl | cloudinarySrcset: 160;
-                      <img
-                        [src]="rowSet.src"
-                        [attr.srcset]="rowSet.srcset || null"
-                        [alt]="project.title"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    } @else {
-                      <span class="projects-row__thumb-empty" aria-hidden="true">—</span>
-                    }
-                  </div>
-
-                  <div class="projects-row__body">
-                    <span class="projects-row__title">{{ project.title }}</span>
-                    @if (project.oneLiner | translatable: locale() : ''; as line) {
-                      <span class="projects-row__sum">{{ line }}</span>
-                    }
-                    @if (project.skills.length > 0) {
-                      <div class="projects-row__chips">
-                        @for (skill of project.skills.slice(0, 3); track skill.slug) {
-                          <landing-chip [label]="skill.name" size="sm" />
-                        }
-                      </div>
-                    }
-                  </div>
-
-                  <span class="projects-row__arrow-stack" aria-hidden="true">
-                    <landing-icon-arrow
-                      direction="right"
-                      [size]="14"
-                      class="projects-row__arrow projects-row__arrow--ghost"
-                    />
-                    <landing-icon-arrow
-                      direction="right"
-                      [size]="14"
-                      class="projects-row__arrow projects-row__arrow--lead"
-                    />
-                  </span>
-                </a>
-              </li>
-            }
-          </ul>
+      <!-- Loading / empty / list -->
+      @if (showSpinner()) {
+        <landing-loading-spinner message="Loading projects…" />
+      } @else if (rows().length === 0) {
+        @if (activeFilterCount() > 0) {
+          <div class="projects-empty">
+            <landing-empty-state icon="folder-open" message="No projects match these filters" />
+            <button type="button" class="projects-empty__clear" (click)="clearAll()">Clear all filters</button>
+          </div>
+        } @else {
+          <landing-empty-state icon="folder-open" message="No projects published yet" />
         }
+      } @else {
+        @switch (viewMode()) {
+          <!-- ═══ Row view (C3 default) ═══════════════════════════ -->
+          @case ('row') {
+            <ul class="projects-list" role="list">
+              @for (project of rows(); track project.slug) {
+                <li class="projects-row">
+                  <a [routerLink]="['/projects', project.slug]" class="projects-row__link">
+                    <span class="projects-row__year">{{ project.year }}</span>
 
-        <!-- ═══ Grid view (cover-dominant cards) ════════════════ -->
-        @case ('grid') {
-          <ul class="projects-grid" role="list">
-            @for (project of rows(); track project.slug) {
-              <li class="projects-card">
-                <a [routerLink]="['/projects', project.slug]" class="projects-card__link">
-                  <div class="projects-card__media">
-                    @if (project.thumbnailUrl) {
-                      @let cardSet = project.thumbnailUrl | cloudinarySrcset: 480;
-                      <img
-                        [src]="cardSet.src"
-                        [attr.srcset]="cardSet.srcset || null"
-                        [alt]="project.title"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    } @else {
-                      <span class="projects-card__media-empty" aria-hidden="true">{{ project.title }}</span>
-                    }
-                  </div>
-
-                  <div class="projects-card__body">
-                    <div class="projects-card__head">
-                      <span class="projects-card__year">{{ project.year }}</span>
-                      <span class="projects-card__title">{{ project.title }}</span>
+                    <div class="projects-row__thumb">
+                      @if (project.thumbnailUrl) {
+                        @let rowSet = project.thumbnailUrl | cloudinarySrcset: 160;
+                        <img
+                          [src]="rowSet.src"
+                          [attr.srcset]="rowSet.srcset || null"
+                          [alt]="project.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      } @else {
+                        <span class="projects-row__thumb-empty" aria-hidden="true">—</span>
+                      }
                     </div>
-                    @if (project.oneLiner | translatable: locale() : ''; as line) {
-                      <p class="projects-card__sum">{{ line }}</p>
-                    }
-                    @if (project.skills.length > 0) {
-                      <div class="projects-card__chips">
-                        @for (skill of project.skills.slice(0, 3); track skill.slug) {
-                          <landing-chip [label]="skill.name" size="sm" />
-                        }
-                      </div>
-                    }
-                  </div>
-                </a>
-              </li>
-            }
-          </ul>
-        }
 
-        <!-- ═══ Timeline view (year-grouped vertical) ═══════════ -->
-        @case ('timeline') {
-          <div class="projects-timeline">
-            @for (group of groupedByYear(); track group.year) {
-              <div class="projects-timeline__group">
-                <div class="projects-timeline__year-row">
-                  <span class="projects-timeline__dot" aria-hidden="true"></span>
-                  <span class="projects-timeline__year">{{ group.year }}</span>
-                  <span class="projects-timeline__rule" aria-hidden="true"></span>
-                </div>
-
-                <ul class="projects-timeline__items" role="list">
-                  @for (project of group.items; track project.slug) {
-                    <li class="projects-timeline__entry">
-                      <span class="projects-timeline__connector" aria-hidden="true"></span>
-                      <a [routerLink]="['/projects', project.slug]" class="projects-timeline__link">
-                        <div class="projects-timeline__body">
-                          <span class="projects-timeline__title">{{ project.title }}</span>
-                          @if (project.oneLiner | translatable: locale() : ''; as line) {
-                            <span class="projects-timeline__sum">{{ line }}</span>
-                          }
-                          @if (project.skills.length > 0) {
-                            <div class="projects-timeline__chips">
-                              @for (skill of project.skills.slice(0, 3); track skill.slug) {
-                                <landing-chip [label]="skill.name" size="sm" />
-                              }
-                            </div>
+                    <div class="projects-row__body">
+                      <span class="projects-row__title">{{ project.title }}</span>
+                      @if (project.oneLiner | translatable: locale() : ''; as line) {
+                        <span class="projects-row__sum">{{ line }}</span>
+                      }
+                      @if (project.skills.length > 0) {
+                        <div class="projects-row__chips">
+                          @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                            <landing-chip [label]="skill.name" size="sm" />
                           }
                         </div>
-                        <span class="projects-timeline__arrow-stack" aria-hidden="true">
-                          <landing-icon-arrow
-                            direction="right"
-                            [size]="14"
-                            class="projects-timeline__arrow projects-timeline__arrow--ghost"
-                          />
-                          <landing-icon-arrow
-                            direction="right"
-                            [size]="14"
-                            class="projects-timeline__arrow projects-timeline__arrow--lead"
-                          />
-                        </span>
-                      </a>
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-          </div>
+                      }
+                    </div>
+
+                    <span class="projects-row__arrow-stack" aria-hidden="true">
+                      <landing-icon-arrow
+                        direction="right"
+                        [size]="14"
+                        class="projects-row__arrow projects-row__arrow--ghost"
+                      />
+                      <landing-icon-arrow
+                        direction="right"
+                        [size]="14"
+                        class="projects-row__arrow projects-row__arrow--lead"
+                      />
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+
+          <!-- ═══ Grid view (cover-dominant cards) ════════════════ -->
+          @case ('grid') {
+            <ul class="projects-grid" role="list">
+              @for (project of rows(); track project.slug) {
+                <li class="projects-card">
+                  <a [routerLink]="['/projects', project.slug]" class="projects-card__link">
+                    <div class="projects-card__media">
+                      @if (project.thumbnailUrl) {
+                        @let cardSet = project.thumbnailUrl | cloudinarySrcset: 480;
+                        <img
+                          [src]="cardSet.src"
+                          [attr.srcset]="cardSet.srcset || null"
+                          [alt]="project.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      } @else {
+                        <span class="projects-card__media-empty" aria-hidden="true">{{ project.title }}</span>
+                      }
+                    </div>
+
+                    <div class="projects-card__body">
+                      <div class="projects-card__head">
+                        <span class="projects-card__year">{{ project.year }}</span>
+                        <span class="projects-card__title">{{ project.title }}</span>
+                      </div>
+                      @if (project.oneLiner | translatable: locale() : ''; as line) {
+                        <p class="projects-card__sum">{{ line }}</p>
+                      }
+                      @if (project.skills.length > 0) {
+                        <div class="projects-card__chips">
+                          @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                            <landing-chip [label]="skill.name" size="sm" />
+                          }
+                        </div>
+                      }
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+
+          <!-- ═══ Timeline view (year-grouped vertical) ═══════════ -->
+          @case ('timeline') {
+            <div class="projects-timeline">
+              @for (group of groupedByYear(); track group.year) {
+                <div class="projects-timeline__group">
+                  <div class="projects-timeline__year-row">
+                    <span class="projects-timeline__dot" aria-hidden="true"></span>
+                    <span class="projects-timeline__year">{{ group.year }}</span>
+                    <span class="projects-timeline__rule" aria-hidden="true"></span>
+                  </div>
+
+                  <ul class="projects-timeline__items" role="list">
+                    @for (project of group.items; track project.slug) {
+                      <li class="projects-timeline__entry">
+                        <span class="projects-timeline__connector" aria-hidden="true"></span>
+                        <a [routerLink]="['/projects', project.slug]" class="projects-timeline__link">
+                          <div class="projects-timeline__body">
+                            <span class="projects-timeline__title">{{ project.title }}</span>
+                            @if (project.oneLiner | translatable: locale() : ''; as line) {
+                              <span class="projects-timeline__sum">{{ line }}</span>
+                            }
+                            @if (project.skills.length > 0) {
+                              <div class="projects-timeline__chips">
+                                @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                                  <landing-chip [label]="skill.name" size="sm" />
+                                }
+                              </div>
+                            }
+                          </div>
+                          <span class="projects-timeline__arrow-stack" aria-hidden="true">
+                            <landing-icon-arrow
+                              direction="right"
+                              [size]="14"
+                              class="projects-timeline__arrow projects-timeline__arrow--ghost"
+                            />
+                            <landing-icon-arrow
+                              direction="right"
+                              [size]="14"
+                              class="projects-timeline__arrow projects-timeline__arrow--lead"
+                            />
+                          </span>
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          }
         }
       }
-    }
-  </landing-container>
-</landing-section>
+    </landing-container>
+  </section>
+</landing-page-shell>

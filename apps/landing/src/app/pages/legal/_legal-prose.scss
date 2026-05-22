@@ -1,24 +1,27 @@
-/* Local layout extensions for /privacy and /terms.
-   Content rhythm and table styling come from `.landing-prose`
-   (libs/landing/shared/ui/src/styles/_prose.scss). Only the page-level chrome
-   (header gap, reading-column width) lives here. */
+/* Local layout for /privacy and /terms — page-shell handles header + footer
+   chrome; this only sets the prose reading width.
 
-.legal-page__head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 16px;
-  margin-bottom: 40px;
+   Content rhythm and table styling come from `.landing-prose`
+   (libs/landing/shared/ui/src/styles/_prose.scss). */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.legal-page__meta {
-  margin: 0;
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-sm);
-  line-height: var(--landing-mono-sm-lh);
-  letter-spacing: 0.02em;
-  color: var(--landing-text-600);
+.legal-page__body {
+  padding-block: 32px 64px;
+
+  @media (min-width: 960px) {
+    padding-block: 48px 96px;
+  }
 }
 
 /* Reading column — mirrors `.project-reading` width so legal pages share the

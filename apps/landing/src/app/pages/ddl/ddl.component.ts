@@ -182,6 +182,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         desc: 'Eyebrow + heading + lede bundle used across /contact, /uses, /colophon. Left/center variants, size scale, italic-em accent.',
       },
       {
+        path: '/ddl/page-shell',
+        title: 'Page shell · canonical feature-page composition',
+        desc: 'Article > header (breadcrumb + page-hero + meta strip) > section body > optional footer. Four meta-strip variants: composite, legal, catalogue, talk-to-me. Mandatory for all subpages.',
+      },
+      {
         path: '/ddl/form-input',
         title: 'Form input · primitive variants (historical)',
         desc: 'Three visual directions for landing-input + landing-textarea. Variant B picked + shipped 2026-05-21; A/C kept as historical record.',

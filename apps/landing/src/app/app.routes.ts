@@ -1,5 +1,12 @@
-import { Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
+import { inject } from '@angular/core';
 import { FeatureHome } from '@portfolio/landing/feature-home';
+
+// `/experience` redirects to `/about#experience`. Server-side `server.ts` issues
+// a real 301 (with fragment) for direct loads & bots. This client-side variant
+// only fires for in-app SPA navigation — kept as a defensive fallback since no
+// internal link points at `/experience` after this epic.
+const experienceRedirect = () => inject(Router).parseUrl('/about#experience');
 
 export const appRoutes: Route[] = [
   {
@@ -8,16 +15,13 @@ export const appRoutes: Route[] = [
     pathMatch: 'full',
   },
   {
-    path: 'experience',
-    loadComponent: () => import('@portfolio/landing/feature-experience').then((m) => m.FeatureExperience),
+    path: 'about',
+    loadComponent: () => import('@portfolio/landing/feature-about').then((m) => m.FeatureAbout),
   },
   {
-    path: 'about',
-    loadComponent: () => import('./pages/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage),
-    data: {
-      section: 'About',
-      blurb: "I'm shaping this section — voice, story, and what I'm about. It'll land here soon.",
-    },
+    path: 'experience',
+    pathMatch: 'full',
+    redirectTo: experienceRedirect,
   },
   {
     path: 'projects',
@@ -95,6 +99,10 @@ export const appRoutes: Route[] = [
       {
         path: 'page-hero',
         loadComponent: () => import('./pages/ddl/page-hero').then((m) => m.PageHeroPage),
+      },
+      {
+        path: 'page-shell',
+        loadComponent: () => import('./pages/ddl/page-shell').then((m) => m.PageShellPage),
       },
       {
         path: 'form-input',

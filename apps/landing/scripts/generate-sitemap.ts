@@ -51,7 +51,7 @@ const legalAlternates = (path: string): HreflangAlternate[] => [
 const staticRoutes: SitemapEntry[] = [
   { loc: '/', lastmod: today, changefreq: 'weekly', priority: 1.0 },
   { loc: '/projects', lastmod: today, changefreq: 'weekly', priority: 0.9 },
-  { loc: '/experience', lastmod: today, changefreq: 'monthly', priority: 0.8 },
+  { loc: '/about', lastmod: today, changefreq: 'monthly', priority: 0.8 },
   { loc: '/blog', lastmod: today, changefreq: 'weekly', priority: 0.7 },
   { loc: '/uses', lastmod: today, changefreq: 'monthly', priority: 0.5 },
   { loc: '/colophon', lastmod: today, changefreq: 'yearly', priority: 0.4 },

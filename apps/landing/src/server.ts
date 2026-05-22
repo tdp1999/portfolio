@@ -19,6 +19,13 @@ app.get('/healthz', (_req, res) => {
   res.status(200).send('ok');
 });
 
+// `/experience` was retired into `/about#experience`. 301 keeps the SEO equity
+// and lets bookmarks land on the right anchor; the fragment is preserved by
+// the browser when it follows the redirect.
+app.get('/experience', (_req, res) => {
+  res.redirect(301, '/about#experience');
+});
+
 /**
  * Reverse-proxy `/api/*` to the API service.
  *

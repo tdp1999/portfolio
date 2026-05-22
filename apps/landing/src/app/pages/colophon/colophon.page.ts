@@ -3,10 +3,8 @@ import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import {
   ContainerComponent,
-  LandingBreadcrumbComponent,
   LandingContentSectionComponent,
-  LandingPageHeroComponent,
-  SectionComponent,
+  LandingPageShellComponent,
   type BreadcrumbItem,
   type ContentSection,
 } from '@portfolio/landing/shared/ui';
@@ -188,14 +186,7 @@ const COLOPHON_SECTIONS: readonly ContentSection[] = [
   selector: 'landing-colophon-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    ContainerComponent,
-    SectionComponent,
-    LandingBreadcrumbComponent,
-    LandingPageHeroComponent,
-    LandingContentSectionComponent,
-  ],
+  imports: [RouterLink, ContainerComponent, LandingPageShellComponent, LandingContentSectionComponent],
   templateUrl: './colophon.page.html',
   styleUrls: ['./colophon.page.scss'],
 })
