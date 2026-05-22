@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   PLATFORM_ID,
   computed,
@@ -14,6 +15,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
 import type { SelectAlign, SelectOption, SelectTriggerValue } from './select.types';
+
+const OPEN_DELAY_MS = 80;
+const CLOSE_DELAY_MS = 200;
+/** After a hover-open, clicks within this window are treated as "keep open"
+ *  (defeats the hover→click-toggle-off race). Past this window, click toggles
+ *  off normally — otherwise users feel like they need to click twice to close. */
+const HOVER_GRACE_MS = 250;
 
 /**
  * Generic dropdown select. Works two ways:
@@ -53,6 +61,8 @@ import type { SelectAlign, SelectOption, SelectTriggerValue } from './select.typ
   ],
   host: {
     class: 'landing-select',
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()',
     '(document:click)': 'onDocumentClick($event)',
     '(document:keydown.escape)': 'close()',
   },
@@ -129,7 +139,12 @@ import type { SelectAlign, SelectOption, SelectTriggerValue } from './select.typ
 })
 export class LandingSelectComponent<T = string> implements ControlValueAccessor {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.clearTimers());
+  }
 
   readonly options = input.required<readonly SelectOption<T>[]>();
   readonly value = input<T | null>(null);
@@ -154,6 +169,15 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
 
   protected readonly open = signal(false);
   protected readonly cursor = signal(0);
+
+  private openTimer: ReturnType<typeof setTimeout> | null = null;
+  private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Tracks WHICH gesture opened the panel so a click that follows a hover-open
+   *  doesn't get misread as "toggle off". `null` while closed. */
+  private openedBy: 'hover' | 'click' | null = null;
+  /** Timestamp of the last hover-open. Bounds the grace window in which a
+   *  click is treated as "keep open" instead of toggling off. */
+  private hoverOpenedAt = 0;
 
   // ─── ControlValueAccessor state ────────────────────────────────
   private readonly cvaValue = signal<T | null>(null);
@@ -207,24 +231,32 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
   protected toggle(event: MouseEvent): void {
     if (this.effectiveDisabled()) return;
     event.stopPropagation();
-    const next = !this.open();
-    this.open.set(next);
-    if (next) {
-      // Seed cursor with current value's index, fallback 0.
-      const i = this.options().findIndex((o) => o.value === this.effectiveValue());
-      this.cursor.set(i >= 0 ? i : 0);
+    this.clearTimers();
+    if (!this.open()) {
+      this.openAs('click');
+      return;
     }
+    // Only swallow the close if we're inside the brief grace window after a
+    // hover-open (defeats the hover→click race). Past that window the user
+    // means "close" and we must respect it on the first click.
+    if (this.openedBy === 'hover' && Date.now() - this.hoverOpenedAt < HOVER_GRACE_MS) {
+      this.openedBy = 'click';
+      return;
+    }
+    this.doClose();
   }
 
   protected close(): void {
-    if (this.open()) this.open.set(false);
+    this.clearTimers();
+    if (this.open()) this.doClose();
   }
 
   protected onDocumentClick(event: MouseEvent): void {
     if (!this.open()) return;
     const target = event.target as Node | null;
     if (target && this.elementRef.nativeElement.contains(target)) return;
-    this.open.set(false);
+    this.clearTimers();
+    this.doClose();
     this.onTouched();
   }
 
@@ -234,8 +266,36 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
     this.cvaValue.set(option.value);
     this.onChange(option.value);
     this.valueChange.emit(option.value);
-    this.open.set(false);
+    this.clearTimers();
+    this.doClose();
     this.onTouched();
+  }
+
+  protected onMouseEnter(): void {
+    if (this.effectiveDisabled()) return;
+    if (!this.supportsHover()) return;
+    if (this.closeTimer !== null) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
+    if (this.open() || this.openTimer !== null) return;
+    this.openTimer = setTimeout(() => {
+      this.openTimer = null;
+      this.openAs('hover');
+    }, OPEN_DELAY_MS);
+  }
+
+  protected onMouseLeave(): void {
+    if (!this.supportsHover()) return;
+    if (this.openTimer !== null) {
+      clearTimeout(this.openTimer);
+      this.openTimer = null;
+    }
+    if (!this.open() || this.closeTimer !== null) return;
+    this.closeTimer = setTimeout(() => {
+      this.closeTimer = null;
+      this.doClose();
+    }, CLOSE_DELAY_MS);
   }
 
   protected onTriggerKeydown(event: KeyboardEvent): void {
@@ -243,9 +303,8 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
     if (!this.open()) {
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        const i = this.options().findIndex((o) => o.value === this.effectiveValue());
-        this.cursor.set(i >= 0 ? i : 0);
-        this.open.set(true);
+        this.clearTimers();
+        this.openAs('click');
       }
       return;
     }
@@ -268,6 +327,37 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
     } else if (event.key === 'End') {
       event.preventDefault();
       this.cursor.set(total - 1);
+    }
+  }
+
+  private openAs(source: 'hover' | 'click'): void {
+    this.openedBy = source;
+    if (source === 'hover') this.hoverOpenedAt = Date.now();
+    // Seed the keyboard cursor with the current value's index so arrow keys
+    // start from the active option.
+    const i = this.options().findIndex((o) => o.value === this.effectiveValue());
+    this.cursor.set(i >= 0 ? i : 0);
+    this.open.set(true);
+  }
+
+  private doClose(): void {
+    this.open.set(false);
+    this.openedBy = null;
+  }
+
+  private supportsHover(): boolean {
+    if (!this.isBrowser) return false;
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+
+  private clearTimers(): void {
+    if (this.openTimer !== null) {
+      clearTimeout(this.openTimer);
+      this.openTimer = null;
+    }
+    if (this.closeTimer !== null) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
     }
   }
 }

@@ -16,6 +16,10 @@ import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem } from './mega-menu.t
 
 const OPEN_DELAY_MS = 80;
 const CLOSE_DELAY_MS = 200;
+/** After a hover-open, clicks within this window are treated as "keep open"
+ *  (defeats the hover→click-toggle-off race). Past this window, click toggles
+ *  off normally — otherwise users feel like they need to click twice to close. */
+const HOVER_GRACE_MS = 250;
 
 /**
  * Mega-menu dropdown — "featured hero + compact rows" layout (V5 from DDL).
@@ -189,6 +193,13 @@ export class MegaMenuComponent {
 
   private openTimer: ReturnType<typeof setTimeout> | null = null;
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Tracks WHICH gesture opened the panel so a click that follows a hover-open
+   *  doesn't get misread as "toggle off". `null` while closed. */
+  private openedBy: 'hover' | 'click' | null = null;
+  /** Timestamp of the last hover-open, used to bound the "keep open on click"
+   *  protection. After HOVER_GRACE_MS the click acts like a normal toggle so the
+   *  trigger can close the panel in one click. */
+  private hoverOpenedAt = 0;
 
   constructor() {
     this.destroyRef.onDestroy(() => this.clearTimers());
@@ -205,12 +216,25 @@ export class MegaMenuComponent {
   protected toggle(event: MouseEvent): void {
     event.stopPropagation();
     this.clearTimers();
-    this.open.update((v) => !v);
+    if (!this.open()) {
+      // Closed → open as click-controlled.
+      this.openedBy = 'click';
+      this.open.set(true);
+      return;
+    }
+    // Hover-then-fast-click race: only swallow the close if we're inside the
+    // brief grace window after a hover-open. Past that window the user is
+    // making a deliberate "close" click and we must respect it on the first try.
+    if (this.openedBy === 'hover' && Date.now() - this.hoverOpenedAt < HOVER_GRACE_MS) {
+      this.openedBy = 'click';
+      return;
+    }
+    this.doClose();
   }
 
   protected close(): void {
     this.clearTimers();
-    if (this.open()) this.open.set(false);
+    if (this.open()) this.doClose();
   }
 
   protected onDocumentClick(event: MouseEvent): void {
@@ -218,12 +242,12 @@ export class MegaMenuComponent {
     const target = event.target as Node | null;
     if (target && this.elementRef.nativeElement.contains(target)) return;
     this.clearTimers();
-    this.open.set(false);
+    this.doClose();
   }
 
   protected onItemSelect(): void {
     this.clearTimers();
-    this.open.set(false);
+    this.doClose();
   }
 
   protected onMouseEnter(): void {
@@ -235,6 +259,8 @@ export class MegaMenuComponent {
     if (this.open() || this.openTimer !== null) return;
     this.openTimer = setTimeout(() => {
       this.openTimer = null;
+      this.openedBy = 'hover';
+      this.hoverOpenedAt = Date.now();
       this.open.set(true);
     }, OPEN_DELAY_MS);
   }
@@ -248,8 +274,13 @@ export class MegaMenuComponent {
     if (!this.open() || this.closeTimer !== null) return;
     this.closeTimer = setTimeout(() => {
       this.closeTimer = null;
-      this.open.set(false);
+      this.doClose();
     }, CLOSE_DELAY_MS);
+  }
+
+  private doClose(): void {
+    this.open.set(false);
+    this.openedBy = null;
   }
 
   private supportsHover(): boolean {
