@@ -164,6 +164,10 @@ export const appRoutes: Route[] = [
         path: 'email-templates',
         loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
       },
+      {
+        path: 'about-signatures',
+        loadComponent: () => import('./pages/ddl/about-signatures').then((m) => m.DdlAboutSignaturesPage),
+      },
     ],
   },
   {

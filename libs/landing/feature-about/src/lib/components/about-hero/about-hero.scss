@@ -1,0 +1,68 @@
+/* Hero block — sits at the top of the body slot, right under the shell header
+   (which carries breadcrumb + H1 + lede). Just the meta strip — CTAs + CV live
+   in §04 Next steps so the hero stays compact. */
+:host {
+  display: block;
+}
+
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -16px; /* pulls the meta strip closer to the lede above */
+  margin-bottom: 64px;
+  text-align: center;
+}
+
+/* Meta strip — fact row using bullet separators. Text-body-sm scale per task
+   spec; mono variant carries the timezone glyph for the same "datestamp" voice
+   the shell's [meta-strip] slot would give. */
+.about-hero__meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.about-hero__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-hero__meta-item + .about-hero__meta-item::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--landing-text-600);
+}
+
+.about-hero__meta-item--mono {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.about-hero__meta-item--muted time {
+  color: var(--landing-text-500);
+}
+
+/* Left-align on narrow screens so the meta facts stay legible — wrapping
+   centered text fragments creates a ragged middle column. */
+@media (max-width: 480px) {
+  .about-hero {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .about-hero__meta {
+    justify-content: flex-start;
+  }
+}

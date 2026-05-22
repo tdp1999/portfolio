@@ -1,0 +1,26 @@
+/* About → CTA section. Closing line + link row, no form (the form lives on
+   /contact). Same header anatomy as the other About sections. */
+
+:host {
+  display: block;
+}
+
+.cta {
+  scroll-margin-top: 96px;
+  padding-block: var(--about-section-y, 96px);
+}
+
+@use '../../styles/section-header';
+
+.cta__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+}
+
+.cta__item {
+  display: inline-flex;
+}

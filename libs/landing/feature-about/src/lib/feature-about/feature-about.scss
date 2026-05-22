@@ -1,3 +1,12 @@
+/* /about page shell. Hosts the section-rhythm CSS var consumed by every
+   sub-component (`--about-section-y`) so spacing changes happen in one place.
+   Custom properties inherit through view-encapsulated styles, so this token
+   reaches each sub-component's :host without ::ng-deep. */
+:host {
+  display: block;
+  --about-section-y: clamp(64px, 9vh, 96px);
+}
+
 .about-page__head {
   display: flex;
   flex-direction: column;

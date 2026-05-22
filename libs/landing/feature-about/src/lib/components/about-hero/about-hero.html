@@ -1,0 +1,31 @@
+<div class="about-hero">
+  <!-- Meta strip — single row of facts answering "where, when, available?".
+       No CTAs or CV here — those live in the dedicated §04 Next steps section
+       so the hero stays compact and doesn't duplicate the closing CTA row. -->
+  <ul class="about-hero__meta">
+    @if (locationCity()) {
+      <li class="about-hero__meta-item">{{ locationCity() }}</li>
+    }
+    <li class="about-hero__meta-item about-hero__meta-item--mono">{{ timezoneOffset() }}</li>
+    @if (availabilityLabel()) {
+      <li class="about-hero__meta-item">
+        <landing-status-dot
+          [state]="availabilityDotState()"
+          variant="bare"
+          [label]="availabilityLabel()"
+          [ariaLabel]="availabilityLabel()"
+        />
+      </li>
+    }
+    <li class="about-hero__meta-item about-hero__meta-item--muted">
+      <landing-t>
+        <ng-container en
+          >Last updated <time [attr.datetime]="lastUpdatedIso">{{ lastUpdatedLabel() }}</time></ng-container
+        >
+        <ng-container vi
+          >Cập nhật <time [attr.datetime]="lastUpdatedIso">{{ lastUpdatedLabel() }}</time></ng-container
+        >
+      </landing-t>
+    </li>
+  </ul>
+</div>

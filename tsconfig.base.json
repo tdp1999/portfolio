@@ -45,7 +45,6 @@
       "@portfolio/console/feature-messages": ["./libs/console/feature-messages/src/index.ts"],
       "@portfolio/console/feature-profile": ["./libs/console/feature-profile/src/index.ts"],
       "@portfolio/console/feature-experience": ["./libs/console/feature-experience/src/index.ts"],
-      "@portfolio/landing/feature-experience": ["./libs/landing/feature-experience/src/index.ts"],
       "@portfolio/landing/feature-about": ["./libs/landing/feature-about/src/index.ts"],
       "@portfolio/console/feature-project": ["libs/console/feature-project/src/index.ts"],
       "@portfolio/console/feature-blog": ["libs/console/feature-blog/src/index.ts"],

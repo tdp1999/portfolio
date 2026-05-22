@@ -32,6 +32,17 @@ export const PROJECT_STATUS_LABELS: Record<string, string> = {
   PUBLISHED: 'Published',
 };
 
+/**
+ * Display label for each `ProfileAvailability`. Single source of truth — landing
+ * surfaces (about hero meta strip, contact channels copy) read from this map.
+ */
+export const PROFILE_AVAILABILITY_LABELS: Record<string, string> = {
+  OPEN_TO_WORK: 'Open to work',
+  FREELANCING: 'Freelancing',
+  EMPLOYED: 'Employed',
+  NOT_AVAILABLE: 'Not available',
+};
+
 export const BLOG_POST_STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Draft',
   PUBLISHED: 'Published',

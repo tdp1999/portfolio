@@ -1,0 +1,58 @@
+<section id="failures" aria-labelledby="failures-heading" class="afa">
+  <landing-container>
+    <header class="about-section__head">
+      <landing-eyebrow [label]="['03', 'Failures']" [accentFirst]="true" [trailingRule]="true" />
+      <div class="about-section__title-block">
+        <landing-heading id="failures-heading" [level]="2" class="about-section__title">
+          <landing-t>
+            <ng-container en
+              >Three short clinical notes — what I picked, what broke, what changed afterwards.</ng-container
+            >
+            <ng-container vi>Ba ghi chú ngắn, lâm sàng — chọn gì, hỏng gì, sau đó thay đổi điều gì.</ng-container>
+          </landing-t>
+        </landing-heading>
+      </div>
+    </header>
+
+    <ol class="afa__list">
+      @for (e of resolvedEssays(); track e.id) {
+        <li class="afa__card">
+          <header class="afa__card-head">
+            <span class="afa__year">{{ e.year }}</span>
+            <span class="afa__context">{{ e.context }}</span>
+          </header>
+
+          <div class="afa__sec">
+            <p class="afa__label">
+              <landing-t>
+                <ng-container en>Decision</ng-container>
+                <ng-container vi>Quyết định</ng-container>
+              </landing-t>
+            </p>
+            <p class="afa__prose">{{ e.decision }}</p>
+          </div>
+
+          <div class="afa__sec">
+            <p class="afa__label">
+              <landing-t>
+                <ng-container en>Consequence</ng-container>
+                <ng-container vi>Hậu quả</ng-container>
+              </landing-t>
+            </p>
+            <p class="afa__prose">{{ e.consequence }}</p>
+          </div>
+
+          <div class="afa__sec">
+            <p class="afa__label">
+              <landing-t>
+                <ng-container en>Lesson</ng-container>
+                <ng-container vi>Bài học</ng-container>
+              </landing-t>
+            </p>
+            <p class="afa__prose afa__prose--lesson">{{ e.lesson }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </landing-container>
+</section>

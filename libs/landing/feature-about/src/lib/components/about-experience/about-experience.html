@@ -1,0 +1,224 @@
+<section id="experience" aria-labelledby="experience-heading" class="exp">
+  <landing-container>
+    <header class="about-section__head">
+      <landing-eyebrow [label]="['01', 'Experience']" [accentFirst]="true" [trailingRule]="true" />
+      <div class="about-section__title-block">
+        <landing-heading id="experience-heading" [level]="2" class="about-section__title">
+          <landing-t>
+            <ng-container en>Experience</ng-container>
+            <ng-container vi>Kinh nghiệm</ng-container>
+          </landing-t>
+        </landing-heading>
+      </div>
+    </header>
+
+    @if (vms().length === 0) {
+      <p class="exp__empty">
+        <landing-t>
+          <ng-container en>Career history coming soon.</ng-container>
+          <ng-container vi>Lịch sử công việc đang được cập nhật.</ng-container>
+        </landing-t>
+      </p>
+    } @else if (isMobile()) {
+      <!-- Mobile: accordion. Default-open = first (latest role). Clicking the open
+         row collapses it. Chevron rotates 180° via aria-expanded driven CSS. -->
+      <div class="exp-acc">
+        @for (vm of vms(); track vm.id; let i = $index) {
+          <div class="exp-acc__item">
+            <h3 class="exp-acc__heading">
+              <button
+                type="button"
+                class="exp-acc__trigger"
+                [id]="vm.tabId"
+                [attr.aria-expanded]="selectedIndex() === i"
+                [attr.aria-controls]="vm.panelId"
+                (click)="onAccordionToggle(i)"
+              >
+                <span class="exp-acc__company-row">
+                  <span class="exp-acc__logo" aria-hidden="true">
+                    @if (vm.companyLogoUrl) {
+                      <img
+                        [src]="vm.companyLogoUrl"
+                        [alt]="''"
+                        width="32"
+                        height="32"
+                        loading="lazy"
+                        decoding="async"
+                        (error)="hideBrokenImage($event)"
+                      />
+                    } @else {
+                      <span class="exp-acc__logo-initial">{{ vm.companyInitial }}</span>
+                    }
+                  </span>
+                  <span class="exp-acc__company-text">
+                    <span class="exp-acc__company">{{ vm.companyName }}</span>
+                    <span class="exp-acc__position">{{ vm.position }}</span>
+                  </span>
+                  <landing-icon name="chevron-down" [size]="16" class="exp-acc__chevron" />
+                </span>
+                <span class="exp-acc__date-range">{{ vm.dateRangeLabel }}</span>
+              </button>
+            </h3>
+
+            <div
+              class="exp-acc__panel"
+              role="region"
+              [id]="vm.panelId"
+              [attr.aria-labelledby]="vm.tabId"
+              [hidden]="selectedIndex() !== i"
+            >
+              <ng-container [ngTemplateOutlet]="detail" [ngTemplateOutletContext]="{ $implicit: vm }" />
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Desktop: tablist (vertical, sticky to top of section) + panel. -->
+      <div class="exp-tabs">
+        <div class="exp-tabs__rail" role="tablist" aria-orientation="vertical" aria-label="Companies">
+          @for (vm of vms(); track vm.id; let i = $index) {
+            <button
+              type="button"
+              role="tab"
+              class="exp-tabs__tab"
+              [id]="vm.tabId"
+              [attr.aria-selected]="selectedIndex() === i"
+              [attr.aria-controls]="vm.panelId"
+              [attr.tabindex]="selectedIndex() === i ? 0 : -1"
+              [class.exp-tabs__tab--active]="selectedIndex() === i"
+              (click)="onTabClick(i)"
+              (keydown)="onTabKeydown($event, i)"
+            >
+              {{ vm.companyName }}
+            </button>
+          }
+        </div>
+
+        <div class="exp-tabs__panels">
+          @for (vm of vms(); track vm.id; let i = $index) {
+            <div
+              role="tabpanel"
+              class="exp-tabs__panel"
+              [id]="vm.panelId"
+              [attr.aria-labelledby]="vm.tabId"
+              [hidden]="selectedIndex() !== i"
+              tabindex="0"
+            >
+              <ng-container [ngTemplateOutlet]="detail" [ngTemplateOutletContext]="{ $implicit: vm }" />
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </landing-container>
+</section>
+
+<!-- Shared detail body — one template, used by tab panel + accordion panel. -->
+<ng-template #detail let-vm>
+  <header class="exp-detail__header">
+    <div class="exp-detail__title-row">
+      <span class="exp-detail__logo" aria-hidden="true">
+        @if (vm.companyLogoUrl) {
+          <img
+            [src]="vm.companyLogoUrl"
+            [alt]="''"
+            width="40"
+            height="40"
+            loading="lazy"
+            decoding="async"
+            (error)="hideBrokenImage($event)"
+          />
+        } @else {
+          <span class="exp-detail__logo-initial">{{ vm.companyInitial }}</span>
+        }
+      </span>
+
+      <h3 class="exp-detail__title">
+        <span class="exp-detail__position">{{ vm.position }}</span>
+        <span class="exp-detail__at" aria-hidden="true"> · </span>
+        @if (vm.companyUrl) {
+          <a class="exp-detail__company-link" [href]="vm.companyUrl" target="_blank" rel="noopener noreferrer">{{
+            vm.companyName
+          }}</a>
+        } @else {
+          <span class="exp-detail__company">{{ vm.companyName }}</span>
+        }
+        @if (vm.isCurrent) {
+          <span class="exp-detail__current" aria-label="Current role">
+            <landing-t>
+              <ng-container en>· Current</ng-container>
+              <ng-container vi>· Hiện tại</ng-container>
+            </landing-t>
+          </span>
+        }
+      </h3>
+    </div>
+
+    <p class="exp-detail__date-range">{{ vm.dateRangeLabel }}</p>
+
+    @if (vm.metaItems.length) {
+      <ul class="exp-detail__meta">
+        @for (item of vm.metaItems; track $index) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    }
+
+    @if (vm.domain) {
+      <p class="exp-detail__domain">
+        <span class="exp-detail__domain-label">
+          <landing-t>
+            <ng-container en>Domain</ng-container>
+            <ng-container vi>Lĩnh vực</ng-container> </landing-t
+          >:
+        </span>
+        <span class="exp-detail__domain-value">{{ vm.domain }}</span>
+      </p>
+    }
+  </header>
+
+  @if (vm.highlights.length) {
+    <ul class="exp-detail__highlights">
+      @for (h of vm.highlights; track $index) {
+        <li>{{ h }}</li>
+      }
+    </ul>
+  }
+
+  @if (vm.responsibilities.length) {
+    <details class="exp-detail__day-to-day" open>
+      <summary class="exp-detail__day-to-day-summary">
+        <landing-t>
+          <ng-container en>Day-to-day</ng-container>
+          <ng-container vi>Công việc hàng ngày</ng-container>
+        </landing-t>
+        <landing-icon name="chevron-down" [size]="14" class="exp-detail__day-to-day-chevron" />
+      </summary>
+      <ul class="exp-detail__responsibilities">
+        @for (r of vm.responsibilities; track $index) {
+          <li>{{ r }}</li>
+        }
+      </ul>
+    </details>
+  }
+
+  @if (vm.skillChips.length) {
+    <div class="exp-detail__skills" role="list" aria-label="Skills">
+      @for (s of vm.skillChips; track s.id) {
+        <span role="listitem">
+          <landing-chip [label]="s.name" size="sm" />
+        </span>
+      }
+    </div>
+  }
+
+  @if (vm.links.length) {
+    <ul class="exp-detail__links">
+      @for (link of vm.links; track $index) {
+        <li>
+          <landing-link [href]="link.url" [arrow]="true">{{ link.label }}</landing-link>
+        </li>
+      }
+    </ul>
+  }
+</ng-template>

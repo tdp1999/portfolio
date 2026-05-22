@@ -1,0 +1,36 @@
+<section id="cta" aria-labelledby="cta-heading" class="cta">
+  <landing-container>
+    <header class="about-section__head">
+      <landing-eyebrow [label]="['04', 'Next steps']" [accentFirst]="true" [trailingRule]="true" />
+      <div class="about-section__title-block">
+        <landing-heading id="cta-heading" [level]="2" class="about-section__title">
+          <landing-t>
+            <ng-container en>If any of this resonated, the door is open.</ng-container>
+            <ng-container vi>Nếu bạn thấy hợp, cứ gõ cửa.</ng-container>
+          </landing-t>
+        </landing-heading>
+        <p class="about-section__lede">
+          <landing-t>
+            <ng-container en
+              >Engagement, freelance, or a long-form conversation about a hard system — pick the door that
+              fits.</ng-container
+            >
+            <ng-container vi
+              >Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.</ng-container
+            >
+          </landing-t>
+        </p>
+      </div>
+    </header>
+
+    <ul class="cta__list" role="list">
+      @for (item of ctas(); track item.id) {
+        <li class="cta__item">
+          <landing-link [href]="item.href" [kind]="item.kind ?? null" [arrow]="true">
+            {{ locale() === 'vi' ? item.labelVi : item.labelEn }}
+          </landing-link>
+        </li>
+      }
+    </ul>
+  </landing-container>
+</section>

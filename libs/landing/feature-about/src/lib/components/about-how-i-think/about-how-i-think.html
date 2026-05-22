@@ -1,0 +1,25 @@
+<section id="how-i-think" aria-labelledby="how-i-think-heading" class="hit">
+  <landing-container>
+    <header class="about-section__head">
+      <landing-eyebrow [label]="['02', 'How I think']" [accentFirst]="true" [trailingRule]="true" />
+      <div class="about-section__title-block">
+        <landing-heading id="how-i-think-heading" [level]="2" class="about-section__title">
+          <landing-t>
+            <ng-container en>A working set of stances I will defend in PRs.</ng-container>
+            <ng-container vi>Bộ quan điểm mình sẵn sàng bảo vệ trong PR.</ng-container>
+          </landing-t>
+        </landing-heading>
+      </div>
+    </header>
+
+    <ol class="hit__list">
+      @for (p of principles(); track $index) {
+        <li class="hit__item">
+          <span class="hit__number" aria-hidden="true">{{ p.number }}</span>
+          <p class="hit__claim">{{ p.claim }}</p>
+          <p class="hit__expansion">{{ p.expansion }}</p>
+        </li>
+      }
+    </ol>
+  </landing-container>
+</section>

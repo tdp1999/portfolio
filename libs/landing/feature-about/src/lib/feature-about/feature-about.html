@@ -1,12 +1,30 @@
 <landing-page-shell [breadcrumb]="breadcrumb" align="center">
-  <span hero-heading><em>About</em>.</span>
-  <p hero-lede>Work history, principles, and what I am shipping now — informative, defensible, no filler.</p>
+  <span hero-heading>
+    <landing-t>
+      <ng-container en
+        >Senior software engineer building <em>DDD-grade web platforms</em> for fintech &amp; SaaS teams.</ng-container
+      >
+      <ng-container vi>Kỹ sư phần mềm xây dựng <em>nền tảng web DDD</em> cho các đội fintech &amp; SaaS.</ng-container>
+    </landing-t>
+  </span>
+  <p hero-lede>
+    <landing-t>
+      <ng-container en
+        >Six years shipping production systems — payments, dashboards, content tools. I keep teams honest about
+        complexity and trade-offs, and I am picky about who I work with.</ng-container
+      >
+      <ng-container vi
+        >Sáu năm xây dựng hệ thống production — payments, dashboard, content tools. Mình giúp team giữ thái độ trung
+        thực với độ phức tạp và đánh đổi, và khá kén chọn đối tác làm cùng.</ng-container
+      >
+    </landing-t>
+  </p>
 
-  <!-- hero -->
-  <!-- currently-shipping -->
-  <!-- experience -->
-  <!-- depth-map -->
-  <!-- how-i-think -->
-  <!-- failures -->
-  <!-- cta -->
+  <landing-about-hero />
+  <landing-about-experience />
+  <landing-about-how-i-think />
+  <landing-about-failures />
+  <landing-about-cta />
 </landing-page-shell>
+
+<landing-floating-pill-nav [sections]="navSections" hideOnSelector="#shell-footer-banner" />

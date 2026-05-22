@@ -1,0 +1,261 @@
+/* DDL · About signature sections — staging sandbox.
+   Matches the visual chrome of `/ddl/bio-improvements` and `/ddl/feed-item-variants`:
+   bordered header strip up top + per-section blocks with eyebrow + variant grid. */
+
+:host {
+  display: block;
+}
+
+.abs-header {
+  border-bottom: 1px solid var(--landing-border);
+  background: var(--landing-surface);
+}
+
+.abs-header__inner {
+  padding-block: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.abs-header__crumb {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.abs-header__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-300);
+}
+
+.abs-header__lede {
+  margin: 0;
+  max-width: 720px;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+.abs-link {
+  color: var(--landing-accent);
+  text-decoration: none;
+}
+
+.abs-link:hover {
+  text-decoration: underline;
+}
+
+.abs-mono {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+/* ─── TOC ─────────────────────────────────────────────────────────── */
+
+.abs-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 8px;
+}
+
+.abs-toc__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-block: 4px;
+  text-decoration: none;
+  color: var(--landing-text-400);
+  transition: color 200ms ease;
+}
+
+.abs-toc__item:hover {
+  color: var(--landing-accent);
+}
+
+.abs-toc__num {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-accent);
+}
+
+.abs-toc__title {
+  font-size: var(--landing-body-sm);
+}
+
+/* ─── Section ─────────────────────────────────────────────────────── */
+
+.abs-section {
+  padding-block: 64px;
+  scroll-margin-top: 96px;
+  border-bottom: 1px solid var(--landing-border);
+}
+
+.abs-section:last-of-type {
+  border-bottom: 0;
+}
+
+.abs-section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+  max-width: 760px;
+}
+
+.abs-section__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+}
+
+.abs-section__summary {
+  margin: 0;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+.abs-section__question {
+  margin: 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+.abs-section__question-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-400);
+  margin-right: 4px;
+}
+
+.abs-section__winner {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-300);
+}
+
+.abs-section__winner-label {
+  color: var(--landing-text-500);
+  margin-right: 4px;
+}
+
+.abs-section__winner--tbd {
+  color: var(--landing-text-500);
+}
+
+/* ─── Variants ────────────────────────────────────────────────────── */
+
+.abs-variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Populated sections stack their cards vertically — variant content is too
+   rich to read meaningfully when squeezed into a 3-column grid. */
+.abs-variants--stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.abs-variant {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  background: var(--landing-surface);
+}
+
+.abs-variant__label {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-300);
+}
+
+.abs-variant__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border: 1px dashed var(--landing-border-strong);
+  border-radius: 8px;
+  background: var(--landing-bg);
+}
+
+/* When a real variant component renders inside, drop the dashed-border /
+   center-alignment treatment — let the variant own its layout. */
+.abs-variant__stage--filled {
+  display: block;
+  min-height: 0;
+  padding: 24px;
+  border-style: solid;
+  border-color: var(--landing-border);
+}
+
+/* Picked variant — accent rim + small inline badge in the label row.
+   Mirrors the bio-improvements PICKED convention. */
+.abs-variant--picked {
+  border-color: var(--landing-accent);
+  box-shadow: inset 0 0 0 1px var(--landing-accent);
+}
+
+.abs-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--landing-accent);
+  color: var(--landing-bg);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+}
+
+.abs-variant__placeholder {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-600);
+}
+
+.abs-variant__hint {
+  margin: 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+@media (max-width: 640px) {
+  .abs-section {
+    padding-block: 48px;
+  }
+  .abs-section__title {
+    font-size: var(--landing-display-md);
+    line-height: var(--landing-display-md-lh);
+  }
+}

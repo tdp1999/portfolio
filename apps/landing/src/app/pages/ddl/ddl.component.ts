@@ -107,6 +107,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: '§07 Get in Touch · direction variants',
         desc: 'Globe graduated to /contact. Seven 1-col home variants (A–G) route into /contact?purpose=… — variant G (centered, 3-purpose + email fallback) shipped to home. Comparison sandbox retained.',
       },
+      {
+        path: '/ddl/about-signatures',
+        title: '/about · signature sections sandbox',
+        desc: 'Staging for three undesigned /about elements — depth map · failures · currently shipping. Scaffold for variants (tasks 334–336); winners graduate via task 337.',
+      },
     ],
   },
   {

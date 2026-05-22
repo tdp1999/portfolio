@@ -1,0 +1,51 @@
+/* Shared section-header anatomy for /about sub-sections.
+   `@use` from each section component's SCSS so eyebrow + title + lede style
+   stays identical across experience / how-i-think / failures / cta without
+   the four files drifting independently.
+
+   Usage in the component HTML:
+     <header class="about-section__head">
+       <landing-eyebrow ... [trailingRule]="true" />
+       <div class="about-section__title-block">
+         <landing-heading class="about-section__title">...</landing-heading>
+         <p class="about-section__lede">...</p>          <!-- optional -->
+       </div>
+     </header>
+
+   Eyebrow with trailingRule renders the section's leading horizontal rule
+   itself, so no separate `<hr>` is needed. The title-block max-width keeps
+   the heading + lede at a prose measure while the eyebrow rule extends to
+   the full landing-container width. */
+
+.about-section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.about-section__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 720px;
+}
+
+.about-section__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  color: var(--landing-text-300);
+  letter-spacing: var(--landing-tracking-tight);
+}
+
+.about-section__lede {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}

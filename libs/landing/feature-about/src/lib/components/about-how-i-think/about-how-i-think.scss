@@ -1,0 +1,66 @@
+/* About → How I think about software. Numbered manifesto block.
+   Stacked layout per principle — number reads like a mini-eyebrow above the
+   claim. Avoids the cap-line vs baseline misalignment that a side-by-side
+   grid creates between mono-md (12-14px) and sans-body-xl (20px). */
+
+:host {
+  display: block;
+}
+
+.hit {
+  scroll-margin-top: 96px;
+  padding-block: var(--about-section-y, 96px);
+}
+
+@use '../../styles/section-header';
+
+/* Centered prose block — list sits in a 720px column, horizontally centered
+   inside the landing-container. Section header (eyebrow + h2) stays at
+   container edges so the trailing rule still spans full width. */
+.hit__list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  max-width: 720px;
+}
+
+.hit__item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hit__number {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+
+.hit__claim {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-xl);
+  line-height: var(--landing-body-xl-lh);
+  font-weight: 600;
+  color: var(--landing-text-300);
+  letter-spacing: var(--landing-tracking-tight);
+}
+
+.hit__expansion {
+  margin: 4px 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+}
+
+@media (max-width: 640px) {
+  .hit__list {
+    gap: 48px;
+  }
+}
