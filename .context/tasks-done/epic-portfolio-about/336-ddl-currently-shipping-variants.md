@@ -1,0 +1,53 @@
+# Task: Currently-shipping variants on `/ddl/about-signatures`
+
+## Status: done (decision: dropped — currently-shipping section removed from /about IA, won't graduate; /now stays as standalone surface)
+
+## Goal
+Design and render 2-3 visual variants of the "Currently shipping" signature — a tight live-status surface on /about that subscribes to /now data and links out to the full /now page.
+
+## Context
+Per epic C2, `/now` was originally markdown-driven (task 328) but author has pivoted to console-managed. Task 328 must be re-spec'd to choose a content shape (freeform / structured 4 fields / hybrid) before this task can ship its final variants. Mock data can be used for early variant exploration.
+
+## Blocking Dependency
+**Task 328 v2 must define the /now content shape before this task fully ships.** Options being decided:
+- (a) Freeform translatable text (single `body` field per locale)
+- (b) Structured 4 fields: `nowBuilding`, `nowWriting`, `nowLearning`, `lastShipped`
+- (c) Hybrid: structured + freeform appendix
+
+Until that's decided, this task can start with mock data assuming option (b) — structured 4 fields — since that maps cleanest to a status strip.
+
+## Acceptance Criteria
+- [x] 2-3 visual variants rendered side-by-side under "3. Currently shipping" section in `/ddl/about-signatures`
+- [x] Each variant subscribes to the (real or mocked) /now data source — service signature TBD by task 328 v2
+- [x] Variants explore DISTINCT visual treatments — examples (assuming structured 4-field shape):
+  - **V1 — Status strip:** 4 rows: "Building / Writing / Learning / Last shipped" with values + "Last updated YYYY-MM-DD" footer + link "See /now →"
+  - **V2 — Card with prose:** single card with prose paragraphs auto-flowing from 4 fields + small metadata footer
+  - **V3 — Terminal-styled:** monospace pseudo-terminal output (`> now.building → ...`) signaling craft + linking out
+- [x] All variants include "Last updated YYYY-MM-DD" + link "See /now →"
+- [x] If /now data is null/empty (no entry yet), variant degrades gracefully with "Nothing to share yet" + link
+- [x] EN + VI render correctly
+- [ ] Type-check + landing prod build clean
+- [x] If task 328 v2 ships before this task — use real data; otherwise, use a mock factory and note in progress log — **using mock factory (`now-mock.ts`) per fallback in spec**
+
+## Technical Notes
+- Data shape consumer abstracted behind a service interface — if task 328 v2 ships a different shape (e.g., freeform markdown), this task adapts by mapping at the variant component layer.
+- Variants must NOT contain hardcoded "currently shipping" copy — pure consumers of /now data, with link to `/now` for the full version.
+- Last-updated date comes from the /now data source (per task 328 v2 spec) — surface it explicitly.
+- Terminal variant (V3) is opinionated and polarizing — render it but make sure HR-persona reading is still legible (no actual interactivity required).
+
+## Files to Touch
+- DDL page sub-folder per variant: `ddl-about-signatures/currently-shipping-v1/`, etc.
+- DDL page template (mount variants in section 3)
+- (After 328 v2) shared service for /now consumption — likely `libs/landing/shared/data-access/src/lib/now.service.ts`
+
+## Dependencies
+- 333 (DDL scaffold)
+- Task 328 v2 (/now content shape decided — separate task)
+
+## Complexity: M
+
+## Progress Log
+- 2026-05-22 Task 328 v2 not yet shipped — using mock factory per spec fallback. Created `now-mock.ts` with `NowEntry { building, writing, learning, lastShipped, lastUpdatedIso }` + EN/VI variants and `getNowEntry(locale)`. When `NowService` exists, swap the page-level binding only — the variant components consume `NowEntry | null` directly and stay unchanged. Each variant degrades to "Nothing to share yet → /now" when entry is null.
+- 2026-05-22 Built three variants as sub-components under `apps/landing/src/app/pages/ddl/about-signatures/{currently-shipping-v1,currently-shipping-v2,currently-shipping-v3}/`. **V1** status strip: `<dl>` with 4 labeled rows in a 140px-label / 1fr-value grid (collapses to single column < 640px), mono "Last updated" + landing-link footer; bordered top + bottom for the dl, dividers between rows. **V2** card with prose: bordered card; each field appears as `<em>italic-display lead</em>` (accent color, Newsreader italic) followed by the value as body prose; `lastShipped` set off by a top border. **V3** terminal: monospace pseudo-shell, `$ now` heading line, `· building → <value>` rows separated by dashed dividers; accent prompt + arrow glyph; "# last updated" footer comment. All three include `landing-link [arrow]` to `/now`.
+- 2026-05-22 Wired into the page: dropped the generic placeholder loop entirely (was only rendering currently-shipping), gave it a dedicated populated section in the same `--stacked` layout as depth-map/failures. TOC now goes depth-map → failures → currently-shipping.
+- 2026-05-22 **DECISION: drop currently-shipping from `/about` entirely.** Same critique as depth-map: /about's section is a 4-field teaser that duplicates the dedicated `/now` page (same data, same shape, same render). /now exists for external traffic (LinkedIn bio, RSS, Sivers /now community) — keeping it as the canonical surface. **Outcome:** currently-shipping section removed from /about IA; task 337 will NOT graduate any currently-shipping variant; DDL sandbox kept as historical record. Winner field updated to "DROPPED — duplicates /now page". Mock factory + V1/V2/V3 stay in `apps/landing/src/app/pages/ddl/about-signatures/`. Task 328 (/now page itself) remains in scope; /about can later add a 1-line "Currently: … → /now" bridge in the hero meta strip if author wants — that's smaller scope and lives with task 330 / hero work, not here.

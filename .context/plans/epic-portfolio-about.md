@@ -16,7 +16,7 @@ Replace the `coming-soon` placeholder at `/about` with a single deep page that a
 
 The page serves two personas simultaneously:
 
-- **Recruiter / HR (10-second scan):** hero positioning, sticky-tab company list, depth map.
+- **Recruiter / HR (10-second scan):** hero positioning, sticky-tab company list, manifesto headline.
 - **Tech lead / founder (3-5 min read):** manifesto principles, failures essays, full role detail.
 
 `/experience` route is retired — about is the **single source of truth** for work history.
@@ -43,16 +43,20 @@ Ground truth for every downstream task in this epic.
 ### Information Architecture — Variant C "Show, then tell, then prove"
 
 ```
-1. HERO              text-only, positioning H1 + sub-paragraph + meta strip + 2 CTAs
-2. CURRENTLY SHIPPING signature, pulls from /now data (see C2 — /now pivot)
-3. EXPERIENCE        sticky-tab two-column (accordion on mobile), sourced from /experience data
-4. DEPTH MAP         signature, replaces "skills" — 3 tiers Daily / Frequent / Shipped, rationale per Daily tool
-5. HOW I THINK       manifesto-lite, 5-7 numbered principles with bold claim + 2-3 sentence expansion
-6. FAILURES          signature, 3 anonymized clinical essays (~150 words each)
-7. CTA               "Hiring, partnering, or just curious?" → /contact + LinkedIn + GitHub + CV
+1. HERO        text-only, positioning H1 + sub-paragraph + meta strip + 2 CTAs
+2. EXPERIENCE  sticky-tab two-column (accordion on mobile), sourced from /experience data
+3. HOW I THINK manifesto-lite, 5-7 numbered principles with bold claim + 2-3 sentence expansion
+4. FAILURES    signature, 3 anonymized clinical essays (~150 words each)
+5. CTA         "Hiring, partnering, or just curious?" → /contact + LinkedIn + GitHub + CV
 ```
 
-**Reserved slot (deferred):** highlights strip between hero and currently-shipping. Add when author decides metrics shape.
+**Reserved slot (deferred):** highlights strip between hero and experience. Add when author decides metrics shape.
+
+**Dropped 2026-05-22 (review pass on DDL variants):**
+- **Depth map** (originally between EXPERIENCE and HOW I THINK) — duplicated home §04 "The Stack" (same `tierGroups` data, same chip rendering). The differentiator (per-Daily rationale) couldn't carry it because `Skill.proficiencyNote` is null on most rows.
+- **Currently shipping** (originally between HERO and EXPERIENCE) — duplicated the standalone `/now` page (same 4-field shape, same render). `/now` stays as the canonical surface for external traffic (LinkedIn bio, RSS, Sivers /now community). `/about` may later add a 1-line bridge in the hero meta strip if author wants.
+
+Tasks 333 / 334 / 336 stay shipped as DDL exploration; task 337 only graduates **failures**.
 
 ### `/experience` → `/about` (C1)
 
@@ -68,10 +72,10 @@ Author overrides task 328 spec ("markdown-driven, no console, no DB"). New direc
 - **`/now` becomes console-managed.** New `Now` module: schema, entity, command/query handlers, console editor page, API endpoint, landing page.
 - **Content shape options to be decided in task 328 v2** (one of):
   - **Freeform translatable text** (single `body` field per locale, markdown rendered) — closest to original task spec, just moved to DB.
-  - **Structured 4 fields** — `nowBuilding`, `nowWriting`, `nowLearning`, `lastShipped` (all translatable). Easier for `/about` to consume as a tight 4-line strip.
+  - **Structured 4 fields** — `nowBuilding`, `nowWriting`, `nowLearning`, `lastShipped` (all translatable). Easier as a tight 4-line strip.
   - **Hybrid** — structured 4 fields + optional freeform appendix.
-- About's "Currently shipping" section subscribes to the same data source.
-- **Blocking dependency:** About signature 3 cannot graduate until /now data shape exists. DDL variants can be designed against mock data in parallel.
+- ~~About's "Currently shipping" section subscribes to the same data source.~~ **Resolved 2026-05-22:** /about no longer has a currently-shipping section (dropped — duplicated /now). /now stays standalone; task 328 v2 still in scope.
+- **Blocking dependency removed:** task 336 was the only About-side consumer; it's now done-as-dropped. /now ships on its own cadence.
 
 ### Experience UI — sticky-tab two-column
 
@@ -97,13 +101,17 @@ Author overrides task 328 spec ("markdown-driven, no console, no DB"). New direc
 - **Meta strip:** `Saigon · GMT+7 · ● Open to consulting · Last updated <month YYYY>`. Availability state pulled from `Profile.availability` + `Profile.openTo`. "Last updated" is a hardcoded field updated on each substantive content edit (not auto from `updatedAt`).
 - **CTAs:** primary `[Read my story]` (anchors to `#how-i-think` or scrolls past hero), secondary `[Get in touch]` (→ `/contact`). Quiet inline `Download CV (EN/VI) →` below CTAs.
 
-### Signature elements (3 — staged in DDL first)
+### Signature elements (1 — staged in DDL first)
 
-All three go to `/ddl/about-signatures` with 2-3 visual variants each. Author compares side-by-side and graduates one variant per signature into `/about`. DDL page is kept as historical record per the no-delete rule.
+Goes to `/ddl/about-signatures` with 2-3 visual variants. Author compares side-by-side and graduates one variant per signature into `/about`. DDL page is kept as historical record per the no-delete rule.
 
-1. **Depth map** — visual replacement for skill cloud. Three tiers (Daily / Frequent / Shipped) match existing `Skill.tier` enum. Each Daily-driver tool gets a 1-line rationale ("Why I reach for this first"). Frequent and Shipped tiers are tighter pills with no per-item rationale. Data: existing `SkillService.getSkillsByTier()`. **No new BE work.**
-2. **Failures & lessons** — 3 essays, ~150 words each. **Anonymized** (no company name — "At a fintech I led in 2022..."). **Clinical tone** — decision → consequence → lesson, no emotional arc. Source: hard-coded in landing component or markdown file (decide during task breakdown — leaning markdown to allow easy edits).
-3. **Currently shipping** — depends on /now pivot (C2). Renders 3-4 status lines + "Last updated YYYY-MM-DD" + link to `/now`. Pure consumer of /now data; no new schema beyond what /now needs.
+1. **Failures & lessons** — 3 essays, ~150 words each. **Anonymized** (no company name — "At a fintech I led in 2022..."). **Clinical tone** — decision → consequence → lesson, no emotional arc. Source: hard-coded in landing component or markdown file (decide during task breakdown — leaning markdown to allow easy edits).
+
+**Originally 3 signatures.** Two were dropped on the 2026-05-22 DDL review pass:
+- **Depth map** — duplicated home §04 "The Stack" (same data, same chip rendering, no real differentiator).
+- **Currently shipping** — duplicated the standalone `/now` page (same 4-field data, same render).
+
+Sandboxes for both stay live as historical record; tasks 333 / 334 / 336 remain shipped; task 337 only graduates failures.
 
 ### Manifesto-lite ("How I think about software")
 
@@ -125,11 +133,11 @@ All three go to `/ddl/about-signatures` with 2-3 visual variants each. Author co
 
 - **All sections content translatable EN+VI**, consistent with rest of landing.
 - **Manifesto + failures essays:** author writes EN first (default lang for technical depth), VI translation as a separate sub-task (can ship EN-only at first cut if VI lags).
-- **`/now` and depth map rationale:** translatable from data source / `Skill.proficiencyNote` field.
+- **`/now` content:** translatable from data source (see C2 for shape options).
 
 ### DDL strategy
 
-- **1 page** `/ddl/about-signatures` with 3 sections (depth-map, failures, currently-shipping).
+- **1 page** `/ddl/about-signatures` with 3 sections originally (depth-map, failures, currently-shipping). Depth-map + currently-shipping sandboxes kept as historical record but dropped from production graduation (2026-05-22 review pass). Effective graduation set = **1 (failures)**.
 - **2-3 variants per section** rendered side-by-side or stacked with clear divider.
 - **Sequential build:** DDL ships first → author picks winners → graduate each to `/about`. Other About sections (hero, sticky-tab, manifesto-lite text) can be scaffolded in parallel — they have no variant exploration needed.
 - **DDL page kept after graduation** per project rule. Winner marked inline.
@@ -145,10 +153,10 @@ All three go to `/ddl/about-signatures` with 2-3 visual variants each. Author co
 
 ## Risks
 
-1. **Sticky-tab pattern is a meme.** Brittany Chiang v4 has been copied for years. To differentiate, the *content* (failures, manifesto, depth map) and the *typography* must do work; the tab pattern alone is no longer signature.
+1. **Sticky-tab pattern is a meme.** Brittany Chiang v4 has been copied for years. To differentiate, the *content* (failures, manifesto) and the *typography* must do work; the tab pattern alone is no longer signature.
 2. **Failures section is the highest-content-risk surface.** If essays are performative or vague, the section actively damages credibility. Author may need a writing pass with someone tough on prose.
 3. **Manifesto principles drift toward generic.** "I prefer types over tests" is fine; "I love clean code" must be flagged. Review pass before graduate.
-4. **`/now` console-managed pivot bloats scope.** Task 328 was S-complexity; now it touches BE schema + module + console + API. Without it, About signature 3 cannot ship — but rest of /about can ship independently.
+4. **`/now` console-managed pivot bloats scope.** Task 328 was S-complexity; now it touches BE schema + module + console + API. ~~Without it, About signature 3 cannot ship — but rest of /about can ship independently.~~ **Resolved 2026-05-22:** /about no longer depends on /now (currently-shipping section dropped). Task 328 ships on its own cadence; doesn't block /about.
 5. **`/experience` deep links in external systems (LinkedIn, CV, third-party).** 301 covers most; some scrapers may break. Acceptable.
 6. **Anonymized-failures legal:** "At a fintech in 2022" is still partially identifying. Author confirms any specific framing in essays during content review.
 7. **`feature-experience` lib status post-merge** — refactored into a sub-component of `feature-about`, OR `feature-experience` deleted with its component re-homed inside `feature-about`. Pick one in task breakdown to avoid two libs with one consumer.
@@ -168,7 +176,7 @@ All three go to `/ddl/about-signatures` with 2-3 visual variants each. Author co
 - **Q2:** Failures content storage — markdown files (mirror `/now` markdown precedent from task 325) OR hardcoded in landing component? **Default v1:** markdown files, one per locale (`failures.{en,vi}.md`), parsed at SSR.
 - **Q3:** `feature-experience` lib disposition — refactor or delete-and-re-home? **Decide in task breakdown.**
 - **Q4:** "Last updated" date on hero — manual field in component OR pulled from latest `Skill.updatedAt` / `Profile.updatedAt`? **Default:** manual constant updated on each substantive edit (more honest, less misleading than auto).
-- **Q5:** Depth-map rationale per Daily tool — `Skill.proficiencyNote` field exists, but is it populated? **Audit during task breakdown.** If empty, content authoring task includes filling it.
+- ~~**Q5:** Depth-map rationale per Daily tool — `Skill.proficiencyNote` field exists, but is it populated?~~ **Resolved 2026-05-22:** depth map dropped from /about IA (duplicates home §04 The Stack). Q5 no longer relevant.
 
 ## Content writing brief (author task)
 
@@ -227,14 +235,12 @@ To be cut as individual task files in `.context/tasks/` via `/ctx:breakdown` whe
 
 ## Acceptance criteria (epic-level)
 
-- [ ] `/about` route loads with all 7 IA sections (hero, currently-shipping, experience, depth-map, how-i-think, failures, CTA)
+- [ ] `/about` route loads with all 5 IA sections (hero, experience, how-i-think, failures, CTA). Depth-map + currently-shipping dropped 2026-05-22 (see C above).
 - [ ] `/experience` returns 301 to `/about#experience` (verified in prod)
 - [ ] Sticky-tab works on desktop (≥ 768px), accordion on mobile
 - [ ] All sections render in EN + VI
-- [ ] Depth map uses existing `Skill.tier` data, no BE changes
 - [ ] Failures section renders 3 essays, anonymized + clinical-toned
 - [ ] Manifesto renders 5-7 principles with claim + expansion
-- [ ] Currently-shipping renders /now data + last-updated date + link to `/now`
 - [ ] SEO meta + JSON-LD + sitemap updated
 - [ ] Lighthouse smoke: A11y ≥ 95, BP ≥ 95, SEO ≥ 95, Performance ≥ 80 (desktop)
 - [ ] Type-check + landing prod build clean

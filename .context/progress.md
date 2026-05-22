@@ -296,33 +296,36 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [ ] 323-landing-llms-txt (S)
 - [ ] 324-landing-pwa-manifest-and-icons (M)
 - [ ] 326-landing-analytics-umami-self-host (M)
-- [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2; blocks task 336**)
+- [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
 
 ## Pending — Portfolio About (broken down 2026-05-22)
 
-From: `epic-portfolio-about`. `/about` becomes single source of truth for work history + persona surfaces (hero, manifesto, depth-map, failures, currently-shipping). `/experience` route retired via 301 redirect.
+From: `epic-portfolio-about`. `/about` becomes single source of truth for work history + persona surfaces (hero, manifesto, failures). `/experience` route retired via 301 redirect. (DDL review pass 2026-05-22 dropped depth-map [duplicated home §04 Stack] and currently-shipping [duplicated /now page]; sandboxes kept as historical record. Effective signature graduation set = 1: failures.)
 
 ### Foundation
-- [ ] 329-about-feature-lib-and-route (S) — feature-about lib + /about route + /experience 301
-- [ ] 330-about-hero (S) — deps: 329
-- [ ] 331-about-sticky-tab-experience (M) — deps: 329 — Chiang v4 two-col + mobile accordion + component-bank doc
-- [ ] 332-about-how-i-think-manifesto (S) — deps: 329
+- [x] 329-about-feature-lib-and-route (S) — archived
+- [x] 330-about-hero (S) — archived
+- [x] 331-about-sticky-tab-experience (M) — archived
+- [x] 332-about-how-i-think-manifesto (S) — archived
 
 ### DDL signature staging
-- [ ] 333-ddl-about-signatures-scaffold (S) — deps: 329
-- [ ] 334-ddl-depth-map-variants (M) — deps: 333
-- [ ] 335-ddl-failures-variants (M) — deps: 333
-- [ ] 336-ddl-currently-shipping-variants (M) — deps: 333, **task 328 v2 (/now content shape)**
+- [x] 333-ddl-about-signatures-scaffold (S) — archived
+- [x] 334-ddl-depth-map-variants (M) — archived (DROPPED — duplicated home §04 Stack; sandbox kept as historical record)
+- [x] 335-ddl-failures-variants (M) — archived (V1 three-column cards picked 2026-05-22)
+- [x] 336-ddl-currently-shipping-variants (M) — archived (DROPPED — duplicated /now page; sandbox kept as historical record)
 
 ### Composition + polish
-- [ ] 337-about-graduate-signatures (S) — deps: 334, 335, 336
-- [ ] 338-about-cta-and-page-composition (S) — deps: 330, 331, 332, 337
+- [x] 337-about-graduate-signatures (S) — archived
+- [x] 338-about-cta-and-page-composition (S) — archived
 - [ ] 339-about-seo-meta-and-jsonld (S) — deps: 330, 338
 
 ### Content + locale + verify
-- [ ] 340-about-content-authoring (M) — author task, parallel to build
-- [ ] 341-about-bilingual-vi-translation (S) — deps: 340
+- [ ] 340-about-content-authoring (M) — author task, parallel to build — **partly superseded by 343/344/345 (console-managed): heading/lede/CTA copy → 343; principle essays → 344; failure essays → 345. What remains: SEO copy + any final pre-launch wording polish.**
+- [ ] 341-about-bilingual-vi-translation (S) — deps: 340 — **superseded by 343/344/345: bilingual editing is now part of the console form for every console-managed surface. Close once all three land.**
 - [ ] 342-about-e2e-test-pass (M) — deps: 338, 339; uses aqa-expert skill
+- [ ] 343-about-profile-fields-to-console (L) — deps: 338 — **Promote aboutHeading / aboutLede / ctaHeading / ctaLede / contentUpdatedAt to `Profile`; full BE + console form + landing wire-up.**
+- [ ] 344-about-principles-to-console (L) — deps: 338, soft-343 — **New `AboutPrinciple` entity + console CRUD + landing service swap. Drops the hardcoded `PRINCIPLES` const.**
+- [ ] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — **New `AboutFailure` entity + console CRUD + landing & DDL service swap. Drops the hardcoded `getFailureEssays()`.**
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 

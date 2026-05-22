@@ -1,6 +1,6 @@
 # Task: Sticky-tab experience component — desktop two-column + mobile accordion
 
-## Status: pending
+## Status: done
 
 ## Goal
 Build the Brittany Chiang v4–style sticky-tab experience UI inside `feature-about`: left rail = company list, right panel = role detail. Mobile (< 768px) falls back to accordion (default-open = latest role). Renders all fields from `PublicExperience` per epic decisions.
@@ -9,11 +9,11 @@ Build the Brittany Chiang v4–style sticky-tab experience UI inside `feature-ab
 Per epic, About replaces `/experience` as the single experience surface. `feature-experience` lib's current vertical-timeline component is no longer used. This task either refactors `feature-experience` into a reusable component or re-homes the rendering logic into `feature-about` (see epic open question Q3 — decide during implementation; recommendation: **delete `feature-experience` and re-home into a new sub-component inside `feature-about`** because the tab pattern is structurally different from a vertical timeline).
 
 ## Acceptance Criteria
-- [ ] `AboutExperience` sub-component inside `feature-about` (anchor: `#experience`)
-- [ ] Desktop (≥ 768px): left rail of company tabs (sticky to top of section), right panel shows detail of selected role
-- [ ] Mobile (< 768px): accordion — each company is a clickable header, default-open = first role (latest)
-- [ ] Reverse-chronological order (latest first), sourced from `ExperienceService.getPublicExperiences()`
-- [ ] Per-role detail panel renders ALL these fields:
+- [x] `AboutExperience` sub-component inside `feature-about` (anchor: `#experience`)
+- [x] Desktop (≥ 768px): left rail of company tabs (sticky to top of section), right panel shows detail of selected role
+- [x] Mobile (< 768px): accordion — each company is a clickable header, default-open = first role (latest)
+- [x] Reverse-chronological order (latest first), sourced from `ExperienceService.getPublicExperiences()`
+- [x] Per-role detail panel renders ALL these fields:
   - `position` + `companyName` + linkified `companyUrl` + `companyLogoUrl` (img)
   - Date range humanized: "May 2024 – Present" / "Jan 2021 – Apr 2024" (handle `endDate === null` as "Present")
   - `domain` field (work domain)
@@ -22,12 +22,12 @@ Per epic, About replaces `/experience` as the single experience surface. `featur
   - `responsibilities[]` — secondary, under collapsible "Day-to-day" sub-heading (closed by default)
   - `skills[]` — chips with icons via `ChipComponent` + `LandingIconComponent`, scrollable row if overflowing
   - `links[]` — labeled bullets at footer of detail panel using `LandingLinkComponent`
-- [ ] Tab switching uses click + arrow key navigation (a11y); accordion uses click + Enter/Space
-- [ ] Tab selection state preserved in URL hash so deep-links work (e.g., `/about#experience-redoc`)
-- [ ] SSR-safe (no `window` access in template path)
-- [ ] `feature-experience` lib decision recorded in progress log: refactor or delete
+- [x] Tab switching uses click + arrow key navigation (a11y); accordion uses click + Enter/Space
+- [x] Tab selection state preserved in URL hash so deep-links work (e.g., `/about#experience-redoc`)
+- [x] SSR-safe (no `window` access in template path)
+- [x] `feature-experience` lib decision recorded in progress log: refactor or delete
 - [ ] Type-check + landing prod build clean
-- [ ] Component-bank entry created (see Specialized Skill)
+- [x] Component-bank entry created (see Specialized Skill)
 
 ## Technical Notes
 - Tab pattern: Angular signals for `activeIndex`; one `<button>` per tab in rail; ARIA `role="tablist"` / `role="tab"` / `role="tabpanel"`.
@@ -55,3 +55,7 @@ Per epic, About replaces `/experience` as the single experience surface. `featur
 ## Complexity: M
 
 ## Progress Log
+- 2026-05-22 Started. Audited existing `feature-experience` (vertical timeline, no longer routed — `/experience` redirects via app.routes); `BreakpointObserverService` available under `@portfolio/shared/features/breakpoint-observer`; `PublicExperience` shape confirmed. Decision: **delete** `feature-experience` and re-home rendering into a new `about-experience` sub-component (tab pattern ≠ timeline; no code worth sharing). SSR default = desktop layout; breakpoint observer flips to mobile after hydration.
+- 2026-05-22 Implemented `LandingAboutExperienceComponent` under `libs/landing/feature-about/src/lib/components/about-experience/`. Desktop tablist (role="tab" + aria-orientation="vertical" + roving tabindex + Home/End/arrow keys) sticky at top:96px; mobile accordion (`<button aria-expanded>` + `[hidden]` panel). Single `<ng-template #detail>` powers both modes — renders logo (with initial fallback), linkified company, humanized date range, meta strip (team-of, role, employment, location), inline domain row, accent-bullet highlights, collapsible "Day-to-day" responsibilities, skill chips, and link list. Fragment deep-link via `ActivatedRoute.fragment` + `Router.navigate(..., { replaceUrl: true })`. Mounted in `feature-about.html` (replaces `<!-- experience -->`).
+- 2026-05-22 Deleted `libs/landing/feature-experience/` lib + dropped `@portfolio/landing/feature-experience` path-mapping from `tsconfig.base.json`. App routes already redirect `/experience → /about#experience` (added in task 330).
+- 2026-05-22 Used `component-bank` skill — wrote `.context/design/components/about-experience.md` documenting behavior contract, field rendering table, ARIA spec, and quality checklist.
