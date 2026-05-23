@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ApiService } from '@portfolio/console/shared/data-access';
-import { AdminUserService, UsersListResponse } from './admin-user.service';
+import { AdminUserService } from './admin-user.service';
+import { UsersListResponse } from './admin-user.types';
 
 describe('AdminUserService', () => {
   let service: AdminUserService;

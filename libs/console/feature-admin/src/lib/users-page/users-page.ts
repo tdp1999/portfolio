@@ -31,7 +31,8 @@ import {
   withListLoading,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import { AdminUser, AdminUserService } from '../admin-user.service';
+import { AdminUserService } from '../admin-user.service';
+import { AdminUser } from '../admin-user.types';
 
 @Component({
   selector: 'console-users-page',

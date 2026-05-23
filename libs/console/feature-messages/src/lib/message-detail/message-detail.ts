@@ -12,7 +12,8 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { filter, of, switchMap, tap } from 'rxjs';
-import { ContactMessageDetail, MessageService } from '../message.service';
+import { MessageService } from '../message.service';
+import { ContactMessageDetail } from '../message.types';
 
 @Component({
   selector: 'console-message-detail',

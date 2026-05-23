@@ -1,6 +1,17 @@
 export type BlogLanguage = 'EN' | 'VI';
 export type BlogStatus = 'DRAFT' | 'PUBLISHED' | 'PRIVATE' | 'UNLISTED';
 
+export interface ListBlogPostsParams {
+  page: number;
+  limit: number;
+  status?: BlogStatus;
+  language?: BlogLanguage;
+  includeDeleted?: boolean;
+  search?: string;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
+}
+
 export interface BlogCategoryRef {
   id: string;
   name: string;

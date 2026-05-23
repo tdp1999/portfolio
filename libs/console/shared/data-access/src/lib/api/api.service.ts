@@ -1,12 +1,8 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, timeout } from 'rxjs';
 import { API_CONFIG } from './api.config';
-
-export interface RequestOptions {
-  params?: Record<string, string>;
-  context?: HttpContext;
-}
+import { RequestOptions } from './api.types';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -47,12 +43,8 @@ export class ApiService {
 
   private buildUrl(endpoint: string): string {
     const normalized = endpoint.replace(/^\//, '');
-    const prefixes = Array.isArray(this.config.urlPrefix)
-      ? this.config.urlPrefix
-      : [this.config.urlPrefix];
+    const prefixes = Array.isArray(this.config.urlPrefix) ? this.config.urlPrefix : [this.config.urlPrefix];
     const prefix = prefixes.filter(Boolean).join('/');
-    return prefix
-      ? `${this.config.baseUrl}/${prefix}/${normalized}`
-      : `${this.config.baseUrl}/${normalized}`;
+    return prefix ? `${this.config.baseUrl}/${prefix}/${normalized}` : `${this.config.baseUrl}/${normalized}`;
   }
 }

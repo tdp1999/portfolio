@@ -6,7 +6,7 @@ export type { ErrorHandler } from './lib/interceptors';
 export { ERROR_HANDLER, SKIP_ERROR_HANDLING } from './lib/interceptors';
 export { adminGuard, authGuard, guestGuard } from './lib/guards';
 export { ThemeService } from './lib/theme.service';
-export type { Theme } from './lib/theme.service';
+export type { Theme } from './lib/theme.types';
 export { UnreadBadgeService } from './lib/unread-badge.service';
 export { MediaService } from './lib/media/media.service';
 export type { MediaMimeGroup } from '@portfolio/console/shared/util';

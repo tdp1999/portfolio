@@ -1,25 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '@portfolio/console/shared/data-access';
-
-export interface AdminUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'ADMIN' | 'USER';
-  hasPassword: boolean;
-  hasGoogleLinked: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  hasAcceptedInvite: boolean;
-}
-
-export interface UsersListResponse {
-  data: AdminUser[];
-  total: number;
-  page: number;
-  limit: number;
-}
+import { UsersListResponse } from './admin-user.types';
 
 @Injectable({ providedIn: 'root' })
 export class AdminUserService {

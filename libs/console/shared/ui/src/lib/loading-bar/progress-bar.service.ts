@@ -1,8 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-
-export interface ProgressBarHandle {
-  complete(): void;
-}
+import { ProgressBarHandle } from './progress-bar.types';
 
 /**
  * Ref-counted progress bar service. Multiple concurrent `start()` calls keep the

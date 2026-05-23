@@ -3,25 +3,13 @@ import { ApiService } from '@portfolio/console/shared/data-access';
 import {
   AdminBlogPostDetail,
   BlogPostListResponse,
-  BlogStatus,
-  BlogLanguage,
   CreateBlogPostPayload,
   UpdateBlogPostPayload,
   ImportMarkdownPayload,
   BlogCategoryRef,
   BlogTagRef,
+  ListBlogPostsParams,
 } from './blog.types';
-
-export interface ListBlogPostsParams {
-  page: number;
-  limit: number;
-  status?: BlogStatus;
-  language?: BlogLanguage;
-  includeDeleted?: boolean;
-  search?: string;
-  sortBy?: string;
-  sortDir?: 'asc' | 'desc';
-}
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {

@@ -1,8 +1,7 @@
 import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { STORAGE_KEYS } from '@portfolio/console/shared/util';
-
-export type Theme = 'light' | 'dark' | 'system';
+import { Theme } from './theme.types';
 
 const STORAGE_KEY = STORAGE_KEYS.consoleTheme;
 

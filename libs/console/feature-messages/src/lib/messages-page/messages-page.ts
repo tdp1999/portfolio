@@ -18,7 +18,8 @@ import {
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { forkJoin, Observable } from 'rxjs';
-import { ContactMessageListItem, MessageService } from '../message.service';
+import { MessageService } from '../message.service';
+import { ContactMessageListItem } from '../message.types';
 import { RelativeTimePipe } from '../pipes/relative-time.pipe';
 
 const STATUS_OPTIONS = [

@@ -5,7 +5,8 @@ import { of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthStore } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
-import { AdminUserService, AdminUser, UsersListResponse } from '../admin-user.service';
+import { AdminUserService } from '../admin-user.service';
+import { AdminUser, UsersListResponse } from '../admin-user.types';
 import UsersPageComponent from './users-page';
 
 const mockUser = (overrides: Partial<AdminUser> = {}): AdminUser => ({
