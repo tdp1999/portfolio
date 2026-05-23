@@ -1,3 +1,5 @@
+@use '../../styles/section-header';
+
 /* About → Failures & lessons. Graduated V1 from /ddl/about-signatures.
    Three equal-height bordered cards on desktop (≥ 1024px), single column
    below. Lesson line bumped to text-300 + weight 500 so the takeaway stands
@@ -11,8 +13,6 @@
   scroll-margin-top: 96px;
   padding-block: var(--about-section-y, 96px);
 }
-
-@use '../../styles/section-header';
 
 .afa__list {
   list-style: none;

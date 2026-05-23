@@ -1,3 +1,5 @@
+@use '../../styles/section-header';
+
 /* About → Experience block. Two layouts share a single detail template:
    - Desktop (≥ 768px): vertical tablist sticky to top of section, right panel.
    - Mobile  (< 768px): accordion, default-open = first (latest) role.
@@ -12,8 +14,6 @@
   scroll-margin-top: 96px;
   padding-block: var(--about-section-y, 96px);
 }
-
-@use '../../styles/section-header';
 
 .exp__empty {
   color: var(--landing-text-500);

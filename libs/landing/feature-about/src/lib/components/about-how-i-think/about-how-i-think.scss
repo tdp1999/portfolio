@@ -1,3 +1,5 @@
+@use '../../styles/section-header';
+
 /* About → How I think about software. Numbered manifesto block.
    Stacked layout per principle — number reads like a mini-eyebrow above the
    claim. Avoids the cap-line vs baseline misalignment that a side-by-side
@@ -11,8 +13,6 @@
   scroll-margin-top: 96px;
   padding-block: var(--about-section-y, 96px);
 }
-
-@use '../../styles/section-header';
 
 /* Centered prose block — list sits in a 720px column, horizontally centered
    inside the landing-container. Section header (eyebrow + h2) stays at
