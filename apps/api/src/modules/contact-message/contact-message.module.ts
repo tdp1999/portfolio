@@ -20,7 +20,8 @@ import {
 import { ListMessagesHandler, GetMessageByIdHandler, GetUnreadCountHandler } from './application/queries';
 import { MessagePurgeJob } from './application/jobs/message-purge.job';
 import { ContactMessageRepository } from './infrastructure/repositories/contact-message.repository';
-import { TURNSTILE_VERIFIER, TurnstileVerifyService } from './infrastructure/services/turnstile-verify.service';
+import { TURNSTILE_VERIFIER } from './application/ports/turnstile-verifier.port';
+import { TurnstileVerifyService } from './infrastructure/services/turnstile-verify.service';
 import { ContactMessageController } from './presentation/contact-message.controller';
 
 const CommandHandlers = [

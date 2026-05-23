@@ -11,7 +11,7 @@ import { CONTACT_MESSAGE_REPOSITORY } from '../contact-message.token';
 import { SubmitContactMessageSchema } from '../contact-message.dto';
 import { ContactMessage, hashIp } from '../../domain/entities/contact-message.entity';
 import { isDisposableEmail } from '../../infrastructure/utils/disposable-email';
-import { ITurnstileVerifier, TURNSTILE_VERIFIER } from '../../infrastructure/services/turnstile-verify.service';
+import { ITurnstileVerifier, TURNSTILE_VERIFIER } from '../ports/turnstile-verifier.port';
 import { deriveContactSubject, humanizePurpose } from '../utils/purpose-labels';
 import { EMAIL_TEMPLATE_REPOSITORY, IEmailTemplateRepository } from '../../../email-template';
 import { EMAIL_SERVICE, IEmailService } from '../../../email';

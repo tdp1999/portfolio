@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto';
 import { AUTH_CONFIG, AuthConfig } from '../auth.config';
 import { UserRole } from '../../../user/domain/user.types';
 
-export type AccessTokenPayload = {
+type AccessTokenPayload = {
   sub: string;
   role: UserRole;
   tokenVersion: number;
@@ -12,7 +12,7 @@ export type AccessTokenPayload = {
   exp: number;
 };
 
-export type RefreshTokenPayload = {
+type RefreshTokenPayload = {
   sub: string;
   tokenVersion: number;
 };

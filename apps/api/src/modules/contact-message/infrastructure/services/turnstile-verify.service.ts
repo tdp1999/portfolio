@@ -1,12 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ITurnstileVerifier } from '../../application/ports/turnstile-verifier.port';
 
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-
-export interface ITurnstileVerifier {
-  verify(token: string, ip?: string): Promise<boolean>;
-}
-
-export const TURNSTILE_VERIFIER = Symbol('TURNSTILE_VERIFIER');
 
 interface SiteVerifyResponse {
   readonly success: boolean;

@@ -3,7 +3,7 @@ import { DomainError } from '@portfolio/shared/errors';
 import { IContactMessageRepository } from '../ports/contact-message.repository.port';
 import { IEmailTemplateRepository } from '../../../email-template';
 import { IEmailService } from '../../../email';
-import { ITurnstileVerifier } from '../../infrastructure/services/turnstile-verify.service';
+import { ITurnstileVerifier } from '../ports/turnstile-verifier.port';
 
 import { SubmitContactMessageCommand, SubmitContactMessageHandler } from './submit-contact-message.command';
 
