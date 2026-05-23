@@ -30,7 +30,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
-import { startWith } from 'rxjs';
+import { EMPTY, map, startWith, switchMap } from 'rxjs';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse } from '../../profile.types';
 
@@ -144,24 +144,23 @@ export class IdentitySectionComponent {
         width: '900px',
       })
       .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((picked) => {
-        if (!picked) return;
-        const id = picked.id;
-        this.avatarSaving.set(true);
-        this.profileService
-          .updateAvatar(id)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: ({ avatarUrl }) => {
-              this.avatarSaving.set(false);
-              this.avatarId.set(id);
-              this.avatarPreview.set(avatarUrl);
-              this.toast.success('Avatar updated');
-              this.saved.emit({ avatarId: id, avatarUrl });
-            },
-            error: () => this.avatarSaving.set(false),
-          });
+      .pipe(
+        switchMap((picked) => {
+          if (!picked) return EMPTY;
+          this.avatarSaving.set(true);
+          return this.profileService.updateAvatar(picked.id).pipe(map((res) => ({ id: picked.id, ...res })));
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: ({ id, avatarUrl }) => {
+          this.avatarSaving.set(false);
+          this.avatarId.set(id);
+          this.avatarPreview.set(avatarUrl);
+          this.toast.success('Avatar updated');
+          this.saved.emit({ avatarId: id, avatarUrl });
+        },
+        error: () => this.avatarSaving.set(false),
       });
   }
 

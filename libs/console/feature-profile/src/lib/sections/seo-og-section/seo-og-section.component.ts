@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { startWith } from 'rxjs';
+import { EMPTY, map, startWith, switchMap } from 'rxjs';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -151,24 +151,23 @@ export class SeoOgSectionComponent {
         width: '900px',
       })
       .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((picked) => {
-        if (!picked) return;
-        const id = picked.id;
-        this.ogImageSaving.set(true);
-        this.profileService
-          .updateOgImage(id)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: ({ ogImageUrl }) => {
-              this.ogImageSaving.set(false);
-              this.ogImageId.set(id);
-              this.ogImagePreview.set(ogImageUrl);
-              this.toast.success('OG image updated');
-              this.saved.emit({ ogImageId: id, ogImageUrl });
-            },
-            error: () => this.ogImageSaving.set(false),
-          });
+      .pipe(
+        switchMap((picked) => {
+          if (!picked) return EMPTY;
+          this.ogImageSaving.set(true);
+          return this.profileService.updateOgImage(picked.id).pipe(map((res) => ({ id: picked.id, ...res })));
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: ({ id, ogImageUrl }) => {
+          this.ogImageSaving.set(false);
+          this.ogImageId.set(id);
+          this.ogImagePreview.set(ogImageUrl);
+          this.toast.success('OG image updated');
+          this.saved.emit({ ogImageId: id, ogImageUrl });
+        },
+        error: () => this.ogImageSaving.set(false),
       });
   }
 
