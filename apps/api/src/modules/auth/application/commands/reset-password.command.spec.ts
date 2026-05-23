@@ -1,5 +1,5 @@
 import { ResetPasswordCommand, ResetPasswordHandler } from './reset-password.command';
-import { IUserRepository } from '../../../user/application/ports/user.repository.port';
+import { IUserRepository, UserUpdateData } from '../../../user/application/ports/user.repository.port';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
 import { AuthErrorCode } from '@portfolio/shared/errors';
@@ -112,7 +112,7 @@ describe('ResetPasswordHandler', () => {
 
     await handler.execute(new ResetPasswordCommand(validDto));
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     expect(updatedUser.password).toBe('new-hashed-pw');
     expect(updatedUser.passwordResetToken).toBeNull();
     expect(updatedUser.passwordResetExpiresAt).toBeNull();

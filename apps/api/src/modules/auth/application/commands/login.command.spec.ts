@@ -1,5 +1,5 @@
 import { LoginCommand, LoginHandler, LoginResult } from './login.command';
-import { IUserRepository } from '../../../user/application/ports/user.repository.port';
+import { IUserRepository, UserUpdateData } from '../../../user/application/ports/user.repository.port';
 import { TokenService } from '../services/token.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { User } from '../../../user/domain/entities/user.entity';
@@ -179,7 +179,7 @@ describe('LoginHandler', () => {
     }
 
     const updateCall = repo.update.mock.calls[0];
-    const updatedUser = updateCall[1] as User;
+    const updatedUser = updateCall[1] as UserUpdateData;
     expect(updatedUser.failedLoginAttempts).toBe(5);
     expect(updatedUser.lockedUntil).not.toBeNull();
     const expectedLock = Date.now() + 1 * 60 * 1000;
@@ -193,7 +193,7 @@ describe('LoginHandler', () => {
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     expect(updatedUser.failedLoginAttempts).toBe(6);
     const expectedLock = Date.now() + 5 * 60 * 1000;
     expect(updatedUser.lockedUntil!.getTime()).toBeCloseTo(expectedLock, -3);
@@ -206,7 +206,7 @@ describe('LoginHandler', () => {
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     const expectedLock = Date.now() + 15 * 60 * 1000;
     expect(updatedUser.lockedUntil!.getTime()).toBeCloseTo(expectedLock, -3);
   });
@@ -218,7 +218,7 @@ describe('LoginHandler', () => {
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     const expectedLock = Date.now() + 60 * 60 * 1000;
     expect(updatedUser.lockedUntil!.getTime()).toBeCloseTo(expectedLock, -3);
   });
@@ -230,7 +230,7 @@ describe('LoginHandler', () => {
 
     await expect(handler.execute(new LoginCommand(validDto))).rejects.toBeDefined();
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     expect(updatedUser.failedLoginAttempts).toBe(4);
     expect(updatedUser.lockedUntil).toBeNull();
   });

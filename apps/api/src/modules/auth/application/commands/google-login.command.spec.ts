@@ -1,5 +1,5 @@
 import { GoogleLoginCommand, GoogleLoginHandler, GoogleLoginResult } from './google-login.command';
-import { IUserRepository } from '../../../user/application/ports/user.repository.port';
+import { IUserRepository, UserUpdateData } from '../../../user/application/ports/user.repository.port';
 import { TokenService } from '../services/token.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { User } from '../../../user/domain/entities/user.entity';
@@ -91,7 +91,7 @@ describe('GoogleLoginHandler', () => {
       expect(result.refreshToken).toBe('refresh-token-jwt');
       expect(repo.update).toHaveBeenCalledWith('user-id-123', expect.objectContaining({}));
       // Should have linked google + set refresh token
-      const updatedUser = repo.update.mock.calls[0][1] as User;
+      const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
       expect(updatedUser.googleId).toBe('google-123');
       expect(updatedUser.refreshToken).toBe(hashRefreshToken('refresh-token-jwt'));
     });
@@ -104,7 +104,7 @@ describe('GoogleLoginHandler', () => {
 
       expect(result.accessToken).toBe('access-token-123');
       // Should still update refresh token but googleId stays the same
-      const updatedUser = repo.update.mock.calls[0][1] as User;
+      const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
       expect(updatedUser.googleId).toBe('google-123');
     });
 
@@ -114,7 +114,7 @@ describe('GoogleLoginHandler', () => {
 
       await handler.execute(new GoogleLoginCommand(validProfile));
 
-      const updatedUser = repo.update.mock.calls[0][1] as User;
+      const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
       expect(updatedUser.failedLoginAttempts).toBe(0);
     });
 
@@ -168,7 +168,7 @@ describe('GoogleLoginHandler', () => {
 
       expect(result.accessToken).toBe('access-token-123');
       // Should also unlock the account
-      const updatedUser = repo.update.mock.calls[0][1] as User;
+      const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
       expect(updatedUser.failedLoginAttempts).toBe(0);
     });
   });

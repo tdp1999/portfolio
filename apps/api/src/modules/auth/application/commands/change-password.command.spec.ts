@@ -1,5 +1,5 @@
 import { ChangePasswordCommand, ChangePasswordHandler } from './change-password.command';
-import { IUserRepository } from '../../../user/application/ports/user.repository.port';
+import { IUserRepository, UserUpdateData } from '../../../user/application/ports/user.repository.port';
 import { User } from '../../../user/domain/entities/user.entity';
 import { DomainError } from '@portfolio/shared/errors';
 import { AuthErrorCode } from '@portfolio/shared/errors';
@@ -88,7 +88,7 @@ describe('ChangePasswordHandler', () => {
 
     await handler.execute(new ChangePasswordCommand(userId, validDto));
 
-    const updatedUser = repo.update.mock.calls[0][1] as User;
+    const updatedUser = repo.update.mock.calls[0][1] as UserUpdateData;
     expect(updatedUser.password).toBe('new-hashed-pw');
     expect(updatedUser.tokenVersion).toBe(1);
     expect(hashUtil.hashPassword).toHaveBeenCalledWith('NewPass1!');
