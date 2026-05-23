@@ -1,7 +1,6 @@
 import { DOCUMENT, Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-
-export type LandingTheme = 'dark' | 'light';
+import { LandingTheme } from './theme.types';
 
 const STORAGE_KEY = 'landing_theme';
 const COOKIE_KEY = 'landing_theme';
