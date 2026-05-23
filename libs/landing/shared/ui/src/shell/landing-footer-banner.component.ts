@@ -40,7 +40,7 @@ export class LandingFooterBannerComponent {
     {
       title: 'About',
       routes: [
-        { label: 'Experience', href: '/experience' },
+        { label: 'About', href: '/about' },
         { label: 'Projects', href: '/projects' },
         { label: 'Contact', href: '/#get-in-touch' },
       ],

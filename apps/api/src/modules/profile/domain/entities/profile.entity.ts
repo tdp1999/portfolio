@@ -28,6 +28,9 @@ interface ProfileAggregateProps {
   socialLinks: SocialLinks;
   seoOg: SeoOg;
   landingContent: LandingContentBlocks;
+  /** Set by `markContentUpdated()` whenever the author saves narrative copy.
+   *  Null on a freshly-created profile that hasn't been content-edited yet. */
+  contentUpdatedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   createdById: string;
@@ -205,8 +208,28 @@ export class Profile {
     return this.props.landingContent.footerTagline;
   }
 
+  get aboutHeading(): TranslatableJson | null {
+    return this.props.landingContent.aboutHeading;
+  }
+
+  get aboutLede(): TranslatableJson | null {
+    return this.props.landingContent.aboutLede;
+  }
+
+  get ctaHeading(): TranslatableJson | null {
+    return this.props.landingContent.ctaHeading;
+  }
+
+  get ctaLede(): TranslatableJson | null {
+    return this.props.landingContent.ctaLede;
+  }
+
   get coreStack(): string[] {
     return this.props.landingContent.coreStack;
+  }
+
+  get contentUpdatedAt(): Date | null {
+    return this.props.contentUpdatedAt;
   }
 
   get createdAt(): Date {
@@ -281,8 +304,13 @@ export class Profile {
         selectedWorkIntro: data.selectedWorkIntro ?? null,
         contactIntro: data.contactIntro ?? null,
         footerTagline: data.footerTagline ?? null,
+        aboutHeading: data.aboutHeading ?? null,
+        aboutLede: data.aboutLede ?? null,
+        ctaHeading: data.ctaHeading ?? null,
+        ctaLede: data.ctaLede ?? null,
         coreStack: data.coreStack ?? [],
       }),
+      contentUpdatedAt: null,
       createdAt: now,
       updatedAt: now,
       createdById: userId,
@@ -339,8 +367,13 @@ export class Profile {
         selectedWorkIntro: props.selectedWorkIntro,
         contactIntro: props.contactIntro,
         footerTagline: props.footerTagline,
+        aboutHeading: props.aboutHeading,
+        aboutLede: props.aboutLede,
+        ctaHeading: props.ctaHeading,
+        ctaLede: props.ctaLede,
         coreStack: props.coreStack ?? [],
       }),
+      contentUpdatedAt: props.contentUpdatedAt,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
       createdById: props.createdById,
@@ -425,6 +458,19 @@ export class Profile {
     return this.withSeoOg(newSeoOg, userId);
   }
 
+  /** Stamps `contentUpdatedAt` to "now". Called explicitly by the author from
+   *  the console (separate from any per-save bump) so the /about hero "Last
+   *  updated" line tracks narrative-edit cadence rather than every DB write. */
+  markContentUpdated(userId: string): Profile {
+    const now = TemporalValue.now();
+    return new Profile({
+      ...this.props,
+      contentUpdatedAt: now,
+      updatedAt: now,
+      updatedById: userId,
+    });
+  }
+
   // --- Serialization ---
 
   toProps(): IProfileProps {
@@ -463,7 +509,12 @@ export class Profile {
       selectedWorkIntro: this.props.landingContent.selectedWorkIntro,
       contactIntro: this.props.landingContent.contactIntro,
       footerTagline: this.props.landingContent.footerTagline,
+      aboutHeading: this.props.landingContent.aboutHeading,
+      aboutLede: this.props.landingContent.aboutLede,
+      ctaHeading: this.props.landingContent.ctaHeading,
+      ctaLede: this.props.landingContent.ctaLede,
       coreStack: this.props.landingContent.coreStack,
+      contentUpdatedAt: this.props.contentUpdatedAt,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
       createdById: this.props.createdById,

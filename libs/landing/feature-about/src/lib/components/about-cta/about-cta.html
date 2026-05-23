@@ -4,22 +4,9 @@
       <landing-eyebrow [label]="['04', 'Next steps']" [accentFirst]="true" [trailingRule]="true" />
       <div class="about-section__title-block">
         <landing-heading id="cta-heading" [level]="2" class="about-section__title">
-          <landing-t>
-            <ng-container en>If any of this resonated, the door is open.</ng-container>
-            <ng-container vi>Nếu bạn thấy hợp, cứ gõ cửa.</ng-container>
-          </landing-t>
+          {{ heading() }}
         </landing-heading>
-        <p class="about-section__lede">
-          <landing-t>
-            <ng-container en
-              >Engagement, freelance, or a long-form conversation about a hard system — pick the door that
-              fits.</ng-container
-            >
-            <ng-container vi
-              >Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.</ng-container
-            >
-          </landing-t>
-        </p>
+        <p class="about-section__lede">{{ lede() }}</p>
       </div>
     </header>
 

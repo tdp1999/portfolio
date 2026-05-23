@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { startWith } from 'rxjs';
 import {
   FormSnapshotDirective,
@@ -36,6 +37,7 @@ function isEmpty(t: { en: string; vi: string }): boolean {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonModule,
     SectionCardComponent,
     FormSnapshotDirective,
     ServerErrorDirective,
@@ -59,11 +61,20 @@ export class LandingContentSectionComponent {
     selectedWorkIntro: this.bilingualGroup(),
     contactIntro: this.bilingualGroup(),
     footerTagline: this.bilingualGroup(),
+    aboutHeading: this.bilingualGroup(),
+    aboutLede: this.bilingualGroup(),
+    ctaHeading: this.bilingualGroup(),
+    ctaLede: this.bilingualGroup(),
     coreStack: this.fb.control('', { nonNullable: true }),
   });
 
   readonly saving = signal(false);
   readonly lastSaved = signal<Date | null>(null);
+  /** Mirrored from `Profile.contentUpdatedAt` — distinct from `lastSaved`
+   *  (which only reflects this session). Drives the /about hero "Last
+   *  updated" line and the muted timestamp next to the Mark-updated button. */
+  readonly contentUpdatedAt = signal<Date | null>(null);
+  readonly markingUpdated = signal(false);
   private readonly dirty = signal(false);
   private readonly invalid = signal(false);
 
@@ -89,8 +100,13 @@ export class LandingContentSectionComponent {
         },
         contactIntro: { en: data.contactIntro?.en ?? '', vi: data.contactIntro?.vi ?? '' },
         footerTagline: { en: data.footerTagline?.en ?? '', vi: data.footerTagline?.vi ?? '' },
+        aboutHeading: { en: data.aboutHeading?.en ?? '', vi: data.aboutHeading?.vi ?? '' },
+        aboutLede: { en: data.aboutLede?.en ?? '', vi: data.aboutLede?.vi ?? '' },
+        ctaHeading: { en: data.ctaHeading?.en ?? '', vi: data.ctaHeading?.vi ?? '' },
+        ctaLede: { en: data.ctaLede?.en ?? '', vi: data.ctaLede?.vi ?? '' },
         coreStack: (data.coreStack ?? []).join(', '),
       });
+      this.contentUpdatedAt.set(data.contentUpdatedAt ? new Date(data.contentUpdatedAt) : null);
       this.hydrated = true;
     });
     this.form.events.pipe(startWith(null), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -116,6 +132,10 @@ export class LandingContentSectionComponent {
       selectedWorkIntro: isEmpty(v.selectedWorkIntro) ? null : v.selectedWorkIntro,
       contactIntro: isEmpty(v.contactIntro) ? null : v.contactIntro,
       footerTagline: isEmpty(v.footerTagline) ? null : v.footerTagline,
+      aboutHeading: isEmpty(v.aboutHeading) ? null : v.aboutHeading,
+      aboutLede: isEmpty(v.aboutLede) ? null : v.aboutLede,
+      ctaHeading: isEmpty(v.ctaHeading) ? null : v.ctaHeading,
+      ctaLede: isEmpty(v.ctaLede) ? null : v.ctaLede,
       coreStack,
     };
     this.profileService
@@ -130,6 +150,26 @@ export class LandingContentSectionComponent {
           this.saved.emit(payload);
         },
         error: () => this.saving.set(false),
+      });
+  }
+
+  /** Stamp `Profile.contentUpdatedAt = now()` on the BE — author confirms
+   *  the published /about copy is current. Independent of the per-save dirty
+   *  flow above so the timestamp tracks narrative cadence, not every field
+   *  tweak. */
+  markUpdatedNow(): void {
+    if (this.markingUpdated()) return;
+    this.markingUpdated.set(true);
+    this.profileService
+      .markContentUpdated()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.markingUpdated.set(false);
+          this.contentUpdatedAt.set(new Date(res.contentUpdatedAt));
+          this.toast.success('Marked content as updated');
+        },
+        error: () => this.markingUpdated.set(false),
       });
   }
 

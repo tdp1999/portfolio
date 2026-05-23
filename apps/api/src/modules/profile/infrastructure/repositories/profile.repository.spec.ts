@@ -181,23 +181,32 @@ describe('ProfileRepository — section updates', () => {
 
   describe('updateLandingContent', () => {
     const tagline = { en: 'Build delightful UIs', vi: 'Xay dung giao dien thu vi' };
+    const aboutHeading = { en: 'About', vi: 'Ve toi' };
     const blocks = LandingContentBlocks.fromPersistence({
       tagline,
       stackIntro: null,
       selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
+      aboutHeading,
+      aboutLede: null,
+      ctaHeading: null,
+      ctaLede: null,
       coreStack: [],
     });
 
-    it('writes only landing-content columns + updatedById', async () => {
+    it('writes every landing-content column + updatedById', async () => {
       await repo.updateLandingContent(userId, blocks, updatedById);
 
       expect(whereOf(update)).toEqual({ userId });
       expect(keysOf(update)).toEqual(
         [
+          'aboutHeading',
+          'aboutLede',
           'contactIntro',
           'coreStack',
+          'ctaHeading',
+          'ctaLede',
           'footerTagline',
           'selectedWorkIntro',
           'stackIntro',
@@ -207,11 +216,31 @@ describe('ProfileRepository — section updates', () => {
       );
       const data = dataOf(update);
       expect(data.tagline).toEqual(tagline);
+      expect(data.aboutHeading).toEqual(aboutHeading);
+      expect(data.aboutLede).toBe(Prisma.DbNull);
+      expect(data.ctaHeading).toBe(Prisma.DbNull);
+      expect(data.ctaLede).toBe(Prisma.DbNull);
       expect(data.stackIntro).toBe(Prisma.DbNull);
       expect(data.selectedWorkIntro).toBe(Prisma.DbNull);
       expect(data.contactIntro).toBe(Prisma.DbNull);
       expect(data.footerTagline).toBe(Prisma.DbNull);
       expect(data.coreStack).toEqual([]);
+    });
+  });
+
+  // --- markContentUpdated ---
+
+  describe('markContentUpdated', () => {
+    it('writes contentUpdatedAt + updatedById only', async () => {
+      const stamp = new Date('2026-05-23T10:00:00.000Z');
+
+      await repo.markContentUpdated(userId, stamp, updatedById);
+
+      expect(whereOf(update)).toEqual({ userId });
+      expect(keysOf(update)).toEqual(['contentUpdatedAt', 'updatedById'].sort());
+      const data = dataOf(update);
+      expect(data.contentUpdatedAt).toEqual(stamp);
+      expect(data.updatedById).toBe(updatedById);
     });
   });
 });

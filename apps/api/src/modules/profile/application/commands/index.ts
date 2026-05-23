@@ -16,3 +16,7 @@ export {
   UpdateProfileLandingContentCommand,
   UpdateProfileLandingContentHandler,
 } from './update-profile-landing-content.command';
+export {
+  MarkProfileContentUpdatedCommand,
+  MarkProfileContentUpdatedHandler,
+} from './mark-profile-content-updated.command';

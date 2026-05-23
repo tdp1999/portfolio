@@ -16,6 +16,10 @@ import {
   UpdateProfileLandingContentCommand,
   UpdateProfileLandingContentHandler,
 } from './update-profile-landing-content.command';
+import {
+  MarkProfileContentUpdatedCommand,
+  MarkProfileContentUpdatedHandler,
+} from './mark-profile-content-updated.command';
 import { IProfileRepository } from '../ports/profile.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
@@ -64,7 +68,12 @@ describe('Profile Commands', () => {
     selectedWorkIntro: null,
     contactIntro: null,
     footerTagline: null,
+    aboutHeading: null,
+    aboutLede: null,
+    ctaHeading: null,
+    ctaLede: null,
     coreStack: [],
+    contentUpdatedAt: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -88,6 +97,7 @@ describe('Profile Commands', () => {
       updateSocialLinks: jest.fn(),
       updateSeoOg: jest.fn(),
       updateLandingContent: jest.fn(),
+      markContentUpdated: jest.fn(),
     };
     mediaRepo = {
       findById: jest.fn(),
@@ -363,6 +373,10 @@ describe('Profile Commands', () => {
       selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
+      aboutHeading: { en: 'About', vi: 'Ve toi' },
+      aboutLede: null,
+      ctaHeading: null,
+      ctaLede: null,
       coreStack: [],
     };
 
@@ -385,6 +399,10 @@ describe('Profile Commands', () => {
             selectedWorkIntro: null,
             contactIntro: null,
             footerTagline: null,
+            aboutHeading: null,
+            aboutLede: null,
+            ctaHeading: null,
+            ctaLede: null,
             coreStack: [],
           },
           userId
@@ -399,6 +417,66 @@ describe('Profile Commands', () => {
         handler.execute(new UpdateProfileLandingContentCommand({ tagline: 'not-an-object' }, userId))
       ).rejects.toMatchObject({ errorCode: 'PROFILE_INVALID_INPUT' });
       expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+
+    it('should persist the new /about copy fields through the VO', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(
+        new UpdateProfileLandingContentCommand(
+          {
+            tagline: null,
+            stackIntro: null,
+            selectedWorkIntro: null,
+            contactIntro: null,
+            footerTagline: null,
+            aboutHeading: { en: 'About — engineering for hiring teams', vi: 'Ve toi' },
+            aboutLede: { en: 'Six years shipping.', vi: 'Sau nam ship.' },
+            ctaHeading: { en: 'Door is open', vi: 'Cua mo' },
+            ctaLede: { en: 'Pick the door that fits.', vi: 'Chon cua phu hop.' },
+            coreStack: [],
+          },
+          userId
+        )
+      );
+
+      const vo = profileRepo.updateLandingContent.mock.calls[0][1];
+      expect(vo.aboutHeading).toEqual({ en: 'About — engineering for hiring teams', vi: 'Ve toi' });
+      expect(vo.aboutLede).toEqual({ en: 'Six years shipping.', vi: 'Sau nam ship.' });
+      expect(vo.ctaHeading).toEqual({ en: 'Door is open', vi: 'Cua mo' });
+      expect(vo.ctaLede).toEqual({ en: 'Pick the door that fits.', vi: 'Chon cua phu hop.' });
+    });
+  });
+
+  // --- Mark Profile Content Updated ---
+
+  describe('MarkProfileContentUpdatedHandler', () => {
+    let handler: MarkProfileContentUpdatedHandler;
+    beforeEach(() => (handler = new MarkProfileContentUpdatedHandler(profileRepo)));
+
+    it('should stamp contentUpdatedAt via the repo and return the ISO string', async () => {
+      const before = Date.now();
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      const result = await handler.execute(new MarkProfileContentUpdatedCommand(userId));
+
+      expect(profileRepo.markContentUpdated).toHaveBeenCalledTimes(1);
+      const [persistedUserId, persistedStamp, persistedEditor] = profileRepo.markContentUpdated.mock.calls[0];
+      expect(persistedUserId).toBe(userId);
+      expect(persistedEditor).toBe(userId);
+      expect(persistedStamp.getTime()).toBeGreaterThanOrEqual(before);
+      // Returned ISO string round-trips to the same instant the repo received.
+      expect(new Date(result.contentUpdatedAt).getTime()).toBe(persistedStamp.getTime());
+    });
+
+    it('should throw NOT_FOUND when profile is missing', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new MarkProfileContentUpdatedCommand(userId))).rejects.toMatchObject({
+        statusCode: 404,
+        errorCode: 'PROFILE_NOT_FOUND',
+      });
+      expect(profileRepo.markContentUpdated).not.toHaveBeenCalled();
     });
   });
 });

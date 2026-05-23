@@ -42,6 +42,10 @@ export class UpdateProfileLandingContentHandler implements ICommandHandler<Updat
       selectedWorkIntro: data.selectedWorkIntro,
       contactIntro: data.contactIntro,
       footerTagline: data.footerTagline,
+      aboutHeading: data.aboutHeading,
+      aboutLede: data.aboutLede,
+      ctaHeading: data.ctaHeading,
+      ctaLede: data.ctaLede,
       coreStack: data.coreStack,
     });
     const updated = profile.withLandingContent(newLandingContent, command.userId);

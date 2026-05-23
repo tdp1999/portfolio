@@ -44,7 +44,16 @@ export type PublicProfileResponse = {
   selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  /** /about page-shell hero heading + lede. Plain text per locale. */
+  aboutHeading: TranslatableJson | null;
+  aboutLede: TranslatableJson | null;
+  /** /about §04 Next steps heading + lede. Plain text per locale. */
+  ctaHeading: TranslatableJson | null;
+  ctaLede: TranslatableJson | null;
   coreStack: string[];
+  /** ISO timestamp of the author's last narrative-copy save (drives the
+   *  /about hero "Last updated" line). Null until the first save. */
+  contentUpdatedAt: string | null;
 };
 
 export type ProfileJsonLd = {

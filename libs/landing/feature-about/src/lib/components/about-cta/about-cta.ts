@@ -7,8 +7,8 @@ import {
   LandingHeadingComponent,
   LandingLinkComponent,
   LandingLocaleService,
-  LandingTComponent,
 } from '@portfolio/landing/shared/ui';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 
 type CtaItem = {
   readonly id: 'contact' | 'linkedin' | 'github' | 'cv';
@@ -18,6 +18,15 @@ type CtaItem = {
   readonly kind?: 'internal' | 'external' | 'download';
 };
 
+const DEFAULT_HEADING_BY_LOCALE = {
+  en: 'If any of this resonated, the door is open.',
+  vi: 'Nếu bạn thấy hợp, cứ gõ cửa.',
+} as const;
+const DEFAULT_LEDE_BY_LOCALE = {
+  en: 'Engagement, freelance, or a long-form conversation about a hard system — pick the door that fits.',
+  vi: 'Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.',
+} as const;
+
 /**
  * About → §04 What's next. Closing CTA section: one prompt line + a row of
  * link CTAs. No form (the form lives on `/contact`) — these are pure
@@ -25,20 +34,30 @@ type CtaItem = {
  * guardrail.
  *
  * The Contact link is always present; LinkedIn, GitHub, and Download CV are
- * pulled from `ProfileService` and only rendered when their URL exists. Copy
- * is placeholder for v1 — author replaces in task 340.
+ * pulled from `ProfileService` and only rendered when their URL exists.
+ *
+ * Heading + lede default to a tight locale-aware fallback so a freshly-seeded
+ * profile still renders cleanly; the author overrides via Console
+ * (`Profile.ctaHeading` / `Profile.ctaLede`).
  */
 @Component({
   selector: 'landing-about-cta',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ContainerComponent, EyebrowComponent, LandingHeadingComponent, LandingLinkComponent, LandingTComponent],
+  imports: [ContainerComponent, EyebrowComponent, LandingHeadingComponent, LandingLinkComponent],
   templateUrl: './about-cta.html',
   styleUrl: './about-cta.scss',
 })
 export class LandingAboutCtaComponent {
   private readonly profile = toSignal(inject(ProfileService).getPublicProfile(), { initialValue: null });
   protected readonly locale = inject(LandingLocaleService).locale;
+
+  protected readonly heading = computed(
+    () => getLocalized(this.profile()?.ctaHeading, this.locale()) || DEFAULT_HEADING_BY_LOCALE[this.locale()]
+  );
+  protected readonly lede = computed(
+    () => getLocalized(this.profile()?.ctaLede, this.locale()) || DEFAULT_LEDE_BY_LOCALE[this.locale()]
+  );
 
   protected readonly ctas = computed<readonly CtaItem[]>(() => {
     const p = this.profile();

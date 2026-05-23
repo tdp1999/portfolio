@@ -144,9 +144,20 @@ export class ProfileRepository implements IProfileRepository {
         selectedWorkIntro: (landingContent.selectedWorkIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         contactIntro: (landingContent.contactIntro as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         footerTagline: (landingContent.footerTagline as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        aboutHeading: (landingContent.aboutHeading as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        aboutLede: (landingContent.aboutLede as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        ctaHeading: (landingContent.ctaHeading as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+        ctaLede: (landingContent.ctaLede as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         coreStack: landingContent.coreStack as unknown as Prisma.InputJsonValue,
         updatedById,
       },
+    });
+  }
+
+  async markContentUpdated(userId: string, contentUpdatedAt: Date, updatedById: string): Promise<void> {
+    await this.prisma.profile.update({
+      where: { userId },
+      data: { contentUpdatedAt, updatedById },
     });
   }
 }

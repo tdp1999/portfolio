@@ -41,7 +41,12 @@ function buildProfileProps(overrides: Partial<IProfileProps> = {}): IProfileProp
     selectedWorkIntro: null,
     contactIntro: null,
     footerTagline: null,
+    aboutHeading: null,
+    aboutLede: null,
+    ctaHeading: null,
+    ctaLede: null,
     coreStack: [],
+    contentUpdatedAt: null,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-06-01'),
     createdById: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
@@ -124,6 +129,36 @@ describe('ProfilePresenter', () => {
       const profileWithZalo = Profile.load(buildProfileProps({ phoneZalo: '+84901234567' }));
       const withZalo = ProfilePresenter.toPublicResponse(profileWithZalo, avatarUrl, ogImageUrl);
       expect(withZalo.phoneZalo).toBe('+84901234567');
+    });
+
+    it('should expose the /about narrative copy fields (null when unset)', () => {
+      expect(result.aboutHeading).toBeNull();
+      expect(result.aboutLede).toBeNull();
+      expect(result.ctaHeading).toBeNull();
+      expect(result.ctaLede).toBeNull();
+    });
+
+    it('should serialize contentUpdatedAt as an ISO string when set', () => {
+      const stamped = Profile.load(buildProfileProps({ contentUpdatedAt: new Date('2026-05-23T10:00:00.000Z') }));
+      const dto = ProfilePresenter.toPublicResponse(stamped, avatarUrl, ogImageUrl);
+      expect(dto.contentUpdatedAt).toBe('2026-05-23T10:00:00.000Z');
+    });
+
+    it('should expose contentUpdatedAt as null on a fresh profile', () => {
+      expect(result.contentUpdatedAt).toBeNull();
+    });
+
+    it('should pass aboutHeading/aboutLede/ctaHeading/ctaLede through when set', () => {
+      const aboutHeading = { en: 'Hello', vi: 'Xin chao' };
+      const aboutLede = { en: 'Lede', vi: 'Mo dau' };
+      const ctaHeading = { en: 'CTA', vi: 'Hanh dong' };
+      const ctaLede = { en: 'Pick the door', vi: 'Chon cua' };
+      const populated = Profile.load(buildProfileProps({ aboutHeading, aboutLede, ctaHeading, ctaLede }));
+      const dto = ProfilePresenter.toPublicResponse(populated, avatarUrl, ogImageUrl);
+      expect(dto.aboutHeading).toEqual(aboutHeading);
+      expect(dto.aboutLede).toEqual(aboutLede);
+      expect(dto.ctaHeading).toEqual(ctaHeading);
+      expect(dto.ctaLede).toEqual(ctaLede);
     });
   });
 

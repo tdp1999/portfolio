@@ -55,7 +55,15 @@ export type ProfilePublicResponseDto = {
   selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  /** /about narrative copy — bilingual plain text. */
+  aboutHeading: TranslatableJson | null;
+  aboutLede: TranslatableJson | null;
+  ctaHeading: TranslatableJson | null;
+  ctaLede: TranslatableJson | null;
   coreStack: string[];
+  /** ISO timestamp of the author's last `markContentUpdated` action. Null until
+   *  the first save. Drives the /about hero "Last updated" line. */
+  contentUpdatedAt: string | null;
 };
 
 export type ProfileAdminResponseDto = ProfilePublicResponseDto & {

@@ -33,9 +33,14 @@ const RAW_PROFILE: PrismaProfile = {
   selectedWorkIntro: null,
   contactIntro: null,
   footerTagline: null,
+  aboutHeading: null,
+  aboutLede: null,
+  ctaHeading: null,
+  ctaLede: null,
   coreStack: ['Angular', 'TypeScript', 'Angular Material'],
   timezones: [],
   canonicalUrl: null,
+  contentUpdatedAt: null,
   avatarId: null,
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),
@@ -99,6 +104,31 @@ describe('ProfileMapper', () => {
       const prisma = ProfileMapper.toPrisma(domain);
       expect(domain.phoneZalo).toBe('+84901234567');
       expect(prisma.phoneZalo).toBe('+84901234567');
+    });
+
+    it('should preserve about narrative copy + contentUpdatedAt through both directions', () => {
+      const stamp = new Date('2026-05-23T10:00:00.000Z');
+      const raw: PrismaProfile = {
+        ...RAW_PROFILE,
+        aboutHeading: { en: 'About', vi: 'Ve toi' },
+        aboutLede: { en: 'Lede', vi: 'Mo dau' },
+        ctaHeading: { en: 'CTA', vi: 'Hanh dong' },
+        ctaLede: { en: 'Door', vi: 'Cua' },
+        contentUpdatedAt: stamp,
+      };
+      const domain = ProfileMapper.toDomain(raw);
+      expect(domain.aboutHeading).toEqual({ en: 'About', vi: 'Ve toi' });
+      expect(domain.aboutLede).toEqual({ en: 'Lede', vi: 'Mo dau' });
+      expect(domain.ctaHeading).toEqual({ en: 'CTA', vi: 'Hanh dong' });
+      expect(domain.ctaLede).toEqual({ en: 'Door', vi: 'Cua' });
+      expect(domain.contentUpdatedAt).toEqual(stamp);
+
+      const prisma = ProfileMapper.toPrisma(domain);
+      expect(prisma.aboutHeading).toEqual({ en: 'About', vi: 'Ve toi' });
+      expect(prisma.aboutLede).toEqual({ en: 'Lede', vi: 'Mo dau' });
+      expect(prisma.ctaHeading).toEqual({ en: 'CTA', vi: 'Hanh dong' });
+      expect(prisma.ctaLede).toEqual({ en: 'Door', vi: 'Cua' });
+      expect(prisma.contentUpdatedAt).toEqual(stamp);
     });
   });
 });

@@ -38,7 +38,12 @@ export class ProfilePresenter {
       selectedWorkIntro: profile.selectedWorkIntro,
       contactIntro: profile.contactIntro,
       footerTagline: profile.footerTagline,
+      aboutHeading: profile.aboutHeading,
+      aboutLede: profile.aboutLede,
+      ctaHeading: profile.ctaHeading,
+      ctaLede: profile.ctaLede,
       coreStack: profile.coreStack,
+      contentUpdatedAt: profile.contentUpdatedAt?.toISOString() ?? null,
     };
   }
 

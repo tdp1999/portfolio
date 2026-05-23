@@ -29,4 +29,5 @@ export type IProfileRepository = {
   updateSocialLinks(userId: string, socialLinks: SocialLinks, updatedById: string): Promise<void>;
   updateSeoOg(userId: string, seoOg: SeoOg, updatedById: string): Promise<void>;
   updateLandingContent(userId: string, landingContent: LandingContentBlocks, updatedById: string): Promise<void>;
+  markContentUpdated(userId: string, contentUpdatedAt: Date, updatedById: string): Promise<void>;
 };

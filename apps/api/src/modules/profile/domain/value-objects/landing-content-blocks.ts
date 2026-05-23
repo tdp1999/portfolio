@@ -6,6 +6,14 @@ export interface LandingContentBlocksProps {
   selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  /** /about page-shell hero heading — bilingual, plain text. */
+  aboutHeading: TranslatableJson | null;
+  /** /about page-shell hero lede paragraph — bilingual, plain text. */
+  aboutLede: TranslatableJson | null;
+  /** /about §04 Next steps heading — bilingual, plain text. */
+  ctaHeading: TranslatableJson | null;
+  /** /about §04 Next steps lede paragraph — bilingual, plain text. */
+  ctaLede: TranslatableJson | null;
   coreStack: string[];
 }
 
@@ -29,6 +37,10 @@ export class LandingContentBlocks {
       selectedWorkIntro: null,
       contactIntro: null,
       footerTagline: null,
+      aboutHeading: null,
+      aboutLede: null,
+      ctaHeading: null,
+      ctaLede: null,
       coreStack: [],
     });
   }
@@ -53,6 +65,22 @@ export class LandingContentBlocks {
     return this.props.footerTagline;
   }
 
+  get aboutHeading(): TranslatableJson | null {
+    return this.props.aboutHeading;
+  }
+
+  get aboutLede(): TranslatableJson | null {
+    return this.props.aboutLede;
+  }
+
+  get ctaHeading(): TranslatableJson | null {
+    return this.props.ctaHeading;
+  }
+
+  get ctaLede(): TranslatableJson | null {
+    return this.props.ctaLede;
+  }
+
   get coreStack(): string[] {
     return [...this.props.coreStack];
   }
@@ -64,6 +92,10 @@ export class LandingContentBlocks {
       JSON.stringify(this.props.selectedWorkIntro) === JSON.stringify(other.props.selectedWorkIntro) &&
       JSON.stringify(this.props.contactIntro) === JSON.stringify(other.props.contactIntro) &&
       JSON.stringify(this.props.footerTagline) === JSON.stringify(other.props.footerTagline) &&
+      JSON.stringify(this.props.aboutHeading) === JSON.stringify(other.props.aboutHeading) &&
+      JSON.stringify(this.props.aboutLede) === JSON.stringify(other.props.aboutLede) &&
+      JSON.stringify(this.props.ctaHeading) === JSON.stringify(other.props.ctaHeading) &&
+      JSON.stringify(this.props.ctaLede) === JSON.stringify(other.props.ctaLede) &&
       JSON.stringify(this.props.coreStack) === JSON.stringify(other.props.coreStack)
     );
   }

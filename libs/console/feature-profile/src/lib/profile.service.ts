@@ -53,6 +53,12 @@ export class ProfileService {
     return this.api.patch<void>('/admin/profile/landing-content', payload);
   }
 
+  /** Author action: stamp `Profile.contentUpdatedAt = now()` on the BE. Used
+   *  by the landing-content section after the author confirms a copy edit. */
+  markContentUpdated() {
+    return this.api.post<{ contentUpdatedAt: string }>('/admin/profile/content-updated-at', {});
+  }
+
   // ── Media (dedicated endpoints) ──────────────────────────────────────────
 
   updateAvatar(avatarId: string | null) {

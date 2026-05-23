@@ -55,6 +55,50 @@
       [placeholder]="{ en: 'Built with care, in Saigon.', vi: 'Làm tử tế, từ Sài Gòn.' }"
     />
 
+    <console-translatable-markdown-group
+      [group]="form.controls.aboutHeading"
+      label="/about — page heading"
+      helperText="H1 at the top of the /about page. Plain text; keep ≤ 18 words."
+      [minHeight]="80"
+      [placeholder]="{
+        en: 'Senior software engineer building DDD-grade web platforms for fintech & SaaS teams.',
+        vi: 'Kỹ sư phần mềm xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
+      }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.aboutLede"
+      label="/about — page lede"
+      helperText="Sub-paragraph under the H1. 2–3 sentences; also used as the meta description + og:description."
+      [minHeight]="120"
+      [placeholder]="{
+        en: 'Six years shipping production systems — payments, dashboards, content tools. I keep teams honest about complexity and trade-offs.',
+        vi: 'Sáu năm xây dựng hệ thống production — payments, dashboard, content tools.',
+      }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.ctaHeading"
+      label="/about — §04 Next steps heading"
+      helperText="Closing CTA heading at the bottom of /about (above the contact / LinkedIn / GitHub / CV row)."
+      [minHeight]="80"
+      [placeholder]="{
+        en: 'If any of this resonated, the door is open.',
+        vi: 'Nếu bạn thấy hợp, cứ gõ cửa.',
+      }"
+    />
+
+    <console-translatable-markdown-group
+      [group]="form.controls.ctaLede"
+      label="/about — §04 Next steps lede"
+      helperText="One-line prompt under the CTA heading."
+      [minHeight]="80"
+      [placeholder]="{
+        en: 'Engagement, freelance, or a long-form conversation about a hard system — pick the door that fits.',
+        vi: 'Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.',
+      }"
+    />
+
     <div class="field-block">
       <label class="field-label" for="profile-core-stack-input">Core stack chips</label>
       <span class="text-caption">
@@ -69,6 +113,31 @@
           placeholder="Angular, TypeScript, Angular Material"
         />
       </mat-form-field>
+    </div>
+
+    <!-- ── /about Last-updated action ─────────────────────────────────────
+         Independent of the per-section save flow: stamps Profile.contentUpdatedAt
+         to "now" on click. The /about hero's "Last updated <month>" line reads
+         this value directly. Keep this separate so authors can publish narrative
+         tweaks (typos, casing) without bumping the visible date, then promote a
+         meaningful edit with one click. -->
+    <div class="field-block">
+      <label class="field-label">/about — content updated stamp</label>
+      <span class="text-caption">
+        Click to mark today as the “Last updated” date shown on the /about hero meta strip.
+      </span>
+      <div class="content-updated-row">
+        <button mat-stroked-button type="button" [disabled]="markingUpdated()" (click)="markUpdatedNow()">
+          {{ markingUpdated() ? 'Marking…' : 'Mark content as updated now' }}
+        </button>
+        @if (contentUpdatedAt(); as stamp) {
+          <span class="text-stat-label">
+            Last marked: <time [attr.datetime]="stamp.toISOString()">{{ stamp.toISOString().slice(0, 10) }}</time>
+          </span>
+        } @else {
+          <span class="text-stat-label">Never marked.</span>
+        }
+      </div>
     </div>
   </div>
 </console-section-card>

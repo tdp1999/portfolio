@@ -46,7 +46,12 @@ describe('Profile Queries', () => {
     selectedWorkIntro: null,
     contactIntro: null,
     footerTagline: null,
+    aboutHeading: null,
+    aboutLede: null,
+    ctaHeading: null,
+    ctaLede: null,
     coreStack: [],
+    contentUpdatedAt: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -73,6 +78,7 @@ describe('Profile Queries', () => {
       updateSocialLinks: jest.fn(),
       updateSeoOg: jest.fn(),
       updateLandingContent: jest.fn(),
+      markContentUpdated: jest.fn(),
     };
   });
 
@@ -122,6 +128,22 @@ describe('Profile Queries', () => {
       expect((result as any).phone).toBeUndefined();
       expect((result as any).locationPostalCode).toBeUndefined();
       expect((result as any).locationAddress1).toBeUndefined();
+    });
+
+    it('should include the /about narrative copy + contentUpdatedAt on the public surface', async () => {
+      repo.findOwnerProfile.mockResolvedValue(profileWithMedia);
+
+      const result = await handler.execute();
+
+      expect(Object.keys(result)).toEqual(
+        expect.arrayContaining(['aboutHeading', 'aboutLede', 'ctaHeading', 'ctaLede', 'contentUpdatedAt'])
+      );
+      // baseProps leaves them unset → all null on the public surface.
+      expect(result.aboutHeading).toBeNull();
+      expect(result.aboutLede).toBeNull();
+      expect(result.ctaHeading).toBeNull();
+      expect(result.ctaLede).toBeNull();
+      expect(result.contentUpdatedAt).toBeNull();
     });
 
     it('should throw NotFound when profile does not exist', async () => {

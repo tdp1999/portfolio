@@ -317,13 +317,13 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 ### Composition + polish
 - [x] 337-about-graduate-signatures (S) — archived
 - [x] 338-about-cta-and-page-composition (S) — archived
-- [ ] 339-about-seo-meta-and-jsonld (S) — deps: 330, 338
+- [x] 339-about-seo-meta-and-jsonld (S) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 
 ### Content + locale + verify
-- [ ] 340-about-content-authoring (M) — author task, parallel to build — **partly superseded by 343/344/345 (console-managed): heading/lede/CTA copy → 343; principle essays → 344; failure essays → 345. What remains: SEO copy + any final pre-launch wording polish.**
+- [ ] 340-about-content-authoring (M) — author task, parallel to build — **partly superseded by 343/344/345 (console-managed): heading/lede/CTA copy → 343 (done); principle essays → 344; failure essays → 345. What remains: SEO copy + any final pre-launch wording polish.**
 - [ ] 341-about-bilingual-vi-translation (S) — deps: 340 — **superseded by 343/344/345: bilingual editing is now part of the console form for every console-managed surface. Close once all three land.**
-- [ ] 342-about-e2e-test-pass (M) — deps: 338, 339; uses aqa-expert skill
-- [ ] 343-about-profile-fields-to-console (L) — deps: 338 — **Promote aboutHeading / aboutLede / ctaHeading / ctaLede / contentUpdatedAt to `Profile`; full BE + console form + landing wire-up.**
+- [x] 342-about-e2e-test-pass (M) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
+- [x] 343-about-profile-fields-to-console (L) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 - [ ] 344-about-principles-to-console (L) — deps: 338, soft-343 — **New `AboutPrinciple` entity + console CRUD + landing service swap. Drops the hardcoded `PRINCIPLES` const.**
 - [ ] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — **New `AboutFailure` entity + console CRUD + landing & DDL service swap. Drops the hardcoded `getFailureEssays()`.**
 

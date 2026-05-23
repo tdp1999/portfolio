@@ -10,13 +10,6 @@ import {
 } from '@portfolio/landing/shared/ui';
 
 /**
- * Hardcoded per epic Q4 — "Last updated" reflects substantive content edits,
- * not `Profile.updatedAt`. Bump this constant in the same PR as any meaningful
- * About-page content change so the timestamp stays honest.
- */
-const LAST_UPDATED = { iso: '2026-05-22', monthEn: 'May 2026', monthVi: 'Tháng 5, 2026' } as const;
-
-/**
  * Maps `ProfileAvailability` to the green/amber/grey status-dot states the
  * landing system already uses (`available` = pill green, `busy` = amber,
  * `away` = grey). Open-to-work + freelancing both signal availability;
@@ -28,6 +21,35 @@ const AVAILABILITY_TO_DOT: Record<string, LandingStatusDotState> = {
   EMPLOYED: 'busy',
   NOT_AVAILABLE: 'away',
 };
+
+const EN_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const;
+const VI_MONTHS = [
+  'Tháng 1',
+  'Tháng 2',
+  'Tháng 3',
+  'Tháng 4',
+  'Tháng 5',
+  'Tháng 6',
+  'Tháng 7',
+  'Tháng 8',
+  'Tháng 9',
+  'Tháng 10',
+  'Tháng 11',
+  'Tháng 12',
+] as const;
 
 @Component({
   selector: 'landing-about-hero',
@@ -57,10 +79,27 @@ export class LandingAboutHeroComponent {
     return AVAILABILITY_TO_DOT[a] ?? 'away';
   });
 
-  protected readonly lastUpdatedIso = LAST_UPDATED.iso;
-  protected readonly lastUpdatedLabel = computed(() =>
-    this.locale() === 'vi' ? LAST_UPDATED.monthVi : LAST_UPDATED.monthEn
-  );
+  /** ISO date of the last narrative content edit — pulled from
+   *  `Profile.contentUpdatedAt` (set by the author via the console "Mark
+   *  content as updated" action). Null until the first save. */
+  private readonly contentUpdatedAt = computed(() => {
+    const iso = this.profile()?.contentUpdatedAt;
+    if (!iso) return null;
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? null : d;
+  });
+
+  protected readonly lastUpdatedIso = computed<string | null>(() => {
+    const d = this.contentUpdatedAt();
+    return d ? d.toISOString().slice(0, 10) : null;
+  });
+  protected readonly lastUpdatedLabel = computed(() => {
+    const d = this.contentUpdatedAt();
+    if (!d) return '';
+    const months = this.locale() === 'vi' ? VI_MONTHS : EN_MONTHS;
+    const monthLabel = months[d.getUTCMonth()];
+    return `${monthLabel} ${d.getUTCFullYear()}`;
+  });
 }
 
 const AVAILABILITY_LABELS_VI: Record<string, string> = {

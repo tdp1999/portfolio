@@ -41,7 +41,14 @@ export interface ProfileAdminResponse {
   selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  /** /about narrative copy — page-shell hero + §04 Next steps. */
+  aboutHeading: TranslatableJson | null;
+  aboutLede: TranslatableJson | null;
+  ctaHeading: TranslatableJson | null;
+  ctaLede: TranslatableJson | null;
   coreStack: string[];
+  /** ISO timestamp of the last `markContentUpdated` save. Null until first. */
+  contentUpdatedAt: string | null;
 }
 
 // ── Per-section PATCH payloads (mirror BE Update*Schema shapes) ────────────
@@ -95,6 +102,10 @@ export interface UpdateLandingContentPayload {
   selectedWorkIntro: TranslatableJson | null;
   contactIntro: TranslatableJson | null;
   footerTagline: TranslatableJson | null;
+  aboutHeading: TranslatableJson | null;
+  aboutLede: TranslatableJson | null;
+  ctaHeading: TranslatableJson | null;
+  ctaLede: TranslatableJson | null;
   coreStack: string[];
 }
 

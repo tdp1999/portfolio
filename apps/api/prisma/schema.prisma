@@ -402,6 +402,16 @@ model Profile {
   selectedWorkIntro  Json?
   contactIntro       Json?
   footerTagline      Json?
+  // /about narrative copy — page-shell hero + §04 Next steps. Plain text per
+  // locale; console-managed so the author can edit without a code deploy.
+  aboutHeading       Json?
+  aboutLede          Json?
+  ctaHeading         Json?
+  ctaLede            Json?
+  // Last time the author bumped /about narrative content (separate from
+  // `updatedAt` which also bumps on avatar/social-link saves). Drives the
+  // "Last updated <month>" line in the about hero meta strip.
+  contentUpdatedAt   DateTime?
 
   // Hero core-stack chips: Array<string> (3–4 short tokens, rendered uppercase).
   // Decoupled from `stackIntro` (which is prose for §5) so the hero strip stays terse.

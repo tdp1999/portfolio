@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards, Body, Patch, Req } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards, Body, Patch, Req } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
@@ -13,6 +13,7 @@ import {
   UpdateProfileSocialLinksCommand,
   UpdateProfileSeoOgCommand,
   UpdateProfileLandingContentCommand,
+  MarkProfileContentUpdatedCommand,
 } from '../application/commands';
 import { GetProfileQuery, GetPublicProfileQuery, GetJsonLdQuery } from '../application/queries';
 
@@ -93,5 +94,13 @@ export class AdminProfileController {
   @Patch('og-image')
   async updateOgImage(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<{ ogImageUrl: string | null }> {
     return await this.commandBus.execute(new UpdateOgImageCommand(body, req.user.id));
+  }
+
+  /** Author action: stamp `Profile.contentUpdatedAt` to "now". Surfaces in the
+   *  /about hero "Last updated" line. POST (not PATCH) — it's a side-effect
+   *  with no client-supplied body. */
+  @Post('content-updated-at')
+  async markContentUpdated(@Req() req: AuthenticatedRequest): Promise<{ contentUpdatedAt: string }> {
+    return await this.commandBus.execute(new MarkProfileContentUpdatedCommand(req.user.id));
   }
 }

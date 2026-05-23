@@ -41,7 +41,12 @@ describe('Profile Entity', () => {
     selectedWorkIntro: null,
     contactIntro: null,
     footerTagline: null,
+    aboutHeading: null,
+    aboutLede: null,
+    ctaHeading: null,
+    ctaLede: null,
     coreStack: [],
+    contentUpdatedAt: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -141,6 +146,46 @@ describe('Profile Entity', () => {
 
       expect(profile.coreStack).toEqual(coreStack);
       expect(profile.toProps().coreStack).toEqual(coreStack);
+    });
+  });
+
+  describe('markContentUpdated()', () => {
+    it('stamps contentUpdatedAt to now and bumps updatedAt + updatedById', () => {
+      const before = Date.now();
+      const profile = Profile.load(validProps);
+      expect(profile.contentUpdatedAt).toBeNull();
+
+      const editor = 'cccccccc-dddd-eeee-ffff-000000000000';
+      const updated = profile.markContentUpdated(editor);
+
+      expect(updated.contentUpdatedAt).not.toBeNull();
+      expect(updated.contentUpdatedAt!.getTime()).toBeGreaterThanOrEqual(before);
+      // contentUpdatedAt and updatedAt should be the same instant — both are
+      // sourced from a single TemporalValue.now() call in the mutator.
+      expect(updated.updatedAt.getTime()).toBe(updated.contentUpdatedAt!.getTime());
+      expect(updated.updatedById).toBe(editor);
+    });
+
+    it('does not mutate the receiver (immutability)', () => {
+      const profile = Profile.load(validProps);
+      profile.markContentUpdated(userId);
+      expect(profile.contentUpdatedAt).toBeNull();
+    });
+  });
+
+  describe('about narrative copy getters', () => {
+    it('expose aboutHeading/aboutLede/ctaHeading/ctaLede from landingContent', () => {
+      const aboutHeading: TranslatableJson = { en: 'About', vi: 'Ve toi' };
+      const aboutLede: TranslatableJson = { en: 'Lede', vi: 'Mo dau' };
+      const ctaHeading: TranslatableJson = { en: 'CTA', vi: 'Hanh dong' };
+      const ctaLede: TranslatableJson = { en: 'Door', vi: 'Cua' };
+
+      const profile = Profile.load({ ...validProps, aboutHeading, aboutLede, ctaHeading, ctaLede });
+
+      expect(profile.aboutHeading).toEqual(aboutHeading);
+      expect(profile.aboutLede).toEqual(aboutLede);
+      expect(profile.ctaHeading).toEqual(ctaHeading);
+      expect(profile.ctaLede).toEqual(ctaLede);
     });
   });
 });
