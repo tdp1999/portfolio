@@ -58,6 +58,11 @@ export const appRoutes: Route[] = [
             loadChildren: () => import('@portfolio/console/feature-experience').then((m) => m.experienceRoutes),
           },
           {
+            path: 'about/principles',
+            loadChildren: () =>
+              import('@portfolio/console/feature-about-principle').then((m) => m.aboutPrincipleRoutes),
+          },
+          {
             path: 'messages',
             loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
           },

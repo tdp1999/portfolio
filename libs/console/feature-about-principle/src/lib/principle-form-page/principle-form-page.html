@@ -1,0 +1,83 @@
+<div class="principle-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="principle-form-page__header">
+    <a mat-icon-button routerLink="/about/principles" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <div>
+      <h1 class="text-page-title">{{ isEditMode() ? 'Edit Principle' : 'New Principle' }}</h1>
+      <p class="text-body text-text-secondary">
+        One claim + a 2–3 sentence expansion. EN required; VI optional (landing falls back to EN per-item).
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+    <console-section-card
+      id="section-claim"
+      bucket="PUBLIC"
+      title="Claim"
+      description="The one-line assertion. Keep it stance-driven and terse."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Claim (English)</mat-label>
+            <input matInput formControlName="claimEn" placeholder="Complexity is a constraint, not a flex." />
+            <mat-hint align="end">{{ form.controls.claimEn.value.length }} / 200</mat-hint>
+            <mat-error>{{ form.controls.claimEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Claim (Tiếng Việt)</mat-label>
+            <input matInput formControlName="claimVi" placeholder="Optional VI translation" />
+            <mat-hint align="end">{{ form.controls.claimVi.value.length }} / 200</mat-hint>
+            <mat-error>{{ form.controls.claimVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-expansion"
+      bucket="PUBLIC"
+      title="Expansion"
+      description="2–3 sentences. The reasoning behind the claim, not a rephrase of it."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Expansion (English)</mat-label>
+            <textarea matInput formControlName="expansionEn" rows="6"></textarea>
+            <mat-hint align="end">{{ form.controls.expansionEn.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.expansionEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Expansion (Tiếng Việt)</mat-label>
+            <textarea matInput formControlName="expansionVi" rows="6"></textarea>
+            <mat-hint align="end">{{ form.controls.expansionVi.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.expansionVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-settings"
+      bucket="PUBLIC"
+      title="Settings"
+      description="Toggle off to hide this entry from the landing page without deleting it."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <mat-slide-toggle formControlName="isPublished"> Published </mat-slide-toggle>
+      </div>
+    </console-section-card>
+  </form>
+
+  <console-sticky-save-bar [dirty]="dirty" [saving]="submitting" (save)="submit()" (discard)="discard()" />
+</div>

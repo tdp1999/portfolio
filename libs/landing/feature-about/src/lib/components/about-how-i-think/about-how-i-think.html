@@ -12,14 +12,18 @@
       </div>
     </header>
 
-    <ol class="hit__list">
-      @for (p of principles(); track $index) {
-        <li class="hit__item">
-          <span class="hit__number" aria-hidden="true">{{ p.number }}</span>
-          <p class="hit__claim">{{ p.claim }}</p>
-          <p class="hit__expansion">{{ p.expansion }}</p>
-        </li>
-      }
-    </ol>
+    @if (isEmpty()) {
+      <p class="hit__loading" aria-live="polite">Loading principles…</p>
+    } @else {
+      <ol class="hit__list">
+        @for (p of principles(); track p.id) {
+          <li class="hit__item">
+            <span class="hit__number" aria-hidden="true">{{ p.number }}</span>
+            <p class="hit__claim">{{ p.claim }}</p>
+            <p class="hit__expansion">{{ p.expansion }}</p>
+          </li>
+        }
+      </ol>
+    }
   </landing-container>
 </section>

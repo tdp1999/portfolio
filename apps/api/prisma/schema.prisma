@@ -444,6 +444,24 @@ model Profile {
   @@map("profiles")
 }
 
+/// Author-managed manifesto entries for /about §03 "How I think".
+/// Bilingual claim + expansion (TranslatableJson { en, vi }); EN required,
+/// VI optional and falls back to EN per-item. `order` is a sortable Int
+/// (non-unique — reorder writes new values directly per id).
+model AboutPrinciple {
+  id          String   @id @db.Uuid
+  order       Int      @default(0)
+  claim       Json     @db.JsonB
+  expansion   Json     @db.JsonB
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([isPublished, order])
+  @@map("about_principles")
+}
+
 model Experience {
   // Identity
   id   String @id @db.Uuid

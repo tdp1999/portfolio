@@ -1,0 +1,79 @@
+<div class="principle-detail">
+  <console-spinner-overlay [loading]="loading()" />
+
+  @if (principle(); as p) {
+    <header class="principle-detail__header">
+      <a mat-icon-button routerLink="/about/principles" aria-label="Back to list">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="principle-detail__title">
+        <div class="principle-detail__meta">
+          <span class="text-caption text-text-muted font-mono">#{{ p.order + 1 }}</span>
+          @if (p.isPublished) {
+            <span
+              class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
+              >Published</span
+            >
+          } @else {
+            <span
+              class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+              >Unpublished</span
+            >
+          }
+        </div>
+        <h1 class="text-page-title">{{ p.claim.en }}</h1>
+      </div>
+      <div class="principle-detail__actions">
+        <a mat-stroked-button [routerLink]="['/about/principles', p.id, 'edit']">
+          <mat-icon class="icon-md">edit</mat-icon>
+          Edit
+        </a>
+        <button mat-stroked-button color="warn" (click)="confirmDelete()">
+          <mat-icon class="icon-md">delete</mat-icon>
+          Delete
+        </button>
+      </div>
+    </header>
+
+    <section class="principle-detail__section">
+      <h2 class="text-section-heading">Claim</h2>
+      <dl class="principle-detail__bilingual">
+        <dt class="text-caption text-text-muted">English</dt>
+        <dd class="text-body">{{ p.claim.en }}</dd>
+
+        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
+        @if (p.claim.vi) {
+          <dd class="text-body">{{ p.claim.vi }}</dd>
+        } @else {
+          <dd class="text-body text-text-muted italic">— no translation —</dd>
+        }
+      </dl>
+    </section>
+
+    <section class="principle-detail__section">
+      <h2 class="text-section-heading">Expansion</h2>
+      <dl class="principle-detail__bilingual">
+        <dt class="text-caption text-text-muted">English</dt>
+        <dd class="text-body principle-detail__prose">{{ p.expansion.en }}</dd>
+
+        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
+        @if (p.expansion.vi) {
+          <dd class="text-body principle-detail__prose">{{ p.expansion.vi }}</dd>
+        } @else {
+          <dd class="text-body text-text-muted italic">— no translation —</dd>
+        }
+      </dl>
+    </section>
+
+    <section class="principle-detail__section">
+      <h2 class="text-section-heading">Metadata</h2>
+      <dl class="principle-detail__bilingual">
+        <dt class="text-caption text-text-muted">Created</dt>
+        <dd class="text-body">{{ p.createdAt | date: 'medium' }}</dd>
+
+        <dt class="text-caption text-text-muted">Last updated</dt>
+        <dd class="text-body">{{ p.updatedAt | date: 'medium' }}</dd>
+      </dl>
+    </section>
+  }
+</div>

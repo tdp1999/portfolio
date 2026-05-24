@@ -11,3 +11,4 @@ export { ProfileErrorCode } from './profile.error-codes';
 export { ExperienceErrorCode } from './experience.error-codes';
 export { ProjectErrorCode } from './project.error-codes';
 export { BlogPostErrorCode } from './blog-post.error-codes';
+export { AboutPrincipleErrorCode } from './about-principle.error-codes';
