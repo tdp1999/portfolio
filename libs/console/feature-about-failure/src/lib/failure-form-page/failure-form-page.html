@@ -1,0 +1,143 @@
+<div class="failure-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="failure-form-page__header">
+    <a mat-icon-button routerLink="/about/failures" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <div>
+      <h1 class="text-page-title">{{ isEditMode() ? 'Edit Failure' : 'New Failure' }}</h1>
+      <p class="text-body text-text-secondary">
+        Year + anonymized context, then three beats (decision → consequence → lesson). EN required; VI optional (landing
+        falls back to EN per-item).
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+    <console-section-card
+      id="section-meta"
+      bucket="PUBLIC"
+      title="Year &amp; context"
+      description="Year tag (4-digit) + a single-line anonymized scope label. Keep context terse — long context blurs the card header."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <mat-form-field class="failure-form__year">
+          <mat-label>Year</mat-label>
+          <input matInput type="number" formControlName="year" [min]="yearMin" [max]="currentYear" placeholder="2021" />
+          <mat-hint>Between {{ yearMin }} and {{ currentYear }}</mat-hint>
+          <mat-error>{{ form.controls.year | formError }}</mat-error>
+        </mat-form-field>
+
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Context (English)</mat-label>
+            <input matInput formControlName="contextEn" placeholder="At a B2B SaaS · team of 8" />
+            <mat-hint align="end">{{ form.controls.contextEn.value.length }} / 200</mat-hint>
+            <mat-error>{{ form.controls.contextEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Context (Tiếng Việt)</mat-label>
+            <input matInput formControlName="contextVi" placeholder="Optional VI translation" />
+            <mat-hint align="end">{{ form.controls.contextVi.value.length }} / 200</mat-hint>
+            <mat-error>{{ form.controls.contextVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-decision"
+      bucket="PUBLIC"
+      title="Decision"
+      description="The specific bad call — name the tech / pattern, not the company."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Decision (English)</mat-label>
+            <textarea matInput formControlName="decisionEn" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.decisionEn.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.decisionEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Decision (Tiếng Việt)</mat-label>
+            <textarea matInput formControlName="decisionVi" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.decisionVi.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.decisionVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-consequence"
+      bucket="PUBLIC"
+      title="Consequence"
+      description="Outcome — quantified if possible (cost N weeks, two engineers left, etc.)."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Consequence (English)</mat-label>
+            <textarea matInput formControlName="consequenceEn" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.consequenceEn.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.consequenceEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Consequence (Tiếng Việt)</mat-label>
+            <textarea matInput formControlName="consequenceVi" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.consequenceVi.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.consequenceVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-lesson"
+      bucket="PUBLIC"
+      title="Lesson"
+      description="Concrete change since — what you now do differently. Not 'I learned to communicate better'."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <div class="bilingual-pair">
+          <mat-form-field>
+            <mat-label>Lesson (English)</mat-label>
+            <textarea matInput formControlName="lessonEn" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.lessonEn.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.lessonEn | formError }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Lesson (Tiếng Việt)</mat-label>
+            <textarea matInput formControlName="lessonVi" rows="5"></textarea>
+            <mat-hint align="end">{{ form.controls.lessonVi.value.length }} / 1500</mat-hint>
+            <mat-error>{{ form.controls.lessonVi | formError }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </console-section-card>
+
+    <console-section-card
+      id="section-settings"
+      bucket="PUBLIC"
+      title="Settings"
+      description="Toggle off to hide this entry from the landing page without deleting it."
+      saveMode="atomic"
+    >
+      <div class="form-stack">
+        <console-chip-boolean formControlName="isPublished" label="Published" />
+      </div>
+    </console-section-card>
+  </form>
+
+  <console-sticky-save-bar [dirty]="dirty" [saving]="submitting" (save)="submit()" (discard)="discard()" />
+</div>

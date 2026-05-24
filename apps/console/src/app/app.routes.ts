@@ -63,6 +63,10 @@ export const appRoutes: Route[] = [
               import('@portfolio/console/feature-about-principle').then((m) => m.aboutPrincipleRoutes),
           },
           {
+            path: 'about/failures',
+            loadChildren: () => import('@portfolio/console/feature-about-failure').then((m) => m.aboutFailureRoutes),
+          },
+          {
             path: 'messages',
             loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
           },

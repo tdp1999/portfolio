@@ -1,0 +1,21 @@
+{
+  "name": "feature-about-failure",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/console/feature-about-failure/src",
+  "prefix": "console",
+  "projectType": "library",
+  "tags": ["scope:console", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/console/feature-about-failure/jest.config.cts",
+        "tsConfig": "libs/console/feature-about-failure/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

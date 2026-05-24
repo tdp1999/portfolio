@@ -15,8 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
+  ChipBooleanComponent,
   SectionCardComponent,
   SpinnerOverlayComponent,
   StickySaveBarComponent,
@@ -42,7 +42,7 @@ import { ABOUT_PRINCIPLE_LIMITS, AdminAboutPrinciple } from '../about-principle.
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatSlideToggleModule,
+    ChipBooleanComponent,
     SectionCardComponent,
     SpinnerOverlayComponent,
     StickySaveBarComponent,

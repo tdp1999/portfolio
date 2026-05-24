@@ -8,13 +8,13 @@ import {
   LandingLocaleService,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
-import { SkillService } from '@portfolio/landing/shared/data-access';
+import { FailureService, SkillService, type PublicAboutFailure } from '@portfolio/landing/shared/data-access';
 import { DepthMapV1Component } from './depth-map-v1/depth-map-v1.component';
 import { DepthMapV2Component } from './depth-map-v2/depth-map-v2.component';
 import { DepthMapV3Component } from './depth-map-v3/depth-map-v3.component';
 import { FailuresV2Component } from './failures-v2/failures-v2.component';
 import { FailuresV3Component } from './failures-v3/failures-v3.component';
-import { LandingAboutFailuresComponent, getFailureEssays } from '@portfolio/landing/feature-about';
+import { LandingAboutFailuresComponent, type FailureEssay } from '@portfolio/landing/feature-about';
 import { CurrentlyShippingV1Component } from './currently-shipping-v1/currently-shipping-v1.component';
 import { CurrentlyShippingV2Component } from './currently-shipping-v2/currently-shipping-v2.component';
 import { CurrentlyShippingV3Component } from './currently-shipping-v3/currently-shipping-v3.component';
@@ -108,7 +108,12 @@ const CURRENTLY_SHIPPING_VARIANTS: readonly VariantMeta[] = [
 })
 export class DdlAboutSignaturesPage {
   private readonly skillService = inject(SkillService);
+  private readonly failureService = inject(FailureService);
   private readonly locale = inject(LandingLocaleService).locale;
+
+  private readonly failureRows = toSignal(this.failureService.getPublicFailures(), {
+    initialValue: [] as readonly PublicAboutFailure[],
+  });
 
   readonly breadcrumb: readonly BreadcrumbItem[] = [
     { label: 'DDL', href: '/ddl' },
@@ -130,7 +135,27 @@ export class DdlAboutSignaturesPage {
   readonly depthMapQuestion = 'Resolved by removal — no further variants needed.';
 
   // ─── §02 · Failures & lessons ───
-  readonly failureEssays = computed(() => getFailureEssays(this.locale()));
+  /** Localized failure essays — same source-of-truth as the V1 component
+   *  consumes internally (`FailureService`). Page projects to `FailureEssay`
+   *  here so V2 + V3 receive the same data shape as V1 renders, keeping all
+   *  three variants in sync after the task 345 service swap. */
+  readonly failureEssays = computed<readonly FailureEssay[]>(() => {
+    const loc = this.locale();
+    return this.failureRows().map((f) => {
+      const pick = (en: string | undefined, vi: string | undefined): string => {
+        const enT = (en ?? '').trim();
+        return loc === 'vi' ? (vi ?? '').trim() || enT : enT;
+      };
+      return {
+        id: f.id,
+        year: String(f.year),
+        context: pick(f.context?.en, f.context?.vi),
+        decision: pick(f.decision?.en, f.decision?.vi),
+        consequence: pick(f.consequence?.en, f.consequence?.vi),
+        lesson: pick(f.lesson?.en, f.lesson?.vi),
+      };
+    });
+  });
   readonly failuresVariants = FAILURES_VARIANTS;
   readonly failuresTocItem = { id: 'failures', num: '02', title: 'Failures & lessons' } as const;
   readonly failuresWinner: string = 'Variant 1 · Three-column cards — graduated to /about 2026-05-22';

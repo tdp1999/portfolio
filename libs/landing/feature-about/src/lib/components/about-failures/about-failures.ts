@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ContainerComponent,
   EyebrowComponent,
@@ -6,7 +7,8 @@ import {
   LandingLocaleService,
   LandingTComponent,
 } from '@portfolio/landing/shared/ui';
-import { getFailureEssays, type FailureEssay } from './failures-content';
+import { FailureService, type PublicAboutFailure } from '@portfolio/landing/shared/data-access';
+import type { FailureEssay } from './failures-content';
 
 /**
  * About → Failures & lessons section. Graduated from `/ddl/about-signatures`
@@ -15,14 +17,12 @@ import { getFailureEssays, type FailureEssay } from './failures-content';
  *
  * Layout: bordered equal-height cards in a 3-column grid (collapses to a
  * single column < 1024px). Each card carries year + anonymized context as a
- * header, then three labeled sections (Decision / Consequence / Lesson). The
- * lesson row is bumped to text-300 + weight 500 so the takeaway stands out
- * inside the card without breaking the scan grid.
+ * header, then three labeled sections (Decision / Consequence / Lesson).
  *
- * Content lives in `failures-content.ts` — placeholder essays for v1; author
- * replaces with real essays in task 340. Optional `[essays]` input lets a
- * caller override the default locale-driven essays (used by the DDL
- * comparison page when it wants to show, e.g., locale-mismatched samples).
+ * Data source: `FailureService.getPublicFailures()` — console-managed via the
+ * `AboutFailure` admin CRUD shipped in task 345. The DDL sandbox now passes
+ * the same localized essays into V2/V3 via the page-level component so all
+ * three variants stay in sync visually.
  */
 @Component({
   selector: 'landing-about-failures',
@@ -34,13 +34,34 @@ import { getFailureEssays, type FailureEssay } from './failures-content';
 })
 export class LandingAboutFailuresComponent {
   private readonly locale = inject(LandingLocaleService).locale;
+  private readonly failureService = inject(FailureService);
 
-  /** Optional override — when not provided, the component reads the current
-   *  locale and pulls from `failures-content.ts`. The DDL sandbox renders the
-   *  same default; production /about does not pass this input. */
-  readonly essays = input<readonly FailureEssay[] | null>(null);
+  private readonly raw = toSignal(this.failureService.getPublicFailures(), {
+    initialValue: [] as readonly PublicAboutFailure[],
+  });
 
-  protected readonly resolvedEssays = computed<readonly FailureEssay[]>(
-    () => this.essays() ?? getFailureEssays(this.locale())
-  );
+  /** Localized essay list with EN-fallback per-item — preserves the layout
+   *  if a translation is missing. Ordering follows the BE `order` field. */
+  protected readonly resolvedEssays = computed<readonly FailureEssay[]>(() => {
+    const loc = this.locale();
+    return this.raw().map((f) => {
+      const contextEn = (f.context?.en ?? '').trim();
+      const decisionEn = (f.decision?.en ?? '').trim();
+      const consequenceEn = (f.consequence?.en ?? '').trim();
+      const lessonEn = (f.lesson?.en ?? '').trim();
+
+      const pick = (en: string, vi: string | undefined): string => (loc === 'vi' ? (vi ?? '').trim() || en : en);
+
+      return {
+        id: f.id,
+        year: String(f.year),
+        context: pick(contextEn, f.context?.vi),
+        decision: pick(decisionEn, f.decision?.vi),
+        consequence: pick(consequenceEn, f.consequence?.vi),
+        lesson: pick(lessonEn, f.lesson?.vi),
+      };
+    });
+  });
+
+  protected readonly isEmpty = computed(() => this.resolvedEssays().length === 0);
 }

@@ -6,10 +6,11 @@ import { filter, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
+  ChipBooleanComponent,
   ConfirmDialogComponent,
   type ConfirmDialogData,
   ProgressBarService,
@@ -25,11 +26,12 @@ import { AdminAboutPrinciple } from '../about-principle.types';
   selector: 'console-principles-page',
   standalone: true,
   imports: [
+    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSlideToggleModule,
+    ChipBooleanComponent,
     SkeletonTableComponent,
     RelativeTimeComponent,
     DecimalPipe,

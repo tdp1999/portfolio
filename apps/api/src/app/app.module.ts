@@ -15,6 +15,7 @@ import { MediaModule } from '../modules/media/media.module';
 import { ContactMessageModule } from '../modules/contact-message';
 import { ProfileModule } from '../modules/profile';
 import { AboutPrincipleModule } from '../modules/about-principle/about-principle.module';
+import { AboutFailureModule } from '../modules/about-failure/about-failure.module';
 import { ExperienceModule } from '../modules/experience';
 import { ProjectModule } from '../modules/project';
 import { BlogPostModule } from '../modules/blog-post';
@@ -40,6 +41,7 @@ const isTest = process.env['NODE_ENV'] === 'test';
     ContactMessageModule,
     ProfileModule,
     AboutPrincipleModule,
+    AboutFailureModule,
     ExperienceModule,
     ProjectModule,
     BlogPostModule,
