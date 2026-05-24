@@ -324,8 +324,8 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 - [ ] 341-about-bilingual-vi-translation (S) — deps: 340 — **superseded by 343/344/345: bilingual editing is now part of the console form for every console-managed surface. Close once all three land.**
 - [x] 342-about-e2e-test-pass (M) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 - [x] 343-about-profile-fields-to-console (L) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
-- [ ] 344-about-principles-to-console (L) — deps: 338, soft-343 — **New `AboutPrinciple` entity + console CRUD + landing service swap. Drops the hardcoded `PRINCIPLES` const.**
-- [ ] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — **New `AboutFailure` entity + console CRUD + landing & DDL service swap. Drops the hardcoded `getFailureEssays()`.**
+- [x] 344-about-principles-to-console (L) — deps: 338, soft-343 — Completed 2026-05-24. AboutPrinciple BE module + console CRUD + landing service swap shipped; PRINCIPLES const deleted; 5 EN+VI principles seeded. Archived to `tasks-done/epic-portfolio-about/`.
+- [x] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — Completed 2026-05-24. AboutFailure BE module + console CRUD + landing & DDL service swap shipped; `getFailureEssays()` retired; 3 EN+VI failure essays seeded. Chip-toggle migration: replaced `mat-slide-toggle` with `console-chip-boolean` in feature-about-failure AND feature-about-principle. Archived to `tasks-done/epic-portfolio-about/`.
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 
