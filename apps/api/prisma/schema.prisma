@@ -685,7 +685,7 @@ model BlogPost {
 
   // Relations
   authorId        String     @db.Uuid
-  featuredImageId String?    @db.Uuid
+  featuredImageId String     @db.Uuid
 
   // Audit
   createdAt       DateTime   @default(now())
@@ -697,7 +697,7 @@ model BlogPost {
 
   // Relation definitions
   author        User           @relation("PostAuthor", fields: [authorId], references: [id])
-  featuredImage Media?         @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
+  featuredImage Media          @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
   createdBy     User           @relation("PostCreatedBy", fields: [createdById], references: [id])
   updatedBy     User           @relation("PostUpdatedBy", fields: [updatedById], references: [id])
   deletedBy     User?          @relation("PostDeletedBy", fields: [deletedById], references: [id])

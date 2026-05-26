@@ -30,7 +30,7 @@ export interface IBlogPostProps extends IBaseAuditProps {
 
   // Relations
   authorId: string;
-  featuredImageId: string | null;
+  featuredImageId: string;
 }
 
 export interface ICreateBlogPostPayload {
@@ -40,7 +40,8 @@ export interface ICreateBlogPostPayload {
   excerpt?: string;
   featured?: boolean;
   authorId: string;
-  featuredImageId?: string;
+  /** PST-011: required at all times — null/undefined rejected by entity. */
+  featuredImageId: string;
   metaTitle?: string;
   metaDescription?: string;
 }
@@ -52,7 +53,8 @@ export interface IUpdateBlogPostPayload {
   language?: 'EN' | 'VI';
   status?: PostStatus;
   featured?: boolean;
-  featuredImageId?: string | null;
+  /** PST-011: explicit `null` is rejected; `undefined` means "no change". */
+  featuredImageId?: string;
   metaTitle?: string | null;
   metaDescription?: string | null;
   publishedAt?: Date | null;

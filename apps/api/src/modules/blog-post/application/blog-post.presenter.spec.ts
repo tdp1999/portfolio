@@ -75,6 +75,72 @@ describe('BlogPostPresenter', () => {
     });
   });
 
+  describe('toJsonLd', () => {
+    const ORIGINAL_FRONTEND_URL = process.env['FRONTEND_URL'];
+    beforeEach(() => {
+      process.env['FRONTEND_URL'] = 'https://thunderphong.com/';
+    });
+    afterEach(() => {
+      if (ORIGINAL_FRONTEND_URL === undefined) delete process.env['FRONTEND_URL'];
+      else process.env['FRONTEND_URL'] = ORIGINAL_FRONTEND_URL;
+    });
+
+    it('returns schema.org BlogPosting with required fields', () => {
+      const author = { id: USER_ID, name: 'Phong', avatarUrl: null, shortBio: null };
+      const r = BlogPostPresenter.toJsonLd(makeReadResult(), author);
+
+      expect(r['@context']).toBe('https://schema.org');
+      expect(r['@type']).toBe('BlogPosting');
+      expect(r.headline).toBe('Hello World');
+      expect(r.description).toBe('Meta D');
+      expect(r.datePublished).toBe(new Date('2026-01-01').toISOString());
+      expect(r.dateModified).toBe(new Date('2026-01-02').toISOString());
+      expect(r.author).toEqual({ '@type': 'Person', name: 'Phong', url: null });
+      expect(r.publisher).toEqual({ '@type': 'Person', name: 'Phong' });
+      expect(r.mainEntityOfPage).toBe('https://thunderphong.com/blog/hello-world');
+      expect(r.inLanguage).toBe('en');
+    });
+
+    it('includes image only when featuredImageUrl present', () => {
+      const r = BlogPostPresenter.toJsonLd(makeReadResult(), null);
+      expect(r.image).toBe('https://cdn.example.com/img.png');
+    });
+
+    it('omits image (does not set to null) when no featured image', () => {
+      const item = makeReadResult();
+      item.featuredImageUrl = null;
+      const r = BlogPostPresenter.toJsonLd(item, null);
+      expect(r).not.toHaveProperty('image');
+    });
+
+    it('falls back description to excerpt when metaDescription missing', () => {
+      const r = BlogPostPresenter.toJsonLd(makeReadResult({ metaDescription: null }), null);
+      expect(r.description).toBe('A short excerpt');
+    });
+
+    it('falls back author name to "Phuong Tran" when author is null', () => {
+      const r = BlogPostPresenter.toJsonLd(makeReadResult(), null);
+      expect(r.author.name).toBe('Phuong Tran');
+      expect(r.publisher.name).toBe('Phuong Tran');
+    });
+
+    it('reports VI posts with inLanguage = "vi"', () => {
+      const r = BlogPostPresenter.toJsonLd(makeReadResult({ language: 'VI' }), null);
+      expect(r.inLanguage).toBe('vi');
+    });
+
+    it('falls back datePublished to createdAt when publishedAt is null', () => {
+      const r = BlogPostPresenter.toJsonLd(makeReadResult({ publishedAt: null }), null);
+      expect(r.datePublished).toBe(new Date('2026-01-01').toISOString());
+    });
+
+    it('exposes jsonLd inside toPublicDetail payload (Option B)', () => {
+      const r = BlogPostPresenter.toPublicDetail(makeReadResult(), null, []);
+      expect(r.jsonLd['@type']).toBe('BlogPosting');
+      expect(r.jsonLd.mainEntityOfPage).toBe('https://thunderphong.com/blog/hello-world');
+    });
+  });
+
   describe('toAdminList', () => {
     it('exposes status and audit timestamps', () => {
       const r = BlogPostPresenter.toAdminList(makeReadResult({ deletedAt: new Date('2026-02-01') }));

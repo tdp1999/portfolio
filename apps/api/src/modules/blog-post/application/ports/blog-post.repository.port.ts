@@ -21,10 +21,23 @@ export interface BlogPostFindAllOptions extends PaginatedQuery {
   sortBy?: string;
 }
 
+export type BlogPostPublicSort = 'newest' | 'oldest';
+
 export interface BlogPostListPublicOptions extends PaginatedQuery {
   categoryId?: string;
   tagId?: string;
   language?: 'EN' | 'VI';
+  /**
+   * Free-text search across `title` + `excerpt` (case-insensitive contains).
+   * Caller is expected to trim; empty string is treated as no search.
+   */
+  search?: string;
+  /**
+   * `'newest'` (default) → publishedAt DESC, `'oldest'` → publishedAt ASC.
+   * Extend as the union grows (e.g. `'mostRead'`) — keep as TS literal union
+   * so typos break at compile time.
+   */
+  sortBy?: BlogPostPublicSort;
 }
 
 export interface IBlogPostRepository {
@@ -43,7 +56,16 @@ export interface IBlogPostRepository {
   findBySlug(slug: string): Promise<BlogPostReadResult | null>;
   listPublic(options: BlogPostListPublicOptions): Promise<PaginatedResult<BlogPostReadResult>>;
   listFeatured(): Promise<BlogPostReadResult[]>;
-  findRelated(postId: string, categoryIds: string[], tagIds: string[], limit: number): Promise<BlogPostReadResult[]>;
+  /**
+   * PST-010: Related posts by primary-category match only. Excludes self,
+   * filters to PUBLISHED + active rows, orders by publishedAt DESC, limit N.
+   * Caller must resolve the primary category (none → return [] without calling).
+   */
+  findRelatedByPrimaryCategory(
+    excludeId: string,
+    primaryCategoryId: string,
+    limit: number
+  ): Promise<BlogPostReadResult[]>;
 
   // Utility
   slugExists(slug: string, excludeId?: string): Promise<boolean>;

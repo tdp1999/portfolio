@@ -18,7 +18,7 @@ describe('BlogPost Entity', () => {
     metaTitle: null,
     metaDescription: null,
     authorId: userId,
-    featuredImageId: null,
+    featuredImageId: '550e8400-e29b-41d4-a716-446655440099',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -27,10 +27,17 @@ describe('BlogPost Entity', () => {
     deletedById: null,
   };
 
+  const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
+
   describe('create()', () => {
     it('should generate slug from title and set defaults', () => {
       const post = BlogPost.create(
-        { title: 'TypeScript Tips & Tricks', content: 'Some content here', authorId: userId },
+        {
+          title: 'TypeScript Tips & Tricks',
+          content: 'Some content here',
+          authorId: userId,
+          featuredImageId: COVER_ID,
+        },
         userId
       );
 
@@ -45,7 +52,10 @@ describe('BlogPost Entity', () => {
 
     it('should calculate readTimeMinutes from content', () => {
       const words = Array(400).fill('word').join(' ');
-      const post = BlogPost.create({ title: 'Long Post', content: words, authorId: userId }, userId);
+      const post = BlogPost.create(
+        { title: 'Long Post', content: words, authorId: userId, featuredImageId: COVER_ID },
+        userId
+      );
 
       expect(post.readTimeMinutes).toBe(2);
     });
@@ -61,7 +71,7 @@ describe('BlogPost Entity', () => {
           featured: true,
           metaTitle: 'SEO Title',
           metaDescription: 'SEO Desc',
-          featuredImageId: '550e8400-e29b-41d4-a716-446655440099',
+          featuredImageId: COVER_ID,
         },
         userId
       );
@@ -71,7 +81,23 @@ describe('BlogPost Entity', () => {
       expect(post.featured).toBe(true);
       expect(post.metaTitle).toBe('SEO Title');
       expect(post.metaDescription).toBe('SEO Desc');
-      expect(post.featuredImageId).toBe('550e8400-e29b-41d4-a716-446655440099');
+      expect(post.featuredImageId).toBe(COVER_ID);
+    });
+
+    it('PST-011: throws when featuredImageId is missing', () => {
+      expect(() =>
+        BlogPost.create(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          { title: 'No Cover', content: 'Body', authorId: userId } as any,
+          userId
+        )
+      ).toThrow(/cover image is required/i);
+    });
+
+    it('PST-011: throws when featuredImageId is empty string', () => {
+      expect(() =>
+        BlogPost.create({ title: 'No Cover', content: 'Body', authorId: userId, featuredImageId: '' }, userId)
+      ).toThrow(/cover image is required/i);
     });
   });
 
@@ -139,6 +165,19 @@ describe('BlogPost Entity', () => {
 
       expect(updated.excerpt).toBeNull();
       expect(updated.metaTitle).toBeNull();
+    });
+
+    it('PST-011: throws when update payload passes featuredImageId: null', () => {
+      const post = BlogPost.load(validProps);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(() => post.update({ featuredImageId: null as any }, userId)).toThrow(/cover image is required/i);
+    });
+
+    it('PST-011: throws when update payload passes featuredImageId: empty string', () => {
+      const post = BlogPost.load(validProps);
+      expect(() => post.update({ featuredImageId: '' as unknown as string }, userId)).toThrow(
+        /cover image is required/i
+      );
     });
 
     it('should throw CONTENT_REQUIRED when transitioning to PUBLISHED without content', () => {

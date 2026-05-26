@@ -60,6 +60,7 @@ export class ImportMarkdownHandler implements ICommandHandler<ImportMarkdownComm
         content: data.content,
         language: data.language,
         authorId: command.userId,
+        featuredImageId: data.featuredImageId,
       },
       command.userId
     );

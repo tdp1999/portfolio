@@ -31,7 +31,7 @@ const baseProps: IBlogPostProps = {
   metaTitle: null,
   metaDescription: null,
   authorId: USER_ID,
-  featuredImageId: null,
+  featuredImageId: '550e8400-e29b-41d4-a716-446655440099',
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),
   createdById: USER_ID,
@@ -61,7 +61,7 @@ function makeBlogRepoMock(): jest.Mocked<IBlogPostRepository> {
     findBySlug: jest.fn(),
     listPublic: jest.fn(),
     listFeatured: jest.fn(),
-    findRelated: jest.fn(),
+    findRelatedByPrimaryCategory: jest.fn(),
     slugExists: jest.fn(),
   };
 }
@@ -169,6 +169,30 @@ describe('BlogPost Queries', () => {
       await handler.execute(new ListPublicPostsQuery({ tagSlug: 'angular' }));
       expect(repo.listPublic.mock.calls[0][0].tagId).toBe('tag-1');
     });
+
+    it('forwards search to the repository', async () => {
+      await handler.execute(new ListPublicPostsQuery({ search: 'hydration' }));
+      expect(repo.listPublic.mock.calls[0][0].search).toBe('hydration');
+    });
+
+    it('treats whitespace-only search as no search', async () => {
+      await handler.execute(new ListPublicPostsQuery({ search: '   ' }));
+      expect(repo.listPublic.mock.calls[0][0].search).toBeUndefined();
+    });
+
+    it("defaults sortBy to 'newest'", async () => {
+      await handler.execute(new ListPublicPostsQuery({}));
+      expect(repo.listPublic.mock.calls[0][0].sortBy).toBe('newest');
+    });
+
+    it("forwards sort='oldest' to the repository", async () => {
+      await handler.execute(new ListPublicPostsQuery({ sort: 'oldest' }));
+      expect(repo.listPublic.mock.calls[0][0].sortBy).toBe('oldest');
+    });
+
+    it('rejects unknown sort values', async () => {
+      await expect(handler.execute(new ListPublicPostsQuery({ sort: 'random' }))).rejects.toThrow();
+    });
   });
 
   // ---------- GetPublicPostBySlugQuery ----------
@@ -182,7 +206,7 @@ describe('BlogPost Queries', () => {
       repo = makeBlogRepoMock();
       profileRepo = { findWithMedia: jest.fn() } as unknown as jest.Mocked<IProfileRepository>;
       userRepo = { findById: jest.fn() } as unknown as jest.Mocked<IUserRepository>;
-      repo.findRelated.mockResolvedValue([]);
+      repo.findRelatedByPrimaryCategory.mockResolvedValue([]);
       handler = new GetPublicPostBySlugHandler(repo, profileRepo, userRepo);
     });
 
@@ -194,13 +218,59 @@ describe('BlogPost Queries', () => {
         avatarUrl: 'https://cdn/a.png',
         ogImageUrl: null,
       });
-      repo.findRelated.mockResolvedValue([makeReadResult({ id: 'rel-1', slug: 'rel-1' })]);
+      repo.findRelatedByPrimaryCategory.mockResolvedValue([makeReadResult({ id: 'rel-1', slug: 'rel-1' })]);
 
       const r = await handler.execute(new GetPublicPostBySlugQuery('hello'));
       expect(r.author).toEqual({ id: USER_ID, name: 'Phong', avatarUrl: 'https://cdn/a.png', shortBio: 'Dev' });
       expect(r.relatedPosts).toHaveLength(1);
       expect(r.relatedPosts[0].slug).toBe('rel-1');
       expect(r.content).toBe('Body');
+    });
+
+    // ---------- PST-010 related-posts selection ----------
+    it('PST-010: queries related by primary category (first by id ASC) and limit 3', async () => {
+      const fixture = makeReadResult();
+      // multiple categories — primary must be the one with smallest id (c1 < c2)
+      fixture.relations.categories = [
+        { id: 'c2', name: 'B', slug: 'b' },
+        { id: 'c1', name: 'A', slug: 'a' },
+      ];
+      repo.findBySlug.mockResolvedValue(fixture);
+      repo.findRelatedByPrimaryCategory.mockResolvedValue([
+        makeReadResult({ id: 'r1', slug: 'r1' }),
+        makeReadResult({ id: 'r2', slug: 'r2' }),
+        makeReadResult({ id: 'r3', slug: 'r3' }),
+      ]);
+
+      const r = await handler.execute(new GetPublicPostBySlugQuery('hello'));
+      expect(r.relatedPosts.map((p) => p.slug)).toEqual(['r1', 'r2', 'r3']);
+      expect(repo.findRelatedByPrimaryCategory).toHaveBeenCalledWith(POST_ID, 'c1', 3);
+    });
+
+    it('PST-010: returns fewer than 3 when category match is sparse — no padding', async () => {
+      repo.findBySlug.mockResolvedValue(makeReadResult());
+      repo.findRelatedByPrimaryCategory.mockResolvedValue([makeReadResult({ id: 'only', slug: 'only' })]);
+
+      const r = await handler.execute(new GetPublicPostBySlugQuery('hello'));
+      expect(r.relatedPosts).toHaveLength(1);
+    });
+
+    it('PST-010: returns empty array when no category match', async () => {
+      repo.findBySlug.mockResolvedValue(makeReadResult());
+      repo.findRelatedByPrimaryCategory.mockResolvedValue([]);
+
+      const r = await handler.execute(new GetPublicPostBySlugQuery('hello'));
+      expect(r.relatedPosts).toEqual([]);
+    });
+
+    it('PST-010: returns empty array and skips repo call when post has zero categories', async () => {
+      const fixture = makeReadResult();
+      fixture.relations.categories = [];
+      repo.findBySlug.mockResolvedValue(fixture);
+
+      const r = await handler.execute(new GetPublicPostBySlugQuery('hello'));
+      expect(r.relatedPosts).toEqual([]);
+      expect(repo.findRelatedByPrimaryCategory).not.toHaveBeenCalled();
     });
 
     it('falls back to user.name when profile missing', async () => {

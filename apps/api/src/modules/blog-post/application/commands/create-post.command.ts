@@ -46,7 +46,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
         excerpt: data.excerpt,
         featured: data.featured,
         authorId: command.userId,
-        featuredImageId: data.featuredImageId ?? undefined,
+        featuredImageId: data.featuredImageId,
         metaTitle: data.metaTitle,
         metaDescription: data.metaDescription,
       },

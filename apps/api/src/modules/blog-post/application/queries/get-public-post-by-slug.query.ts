@@ -34,12 +34,13 @@ export class GetPublicPostBySlugHandler implements IQueryHandler<GetPublicPostBy
 
     const author = await this.resolveAuthor(post.entity.authorId, post.entity.language);
 
-    const related = await this.repo.findRelated(
-      post.entity.id,
-      post.relations.categories.map((c) => c.id),
-      post.relations.tags.map((t) => t.id),
-      3
-    );
+    // PST-010: primary category = first by id ASC (deterministic with no schema-level "primary" flag).
+    const sortedCategoryIds = [...post.relations.categories].map((c) => c.id).sort();
+    const primaryCategoryId = sortedCategoryIds[0] ?? null;
+
+    const related = primaryCategoryId
+      ? await this.repo.findRelatedByPrimaryCategory(post.entity.id, primaryCategoryId, 3)
+      : [];
 
     return BlogPostPresenter.toPublicDetail(post, author, related);
   }

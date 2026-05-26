@@ -7,6 +7,8 @@ import { PrismaClient, Role, SkillCategory } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { v7 as uuidv7 } from 'uuid';
 
+import { seedBlogPosts } from './seeds/blog-posts.seed';
+
 // Inlined to avoid monorepo imports that don't exist in the Docker production image
 const hashPassword = (password: string): Promise<string> => hash(password, 10);
 
@@ -182,6 +184,7 @@ async function main() {
     await seedAdmin(prisma, process.env as SeedEnv);
     await seedProfile(prisma, process.env as SeedEnv);
     await seedSkillUmbrellas(prisma, process.env as SeedEnv);
+    await seedBlogPosts(prisma, process.env as SeedEnv);
   } finally {
     await prisma.$disconnect();
   }

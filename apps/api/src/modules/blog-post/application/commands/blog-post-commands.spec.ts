@@ -12,6 +12,7 @@ const USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 const POST_ID = '550e8400-e29b-41d4-a716-446655440001';
 const CAT_ID = '550e8400-e29b-41d4-a716-446655440010';
 const TAG_ID = '550e8400-e29b-41d4-a716-446655440020';
+const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
 
 const baseProps: IBlogPostProps = {
   id: POST_ID,
@@ -27,7 +28,7 @@ const baseProps: IBlogPostProps = {
   metaTitle: null,
   metaDescription: null,
   authorId: USER_ID,
-  featuredImageId: null,
+  featuredImageId: '550e8400-e29b-41d4-a716-446655440099',
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),
   createdById: USER_ID,
@@ -59,7 +60,7 @@ function makeRepoMock(): jest.Mocked<IBlogPostRepository> {
     findBySlug: jest.fn(),
     listPublic: jest.fn(),
     listFeatured: jest.fn(),
-    findRelated: jest.fn(),
+    findRelatedByPrimaryCategory: jest.fn(),
     slugExists: jest.fn().mockResolvedValue(false),
   };
 }
@@ -74,7 +75,7 @@ describe('BlogPost Commands', () => {
   // ---------- CreatePostCommand ----------
   describe('CreatePostHandler', () => {
     const handler = () => new CreatePostHandler(repo);
-    const validDto = { title: 'Hello', content: 'Body' };
+    const validDto = { title: 'Hello', content: 'Body', featuredImageId: COVER_ID };
 
     it('creates a draft post and returns id', async () => {
       const id = await handler().execute(new CreatePostCommand(validDto, USER_ID));
@@ -95,6 +96,13 @@ describe('BlogPost Commands', () => {
 
     it('rejects invalid input', async () => {
       await expect(handler().execute(new CreatePostCommand({ title: '' }, USER_ID))).rejects.toThrow();
+      expect(repo.add).not.toHaveBeenCalled();
+    });
+
+    it('PST-011: rejects payload without featuredImageId', async () => {
+      await expect(
+        handler().execute(new CreatePostCommand({ title: 'Hello', content: 'Body' }, USER_ID))
+      ).rejects.toThrow();
       expect(repo.add).not.toHaveBeenCalled();
     });
 
@@ -216,7 +224,9 @@ describe('BlogPost Commands', () => {
     });
 
     it('imports markdown with h1 heading as DRAFT', async () => {
-      const id = await handler().execute(new ImportMarkdownCommand({ content: '# Imported\n\nbody' }, USER_ID));
+      const id = await handler().execute(
+        new ImportMarkdownCommand({ content: '# Imported\n\nbody', featuredImageId: COVER_ID }, USER_ID)
+      );
       expect(id).toBe(POST_ID);
       const arg = repo.add.mock.calls[0][0];
       expect(arg.entity.title).toBe('Imported');
@@ -224,7 +234,9 @@ describe('BlogPost Commands', () => {
     });
 
     it('imports with explicit title when no h1', async () => {
-      await handler().execute(new ImportMarkdownCommand({ title: 'Manual', content: 'no heading body' }, USER_ID));
+      await handler().execute(
+        new ImportMarkdownCommand({ title: 'Manual', content: 'no heading body', featuredImageId: COVER_ID }, USER_ID)
+      );
       const arg = repo.add.mock.calls[0][0];
       expect(arg.entity.title).toBe('Manual');
     });

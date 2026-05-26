@@ -53,6 +53,8 @@ export class ListPublicPostsHandler implements IQueryHandler<ListPublicPostsQuer
       categoryId,
       tagId,
       language: data.language,
+      search: data.search,
+      sortBy: data.sort,
     });
 
     return {

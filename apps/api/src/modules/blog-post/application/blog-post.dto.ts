@@ -18,7 +18,7 @@ export const CreateBlogPostSchema = z.object({
   excerpt: ExcerptSchema.optional(),
   categoryIds: z.array(z.uuid()).default([]),
   tagIds: z.array(z.uuid()).default([]),
-  featuredImageId: z.uuid().nullable().optional(),
+  featuredImageId: z.uuid(),
   status: PostStatusSchema.default(POST_STATUS.DRAFT),
   featured: z.boolean().default(false),
   metaTitle: MetaTitleSchema.optional(),
@@ -36,7 +36,7 @@ const UpdateBlogPostBaseSchema = z.object({
   excerpt: ExcerptSchema.nullable(),
   categoryIds: z.array(z.uuid()),
   tagIds: z.array(z.uuid()),
-  featuredImageId: z.uuid().nullable(),
+  featuredImageId: z.uuid(),
   status: PostStatusSchema,
   featured: z.boolean(),
   metaTitle: MetaTitleSchema.nullable(),
@@ -62,10 +62,21 @@ export type BlogPostQueryDto = z.infer<typeof BlogPostQuerySchema>;
 
 // --- Query (public) ---
 
+export const PUBLIC_BLOG_SORT = ['newest', 'oldest'] as const;
+export type PublicBlogSort = (typeof PUBLIC_BLOG_SORT)[number];
+
 export const PublicBlogPostQuerySchema = PaginatedQuerySchema.extend({
   language: LanguageSchema.optional(),
   categorySlug: z.string().optional(),
   tagSlug: z.string().optional(),
+  // Free-text against title + excerpt. Trim whitespace; empty → no search.
+  search: z
+    .string()
+    .trim()
+    .transform((v) => (v.length === 0 ? undefined : v))
+    .optional(),
+  // URL param `?sort=newest|oldest`. Default 'newest' (not serialized to URL).
+  sort: z.enum(PUBLIC_BLOG_SORT).default('newest'),
 });
 
 export type PublicBlogPostQueryDto = z.infer<typeof PublicBlogPostQuerySchema>;
@@ -76,6 +87,9 @@ export const ImportMarkdownSchema = z.object({
   title: TitleSchema.optional(),
   content: ContentSchema,
   language: LanguageSchema.default('EN'),
+  // PST-011: cover required at import time too — markdown imports must pick a
+  // cover before the post can be created, same rule as the create form.
+  featuredImageId: z.uuid(),
 });
 
 export type ImportMarkdownDto = z.infer<typeof ImportMarkdownSchema>;
@@ -106,6 +120,7 @@ export type BlogPostPublicListItemDto = {
   title: string;
   excerpt: string | null;
   language: 'EN' | 'VI';
+  featured: boolean;
   featuredImageUrl: string | null;
   categories: BlogPostCategoryResponseDto[];
   tags: BlogPostTagResponseDto[];
@@ -119,6 +134,30 @@ export type BlogPostPublicDetailDto = BlogPostPublicListItemDto & {
   metaDescription: string | null;
   author: BlogPostAuthorDto | null;
   relatedPosts: BlogPostPublicListItemDto[];
+  jsonLd: BlogPostJsonLdDto;
+};
+
+// schema.org BlogPosting (subclass of Article). `image` is omitted (not null) when
+// the post has no featured image, per Google's structured-data validator preference.
+export type BlogPostJsonLdDto = {
+  '@context': 'https://schema.org';
+  '@type': 'BlogPosting';
+  headline: string;
+  description: string | null;
+  image?: string;
+  datePublished: string;
+  dateModified: string;
+  author: {
+    '@type': 'Person';
+    name: string;
+    url: string | null;
+  };
+  publisher: {
+    '@type': 'Person';
+    name: string;
+  };
+  mainEntityOfPage: string;
+  inLanguage: 'en' | 'vi';
 };
 
 export type BlogPostAdminListItemDto = {
@@ -144,7 +183,7 @@ export type BlogPostAdminDetailDto = BlogPostAdminListItemDto & {
   metaTitle: string | null;
   metaDescription: string | null;
   authorId: string;
-  featuredImageId: string | null;
+  featuredImageId: string;
   createdById: string;
   updatedById: string;
   deletedById: string | null;

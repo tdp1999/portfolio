@@ -170,7 +170,7 @@ export class BlogPostRepository implements IBlogPostRepository {
   }
 
   async listPublic(options: BlogPostListPublicOptions): Promise<PaginatedResult<BlogPostReadResult>> {
-    const { page, limit, categoryId, tagId, language } = options;
+    const { page, limit, categoryId, tagId, language, search, sortBy } = options;
     const where: Prisma.BlogPostWhereInput = {
       status: 'PUBLISHED',
       deletedAt: null,
@@ -188,12 +188,24 @@ export class BlogPostRepository implements IBlogPostRepository {
       where.language = language;
     }
 
+    // Free-text contains on title + excerpt. ILIKE-fast enough for ~100 posts.
+    // If volume grows past ~1000, switch to a `tsvector` column + GIN index.
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
+      where.OR = [
+        { title: { contains: trimmedSearch, mode: 'insensitive' } },
+        { excerpt: { contains: trimmedSearch, mode: 'insensitive' } },
+      ];
+    }
+
+    const direction: Prisma.SortOrder = sortBy === 'oldest' ? 'asc' : 'desc';
+
     const [data, total] = await Promise.all([
       this.prisma.blogPost.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: [{ publishedAt: 'desc' }],
+        orderBy: [{ publishedAt: direction }],
         include: fullInclude,
       }),
       this.prisma.blogPost.count({ where }),
@@ -214,30 +226,18 @@ export class BlogPostRepository implements IBlogPostRepository {
     return (data as PrismaBlogPostWithRelations[]).map(BlogPostMapper.toReadResult);
   }
 
-  async findRelated(
-    postId: string,
-    categoryIds: string[],
-    tagIds: string[],
+  async findRelatedByPrimaryCategory(
+    excludeId: string,
+    primaryCategoryId: string,
     limit: number
   ): Promise<BlogPostReadResult[]> {
-    const orConditions: Prisma.BlogPostWhereInput[] = [];
-
-    if (categoryIds.length > 0) {
-      orConditions.push({ categories: { some: { categoryId: { in: categoryIds } } } });
-    }
-
-    if (tagIds.length > 0) {
-      orConditions.push({ tags: { some: { tagId: { in: tagIds } } } });
-    }
-
-    if (orConditions.length === 0) return [];
-
+    // PST-010: primary-category match only — no tag-based fallback, no padding.
     const data = await this.prisma.blogPost.findMany({
       where: {
-        id: { not: postId },
+        id: { not: excludeId },
         status: 'PUBLISHED',
         deletedAt: null,
-        OR: orConditions,
+        categories: { some: { categoryId: primaryCategoryId } },
       },
       orderBy: [{ publishedAt: 'desc' }],
       take: limit,

@@ -6,9 +6,12 @@ import {
   ImportMarkdownSchema,
 } from './blog-post.dto';
 
+const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
+
 const VALID_CREATE = {
   title: 'Hello World',
   content: 'Some body content',
+  featuredImageId: COVER_ID,
 };
 
 describe('CreateBlogPostSchema', () => {
@@ -25,11 +28,15 @@ describe('CreateBlogPostSchema', () => {
   });
 
   it('rejects missing title', () => {
-    expect(CreateBlogPostSchema.safeParse({ content: 'x' }).success).toBe(false);
+    expect(CreateBlogPostSchema.safeParse({ content: 'x', featuredImageId: COVER_ID }).success).toBe(false);
   });
 
   it('rejects missing content', () => {
-    expect(CreateBlogPostSchema.safeParse({ title: 'x' }).success).toBe(false);
+    expect(CreateBlogPostSchema.safeParse({ title: 'x', featuredImageId: COVER_ID }).success).toBe(false);
+  });
+
+  it('PST-011: rejects missing featuredImageId', () => {
+    expect(CreateBlogPostSchema.safeParse({ title: 'x', content: 'y' }).success).toBe(false);
   });
 
   it('strips HTML from title', () => {
@@ -84,7 +91,7 @@ describe('BlogPostQuerySchema', () => {
     if (r.success) {
       expect(r.data.page).toBe(1);
       expect(r.data.limit).toBe(20);
-      expect(r.data.sortBy).toBe('createdAt');
+      expect(r.data.sortBy).toBe('updatedAt');
       expect(r.data.includeDeleted).toBe(false);
     }
   });
@@ -107,6 +114,32 @@ describe('PublicBlogPostQuerySchema', () => {
     expect(r.success).toBe(true);
     if (r.success) expect((r.data as Record<string, unknown>).status).toBeUndefined();
   });
+
+  it("defaults sort to 'newest'", () => {
+    const r = PublicBlogPostQuerySchema.safeParse({});
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.sort).toBe('newest');
+  });
+
+  it("accepts sort='oldest'", () => {
+    const r = PublicBlogPostQuerySchema.safeParse({ sort: 'oldest' });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.sort).toBe('oldest');
+  });
+
+  it('rejects unknown sort values', () => {
+    expect(PublicBlogPostQuerySchema.safeParse({ sort: 'random' }).success).toBe(false);
+  });
+
+  it('trims search and treats empty/whitespace as undefined', () => {
+    const r1 = PublicBlogPostQuerySchema.safeParse({ search: '  ' });
+    expect(r1.success).toBe(true);
+    if (r1.success) expect(r1.data.search).toBeUndefined();
+
+    const r2 = PublicBlogPostQuerySchema.safeParse({ search: '  hydration  ' });
+    expect(r2.success).toBe(true);
+    if (r2.success) expect(r2.data.search).toBe('hydration');
+  });
 });
 
 describe('ImportMarkdownSchema', () => {
@@ -114,8 +147,12 @@ describe('ImportMarkdownSchema', () => {
     expect(ImportMarkdownSchema.safeParse({}).success).toBe(false);
   });
 
-  it('allows missing title', () => {
-    const r = ImportMarkdownSchema.safeParse({ content: '# Title\n\nbody' });
+  it('allows missing title (cover still required)', () => {
+    const r = ImportMarkdownSchema.safeParse({ content: '# Title\n\nbody', featuredImageId: COVER_ID });
     expect(r.success).toBe(true);
+  });
+
+  it('PST-011: rejects missing featuredImageId', () => {
+    expect(ImportMarkdownSchema.safeParse({ content: '# Title\n\nbody' }).success).toBe(false);
   });
 });

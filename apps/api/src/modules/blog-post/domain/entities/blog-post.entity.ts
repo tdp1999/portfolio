@@ -55,7 +55,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
     return this.props.authorId;
   }
 
-  get featuredImageId(): string | null {
+  get featuredImageId(): string {
     return this.props.featuredImageId;
   }
 
@@ -67,6 +67,14 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
   }
 
   static create(data: ICreateBlogPostPayload, userId: string): BlogPost {
+    // PST-011: cover image required at create time.
+    if (!data.featuredImageId) {
+      throw BadRequestError('A cover image is required (PST-011).', {
+        errorCode: BlogPostErrorCode.COVER_REQUIRED,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+
     return new BlogPost({
       ...BaseCrudEntity.createBaseProps(userId),
       slug: SlugValue.from(data.title),
@@ -81,7 +89,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       metaTitle: data.metaTitle ?? null,
       metaDescription: data.metaDescription ?? null,
       authorId: data.authorId,
-      featuredImageId: data.featuredImageId ?? null,
+      featuredImageId: data.featuredImageId,
     });
   }
 
@@ -100,6 +108,15 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
     if ((status === 'PUBLISHED' || status === 'UNLISTED') && (!title || !content)) {
       throw BadRequestError('Title and content are required for Published or Unlisted posts', {
         errorCode: BlogPostErrorCode.CONTENT_REQUIRED,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+
+    // PST-011: cover cannot be unset. Type-wise null is no longer in the payload union,
+    // but a runtime caller (loose layer, deserialised JSON) could still slip null through.
+    if (data.featuredImageId === null || data.featuredImageId === '') {
+      throw BadRequestError('A cover image is required (PST-011).', {
+        errorCode: BlogPostErrorCode.COVER_REQUIRED,
         layer: ErrorLayer.DOMAIN,
       });
     }
@@ -123,7 +140,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       language: data.language ?? this.props.language,
       excerpt: data.excerpt !== undefined ? data.excerpt : this.props.excerpt,
       featured: data.featured ?? this.props.featured,
-      featuredImageId: data.featuredImageId !== undefined ? data.featuredImageId : this.props.featuredImageId,
+      featuredImageId: data.featuredImageId ?? this.props.featuredImageId,
       metaTitle: data.metaTitle !== undefined ? data.metaTitle : this.props.metaTitle,
       metaDescription: data.metaDescription !== undefined ? data.metaDescription : this.props.metaDescription,
       ...BaseCrudEntity.updateTimestamp(userId),
