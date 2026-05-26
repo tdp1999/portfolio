@@ -268,3 +268,29 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - Task 284 prototype gallery extends with 7 PF-* options (spotlight bento, aurora mesh, editorial magazine, showcase artifact, breaking-boundary, brutalist mono, dimensional layers).
 - Once §3 register is picked, may seed shared primitives (e.g. spotlight-card variant) — promote only if the pattern recurs.
 - E4 epic file gets a footnote referencing this ADR; the lock text itself stays as default policy.
+
+### ADR-018: Blog Page DDL Winners — List V1+V3 Hybrid · Detail V4 · Featured = Bento Strip
+
+**Status:** Accepted (2026-05-25)
+**Context:** Per `epic-portfolio-blog.md` (task 351), `/ddl/blog-list-variants` and `/ddl/blog-detail-variants` staged variants for side-by-side review. Featured-treatment α (filter chip) vs β (tab) — both framed before the 2026-05-24 afternoon pivot that reshaped `/blog` into hero → featured-strip (bento) → archive list. After the pivot, featured posts live in the strip itself, not behind an archive filter.
+**Decision:**
+1. **List winner — V1 + V3 hybrid (count-switched featured strip).**
+   - `3-4 featured` → V3 mosaic (top hero card spans full width + 2-3 archive cards underneath; archive grid widens to full container at counts ≤ 2).
+   - `5+ featured` → V1 asymmetric (1 lead card ~60% + 4 side cards stacked ~40%).
+   - V2 (left-anchored editorial) and V4 (horizontal scroll) **not** chosen — both retained on the DDL.
+   - Featured-strip vertical budget fixed at ~800-900px (hero + strip together within one desktop viewport).
+2. **Detail winner — V4 (center hero + far-right floating TOC).**
+   - Hero: V1's centered treatment (eyebrow chips → title → dek → meta strip → compact icon-only share row → `landing-figure` cover).
+   - TOC: V3's `landing-toc-sidebar` + scrollspy, anchored `position: fixed` to the far right of the viewport (outside the article container, distinct from `/projects` which keeps TOC inside the grid). Hidden when post is type `Note` or has fewer than 3 H2/H3 sections.
+   - Mobile (<1280px): floating TOC hides; inline top-of-prose TOC card appears in its place.
+   - Footer: `landing-blog-share-row` reuse + related posts + JSON-LD `<details>` + personal signature block.
+   - V1/V2/V3 retained on the DDL per `feedback_ddl_keep_after_graduate`.
+3. **Featured treatment — Treatment γ (bento strip, no archive filter).**
+   - Featured posts surface exclusively via the V1+V3 strip above the archive list — no `Featured only` filter chip and no `All / Featured` tab in the archive toolbar.
+   - Treatments α and β (the pre-pivot framing) are **rejected** because the bento strip already does the surfacing job they were meant to solve.
+   - URL param `?featured=1` is not wired in v1; the shape stays extensible (filter extension point left open per the pivot's "shape must be extensible" rule).
+**Consequences:**
+- Task 352 graduates the V1+V3 hybrid as `BlogListPage`. Archive toolbar carries category + search + sort + view-toggle (no featured chip, no featured tab).
+- Task 353 graduates V4 as `BlogDetailPage` with the centered hero + floating-TOC + signature pattern. `landing-blog-share-row` and the floating-TOC override (`::ng-deep` reset of host sticky inside a fixed positioning context) lift verbatim from the DDL.
+- DDL pages `/ddl/blog-list-variants` and `/ddl/blog-detail-variants` remain in `DDL_SUBROUTES` post-graduation with chosen/unchosen pills marking the winner.
+- If a `Featured only` archive filter is needed later, add as a category-style chip + `?featured=1` param — the pivot's filter-shape extensibility rule already accommodates this without revisiting the bento strip.

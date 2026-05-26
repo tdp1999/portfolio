@@ -191,6 +191,8 @@
 - PST-007: publishedAt is auto-set on first transition to PUBLISHED; not modified on subsequent status changes. Manual override allowed via admin.
 - PST-008: Markdown import always creates a DRAFT post; user must explicitly publish
 - PST-009: A Post belongs to exactly one Language. Publishing the same article in multiple languages requires separate Post records, each with its own slug and independent publication status.
+- PST-010: Related posts surfaced on a Post detail page are computed by primary-category match — exclude self, order by publishedAt DESC, limit 3. If fewer than 3 posts share the primary category, render the smaller set without padding from other selection strategies (recent / popular / featured).
+- PST-011: A BlogPost requires a `featuredImageId` (cover image) at all times — null is invalid on both create and update. The cover anchors the post's visual identity in list cards, the featured strip on `/blog`, and social previews. Enforced by domain entity invariant, command-layer validation, BE schema (`NOT NULL`), and console form validation. Existing posts without a cover must be backfilled or soft-deleted before the constraint is enforced.
 
 ### Contact Message
 - CTM-001: A ContactMessage requires name, email, message, and GDPR consent
