@@ -29,8 +29,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'blog',
-    loadComponent: () => import('./pages/coming-soon/coming-soon.page').then((m) => m.ComingSoonPage),
-    data: { section: 'Blog', blurb: "I'm drafting the first posts. Subscribe nowhere — just check back." },
+    loadChildren: () => import('@portfolio/landing/feature-blog').then((m) => m.BLOG_ROUTES),
   },
   {
     path: 'uses',
@@ -127,6 +126,14 @@ export const appRoutes: Route[] = [
       {
         path: 'feed-item-variants',
         loadComponent: () => import('./pages/ddl/feed-item-variants').then((m) => m.FeedItemVariantsPage),
+      },
+      {
+        path: 'blog-list-variants',
+        loadComponent: () => import('./pages/ddl/blog-list-variants').then((m) => m.BlogListVariantsPage),
+      },
+      {
+        path: 'blog-detail-variants',
+        loadComponent: () => import('./pages/ddl/blog-detail-variants').then((m) => m.BlogDetailVariantsPage),
       },
       {
         path: 'feed-filter-bar',

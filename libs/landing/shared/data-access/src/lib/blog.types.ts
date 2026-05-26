@@ -22,6 +22,7 @@ export type BlogPostListItem = {
   title: string;
   excerpt: string | null;
   language: 'EN' | 'VI';
+  featured: boolean;
   featuredImageUrl: string | null;
   categories: BlogPostCategory[];
   tags: BlogPostTag[];
@@ -35,6 +36,21 @@ export type BlogPostDetail = BlogPostListItem & {
   metaDescription: string | null;
   author: BlogPostAuthor | null;
   relatedPosts: BlogPostListItem[];
+  jsonLd: BlogPostJsonLd;
+};
+
+export type BlogPostJsonLd = {
+  '@context': 'https://schema.org';
+  '@type': 'BlogPosting';
+  headline: string;
+  description: string | null;
+  image?: string;
+  datePublished: string;
+  dateModified: string;
+  author: { '@type': 'Person'; name: string; url: string | null };
+  publisher: { '@type': 'Person'; name: string };
+  mainEntityOfPage: string;
+  inLanguage: 'en' | 'vi';
 };
 
 export type BlogPostListResponse = {
@@ -44,9 +60,13 @@ export type BlogPostListResponse = {
   limit: number;
 };
 
+export type BlogListSort = 'newest' | 'oldest';
+
 export type BlogListQuery = {
   page?: number;
   limit?: number;
   categorySlug?: string;
   tagSlug?: string;
+  search?: string;
+  sort?: BlogListSort;
 };

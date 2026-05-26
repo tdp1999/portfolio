@@ -1,34 +1,37 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   PLATFORM_ID,
   TransferState,
   computed,
   effect,
   inject,
   makeStateKey,
-  signal,
-  viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta, DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Title, Meta, DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, from, of, map } from 'rxjs';
+import { from, of, map, switchMap } from 'rxjs';
 import {
-  ContainerComponent,
-  SectionComponent,
-  IconComponent,
   ChipComponent,
-  LandingBackLinkComponent,
+  ContainerComponent,
+  FigureComponent,
   LandingEmptyStateComponent,
-  LandingLinkComponent,
-  LandingReadingProgressComponent,
+  LandingPageShellComponent,
+  LandingProseAnchorsDirective,
+  LandingScrollspyService,
+  LandingTocSidebarComponent,
+  type BreadcrumbItem,
+  type InPageSection,
 } from '@portfolio/landing/shared/ui';
-import { BlogDataService, MarkdownService } from '@portfolio/landing/shared/data-access';
-import type { BlogPostDetail, RenderedMarkdown } from '@portfolio/landing/shared/data-access';
-import { TocComponent } from './toc.component';
+import {
+  BlogDataService,
+  MarkdownService,
+  type BlogPostDetail,
+  type RenderedMarkdown,
+} from '@portfolio/landing/shared/data-access';
+import { BlogShareRowComponent } from './blog-share-row.component';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
 
@@ -37,44 +40,54 @@ type DetailState = {
   rendered: RenderedMarkdown;
 };
 
+const INITIAL_STATE: DetailState = { post: null, rendered: EMPTY_RENDER };
+
+/**
+ * Below this H2/H3 count the TOC is auto-hidden — same threshold the DDL
+ * used (replaces an earlier word-count heuristic that mis-hid valid TOCs).
+ * Notes (category slug `notes`) always hide regardless of section count.
+ */
+const TOC_MIN_SECTIONS = 3;
+
 @Component({
   selector: 'landing-blog-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterLink,
-    ContainerComponent,
-    SectionComponent,
-    IconComponent,
     ChipComponent,
-    TocComponent,
-    LandingBackLinkComponent,
+    ContainerComponent,
+    FigureComponent,
     LandingEmptyStateComponent,
-    LandingLinkComponent,
-    LandingReadingProgressComponent,
+    LandingPageShellComponent,
+    LandingProseAnchorsDirective,
+    LandingTocSidebarComponent,
+    BlogShareRowComponent,
   ],
+  providers: [LandingScrollspyService],
   templateUrl: './blog-detail-page.html',
   styleUrl: './blog-detail-page.scss',
 })
 export class BlogDetailPage {
-  private route = inject(ActivatedRoute);
-  private blogService = inject(BlogDataService);
-  private markdown = inject(MarkdownService);
-  private sanitizer = inject(DomSanitizer);
-  private title = inject(Title);
-  private meta = inject(Meta);
-  private platformId = inject(PLATFORM_ID);
-  private transferState = inject(TransferState);
+  private readonly route = inject(ActivatedRoute);
+  private readonly blogService = inject(BlogDataService);
+  private readonly markdown = inject(MarkdownService);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly transferState = inject(TransferState);
+  private readonly document = inject(DOCUMENT);
+  private readonly scrollspy = inject(LandingScrollspyService);
 
-  articleEl = viewChild<ElementRef<HTMLElement>>('articleEl');
-
-  copied = signal(false);
-
-  private state = toSignal(
+  // ─── Data pipeline (SSR transfer cache) ──────────────────────────
+  // Cache the rendered post in TransferState so the client doesn't refetch
+  // + re-render markdown after hydration. Pattern shared with the previous
+  // baseline; preserved through graduation.
+  private readonly state = toSignal(
     this.route.paramMap.pipe(
       switchMap((params) => {
         const slug = params.get('slug');
-        if (!slug) return of<DetailState>({ post: null, rendered: EMPTY_RENDER });
+        if (!slug) return of<DetailState>(INITIAL_STATE);
 
         const stateKey = makeStateKey<DetailState>('blog-post-' + slug);
         const cached = this.transferState.get(stateKey, null);
@@ -85,7 +98,7 @@ export class BlogDetailPage {
 
         return this.blogService.getBySlug(slug).pipe(
           switchMap((post) => {
-            if (!post) return of<DetailState>({ post: null, rendered: EMPTY_RENDER });
+            if (!post) return of<DetailState>(INITIAL_STATE);
             return from(this.markdown.render(post.content)).pipe(
               map((rendered): DetailState => {
                 const next: DetailState = { post, rendered };
@@ -99,27 +112,47 @@ export class BlogDetailPage {
         );
       })
     ),
-    { initialValue: { post: null, rendered: EMPTY_RENDER } satisfies DetailState }
+    { initialValue: INITIAL_STATE }
   );
 
-  post = computed(() => this.state().post);
-  toc = computed(() => this.state().rendered.toc);
-  contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
-  notFound = computed(() => {
-    // After first emission, if state has no post and slug present
-    return this.state().post === null && this.route.snapshot.paramMap.has('slug');
+  readonly post = computed(() => this.state().post);
+  readonly notFound = computed(() => this.state().post === null && this.route.snapshot.paramMap.has('slug'));
+  readonly contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
+  readonly toc = computed<readonly InPageSection[]>(() =>
+    this.state().rendered.toc.map((e) => ({ id: e.id, title: e.text, level: e.level }))
+  );
+  readonly hideToc = computed(() => shouldHideToc(this.post(), this.toc().length));
+
+  readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const p = this.post();
+    const items: BreadcrumbItem[] = [
+      { label: 'Home', href: '/' },
+      { label: 'Writing', href: '/blog' },
+    ];
+    if (p) items.push({ label: p.title });
+    return items;
   });
-  publishedDate = computed(() => {
-    const published = this.post()?.publishedAt;
-    if (!published) return '';
-    return new Date(published).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
+
+  readonly postType = computed<string>(() => {
+    const p = this.post();
+    if (!p) return '—';
+    if (p.categories[0]?.slug === 'notes') return 'Note';
+    const wc = wordCount(p.content);
+    if (wc >= 1500) return 'Deep dive';
+    return 'Essay';
+  });
+
+  readonly publishedDate = computed<string>(() => {
+    const iso = this.post()?.publishedAt;
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (!Number.isFinite(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   });
 
   constructor() {
+    // SEO meta — runs on both server and client. Article OG tags + canonical
+    // values mirror the about-page pattern (commit 96a0cd4).
     effect(() => {
       const p = this.post();
       if (!p) return;
@@ -136,16 +169,43 @@ export class BlogDetailPage {
       if (p.publishedAt) {
         this.meta.updateTag({ property: 'article:published_time', content: p.publishedAt });
       }
+      if (p.author?.name) {
+        this.meta.updateTag({ property: 'article:author', content: p.author.name });
+      }
+    });
+
+    // SSR-only JSON-LD injection. Guarded by isPlatformServer so the client
+    // never re-injects (which would yield duplicate <script> tags on hydration).
+    // Payload comes pre-built from the BE (task 348) on `post.jsonLd`.
+    effect(() => {
+      const p = this.post();
+      if (!p || !isPlatformServer(this.platformId)) return;
+      const script = this.document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.textContent = JSON.stringify(p.jsonLd);
+      this.document.head.appendChild(script);
+    });
+
+    // Scrollspy: register section anchors only when the TOC will actually
+    // render. Clearing on hide avoids stale highlights from the previous post
+    // when navigating slug → slug client-side.
+    effect(() => {
+      if (this.hideToc()) {
+        this.scrollspy.setSections([]);
+        return;
+      }
+      this.scrollspy.setSections(this.toc());
     });
   }
+}
 
-  copyLink() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
-    });
-  }
+function wordCount(content: string | null | undefined): number {
+  if (!content) return 0;
+  return content.split(/\s+/).filter(Boolean).length;
+}
 
-  articleElement = computed(() => this.articleEl()?.nativeElement ?? null);
+function shouldHideToc(post: BlogPostDetail | null, sectionCount: number): boolean {
+  if (!post) return true;
+  const isNote = post.categories.some((c) => c.slug === 'notes');
+  return isNote || sectionCount < TOC_MIN_SECTIONS;
 }

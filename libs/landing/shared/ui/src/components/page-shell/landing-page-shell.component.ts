@@ -115,13 +115,7 @@ import { LandingPageHeroComponent } from '../page-hero';
       }
       @media (min-width: 768px) {
         .lps__header {
-          padding-top: 96px;
-          padding-bottom: 64px;
-        }
-      }
-      @media (min-width: 1024px) {
-        .lps__header {
-          padding-top: 128px;
+          padding-top: 64px;
           padding-bottom: 64px;
         }
       }

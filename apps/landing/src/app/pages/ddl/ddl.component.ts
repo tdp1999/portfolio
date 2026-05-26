@@ -125,6 +125,16 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         desc: 'Row (3 sub-variants) · Card · Timeline — side-by-side on same fake data. Pick default for /projects + /blog.',
       },
       {
+        path: '/ddl/blog-list-variants',
+        title: 'Blog · list layout variants',
+        desc: 'Featured-strip variants V1-V4 (Asymmetric · Even row · Mosaic bento · Horizontal scroll) plus a list-section showcase reusing /projects filter/sort/view-toggle with search added. Supersedes the morning A/B/C round (kept under Historical).',
+      },
+      {
+        path: '/ddl/blog-detail-variants',
+        title: 'Blog · detail layout variants',
+        desc: 'Three layouts for /blog/:slug — Editorial banner (centered hero + inline TOC) · Dan minimal (title→prose) · Sticky meta rail (2-col with right rail). Renders the seeded deep-dive + auto-hide-TOC branch on a Note.',
+      },
+      {
         path: '/ddl/feed-filter-bar',
         title: 'Feed · filter bar variants',
         desc: 'V1 chip-row · V2 dropdown-per-facet · V3 sidebar · V4 search+autocomplete. Year + status + stack filter UX.',

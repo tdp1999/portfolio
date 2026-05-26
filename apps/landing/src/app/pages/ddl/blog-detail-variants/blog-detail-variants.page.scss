@@ -1,0 +1,807 @@
+:host {
+  display: block;
+}
+
+/* ─── DDL page chrome (matches blog-list-variants) ────────────────── */
+.ddl-page__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-100);
+
+  em {
+    font-style: italic;
+    color: var(--landing-accent);
+  }
+}
+
+.ai-block {
+  padding-block: 32px;
+  border-bottom: 1px solid var(--landing-border);
+}
+.ai-block--alt {
+  background: var(--landing-ink-1);
+}
+.ai-block__intro,
+.ai-section__intro {
+  margin: 8px 0 0;
+  max-width: 56rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+.variant-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.variant-meta__pill--chosen {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: lowercase;
+  color: var(--landing-accent);
+  border: 1px solid var(--landing-accent);
+  border-radius: 4px;
+}
+
+.ai-block__chosen {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  max-width: 56rem;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-300);
+  border-left: 3px solid var(--landing-accent);
+  background: color-mix(in oklab, var(--landing-accent) 8%, transparent);
+  border-radius: 0 4px 4px 0;
+
+  strong {
+    color: var(--landing-text-100);
+    font-weight: 600;
+  }
+}
+
+/* ─── Shared article frame ───────────────────────────────────────── */
+%article-frame {
+  margin-top: 24px;
+  padding: 32px;
+  background: var(--landing-ink-0);
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+}
+
+/* Prose styling comes from `.landing-prose` (loaded globally via
+   `libs/landing/shared/ui/src/styles/_prose.scss`). The wrappers below
+   only constrain width / centering — no rhythm rules here. */
+
+/* ═══════════════════════════════════════════════════════════════════
+   Variant 1 — Editorial banner
+   ═══════════════════════════════════════════════════════════════════ */
+.v1-article {
+  @extend %article-frame;
+}
+.v1-article--note {
+  margin-top: 32px;
+  background: color-mix(in oklab, var(--landing-accent) 4%, var(--landing-ink-0));
+}
+
+.v1-hero {
+  max-width: 760px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+.v1-hero__eyebrow {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.v1-hero__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-lg);
+  line-height: var(--landing-display-lg-lh);
+  color: var(--landing-text-100);
+}
+.v1-hero__dek {
+  margin: 0 0 20px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: 1.5;
+  color: var(--landing-text-400);
+}
+.v1-hero__meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+
+.v1-toc {
+  max-width: 680px;
+  margin: 0 auto 40px;
+  padding: 16px 20px;
+  border: 1px dashed var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-ink-1);
+}
+.v1-toc__label {
+  margin: 0 0 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.v1-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+
+  li[data-level='3'] {
+    padding-left: 16px;
+  }
+  li[data-level='4'] {
+    padding-left: 32px;
+  }
+  a {
+    color: var(--landing-text-300);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--landing-accent);
+    }
+  }
+}
+.v1-toc-note {
+  max-width: 680px;
+  margin: 0 auto 32px;
+  padding: 8px 12px;
+  text-align: center;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  border: 1px dashed var(--landing-border);
+  border-radius: 4px;
+}
+.v1-prose {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.v1-footer {
+  max-width: 680px;
+  margin: 48px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--landing-border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Variant 2 — Dan minimal
+   ═══════════════════════════════════════════════════════════════════ */
+.v2-article {
+  @extend %article-frame;
+  max-width: 720px;
+  margin-inline: auto;
+}
+.v2-hero {
+  margin: 0 0 32px;
+}
+.v2-hero__title {
+  margin: 0 0 8px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-100);
+}
+.v2-hero__date {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+.v2-footer {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--landing-border);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.v2-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Variant 3 — Sticky meta rail
+   ═══════════════════════════════════════════════════════════════════ */
+.v3-article {
+  @extend %article-frame;
+}
+.v3-hero {
+  margin: 0 0 32px;
+}
+.v3-hero__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.v3-hero__title {
+  margin: 0;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-100);
+  max-width: 28ch;
+}
+.v3-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 48px;
+  align-items: start;
+}
+.v3-grid__prose {
+  max-width: 720px;
+  min-width: 0;
+}
+.v3-rail {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+.v3-rail__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-right: 4px;
+
+  /* landing-toc-sidebar applies its own position:sticky + max-height +
+     overflow on :host. Nesting that inside our already-sticky rail caused
+     the toc + dl + share to overlap. Force it to flow as a normal block
+     inside the rail's own scroll container. */
+  ::ng-deep landing-toc-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+.v3-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: 1.45;
+
+  dt {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-500);
+  }
+  dd {
+    margin: 0;
+    color: var(--landing-text-200);
+  }
+}
+.v3-meta__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.v3-footer {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--landing-border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Shared — related grid + json-ld + prototypes + usage
+   ═══════════════════════════════════════════════════════════════════ */
+.related-block__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-body-xl);
+  line-height: 1.3;
+  color: var(--landing-text-100);
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.related-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-ink-0);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 160ms ease;
+
+  &:hover {
+    border-color: var(--landing-text-500);
+  }
+}
+.related-card__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.related-card__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.related-card__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-md);
+  line-height: 1.32;
+  color: var(--landing-text-100);
+}
+.related-card__excerpt {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: 1.45;
+  color: var(--landing-text-400);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.related-list__link {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--landing-border);
+  text-decoration: none;
+  color: inherit;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+
+  &:hover .related-list__title {
+    color: var(--landing-accent);
+  }
+}
+.related-list__title {
+  color: var(--landing-text-100);
+  font-weight: 500;
+  transition: color 160ms ease;
+}
+.related-list__date {
+  flex: 0 0 auto;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+
+.json-ld {
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-400);
+
+  summary {
+    cursor: pointer;
+    color: var(--landing-text-300);
+  }
+  pre {
+    margin: 8px 0 0;
+    padding: 12px;
+    background: var(--landing-ink-1);
+    border-radius: 4px;
+    overflow-x: auto;
+    color: var(--landing-text-300);
+    font-size: var(--landing-mono-sm);
+    line-height: 1.5;
+  }
+}
+
+/* Prototypes + Usage (mirrors blog-list-variants conventions) */
+.proto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+.proto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-ink-0);
+}
+.proto__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--landing-border);
+}
+.proto__tag {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+.proto__note {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+.proto__notes {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+
+  dt {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-500);
+  }
+  dd {
+    margin: 0;
+    color: var(--landing-text-300);
+  }
+}
+
+.usage__title {
+  margin: 0 0 32px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-md);
+  line-height: var(--landing-display-md-lh);
+  color: var(--landing-text-100);
+}
+.usage__row {
+  margin-top: 24px;
+
+  h3 {
+    margin: 0 0 8px;
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-sm);
+    line-height: var(--landing-display-sm-lh);
+    color: var(--landing-text-100);
+  }
+  p {
+    margin: 0;
+    max-width: 64ch;
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+    color: var(--landing-text-400);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Variant 4 — CHOSEN (center hero · floating far-right TOC)
+   The container `.v4-host` is `position: relative` so the floating TOC
+   (`position: absolute`) can anchor to the right of the container's
+   bounding rect. The TOC inside is `position: sticky; top: 96px` (from
+   the toc-sidebar host) so it sticks while scrolling.
+   ═══════════════════════════════════════════════════════════════════ */
+.v4-host {
+  position: relative;
+}
+.v4-shape-toggle {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 16px;
+}
+.v4-article {
+  /* No bordered card — V4 reads like a real blog page, not a DDL frame. */
+  margin: 24px auto 0;
+  padding: 0;
+  max-width: 760px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.v4-hero {
+  text-align: center;
+  margin: 0 0 40px;
+}
+.v4-hero__eyebrow {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.v4-hero__title {
+  margin: 0 0 16px;
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-lg);
+  line-height: var(--landing-display-lg-lh);
+  color: var(--landing-text-100);
+}
+.v4-hero__dek {
+  margin: 0 0 20px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: 1.5;
+  color: var(--landing-text-400);
+}
+.v4-hero__meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+}
+/* Hero share row — sits right under meta strip, icon-only compact. */
+.v4-hero__share {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+.v4-hero__figure {
+  margin: 32px 0 0;
+}
+
+/* TOC auto-hidden note (Note posts or <800 words). */
+.v4-toc-note {
+  max-width: 680px;
+  margin: 0 auto 32px;
+  padding: 8px 12px;
+  text-align: center;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  border: 1px dashed var(--landing-border);
+  border-radius: 4px;
+}
+
+/* Personal signature — about the author + site brief.
+   Sits between related posts and JSON-LD details block. */
+.v4-signature {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-ink-1);
+}
+.v4-signature__avatar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--landing-accent) 18%, transparent);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-accent);
+}
+.v4-signature__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.v4-signature__name {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-body-md);
+  color: var(--landing-text-100);
+}
+.v4-signature__bio {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: 1.5;
+  color: var(--landing-text-400);
+}
+.v4-signature__links {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+
+  a {
+    color: var(--landing-text-300);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--landing-accent);
+    }
+  }
+}
+
+/* Inline TOC fallback (default — shown below 1280px viewport) */
+.v4-toc-inline {
+  max-width: 680px;
+  margin: 0 auto 40px;
+  padding: 16px 20px;
+  border: 1px dashed var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-ink-1);
+}
+.v4-toc-inline__label {
+  margin: 0 0 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+.v4-toc-inline__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+
+  li[data-level='3'] {
+    padding-left: 16px;
+  }
+  li[data-level='4'] {
+    padding-left: 32px;
+  }
+  a {
+    color: var(--landing-text-300);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--landing-accent);
+    }
+  }
+}
+
+.v4-prose {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.v4-footer {
+  max-width: 680px;
+  margin: 48px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--landing-border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Floating far-right TOC — sibling of the article section.
+   `position: fixed` pins it to the viewport's top-right on desktop.
+   Below 1280px the floating TOC hides and the inline TOC inside the
+   article takes over. */
+.v4-floating-toc {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .v4-toc-inline {
+    display: none;
+  }
+  .v4-floating-toc {
+    display: block;
+    position: fixed;
+    // top: 120px;
+    right: 48px;
+    width: 280px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    z-index: 5;
+  }
+  .v4-floating-toc ::ng-deep landing-toc-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* ─── Mobile breakpoints ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .v3-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .v3-rail {
+    position: static;
+    order: -1;
+  }
+  .v3-rail__inner {
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .v1-article,
+  .v2-article,
+  .v3-article {
+    padding: 20px;
+  }
+  .v1-hero__title {
+    font-size: var(--landing-display-md);
+    line-height: var(--landing-display-md-lh);
+  }
+  .v2-hero__title,
+  .v3-hero__title {
+    font-size: var(--landing-display-sm);
+    line-height: var(--landing-display-sm-lh);
+  }
+  .proto-grid {
+    grid-template-columns: 1fr;
+  }
+}

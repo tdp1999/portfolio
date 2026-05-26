@@ -1,94 +1,324 @@
-<div class="flex flex-col min-h-screen">
-  <landing-section>
-    <landing-container>
-      <div class="mb-8">
-        <landing-back-link href="/">Back to home</landing-back-link>
-      </div>
+<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+  <span hero-heading>Writing.</span>
+  <p hero-lede>Long-form deep-dives, short notes, and the occasional retro from building this portfolio.</p>
 
-      <h1 class="text-display-sm font-bold tracking-tight text-text mb-2">Blog</h1>
-      <p class="text-text-secondary mb-8">Articles, notes, and explorations</p>
+  <!-- ─── Featured strip (V1+V3 hybrid per ADR-018) ──────────────── -->
+  @if (stripVariant() === 'v1') {
+    <section class="blog-featured" aria-labelledby="blog-featured-h">
+      <landing-container size="wide">
+        <h2 id="blog-featured-h" class="sr-only">Featured posts</h2>
+        @if (v1Hero(); as hero) {
+          <div class="mag-v1" [attr.data-count]="featuredCount()">
+            <div class="mag-v1__side">
+              @for (post of v1Left(); track post.slug) {
+                <article class="mag-side">
+                  <a [routerLink]="['/blog', post.slug]" class="mag-side__link">
+                    <div class="mag-side__media">
+                      @if (post.featuredImageUrl; as url) {
+                        @let leftSet = url | cloudinarySrcset: 320;
+                        <img
+                          [src]="leftSet.src"
+                          [attr.srcset]="leftSet.srcset || null"
+                          [alt]="post.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      }
+                    </div>
+                    <div class="mag-side__body">
+                      <h3 class="mag-title mag-title--side">{{ post.title }}</h3>
+                      @if (post.excerpt; as ex) {
+                        <p class="mag-excerpt mag-excerpt--side">{{ ex }}</p>
+                      }
+                      <div class="mag-meta">
+                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
+                        @if (primaryCategory(post); as cat) {
+                          <span class="mag-meta__sep" aria-hidden="true">·</span>
+                          <span class="mag-meta__cat">{{ cat }}</span>
+                        }
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              }
+            </div>
 
-      @if (categories().length > 0) {
-        <div class="flex flex-wrap gap-2 mb-12">
-          <button
-            type="button"
-            class="blog-filter"
-            [class.blog-filter--active]="!categorySlug()"
-            (click)="selectCategory(undefined)"
-          >
-            All
-          </button>
-          @for (cat of categories(); track cat.slug) {
-            <button
-              type="button"
-              class="blog-filter"
-              [class.blog-filter--active]="categorySlug() === cat.slug"
-              (click)="selectCategory(cat.slug)"
-            >
-              {{ cat.name }}
-            </button>
-          }
-        </div>
-      }
-
-      @if (postVms().length === 0) {
-        <landing-empty-state icon="file-text" message="No posts yet" />
-      } @else {
-        <div class="flex flex-col gap-8">
-          @for (post of postVms(); track post.slug) {
-            <a [routerLink]="['/blog', post.slug]" class="blog-row group">
-              <div class="blog-row__thumbnail">
-                @if (post.featuredImageUrl) {
-                  <img [src]="post.featuredImageUrl" [alt]="post.title" class="w-full h-full object-cover" />
-                } @else {
-                  <div class="w-full h-full bg-surface-variant flex items-center justify-center">
-                    <landing-icon name="image" [size]="32" class="text-text-secondary opacity-40" />
-                  </div>
+            <article class="mag-hero mag-hero--center">
+              <a [routerLink]="['/blog', hero.slug]" class="mag-hero__link">
+                <h3 class="mag-title mag-title--hero">{{ hero.title }}</h3>
+                @if (hero.excerpt; as ex) {
+                  <p class="mag-excerpt mag-excerpt--hero">{{ ex }}</p>
                 }
-              </div>
-
-              <div class="blog-row__content">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  @for (cat of post.categories; track cat.slug) {
-                    <landing-chip [label]="cat.name" size="sm" />
-                  }
-                  @if (post.readTimeMinutes) {
-                    <span class="text-body-sm text-text-secondary"> · {{ post.readTimeMinutes }} min read </span>
+                <div class="mag-meta mag-meta--hero">
+                  <span class="mag-meta__time">{{ timeAgo(hero) | uppercase }}</span>
+                  @if (primaryCategory(hero); as cat) {
+                    <span class="mag-meta__sep" aria-hidden="true">·</span>
+                    <span class="mag-meta__cat">{{ cat | uppercase }}</span>
                   }
                 </div>
-
-                <h2 class="text-body-xl font-semibold text-text group-hover:text-primary transition-colors mb-2">
-                  {{ post.title }}
-                </h2>
-
-                @if (post.excerpt) {
-                  <p class="text-text-secondary mb-3 line-clamp-2">{{ post.excerpt }}</p>
+                @if (hero.featuredImageUrl; as url) {
+                  <figure class="mag-hero__figure">
+                    @let heroSet = url | cloudinarySrcset: 640;
+                    <img
+                      [src]="heroSet.src"
+                      [attr.srcset]="heroSet.srcset || null"
+                      [alt]="hero.title"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </figure>
                 }
+              </a>
+            </article>
 
-                @if (post.displayDate) {
-                  <span class="text-body-sm text-text-secondary">
-                    {{ post.displayDate }}
-                  </span>
+            <div class="mag-v1__side">
+              @for (post of v1Right(); track post.slug) {
+                <article class="mag-side">
+                  <a [routerLink]="['/blog', post.slug]" class="mag-side__link">
+                    <div class="mag-side__media">
+                      @if (post.featuredImageUrl; as url) {
+                        @let rightSet = url | cloudinarySrcset: 320;
+                        <img
+                          [src]="rightSet.src"
+                          [attr.srcset]="rightSet.srcset || null"
+                          [alt]="post.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      }
+                    </div>
+                    <div class="mag-side__body">
+                      <h3 class="mag-title mag-title--side">{{ post.title }}</h3>
+                      @if (post.excerpt; as ex) {
+                        <p class="mag-excerpt mag-excerpt--side">{{ ex }}</p>
+                      }
+                      <div class="mag-meta">
+                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
+                        @if (primaryCategory(post); as cat) {
+                          <span class="mag-meta__sep" aria-hidden="true">·</span>
+                          <span class="mag-meta__cat">{{ cat }}</span>
+                        }
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              }
+            </div>
+          </div>
+        }
+      </landing-container>
+    </section>
+  } @else if (stripVariant() === 'v3') {
+    <section class="blog-featured" aria-labelledby="blog-featured-h">
+      <landing-container size="wide">
+        <h2 id="blog-featured-h" class="sr-only">Featured posts</h2>
+        @if (v3Hero(); as hero) {
+          <div class="mag-v3" [attr.data-count]="featuredCount()">
+            <article class="mag-hero mag-hero--top">
+              <a [routerLink]="['/blog', hero.slug]" class="mag-hero__link">
+                <div class="mag-hero__split-media mag-hero__split-media--top">
+                  @if (hero.featuredImageUrl; as url) {
+                    @let v3HeroSet = url | cloudinarySrcset: 720;
+                    <img
+                      [src]="v3HeroSet.src"
+                      [attr.srcset]="v3HeroSet.srcset || null"
+                      [alt]="hero.title"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  }
+                </div>
+                <div class="mag-hero__split-body">
+                  <h3 class="mag-title mag-title--hero">{{ hero.title }}</h3>
+                  @if (hero.excerpt; as ex) {
+                    <p class="mag-excerpt mag-excerpt--hero">{{ ex }}</p>
+                  }
+                  <div class="mag-meta mag-meta--hero">
+                    <span class="mag-meta__time">{{ timeAgo(hero) | uppercase }}</span>
+                    @if (primaryCategory(hero); as cat) {
+                      <span class="mag-meta__sep" aria-hidden="true">·</span>
+                      <span class="mag-meta__cat">{{ cat | uppercase }}</span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </article>
+
+            @if (v3Archive().length > 0) {
+              <ul class="mag-v3__grid" [attr.data-count]="v3Archive().length" role="list">
+                @for (post of v3Archive(); track post.slug) {
+                  <li>
+                    <article class="mag-archive">
+                      <a [routerLink]="['/blog', post.slug]" class="mag-archive__link">
+                        <div class="mag-archive__media">
+                          @if (post.featuredImageUrl; as url) {
+                            @let archSet = url | cloudinarySrcset: 240;
+                            <img
+                              [src]="archSet.src"
+                              [attr.srcset]="archSet.srcset || null"
+                              [alt]="post.title"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          }
+                        </div>
+                        <div class="mag-archive__body">
+                          <h4 class="mag-title mag-title--archive">{{ post.title }}</h4>
+                          <div class="mag-meta">
+                            <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
+                            @if (primaryCategory(post); as cat) {
+                              <span class="mag-meta__sep" aria-hidden="true">·</span>
+                              <span class="mag-meta__cat">{{ cat }}</span>
+                            }
+                          </div>
+                        </div>
+                      </a>
+                    </article>
+                  </li>
                 }
-              </div>
-            </a>
+              </ul>
+            }
+          </div>
+        }
+      </landing-container>
+    </section>
+  }
+
+  @if (stripVariant() !== null) {
+    <landing-section-rule />
+  }
+
+  <!-- ─── Archive list ─────────────────────────────────────────────── -->
+  <section class="blog-archive" aria-labelledby="blog-archive-h">
+    <landing-container size="wide">
+      <h2 id="blog-archive-h" class="sr-only">All posts</h2>
+
+      <div class="list-toolbar">
+        <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="post" />
+        <div class="list-toolbar__view">
+          <landing-view-toggle [options]="viewOptions" [value]="viewMode()" (valueChange)="setView($event)" />
+        </div>
+        <div class="list-toolbar__sort">
+          <landing-segmented
+            [segments]="sortOptions"
+            [active]="sortKey()"
+            (activeChange)="setSort($event)"
+            variant="hairline"
+            ariaLabel="Sort posts"
+          />
+        </div>
+      </div>
+
+      <div class="list-controls">
+        <div class="list-controls__search">
+          <landing-input
+            [formControl]="searchControl"
+            placeholder="Search posts by title or excerpt…"
+            inputmode="search"
+            autocomplete="off"
+          />
+        </div>
+        <div class="list-controls__chips" role="group" aria-label="Category filter">
+          <landing-filter-chip
+            label="All"
+            [selected]="selectedCategory() === null"
+            (selectionChange)="setCategory(null)"
+          />
+          @for (c of availableCategories(); track c.slug) {
+            <landing-filter-chip
+              [label]="c.name"
+              [selected]="selectedCategory() === c.slug"
+              (selectionChange)="setCategory(selectedCategory() === c.slug ? null : c.slug)"
+            />
           }
         </div>
+      </div>
+
+      @if (visiblePosts().length === 0) {
+        <div class="list-empty">
+          <landing-empty-state icon="folder-open" message="No posts match the current filters." />
+          <button type="button" class="list-empty__clear" (click)="clearFilters()">Clear filters</button>
+        </div>
+      } @else {
+        @switch (viewMode()) {
+          @case ('row') {
+            <ul class="list-rows" role="list">
+              @for (post of visiblePosts(); track post.slug) {
+                <li class="list-row">
+                  <a [routerLink]="['/blog', post.slug]" class="list-row__link">
+                    <div class="list-row__thumb">
+                      @if (post.featuredImageUrl; as url) {
+                        @let rowSet = url | cloudinarySrcset: 160;
+                        <img
+                          [src]="rowSet.src"
+                          [attr.srcset]="rowSet.srcset || null"
+                          [alt]="post.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      }
+                    </div>
+                    <div class="list-row__body">
+                      <div class="mag-meta">
+                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
+                        @if (primaryCategory(post); as cat) {
+                          <span class="mag-meta__sep" aria-hidden="true">·</span>
+                          <span class="mag-meta__cat">{{ cat }}</span>
+                        }
+                      </div>
+                      <span class="mag-title mag-title--side list-row__title">{{ post.title }}</span>
+                      @if (post.excerpt; as ex) {
+                        <p class="mag-excerpt mag-excerpt--side list-row__excerpt">{{ ex }}</p>
+                      }
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+          @case ('grid') {
+            <ul class="list-grid" role="list">
+              @for (post of visiblePosts(); track post.slug) {
+                <li class="list-card">
+                  <a [routerLink]="['/blog', post.slug]" class="list-card__link">
+                    <div class="list-card__media">
+                      @if (post.featuredImageUrl; as url) {
+                        @let cardSet = url | cloudinarySrcset: 480;
+                        <img
+                          [src]="cardSet.src"
+                          [attr.srcset]="cardSet.srcset || null"
+                          [alt]="post.title"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      }
+                    </div>
+                    <div class="list-card__body">
+                      <div class="mag-meta">
+                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
+                        @if (primaryCategory(post); as cat) {
+                          <span class="mag-meta__sep" aria-hidden="true">·</span>
+                          <span class="mag-meta__cat">{{ cat }}</span>
+                        }
+                      </div>
+                      <h3 class="mag-title mag-title--side list-card__title">{{ post.title }}</h3>
+                      @if (post.excerpt; as ex) {
+                        <p class="mag-excerpt mag-excerpt--side list-card__excerpt">{{ ex }}</p>
+                      }
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        }
 
         @if (totalPages() > 1) {
-          <div class="flex items-center justify-center gap-4 mt-12">
-            <button type="button" class="blog-page-btn" [disabled]="page() <= 1" (click)="prevPage()">
-              <landing-icon name="arrow-left" [size]="16" />
-              Previous
-            </button>
-            <span class="text-body-sm text-text-secondary"> Page {{ page() }} of {{ totalPages() }} </span>
-            <button type="button" class="blog-page-btn" [disabled]="page() >= totalPages()" (click)="nextPage()">
-              Next
-              <landing-icon name="arrow-right" [size]="16" />
-            </button>
+          <div class="list-paginate">
+            <landing-pagination [page]="currentPage()" [total]="totalPages()" (pageChange)="setPage($event)" />
           </div>
         }
       }
     </landing-container>
-  </landing-section>
-</div>
+  </section>
+</landing-page-shell>

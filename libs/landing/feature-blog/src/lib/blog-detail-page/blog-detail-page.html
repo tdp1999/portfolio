@@ -1,106 +1,140 @@
-@if (post(); as p) {
-  <landing-reading-progress [target]="articleElement()" />
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>
+    @if (notFound()) {
+      Not found.
+    } @else {
+      Writing.
+    }
+  </span>
+  <p hero-lede>
+    @if (post(); as p) {
+      Published {{ publishedDate() }}.
+    } @else if (notFound()) {
+      This post doesn't exist or has been unpublished.
+    } @else {
+      Fetching post.
+    }
+  </p>
 
-  <landing-section>
-    <landing-container>
-      <div class="blog-detail-layout">
-        <article class="blog-article" #articleEl>
-          <div class="mb-8">
-            <landing-back-link href="/blog">All Articles</landing-back-link>
-          </div>
+  <!-- Floating far-right TOC — sibling of the article so position:fixed
+       escape is cleanest. Visible immediately on desktop (≥1280px);
+       collapses to inline block inside the article below that breakpoint. -->
+  @if (post(); as p) {
+    @if (!hideToc() && toc().length > 0) {
+      <aside class="blog-floating-toc" aria-label="On this page (floating)">
+        <landing-toc-sidebar [sections]="toc()" label="On this page" />
+      </aside>
+    }
 
-          <header class="mb-8">
-            <div class="flex flex-wrap items-center gap-2 mb-4">
-              @for (cat of p.categories; track cat.slug) {
+    <section class="blog-detail" aria-labelledby="blog-detail-h">
+      <landing-container size="wide">
+        <h2 id="blog-detail-h" class="sr-only">{{ p.title }}</h2>
+
+        <article class="blog-article">
+          <header class="blog-hero">
+            <div class="blog-hero__eyebrow">
+              <landing-chip [label]="postType()" size="sm" />
+              <landing-chip [label]="p.language" size="sm" />
+              @if (p.categories[0]; as cat) {
                 <landing-chip [label]="cat.name" size="sm" />
               }
+            </div>
+            <h1 class="blog-hero__title">{{ p.title }}</h1>
+            @if (p.excerpt; as ex) {
+              <p class="blog-hero__dek">{{ ex }}</p>
+            }
+            <div class="blog-hero__meta">
+              <span>{{ publishedDate() }}</span>
               @if (p.readTimeMinutes) {
-                <span class="text-body-sm text-text-secondary"> · {{ p.readTimeMinutes }} min read </span>
+                <span aria-hidden="true">·</span>
+                <span>{{ p.readTimeMinutes }} min read</span>
               }
-              @if (publishedDate()) {
-                <span class="text-body-sm text-text-secondary">· {{ publishedDate() }}</span>
+              @if (p.author?.name; as authorName) {
+                <span aria-hidden="true">·</span>
+                <span>{{ authorName }}</span>
               }
             </div>
 
-            <h1 class="text-display-sm font-bold tracking-tight text-text mb-6">{{ p.title }}</h1>
+            <div class="blog-hero__share">
+              <landing-blog-share-row [slug]="p.slug" [title]="p.title" [compact]="true" />
+            </div>
 
-            @if (p.author) {
-              <div class="author-card">
-                @if (p.author.avatarUrl) {
-                  <img [src]="p.author.avatarUrl" [alt]="p.author.name ?? ''" class="author-card__avatar" />
-                } @else {
-                  <div class="author-card__avatar author-card__avatar--placeholder">
-                    <landing-icon name="user" [size]="20" />
-                  </div>
-                }
-                <div class="author-card__meta">
-                  <p class="font-medium text-text">{{ p.author.name }}</p>
-                  @if (p.author.shortBio) {
-                    <p class="text-body-sm text-text-secondary">{{ p.author.shortBio }}</p>
-                  }
-                </div>
-                <button type="button" class="copy-link" (click)="copyLink()">
-                  <landing-icon [name]="copied() ? 'check' : 'link'" [size]="16" />
-                  {{ copied() ? 'Copied!' : 'Copy link' }}
-                </button>
+            @if (p.featuredImageUrl) {
+              <div class="blog-hero__figure">
+                <landing-figure
+                  [src]="p.featuredImageUrl"
+                  [alt]="p.title"
+                  aspectRatio="16 / 9"
+                  [cloudinaryWidth]="960"
+                />
               </div>
             }
           </header>
 
-          @if (p.featuredImageUrl) {
-            <img [src]="p.featuredImageUrl" [alt]="p.title" class="blog-article__hero" />
-          }
-
-          <div class="blog-content prose" [innerHTML]="contentHtml()"></div>
-
-          @if (p.tags.length > 0) {
-            <div class="flex flex-wrap gap-2 mt-12 pt-6 border-t border-border">
-              @for (tag of p.tags; track tag.slug) {
-                <a [routerLink]="['/blog']" [queryParams]="{ tag: tag.slug }">
-                  <landing-chip [label]="'#' + tag.name" size="sm" />
-                </a>
-              }
-            </div>
-          }
-
-          @if (p.relatedPosts.length > 0) {
-            <section class="mt-16 pt-8 border-t border-border">
-              <h2 class="text-body-xl font-semibold text-text mb-6">Related posts</h2>
-              <div class="related-grid">
-                @for (related of p.relatedPosts; track related.slug) {
-                  <a [routerLink]="['/blog', related.slug]" class="related-card group">
-                    @if (related.featuredImageUrl) {
-                      <img [src]="related.featuredImageUrl" [alt]="related.title" class="related-card__image" />
-                    }
-                    <h3 class="text-text group-hover:text-primary transition-colors font-medium mt-3">
-                      {{ related.title }}
-                    </h3>
-                    @if (related.excerpt) {
-                      <p class="text-body-sm text-text-secondary mt-1 line-clamp-2">{{ related.excerpt }}</p>
-                    }
-                  </a>
+          @if (!hideToc() && toc().length > 0) {
+            <nav class="blog-toc-inline" aria-label="On this page">
+              <p class="blog-toc-inline__label">On this page</p>
+              <ol class="blog-toc-inline__list">
+                @for (s of toc(); track s.id) {
+                  <li [attr.data-level]="s.level ?? 2">
+                    <a [href]="'#' + s.id">{{ s.title }}</a>
+                  </li>
                 }
-              </div>
-            </section>
+              </ol>
+            </nav>
           }
-        </article>
 
-        <aside class="blog-sidebar">
-          <landing-toc [entries]="toc()" />
-        </aside>
-      </div>
-    </landing-container>
-  </landing-section>
-} @else {
-  <landing-section>
-    <landing-container>
-      <landing-empty-state
-        icon="file-x"
-        title="Post not found"
-        message="This article may have been moved, unpublished, or never existed."
-      >
-        <landing-link href="/blog" [arrow]="true" class="mt-4">Browse all articles</landing-link>
-      </landing-empty-state>
-    </landing-container>
-  </landing-section>
-}
+          <div class="blog-prose landing-prose" landingProseAnchors [innerHTML]="contentHtml()"></div>
+
+          <footer class="blog-footer">
+            @if (p.relatedPosts.length > 0) {
+              <section class="related-block" aria-labelledby="related-h">
+                <h2 id="related-h" class="related-block__title">Related posts</h2>
+                <div class="related-grid">
+                  @for (r of p.relatedPosts; track r.slug) {
+                    <a [routerLink]="['/blog', r.slug]" class="related-card">
+                      @if (r.featuredImageUrl) {
+                        <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
+                      }
+                      <div class="related-card__body">
+                        <p class="related-card__title">{{ r.title }}</p>
+                        @if (r.excerpt) {
+                          <p class="related-card__excerpt">{{ r.excerpt }}</p>
+                        }
+                      </div>
+                    </a>
+                  }
+                </div>
+              </section>
+            }
+
+            <aside class="blog-signature" aria-label="About the author">
+              <div class="blog-signature__avatar">PT</div>
+              <div class="blog-signature__body">
+                <p class="blog-signature__name">Phuong Tran</p>
+                <p class="blog-signature__bio">
+                  I build long-lived web systems — currently focused on Angular SSR, Nx monorepos, and the small rituals
+                  that keep design and engineering honest. This site is my notebook in public: retrospectives, deep
+                  dives, and the occasional opinion I'm willing to defend.
+                </p>
+                <p class="blog-signature__links">
+                  <a routerLink="/about">About</a>
+                  <span aria-hidden="true">·</span>
+                  <a routerLink="/blog">All posts</a>
+                  <span aria-hidden="true">·</span>
+                  <a routerLink="/projects">Projects</a>
+                </p>
+              </div>
+            </aside>
+          </footer>
+        </article>
+      </landing-container>
+    </section>
+  } @else if (notFound()) {
+    <section class="blog-not-found">
+      <landing-container>
+        <landing-empty-state icon="file-text" message="Post not found." />
+      </landing-container>
+    </section>
+  }
+</landing-page-shell>

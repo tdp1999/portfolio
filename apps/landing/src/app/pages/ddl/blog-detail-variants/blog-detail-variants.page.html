@@ -1,0 +1,579 @@
+<div class="border-b border-landing-border bg-ink-1/60">
+  <landing-container size="wide">
+    <div class="py-6">
+      <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
+      <h1 class="ddl-page__title">Blog — <em>detail page variants</em>.</h1>
+      <p class="ai-block__intro">
+        Four layouts for <code>/blog/:slug</code> against the same seeded deep-dive post (<code>{{
+          deepPost()?.slug
+        }}</code
+        >). The design question is hero treatment + TOC + meta placement.
+      </p>
+      <p class="ai-block__chosen">
+        <strong>Chosen:</strong> V4 — V1's centered hero (figure-style cover) + V3's <code>landing-toc-sidebar</code>,
+        but the TOC floats <strong>off the article container to the far right of the viewport</strong> on desktop
+        (≥1280px). Below that, the TOC collapses to V1's inline top-of-prose treatment. The shared
+        <code>landing-blog-share-row</code> sits in the footer of every variant.
+      </p>
+      <div class="mt-6">
+        <landing-segmented
+          [segments]="tabs"
+          [active]="tab()"
+          (activeChange)="setTab($event)"
+          ariaLabel="DDL view mode"
+        />
+      </div>
+    </div>
+  </landing-container>
+</div>
+
+@if (tab() === 'v4') {
+  <!-- ═══════════════════════════════════════════════════════════════
+       VARIANT 4 — CHOSEN
+       Center hero (V1-style) + floating far-right TOC outside container.
+       Mobile (<1280px): TOC collapses to V1-style inline top block.
+       Sub-segmented "Deep dive / Featured essay / Retro / Note" lets the
+       same layout be sanity-checked across the four content shapes the
+       seeded dataset ships with.
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="ai-block v4-host" aria-label="Variant 4 — Chosen layout">
+    <landing-container size="wide">
+      <!-- Floating far-right TOC — sibling of the article section so its
+       position:fixed escape is cleanest. Visible immediately on desktop;
+       collapses to an inline block inside the article on <1280px. -->
+      @if (!v4HideToc() && v4Active().toc.length > 0) {
+        <aside class="v4-floating-toc" aria-label="On this page (floating)">
+          <landing-toc-sidebar [sections]="v4Active().toc" label="On this page" />
+        </aside>
+      }
+
+      <div class="variant-head">
+        <landing-eyebrow [label]="['variant', '4', 'CHOSEN · center hero + floating far-right TOC']" tone="accent" />
+        <span class="variant-meta__pill variant-meta__pill--chosen">chosen</span>
+      </div>
+      <p class="ai-section__intro">
+        Center hero (eyebrow chips → title → dek → meta → share → cover figure). The floating TOC sits at the far right
+        of the viewport, OUTSIDE the article container; it fades in only after the hero scrolls out of view
+        (content-threshold). On Notes the TOC auto-hides. Below 1280px the floating TOC collapses to an inline
+        top-of-prose block.
+      </p>
+
+      <div class="v4-shape-toggle">
+        <landing-segmented
+          [segments]="v4Types"
+          [active]="v4Type()"
+          (activeChange)="setV4Type($event)"
+          variant="hairline"
+          ariaLabel="Content shape"
+        />
+      </div>
+
+      <article class="v4-article">
+        @if (v4Active().post; as p) {
+          <header class="v4-hero">
+            <div class="v4-hero__eyebrow">
+              <landing-chip [label]="postType(p)" size="sm" />
+              <landing-chip [label]="p.language" size="sm" />
+              @if (p.categories[0]; as cat) {
+                <landing-chip [label]="cat.name" size="sm" />
+              }
+            </div>
+            <h2 class="v4-hero__title">{{ p.title }}</h2>
+            @if (p.excerpt; as ex) {
+              <p class="v4-hero__dek">{{ ex }}</p>
+            }
+            <div class="v4-hero__meta">
+              <span>{{ formatDate(p.publishedAt) }}</span>
+              @if (p.readTimeMinutes) {
+                <span aria-hidden="true">·</span>
+                <span>{{ p.readTimeMinutes }} min read</span>
+              }
+              @if (p.author?.name; as authorName) {
+                <span aria-hidden="true">·</span>
+                <span>{{ authorName }}</span>
+              }
+            </div>
+
+            <div class="v4-hero__share">
+              <landing-blog-share-row [slug]="p.slug" [title]="p.title" [compact]="true" />
+            </div>
+
+            @if (p.featuredImageUrl) {
+              <div class="v4-hero__figure">
+                <landing-figure
+                  [src]="p.featuredImageUrl"
+                  [alt]="p.title"
+                  aspectRatio="16 / 9"
+                  [cloudinaryWidth]="960"
+                />
+              </div>
+            }
+          </header>
+
+          <!-- Inline TOC fallback (<1280px viewport, or when floating TOC suppressed) -->
+          @if (!v4HideToc() && v4Active().toc.length > 0) {
+            <nav class="v4-toc-inline" aria-label="On this page">
+              <p class="v4-toc-inline__label">On this page</p>
+              <ol class="v4-toc-inline__list">
+                @for (s of v4Active().toc; track s.id) {
+                  <li [attr.data-level]="s.level ?? 2">
+                    <a [href]="'#' + s.id">{{ s.title }}</a>
+                  </li>
+                }
+              </ol>
+            </nav>
+          } @else if (v4HideToc()) {
+            <p class="v4-toc-note">TOC auto-hidden — post is a Note OR fewer than 3 H2/H3 sections.</p>
+          }
+
+          <div class="v4-prose landing-prose" landingProseAnchors [innerHTML]="v4Active().html"></div>
+
+          <footer class="v4-footer">
+            @if (p.relatedPosts.length > 0) {
+              <section class="related-block">
+                <h3 class="related-block__title">Related posts</h3>
+                <div class="related-grid">
+                  @for (r of p.relatedPosts; track r.slug) {
+                    <a [routerLink]="['/blog', r.slug]" class="related-card">
+                      @if (r.featuredImageUrl) {
+                        <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
+                      }
+                      <div class="related-card__body">
+                        <p class="related-card__title">{{ r.title }}</p>
+                        @if (r.excerpt) {
+                          <p class="related-card__excerpt">{{ r.excerpt }}</p>
+                        }
+                      </div>
+                    </a>
+                  }
+                </div>
+              </section>
+            }
+
+            <!-- Personal signature — who I am, what this site is. -->
+            <aside class="v4-signature" aria-label="About the author">
+              <div class="v4-signature__avatar">PT</div>
+              <div class="v4-signature__body">
+                <p class="v4-signature__name">Phuong Tran</p>
+                <p class="v4-signature__bio">
+                  I build long-lived web systems — currently focused on Angular SSR, Nx monorepos, and the small rituals
+                  that keep design and engineering honest. This site is my notebook in public: retrospectives, deep
+                  dives, and the occasional opinion I'm willing to defend.
+                </p>
+                <p class="v4-signature__links">
+                  <a routerLink="/about">About</a>
+                  <span aria-hidden="true">·</span>
+                  <a routerLink="/blog">All posts</a>
+                  <span aria-hidden="true">·</span>
+                  <a routerLink="/projects">Projects</a>
+                </p>
+              </div>
+            </aside>
+
+            <details class="json-ld">
+              <summary>JSON-LD payload (BlogPosting) — present</summary>
+              <pre>{{ p.jsonLd | json }}</pre>
+            </details>
+          </footer>
+        }
+      </article>
+    </landing-container>
+  </section>
+}
+
+@if (tab() === 'v1') {
+  <!-- ═══════════════════════════════════════════════════════════════
+       VARIANT 1 — Editorial banner (centered hero + inline TOC)
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="ai-block" aria-label="Variant 1 — Editorial banner">
+    <landing-container size="wide">
+      <div class="variant-head">
+        <landing-eyebrow [label]="['variant', '1', 'Editorial banner · centered hero + inline TOC']" tone="accent" />
+      </div>
+      <p class="ai-section__intro">
+        Centered hero earns the first read. Inline TOC sits below the hero on long posts; auto-hides for Notes or posts
+        under {{ 800 }} words. Single-column prose at <code>max-w-[680px]</code>. Footer carries related posts, share
+        row, and a JSON-LD presence indicator.
+      </p>
+
+      <!-- ─── 1a. Deep-dive instance (TOC visible) ─── -->
+      <article class="v1-article" aria-label="Variant 1 — deep-dive instance">
+        @if (deepPost(); as p) {
+          <header class="v1-hero">
+            <div class="v1-hero__eyebrow">
+              <landing-chip [label]="postType(p)" size="sm" />
+              <landing-chip [label]="p.language" size="sm" />
+              @if (p.categories[0]; as cat) {
+                <landing-chip [label]="cat.name" size="sm" />
+              }
+            </div>
+            <h2 class="v1-hero__title">{{ p.title }}</h2>
+            @if (p.excerpt; as ex) {
+              <p class="v1-hero__dek">{{ ex }}</p>
+            }
+            <div class="v1-hero__meta">
+              <span>{{ formatDate(p.publishedAt) }}</span>
+              @if (p.readTimeMinutes) {
+                <span aria-hidden="true">·</span>
+                <span>{{ p.readTimeMinutes }} min read</span>
+              }
+              @if (p.author?.name; as authorName) {
+                <span aria-hidden="true">·</span>
+                <span>{{ authorName }}</span>
+              }
+            </div>
+          </header>
+
+          @if (!hideTocForDeep() && deepToc().length > 0) {
+            <nav class="v1-toc" aria-label="On this page">
+              <p class="v1-toc__label">On this page</p>
+              <ol class="v1-toc__list">
+                @for (s of deepToc(); track s.id) {
+                  <li [attr.data-level]="s.level ?? 2">
+                    <a [href]="'#' + s.id">{{ s.title }}</a>
+                  </li>
+                }
+              </ol>
+            </nav>
+          }
+
+          <div class="v1-prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+
+          <footer class="v1-footer">
+            <landing-blog-share-row [slug]="p.slug" [title]="p.title" />
+
+            @if (p.relatedPosts.length > 0) {
+              <section class="related-block">
+                <h3 class="related-block__title">Related posts</h3>
+                <div class="related-grid">
+                  @for (r of p.relatedPosts; track r.slug) {
+                    <a [routerLink]="['/blog', r.slug]" class="related-card">
+                      @if (r.featuredImageUrl) {
+                        <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
+                      }
+                      <div class="related-card__body">
+                        <p class="related-card__title">{{ r.title }}</p>
+                        @if (r.excerpt) {
+                          <p class="related-card__excerpt">{{ r.excerpt }}</p>
+                        }
+                      </div>
+                    </a>
+                  }
+                </div>
+              </section>
+            }
+
+            <details class="json-ld">
+              <summary>JSON-LD payload (BlogPosting) — present</summary>
+              <pre>{{ p.jsonLd | json }}</pre>
+            </details>
+          </footer>
+        }
+      </article>
+
+      <!-- ─── 1b. Note instance (TOC hidden via auto-branch) ─── -->
+      <article class="v1-article v1-article--note" aria-label="Variant 1 — note instance (TOC auto-hidden)">
+        @if (notePost(); as p) {
+          <header class="v1-hero">
+            <div class="v1-hero__eyebrow">
+              <landing-chip [label]="postType(p)" size="sm" />
+              <landing-chip [label]="p.language" size="sm" />
+              @if (p.categories[0]; as cat) {
+                <landing-chip [label]="cat.name" size="sm" />
+              }
+            </div>
+            <h2 class="v1-hero__title">{{ p.title }}</h2>
+            <div class="v1-hero__meta">
+              <span>{{ formatDate(p.publishedAt) }}</span>
+              @if (p.readTimeMinutes) {
+                <span aria-hidden="true">·</span>
+                <span>{{ p.readTimeMinutes }} min read</span>
+              }
+            </div>
+          </header>
+
+          <p class="v1-toc-note">TOC auto-hidden — post is Note OR fewer than 3 H2/H3 sections.</p>
+
+          <div class="v1-prose landing-prose" landingProseAnchors [innerHTML]="noteHtml()"></div>
+
+          <footer class="v1-footer">
+            <landing-blog-share-row [slug]="p.slug" [title]="p.title" />
+            <details class="json-ld">
+              <summary>JSON-LD payload (BlogPosting) — present</summary>
+              <pre>{{ p.jsonLd | json }}</pre>
+            </details>
+          </footer>
+        }
+      </article>
+    </landing-container>
+  </section>
+}
+
+@if (tab() === 'v2') {
+  <!-- ═══════════════════════════════════════════════════════════════
+       VARIANT 2 — Dan minimal (left-aligned, no TOC, no dek)
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="ai-block ai-block--alt" aria-label="Variant 2 — Dan minimal">
+    <landing-container size="wide">
+      <div class="variant-head">
+        <landing-eyebrow [label]="['variant', '2', 'Dan minimal · title + date → straight to prose']" tone="accent" />
+      </div>
+      <p class="ai-section__intro">
+        Aggressively spare. Left-aligned title, date directly below, no dek, no TOC, no read-time, no banner. Lets the
+        prose carry everything. Tags strip + share row + related in the footer.
+      </p>
+
+      <article class="v2-article">
+        @if (deepPost(); as p) {
+          <header class="v2-hero">
+            <h2 class="v2-hero__title">{{ p.title }}</h2>
+            <p class="v2-hero__date">{{ formatDate(p.publishedAt) }}</p>
+          </header>
+
+          <div class="v2-prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+
+          <footer class="v2-footer">
+            @if (p.tags.length > 0) {
+              <div class="v2-tags">
+                @for (t of p.tags; track t.slug) {
+                  <a [routerLink]="['/blog']" [queryParams]="{ tag: t.slug }">
+                    <landing-chip [label]="'#' + t.name" size="sm" />
+                  </a>
+                }
+              </div>
+            }
+            <landing-blog-share-row [slug]="p.slug" [title]="p.title" />
+
+            @if (p.relatedPosts.length > 0) {
+              <section class="related-block">
+                <h3 class="related-block__title">More posts</h3>
+                <ul class="related-list" role="list">
+                  @for (r of p.relatedPosts; track r.slug) {
+                    <li>
+                      <a [routerLink]="['/blog', r.slug]" class="related-list__link">
+                        <span class="related-list__title">{{ r.title }}</span>
+                        @if (r.publishedAt) {
+                          <span class="related-list__date">{{ formatDate(r.publishedAt) }}</span>
+                        }
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+
+            <details class="json-ld">
+              <summary>JSON-LD payload (BlogPosting) — present</summary>
+              <pre>{{ p.jsonLd | json }}</pre>
+            </details>
+          </footer>
+        }
+      </article>
+    </landing-container>
+  </section>
+}
+
+@if (tab() === 'v3') {
+  <!-- ═══════════════════════════════════════════════════════════════
+       VARIANT 3 — Sticky meta rail (2-col desktop, collapses < 1024)
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="ai-block" aria-label="Variant 3 — Sticky meta rail">
+    <landing-container size="wide">
+      <div class="variant-head">
+        <landing-eyebrow
+          [label]="['variant', '3', 'Sticky meta rail · prose | right rail (TOC + meta + share)']"
+          tone="accent"
+        />
+      </div>
+      <p class="ai-section__intro">
+        Two-column on desktop (≥1024px): main prose on the left, sticky rail on the right carrying TOC + metadata +
+        share. Rail collapses to top of body on mobile. Hero stays compact since the rail handles metadata duty.
+      </p>
+
+      <article class="v3-article">
+        @if (deepPost(); as p) {
+          <header class="v3-hero">
+            <div class="v3-hero__eyebrow">
+              <landing-chip [label]="postType(p)" size="sm" />
+              @if (p.categories[0]; as cat) {
+                <landing-chip [label]="cat.name" size="sm" />
+              }
+            </div>
+            <h2 class="v3-hero__title">{{ p.title }}</h2>
+          </header>
+
+          <div class="v3-grid">
+            <div class="v3-grid__prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+
+            <aside class="v3-rail">
+              <div class="v3-rail__inner">
+                <landing-toc-sidebar [sections]="deepToc()" label="On this page" />
+
+                <dl class="v3-meta">
+                  <dt>Published</dt>
+                  <dd>{{ formatDate(p.publishedAt) }}</dd>
+                  @if (p.readTimeMinutes) {
+                    <dt>Read time</dt>
+                    <dd>{{ p.readTimeMinutes }} min</dd>
+                  }
+                  <dt>Language</dt>
+                  <dd>{{ p.language }}</dd>
+                  @if (p.tags.length > 0) {
+                    <dt>Tags</dt>
+                    <dd class="v3-meta__tags">
+                      @for (t of p.tags; track t.slug) {
+                        <landing-chip [label]="'#' + t.name" size="sm" />
+                      }
+                    </dd>
+                  }
+                </dl>
+
+                <landing-blog-share-row [slug]="p.slug" [title]="p.title" />
+              </div>
+            </aside>
+          </div>
+
+          <footer class="v3-footer">
+            @if (p.relatedPosts.length > 0) {
+              <section class="related-block">
+                <h3 class="related-block__title">Related posts</h3>
+                <div class="related-grid">
+                  @for (r of p.relatedPosts; track r.slug) {
+                    <a [routerLink]="['/blog', r.slug]" class="related-card">
+                      @if (r.featuredImageUrl) {
+                        <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
+                      }
+                      <div class="related-card__body">
+                        <p class="related-card__title">{{ r.title }}</p>
+                        @if (r.excerpt) {
+                          <p class="related-card__excerpt">{{ r.excerpt }}</p>
+                        }
+                      </div>
+                    </a>
+                  }
+                </div>
+              </section>
+            }
+
+            <details class="json-ld">
+              <summary>JSON-LD payload (BlogPosting) — present</summary>
+              <pre>{{ p.jsonLd | json }}</pre>
+            </details>
+          </footer>
+        }
+      </article>
+    </landing-container>
+  </section>
+}
+
+@if (tab() === 'prototypes') {
+  <section class="ai-block">
+    <landing-container size="wide">
+      <p class="ai-section__intro">
+        Annotated prototypes — best for / failure mode / cost. Use this tab when comparing layout DNA rather than
+        reading the seeded post.
+      </p>
+
+      <div class="proto-grid">
+        <article class="proto">
+          <header class="proto__head">
+            <span class="proto__tag">Variant 1 · Editorial banner</span>
+            <span class="proto__note">centered hero · inline TOC · single-column prose</span>
+          </header>
+          <dl class="proto__notes">
+            <dt>Best for</dt>
+            <dd>Deep dives that earn a ceremonial entrance. TOC + dek + meta on one page = anchored reading.</dd>
+            <dt>Failure mode</dt>
+            <dd>Wastes space on Notes (TOC of 1 heading + dek that duplicates excerpt). Auto-hide branch required.</dd>
+            <dt>Cost</dt>
+            <dd>Largest header — ~240-300px before prose starts.</dd>
+          </dl>
+        </article>
+
+        <article class="proto">
+          <header class="proto__head">
+            <span class="proto__tag">Variant 2 · Dan minimal</span>
+            <span class="proto__note">title + date → prose · everything else in footer</span>
+          </header>
+          <dl class="proto__notes">
+            <dt>Best for</dt>
+            <dd>Short essays + notes where chrome competes with thinking. Reads like Dan Abramov's overreacted.</dd>
+            <dt>Failure mode</dt>
+            <dd>No TOC = hard to scan long deep-dives. No featured image = pages feel monotonous in a feed.</dd>
+            <dt>Cost</dt>
+            <dd>Hero ≈ 80-100px. Cheapest layout.</dd>
+          </dl>
+        </article>
+
+        <article class="proto">
+          <header class="proto__head">
+            <span class="proto__tag">Variant 3 · Sticky meta rail</span>
+            <span class="proto__note">2-col desktop · sticky TOC + meta + share · collapses &lt;1024</span>
+          </header>
+          <dl class="proto__notes">
+            <dt>Best for</dt>
+            <dd>Deep dives on desktop. Sticky TOC + persistent share make long reads navigable.</dd>
+            <dt>Failure mode</dt>
+            <dd>Below 1024px the rail must collapse — adds responsive cost. Not ideal for Notes (rail looks empty).</dd>
+            <dt>Cost</dt>
+            <dd>Hero ≈ 120px. Rail ≈ 240px wide on desktop. Highest CSS complexity.</dd>
+          </dl>
+        </article>
+      </div>
+    </landing-container>
+  </section>
+}
+
+@if (tab() === 'usage') {
+  <section class="ai-block">
+    <landing-container size="wide">
+      <h2 class="usage__title">When to pick each detail variant</h2>
+
+      <div class="usage__row">
+        <h3>Variant 1 — Editorial banner</h3>
+        <p>
+          Magazine-style entrance. Pick this when posts deserve ceremony (deep dives, essays) AND the readership
+          benefits from a TOC. The auto-hide branch (Notes or &lt; 800 words) prevents the layout from looking
+          apologetic on shorter posts.
+        </p>
+      </div>
+
+      <div class="usage__row">
+        <h3>Variant 2 — Dan minimal</h3>
+        <p>
+          Pick this when the writing is the point and chrome competes. Best for opinionated essays, TILs, and tutorials
+          where the reader scrolls top-to-bottom without jumping. No TOC = hostile to long deep dives.
+        </p>
+      </div>
+
+      <div class="usage__row">
+        <h3>Variant 3 — Sticky meta rail</h3>
+        <p>
+          Desktop-first. Pick this when most readers are on wide screens AND deep dives outnumber notes. The rail
+          carries the metadata work the hero would otherwise inflate, and the sticky TOC keeps long reads navigable. Has
+          a non-trivial mobile collapse cost (rail → top accordion).
+        </p>
+      </div>
+
+      <div class="usage__row">
+        <h3>Page-level rules (all variants)</h3>
+        <p>
+          Markdown rendering goes through <code>MarkdownService.render()</code> (Shiki highlighter + heading slugify).
+          Anchors inside prose use <code>landingProseAnchors</code>. Copy-link uses <code>landingCopyToClipboard</code>.
+          The share row is a single shared component (<code>landing-blog-share-row</code>) reused across all three
+          variants — never duplicate the X/LinkedIn markup.
+        </p>
+      </div>
+
+      <div class="usage__row">
+        <h3>JSON-LD</h3>
+        <p>
+          The <code>BlogPostDetail.jsonLd</code> payload (task 348) ships from the API and is rendered into
+          <code>&lt;script type="application/ld+json"&gt;</code> in the production layout. The
+          <code>&lt;details&gt;</code> blocks below each variant on this DDL prove the payload is plumbed; the script
+          tag injection is a production-side concern not duplicated in this sandbox.
+        </p>
+      </div>
+    </landing-container>
+  </section>
+}

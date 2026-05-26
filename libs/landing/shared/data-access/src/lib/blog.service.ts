@@ -15,6 +15,10 @@ export class BlogDataService {
     if (query.limit) params = params.set('limit', String(query.limit));
     if (query.categorySlug) params = params.set('categorySlug', query.categorySlug);
     if (query.tagSlug) params = params.set('tagSlug', query.tagSlug);
+    const trimmedSearch = query.search?.trim();
+    if (trimmedSearch) params = params.set('search', trimmedSearch);
+    // 'newest' is the default — don't serialize it to the URL.
+    if (query.sort && query.sort !== 'newest') params = params.set('sort', query.sort);
 
     return this.http.get<BlogPostListResponse>(`/api/blog`, { params }).pipe(catchError(() => of(EMPTY_LIST)));
   }
