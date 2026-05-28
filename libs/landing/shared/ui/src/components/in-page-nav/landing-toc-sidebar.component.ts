@@ -52,6 +52,8 @@ import { InPageSection } from './section.types';
         @for (s of items(); track s.id) {
           <li
             class="toc__item"
+            [class.toc__item--passed]="s.isPassed"
+            [class.toc__item--last]="s.isLast"
             [attr.data-level]="s.level"
             [style.--toc-indent.px]="s.indent"
             [style.--toc-prev-indent.px]="s.prevIndent"
@@ -79,21 +81,18 @@ import { InPageSection } from './section.types';
       top: 96px;
       max-height: calc(100vh - 96px - 16px);
       overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--landing-border) transparent;
+      /* Left breathing room so the active + endpoint dots (at left: -4px on
+         each rail) are not clipped by overflow:auto's implicit overflow-x. */
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-bottom: 8px;
+      /* Hide scrollbar — long TOCs still scroll via wheel/touch, but the
+         scrollbar chrome was visually noisy. */
+      scrollbar-width: none;
     }
     :host::-webkit-scrollbar {
-      width: 4px;
-    }
-    :host::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    :host::-webkit-scrollbar-thumb {
-      background: var(--landing-border);
-      border-radius: 2px;
-    }
-    :host::-webkit-scrollbar-thumb:hover {
-      background: var(--landing-text-500);
+      width: 0;
+      height: 0;
     }
 
     .toc__list {
@@ -106,13 +105,9 @@ import { InPageSection } from './section.types';
       position: relative;
     }
 
-    /* "Elbow" connector: a 1px horizontal stroke at the TOP of each item that
-       bridges the previous item's rail (border-left at --toc-prev-indent) to
-       this item's rail (border-left at --toc-indent). When the two indents
-       differ (level change), this elbow turns the segmented rails into one
-       continuous thread. When this item is active, the elbow inherits the
-       accent color too — so the accent flows along the thread as scrollspy
-       moves through nested sections. */
+    /* "Elbow" connector: 2px horizontal stroke at the TOP of each item that
+       bridges the previous item's rail to this item's rail. Matches the rail
+       width so the thread reads as one continuous wire across level changes. */
     .toc__item:not(:first-child)::before {
       content: '';
       position: absolute;
@@ -123,9 +118,9 @@ import { InPageSection } from './section.types';
             var(--toc-indent, 0px),
             var(--toc-prev-indent, 0px)
           ) +
-          1px
+          2px
       );
-      height: 1px;
+      height: 2px;
       background-color: var(--landing-border);
       transition: background-color 240ms ease;
     }
@@ -134,16 +129,27 @@ import { InPageSection } from './section.types';
       background-color: var(--landing-accent);
     }
 
+    /* Trail: items above the active item read as "already passed" — rail and
+       elbow colored accent, text slightly brighter than untouched default. */
+    .toc__item--passed::before {
+      background-color: var(--landing-accent);
+    }
+    .toc__item--passed .toc__link {
+      color: var(--landing-text-300);
+      border-left-color: var(--landing-accent);
+    }
+
     /* Each item carries its OWN vertical rail at --toc-indent. Combined with
        the elbow above, the rails read as one continuous thread that steps
        inward with depth. Active state only changes COLOR (not width) so the
        accent transitions smoothly without any layout jiggle. */
     .toc__link {
       display: block;
+      position: relative;
       margin-left: var(--toc-indent, 0px);
-      padding-block: 6px;
-      padding-left: 12px;
-      border-left: 1px solid var(--landing-border);
+      padding-block: 8px;
+      padding-left: 16px;
+      border-left: 2px solid var(--landing-border);
       font-family: var(--landing-font-body);
       font-size: var(--landing-body-sm);
       line-height: var(--landing-body-sm-lh);
@@ -158,10 +164,51 @@ import { InPageSection } from './section.types';
       color: var(--landing-text-300);
     }
 
+    /* Active item gets a filled dot pinned to the rail (centered on its left
+       edge), plus the accent color shift. The dot is the unmistakable "you
+       are here" marker — color-only highlights were too quiet in earlier
+       feedback. */
     .toc__link--active {
       color: var(--landing-accent);
       border-left-color: var(--landing-accent);
       font-weight: 500;
+    }
+    .toc__link--active::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--landing-accent);
+      transform: translateY(-50%);
+      transition: background-color 240ms ease;
+    }
+
+    /* Endpoint cap: small dot pinned to the bottom of the last item, marking
+       where the rail ends. Stays muted (border color) — terminal marker. */
+    .toc__item--last .toc__link::after {
+      content: '';
+      position: absolute;
+      left: -5px;
+      bottom: -5px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--landing-border);
+      transition: background-color 240ms ease;
+    }
+    .toc__item--last.toc__item--passed .toc__link::after,
+    .toc__item--last:has(.toc__link--active) .toc__link::after {
+      background-color: var(--landing-accent);
+    }
+
+    /* If the LAST item is the active one, suppress the middle "active dot" —
+     * the endpoint dot already serves as the "you are here" marker, and
+     * showing both reads as two separate indicators. */
+    .toc__item--last .toc__link--active::before {
+      display: none;
     }
   `,
 })
@@ -174,15 +221,26 @@ export class LandingTocSidebarComponent {
 
   readonly active = computed(() => this.scrollspy.active());
 
-  /** Precomputed item descriptors with resolved level + indent + prev-indent —
-   *  avoids method calls in the template `@for`. */
+  /** Precomputed item descriptors with resolved level + indent + prev-indent
+   *  and `isPassed` / `isLast` flags for the trail + endpoint dot. */
   protected readonly items = computed(() => {
     const list = this.sections();
+    const activeId = this.active();
+    const activeIdx = activeId ? list.findIndex((s) => s.id === activeId) : -1;
+    const lastIdx = list.length - 1;
     return list.map((s, i) => {
       const level = s.level ?? 2;
       const indent = indentForLevel(level);
       const prevLevel = list[i - 1]?.level ?? level;
-      return { id: s.id, title: s.title, level, indent, prevIndent: indentForLevel(prevLevel) };
+      return {
+        id: s.id,
+        title: s.title,
+        level,
+        indent,
+        prevIndent: indentForLevel(prevLevel),
+        isPassed: activeIdx > 0 && i < activeIdx,
+        isLast: i === lastIdx,
+      };
     });
   });
 
@@ -202,8 +260,8 @@ export class LandingTocSidebarComponent {
   }
 }
 
-// h2 rail at left:0 (border at margin-left:0). h3 at 12px. h4 at 24px.
+// h2 rail at left:0 (border at margin-left:0). h3 at 16px. h4 at 32px.
 // → rail visibly steps inward with depth.
 function indentForLevel(level: 2 | 3 | 4): number {
-  return (level - 2) * 12;
+  return (level - 2) * 16;
 }

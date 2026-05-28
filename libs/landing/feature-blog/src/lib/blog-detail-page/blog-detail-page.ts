@@ -12,13 +12,14 @@ import {
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta, DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { from, of, map, switchMap } from 'rxjs';
+import { from, of, map, startWith, switchMap } from 'rxjs';
 import {
   ChipComponent,
   ContainerComponent,
   FigureComponent,
+  LandingBreadcrumbComponent,
   LandingEmptyStateComponent,
-  LandingPageShellComponent,
+  LandingLoadingSpinnerComponent,
   LandingProseAnchorsDirective,
   LandingScrollspyService,
   LandingTocSidebarComponent,
@@ -35,12 +36,15 @@ import { BlogShareRowComponent } from './blog-share-row.component';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
 
+type LoadStatus = 'idle' | 'loading' | 'loaded' | 'not-found';
+
 type DetailState = {
+  status: LoadStatus;
   post: BlogPostDetail | null;
   rendered: RenderedMarkdown;
 };
 
-const INITIAL_STATE: DetailState = { post: null, rendered: EMPTY_RENDER };
+const INITIAL_STATE: DetailState = { status: 'idle', post: null, rendered: EMPTY_RENDER };
 
 /**
  * Below this H2/H3 count the TOC is auto-hidden — same threshold the DDL
@@ -57,8 +61,9 @@ const TOC_MIN_SECTIONS = 3;
     ChipComponent,
     ContainerComponent,
     FigureComponent,
+    LandingBreadcrumbComponent,
     LandingEmptyStateComponent,
-    LandingPageShellComponent,
+    LandingLoadingSpinnerComponent,
     LandingProseAnchorsDirective,
     LandingTocSidebarComponent,
     BlogShareRowComponent,
@@ -96,19 +101,22 @@ export class BlogDetailPage {
           return of<DetailState>(cached);
         }
 
+        // Emit `loading` immediately so the template doesn't flash the 404
+        // empty state during the fetch+render window.
         return this.blogService.getBySlug(slug).pipe(
           switchMap((post) => {
-            if (!post) return of<DetailState>(INITIAL_STATE);
-            return from(this.markdown.render(post.content)).pipe(
+            if (!post) return of<DetailState>({ status: 'not-found', post: null, rendered: EMPTY_RENDER });
+            return from(this.markdown.render(post.content, { basePath: `/blog/${post.slug}` })).pipe(
               map((rendered): DetailState => {
-                const next: DetailState = { post, rendered };
+                const next: DetailState = { status: 'loaded', post, rendered };
                 if (!isPlatformBrowser(this.platformId)) {
                   this.transferState.set(stateKey, next);
                 }
                 return next;
               })
             );
-          })
+          }),
+          startWith<DetailState>({ status: 'loading', post: null, rendered: EMPTY_RENDER })
         );
       })
     ),
@@ -116,7 +124,8 @@ export class BlogDetailPage {
   );
 
   readonly post = computed(() => this.state().post);
-  readonly notFound = computed(() => this.state().post === null && this.route.snapshot.paramMap.has('slug'));
+  readonly loading = computed(() => this.state().status === 'loading');
+  readonly notFound = computed(() => this.state().status === 'not-found');
   readonly contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
   readonly toc = computed<readonly InPageSection[]>(() =>
     this.state().rendered.toc.map((e) => ({ id: e.id, title: e.text, level: e.level }))

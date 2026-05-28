@@ -1,20 +1,9 @@
-<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
-  <span hero-heading>
-    @if (notFound()) {
-      Not found.
-    } @else {
-      Writing.
-    }
-  </span>
-  <p hero-lede>
-    @if (post(); as p) {
-      Published {{ publishedDate() }}.
-    } @else if (notFound()) {
-      This post doesn't exist or has been unpublished.
-    } @else {
-      Fetching post.
-    }
-  </p>
+<article class="blog-detail-shell">
+  <landing-container size="wide" class="text-center">
+    <nav class="blog-detail__breadcrumb" aria-label="Breadcrumb">
+      <landing-breadcrumb [items]="breadcrumb()" />
+    </nav>
+  </landing-container>
 
   <!-- Floating far-right TOC — sibling of the article so position:fixed
        escape is cleanest. Visible immediately on desktop (≥1280px);
@@ -32,13 +21,6 @@
 
         <article class="blog-article">
           <header class="blog-hero">
-            <div class="blog-hero__eyebrow">
-              <landing-chip [label]="postType()" size="sm" />
-              <landing-chip [label]="p.language" size="sm" />
-              @if (p.categories[0]; as cat) {
-                <landing-chip [label]="cat.name" size="sm" />
-              }
-            </div>
             <h1 class="blog-hero__title">{{ p.title }}</h1>
             @if (p.excerpt; as ex) {
               <p class="blog-hero__dek">{{ ex }}</p>
@@ -55,8 +37,18 @@
               }
             </div>
 
-            <div class="blog-hero__share">
-              <landing-blog-share-row [slug]="p.slug" [title]="p.title" [compact]="true" />
+            <div class="flex justify-between items-center mt-2">
+              <div class="blog-hero__eyebrow">
+                <landing-chip [label]="postType()" size="sm" />
+                <landing-chip [label]="p.language" size="sm" />
+                @if (p.categories[0]; as cat) {
+                  <landing-chip [label]="cat.name" size="sm" />
+                }
+              </div>
+
+              <div class="blog-hero__share">
+                <landing-blog-share-row [slug]="p.slug" [title]="p.title" [compact]="true" />
+              </div>
             </div>
 
             @if (p.featuredImageUrl) {
@@ -85,49 +77,55 @@
           }
 
           <div class="blog-prose landing-prose" landingProseAnchors [innerHTML]="contentHtml()"></div>
-
-          <footer class="blog-footer">
-            @if (p.relatedPosts.length > 0) {
-              <section class="related-block" aria-labelledby="related-h">
-                <h2 id="related-h" class="related-block__title">Related posts</h2>
-                <div class="related-grid">
-                  @for (r of p.relatedPosts; track r.slug) {
-                    <a [routerLink]="['/blog', r.slug]" class="related-card">
-                      @if (r.featuredImageUrl) {
-                        <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
-                      }
-                      <div class="related-card__body">
-                        <p class="related-card__title">{{ r.title }}</p>
-                        @if (r.excerpt) {
-                          <p class="related-card__excerpt">{{ r.excerpt }}</p>
-                        }
-                      </div>
-                    </a>
-                  }
-                </div>
-              </section>
-            }
-
-            <aside class="blog-signature" aria-label="About the author">
-              <div class="blog-signature__avatar">PT</div>
-              <div class="blog-signature__body">
-                <p class="blog-signature__name">Phuong Tran</p>
-                <p class="blog-signature__bio">
-                  I build long-lived web systems — currently focused on Angular SSR, Nx monorepos, and the small rituals
-                  that keep design and engineering honest. This site is my notebook in public: retrospectives, deep
-                  dives, and the occasional opinion I'm willing to defend.
-                </p>
-                <p class="blog-signature__links">
-                  <a routerLink="/about">About</a>
-                  <span aria-hidden="true">·</span>
-                  <a routerLink="/blog">All posts</a>
-                  <span aria-hidden="true">·</span>
-                  <a routerLink="/projects">Projects</a>
-                </p>
-              </div>
-            </aside>
-          </footer>
         </article>
+
+        <footer class="blog-footer">
+          @if (p.relatedPosts.length > 0) {
+            <section class="related-block" aria-labelledby="related-h">
+              <h2 id="related-h" class="related-block__title">Related posts</h2>
+              <div class="related-grid">
+                @for (r of p.relatedPosts; track r.slug) {
+                  <a [routerLink]="['/blog', r.slug]" class="related-card">
+                    @if (r.featuredImageUrl) {
+                      <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
+                    }
+                    <div class="related-card__body">
+                      <p class="related-card__title">{{ r.title }}</p>
+                      @if (r.excerpt) {
+                        <p class="related-card__excerpt">{{ r.excerpt }}</p>
+                      }
+                    </div>
+                  </a>
+                }
+              </div>
+            </section>
+          }
+
+          <aside class="blog-signature" aria-label="About the author">
+            <div class="blog-signature__avatar">PT</div>
+            <div class="blog-signature__body">
+              <p class="blog-signature__name">Phuong Tran</p>
+              <p class="blog-signature__bio">
+                I build long-lived web systems — currently focused on Angular SSR, Nx monorepos, and the small rituals
+                that keep design and engineering honest. This site is my notebook in public: retrospectives, deep dives,
+                and the occasional opinion I'm willing to defend.
+              </p>
+              <p class="blog-signature__links">
+                <a routerLink="/about">About</a>
+                <span aria-hidden="true">·</span>
+                <a routerLink="/blog">All posts</a>
+                <span aria-hidden="true">·</span>
+                <a routerLink="/projects">Projects</a>
+              </p>
+            </div>
+          </aside>
+        </footer>
+      </landing-container>
+    </section>
+  } @else if (loading()) {
+    <section class="blog-loading" aria-busy="true" aria-live="polite">
+      <landing-container>
+        <landing-loading-spinner message="Loading post…" />
       </landing-container>
     </section>
   } @else if (notFound()) {
@@ -137,4 +135,4 @@
       </landing-container>
     </section>
   }
-</landing-page-shell>
+</article>

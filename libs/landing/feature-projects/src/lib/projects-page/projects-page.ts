@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
@@ -29,6 +29,7 @@ import {
   type ProjectsQuery,
   type ProjectsQueryResult,
 } from '@portfolio/landing/shared/data-access';
+import { LandingUrlStateService } from '@portfolio/landing/shared/util';
 import { asyncResource } from '@portfolio/shared/async-state';
 import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
 
@@ -98,7 +99,7 @@ function isViewMode(v: string | null): v is ViewMode {
 export class ProjectsPage {
   private readonly queryPort = inject(PROJECTS_QUERY_PORT);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly urlState = inject(LandingUrlStateService);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 
@@ -116,27 +117,26 @@ export class ProjectsPage {
   readonly viewOptions = VIEW_OPTIONS;
   readonly statuses: readonly ProjectLifecycleStatus[] = PROJECT_LIFECYCLE_STATUSES;
 
-  // ─── URL-derived state ───────────────────────────────────────
-  private readonly queryParams = toSignal(this.route.queryParamMap, {
-    initialValue: this.route.snapshot.queryParamMap,
-  });
+  // ─── Local state (URL is a mirror, not the source) ────────────
+  // Same scroll-stability rationale as blog-list-page — keep filter /
+  // toggle interactions from triggering router scroll-restoration.
+  private readonly initialQp = this.route.snapshot.queryParamMap;
 
-  readonly selectedYears = computed(() =>
-    parseCsvSet(this.queryParams().get(QUERY.YEAR), (s) => {
+  readonly selectedYears = signal<ReadonlySet<number>>(
+    parseCsvSet(this.initialQp.get(QUERY.YEAR), (s) => {
       const n = Number(s);
       return Number.isFinite(n) && s.length > 0 ? n : null;
     })
   );
-  readonly selectedStatuses = computed(() =>
-    parseCsvSet(this.queryParams().get(QUERY.STATUS), (s) =>
+  readonly selectedStatuses = signal<ReadonlySet<ProjectLifecycleStatus>>(
+    parseCsvSet(this.initialQp.get(QUERY.STATUS), (s) =>
       (PROJECT_LIFECYCLE_STATUSES as readonly string[]).includes(s) ? (s as ProjectLifecycleStatus) : null
     )
   );
-  readonly selectedSkills = computed(() => parseCsvSet(this.queryParams().get(QUERY.STACK), (s) => (s ? s : null)));
-  readonly viewMode = computed<ViewMode>(() => {
-    const raw = this.queryParams().get(QUERY.VIEW);
-    return isViewMode(raw) ? raw : 'row';
-  });
+  readonly selectedSkills = signal<ReadonlySet<string>>(
+    parseCsvSet(this.initialQp.get(QUERY.STACK), (s) => (s ? s : null))
+  );
+  readonly viewMode = signal<ViewMode>(initialViewMode(this.initialQp.get(QUERY.VIEW)));
 
   readonly activeFilterCount = computed(
     () => this.selectedYears().size + this.selectedStatuses().size + this.selectedSkills().size
@@ -195,52 +195,56 @@ export class ProjectsPage {
     this.filtersOpen.update((v) => !v);
   }
 
-  // ─── Mutations → URL ─────────────────────────────────────────
+  // ─── Mutations → local signal + URL mirror ────────────────────
   toggleYear(year: number, on: boolean): void {
     const next = new Set(this.selectedYears());
     if (on) next.add(year);
     else next.delete(year);
-    this.writeQuery(QUERY.YEAR, [...next].sort((a, b) => b - a).map(String));
+    const sorted = [...next].sort((a, b) => b - a);
+    this.selectedYears.set(new Set(sorted));
+    this.writeCsv(QUERY.YEAR, sorted.map(String));
   }
 
   toggleStatus(status: ProjectLifecycleStatus, on: boolean): void {
     const next = new Set(this.selectedStatuses());
     if (on) next.add(status);
     else next.delete(status);
-    this.writeQuery(QUERY.STATUS, [...next]);
+    this.selectedStatuses.set(next);
+    this.writeCsv(QUERY.STATUS, [...next]);
   }
 
   toggleSkill(slug: string, on: boolean): void {
     const next = new Set(this.selectedSkills());
     if (on) next.add(slug);
     else next.delete(slug);
-    this.writeQuery(QUERY.STACK, [...next]);
+    this.selectedSkills.set(next);
+    this.writeCsv(QUERY.STACK, [...next]);
   }
 
   setView(mode: string): void {
     const next = isViewMode(mode) ? mode : 'row';
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { [QUERY.VIEW]: next === 'row' ? null : next },
-      queryParamsHandling: 'merge',
-    });
+    this.viewMode.set(next);
+    this.urlState.patchQueryParams(this.route, { [QUERY.VIEW]: next === 'row' ? null : next });
   }
 
   clearAll(): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { [QUERY.YEAR]: null, [QUERY.STATUS]: null, [QUERY.STACK]: null },
-      queryParamsHandling: 'merge',
+    this.selectedYears.set(new Set());
+    this.selectedStatuses.set(new Set());
+    this.selectedSkills.set(new Set());
+    this.urlState.patchQueryParams(this.route, {
+      [QUERY.YEAR]: null,
+      [QUERY.STATUS]: null,
+      [QUERY.STACK]: null,
     });
   }
 
-  private writeQuery(key: string, values: readonly string[]): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { [key]: values.length > 0 ? values.join(',') : null },
-      queryParamsHandling: 'merge',
-    });
+  private writeCsv(key: string, values: readonly string[]): void {
+    this.urlState.patchQueryParams(this.route, { [key]: values.length > 0 ? values.join(',') : null });
   }
+}
+
+function initialViewMode(raw: string | null): ViewMode {
+  return isViewMode(raw) ? raw : 'row';
 }
 
 function yearOf(iso: string): string {

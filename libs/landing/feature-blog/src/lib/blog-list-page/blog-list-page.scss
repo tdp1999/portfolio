@@ -42,6 +42,7 @@
   font-weight: 500;
   color: var(--landing-text-100);
   letter-spacing: -0.01em;
+  transition: color 160ms ease;
 }
 .mag-title--hero {
   font-size: var(--landing-body-xl);
@@ -95,13 +96,16 @@
   border: 1px solid var(--landing-border);
   border-radius: 4px;
   background: var(--landing-ink-0);
-  overflow: hidden;
+  //   overflow: hidden;
   transition: border-color 160ms ease;
   flex: 1 1 0;
   height: 100%;
 
   &:hover {
-    border-color: var(--landing-text-500);
+    border-color: var(--landing-accent);
+  }
+  &:hover .mag-title {
+    color: var(--landing-accent);
   }
 }
 .mag-side__link {
@@ -141,12 +145,21 @@
   border-radius: 4px;
   background: var(--landing-ink-0);
   overflow: hidden;
+  transition: border-color 160ms ease;
+
+  &:hover {
+    border-color: var(--landing-accent);
+  }
+  &:hover .mag-title {
+    color: var(--landing-accent);
+  }
 }
 .mag-hero__link {
   display: block;
   text-decoration: none;
   color: inherit;
   height: 100%;
+  width: 100%;
 }
 
 /* ═════════════════════════════════════════════════════════════════
@@ -155,7 +168,8 @@
 .mag-v1 {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: 600px;
+  // grid-template-rows: 600px;
+  grid-template-rows: auto;
   gap: 28px;
   align-items: stretch;
 }
@@ -174,28 +188,48 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  align-self: center;
 }
 .mag-hero--center .mag-hero__link {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
+/* Title/excerpt/meta must keep their intrinsic height so the image absorbs
+   the leftover — otherwise the image's intrinsic min-content can push text
+   out of the overflow:hidden container. `min-height: 0` on the link + flex
+   children with explicit `flex-shrink: 0` give the figure permission to be
+   the only flexible slot. */
+.mag-hero--center .mag-hero__link {
+  min-height: 0;
+}
+.mag-hero--center .mag-title,
+.mag-hero--center .mag-excerpt,
+.mag-hero--center .mag-meta {
+  flex-shrink: 0;
+}
+
+/* Figure has intrinsic size via aspect-ratio — independent of parent's
+   flex-grow. Works when parent uses `align-self: center` / `start` / etc.
+   which collapse the parent to max-content (zero leftover space for flex). */
 .mag-hero__figure {
   margin: 16px 0 0;
   padding: 0;
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--landing-ink-1);
 
   img {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
-    background: var(--landing-ink-1);
+    display: block;
   }
 }
 
@@ -270,7 +304,10 @@
   height: 100%;
 
   &:hover {
-    border-color: var(--landing-text-500);
+    border-color: var(--landing-accent);
+  }
+  &:hover .mag-title {
+    color: var(--landing-accent);
   }
 }
 .mag-archive__link {
@@ -349,10 +386,22 @@
   display: grid;
   grid-template-columns: 160px 1fr;
   gap: 24px;
-  padding: 20px 0;
+  padding: 20px 16px;
+  margin: 0 -16px;
+  border-radius: 4px;
   text-decoration: none;
   color: inherit;
   align-items: start;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+
+  &:hover {
+    background-color: var(--landing-ink-1);
+  }
+  &:hover .list-row__title {
+    color: var(--landing-accent);
+  }
 }
 .list-row__thumb {
   aspect-ratio: 4 / 3;
@@ -417,18 +466,25 @@
   transition: border-color 160ms ease;
 
   &:hover {
-    border-color: var(--landing-text-500);
+    border-color: var(--landing-accent);
+  }
+  &:hover .list-card__title {
+    color: var(--landing-accent);
   }
 }
 .list-card__media {
   aspect-ratio: 16 / 9;
   background: var(--landing-ink-1);
+  position: relative;
+  overflow: hidden;
 
   img {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 }
 .list-card__body {

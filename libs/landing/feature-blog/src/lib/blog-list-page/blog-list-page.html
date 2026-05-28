@@ -216,6 +216,7 @@
             placeholder="Search posts by title or excerpt…"
             inputmode="search"
             autocomplete="off"
+            [clearable]="true"
           />
         </div>
         <div class="list-controls__chips" role="group" aria-label="Category filter">
@@ -234,7 +235,9 @@
         </div>
       </div>
 
-      @if (visiblePosts().length === 0) {
+      @if (archiveLoading()) {
+        <landing-loading-spinner message="Loading posts…" />
+      } @else if (archiveEmpty()) {
         <div class="list-empty">
           <landing-empty-state icon="folder-open" message="No posts match the current filters." />
           <button type="button" class="list-empty__clear" (click)="clearFilters()">Clear filters</button>

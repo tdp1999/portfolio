@@ -119,3 +119,17 @@ Inputs:
 - `[hydrationSafeActive]` — path to compare (required).
 - `[hydrationSafeActiveExact]` — exact match (default `false`, prefix match).
 - `[hydrationSafeActiveClass]` — class to apply when active (default `nav-link--active`).
+
+## 4. Toolbar scroll stability — never `router.navigate` for URL-state mirror
+
+**Cause:** `apps/landing/src/app/app.config.ts` enables `withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })` so route changes restore the user's scroll. Side effect: any `Router.navigate(..., { queryParamsHandling: 'merge' })` — including filter / sort / view-toggle / pagination updates that stay on the same page — counts as a navigation, so the scroller jumps the viewport to the top mid-interaction.
+
+**Fix in place:** `LandingUrlStateService` in `libs/landing/shared/util/`. It writes query params via `Location.replaceState(router.serializeUrl(router.createUrlTree(...)))` — URL updates without firing a Router navigation. `BlogListPage`, `ProjectsPage`, and any future toolbar consumer inject the service and call `urlState.patchQueryParams(route, {...})`.
+
+**Rules for new landing list / toolbar pages:**
+
+- Hold UI state (selected filters, sort key, view mode, page) in **local signals**, initialized once from `route.snapshot.queryParamMap`.
+- Mutators do `signal.set(...)` first, then mirror to URL via `LandingUrlStateService.patchQueryParams`.
+- Reserve `Router.navigate` for **actual route changes** (transitioning to a new page).
+- Do NOT read `ActivatedRoute.queryParamMap` after a patch — `Location.replaceState` does not update it; the local signal is the source of truth.
+- Browser back/forward will navigate between *page* history entries, not between filter states (intentional — filter churn shouldn't pollute history).

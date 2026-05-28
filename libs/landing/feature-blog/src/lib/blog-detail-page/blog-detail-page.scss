@@ -8,8 +8,31 @@
   display: block;
 }
 
+/* ─── Outer shell (page-shell wrapper removed; we own padding now) ── */
+.blog-detail-shell {
+  padding-top: 48px;
+  padding-bottom: 64px;
+}
+@media (min-width: 768px) {
+  .blog-detail-shell {
+    padding-top: 64px;
+  }
+}
+
+.blog-detail__breadcrumb {
+  //   margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.blog-loading {
+  padding: 64px 0;
+  display: flex;
+  justify-content: center;
+}
+
 .blog-detail {
-  padding: 24px 0 48px;
+  padding: 8px 0 48px;
 }
 
 .blog-article {
@@ -31,7 +54,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  //   margin-bottom: 16px;
 }
 .blog-hero__title {
   margin: 0 0 16px;
@@ -60,10 +83,10 @@
 .blog-hero__share {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  //   margin-top: 16px;
 }
 .blog-hero__figure {
-  margin: 32px 0 0;
+  margin: 12px 0 0;
 }
 
 /* ─── Inline TOC (shown below 1280px) ────────────────────────────── */
@@ -133,52 +156,69 @@
   line-height: 1.3;
   color: var(--landing-text-100);
 }
+/* Compact horizontal cards — thumb (96px) + body. Reads as a sidebar list
+   instead of a hero-card grid, so it doesn't compete with the article. */
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
 }
 .related-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: stretch;
+  padding: 8px;
   border: 1px solid var(--landing-border);
   border-radius: 4px;
   background: var(--landing-ink-0);
-  overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: border-color 160ms ease;
 
   &:hover {
-    border-color: var(--landing-text-500);
+    border-color: var(--landing-accent);
+  }
+  &:hover .related-card__title {
+    color: var(--landing-accent);
   }
 }
 .related-card__media {
   display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  width: 96px;
+  height: 72px;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
+  border-radius: 2px;
+  background: var(--landing-ink-1);
 }
 .related-card__body {
-  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  justify-content: center;
 }
 .related-card__title {
   margin: 0;
   font-family: var(--landing-font-body);
   font-weight: 600;
-  font-size: var(--landing-body-md);
+  font-size: var(--landing-body-sm);
   line-height: 1.32;
   color: var(--landing-text-100);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 160ms ease;
 }
 .related-card__excerpt {
   margin: 0;
   font-family: var(--landing-font-body);
-  font-size: var(--landing-body-sm);
-  line-height: 1.45;
-  color: var(--landing-text-400);
+  font-size: var(--landing-mono-sm);
+  line-height: 1.4;
+  color: var(--landing-text-500);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
