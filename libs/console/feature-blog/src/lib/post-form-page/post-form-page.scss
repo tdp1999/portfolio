@@ -191,6 +191,24 @@
   }
 }
 
+.field-block {
+  &--invalid {
+    .featured-image-preview,
+    [mat-stroked-button] {
+      outline: 1px solid var(--mat-sys-error, #ba1a1a);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+  }
+
+  &__error {
+    margin: 4px 0 0;
+    color: var(--mat-sys-error, #ba1a1a);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
 .readonly-info {
   display: flex;
   flex-direction: column;

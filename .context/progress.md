@@ -174,7 +174,7 @@
   - C19 (`/now` page) extracted to standalone task 328; C28c (orphan-const sweep) dropped — F8 inventory retained as guidance for new code
 - [x] **327-landing-contact-form** (M) — superseded by epic-portfolio-contact and archived; original draft kept in `tasks-done/epic-portfolio-contact/327-landing-contact-form.md` for traceability
 - [x] **Portfolio Blog** (epic-portfolio-blog) - Completed 2026-05-28
-  - Tasks 346-358 → archived in `tasks-done/epic-portfolio-blog/`; epic file moved to `plans-done/`
+  - Tasks 346-359 → archived in `tasks-done/epic-portfolio-blog/`; epic file moved to `plans-done/`
   - `/blog` (list) graduated as V1+V3 hybrid (featured bento strip + project-style archive list with search/sort/category filter); `/blog/:slug` (detail) graduated as V4 (centered hero + floating TOC + signature block); featured treatment γ (soft-pin via sort=featuredFirst)
   - BE: `findRelatedByPrimaryCategory` (PST-010), `jsonLd` embedded in detail response, `search` (title+excerpt ILIKE) + `sort` (newest/oldest/featuredFirst) on list query, `featuredImageId` migrated nullable → NOT NULL with seed backfill (PST-011 enforced entity + DTO + console form)
   - Seed: 6 idempotent `seed-*` posts covering all 4 voices (Deep-dive / Retro / Essay / Note) + both languages + 1 featured; covers attached to all six
@@ -182,7 +182,7 @@
   - E2E: Playwright POM (`blog-list.page.ts`, `blog-detail.page.ts`, `fixtures/blog-seed.ts`); 19 specs across list / detail / SEO; 57/57 stable across 3 reruns
   - Cleanup: pruned `BlogListPage` / `BlogDetailPage` re-exports from `libs/landing/feature-blog/src/index.ts` (only `BLOG_ROUTES` consumed externally); deleted orphan `apps/landing/src/app/pages/coming-soon/` (zero refs after route swap) and removed the matching bullet from the page-shell DDL migration list
   - ADR-018 logged the pick (list V1+V3, detail V4, featured γ); SEO `Article` JSON-LD SSR-guarded on detail; per-post language surfaced as filter (no global translate switcher)
-  - Cover-image requirement (PST-011) end-to-end: domain entity invariant, DTO Zod schema, NOT NULL migration, seed backfill — final console form-validation mirror tracked separately as 359 (carried forward outside this epic)
+  - Cover-image requirement (PST-011) end-to-end: domain entity invariant, DTO Zod schema, NOT NULL migration, seed backfill, console form-validation mirror (task 359 — empty-string sentinel + Validators.required + inline error chrome + 3 unit specs)
 
 ## In Progress
 
@@ -336,12 +336,6 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 - [x] 343-about-profile-fields-to-console (L) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 - [x] 344-about-principles-to-console (L) — deps: 338, soft-343 — Completed 2026-05-24. AboutPrinciple BE module + console CRUD + landing service swap shipped; PRINCIPLES const deleted; 5 EN+VI principles seeded. Archived to `tasks-done/epic-portfolio-about/`.
 - [x] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — Completed 2026-05-24. AboutFailure BE module + console CRUD + landing & DDL service swap shipped; `getFailureEssays()` retired; 3 EN+VI failure essays seeded. Chip-toggle migration: replaced `mat-slide-toggle` with `console-chip-boolean` in feature-about-failure AND feature-about-principle. Archived to `tasks-done/epic-portfolio-about/`.
-
-## Pending — Portfolio Blog follow-up
-
-From: `epic-portfolio-blog` (completed 2026-05-28, archived to `plans-done/`). One carry-over from the cover-required pivot:
-
-- [ ] 359-console-blog-cover-required-form (S) — console form validation for cover image required (PST-011 client-side mirror)
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 

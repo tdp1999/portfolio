@@ -121,7 +121,12 @@
             <mat-error>{{ form.controls.excerpt | formError }}</mat-error>
           </mat-form-field>
 
-          <div class="field-block">
+          <div
+            class="field-block"
+            [class.field-block--invalid]="
+              form.controls.featuredImageId.touched && form.controls.featuredImageId.invalid
+            "
+          >
             <p class="field-label">Featured image</p>
             @if (featuredImageUrl()) {
               <div class="featured-image-preview">
@@ -140,6 +145,11 @@
                 <mat-icon>add_photo_alternate</mat-icon>
                 Choose image
               </button>
+            }
+            @if (form.controls.featuredImageId.touched && form.controls.featuredImageId.invalid) {
+              <p class="field-block__error">
+                {{ form.controls.featuredImageId | formError: { required: 'Cover image is required (PST-011).' } }}
+              </p>
             }
           </div>
         </div>

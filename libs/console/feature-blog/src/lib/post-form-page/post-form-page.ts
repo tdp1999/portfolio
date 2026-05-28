@@ -100,10 +100,12 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
     tagIds: [[] as string[]],
     metaTitle: ['', baselineFor.metaTitle()],
     metaDescription: ['', baselineFor.metaDescription()],
+    // Empty string sentinel = no cover. Validators.required rejects empty strings,
+    // so this gates submit when the user has not picked a cover.
+    featuredImageId: ['', [Validators.required]],
   });
 
   readonly slugManuallyEdited = signal(false);
-  readonly featuredImageId = signal<string | null>(null);
   readonly featuredImageUrl = signal<string | null>(null);
   readonly readTimeMinutes = signal<number | null>(null);
   readonly publishedAt = signal<string | null>(null);
@@ -182,7 +184,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         maxHeight: '90vh',
         data: {
           mode: 'single',
-          selectedIds: this.featuredImageId() ? [this.featuredImageId() as string] : [],
+          selectedIds: this.form.controls.featuredImageId.value ? [this.form.controls.featuredImageId.value] : [],
           mimeFilter: 'image/',
           dataSource: this.mediaDataSource,
         } satisfies MediaPickerDialogData,
@@ -193,14 +195,16 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((item) => {
         if (!item) return;
-        this.featuredImageId.set(item.id);
+        this.form.controls.featuredImageId.setValue(item.id);
+        this.form.controls.featuredImageId.markAsTouched();
         this.featuredImageUrl.set(item.url);
         this.dirty.set(true);
       });
   }
 
   clearFeaturedImage(): void {
-    this.featuredImageId.set(null);
+    this.form.controls.featuredImageId.setValue('');
+    this.form.controls.featuredImageId.markAsTouched();
     this.featuredImageUrl.set(null);
     this.dirty.set(true);
   }
@@ -268,7 +272,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         excerpt: raw.excerpt || null,
         categoryIds: raw.categoryIds,
         tagIds: raw.tagIds,
-        featuredImageId: this.featuredImageId(),
+        featuredImageId: raw.featuredImageId,
         status: raw.status,
         featured: raw.featured,
         metaTitle: raw.metaTitle || null,
@@ -290,7 +294,7 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         excerpt: raw.excerpt || undefined,
         categoryIds: raw.categoryIds,
         tagIds: raw.tagIds,
-        featuredImageId: this.featuredImageId(),
+        featuredImageId: raw.featuredImageId,
         status: raw.status,
         featured: raw.featured,
         metaTitle: raw.metaTitle || undefined,
@@ -329,8 +333,8 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
         tagIds: [],
         metaTitle: '',
         metaDescription: '',
+        featuredImageId: '',
       });
-      this.featuredImageId.set(null);
       this.featuredImageUrl.set(null);
       this.slugManuallyEdited.set(false);
       this.dirty.set(false);
@@ -353,9 +357,9 @@ export default class PostFormPageComponent implements OnInit, HasUnsavedChanges 
           tagIds: post.tags.map((t) => t.id),
           metaTitle: post.metaTitle ?? '',
           metaDescription: post.metaDescription ?? '',
+          featuredImageId: post.featuredImageId ?? '',
         });
         this.slugManuallyEdited.set(true);
-        this.featuredImageId.set(post.featuredImageId);
         this.featuredImageUrl.set(post.featuredImageUrl);
         this.readTimeMinutes.set(post.readTimeMinutes);
         this.publishedAt.set(post.publishedAt);
