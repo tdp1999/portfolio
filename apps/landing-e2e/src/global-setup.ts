@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import { seedBlogPosts } from '../../api/prisma/seeds/blog-posts.seed';
 
 config({ path: resolve(process.cwd(), '.env') });
 
@@ -41,6 +42,20 @@ async function globalSetup(): Promise<void> {
     },
     update: { password: hashed, role: TEST_ADMIN.role },
   });
+
+  // Seed the deterministic blog dataset (4 categories + 10 tags + 6 media + 6
+  // posts including 1 featured, 2 notes, 1 VI essay, 1 deep-dive, 1 retro).
+  // The seed is idempotent — existing rows are detected and skipped, so re-runs
+  // are safe across test executions. We point the seed at the *real* admin so
+  // posts authored by `seedBlogPosts` survive separate dev `pnpm seed` runs
+  // without duplication; if the production admin is missing in this DB, fall
+  // back to the e2e test admin as the author.
+  const realAdminEmail = process.env['ADMIN_EMAIL'];
+  const realAdmin = realAdminEmail
+    ? await prisma.user.findUnique({ where: { email: realAdminEmail }, select: { email: true } })
+    : null;
+  const blogAuthorEmail = realAdmin ? realAdmin.email : TEST_ADMIN.email;
+  await seedBlogPosts(prisma, { ADMIN_EMAIL: blogAuthorEmail });
 
   await prisma.$disconnect();
 }
