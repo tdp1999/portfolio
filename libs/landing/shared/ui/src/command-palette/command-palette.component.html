@@ -22,6 +22,11 @@
           (input)="onQueryInput($event)"
           aria-label="Search query"
         />
+        @if (query().length > 0) {
+          <button type="button" class="cp-modal__clear" (click)="clearQuery()" aria-label="Clear search">
+            <landing-icon name="close" [size]="14" />
+          </button>
+        }
         <button type="button" class="cp-modal__esc" (click)="close()" aria-label="Close">esc</button>
       </div>
 

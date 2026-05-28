@@ -163,6 +163,10 @@ export class TimezonePickerComponent implements ControlValueAccessor {
     this.filterText.set(value);
   }
 
+  protected clearFilter(): void {
+    this.filterText.set('');
+  }
+
   protected onPanelClosed(): void {
     this.filterText.set('');
   }

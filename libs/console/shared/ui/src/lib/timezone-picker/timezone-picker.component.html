@@ -31,6 +31,11 @@
         placeholder="Search city or zone"
         aria-label="Search timezones"
       />
+      @if (filterText().length > 0) {
+        <button type="button" class="tz-search__clear" aria-label="Clear search" (click)="clearFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </div>
     @for (group of groups(); track group.region) {
       <mat-optgroup [label]="group.region">

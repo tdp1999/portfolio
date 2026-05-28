@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { IconComponent } from '../icon';
 
 /**
  * `landing-input` — single-line text input primitive (Variant B "sunken card").
@@ -18,6 +19,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'landing-input',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [IconComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -26,21 +28,28 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     },
   ],
   template: `
-    <input
-      [type]="type()"
-      [placeholder]="placeholder()"
-      [class]="inputClasses()"
-      [disabled]="disabled()"
-      [value]="value()"
-      [attr.id]="inputId() || null"
-      [attr.autocomplete]="autocomplete() || null"
-      [attr.inputmode]="inputmode() || null"
-      [attr.maxlength]="maxLength() || null"
-      [attr.aria-describedby]="ariaDescribedBy() || null"
-      [attr.aria-invalid]="error() || hasError() ? 'true' : null"
-      (input)="onInput($event)"
-      (blur)="onTouched()"
-    />
+    <div class="input-wrap" [class.input-wrap--clearable]="showClearButton()">
+      <input
+        [type]="type()"
+        [placeholder]="placeholder()"
+        [class]="inputClasses()"
+        [disabled]="disabled()"
+        [value]="value()"
+        [attr.id]="inputId() || null"
+        [attr.autocomplete]="autocomplete() || null"
+        [attr.inputmode]="inputmode() || null"
+        [attr.maxlength]="maxLength() || null"
+        [attr.aria-describedby]="ariaDescribedBy() || null"
+        [attr.aria-invalid]="error() || hasError() ? 'true' : null"
+        (input)="onInput($event)"
+        (blur)="onTouched()"
+      />
+      @if (showClearButton()) {
+        <button type="button" class="input-clear" aria-label="Clear input" (click)="onClear()">
+          <landing-icon name="close" [size]="14" />
+        </button>
+      }
+    </div>
   `,
   styleUrl: './input.component.scss',
 })
@@ -58,8 +67,11 @@ export class InputComponent implements ControlValueAccessor {
   readonly inputmode = input<string>('');
   readonly maxLength = input<number | null>(null);
   readonly ariaDescribedBy = input<string>('');
+  /** Show an "X" button on the right when the input has a value. */
+  readonly clearable = input<boolean>(false);
 
   protected readonly value = signal<string>('');
+  protected readonly showClearButton = computed(() => this.clearable() && !this.disabled() && this.value().length > 0);
   protected onChange: (value: string) => void = () => {
     /* empty */
   };
@@ -80,6 +92,11 @@ export class InputComponent implements ControlValueAccessor {
     const newValue = inputElement.value;
     this.value.set(newValue);
     this.onChange(newValue);
+  }
+
+  protected onClear(): void {
+    this.value.set('');
+    this.onChange('');
   }
 
   // ControlValueAccessor

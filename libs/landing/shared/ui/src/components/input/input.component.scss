@@ -3,6 +3,45 @@
    turns accent and the background deepens. Shared with `landing-textarea`
    (textarea.component.scss mirrors these tokens). */
 
+.input-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.input-wrap--clearable .input {
+  /* Reserve space for the clear button so text doesn't slide under it. */
+  padding-right: 40px;
+}
+
+.input-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--landing-text-500);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+.input-clear:hover {
+  background: color-mix(in srgb, var(--landing-text-500) 18%, transparent);
+  color: var(--landing-text-100);
+}
+.input-clear:focus-visible {
+  outline: 2px solid var(--landing-accent);
+  outline-offset: 1px;
+}
+
 .input {
   width: 100%;
   padding: 12px 16px;

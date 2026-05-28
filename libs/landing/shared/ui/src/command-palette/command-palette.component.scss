@@ -84,6 +84,33 @@
   }
 }
 
+.cp-modal__clear {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--landing-text-500);
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--landing-text-500) 18%, transparent);
+    color: var(--landing-text-100);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 1px;
+  }
+}
+
 .cp-modal__esc {
   appearance: none;
   border: 1px solid var(--landing-border);

@@ -228,6 +228,10 @@ export class LandingCommandPaletteComponent {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  protected clearQuery(): void {
+    this.query.set('');
+  }
+
   protected activate(result: CommandResult): void {
     this.close();
     if (result.handler) {
