@@ -64,6 +64,7 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [BlogPostErrorCode.SLUG_CONFLICT]: 'A blog post with this slug already exists.',
   [BlogPostErrorCode.INVALID_STATUS_TRANSITION]: 'That status change is not allowed for this post.',
   [BlogPostErrorCode.CONTENT_REQUIRED]: 'Content is required to publish this post.',
+  [BlogPostErrorCode.COVER_REQUIRED]: 'Cover image is required.',
   [BlogPostErrorCode.INVALID_INPUT]: VALIDATION_FALLBACK,
 
   // --- Category ---
