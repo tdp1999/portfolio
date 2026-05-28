@@ -204,7 +204,7 @@ const BREADCRUMB_CONTACT: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/
             <li>
               Migrated callsites: <code>feature-about</code>, <code>contact.page</code>, <code>uses.page</code>,
               <code>colophon.page</code>, <code>privacy.page</code>, <code>terms.page</code>,
-              <code>projects-page</code>, <code>coming-soon.page</code>, <code>not-found.page</code>.
+              <code>projects-page</code>, <code>not-found.page</code>.
             </li>
             <li>
               <strong>Documented exception:</strong> <code>project-detail</code> (case-study) keeps its bespoke

@@ -1,6 +1,6 @@
 # Epic: Landing Blog page — `/blog` as the writing surface (DDL-driven full redesign)
 
-> Status: broken-down (2026-05-24)
+> Status: completed (2026-05-28)
 > Depends on: `epic-blog-post` (done, in `plans-done/` — provides BE module, console CMS, schema, `BlogDataService` + DTOs, `/api/blog` endpoints), `epic-portfolio-e5-implementation` (done — landing platform, page-shell pattern, DDL sandbox), `epic-portfolio-about` (done — SEO + JSON-LD pattern to copy from commit 96a0cd4).
 > Defers to: `epic-portfolio-rich-text-editor` (task 314 — RTE renderer swap for blog detail. This epic ships with the current `MarkdownService` + Shiki pipeline; 314 swaps the renderer later without touching layout).
 > Feeds: launch readiness. `/blog` is the third deep surface after `/projects` and `/about` — the **writing voice** complement to project-as-artifact and about-as-credibility.
@@ -370,9 +370,12 @@ Ordered for parallelism where possible.
 Tasks 1, 2, 3 can run in parallel. Tasks 4 + 5 in parallel after 1 (need seed for fidelity). Task 6 is a review gate. Tasks 7 + 8 + 9 are sequential within the graduation step. Tasks 10 + 11 last.
 
 ## Status
-broken-down
+completed
 
-> Broken down into tasks 346-356 on 2026-05-24.
+> Broken down into tasks 346-356 on 2026-05-24. Pivot afternoon 2026-05-24 appended 357-359. Closed 2026-05-28 (task 356). Winners: list V1+V3 hybrid, detail V4, featured γ. DDL pages `/ddl/blog-list-variants` and `/ddl/blog-detail-variants` kept in place. Carry-over: 359 (console form validation) tracked in `progress.md` under Portfolio Blog follow-up.
 
 ## Created
 2026-05-24
+
+## Completed
+2026-05-28

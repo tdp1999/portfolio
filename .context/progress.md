@@ -173,6 +173,16 @@
   - Privacy policy §3.3 updated with `purpose` field; email templates V1 graduated (auto-reply EN+VI, admin notification EN-only); E2E `contact.spec.ts` covers chip preselect / default / valid submit / payload shape / validation gate
   - C19 (`/now` page) extracted to standalone task 328; C28c (orphan-const sweep) dropped — F8 inventory retained as guidance for new code
 - [x] **327-landing-contact-form** (M) — superseded by epic-portfolio-contact and archived; original draft kept in `tasks-done/epic-portfolio-contact/327-landing-contact-form.md` for traceability
+- [x] **Portfolio Blog** (epic-portfolio-blog) - Completed 2026-05-28
+  - Tasks 346-358 → archived in `tasks-done/epic-portfolio-blog/`; epic file moved to `plans-done/`
+  - `/blog` (list) graduated as V1+V3 hybrid (featured bento strip + project-style archive list with search/sort/category filter); `/blog/:slug` (detail) graduated as V4 (centered hero + floating TOC + signature block); featured treatment γ (soft-pin via sort=featuredFirst)
+  - BE: `findRelatedByPrimaryCategory` (PST-010), `jsonLd` embedded in detail response, `search` (title+excerpt ILIKE) + `sort` (newest/oldest/featuredFirst) on list query, `featuredImageId` migrated nullable → NOT NULL with seed backfill (PST-011 enforced entity + DTO + console form)
+  - Seed: 6 idempotent `seed-*` posts covering all 4 voices (Deep-dive / Retro / Essay / Note) + both languages + 1 featured; covers attached to all six
+  - DDL pages `/ddl/blog-list-variants` (V1-V4 strip variants) and `/ddl/blog-detail-variants` (V1-V3) kept in place per `feedback_ddl_keep_after_graduate` — historical record of the comparison
+  - E2E: Playwright POM (`blog-list.page.ts`, `blog-detail.page.ts`, `fixtures/blog-seed.ts`); 19 specs across list / detail / SEO; 57/57 stable across 3 reruns
+  - Cleanup: pruned `BlogListPage` / `BlogDetailPage` re-exports from `libs/landing/feature-blog/src/index.ts` (only `BLOG_ROUTES` consumed externally); deleted orphan `apps/landing/src/app/pages/coming-soon/` (zero refs after route swap) and removed the matching bullet from the page-shell DDL migration list
+  - ADR-018 logged the pick (list V1+V3, detail V4, featured γ); SEO `Article` JSON-LD SSR-guarded on detail; per-post language surfaced as filter (no global translate switcher)
+  - Cover-image requirement (PST-011) end-to-end: domain entity invariant, DTO Zod schema, NOT NULL migration, seed backfill — final console form-validation mirror tracked separately as 359 (carried forward outside this epic)
 
 ## In Progress
 
@@ -327,35 +337,11 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 - [x] 344-about-principles-to-console (L) — deps: 338, soft-343 — Completed 2026-05-24. AboutPrinciple BE module + console CRUD + landing service swap shipped; PRINCIPLES const deleted; 5 EN+VI principles seeded. Archived to `tasks-done/epic-portfolio-about/`.
 - [x] 345-about-failures-to-console (L) — deps: 338, 337, soft-343 — Completed 2026-05-24. AboutFailure BE module + console CRUD + landing & DDL service swap shipped; `getFailureEssays()` retired; 3 EN+VI failure essays seeded. Chip-toggle migration: replaced `mat-slide-toggle` with `console-chip-boolean` in feature-about-failure AND feature-about-principle. Archived to `tasks-done/epic-portfolio-about/`.
 
-## Pending — Portfolio Blog (broken down 2026-05-24, pivoted afternoon 2026-05-24)
+## Pending — Portfolio Blog follow-up
 
-From: `epic-portfolio-blog`. `/blog` becomes the writing surface. **Direction pivoted 2026-05-24 afternoon** — see epic § Direction Pivot. New shape: hero (reused from `/projects`) → featured strip (bento, 4 variants on DDL) → list section (project-style + search + sort + category filter). Cover image now required (PST-011). New tasks 357 (BE cover required + seed backfill), 358 (BE list query: search + sort), 359 (console form validation) appended. Detail-side tasks 350-356 unchanged by pivot.
+From: `epic-portfolio-blog` (completed 2026-05-28, archived to `plans-done/`). One carry-over from the cover-required pivot:
 
-### Foundation (parallel) — all archived to `tasks-done/epic-portfolio-blog/`
-- [x] 346-blog-seed-placeholder-posts (M) ✓
-- [x] 347-blog-be-related-posts-query (S) ✓ — `findRelatedByPrimaryCategory` (PST-010)
-- [x] 348-blog-be-jsonld-query (S) ✓ — `jsonLd` embedded in detail response
-
-### Pivot — Cover-required foundation
-- [x] 357-blog-cover-required-end-to-end (M) ✓ — PST-011 enforced end-to-end (entity, DTOs, NOT-NULL migration, seed backfill)
-- [x] 358-blog-be-list-query-search-sort (S) ✓ — `search` (title+excerpt ILIKE) + `sort` (newest/oldest) wired BE→FE
 - [ ] 359-console-blog-cover-required-form (S) — console form validation for cover image required (PST-011 client-side mirror)
-
-### DDL staging
-- [x] 349-ddl-blog-list-variants (L) ✓ — V1-V4 featured-strip bento + list section
-- [x] 350-ddl-blog-detail-variants (L) ✓ — V1/V2/V3 stacked at `/ddl/blog-detail-variants`
-
-### Review gate
-- [x] 351-blog-ddl-review-and-pick (S) ✓ — ADR-018: list=V1+V3 hybrid, detail=V4, featured=γ
-
-### Graduate
-- [x] 352-blog-graduate-list-winner (M) ✓ — V1+V3 hybrid + archive list in `BlogListPage`
-- [x] 353-blog-graduate-detail-winner (M) ✓ — V4 (center hero + floating TOC) in `BlogDetailPage`; SSR JSON-LD
-- [x] 354-blog-route-swap (S) ✓ — `/blog` flipped from `ComingSoonPage` to `BLOG_ROUTES`
-
-### Verify + Cleanup (sequential) — active
-- [ ] 355-blog-e2e-tests (M) — Playwright POM for list + detail + SSR meta/JSON-LD — deps: 354
-- [ ] 356-blog-cleanup-deprecated-code (S) — prune orphan files; verify seed idempotency; close epic — deps: 355
 
 ## Pending — Portfolio Rich-Text Editor Integration (broken down 2026-05-05)
 
