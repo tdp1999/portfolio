@@ -14,6 +14,7 @@ export const serverRoutes: ServerRoute[] = [
 
   // Data-driven — SSR at runtime (Railway)
   { path: '', renderMode: RenderMode.Server },
+  { path: 'about', renderMode: RenderMode.Server },
   { path: 'experience', renderMode: RenderMode.Server },
   { path: 'projects', renderMode: RenderMode.Server },
   { path: 'projects/**', renderMode: RenderMode.Server },
