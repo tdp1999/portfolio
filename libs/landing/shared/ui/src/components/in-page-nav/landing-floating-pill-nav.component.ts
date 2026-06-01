@@ -37,7 +37,7 @@ import { InPageSection } from './section.types';
     @if (visible()) {
       <!-- Pill: bottom-center. Desktop-only (≥lg) — tablets and below get the
            regular header nav, no in-page wayfinding pill. -->
-      <div #pillContainer class="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 hidden lg:block">
+      <div #pillContainer class="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 hidden laptop:block">
         @if (open()) {
           <ul
             class="absolute bottom-full left-1/2 mb-2 w-64 -translate-x-1/2 overflow-hidden rounded-lg border border-landing-border bg-ink-1 shadow-xl"
@@ -91,7 +91,7 @@ import { InPageSection } from './section.types';
 
       <!-- Mini-map: right edge with hover labels -->
       @if (showMinimap()) {
-        <nav class="fixed right-3 top-1/2 z-30 -translate-y-1/2 hidden lg:block" aria-label="Mini-map">
+        <nav class="fixed right-3 top-1/2 z-30 -translate-y-1/2 hidden laptop:block" aria-label="Mini-map">
           <ul class="flex flex-col gap-1">
             @for (s of sections(); track s.id) {
               <li>

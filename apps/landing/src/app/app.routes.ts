@@ -168,6 +168,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/ddl/mega-menu').then((m) => m.MegaMenuDdlPage),
       },
       {
+        path: 'mobile-nav',
+        loadComponent: () => import('./pages/ddl/mobile-nav').then((m) => m.MobileNavPage),
+      },
+      {
         path: 'email-templates',
         loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
       },

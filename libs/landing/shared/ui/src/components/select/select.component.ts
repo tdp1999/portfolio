@@ -97,6 +97,7 @@ const HOVER_GRACE_MS = 250;
         class="landing-select__panel"
         [class.landing-select__panel--align-left]="align() === 'left'"
         [class.landing-select__panel--align-right]="align() === 'right'"
+        [class.landing-select__panel--up]="placement() === 'up'"
         [id]="panelId()"
         role="listbox"
         [attr.aria-label]="ariaLabel() || placeholder()"
@@ -162,6 +163,9 @@ export class LandingSelectComponent<T = string> implements ControlValueAccessor 
   readonly showChevron = input<boolean>(true);
   /** Panel alignment relative to trigger. */
   readonly align = input<SelectAlign>('right');
+  /** Vertical placement: `down` (default) opens below the trigger; `up` opens above
+   *  — use when the trigger sits near the bottom of the viewport (e.g. a bottom sheet). */
+  readonly placement = input<'down' | 'up'>('down');
   /** Stable id used for `aria-controls`. */
   readonly panelId = input<string>(`landing-select-${nextSelectId()}`);
 

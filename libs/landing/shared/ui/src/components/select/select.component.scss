@@ -102,6 +102,23 @@
       left: auto;
       transform-origin: top right;
     }
+
+    // Drop-up: open above the trigger (for triggers near the viewport bottom,
+    // e.g. the locale switcher in the mobile nav sheet).
+    &--up {
+      top: auto;
+      bottom: calc(100% + 8px);
+      transform-origin: bottom right;
+
+      &::before {
+        top: auto;
+        bottom: -8px;
+      }
+
+      &.landing-select__panel--align-left {
+        transform-origin: bottom left;
+      }
+    }
   }
 
   &__option {

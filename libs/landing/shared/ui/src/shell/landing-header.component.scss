@@ -59,3 +59,22 @@
   height: 1px;
   background-color: var(--landing-accent);
 }
+
+/* Mobile sheet (Direction C) — arrow rows. The active marker is the accent
+   colour + arrow, not the inline underline, so suppress the ::after here. */
+.mobile-sheet__arrow {
+  color: var(--landing-text-600);
+  transition: color var(--duration-motion-base) var(--ease-landing-ease);
+}
+
+.mobile-sheet__row.nav-link--active {
+  color: var(--landing-accent);
+}
+
+.mobile-sheet__row.nav-link--active .mobile-sheet__arrow {
+  color: var(--landing-accent);
+}
+
+.mobile-sheet__row.nav-link--active::after {
+  content: none;
+}

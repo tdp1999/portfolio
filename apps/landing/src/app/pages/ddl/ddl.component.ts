@@ -226,6 +226,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         title: 'Mega-menu · More dropdown variants',
         desc: 'Six layout directions for the header "More" panel — refined row, centered cards, typography-only, editorial eyebrow, hero+list, inline-glyph reveal. Research stepback + decision matrix.',
       },
+      {
+        path: '/ddl/mobile-nav',
+        title: 'Mobile nav · sheet design directions',
+        desc: 'Three looks for the < tablet full-screen nav sheet — A editorial index (numbered), B big-type edge index, C arrow-list airy. Same content; pick one to graduate into the header.',
+      },
     ],
   },
   {
