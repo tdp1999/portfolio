@@ -3,7 +3,9 @@
 }
 
 .landing-container {
-  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  /* Gutter steps 24 / 32 / 48 (mobile / tablet / laptop). Device-bound prefixes
+     per the responsive contract — not the generic sm/lg. */
+  @apply mx-auto w-full max-w-6xl px-6 tablet:px-8 laptop:px-12;
 
   &--wide {
     @apply max-w-7xl;

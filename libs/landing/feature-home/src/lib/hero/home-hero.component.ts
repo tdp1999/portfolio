@@ -75,5 +75,12 @@ export class HomeHeroComponent {
       .filter((item) => item.length > 0);
   });
 
-  protected readonly stackDisplay = computed(() => this.coreStack().join(' / '));
+  /** Join tokens with ` / `, but keep each multi-word token non-breaking so a
+   *  wrap lands on a separator — never mid-token (e.g. "ANGULAR MATERIAL" stayed
+   *  whole instead of breaking to read like a duplicate "ANGULAR"). */
+  protected readonly stackDisplay = computed(() =>
+    this.coreStack()
+      .map((token) => token.replace(/ /g, ' '))
+      .join(' / ')
+  );
 }

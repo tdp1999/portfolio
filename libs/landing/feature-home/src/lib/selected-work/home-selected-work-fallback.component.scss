@@ -1,11 +1,14 @@
 /* Selected Work — fallback (B3.b text-only) when project lacks 4 images. */
 
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
+
 .selected-work-fallback {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: 40fr 60fr;
     gap: 48px;
   }
@@ -100,7 +103,16 @@
   border-left: 1px solid var(--landing-border);
   padding-left: 32px;
 
-  @media (max-width: 959px) {
+  /* The split row's height is driven by the (taller) left column. With sparse
+     data — motivation only, no decisions — centre the content so it doesn't sit
+     top-heavy over a large void. The hairline rule still spans the full height. */
+  @include bp.respond-to('laptop') {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  @include bp.respond-down('laptop') {
     border-left: 0;
     padding-left: 0;
     border-top: 1px solid var(--landing-border);
@@ -129,7 +141,7 @@
   gap: 16px;
   align-items: baseline;
 
-  @media (max-width: 600px) {
+  @include bp.respond-down('tablet') {
     grid-template-columns: 1fr;
     gap: 4px;
   }
@@ -194,13 +206,13 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .selected-work-fallback__meta,
-  .selected-work-fallback__title,
-  .selected-work-fallback__desc,
-  .selected-work-fallback__chips,
-  .selected-work-fallback__link-groups,
-  .selected-work-fallback__right {
+.selected-work-fallback__meta,
+.selected-work-fallback__title,
+.selected-work-fallback__desc,
+.selected-work-fallback__chips,
+.selected-work-fallback__link-groups,
+.selected-work-fallback__right {
+  @include prefers.reduce-motion {
     animation: none;
   }
 }

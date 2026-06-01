@@ -2,21 +2,25 @@
    The globe + right column moved to /contact. Section is a closing-moment
    centered stack: eyebrow → heading → copy → 3 deep-links → mailto fallback. */
 
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
 
 .home-get-in-touch {
   position: relative;
-  padding: 64px 0 80px;
+  /* Mobile-first stepped padding; the laptop step replaces a legacy 960px raw
+     query (snapped to the 1024 device BP per the responsive contract). */
+  padding: 48px 0 64px;
   scroll-margin-top: 80px;
 
-  @media (min-width: 960px) {
-    padding: 96px 0 112px;
+  @include bp.respond-to('tablet') {
+    padding: 64px 0 80px;
   }
 
-  @media (max-width: 768px) {
-    padding: 48px 0 64px;
+  @include bp.respond-to('laptop') {
+    padding: 96px 0 112px;
   }
 }
 
@@ -66,6 +70,13 @@
 
 .home-get-in-touch__cta {
   display: inline-flex;
+
+  /* WCAG 2.2 §2.5.8 target size: the interactive <a> renders only ~18px tall at
+     mono-md. Pierce encapsulation to give these primary CTAs a ≥44px hit area
+     (comfortable on touch) without changing the shared link primitive globally. */
+  ::ng-deep .landing-link {
+    min-height: 44px;
+  }
 }
 
 .home-get-in-touch__cta--quiet {

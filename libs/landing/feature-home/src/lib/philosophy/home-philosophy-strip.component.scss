@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -23,7 +25,7 @@
   opacity: 0.85;
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .home-philosophy {
     padding-block: 32px;
   }

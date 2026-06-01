@@ -9,6 +9,17 @@
   line-height: var(--landing-mono-md-lh);
   letter-spacing: var(--landing-tracking-mono);
   text-transform: uppercase;
+  /* A tab strip can be wider than its container (e.g. 3 project tabs on a phone).
+     Scroll horizontally rather than overflow the page; invisible on wider screens
+     where nothing overflows. Scrollbar hidden — the active underline signals position. */
+  max-width: 100%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .landing-segmented__btn {
@@ -16,6 +27,8 @@
   background-color: transparent;
   border: 0;
   margin: 0;
+  /* Keep natural width inside the scrollable strip — don't squish to fit. */
+  flex: 0 0 auto;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
@@ -105,7 +118,9 @@
 
   .landing-segmented__btn {
     border-radius: 0;
-    padding: 8px 0 8px;
+    /* 12px V padding → ~42px row so the underline tabs clear a comfortable
+       touch target (was 8px ≈ 34px). */
+    padding: 12px 0;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
 

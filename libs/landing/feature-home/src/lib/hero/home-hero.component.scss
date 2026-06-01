@@ -1,10 +1,13 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
+
 :host {
   display: block;
 }
 
 .home-hero {
   position: relative;
-  min-height: calc(100vh - 80px);
+  min-height: calc(var(--vh-full) - 80px);
   display: flex;
   flex-direction: column;
   padding-block: 96px;
@@ -158,7 +161,7 @@
   text-transform: uppercase;
 }
 
-@media (max-width: 1024px) {
+@include bp.respond-down('laptop') {
   .home-hero__title {
     font-size: 64px;
     line-height: 72px;
@@ -169,9 +172,9 @@
   }
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .home-hero {
-    min-height: calc(100vh - 64px);
+    min-height: calc(var(--vh-full) - 64px);
   }
 
   .home-hero__title {
@@ -194,11 +197,11 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .home-hero__role,
-  .home-hero__sub-lead,
-  .home-hero__sub-emphasis,
-  .home-hero__meta-row {
+.home-hero__role,
+.home-hero__sub-lead,
+.home-hero__sub-emphasis,
+.home-hero__meta-row {
+  @include prefers.reduce-motion {
     animation: none;
     opacity: 1;
     clip-path: none;

@@ -1,6 +1,8 @@
 /* Site-wide footer banner (Parth-style fat site map).
  * Brand block + nav columns. Signature row is the sibling `landing-footer-signature`. */
 
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -11,7 +13,7 @@
   padding-block: 64px;
   //   border-top: 1px solid var(--landing-accent);
 
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     padding-block: 96px;
   }
 }
@@ -22,7 +24,7 @@
   border-radius: 12px;
   padding: 32px;
 
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     padding: 48px;
   }
 }
@@ -32,11 +34,11 @@
   gap: 40px 32px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 640px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: 1fr 1fr;
   }
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
     gap: 32px 48px;
   }
@@ -47,11 +49,11 @@
   flex-direction: column;
   gap: 16px;
 
-  @media (min-width: 640px) {
+  @include bp.respond-to('tablet') {
     grid-column: 1 / -1;
   }
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-column: 1 / 2;
     max-width: 32ch;
   }

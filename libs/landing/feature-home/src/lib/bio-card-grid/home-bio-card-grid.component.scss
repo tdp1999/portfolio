@@ -8,6 +8,8 @@
  * card-body content layout (rows / quote / email button / socials) bespoke to §3.
  */
 
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
   position: relative;
@@ -22,7 +24,7 @@
   position: relative;
   z-index: 1;
   padding-block: 64px;
-  @media (min-width: 1024px) {
+  @include bp.respond-to('laptop') {
     padding-block: 96px;
   }
 }
@@ -35,8 +37,20 @@
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
-  @media (min-width: 768px) {
+  /* 2-up at tablet keeps each card's measure readable (3-up at 768 cramped the
+     middle Outlook prose); the third card spans the full row so the pair sits
+     above a full-width card instead of leaving an empty 2×2 cell. */
+  @include bp.respond-to('tablet') {
+    grid-template-columns: repeat(2, 1fr);
+    > :nth-child(3) {
+      grid-column: 1 / -1;
+    }
+  }
+  @include bp.respond-to('laptop') {
     grid-template-columns: repeat(3, 1fr);
+    > :nth-child(3) {
+      grid-column: auto;
+    }
   }
 }
 
@@ -181,6 +195,12 @@
 }
 .bio-card__connect {
   margin-top: 16px;
+  /* Lift the standalone link to a comfortable tap target (rendered ~16px tall). */
+  display: inline-flex;
+  ::ng-deep .landing-link {
+    min-height: 44px;
+    align-items: center;
+  }
 }
 .bio-card__socials {
   margin-top: 12px;

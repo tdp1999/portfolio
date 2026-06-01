@@ -1,11 +1,14 @@
 /* Selected Work — gallery tab content (B3.d 40/60 split). */
 
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
+
 .selected-work-tab {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: 40fr 60fr;
     gap: 48px;
   }
@@ -106,7 +109,7 @@
 .selected-work-tab__right {
   min-width: 0;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     aspect-ratio: 4 / 3;
     display: flex;
   }
@@ -156,13 +159,13 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .selected-work-tab__meta,
-  .selected-work-tab__title,
-  .selected-work-tab__desc,
-  .selected-work-tab__chips,
-  .selected-work-tab__link-groups,
-  .selected-work-tab__right {
+.selected-work-tab__meta,
+.selected-work-tab__title,
+.selected-work-tab__desc,
+.selected-work-tab__chips,
+.selected-work-tab__link-groups,
+.selected-work-tab__right {
+  @include prefers.reduce-motion {
     animation: none;
   }
 }

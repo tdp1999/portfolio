@@ -8,13 +8,17 @@
 }
 
 /* `bleedDown` lifts the bottom clip so the pattern extends below the section.
-   The receiving section needs a transparent top band for the bleed to show. */
+   The receiving section needs a transparent top band for the bleed to show.
+   Only the vertical axis opens up — horizontal stays clipped so the blurred
+   aurora blobs can't push page width past the viewport (mobile h-scroll). */
 :host(.is-bleed-down) {
   inset: 0 0 -160px 0;
-  overflow: visible;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 :host(.is-bleed-down) .landing-bg {
-  overflow: visible;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .landing-bg {
