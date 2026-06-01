@@ -128,7 +128,7 @@ const PATTERNS: readonly PatternEntry[] = [
     </section>
 
     <landing-container size="wide">
-      <div class="py-12 grid gap-8 md:grid-cols-[2fr_1fr]">
+      <div class="py-12 grid gap-8 tablet:grid-cols-[2fr_1fr]">
         <article>
           <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
             use case · {{ entry().id }}
@@ -172,7 +172,7 @@ const PATTERNS: readonly PatternEntry[] = [
             gallery · all five
           </p>
           <h3 class="font-display text-display-sm text-landing-text-300 mb-6">At a glance</h3>
-          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="grid gap-4 grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5">
             @for (p of patterns; track p.id) {
               <button
                 type="button"

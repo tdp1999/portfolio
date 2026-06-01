@@ -61,7 +61,7 @@ const PATTERN_OPTIONS = [
     <!-- Pattern selector header -->
     <div class="border-b border-landing-border bg-ink-1/60 backdrop-blur-sm">
       <landing-container size="wide">
-        <div class="flex flex-col gap-3 py-6 md:flex-row md:items-end md:justify-between">
+        <div class="flex flex-col gap-3 py-6 tablet:flex-row tablet:items-end tablet:justify-between">
           <div>
             <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
             <h1 class="font-display text-display-md text-landing-text-300">Navigation prototypes</h1>
@@ -84,7 +84,7 @@ const PATTERN_OPTIONS = [
 
     <!-- Main content + optional right rail -->
     <landing-container size="wide">
-      <div class="grid gap-12 py-12" [class.lg:grid-cols-[1fr_220px]]="pattern() === 'toc'">
+      <div class="grid gap-12 py-12" [class.laptop:grid-cols-[1fr_220px]]="pattern() === 'toc'">
         <article class="space-y-16">
           @for (s of sections; track s.id) {
             <section [id]="s.id">
@@ -108,7 +108,7 @@ const PATTERN_OPTIONS = [
         </article>
 
         @if (pattern() === 'toc') {
-          <aside class="hidden lg:block">
+          <aside class="hidden laptop:block">
             <landing-toc-sidebar [sections]="sections" />
           </aside>
         }

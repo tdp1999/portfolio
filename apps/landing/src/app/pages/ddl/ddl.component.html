@@ -142,7 +142,7 @@
         @switch (typographyTab()) {
           @case ('showcase') {
             <!-- Role table -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <div class="grid grid-cols-1 tablet:grid-cols-3 gap-4 mb-10">
               <div class="bg-ink-0 border border-landing-border rounded p-4">
                 <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
                   newsreader · display
@@ -965,7 +965,7 @@
                 <p class="font-mono text-mono-md text-landing-text-500 mb-3">
                   landing-figure · numbered caption + lazy load (default)
                 </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+                <div class="grid grid-cols-1 tablet:grid-cols-2 gap-6 max-w-3xl">
                   <landing-figure
                     src="https://placehold.co/640x400/1a2030/cbd5e1.png?text=Hero+shot"
                     alt="Hero shot of a product page"
@@ -1013,7 +1013,7 @@
                 <p class="font-mono text-mono-md text-landing-text-500 mb-3">
                   portrait inline pair · two narrow shots side by side (mobile screens, devices, posters)
                 </p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
+                <div class="grid grid-cols-2 tablet:grid-cols-4 gap-4 max-w-3xl">
                   <landing-figure
                     src="https://placehold.co/300x600/1a2030/cbd5e1.png?text=Mobile+1"
                     alt="Mobile screen 1"
@@ -1375,7 +1375,7 @@
           <div>
             <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-icon · all available glyphs</p>
             <div
-              class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-3 p-6 bg-ink-0 border border-landing-border rounded"
+              class="grid grid-cols-6 tablet:grid-cols-8 laptop:grid-cols-10 gap-3 p-6 bg-ink-0 border border-landing-border rounded"
             >
               @for (name of iconNames; track name) {
                 <div

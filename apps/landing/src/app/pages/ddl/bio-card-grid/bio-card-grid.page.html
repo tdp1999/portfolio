@@ -15,7 +15,7 @@
   <!-- Picker -->
   <div class="py-8">
     <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">scenes</p>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+    <div class="grid grid-cols-2 tablet:grid-cols-3 laptop:grid-cols-5 gap-2">
       @for (p of protos; track p.id) {
         <button
           type="button"
@@ -614,7 +614,7 @@
       <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
         gallery · all seventeen at a glance
       </p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div class="grid grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5 gap-3">
         @for (p of protos; track p.id) {
           <button
             type="button"
