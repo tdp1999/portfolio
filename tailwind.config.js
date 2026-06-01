@@ -10,6 +10,19 @@ module.exports = {
   darkMode: ['variant', ['.dark &', '[data-theme="dark"] &']],
   theme: {
     extend: {
+      // Device-bound breakpoints (responsive-system skill). `mobile` is the
+      // unprefixed base, so it is omitted. MUST mirror the SCSS $breakpoints
+      // map and RESPONSIVE_BREAKPOINTS. See responsive-contract.md §1.
+      //
+      // ADDED (extend), not replaced: the default sm/md/lg/xl/2xl prefixes stay
+      // functional so the ~36 existing usages don't break. Per contract §2 + §8,
+      // generic names are banned for NEW code and migrate organically; remove the
+      // defaults (move this block to `theme.screens`) once the sweep is complete.
+      screens: {
+        tablet: '48rem', // 768px
+        laptop: '64rem', // 1024px
+        wide: '90rem', // 1440px
+      },
       colors: {
         // Landing palette (E4 lock — technical-cool with indigo accent)
         ink: {

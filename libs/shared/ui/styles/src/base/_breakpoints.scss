@@ -1,0 +1,86 @@
+// =============================================================================
+// Breakpoints — the responsive system's foundation.
+// Source of truth for the 4 device-bound breakpoints. See
+// `.context/design/responsive-contract.md` §1–§3.
+//
+// These three rem thresholds MUST stay in sync with:
+//   • tailwind.config.js                          → theme.screens
+//   • responsive-breakpoint.constant.ts           → RESPONSIVE_BREAKPOINTS
+//
+// Direction (hybrid): layout = desktop-first (`respond-down`),
+//                     tokens = mobile-first (`respond-to`).
+// =============================================================================
+
+@use 'sass:map';
+@use 'sass:meta';
+
+/// Device-bound breakpoints. `mobile` is the base layer (0 — no media query).
+$breakpoints: (
+  'mobile': 0,
+  'tablet': 48rem,
+  // 768px
+  'laptop': 64rem,
+  // 1024px
+  'wide': 90rem, // 1440px
+) !default;
+
+/// A hair subtracted from `max-width` so adjacent ranges never overlap.
+/// In rem to match the threshold units (mixing px/rem in arithmetic errors).
+$_epsilon: 0.02rem;
+
+/// Hard-error helper — keeps unknown BP names from silently no-op'ing.
+@function _bp($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint `#{$name}`. Valid: #{map.keys($breakpoints)}.';
+  }
+  @return map.get($breakpoints, $name);
+}
+
+/// Mobile-first: styles apply at `$bp` and WIDER. Use for tokens (spacing, type).
+/// `respond-to('mobile')` emits no media query — it is the base layer.
+@mixin respond-to($bp) {
+  $min: _bp($bp);
+
+  @if $min == 0 {
+    @content;
+  } @else {
+    @media (min-width: $min) {
+      @content;
+    }
+  }
+}
+
+/// Desktop-first: styles apply at `$bp` and NARROWER. Use for layout cascades.
+/// Errors on `mobile` (there is nothing narrower than the base).
+@mixin respond-down($bp) {
+  @if $bp == 'mobile' {
+    @error '`respond-down(\'mobile\')` is invalid — mobile is the base layer. Put base styles outside any mixin.';
+  }
+
+  @media (max-width: (_bp($bp) - $_epsilon)) {
+    @content;
+  }
+}
+
+/// Banded: styles apply only between `$from` (inclusive) and `$to` (exclusive).
+@mixin respond-between($from, $to) {
+  $min: _bp($from);
+  $max: _bp($to);
+
+  @if $min == 0 {
+    @media (max-width: ($max - $_epsilon)) {
+      @content;
+    }
+  } @else {
+    @media (min-width: $min) and (max-width: ($max - $_epsilon)) {
+      @content;
+    }
+  }
+}
+
+// Publish thresholds as custom properties so JS / debug tooling can read them.
+:root {
+  --bp-tablet: #{map.get($breakpoints, 'tablet')};
+  --bp-laptop: #{map.get($breakpoints, 'laptop')};
+  --bp-wide: #{map.get($breakpoints, 'wide')};
+}

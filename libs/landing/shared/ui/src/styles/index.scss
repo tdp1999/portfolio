@@ -8,6 +8,18 @@
 @use 'tokens/layout' as layout-tokens;
 @use 'themes/dark' as dark-theme;
 
+/* Responsive foundation (responsive-system skill). Emits global CSS:
+     • base/breakpoints → --bp-* threshold vars
+     • base/viewport    → --vh-full, --safe-area-*, .safe-* utilities
+     • base/focus       → :focus-visible baseline + --toolbar-height
+     • tokens/responsive→ stepped --section-spacing / --container-* per BP
+   Mixin-only partials (base/prefers, base/input-modality) are @use'd directly
+   by the components that need them. See .context/design/responsive-contract.md. */
+@use 'base/breakpoints' as breakpoints;
+@use 'base/viewport' as viewport;
+@use 'base/focus' as focus;
+@use 'tokens/responsive' as responsive-tokens;
+
 /* Landing-specific tokens (E4 lock — ink/slate/indigo, Newsreader display scale, motion) */
 @use '../tokens' as landing-tokens;
 

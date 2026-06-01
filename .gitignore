@@ -1,6 +1,9 @@
 # Dependencies
 node_modules
 
+# Responsive screenshot captures (validation Layer 2, regenerated on demand)
+.responsive-shots/
+
 # Nx
 .nx
 dist

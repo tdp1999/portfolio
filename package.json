@@ -26,6 +26,7 @@
     "lint:api": "nx lint api",
     "lint": "nx run-many -t lint --all --skip-nx-cache --tui=false",
     "lint:fix": "nx run-many -t lint --all --fix",
+    "lint:css": "stylelint \"{apps,libs}/**/*.scss\"",
     "format:check": "prettier --check .",
     "graph": "nx graph",
     "bundle:analyze": "nx build landing --configuration=analyze && source-map-explorer \"dist/apps/landing/browser/chunk-*.js\" \"dist/apps/landing/browser/main-*.js\" \"dist/apps/landing/browser/polyfills-*.js\" --html dist/apps/landing/bundle-report.html --no-border-checks && echo Open dist/apps/landing/bundle-report.html",
@@ -45,6 +46,7 @@
     "prisma:migrate:deploy": "prisma migrate deploy --config=apps/api/prisma/prisma.config.ts",
     "prisma:studio": "prisma studio --config=apps/api/prisma/prisma.config.ts",
     "prisma:seed": "tsx --tsconfig apps/api/tsconfig.json apps/api/prisma/seed.ts",
+    "postinstall": "prisma generate --config=apps/api/prisma/prisma.config.ts",
     "prepare": "husky"
   },
   "prisma": {
@@ -99,9 +101,11 @@
     "jsonc-eslint-parser": "^2.1.0",
     "lint-staged": "^16.2.7",
     "nx": "22.4.4",
+    "postcss-scss": "^4.0.9",
     "prettier": "~3.6.2",
     "prisma": "^7.4.0",
     "source-map-explorer": "^2.5.3",
+    "stylelint": "^17.12.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^3.4.0",
     "ts-jest": "^29.4.0",

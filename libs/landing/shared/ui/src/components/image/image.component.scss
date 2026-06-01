@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.landing-image {
+  display: block;
+
+  &--fill {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.landing-image__img {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  .landing-image--fill & {
+    height: 100%;
+    object-fit: cover;
+  }
+}

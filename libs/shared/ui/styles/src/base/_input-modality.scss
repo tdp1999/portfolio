@@ -1,0 +1,22 @@
+// =============================================================================
+// Input-modality mixins. See responsive-contract.md §16.
+// Orthogonal to width breakpoints — a touchscreen laptop and a small tablet
+// can share a width band but differ in pointer precision. Use these to bump
+// tap targets and gate hover-only affordances independent of viewport size.
+// =============================================================================
+
+/// Coarse pointer (touch). Bump tap targets to the 24px floor (44px ideal),
+/// drop hover-only affordances.
+@mixin touch-only {
+  @media (pointer: coarse) {
+    @content;
+  }
+}
+
+/// Fine pointer that supports real hover (mouse / trackpad). Gate hover effects
+/// here so they never stick on touch devices.
+@mixin hover-only {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}

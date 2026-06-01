@@ -1,0 +1,35 @@
+// =============================================================================
+// Stepped responsive tokens. See responsive-contract.md §9.
+// Spacing & container max-width step PER BP (rigid, 4px-grid aligned) — unlike
+// display headings, which scale fluidly via clamp() in the Tailwind fontSize
+// scale. Mobile-first: values grow up with `respond-to`.
+// =============================================================================
+
+@use '../base/breakpoints' as bp;
+
+:root {
+  // Vertical rhythm between major page sections.
+  --section-spacing: 48px; // mobile
+  // Inner horizontal padding for page gutters.
+  --container-padding: 16px; // mobile
+  // Max readable content width.
+  --container-max: 100%; // mobile — full-bleed
+
+  @include bp.respond-to('tablet') {
+    --section-spacing: 64px;
+    --container-padding: 24px;
+    --container-max: 720px;
+  }
+
+  @include bp.respond-to('laptop') {
+    --section-spacing: 96px;
+    --container-padding: 32px;
+    --container-max: 1024px;
+  }
+
+  @include bp.respond-to('wide') {
+    --section-spacing: 128px;
+    --container-padding: 40px;
+    --container-max: 1280px;
+  }
+}

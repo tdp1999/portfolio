@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { BreakpointObserverService } from './breakpoint-observer.service';
 import { DEFAULT_BREAKPOINTS } from './breakpoint.constant';
 import { BreakpointConfig } from './breakpoint.type';
+import { RESPONSIVE_BREAKPOINTS } from './responsive-breakpoint.constant';
 
 describe('BreakpointObserverService', () => {
   let service: BreakpointObserverService;
@@ -27,6 +28,9 @@ describe('BreakpointObserverService', () => {
 
     service = TestBed.inject(BreakpointObserverService);
     observeSpy = jest.spyOn(TestBed.inject(BreakpointObserver), 'observe');
+    // The service eagerly observes RESPONSIVE_BREAKPOINTS at construction (for
+    // the 4-BP API). Clear that call so per-test cdk.observe counts start at 0.
+    observeSpy.mockClear();
   });
 
   function emitBreakpoint(matches: Record<string, boolean>): void {
@@ -113,5 +117,46 @@ describe('BreakpointObserverService', () => {
 
     expect(state().name).toBe('mobile');
     expect(state().isActive).toBe(false);
+  });
+
+  describe('4-BP responsive API', () => {
+    // `currentBp` subscribes lazily on first read — prime it so emits are caught.
+    beforeEach(() => {
+      service.currentBp();
+    });
+
+    function emitResponsive(active: 'mobile' | 'tablet' | 'laptop' | 'wide'): void {
+      emitBreakpoint({
+        [RESPONSIVE_BREAKPOINTS['mobile']]: active === 'mobile',
+        [RESPONSIVE_BREAKPOINTS['tablet']]: active === 'tablet',
+        [RESPONSIVE_BREAKPOINTS['laptop']]: active === 'laptop',
+        [RESPONSIVE_BREAKPOINTS['wide']]: active === 'wide',
+      });
+    }
+
+    it('defaults currentBp to "wide" before any emit (SSR fallback)', () => {
+      expect(service.currentBp()).toBe('wide');
+      expect(service.isWide()).toBe(true);
+    });
+
+    it('tracks currentBp and flags across breakpoints', () => {
+      emitResponsive('mobile');
+      expect(service.currentBp()).toBe('mobile');
+      expect(service.isMobile()).toBe(true);
+      expect(service.isWide()).toBe(false);
+
+      emitResponsive('laptop');
+      expect(service.currentBp()).toBe('laptop');
+      expect(service.isLaptop()).toBe(true);
+      expect(service.isMobile()).toBe(false);
+    });
+
+    it('isAtLeast is true for the named BP and wider', () => {
+      emitResponsive('laptop');
+      expect(service.isAtLeast('mobile')).toBe(true);
+      expect(service.isAtLeast('tablet')).toBe(true);
+      expect(service.isAtLeast('laptop')).toBe(true);
+      expect(service.isAtLeast('wide')).toBe(false);
+    });
   });
 });

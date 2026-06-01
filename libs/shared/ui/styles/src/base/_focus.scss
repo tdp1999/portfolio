@@ -1,0 +1,25 @@
+// =============================================================================
+// Focus baseline + scroll-margin. See responsive-contract.md §10 (WCAG 2.4.7,
+// 2.4.11). The `:where()` wrapper keeps specificity 0 so component-level
+// overrides win without `!important`.
+// =============================================================================
+
+:where(*:focus-visible) {
+  outline: 2px solid var(--color-primary, var(--landing-accent, currentColor));
+  outline-offset: 2px;
+}
+
+// Anchor / TOC targets must not land under the sticky header (WCAG 2.4.11
+// Focus Not Obscured). Reads `--toolbar-height` with a sane default.
+:root {
+  --toolbar-height: 64px;
+}
+
+/// Apply to fragment-link targets so they clear the sticky header on scroll.
+@mixin scroll-margin-top($offset: var(--toolbar-height)) {
+  scroll-margin-top: calc(#{$offset} + 16px);
+}
+
+.scroll-margin-toolbar {
+  @include scroll-margin-top;
+}

@@ -1,0 +1,39 @@
+// =============================================================================
+// User-preference mixins. See responsive-contract.md §15.
+// Each mixin dual-keys off an `<html data-*>` override AND the OS-level
+// `@media (prefers-*)` query, so a future toggle panel can override the OS
+// preference without touching component CSS.
+//
+// Because they emit DESCENDANT selectors (`html[data-…] &`), these mixins must
+// be called from INSIDE a selector — never at the top level.
+//
+// Raw `@media (prefers-*)` is banned by the stylelint guard — use these.
+// =============================================================================
+
+/// Styles applied when motion should be reduced.
+/// Toggle override: `<html data-motion="reduce">`.
+@mixin reduce-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+
+  :root[data-motion='reduce'] & {
+    @content;
+  }
+}
+
+/// Styles applied for a given color scheme.
+/// Toggle override: `<html data-theme="dark|light">`.
+@mixin color-scheme($scheme) {
+  @if $scheme != 'dark' and $scheme != 'light' {
+    @error '`color-scheme` accepts only \'dark\' or \'light\', got `#{$scheme}`.';
+  }
+
+  @media (prefers-color-scheme: #{$scheme}) {
+    @content;
+  }
+
+  :root[data-theme='#{$scheme}'] & {
+    @content;
+  }
+}

@@ -58,6 +58,7 @@ Use these skills for specific workflows. More will be added over time.
 - `DESIGN-landing.md` - Stitch-compatible AI-readable spec for landing
 - `DESIGN-console.md` - Stitch-compatible AI-readable spec for console
 - `angular-style-guide.md` - Angular v21+ syntax standards (signals, control flow, queries)
+- `design/responsive-contract.md` - **Read before writing any responsive CSS or breakpoint logic.** The locked 4-BP system (mobile/tablet/laptop/wide), hybrid direction, SCSS mixins, `currentBp()` observer, image primitive, lint guard. Landing-scoped; console deferred.
 - `landing-ssr.md` - **Read before touching landing data services, fonts, or nav links.** SSR hydration rules: HTTP transfer cache, FOUT preload recipe, `HydrationSafeActiveDirective` usage
 - `guides/deploy-railway-ssr.md` - **Read before deploying any new Angular SSR app.** Reusable runbook: Railway service config, Cloudflare DNS/SSL/cache rules, SSR fetch-rewrite patch, common failures
 - `testing-guide.md` - TDD workflow and patterns
@@ -117,6 +118,7 @@ Use these skills for specific workflows. More will be added over time.
 | **Component bank**          | Before editing a component listed in `.context/design/components/`, read its md and the family `_overview.md`. After a design discussion that yields a rule, suggest persisting via `/component-bank`. | Editing `chip-*`, future documented components |
 | **Reuse shared UI first**   | Before writing inline markup, grep shared libs (`libs/landing/shared/ui`, `libs/shared/ui`, `libs/console/shared/ui`) for an existing component. Reuse → extend (additive, no breaking change) → create-shared (when need will recur). Inline one-offs only when truly local AND single-use. | ❌ inline `<span>` for eyebrow ✅ `<landing-eyebrow>`; ❌ hardcoded `<h2>` ✅ `<landing-heading>` |
 | **Guidance docs are timeless** | Reference docs in `.context/design/`, `.context/patterns-*`, `*-guide.md`, `vision.md`, `domain.md` describe the system as it is — no migration trackers, dated changelogs, or per-epic status. Status goes in the originating epic file or `progress.md`; one-shot decisions go in `decisions.md`. Sweep epic additions for ephemeral wording before closing. | ❌ "Migration status (applied YYYY-MM-DD)" inside cookbook ✅ same content in epic file |
+| **Responsive: mixins, never raw @media** | Use the SCSS mixins (`respond-to`/`respond-down`/`respond-between` from `@use 'base/breakpoints'`) and the 4 device-bound names (`mobile/tablet/laptop/wide`). Never write raw `@media (min/max-width: …)`, raw `100vh` (use `var(--vh-full)`), or raw `@media (prefers-*)` (use `reduce-motion`/`color-scheme` mixins). For JS-driven layout swaps read `BreakpointObserverService.currentBp()`/`isAtLeast(bp)`. Banned: `sm/md/lg/xl/2xl`. Stylelint flags violations (warning). See `.context/design/responsive-contract.md`. | ❌ `@media (min-width: 768px)` ✅ `@include respond-to('tablet')` |
 
 ## Angular Code Style
 
