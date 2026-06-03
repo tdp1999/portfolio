@@ -1,6 +1,55 @@
 /* landing-segmented — Apple-classic / hairline / underline variants (E5 task 280b). */
 /* No box-shadow per project rule — Apple's "raised active" cue is rendered via tonal lift only. */
 
+/* Host is the positioning context for the overflow chevrons; inline-flex so it shrinks
+   to the strip and clamps to the parent only when the tabs overflow. */
+:host {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+}
+
+/* Scroll chevrons — gradient-scrim affordance (Material scrollable-tabs style): a
+   full-height band whose background fades the tabs INTO the arrow, so the fade and the
+   pointer affordance are one element. Shown by the template only while the strip
+   overflows that edge ([hidden] otherwise → short non-scrolling groups never show them).
+   The directive's own mask is disabled ([edgeFadeMask]="false") so the scrim is the
+   single source of the fade. */
+.landing-segmented__chev {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  width: 52px;
+  padding: 0 2px;
+  border: 0;
+  color: var(--landing-text-400);
+  cursor: pointer;
+  transition: color 160ms ease;
+
+  &:hover {
+    color: var(--landing-accent);
+  }
+
+  &--prev {
+    left: 0;
+    justify-content: flex-start;
+    background: linear-gradient(to left, transparent, var(--landing-ink-0) 70%);
+  }
+
+  &--next {
+    right: 0;
+    justify-content: flex-end;
+    background: linear-gradient(to right, transparent, var(--landing-ink-0) 70%);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
 .landing-segmented {
   display: inline-flex;
   align-items: stretch;
@@ -20,6 +69,10 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  /* Overflow affordance (fade the edge with off-screen tabs) is provided by the
+     reusable `landingScrollEdgeFade` directive applied in the template — it owns the
+     mask-image so the rule lives in one place for every scrollable strip. */
 }
 
 .landing-segmented__btn {

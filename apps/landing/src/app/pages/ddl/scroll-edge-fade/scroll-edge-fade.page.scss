@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  padding-block: var(--landing-space-2xl, 4rem);
+}
+
+.sef {
+  &__head {
+    margin-bottom: var(--landing-space-2xl, 4rem);
+  }
+
+  &__title {
+    margin-top: var(--landing-space-sm, 0.75rem);
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-md);
+  }
+
+  &__lede {
+    margin-top: var(--landing-space-md, 1rem);
+    max-width: 60ch;
+    color: var(--landing-text-400);
+    font-size: var(--landing-body-lg);
+  }
+
+  &__demo {
+    margin-bottom: var(--landing-space-2xl, 4rem);
+  }
+
+  &__demo-title {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    text-transform: uppercase;
+    letter-spacing: var(--landing-tracking-mono);
+    color: var(--landing-text-300);
+  }
+
+  &__demo-note {
+    margin: var(--landing-space-xs, 0.5rem) 0 var(--landing-space-lg, 1.5rem);
+    max-width: 56ch;
+    color: var(--landing-text-500);
+    font-size: var(--landing-body-md);
+  }
+
+  /* The scroll container — fixed visual frame, content overflows + scrolls. */
+  &__strip {
+    display: flex;
+    gap: var(--landing-space-sm, 0.75rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: var(--landing-space-sm, 0.75rem);
+    border: 1px solid var(--landing-border);
+    border-radius: 12px;
+    background: var(--landing-ink-1);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__pill {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: var(--landing-space-xs, 0.5rem) var(--landing-space-md, 1rem);
+    border-radius: 999px;
+    border: 1px solid var(--landing-border);
+    background: var(--landing-ink-2);
+    color: var(--landing-text-300);
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--landing-tracking-mono);
+  }
+
+  /* Rail = relative wrapper hosting the strip + flanking chevrons. */
+  &__rail {
+    position: relative;
+  }
+
+  /* Gradient-scrim chevron — mirrors the shipped landing-segmented affordance. */
+  &__chev {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    width: 56px;
+    padding: 0 var(--landing-space-xs, 0.5rem);
+    border: 0;
+    color: var(--landing-text-400);
+    cursor: pointer;
+    transition: color 160ms ease;
+
+    &:hover {
+      color: var(--landing-accent);
+    }
+
+    &--prev {
+      left: 1px;
+      justify-content: flex-start;
+      background: linear-gradient(to left, transparent, var(--landing-ink-1) 70%);
+    }
+
+    &--next {
+      right: 1px;
+      justify-content: flex-end;
+      background: linear-gradient(to right, transparent, var(--landing-ink-1) 70%);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__vlist {
+    max-height: 220px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border: 1px solid var(--landing-border);
+    border-radius: 12px;
+    background: var(--landing-ink-1);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__vrow {
+    padding: var(--landing-space-sm, 0.75rem) var(--landing-space-md, 1rem);
+    border-bottom: 1px solid var(--landing-border);
+    color: var(--landing-text-400);
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__code {
+    overflow-x: auto;
+    padding: var(--landing-space-lg, 1.5rem);
+    border: 1px solid var(--landing-border);
+    border-radius: 12px;
+    background: var(--landing-ink-1);
+    color: var(--landing-text-400);
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: 1.7;
+  }
+}

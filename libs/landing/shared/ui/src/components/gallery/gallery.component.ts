@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { FigureComponent } from '../figure/figure.component';
+import { LightboxDirective } from '../lightbox';
 import type { GalleryImage } from './gallery.types';
+
+/** Per-instance fallback group id (SSR-safe: deterministic instantiation order). */
+let gallerySeq = 0;
 
 type Cell = {
   readonly img: GalleryImage;
@@ -33,7 +37,7 @@ type Cell = {
 @Component({
   selector: 'landing-gallery',
   standalone: true,
-  imports: [FigureComponent],
+  imports: [FigureComponent, LightboxDirective],
   template: `
     @if (cells().length > 0) {
       <div class="landing-gallery" [class.landing-gallery--fill]="fillContainer()" [attr.data-count]="layoutCount()">
@@ -48,9 +52,31 @@ type Cell = {
             [aspectRatio]="fillContainer() ? '' : cell.ratio"
             [fill]="fillContainer()"
             [cloudinaryWidth]="cellWidth()"
+            [lightbox]="lightbox()"
+            [lightboxGroup]="effectiveGroup()"
+            [lightboxFullSrc]="cell.img.fullSrc ?? ''"
+            [lightboxSrcset]="cell.img.srcset ?? ''"
           />
         }
       </div>
+      <!-- The grid caps at 4 cells; register any extra images as hidden lightbox
+           entries so the (desktop) lightbox can navigate the FULL set, matching the
+           mobile carousel. Hidden from layout + a11y; they only feed the group. -->
+      @if (lightbox()) {
+        @for (extra of extraImages(); track extra.url; let j = $index) {
+          <landing-figure
+            hidden
+            [src]="extra.url"
+            [alt]="extra.alt ?? ''"
+            [caption]="extra.caption ?? ''"
+            [figureNumber]="numbered() ? 4 + j + 1 : null"
+            lightbox
+            [lightboxGroup]="effectiveGroup()"
+            [lightboxFullSrc]="extra.fullSrc ?? ''"
+            [lightboxSrcset]="extra.srcset ?? ''"
+          />
+        }
+      }
     }
   `,
   styleUrl: './gallery.component.scss',
@@ -67,6 +93,15 @@ export class LandingGalleryComponent {
    * so swapping content with different image counts doesn't shift layout.
    */
   readonly fillContainer = input<boolean>(false);
+  /** Make each cell open the shared lightbox on click. Default: off (opt-in). */
+  readonly lightbox = input<boolean>(false);
+  /** Lightbox group key. Defaults to a per-instance id so galleries don't merge. */
+  readonly lightboxGroup = input<string>('');
+
+  private readonly autoGroup = `lb-gallery-${gallerySeq++}`;
+  protected readonly effectiveGroup = computed(() => this.lightboxGroup() || this.autoGroup);
+  /** Images beyond the 4-cell grid cap — fed to the lightbox group only. */
+  protected readonly extraImages = computed<readonly GalleryImage[]>(() => this.images().slice(4));
 
   protected readonly layoutCount = computed<1 | 2 | 3 | 4>(() => {
     const n = Math.min(this.images().length, 4);

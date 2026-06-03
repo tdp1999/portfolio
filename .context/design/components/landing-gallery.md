@@ -53,6 +53,7 @@ When a project only has 2 strong screenshots, **upload only 2** — don't pad wi
 - Pass `[aspectRatio]` to `<landing-figure>` (the cropped variant — image fills frame via `object-fit: cover`).
 - `[numbered]` defaults to true — captions get `FIG. 0X` numbering.
 - Caption falls back to `slug.toUpperCase()` if `image.alt` is empty (consumer-side responsibility, not gallery).
+- `[lightbox]` (opt-in, default off) wires each cell to the shared `landing-lightbox`; pass `[lightboxGroup]` so a gallery's cells navigate together. Note: the grid caps at 4 cells, so the lightbox group is the rendered ≤4 — a `landing-carousel` of the same images (e.g. the mobile half of a BP-swap) will show all of them.
 
 ## Quality checklist
 

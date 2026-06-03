@@ -1,0 +1,75 @@
+<landing-container size="wide">
+  <landing-breadcrumb [items]="breadcrumb" class="lb__crumb" />
+
+  <header class="lb__head">
+    <landing-eyebrow [label]="['DDL', 'Lightbox']" />
+    <h1 class="lb__title">Lightbox — full-screen viewer + zoom/carousel</h1>
+    <p class="lb__lede">
+      Opt-in per figure: add <code>lightbox</code> to any <code>landing-figure</code> and it becomes clickable into a
+      full-screen viewer. Figures sharing a <code>lightboxGroup</code> navigate together — swipe / drag / ←→ keys /
+      filmstrip. The overlay loads the <strong>largest available candidate</strong> (srcset always-best) and supports
+      <strong>double-tap / pinch / ⌘-wheel zoom</strong>, pan-when-zoomed, and a FLIP open/close from the thumbnail.
+    </p>
+  </header>
+
+  <!-- Grouped gallery -->
+  <section class="lb__demo">
+    <p class="lb__demo-title">Grouped — click any to open the carousel</p>
+    <p class="lb__demo-note">
+      All four share <code>lightboxGroup="case-study"</code>, so opening one lets you swipe/arrow through the set. Try
+      double-tap (touch) / double-click (mouse) / ⌘+scroll to zoom, then drag to pan.
+    </p>
+    <div class="lb__grid">
+      @for (shot of gallery; track shot.url; let i = $index) {
+        <landing-figure
+          [src]="shot.url"
+          [alt]="shot.alt"
+          [caption]="shot.caption"
+          [figureNumber]="i + 1"
+          aspectRatio="4 / 3"
+          lightbox
+          lightboxGroup="case-study"
+        />
+      }
+    </div>
+  </section>
+
+  <!-- Standalone -->
+  <section class="lb__demo">
+    <p class="lb__demo-title">Standalone — no group</p>
+    <p class="lb__demo-note">
+      A lone figure opens on its own (no prev/next, no filmstrip). Download is opt-in
+      (<code>lightboxShowDownload</code>) — enabled here, hidden by default elsewhere.
+    </p>
+    <div class="lb__solo">
+      <landing-figure
+        [src]="solo.url"
+        [alt]="solo.alt"
+        [caption]="solo.caption"
+        aspectRatio="16 / 10"
+        lightbox
+        lightboxShowDownload
+      />
+    </div>
+  </section>
+
+  <!-- API -->
+  <section class="lb__demo">
+    <p class="lb__demo-title">Inputs (directive)</p>
+    <ul class="lb__api">
+      <li><code>lightbox</code> — enable (bare attribute). <code>[lightbox]="false"</code> disables.</li>
+      <li>
+        <code>lightboxGroup</code> — group key; figures sharing it navigate together (default <code>"default"</code>).
+      </li>
+      <li><code>lightboxFullSrc</code> · <code>lightboxSrcset</code> — explicit full-res source for the overlay.</li>
+      <li>
+        <code>lightboxShowDownload</code> — show the download action (hidden by default).
+        <code>lightboxDownload</code> — its URL (falls back to the resolved full source).
+      </li>
+      <li>
+        <code>lightboxSrc</code> · <code>lightboxAlt</code> · <code>lightboxCaption</code> — for bare (non-figure)
+        hosts.
+      </li>
+    </ul>
+  </section>
+</landing-container>

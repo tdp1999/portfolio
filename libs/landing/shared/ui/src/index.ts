@@ -1,6 +1,7 @@
 export * from './components/icon';
 export * from './components/button';
 export * from './components/card';
+export * from './components/carousel';
 export * from './components/input';
 export * from './components/textarea';
 export * from './components/checkbox';
@@ -15,6 +16,7 @@ export * from './components/status-dot';
 export * from './components/figure';
 export * from './components/image';
 export * from './components/gallery';
+export * from './components/lightbox';
 export * from './components/pull-quote';
 export * from './components/section-rule';
 export * from './components/segmented';

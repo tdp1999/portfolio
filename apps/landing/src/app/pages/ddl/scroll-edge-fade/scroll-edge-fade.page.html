@@ -1,0 +1,116 @@
+<landing-container size="content">
+  <landing-breadcrumb [items]="breadcrumb" class="mb-8 block" />
+
+  <header class="sef__head">
+    <landing-eyebrow label="Patterns · primitive" />
+    <h1 class="sef__title">Scroll edge fade</h1>
+    <p class="sef__lede">
+      Overflow affordance for any horizontally- or vertically-scrolling container. The
+      <code>landingScrollEdgeFade</code> directive fades the edge(s) that have content out of view, so a clipped child
+      reads as “scroll for more” rather than “cut off”. It also exposes its edge state + a
+      <code>scrollStep()</code> method, so you can add explicit clickable chevrons. Resize the window narrow to see the
+      strips overflow.
+    </p>
+  </header>
+
+  <!-- Variant A · fade only -->
+  <section class="sef__demo">
+    <h2 class="sef__demo-title">A · Fade only</h2>
+    <p class="sef__demo-note">
+      Bare directive. Mask appears only when the strip overflows and dissolves at each end so the first/last item is
+      never clipped.
+    </p>
+    <div class="sef__strip" landingScrollEdgeFade>
+      @for (tab of tabs; track tab) {
+        <span class="sef__pill">{{ tab }}</span>
+      }
+    </div>
+  </section>
+
+  <!-- Variant B · gradient-scrim chevrons (the shipped Selected Work pattern) -->
+  <section class="sef__demo">
+    <h2 class="sef__demo-title">B · Fade + chevron indicators</h2>
+    <p class="sef__demo-note">
+      The shipped pattern (Selected Work tab strip): a gradient-scrim chevron fades the content INTO the arrow, so fade
+      and affordance are one element. The strip sets <code>[edgeFadeMask]="false"</code> (the scrim is the fade);
+      chevrons read <code>rail.atStart()</code> / <code>rail.atEnd()</code> to hide at the edges and call
+      <code>rail.scrollStep(±1)</code> on click.
+    </p>
+    <div class="sef__rail">
+      <button
+        type="button"
+        class="sef__chev sef__chev--prev"
+        [hidden]="rail.atStart()"
+        (click)="rail.scrollStep(-1)"
+        tabindex="-1"
+        aria-label="Scroll left"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="sef__strip" landingScrollEdgeFade [edgeFadeMask]="false" #rail="scrollEdgeFade">
+        @for (tab of tabs; track tab) {
+          <span class="sef__pill">{{ tab }}</span>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="sef__chev sef__chev--next"
+        [hidden]="rail.atEnd()"
+        (click)="rail.scrollStep(1)"
+        tabindex="-1"
+        aria-label="Scroll right"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Variant C · vertical -->
+  <section class="sef__demo">
+    <h2 class="sef__demo-title">C · Vertical axis</h2>
+    <p class="sef__demo-note"><code>edgeFadeAxis="y"</code> on a fixed-height list — top/bottom fade as you scroll.</p>
+    <div class="sef__vlist" landingScrollEdgeFade edgeFadeAxis="y">
+      @for (row of rows; track row) {
+        <div class="sef__vrow">{{ row }}</div>
+      }
+    </div>
+  </section>
+
+  <section class="sef__demo">
+    <h2 class="sef__demo-title">Usage</h2>
+    <pre class="sef__code">
+&lt;!-- horizontal (default) --&gt;
+&lt;div class="tabs" landingScrollEdgeFade&gt;…&lt;/div&gt;
+
+&lt;!-- with clickable chevrons --&gt;
+&lt;button [hidden]="r.atStart()" (click)="r.scrollStep(-1)"&gt;‹&lt;/button&gt;
+&lt;div landingScrollEdgeFade #r="scrollEdgeFade"&gt;…&lt;/div&gt;
+&lt;button [hidden]="r.atEnd()" (click)="r.scrollStep(1)"&gt;›&lt;/button&gt;
+
+&lt;!-- vertical --&gt;
+&lt;div landingScrollEdgeFade edgeFadeAxis="y"&gt;…&lt;/div&gt;</pre
+    >
+  </section>
+</landing-container>

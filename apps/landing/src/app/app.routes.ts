@@ -172,6 +172,18 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/ddl/mobile-nav').then((m) => m.MobileNavPage),
       },
       {
+        path: 'scroll-edge-fade',
+        loadComponent: () => import('./pages/ddl/scroll-edge-fade').then((m) => m.ScrollEdgeFadePage),
+      },
+      {
+        path: 'carousel',
+        loadComponent: () => import('./pages/ddl/carousel').then((m) => m.CarouselPage),
+      },
+      {
+        path: 'lightbox',
+        loadComponent: () => import('./pages/ddl/lightbox').then((m) => m.LightboxPage),
+      },
+      {
         path: 'email-templates',
         loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
       },

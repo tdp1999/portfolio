@@ -99,10 +99,10 @@
         <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
           landing tokens · E4 D2 lock
         </p>
-        <h2 class="font-display text-display-lg text-landing-text-300 mb-2">Newsreader display, 48 / 56</h2>
+        <h2 class="font-display text-display-lg text-landing-text-300 mb-2">Newsreader display · fluid 36–56</h2>
         <p class="font-sans text-body-lg text-landing-text-400 mb-4">
-          Inter body large at 17/28 — the reading size for prose blocks. Quiet, slightly desaturated against the ink
-          background; the indigo accent stays reserved for one element per view.
+          Inter body large at 15→17 (fluid) — the reading size for prose blocks. Quiet, slightly desaturated against the
+          ink background; the indigo accent stays reserved for one element per view.
         </p>
         <p class="font-mono text-mono-md text-landing-text-500 mb-4">
           font-mono · 12/16 · JetBrains Mono · meta labels and code
@@ -178,26 +178,31 @@
             <!-- Display scale -->
             <div class="mb-10">
               <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
-                display scale · newsreader
+                display scale · newsreader · fluid (mobile 375 → wide 1440)
               </p>
               <div class="space-y-4">
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">xl · 56/64</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">xl · 36→56</span>
                   <span class="font-display text-display-xl text-landing-text-300 leading-none">Hero h1</span>
                 </div>
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 48/56</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 32→48</span>
                   <span class="font-display text-display-lg text-landing-text-300 leading-none">Page h1</span>
                 </div>
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 40/48</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 28→40</span>
                   <span class="font-display text-display-md text-landing-text-300 leading-none">Sub-hero</span>
                 </div>
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 32/40</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 24→32</span>
                   <span class="font-display text-display-sm text-landing-text-300 leading-none">Section h2</span>
                 </div>
               </div>
+              <p class="font-sans text-body-sm text-landing-text-500 mt-3 max-w-2xl">
+                Sizes resize smoothly with the viewport — the mobile end (left) avoids a 56px hero eating a phone
+                screen; the wide end (right) is unchanged from before. Line-heights are unitless ratios so they track
+                the fluid size. Resize this window to watch them scale.
+              </p>
 
               <!-- Element default mapping + prose override (locked) -->
               <div class="mt-6 p-4 border border-landing-border rounded bg-ink-0 max-w-2xl">
@@ -211,7 +216,7 @@
                   </li>
                   <li>Bare <code class="font-mono">&lt;h2&gt;</code> → display-md (Sub-hero).</li>
                   <li>Bare <code class="font-mono">&lt;h3&gt;</code> → display-sm.</li>
-                  <li>Bare <code class="font-mono">&lt;h4&gt;</code> → body-xl (20/28). Below display scale.</li>
+                  <li>Bare <code class="font-mono">&lt;h4&gt;</code> → body-xl (fluid 16→20). Below display scale.</li>
                 </ul>
 
                 <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
@@ -242,19 +247,19 @@
               </p>
               <div class="space-y-3">
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 17/28</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 15→17</span>
                   <span class="font-sans text-body-lg text-landing-text-300">
                     Reading column body — long-form paragraphs sit at this size.
                   </span>
                 </div>
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 15/24</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 14→16 · X</span>
                   <span class="font-sans text-body-md text-landing-text-400">
                     Default UI text, card body, descriptions in dense layouts.
                   </span>
                 </div>
                 <div class="flex items-baseline gap-6">
-                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 13/20</span>
+                  <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 12→13</span>
                   <span class="font-sans text-body-sm text-landing-text-500">
                     Small labels and helper text near captions.
                   </span>
@@ -296,8 +301,8 @@
                   Quiet ink, restrained accent.
                 </h3>
                 <p class="font-sans text-body-lg text-landing-text-400 mb-4">
-                  Inter at 17/28 — the reading size. Newsreader carries the headline, Inter carries the prose, mono caps
-                  flag the section above.
+                  Inter at 15→17 (fluid) — the reading size. Newsreader carries the headline, Inter carries the prose,
+                  mono caps flag the section above.
                 </p>
                 <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
                   FIG. 01 · canonical pairing

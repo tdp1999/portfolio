@@ -1,0 +1,109 @@
+@if (count() > 0) {
+  <div class="landing-carousel__viewport" role="group" aria-roledescription="carousel" [attr.aria-label]="ariaLabel()">
+    <!-- Scroll/snap track. Focusable so ←/→ work; touch swipe is native, mouse drag is wired in the component. -->
+    <div
+      #track
+      class="landing-carousel__track"
+      [class.landing-carousel__track--peek]="peek()"
+      tabindex="0"
+      (keydown)="onKeydown($event)"
+    >
+      @for (img of images(); track img.url; let i = $index) {
+        <div
+          class="landing-carousel__slide"
+          role="group"
+          aria-roledescription="slide"
+          [attr.aria-label]="i + 1 + ' of ' + count()"
+        >
+          <landing-figure
+            [src]="img.url"
+            [alt]="img.alt ?? ''"
+            [caption]="img.caption ?? ''"
+            [figureNumber]="numbered() ? i + 1 : null"
+            [aspectRatio]="aspectRatio()"
+            [lightbox]="lightbox()"
+            [lightboxGroup]="effectiveGroup()"
+            [lightboxFullSrc]="img.fullSrc ?? ''"
+            [lightboxSrcset]="img.srcset ?? ''"
+          />
+        </div>
+      }
+    </div>
+
+    @if (showArrows() && count() > 1) {
+      <button
+        type="button"
+        class="landing-carousel__arrow landing-carousel__arrow--prev"
+        [disabled]="!loop() && atStart()"
+        aria-label="Previous slide"
+        (click)="go(-1)"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="landing-carousel__arrow landing-carousel__arrow--next"
+        [disabled]="!loop() && atEnd()"
+        aria-label="Next slide"
+        (click)="go(1)"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    }
+  </div>
+
+  @if (showDots() && !showThumbnails() && count() > 1) {
+    <div class="landing-carousel__dots" role="tablist" aria-label="Choose slide">
+      @for (img of images(); track img.url; let i = $index) {
+        <button
+          type="button"
+          class="landing-carousel__dot"
+          [class.is-active]="index() === i"
+          [attr.aria-label]="'Go to slide ' + (i + 1)"
+          [attr.aria-selected]="index() === i"
+          (click)="goTo(i)"
+        ></button>
+      }
+    </div>
+  }
+
+  @if (showThumbnails() && count() > 1) {
+    <div class="landing-carousel__strip" role="tablist" aria-label="Choose slide">
+      @for (img of images(); track img.url; let i = $index) {
+        <button
+          type="button"
+          class="landing-carousel__thumb"
+          [class.is-active]="index() === i"
+          [attr.aria-label]="'Show slide ' + (i + 1)"
+          [attr.aria-selected]="index() === i"
+          (click)="goTo(i)"
+        >
+          <img [src]="img.url" alt="" loading="lazy" />
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Polite announcement of the active slide for screen readers. -->
+  <span class="landing-carousel__live" aria-live="polite">{{ liveLabel() }}</span>
+}

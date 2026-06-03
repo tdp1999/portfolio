@@ -1,0 +1,199 @@
+<div
+  class="landing-lightbox__dialog"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="dialogLabel()"
+  cdkTrapFocus
+  [cdkTrapFocusAutoCapture]="true"
+  (keydown)="onKeydown($event)"
+  tabindex="-1"
+>
+  <!-- Scrim — decorative backdrop; closing is handled by a click on the stage. -->
+  <div class="landing-lightbox__scrim" aria-hidden="true"></div>
+
+  <!-- Top bar: counter + actions -->
+  <div class="landing-lightbox__bar">
+    <span class="landing-lightbox__counter" aria-hidden="true">{{ index() + 1 }} / {{ count() }}</span>
+    <div class="landing-lightbox__actions">
+      <button
+        type="button"
+        class="landing-lightbox__btn"
+        aria-label="Zoom out"
+        [disabled]="scaleSig() <= minScale"
+        (click)="zoomOut()"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3M8 11h6" stroke-linecap="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="landing-lightbox__btn"
+        aria-label="Zoom in"
+        [disabled]="scaleSig() >= maxScale"
+        (click)="zoomIn()"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3M11 8v6M8 11h6" stroke-linecap="round" />
+        </svg>
+      </button>
+      @if (current(); as item) {
+        @if (item.showDownload) {
+          <a
+            class="landing-lightbox__btn"
+            [href]="resolveBest(item).download"
+            target="_blank"
+            rel="noopener"
+            download
+            aria-label="Download image"
+            (click)="$event.stopPropagation()"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        }
+      }
+      <button type="button" class="landing-lightbox__btn" aria-label="Close" (click)="requestClose()">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stage: the gesture surface. Track translates by index; active image zooms. -->
+  <div class="landing-lightbox__stage" #stage [class.is-zoomed]="zoomed()">
+    <div class="landing-lightbox__track" #track>
+      @for (item of items(); track item.url; let i = $index) {
+        <div class="landing-lightbox__slide">
+          @if (resolveBest(item); as r) {
+            <img
+              class="landing-lightbox__img"
+              [attr.src]="r.src"
+              [attr.srcset]="r.srcset"
+              sizes="100vw"
+              [attr.alt]="item.alt ?? ''"
+              draggable="false"
+              decoding="async"
+            />
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (count() > 1) {
+    <button
+      type="button"
+      class="landing-lightbox__nav landing-lightbox__nav--prev"
+      [disabled]="index() <= 0"
+      aria-label="Previous image"
+      (click)="go(-1)"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="landing-lightbox__nav landing-lightbox__nav--next"
+      [disabled]="index() >= count() - 1"
+      aria-label="Next image"
+      (click)="go(1)"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  }
+
+  <!-- Caption -->
+  @if (current(); as item) {
+    @if (item.caption) {
+      <figcaption class="landing-lightbox__caption">
+        @if (item.figureNumber != null) {
+          <span class="landing-lightbox__fig"
+            >FIG. {{ item.figureNumber! < 10 ? '0' + item.figureNumber : item.figureNumber }}</span
+          >
+        }
+        <span>{{ item.caption }}</span>
+      </figcaption>
+    }
+  }
+
+  <!-- Filmstrip -->
+  @if (count() > 1) {
+    <div class="landing-lightbox__strip" role="tablist" aria-label="Choose image">
+      @for (item of items(); track item.url; let i = $index) {
+        <button
+          type="button"
+          class="landing-lightbox__thumb"
+          [class.is-active]="index() === i"
+          [attr.aria-label]="'Show image ' + (i + 1)"
+          [attr.aria-selected]="index() === i"
+          (click)="goTo(i)"
+        >
+          <img [attr.src]="item.url" alt="" loading="lazy" draggable="false" />
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Desktop-only hint (hidden on touch + once zoomed). -->
+  <div class="landing-lightbox__hint" [class.is-hidden]="zoomed()" aria-hidden="true">
+    <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + scroll · or <kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>−</kbd> to zoom
+  </div>
+
+  <span class="landing-lightbox__live" aria-live="polite">{{ liveLabel() }}</span>
+</div>

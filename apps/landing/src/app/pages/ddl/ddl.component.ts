@@ -187,6 +187,21 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         desc: 'Micro-interaction candidates grouped by trigger — hover, click, scroll, focus, idle, transition.',
       },
       {
+        path: '/ddl/scroll-edge-fade',
+        title: 'Scroll edge fade · overflow affordance',
+        desc: 'landingScrollEdgeFade directive — fades the edge(s) of an overflowing scroll container (x or y) and exposes atStart()/atEnd() + scrollStep() for clickable chevrons. Graduated from the Selected Work tab strip.',
+      },
+      {
+        path: '/ddl/carousel',
+        title: 'Carousel · full-feature slider',
+        desc: 'One reusable landing-carousel — touch swipe, mouse drag, keyboard, arrows, dots, optional thumbnails/peek/loop, figure caption + FIG number. BP-agnostic; consumers swap it in by breakpoint (Selected Work uses it below laptop, keeps the grid above).',
+      },
+      {
+        path: '/ddl/lightbox',
+        title: 'Lightbox · full-screen viewer + zoom/carousel',
+        desc: 'Opt-in [lightbox] directive — click any figure into a full-screen viewer with carousel nav, double-tap/pinch/⌘-wheel zoom + pan, FLIP open/close, filmstrip, download, srcset always-best. Figures sharing lightboxGroup navigate together.',
+      },
+      {
         path: '/ddl/section-header',
         title: 'Section header · cii propagation',
         desc: 'New primitive (eyebrow + center display + italic accent) applied to 5 home sections — pick copy.',

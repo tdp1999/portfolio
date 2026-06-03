@@ -1,0 +1,66 @@
+<landing-container size="wide">
+  <landing-breadcrumb [items]="breadcrumb" class="car__crumb" />
+
+  <header class="car__head">
+    <landing-eyebrow [label]="['DDL', 'Carousel']" />
+    <h1 class="car__title">Carousel — one full-feature slider</h1>
+    <p class="car__lede">
+      A single reusable <code>landing-carousel</code>: touch swipe (native snap), mouse drag, ←/→ keys, prev/next
+      arrows, dots, optional thumbnails / peek / loop, and per-slide <code>landing-figure</code> caption + FIG number.
+      It is <strong>not</strong> responsive by itself — when a layout needs a slider on small screens, the consumer
+      swaps components by breakpoint (Selected Work keeps the curated grid on laptop+ and swaps to this below).
+    </p>
+  </header>
+
+  <!-- Default: arrows + dots -->
+  <section class="car__demo">
+    <p class="car__demo-title">Default — arrows + dots</p>
+    <p class="car__demo-note">Swipe / drag / arrow-keys / click arrows or dots. Arrows fade out at the ends.</p>
+    <div class="car__frame">
+      <landing-carousel [images]="slides" ariaLabel="Default carousel" />
+    </div>
+  </section>
+
+  <!-- Peek -->
+  <section class="car__demo">
+    <p class="car__demo-title">Peek — a sliver of the neighbour</p>
+    <p class="car__demo-note">A visible edge of the next frame makes "there's more" obvious without controls.</p>
+    <div class="car__frame">
+      <landing-carousel [images]="slides" [peek]="true" ariaLabel="Peek carousel" />
+    </div>
+  </section>
+
+  <!-- Thumbnails -->
+  <section class="car__demo">
+    <p class="car__demo-title">Thumbnails — random access</p>
+    <p class="car__demo-note">A filmstrip replaces the dots when the shots are distinct and jumping around matters.</p>
+    <div class="car__frame">
+      <landing-carousel [images]="slides" [showThumbnails]="true" ariaLabel="Thumbnail carousel" />
+    </div>
+  </section>
+
+  <!-- Loop -->
+  <section class="car__demo">
+    <p class="car__demo-title">Loop — wrap at the ends</p>
+    <p class="car__demo-note">Next from the last slide wraps to the first; arrows never disable.</p>
+    <div class="car__frame">
+      <landing-carousel [images]="slides" [loop]="true" ariaLabel="Looping carousel" />
+    </div>
+  </section>
+
+  <!-- API -->
+  <section class="car__demo">
+    <p class="car__demo-title">Inputs</p>
+    <ul class="car__api">
+      <li><code>[images]</code> — <code>GalleryImage[]</code> (url / alt / caption). Required.</li>
+      <li>
+        <code>[peek]</code> · <code>[showThumbnails]</code> · <code>[showDots]</code> · <code>[showArrows]</code> ·
+        <code>[loop]</code> — booleans.
+      </li>
+      <li>
+        <code>[aspectRatio]</code> — frame ratio (default <code>4 / 3</code>). <code>[numbered]</code> — FIG numbering.
+      </li>
+      <li><code>[(index)]</code> — two-way active slide. <code>[ariaLabel]</code> — carousel label.</li>
+    </ul>
+  </section>
+</landing-container>

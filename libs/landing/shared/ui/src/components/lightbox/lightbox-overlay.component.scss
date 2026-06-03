@@ -1,0 +1,354 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
+
+:host {
+  --lightbox-flip: 240ms;
+  --lightbox-zoom: 200ms;
+  // Slide padding reserves room for the top bar / caption / filmstrip. The nav
+  // arrows reuse these to centre on the IMAGE, not the viewport.
+  --lb-pad-top: 80px;
+  --lb-pad-bottom: 152px;
+
+  position: fixed;
+  inset: 0;
+  display: block;
+  z-index: 0; // stacking handled by the CDK overlay container
+
+  @include bp.respond-down('tablet') {
+    --lb-pad-top: 72px;
+    --lb-pad-bottom: 176px;
+  }
+}
+
+.landing-lightbox__dialog {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  // Everything fades out together on close so no chrome lingers without a backdrop.
+  opacity: 1;
+  animation: lightbox-fade var(--lightbox-flip) ease;
+
+  :host(.is-closing) & {
+    opacity: 0;
+    transition: opacity var(--lightbox-flip) ease;
+    animation: none;
+  }
+
+  @include prefers.reduce-motion {
+    animation: none;
+
+    :host(.is-closing) & {
+      transition: none;
+    }
+  }
+}
+
+.landing-lightbox__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: rgb(8 10 14 / 0.92);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.landing-lightbox__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  pointer-events: none;
+}
+
+.landing-lightbox__counter {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: rgb(255 255 255 / 0.72);
+}
+
+.landing-lightbox__actions {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.landing-lightbox__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 0;
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(255 255 255 / 0.86);
+  cursor: pointer;
+  transition:
+    background var(--lightbox-zoom) ease,
+    color var(--lightbox-zoom) ease;
+
+  &:hover:not(:disabled) {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
+
+.landing-lightbox__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  touch-action: none;
+
+  // Cursor stays default; it only hints zoom while Ctrl/⌘ is held.
+  &.is-zoom-modifier {
+    cursor: zoom-in;
+  }
+
+  &.is-zoom-modifier.is-zoomed {
+    cursor: zoom-out;
+  }
+}
+
+.landing-lightbox__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transition: transform var(--lightbox-flip) cubic-bezier(0.22, 1, 0.36, 1);
+
+  &.is-grabbing {
+    transition: none;
+  }
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}
+
+.landing-lightbox__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Reserve room for the top bar, the caption, and the filmstrip so the image
+  // never sits under them (the chrome is positioned absolutely over the stage).
+  padding: var(--lb-pad-top) 24px var(--lb-pad-bottom);
+
+  @include bp.respond-down('tablet') {
+    padding-inline: 16px;
+  }
+}
+
+.landing-lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center center;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.landing-lightbox__nav {
+  position: absolute;
+  // Centre on the image, not the viewport: the slide's asymmetric padding shifts
+  // the image up, so offset by half the padding difference.
+  top: calc(50% + (var(--lb-pad-top) - var(--lb-pad-bottom)) / 2);
+  transform: translateY(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 0;
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(255 255 255 / 0.86);
+  cursor: pointer;
+  transition: background var(--lightbox-zoom) ease;
+
+  &:hover:not(:disabled) {
+    background: rgb(255 255 255 / 0.18);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &--prev {
+    left: 16px;
+  }
+
+  &--next {
+    right: 16px;
+  }
+
+  @include bp.respond-down('tablet') {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.landing-lightbox__caption {
+  position: absolute;
+  width: 100%;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  max-width: min(720px, 90vw);
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: baseline;
+  text-align: center;
+  padding: 0 16px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: rgb(255 255 255 / 0.7);
+  text-transform: uppercase;
+
+  // Mobile: stack the FIG number above the caption text instead of a cramped row.
+  @include bp.respond-down('tablet') {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0; // avoid collapsing the caption when the text is long and the image is short
+  }
+}
+
+.landing-lightbox__fig {
+  color: rgb(255 255 255 / 0.5);
+  flex-shrink: 0; // avoid inheriting the caption's uppercase and letter-spacing
+}
+
+.landing-lightbox__strip {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  max-width: 92vw;
+  overflow-x: auto;
+  padding: 4px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.landing-lightbox__thumb {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.5;
+  background: rgb(255 255 255 / 0.06);
+  transition:
+    opacity var(--lightbox-zoom) ease,
+    border-color var(--lightbox-zoom) ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.is-active {
+    opacity: 1;
+    border-color: rgb(255 255 255 / 0.9);
+  }
+
+  @include bp.respond-down('tablet') {
+    width: 56px;
+    height: 40px;
+  }
+}
+
+// Desktop-only zoom hint. Hidden on touch (no Ctrl+scroll there) and once zoomed.
+.landing-lightbox__hint {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: rgb(255 255 255 / 0.5);
+  pointer-events: none;
+  transition: opacity var(--lightbox-zoom) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    display: flex;
+  }
+
+  &.is-hidden {
+    opacity: 0;
+  }
+
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background: rgb(255 255 255 / 0.08);
+    font-size: 0.9em;
+    line-height: 1;
+  }
+}
+
+.landing-lightbox__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

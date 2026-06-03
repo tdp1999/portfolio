@@ -5,6 +5,9 @@
         @if (year()) {
           <span class="selected-work-tab__meta-year">{{ year() }}</span>
         }
+        @if (year() && role()) {
+          <span class="selected-work-tab__meta-sep" aria-hidden="true">·</span>
+        }
         @if (role()) {
           <span class="selected-work-tab__meta-role">{{ role() }}</span>
         }
@@ -59,6 +62,21 @@
   </div>
 
   <div class="selected-work-tab__right">
-    <landing-gallery [images]="galleryImages()" [fillContainer]="true" />
+    @if (useGrid()) {
+      <landing-gallery
+        [images]="galleryImages()"
+        [fillContainer]="true"
+        [lightbox]="true"
+        [lightboxGroup]="lightboxGroup()"
+      />
+    } @else {
+      <landing-carousel
+        [images]="galleryImages()"
+        [showThumbnails]="galleryImages().length > 2"
+        ariaLabel="Project screenshots"
+        [lightbox]="true"
+        [lightboxGroup]="lightboxGroup()"
+      />
+    }
   </div>
 </div>

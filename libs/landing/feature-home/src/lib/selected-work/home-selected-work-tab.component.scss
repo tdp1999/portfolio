@@ -21,23 +21,27 @@
   min-width: 0;
 }
 
-/* Two-row meta: year (small sub-label) above role (primary eyebrow). */
+/* Single-line meta: "YEAR · ROLE" in one mono size — one treatment instead of two
+   stacked sizes/colors, so the tab opens with less type noise. */
 .selected-work-tab__meta {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
   font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
   letter-spacing: var(--landing-tracking-mono);
   text-transform: uppercase;
 }
 .selected-work-tab__meta-year {
-  font-size: var(--landing-mono-sm);
-  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-500);
+}
+.selected-work-tab__meta-sep {
   color: var(--landing-text-600);
 }
 .selected-work-tab__meta-role {
-  font-size: var(--landing-mono-md);
-  line-height: var(--landing-mono-md-lh);
   color: var(--landing-accent);
 }
 
@@ -61,8 +65,10 @@
   margin: 0;
 }
 
+/* Emphasis stays in the body family (Inter italic) instead of switching to the serif
+   display face mid-sentence — a serif-italic phrase inside a sans paragraph was a big
+   part of what made the tab read busy. Colour lift carries the emphasis instead. */
 .selected-work-tab__desc-em {
-  font-family: var(--landing-font-display);
   font-style: italic;
   color: var(--landing-text-300);
 }
