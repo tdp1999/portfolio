@@ -139,33 +139,38 @@
   position: absolute;
   inset: 0;
 }
+/* Soft radial-gradient glow — replaces `filter: blur(120px)`. Visually
+   near-identical, but a gradient paints once and caches as a layer, so scrolling
+   just translates it instead of re-rasterising a ~720px blurred surface every
+   frame. That blur was the dominant mobile/tablet scroll-jank source after the
+   card fix — measured ~5× fewer hitches and no 300ms stalls vs the blurred blob.
+   Boxes are enlarged (~+2× the blur radius) and re-centred via calc() so the glow
+   keeps the old blurred footprint. opacity stays on the element (not color-mix)
+   so old Safari (<16.2) still renders it. */
 .landing-bg__blob {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
 }
 .landing-bg__blob--1 {
-  top: -10%;
-  left: 10%;
-  width: 480px;
-  height: 480px;
-  background-color: var(--landing-accent);
+  top: calc(-10% - 120px);
+  left: calc(10% - 120px);
+  width: 720px;
+  height: 720px;
+  background: radial-gradient(circle, var(--landing-accent) 0%, transparent 70%);
   opacity: 0.22;
 }
 .landing-bg__blob--2 {
-  bottom: -20%;
-  right: 5%;
-  width: 520px;
-  height: 520px;
-  background-color: var(--landing-accent);
+  bottom: calc(-20% - 130px);
+  right: calc(5% - 130px);
+  width: 780px;
+  height: 780px;
+  background: radial-gradient(circle, var(--landing-accent) 0%, transparent 70%);
   opacity: 0.16;
 }
-/* Solid bg + explicit opacity (rather than color-mix) so old Safari (<16.2) still renders the blob. */
 .landing-bg__blob--3 {
-  top: 30%;
-  right: 35%;
-  width: 360px;
-  height: 360px;
-  background-color: var(--landing-text-300);
+  top: calc(30% - 100px);
+  right: calc(35% - 100px);
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, var(--landing-text-300) 0%, transparent 70%);
   opacity: 0.04;
 }

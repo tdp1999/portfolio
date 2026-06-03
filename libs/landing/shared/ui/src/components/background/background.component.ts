@@ -12,7 +12,7 @@ export type LandingBackgroundPattern = 'blueprint' | 'topo' | 'hatch' | 'dots' |
  * - `hatch`     — thin diagonal hatching, draftsman's pencil.
  * - `dots`      — dot matrix at intersections, star-field feel.
  * - `crosshair` — radial crosshair sweep, radar / compass feel.
- * - `aurora`    — three blurred accent blobs, glass / mesh feel.
+ * - `aurora`    — three soft radial-gradient accent glows, glass / mesh feel.
  *
  * `bleedDown` modifier: lifts the bottom clip so the pattern extends below
  * the host section, useful for soft transitions into the next section.
