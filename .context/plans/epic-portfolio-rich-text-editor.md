@@ -4,6 +4,7 @@
 > Status: broken-down (2026-05-05). 15 tasks created (305–319) in `.context/tasks/`.
 > Depends on: `epic-portfolio-e2-content-scaffolding`, `epic-portfolio-e5-implementation` (Phases 1–4 complete).
 > Feeds: future content authoring (E5 Phase 6, blog post body, project case-study body).
+> Followed by: [`epic-portfolio-prose-block-renderer`](./epic-portfolio-prose-block-renderer.md) (`redoc-blocks`) — opens AFTER this epic ships; replaces the Phase 6/7 `[innerHTML]` + `data-block` read-path with an AST renderer + block registry once a 2nd block type is needed. The Phase 6/7 approach here is the sanctioned interim for the single `image-ref` block.
 > External dependency: `document-engine` repo (`C:\study\document-engine`) — see [Sprint 1 / Sprint 2 issue list](#external-dependencies-document-engine-repo).
 
 ## Purpose

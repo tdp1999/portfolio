@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (252 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (336 tasks)
 
 ## Completed Milestones
 
@@ -372,6 +372,10 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 ### Cross-cutting — Migration script
 - [ ] 319-rte-migrate-editor-script (S) — deps: 305, 307, 310
 
+## Planned — Prose Block Renderer (not broken down)
+
+From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RTE epic ships. Replaces the RTE Phase 6/7 `[innerHTML]` + `data-block` landing read-path with an AST renderer + DI block registry (`PortableDocument` canonical, `NgComponentOutlet` conditional injection, Zod-anchored editor↔component contract, declarative inline marks, HTML-cache demoted to RSS/llms.txt/OG fallback). Locked 2026-06-03; no tasks created yet.
+
 ---
 
 ## Up Next
@@ -391,11 +395,11 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 322     |
+| Done (archived)           | 336     |
 | In Progress               | 0       |
-| Pending                   | 11      |
-| **Total Created**         | **333** |
-| Epics completed           | 30      |
+| Pending                   | 24      |
+| **Total Created**         | **360** |
+| Epics completed           | 44      |
 
 ## Notes
 
