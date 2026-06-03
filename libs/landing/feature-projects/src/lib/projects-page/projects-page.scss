@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -6,7 +8,7 @@
 .projects-page__body {
   padding-block: 24px 64px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     padding-block: 32px 96px;
   }
 }
@@ -33,6 +35,29 @@
   border: 1px solid var(--landing-border);
   border-radius: 4px;
   margin-bottom: 16px;
+
+  /* On phones the single no-wrap row crushes the count + Clear-all into
+     narrow wrapped columns once the view-toggle + filters button claim the
+     right side. Reflow to two tidy rows: count (+ clear) on top, the control
+     group spread across the row below. */
+  @include bp.respond-down('tablet') {
+    flex-wrap: wrap;
+  }
+}
+
+/* Right-side control group — pushed right on desktop, its own full-width
+   row on phones (see toolbar wrap above). */
+.projects-toolbar__controls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+
+  @include bp.respond-down('tablet') {
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
 }
 
 .projects-toolbar__clear {
@@ -49,10 +74,6 @@
 
 .projects-toolbar__clear:hover {
   text-decoration: underline;
-}
-
-.projects-toolbar__view {
-  margin-left: auto;
 }
 
 .projects-toolbar__toggle {
@@ -112,9 +133,15 @@
 
 .projects-filter-group {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 16px;
+  grid-template-columns: 1fr; /* label stacked above chips on phones */
+  gap: 8px;
   align-items: start;
+
+  /* Label moves to its own left column once there's width for it. */
+  @include bp.respond-to('tablet') {
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+  }
 }
 
 .projects-filter-group__label {
@@ -130,13 +157,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-@media (max-width: 768px) {
-  .projects-filter-group {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
 }
 
 /* ─── Empty state ─────────────────────────────────────────────── */
@@ -305,16 +325,35 @@
   color: var(--landing-accent);
 }
 
-@media (max-width: 640px) {
+/* Phones (< tablet): the desktop year-rail + thumb + body + arrow layout
+   starves the content column (≈ 91px at 375 → title wraps, summary rivers).
+   Drop the dedicated year column and the hover-only arrow; fold the year to a
+   small label above the body beside the thumb. Reclaims ≈ 108px for content. */
+@include bp.respond-down('tablet') {
   .projects-row__link {
-    grid-template-columns: 56px 96px 1fr 20px;
-    gap: 16px;
+    grid-template-columns: 96px 1fr;
+    grid-template-areas:
+      'thumb year'
+      'thumb body';
+    column-gap: 16px;
+    row-gap: 4px;
     padding: 16px 8px;
   }
 
+  .projects-row__year {
+    grid-area: year;
+    padding-top: 0;
+  }
+
   .projects-row__thumb {
+    grid-area: thumb;
+    align-self: start;
     width: 96px;
     height: 64px;
+  }
+
+  .projects-row__body {
+    grid-area: body;
   }
 
   .projects-row__title {
@@ -326,28 +365,24 @@
     font-size: var(--landing-body-sm);
     line-height: var(--landing-body-sm-lh);
   }
+
+  /* Hover-trail affordance never fires on touch — dead weight, reclaim its column. */
+  .projects-row__arrow-stack {
+    display: none;
+  }
 }
 
 /* ─── Grid view ─────────────────────────────────────────────── */
+/* Fluid track — no breakpoints needed: 1 col on phones, 2 col mid, 3 col wide,
+   driven by available width. `min(100%, 320px)` keeps a single card from
+   overflowing below 320px. Replaces the old off-contract @media(960/600). */
 .projects-grid {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 24px;
-}
-
-@media (max-width: 960px) {
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .projects-card {

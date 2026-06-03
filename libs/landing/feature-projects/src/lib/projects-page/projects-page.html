@@ -13,27 +13,29 @@
           <button type="button" class="projects-toolbar__clear" (click)="clearAll()">Clear all</button>
         }
 
-        <landing-view-toggle
-          class="projects-toolbar__view"
-          [options]="viewOptions"
-          [value]="viewMode()"
-          (valueChange)="setView($event)"
-        />
+        <div class="projects-toolbar__controls">
+          <landing-view-toggle
+            class="projects-toolbar__view"
+            [options]="viewOptions"
+            [value]="viewMode()"
+            (valueChange)="setView($event)"
+          />
 
-        <button
-          type="button"
-          class="projects-toolbar__toggle"
-          [class.projects-toolbar__toggle--open]="filtersOpen()"
-          [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
-          (click)="toggleFilters()"
-        >
-          <landing-icon name="filter" [size]="14" />
-          <span>Filters</span>
-          @if (activeFilterCount() > 0) {
-            <span class="projects-toolbar__count">{{ activeFilterCount() }}</span>
-          }
-          <landing-icon [name]="filtersOpen() ? 'chevron-up' : 'chevron-down'" [size]="14" />
-        </button>
+          <button
+            type="button"
+            class="projects-toolbar__toggle"
+            [class.projects-toolbar__toggle--open]="filtersOpen()"
+            [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
+            (click)="toggleFilters()"
+          >
+            <landing-icon name="filter" [size]="14" />
+            <span>Filters</span>
+            @if (activeFilterCount() > 0) {
+              <span class="projects-toolbar__count">{{ activeFilterCount() }}</span>
+            }
+            <landing-icon [name]="filtersOpen() ? 'chevron-up' : 'chevron-down'" [size]="14" />
+          </button>
+        </div>
       </div>
 
       <!-- Filter panel — collapsed by default, expands on toggle -->
