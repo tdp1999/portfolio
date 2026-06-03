@@ -1,6 +1,9 @@
 /* Spotlight effect — companion CSS to SpotlightDirective.
    Loaded via libs/landing/shared/ui/src/motion/_motion.scss → styles/index.scss. */
 
+@use 'base/input-modality' as im;
+@use 'base/prefers';
+
 /* Theme-aware spotlight color (RGB triplet, used inside rgb(... / alpha)).
    Default + dark theme: white tint (brightens the dark surface).
    Light theme: dark slate tint (subtle reading-lamp / scanner shadow). */
@@ -25,6 +28,15 @@
   transition: opacity 240ms ease;
 }
 
+/* Pointer-only affordance. On a touch screen the glow has no cursor to follow — a tap
+   fires a one-off mousemove that leaves it frozen mid-screen — so drop it entirely for
+   coarse pointers (phones/tablets). Hybrid devices with a real mouse keep it. */
+@include im.touch-only {
+  .fx-spotlight__overlay {
+    display: none;
+  }
+}
+
 /* Per-section: overlay sits inside its host box. */
 .fx-spotlight__overlay--host {
   position: absolute;
@@ -39,8 +51,8 @@
   z-index: 1; /* above background, below interactive content (which sits in flow) */
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fx-spotlight__overlay {
+.fx-spotlight__overlay {
+  @include prefers.reduce-motion {
     transition: none;
   }
 }

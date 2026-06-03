@@ -7,7 +7,7 @@
         <landing-stagger-text [text]="fullName()" />
       </h1>
       @if (title()) {
-        <p class="home-hero__role">— {{ title() }}</p>
+        <p class="home-hero__role"><span class="home-hero__role-dash" aria-hidden="true">— </span>{{ title() }}</p>
       }
 
       @if (taglineLead()) {

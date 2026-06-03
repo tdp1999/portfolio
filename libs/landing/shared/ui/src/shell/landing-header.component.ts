@@ -130,7 +130,9 @@ const SCROLL_THRESHOLD = 8;
       } @else {
         <!-- Top state: 3-column grid so the centre nav stays page-centred regardless of side widths -->
         <landing-container size="wide">
-          <div class="grid h-16 items-center header-fade-in grid-cols-[1fr_auto_1fr]">
+          <div
+            class="flex h-16 items-center justify-between header-fade-in tablet:grid tablet:grid-cols-[1fr_auto_1fr]"
+          >
             <a
               routerLink="/"
               class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent justify-self-start"
@@ -228,8 +230,10 @@ const SCROLL_THRESHOLD = 8;
           </button>
         </div>
 
-        <!-- Direction C · arrow-list, airy — primary links with a trailing arrow, generous rhythm -->
-        <nav class="flex flex-col px-6 pt-8" aria-label="Primary">
+        <!-- Direction C · arrow-list, airy — primary links with a trailing arrow, generous rhythm.
+             max-w cap keeps the label↔arrow pairing tight across the sheet's full <tablet range
+             (the sheet can be up to ~767px wide; without the cap the arrow strands far right). -->
+        <nav class="flex w-full max-w-[30rem] flex-col px-6 pt-8" aria-label="Primary">
           @for (item of navItems; track item.path) {
             <a
               [routerLink]="item.path"
@@ -244,7 +248,7 @@ const SCROLL_THRESHOLD = 8;
           }
         </nav>
 
-        <div class="flex flex-col px-6 pt-10">
+        <div class="flex w-full max-w-[30rem] flex-col px-6 pt-10">
           <landing-eyebrow label="More" class="mb-3 block" />
           @for (m of moreItems(); track m.label) {
             <a

@@ -16,11 +16,14 @@ import { type SocialLink } from '@portfolio/shared/types';
   template: `
     <footer class="border-t border-landing-border" role="contentinfo">
       <landing-container size="wide">
-        <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-8">
-          <p class="m-0 font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
-            © {{ year }} {{ fullName() || 'Portfolio' }}. All rights reserved.
+        <div
+          class="flex flex-nowrap items-center justify-between gap-4 py-8 tablet:flex-wrap tablet:gap-x-6 tablet:gap-y-4"
+        >
+          <p class="m-0 min-w-0 truncate font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
+            © {{ year }} {{ fullName() || 'Portfolio'
+            }}<span class="hidden tablet:inline">. All rights reserved.</span>
           </p>
-          <landing-social-row [socialLinks]="socialLinks()" [iconSize]="18" />
+          <landing-social-row [socialLinks]="socialLinks()" [iconSize]="18" class="shrink-0" />
         </div>
       </landing-container>
     </footer>

@@ -98,15 +98,17 @@ module.exports = {
         '3xl': ['var(--text-3xl)', { lineHeight: 'var(--leading-tight)' }],
         '4xl': ['var(--text-4xl)', { lineHeight: 'var(--leading-tight)' }],
         '5xl': ['var(--text-5xl)', { lineHeight: 'var(--leading-tight)' }],
-        // Landing — fixed display/body/mono scale (E4 D2 lock, 4-grid aligned)
-        'display-xl': ['56px', { lineHeight: '64px', letterSpacing: '-0.02em' }],
-        'display-lg': ['48px', { lineHeight: '56px', letterSpacing: '-0.02em' }],
-        'display-md': ['40px', { lineHeight: '48px', letterSpacing: '-0.02em' }],
-        'display-sm': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em' }],
-        'body-xl': ['20px', { lineHeight: '28px' }],
-        'body-lg': ['17px', { lineHeight: '28px' }],
-        'body-md': ['15px', { lineHeight: '24px' }],
-        'body-sm': ['13px', { lineHeight: '20px' }],
+        // Landing — display + the whole body scale are FLUID (clamp via CSS vars in
+        // tokens/typography.scss, mobile 375 → wide 1440); only mono stays stepped.
+        // 4-grid aligned endpoints. Base size `X` = body-md (14 mobile → 16 wide).
+        'display-xl': ['var(--landing-display-xl)', { lineHeight: 'var(--landing-display-xl-lh)', letterSpacing: '-0.02em' }],
+        'display-lg': ['var(--landing-display-lg)', { lineHeight: 'var(--landing-display-lg-lh)', letterSpacing: '-0.02em' }],
+        'display-md': ['var(--landing-display-md)', { lineHeight: 'var(--landing-display-md-lh)', letterSpacing: '-0.02em' }],
+        'display-sm': ['var(--landing-display-sm)', { lineHeight: 'var(--landing-display-sm-lh)', letterSpacing: '-0.02em' }],
+        'body-xl': ['var(--landing-body-xl)', { lineHeight: 'var(--landing-body-xl-lh)' }],
+        'body-lg': ['var(--landing-body-lg)', { lineHeight: 'var(--landing-body-lg-lh)' }],
+        'body-md': ['var(--landing-body-md)', { lineHeight: 'var(--landing-body-md-lh)' }], // base size `X` — see .context/design/landing-typography.md
+        'body-sm': ['var(--landing-body-sm)', { lineHeight: 'var(--landing-body-sm-lh)' }],
         'mono-md': ['12px', { lineHeight: '16px', letterSpacing: '0.06em' }],
         'mono-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.06em' }],
       },

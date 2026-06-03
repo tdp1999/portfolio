@@ -31,11 +31,14 @@
 
 .landing-footer-banner__grid {
   display: grid;
-  gap: 40px 32px;
+  gap: 32px;
   grid-template-columns: 1fr;
 
+  // Tablet: 3 nav columns sit in one row under the full-width brand — avoids the old
+  // 2-col layout that stranded the 3rd column with an empty cell to its right.
   @include bp.respond-to('tablet') {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 32px;
   }
 
   @include bp.respond-to('laptop') {
@@ -93,8 +96,16 @@
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  // Mobile: links flow horizontally and wrap, so each group fills the row width instead
+  // of forming a thin left-aligned strip with the whole right side empty.
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+
+  @include bp.respond-to('tablet') {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .landing-footer-banner__list li {

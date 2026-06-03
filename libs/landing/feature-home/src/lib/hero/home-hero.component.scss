@@ -70,7 +70,7 @@
 .home-hero__sub-emphasis {
   margin: 0;
   max-width: 42rem;
-  font-size: var(--landing-body-lg);
+  //   font-size: var(--landing-body-lg);
   line-height: var(--landing-body-lg-lh);
   opacity: 0;
 }
@@ -177,23 +177,51 @@
     min-height: calc(var(--vh-full) - 64px);
   }
 
+  /* Center the hero on small screens (it reads better stacked + centered on a phone). */
+  .home-hero__headline {
+    text-align: center;
+  }
+
+  /* Calmer type on mobile — the desktop scale eats a phone screen — but the name stays
+     the dominant element, so it keeps a strong size; only the role/sub step down. */
   .home-hero__title {
     font-size: 48px;
     line-height: 56px;
   }
 
   .home-hero__role {
-    font-size: 32px;
-    line-height: 40px;
+    font-size: 28px;
+    line-height: 36px;
   }
 
+  /* The leading em-dash is a desktop flourish; on the centered mobile layout it reads as
+     a stray mark, so hide it. */
+  .home-hero__role-dash {
+    display: none;
+  }
+
+  .home-hero__sub-lead,
+  .home-hero__sub-emphasis {
+    margin-inline: auto;
+  }
+
+  /* Meta: center + stack each row (key above value) so a long value like the core stack
+     wraps cleanly instead of breaking the "CORE STACK" key mid-word. */
   .home-hero__meta {
-    align-items: flex-start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
+    gap: 12px; /* roomier separation between the stacked STATUS / CORE STACK / LOCATION groups */
   }
 
   .home-hero__meta-row {
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .home-hero__meta-key {
+    white-space: nowrap;
   }
 }
 
