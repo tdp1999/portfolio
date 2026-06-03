@@ -80,7 +80,8 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "options": {
-        "proxyConfig": "apps/landing/proxy.conf.json"
+        "proxyConfig": "apps/landing/proxy.conf.json",
+        "allowedHosts": [".trycloudflare.com"]
       },
       "configurations": {
         "production": {
