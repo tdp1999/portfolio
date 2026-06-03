@@ -201,6 +201,15 @@
   padding-block: 16px 24px;
 }
 
+/* The accordion trigger already shows the logo, company, position and date
+   range, so the shared detail header would repeat all of them. Suppress those
+   rows inside the panel — it opens straight into the meta facts. ("Current" is
+   already conveyed by the trigger's "– PRESENT".) */
+.exp-acc__panel .exp-detail__title-row,
+.exp-acc__panel .exp-detail__date-range {
+  display: none;
+}
+
 /* ═══ Shared detail body ═══════════════════════════════════════════════════ */
 
 .exp-detail__header {

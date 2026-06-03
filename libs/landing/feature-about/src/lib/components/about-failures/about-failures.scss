@@ -1,4 +1,5 @@
 @use '../../styles/section-header';
+@use 'base/breakpoints' as bp;
 
 /* About → Failures & lessons. Graduated V1 from /ddl/about-signatures.
    Three equal-height bordered cards on desktop (≥ 1024px), single column
@@ -23,7 +24,7 @@
   gap: 20px;
 }
 
-@media (max-width: 1024px) {
+@include bp.respond-down('laptop') {
   .afa__list {
     grid-template-columns: 1fr;
   }

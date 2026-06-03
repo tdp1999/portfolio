@@ -1,4 +1,5 @@
 @use '../../styles/section-header';
+@use 'base/breakpoints' as bp;
 
 /* About → How I think about software. Numbered manifesto block.
    Stacked layout per principle — number reads like a mini-eyebrow above the
@@ -23,8 +24,13 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: 48px;
   max-width: 720px;
+
+  /* Roomier rhythm once there's vertical space; tighter on phones/tablet. */
+  @include bp.respond-to('tablet') {
+    gap: 64px;
+  }
 }
 
 .hit__item {
@@ -66,10 +72,4 @@
   font-size: var(--landing-mono-sm);
   letter-spacing: var(--landing-tracking-mono);
   color: var(--landing-text-500);
-}
-
-@media (max-width: 640px) {
-  .hit__list {
-    gap: 48px;
-  }
 }

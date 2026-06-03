@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 /* Hero block — sits at the top of the body slot, right under the shell header
    (which carries breadcrumb + H1 + lede). Just the meta strip — CTAs + CV live
    in §04 Next steps so the hero stays compact. */
@@ -55,14 +57,19 @@
   color: var(--landing-text-500);
 }
 
-/* Left-align on narrow screens so the meta facts stay legible — wrapping
-   centered text fragments creates a ragged middle column. */
-@media (max-width: 480px) {
-  .about-hero {
-    align-items: flex-start;
-    text-align: left;
+/* On phones the row wraps to two lines: the three facts stay bullet-separated
+   on line 1, and "Last updated" drops to its own centered line 2. Force that
+   break deterministically and remove its leading `·` so no separator dangles
+   at the start of the wrapped line. */
+@include bp.respond-down('tablet') {
+  .about-hero__meta-item--muted {
+    flex-basis: 100%;
+    justify-content: center;
   }
-  .about-hero__meta {
-    justify-content: flex-start;
+
+  /* Match the separator rule's specificity (adjacent + two classes) so this
+     wins and the wrapped line starts clean, no leading bullet. */
+  .about-hero__meta-item + .about-hero__meta-item--muted::before {
+    content: none;
   }
 }

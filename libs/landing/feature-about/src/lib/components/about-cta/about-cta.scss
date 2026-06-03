@@ -1,4 +1,5 @@
 @use '../../styles/section-header';
+@use 'base/breakpoints' as bp;
 
 /* About → CTA section. Closing line + link row, no form (the form lives on
    /contact). Same header anatomy as the other About sections. */
@@ -19,6 +20,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px 40px;
+
+  /* On phones the row wraps unevenly (2 + 1 orphan); stack into a clean
+     single column instead. Tablet+ keeps the inline row. */
+  @include bp.respond-down('tablet') {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 
 .cta__item {
