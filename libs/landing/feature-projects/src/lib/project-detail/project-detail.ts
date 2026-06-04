@@ -1,4 +1,4 @@
-import { DOCUMENT, DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, DecimalPipe, NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +27,7 @@ import {
   LandingBreadcrumbComponent,
   LandingBrowserWindowComponent,
   CloudinarySrcsetPipe,
+  ShowMoreComponent,
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
@@ -80,7 +81,9 @@ const LIFECYCLE_STATUS_LABEL: Record<'LIVE' | 'SHIPPED' | 'ARCHIVED' | 'BETA' | 
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DecimalPipe,
+    NgTemplateOutlet,
     RouterLink,
+    ShowMoreComponent,
     ContainerComponent,
     SectionComponent,
     LandingEmptyStateComponent,

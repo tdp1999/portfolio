@@ -25,37 +25,28 @@
         }
       </div>
 
-      <!-- 3-col body: meta · content · TOC -->
+      <!-- Body: reading-first below wide (Details + TOC as rails on top); 3-col sticky sidebars at wide -->
       <div class="project-body">
-        <!-- LEFT: metadata + links -->
+        <!-- LEFT sidebar (wide only) -->
         <aside class="project-aside project-aside--left">
-          <div class="project-aside__block">
-            <landing-eyebrow [label]="['metadata']" tone="accent" />
-            <dl class="project-meta-list">
-              @for (row of metadataRows(); track row.label) {
-                <div class="project-meta-list__row">
-                  <dt>{{ row.label }}</dt>
-                  <dd>{{ row.value }}</dd>
-                </div>
-              }
-            </dl>
-          </div>
+          <ng-container [ngTemplateOutlet]="metaTpl" />
+        </aside>
 
-          @if (sortedLinks().length > 0) {
-            <div class="project-aside__block">
-              <landing-eyebrow [label]="['links']" tone="accent" />
-              <ul class="project-aside__links" role="list">
-                @for (link of sortedLinks(); track link.url) {
-                  <li>
-                    <landing-link [href]="link.url" [external]="true" [arrow]="true">
-                      {{ link.displayLabel }}
-                    </landing-link>
-                  </li>
-                }
-              </ul>
+        <!-- Below wide: Details + TOC as collapsible rails (2-col row on tablet/laptop, stacked on mobile) -->
+        <div class="project-rails">
+          <div class="project-rails__item">
+            <landing-show-more [maxHeight]="280" moreLabel="More details" lessLabel="Less details">
+              <ng-container [ngTemplateOutlet]="metaTpl" />
+            </landing-show-more>
+          </div>
+          @if (tocSections().length > 0) {
+            <div class="project-rails__item">
+              <landing-show-more [maxHeight]="280">
+                <ng-container [ngTemplateOutlet]="tocTpl" />
+              </landing-show-more>
             </div>
           }
-        </aside>
+        </div>
 
         <!-- MIDDLE: reading column -->
         <article class="project-reading">
@@ -146,13 +137,47 @@
           }
         </article>
 
-        <!-- RIGHT: TOC -->
+        <!-- RIGHT: TOC sidebar (wide only) -->
         @if (tocSections().length > 0) {
           <aside class="project-aside project-aside--right">
-            <landing-toc-sidebar [sections]="tocSections()" label="On this page" />
+            <ng-container [ngTemplateOutlet]="tocTpl" />
           </aside>
         }
       </div>
+
+      <!-- Shared rail/sidebar content — rendered into both the wide sidebars and the below-wide rails -->
+      <ng-template #metaTpl>
+        <div class="project-aside__block">
+          <landing-eyebrow [label]="['metadata']" tone="accent" />
+          <dl class="project-meta-list">
+            @for (row of metadataRows(); track row.label) {
+              <div class="project-meta-list__row">
+                <dt>{{ row.label }}</dt>
+                <dd>{{ row.value }}</dd>
+              </div>
+            }
+          </dl>
+        </div>
+
+        @if (sortedLinks().length > 0) {
+          <div class="project-aside__block mt-4">
+            <landing-eyebrow [label]="['links']" tone="accent" />
+            <ul class="project-aside__links" role="list">
+              @for (link of sortedLinks(); track link.url) {
+                <li>
+                  <landing-link [href]="link.url" [external]="true" [arrow]="true">
+                    {{ link.displayLabel }}
+                  </landing-link>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </ng-template>
+
+      <ng-template #tocTpl>
+        <landing-toc-sidebar [sections]="tocSections()" label="On this page" />
+      </ng-template>
     </landing-container>
   </landing-section>
 } @else {

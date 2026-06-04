@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChipComponent,
   ContainerComponent,
@@ -11,6 +12,7 @@ import {
   LandingTocSidebarComponent,
   SectionComponent,
   SegmentedComponent,
+  ShowMoreComponent,
   type BreadcrumbItem,
   type InPageSection,
   type SegmentOption,
@@ -70,6 +72,7 @@ const META_ROWS = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [LandingScrollspyService],
   imports: [
+    NgTemplateOutlet,
     ContainerComponent,
     SectionComponent,
     SegmentedComponent,
@@ -80,6 +83,7 @@ const META_ROWS = [
     LandingHeadingComponent,
     LandingSectionHeaderComponent,
     LandingTocSidebarComponent,
+    ShowMoreComponent,
   ],
   templateUrl: './project-detail-explore.page.html',
   styleUrl: './project-detail-explore.page.scss',
@@ -90,9 +94,16 @@ export class ProjectDetailExplorePage {
   readonly aspectOptions = ASPECT_OPTIONS;
   readonly layoutOptions = LAYOUT_OPTIONS;
   readonly sections = SECTIONS;
+  /** Shorter body for the tablet frames so each preview stays a reasonable height. */
+  readonly articleSections = SECTIONS.slice(0, 5);
   readonly lorem = LOREM;
   readonly skills = SKILLS;
   readonly metaRows = META_ROWS;
+  readonly links: readonly { label: string; href: string }[] = [
+    { label: 'Repository', href: '#' },
+    { label: 'Live demo', href: '#' },
+    { label: 'Case study', href: '#' },
+  ];
   readonly coverUrl = COVER_URL;
   readonly breadcrumb: readonly BreadcrumbItem[] = [
     { label: 'Home', href: '/' },

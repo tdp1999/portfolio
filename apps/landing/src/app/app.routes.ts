@@ -184,6 +184,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/ddl/lightbox').then((m) => m.LightboxPage),
       },
       {
+        path: 'show-more',
+        loadComponent: () => import('./pages/ddl/show-more').then((m) => m.ShowMoreDdlPage),
+      },
+      {
         path: 'email-templates',
         loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
       },

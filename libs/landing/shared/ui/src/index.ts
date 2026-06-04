@@ -48,6 +48,7 @@ export * from './components/pagination';
 export * from './components/view-toggle';
 export * from './components/tooltip';
 export * from './components/globe';
+export * from './components/show-more';
 export * from './motion';
 export * from './directives';
 export * from './theme';

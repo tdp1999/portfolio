@@ -131,3 +131,142 @@
     }
   </div>
 </landing-container>
+
+<!-- ─── Tablet (768px) layout options — pick one to graduate ─────────────── -->
+<landing-section>
+  <landing-container size="wide">
+    <landing-section-header size="sm" [level]="2"> Tablet (768px) · <em>three options</em>. </landing-section-header>
+    <p class="text-landing-text-400 text-body-md mt-2 max-w-2xl">
+      Each frame is locked to 768px wide so the three body layouts compare side by side, independent of your window.
+      Metadata + TOC use the new <code>landing-show-more</code> primitive (clamp + <em>See more</em>) — the same
+      mechanism the real page uses to limit the mobile left-aside height. Pick one to graduate into
+      <code>libs/landing/feature-projects/.../project-detail</code>.
+    </p>
+
+    <div class="tablet-options">
+      <!-- A — Reading-first (blog-style) -->
+      <figure class="tablet-frame">
+        <figcaption class="tablet-frame__cap">
+          A · Reading-first (blog-style) — 1 column; meta + TOC inline above body, both collapsible
+        </figcaption>
+        <div class="tablet-frame__view">
+          <div class="tf tf--a">
+            <ng-container [ngTemplateOutlet]="heroTpl" />
+            <div class="tf-rail">
+              <landing-show-more [maxHeight]="120" moreLabel="More details" lessLabel="Less details">
+                <ng-container [ngTemplateOutlet]="metaTpl" />
+              </landing-show-more>
+            </div>
+            <div class="tf-rail">
+              <landing-show-more [maxHeight]="140">
+                <ng-container [ngTemplateOutlet]="tocTpl" />
+              </landing-show-more>
+            </div>
+            <article class="tf-article landing-prose">
+              <ng-container [ngTemplateOutlet]="articleTpl" />
+            </article>
+          </div>
+        </div>
+      </figure>
+
+      <!-- B — Meta rail + reading -->
+      <figure class="tablet-frame">
+        <figcaption class="tablet-frame__cap">
+          B · Meta rail + reading — 2 columns (meta left); TOC inline above the body
+        </figcaption>
+        <div class="tablet-frame__view">
+          <div class="tf tf--b">
+            <div class="tf-span"><ng-container [ngTemplateOutlet]="heroTpl" /></div>
+            <aside class="tf-col">
+              <div class="tf-rail">
+                <landing-show-more [maxHeight]="200" moreLabel="More details" lessLabel="Less details">
+                  <ng-container [ngTemplateOutlet]="metaTpl" />
+                </landing-show-more>
+              </div>
+            </aside>
+            <div class="tf-col">
+              <div class="tf-rail">
+                <landing-show-more [maxHeight]="120">
+                  <ng-container [ngTemplateOutlet]="tocTpl" />
+                </landing-show-more>
+              </div>
+              <article class="tf-article landing-prose">
+                <ng-container [ngTemplateOutlet]="articleTpl" />
+              </article>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <!-- C — Reading + TOC rail -->
+      <figure class="tablet-frame">
+        <figcaption class="tablet-frame__cap">
+          C · Reading + TOC rail — meta strip on top; sticky TOC on the right
+        </figcaption>
+        <div class="tablet-frame__view">
+          <div class="tf tf--c">
+            <div class="tf-span"><ng-container [ngTemplateOutlet]="heroTpl" /></div>
+            <div class="tf-span tf-rail">
+              <landing-show-more [maxHeight]="84" moreLabel="More details" lessLabel="Less details">
+                <ng-container [ngTemplateOutlet]="metaTpl" />
+              </landing-show-more>
+            </div>
+            <article class="tf-article landing-prose">
+              <ng-container [ngTemplateOutlet]="articleTpl" />
+            </article>
+            <aside class="tf-col">
+              <div class="tf-rail">
+                <landing-show-more [maxHeight]="220">
+                  <ng-container [ngTemplateOutlet]="tocTpl" />
+                </landing-show-more>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </landing-container>
+</landing-section>
+
+<!-- ─── Shared content templates for the tablet frames ───────────────────── -->
+<ng-template #heroTpl>
+  <img class="tf-hero" [src]="coverUrl" alt="Mock project cover" />
+</ng-template>
+
+<ng-template #metaTpl>
+  <landing-eyebrow [label]="['details']" tone="accent" />
+  <dl class="tf-meta">
+    @for (row of metaRows; track row.label) {
+      <div class="tf-meta__row">
+        <dt>{{ row.label }}</dt>
+        <dd>{{ row.value }}</dd>
+      </div>
+    }
+  </dl>
+  <p class="tf-meta__sub">Links</p>
+  <ul class="tf-links">
+    @for (l of links; track l.label) {
+      <li>
+        <a [href]="l.href">{{ l.label }} ↗</a>
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<ng-template #tocTpl>
+  <p class="tf-toc__label">On this page</p>
+  <ol class="tf-toc__list">
+    @for (s of sections; track s.id) {
+      <li [attr.data-level]="s.level ?? 2">
+        <a [href]="'#' + s.id">{{ s.title }}</a>
+      </li>
+    }
+  </ol>
+</ng-template>
+
+<ng-template #articleTpl>
+  @for (s of articleSections; track s.id) {
+    <landing-heading [level]="s.level ?? 2">{{ s.title }}</landing-heading>
+    <p>{{ lorem }}</p>
+  }
+</ng-template>

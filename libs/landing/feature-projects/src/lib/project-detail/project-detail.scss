@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -9,7 +11,7 @@
 /* ─── Hero: 16:9 cover capped to fit above-fold ──────────────── */
 
 .project-hero {
-  padding: 0 0 32px;
+  padding: 0 0 24px;
   background: linear-gradient(180deg, transparent, var(--landing-ink-1) 50%, transparent);
 }
 
@@ -82,20 +84,52 @@
 /* ─── 3-col body: meta · content · TOC ───────────────────────── */
 
 .project-body {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 220px;
-  gap: 64px;
-  padding-block: 32px 96px;
-  align-items: start;
-}
-
-.project-aside {
-  position: sticky;
-  top: 96px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  align-self: start;
+  gap: 32px;
+  padding-block: 16px 64px;
+}
+
+/* Details + TOC rails — reading-first layout (below wide). Stacked on mobile,
+   2-col row on tablet/laptop. Aligned to the reading column width. Hidden at
+   wide, where the sticky sidebars take over. */
+.project-rails {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* No box chrome: the rails are plain content columns. Without a border, a tall
+   Metadata column and a short TOC column read as a normal meta strip — height
+   differences no longer show up as a staggered or half-empty box. */
+.project-rails__item {
+  min-width: 0;
+}
+
+/* Mobile (stacked): a hairline separates Metadata from On-this-page. Removed at
+   tablet+ where they sit side by side (the gap is the separator). */
+.project-rails__item:not(:last-child) {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--landing-border);
+}
+
+/* The TOC sidebar is its own sticky, max-height, overflow-y:auto scroll container
+   by default (its sidebar role at `wide`). Inside the rails it's a plain inline
+   block — neutralize that host scroll so it doesn't nest a second scrollbar inside
+   the rail / show-more, and so its scrollspy auto-scroll stays a no-op here (it
+   only acts when the host is its own scroll container). */
+.project-rails ::ng-deep landing-toc-sidebar {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Sticky meta/TOC sidebars — wide only. Below wide they render inside .project-rails. */
+.project-aside {
+  display: none;
 }
 
 .project-aside__block {
@@ -241,6 +275,8 @@
 }
 
 .project-reading__fig-num {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);
   letter-spacing: var(--landing-tracking-mono);
@@ -291,44 +327,58 @@
   }
 }
 
-/* ─── Responsive ─────────────────────────────────────────────── */
+/* ─── Responsive (locked 4-BP grid via mixins) ───────────────── */
 
-// Below lg — collapse 3-col to 2-col (drop right TOC).
-@media (max-width: 1279px) {
+// Tablet + laptop — Details + TOC sit side by side above the reading column.
+@include bp.respond-to('tablet') {
+  .project-hero {
+    padding: 0 0 32px;
+  }
   .project-body {
-    grid-template-columns: 200px minmax(0, 1fr);
+    padding-block: 32px 96px;
+  }
+  // Wider gap stands in for the removed box borders as the column separator.
+  .project-rails {
+    flex-direction: row;
+    align-items: start;
     gap: 48px;
   }
-  .project-aside--right {
+  .project-rails__item {
+    flex: 1 1 0;
+  }
+  .project-rails__item:not(:last-child) {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+// Wide — restore the 3-col sticky layout: meta · reading · TOC.
+@include bp.respond-to('wide') {
+  .project-body {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 220px;
+    grid-template-areas: 'meta reading toc';
+    gap: 64px;
+    align-items: start;
+  }
+  .project-rails {
     display: none;
   }
-}
-
-// Below md — single column, sidebar above content.
-@media (max-width: 960px) {
-  .project-body {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-
   .project-aside {
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 24px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    position: sticky;
+    top: 96px;
+    align-self: start;
   }
-
-  .project-aside__block {
-    flex: 1 1 200px;
-    min-width: 0;
+  .project-aside--left {
+    grid-area: meta;
   }
-}
-
-@media (max-width: 640px) {
-  .project-hero {
-    padding: 0 0 24px;
+  .project-reading {
+    grid-area: reading;
   }
-  .project-body {
-    padding-block: 16px 64px;
+  .project-aside--right {
+    grid-area: toc;
   }
 }

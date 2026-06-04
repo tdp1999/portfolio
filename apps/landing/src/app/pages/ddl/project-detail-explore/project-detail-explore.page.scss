@@ -210,3 +210,176 @@
     display: flex;
   }
 }
+
+/* ─── Tablet (768px) layout options — A / B / C, fixed-width preview frames ── */
+
+.tablet-options {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.tablet-frame {
+  margin: 0;
+}
+
+.tablet-frame__cap {
+  margin-bottom: 12px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+/* The 768px "device" frame — fixed width so all three compare regardless of viewport. */
+.tablet-frame__view {
+  width: 768px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 24px;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  background: var(--landing-ink-1);
+}
+
+.tf-hero {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border: 1px solid var(--landing-border);
+  border-radius: 6px;
+}
+
+.tf-rail {
+  padding: 16px;
+  border: 1px dashed var(--landing-border);
+  border-radius: 6px;
+}
+
+.tf-article :is(h2, h3, h4):first-child {
+  margin-top: 0;
+}
+
+/* Option A — single column, everything stacked. */
+.tf--a {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Option B — meta rail (left) + reading (right); hero spans both. */
+.tf--b {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 24px 32px;
+  align-items: start;
+}
+
+/* Option C — reading + TOC rail (right); hero + meta strip span both. */
+.tf--c {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 24px 32px;
+  align-items: start;
+}
+
+.tf-span {
+  grid-column: 1 / -1;
+}
+
+.tf-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Shared rail content (meta + toc) typography. */
+.tf-meta {
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tf-meta__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tf-meta__row dt {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.tf-meta__row dd {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  color: var(--landing-text-300);
+}
+
+.tf-meta__sub {
+  margin: 16px 0 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.tf-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  a {
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-sm);
+    color: var(--landing-accent);
+    text-decoration: none;
+  }
+}
+
+.tf-toc__label {
+  margin: 0 0 8px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.tf-toc__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  a {
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-sm);
+    color: var(--landing-text-400);
+    text-decoration: none;
+  }
+
+  li[data-level='3'] {
+    padding-left: 12px;
+  }
+
+  li[data-level='4'] {
+    padding-left: 24px;
+  }
+}

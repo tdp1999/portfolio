@@ -13,6 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LandingScrollspyService } from './landing-scrollspy.service';
 import { InPageSection } from './section.types';
+import { EyebrowComponent } from '../eyebrow';
 
 /**
  * Sticky table-of-contents sidebar with scrollspy active highlighting.
@@ -39,15 +40,13 @@ import { InPageSection } from './section.types';
   selector: 'landing-toc-sidebar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, EyebrowComponent],
   host: {
     style: 'display: block;',
   },
   template: `
     <nav class="toc" [attr.aria-label]="label()">
-      <p class="toc__label font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-3">
-        {{ label() }}
-      </p>
+      <landing-eyebrow class="toc__label" [label]="label()" tone="accent" />
       <ul #list class="toc__list">
         @for (s of items(); track s.id) {
           <li
@@ -81,11 +80,6 @@ import { InPageSection } from './section.types';
       top: 96px;
       max-height: calc(100vh - 96px - 16px);
       overflow-y: auto;
-      /* Left breathing room so the active + endpoint dots (at left: -4px on
-         each rail) are not clipped by overflow:auto's implicit overflow-x. */
-      padding-left: 8px;
-      padding-right: 8px;
-      padding-bottom: 8px;
       /* Hide scrollbar — long TOCs still scroll via wheel/touch, but the
          scrollbar chrome was visually noisy. */
       scrollbar-width: none;
@@ -95,10 +89,18 @@ import { InPageSection } from './section.types';
       height: 0;
     }
 
+    .toc__label {
+      display: block;
+      margin-bottom: 12px;
+    }
+
     .toc__list {
       list-style: none;
       margin: 0;
-      padding: 0;
+      /* Padding lives on the list (not the host) so the label sits flush while
+         the rail still gets left breathing room for the active + endpoint dots
+         (at left: -5px), which would otherwise be clipped by overflow:auto. */
+      padding: 0 8px 8px;
     }
 
     .toc__item {
@@ -245,17 +247,30 @@ export class LandingTocSidebarComponent {
   });
 
   private readonly listEl = viewChild<ElementRef<HTMLUListElement>>('list');
+  private readonly hostRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   constructor() {
-    // Keep the active item scrolled into view inside the TOC's own scroll container,
-    // so long TOCs don't lose track of where the user is.
+    // Keep the active item scrolled into view inside the TOC's OWN scroll container,
+    // so long TOCs don't lose track of where the user is. Critical: scroll the host
+    // container only — never let it bubble to the page. Below `wide` the TOC renders
+    // inline (inside a rail / show-more), where it is NOT its own scroll container;
+    // there `scrollIntoView` would walk up to the document and yank the whole page
+    // back toward the TOC every time scrollspy advances. We instead adjust the host's
+    // own scrollTop, and only when the host actually overflows (i.e. acts as a rail).
     effect(() => {
       const id = this.active();
       if (!id || !isPlatformBrowser(this.platformId)) return;
+      const host = this.hostRef.nativeElement;
+      // Not its own scroll container (inline rail / short list) → nothing to do.
+      if (host.scrollHeight <= host.clientHeight + 1) return;
       const ul = this.listEl()?.nativeElement;
-      if (!ul) return;
-      const el = ul.querySelector<HTMLAnchorElement>(`[data-section-id="${id}"]`);
-      el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      const link = ul?.querySelector<HTMLAnchorElement>(`[data-section-id="${id}"]`);
+      if (!link) return;
+      const hostRect = host.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      // Center the active link within the host viewport, scrolling the host alone.
+      const delta = linkRect.top - hostRect.top - (host.clientHeight - linkRect.height) / 2;
+      host.scrollBy({ top: delta, behavior: 'smooth' });
     });
   }
 }

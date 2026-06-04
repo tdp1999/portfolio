@@ -202,6 +202,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
         desc: 'Opt-in [lightbox] directive — click any figure into a full-screen viewer with carousel nav, double-tap/pinch/⌘-wheel zoom + pan, FLIP open/close, filmstrip, download, srcset always-best. Figures sharing lightboxGroup navigate together.',
       },
       {
+        path: '/ddl/show-more',
+        title: 'Show more · clamp / scroll disclosure',
+        desc: 'landing-show-more — projects any content; over maxHeight it either clamps behind a See more/Less toggle (mode="toggle") or caps + scrolls inside the box (mode="scroll", keeps a 2-col rail row even). SSR/no-JS-safe, self-measuring, ResizeObserver re-measure. Used by project-detail rails.',
+      },
+      {
         path: '/ddl/section-header',
         title: 'Section header · cii propagation',
         desc: 'New primitive (eyebrow + center display + italic accent) applied to 5 home sections — pick copy.',

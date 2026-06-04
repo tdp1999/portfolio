@@ -1,0 +1,76 @@
+@use 'base/prefers' as prefers;
+
+:host {
+  display: block;
+}
+
+.show-more__content {
+  /* Only clamped when `--collapsed` sets the inline max-height; otherwise auto. */
+  overflow: hidden;
+}
+
+/* Scroll mode: capped at maxHeight, overflow scrolls inside the box. Hidden
+   scrollbar chrome (matches the TOC sidebar) — content still scrolls via
+   wheel/touch. */
+.show-more--scroll .show-more__content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Bottom fade on the clamped content so it reads as "more below". */
+.show-more--fade .show-more__content {
+  -webkit-mask-image: linear-gradient(180deg, #000 65%, transparent);
+  mask-image: linear-gradient(180deg, #000 65%, transparent);
+}
+
+.show-more__toggle {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+  transition: color 160ms ease;
+
+  /* Hover stays in the accent family (a lighter accent), not text-300. A
+     light/white hover would "stick" after a click: expanding the content
+     reflows the button out from under the pointer, and the browser keeps the
+     stale :hover until the next mouse move — reading as a stuck white button.
+     Keeping hover accent-toned means the resting (post-click) colour is never
+     lost. Gated to hover-capable pointers so touch taps don't latch it. */
+  @media (hover: hover) {
+    &:hover {
+      color: var(--landing-accent-hover);
+    }
+  }
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}
+
+.show-more__chevron {
+  transition: transform 200ms ease;
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}
+
+.show-more--expanded .show-more__chevron {
+  transform: rotate(180deg);
+}
