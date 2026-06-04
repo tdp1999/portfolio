@@ -1,8 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { effect, inject, type Signal } from '@angular/core';
+import { computed, effect, inject, type Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LandingScrollspyService, type InPageSection } from '@portfolio/landing/shared/ui';
 import { map } from 'rxjs';
 
 export type LegalLocale = 'en' | 'vi';
@@ -14,10 +15,16 @@ export interface LegalPageConfig {
   readonly path: '/privacy' | '/terms';
   readonly titles: Readonly<Record<LegalLocale, string>>;
   readonly descriptions: Readonly<Record<LegalLocale, string>>;
+  /** Optional in-page-nav sections per locale (same anchor IDs, localized titles). */
+  readonly sections?: Readonly<Record<LegalLocale, readonly InPageSection[]>>;
 }
 
 export interface LegalPageState {
   readonly locale: Signal<LegalLocale>;
+  /** Section list for the active locale; empty when no `sections` configured. */
+  readonly sections: Signal<readonly InPageSection[]>;
+  /** Localized "On this page" label for the TOC. */
+  readonly tocLabel: Signal<string>;
   setLocale(lang: LegalLocale): void;
 }
 
@@ -31,11 +38,16 @@ export function useLegalPage(config: LegalPageConfig): LegalPageState {
   const meta = inject(Meta);
   const route = inject(ActivatedRoute);
   const router = inject(Router);
+  // Optional: pages that render a TOC provide LandingScrollspyService themselves.
+  const scrollspy = inject(LandingScrollspyService, { optional: true });
 
   const locale = toSignal(
     route.queryParamMap.pipe(map((q) => (q.get('lang') === 'vi' ? ('vi' as const) : ('en' as const)))),
     { initialValue: 'en' as const }
   );
+
+  const sections = computed<readonly InPageSection[]>(() => config.sections?.[locale()] ?? []);
+  const tocLabel = computed(() => (locale() === 'vi' ? 'Trong trang này' : 'On this page'));
 
   effect(() => {
     const lang = locale();
@@ -44,8 +56,14 @@ export function useLegalPage(config: LegalPageConfig): LegalPageState {
     setHreflangLinks(document, config.path, lang);
   });
 
+  // Keep scrollspy in sync with the active-locale section list (no-op when the
+  // page didn't provide the service or configure sections).
+  effect(() => scrollspy?.setSections(sections()));
+
   return {
     locale,
+    sections,
+    tocLabel,
     setLocale(lang) {
       void router.navigate([], {
         relativeTo: route,

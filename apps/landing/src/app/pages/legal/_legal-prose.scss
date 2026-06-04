@@ -4,6 +4,8 @@
    Content rhythm and table styling come from `.landing-prose`
    (libs/landing/shared/ui/src/styles/_prose.scss). */
 
+@use 'base/breakpoints' as bp;
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -19,15 +21,70 @@
 .legal-page__body {
   padding-block: 32px 64px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     padding-block: 48px 96px;
   }
 }
 
-/* Reading column — mirrors `.project-reading` width so legal pages share the
-   established editorial measure. Centered inside the outer container. */
+/* Reading column — editorial measure tuned to line-length. Forked from the
+   720px `.project-reading` width (responsive review F2): at 720px the body ran
+   ~90 chars/line, over the 50–75ch comfort ceiling. Inter averages ~0.5em per
+   character, so `37em` ≈ 74 chars — squarely in range — and self-adjusts with
+   the fluid body size per BP. (`ch` is unreliable here: Inter's "0" glyph is
+   far wider than its average char, so `68ch` resolved to 686px ≈ 86 chars.)
+   No effect on mobile, where the column is already narrower than 37em.
+   Centered inside the outer container. */
 .legal-reading {
-  max-width: 720px;
+  max-width: 37em;
   margin-inline: auto;
   min-width: 0;
+}
+
+/* F5 — processors table: give it room so the `.landing-prose__table-wrap`
+   scrolls horizontally on narrow screens instead of cramming each cell into a
+   3–4 line stack (and breaking "ap-/southeast-1" mid-token). Scoped to legal so
+   other prose tables keep their auto-fit behavior. */
+.legal-reading .landing-prose__table-wrap > table {
+  min-width: 34rem;
+}
+
+/* ── In-page navigation (review F1) ──────────────────────────────────
+   Tablet/mobile/laptop: an inline "On this page" block above the prose.
+   Wide: a rail in the right margin so the reading column stays CENTERED
+   (the rail is out of flow and never shifts the text). Reuses
+   landing-toc-sidebar + LandingScrollspyService (see the legal page
+   components). The reading column keeps its own centering from
+   `.legal-reading`.
+
+   The rail is an ABSOLUTE column spanning the body height; the sidebar
+   inside keeps its default `position: sticky`, so it follows the scroll
+   but is bounded by the body — it scrolls away before the global
+   full-width footer instead of overlapping it (a plain `position: fixed`
+   rail, like blog-detail's, would sit over our full-width footer because
+   the legal footer isn't a narrow centered block like the blog's). */
+
+.legal-toc-rail {
+  display: none;
+}
+
+/* Visibility-toggle wrapper for the inline TOC card; the card itself
+   (dashed box + list) is the <landing-toc-inline> component. */
+.legal-toc-inline {
+  margin-bottom: 40px;
+}
+
+@include bp.respond-to('wide') {
+  .legal-page__body {
+    position: relative;
+  }
+  .legal-toc-inline {
+    display: none;
+  }
+  .legal-toc-rail {
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    right: 48px;
+    width: 240px;
+  }
 }
