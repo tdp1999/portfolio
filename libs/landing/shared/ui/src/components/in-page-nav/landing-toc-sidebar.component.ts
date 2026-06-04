@@ -60,6 +60,7 @@ import { EyebrowComponent } from '../eyebrow';
             <a
               [routerLink]="[]"
               [fragment]="s.id"
+              queryParamsHandling="preserve"
               [attr.data-section-id]="s.id"
               [attr.aria-current]="active() === s.id ? 'location' : null"
               class="toc__link"
