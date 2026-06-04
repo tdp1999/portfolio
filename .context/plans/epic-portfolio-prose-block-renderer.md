@@ -7,7 +7,7 @@
 
 ## Why this exists
 
-The RTE epic stores rich content as **JSON AST canonical + sanitized HTML cache** and renders the landing read-path via `[innerHTML]="contentHtml"` plus a directive that scans `[data-block="image-ref"]` and mounts a component. That islands-hydration approach is correct for **one** block type. It does not scale to a CMS-like model where the author composes **many** custom blocks — each with its own UI *and its own logic* — the way WordPress/Gutenberg plugins register block types.
+The RTE epic stores rich content as **JSON AST canonical + sanitized HTML cache** and renders the landing read-path via `[innerHTML]="contentHtml"` plus a directive that scans `[data-block="image-ref"]` and mounts a component. That islands-hydration approach is correct for **one** block type. It does not scale to a CMS-like model where the author composes **many** custom blocks — each with its own UI _and its own logic_ — the way WordPress/Gutenberg plugins register block types.
 
 The mental shift: **content is a structured node tree, not HTML.** HTML is one serialization. To get live, logic-bearing components in prose we render the **AST directly into an Angular component tree via a registry**, instead of hydrating dead HTML. This is the Gutenberg/Portable-Text model (a `nodeType → renderer` registry with an unknown-block fallback), adapted to Angular SSR.
 
@@ -25,13 +25,16 @@ Landing never reads E's (Tiptap) JSON shape directly. We define our own stable c
 
 ```ts
 export interface PortableNode {
-  type: string;                    // OUR node type (e.g. 'paragraph', 'gallery')
+  type: string; // OUR node type (e.g. 'paragraph', 'gallery')
   attrs?: Record<string, unknown>; // Zod-validated
-  marks?: Mark[];                  // text nodes only
-  text?: string;                   // text nodes
+  marks?: Mark[]; // text nodes only
+  text?: string; // text nodes
   content?: PortableNode[];
 }
-export interface PortableDocument { schemaVersion: number; content: PortableNode[]; }
+export interface PortableDocument {
+  schemaVersion: number;
+  content: PortableNode[];
+}
 ```
 
 The envelope mirrors ProseMirror, but **node names + attrs are ours**. `schemaVersion` is **our** version, independent of E's. This is the answer to the "E schema may change" concern (#6): the only coupling lives in one adapter (D3); everything downstream keys on our stable types.
@@ -52,9 +55,9 @@ Blocks are registered via a DI multi-provider token — adding a block = adding 
 
 ```ts
 export interface BlockRenderer<I = Record<string, unknown>> {
-  type: string;                                            // matches PortableNode.type
+  type: string; // matches PortableNode.type
   component: Type<unknown>;
-  inputs: (node: PortableNode, ctx: RenderContext) => I;   // node.attrs → @Input()s
+  inputs: (node: PortableNode, ctx: RenderContext) => I; // node.attrs → @Input()s
 }
 export const BLOCK_RENDERERS = new InjectionToken<readonly BlockRenderer[]>('BLOCK_RENDERERS');
 ```
@@ -62,13 +65,14 @@ export const BLOCK_RENDERERS = new InjectionToken<readonly BlockRenderer[]>('BLO
 The renderer walks the tree and injects conditionally — declaratively, so Angular SSR + (incremental) hydration handle it natively, with no manual `createComponent` after `innerHTML`:
 
 ```html
-@let r = rendererFor(node.type);
-@if (r) {
-  <ng-container *ngComponentOutlet="r.component; inputs: r.inputs(node, ctx)" />
+@let r = rendererFor(node.type); @if (r) {
+<ng-container *ngComponentOutlet="r.component; inputs: r.inputs(node, ctx)" />
 } @else if (node.text != null) {
-  <redoc-inline [node]="node" />        <!-- D5 -->
+<redoc-inline [node]="node" />
+<!-- D5 -->
 } @else {
-  <redoc-element [node]="node" />       <!-- recursive p/h2/ul/... -->
+<redoc-element [node]="node" />
+<!-- recursive p/h2/ul/... -->
 }
 ```
 
@@ -103,32 +107,32 @@ Angular SSR emits full HTML from the AST renderer, so Googlebot / AI crawlers ge
 
 ## Library boundary changes
 
-| Lib | Change |
-|---|---|
-| `libs/shared/redoc-rte` (contract) | **Add** `PortableDocument`/`PortableNode`/`Mark`, `BlockRenderer`, `BLOCK_RENDERERS` token, `provideBlockRenderers()`, `RenderContext`, and per-block Zod attr schemas. |
-| `libs/shared/redoc-rte-renderer` | **Rewrite** read-path from "innerHTML + DOMPurify" to an **AST walker + `NgComponentOutlet`** (`<redoc-rte-render [doc]="...">`). Keep a separate `<redoc-rte-render-html [html]="...">` for the cache-fallback consumers (RSS/llms.txt/OG/no-JS). |
-| BE `RichTextService` (RTE Phase 4) | **Extend** `toCanonicalForm` to run the E→canonical adapter (D3) before HTML generation; persist canonical JSON. |
-| Block component libs | New thin wrappers (e.g. `FigureBlockComponent`, `GalleryBlockComponent`) over existing `landing-figure` / `landing-gallery` primitives. |
+| Lib                                | Change                                                                                                                                                                                                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `libs/shared/redoc-rte` (contract) | **Add** `PortableDocument`/`PortableNode`/`Mark`, `BlockRenderer`, `BLOCK_RENDERERS` token, `provideBlockRenderers()`, `RenderContext`, and per-block Zod attr schemas.                                                                            |
+| `libs/shared/redoc-rte-renderer`   | **Rewrite** read-path from "innerHTML + DOMPurify" to an **AST walker + `NgComponentOutlet`** (`<redoc-rte-render [doc]="...">`). Keep a separate `<redoc-rte-render-html [html]="...">` for the cache-fallback consumers (RSS/llms.txt/OG/no-JS). |
+| BE `RichTextService` (RTE Phase 4) | **Extend** `toCanonicalForm` to run the E→canonical adapter (D3) before HTML generation; persist canonical JSON.                                                                                                                                   |
+| Block component libs               | New thin wrappers (e.g. `FigureBlockComponent`, `GalleryBlockComponent`) over existing `landing-figure` / `landing-gallery` primitives.                                                                                                            |
 
 ## Phases (provisional — detail when this epic opens)
 
 1. **Contract** — `PortableDocument` types, `BlockRenderer`/`BLOCK_RENDERERS`/`provideBlockRenderers`, `RenderContext`, first Zod attr schemas (`paragraph`/`heading`/`image-ref`).
 2. **E→canonical adapter** — anti-corruption mapper + Zod validation in `RichTextService` (BE write-time). Migrate stored docs lazily (reuse RTE `schemaVersion`/`migrateDoc` discipline, but on **our** version).
 3. **AST renderer** — `<redoc-rte-render [doc]>` walker, `redoc-element` (recursive structural), `redoc-inline` (declarative marks, D5b), unknown-block fallback.
-4. **Block registry + first blocks** — wire `BLOCK_RENDERERS` in landing `app.config.ts`; ship `image-ref` (replacing the RTE Phase 7 `data-block` directive) + one additional block (`gallery`) as the proof that "register a new block" is one provider entry.
+4. **Block registry + first blocks** — wire `BLOCK_RENDERERS` in landing `app.config.ts`; ship `image-ref` (replacing the RTE Phase 7 `data-block` directive) + one additional block (`gallery`) as the proof that "register a new block" is one provider entry. Both block components wrap the **lightbox-enabled** landing primitives (`image-ref` → `<landing-figure lightbox>`, `gallery` → `<landing-gallery [lightbox]>`), so **in-content figures gain the full-screen viewer** here — this is the sanctioned solution to project-detail/blog content figures that the current `[innerHTML]` read-path cannot lightbox (see `lightbox.md` §6).
 5. **Cache-fallback split** — `<redoc-rte-render-html>` for RSS/llms.txt/OG/no-JS; confirm SSR output of the AST path is crawler-complete (drop reliance on the cache for SEO).
 6. **Consumer swap** — point `project-detail` + `blog-detail` read-paths at `<redoc-rte-render [doc]>`; retire the RTE Phase 6/7 `[innerHTML]` + `data-block` hydration.
 
 ## Risks & mitigations
 
-| Risk | Mitigation |
-|---|---|
-| `NgComponentOutlet` hydration mismatch under SSR | Declarative outlet participates in SSR + incremental hydration natively; add a hydration smoke test per block. Prefer this over manual `createComponent`. |
-| Inline-mark renderer balloons | Marks are a fixed small whitelist (bold/italic/link/code/u/s). Recursive template, no open-ended HTML. |
-| E schema drift breaks ingest | Coupling isolated to the D3 adapter + our `schemaVersion`. E changes never reach the renderer. |
-| Media resolution (`ctx.media`) async vs SSR | Resolve media metadata before render (batched, per-page, via landing data-access); `RenderContext` exposes a synchronous lookup over the pre-resolved map. |
-| Two render paths (AST + HTML-cache) drift | The AST path is canonical; the cache is regenerated from the same canonical JSON at write-time. Single upstream source. |
-| Premature build (only one block type exists) | This epic is explicitly sequenced AFTER RTE. The RTE `data-block` approach is the sanctioned interim for the single `image-ref` block; do not start this epic until a 2nd block type is genuinely needed. |
+| Risk                                             | Mitigation                                                                                                                                                                                                |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NgComponentOutlet` hydration mismatch under SSR | Declarative outlet participates in SSR + incremental hydration natively; add a hydration smoke test per block. Prefer this over manual `createComponent`.                                                 |
+| Inline-mark renderer balloons                    | Marks are a fixed small whitelist (bold/italic/link/code/u/s). Recursive template, no open-ended HTML.                                                                                                    |
+| E schema drift breaks ingest                     | Coupling isolated to the D3 adapter + our `schemaVersion`. E changes never reach the renderer.                                                                                                            |
+| Media resolution (`ctx.media`) async vs SSR      | Resolve media metadata before render (batched, per-page, via landing data-access); `RenderContext` exposes a synchronous lookup over the pre-resolved map.                                                |
+| Two render paths (AST + HTML-cache) drift        | The AST path is canonical; the cache is regenerated from the same canonical JSON at write-time. Single upstream source.                                                                                   |
+| Premature build (only one block type exists)     | This epic is explicitly sequenced AFTER RTE. The RTE `data-block` approach is the sanctioned interim for the single `image-ref` block; do not start this epic until a 2nd block type is genuinely needed. |
 
 ## Acceptance criteria
 

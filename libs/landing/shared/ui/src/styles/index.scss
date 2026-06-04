@@ -29,6 +29,9 @@
 /* Landing prose — `.landing-prose` class with vertical rhythm for long-form. */
 @use 'prose' as landing-prose;
 
+/* Lightbox hover affordance — `.lightbox-enabled` figures zoom slightly on hover. */
+@use 'lightbox-affordance' as landing-lightbox-affordance;
+
 /* Motion library — one file per effect. See libs/landing/shared/ui/src/motion/. */
 @use '../motion/motion' as landing-motion;
 

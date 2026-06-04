@@ -22,7 +22,8 @@ import type { LightboxEntry, LightboxItem } from './lightbox.types';
   host: {
     role: 'button',
     tabindex: '0',
-    '[style.cursor]': "enabled() ? 'pointer' : null",
+    '[class.lightbox-enabled]': 'enabled()',
+    '[style.cursor]': "enabled() ? 'zoom-in' : null",
     '(click)': 'activate($event)',
     '(keydown.enter)': 'activate($event)',
     '(keydown.space)': 'activate($event)',

@@ -1,0 +1,29 @@
+/* Lightbox hover affordance — any element carrying the `[lightbox]` directive
+ * (the directive adds `.lightbox-enabled` when active) signals it's clickable
+ * into the full-screen viewer: `cursor: zoom-in` (set by the directive host) plus
+ * a subtle image zoom on hover/keyboard-focus. The host frames (`landing-figure`,
+ * gallery cells) already `overflow: hidden`, so the scaled image stays clipped.
+ * Motion-gated — no transform when the user prefers reduced motion. */
+@use 'base/prefers' as prefers;
+
+.lightbox-enabled {
+  img {
+    transition: transform 240ms ease;
+  }
+
+  &:hover img,
+  &:focus-visible img {
+    transform: scale(1.03);
+  }
+
+  @include prefers.reduce-motion {
+    img {
+      transition: none;
+    }
+
+    &:hover img,
+    &:focus-visible img {
+      transform: none;
+    }
+  }
+}
