@@ -1,8 +1,7 @@
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
-}
-:host + :host {
-  margin-top: 64px;
 }
 
 .content-section {
@@ -36,7 +35,10 @@
 
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* auto-fill (not auto-fit): a lone card keeps one-column width instead of
+     stretching across the empty tracks. min(320px, 100%) lets the track shrink
+     below 320px on narrow phones (≤360px) so it never forces h-overflow. */
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -121,13 +123,15 @@
   color: var(--landing-text-500);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .content-card,
-  .content-card__monogram,
-  .content-card__arrow {
+.content-card,
+.content-card__monogram,
+.content-card__arrow {
+  @include prefers.reduce-motion {
     transition: none;
   }
-  .content-card--linked:hover {
+}
+.content-card--linked:hover {
+  @include prefers.reduce-motion {
     transform: none;
   }
 }

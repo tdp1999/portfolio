@@ -216,7 +216,12 @@ export class ContactPage {
       press: ['Press / podcast', 'Báo chí'],
       hi: ['Just say hi', 'Chào hỏi'],
     };
-    return CONTACT_PURPOSES.map((id) => ({ id, label: isVi ? labels[id][1] : labels[id][0] }));
+    // 'hi' (the default-active purpose) leads so the chip strip opens at its
+    // start on mobile — otherwise the horizontal-scroll strip auto-scrolls to
+    // the active chip at the far end, hiding the other purposes behind a
+    // back-chevron and half-cutting the last visible one.
+    const order: readonly ContactPurpose[] = ['hi', ...CONTACT_PURPOSES.filter((id) => id !== 'hi')];
+    return order.map((id) => ({ id, label: isVi ? labels[id][1] : labels[id][0] }));
   });
 
   protected readonly heroCopy = computed(() =>

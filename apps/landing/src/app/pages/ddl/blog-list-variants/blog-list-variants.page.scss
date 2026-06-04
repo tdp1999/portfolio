@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -920,15 +922,28 @@
   margin: 48px 0 32px;
 }
 
-/* ─── Mobile breakpoints ─────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .mag-v1 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+/* ─── V1 featured strip — collapse on device breakpoints ───────────
+   Mirrors production `blog-list-page.scss`: 1-col below `laptop`, the lead
+   hero floated to the top of the stack (was grid-placement), side pairs
+   row→column at `tablet`. Uses the contract mixins, not raw `@media`. */
+@include bp.respond-down('laptop') {
+  .mag-v1,
+  .mag-v1[data-count='4'],
+  .mag-v1[data-count='3'],
+  .mag-v1[data-count='2'] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
-  .mag-hero--center {
-    grid-column: 1 / span 2;
-    grid-row: 1;
+  // Lead story leads (default DOM order is left-side → hero → right-side).
+  .mag-v1 .mag-hero--center {
+    order: -1;
+  }
+  // Re-show the side columns the desktop count-variants hide, so no featured
+  // card disappears once the strip is a single stacked column.
+  .mag-v1[data-count='4'] .mag-v1__side:first-child,
+  .mag-v1[data-count='2'] .mag-v1__side:first-child,
+  .mag-v1[data-count='1'] .mag-v1__side {
+    display: flex;
   }
   .mag-v1__side {
     flex-direction: row;
@@ -936,21 +951,23 @@
   .mag-v1__side .mag-side {
     flex: 1 1 0;
   }
+}
+@include bp.respond-down('tablet') {
+  .mag-v1__side {
+    flex-direction: column;
+  }
+}
+
+/* ─── Other variants + archive list (DDL sandbox — not graduated) ──── */
+@media (max-width: 1024px) {
   .mag-v3__grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .mag-v1,
   .mag-v2 {
     grid-template-columns: 1fr;
-  }
-  .mag-v1 .mag-hero--center {
-    grid-column: 1;
-  }
-  .mag-v1__side {
-    flex-direction: column;
   }
   .mag-hero--split .mag-hero__link,
   .mag-hero--top .mag-hero__link {

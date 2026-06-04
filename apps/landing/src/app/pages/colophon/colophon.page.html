@@ -13,32 +13,34 @@
         <landing-content-section [section]="section" class="mb-12" />
       }
 
-      <section id="this-site" class="colophon-prose" aria-labelledby="colophon-this-site-h">
-        <header class="colophon-prose__head">
-          <h2 id="colophon-this-site-h" class="colophon-prose__title">
-            <a class="colophon-prose__anchor" [routerLink]="[]" fragment="this-site">This site</a>
-          </h2>
-        </header>
-        <p>
-          Authored end-to-end by one person — design system, content, backend, frontend, ops. The public landing reads
-          from a small NestJS API backed by Postgres; an admin console in the same monorepo edits every section you see,
-          so a typo fix is a 12-second round-trip and a deploy nobody notices. The visual direction settled across an E4
-          moodboard pass — dark, restrained accent, editorial-serif italic for the human moments. The writing is the
-          part I edited most: read aloud, cut, read aloud again.
-        </p>
-      </section>
+      <div class="colophon-prose-group">
+        <section id="this-site" class="colophon-prose" aria-labelledby="colophon-this-site-h">
+          <header class="colophon-prose__head">
+            <h2 id="colophon-this-site-h" class="colophon-prose__title">
+              <a class="colophon-prose__anchor" [routerLink]="[]" fragment="this-site">This site</a>
+            </h2>
+          </header>
+          <p>
+            Authored end-to-end by one person — design system, content, backend, frontend, ops. The public landing reads
+            from a small NestJS API backed by Postgres; an admin console in the same monorepo edits every section you
+            see, so a typo fix is a 12-second round-trip and a deploy nobody notices. The visual direction settled
+            across an E4 moodboard pass — dark, restrained accent, editorial-serif italic for the human moments. The
+            writing is the part I edited most: read aloud, cut, read aloud again.
+          </p>
+        </section>
 
-      <section id="updates" class="colophon-prose" aria-labelledby="colophon-updates-h">
-        <header class="colophon-prose__head">
-          <h2 id="colophon-updates-h" class="colophon-prose__title">
-            <a class="colophon-prose__anchor" [routerLink]="[]" fragment="updates">Updates</a>
-          </h2>
-        </header>
-        <p>
-          Ship-and-forget by default. The case studies, /uses, and this page change when the work behind them changes —
-          not on a calendar. If you spot something stale, the email at the bottom is mine, not a contact form.
-        </p>
-      </section>
+        <section id="updates" class="colophon-prose" aria-labelledby="colophon-updates-h">
+          <header class="colophon-prose__head">
+            <h2 id="colophon-updates-h" class="colophon-prose__title">
+              <a class="colophon-prose__anchor" [routerLink]="[]" fragment="updates">Updates</a>
+            </h2>
+          </header>
+          <p>
+            Ship-and-forget by default. The case studies, /uses, and this page change when the work behind them changes
+            — not on a calendar. If you spot something stale, the email at the bottom is mine, not a contact form.
+          </p>
+        </section>
+      </div>
     </landing-container>
   </section>
 </landing-page-shell>

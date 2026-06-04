@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -10,11 +12,29 @@
   border: 0;
 }
 
-/* Inline prose blocks ("This site", "Updates") match content-section's
-   heading rhythm but render a single paragraph instead of a card grid. */
+/* The two prose blocks ("This site", "Updates"). Stacked full-width on
+   mobile/tablet; two columns at laptop+ so they fill the row like the card
+   grids above instead of leaving a wide empty gutter on the right. 48px
+   cadence matches the card-section spacing (mb-12). */
+.colophon-prose-group {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+
+  @include bp.respond-to('laptop') {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+  }
+}
+
+/* Inline prose blocks match content-section's heading rhythm but render a
+   single paragraph instead of a card grid. max-width caps the reading measure
+   when stacked (≤1023px) so lines stay ~80 cpl; at laptop+ the 2-col track
+   (~504px) is narrower than 64ch, so the cap is inactive and prose fills the
+   column. */
 .colophon-prose {
   scroll-margin-top: 80px;
-  margin-top: 64px;
   max-width: 64ch;
 }
 

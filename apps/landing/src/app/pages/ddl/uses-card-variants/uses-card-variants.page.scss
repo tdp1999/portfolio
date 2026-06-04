@@ -212,10 +212,13 @@
   color: var(--landing-text-500);
 }
 
-/* ─── V2 — Monogram tile mini-card ────────────────────────────── */
+/* ─── V2 — Monogram tile mini-card (shipped as landing-content-section) ─── */
 .v2-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* auto-fill keeps a lone card at one-column width (no full-row stretch);
+     min(320px, 100%) prevents h-overflow on ≤360px phones. Mirrors the
+     shipped content-section grid. */
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 12px;
 }
 

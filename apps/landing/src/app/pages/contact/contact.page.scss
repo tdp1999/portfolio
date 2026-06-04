@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -18,17 +20,24 @@
 .contact-page__main {
   padding-block: 32px 64px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     padding-block: 48px 96px;
   }
 }
 .contact-page__grid {
   display: grid;
   gap: 48px;
+  /* Stacked range (mobile → <laptop): cap the single column to a comfortable
+     form width so inputs don't stretch to ~800px and the channel rows don't
+     leave a huge gutter before the Copy button. Cap lifts at the 2-col break. */
+  max-width: 640px;
+  margin-inline: auto;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     gap: 64px;
+    max-width: none;
+    margin-inline: 0;
   }
 }
 .contact-page__form-col {
@@ -255,6 +264,9 @@
   color: var(--landing-accent);
 }
 .contact-channels__copy {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
   padding: 4px 12px;
   border: 1px solid var(--landing-border);
   border-radius: 999px;
@@ -278,7 +290,7 @@
   padding-block: 48px 80px;
   border-top: 1px dashed color-mix(in srgb, var(--landing-border) 60%, transparent);
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     padding-block: 64px 112px;
   }
 }
@@ -287,7 +299,7 @@
   justify-content: center;
   min-height: 280px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     min-height: 480px;
   }
 }
@@ -303,9 +315,25 @@
 }
 
 /* ═══ Mobile tweaks ══════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .contact-channels__row {
     grid-template-columns: 72px 1fr auto;
     gap: 8px;
+  }
+}
+
+/* In the 2-col layout the channels column is narrow (~288px at laptop), so the
+   fixed 80px label + body-md value pushed long emails / URLs onto a second,
+   mid-word-broken line. Size the label to its text, tighten the gap, and drop
+   the value to body-sm so they sit on one line down to the laptop break. The
+   roomy stacked layout above keeps the larger value type. */
+@include bp.respond-to('laptop') {
+  .contact-channels__row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .contact-channels__value {
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
   }
 }

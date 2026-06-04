@@ -35,8 +35,14 @@ export interface ViewToggleOption {
   imports: [IconComponent, LandingTooltipComponent],
   template: `
     <div class="lvt" role="radiogroup" [attr.aria-label]="ariaLabel()">
-      @for (option of options(); track option.id; let index = $index; let last = $last) {
-        <landing-tooltip [text]="option.description ?? option.label" position="bottom">
+      @for (option of options(); track option.id) {
+        <!--
+          align="end" → bubbles open leftward (right edge pinned to the trigger).
+          This control is right-anchored in every toolbar that uses it (margin-left:auto),
+          so a centered/leftward-opening bubble escapes the viewport's right edge on
+          narrow screens. Opening left keeps it on-screen.
+        -->
+        <landing-tooltip [text]="option.description ?? option.label" position="bottom" align="end">
           <button
             type="button"
             class="lvt__btn"
