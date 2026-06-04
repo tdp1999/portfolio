@@ -179,7 +179,7 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
       {
         path: '/ddl/fragment-navigation',
         title: 'Fragment navigation',
-        desc: 'Four in-page nav patterns — FAB, TOC sidebar, section dots + reading bar, floating pill.',
+        desc: 'Five in-page nav patterns — FAB, sticky TOC sidebar, inline TOC (mobile), section dots + reading bar, floating pill.',
       },
       {
         path: '/ddl/interactions',

@@ -8,12 +8,13 @@ import {
   LandingReadingProgressComponent,
   LandingScrollspyService,
   LandingSectionDotsComponent,
+  LandingTocInlineComponent,
   LandingTocSidebarComponent,
   SegmentedComponent,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 
-type NavPattern = 'fab' | 'toc' | 'dots' | 'pill';
+type NavPattern = 'fab' | 'toc' | 'inline' | 'dots' | 'pill';
 
 const SECTIONS: readonly InPageSection[] = [
   { id: 'intro', title: 'Introduction' },
@@ -33,6 +34,7 @@ const LOREM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean e
 const PATTERN_OPTIONS = [
   { id: 'fab', label: 'Scroll-to-top FAB' },
   { id: 'toc', label: 'Sticky TOC sidebar' },
+  { id: 'inline', label: 'Inline TOC (mobile)' },
   { id: 'dots', label: 'Section dots + progress' },
   { id: 'pill', label: 'Floating pill + mini-map' },
 ];
@@ -48,6 +50,7 @@ const PATTERN_OPTIONS = [
     LandingBreadcrumbComponent,
     LandingHeadingComponent,
     LandingTocSidebarComponent,
+    LandingTocInlineComponent,
     LandingSectionDotsComponent,
     LandingReadingProgressComponent,
     LandingFloatingPillNavComponent,
@@ -86,6 +89,11 @@ const PATTERN_OPTIONS = [
     <landing-container size="wide">
       <div class="grid gap-12 py-12" [class.laptop:grid-cols-[1fr_220px]]="pattern() === 'toc'">
         <article class="space-y-16">
+          @if (pattern() === 'inline') {
+            <div class="max-w-prose">
+              <landing-toc-inline [sections]="sections" />
+            </div>
+          }
           @for (s of sections; track s.id) {
             <section [id]="s.id">
               <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
@@ -147,7 +155,7 @@ export class FragmentNavigationPage {
   }
 
   setPattern(value: string): void {
-    if (value === 'fab' || value === 'toc' || value === 'dots' || value === 'pill') {
+    if (value === 'fab' || value === 'toc' || value === 'inline' || value === 'dots' || value === 'pill') {
       this.pattern.set(value);
     }
   }

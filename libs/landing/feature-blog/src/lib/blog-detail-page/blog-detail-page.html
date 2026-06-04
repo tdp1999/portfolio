@@ -66,16 +66,9 @@
           </header>
 
           @if (!hideToc() && toc().length > 0) {
-            <nav class="blog-toc-inline" aria-label="On this page">
-              <p class="blog-toc-inline__label">On this page</p>
-              <ol class="blog-toc-inline__list">
-                @for (s of toc(); track s.id) {
-                  <li [attr.data-level]="s.level ?? 2">
-                    <a [href]="'#' + s.id">{{ s.title }}</a>
-                  </li>
-                }
-              </ol>
-            </nav>
+            <div class="blog-toc-inline">
+              <landing-toc-inline [sections]="toc()" />
+            </div>
           }
 
           <div class="blog-prose landing-prose" landingProseAnchors [innerHTML]="contentHtml()"></div>

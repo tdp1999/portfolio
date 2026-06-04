@@ -89,47 +89,12 @@
   margin: 12px 0 0;
 }
 
-/* ─── Inline TOC (shown below 1280px) ────────────────────────────── */
+/* ─── Inline TOC (shown below 1280px) ─────────────────────────────────
+   Layout-only wrapper; the card itself is the <landing-toc-inline>
+   component (libs/landing/shared/ui/components/in-page-nav). */
 .blog-toc-inline {
   max-width: 680px;
   margin: 0 auto 40px;
-  padding: 16px 20px;
-  border: 1px dashed var(--landing-border);
-  border-radius: 4px;
-  background: var(--landing-ink-1);
-}
-.blog-toc-inline__label {
-  margin: 0 0 8px;
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-sm);
-  letter-spacing: var(--landing-tracking-mono);
-  text-transform: uppercase;
-  color: var(--landing-text-500);
-}
-.blog-toc-inline__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-family: var(--landing-font-body);
-  font-size: var(--landing-body-sm);
-
-  li[data-level='3'] {
-    padding-left: 16px;
-  }
-  li[data-level='4'] {
-    padding-left: 32px;
-  }
-  a {
-    color: var(--landing-text-300);
-    text-decoration: none;
-
-    &:hover {
-      color: var(--landing-accent);
-    }
-  }
 }
 
 /* ─── Prose body ─────────────────────────────────────────────────── */
@@ -290,11 +255,13 @@
   }
 }
 
-/* ─── Floating far-right TOC (desktop only ≥1280px) ──────────────── */
-/* `landing-toc-sidebar` has its own `position: sticky + max-height +
-   overflow-y` on host. Inside a `position: fixed` wrapper that double-clips
-   and creates nested-sticky overlap. Reset host sticky to `position: static`
-   so the fixed wrapper alone handles positioning. */
+/* ─── Far-right TOC (desktop only ≥1280px) ───────────────────────────
+   An ABSOLUTE column in the right margin spanning the component height
+   (`:host` is position:relative). `landing-toc-sidebar` keeps its own
+   default `position: sticky`, so it follows the scroll but is bounded by
+   the host — it scrolls away before the global full-width footer instead
+   of overlapping it. (Was `position: fixed`, which sits over the footer
+   once a long post scrolls the footer up into the pinned rail's band.) */
 .blog-floating-toc {
   display: none;
 }
@@ -304,18 +271,10 @@
   }
   .blog-floating-toc {
     display: block;
-    position: fixed;
-    top: 120px;
+    position: absolute;
+    inset-block: 0;
     right: 48px;
     width: 280px;
-    max-height: calc(100vh - 160px);
-    overflow-y: auto;
-    z-index: 5;
-  }
-  .blog-floating-toc ::ng-deep landing-toc-sidebar {
-    position: static;
-    max-height: none;
-    overflow: visible;
   }
 }
 
