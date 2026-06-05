@@ -1,4 +1,5 @@
 @use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
 
 /* Host stretches to grid/flex cell so multi-card rows align at equal height. */
 :host {
@@ -54,13 +55,15 @@
     0 12px 40px color-mix(in srgb, var(--landing-accent) 22%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .card--tilt {
+.card--tilt {
+  @include prefers.reduce-motion {
     transition:
       box-shadow 300ms ease,
       border-color 300ms ease;
   }
-  .card--tilt:hover {
+}
+.card--tilt:hover {
+  @include prefers.reduce-motion {
     transform: none;
   }
 }

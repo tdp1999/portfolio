@@ -1,6 +1,9 @@
 // DDL Component Styles
 // Component-scoped styles only. Most layout uses Tailwind utilities in the template.
 
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
 // ─────────────────────────────────────────────────────────
 // Compact DDL subroute nav (replaces card grid)
 // 1 row per subpage · grid: path | title+desc | arrow
@@ -107,7 +110,7 @@
     align-self: center;
   }
 
-  @media (max-width: 768px) {
+  @include bp.respond-down('tablet') {
     &__row {
       grid-template-columns: 1fr 24px;
       grid-template-areas:
@@ -133,7 +136,7 @@
     gap: 32px;
     align-items: center;
 
-    @media (max-width: 768px) {
+    @include bp.respond-down('tablet') {
       grid-template-columns: 1fr;
     }
   }
@@ -292,17 +295,23 @@
     color: var(--landing-text-300);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .chip-fx {
+  .chip-fx {
+    @include prefers.reduce-motion {
       transition: none;
     }
-    .chip-fx--c:hover {
+  }
+  .chip-fx--c:hover {
+    @include prefers.reduce-motion {
       letter-spacing: var(--landing-tracking-mono);
     }
-    .status-fx--a .status-fx__dot {
+  }
+  .status-fx--a .status-fx__dot {
+    @include prefers.reduce-motion {
       animation: none;
     }
-    .status-fx--b:hover .status-fx__dot::after {
+  }
+  .status-fx--b:hover .status-fx__dot::after {
+    @include prefers.reduce-motion {
       animation: none;
     }
   }
@@ -322,7 +331,7 @@
     gap: 32px;
     align-items: start;
 
-    @media (max-width: 768px) {
+    @include bp.respond-down('tablet') {
       grid-template-columns: 1fr;
     }
   }
@@ -469,25 +478,33 @@
   }
 
   // Reduced motion — kill all transitions, keep static states
-  @media (prefers-reduced-motion: reduce) {
-    .fx__arrow,
-    .fx__text,
-    .fx__rail,
-    .fx__arrow--ghost,
-    .fx__arrow--lead {
+  .fx__arrow,
+  .fx__text,
+  .fx__rail,
+  .fx__arrow--ghost,
+  .fx__arrow--lead {
+    @include prefers.reduce-motion {
       transition: none !important;
     }
-    .fx-a:hover .fx__rail {
+  }
+  .fx-a:hover .fx__rail {
+    @include prefers.reduce-motion {
       width: 0;
     }
-    .fx-b:hover .fx__arrow--lead {
+  }
+  .fx-b:hover .fx__arrow--lead {
+    @include prefers.reduce-motion {
       transform: none;
     }
-    .fx-b:hover .fx__arrow--ghost {
+  }
+  .fx-b:hover .fx__arrow--ghost {
+    @include prefers.reduce-motion {
       opacity: 0;
     }
-    .fx-c:hover .fx__text,
-    .fx-c:hover .fx__arrow {
+  }
+  .fx-c:hover .fx__text,
+  .fx-c:hover .fx__arrow {
+    @include prefers.reduce-motion {
       transform: none;
     }
   }

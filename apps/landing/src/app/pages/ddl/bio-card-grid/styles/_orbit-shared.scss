@@ -17,6 +17,8 @@
  * Mobile (<768px): centerpiece hidden, cards stack — content stays
  * first-class on small screens.
  * ────────────────────────────────────────────────────────────────────────── */
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
 
 .proto-grid--orbit {
   --carve-r: clamp(140px, 14vw, 180px);
@@ -105,7 +107,7 @@
     0 1px 0 color-mix(in srgb, var(--landing-text-300) 4%, transparent) inset,
     0 8px 20px rgba(0, 0, 0, 0.18);
 
-  @media (min-width: 1024px) {
+  @include bp.respond-to('laptop') {
     padding: 28px;
     min-height: 280px;
   }
@@ -168,7 +170,7 @@
 /* ============================================================
  *  Desktop: orbit layouts (3- and 4-card) live behind 1024px MQ.
  * ============================================================ */
-@media (min-width: 1024px) {
+@include bp.respond-to('laptop') {
   /* ── 3 cards: 1-big-top + 2-small-bottom ────────────────── */
   .proto-grid--orbit[data-cards='3'] {
     grid-template-columns: 1fr 1fr;
@@ -352,11 +354,13 @@
 /* ============================================================
  *  Reduced-motion
  * ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  .proto-card--orbit {
+.proto-card--orbit {
+  @include prefers.reduce-motion {
     transition: none;
+  }
 
-    &:hover {
+  &:hover {
+    @include prefers.reduce-motion {
       transform: none;
     }
   }

@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 /* Type-out effect — companion CSS to TypeOutDirective.
    Loaded via libs/landing/shared/ui/src/motion/_motion.scss → styles/index.scss. */
 
@@ -20,8 +22,8 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fx-type-out--animating::after {
+.fx-type-out--animating::after {
+  @include prefers.reduce-motion {
     animation: none;
     opacity: 0;
   }

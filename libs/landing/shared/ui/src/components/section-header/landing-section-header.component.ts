@@ -60,6 +60,7 @@ export type LandingSectionHeaderLevel = 1 | 2;
   `,
   styles: [
     `
+      @use 'base/breakpoints' as bp;
       :host {
         display: block;
       }
@@ -104,7 +105,7 @@ export type LandingSectionHeaderLevel = 1 | 2;
         font-size: 1.12em;
         color: var(--landing-accent);
       }
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .lsh__heading {
           font-size: var(--landing-display-md);
           line-height: var(--landing-display-md-lh);

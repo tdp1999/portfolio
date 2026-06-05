@@ -306,6 +306,9 @@ const SKILLS = {
   `,
   styles: [
     `
+      @use 'base/breakpoints' as bp;
+      @use 'base/prefers' as prefers;
+
       :host {
         display: block;
       }
@@ -489,14 +492,16 @@ const SKILLS = {
           transform: scaleX(0.7);
         }
       }
-      @media (prefers-reduced-motion: reduce) {
-        .stk--proposal .stk__chips--enter > li,
-        .stk--proposal .stk__tier--enter .stk__tier-head {
+      .stk--proposal .stk__chips--enter > li,
+      .stk--proposal .stk__tier--enter .stk__tier-head {
+        @include prefers.reduce-motion {
           opacity: 1;
           transform: none;
           animation: none;
         }
-        .stk--proposal .stk__rule--pulse {
+      }
+      .stk--proposal .stk__rule--pulse {
+        @include prefers.reduce-motion {
           animation: none;
         }
       }
@@ -697,7 +702,7 @@ const SKILLS = {
       }
 
       /* ─── Mobile ─────────────────────────────────────────────────── */
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .stk {
           padding-block: 64px;
         }

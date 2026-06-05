@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 /* landing-gallery — count-aware curated layouts (1–4 images). */
 /* Cell aspect-ratios are passed through `<landing-figure [aspectRatio]>`; */
 /* this stylesheet only owns grid-track shape per count. */
@@ -67,7 +69,7 @@
 }
 
 /* Mobile collapse — single column, taller cells. */
-@media (max-width: 639px) {
+@include bp.respond-down('tablet') {
   .landing-gallery,
   .landing-gallery[data-count='1'],
   .landing-gallery[data-count='2'],

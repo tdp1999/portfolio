@@ -1,3 +1,6 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
 }
@@ -125,7 +128,7 @@
   color: var(--landing-text-300);
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .cp-arch__row {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -139,7 +142,7 @@
   gap: 24px;
 }
 
-@media (max-width: 900px) {
+@include bp.respond-down('laptop') {
   .cp-variants {
     grid-template-columns: 1fr;
   }
@@ -359,7 +362,7 @@
   border-bottom: none;
 }
 
-@media (max-width: 900px) {
+@include bp.respond-down('laptop') {
   .cp-matrix {
     display: block;
     overflow-x: auto;
@@ -713,9 +716,13 @@
   color: var(--landing-text-400);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cp-backdrop,
-  .cp-modal {
+.cp-backdrop {
+  @include prefers.reduce-motion {
+    animation: none !important;
+  }
+}
+.cp-modal {
+  @include prefers.reduce-motion {
     animation: none !important;
   }
 }

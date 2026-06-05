@@ -260,6 +260,9 @@ const DEMO = {
   `,
   styles: [
     `
+      @use 'base/breakpoints' as bp;
+      @use 'base/prefers' as prefers;
+
       :host {
         display: block;
       }
@@ -267,7 +270,7 @@ const DEMO = {
       /* ─── Shared scaffolding ─────────────────────────────────────── */
       .hv {
         position: relative;
-        min-height: calc(100vh - 80px);
+        min-height: calc(var(--vh-full) - 80px);
         display: flex;
         flex-direction: column;
         padding-block: 96px;
@@ -657,51 +660,59 @@ const DEMO = {
       }
 
       /* ─── Reduced motion safety net ──────────────────────────────── */
-      @media (prefers-reduced-motion: reduce) {
-        .hv--v1 ::ng-deep .landing-bg--blueprint::before,
-        .hv--v1 .hv--v1-title,
-        .hv--v1 .hv__sub-lead,
-        .hv--v1 .hv__sub-emphasis,
-        .hv--alpha-dash,
-        .hv--alpha-lead,
-        .hv--alpha-emphasis,
-        .hv--beta-name,
-        .hv--beta-rule,
-        .hv--beta-role,
-        .hv--beta-lead,
-        .hv--beta-emphasis,
-        .hv--gamma-name,
-        .hv--gamma-rule,
-        .hv--gamma-role,
-        .hv--gamma-lead,
-        .hv--gamma-emphasis,
-        .hv:not(.hv--v2) .hv__meta-row {
+      .hv--v1 ::ng-deep .landing-bg--blueprint::before,
+      .hv--v1 .hv--v1-title,
+      .hv--v1 .hv__sub-lead,
+      .hv--v1 .hv__sub-emphasis,
+      .hv--alpha-dash,
+      .hv--alpha-lead,
+      .hv--alpha-emphasis,
+      .hv--beta-name,
+      .hv--beta-rule,
+      .hv--beta-role,
+      .hv--beta-lead,
+      .hv--beta-emphasis,
+      .hv--gamma-name,
+      .hv--gamma-rule,
+      .hv--gamma-role,
+      .hv--gamma-lead,
+      .hv--gamma-emphasis,
+      .hv:not(.hv--v2) .hv__meta-row {
+        @include prefers.reduce-motion {
           animation: none;
         }
-        .hv--alpha-dash {
+      }
+      .hv--alpha-dash {
+        @include prefers.reduce-motion {
           clip-path: none;
         }
-        .hv--beta-name,
-        .hv--gamma-name {
+      }
+      .hv--beta-name,
+      .hv--gamma-name {
+        @include prefers.reduce-motion {
           opacity: 1;
           transform: none;
           mask-image: none;
           -webkit-mask-image: none;
         }
-        .hv--beta-role,
-        .hv--gamma-role,
-        .hv--alpha-lead,
-        .hv--alpha-emphasis,
-        .hv--beta-lead,
-        .hv--beta-emphasis,
-        .hv--gamma-lead,
-        .hv--gamma-emphasis,
-        .hv:not(.hv--v2) .hv__meta-row {
+      }
+      .hv--beta-role,
+      .hv--gamma-role,
+      .hv--alpha-lead,
+      .hv--alpha-emphasis,
+      .hv--beta-lead,
+      .hv--beta-emphasis,
+      .hv--gamma-lead,
+      .hv--gamma-emphasis,
+      .hv:not(.hv--v2) .hv__meta-row {
+        @include prefers.reduce-motion {
           opacity: 1;
           transform: none;
         }
-        .hv--beta-rule,
-        .hv--gamma-rule {
+      }
+      .hv--beta-rule,
+      .hv--gamma-rule {
+        @include prefers.reduce-motion {
           width: 96px;
         }
       }
@@ -792,7 +803,7 @@ const DEMO = {
       }
 
       /* ─── Tablet ─────────────────────────────────────────────────── */
-      @media (max-width: 1024px) {
+      @include bp.respond-down('laptop') {
         .hv--v1-title,
         .hv--alpha-title,
         .hv--beta-title,
@@ -810,9 +821,9 @@ const DEMO = {
       }
 
       /* ─── Mobile ─────────────────────────────────────────────────── */
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .hv {
-          min-height: calc(100vh - 64px);
+          min-height: calc(var(--vh-full) - 64px);
           padding-block: 64px;
         }
         .hv--v1-title,

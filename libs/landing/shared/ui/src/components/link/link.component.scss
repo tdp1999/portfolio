@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 /* landing-link — primitive for E5 landing per task 278 */
 /* Color-only hover (no underline ever); active state is indigo. */
 /* Arrow effect (when [arrow]=true): "Lift-off" — lead arrow shoots in its */
@@ -125,14 +127,18 @@
   transform: translate(4px, -4px) scale(1.05);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-link__arrow {
+.landing-link__arrow {
+  @include prefers.reduce-motion {
     transition: none;
   }
-  .landing-link:hover .landing-link__arrow--lead {
+}
+.landing-link:hover .landing-link__arrow--lead {
+  @include prefers.reduce-motion {
     transform: none;
   }
-  .landing-link:hover .landing-link__arrow--ghost {
+}
+.landing-link:hover .landing-link__arrow--ghost {
+  @include prefers.reduce-motion {
     opacity: 0;
   }
 }

@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 :host {
   position: relative;
   display: inline-flex;
@@ -246,11 +248,26 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-mega-menu__chevron,
-  .landing-mega-menu__panel,
-  .landing-mega-menu__hero,
-  .landing-mega-menu__row {
+.landing-mega-menu__chevron {
+  @include prefers.reduce-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.landing-mega-menu__panel {
+  @include prefers.reduce-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.landing-mega-menu__hero {
+  @include prefers.reduce-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.landing-mega-menu__row {
+  @include prefers.reduce-motion {
     animation: none !important;
     transition: none !important;
   }

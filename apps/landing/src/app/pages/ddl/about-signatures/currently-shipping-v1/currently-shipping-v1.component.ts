@@ -48,6 +48,8 @@ import type { NowEntry } from '../now-mock';
     }
   `,
   styles: `
+    @use 'base/breakpoints' as bp;
+
     :host {
       display: block;
     }
@@ -88,7 +90,7 @@ import type { NowEntry } from '../now-mock';
       color: var(--landing-text-300);
     }
 
-    @media (max-width: 640px) {
+    @include bp.respond-down('tablet') {
       .csv1__row {
         grid-template-columns: 1fr;
         gap: 4px;

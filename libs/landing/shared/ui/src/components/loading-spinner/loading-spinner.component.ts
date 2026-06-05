@@ -37,6 +37,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     </div>
   `,
   styles: `
+    @use 'base/prefers' as prefers;
     .loading-spinner__icon {
       animation: loading-spinner-rotate 0.9s linear infinite;
     }
@@ -45,8 +46,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         transform: rotate(360deg);
       }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .loading-spinner__icon {
+    .loading-spinner__icon {
+      @include prefers.reduce-motion {
         animation-duration: 2.4s;
       }
     }

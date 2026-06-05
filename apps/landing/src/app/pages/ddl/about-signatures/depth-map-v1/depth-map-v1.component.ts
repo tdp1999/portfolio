@@ -62,6 +62,8 @@ import type { SkillTierGroup } from '@portfolio/landing/shared/data-access';
     </div>
   `,
   styles: `
+    @use 'base/breakpoints' as bp;
+
     :host {
       display: block;
     }
@@ -94,7 +96,7 @@ import type { SkillTierGroup } from '@portfolio/landing/shared/data-access';
       gap: 16px;
     }
 
-    @media (max-width: 640px) {
+    @include bp.respond-down('tablet') {
       .dm1__daily-grid {
         grid-template-columns: 1fr;
       }

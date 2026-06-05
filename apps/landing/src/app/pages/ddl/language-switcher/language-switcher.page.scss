@@ -1,3 +1,6 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
 }
@@ -112,7 +115,7 @@
   color: var(--landing-text-300);
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .ls-research__item {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -175,7 +178,7 @@
   border-radius: 12px;
 }
 
-@media (max-width: 900px) {
+@include bp.respond-down('laptop') {
   .ls-variant {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -542,7 +545,7 @@
   border-bottom: none;
 }
 
-@media (max-width: 900px) {
+@include bp.respond-down('laptop') {
   .ls-matrix {
     display: block;
     overflow-x: auto;
@@ -550,13 +553,38 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ls-marquee__viewport,
-  .ls-drop__panel,
-  .ls-drop__chev,
-  .ls-seg__btn,
-  .ls-mono__code,
-  .ls-flip {
+.ls-marquee__viewport {
+  @include prefers.reduce-motion {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.ls-drop__panel {
+  @include prefers.reduce-motion {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.ls-drop__chev {
+  @include prefers.reduce-motion {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.ls-seg__btn {
+  @include prefers.reduce-motion {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.ls-mono__code {
+  @include prefers.reduce-motion {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.ls-flip {
+  @include prefers.reduce-motion {
     transition: none !important;
     animation: none !important;
   }

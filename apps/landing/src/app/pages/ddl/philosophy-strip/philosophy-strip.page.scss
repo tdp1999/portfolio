@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -367,7 +369,7 @@
   color: var(--landing-text-400);
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .ps-v0 {
     padding-block: 64px;
   }

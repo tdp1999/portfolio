@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -91,7 +93,7 @@
   border-radius: 8px;
   background: color-mix(in srgb, var(--landing-surface-100) 30%, transparent);
 
-  @media (min-width: 720px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 /* landing-back-link — mirror of landing-link facing left.
    Mono voice + indigo lead arrow + ghost-trail lift-off on hover. */
 
@@ -69,14 +71,18 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-back-link__arrow {
+.landing-back-link__arrow {
+  @include prefers.reduce-motion {
     transition: none;
   }
-  .landing-back-link:hover .landing-back-link__arrow--lead {
+}
+.landing-back-link:hover .landing-back-link__arrow--lead {
+  @include prefers.reduce-motion {
     transform: none;
   }
-  .landing-back-link:hover .landing-back-link__arrow--ghost {
+}
+.landing-back-link:hover .landing-back-link__arrow--ghost {
+  @include prefers.reduce-motion {
     opacity: 0;
   }
 }

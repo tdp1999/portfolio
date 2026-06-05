@@ -34,6 +34,7 @@ const MIN_DISPLAY_MS = 250;
     </div>
   `,
   styles: `
+    @use 'base/prefers' as prefers;
     .router-progress {
       position: fixed;
       top: 0;
@@ -64,8 +65,8 @@ const MIN_DISPLAY_MS = 250;
         transform: translateX(350%);
       }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .router-progress__bar {
+    .router-progress__bar {
+      @include prefers.reduce-motion {
         animation-duration: 2.4s;
       }
     }

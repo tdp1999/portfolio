@@ -1,4 +1,5 @@
 @use 'base/prefers' as prefers;
+@use 'base/input-modality' as modality;
 
 :host {
   display: block;
@@ -52,7 +53,7 @@
      stale :hover until the next mouse move — reading as a stuck white button.
      Keeping hover accent-toned means the resting (post-click) colour is never
      lost. Gated to hover-capable pointers so touch taps don't latch it. */
-  @media (hover: hover) {
+  @include modality.hover-only {
     &:hover {
       color: var(--landing-accent-hover);
     }

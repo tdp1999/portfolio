@@ -1,11 +1,12 @@
 /* Card base + plain prototypes P1–P10 */
+@use 'base/breakpoints' as bp;
 
 .proto-grid {
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -13,7 +14,7 @@
 /* Asymmetric: Card B wider */
 .proto-grid--p4-asymmetric,
 .proto-grid--p10-spine {
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: 1fr 1.4fr 1fr;
   }
 }
@@ -34,7 +35,7 @@
 }
 .proto-grid--p10-spine::before,
 .proto-grid--p10-spine::after {
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     content: '';
     position: absolute;
     top: 16px;

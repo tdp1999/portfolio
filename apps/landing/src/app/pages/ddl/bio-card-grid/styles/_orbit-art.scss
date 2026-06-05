@@ -1,4 +1,5 @@
 /* PF8 / PF9 / PF10 centerpiece animation art */
+@use 'base/prefers' as prefers;
 
 /* ─────────────── PF8 · Document Engine wireframe ─────────────── */
 .proto-orbit-center--doc .proto-doc {
@@ -243,15 +244,15 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .proto-doc__bar--shift,
-  .proto-doc__cursor,
-  .proto-compass__ring-rotating,
-  .proto-compass__pulse,
-  .proto-constellation__ring--inner,
-  .proto-constellation__ring--outer,
-  .proto-constellation__node--inner,
-  .proto-constellation__node--outer {
+.proto-doc__bar--shift,
+.proto-doc__cursor,
+.proto-compass__ring-rotating,
+.proto-compass__pulse,
+.proto-constellation__ring--inner,
+.proto-constellation__ring--outer,
+.proto-constellation__node--inner,
+.proto-constellation__node--outer {
+  @include prefers.reduce-motion {
     animation: none;
   }
 }

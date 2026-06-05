@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 /* Per-character stagger entrance. The host is `display: contents` so it doesn't
    create a layout box — the spans flow inline within whatever element wraps
    this component (h1, h2, etc.). */
@@ -27,8 +29,8 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fx-stagger-text__char {
+.fx-stagger-text__char {
+  @include prefers.reduce-motion {
     animation: none;
     opacity: 1;
     transform: none;

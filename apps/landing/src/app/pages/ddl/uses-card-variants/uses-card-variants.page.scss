@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
 }
@@ -395,20 +397,22 @@
   color: var(--landing-text-500);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .v1-card,
-  .v2-card,
-  .v3-card,
-  .v1-card__arrow,
-  .v2-card__arrow,
-  .v3-card__arrow,
-  .v3-card__icon,
-  .v3-card::before {
+.v1-card,
+.v2-card,
+.v3-card,
+.v1-card__arrow,
+.v2-card__arrow,
+.v3-card__arrow,
+.v3-card__icon,
+.v3-card::before {
+  @include prefers.reduce-motion {
     transition: none;
   }
-  .v1-card--linked:hover,
-  .v2-card--linked:hover,
-  .v3-card--linked:hover {
+}
+.v1-card--linked:hover,
+.v2-card--linked:hover,
+.v3-card--linked:hover {
+  @include prefers.reduce-motion {
     transform: none;
   }
 }

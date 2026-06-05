@@ -2,6 +2,8 @@
    Matches the visual chrome of `/ddl/bio-improvements` and `/ddl/feed-item-variants`:
    bordered header strip up top + per-section blocks with eyebrow + variant grid. */
 
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -250,7 +252,7 @@
   color: var(--landing-text-500);
 }
 
-@media (max-width: 640px) {
+@include bp.respond-down('tablet') {
   .abs-section {
     padding-block: 48px;
   }

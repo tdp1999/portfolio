@@ -5,6 +5,9 @@
  * recreated on every swap — letting the `animation: <variant> ... both` play
  * on each entrance without needing Angular animations. */
 
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
 }
@@ -49,7 +52,7 @@
   grid-template-columns: 1fr;
   gap: 32px;
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: 40fr 60fr;
     gap: 48px;
   }
@@ -126,7 +129,7 @@
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  @media (min-width: 960px) {
+  @include bp.respond-to('laptop') {
     aspect-ratio: 4 / 3;
   }
 }
@@ -222,14 +225,14 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .swt--v1 .swt__inner,
-  .swt--v2 .swt__left--v2,
-  .swt--v2 .swt__right--v2,
-  .swt--v3 .swt__right--v2,
-  .swt--v4 .swt__right--v2,
-  .swt--v3 [class*='swt__stagger'],
-  .swt--v4 .swt__left--v4 {
+.swt--v1 .swt__inner,
+.swt--v2 .swt__left--v2,
+.swt--v2 .swt__right--v2,
+.swt--v3 .swt__right--v2,
+.swt--v4 .swt__right--v2,
+.swt--v3 [class*='swt__stagger'],
+.swt--v4 .swt__left--v4 {
+  @include prefers.reduce-motion {
     animation: none;
   }
 }

@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 /* landing-button — primitive for E5 landing per task 278 */
 /* Variants: solid (indigo), ghost (hairline border), link (inline text style) */
 
@@ -144,14 +146,18 @@
   transform: translate(4px, -4px) scale(1.05);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-btn__arrow {
+.landing-btn__arrow {
+  @include prefers.reduce-motion {
     transition: none;
   }
-  .landing-btn:hover:not(:disabled) .landing-btn__arrow--lead {
+}
+.landing-btn:hover:not(:disabled) .landing-btn__arrow--lead {
+  @include prefers.reduce-motion {
     transform: none;
   }
-  .landing-btn:hover:not(:disabled) .landing-btn__arrow--ghost {
+}
+.landing-btn:hover:not(:disabled) .landing-btn__arrow--ghost {
+  @include prefers.reduce-motion {
     opacity: 0;
   }
 }

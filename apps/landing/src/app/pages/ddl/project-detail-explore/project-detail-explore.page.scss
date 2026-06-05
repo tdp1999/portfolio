@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -192,7 +194,7 @@
 
 /* ─── Below lg breakpoint: collapse to single column ──────────── */
 
-@media (max-width: 1023px) {
+@include bp.respond-down('laptop') {
   // Chain variant class for specificity (0,2,0) to beat the per-variant rules above
   // without using !important.
   .project-body.project-body--current,

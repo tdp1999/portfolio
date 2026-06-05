@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -224,7 +226,7 @@
   margin-right: 4px;
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .sv-opt-a__column {
     padding-left: 32px;
   }
@@ -338,7 +340,7 @@
   color: var(--landing-text-300);
 }
 
-@media (max-width: 980px) {
+@include bp.respond-down('laptop') {
   .sv-opt-b__grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -471,7 +473,7 @@
   text-transform: uppercase;
 }
 
-@media (max-width: 980px) {
+@include bp.respond-down('laptop') {
   .sv-opt-c__grid {
     grid-template-columns: 1fr;
     gap: 48px;
@@ -601,7 +603,7 @@
   color: var(--landing-text-300);
 }
 
-@media (max-width: 980px) {
+@include bp.respond-down('laptop') {
   .sv-opt-d__grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -810,7 +812,7 @@
 /* ─── Tablet & below (≤ 980px) ─── Lamp hidden; underline replaces it.
    Prose centers in the (now single-column) grid so the section reads as one
    focused column instead of left-anchored next to an empty right edge. */
-@media (max-width: 980px) {
+@include bp.respond-down('laptop') {
   .sv-opt-e {
     min-height: auto;
   }
@@ -976,7 +978,7 @@
   transform: translateY(0);
 }
 
-@media (max-width: 980px) {
+@include bp.respond-down('laptop') {
   .sv-opt-g__grid {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -1034,7 +1036,7 @@
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
 }
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .sv-summary__row {
     grid-template-columns: 1fr;
     gap: 8px;

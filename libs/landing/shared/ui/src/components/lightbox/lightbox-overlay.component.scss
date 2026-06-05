@@ -1,5 +1,6 @@
 @use 'base/breakpoints' as bp;
 @use 'base/prefers';
+@use 'base/input-modality' as modality;
 
 :host {
   --lightbox-flip: 240ms;
@@ -324,7 +325,7 @@
   pointer-events: none;
   transition: opacity var(--lightbox-zoom) ease;
 
-  @media (hover: hover) and (pointer: fine) {
+  @include modality.hover-only {
     display: flex;
   }
 

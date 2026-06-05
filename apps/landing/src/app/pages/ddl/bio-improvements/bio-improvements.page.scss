@@ -1,4 +1,6 @@
 /* /ddl/bio-improvements — staging page for §3 refinement. Exploration only. */
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
 
 :host {
   display: block;
@@ -90,7 +92,7 @@
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -308,10 +310,10 @@
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: repeat(2, 1fr);
   }
-  @media (min-width: 1200px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -567,7 +569,7 @@
   display: grid;
   gap: 24px;
   grid-template-columns: 1fr;
-  @media (min-width: 768px) {
+  @include bp.respond-to('tablet') {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -636,7 +638,7 @@
   display: grid;
   gap: 24px;
   grid-template-columns: 1fr;
-  @media (min-width: 1024px) {
+  @include bp.respond-to('laptop') {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -709,14 +711,18 @@
   line-height: var(--landing-body-sm-lh);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bi-hours-row__val.is-animating {
+.bi-hours-row__val.is-animating {
+  @include prefers.reduce-motion {
     animation: none;
   }
-  .bi-hours-row__trigger:active {
+}
+.bi-hours-row__trigger:active {
+  @include prefers.reduce-motion {
     transform: none;
   }
-  .bi-shadow-card {
+}
+.bi-shadow-card {
+  @include prefers.reduce-motion {
     transition: none;
   }
 }

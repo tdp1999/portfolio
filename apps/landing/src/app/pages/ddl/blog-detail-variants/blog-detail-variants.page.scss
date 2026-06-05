@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -281,7 +283,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-height: calc(100vh - 120px);
+  max-height: calc(var(--vh-full) - 120px);
   overflow-y: auto;
   padding-right: 4px;
 
@@ -749,7 +751,7 @@
 .v4-floating-toc {
   display: none;
 }
-@media (min-width: 1280px) {
+@include bp.respond-to('wide') {
   .v4-toc-inline {
     display: none;
   }
@@ -759,7 +761,7 @@
     // top: 120px;
     right: 48px;
     width: 280px;
-    max-height: calc(100vh - 160px);
+    max-height: calc(var(--vh-full) - 160px);
     overflow-y: auto;
     z-index: 5;
   }
@@ -771,7 +773,7 @@
 }
 
 /* ─── Mobile breakpoints ─────────────────────────────────────────── */
-@media (max-width: 1024px) {
+@include bp.respond-down('laptop') {
   .v3-grid {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -786,7 +788,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .v1-article,
   .v2-article,
   .v3-article {

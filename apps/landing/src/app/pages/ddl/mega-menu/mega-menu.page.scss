@@ -1,3 +1,6 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
 :host {
   display: block;
 }
@@ -122,7 +125,7 @@
   font-style: italic;
 }
 
-@media (max-width: 800px) {
+@include bp.respond-down('tablet') {
   .mm-research__item {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -136,7 +139,7 @@
   gap: 32px;
 }
 
-@media (max-width: 1100px) {
+@include bp.respond-down('laptop') {
   .mm-grid {
     grid-template-columns: 1fr;
   }
@@ -803,7 +806,7 @@
   gap: 24px;
 }
 
-@media (max-width: 1100px) {
+@include bp.respond-down('laptop') {
   .mm-context-grid {
     grid-template-columns: 1fr;
   }
@@ -895,23 +898,55 @@
   border-bottom: none;
 }
 
-@media (max-width: 1100px) {
+@include bp.respond-down('laptop') {
   .mm-matrix {
     display: block;
     overflow-x: auto;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .v3-item__accent,
-  .v6-item__desc,
-  .v1-item,
-  .v2-item,
-  .v3-item,
-  .v4-item,
-  .v5-hero,
-  .v5-item,
-  .v6-item {
+.v3-item__accent {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v6-item__desc {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v1-item {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v2-item {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v3-item {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v4-item {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v5-hero {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v5-item {
+  @include prefers.reduce-motion {
+    transition: none !important;
+  }
+}
+.v6-item {
+  @include prefers.reduce-motion {
     transition: none !important;
   }
 }

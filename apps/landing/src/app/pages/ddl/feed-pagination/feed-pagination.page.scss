@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -122,7 +124,7 @@
   color: var(--landing-text-300);
   font-weight: 600;
 }
-@media (max-width: 768px) {
+@include bp.respond-down('tablet') {
   .ap-pick__row {
     grid-template-columns: 1fr;
     gap: 4px;

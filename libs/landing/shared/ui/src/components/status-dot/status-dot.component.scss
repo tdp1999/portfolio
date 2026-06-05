@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 :host {
   display: inline-flex;
 }
@@ -86,8 +88,8 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-status-dot--available:hover .landing-status-dot__dot::after {
+.landing-status-dot--available:hover .landing-status-dot__dot::after {
+  @include prefers.reduce-motion {
     animation: none;
   }
 }

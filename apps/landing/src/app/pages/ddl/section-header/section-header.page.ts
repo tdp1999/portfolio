@@ -352,6 +352,8 @@ const SECTIONS: readonly SectionPreview[] = [
   `,
   styles: [
     `
+      @use 'base/breakpoints' as bp;
+
       :host {
         display: block;
       }
@@ -411,7 +413,7 @@ const SECTIONS: readonly SectionPreview[] = [
         border-radius: 4px;
         padding: 48px 32px;
       }
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .sh-sizes__row {
           grid-template-columns: 1fr;
         }
@@ -445,7 +447,7 @@ const SECTIONS: readonly SectionPreview[] = [
         grid-template-columns: 1fr 1fr;
         gap: 24px;
       }
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .sh-block__grid {
           grid-template-columns: 1fr;
         }
@@ -534,7 +536,7 @@ const SECTIONS: readonly SectionPreview[] = [
         border-radius: 4px;
         padding: 48px 32px;
       }
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .sh-row {
           grid-template-columns: 1fr;
           gap: 12px;
@@ -612,7 +614,7 @@ const SECTIONS: readonly SectionPreview[] = [
         color: var(--landing-text-300);
         font-weight: 600;
       }
-      @media (max-width: 768px) {
+      @include bp.respond-down('tablet') {
         .sh-cost__row {
           grid-template-columns: 1fr;
           gap: 8px;

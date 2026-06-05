@@ -20,7 +20,7 @@ import { EyebrowComponent } from '../eyebrow';
  *
  * Supports h2/h3/h4 nesting via `section.level` — indentation grows 12px per level.
  *
- * Long content: the nav is internally scrollable with `max-height: calc(100vh - 96px - 16px)`
+ * Long content: the nav is internally scrollable with `max-height: calc(var(--vh-full) - 96px - 16px)`
  * so a long TOC doesn't get clipped by the viewport when sticky-pinned. Active item is auto
  * scrolled into view when scrollspy moves between sections.
  *
@@ -79,7 +79,7 @@ import { EyebrowComponent } from '../eyebrow';
       /* Position sticky on the host so the scroll container has a stable height. */
       position: sticky;
       top: 96px;
-      max-height: calc(100vh - 96px - 16px);
+      max-height: calc(var(--vh-full) - 96px - 16px);
       overflow-y: auto;
       /* Hide scrollbar — long TOCs still scroll via wheel/touch, but the
          scrollbar chrome was visually noisy. */
