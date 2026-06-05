@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -14,8 +16,10 @@
   border: 0;
 }
 
+/* Small top breather so the recovery links read as one group with the lede
+   (the header already contributes its own padding-bottom above this). */
 .not-found-page__body {
-  padding-block: 24px 96px;
+  padding-block: 8px 96px;
 }
 
 .not-found-page__actions {
@@ -23,10 +27,17 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-}
 
-@media (min-width: 640px) {
-  .not-found-page__actions {
+  /* WCAG 2.2 §2.5.8 target size: the interactive <a> renders only ~16px tall at
+     mono-md, yet these two links are the entire purpose of the 404 page. Pierce
+     encapsulation to give them a ≥44px hit area (comfortable on touch) without
+     changing the shared link primitive globally — same pattern as the home CTAs. */
+  ::ng-deep .landing-link {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  @include bp.respond-to('tablet') {
     flex-direction: row;
     gap: 24px;
     justify-content: center;
