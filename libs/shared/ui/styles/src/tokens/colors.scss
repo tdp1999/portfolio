@@ -4,11 +4,14 @@
   --accent-saturation: 65%;
 
   /* Semantic color tokens (Light mode) */
-  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 50%);
-  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 42%);
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 42%); /* AA as link text + white label */
+  --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 36%);
+  --color-primary-strong: hsl(
+    var(--accent-hue) var(--accent-saturation) 42%
+  ); /* fill behind white labels (= primary in light) */
   --color-primary-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
 
-  --color-background: #f9fafb; /* gray-50 */
+  --color-background: #f3f4f6; /* gray-100 — distinct layer beneath #fff surface */
   --color-surface: #ffffff;
   --color-surface-alt: #f8fafc; /* slate-50 — subtle input background */
   --color-surface-hover: #f1f5f9; /* slate-100 — hover state */
@@ -16,7 +19,7 @@
 
   --color-text: #111827; /* gray-900 */
   --color-text-secondary: #4b5563; /* gray-600 */
-  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-muted: #646d7d; /* AA body on light surfaces (was gray-400, failed 4.5) */
   --color-text-on-primary: #ffffff;
   --color-placeholder: #6b7280; /* gray-500 — input placeholder, distinct from filled text */
 
@@ -24,12 +27,12 @@
   --color-border-strong: #d1d5db; /* gray-300 */
 
   /* Feedback colors */
-  --color-success: #22c55e; /* green-500 */
+  --color-success: #15803d; /* green-700 — AA non-text (≥3:1) on white */
   --color-success-container: #dcfce7; /* green-100 */
-  --color-warning: #f59e0b; /* amber-500 */
+  --color-warning: #c2740a; /* amber-600 — AA non-text (≥3:1) on white */
   --color-warning-container: #fef3c7; /* amber-100 */
   --color-error: #ef4444; /* red-500 */
   --color-error-container: #fee2e2; /* red-100 */
-  --color-info: hsl(var(--accent-hue) var(--accent-saturation) 50%);
+  --color-info: hsl(var(--accent-hue) var(--accent-saturation) 42%);
   --color-info-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
 }

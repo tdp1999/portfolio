@@ -10,14 +10,15 @@
   /* Text — slate scale, hi → low contrast */
   --landing-text-300: #e2e8f0; /* primary text */
   --landing-text-400: #cbd5e1; /* secondary */
-  --landing-text-500: #94a3b8; /* muted */
-  --landing-text-600: #64748b; /* very muted, captions */
-  --landing-text-700: #475569; /* placeholder / dimmed */
+  --landing-text-500: #a3b0c4; /* muted — lifted for AA body + cross-theme parity */
+  --landing-text-600: #96a1b4; /* captions — AA on ink + cross-theme parity */
+  --landing-text-700: #475569; /* decorative dimming only (SVG fill, inactive marker) — not body text */
 
   /* Accent — indigo */
-  --landing-accent: #6e66d9;
+  --landing-accent: #857ee2; /* lifted for AA link/icon/focus on ink incl. elevated surface */
   --landing-accent-hover: #8a83e3;
   --landing-accent-active: #5b53c2;
+  --landing-accent-strong: #6e66d9; /* fill behind white labels (solid button) */
 
   /* Borders */
   --landing-border: #232a3a;
@@ -43,13 +44,14 @@
   --landing-text-300: #0f172a;
   --landing-text-400: #1e293b;
   --landing-text-500: #475569;
-  --landing-text-600: #64748b;
-  --landing-text-700: #94a3b8;
+  --landing-text-600: #646e82; /* captions — AA on light surface (eased to hold tier gap) */
+  --landing-text-700: #94a3b8; /* decorative dimming only — not body text */
 
   /* Accent — indigo (slightly desaturated for light surfaces) */
   --landing-accent: #5b53c2;
   --landing-accent-hover: #4c45a8;
   --landing-accent-active: #6e66d9;
+  --landing-accent-strong: var(--landing-accent); /* light accent already carries white label (AA) */
 
   /* Borders */
   --landing-border: #e2e8f0;
@@ -72,12 +74,13 @@
   --landing-ink-2: #1a2030;
   --landing-text-300: #e2e8f0;
   --landing-text-400: #cbd5e1;
-  --landing-text-500: #94a3b8;
-  --landing-text-600: #64748b;
-  --landing-text-700: #475569;
-  --landing-accent: #6e66d9;
+  --landing-text-500: #a3b0c4; /* muted — lifted for AA body + cross-theme parity */
+  --landing-text-600: #96a1b4; /* captions — AA on ink + cross-theme parity */
+  --landing-text-700: #475569; /* decorative dimming only — not body text */
+  --landing-accent: #857ee2; /* lifted for AA link/icon/focus on ink incl. elevated surface */
   --landing-accent-hover: #8a83e3;
   --landing-accent-active: #5b53c2;
+  --landing-accent-strong: #6e66d9; /* fill behind white labels (solid button) */
   --landing-border: #232a3a;
   --landing-border-strong: #2f3854;
   --landing-surface: var(--landing-ink-1);

@@ -60,6 +60,10 @@ export const appRoutes: Route[] = [
         pathMatch: 'full',
       },
       {
+        path: 'contrast',
+        loadComponent: () => import('./pages/ddl/contrast').then((m) => m.ContrastPage),
+      },
+      {
         path: 'fragment-navigation',
         loadComponent: () => import('./pages/ddl/fragment-navigation').then((m) => m.FragmentNavigationPage),
       },

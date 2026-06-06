@@ -37,7 +37,7 @@
   /* Button */
   @include mat.button-overrides(
     (
-      filled-container-color: var(--color-primary),
+      filled-container-color: var(--color-primary-strong),
       filled-label-text-color: var(--color-text-on-primary),
       filled-hover-state-layer-opacity: 0.08,
       filled-container-shape: 8px,

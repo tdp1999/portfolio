@@ -5,15 +5,18 @@
   --color-surface-hover: #252a3a; /* hover state */
   --color-surface-elevated: #22263a; /* elevated surface with depth */
 
-  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 58%); /* slightly muted accent */
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) 58%); /* link/icon role — AA as text on dark */
   --color-primary-hover: hsl(var(--accent-hue) var(--accent-saturation) 68%);
+  --color-primary-strong: hsl(
+    var(--accent-hue) var(--accent-saturation) 46%
+  ); /* fill role — carries white label (AA) */
   --color-primary-container: hsl(var(--accent-hue) 40% 22%); /* desaturated container */
 
   --color-text: #e2e8f0; /* slate-200, softer than pure white */
-  --color-text-secondary: #94a3b8; /* slate-400 */
-  --color-text-muted: #64748b; /* slate-500 */
+  --color-text-secondary: #a3b0c4; /* lifted — cross-theme parity w/ light secondary */
+  --color-text-muted: #8794a8; /* AA body on dark surfaces (was slate-500, failed 4.5) */
   --color-text-on-primary: #ffffff;
-  --color-placeholder: #475569; /* slate-600 — input placeholder, dimmer than text-muted */
+  --color-placeholder: #7d8aa0; /* AA placeholder on input bg (was slate-600, failed 4.5) */
 
   --color-border: #2d3148; /* subtle border */
   --color-border-strong: #3d4266; /* visible border */

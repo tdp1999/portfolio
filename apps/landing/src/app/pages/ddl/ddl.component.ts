@@ -172,6 +172,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
     tone: 'accent',
     routes: [
       {
+        path: '/ddl/contrast',
+        title: 'Contrast & color · live WCAG + APCA matrix',
+        desc: 'Source-of-truth contrast page — every landing text↔surface pair scored live against WCAG 2.x (gate) + APCA Lc (quality), per theme. Accent fill-vs-text split, focus ring, tier ramp, surface layers.',
+      },
+      {
         path: '/ddl/backgrounds',
         title: 'Background patterns',
         desc: 'Six pure-CSS section backgrounds — blueprint, topo, hatch, dot matrix, crosshair, aurora.',
