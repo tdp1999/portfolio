@@ -234,6 +234,7 @@
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
+- [ ] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone)
 - [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
