@@ -258,18 +258,6 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
       },
     ],
   },
-  {
-    id: 'legacy',
-    label: 'legacy · superseded; safe to delete in a cleanup pass',
-    tone: 'muted',
-    routes: [
-      {
-        path: '/ddl/bio-card-grid',
-        title: 'Bio card grid · task 284 PROTOs',
-        desc: 'Original ten visual register options for §3. PF2 + PF7 picked and graduated.',
-      },
-    ],
-  },
 ];
 
 @Component({

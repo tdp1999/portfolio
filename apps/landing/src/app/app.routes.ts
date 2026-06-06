@@ -72,10 +72,6 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./pages/ddl/backgrounds').then((m) => m.BackgroundsPage),
       },
       {
-        path: 'bio-card-grid',
-        loadComponent: () => import('./pages/ddl/bio-card-grid').then((m) => m.BioCardGridPage),
-      },
-      {
         path: 'bio-improvements',
         loadComponent: () => import('./pages/ddl/bio-improvements').then((m) => m.BioImprovementsPage),
       },
