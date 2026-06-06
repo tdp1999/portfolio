@@ -210,15 +210,18 @@
   flex-shrink: 0;
 }
 
-/* Figure has intrinsic size via aspect-ratio — independent of parent's
-   flex-grow. Works when parent uses `align-self: center` / `start` / etc.
-   which collapse the parent to max-content (zero leftover space for flex). */
+/* F1: in the 3-col desktop strip the figure is the hero's only flexible slot —
+   it grows to absorb whatever height the side columns add, so the lead card
+   fills its cell and the bento ends flush. `min-height` is the floor that keeps
+   the photo a sensible size; the img is absolutely positioned + object-fit:cover,
+   so a taller box just shows more of the frame. The collapsed single-col view
+   restores a fixed 16/9 (capped) figure in respond-down('laptop'). */
 .mag-hero__figure {
   margin: 16px 0 0;
   padding: 0;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  min-height: 220px;
   position: relative;
   overflow: hidden;
   border-radius: 4px;
@@ -562,6 +565,15 @@
   .mag-hero--center {
     order: -1;
     padding: 16px 20px 20px;
+  }
+  // Single-col: no side columns to match, so restore the fixed-ratio figure
+  // (the desktop flex-grow has nothing to absorb here). F2 caps its height so
+  // the lead photo doesn't dominate the fold on tablet / ~900px.
+  .mag-hero__figure {
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: 360px;
   }
   .mag-v1__side {
     flex-direction: row;

@@ -87,6 +87,16 @@
   justify-content: center;
   //   margin-top: 16px;
 }
+
+/* Byline row: chips (left) + share (right) at tablet+. On phones this
+   justify-between split breaks the centered hero and misaligns when the
+   chips wrap — stack and center it instead. */
+.blog-hero__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
 .blog-hero__figure {
   margin: 12px 0 0;
 }
@@ -298,8 +308,28 @@
     gap: 12px;
     padding: 20px;
   }
+  .blog-hero__actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
 }
 
 .blog-not-found {
-  padding: 80px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+}
+.blog-not-found__link {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-300);
+  text-decoration: none;
+  transition: color 160ms ease;
+
+  &:hover {
+    color: var(--landing-accent);
+  }
 }

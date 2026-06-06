@@ -1,7 +1,7 @@
 <article class="blog-detail-shell">
   <landing-container size="wide" class="text-center">
     <nav class="blog-detail__breadcrumb" aria-label="Breadcrumb">
-      <landing-breadcrumb [items]="breadcrumb()" />
+      <landing-breadcrumb [items]="breadcrumb()" align="center" />
     </nav>
   </landing-container>
 
@@ -37,7 +37,7 @@
               }
             </div>
 
-            <div class="flex justify-between items-center mt-2">
+            <div class="blog-hero__actions">
               <div class="blog-hero__eyebrow">
                 <landing-chip [label]="postType()" size="sm" />
                 <landing-chip [label]="p.language" size="sm" />
@@ -53,14 +53,7 @@
 
             @if (p.featuredImageUrl) {
               <div class="blog-hero__figure">
-                <landing-figure
-                  [src]="p.featuredImageUrl"
-                  [alt]="p.title"
-                  aspectRatio="16 / 9"
-                  [cloudinaryWidth]="960"
-                  lightbox
-                  lightboxGroup="post-hero"
-                />
+                <landing-browser-window [src]="p.featuredImageUrl" [alt]="p.title" [url]="'/blog/' + p.slug" />
               </div>
             }
           </header>
@@ -126,7 +119,13 @@
   } @else if (notFound()) {
     <section class="blog-not-found">
       <landing-container>
-        <landing-empty-state icon="file-text" message="Post not found." />
+        <landing-empty-state
+          icon="file-x"
+          title="Post not found"
+          message="This article may have been moved, unpublished, or never existed."
+        >
+          <a routerLink="/blog" class="blog-not-found__link">← Browse all articles</a>
+        </landing-empty-state>
       </landing-container>
     </section>
   }
