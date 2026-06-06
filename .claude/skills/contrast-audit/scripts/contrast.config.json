@@ -1,0 +1,229 @@
+{
+  "$comment": "Project config for contrast-audit. To reuse on another project, edit ONLY this file (token file paths, theme selectors, pair list). The engine (contrast-audit.mjs) never changes.",
+
+  "roles": {
+    "body": { "label": "Body text", "wcag": 4.5, "apca": 75, "note": "" },
+    "large": { "label": "Large / secondary text", "wcag": 3.0, "apca": 60, "note": "judged at large-text intent" },
+    "caption": { "label": "Caption / small meta", "wcag": 4.5, "apca": 60, "note": "small text — held to body floor" },
+    "placeholder": {
+      "label": "Placeholder / disabled",
+      "wcag": 4.5,
+      "apca": 30,
+      "note": "WCAG-exempt ONLY if the control is truly disabled"
+    },
+    "link": { "label": "Link / inline accent text", "wcag": 4.5, "apca": 75, "note": "" },
+    "onAccent": { "label": "Label on accent fill", "wcag": 4.5, "apca": 75, "note": "button/badge label assumption" },
+    "nonText": {
+      "label": "Icon / UI graphic",
+      "wcag": 3.0,
+      "apca": 45,
+      "note": "WCAG 1.4.11 — required only if the graphic conveys meaning"
+    },
+    "focus": {
+      "label": "Focus indicator",
+      "wcag": 3.0,
+      "apca": 45,
+      "note": "WCAG 1.4.11 / 2.4.11 vs adjacent background"
+    },
+    "border": {
+      "label": "Delimiting border",
+      "wcag": 3.0,
+      "apca": 30,
+      "note": "WCAG 1.4.11 — required only if the border alone marks a control boundary"
+    }
+  },
+
+  "translucent": {
+    "--landing-header-bg": { "over": "--landing-bg" }
+  },
+
+  "$scales-doc": "Ordered token ramps for the harmony gate. type:text → tiers checked for hierarchy separation + cross-theme parity (judged on `on` bg). type:surface → adjacent layers checked for distinctness. Tune thresholds in `harmony`.",
+  "harmony": { "minTierGapLc": 3, "maxThemeSpreadLc": 30, "minSurfaceRatio": 1.05 },
+  "scales": [
+    {
+      "id": "landing-text",
+      "system": "landing",
+      "type": "text",
+      "on": "--landing-bg",
+      "tokens": ["--landing-text-300", "--landing-text-400", "--landing-text-500", "--landing-text-600"]
+    },
+    {
+      "id": "landing-surface",
+      "system": "landing",
+      "type": "surface",
+      "tokens": ["--landing-bg", "--landing-surface", "--landing-surface-elevated"]
+    },
+    {
+      "id": "console-text",
+      "system": "console",
+      "type": "text",
+      "on": "--color-background",
+      "tokens": ["--color-text", "--color-text-secondary", "--color-text-muted"]
+    },
+    {
+      "id": "console-surface",
+      "system": "console",
+      "type": "surface",
+      "tokens": ["--color-background", "--color-surface", "--color-surface-elevated"]
+    }
+  ],
+
+  "themes": [
+    {
+      "id": "landing-light",
+      "system": "landing",
+      "mode": "light",
+      "layers": [{ "file": "libs/landing/shared/ui/src/tokens/colors.scss", "selector": ":root[data-theme='light']" }]
+    },
+    {
+      "id": "landing-dark",
+      "system": "landing",
+      "mode": "dark",
+      "layers": [{ "file": "libs/landing/shared/ui/src/tokens/colors.scss", "selector": ":root[data-theme='dark']" }]
+    },
+    {
+      "id": "console-light",
+      "system": "console",
+      "mode": "light",
+      "layers": [{ "file": "libs/shared/ui/styles/src/tokens/colors.scss", "selector": ":root" }]
+    },
+    {
+      "id": "console-dark",
+      "system": "console",
+      "mode": "dark",
+      "layers": [
+        { "file": "libs/shared/ui/styles/src/tokens/colors.scss", "selector": ":root" },
+        { "file": "libs/shared/ui/styles/src/themes/dark.scss", "selector": ".dark" }
+      ]
+    }
+  ],
+
+  "pairs": {
+    "landing": [
+      { "fg": "--landing-text-300", "bg": "--landing-bg", "role": "body" },
+      { "fg": "--landing-text-300", "bg": "--landing-surface", "role": "body" },
+      { "fg": "--landing-text-300", "bg": "--landing-surface-elevated", "role": "body" },
+      {
+        "fg": "--landing-text-300",
+        "bg": "--landing-header-bg",
+        "role": "body",
+        "note": "text over glass header (composited over page bg)"
+      },
+      { "fg": "--landing-text-400", "bg": "--landing-bg", "role": "body" },
+      { "fg": "--landing-text-400", "bg": "--landing-surface", "role": "body" },
+      { "fg": "--landing-text-400", "bg": "--landing-surface-elevated", "role": "body" },
+      {
+        "fg": "--landing-text-500",
+        "bg": "--landing-bg",
+        "role": "body",
+        "note": "muted — used as --landing-text-muted"
+      },
+      { "fg": "--landing-text-500", "bg": "--landing-surface", "role": "body" },
+      { "fg": "--landing-text-500", "bg": "--landing-surface-elevated", "role": "body" },
+      { "fg": "--landing-text-600", "bg": "--landing-bg", "role": "caption" },
+      { "fg": "--landing-text-600", "bg": "--landing-surface", "role": "caption" },
+      { "fg": "--landing-accent", "bg": "--landing-bg", "role": "link" },
+      { "fg": "--landing-accent", "bg": "--landing-surface", "role": "link" },
+      {
+        "fg": "--landing-accent",
+        "bg": "--landing-surface-elevated",
+        "role": "link",
+        "note": "link inside an elevated card — lowest accent contrast"
+      },
+      { "fg": "--landing-accent-hover", "bg": "--landing-bg", "role": "link" },
+      { "fg": "--landing-accent", "bg": "--landing-bg", "role": "nonText", "note": "accent as icon/graphic" },
+      { "fg": "--landing-accent", "bg": "--landing-bg", "role": "focus", "note": "focus ring on page bg" },
+      { "fg": "--landing-accent", "bg": "--landing-surface", "role": "focus", "note": "focus ring on surface" },
+      {
+        "fg": "--landing-accent",
+        "bg": "--landing-surface-elevated",
+        "role": "focus",
+        "note": "focus ring on elevated surface"
+      },
+      { "fg": "--landing-border", "bg": "--landing-bg", "role": "border" },
+      { "fg": "--landing-border", "bg": "--landing-surface", "role": "border" },
+      { "fg": "--landing-border-strong", "bg": "--landing-bg", "role": "border" },
+      { "fg": "--landing-border-strong", "bg": "--landing-surface", "role": "border" },
+      {
+        "fg": "#ffffff",
+        "bg": "--landing-accent-strong",
+        "role": "onAccent",
+        "note": "white solid-button label sits on the strong fill, not the lifted text-role accent"
+      }
+    ],
+    "console": [
+      { "fg": "--color-text", "bg": "--color-background", "role": "body" },
+      { "fg": "--color-text", "bg": "--color-surface", "role": "body" },
+      { "fg": "--color-text", "bg": "--color-surface-elevated", "role": "body" },
+      { "fg": "--color-text-secondary", "bg": "--color-background", "role": "body" },
+      { "fg": "--color-text-secondary", "bg": "--color-surface", "role": "body" },
+      { "fg": "--color-text-secondary", "bg": "--color-surface-elevated", "role": "body" },
+      {
+        "fg": "--color-text-muted",
+        "bg": "--color-surface",
+        "role": "body",
+        "note": "muted — cookbook says captions only"
+      },
+      { "fg": "--color-text-muted", "bg": "--color-background", "role": "body" },
+      { "fg": "--color-text-muted", "bg": "--color-surface-elevated", "role": "caption" },
+      {
+        "fg": "--color-placeholder",
+        "bg": "--color-surface-alt",
+        "role": "placeholder",
+        "note": "input placeholder on input bg"
+      },
+      { "fg": "--color-placeholder", "bg": "--color-surface", "role": "placeholder" },
+      {
+        "fg": "--color-text-on-primary",
+        "bg": "--color-primary-strong",
+        "role": "onAccent",
+        "note": "filled button label sits on the strong fill, not the text-role primary"
+      },
+      { "fg": "--color-primary", "bg": "--color-surface", "role": "link" },
+      { "fg": "--color-primary", "bg": "--color-background", "role": "link" },
+      {
+        "fg": "--color-primary",
+        "bg": "--color-surface-elevated",
+        "role": "link",
+        "note": "link inside an elevated card — lowest primary contrast"
+      },
+      { "fg": "--color-primary", "bg": "--color-surface", "role": "nonText", "note": "primary as icon" },
+      { "fg": "--color-primary", "bg": "--color-surface", "role": "focus", "note": "focus ring on surface" },
+      { "fg": "--color-primary", "bg": "--color-background", "role": "focus", "note": "focus ring on page bg" },
+      { "fg": "--color-border", "bg": "--color-surface", "role": "border" },
+      { "fg": "--color-border", "bg": "--color-background", "role": "border" },
+      { "fg": "--color-border-strong", "bg": "--color-surface", "role": "border" },
+      { "fg": "--color-border-strong", "bg": "--color-background", "role": "border" },
+      { "fg": "--color-success", "bg": "--color-surface", "role": "nonText", "note": "success icon/indicator" },
+      { "fg": "--color-warning", "bg": "--color-surface", "role": "nonText", "note": "warning icon/indicator" },
+      { "fg": "--color-error", "bg": "--color-surface", "role": "nonText", "note": "error icon/indicator" },
+      { "fg": "--color-success", "bg": "--color-background", "role": "nonText" },
+      { "fg": "--color-warning", "bg": "--color-background", "role": "nonText" },
+      { "fg": "--color-error", "bg": "--color-background", "role": "nonText" },
+      {
+        "fg": "--color-text",
+        "bg": "--color-success-container",
+        "role": "body",
+        "note": "alert text on success container"
+      },
+      {
+        "fg": "--color-text",
+        "bg": "--color-warning-container",
+        "role": "body",
+        "note": "alert text on warning container"
+      },
+      {
+        "fg": "--color-text",
+        "bg": "--color-error-container",
+        "role": "body",
+        "note": "alert text on error container"
+      },
+      {
+        "fg": "--color-text",
+        "bg": "--color-primary-container",
+        "role": "body",
+        "note": "text on info/primary container"
+      }
+    ]
+  }
+}
