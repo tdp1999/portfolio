@@ -19,7 +19,7 @@ export interface BreadcrumbItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <nav class="landing-breadcrumb" aria-label="Breadcrumb">
-      <ol class="landing-breadcrumb__list" role="list">
+      <ol class="landing-breadcrumb__list" role="list" [class.landing-breadcrumb__list--center]="align() === 'center'">
         @for (item of items(); track item.label; let last = $last) {
           <li class="landing-breadcrumb__item">
             @if (last || !item.href) {
@@ -39,6 +39,13 @@ export interface BreadcrumbItem {
 })
 export class LandingBreadcrumbComponent {
   readonly items = input.required<readonly BreadcrumbItem[]>();
+
+  /**
+   * Horizontal alignment of the trail. `start` (default) keeps the existing
+   * left-aligned sub-page header behavior (project detail, DDL); `center`
+   * centers the items — including wrapped lines — for centered heroes (blog detail).
+   */
+  readonly align = input<'start' | 'center'>('start');
 
   /** Tally retained for tests / consumers; not used by the template. */
   protected readonly count = computed(() => this.items().length);

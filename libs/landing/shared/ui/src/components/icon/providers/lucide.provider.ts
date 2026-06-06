@@ -44,6 +44,7 @@ import {
   LayoutGrid,
   List,
   History,
+  FileX,
   LucideIconData,
   Link,
 } from 'lucide-angular';
@@ -96,6 +97,7 @@ const ICON_MAP: Record<string, LucideIconData> = {
   'layout-grid': LayoutGrid,
   list: List,
   history: History,
+  'file-x': FileX,
   link: Link,
 };
 

@@ -82,6 +82,10 @@ import { InPageSection } from './section.types';
       padding-left: 32px;
     }
     .toc-inline__list a {
+      /* Block + vertical padding lifts each row to a ≥24px tap target
+         (WCAG 2.5.8) — the bare inline links were only 15px tall. */
+      display: block;
+      padding-block: 6px;
       color: var(--landing-text-300);
       text-decoration: none;
     }

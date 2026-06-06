@@ -1,5 +1,7 @@
 /* landing-breadcrumb — mono caps trail. Pairs with eyebrow typography. */
 
+@use 'base/breakpoints' as bp;
+
 .landing-breadcrumb {
   display: block;
 }
@@ -19,6 +21,12 @@
   text-transform: uppercase;
 }
 
+/* Center variant — opt-in via `align="center"`. Centers wrapped lines too
+   (the flex list otherwise packs items left when the trail wraps). */
+.landing-breadcrumb__list--center {
+  justify-content: center;
+}
+
 .landing-breadcrumb__item {
   display: inline-flex;
   align-items: center;
@@ -26,6 +34,11 @@
 }
 
 .landing-breadcrumb__link {
+  /* padding-block lifts the link row to a ≥24px tap target (WCAG 2.5.8);
+     the bare mono-caps links were only 16px tall. */
+  display: inline-flex;
+  align-items: center;
+  padding-block: 6px;
   color: var(--landing-text-500);
   transition: color 150ms ease;
 
@@ -43,6 +56,17 @@
 
 .landing-breadcrumb__current {
   color: var(--landing-text-300);
+
+  /* On phones a long current crumb (e.g. a full article title) wraps to two
+     lines directly above the identical H1. Elide it to one line instead. */
+  @include bp.respond-down('tablet') {
+    display: inline-block;
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
 }
 
 .landing-breadcrumb__sep {
