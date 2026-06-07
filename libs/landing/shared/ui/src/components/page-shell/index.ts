@@ -1,1 +1,1 @@
-export * from './landing-page-shell.component';
+export * from './page-shell';

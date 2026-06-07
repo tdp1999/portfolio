@@ -36,7 +36,7 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   styleUrl: './reset-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ResetPasswordComponent implements OnInit {
+export default class ResetPassword implements OnInit {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -83,7 +83,7 @@ export default class ResetPasswordComponent implements OnInit {
     this.token = params.get('token') ?? '';
     this.userId = params.get('userId') ?? '';
 
-    if (!this.token || !this.userId || !ResetPasswordComponent.TOKEN_REGEX.test(this.token)) {
+    if (!this.token || !this.userId || !ResetPassword.TOKEN_REGEX.test(this.token)) {
       this.tokenError.set(true);
     }
   }

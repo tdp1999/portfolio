@@ -1,1 +1,1 @@
-export { FragmentNavigationPage } from './fragment-navigation.page';
+export { DdlFragmentNavigation } from '../ddl-fragment-navigation/ddl-fragment-navigation';

@@ -2,6 +2,8 @@
 
 > Architectural decisions, module boundaries, and backend/frontend structure.
 > For design system and component patterns, see `design/foundations.md`.
+> For the micro-convention (filename grammar, role vocabulary, folder rules inside a lib), see
+> `patterns-file-structure.md`.
 
 ## Architecture
 

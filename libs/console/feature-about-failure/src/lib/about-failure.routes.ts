@@ -4,20 +4,20 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const aboutFailureRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./failures-page/failures-page'),
+    loadComponent: () => import('./failures/failures'),
   },
   {
     path: 'new',
-    loadComponent: () => import('./failure-form-page/failure-form-page'),
+    loadComponent: () => import('./failure.form/failure.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./failure-form-page/failure-form-page'),
+    loadComponent: () => import('./failure.form/failure.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./failure-detail/failure-detail'),
+    loadComponent: () => import('./failure.detail/failure.detail'),
   },
 ];

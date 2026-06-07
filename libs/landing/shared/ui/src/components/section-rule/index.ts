@@ -1,1 +1,1 @@
-export * from './section-rule.component';
+export * from './section-rule';

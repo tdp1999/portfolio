@@ -30,7 +30,7 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class LoginComponent implements OnInit {
+export default class Login implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -70,7 +70,7 @@ export default class LoginComponent implements OnInit {
     const errorCode = this.route.snapshot.queryParamMap.get('error');
     if (!errorCode) return;
 
-    const message = LoginComponent.GOOGLE_ERROR_MESSAGES[errorCode] ?? 'Authentication failed. Please try again.';
+    const message = Login.GOOGLE_ERROR_MESSAGES[errorCode] ?? 'Authentication failed. Please try again.';
     this.toast.error(message);
 
     // Clean the URL so the error doesn't persist on refresh

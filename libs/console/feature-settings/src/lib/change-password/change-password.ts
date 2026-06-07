@@ -34,7 +34,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
   styleUrl: './change-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ChangePasswordComponent {
+export default class ChangePassword {
   private readonly authStore = inject(AuthStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);

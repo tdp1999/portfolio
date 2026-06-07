@@ -1,1 +1,1 @@
-export { ShowMoreComponent } from './show-more.component';
+export { ShowMore } from './show-more';

@@ -1,1 +1,1 @@
-export { EmailTemplatesPage } from './email-templates.page';
+export { DdlEmailTemplates } from '../ddl-email-templates/ddl-email-templates';

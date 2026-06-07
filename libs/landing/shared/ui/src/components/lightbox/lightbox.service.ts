@@ -1,13 +1,13 @@
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { LightboxOverlayComponent } from './lightbox-overlay.component';
+import { LightboxOverlay } from '../lightbox-overlay/lightbox-overlay';
 import type { LightboxEntry, LightboxItem } from './lightbox.types';
 
 /**
  * Drives the landing lightbox. Triggers register themselves (one per opt-in
  * figure via `[lightbox]`); on open the service orders a group's entries by DOM
- * position, builds the item list, and mounts {@link LightboxOverlayComponent} in
+ * position, builds the item list, and mounts {@link LightboxOverlay} in
  * a CDK Overlay with a blocking scroll strategy. Service-driven so the overlay
  * opens from ANY page without editing the shell.
  *
@@ -87,6 +87,6 @@ export class LightboxService {
     });
     this.overlayRef = ref;
     this.open$.set(true);
-    ref.attach(new ComponentPortal(LightboxOverlayComponent, null, this.injector));
+    ref.attach(new ComponentPortal(LightboxOverlay, null, this.injector));
   }
 }

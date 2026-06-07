@@ -4,20 +4,20 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const aboutPrincipleRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./principles-page/principles-page'),
+    loadComponent: () => import('./principles/principles'),
   },
   {
     path: 'new',
-    loadComponent: () => import('./principle-form-page/principle-form-page'),
+    loadComponent: () => import('./principle.form/principle.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./principle-form-page/principle-form-page'),
+    loadComponent: () => import('./principle.form/principle.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./principle-detail/principle-detail'),
+    loadComponent: () => import('./principle.detail/principle.detail'),
   },
 ];

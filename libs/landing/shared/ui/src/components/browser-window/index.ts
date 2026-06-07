@@ -1,1 +1,1 @@
-export { LandingBrowserWindowComponent } from './landing-browser-window.component';
+export { BrowserWindow } from './browser-window';

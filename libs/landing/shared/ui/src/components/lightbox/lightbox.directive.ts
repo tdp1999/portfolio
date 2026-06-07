@@ -1,5 +1,5 @@
 import { Directive, ElementRef, booleanAttribute, effect, inject, input } from '@angular/core';
-import { FigureComponent } from '../figure/figure.component';
+import { Figure } from '../figure/figure';
 import { LightboxService } from './lightbox.service';
 import type { LightboxEntry, LightboxItem } from './lightbox.types';
 
@@ -44,7 +44,7 @@ export class LightboxDirective {
   readonly alt = input<string>('', { alias: 'lightboxAlt' });
   readonly caption = input<string>('', { alias: 'lightboxCaption' });
 
-  private readonly figure = inject(FigureComponent, { optional: true, self: true });
+  private readonly figure = inject(Figure, { optional: true, self: true });
   private readonly hostRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly service = inject(LightboxService);
   private entry: LightboxEntry | null = null;

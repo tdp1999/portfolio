@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { adminGuard, authGuard } from '@portfolio/console/shared/data-access';
-import { LayoutShellComponent } from './layout-shell';
+import { LayoutShell } from './layout.shell';
 
 export const appRoutes: Route[] = [
   // Auth routes — delegated to feature-auth library
@@ -18,7 +18,7 @@ export const appRoutes: Route[] = [
   // Main routes — sidebar layout
   {
     path: '',
-    component: LayoutShellComponent,
+    component: LayoutShell,
     canActivate: [authGuard],
     children: [
       {

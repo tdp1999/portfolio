@@ -1,17 +1,12 @@
 import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {
-  FullPageSpinnerComponent,
-  LoadingBarComponent,
-  SpinnerService,
-  ToastContainerComponent,
-} from '@portfolio/console/shared/ui';
+import { FullPageSpinner, LoadingBar, SpinnerService, ToastContainer } from '@portfolio/console/shared/ui';
 import { AuthStore } from '@portfolio/console/shared/data-access';
 
 @Component({
   selector: 'console-root',
   standalone: true,
-  imports: [RouterOutlet, ToastContainerComponent, LoadingBarComponent, FullPageSpinnerComponent],
+  imports: [RouterOutlet, ToastContainer, LoadingBar, FullPageSpinner],
   template: `
     <console-loading-bar />
     <router-outlet />

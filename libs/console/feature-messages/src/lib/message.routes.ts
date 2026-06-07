@@ -3,10 +3,10 @@ import { Route } from '@angular/router';
 export const messageRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./messages-page/messages-page'),
+    loadComponent: () => import('./messages/messages'),
   },
   {
     path: ':id',
-    loadComponent: () => import('./message-detail/message-detail'),
+    loadComponent: () => import('./message.detail/message.detail'),
   },
 ];

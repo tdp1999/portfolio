@@ -1,1 +1,1 @@
-export { default as HomeComponent } from './lib/home';
+export { default as HomeComponent } from './lib/home/home';

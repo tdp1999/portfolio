@@ -1,19 +1,19 @@
 import { Route } from '@angular/router';
 import { guestGuard } from '@portfolio/console/shared/data-access';
-import { ConsoleBlankLayoutComponent } from '@portfolio/console/shared/ui';
+import { BlankLayout } from '@portfolio/console/shared/ui';
 
 export const authRoutes: Route[] = [
   // OAuth callback — no guard (transitions from guest to authenticated)
   {
     path: 'callback',
-    component: ConsoleBlankLayoutComponent,
+    component: BlankLayout,
     children: [{ path: '', loadComponent: () => import('./callback/callback') }],
   },
 
   // Auth routes — blank layout (no sidebar)
   {
     path: '',
-    component: ConsoleBlankLayoutComponent,
+    component: BlankLayout,
     canActivate: [guestGuard],
     children: [
       { path: 'login', loadComponent: () => import('./login/login') },

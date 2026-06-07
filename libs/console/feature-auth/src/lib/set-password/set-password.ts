@@ -36,7 +36,7 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   styleUrl: './set-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class SetPasswordComponent implements OnInit {
+export default class SetPassword implements OnInit {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -86,7 +86,7 @@ export default class SetPasswordComponent implements OnInit {
     this.token = params.get('token') ?? '';
     this.userId = params.get('userId') ?? '';
 
-    if (!this.token || !this.userId || !SetPasswordComponent.TOKEN_REGEX.test(this.token)) {
+    if (!this.token || !this.userId || !SetPassword.TOKEN_REGEX.test(this.token)) {
       this.tokenError.set(true);
     }
   }

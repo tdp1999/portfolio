@@ -1,6 +1,6 @@
 import { Route, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { FeatureHome } from '@portfolio/landing/feature-home';
+import { Home } from '@portfolio/landing/feature-home';
 
 // `/experience` redirects to `/about#experience`. Server-side `server.ts` issues
 // a real 301 (with fragment) for direct loads & bots. This client-side variant
@@ -11,12 +11,12 @@ const experienceRedirect = () => inject(Router).parseUrl('/about#experience');
 export const appRoutes: Route[] = [
   {
     path: '',
-    component: FeatureHome,
+    component: Home,
     pathMatch: 'full',
   },
   {
     path: 'about',
-    loadComponent: () => import('@portfolio/landing/feature-about').then((m) => m.FeatureAbout),
+    loadComponent: () => import('@portfolio/landing/feature-about').then((m) => m.About),
   },
   {
     path: 'experience',
@@ -33,176 +33,197 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'uses',
-    loadComponent: () => import('./pages/uses/uses.page').then((m) => m.UsesPage),
+    loadComponent: () => import('./pages/uses/uses').then((m) => m.Uses),
   },
   {
     path: 'colophon',
-    loadComponent: () => import('./pages/colophon/colophon.page').then((m) => m.ColophonPage),
+    loadComponent: () => import('./pages/colophon/colophon').then((m) => m.Colophon),
   },
   {
     path: 'contact',
-    loadComponent: () => import('./pages/contact').then((m) => m.ContactPage),
+    loadComponent: () => import('./pages/contact').then((m) => m.Contact),
   },
   {
     path: 'privacy',
-    loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
+    loadComponent: () => import('./pages/legal/privacy').then((m) => m.Privacy),
   },
   {
     path: 'terms',
-    loadComponent: () => import('./pages/legal/terms.page').then((m) => m.TermsPage),
+    loadComponent: () => import('./pages/legal/terms').then((m) => m.Terms),
   },
   {
     path: 'ddl',
     children: [
       {
         path: '',
-        loadComponent: () => import('./pages/ddl').then((m) => m.DdlComponent),
+        loadComponent: () => import('./pages/ddl').then((m) => m.Ddl),
         pathMatch: 'full',
       },
       {
         path: 'contrast',
-        loadComponent: () => import('./pages/ddl/contrast').then((m) => m.ContrastPage),
+        loadComponent: () => import('./pages/ddl/ddl-contrast/ddl-contrast').then((m) => m.DdlContrast),
       },
       {
         path: 'fragment-navigation',
-        loadComponent: () => import('./pages/ddl/fragment-navigation').then((m) => m.FragmentNavigationPage),
+        loadComponent: () => import('./pages/ddl/fragment-navigation').then((m) => m.DdlFragmentNavigation),
       },
       {
         path: 'backgrounds',
-        loadComponent: () => import('./pages/ddl/backgrounds').then((m) => m.BackgroundsPage),
+        loadComponent: () => import('./pages/ddl/ddl-backgrounds/ddl-backgrounds').then((m) => m.DdlBackgrounds),
       },
       {
         path: 'bio-improvements',
-        loadComponent: () => import('./pages/ddl/bio-improvements').then((m) => m.BioImprovementsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-bio-improvements/ddl-bio-improvements').then((m) => m.DdlBioImprovements),
       },
       {
         path: 'interactions',
-        loadComponent: () => import('./pages/ddl/interactions').then((m) => m.InteractionsPage),
+        loadComponent: () => import('./pages/ddl/ddl-interactions/ddl-interactions').then((m) => m.DdlInteractions),
       },
       {
         path: 'hero-variants',
-        loadComponent: () => import('./pages/ddl/hero-variants').then((m) => m.HeroVariantsPage),
+        loadComponent: () => import('./pages/ddl/ddl-hero-variants/ddl-hero-variants').then((m) => m.DdlHeroVariants),
       },
       {
         path: 'selected-work-transitions',
-        loadComponent: () => import('./pages/ddl/selected-work-transitions').then((m) => m.SelectedWorkTransitionsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-selected-work-transitions/ddl-selected-work-transitions').then(
+            (m) => m.DdlSelectedWorkTransitions
+          ),
       },
       {
         path: 'stack',
-        loadComponent: () => import('./pages/ddl/stack').then((m) => m.StackPage),
+        loadComponent: () => import('./pages/ddl/ddl-stack/ddl-stack').then((m) => m.DdlStack),
       },
       {
         path: 'section-header',
-        loadComponent: () => import('./pages/ddl/section-header').then((m) => m.SectionHeaderPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-section-header/ddl-section-header').then((m) => m.DdlSectionHeader),
       },
       {
         path: 'page-hero',
-        loadComponent: () => import('./pages/ddl/page-hero').then((m) => m.PageHeroPage),
+        loadComponent: () => import('./pages/ddl/ddl-page-hero/ddl-page-hero').then((m) => m.DdlPageHero),
       },
       {
         path: 'page-shell',
-        loadComponent: () => import('./pages/ddl/page-shell').then((m) => m.PageShellPage),
+        loadComponent: () => import('./pages/ddl/ddl-page-shell/ddl-page-shell').then((m) => m.DdlPageShell),
       },
       {
         path: 'form-input',
-        loadComponent: () => import('./pages/ddl/form-input').then((m) => m.FormInputPage),
+        loadComponent: () => import('./pages/ddl/ddl-form-input/ddl-form-input').then((m) => m.DdlFormInput),
       },
       {
         path: 'form-lib',
-        loadComponent: () => import('./pages/ddl/form-lib').then((m) => m.FormLibPage),
+        loadComponent: () => import('./pages/ddl/ddl-form-lib/ddl-form-lib').then((m) => m.DdlFormLib),
       },
       {
         path: 'story-variants',
-        loadComponent: () => import('./pages/ddl/story-variants').then((m) => m.StoryVariantsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-story-variants/ddl-story-variants').then((m) => m.DdlStoryVariants),
       },
       {
         path: 'philosophy-strip',
-        loadComponent: () => import('./pages/ddl/philosophy-strip').then((m) => m.PhilosophyStripPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-philosophy-strip/ddl-philosophy-strip').then((m) => m.DdlPhilosophyStrip),
       },
       {
         path: 'get-in-touch',
-        loadComponent: () => import('./pages/ddl/get-in-touch').then((m) => m.GetInTouchPage),
+        loadComponent: () => import('./pages/ddl/ddl-get-in-touch/ddl-get-in-touch').then((m) => m.DdlGetInTouch),
       },
       {
         path: 'feed-item-variants',
-        loadComponent: () => import('./pages/ddl/feed-item-variants').then((m) => m.FeedItemVariantsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-feed-item-variants/ddl-feed-item-variants').then((m) => m.DdlFeedItemVariants),
       },
       {
         path: 'blog-list-variants',
-        loadComponent: () => import('./pages/ddl/blog-list-variants').then((m) => m.BlogListVariantsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-blog-list-variants/ddl-blog-list-variants').then((m) => m.DdlBlogListVariants),
       },
       {
         path: 'blog-detail-variants',
-        loadComponent: () => import('./pages/ddl/blog-detail-variants').then((m) => m.BlogDetailVariantsPage),
+        loadComponent: () => import('./pages/ddl/blog-detail-variants').then((m) => m.DdlBlogDetailVariants),
       },
       {
         path: 'feed-filter-bar',
-        loadComponent: () => import('./pages/ddl/feed-filter-bar').then((m) => m.FeedFilterBarPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-feed-filter-bar/ddl-feed-filter-bar').then((m) => m.DdlFeedFilterBar),
       },
       {
         path: 'feed-pagination',
-        loadComponent: () => import('./pages/ddl/feed-pagination').then((m) => m.FeedPaginationPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-feed-pagination/ddl-feed-pagination').then((m) => m.DdlFeedPagination),
       },
       {
         path: 'project-detail-explore',
-        loadComponent: () => import('./pages/ddl/project-detail-explore').then((m) => m.ProjectDetailExplorePage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-project-detail-explore/ddl-project-detail-explore').then(
+            (m) => m.DdlProjectDetailExplore
+          ),
       },
       {
         path: 'prose-flow',
-        loadComponent: () => import('./pages/ddl/prose-flow').then((m) => m.ProseFlowPage),
+        loadComponent: () => import('./pages/ddl/ddl-prose-flow/ddl-prose-flow').then((m) => m.DdlProseFlow),
       },
       {
         path: 'uses-card-variants',
-        loadComponent: () => import('./pages/ddl/uses-card-variants').then((m) => m.UsesCardVariantsPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-uses-card-variants/ddl-uses-card-variants').then((m) => m.DdlUsesCardVariants),
       },
       {
         path: 'language-switcher',
-        loadComponent: () => import('./pages/ddl/language-switcher').then((m) => m.LanguageSwitcherPage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-language-switcher/ddl-language-switcher').then((m) => m.DdlLanguageSwitcher),
       },
       {
         path: 'command-palette',
-        loadComponent: () => import('./pages/ddl/command-palette').then((m) => m.CommandPalettePage),
+        loadComponent: () => import('./pages/ddl/command-palette').then((m) => m.DdlCommandPalette),
       },
       {
         path: 'mega-menu',
-        loadComponent: () => import('./pages/ddl/mega-menu').then((m) => m.MegaMenuDdlPage),
+        loadComponent: () => import('./pages/ddl/ddl-mega-menu/ddl-mega-menu').then((m) => m.DdlMegaMenu),
       },
       {
         path: 'mobile-nav',
-        loadComponent: () => import('./pages/ddl/mobile-nav').then((m) => m.MobileNavPage),
+        loadComponent: () => import('./pages/ddl/ddl-mobile-nav/ddl-mobile-nav').then((m) => m.DdlMobileNav),
       },
       {
         path: 'scroll-edge-fade',
-        loadComponent: () => import('./pages/ddl/scroll-edge-fade').then((m) => m.ScrollEdgeFadePage),
+        loadComponent: () =>
+          import('./pages/ddl/ddl-scroll-edge-fade/ddl-scroll-edge-fade').then((m) => m.DdlScrollEdgeFade),
       },
       {
         path: 'carousel',
-        loadComponent: () => import('./pages/ddl/carousel').then((m) => m.CarouselPage),
+        loadComponent: () => import('./pages/ddl/ddl-carousel/ddl-carousel').then((m) => m.DdlCarousel),
       },
       {
         path: 'lightbox',
-        loadComponent: () => import('./pages/ddl/lightbox').then((m) => m.LightboxPage),
+        loadComponent: () => import('./pages/ddl/ddl-lightbox/ddl-lightbox').then((m) => m.DdlLightbox),
       },
       {
         path: 'show-more',
-        loadComponent: () => import('./pages/ddl/show-more').then((m) => m.ShowMoreDdlPage),
+        loadComponent: () => import('./pages/ddl/ddl-show-more/ddl-show-more').then((m) => m.DdlShowMore),
       },
       {
         path: 'email-templates',
-        loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.EmailTemplatesPage),
+        loadComponent: () => import('./pages/ddl/email-templates').then((m) => m.DdlEmailTemplates),
       },
       {
         path: 'about-signatures',
-        loadComponent: () => import('./pages/ddl/about-signatures').then((m) => m.DdlAboutSignaturesPage),
+        loadComponent: () => import('./pages/ddl/about-signatures').then((m) => m.DdlAboutSignatures),
+      },
+      {
+        path: 'identity',
+        loadComponent: () => import('./pages/ddl/ddl-identity/ddl-identity').then((m) => m.DdlIdentity),
       },
     ],
   },
   {
     path: '404',
-    loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
+    loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFound),
   },
   {
     path: '**',
-    loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
+    loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFound),
   },
 ];

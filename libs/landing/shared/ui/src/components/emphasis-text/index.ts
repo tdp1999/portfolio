@@ -1,1 +1,1 @@
-export { LandingEmphasisTextComponent, parseEmphasis } from './landing-emphasis-text.component';
+export { EmphasisText, parseEmphasis } from './emphasis-text';

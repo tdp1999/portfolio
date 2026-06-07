@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+import feNaming from './tools/eslint/fe-naming.mjs';
 
 export default [
   ...nx.configs['flat/base'],
@@ -80,6 +81,33 @@ export default [
     // Override or add rules here
     rules: {
       '@typescript-eslint/no-require-imports': 'error',
+    },
+  },
+  // FE file-naming grammar (.context/patterns-file-structure.md). Landing + console only;
+  // shared/api/e2e excluded (shared/ui sidebar is a vendored port kept as-is). Error-level —
+  // the tree was confirmed clean (0 findings) at migration time.
+  {
+    files: [
+      'apps/landing/**/*.ts',
+      'apps/console/**/*.ts',
+      'libs/landing/**/*.ts',
+      'libs/console/**/*.ts',
+    ],
+    ignores: [
+      '**/*.spec.ts',
+      '**/*.routes.ts',
+      '**/main.ts',
+      '**/main.server.ts',
+      '**/*.server.ts',
+      '**/test-setup.ts',
+      '**/*.config.ts',
+      '**/environments/**', // Angular build-target env files (environment.development.ts, …)
+      'apps/*/src/app/app.ts', // bootstrap root component — selector `*-root` is a CLI convention
+    ],
+    plugins: { 'fe-naming': feNaming },
+    rules: {
+      'fe-naming/filename-grammar': 'error',
+      'fe-naming/decorator-name-agreement': 'error',
     },
   },
 ];

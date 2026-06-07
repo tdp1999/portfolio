@@ -1,1 +1,1 @@
-export { DdlAboutSignaturesPage } from './about-signatures.page';
+export { DdlAboutSignatures } from '../ddl-about-signatures/ddl-about-signatures';

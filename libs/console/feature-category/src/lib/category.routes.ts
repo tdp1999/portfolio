@@ -4,20 +4,20 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const categoryRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./categories-page/categories-page'),
+    loadComponent: () => import('./categories/categories'),
   },
   {
     path: 'new',
-    loadComponent: () => import('./category-form-page/category-form-page'),
+    loadComponent: () => import('./category.form/category.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./category-form-page/category-form-page'),
+    loadComponent: () => import('./category.form/category.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./category-detail/category-detail'),
+    loadComponent: () => import('./category.detail/category.detail'),
   },
 ];

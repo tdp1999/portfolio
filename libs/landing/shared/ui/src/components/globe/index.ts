@@ -1,1 +1,1 @@
-export { LandingGlobeComponent } from './landing-globe.component';
+export { Globe } from './globe';

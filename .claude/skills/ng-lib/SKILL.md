@@ -103,6 +103,26 @@ After generating, do the following:
    This only applies to Angular/frontend libs. Pure backend or non-Angular shared libs (types, utils, errors) can keep `node10`.
 4. Run `pnpm lint` to verify module boundaries
 
+## File & Component Naming
+
+All generated files/folders must follow the grammar in **`.context/patterns-file-structure.md`**
+(`<entity>.[variant].<role|kind>.[spec].<ext>`, dot = structural boundary, dash = word-joiner). It is
+lint-enforced (`fe-naming/filename-grammar` + `fe-naming/decorator-name-agreement`, **error** level for
+landing + console).
+
+- **Components:** the `@nx/angular:component` generator is pre-set in `nx.json` to emit the new shape —
+  no `.component` suffix (`type: ""`), `OnPush`, `scss`, folder-per-component. Pass a grammar-correct
+  **path** so the file lands dot-named in the right place, e.g.:
+  ```bash
+  nx g @nx/angular:component --path=libs/console/feature-project/src/lib/project.delete-dialog/project.delete-dialog
+  # → project.delete-dialog.ts (class ProjectDeleteDialog, selector console-project-delete-dialog)
+  ```
+  Role/variant must come from the controlled vocab in §5 (console is allowlist-enforced; landing section
+  names are open). Single-file artifacts (`*.types.ts`, `*.service.ts`, `*.tokens.ts`) sit flat at `src/`
+  / `src/lib/` root — no folder, no `components/` bucket.
+- **Class ↔ file ↔ selector** must agree (§6): file `x.y.ts` → class `XY` → selector `<prefix>-x-y`.
+  The lint rule fails the build otherwise.
+
 ## Module Boundary Rules
 
 Reference: `references/module-boundaries.md` for ESLint enforce-module-boundaries configuration.

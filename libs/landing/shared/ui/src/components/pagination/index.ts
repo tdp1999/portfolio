@@ -1,1 +1,1 @@
-export { LandingPaginationComponent } from './landing-pagination.component';
+export { Pagination } from './pagination';

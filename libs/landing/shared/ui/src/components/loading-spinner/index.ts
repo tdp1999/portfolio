@@ -1,1 +1,1 @@
-export { LandingLoadingSpinnerComponent } from './loading-spinner.component';
+export { LoadingSpinner } from './loading-spinner';

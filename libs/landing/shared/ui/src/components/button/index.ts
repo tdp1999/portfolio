@@ -1,1 +1,1 @@
-export { ButtonComponent, type LandingButtonVariant, type LandingButtonSize } from './button.component';
+export { Button, type LandingButtonVariant, type LandingButtonSize } from './button';
