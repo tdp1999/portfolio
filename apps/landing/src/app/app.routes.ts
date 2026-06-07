@@ -212,6 +212,10 @@ export const appRoutes: Route[] = [
         path: 'about-signatures',
         loadComponent: () => import('./pages/ddl/about-signatures').then((m) => m.DdlAboutSignatures),
       },
+      {
+        path: 'identity',
+        loadComponent: () => import('./pages/ddl/ddl-identity/ddl-identity').then((m) => m.DdlIdentity),
+      },
     ],
   },
   {

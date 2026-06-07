@@ -73,6 +73,11 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
     tone: 'accent',
     routes: [
       {
+        path: '/ddl/identity',
+        title: 'Identity · 9 mark directions',
+        desc: 'Brand-identity Phase 1 — 9 logo directions as live SVG (full/compact/wordmark + 16px & 1-colour gates), recolourable.',
+      },
+      {
         path: '/ddl/hero-variants',
         title: 'Hero direction variants',
         desc: 'Six hero compositions — V1/V2 + α stagger, β marquee, γ mask wipe, δ magnetic. α picked.',
