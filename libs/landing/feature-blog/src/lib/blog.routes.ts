@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
-import { BlogListPage } from './blog-list-page/blog-list-page';
-import { BlogDetailPage } from './blog-detail-page/blog-detail-page';
+import { BlogList } from './blog.list/blog.list';
+import { BlogDetail } from './blog-detail-page/blog.detail';
 
 export const BLOG_ROUTES: Route[] = [
-  { path: '', component: BlogListPage },
-  { path: ':slug', component: BlogDetailPage },
+  { path: '', component: BlogList },
+  { path: ':slug', component: BlogDetail },
 ];

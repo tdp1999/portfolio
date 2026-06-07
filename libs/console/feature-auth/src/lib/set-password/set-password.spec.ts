@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideRouter, ActivatedRoute, Router } from '@angular/router';
 import { API_CONFIG } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
-import SetPasswordComponent from './set-password';
+import SetPassword from './set-password';
 
 const VALID_TOKEN = 'a'.repeat(64);
 const USER_ID = 'user-123';
@@ -20,25 +20,25 @@ function createRoute(token: string | null, userId: string | null) {
 }
 
 describe('SetPasswordComponent', () => {
-  let fixture: ComponentFixture<SetPasswordComponent>;
-  let component: SetPasswordComponent;
+  let fixture: ComponentFixture<SetPassword>;
+  let component: SetPassword;
   let httpTesting: HttpTestingController;
   let toastSpy: jest.SpyInstance;
   let routerSpy: jest.SpyInstance;
 
   function setup(token: string | null = VALID_TOKEN, userId: string | null = USER_ID) {
     TestBed.configureTestingModule({
-      imports: [SetPasswordComponent],
+      imports: [SetPassword],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: '**', component: SetPasswordComponent }]),
+        provideRouter([{ path: '**', component: SetPassword }]),
         { provide: API_CONFIG, useValue: { baseUrl: 'http://localhost:3000', urlPrefix: 'api', timeout: 5000 } },
         createRoute(token, userId),
       ],
     });
 
-    fixture = TestBed.createComponent(SetPasswordComponent);
+    fixture = TestBed.createComponent(SetPassword);
     component = fixture.componentInstance;
     httpTesting = TestBed.inject(HttpTestingController);
     toastSpy = jest.spyOn(TestBed.inject(ToastService), 'success');

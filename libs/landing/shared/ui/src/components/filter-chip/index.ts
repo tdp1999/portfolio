@@ -1,1 +1,1 @@
-export { LandingFilterChipComponent } from './landing-filter-chip.component';
+export { FilterChip } from './filter-chip';

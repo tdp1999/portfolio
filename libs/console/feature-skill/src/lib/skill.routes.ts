@@ -4,20 +4,20 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const skillRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./skills-page/skills-page'),
+    loadComponent: () => import('./skills/skills'),
   },
   {
     path: 'new',
-    loadComponent: () => import('./skill-form-page/skill-form-page'),
+    loadComponent: () => import('./skill.form/skill.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./skill-form-page/skill-form-page'),
+    loadComponent: () => import('./skill.form/skill.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./skill-detail/skill-detail'),
+    loadComponent: () => import('./skill.detail/skill.detail'),
   },
 ];

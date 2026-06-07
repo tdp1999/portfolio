@@ -1,2 +1,2 @@
-export { LandingGalleryComponent } from './gallery.component';
+export { Gallery } from './gallery';
 export type { GalleryImage } from './gallery.types';

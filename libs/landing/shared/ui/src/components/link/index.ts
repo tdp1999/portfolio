@@ -1,1 +1,1 @@
-export { LandingLinkComponent, type LandingLinkKind } from './link.component';
+export { Link, type LandingLinkKind } from './link';

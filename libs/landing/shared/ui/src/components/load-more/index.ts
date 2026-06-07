@@ -1,1 +1,1 @@
-export { LandingLoadMoreComponent } from './landing-load-more.component';
+export { LoadMore } from './load-more';

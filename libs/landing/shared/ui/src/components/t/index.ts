@@ -1,1 +1,1 @@
-export * from './landing-t.component';
+export * from './t';

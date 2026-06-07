@@ -1,4 +1,4 @@
-export { LandingCommandPaletteComponent } from './command-palette.component';
+export { CommandPalette } from './command-palette';
 export { CommandPaletteService } from './command-palette.service';
 export {
   KIND_LABEL,

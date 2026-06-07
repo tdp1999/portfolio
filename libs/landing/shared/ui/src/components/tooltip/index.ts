@@ -1,5 +1,1 @@
-export {
-  LandingTooltipComponent,
-  type LandingTooltipPosition,
-  type LandingTooltipAlign,
-} from './landing-tooltip.component';
+export { Tooltip, type LandingTooltipPosition, type LandingTooltipAlign } from './tooltip';

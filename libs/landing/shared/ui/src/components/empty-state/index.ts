@@ -1,1 +1,1 @@
-export { LandingEmptyStateComponent } from './empty-state.component';
+export { EmptyState } from './empty-state';

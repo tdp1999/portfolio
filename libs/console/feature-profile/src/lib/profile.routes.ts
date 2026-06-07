@@ -4,7 +4,7 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const profileRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./profile-page/profile-page'),
+    loadComponent: () => import('./profile/profile'),
     canDeactivate: [unsavedChangesGuard],
   },
 ];

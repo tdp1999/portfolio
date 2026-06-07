@@ -1,1 +1,1 @@
-export * from './social-row.component';
+export * from './social-row';

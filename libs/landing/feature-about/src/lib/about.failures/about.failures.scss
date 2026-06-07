@@ -1,0 +1,91 @@
+@use '../styles/section-header';
+@use 'base/breakpoints' as bp;
+
+/* About → Failures & lessons. Graduated V1 from /ddl/about-signatures.
+   Three equal-height bordered cards on desktop (≥ 1024px), single column
+   below. Lesson line bumped to text-300 + weight 500 so the takeaway stands
+   out inside the card without breaking the section's scan grid. */
+
+:host {
+  display: block;
+}
+
+.afa {
+  scroll-margin-top: 96px;
+  padding-block: var(--about-section-y, 96px);
+}
+
+.afa__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@include bp.respond-down('laptop') {
+  .afa__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.afa__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  background: var(--landing-bg);
+}
+
+.afa__card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--landing-border);
+}
+
+.afa__year {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-md);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-accent);
+}
+
+.afa__context {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  font-weight: 600;
+  color: var(--landing-text-300);
+}
+
+.afa__sec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.afa__label {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.afa__prose {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+
+.afa__prose--lesson {
+  color: var(--landing-text-300);
+  font-weight: 500;
+}

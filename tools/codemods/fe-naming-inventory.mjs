@@ -106,6 +106,16 @@ function propose(meta, filePath) {
   let confidence = 'high';
   const notes = [];
 
+  // KEEP (no rename): global shared scope (libs/shared/** — prefix `ui`/none, vendored/infra, out of
+  // this FE-scoped migration) and non-simple selectors (attribute/compound, e.g. shadcn sidebar).
+  const curKeepBase = basename(filePath).replace(/\.ts$/, '').replace(/\.component$/, '');
+  const nonSimpleSel = meta.selector && /[\[\], ]/.test(meta.selector);
+  if (scope === 'shared' || nonSimpleSel) {
+    return { scope, isSharedUi, confidence: 'high', proposedBase: curKeepBase, proposedClass: meta.className,
+      proposedSelector: meta.selector || meta.pipeName || '',
+      notes: nonSimpleSel ? 'non-simple-selector-KEEP' : 'global-shared-KEEP' };
+  }
+
   // Pipes & directives keep their kind-suffix; most already conform. Propose the existing base.
   if (meta.__decorator === 'Pipe' || meta.__decorator === 'Directive') {
     const cur = basename(filePath).replace(/\.ts$/, '');

@@ -1,1 +1,1 @@
-export { LandingResultsCountComponent } from './landing-results-count.component';
+export { ResultsCount } from './results-count';

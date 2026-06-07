@@ -1,1 +1,1 @@
-export { LandingBackLinkComponent } from './back-link.component';
+export { BackLink } from './back-link';

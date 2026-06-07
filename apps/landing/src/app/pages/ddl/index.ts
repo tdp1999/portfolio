@@ -1,1 +1,1 @@
-export { DdlComponent } from './ddl.component';
+export { Ddl } from './ddl';

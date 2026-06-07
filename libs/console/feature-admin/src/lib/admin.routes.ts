@@ -3,7 +3,7 @@ import { Route } from '@angular/router';
 export const adminRoutes: Route[] = [
   {
     path: 'users',
-    loadComponent: () => import('./users-page/users-page'),
+    loadComponent: () => import('./users/users'),
   },
   { path: '', redirectTo: 'users', pathMatch: 'full' },
 ];

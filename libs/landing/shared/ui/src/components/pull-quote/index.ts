@@ -1,1 +1,1 @@
-export * from './pull-quote.component';
+export * from './pull-quote';

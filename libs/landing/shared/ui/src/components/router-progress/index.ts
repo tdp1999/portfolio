@@ -1,1 +1,1 @@
-export { LandingRouterProgressComponent } from './router-progress.component';
+export { RouterProgress } from './router-progress';

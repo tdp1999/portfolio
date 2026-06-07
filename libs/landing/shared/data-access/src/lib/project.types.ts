@@ -42,7 +42,7 @@ export type ProjectLink = {
   type: ProjectLinkType;
 };
 
-export type ProjectDetail = {
+export type ProjectDetailData = {
   slug: string;
   title: string;
   oneLiner: TranslatableJson;

@@ -1,1 +1,1 @@
-export { LandingViewToggleComponent, type ViewToggleOption } from './landing-view-toggle.component';
+export { ViewToggle, type ViewToggleOption } from './view-toggle';

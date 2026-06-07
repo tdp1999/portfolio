@@ -1,1 +1,1 @@
-export { LandingBreadcrumbComponent, type BreadcrumbItem } from './breadcrumb.component';
+export { Breadcrumb, type BreadcrumbItem } from './breadcrumb';

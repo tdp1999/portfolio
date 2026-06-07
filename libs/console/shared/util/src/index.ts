@@ -8,7 +8,7 @@ export { scrollToFirstError } from './lib/scroll-to-first-error';
 export {
   unsavedChangesGuard,
   onBeforeUnload,
-  UnsavedChangesDialogComponent,
+  UnsavedChangesDialog,
   type HasUnsavedChanges,
   type UnsavedChangesResult,
-} from './lib/unsaved-changes.guard';
+} from './lib/unsaved-changes.dialog/unsaved-changes.dialog';

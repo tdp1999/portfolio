@@ -1,1 +1,1 @@
-export { BlogDetailVariantsPage } from './blog-detail-variants.page';
+export { DdlBlogDetailVariants } from './ddl-blog-detail-variants';

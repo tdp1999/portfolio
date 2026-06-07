@@ -24,7 +24,7 @@ import { FormErrorPipe } from '@portfolio/console/shared/util';
   styleUrl: './forgot-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ForgotPasswordComponent {
+export default class ForgotPassword {
   private readonly api = inject(ApiService);
 
   readonly submitting = signal(false);

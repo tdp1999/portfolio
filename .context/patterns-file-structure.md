@@ -174,6 +174,9 @@ services is useful; typing "component" is not):
 | Types / model | `*.types.ts` · `*.model.ts` | anywhere (flat at root) |
 | Routes | `*.routes.ts` | feature root |
 | Constants / config / tokens | `*.constants.ts` · `*.config.ts` · `*.tokens.ts` | anywhere (flat) |
+| Provider / validator / matcher | `*.provider.ts` · `*.validator.ts` · `*.matcher.ts` | data-access or util |
+| Util / data | `*.util.ts` · `*.data.ts` | util, or feature root if feature-local |
+| SSR server | `*.server.ts` | app root (build-target, not lint-checked) |
 
 ---
 
@@ -343,19 +346,26 @@ same three-layer identity philosophy (§1) applied to the backend — no change 
 
 Rules that are not automated rot. The standard is upheld by three mechanisms:
 
-1. **ESLint — naming + boundaries.**
-   - `@nx/enforce-module-boundaries` (scope/type tags) — already configured; keep it strict.
-   - A filename-grammar rule (custom rule or `eslint-plugin-check-file`) asserting
-     `<entity>.[variant].<role>.[spec].<ext>` and that `role`/`variant` ∈ the allowlist mirroring §5.
-   - A rule asserting class + selector derive from the file base (§6).
-2. **Generators emit it correctly.** Update the `ng-lib` / component skill (and the Nx/Angular
-   schematics defaults in `nx.json`) so new components are born flat-in-`/src`, dot-named, no
-   `.component` suffix. New files should never need manual renaming.
+1. **ESLint — naming + boundaries.** Local plugin `tools/eslint/fe-naming.mjs`, wired in
+   `eslint.config.mjs` at **error** level, scoped to `apps/{landing,console}` + `libs/{landing,console}`
+   (shared/api/e2e excluded; `*.spec`, `*.routes`, `*.config`, `*.server`, `environments/**`, and the
+   `app.ts` bootstrap component are ignored):
+   - `fe-naming/filename-grammar` — no legacy `.component`/`.page`/`.container` suffix segment; lowercase
+     dash-joined segments; and (console paths only) every non-entity segment ∈ role ∪ variant ∪ kept-kind
+     allowlist mirroring §5. Landing section names are open.
+   - `fe-naming/decorator-name-agreement` — for `@Component`, file base ↔ class (PascalCase) ↔ selector
+     (`<prefix>-<kebab>`) must agree (§6). Directives/services are exempt (landing-shared injectables
+     intentionally carry a `Landing` prefix).
+   - `@nx/enforce-module-boundaries` (scope/type tags) — kept strict.
+2. **Generators emit it correctly.** `nx.json` sets `@nx/angular:component` to `type: ""` (no
+   `.component` suffix), `changeDetection: OnPush`, `style: scss`; the `ng-lib` skill documents passing a
+   grammar-correct dot-named path. New components are born conformant — no manual rename.
 3. **One guardrail line in `CLAUDE.md`** pointing here, so every `.ts`/`.html` change is checked
    against this doc.
 
-The controlled vocabulary in §5 is the single source of truth; the lint allowlist must be updated in
-the same PR that adds a word here.
+The controlled vocabulary in §5 is the single source of truth; the lint allowlist
+(`ROLES`/`VARIANTS`/`KEPT_KINDS` in `tools/eslint/fe-naming.mjs`) must be updated in the same PR that
+adds a word here.
 
 ---
 

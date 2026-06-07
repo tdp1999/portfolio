@@ -1,6 +1,6 @@
 # Task: Migrate FE file/folder naming to patterns-file-structure standard
 
-## Status: pending
+## Status: in-progress (mechanical migration + enforcement done & build-verified; commit pending)
 
 ## Goal
 
@@ -36,36 +36,43 @@ same commit as** the rename — otherwise freshly-cleaned code drifts again imme
 ## Acceptance Criteria
 
 ### Gate 0 — vocab sign-off (before any code)
-- [ ] Role/variant vocabulary in `patterns-file-structure.md` §5 reviewed and adjusted for the real
-      console + landing domains; allowlist will mirror it exactly.
+- [x] Role/variant vocabulary in `patterns-file-structure.md` §5 reviewed and signed off; allowlist in
+      `tools/eslint/fe-naming.mjs` mirrors it (kept-kinds extended with provider/validator/util/server/
+      data/matcher, confirmed against the real tree).
 
 ### Enforcement (lands before/with rename)
-- [ ] ESLint filename-grammar rule asserts `<entity>.[variant].<role|kind>.[spec].<ext>` and that
-      `role`/`variant` ∈ the allowlist mirroring §5 (custom rule or `eslint-plugin-check-file`).
-- [ ] ESLint rule asserts file-base ↔ class (PascalCase) ↔ selector (`<app>-…`) agree (§6).
-- [ ] `@nx/enforce-module-boundaries` confirmed still strict (scope/type tags) — no regression.
-- [ ] `ng-lib` / component generator (and `nx.json`/schematics defaults) emit the new shape:
-      flat-in-`/src`, dot-named, no `.component` suffix, folder-per-component. New files need no
-      manual rename.
+- [x] ESLint filename-grammar rule (`fe-naming/filename-grammar`) — no legacy suffix, dash-joined
+      segments, console role/variant/kind allowlist mirroring §5. Custom local plugin.
+- [x] ESLint rule (`fe-naming/decorator-name-agreement`) — file-base ↔ class ↔ selector agree (§6).
+      Both rules **error** level, scoped to landing+console; 0 findings on the migrated tree.
+- [x] `@nx/enforce-module-boundaries` confirmed still strict (scope/type tags) — config untouched.
+- [x] `ng-lib` / component generator: `nx.json` `@nx/angular:component` → `type: ""` (no `.component`
+      suffix), `OnPush`, `scss`; dry-run verified (`sample-thing.ts`, folder-per-component). `ng-lib`
+      skill documents the grammar-correct path.
 
 ### Codemod + rename
-- [ ] `ts-morph` codemod inventories every FE component (reads `@Component` selector/templateUrl/
-      styleUrl/class), infers `(entity, variant, role)`, and **emits a `cũ→mới` mapping CSV**.
-- [ ] **Mapping CSV reviewed and corrected by hand** before applying (ambiguous cases like `ddl.ts`,
-      `editor.ts` resolved explicitly). ← human gate.
-- [ ] Files/folders renamed via `git mv` into folder-per-component dotted layout (history preserved).
-- [ ] References updated by AST (not regex): intra-lib imports, `templateUrl`/`styleUrl`, `index.ts`
-      barrels, class names (rename-symbol), and selectors in **both `.ts` decorators and `.html`
-      templates** repo-wide.
-- [ ] `shared/ui` flattened `/src/lib` → `/src` (landing already flat; console moved); tsconfig
-      paths updated if needed.
+- [x] `ts-morph` codemod inventories every FE component and **emits `fe-naming-map.csv`**
+      (`tools/codemods/fe-naming-inventory.mjs` + `fe-naming-rename.mjs`).
+- [x] **Mapping CSV reviewed** (user approved; DDL included; sidebar/shared kept; 220 rename / 43 keep).
+- [x] Files/folders renamed via `git mv`-equivalent (ts-morph `sf.move()`) into folder-per-component
+      dotted layout — 483 renames, git history preserved, 0 data loss. 62 empty husk folders + 29 DDL
+      orphan barrels removed.
+- [x] References updated by AST: imports, `templateUrl`/`styleUrl`, `index.ts` barrels, class names
+      (rename-symbol), selectors in `.ts` + `.html`. 8 class↔file mismatches resolved
+      (`fe-naming-class-fixups.mjs`: 2 data-types suffixed `…Data`, 6 classes → bare name). One real
+      stray selector fixed (`landing-ddl-blog-share-row` → `landing-blog-share-row`). `feature-about`
+      `components/` bucket lifted; stray `failures-content.ts` → `about.failures.types.ts`.
+- [x] `shared/ui` flattened `/src/lib` → `/src`: `libs/console/shared/ui` moved (33 component folders up,
+      barrel `./lib/` → `./`); landing shared/ui already flat. Build green. Global `libs/shared/**`
+      (vendored sidebar port) intentionally still out of scope.
 
 ### Verify + commit
-- [ ] `npx tsc --noEmit` clean (or via watch-servers build).
-- [ ] `nx affected -t lint test build` green across affected projects.
-- [ ] Selectors verified by build/render, not by eye (no orphaned tags in templates).
-- [ ] One atomic commit; its hash added to `.git-blame-ignore-revs` (created if absent) so blame
-      skips the mechanical rename.
+- [x] Build green (used instead of `tsc -p base`, which lacks Angular module-resolution): `nx build
+      landing` + `nx build console` both exit 0.
+- [x] `fe-naming` lint clean (0 findings); `@nx/enforce-module-boundaries` unaffected.
+      ⚠ `nx test` (unit) not yet run for the rename.
+- [x] Selectors verified by build (no orphaned tags; element-selector rewrites compiled).
+- [ ] One atomic commit + `.git-blame-ignore-revs` — **PENDING** (user holding commit for review).
 
 ## Technical Notes
 

@@ -1,1 +1,1 @@
-export { default as ErrorPageComponent } from './lib/error-page';
+export { default as ErrorPageComponent } from './lib/error/error';

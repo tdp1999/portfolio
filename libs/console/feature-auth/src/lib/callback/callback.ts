@@ -17,7 +17,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class CallbackComponent implements OnInit {
+export default class Callback implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);

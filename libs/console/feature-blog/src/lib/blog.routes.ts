@@ -4,20 +4,20 @@ import { unsavedChangesGuard } from '@portfolio/console/shared/util';
 export const blogRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./posts-page/posts-page'),
+    loadComponent: () => import('./posts/posts'),
   },
   {
     path: 'new',
-    loadComponent: () => import('./post-form-page/post-form-page'),
+    loadComponent: () => import('./post.form/post.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./post-form-page/post-form-page'),
+    loadComponent: () => import('./post.form/post.form'),
     canDeactivate: [unsavedChangesGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./blog-post-detail/blog-post-detail'),
+    loadComponent: () => import('./blog-post.detail/blog-post.detail'),
   },
 ];

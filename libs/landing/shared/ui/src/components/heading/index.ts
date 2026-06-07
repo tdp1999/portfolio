@@ -1,2 +1,2 @@
-export { LandingHeadingComponent } from './landing-heading.component';
-export type { HeadingLevel } from './landing-heading.component';
+export { Heading } from './heading';
+export type { HeadingLevel } from './heading';

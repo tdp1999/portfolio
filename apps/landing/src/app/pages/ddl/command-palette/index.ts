@@ -1,1 +1,1 @@
-export { CommandPalettePage } from './command-palette.page';
+export { DdlCommandPalette } from '../ddl-command-palette/ddl-command-palette';
