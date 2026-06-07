@@ -1,0 +1,5 @@
+# Mechanical commits to skip in `git blame`. Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# refactor(fe-naming): adopt dotted file grammar + lint/generator enforcement
+7422fa2f707f20fce501f5dbb0e7617995e659a2
