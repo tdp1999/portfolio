@@ -12,12 +12,22 @@ svg {
   overflow: visible;
 }
 
+.draw path {
+  fill: currentColor;
+}
+
+.draw-dot {
+  fill: var(--brand-accent, #6e66d9);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+// ── DRAW (default) ───────────────────────────────────────────────────
 // Each glyph traces (stroke-dashoffset 1→0) then inks (fill in / stroke out) in its
 // own ~0.62s slot; the per-glyph `--i` delay staggers them left-to-right so the fill
 // chases the pen. A global fill can't follow the pen — per-glyph paths are why this
-// reads as one continuous "writing" gesture instead of two disconnected phases.
-.draw path {
-  fill: currentColor;
+// reads as one continuous "writing" gesture. The Dot pops just after the final glyph.
+:host(.mode-draw) .draw path {
   stroke: currentColor;
   stroke-width: 1.6;
   fill-opacity: 0;
@@ -34,18 +44,96 @@ svg {
   }
 }
 
-// the Dot pops just after the final glyph finishes inking
-.draw-dot {
-  fill: var(--brand-accent, #6e66d9);
+:host(.mode-draw) .draw-dot {
   opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: brand-dot 0.4s ease var(--dot-delay, 0.8s) both;
+  // entrance pop, then loop the "still working" pulse until [done]
+  animation:
+    brand-dot 0.4s ease var(--dot-delay, 0.8s) both,
+    brand-dot-loop 2.4s ease-in-out calc(var(--dot-delay, 0.8s) + 0.4s) infinite;
 
   @include prefers.reduce-motion {
     animation: none;
     opacity: 1;
   }
+}
+
+// ── DROP ─────────────────────────────────────────────────────────────
+// Glyphs rise + fade in (staggered); the Dot drops from above with a soft bounce.
+:host(.mode-drop) .draw path {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 0.08s);
+
+  @include prefers.reduce-motion {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:host(.mode-drop) .draw-dot {
+  opacity: 0;
+  animation:
+    brand-drop 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) var(--dot-delay, 0.8s) both,
+    brand-dot-loop 2.4s ease-in-out calc(var(--dot-delay, 0.8s) + 0.5s) infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ── WIPE ─────────────────────────────────────────────────────────────
+// The whole mark (glyphs + Dot) is revealed left-to-right by a clip.
+:host(.mode-wipe) .draw path {
+  fill-opacity: 1;
+}
+
+// Wipe reveal + pulse-loop start both ride `--dot-delay`, so they scale with glyph
+// count (longer marks reveal longer) and can never drift apart like two literals.
+:host(.mode-wipe) .draw-dot {
+  opacity: 1;
+  animation: brand-dot-loop 2.4s ease-in-out var(--dot-delay, 0.8s) infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+:host(.mode-wipe) .draw {
+  animation: brand-wipe var(--dot-delay, 0.8s) cubic-bezier(0.4, 0, 0.2, 1) both;
+
+  @include prefers.reduce-motion {
+    animation: none;
+    clip-path: none;
+  }
+}
+
+// ── done — stop every entrance/loop animation, settle the mark solid ──
+// Covers an early `done` (fast load) mid-entrance: the Dot AND the glyphs jump to
+// their final inked state together, so the Dot can never appear before its letters.
+:host(.is-done) .draw {
+  animation: none;
+  clip-path: none;
+}
+
+:host(.is-done) .draw path {
+  animation: none;
+  fill-opacity: 1;
+  stroke-opacity: 0;
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transform: none;
+}
+
+:host(.is-done) .draw-dot {
+  animation: none;
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes brand-glyph {
@@ -76,5 +164,52 @@ svg {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+// "still working" loop — the Dot breathes after the entrance, until [done]
+@keyframes brand-dot-loop {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.82;
+  }
+}
+
+@keyframes brand-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brand-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-70%);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brand-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
   }
 }

@@ -9,12 +9,18 @@ import {
 } from '../glyph-outlines.data';
 
 /**
- * The Loader — the v1 "loading sting". Each glyph is its own path that traces
- * (stroke-dashoffset) then inks (fill in / stroke out) in its own slot, staggered
- * left-to-right via a per-glyph `--i` delay, so the fill chases the pen as the name
- * is written, then the accent Dot pops just after the final glyph. `mark` picks the
- * Monogram (`tdp.`) or the Wordmark (`Phuong Tran.`) — both close with the Dot.
- * Reduce-motion → static filled state. Call `replay()` to re-run.
+ * The Loader — the "loading sting", duration-adaptive. Two phases:
+ *   1. **Entrance** (~1.5s): the mark is revealed by `mode` — `draw` (per-glyph
+ *      trace→ink, staggered left-to-right via a `--i` delay so the fill chases the
+ *      pen), `drop` (glyphs rise + fade, the Dot drops in), or `wipe` (left-to-right
+ *      reveal). The accent Dot lands just after the final glyph.
+ *   2. **Loop** (until `done`): the Dot pulses ("still working") so the loader fits
+ *      any load duration (3s / 5s / 10s …). When the consumer flips `[done]` true the
+ *      pulse settles to a solid Dot; the consumer then hides/fades the loader.
+ *
+ * `mark` picks the Monogram (`tdp.`) or the Wordmark (`Phuong Tran.`) — both close with
+ * the Dot. Reduce-motion → static filled state (no entrance, no loop). `replay()` re-runs
+ * the entrance.
  */
 @Component({
   selector: 'brand-loader',
@@ -22,6 +28,10 @@ import {
   host: {
     role: 'img',
     '[attr.aria-label]': 'label()',
+    '[class.mode-draw]': "mode() === 'draw'",
+    '[class.mode-drop]': "mode() === 'drop'",
+    '[class.mode-wipe]': "mode() === 'wipe'",
+    '[class.is-done]': 'done()',
     '[style.--brand-accent]': 'accent()',
   },
   template: `
@@ -46,6 +56,13 @@ export class Loader {
   readonly mark = input<'monogram' | 'wordmark'>('monogram');
   readonly accent = input<string | null>(null);
   readonly label = input<string>('tdp.');
+  /**
+   * Entrance style: `draw` (per-glyph trace→ink, the signature sting), `drop`
+   * (glyphs rise + fade, the Dot drops in), or `wipe` (left-to-right reveal).
+   */
+  readonly mode = input<'draw' | 'drop' | 'wipe'>('draw');
+  /** Loading finished — stops the "still working" pulse and settles the Dot solid. */
+  readonly done = input<boolean>(false);
 
   private readonly run = signal(0);
   protected readonly runId = this.run.asReadonly();

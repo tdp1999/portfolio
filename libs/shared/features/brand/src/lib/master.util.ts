@@ -186,3 +186,55 @@ export function masterSvg(mark: MarkName, options: SignatureRenderOptions = {}):
       return monogramSvg(options);
   }
 }
+
+/**
+ * Decoration Motif tokens — the locked Phase-3 motif: a **lines-only blueprint grid**.
+ * Shared by the web `<brand-motif>` primitive and `motifSvg()` so both render identically.
+ * The Dot is intentionally absent: the mark's accent Dot must stay the only circle
+ * wherever the motif sits behind it (chosen direction A — keep the Dot exclusive).
+ */
+export const MOTIF = {
+  /** Grid cell size — px (web) / user units (asset). */
+  cell: 40,
+  /** Line thickness — px / user units. */
+  stroke: 0.75,
+  /** Line opacity over the surface. */
+  opacity: 0.13,
+} as const;
+
+export interface MotifRenderOptions {
+  /** Accent / line colour. */
+  accent?: string;
+  /** Grid cell size in user units. */
+  cell?: number;
+  /** Line thickness in user units. */
+  strokeWidth?: number;
+  /** Line opacity. */
+  opacity?: number;
+  /** Surface rect behind the grid; `null`/omitted = transparent. */
+  background?: string | null;
+}
+
+/**
+ * The Motif as a standalone tileable SVG sized `width`×`height` — for asset
+ * composition (OG / email backgrounds, section textures). The web uses the
+ * `<brand-motif>` CSS primitive instead; both follow `MOTIF`.
+ */
+export function motifSvg(width: number, height: number, options: MotifRenderOptions = {}): string {
+  const {
+    accent = TDP_BRAND.theme.accent,
+    cell = MOTIF.cell,
+    strokeWidth = MOTIF.stroke,
+    opacity = MOTIF.opacity,
+    background = null,
+  } = options;
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" fill="none">`,
+    background ? `<rect width="${width}" height="${height}" fill="${background}" />` : '',
+    `<defs><pattern id="brand-motif" width="${cell}" height="${cell}" patternUnits="userSpaceOnUse">`,
+    `<path d="M${cell} 0 H0 V${cell}" stroke="${accent}" stroke-width="${strokeWidth}" fill="none" opacity="${opacity}" />`,
+    `</pattern></defs>`,
+    `<rect width="${width}" height="${height}" fill="url(#brand-motif)" />`,
+    `</svg>`,
+  ].join('');
+}

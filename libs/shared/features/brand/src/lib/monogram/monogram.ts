@@ -17,6 +17,7 @@ import type { BrandVariant } from '../brand.types';
     '[attr.aria-label]': 'label()',
     '[class.mono]': "variant() === 'mono'",
     '[class.knockout]': "variant() === 'knockout'",
+    '[class.weight-breathe]': 'weightBreathe()',
     '[style.--brand-accent]': 'accent()',
   },
   template: `
@@ -35,6 +36,9 @@ export class Monogram {
   readonly variant = input<BrandVariant>('full');
   readonly accent = input<string | null>(null);
   readonly label = input<string>('tdp.');
+
+  /** Faux variable-weight — animates a stroke on the outline so the mark "breathes" heavier/lighter. */
+  readonly weightBreathe = input<boolean>(false);
 
   protected readonly glyphs = MONOGRAM_GLYPHS;
   protected readonly dot = DOT;

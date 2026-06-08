@@ -1,0 +1,17 @@
+// Lines-only blueprint grid painted as a CSS background (no SVG ids → safe to
+// repeat on a page). cell / stroke / opacity all come from host-bound CSS vars
+// fed by the shared MOTIF token, so this stays in lock-step with motifSvg().
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+
+  --motif-line: color-mix(in srgb, var(--brand-accent, #6e66d9) calc(var(--motif-opacity, 0.13) * 100%), transparent);
+  --motif-stroke: 0.75px;
+
+  background-image:
+    linear-gradient(var(--motif-line) var(--motif-stroke), transparent var(--motif-stroke)),
+    linear-gradient(90deg, var(--motif-line) var(--motif-stroke), transparent var(--motif-stroke));
+  background-size: var(--motif-cell, 40px) var(--motif-cell, 40px);
+}

@@ -1,3 +1,5 @@
+@use 'base/prefers' as prefers;
+
 :host {
   display: inline-block;
   line-height: 0;
@@ -18,4 +20,28 @@ svg {
 :host(.mono) .dot,
 :host(.knockout) .dot {
   fill: currentColor;
+}
+
+// ── motion (opt-in, reduce-motion safe) ──────────────────────────────
+// Faux variable-weight — a stroke on the outline grows/shrinks so the mark
+// "breathes" heavier/lighter (true variable-font weight would need a wght-axis woff2).
+:host(.weight-breathe) g path {
+  stroke: currentColor;
+  stroke-width: 0;
+  animation: brand-weight-breathe 3s ease-in-out infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+    stroke-width: 0;
+  }
+}
+
+@keyframes brand-weight-breathe {
+  0%,
+  100% {
+    stroke-width: 0;
+  }
+  50% {
+    stroke-width: 1.4;
+  }
 }
