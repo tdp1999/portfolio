@@ -145,13 +145,229 @@
       </div>
     </section>
 
+    <!-- ═══════════════ Motif (Phase 3 · locked = lines-only) ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">Motif · <code>&lt;brand-motif&gt;</code></h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          Decoration — a lines-only blueprint grid. The Dot is deliberately absent so the mark's accent Dot stays the
+          only circle wherever the motif sits behind it. A background layer: drop into any positioned surface (absolute
+          inset-0, <code>pointer-events: none</code>). Recolours with the accent and flips with the theme.
+        </p>
+      </header>
+
+      <div class="bmotif-stage">
+        <brand-motif [accent]="accent()" />
+        <brand-wordmark class="bmotif-stage__mark" [accent]="accent()" style="font-size: 40px" />
+      </div>
+    </section>
+
+    <!-- ═══════════════ Motion (Phase 3) ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">Motion</h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          Best viewed live. The <strong class="text-landing-text-300">Loader</strong> is duration-adaptive: an entrance
+          (draw / drop / wipe) then a "still working" Dot pulse that loops until <code>[done]</code> — fits any load
+          time. The <strong class="text-landing-text-300">faux weight</strong> breathes a stroke on the outline. All
+          opt-in and <strong class="text-landing-text-300">reduce-motion → static</strong>.
+        </p>
+      </header>
+
+      <!-- Loader — entrance + loop-until-done, all three modes -->
+      <div class="bmotion">
+        <div class="bmotion__demo bmotion__demo--loaders">
+          <div class="bmotion__loader">
+            <brand-loader
+              #d1
+              mark="monogram"
+              mode="draw"
+              [done]="loaderDone()"
+              [accent]="accent()"
+              style="font-size: 72px"
+            />
+            <span class="font-mono text-mono-sm">draw</span>
+          </div>
+          <div class="bmotion__loader">
+            <brand-loader
+              #d2
+              mark="monogram"
+              mode="drop"
+              [done]="loaderDone()"
+              [accent]="accent()"
+              style="font-size: 72px"
+            />
+            <span class="font-mono text-mono-sm">drop</span>
+          </div>
+          <div class="bmotion__loader">
+            <brand-loader
+              #d3
+              mark="monogram"
+              mode="wipe"
+              [done]="loaderDone()"
+              [accent]="accent()"
+              style="font-size: 72px"
+            />
+            <span class="font-mono text-mono-sm">wipe</span>
+          </div>
+        </div>
+        <div class="bmotion__controls">
+          <button
+            type="button"
+            class="bdraw__replay font-mono text-mono-sm"
+            (click)="loaderDone.set(false); d1.replay(); d2.replay(); d3.replay()"
+          >
+            ↻ replay
+          </button>
+          <button type="button" class="bdraw__replay font-mono text-mono-sm" (click)="loaderDone.set(true)">
+            ✓ mark done
+          </button>
+        </div>
+        <p class="bmotion__cap font-mono text-mono-sm">
+          loader · entrance (draw / drop / wipe) → pulse loop · ✓ done settles the Dot solid
+        </p>
+      </div>
+
+      <!-- faux variable-weight -->
+      <div class="bmotion">
+        <div class="bmotion__demo">
+          <brand-monogram [accent]="accent()" [weightBreathe]="true" style="font-size: 64px" />
+        </div>
+        <p class="bmotion__cap font-mono text-mono-sm">
+          faux weight — stroke breathe (true variable-font weight would need a wght-axis woff2)
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════ Guidelines · do / don't (Phase 3) ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">Guidelines · <code>do / don't</code></h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          The locked rules for using the marks. Recolour the <strong class="text-landing-text-300">accent</strong> per
+          product — that's config. Everything else here is fixed so the Brand stays itself across every surface.
+        </p>
+      </header>
+
+      <!-- clearspace + minimum size -->
+      <div class="grules">
+        <div class="grules__panel">
+          <h3 class="grules__title font-mono text-mono-sm">Clearspace</h3>
+          <div class="gclear">
+            <div class="gclear__box">
+              <brand-monogram [accent]="accent()" style="font-size: 64px" />
+            </div>
+          </div>
+          <p class="grules__cap font-sans text-body-sm">
+            Keep a margin of at least the Monogram's cap-height clear on every side. Nothing — type, edges, other logos
+            — crowds the mark.
+          </p>
+        </div>
+
+        <div class="grules__panel">
+          <h3 class="grules__title font-mono text-mono-sm">Minimum size</h3>
+          <div class="gsize">
+            <div class="gsize__item">
+              <brand-monogram [accent]="accent()" style="font-size: 16px" />
+              <span class="font-mono text-mono-sm">16px · floor</span>
+            </div>
+            <div class="gsize__item">
+              <brand-monogram [accent]="accent()" style="font-size: 32px" />
+              <span class="font-mono text-mono-sm">32px+ · clean</span>
+            </div>
+          </div>
+          <p class="grules__cap font-sans text-body-sm">
+            16px is the favicon floor — legible but tight. Prefer 32px and up. Never set the Monogram below 16px.
+          </p>
+        </div>
+      </div>
+
+      <!-- do / don't grid -->
+      <div class="gdg">
+        <article class="gcard gcard--do">
+          <span class="gcard__tag font-mono text-mono-sm">✓ do</span>
+          <div class="gcard__stage">
+            <brand-monogram [accent]="accent()" style="font-size: 48px" />
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">
+            Recolour the accent per product — the Dot is the one themable atom.
+          </p>
+        </article>
+
+        <article class="gcard gcard--do">
+          <span class="gcard__tag font-mono text-mono-sm">✓ do</span>
+          <div class="gcard__stage gcard__stage--knockout" [style.background]="accent()">
+            <brand-monogram variant="knockout" style="font-size: 48px" />
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">
+            Use knockout on a solid accent fill; mono on busy / low-contrast surfaces.
+          </p>
+        </article>
+
+        <article class="gcard gcard--do">
+          <span class="gcard__tag font-mono text-mono-sm">✓ do</span>
+          <div class="gcard__stage">
+            <brand-monogram variant="mono" style="font-size: 48px" />
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">
+            Let the ink inherit <code>currentColor</code> — the mark adapts to light &amp; dark.
+          </p>
+        </article>
+
+        <article class="gcard gcard--dont">
+          <span class="gcard__tag font-mono text-mono-sm">✗ don't</span>
+          <div class="gcard__stage">
+            <span class="gbad gbad--stretch"><brand-monogram [accent]="accent()" style="font-size: 48px" /></span>
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">Don't stretch, squash, or distort the proportions.</p>
+        </article>
+
+        <article class="gcard gcard--dont">
+          <span class="gcard__tag font-mono text-mono-sm">✗ don't</span>
+          <div class="gcard__stage">
+            <span class="gbad gbad--rotate"><brand-monogram [accent]="accent()" style="font-size: 48px" /></span>
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">Don't rotate or tilt the mark.</p>
+        </article>
+
+        <article class="gcard gcard--dont">
+          <span class="gcard__tag font-mono text-mono-sm">✗ don't</span>
+          <div class="gcard__stage">
+            <span class="gbad gbad--shadow"><brand-monogram [accent]="accent()" style="font-size: 48px" /></span>
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">Don't add shadows, glows, gradients, or outlines.</p>
+        </article>
+
+        <article class="gcard gcard--dont">
+          <span class="gcard__tag font-mono text-mono-sm">✗ don't</span>
+          <div class="gcard__stage">
+            <span class="gbad gbad--recolor"><brand-monogram variant="mono" style="font-size: 48px" /></span>
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">
+            Don't recolour the letters — only the accent Dot carries colour.
+          </p>
+        </article>
+
+        <article class="gcard gcard--dont">
+          <span class="gcard__tag font-mono text-mono-sm">✗ don't</span>
+          <div class="gcard__stage gcard__stage--lowcontrast">
+            <brand-monogram variant="full" [accent]="accent()" style="font-size: 48px" />
+          </div>
+          <p class="gcard__cap font-sans text-body-sm">
+            Don't put the full mark on a low-contrast background — switch to mono / knockout.
+          </p>
+        </article>
+      </div>
+    </section>
+
     <!-- ═══════════════ next step ═══════════════ -->
     <div class="bnext">
-      <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent">next · generator skill</p>
+      <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent">phase 3 · complete</p>
       <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-2xl">
-        Component A done (this lib). Next is the portable generator skill that reads <code>brand.config.ts</code> +
-        Master → emits the asset set (favicon / OG / email sign-off), using the approved <code>resvg-js</code> +
-        <code>png-to-ico</code> stack. Spec: <code>.context/plans/epic-portfolio-brand-identity.md</code>.
+        Components + generator skill + site integration + Phase 3 (motif, duration-adaptive motion, and these
+        guidelines) all shipped. Deferred &amp; non-blocking: true variable-font weight (needs a
+        <code>wght</code>-axis woff2) and a video sting (Remotion). Spec:
+        <code>.context/plans/epic-portfolio-brand-identity.md</code>.
       </p>
     </div>
   </landing-container>

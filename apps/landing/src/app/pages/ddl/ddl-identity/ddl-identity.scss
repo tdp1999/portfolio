@@ -173,6 +173,234 @@
   }
 }
 
+// ── motif ────────────────────────────────────────────────────────────
+.bmotif-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 48px 32px;
+  overflow: hidden;
+  border: 1px solid var(--landing-border);
+  border-radius: 14px;
+  background: var(--landing-ink-1);
+
+  &__mark {
+    position: relative;
+    z-index: 1;
+    color: var(--landing-text-200, var(--landing-text-300));
+  }
+}
+
+// ── motion explorations ──────────────────────────────────────────────
+.bmotion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px 0;
+
+  & + & {
+    border-top: 1px solid var(--landing-border);
+  }
+
+  &__demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 40px;
+    min-height: 96px;
+    color: var(--landing-text-200, var(--landing-text-300));
+
+    &--loaders {
+      gap: 48px;
+    }
+  }
+
+  &__loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    span {
+      color: var(--landing-text-600);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__cap {
+    color: var(--landing-text-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+// ── guidelines (do / don't) ──────────────────────────────────────────
+.grules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  &__panel {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 280px;
+    padding: 24px;
+    border: 1px solid var(--landing-border);
+    border-radius: 14px;
+    background: var(--landing-ink-1);
+  }
+
+  &__title {
+    color: var(--landing-text-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__cap {
+    color: var(--landing-text-500);
+    max-width: 56ch;
+  }
+}
+
+.gclear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+
+  &__box {
+    display: inline-flex;
+    padding: 32px; // the clearspace margin, visualised
+    border: 1px dashed var(--landing-border-strong);
+    border-radius: 8px;
+    color: var(--landing-text-200, var(--landing-text-300));
+  }
+}
+
+.gsize {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 40px;
+  padding: 16px 0;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--landing-text-200, var(--landing-text-300));
+
+    span {
+      color: var(--landing-text-600);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+}
+
+.gdg {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.gcard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  background: var(--landing-ink-1);
+
+  &__tag {
+    align-self: flex-start;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    padding: 16px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--landing-ink-2, var(--landing-ink-1));
+    color: var(--landing-text-200, var(--landing-text-300));
+
+    // knockout demo = single colour punched out of an accent fill
+    &--knockout {
+      color: #0a0d12;
+    }
+
+    // intentionally bad: mark colour ≈ background → fails contrast
+    &--lowcontrast {
+      background: #6b7280;
+      color: #767c86;
+    }
+  }
+
+  &__cap {
+    color: var(--landing-text-500);
+  }
+
+  &--do {
+    border-color: color-mix(in srgb, #2dd4bf 40%, var(--landing-border));
+
+    .gcard__tag {
+      color: #2dd4bf;
+      background: color-mix(in srgb, #2dd4bf 14%, transparent);
+    }
+  }
+
+  &--dont {
+    border-color: color-mix(in srgb, #f43f5e 40%, var(--landing-border));
+
+    .gcard__tag {
+      color: #f43f5e;
+      background: color-mix(in srgb, #f43f5e 14%, transparent);
+    }
+  }
+}
+
+// intentionally-wrong treatments demoed in the "don't" cells
+.gbad {
+  display: inline-flex;
+
+  &--stretch {
+    transform: scaleX(1.7);
+  }
+
+  &--rotate {
+    transform: rotate(-12deg);
+  }
+
+  &--shadow {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  }
+
+  &--recolor {
+    color: #f43f5e;
+  }
+}
+
 // ── next ─────────────────────────────────────────────────────────────
 .bnext {
   padding: 32px 0 64px;
