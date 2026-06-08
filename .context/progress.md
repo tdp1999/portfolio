@@ -183,16 +183,22 @@
   - Cleanup: pruned `BlogListPage` / `BlogDetailPage` re-exports from `libs/landing/feature-blog/src/index.ts` (only `BLOG_ROUTES` consumed externally); deleted orphan `apps/landing/src/app/pages/coming-soon/` (zero refs after route swap) and removed the matching bullet from the page-shell DDL migration list
   - ADR-018 logged the pick (list V1+V3, detail V4, featured γ); SEO `Article` JSON-LD SSR-guarded on detail; per-post language surfaced as filter (no global translate switcher)
   - Cover-image requirement (PST-011) end-to-end: domain entity invariant, DTO Zod schema, NOT NULL migration, seed backfill, console form-validation mirror (task 359 — empty-string sentinel + Validators.required + inline error chrome + 3 unit specs)
+- [x] **Portfolio E1 — Audience & Narrative Discovery** (epic-portfolio-e1-audience-narrative) - Completed 2026-05-01; archived to `plans-done/` (sync 2026-06-07)
+  - Discovery epic (no task breakdown): locked position claim, through-line, audiences, channel map, 10s/30s/90s reading pattern, voice decisions — feeds E2 + E4. Remains the living reference E2 reads from
+- [x] **Portfolio E4 — UI/UX Direction & Moodboard** (epic-portfolio-e4-uiux-direction) - Completed (closed) 2026-05-02; archived to `plans-done/` (sync 2026-06-07)
+  - Direction epic (no task breakdown): visual signature locked — typography, indigo-violet accent, density, hero "type + ambient blueprint", tabbed mini-gallery card rule, Stitch-as-layout-reference contract. Handoff to E5
+- [x] **Landing Lightbox** (lightbox / `landing-lightbox`) - Completed (shipped v1) 2026-06; archived to `plans-done/` (sync 2026-06-07)
+  - `[lightbox]` directive + FLIP open/close, figure auto-pull, grouped galleries, ⌘/Ctrl download hint, `.lightbox-enabled` hover-zoom affordance (reduce-motion gated); behavior contract lives in `.context/design/components/lightbox.md`. Project-detail in-content figures deferred to `epic-portfolio-prose-block-renderer` (architecture limit — `[innerHTML]` can't carry a directive)
 
 ## In Progress
 
 ### Standalone Tasks
 
-- [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M)
+- [ ] 360-fe-file-naming-standard-migration — Big-bang FE file/folder naming migration (XL); mechanical migration + lint/generator enforcement done & build-verified, **commit pending** (13/14 ACs)
 
-### Active Epics
+### Active Epics (broken-down / queued — work not yet started)
 
-- [ ] **Console Tab Redesign** (epic-console-tab-redesign) — UX research + migration (M)
+- [ ] **Console Tab Redesign** (epic-console-tab-redesign) — status `ready`; UX research → direction → system-wide migration, not yet broken down (M)
 
 ---
 
@@ -232,9 +238,10 @@
 ## Standalone Tasks
 
 - [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
+- [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M) (standalone)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
-- [ ] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone)
+- [→] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — **in-progress**, see In Progress section
 - [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
@@ -397,10 +404,10 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 | Status                    | Count   |
 | ------------------------- | ------- |
 | Done (archived)           | 336     |
-| In Progress               | 0       |
+| In Progress               | 1       |
 | Pending                   | 24      |
 | **Total Created**         | **360** |
-| Epics completed           | 44      |
+| Epics completed           | 47      |
 
 ## Notes
 

@@ -1,6 +1,6 @@
 # Feature plan — `landing-lightbox`
 
-Status: **shipped** (v1 complete). Scope approved 2026-06-02; built out 2026-06. All v1 scope landed; see §7 (all boxes checked). Live consumers + remaining rollout in §6.
+Status: ✅ **completed / shipped** (v1 complete). Scope approved 2026-06-02; built out 2026-06. All v1 scope landed; see §7 (all boxes checked). Live consumers + remaining rollout in §6. Project-detail figures deferred to `epic-portfolio-prose-block-renderer` (architecture limit, not a gap). Archived to `plans-done/` (sync 2026-06-07).
 
 A reusable, breakpoint-agnostic lightbox so **any figure in the system** (home, projects, blog, anywhere) can be clicked to open a full-screen viewer with **carousel navigation + zoom/pan**. Opt-in per figure via a directive.
 

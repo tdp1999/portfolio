@@ -1,7 +1,7 @@
 # Epic E4: UI/UX Direction & Moodboard
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: ✅ closed (2026-05-02). Direction lock complete; handoff to E5.
+> Status: ✅ completed (closed 2026-05-02). Direction lock complete; handoff to E5. Archived to `plans-done/` (sync 2026-06-07).
 > Depends on: E1 (audience/narrative), E2 (locked content). Parallel-able with E3.
 > Feeds: E5 (implementation).
 

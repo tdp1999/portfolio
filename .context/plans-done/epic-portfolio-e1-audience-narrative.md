@@ -1,7 +1,7 @@
 # Epic E1: Audience & Narrative Discovery
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: Discovery complete. Outputs feed E2 (content) and E4 (UI/UX direction).
+> Status: ✅ completed (discovery complete). Outputs feed E2 (content) and E4 (UI/UX direction). Archived to `plans-done/` (sync 2026-06-07); remains the living reference E2 reads from.
 
 ## Purpose
 
