@@ -8,7 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
+import { NgTemplateOutlet, UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -27,11 +27,14 @@ import {
   ViewToggle,
   Segmented,
   SectionRule,
+  Carousel,
+  CarouselSlide,
   CloudinarySrcsetPipe,
   type BreadcrumbItem,
   type SegmentOption,
   type ViewToggleOption,
 } from '@portfolio/landing/shared/ui';
+import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import { LandingUrlStateService } from '@portfolio/landing/shared/util';
 import {
   BlogDataService,
@@ -110,6 +113,7 @@ function timeAgo(iso: string | null, locale: 'en' | 'vi'): string {
   imports: [
     RouterLink,
     ReactiveFormsModule,
+    NgTemplateOutlet,
     UpperCasePipe,
     Container,
     Input,
@@ -122,6 +126,8 @@ function timeAgo(iso: string | null, locale: 'en' | 'vi'): string {
     ViewToggle,
     Segmented,
     SectionRule,
+    Carousel,
+    CarouselSlide,
     CloudinarySrcsetPipe,
   ],
   templateUrl: './blog.list.html',
@@ -134,8 +140,23 @@ export class BlogList {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly localeService = inject(LandingLocaleService);
+  private readonly breakpoint = inject(BreakpointObserverService);
 
   readonly locale = this.localeService.locale;
+  /**
+   * Below `laptop` (mobile + tablet) the featured strip keeps its lead hero but
+   * swaps the stacked secondary cards for a swipeable `landing-carousel`. The full
+   * multi-column grid is a laptop+ affordance. Component-swap, not a CSS reflow:
+   * SSR defaults to the widest BP so desktop renders the grid first with no
+   * hydration flash (mirrors Selected Work's gallery↔carousel swap).
+   */
+  readonly stripCompact = computed(() => !this.breakpoint.isAtLeast('laptop'));
+  /**
+   * Dot indicators are a one-card-per-view affordance: they track the card nearest
+   * the viewport centre, which is ambiguous once tablet shows two cards at once.
+   * So show dots only at mobile (1-up); tablet (2-up) navigates by arrows + peek.
+   */
+  readonly stripDots = computed(() => !this.breakpoint.isAtLeast('tablet'));
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Writing' }];
   readonly viewOptions = VIEW_OPTIONS;
   readonly sortOptions = SORT_OPTIONS;
@@ -237,6 +258,8 @@ export class BlogList {
   readonly v1Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);
   readonly v1Left = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 3));
   readonly v1Right = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(3, 5));
+  /** All non-hero side cards, in DOM order — feeds the compact (< tablet) carousel. */
+  readonly v1Sides = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 5));
 
   // V3 split: top hero + archive (1-3 cards under).
   readonly v3Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);

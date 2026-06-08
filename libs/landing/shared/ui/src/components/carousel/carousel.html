@@ -8,29 +8,44 @@
       tabindex="0"
       (keydown)="onKeydown($event)"
     >
-      @for (img of images(); track img.url; let i = $index) {
-        <div
-          class="landing-carousel__slide"
-          role="group"
-          aria-roledescription="slide"
-          [attr.aria-label]="i + 1 + ' of ' + count()"
-        >
-          <landing-figure
-            [src]="img.url"
-            [alt]="img.alt ?? ''"
-            [caption]="img.caption ?? ''"
-            [figureNumber]="numbered() ? i + 1 : null"
-            [aspectRatio]="aspectRatio()"
-            [lightbox]="lightbox()"
-            [lightboxGroup]="effectiveGroup()"
-            [lightboxFullSrc]="img.fullSrc ?? ''"
-            [lightboxSrcset]="img.srcset ?? ''"
-          />
-        </div>
+      @if (slideTemplate(); as tpl) {
+        @for (item of items(); track $index; let i = $index) {
+          <div
+            class="landing-carousel__slide landing-carousel__slide--content"
+            role="group"
+            aria-roledescription="slide"
+            [attr.aria-label]="i + 1 + ' of ' + count()"
+          >
+            <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{ $implicit: item, index: i }" />
+          </div>
+        }
+      } @else {
+        @for (img of images(); track img.url; let i = $index) {
+          <div
+            class="landing-carousel__slide"
+            role="group"
+            aria-roledescription="slide"
+            [attr.aria-label]="i + 1 + ' of ' + count()"
+          >
+            <landing-figure
+              [src]="img.url"
+              [alt]="img.alt ?? ''"
+              [caption]="img.caption ?? ''"
+              [figureNumber]="numbered() ? i + 1 : null"
+              [aspectRatio]="aspectRatio()"
+              [lightbox]="lightbox()"
+              [lightboxGroup]="effectiveGroup()"
+              [lightboxFullSrc]="img.fullSrc ?? ''"
+              [lightboxSrcset]="img.srcset ?? ''"
+            />
+          </div>
+        }
       }
     </div>
 
-    @if (showArrows() && count() > 1) {
+    <!-- Image mode: arrows overlay the figure. Content mode moves them to the
+         control row below so they never cover a projected card. -->
+    @if (showArrows() && scrollable() && count() > 1 && !isContent()) {
       <button
         type="button"
         class="landing-carousel__arrow landing-carousel__arrow--prev"
@@ -72,17 +87,66 @@
     }
   </div>
 
-  @if (showDots() && !showThumbnails() && count() > 1) {
-    <div class="landing-carousel__dots" role="tablist" aria-label="Choose slide">
-      @for (img of images(); track img.url; let i = $index) {
+  <!-- Control row: dots, plus inline arrows in content mode (kept off the card). -->
+  @if (scrollable() && !showThumbnails() && count() > 1 && (showDots() || (showArrows() && isContent()))) {
+    <div class="landing-carousel__controls">
+      @if (showArrows() && isContent()) {
         <button
           type="button"
-          class="landing-carousel__dot"
-          [class.is-active]="index() === i"
-          [attr.aria-label]="'Go to slide ' + (i + 1)"
-          [attr.aria-selected]="index() === i"
-          (click)="goTo(i)"
-        ></button>
+          class="landing-carousel__arrow landing-carousel__arrow--inline"
+          [disabled]="!loop() && atStart()"
+          aria-label="Previous slide"
+          (click)="go(-1)"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      }
+
+      @if (showDots()) {
+        <div class="landing-carousel__dots" role="tablist" aria-label="Choose slide">
+          @for (s of slideList(); track $index; let i = $index) {
+            <button
+              type="button"
+              class="landing-carousel__dot"
+              [class.is-active]="index() === i"
+              [attr.aria-label]="'Go to slide ' + (i + 1)"
+              [attr.aria-selected]="index() === i"
+              (click)="goTo(i)"
+            ></button>
+          }
+        </div>
+      }
+
+      @if (showArrows() && isContent()) {
+        <button
+          type="button"
+          class="landing-carousel__arrow landing-carousel__arrow--inline"
+          [disabled]="!loop() && atEnd()"
+          aria-label="Next slide"
+          (click)="go(1)"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       }
     </div>
   }

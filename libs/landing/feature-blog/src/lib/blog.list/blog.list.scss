@@ -606,3 +606,34 @@
     flex-direction: column;
   }
 }
+
+/* ═════════════════════════════════════════════════════════════════
+   Compact featured strip (< tablet) — the lead hero stays, the stacked
+   secondary cards become a swipeable `landing-carousel` (peek + dots +
+   arrows). These wrappers are rendered only below `tablet` (gated by
+   `stripCompact()` in the template), so no media query is needed here.
+   ═════════════════════════════════════════════════════════════════ */
+.mag-v1--compact {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // Desktop centres the hero in its grid cell; in the compact column it must
+  // fill the width instead.
+  .mag-hero--center {
+    align-self: stretch;
+  }
+}
+.mag-v3--compact {
+  // `.mag-v3` is already a flex column; nothing extra needed beyond the marker.
+  gap: 20px;
+}
+
+// Tablet has room for two cards per view (mobile stays one-up + peek). The
+// compact strip only renders below `laptop`, so this band is effectively
+// tablet-only.
+.mag-strip-carousel {
+  @include bp.respond-between('tablet', 'laptop') {
+    --landing-carousel-peek-basis: 46%;
+  }
+}

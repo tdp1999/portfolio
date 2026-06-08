@@ -6,13 +6,18 @@ import {
   NgZone,
   afterNextRender,
   computed,
+  contentChild,
+  effect,
   inject,
   input,
   model,
+  signal,
   viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Figure } from '../figure/figure';
 import { LightboxDirective } from '../lightbox';
+import { CarouselSlide } from './carousel-slide.directive';
 import type { GalleryImage } from '../gallery/gallery.types';
 
 /** Per-instance fallback group id (SSR-safe: deterministic instantiation order). */
@@ -27,6 +32,12 @@ let carouselSeq = 0;
  * large ones, the *consumer* swaps components by breakpoint (e.g. via
  * `BreakpointObserverService.isAtLeast('laptop')`); this component just does the
  * slider job well at whatever size it is mounted.
+ *
+ * Two slide sources:
+ * - **Image mode** (default) — pass `[images]`; each slide is a `landing-figure`.
+ * - **Content mode** — pass `[items]` + an `<ng-template landingCarouselSlide>`;
+ *   the carousel projects arbitrary content (cards, panels…) per slide while
+ *   still owning the track / snap / count / index / dots / arrows.
  *
  * Features:
  * - **Touch swipe** — native CSS scroll-snap (momentum + flick for free).
@@ -47,14 +58,20 @@ let carouselSeq = 0;
 @Component({
   selector: 'landing-carousel',
   standalone: true,
-  imports: [Figure, LightboxDirective],
+  imports: [Figure, LightboxDirective, NgTemplateOutlet],
   templateUrl: './carousel.html',
   styleUrl: './carousel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'landing-carousel' },
 })
 export class Carousel {
-  readonly images = input.required<readonly GalleryImage[]>();
+  /**
+   * Image-mode slides. Optional so the carousel can also run in content mode
+   * (`[items]` + `landingCarouselSlide`). Existing image callers are unchanged.
+   */
+  readonly images = input<readonly GalleryImage[]>([]);
+  /** Content-mode slide data — rendered through a `landingCarouselSlide` template. */
+  readonly items = input<readonly unknown[]>([]);
   readonly ariaLabel = input<string>('Image carousel');
   /** Show FIG numbering on captions. */
   readonly numbered = input<boolean>(true);
@@ -85,7 +102,26 @@ export class Carousel {
   private readonly destroyRef = inject(DestroyRef);
   private readonly track = viewChild<ElementRef<HTMLElement>>('track');
 
-  protected readonly count = computed(() => this.images().length);
+  /** Present → content mode; absent → image mode. */
+  protected readonly slide = contentChild(CarouselSlide);
+  protected readonly slideTemplate = computed(() => this.slide()?.template ?? null);
+  /** Content mode projects cards — arrows move to a bottom row so they never cover content. */
+  protected readonly isContent = computed(() => this.slideTemplate() !== null);
+  /** Unified slide source — drives count, dots, and the active-index sync. */
+  protected readonly slideList = computed<readonly unknown[]>(() =>
+    this.slideTemplate() ? this.items() : this.images()
+  );
+
+  protected readonly count = computed(() => this.slideList().length);
+  /**
+   * Whether the track actually overflows its viewport. When every slide already
+   * fits (e.g. a 2-up view with only 2 cards), there is nothing to navigate — so
+   * arrows and dots are hidden. Measured from the DOM; defaults to `true` so SSR
+   * renders controls for the common overflowing case.
+   */
+  protected readonly scrollable = signal(true);
+  /** Set once the track is live (client only); lets the count effect re-measure. */
+  private remeasureScrollable: (() => void) | null = null;
   protected readonly atStart = computed(() => this.index() <= 0);
   protected readonly atEnd = computed(() => this.index() >= this.count() - 1);
   protected readonly liveLabel = computed(() => `Slide ${this.index() + 1} of ${this.count()}`);
@@ -119,9 +155,33 @@ export class Carousel {
   }
 
   constructor() {
+    // Re-measure overflow when the slide count changes — the ResizeObserver below
+    // only catches viewport-driven box changes, not in-place data changes (async
+    // load, locale switch) that alter scrollWidth without touching clientWidth.
+    effect(() => {
+      this.count();
+      this.remeasureScrollable?.();
+    });
+
     afterNextRender(() => {
       const el = this.track()?.nativeElement;
       if (!el) return;
+
+      // ── Overflow detection: hide controls when everything already fits ──
+      const measureScrollable = () => {
+        const overflows = el.scrollWidth - el.clientWidth > 1;
+        if (overflows !== this.scrollable()) {
+          this.zone.run(() => this.scrollable.set(overflows));
+        }
+      };
+      this.remeasureScrollable = measureScrollable;
+      measureScrollable();
+      const ro = new ResizeObserver(() => measureScrollable());
+      ro.observe(el);
+      this.destroyRef.onDestroy(() => {
+        ro.disconnect();
+        this.remeasureScrollable = null;
+      });
 
       // ── Active index from scroll position (nearest slide centre) ──
       const syncIndex = () => {
@@ -153,34 +213,60 @@ export class Carousel {
       // One gesture = at most one slide. The visual travel is capped to a single
       // neighbour so a long drag can never reveal slide ±2, and release commits
       // to ±1 on a small displacement OR a quick flick (responsive to light drags).
+      //
+      // Drag only ENGAGES once the pointer moves past a small threshold — until
+      // then it stays a plain click, so a tap on a slide that is a link (content
+      // mode) still navigates. Capturing the pointer on `pointerdown` would swallow
+      // that click; we defer the capture to the first real move instead.
+      const DRAG_THRESHOLD = 6; // px before a press becomes a drag
+      let pointerDown = false;
       let dragging = false;
+      let suppressClick = false;
       let startX = 0;
       let startScroll = 0;
       let startIndex = 0;
       let startTime = 0;
       let step = 0;
+      let activePointer = -1;
       const onDown = (e: PointerEvent) => {
+        // Clear any stale suppression from a drag that produced no trailing click.
+        suppressClick = false;
         if (e.pointerType !== 'mouse') return;
-        dragging = true;
+        pointerDown = true;
+        dragging = false;
         startX = e.clientX;
         startScroll = el.scrollLeft;
         startIndex = this.index();
         startTime = e.timeStamp;
         step = slideStep();
-        el.classList.add('is-dragging');
-        el.setPointerCapture(e.pointerId);
+        activePointer = e.pointerId;
       };
       const onMove = (e: PointerEvent) => {
-        if (!dragging) return;
-        const desired = startScroll - (e.clientX - startX);
+        if (!pointerDown) return;
+        const delta = e.clientX - startX;
+        if (!dragging) {
+          if (Math.abs(delta) < DRAG_THRESHOLD) return;
+          // Engage drag: now capture the pointer + kill snap so it tracks 1:1.
+          dragging = true;
+          el.classList.add('is-dragging');
+          try {
+            el.setPointerCapture(activePointer);
+          } catch {
+            /* pointer may already be released */
+          }
+        }
         // Clamp travel to one neighbour in either direction.
-        el.scrollLeft = Math.min(startScroll + step, Math.max(startScroll - step, desired));
+        el.scrollLeft = Math.min(startScroll + step, Math.max(startScroll - step, startScroll - delta));
       };
       const onUp = (e: PointerEvent) => {
-        if (!dragging) return;
+        if (!pointerDown) return;
+        pointerDown = false;
+        if (!dragging) return; // a click, not a drag — let it through (link navigates)
+
         dragging = false;
+        suppressClick = true; // a real drag just ended — swallow the trailing click
         el.classList.remove('is-dragging');
-        if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+        if (el.hasPointerCapture(activePointer)) el.releasePointerCapture(activePointer);
 
         const dx = e.clientX - startX; // > 0 → dragged right → previous slide
         const dt = Math.max(1, e.timeStamp - startTime);
@@ -198,6 +284,15 @@ export class Carousel {
         else target = Math.min(n - 1, Math.max(0, target));
         this.goTo(target);
       };
+      // Swallow the click synthesised at the end of a real drag so it can't
+      // trigger a slide's link; a plain click (no drag) passes straight through.
+      const onClick = (e: MouseEvent) => {
+        if (suppressClick) {
+          suppressClick = false;
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
       // Suppress the browser's native image-drag ghost while dragging the track.
       const onDragStart = (e: DragEvent) => e.preventDefault();
 
@@ -207,6 +302,7 @@ export class Carousel {
         el.addEventListener('pointermove', onMove);
         el.addEventListener('pointerup', onUp);
         el.addEventListener('pointercancel', onUp);
+        el.addEventListener('click', onClick, true);
         el.addEventListener('dragstart', onDragStart);
       });
 
@@ -216,6 +312,7 @@ export class Carousel {
         el.removeEventListener('pointermove', onMove);
         el.removeEventListener('pointerup', onUp);
         el.removeEventListener('pointercancel', onUp);
+        el.removeEventListener('click', onClick, true);
         el.removeEventListener('dragstart', onDragStart);
       });
     });

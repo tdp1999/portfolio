@@ -45,9 +45,20 @@
   scroll-snap-align: start;
 }
 
-/* Peek mode — narrow the slide so a sliver of the neighbour shows; centre the snap. */
+/* Content mode — projected card fills the slide so neighbours match height. */
+.landing-carousel__slide--content {
+  display: flex;
+
+  > * {
+    width: 100%;
+  }
+}
+
+/* Peek mode — narrow the slide so a sliver of the neighbour shows; centre the snap.
+   Slide basis is overridable via `--landing-carousel-peek-basis` so a consumer can
+   show more than one card per view at wider breakpoints (e.g. 2-up on tablet). */
 .landing-carousel__track--peek .landing-carousel__slide {
-  flex-basis: 88%;
+  flex-basis: var(--landing-carousel-peek-basis, 88%);
   scroll-snap-align: center;
 }
 
@@ -90,6 +101,28 @@
   &--next {
     right: 12px;
   }
+
+  /* Content mode: arrows sit in the bottom control row, not over the card. */
+  &--inline {
+    position: static;
+    transform: none;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+
+    &:disabled {
+      opacity: 0.35;
+    }
+  }
+}
+
+/* ── Control row (dots; + inline arrows in content mode) ───────────── */
+.landing-carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 /* ── Dots ─────────────────────────────────────────────────────────── */
@@ -97,7 +130,6 @@
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 16px;
 }
 
 .landing-carousel__dot {

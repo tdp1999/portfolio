@@ -4,9 +4,18 @@ import {
   Eyebrow,
   Breadcrumb,
   Carousel,
+  CarouselSlide,
   type BreadcrumbItem,
   type GalleryImage,
 } from '@portfolio/landing/shared/ui';
+
+interface DemoCard {
+  readonly href: string;
+  readonly image: string;
+  readonly meta: string;
+  readonly title: string;
+  readonly excerpt: string;
+}
 
 /**
  * `landing-carousel` — one full-feature, breakpoint-agnostic slider.
@@ -20,7 +29,7 @@ import {
   selector: 'landing-ddl-carousel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, Carousel],
+  imports: [Container, Eyebrow, Breadcrumb, Carousel, CarouselSlide],
   templateUrl: './ddl-carousel.html',
   styleUrl: './ddl-carousel.scss',
 })
@@ -50,6 +59,38 @@ export class DdlCarousel {
       url: 'https://placehold.co/960x720/11151c/64748b.png?text=04',
       alt: 'Mobile approval flow',
       caption: 'Mobile approval — one-tap sign-off on the go, audit trail attached.',
+    },
+  ];
+
+  /** Content-mode demo data — arbitrary cards (here: links), not images. */
+  readonly cards: readonly DemoCard[] = [
+    {
+      href: '/ddl/carousel',
+      image: 'https://placehold.co/640x360/1a2030/e2e8f0.png?text=01',
+      meta: '8 MIN · ARCHITECTURE',
+      title: 'Designing the permissions matrix',
+      excerpt: 'Role × resource, inherited scopes, and the audit trail that ties them together.',
+    },
+    {
+      href: '/ddl/carousel',
+      image: 'https://placehold.co/640x360/11151c/cbd5e1.png?text=02',
+      meta: '12 MIN · ENGINEERING',
+      title: 'A block editor for loan contracts',
+      excerpt: 'Composable blocks that render to a signed PDF without losing the template.',
+    },
+    {
+      href: '/ddl/carousel',
+      image: 'https://placehold.co/640x360/1a2030/94a3b8.png?text=03',
+      meta: '6 MIN · INFRA',
+      title: 'Shipping SSR on Railway',
+      excerpt: 'A short note.',
+    },
+    {
+      href: '/ddl/carousel',
+      image: 'https://placehold.co/640x360/11151c/64748b.png?text=04',
+      meta: '5 MIN · DESIGN SYSTEM',
+      title: 'The carousel that grew up',
+      excerpt: 'From image-only slider to a content-projection carousel — same mechanics, new slides.',
     },
   ];
 }

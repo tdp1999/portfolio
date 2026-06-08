@@ -66,4 +66,72 @@
     font-size: var(--landing-body-md);
     line-height: 1.9;
   }
+
+  /* Content-mode demo card — a projected slide (a link, not an image figure). */
+  &__card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--landing-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--landing-ink-0);
+    transition: border-color 160ms ease;
+
+    &:hover {
+      border-color: var(--landing-accent);
+    }
+    &:hover .car__card-title {
+      color: var(--landing-accent);
+    }
+  }
+
+  &__card-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--landing-ink-2);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  &__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1 1 auto;
+    padding: 16px 20px 20px;
+  }
+
+  &__card-meta {
+    margin: 0;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    color: var(--landing-text-500);
+  }
+
+  &__card-title {
+    margin: 0;
+    font-family: var(--landing-font-body);
+    font-weight: 600;
+    font-size: var(--landing-body-lg);
+    line-height: 1.3;
+    color: var(--landing-text-100);
+    transition: color 160ms ease;
+  }
+
+  &__card-excerpt {
+    margin: 0;
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-sm);
+    line-height: 1.45;
+    color: var(--landing-text-400);
+  }
 }

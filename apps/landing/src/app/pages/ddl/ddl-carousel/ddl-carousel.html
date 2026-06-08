@@ -48,11 +48,41 @@
     </div>
   </section>
 
+  <!-- Content mode -->
+  <section class="car__demo">
+    <p class="car__demo-title">Content mode — cards, not just images</p>
+    <p class="car__demo-note">
+      Pass <code>[items]</code> + an <code>&lt;ng-template landingCarouselSlide&gt;</code> to project arbitrary content
+      per slide. The carousel still owns track / snap / peek / dots / arrows; the consumer owns what's inside. Used by
+      the blog featured strip below <code>tablet</code> (lead hero stays, secondary cards swipe).
+    </p>
+    <div class="car__frame">
+      <landing-carousel [items]="cards" [peek]="true" ariaLabel="Content carousel">
+        <ng-template landingCarouselSlide [landingCarouselSlideTypeOf]="cards" let-card>
+          <a class="car__card" [href]="card.href">
+            <div class="car__card-media">
+              <img [src]="card.image" alt="" loading="lazy" decoding="async" />
+            </div>
+            <div class="car__card-body">
+              <p class="car__card-meta">{{ card.meta }}</p>
+              <h3 class="car__card-title">{{ card.title }}</h3>
+              <p class="car__card-excerpt">{{ card.excerpt }}</p>
+            </div>
+          </a>
+        </ng-template>
+      </landing-carousel>
+    </div>
+  </section>
+
   <!-- API -->
   <section class="car__demo">
     <p class="car__demo-title">Inputs</p>
     <ul class="car__api">
-      <li><code>[images]</code> — <code>GalleryImage[]</code> (url / alt / caption). Required.</li>
+      <li><code>[images]</code> — <code>GalleryImage[]</code> (url / alt / caption). Image mode.</li>
+      <li>
+        <code>[items]</code> — <code>unknown[]</code> + <code>&lt;ng-template landingCarouselSlide&gt;</code>. Content
+        mode (project cards / panels per slide).
+      </li>
       <li>
         <code>[peek]</code> · <code>[showThumbnails]</code> · <code>[showDots]</code> · <code>[showArrows]</code> ·
         <code>[loop]</code> — booleans.
