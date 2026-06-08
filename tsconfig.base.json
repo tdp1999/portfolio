@@ -55,7 +55,8 @@
       "@portfolio/console/feature-ddl": ["./libs/console/feature-ddl/src/index.ts"],
       "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"],
       "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
-      "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"]
+      "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"],
+      "@portfolio/shared/features/brand": ["libs/shared/features/brand/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

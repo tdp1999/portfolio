@@ -1,0 +1,21 @@
+{
+  "name": "brand",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/features/brand/src",
+  "prefix": "brand",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:shared-feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/features/brand/jest.config.cts",
+        "tsConfig": "libs/shared/features/brand/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

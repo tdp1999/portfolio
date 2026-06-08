@@ -1,0 +1,21 @@
+:host {
+  display: inline-block;
+  line-height: 0;
+}
+
+svg {
+  display: block;
+  height: 1em;
+  width: auto;
+  overflow: visible;
+}
+
+.dot {
+  fill: var(--brand-accent, #6e66d9);
+}
+
+// mono / knockout collapse to a single ink colour (the dot joins the ink)
+:host(.mono) .dot,
+:host(.knockout) .dot {
+  fill: currentColor;
+}

@@ -1,0 +1,80 @@
+@use 'base/prefers' as prefers;
+
+:host {
+  display: inline-block;
+  line-height: 0;
+}
+
+svg {
+  display: block;
+  height: 1em;
+  width: auto;
+  overflow: visible;
+}
+
+// Each glyph traces (stroke-dashoffset 1→0) then inks (fill in / stroke out) in its
+// own ~0.62s slot; the per-glyph `--i` delay staggers them left-to-right so the fill
+// chases the pen. A global fill can't follow the pen — per-glyph paths are why this
+// reads as one continuous "writing" gesture instead of two disconnected phases.
+.draw path {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill-opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: brand-glyph 0.62s linear both;
+  animation-delay: calc(var(--i) * 0.12s);
+
+  @include prefers.reduce-motion {
+    animation: none;
+    fill-opacity: 1;
+    stroke-opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+// the Dot pops just after the final glyph finishes inking
+.draw-dot {
+  fill: var(--brand-accent, #6e66d9);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-dot 0.4s ease var(--dot-delay, 0.8s) both;
+
+  @include prefers.reduce-motion {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes brand-glyph {
+  0% {
+    stroke-dashoffset: 1;
+    fill-opacity: 0;
+    stroke-opacity: 1;
+  }
+  45% {
+    fill-opacity: 0;
+  }
+  55% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+    stroke-opacity: 0;
+  }
+}
+
+@keyframes brand-dot {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
