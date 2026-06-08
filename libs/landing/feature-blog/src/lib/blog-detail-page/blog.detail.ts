@@ -34,6 +34,7 @@ import {
   type RenderedMarkdown,
 } from '@portfolio/landing/shared/data-access';
 import { BlogShareRow } from './blog.share-row';
+import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
 
 const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
 
@@ -69,6 +70,8 @@ const TOC_MIN_SECTIONS = 3;
     TocInline,
     TocSidebar,
     BlogShareRow,
+    Monogram,
+    Wordmark,
   ],
   providers: [LandingScrollspyService],
   templateUrl: './blog.detail.html',

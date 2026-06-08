@@ -1,18 +1,17 @@
-<div class="identity" [style.--ddl-accent]="accent()">
+<div class="identity">
   <!-- ═══════════════ header ═══════════════ -->
   <div class="border-b border-landing-border bg-ink-1/60">
     <landing-container size="wide">
       <div class="flex flex-wrap items-end justify-between gap-4 py-6">
         <div>
           <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
-          <h1 class="font-display text-display-md text-landing-text-300">Identity — all-monoline system</h1>
+          <h1 class="font-display text-display-md text-landing-text-300">Identity — the Brand system</h1>
           <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
-            Locked direction: one even-weight handwritten language. The
-            <strong class="text-landing-text-300">mark</strong> is a monoline “P”; the
-            <strong class="text-landing-text-300">wordmark</strong> is monoline “Phuong”.
-            <em class="text-landing-text-500"
-              >Letterforms are pass-1 — we refine the curves + terminals before locking the glyph.</em
-            >
+            Live components from <code>&#64;portfolio/shared/features/brand</code>: the
+            <strong class="text-landing-text-300">Monogram</strong> (<code>tdp.</code>, primary), the
+            <strong class="text-landing-text-300">Wordmark</strong> (Phuong Tran), their
+            <strong class="text-landing-text-300">Signature</strong> lockup, and the draw-on
+            <strong class="text-landing-text-300">Loader</strong> — all Newsreader 500, config-driven.
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -24,273 +23,135 @@
   </div>
 
   <landing-container size="wide">
-    <!-- ═══════════════ controls + legend ═══════════════ -->
+    <!-- ═══════════════ recolor (config) ═══════════════ -->
     <div class="id-controls">
-      <div class="id-controls__recolor">
-        <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">recolor (config)</span>
-        <div class="id-swatches">
-          @for (p of presets; track p.value) {
-            <button
-              type="button"
-              class="id-swatch"
-              [class.id-swatch--on]="accent() === p.value"
-              [style.--sw]="p.value"
-              [title]="p.label"
-              (click)="setAccent(p.value)"
-            >
-              <span class="id-swatch__dot"></span>
-              <span class="font-mono text-mono-sm">{{ p.label }}</span>
-            </button>
-          }
-          <label class="id-swatch id-swatch--custom" title="custom">
-            <input type="color" [value]="accent()" (input)="onAccentInput($event)" />
-            <span class="font-mono text-mono-sm">{{ accent() }}</span>
-          </label>
-        </div>
+      <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">accent (per-product)</span>
+      <div class="id-swatches">
+        @for (p of presets; track p.value) {
+          <button
+            type="button"
+            class="id-swatch"
+            [class.id-swatch--on]="accent() === p.value"
+            [style.--sw]="p.value"
+            [title]="p.label"
+            (click)="setAccent(p.value)"
+          >
+            <span class="id-swatch__dot"></span>
+            <span class="font-mono text-mono-sm">{{ p.label }}</span>
+          </button>
+        }
+        <label class="id-swatch id-swatch--custom" title="custom">
+          <input type="color" [value]="accent()" (input)="onAccentInput($event)" />
+          <span class="font-mono text-mono-sm">{{ accent() }}</span>
+        </label>
       </div>
-      <ul class="id-legend font-mono text-mono-sm text-landing-text-500">
-        <li>each mark · <strong class="text-landing-text-300">large</strong> + 16px gate + 1-colour gate</li>
-        <li><strong class="text-landing-text-300">heaviest axes</strong> — reproducible-from-rule · "is it me"</li>
-      </ul>
     </div>
 
-    <!-- ════════════════════════ THE MARK · monoline “P” ════════════════════════ -->
-    <section class="fam">
-      <header class="fam__head">
-        <h2 class="font-display text-display-sm text-landing-text-300">the mark · monoline “P”</h2>
-        <p class="fam__flaw font-sans text-body-sm text-landing-text-500">
-          Icon for favicon / avatar / app. Three terminal treatments — pick the foot.
+    <!-- ═══════════════ Monogram ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">
+          Monogram · <code>&lt;brand-monogram&gt;</code>
+        </h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          Primary mark. Scales with font-size; accent Dot is theme-driven.
         </p>
       </header>
 
-      <div class="vars">
-        <!-- P1 plain -->
-        <article class="var">
-          <header class="var__head">
-            <span class="var__num font-mono">P1</span>
-            <h3 class="font-sans text-body-md text-landing-text-300">plain hook</h3>
-          </header>
-          <p class="var__note font-sans text-body-sm text-landing-text-500">Clean single stroke, no foot.</p>
-          <div class="var__row">
-            <div class="var-stage">
-              <svg viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 42 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="gate__stage">
-              <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 42 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="gate__stage knockout">
-              <svg width="32" height="32" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 42 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-        </article>
-
-        <!-- P2 foot tail -->
-        <article class="var var--lead">
-          <header class="var__head">
-            <span class="var__num font-mono">P2</span>
-            <h3 class="font-sans text-body-md text-landing-text-300">foot tail <span class="var__star">★</span></h3>
-          </header>
-          <p class="var__note font-sans text-body-sm text-landing-text-500">
-            One continuous stroke from a small foot up through the bowl — most "signature".
-          </p>
-          <div class="var__row">
-            <div class="var-stage">
-              <svg viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M8 44 C7 48 14 49 14 43 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="gate__stage">
-              <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M8 44 C7 48 14 49 14 43 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="gate__stage knockout">
-              <svg width="32" height="32" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M8 44 C7 48 14 49 14 43 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-        </article>
-
-        <!-- P3 nặng dot -->
-        <article class="var">
-          <header class="var__head">
-            <span class="var__num font-mono">P3</span>
-            <h3 class="font-sans text-body-md text-landing-text-300">+ nặng dot</h3>
-          </header>
-          <p class="var__note font-sans text-body-sm text-landing-text-500">
-            Plain P with a dot below — the Vietnamese nặng tone as a brand atom.
-          </p>
-          <div class="var__row">
-            <div class="var-stage">
-              <svg viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 38 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle cx="14" cy="44" r="3" fill="var(--ddl-accent)" />
-              </svg>
-            </div>
-            <div class="gate__stage">
-              <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 38 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle cx="14" cy="44" r="3" fill="var(--ddl-accent)" />
-              </svg>
-            </div>
-            <div class="gate__stage knockout">
-              <svg width="32" height="32" viewBox="0 0 48 48" aria-hidden="true">
-                <path
-                  d="M14 38 L14 10 C14 7 22 6 28 10 C35 15 33 27 19 28 L14 28"
-                  fill="none"
-                  stroke="var(--ddl-accent)"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle cx="14" cy="44" r="3" fill="var(--ddl-accent)" />
-              </svg>
-            </div>
-          </div>
-        </article>
+      <div class="bstage">
+        <brand-monogram [accent]="accent()" style="font-size: 96px" />
       </div>
-    </section>
 
-    <!-- ════════════════════════ THE WORDMARK · monoline “Phuong” ════════════════════════ -->
-    <section class="fam">
-      <header class="fam__head">
-        <h2 class="font-display text-display-sm text-landing-text-300">the wordmark · monoline “Phuong”</h2>
-        <p class="fam__flaw font-sans text-body-sm text-landing-text-500">
-          One even-weight stroke spelling the name. Pass-1 curves; “Tran” + final terminals come next.
-        </p>
-      </header>
-
-      <div class="lead__row">
-        <div class="form__stage stage-tall">
-          <svg viewBox="0 0 300 90" role="img" aria-label="Phuong — monoline wordmark">
-            <g fill="none" stroke="var(--ddl-accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 78 L22 20 C22 14 30 12 38 16 C48 21 46 38 32 40 L22 40" />
-              <path d="M64 14 L64 60 M64 42 C66 32 84 32 84 44 L84 60" />
-              <path d="M96 36 L96 52 C96 60 110 62 116 54 L116 36 M116 54 L116 62" />
-              <path d="M140 36 C130 36 130 60 140 60 C150 60 150 36 140 36 Z" />
-              <path d="M160 60 L160 36 M160 44 C162 34 180 34 180 46 L180 60" />
-              <path d="M204 36 C194 36 194 58 204 58 C214 58 214 36 204 36 M214 36 L214 70 C214 80 200 82 192 76" />
-            </g>
-          </svg>
+      <div class="brow">
+        <div class="bcell">
+          <brand-monogram [accent]="accent()" variant="full" style="font-size: 56px" />
+          <span class="bcell__cap font-mono text-mono-sm">full</span>
         </div>
-        <div class="form__stage stage-tall">
-          <svg viewBox="0 0 300 90" role="img" aria-label="Phuong with nặng dot — monoline wordmark">
-            <g fill="none" stroke="var(--ddl-accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 78 L22 20 C22 14 30 12 38 16 C48 21 46 38 32 40 L22 40" />
-              <path d="M64 14 L64 60 M64 42 C66 32 84 32 84 44 L84 60" />
-              <path d="M96 36 L96 52 C96 60 110 62 116 54 L116 36 M116 54 L116 62" />
-              <path d="M140 36 C130 36 130 60 140 60 C150 60 150 36 140 36 Z" />
-              <path d="M160 60 L160 36 M160 44 C162 34 180 34 180 46 L180 60" />
-              <path d="M204 36 C194 36 194 58 204 58 C214 58 214 36 204 36 M214 36 L214 70 C214 80 200 82 192 76" />
-            </g>
-            <circle cx="140" cy="80" r="4" fill="var(--ddl-accent)" />
-          </svg>
+        <div class="bcell">
+          <brand-monogram variant="mono" style="font-size: 56px" />
+          <span class="bcell__cap font-mono text-mono-sm">mono</span>
+        </div>
+        <div class="bcell knockout-cell" [style.background]="accent()">
+          <brand-monogram variant="knockout" style="font-size: 56px" />
+          <span class="bcell__cap font-mono text-mono-sm">knockout</span>
+        </div>
+        <div class="bcell">
+          <brand-monogram [accent]="accent()" style="font-size: 32px" />
+          <span class="bcell__cap font-mono text-mono-sm">32px</span>
+        </div>
+        <div class="bcell">
+          <brand-monogram [accent]="accent()" style="font-size: 16px" />
+          <span class="bcell__cap font-mono text-mono-sm">16px gate</span>
         </div>
       </div>
     </section>
 
-    <!-- ════════════════════════ LOCKUP ════════════════════════ -->
-    <section class="fam">
-      <header class="fam__head">
-        <h2 class="font-display text-display-sm text-landing-text-300">lockup · mark + wordmark</h2>
-        <p class="fam__flaw font-sans text-body-sm text-landing-text-500">
-          The P mark sitting with the “Phuong” wordmark — how header / footer / email sign-off would read.
+    <!-- ═══════════════ Wordmark ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">
+          Wordmark · <code>&lt;brand-wordmark&gt;</code>
+        </h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          Secondary mark — `Phuong Tran.`, closed by the same accent Dot as the Monogram.
+        </p>
+      </header>
+      <div class="bstage">
+        <brand-wordmark style="font-size: 64px" />
+      </div>
+    </section>
+
+    <!-- ═══════════════ Signature ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">
+          Signature · <code>&lt;brand-signature&gt;</code>
+        </h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          Locked lockup of Monogram + Wordmark — horizontal &amp; stacked.
+        </p>
+      </header>
+      <div class="bstage bstage--col">
+        <brand-signature [accent]="accent()" layout="horizontal" style="font-size: 28px" />
+        <brand-signature [accent]="accent()" layout="stacked" style="font-size: 28px" />
+      </div>
+    </section>
+
+    <!-- ═══════════════ Loader ═══════════════ -->
+    <section class="bsec">
+      <header class="bsec__head">
+        <h2 class="font-display text-display-sm text-landing-text-300">Loader · <code>&lt;brand-loader&gt;</code></h2>
+        <p class="bsec__note font-sans text-body-sm text-landing-text-500">
+          The draw-on sting — per-glyph trace→ink, staggered left-to-right.
         </p>
       </header>
 
-      <div class="form__stage stage-tall">
-        <svg viewBox="0 0 420 90" role="img" aria-label="P mark with Phuong wordmark — lockup">
-          <g fill="none" stroke="var(--ddl-accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 70 C20 80 38 81 38 68 L38 18 C38 12 50 11 58 17 C68 24 65 44 42 45 L38 45" />
-          </g>
-          <g
-            transform="translate(110,0)"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M22 78 L22 20 C22 14 30 12 38 16 C48 21 46 38 32 40 L22 40" />
-            <path d="M64 14 L64 60 M64 42 C66 32 84 32 84 44 L84 60" />
-            <path d="M96 36 L96 52 C96 60 110 62 116 54 L116 36 M116 54 L116 62" />
-            <path d="M140 36 C130 36 130 60 140 60 C150 60 150 36 140 36 Z" />
-            <path d="M160 60 L160 36 M160 44 C162 34 180 34 180 46 L180 60" />
-            <path d="M204 36 C194 36 194 58 204 58 C214 58 214 36 204 36 M214 36 L214 70 C214 80 200 82 192 76" />
-          </g>
-        </svg>
+      <div class="bdraw">
+        <div class="bdraw__stage">
+          <brand-loader #monoLoader mark="monogram" [accent]="accent()" style="font-size: 120px" />
+        </div>
+        <button type="button" class="bdraw__replay font-mono text-mono-sm" (click)="monoLoader.replay()">
+          ↻ replay
+        </button>
+      </div>
+
+      <div class="bdraw">
+        <div class="bdraw__stage">
+          <brand-loader #wordLoader mark="wordmark" [accent]="accent()" style="font-size: 64px" />
+        </div>
+        <button type="button" class="bdraw__replay font-mono text-mono-sm" (click)="wordLoader.replay()">
+          ↻ replay
+        </button>
       </div>
     </section>
 
     <!-- ═══════════════ next step ═══════════════ -->
-    <div class="id-next">
-      <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent">next · refine the glyph</p>
+    <div class="bnext">
+      <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent">next · generator skill</p>
       <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-2xl">
-        Pick the P foot (P1/P2/P3), then we refine the monoline letterforms (consistent terminals, true single-stroke
-        joins, the “Tran” half), and lock. Spec: <code>.context/plans/epic-portfolio-brand-identity.md</code>.
+        Component A done (this lib). Next is the portable generator skill that reads <code>brand.config.ts</code> +
+        Master → emits the asset set (favicon / OG / email sign-off), using the approved <code>resvg-js</code> +
+        <code>png-to-ico</code> stack. Spec: <code>.context/plans/epic-portfolio-brand-identity.md</code>.
       </p>
     </div>
   </landing-container>

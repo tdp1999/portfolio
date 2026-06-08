@@ -213,19 +213,16 @@
   border-radius: 4px;
   background: var(--landing-ink-1);
 }
+// Brand monogram chip (replaces the old `PT` circle — kills the second initials system).
 .blog-signature__avatar {
   flex: 0 0 auto;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  padding: 12px 16px;
+  border-radius: 12px;
   background: color-mix(in oklab, var(--landing-accent) 18%, transparent);
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-md);
-  letter-spacing: var(--landing-tracking-mono);
-  color: var(--landing-accent);
+  color: var(--landing-text-200);
+  font-size: 24px;
 }
 .blog-signature__body {
   display: flex;
@@ -233,11 +230,10 @@
   gap: 8px;
   min-width: 0;
 }
+// Brand wordmark (SVG, height:1em) — replaces the plain-text name.
 .blog-signature__name {
   margin: 0;
-  font-family: var(--landing-font-body);
-  font-weight: 600;
-  font-size: var(--landing-body-md);
+  font-size: calc(var(--landing-body-md) * 1.4);
   color: var(--landing-text-100);
 }
 .blog-signature__bio {

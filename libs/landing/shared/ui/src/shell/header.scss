@@ -78,3 +78,9 @@
 .mobile-sheet__row.nav-link--active::after {
   content: none;
 }
+
+// Brand monogram as the header logo. The mark's SVG is height:1em over a glyph box
+// ~1.36× the type em, so it's sized up to visually match the prior `tdp.` text-body-lg.
+.header-logo {
+  font-size: 1.35em;
+}

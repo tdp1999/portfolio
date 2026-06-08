@@ -74,8 +74,8 @@ const DDL_SUBROUTES: readonly DdlSubrouteGroup[] = [
     routes: [
       {
         path: '/ddl/identity',
-        title: 'Identity · 9 mark directions',
-        desc: 'Brand-identity Phase 1 — 9 logo directions as live SVG (full/compact/wordmark + 16px & 1-colour gates), recolourable.',
+        title: 'Identity · the Brand system',
+        desc: 'Live components from @portfolio/shared/features/brand — Monogram (tdp.), Wordmark, Signature lockup, draw-on Loader. Newsreader 500, recolourable, light/dark.',
       },
       {
         path: '/ddl/hero-variants',

@@ -62,13 +62,11 @@
   }
 }
 
+// Brand wordmark (SVG, height:1em). font-size drives the mark height; the glyph box
+// is ~1.36× the type em, so this is tuned below display-sm to read at a similar size.
 .landing-footer-banner__wordmark {
   margin: 0;
-  font-family: var(--landing-font-display);
-  font-weight: 700;
-  font-size: var(--landing-display-sm);
-  line-height: var(--landing-display-sm-lh);
-  letter-spacing: var(--landing-tracking-tight);
+  font-size: calc(var(--landing-display-sm) * 1.1);
   color: var(--landing-text-200);
 }
 

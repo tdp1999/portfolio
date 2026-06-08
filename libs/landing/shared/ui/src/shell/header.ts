@@ -13,6 +13,7 @@ import { CommandPaletteService } from '../command-palette/command-palette.servic
 import { KeyboardShortcutService } from '../keyboard/keyboard-shortcut.service';
 import { LandingLocaleService } from '../locale/landing-locale.service';
 import { HydrationSafeActiveDirective } from './hydration-safe-active.directive';
+import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
 
 const LANGUAGES: readonly SelectOption<Locale>[] = [
@@ -39,7 +40,17 @@ const SCROLL_THRESHOLD = 8;
   selector: 'landing-header',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, HydrationSafeActiveDirective, ThemeToggle, Container, MegaMenu, Select, Eyebrow, A11yModule],
+  imports: [
+    RouterLink,
+    HydrationSafeActiveDirective,
+    ThemeToggle,
+    Container,
+    MegaMenu,
+    Select,
+    Eyebrow,
+    A11yModule,
+    Monogram,
+  ],
   styleUrl: './header.scss',
   host: {
     class: 'sticky top-0 z-50 block w-full',
@@ -56,7 +67,7 @@ const SCROLL_THRESHOLD = 8;
             routerLink="/"
             class="pointer-events-auto absolute left-4 tablet:left-6 laptop:left-8 top-1/2 -translate-y-1/2 inline-flex items-center rounded-full px-4 py-2 font-display text-body-lg font-medium text-landing-text-300 backdrop-blur-md transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
           >
-            tdp.
+            <brand-monogram class="header-logo" />
           </a>
 
           <div class="flex h-full items-center justify-end pr-4 tablet:justify-center tablet:pr-0">
@@ -126,9 +137,9 @@ const SCROLL_THRESHOLD = 8;
           >
             <a
               routerLink="/"
-              class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent justify-self-start"
+              class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent justify-self-start inline-flex items-center"
             >
-              tdp.
+              <brand-monogram class="header-logo" />
             </a>
 
             <nav class="hidden items-center gap-8 tablet:flex justify-self-center" aria-label="Primary">
@@ -205,9 +216,9 @@ const SCROLL_THRESHOLD = 8;
           <a
             routerLink="/"
             (click)="closeMenu()"
-            class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
+            class="font-display text-body-lg font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent inline-flex items-center"
           >
-            tdp.
+            <brand-monogram class="header-logo" />
           </a>
           <button
             type="button"

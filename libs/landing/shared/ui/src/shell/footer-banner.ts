@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { type SocialLink } from '@portfolio/shared/types';
+import { Wordmark } from '@portfolio/shared/features/brand';
 import { Background } from '../components/background';
 import { Container } from '../components/container';
 import { Eyebrow } from '../components/eyebrow';
@@ -16,7 +17,7 @@ type FooterColumn = { readonly title: string; readonly routes: readonly FooterRo
 @Component({
   selector: 'landing-footer-banner',
   standalone: true,
-  imports: [Background, Container, Eyebrow, Link],
+  imports: [Background, Container, Eyebrow, Link, Wordmark],
   templateUrl: './footer-banner.html',
   styleUrl: './footer-banner.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

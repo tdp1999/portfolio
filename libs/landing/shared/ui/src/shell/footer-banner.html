@@ -5,7 +5,7 @@
       <div class="landing-footer-banner__grid">
         <!-- Brand block -->
         <div class="landing-footer-banner__brand">
-          <p class="landing-footer-banner__wordmark">{{ fullName() || 'Portfolio' }}</p>
+          <brand-wordmark class="landing-footer-banner__wordmark" />
           @if (tagline()) {
             <p class="landing-footer-banner__tagline">{{ tagline() }}</p>
           }
