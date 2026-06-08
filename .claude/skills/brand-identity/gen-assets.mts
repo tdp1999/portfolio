@@ -17,7 +17,7 @@ import sharp from 'sharp';
 import pngToIco from 'png-to-ico';
 
 // ── PROJECT WIRING (the only project-specific lines) ────────────────────────
-import { monogramSvg, signatureSvg } from '../../../libs/shared/features/brand/src/lib/master.util';
+import { monogramSvg, motifSvg, signatureSvg } from '../../../libs/shared/features/brand/src/lib/master.util';
 import { TDP_BRAND } from '../../../libs/shared/features/brand/src/lib/brand.config';
 
 // Run from the repo root (see SKILL.md) — cwd is the stable anchor whether this runs
@@ -81,13 +81,18 @@ async function buildFavicons(): Promise<void> {
 
 const OG = { w: 1200, h: 630 } as const;
 
-/** OG / social card — Signature centred on the brand surface. */
+/** OG / social card — Signature centred on the brand surface over the blueprint Motif. */
 async function buildOg(): Promise<void> {
+  const motif = motifSvg(OG.w, OG.h, { accent, cell: 48 }); // subtle blueprint texture
+  const motifPng = await rasterizeSvg(motif, OG.w, OG.h);
   const sig = signatureSvg({ layout: 'horizontal', variant: 'full', ink, accent });
   const sigPng = await rasterizeSvg(sig, Math.round(OG.w * 0.62)); // ~62% canvas width
   const out = resolve(OUT_DIR, 'og.png');
   await canvas(OG.w, OG.h, surface)
-    .composite([{ input: sigPng, gravity: 'centre' }])
+    .composite([
+      { input: motifPng, gravity: 'centre' },
+      { input: sigPng, gravity: 'centre' },
+    ])
     .png()
     .toFile(out);
   console.log('og', `${OG.w}×${OG.h}`, '→', out);
