@@ -1,7 +1,7 @@
 # Epic: Brand Identity System & Portable Mark Skill
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: 🟢 open — Phase 1 in progress. `/ddl/identity` built 2026-06-07 (9 directions live); awaiting review + direction lock.
+> Status: 🟢 open — Phase 1 ✅ (brand lib + `/ddl/identity`). Phase 2 ✅ (full two-stage `brand-identity` skill + favicon/OG/email assets, OG absolute). Site integration ✅ (3 ad-hoc mark systems replaced, verified live). Remaining: Phase 3 (motif/animation/guideline), tests. See Roadmap checklist.
 > Depends on: E4 (UI/UX direction — locked the technical-cool + indigo + serif/mono/density system this mark must cohere with).
 > Feeds: the landing site (replaces 3 divergent ad-hoc mark systems) **and** future products (portable skill).
 > Scope note: broader than the portfolio — the output is a **portable, per-project brand skill** reusable across future products. The portfolio is its first consumer.
@@ -41,7 +41,7 @@ These are things an AI image generator cannot know, and they make the mark *ours
 
 - **No AI-generated raster** as the source of truth. AI gives a one-off PNG that can't be re-themed, re-rendered, or version-controlled — the opposite of what "config + reuse" needs. The reference skill (`ckm:design`) is a Gemini image router; it is our **counter-model**, not our model.
 - **No orbit / node / graph motif** — both a tech cliché and explicitly removed from this codebase (commit 284796d).
-- No reuse of Newsreader/JetBrains for the logo letterform (see decisions).
+- ~~No reuse of Newsreader/JetBrains for the logo letterform.~~ **Reversed 2026-06-08** — the identity is now the name set in the existing site faces; see change log.
 
 ## Locked decisions (2026-06-07)
 
@@ -49,14 +49,33 @@ These are things an AI image generator cannot know, and they make the mark *ours
 |---|---|
 | Destination | Full identity program (Tier 1→3) |
 | Sequence | DDL exploration (9 directions) → **lock 1** → build skill → expand |
-| Anchors | dot `.` ↔ nặng + engineer primitives; **avoid** orbit/node |
-| Initials | `tdp` **canonical** (full-name initials); `Phuong Tran` = fallback / version 2 |
-| Letterform | **Custom-drawn** — do NOT reuse Newsreader / JetBrains for the mark |
+| Anchors | the Dot `.` (accent atom, theme-able, r=13) closes **both** marks — `tdp.` and `Phuong Tran.` (wordmark dot added 2026-06-08, reversing the earlier "no dot" call). ~~nặng-tone framing~~ dropped 2026-06-08. Engineer primitives; **avoid** orbit/node |
+| Initials | `tdp.` monogram + `Phuong Tran.` wordmark — both close with the Dot |
+| Letterform | **Newsreader, weight 500** (locked 2026-06-08) — existing site display serif (OFL 1.1); no custom-drawn glyph. `tdp.` monogram + `Phuong Tran` wordmark |
 | Master format | One hand-authored **SVG** = source of truth; everything else generated from it |
 | Config depth | **Theme map** — `{ accent, surface, mode, variant: mono\|knockout\|full }`; one mark, recolor + variant per product |
 | Skill home | **Portable skill + per-project config** — skill lives once (e.g. `~/.claude/skills/`), reads each project's `brand.config.ts`, generates assets into that project |
 | Skill v1 outputs | SVG master + favicon set · OG/social image · email signature · loading + Lottie animation. (Video sting / Remotion = later.) |
 | Presentation | A `/ddl/identity` showcase page (DDL = source of truth for landing UI) |
+| Naming | Ubiquitous language locked 2026-06-08 (see Glossary): **Monogram** (`tdp.`, primary) · **Wordmark** (`Phuong Tran`, secondary) · **Brand** = aggregate root |
+
+## Ubiquitous language (DDD — locked 2026-06-08)
+
+Use these terms verbatim across code, skill, `brand.config.ts`, and docs. "Logo" is the everyday word for the **Monogram**; do not use it as a type in code.
+
+| Term | Meaning | Role |
+|---|---|---|
+| **Brand** | a named, configured identity instance (e.g. `tdp`, or a future product) — aggregate root, holds Theme + emits Assets | root |
+| **Monogram** | `tdp.` — lettermark from initials + the Dot | **primary** |
+| **Wordmark** | `Phuong Tran.` set in Newsreader 500, closed by the Dot | secondary |
+| **Signature** | locked lockup of Monogram + Wordmark (horizontal / stacked) | composed |
+| **Dot** (the Point) | the accent `.` — brand atom, theme-coloured | atom |
+| **Theme** | config value object `{ accent, surface, mode }` | config |
+| **Variant** | render mode `full · mono · knockout` | config |
+| **Master** | the source SVG (Newsreader outlines) everything derives from | source |
+| **Asset** | a generated output rendered from a Brand at a Theme+Variant | output |
+
+Split into two config-driven deliverables: **(A) runtime component** (Angular `<brand-monogram>`/`<brand-wordmark>`/`<brand-signature>`/`<brand-loader>`, no new tooling) and **(B) generator skill** (portable, reads `brand.config.ts` + Master → emits Assets; needs tooling — gated on per-output approval).
 
 ## Candidate directions (Phase 1 — render all 9 in `/ddl/identity`)
 
@@ -110,22 +129,32 @@ One vector master → deterministic generators per output type:
 
 > ⚠️ **License caveat — Remotion:** free for individuals / ≤3-person companies (incl. commercial), but **$100/mo company license for 4+ people.** Relevant once "future products" become a company. Deferred to a later phase so v1 carries no license burden; web animation (CSS/Lottie) is fully free.
 
-## Config schema (per-project `brand.config.ts`)
+## Config schema (per-project `brand.config.ts`) — **locked 2026-06-08 (as-built)**
 
-Shape the portable skill reads (theme-map depth):
+The shipped shape (`libs/shared/features/brand/src/lib/brand.{types,config}.ts`). Chốt as-is — the skill reads exactly this. `variant` is **render-time** (a component input / asset arg, not stored on the Brand); `outputs` is a **skill argument**, not config.
 
 ```ts
-export const brand = {
-  glyph: 'tdp',              // canonical mark token
-  wordmark: 'Phuong Tran',   // fallback / v2
-  theme: {
-    accent: '#6E66D9',
-    surface: 'ink',          // token name or hex
-    mode: 'dark' | 'light' | 'auto',
-  },
-  variant: 'full' | 'mono' | 'knockout',
-  clearspace: 1,             // multiple of cap-height
-  outputs: ['favicon', 'og', 'emailSig', 'lottie'],
+export type BrandVariant = 'full' | 'mono' | 'knockout';
+export type BrandMode = 'light' | 'dark';
+
+export interface BrandTheme {
+  accent: string;          // hex; the Dot / accent atom
+  surface?: string;        // optional token name or hex
+  mode?: BrandMode;
+}
+
+export interface BrandConfig {
+  name: string;            // 'tdp'
+  monogram: string;        // 'tdp.'  (Monogram text, Dot included)
+  wordmark: string;        // 'Phuong Tran'
+  theme: BrandTheme;
+}
+
+export const TDP_BRAND: BrandConfig = {
+  name: 'tdp',
+  monogram: 'tdp.',
+  wordmark: 'Phuong Tran',
+  theme: { accent: '#6E66D9', mode: 'dark' },
 };
 ```
 
@@ -154,6 +183,43 @@ export const brand = {
 
 > **Phase 1 technical note:** `/ddl/identity` is a **new route** → requires a **dev-server restart** to register (HMR is unreliable for new routes/lazy chunks). The server is started by the user, never by Claude — flagged at build time.
 
+## Roadmap checklist
+
+Worked **sequentially** top-to-bottom. Config schema chốt as-built (see above) — item 0 closed.
+
+**Phase 1 — runtime component (A) — ✅ done**
+- [x] `@portfolio/shared/features/brand` lib (Monogram / Wordmark / Signature / Loader, types, `TDP_BRAND`, Newsreader-500 outline data)
+- [x] `/ddl/identity` showcase consuming the lib (variants · 16/32px gates · knockout · live recolour · theme toggle · loader replay)
+- [x] Font locked = Newsreader 500; per-glyph draw-on; Dot sized as deliberate atom (`r=10`)
+- [x] **Config schema chốt as-built** (`name/monogram/wordmark/theme`; `variant` render-time, `outputs` skill arg)
+
+**Phase 2 — generator skill (B)**
+- [x] **Master** — `master.util.ts` in the brand lib: pure, framework-agnostic SVG-string builders (`monogramSvg` / `wordmarkSvg` / `signatureSvg` / `masterSvg`), themeable (`ink`/`accent`), variant-aware, with `background` + `padding` (clearspace) for asset composition. Resolves `currentColor` to explicit ink so output is standalone. Verified faithful across full/mono/knockout + horizontal/stacked + 32px gate.
+- [x] **Tooling** — `sharp` already present (does SVG→PNG); only added `png-to-ico` (devDep) for `.ico`. `@resvg/resvg-js` not needed.
+- [x] **Skill (full pipeline)** — `.claude/skills/brand-identity/` (project-committed, config-driven → portable). **Two stages, both committed**: `gen-glyphs.mjs` (Stage 1: font → `glyph-outlines.data.ts`, via opentype.js **1.3.4** — 2.0.0 corrupts glyphs) + `gen-assets.mts` (Stage 2: master → assets). The instanced font lives in `fonts/`; `references/pipeline.md` documents end-to-end + decisions. Stage-2 run recipe: esbuild-bundle (externalize sharp/png-to-ico) → node from repo root; imports the lib's pure `master.util` + `brand.config` (never the Angular barrel). Replaces the former throwaway `/tmp/fontgen`.
+- [x] **Favicon set** — 16/32/48/180(apple-touch)/192/512 + `favicon.ico` → `apps/landing/public/brand/`. 16px is tight but **decision 2026-06-08: keep `tdp.` at every size** (accept marginal 16px; modern browsers prefer 32/192). 32px+ clean.
+- [x] **OG / social image** — 1200×630, Signature centred on dark surface, accent Dot. Verified crisp.
+- [x] **Email signature** — `email-signature.png` (2× retina) + email-safe `<table>` HTML. Rendered in **light-mode ink** (fixed a bug where dark-mode ink was invisible on white email bodies).
+- [ ] Lottie / cross-platform loader — **deferred** (web CSS loader already in lib)
+
+**Site integration — replace the 3 ad-hoc systems**
+- [x] Header `tdp.` text → `<brand-monogram class="header-logo">` (all 3 states: scrolled pill, top, mobile). Inherits text colour (hover→accent), indigo Dot. Verified live both states.
+- [x] Footer wordmark (`'Portfolio'` fallback) → `<brand-wordmark>` in the footer-banner brand block. Verified live.
+- [x] Blog signature circular `PT` → brand: `<brand-monogram>` chip (kills the 2nd initials system) + `<brand-wordmark>` name; bio/links kept. Verified live.
+- [x] ~~Content 40px monogram → brand component~~ **SKIPPED — mis-audited.** `entry.monogram` on the colophon page is per-entry **tech initials** (Ag/Ns/Nx/Tw/Rl/Cd…), not the personal brand; replacing with `tdp.` would be wrong. Left as-is.
+- [x] `favicon.ico` trơn → generated favicon set wired in `index.html` (`/brand/favicon.ico` + 16/32 png + apple-touch 180). Verified serving 200 live.
+- [x] OG `null` → `og.png` + Open Graph / Twitter meta in `index.html`; `<title>`/description set. `og:image`/`og:url`/`twitter:image` **absolute** → `https://thunderphong.com/`.
+
+**Phase 3 — full program**
+- [ ] Motif / decoration pattern
+- [ ] Animated / variable mark (loader upgrade, weight variation)
+- [ ] Video sting — Remotion (⚠️ license $100/mo if ≥4 people) — **deferred**
+- [ ] Brand guideline (do/don't, clearspace, min-size) — candidate `/ddl` page
+
+**Housekeeping**
+- [ ] Tests for the brand lib (TDD — currently no specs)
+- [ ] Resolve open questions (future product names/domains → "variant per product"; rubric weighting)
+
 ## Risks
 
 - **Over-divergence in Phase 1** — 9 directions × 3 forms is a lot; some will obviously lose. Mitigated by the gates (16px / 1-color) eliminating non-starters fast.
@@ -169,6 +235,13 @@ export const brand = {
 
 ## Change log
 
+- 2026-06-08 — **Pipeline made whole + committed; Dot enlarged; Wordmark gains its Dot; OG absolute.** (1) **Captured the origination half** that was throwaway in `/tmp`: the glyph-extraction generator + the instanced font now live in the committed skill, renamed `.claude/skills/brand-asset-gen` → **`brand-identity`** (two stages: `gen-glyphs.mjs` font→`glyph-outlines.data.ts`, `gen-assets.mts` master→assets) + `references/pipeline.md` documenting end-to-end + decisions, so a new product reuses it with minimal redo (font + config + run). Added `opentype.js` **pinned 1.3.4** as devDep (2.0.0 regresses `toPathData`, corrupts `g`/`a` — found via OG render). (2) **Dot enlarged** r=10→13 and **spacing fixed**: placed a fixed `dotGap` (14u, user-picked) past the last glyph's true ink edge — the earlier advance-based formula made the bigger Dot sit too close/overlap, reading cramped. (3) **Wordmark now closes with the Dot** — `Phuong Tran.` — the same accent atom as `tdp.`; `<brand-wordmark>` gained `variant`/`accent` inputs + `WORDMARK_DOT`, Signature passes them through, Loader pops the wordmark Dot after the last glyph (dynamic delay). This **reverses** the earlier "no dot on the wordmark" decision. (4) `og:image`/`og:url`/`twitter:image` set absolute to `https://thunderphong.com/`. Regenerated all assets; `nx build landing` green; header/footer/blog/og verified live.
+- 2026-06-08 — **Site integration: 3 ad-hoc mark systems replaced by the brand lib (verified live).** Header `tdp.` text (×3 states) → `<brand-monogram>` (`.header-logo`, 1.35em); footer brand block → `<brand-wordmark>`; blog signature `PT` circle → `<brand-monogram>` chip + `<brand-wordmark>` (2nd initials system gone). `index.html` wired to the generated favicon set + Open Graph/Twitter meta + real title/description. All confirmed via Playwright against the running dev server (HMR picked up the lib imports — no restart needed). **Content monogram NOT touched** — re-audit showed `entry.monogram` is per-entry tech initials on the colophon (Ag/Ns/Nx…), not the personal brand; the original audit mis-grouped it. **Open:** og:image needs the production domain to be absolute.
+- 2026-06-08 — **Phase 2 generator shipped (skill + Master + v1 assets).** Added `master.util.ts` to the brand lib — pure, framework-agnostic SVG-string builders (`monogramSvg`/`wordmarkSvg`/`signatureSvg`/`masterSvg`), themeable + variant-aware, `background`/`padding` for composition. Created project-committed skill `.claude/skills/brand-asset-gen/` (config-driven → portable): reads the lib's pure `master.util` + `brand.config`, rasterizes via **sharp** (already a dep) + **png-to-ico** (newly added devDep — `@resvg/resvg-js` proved unnecessary), composing assets with sharp `composite`. Generated the v1 set into `apps/landing/public/brand/`: favicon 16/32/48/180/192/512 + `favicon.ico`, `og.png` (1200×630), `email-signature.png` + `.html`. Verified each by rasterizing & reading the PNGs. Two issues found & fixed mid-build: (1) `REPO_ROOT` via `import.meta.dirname` wrote assets *above* the repo after bundling → switched to `process.cwd()` (run-from-root); (2) email-sig used dark-mode ink → invisible on white email bodies → forced light-mode ink. **Open:** 16px favicon legibility (wide `tdp.` too tight) — keep or add a compact mark. Next: site integration (wire favicon/OG into `index.html`; replace the 3 ad-hoc mark systems with the lib components).
+- 2026-06-08 — **Roadmap → checklist; config chốt as-built; starting Phase 2 sequentially.** Added a top-to-bottom checklist (Phase 1 ✅ → Phase 2 skill → site integration → Phase 3 → housekeeping). Config schema locked to the shipped shape (`BrandConfig = name/monogram/wordmark/theme`; `variant` render-time, `outputs` skill arg) — superseded the earlier `glyph/clearspace/surface/outputs` draft. Next: Phase 2 item 1 = the Master SVG.
+- 2026-06-08 — **Component A built: the `brand` lib.** Created `@portfolio/shared/features/brand` (`scope:shared`, `type:shared-feature` — cross-app, mirrors `breakpoint-observer`; first attempt mis-filed as a new `type:brand` under `shared/`, corrected). Config-driven standalone components: `<brand-monogram>` (variant full/mono/knockout, `[accent]`), `<brand-wordmark>`, `<brand-signature>` (horizontal/stacked lockup), `<brand-loader>` (per-glyph draw-on, `mark` monogram/wordmark, `replay()`). Plus `BrandConfig/BrandTheme/BrandVariant` types, `TDP_BRAND` default config, and generated Newsreader-500 outline data (`glyph-outlines.data.ts`, via fonttools instancer + opentype.js). Marks render `currentColor` ink + themeable `--brand-accent` Dot → SSR-safe, recolour per product, scale with font-size. `/ddl/identity` rebuilt to **consume** the lib (showcase: variants, 16/32px gates, knockout-on-accent, live recolour, theme toggle, loader replay). `nx build landing` green. Tooling for the generator skill (`@resvg/resvg-js` + `png-to-ico`) approved but NOT yet installed. Next: Phase 2 generator skill (reads `brand.config.ts` + Master → emits favicon/OG/email-sig).
+- 2026-06-08 — **Font locked = Newsreader 500; draw-on animation reworked to per-glyph.** Legal cleared: Newsreader is SIL OFL 1.1 (Production Type) — free commercial use incl. logos/trademark; only the font *file* can't be sold/redistributed-under-name. Logo shipped as **outlines** sidesteps embedding entirely. Built the v1 loading sting from REAL Newsreader outlines (no hand-drawing): `fonttools varLib.instancer` bakes a static wght=500/opsz=40 instance → `opentype.js` extracts **per-glyph** outline paths into `draw-paths.ts`. First pass used one combined path + global `fill-opacity` → felt like two disconnected phases (pen races, then whole word fades in) because a global fill can't follow the pen. Fixed: each glyph is its own `<path>`, traces (stroke-dashoffset) then inks (fill-in/stroke-out) in its own ~0.62s slot, staggered 0.12s left-to-right → fill visibly chases each letter; `tdp.` dot pops after the final glyph. Reduce-motion → static filled state. Open: confirm rhythm; then derive the rest of the reusable set (favicon / OG / email sign-off) from the locked type.
+- 2026-06-08 — **Major pivot: drop custom marks → name in existing site fonts.** After the all-monoline renders still failed on aesthetics / human-feel / legibility, root-caused the real bottleneck: **origination** (inventing a soulful mark from a brief) is what AI does badly, not production. Hand-authoring bezier letterforms = why the monoline read amateur. Reframed the input problem (sketch / type-seed / reference-board / object). Author chose **type-seed**, then simplified further: **use the existing site fonts, no new font, no drawn mark, no dot.** `/ddl/identity` rebuilt as a wordmark specimen — "Phuong Tran" + "tdp" monogram set in Newsreader / Inter / JetBrains Mono at two weights each, plus a hybrid lockup (serif name + mono monogram); theme toggle to check both modes. Recolour/gates/SVG-mark machinery removed. `nx build landing` green. **Anchors (dot↔nặng) and the custom-letterform decision are reversed** (struck through above). Open: pick face + weight (or hybrid) → tune spacing/optical size → lock lockup → derive the reusable set from the chosen type. New durable preference: present explorations in the real `/ddl` page, never `/tmp`.
 - 2026-06-07 — **Direction locked: ALL-MONOLINE (handwritten).** After viewing round-2 detail renders the author cut A1–A4 + B1/B3, disliked A3 (d-rotation), but liked the monoline concept *drawn as the name* and the restored round-1 grid. Coherence fork resolved → one visual language: **monoline**. `/ddl/identity` rebuilt as the all-monoline system: the **mark** = monoline “P” (P1 plain / P2 foot-tail ★ / P3 + nặng-dot), the **wordmark** = monoline “Phuong” (plain + nặng-dot variant), plus a mark+wordmark **lockup**. Recolour + theme retained; knockout now also flips `--ddl-accent: currentColor` for stroke marks. `nx build landing` green; renders verified via screenshot. Open: pick the P foot; refine letterform terminals + true single-stroke joins + draw the “Tran” half; then lock glyph → Phase 2 (skill + assets).
 - 2026-06-07 — **Phase 1 round 2.** Author feedback: cut directions 01 (period), 02 (semicolon), 03 (caret), 07 (fused glyph — "reads as a cross with a handle"). Expand the two survivors — **06 grid-module** + **08 signature** — into variants. `/ddl/identity` rebuilt as two families: A · grid-module (A1 diagonal cut, A2 stem+bowl, **A3 d↔p rotation ★**, A4 notched square) and B · signature (B1 monoline ligature, **B2 ruled stroke ★** — bridges both families, B3 variable-weight filled, B4 underline flourish). Each variant shows compact + 16px + 1-colour gates; each family ends with a wordmark/rule-reveal lockup. Cross-breed flagged (B2 ruled stroke + A3 rotation). `nx build landing` green. Next: pick variant(s) → lock.
 - 2026-06-07 — **Phase 1 built.** `/ddl/identity` route + `ddl-identity` component (TS/HTML/SCSS) added under `apps/landing/src/app/pages/ddl/`, linked from the DDL index nav (compositions group). All 9 directions rendered as hand-authored SVG in three forms (full · compact/favicon · wordmark) + both rubric gates (16px + 1-colour knockout via `[data-accent]`→currentColor). Live recolour via `--ddl-accent` (5 presets + custom picker) proves theme-map config; caret (03) blinks and signature (08) draws on load, both reduce-motion-guarded. `nx build landing` green. Letterforms exploratory (text placeholders) — custom glyph deferred to Phase 2. Next: review → score against rubric → **lock one direction**.
