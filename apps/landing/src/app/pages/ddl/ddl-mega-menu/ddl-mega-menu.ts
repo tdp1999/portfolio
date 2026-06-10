@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Container, Eyebrow, Icon, Breadcrumb, SectionHeader, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
 import type { MoreItem } from './ddl-mega-menu.types';
 import { ITEMS } from './ddl-mega-menu.data';
@@ -18,8 +18,6 @@ export class DdlMegaMenu {
     { label: 'Mega-menu · More dropdown' },
   ];
   readonly items = ITEMS;
-
-  // ── Computed ───────────────────────────────────────────────────────
-  readonly nonFeatured = computed(() => this.items.filter((i) => !i.featured));
-  readonly featured = computed<MoreItem>(() => this.items.find((i) => i.featured) ?? this.items[0]);
+  readonly nonFeatured = ITEMS.filter((i) => !i.featured);
+  readonly featured: MoreItem = ITEMS.find((i) => i.featured) ?? ITEMS[0];
 }
