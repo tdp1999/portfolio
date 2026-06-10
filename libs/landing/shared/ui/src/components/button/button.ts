@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { IconArrow } from '../icon/icon-arrow';
-
-export type LandingButtonVariant = 'solid' | 'ghost' | 'link';
-export type LandingButtonSize = 'sm' | 'md';
-export type LandingButtonArrow = 'right' | 'up-right' | null;
+import type { LandingButtonVariant, LandingButtonSize, LandingButtonArrow } from './button.types';
 
 @Component({
   selector: 'landing-button',
@@ -31,6 +28,7 @@ export class Button {
 
   readonly buttonClick = output<MouseEvent>();
 
+  // ── Derived ────────────────────────────────────────────────────────
   protected readonly buttonClasses = computed(() => {
     const parts = ['landing-btn', `landing-btn--${this.variant()}`, `landing-btn--${this.size()}`];
     const dir = this.arrow();
@@ -38,9 +36,12 @@ export class Button {
     return parts.join(' ');
   });
 
+  // ── Methods ────────────────────────────────────────────────────────
   protected handleClick(event: MouseEvent): void {
     if (!this.disabled()) {
       this.buttonClick.emit(event);
     }
   }
 }
+
+export type { LandingButtonVariant, LandingButtonSize, LandingButtonArrow } from './button.types';

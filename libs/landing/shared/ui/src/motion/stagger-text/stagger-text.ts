@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-const PSEUDO_RANDOM_OFFSETS = [-4, 6, -2, 5, -6, 3, 0, 4, -5, 2, -3, -1, 5, -4, 6, -2, 3, -5, 4, -2];
+import { PSEUDO_RANDOM_OFFSETS } from './stagger-text.constants';
 
 /**
  * Per-character entrance animation, rendered server-side. The template emits one
@@ -26,7 +25,7 @@ const PSEUDO_RANDOM_OFFSETS = [-4, 6, -2, 5, -6, 3, 0, 4, -5, 2, -3, -1, 5, -4, 
       [style.--fx-y]="offsets[$index % offsets.length]"
       [style.animation-delay.ms]="$index * charDelay()"
       [style.animation-duration.ms]="duration()"
-      >{{ char === ' ' ? ' ' : char }}</span
+      >{{ char === ' ' ? ' ' : char }}</span
     >
   }`,
   styleUrl: './stagger-text.scss',

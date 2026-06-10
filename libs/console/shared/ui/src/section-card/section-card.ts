@@ -23,8 +23,6 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SectionCard {
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly destroyRef = inject(DestroyRef);
   /** Anchor id for scrollspy (rendered as HTML id attribute) */
   // eslint-disable-next-line @angular-eslint/no-input-rename -- alias matches native DOM `id` attribute
   sectionId = input.required<string>({ alias: 'id' });
@@ -67,15 +65,8 @@ export class SectionCard {
    */
   cancelled = output<void>();
 
-  constructor() {
-    // Keep OnPush re-rendering in sync with FormGroup state changes (dirty/invalid).
-    effect((onCleanup) => {
-      const fg = this.formGroup();
-      if (!fg) return;
-      const sub = fg.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
-      onCleanup(() => sub.unsubscribe());
-    });
-  }
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Relative time string for last saved */
   lastSavedLabel = computed(() => {
@@ -86,6 +77,16 @@ export class SectionCard {
     if (seconds < 60) return `Saved ${seconds}s ago`;
     return `Saved ${Math.floor(seconds / 60)}m ago`;
   });
+
+  constructor() {
+    // Keep OnPush re-rendering in sync with FormGroup state changes (dirty/invalid).
+    effect((onCleanup) => {
+      const fg = this.formGroup();
+      if (!fg) return;
+      const sub = fg.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.cdr.markForCheck());
+      onCleanup(() => sub.unsubscribe());
+    });
+  }
 
   /** Whether the save button should be disabled (reads FormGroup state imperatively) */
   isSaveDisabled(): boolean {

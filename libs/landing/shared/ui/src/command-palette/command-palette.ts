@@ -24,14 +24,10 @@ import {
   SECTION_MANIFEST,
   type CommandKind,
   type CommandResult,
+  type FlatRow,
   filterCommands,
   groupCommandsByKind,
 } from './command-palette.types';
-
-interface FlatRow {
-  readonly result: CommandResult;
-  readonly groupHeader?: string;
-}
 
 /**
  * Linear-style command palette (V1 from DDL).

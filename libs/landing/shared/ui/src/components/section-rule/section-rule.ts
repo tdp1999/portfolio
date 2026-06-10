@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import type { LandingSectionRuleVariant } from './section-rule.types';
 
-export type LandingSectionRuleVariant = 'plain' | 'lift';
+export type { LandingSectionRuleVariant } from './section-rule.types';
 
 @Component({
   selector: 'landing-section-rule',

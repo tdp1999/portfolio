@@ -1,7 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Directive, ElementRef, PLATFORM_ID, inject, input } from '@angular/core';
-
-export type SpotlightScope = 'host' | 'viewport';
+import type { SpotlightScope } from './spotlight.types';
 
 /**
  * Cursor-tracking spotlight overlay. On hydration, injects a single
@@ -91,3 +90,5 @@ export class SpotlightDirective {
     this.overlay?.style.setProperty('--fx-cursor-opacity', '0');
   }
 }
+
+export type { SpotlightScope } from './spotlight.types';

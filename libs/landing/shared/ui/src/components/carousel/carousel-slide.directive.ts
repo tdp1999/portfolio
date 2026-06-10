@@ -1,12 +1,5 @@
 import { Directive, TemplateRef, inject, input } from '@angular/core';
-
-/** Context passed to a `landingCarouselSlide` template. */
-export interface CarouselSlideContext<T = unknown> {
-  /** The current item from the carousel's `[items]` array. */
-  readonly $implicit: T;
-  /** Zero-based slide index. */
-  readonly index: number;
-}
+import type { CarouselSlideContext } from './carousel-slide.types';
 
 /**
  * Marks an `<ng-template>` as the per-slide renderer for `landing-carousel`'s
@@ -33,11 +26,14 @@ export interface CarouselSlideContext<T = unknown> {
   standalone: true,
 })
 export class CarouselSlide<T = unknown> {
+  // ── DI ────────────────────────────────────────────────────────────
   readonly template = inject<TemplateRef<CarouselSlideContext<T>>>(TemplateRef);
 
+  // ── Inputs ────────────────────────────────────────────────────────
   /** Type anchor only — narrows `$implicit` to the item type. */
   readonly typeOf = input<readonly T[]>([], { alias: 'landingCarouselSlideTypeOf' });
 
+  // ── Static helpers ────────────────────────────────────────────────
   /** Type-narrowing guard for the `let-` context (Angular template checker). */
   static ngTemplateContextGuard<T>(_dir: CarouselSlide<T>, _ctx: unknown): _ctx is CarouselSlideContext<T> {
     return true;

@@ -11,6 +11,7 @@ import { AuthStore } from '@portfolio/console/shared/data-access';
 import { ErrorDataService, FormErrorPipe } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
+import { GOOGLE_ERROR_MESSAGES } from './login.data';
 
 @Component({
   selector: 'console-login',
@@ -31,19 +32,21 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Login implements OnInit {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly authStore = inject(AuthStore);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly errorDataService = inject(ErrorDataService);
-  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
+  // ── Writable signals ──────────────────────────────────────────────
   readonly submitting = signal(false);
   readonly showPassword = signal(false);
   readonly remainingAttempts = signal<number | null>(null);
   readonly retryAfterSeconds = signal<number | null>(null);
 
+  // ── Forms ─────────────────────────────────────────────────────────
   readonly form = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
@@ -56,26 +59,8 @@ export default class Login implements OnInit {
     rememberMe: new FormControl(true, { nonNullable: true }),
   });
 
-  private static readonly GOOGLE_ERROR_MESSAGES: Record<string, string> = {
-    [AuthErrorCode.INVITE_ONLY]: 'This site is invite-only. Contact the administrator to get access.',
-    [AuthErrorCode.ACCOUNT_DELETED]: 'Your account has been deactivated. Contact the administrator.',
-  };
-
-  ngOnInit(): void {
-    this.errorDataService.clear();
-    this.handleOAuthError();
-  }
-
-  private handleOAuthError(): void {
-    const errorCode = this.route.snapshot.queryParamMap.get('error');
-    if (!errorCode) return;
-
-    const message = Login.GOOGLE_ERROR_MESSAGES[errorCode] ?? 'Authentication failed. Please try again.';
-    this.toast.error(message);
-
-    // Clean the URL so the error doesn't persist on refresh
-    this.router.navigate([], { queryParams: {}, replaceUrl: true });
-  }
+  // ── Plain state ───────────────────────────────────────────────────
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     effect(() => {
@@ -91,6 +76,11 @@ export default class Login implements OnInit {
         }
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.errorDataService.clear();
+    this.handleOAuthError();
   }
 
   togglePassword(): void {
@@ -124,6 +114,22 @@ export default class Login implements OnInit {
     });
   }
 
+  loginWithGoogle(): void {
+    this.authStore.loginWithGoogle();
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────
+  private handleOAuthError(): void {
+    const errorCode = this.route.snapshot.queryParamMap.get('error');
+    if (!errorCode) return;
+
+    const message = GOOGLE_ERROR_MESSAGES[errorCode] ?? 'Authentication failed. Please try again.';
+    this.toast.error(message);
+
+    // Clean the URL so the error doesn't persist on refresh
+    this.router.navigate([], { queryParams: {}, replaceUrl: true });
+  }
+
   private startCountdown(): void {
     this.clearCountdown();
     this.countdownInterval = setInterval(() => {
@@ -144,9 +150,5 @@ export default class Login implements OnInit {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
-  }
-
-  loginWithGoogle(): void {
-    this.authStore.loginWithGoogle();
   }
 }

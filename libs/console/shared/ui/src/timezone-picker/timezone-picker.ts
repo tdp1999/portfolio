@@ -13,18 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { DEFAULT_TIMEZONES, formatGmtOffset, REGION_ORDER, type TimezoneOption } from './timezone-data';
-
-type TimezoneValue = string | string[] | null;
-
-interface RenderedZone extends TimezoneOption {
-  label: string;
-  offset: string;
-}
-
-interface RenderedGroup {
-  region: string;
-  zones: RenderedZone[];
-}
+import type { RenderedGroup, RenderedZone, TimezoneValue } from './timezone-picker.types';
 
 /**
  * Timezone picker — Material `mat-select` (multi by default), grouped by

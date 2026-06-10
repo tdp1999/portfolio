@@ -15,10 +15,10 @@ export class App {
   private readonly profileService = inject(ProfileService);
   private readonly localeService = inject(LandingLocaleService);
 
+  private readonly profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
+
   /** Reactive locale — switching the language switcher in the header triggers re-localization here. */
   readonly locale = this.localeService.locale;
-
-  private readonly profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
 
   readonly fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()));
   readonly email = computed(() => this.profile()?.email ?? '');
@@ -30,6 +30,7 @@ export class App {
     if (!urls) return null;
     return this.locale() === 'vi' ? (urls.vi ?? urls.en ?? null) : (urls.en ?? urls.vi ?? null);
   });
+
   readonly resumeUrl = computed(() => this.resumeEntry()?.url ?? '');
   readonly resumeName = computed(() => this.resumeEntry()?.name ?? 'CV');
 

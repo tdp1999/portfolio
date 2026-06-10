@@ -27,33 +27,12 @@ import {
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
-import {
-  BlogDataService,
-  MarkdownService,
-  type BlogPostDetail,
-  type RenderedMarkdown,
-} from '@portfolio/landing/shared/data-access';
+import { BlogDataService, MarkdownService } from '@portfolio/landing/shared/data-access';
 import { BlogShareRow } from './blog.share-row';
 import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
-
-const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };
-
-type LoadStatus = 'idle' | 'loading' | 'loaded' | 'not-found';
-
-type DetailState = {
-  status: LoadStatus;
-  post: BlogPostDetail | null;
-  rendered: RenderedMarkdown;
-};
-
-const INITIAL_STATE: DetailState = { status: 'idle', post: null, rendered: EMPTY_RENDER };
-
-/**
- * Below this H2/H3 count the TOC is auto-hidden — same threshold the DDL
- * used (replaces an earlier word-count heuristic that mis-hid valid TOCs).
- * Notes (category slug `notes`) always hide regardless of section count.
- */
-const TOC_MIN_SECTIONS = 3;
+import type { DetailState } from './blog.detail.types';
+import { EMPTY_RENDER, INITIAL_STATE } from './blog.detail.data';
+import { shouldHideToc, wordCount } from './blog.detail.util';
 
 @Component({
   selector: 'landing-blog-detail',
@@ -165,8 +144,6 @@ export class BlogDetail {
   });
 
   constructor() {
-    // SEO meta — runs on both server and client. Article OG tags + canonical
-    // values mirror the about-page pattern (commit 96a0cd4).
     effect(() => {
       const p = this.post();
       if (!p) return;
@@ -188,9 +165,6 @@ export class BlogDetail {
       }
     });
 
-    // SSR-only JSON-LD injection. Guarded by isPlatformServer so the client
-    // never re-injects (which would yield duplicate <script> tags on hydration).
-    // Payload comes pre-built from the BE (task 348) on `post.jsonLd`.
     effect(() => {
       const p = this.post();
       if (!p || !isPlatformServer(this.platformId)) return;
@@ -200,9 +174,6 @@ export class BlogDetail {
       this.document.head.appendChild(script);
     });
 
-    // Scrollspy: register section anchors only when the TOC will actually
-    // render. Clearing on hide avoids stale highlights from the previous post
-    // when navigating slug → slug client-side.
     effect(() => {
       if (this.hideToc()) {
         this.scrollspy.setSections([]);
@@ -211,15 +182,4 @@ export class BlogDetail {
       this.scrollspy.setSections(this.toc());
     });
   }
-}
-
-function wordCount(content: string | null | undefined): number {
-  if (!content) return 0;
-  return content.split(/\s+/).filter(Boolean).length;
-}
-
-function shouldHideToc(post: BlogPostDetail | null, sectionCount: number): boolean {
-  if (!post) return true;
-  const isNote = post.categories.some((c) => c.slug === 'notes');
-  return isNote || sectionCount < TOC_MIN_SECTIONS;
 }

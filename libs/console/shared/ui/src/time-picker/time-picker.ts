@@ -11,31 +11,9 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-
-export type TimePickerFormat = '12h' | '24h';
-export type TimePickerSize = 'default' | 'dense';
-
-const HHMM = /^([01]\d|2[0-3]):([0-5]\d)$/;
-
-function toMinutes(hhmm: string): number {
-  const [h, m] = hhmm.split(':').map(Number);
-  return h * 60 + m;
-}
-
-function pad2(n: number): string {
-  return n.toString().padStart(2, '0');
-}
-
-function fromMinutes(total: number): string {
-  return `${pad2(Math.floor(total / 60))}:${pad2(total % 60)}`;
-}
-
-function format12h(hhmm: string): string {
-  const [h, m] = hhmm.split(':').map(Number);
-  const period = h >= 12 ? 'PM' : 'AM';
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${pad2(m)} ${period}`;
-}
+import { HHMM } from './time-picker.constants';
+import type { TimePickerFormat, TimePickerSize } from './time-picker.types';
+import { format12h, fromMinutes, toMinutes } from './time-picker.util';
 
 /**
  * Time picker — wraps `mat-select` with generated options at a configurable

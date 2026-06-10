@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { comboFromEvent, formatCombo, normalizeCombo, type KeyboardShortcut } from './keyboard-shortcut.types';
+import { isInEditableElement } from './keyboard-shortcut.util';
 
 /**
  * Root-provided registry of global keyboard shortcuts.
@@ -121,12 +122,4 @@ export class KeyboardShortcutService {
   format(combo: string): string {
     return formatCombo(combo, this.isMacSignal());
   }
-}
-
-function isInEditableElement(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  const tag = target.tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
-  if (target.isContentEditable) return true;
-  return false;
 }

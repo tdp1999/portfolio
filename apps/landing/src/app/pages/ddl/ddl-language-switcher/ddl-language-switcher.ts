@@ -7,9 +7,9 @@ import {
   SectionHeader,
   MegaMenu,
   type BreadcrumbItem,
-  type MegaMenuItem,
 } from '@portfolio/landing/shared/ui';
 import type { Lang } from './ddl-language-switcher.types';
+import { MEGA_MENU_ITEMS } from './ddl-language-switcher.data';
 
 @Component({
   selector: 'landing-ddl-language-switcher',
@@ -20,8 +20,11 @@ import type { Lang } from './ddl-language-switcher.types';
   styleUrl: './ddl-language-switcher.scss',
 })
 export class DdlLanguageSwitcher {
+  // ── Properties ─────────────────────────────────────────────────────
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Language switcher' }];
+  readonly megaMenuItems = MEGA_MENU_ITEMS;
 
+  // ── State ──────────────────────────────────────────────────────────
   // Independent state per variant so each demo behaves on its own.
   readonly v1Lang = signal<Lang>('en');
   readonly v2Lang = signal<Lang>('en');
@@ -31,22 +34,6 @@ export class DdlLanguageSwitcher {
   readonly v4Open = signal(false);
   readonly v5Lang = signal<Lang>('en');
   readonly v6Lang = signal<Lang>('en');
-
-  /** Mock items for mega-menu variant to demonstrate "shared dropdown shell". */
-  readonly megaMenuItems: readonly MegaMenuItem[] = [
-    {
-      label: 'English',
-      description: 'Default — site copy in English.',
-      href: '#en',
-      iconName: 'globe',
-    },
-    {
-      label: 'Tiếng Việt',
-      description: 'Bản tiếng Việt — same content, localized.',
-      href: '#vi',
-      iconName: 'globe',
-    },
-  ];
 
   toggleV1(): void {
     this.v1Lang.update((l) => (l === 'en' ? 'vi' : 'en'));

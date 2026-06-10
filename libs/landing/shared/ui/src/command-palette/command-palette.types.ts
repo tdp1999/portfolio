@@ -1,3 +1,8 @@
+export interface FlatRow {
+  readonly result: CommandResult;
+  readonly groupHeader?: string;
+}
+
 export type CommandKind = 'page' | 'section' | 'action' | 'project' | 'blog';
 
 export interface CommandResult {

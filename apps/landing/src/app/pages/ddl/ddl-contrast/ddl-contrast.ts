@@ -17,6 +17,9 @@ import {
   LandingThemeService,
   ThemeToggle,
 } from '@portfolio/landing/shared/ui';
+import { ROLE_FLOOR, SURFACES, TEXT_TOKENS } from './ddl-contrast.constants';
+import type { Role, TextRow, OnAccentRow, Cell, RampStep, SurfaceLayer, RGB } from './ddl-contrast.types';
+import { parseRgb, toHex, wcagRatio, apcaLc, relLuminance } from './ddl-contrast.util';
 
 /**
  * /ddl/contrast — live color-contrast matrix for the LANDING token system.
@@ -27,78 +30,6 @@ import {
  * APCA Lc (the perceptual quality bar that catches weak dark-mode text). Toggle the
  * theme to re-score both modes. The audit script is the CI gate; this page is the eye.
  */
-
-type Role = 'body' | 'caption' | 'link' | 'onAccent' | 'focus';
-
-const ROLE_FLOOR: Record<Role, { wcag: number; apca: number; label: string }> = {
-  body: { wcag: 4.5, apca: 75, label: 'Body' },
-  caption: { wcag: 4.5, apca: 60, label: 'Caption' },
-  link: { wcag: 4.5, apca: 75, label: 'Link' },
-  onAccent: { wcag: 4.5, apca: 75, label: 'On-accent' },
-  focus: { wcag: 3.0, apca: 45, label: 'Focus / non-text' },
-};
-
-interface RGB {
-  r: number;
-  g: number;
-  b: number;
-}
-
-interface Cell {
-  surface: string;
-  hex: string;
-  wcag: number;
-  apca: number;
-  passWcag: boolean;
-  passApca: boolean;
-}
-
-interface TextRow {
-  token: string;
-  label: string;
-  role: Role;
-  hex: string;
-  cells: Cell[];
-}
-
-interface RampStep {
-  token: string;
-  label: string;
-  hex: string;
-  apca: number;
-}
-
-interface SurfaceLayer {
-  token: string;
-  label: string;
-  hex: string;
-  /** WCAG ratio vs the previous (lower) layer — must read as a distinct step. */
-  vsPrev: number | null;
-}
-
-interface OnAccentRow {
-  label: string;
-  fillToken: string;
-  fillHex: string;
-  wcag: number;
-  apca: number;
-  passWcag: boolean;
-  passApca: boolean;
-}
-
-const SURFACES: ReadonlyArray<{ token: string; label: string }> = [
-  { token: '--landing-bg', label: 'bg' },
-  { token: '--landing-surface', label: 'surface' },
-  { token: '--landing-surface-elevated', label: 'elevated' },
-];
-
-const TEXT_TOKENS: ReadonlyArray<{ token: string; label: string; role: Role }> = [
-  { token: '--landing-text-300', label: 'text-300 · primary', role: 'body' },
-  { token: '--landing-text-400', label: 'text-400 · secondary', role: 'body' },
-  { token: '--landing-text-500', label: 'text-500 · muted', role: 'body' },
-  { token: '--landing-text-600', label: 'text-600 · caption', role: 'caption' },
-  { token: '--landing-accent', label: 'accent · link / icon', role: 'link' },
-];
 
 @Component({
   selector: 'landing-ddl-contrast',
@@ -463,57 +394,4 @@ export class DdlContrast {
     const computed = this.document.defaultView?.getComputedStyle(this.probe).color ?? '';
     return parseRgb(computed);
   }
-}
-
-// --- color math (mirrors .claude/skills/contrast-audit engine) ----------------
-function parseRgb(value: string): RGB | null {
-  const m = value.match(/rgba?\(([^)]+)\)/i);
-  if (!m) return null;
-  const nums = m[1].replace(/\//g, ' ').replace(/,/g, ' ').trim().split(/\s+/).map(Number);
-  if (nums.length < 3 || nums.some((n) => Number.isNaN(n))) return null;
-  return { r: nums[0], g: nums[1], b: nums[2] };
-}
-
-function toHex({ r, g, b }: RGB): string {
-  return '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
-}
-
-function relLuminance({ r, g, b }: RGB): number {
-  const lin = (c: number): number => {
-    const cs = c / 255;
-    return cs <= 0.04045 ? cs / 12.92 : ((cs + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-}
-
-function wcagRatio(fg: RGB, bg: RGB): number {
-  const l1 = relLuminance(fg);
-  const l2 = relLuminance(bg);
-  const [hi, lo] = l1 >= l2 ? [l1, l2] : [l2, l1];
-  return (hi + 0.05) / (lo + 0.05);
-}
-
-function sRGBtoY({ r, g, b }: RGB): number {
-  const e = (c: number): number => (c / 255) ** 2.4;
-  return 0.2126729 * e(r) + 0.7151522 * e(g) + 0.072175 * e(b);
-}
-
-/** APCA-W3 (frozen constants 2021-02-15). Returns signed Lc on a ±106 scale. */
-function apcaLc(txt: RGB, bg: RGB): number {
-  const blkThrs = 0.022;
-  const blkClmp = 1.414;
-  const clamp = (y: number): number => (y > blkThrs ? y : y + (blkThrs - y) ** blkClmp);
-  const yTxt = clamp(sRGBtoY(txt));
-  const yBg = clamp(sRGBtoY(bg));
-  if (Math.abs(yBg - yTxt) < 0.0005) return 0;
-  let sapc: number;
-  let out: number;
-  if (yBg > yTxt) {
-    sapc = (yBg ** 0.56 - yTxt ** 0.57) * 1.14;
-    out = sapc < 0.1 ? 0 : sapc - 0.027;
-  } else {
-    sapc = (yBg ** 0.65 - yTxt ** 0.62) * 1.14;
-    out = sapc > -0.1 ? 0 : sapc + 0.027;
-  }
-  return out * 100;
 }

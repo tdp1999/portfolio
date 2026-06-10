@@ -7,7 +7,7 @@ import { filter } from 'rxjs';
 import { ThemeToggle } from '../theme';
 import { Container } from '../components/container';
 import { MegaMenu, type MegaMenuItem } from '../components/mega-menu';
-import { Select, type SelectOption } from '../components/select';
+import { Select } from '../components/select';
 import { Eyebrow } from '../components/eyebrow';
 import { CommandPaletteService } from '../command-palette/command-palette.service';
 import { KeyboardShortcutService } from '../keyboard/keyboard-shortcut.service';
@@ -15,26 +15,7 @@ import { LandingLocaleService } from '../locale/landing-locale.service';
 import { HydrationSafeActiveDirective } from './hydration-safe-active.directive';
 import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
-
-const LANGUAGES: readonly SelectOption<Locale>[] = [
-  { value: 'en', label: 'English', sublabel: 'en', iconName: 'globe' },
-  { value: 'vi', label: 'Tiếng Việt', sublabel: 'vi', iconName: 'globe' },
-];
-
-interface NavItem {
-  label: string;
-  path: string;
-  exact?: boolean;
-}
-
-const NAV_ITEMS: readonly NavItem[] = [
-  { label: 'Home', path: '/', exact: true },
-  { label: 'About', path: '/about' },
-  { label: 'Projects', path: '/projects' },
-  { label: 'Blog', path: '/blog' },
-];
-
-const SCROLL_THRESHOLD = 8;
+import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
 
 @Component({
   selector: 'landing-header',
@@ -304,30 +285,6 @@ export class Header {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
 
-  constructor() {
-    // Close the sheet on any successful navigation — covers programmatic nav and
-    // browser back/forward, not just the link taps wired in the template.
-    this.router.events
-      .pipe(
-        filter((e) => e instanceof NavigationEnd),
-        takeUntilDestroyed()
-      )
-      .subscribe(() => this.closeMenu());
-
-    // Lock background scroll while the full-screen sheet is open (effects run in
-    // the browser only, so this never touches the SSR document).
-    effect(() => {
-      const open = this.menuOpen();
-      if (this.document.defaultView) {
-        this.document.body.style.overflow = open ? 'hidden' : '';
-      }
-    });
-  }
-
-  setLang(lang: Locale): void {
-    this.localeService.setLocale(lang);
-  }
-
   protected readonly kbdMod = computed(() => (this.shortcuts.isMac() ? '⌘' : 'Ctrl'));
   protected readonly paletteAriaLabel = computed(() => `Open command palette (${this.kbdMod()}+K)`);
 
@@ -370,6 +327,30 @@ export class Header {
     return items;
   });
 
+  constructor() {
+    // Close the sheet on any successful navigation — covers programmatic nav and
+    // browser back/forward, not just the link taps wired in the template.
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.closeMenu());
+
+    // Lock background scroll while the full-screen sheet is open (effects run in
+    // the browser only, so this never touches the SSR document).
+    effect(() => {
+      const open = this.menuOpen();
+      if (this.document.defaultView) {
+        this.document.body.style.overflow = open ? 'hidden' : '';
+      }
+    });
+  }
+
+  setLang(lang: Locale): void {
+    this.localeService.setLocale(lang);
+  }
+
   onWindowScroll(): void {
     if (typeof window === 'undefined') return;
     const next = window.scrollY > SCROLL_THRESHOLD;
@@ -386,3 +367,5 @@ export class Header {
     if (this.menuOpen()) this.menuOpen.set(false);
   }
 }
+
+export type { NavItem } from './header.types';

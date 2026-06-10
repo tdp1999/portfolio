@@ -10,17 +10,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { ScrollEdgeFadeDirective } from '../../directives/scroll-edge-fade';
+import { SCRIM_CLEARANCE } from './segmented.data';
+import type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
 
-/** Keep the active tab this many px clear of the scrim chevrons when scrolled into view. */
-const SCRIM_CLEARANCE = 56;
-
-export interface SegmentOption {
-  readonly id: string;
-  readonly label: string;
-  readonly disabled?: boolean;
-}
-
-export type LandingSegmentedVariant = 'apple' | 'hairline' | 'underline';
+export type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
 
 @Component({
   selector: 'landing-segmented',

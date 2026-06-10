@@ -1,15 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Container, Breadcrumb, ThemeToggle, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-
-interface PrimaryItem {
-  label: string;
-  index: string;
-  active?: boolean;
-}
-interface SecondaryItem {
-  label: string;
-  hint: string;
-}
+import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
 
 /**
  * DDL · Mobile nav — design directions for the `< tablet` full-screen nav sheet.
@@ -365,19 +356,8 @@ interface SecondaryItem {
   ],
 })
 export class DdlMobileNav {
+  // ── Properties ─────────────────────────────────────────────────────
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Mobile nav' }];
-
-  readonly primary: readonly PrimaryItem[] = [
-    { label: 'Home', index: '01', active: true },
-    { label: 'About', index: '02' },
-    { label: 'Projects', index: '03' },
-    { label: 'Blog', index: '04' },
-  ];
-
-  readonly secondary: readonly SecondaryItem[] = [
-    { label: 'Uses', hint: 'tools' },
-    { label: 'Contact', hint: 'reach me' },
-    { label: 'Colophon', hint: 'behind the build' },
-    { label: 'DDL', hint: 'sandbox' },
-  ];
+  readonly primary = PRIMARY_ITEMS;
+  readonly secondary = SECONDARY_ITEMS;
 }

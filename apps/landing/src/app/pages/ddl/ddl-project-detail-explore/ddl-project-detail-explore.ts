@@ -14,57 +14,17 @@ import {
   Segmented,
   ShowMore,
   type BreadcrumbItem,
-  type InPageSection,
-  type SegmentOption,
 } from '@portfolio/landing/shared/ui';
-
-type AspectRatio = '4-3' | '3-2' | '16-9' | '21-9' | 'natural-capped';
-type Layout = 'current' | 'toc-right-strip' | 'toc-right-bundled' | 'three-col';
-
-const ASPECT_OPTIONS: readonly SegmentOption[] = [
-  { id: '4-3', label: '4 : 3' },
-  { id: '3-2', label: '3 : 2' },
-  { id: '16-9', label: '16 : 9' },
-  { id: '21-9', label: '21 : 9' },
-  { id: 'natural-capped', label: 'Natural · capped' },
-];
-
-const LAYOUT_OPTIONS: readonly SegmentOption[] = [
-  { id: 'current', label: 'Current · meta+TOC left' },
-  { id: 'toc-right-strip', label: 'TOC right · meta strip' },
-  { id: 'toc-right-bundled', label: 'TOC right · meta bundled' },
-  { id: 'three-col', label: '3-col · meta L · TOC R' },
-];
-
-const SECTIONS: readonly InPageSection[] = [
-  { id: 'overview', title: 'Overview', level: 2 },
-  { id: 'overview-context', title: 'Context', level: 3 },
-  { id: 'overview-scope', title: 'Scope', level: 3 },
-  { id: 'motivation', title: 'Motivation', level: 2 },
-  { id: 'role', title: 'My role', level: 2 },
-  { id: 'role-backend', title: 'Backend', level: 3 },
-  { id: 'role-backend-api', title: 'API layer', level: 4 },
-  { id: 'role-backend-db', title: 'Database', level: 4 },
-  { id: 'role-frontend', title: 'Frontend', level: 3 },
-  { id: 'role-frontend-state', title: 'State machine', level: 4 },
-  { id: 'highlights', title: 'Highlights', level: 2 },
-  { id: 'stack-notes', title: 'Stack notes', level: 2 },
-  { id: 'lessons', title: 'Lessons', level: 2 },
-];
-
-const LOREM =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus pronin sapien nunc accuan eget.';
-
-const SKILLS: readonly string[] = ['TypeScript', 'Angular', 'Nx', 'Tailwind', 'NestJS', 'Postgres'];
-
-const COVER_URL = 'https://picsum.photos/id/180/2400/1350';
-
-const META_ROWS = [
-  { label: 'Role', value: 'Lead developer · solo' },
-  { label: 'Stack', value: 'TypeScript · Angular · Nx · Tailwind · NestJS · Postgres' },
-  { label: 'Year', value: '2025 → Present' },
-  { label: 'Status', value: 'Live' },
-] as const;
+import type { AspectRatio, Layout } from './ddl-project-detail-explore.types';
+import {
+  ASPECT_OPTIONS,
+  LAYOUT_OPTIONS,
+  SECTIONS,
+  LOREM,
+  SKILLS,
+  COVER_URL,
+  META_ROWS,
+} from './ddl-project-detail-explore.data';
 
 @Component({
   selector: 'landing-ddl-project-detail-explore',
@@ -89,8 +49,10 @@ const META_ROWS = [
   styleUrl: './ddl-project-detail-explore.scss',
 })
 export class DdlProjectDetailExplore {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly scrollspy = inject(LandingScrollspyService);
 
+  // ── Properties ─────────────────────────────────────────────────────
   readonly aspectOptions = ASPECT_OPTIONS;
   readonly layoutOptions = LAYOUT_OPTIONS;
   readonly sections = SECTIONS;
@@ -111,6 +73,7 @@ export class DdlProjectDetailExplore {
     { label: 'Project Detail Explore' },
   ];
 
+  // ── State ──────────────────────────────────────────────────────────
   readonly aspect = signal<AspectRatio>('16-9');
   readonly layout = signal<Layout>('toc-right-strip');
 

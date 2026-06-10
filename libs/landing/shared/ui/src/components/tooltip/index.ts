@@ -1,1 +1,2 @@
-export { Tooltip, type LandingTooltipPosition, type LandingTooltipAlign } from './tooltip';
+export { Tooltip } from './tooltip';
+export type { LandingTooltipAlign, LandingTooltipPosition } from './tooltip.types';

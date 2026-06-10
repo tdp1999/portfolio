@@ -57,13 +57,6 @@ export class MarkdownEditor implements ControlValueAccessor, MarkdownEditorApi {
 
   private initialized = false;
 
-  private onChange: (value: string) => void = () => {
-    // No-op
-  };
-  protected onTouched: () => void = () => {
-    // No-op
-  };
-
   constructor() {
     // Apply initialContent once on first read; subsequent updates should go
     // through setContent() / formControl writes so the editor stays the source
@@ -78,6 +71,13 @@ export class MarkdownEditor implements ControlValueAccessor, MarkdownEditorApi {
       }
     });
   }
+
+  private onChange: (value: string) => void = () => {
+    // No-op
+  };
+  protected onTouched: () => void = () => {
+    // No-op
+  };
 
   setContent(markdown: string): void {
     this.content.set(markdown ?? '');

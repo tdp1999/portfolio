@@ -1,45 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Chip, Container, Eyebrow, Breadcrumb, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-
-type Skill = {
-  readonly name: string;
-  readonly icon: string;
-};
-
-/**
- * DDL-ONLY: Iconify CDN URL builder. Production will not use this — `Skill.iconUrl`
- * comes from Cloudinary via the existing MediaPicker pipeline (single Media-driven
- * source of truth, matches `Skill.iconId` schema). CDN here is a prototype shortcut
- * so the page renders real-looking brand chips without seeding Cloudinary yet.
- */
-const ICONIFY = 'https://api.iconify.design';
-const url = (slug: string, color?: string) =>
-  color ? `${ICONIFY}/${slug}.svg?color=${encodeURIComponent('#' + color)}` : `${ICONIFY}/${slug}.svg`;
-
-const SKILLS = {
-  daily: [
-    { name: 'Angular', icon: url('logos:angular-icon') },
-    { name: 'TypeScript', icon: url('logos:typescript-icon') },
-    { name: 'Angular Material', icon: url('logos:material-design-icon') },
-  ] as readonly Skill[],
-  frequent: [
-    { name: 'RxJS', icon: url('logos:reactivex') },
-    { name: 'Signals', icon: url('simple-icons:angular', 'DD0031') },
-    { name: 'SSR', icon: url('simple-icons:webcomponentsdotorg', 'A78BFA') },
-    { name: 'TipTap', icon: url('simple-icons:tldraw', 'FFFFFF') },
-    { name: 'Tailwind', icon: url('logos:tailwindcss-icon') },
-    { name: 'SCSS', icon: url('logos:sass') },
-    { name: 'NestJS', icon: url('logos:nestjs') },
-    { name: 'Prisma', icon: url('simple-icons:prisma', 'B8C5D6') },
-    { name: 'Postgres', icon: url('logos:postgresql') },
-  ] as readonly Skill[],
-  shipped: [
-    { name: 'Nx', icon: url('logos:nx') },
-    { name: 'Jest', icon: url('logos:jest') },
-    { name: 'Playwright', icon: url('logos:playwright') },
-    { name: 'Claude Code', icon: url('simple-icons:anthropic', 'D97757') },
-  ] as readonly Skill[],
-} as const;
+import { SKILLS } from './ddl-stack.data';
 
 @Component({
   selector: 'landing-ddl-stack',
@@ -723,9 +684,11 @@ const SKILLS = {
   ],
 })
 export class DdlStack {
+  // ── Properties ─────────────────────────────────────────────────────
   readonly skills = SKILLS;
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Stack — proposal' }];
 
+  // ── Methods ────────────────────────────────────────────────────────
   protected replay(host: HTMLElement): void {
     const animations = host.getAnimations?.({ subtree: true });
     if (!animations) return;

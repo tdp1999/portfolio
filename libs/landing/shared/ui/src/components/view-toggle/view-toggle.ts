@@ -1,15 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Tooltip } from '../tooltip';
-
-export interface ViewToggleOption {
-  readonly id: string;
-  readonly label: string;
-  /** Icon name registered in the icon provider. */
-  readonly icon: string;
-  /** Longer description shown in the hover/focus tooltip. Falls back to `label` if omitted. */
-  readonly description?: string;
-}
+import type { ViewToggleOption } from './view-toggle.types';
 
 /**
  * Icon segmented control for switching between feed layouts (row / grid / timeline).
@@ -117,3 +109,5 @@ export class ViewToggle {
     this.valueChange.emit(id);
   }
 }
+
+export type { ViewToggleOption } from './view-toggle.types';

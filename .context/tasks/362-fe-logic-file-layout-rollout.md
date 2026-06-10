@@ -1,6 +1,6 @@
 # Task: Roll out FE logic/component file-layout standard
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Bring every FE `.ts` component/directive/injectable in line with the new file-layout standard (member order, access/readonly, naming, file purity, orphan extraction) — beyond the doc + warning-level lint already shipped.
@@ -24,7 +24,7 @@ Enforcement is **warning-only by design** — no CI block, no Prettier action, n
 - [x] No behavior change — pure structural refactor (spot-check a migrated page renders identically). User spot-checked: renders as before.
 - [ ] **Repo-wide lint clean (added 2026-06-10).** `pnpm lint` across all projects shows 0 errors, 0 warnings.
   - [x] **Phase 1 — genuine pre-existing issues** (30 errors + ~43 warnings, independent of the new rules): a11y templates (keyboard handlers + `tabindex`/`role`), `table-scope`/`label`/`eqeqeq`/`no-inferrable-types`/`no-irregular-whitespace`, private-field `_`-prefix renames (→ `…Signal` when colliding with a public readonly view), unused-import removal, non-null assertions → safe guards, 2 scoped module-boundary disables. Plus B3 config relaxations (below). Verified: only `fe-file-layout/*` + `member-ordering` warnings remain; both apps `tsc` clean.
-  - [ ] **Phase 2 — new-rule migration sweep** (`fe-file-layout/file-purity` ~490 + `member-ordering` ~170, across ~157 FE files): the deferred "sweep the rest incrementally" — extract module-scope orphans into role siblings + reorder members. Warning-only, no CI block.
+  - [x] **Phase 2 — new-rule migration sweep** (done 2026-06-10). Refined `fe-file-layout/file-purity` to fire only on files that contain an Angular-decorated class (§16.1 is "A component file holds only the class" — pure util/types/const modules and functional guards/interceptors have no class to keep pure), clearing ~40 false positives. Migrated the remaining 123 component/directive/service/pipe files: extracted module-scope orphans into `.types`/`.data`/`.util`/`.constants`/`.tokens` siblings (public orphans kept as bare re-exports or barrel-resolved) + reordered members to field→constructor→method. ~160 new sibling role files. **Result: `pnpm lint` across all 38 projects = 0 errors, 0 warnings; both apps `tsc --noEmit` clean.**
 
 ## Technical Notes
 - Standard is the source of truth: `angular-style-guide.md §16` + `patterns-file-structure.md §5.5`. Do not re-derive.

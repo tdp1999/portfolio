@@ -1,1 +1,2 @@
-export * from './status-dot';
+export { StatusDot } from './status-dot';
+export type { LandingStatusDotState, LandingStatusDotVariant } from './status-dot.types';

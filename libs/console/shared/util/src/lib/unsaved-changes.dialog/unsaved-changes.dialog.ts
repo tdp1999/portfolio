@@ -1,27 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { CanDeactivateFn } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import type { UnsavedChangesDialogData } from './unsaved-changes.dialog.types';
 
-// ---------------------------------------------------------------------------
-// Public interface — components must implement this
-// ---------------------------------------------------------------------------
-
-export interface HasUnsavedChanges {
-  hasUnsavedChanges(): boolean | Signal<boolean>;
-  onSaveAndContinue?(): Promise<boolean>;
-}
-
-// ---------------------------------------------------------------------------
-// Unsaved-changes dialog (3-action: Stay / Discard / Save & Continue)
-// ---------------------------------------------------------------------------
-
-export type UnsavedChangesResult = 'stay' | 'discard' | 'save';
-
-interface UnsavedChangesDialogData {
-  showSave: boolean;
-}
+export type { HasUnsavedChanges, UnsavedChangesResult, UnsavedChangesDialogData } from './unsaved-changes.dialog.types';
+export { unsavedChangesGuard, onBeforeUnload } from './unsaved-changes.dialog.util';
 
 @Component({
   selector: 'console-unsaved-changes-dialog',
@@ -43,51 +26,21 @@ interface UnsavedChangesDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnsavedChangesDialog {
+  // ── DI ───────────────────────────────────────────────────────────────
   readonly data = inject<UnsavedChangesDialogData>(MAT_DIALOG_DATA);
   readonly dialogRef = inject(MatDialogRef<UnsavedChangesDialog>);
-}
 
-// ---------------------------------------------------------------------------
-// Functional CanDeactivate guard
-// ---------------------------------------------------------------------------
+  // ── Inputs ────────────────────────────────────────────────────────────
 
-export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = async (component) => {
-  const dirty = component.hasUnsavedChanges();
-  const isDirty = typeof dirty === 'function' ? (dirty as Signal<boolean>)() : dirty;
+  // ── Outputs ───────────────────────────────────────────────────────────
 
-  if (!isDirty) return true;
+  // ── Queries ───────────────────────────────────────────────────────────
 
-  const dialog = inject(MatDialog);
-  const showSave = typeof component.onSaveAndContinue === 'function';
+  // ── Writable signals ──────────────────────────────────────────────────
 
-  const result = await firstValueFrom(
-    dialog
-      .open<
-        UnsavedChangesDialog,
-        UnsavedChangesDialogData,
-        UnsavedChangesResult
-      >(UnsavedChangesDialog, { data: { showSave }, disableClose: true })
-      .afterClosed()
-  );
+  // ── Derived ───────────────────────────────────────────────────────────
 
-  if (result === 'discard') return true;
+  // ── Forms ─────────────────────────────────────────────────────────────
 
-  if (result === 'save' && component.onSaveAndContinue) {
-    return component.onSaveAndContinue();
-  }
-
-  // 'stay' or dialog dismissed
-  return false;
-};
-
-// ---------------------------------------------------------------------------
-// beforeunload helper — call in component constructor via effect or HostListener
-// ---------------------------------------------------------------------------
-
-export function onBeforeUnload(event: BeforeUnloadEvent, isDirty: boolean): void {
-  if (isDirty) {
-    event.preventDefault();
-    // Modern browsers ignore custom messages but require returnValue to be set
-    event.returnValue = '';
-  }
+  // ── Plain state ───────────────────────────────────────────────────────
 }

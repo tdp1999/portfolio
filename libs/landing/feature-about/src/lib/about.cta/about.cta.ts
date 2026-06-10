@@ -3,23 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { Container, Eyebrow, Heading, Link, LandingLocaleService } from '@portfolio/landing/shared/ui';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-
-type CtaItem = {
-  readonly id: 'contact' | 'linkedin' | 'github' | 'cv';
-  readonly labelEn: string;
-  readonly labelVi: string;
-  readonly href: string;
-  readonly kind?: 'internal' | 'external' | 'download';
-};
-
-const DEFAULT_HEADING_BY_LOCALE = {
-  en: 'If any of this resonated, the door is open.',
-  vi: 'Nếu bạn thấy hợp, cứ gõ cửa.',
-} as const;
-const DEFAULT_LEDE_BY_LOCALE = {
-  en: 'Engagement, freelance, or a long-form conversation about a hard system — pick the door that fits.',
-  vi: 'Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.',
-} as const;
+import { DEFAULT_HEADING_BY_LOCALE, DEFAULT_LEDE_BY_LOCALE } from './about.cta.data';
+import type { CtaItem } from './about.cta.types';
 
 /**
  * About → §04 What's next. Closing CTA section: one prompt line + a row of

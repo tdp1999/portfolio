@@ -40,6 +40,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   styleUrl: './textarea.scss',
 })
 export class Textarea implements ControlValueAccessor {
+  // ── Inputs ────────────────────────────────────────────────────────
   readonly placeholder = input<string>('');
   readonly rows = input<number>(4);
   readonly hasError = input<boolean>(false);
@@ -48,7 +49,17 @@ export class Textarea implements ControlValueAccessor {
   readonly maxLength = input<number | null>(null);
   readonly ariaDescribedBy = input<string>('');
 
+  // ── Writable state ────────────────────────────────────────────────
   protected readonly value = signal<string>('');
+
+  // ── Derived ───────────────────────────────────────────────────────
+  protected readonly textareaClasses = computed(() => {
+    const classes = ['textarea'];
+    if (this.hasError()) classes.push('textarea--error');
+    return classes.join(' ');
+  });
+
+  // ── CVA callbacks ─────────────────────────────────────────────────
   protected onChange: (value: string) => void = () => {
     /* empty */
   };
@@ -56,12 +67,7 @@ export class Textarea implements ControlValueAccessor {
     /* empty */
   };
 
-  protected readonly textareaClasses = computed(() => {
-    const classes = ['textarea'];
-    if (this.hasError()) classes.push('textarea--error');
-    return classes.join(' ');
-  });
-
+  // ── Methods ───────────────────────────────────────────────────────
   protected onInput(event: Event): void {
     const el = event.target as HTMLTextAreaElement;
     this.value.set(el.value);

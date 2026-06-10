@@ -72,13 +72,6 @@ export class Input implements ControlValueAccessor {
 
   protected readonly value = signal<string>('');
   protected readonly showClearButton = computed(() => this.clearable() && !this.disabled() && this.value().length > 0);
-  protected onChange: (value: string) => void = () => {
-    /* empty */
-  };
-  protected onTouched: () => void = () => {
-    /* empty */
-  };
-
   protected readonly inputClasses = computed(() => {
     const classes = ['input'];
     if (this.error() || this.hasError()) {
@@ -86,6 +79,12 @@ export class Input implements ControlValueAccessor {
     }
     return classes.join(' ');
   });
+  protected onChange: (value: string) => void = () => {
+    /* empty */
+  };
+  protected onTouched: () => void = () => {
+    /* empty */
+  };
 
   protected onInput(event: Event): void {
     const inputElement = event.target as HTMLInputElement;

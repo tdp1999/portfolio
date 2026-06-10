@@ -1,9 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
-const MINUTE = 60 * 1000;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
-const WEEK = 7 * DAY;
+import { MINUTE, HOUR, DAY, WEEK } from './relative-time.pipe.constants';
 
 @Pipe({ name: 'relativeTime', standalone: true })
 export class RelativeTimePipe implements PipeTransform {

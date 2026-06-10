@@ -2,12 +2,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, forwardRef, input
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-
-export interface SegmentedControlOption {
-  value: string;
-  label: string;
-  icon?: string;
-}
+import type { SegmentedControlOption } from './segmented-control.types';
 
 @Component({
   selector: 'console-segmented-control',
@@ -63,3 +58,5 @@ export class SegmentedControl implements ControlValueAccessor {
     this.onTouched();
   }
 }
+
+export type { SegmentedControlOption } from './segmented-control.types';

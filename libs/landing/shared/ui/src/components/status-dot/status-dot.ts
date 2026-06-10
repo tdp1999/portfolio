@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import type { LandingStatusDotState, LandingStatusDotVariant } from './status-dot.types';
 
-export type LandingStatusDotState = 'available' | 'busy' | 'away';
-export type LandingStatusDotVariant = 'pill' | 'bare';
+export type { LandingStatusDotState, LandingStatusDotVariant } from './status-dot.types';
 
 @Component({
   selector: 'landing-status-dot',

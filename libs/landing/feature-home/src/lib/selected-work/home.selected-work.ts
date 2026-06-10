@@ -12,8 +12,7 @@ import { ProjectDataService, type ProjectDetailData } from '@portfolio/landing/s
 import type { Locale } from '@portfolio/shared/types';
 import { HomeSelectedWorkTab } from './home.selected-work-tab';
 import { HomeSelectedWorkFallback } from './home.selected-work-fallback';
-
-const MAX_TABS = 3;
+import { MAX_TABS } from './home.selected-work.data';
 
 @Component({
   selector: 'landing-home-selected-work',

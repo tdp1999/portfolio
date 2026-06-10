@@ -17,8 +17,7 @@ import { readableSize } from '@portfolio/shared/ui/pipes';
 import { UploadRow } from './upload-row';
 import type { UploadFn, UploadRowState } from './asset-upload-zone.types';
 import { HttpErrorResponse } from '@angular/common/http';
-
-let nextId = 0;
+import { getNextUploadId } from './asset-upload-zone.util';
 
 @Component({
   selector: 'console-asset-upload-zone',
@@ -127,7 +126,7 @@ export class AssetUploadZone implements OnDestroy {
     if (errors.length) this.validationErrors.set(errors);
 
     for (const file of valid) {
-      const id = `upload-${++nextId}`;
+      const id = getNextUploadId();
       this.rows.update((rs) => [...rs, { id, file, state: 'uploading', progress: 0 }]);
       this.startUpload(id, file);
     }

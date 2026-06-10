@@ -7,16 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { FormErrorPipe } from '@portfolio/console/shared/util';
-
-const MONTH_YEAR_FORMATS = {
-  parse: { dateInput: { month: 'numeric', year: 'numeric' } },
-  display: {
-    dateInput: { month: '2-digit', year: 'numeric' },
-    monthYearLabel: { month: 'short', year: 'numeric' },
-    dateA11yLabel: { month: 'long', year: 'numeric' },
-    monthYearA11yLabel: { month: 'long', year: 'numeric' },
-  },
-};
+import { MONTH_YEAR_FORMATS } from './month-year-picker.constants';
 
 /**
  * Month-year picker for "duration / period" fields (Experience, Project start/end).

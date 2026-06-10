@@ -1,14 +1,27 @@
 import { Injectable, signal } from '@angular/core';
 import { Toast, ToastType } from './toast.model';
-
-const DEFAULT_DURATION = 5000;
-
-let nextId = 0;
+import { DEFAULT_DURATION } from './toast.data';
+import { getNextToastId } from './toast.util';
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
+  // ── DI ───────────────────────────────────────────────────────────────
+
+  // ── Inputs ────────────────────────────────────────────────────────────
+
+  // ── Outputs ───────────────────────────────────────────────────────────
+
+  // ── Queries ───────────────────────────────────────────────────────────
+
+  // ── Writable signals ──────────────────────────────────────────────────
   private readonly toastsSignal = signal<Toast[]>([]);
   readonly toasts = this.toastsSignal.asReadonly();
+
+  // ── Derived ───────────────────────────────────────────────────────────
+
+  // ── Forms ─────────────────────────────────────────────────────────────
+
+  // ── Plain state ───────────────────────────────────────────────────────
 
   success(message: string, duration = DEFAULT_DURATION): void {
     this.add(message, 'success', duration);
@@ -31,7 +44,7 @@ export class ToastService {
   }
 
   private add(message: string, type: ToastType, duration: number): void {
-    const id = `toast-${++nextId}`;
+    const id = getNextToastId();
     const toast: Toast = { id, message, type, duration };
     this.toastsSignal.update((toasts) => [...toasts, toast]);
   }

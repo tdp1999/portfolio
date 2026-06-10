@@ -1,17 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-const ERROR_CONFIG: Record<string, { title: string; description: string }> = {
-  '403': { title: 'Access Denied', description: 'You do not have permission to view this page.' },
-  '404': { title: 'Not Found', description: 'The page you are looking for does not exist.' },
-  '500': {
-    title: 'Server Error',
-    description: 'Something went wrong on our end. Please try again later.',
-  },
-};
-
-const DEFAULT_ERROR = { title: 'Error', description: 'An unexpected error occurred.' };
+import { DEFAULT_ERROR, ERROR_CONFIG } from './error.data';
 
 @Component({
   selector: 'console-error',
@@ -31,9 +21,13 @@ const DEFAULT_ERROR = { title: 'Error', description: 'An unexpected error occurr
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Error {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly document = inject(DOCUMENT);
 
+  // ── Inputs ────────────────────────────────────────────────────────
   code = input.required<string>();
+
+  // ── Derived ───────────────────────────────────────────────────────
   config = computed(() => ERROR_CONFIG[this.code()] ?? DEFAULT_ERROR);
 
   refresh(): void {

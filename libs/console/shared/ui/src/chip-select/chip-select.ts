@@ -2,12 +2,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, forwardRef, input
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-
-export interface ChipSelectOption {
-  value: string;
-  label: string;
-  icon?: string;
-}
+import type { ChipSelectOption } from './chip-select.types';
 
 @Component({
   selector: 'console-chip-select',

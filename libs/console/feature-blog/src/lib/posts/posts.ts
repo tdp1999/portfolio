@@ -16,7 +16,6 @@ import {
   FilterBar,
   FilterSearch,
   FilterSelect,
-  type FilterOption,
   ProgressBarService,
   RelativeTime,
   SkeletonTable,
@@ -30,13 +29,7 @@ import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/
 import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
 import { AdminBlogPostListItem, BlogStatus } from '../blog.types';
-
-const STATUS_OPTIONS: FilterOption[] = [
-  { value: 'PUBLISHED', label: 'Published' },
-  { value: 'DRAFT', label: 'Draft' },
-  { value: 'UNLISTED', label: 'Unlisted' },
-  { value: 'PRIVATE', label: 'Private' },
-];
+import { STATUS_OPTIONS } from './posts.data';
 
 @Component({
   selector: 'console-posts',
@@ -63,29 +56,33 @@ const STATUS_OPTIONS: FilterOption[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Posts implements OnInit {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly blogService = inject(BlogService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly progress = inject(ProgressBarService);
 
+  // ── Queries ───────────────────────────────────────────────────────
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'updatedAt', 'actions'];
 
+  // ── Writable signals ──────────────────────────────────────────────
   readonly posts = signal<AdminBlogPostListItem[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
-  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly status = signal('');
-  readonly statusOptions = STATUS_OPTIONS;
-
-  readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
   readonly showDeleted = signal(false);
   readonly sortBy = signal('updatedAt');
   readonly sortDir = signal<'asc' | 'desc'>('desc');
+
+  // ── Plain state ───────────────────────────────────────────────────
+  readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'updatedAt', 'actions'];
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+  readonly statusOptions = STATUS_OPTIONS;
+  readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
 
   ngOnInit(): void {
     this.loadPosts();

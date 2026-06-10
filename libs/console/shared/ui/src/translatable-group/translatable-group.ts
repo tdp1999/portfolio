@@ -3,16 +3,10 @@ import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormErrorPipe } from '@portfolio/console/shared/util';
+import { DEFAULT_LANGUAGES } from './translatable-group.data';
+import type { LanguageConfig } from './translatable-group.types';
 
-export interface LanguageConfig {
-  key: string;
-  label: string;
-}
-
-const DEFAULT_LANGUAGES: LanguageConfig[] = [
-  { key: 'en', label: 'EN' },
-  { key: 'vi', label: 'VI' },
-];
+export type { LanguageConfig } from './translatable-group.types';
 
 /**
  * Accepts any `AbstractControl` and narrows to `FormGroup` at runtime via `instanceof`.

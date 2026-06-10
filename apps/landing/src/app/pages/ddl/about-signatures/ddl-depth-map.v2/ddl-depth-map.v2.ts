@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import type { PublicSkill, SkillTier, SkillTierGroup } from '@portfolio/landing/shared/data-access';
+import type { SkillTierGroup } from '@portfolio/landing/shared/data-access';
+import type { RingNode } from './ddl-depth-map.v2.types';
+import { RING, CX, CY } from './ddl-depth-map.v2.data';
+import { placeOnRing } from './ddl-depth-map.v2.util';
 
 /**
  * Depth Map · V2 — Concentric rings (SVG).
@@ -13,25 +16,6 @@ import type { PublicSkill, SkillTier, SkillTierGroup } from '@portfolio/landing/
  * rotation reads "clockwise from top" — easier mental model than the default
  * math convention.
  */
-
-type RingNode = {
-  readonly id: string;
-  readonly name: string;
-  readonly iconUrl: string | null;
-  readonly proficiencyNote: string | null;
-  readonly x: number;
-  readonly y: number;
-  readonly anchor: 'start' | 'middle' | 'end';
-};
-
-const RING: Record<SkillTier, number> = {
-  DAILY: 80,
-  FREQUENT: 180,
-  SHIPPED: 260,
-};
-
-const CX = 300;
-const CY = 300;
 
 @Component({
   selector: 'landing-ddl-depth-map-v2',
@@ -239,28 +223,10 @@ export class DdlDepthMapV2 {
   protected readonly frequentNodes = computed(() => this.nodesForTier('FREQUENT'));
   protected readonly shippedNodes = computed(() => this.nodesForTier('SHIPPED'));
 
-  private nodesForTier(tier: SkillTier): readonly RingNode[] {
+  private nodesForTier(tier: 'DAILY' | 'FREQUENT' | 'SHIPPED'): readonly RingNode[] {
     const group = this.groups().find((g) => g.tier === tier);
     if (!group) return [];
     const r = RING[tier];
     return group.members.map((s, i) => placeOnRing(s, i, group.members.length, r));
   }
-}
-
-function placeOnRing(skill: PublicSkill, index: number, total: number, radius: number): RingNode {
-  const angle = (index / Math.max(total, 1)) * 2 * Math.PI - Math.PI / 2;
-  const x = CX + radius * Math.cos(angle);
-  const y = CY + radius * Math.sin(angle);
-  // Anchor text away from the center so long labels don't overlap the rings.
-  const cosA = Math.cos(angle);
-  const anchor: RingNode['anchor'] = cosA > 0.3 ? 'start' : cosA < -0.3 ? 'end' : 'middle';
-  return {
-    id: skill.id,
-    name: skill.name,
-    iconUrl: skill.iconUrl,
-    proficiencyNote: skill.proficiencyNote,
-    x,
-    y,
-    anchor,
-  };
 }

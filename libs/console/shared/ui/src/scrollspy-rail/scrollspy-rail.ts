@@ -12,14 +12,8 @@ import {
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SectionDescriptor, SectionStatus } from './scrollspy-rail.types';
-
-const STATUS_ICONS: Record<string, string> = {
-  saved: '✓',
-  editing: '●',
-  error: '⚠',
-  untouched: '○',
-};
+import { STATUS_ICONS } from './scrollspy-rail.constants';
+import type { SectionDescriptor, SectionStatus } from './scrollspy-rail.types';
 
 @Component({
   selector: 'console-scrollspy-rail',

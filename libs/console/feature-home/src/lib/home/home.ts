@@ -3,18 +3,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthStore } from '@portfolio/console/shared/data-access';
-
-interface DashboardStat {
-  label: string;
-  value: number;
-  icon: string;
-}
-
-interface ActivityItem {
-  icon: string;
-  description: string;
-  timestamp: string;
-}
+import { ACTIVITIES, STATS } from './home.data';
+import type { ActivityItem, DashboardStat } from './home.types';
 
 @Component({
   selector: 'console-home',
@@ -111,20 +101,13 @@ interface ActivityItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly authStore = inject(AuthStore);
 
+  // ── Derived ───────────────────────────────────────────────────────
   readonly userName = computed(() => this.authStore.user()?.name?.split(' ')[0] ?? 'User');
 
-  readonly stats: DashboardStat[] = [
-    { label: 'Total Posts', value: 24, icon: 'article' },
-    { label: 'Media Files', value: 156, icon: 'perm_media' },
-    { label: 'Published', value: 18, icon: 'check_circle' },
-    { label: 'Drafts', value: 6, icon: 'edit_note' },
-  ];
-
-  readonly activities: ActivityItem[] = [
-    { icon: 'publish', description: "Published 'Getting Started with NestJS'", timestamp: '2 hours ago' },
-    { icon: 'upload_file', description: 'Uploaded 3 new media files', timestamp: '5 hours ago' },
-    { icon: 'edit', description: "Updated 'Angular Signals Deep Dive' draft", timestamp: 'Yesterday' },
-  ];
+  // ── Plain state ───────────────────────────────────────────────────
+  readonly stats: DashboardStat[] = STATS;
+  readonly activities: ActivityItem[] = ACTIVITIES;
 }

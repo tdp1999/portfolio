@@ -2,13 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Container, Eyebrow, Heading, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
 import { PrincipleService, type PublicAboutPrinciple } from '@portfolio/landing/shared/data-access';
-
-interface RenderedPrinciple {
-  id: string;
-  number: string;
-  claim: string;
-  expansion: string;
-}
+import type { RenderedPrinciple } from './about.how-i-think.types';
 
 @Component({
   selector: 'landing-about-how-i-think',

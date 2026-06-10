@@ -9,11 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-
-/** Width of the fade ramp at a scrollable edge, in px. */
-const FADE_PX = 24;
-/** Fraction of the viewport to advance per `scrollStep()` call. */
-const STEP_FRACTION = 0.8;
+import { FADE_PX, STEP_FRACTION } from './scroll-edge-fade.constants';
 
 /**
  * Fades the edge(s) of a scrollable element that have content out of view, so a

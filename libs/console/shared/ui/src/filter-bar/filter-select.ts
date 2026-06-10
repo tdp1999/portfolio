@@ -1,11 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-
-export interface FilterOption {
-  value: string;
-  label: string;
-}
+import type { FilterOption } from './filter-select.types';
 
 @Component({
   selector: 'console-filter-select',

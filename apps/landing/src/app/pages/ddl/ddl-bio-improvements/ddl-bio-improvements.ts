@@ -12,6 +12,8 @@ import {
   StatusDot,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
+import type { CopyState, BleedId, HoursId } from './ddl-bio-improvements.types';
+import { HOURS_FROM, HOURS_TO } from './ddl-bio-improvements.data';
 
 /**
  * /ddl/bio-improvements — option staging for the home §3 Bio Card Grid refinement pass.
@@ -28,14 +30,6 @@ import {
  * `/ddl/interactions`. Once all picks are graduated to production, delete this page.
  */
 
-type CopyState = 'idle' | 'copied';
-
-type BleedId = 'b1' | 'b2' | 'b3' | 'b4' | 'b5';
-type HoursId = 'slot' | 'digit' | 'type' | 'crossfade' | 'scramble';
-
-const HOURS_FROM = '09:00–18:00 ICT';
-const HOURS_TO = '08:00–17:00 GMT-1';
-
 @Component({
   selector: 'landing-ddl-bio-improvements',
   standalone: true,
@@ -45,9 +39,6 @@ const HOURS_TO = '08:00–17:00 GMT-1';
   styleUrl: './ddl-bio-improvements.scss',
 })
 export class DdlBioImprovements {
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly document = inject(DOCUMENT);
-
   readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Bio improvements' }];
 
   readonly demo = {
@@ -99,6 +90,7 @@ export class DdlBioImprovements {
       picked: true,
     },
   ];
+
   readonly activeBleed = signal<BleedId>('b5');
 
   /* ============================== §C · HOURS roulette ============================== */
@@ -109,6 +101,7 @@ export class DdlBioImprovements {
     { id: 'crossfade' as const, label: 'C4 · Crossfade + blur', hint: 'Blur out, blur in.', picked: false },
     { id: 'scramble' as const, label: 'C5 · Scramble', hint: 'Random chars rồi resolve.', picked: false },
   ];
+
   readonly hoursState: Record<HoursId, ReturnType<typeof signal<string>>> = {
     slot: signal(HOURS_FROM),
     digit: signal(HOURS_FROM),
@@ -116,7 +109,55 @@ export class DdlBioImprovements {
     crossfade: signal(HOURS_FROM),
     scramble: signal(HOURS_FROM),
   };
+
   readonly hoursAnimating = signal<HoursId | null>(null);
+
+  /* ============================== §D · Email copy ============================== */
+  readonly emailCopyState = signal<CopyState>('idle');
+
+  /* ============================== §E · Hover shadow ============================== */
+  readonly shadowVariants = [
+    { id: 'e1' as const, label: 'E1 · Rim only (no shadow)', hint: 'Accent rim 1px + subtle lift.', picked: false },
+    { id: 'e2' as const, label: 'E2 · Soft shadow + rim', hint: 'Theme-aware shadow + rim.', picked: false },
+    {
+      id: 'e3' as const,
+      label: 'E3 · Theme-mixed glow',
+      hint: 'Accent glow color-mix, không shadow tối.',
+      picked: true,
+    },
+  ];
+
+  /* ============================== §F · Social icons in Card C ============================== */
+  readonly socialIcons = [
+    { icon: 'github', label: 'GitHub', url: '#' },
+    { icon: 'linkedin', label: 'LinkedIn', url: '#' },
+    { icon: 'twitter', label: 'Twitter', url: '#' },
+    { icon: 'globe', label: 'Website', url: '#' },
+  ];
+
+  readonly socialVariants = [
+    {
+      id: 'f1' as const,
+      label: 'F1 · Below "Connect now"',
+      hint: 'Icon row max 4, dưới link. Vẫn giữ CTA tường minh.',
+      picked: true,
+    },
+    {
+      id: 'f2' as const,
+      label: 'F2 · Replace "Connect now"',
+      hint: 'Bỏ link, chỉ còn icon row.',
+      picked: false,
+    },
+    {
+      id: 'f3' as const,
+      label: 'F3 · Icons primary + link fallback',
+      hint: 'Icon row trên, "Connect now →" ở dưới.',
+      picked: false,
+    },
+  ];
+
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject(DOCUMENT);
 
   triggerHours(id: HoursId): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -175,9 +216,6 @@ export class DdlBioImprovements {
     }
   }
 
-  /* ============================== §D · Email copy ============================== */
-  readonly emailCopyState = signal<CopyState>('idle');
-
   async copyEmail(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
     try {
@@ -189,44 +227,4 @@ export class DdlBioImprovements {
       // Silent fail — DDL only.
     }
   }
-
-  /* ============================== §E · Hover shadow ============================== */
-  readonly shadowVariants = [
-    { id: 'e1' as const, label: 'E1 · Rim only (no shadow)', hint: 'Accent rim 1px + subtle lift.', picked: false },
-    { id: 'e2' as const, label: 'E2 · Soft shadow + rim', hint: 'Theme-aware shadow + rim.', picked: false },
-    {
-      id: 'e3' as const,
-      label: 'E3 · Theme-mixed glow',
-      hint: 'Accent glow color-mix, không shadow tối.',
-      picked: true,
-    },
-  ];
-
-  /* ============================== §F · Social icons in Card C ============================== */
-  readonly socialIcons = [
-    { icon: 'github', label: 'GitHub', url: '#' },
-    { icon: 'linkedin', label: 'LinkedIn', url: '#' },
-    { icon: 'twitter', label: 'Twitter', url: '#' },
-    { icon: 'globe', label: 'Website', url: '#' },
-  ];
-  readonly socialVariants = [
-    {
-      id: 'f1' as const,
-      label: 'F1 · Below "Connect now"',
-      hint: 'Icon row max 4, dưới link. Vẫn giữ CTA tường minh.',
-      picked: true,
-    },
-    {
-      id: 'f2' as const,
-      label: 'F2 · Replace "Connect now"',
-      hint: 'Bỏ link, chỉ còn icon row.',
-      picked: false,
-    },
-    {
-      id: 'f3' as const,
-      label: 'F3 · Icons primary + link fallback',
-      hint: 'Icon row trên, "Connect now →" ở dưới.',
-      picked: false,
-    },
-  ];
 }

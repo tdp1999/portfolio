@@ -1,9 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api';
-
-interface UnreadCountResponse {
-  unreadCount: number;
-}
+import type { UnreadCountResponse } from './unread-badge.types';
 
 @Injectable({ providedIn: 'root' })
 export class UnreadBadgeService {

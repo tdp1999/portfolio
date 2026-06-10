@@ -1,11 +1,7 @@
 import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
-
-export interface ChipOption {
-  value: string;
-  label: string;
-}
+import type { ChipOption } from './chip-toggle-group.types';
 
 @Component({
   selector: 'console-chip-toggle-group',

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './landing-meta.data';
 
 /**
  * Default page-level metadata. Applied on every {@link NavigationStart} so
@@ -9,8 +10,6 @@ import { filter } from 'rxjs/operators';
  * from a known baseline instead of inheriting whatever the previously visited
  * page left behind.
  */
-const DEFAULT_TITLE = 'Phuong Tran — Software Engineer';
-const DEFAULT_DESCRIPTION = "Phuong Tran's personal portfolio — selected work, experience, and ways to get in touch.";
 
 /**
  * Resets `<title>` and `<meta name="description">` to defaults on every

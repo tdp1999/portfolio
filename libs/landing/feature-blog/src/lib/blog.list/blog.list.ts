@@ -31,81 +31,24 @@ import {
   CarouselSlide,
   CloudinarySrcsetPipe,
   type BreadcrumbItem,
-  type SegmentOption,
-  type ViewToggleOption,
 } from '@portfolio/landing/shared/ui';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import { LandingUrlStateService } from '@portfolio/landing/shared/util';
-import {
-  BlogDataService,
-  type BlogPostCategory,
-  type BlogPostListItem,
-  type BlogPostListResponse,
-} from '@portfolio/landing/shared/data-access';
+import { BlogDataService, type BlogPostCategory, type BlogPostListItem } from '@portfolio/landing/shared/data-access';
 import { asyncResource } from '@portfolio/shared/async-state';
-
-type SortKey = 'newest' | 'oldest';
-type ViewMode = 'row' | 'grid';
-type StripVariant = 'v1' | 'v3';
-
-const QUERY = {
-  SEARCH: 'search',
-  CATEGORY: 'category',
-  SORT: 'sort',
-  VIEW: 'view',
-  PAGE: 'page',
-} as const;
-
-const PAGE_SIZE = 10;
-/** ADR-018: featured strip caps at 5 (V1 asymmetric). Excess hidden. */
-const FEATURED_CAP = 5;
-/** ADR-018: 3-4 featured → V3 mosaic · 5+ → V1 asymmetric. */
-const V1_THRESHOLD = 5;
-/** Strip hidden below this — featured shouldn't feel sparse. */
-const STRIP_MIN = 3;
-/** Search debounce window. */
-const SEARCH_DEBOUNCE_MS = 300;
-
-const VIEW_OPTIONS: readonly ViewToggleOption[] = [
-  { id: 'row', label: 'Row', icon: 'list', description: 'List view — title + meta dominant.' },
-  { id: 'grid', label: 'Grid', icon: 'layout-grid', description: 'Grid view — cover-dominant cards.' },
-];
-
-const SORT_OPTIONS: readonly SegmentOption[] = [
-  { id: 'newest', label: 'Newest' },
-  { id: 'oldest', label: 'Oldest' },
-];
-
-const EMPTY_RESPONSE: BlogPostListResponse = {
-  data: [],
-  total: 0,
-  page: 1,
-  limit: PAGE_SIZE,
-};
-
-/**
- * Locale-aware "time ago" formatter via `Intl.RelativeTimeFormat`.
- */
-function timeAgo(iso: string | null, locale: 'en' | 'vi'): string {
-  if (!iso) return '—';
-  const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return '—';
-  const deltaSec = Math.round((then - Date.now()) / 1000);
-  const abs = Math.abs(deltaSec);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
-  const units: ReadonlyArray<[Intl.RelativeTimeFormatUnit, number]> = [
-    ['year', 60 * 60 * 24 * 365],
-    ['month', 60 * 60 * 24 * 30],
-    ['week', 60 * 60 * 24 * 7],
-    ['day', 60 * 60 * 24],
-    ['hour', 60 * 60],
-    ['minute', 60],
-  ];
-  for (const [unit, sec] of units) {
-    if (abs >= sec) return rtf.format(Math.round(deltaSec / sec), unit);
-  }
-  return rtf.format(0, 'second');
-}
+import type { SortKey, ViewMode, StripVariant } from './blog.list.types';
+import {
+  QUERY,
+  PAGE_SIZE,
+  FEATURED_CAP,
+  V1_THRESHOLD,
+  STRIP_MIN,
+  SEARCH_DEBOUNCE_MS,
+  VIEW_OPTIONS,
+  SORT_OPTIONS,
+  EMPTY_RESPONSE,
+} from './blog.list.data';
+import { timeAgo, parsePageParam } from './blog.list.util';
 
 @Component({
   selector: 'landing-blog-list',
@@ -166,12 +109,71 @@ export class BlogList {
   private readonly initialQp = this.route.snapshot.queryParamMap;
 
   readonly searchControl = new FormControl<string>(this.initialQp.get(QUERY.SEARCH) ?? '', { nonNullable: true });
-  /** Debounced trimmed search term — drives the archive query. */
   readonly searchTerm = signal<string>((this.initialQp.get(QUERY.SEARCH) ?? '').trim());
   readonly selectedCategory = signal<string | null>(this.initialQp.get(QUERY.CATEGORY));
   readonly sortKey = signal<SortKey>(this.initialQp.get(QUERY.SORT) === 'oldest' ? 'oldest' : 'newest');
   readonly viewMode = signal<ViewMode>(this.initialQp.get(QUERY.VIEW) === 'grid' ? 'grid' : 'row');
   readonly currentPage = signal<number>(parsePageParam(this.initialQp.get(QUERY.PAGE)));
+
+  // ─── Featured strip (one-time call, NOT reactive to filters) ──────
+  private readonly featuredRes = asyncResource<readonly BlogPostListItem[]>(this.blogService.featured(), {
+    initialValue: [],
+    isEmpty: (a) => a.length === 0,
+    delayMs: 0,
+    minMs: 400,
+  });
+  readonly featuredLoading = this.featuredRes.showSpinner;
+  readonly featuredPosts = computed<readonly BlogPostListItem[]>(() => this.featuredRes.data().slice(0, FEATURED_CAP));
+  readonly featuredCount = computed(() => this.featuredPosts().length);
+  readonly stripVariant = computed<StripVariant | null>(() => {
+    if (this.featuredRes.status() !== 'ready') return null;
+    const n = this.featuredCount();
+    if (n < STRIP_MIN) return null;
+    return n >= V1_THRESHOLD ? 'v1' : 'v3';
+  });
+  readonly v1Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);
+  readonly v1Left = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 3));
+  readonly v1Right = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(3, 5));
+  readonly v1Sides = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 5));
+  readonly v3Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);
+  readonly v3Archive = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1));
+
+  // ─── Categories facet (one-time, for filter chips) ─────────────────
+  private readonly categoriesRes = asyncResource<readonly BlogPostCategory[]>(this.blogService.categories(), {
+    initialValue: [],
+  });
+  readonly availableCategories = computed(() => this.categoriesRes.data());
+
+  // ─── Archive (BE-driven, reactive to filter / sort / page) ─────────
+  private readonly queryShape = computed(() => ({
+    search: this.searchTerm() || undefined,
+    categorySlug: this.selectedCategory() ?? undefined,
+    sort: this.sortKey(),
+    page: this.currentPage(),
+    limit: PAGE_SIZE,
+  }));
+  private readonly fetchingSubject = new BehaviorSubject<boolean>(true);
+  readonly fetching = toSignal(this.fetchingSubject, { initialValue: true });
+  private readonly archive$ = toObservable(this.queryShape).pipe(
+    tap(() => this.fetchingSubject.next(true)),
+    switchMap((q) =>
+      this.blogService.list(q).pipe(
+        tap({
+          next: () => this.fetchingSubject.next(false),
+          error: () => this.fetchingSubject.next(false),
+        })
+      )
+    )
+  );
+  private readonly archiveData = toSignal(this.archive$, { initialValue: EMPTY_RESPONSE });
+  readonly archiveLoading = signal(true);
+  private spinnerShownAt = 0;
+  private spinnerHideTimer: ReturnType<typeof setTimeout> | null = null;
+  readonly archiveEmpty = computed(() => !this.fetching() && this.archiveData().data.length === 0);
+  readonly visiblePosts = computed<readonly BlogPostListItem[]>(() => this.archiveData().data);
+  readonly visibleCount = computed(() => this.visiblePosts().length);
+  readonly totalCount = computed(() => this.archiveData().total);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
   constructor() {
     this.title.setTitle('Writing | Phuong Tran');
@@ -228,89 +230,6 @@ export class BlogList {
     });
   }
 
-  // ─── Featured strip (one-time call, NOT reactive to filters) ──────
-  // delayMs: 0 + minMs: 400 → every fetch shows the spinner with a guaranteed
-  // visible window so toolbar interactions never feel "did anything happen?".
-  private readonly featuredRes = asyncResource<readonly BlogPostListItem[]>(this.blogService.featured(), {
-    initialValue: [],
-    isEmpty: (a) => a.length === 0,
-    delayMs: 0,
-    minMs: 400,
-  });
-  readonly featuredLoading = this.featuredRes.showSpinner;
-  readonly featuredPosts = computed<readonly BlogPostListItem[]>(() => this.featuredRes.data().slice(0, FEATURED_CAP));
-  readonly featuredCount = computed(() => this.featuredPosts().length);
-
-  /**
-   * ADR-018 (amended): strip hidden below STRIP_MIN to avoid a sparse
-   * featured row · 3-4 featured → V3 mosaic · 5+ → V1 asymmetric.
-   * Suppressed entirely while featured is still loading so the layout
-   * doesn't shift when the response arrives.
-   */
-  readonly stripVariant = computed<StripVariant | null>(() => {
-    if (this.featuredRes.status() !== 'ready') return null;
-    const n = this.featuredCount();
-    if (n < STRIP_MIN) return null;
-    return n >= V1_THRESHOLD ? 'v1' : 'v3';
-  });
-
-  // V1 split: hero + 2 left + 2 right (at n=5).
-  readonly v1Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);
-  readonly v1Left = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 3));
-  readonly v1Right = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(3, 5));
-  /** All non-hero side cards, in DOM order — feeds the compact (< tablet) carousel. */
-  readonly v1Sides = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1, 5));
-
-  // V3 split: top hero + archive (1-3 cards under).
-  readonly v3Hero = computed<BlogPostListItem | null>(() => this.featuredPosts()[0] ?? null);
-  readonly v3Archive = computed<readonly BlogPostListItem[]>(() => this.featuredPosts().slice(1));
-
-  // ─── Categories facet (one-time, for filter chips) ─────────────────
-  private readonly categoriesRes = asyncResource<readonly BlogPostCategory[]>(this.blogService.categories(), {
-    initialValue: [],
-  });
-  readonly availableCategories = computed(() => this.categoriesRes.data());
-
-  // ─── Archive (BE-driven, reactive to filter / sort / page) ─────────
-  private readonly queryShape = computed(() => ({
-    search: this.searchTerm() || undefined,
-    categorySlug: this.selectedCategory() ?? undefined,
-    sort: this.sortKey(),
-    page: this.currentPage(),
-    limit: PAGE_SIZE,
-  }));
-
-  // Manual loading tracking — `asyncResource`'s built-in spinner only fires on
-  // initial subscribe (the `startWith` happens outside `switchMap`). For our
-  // reactive query that re-fetches on every filter change, we drive
-  // `fetching` ourselves with a BehaviorSubject and apply our own min-display.
-  private readonly fetchingSubject = new BehaviorSubject<boolean>(true);
-  readonly fetching = toSignal(this.fetchingSubject, { initialValue: true });
-
-  private readonly archive$ = toObservable(this.queryShape).pipe(
-    tap(() => this.fetchingSubject.next(true)),
-    switchMap((q) =>
-      this.blogService.list(q).pipe(
-        tap({
-          next: () => this.fetchingSubject.next(false),
-          error: () => this.fetchingSubject.next(false),
-        })
-      )
-    )
-  );
-  private readonly archiveData = toSignal(this.archive$, { initialValue: EMPTY_RESPONSE });
-
-  // Spinner with min-display (400ms) so toolbar feedback is always perceivable.
-  readonly archiveLoading = signal(true);
-  private spinnerShownAt = 0;
-  private spinnerHideTimer: ReturnType<typeof setTimeout> | null = null;
-
-  readonly archiveEmpty = computed(() => !this.fetching() && this.archiveData().data.length === 0);
-  readonly visiblePosts = computed<readonly BlogPostListItem[]>(() => this.archiveData().data);
-  readonly visibleCount = computed(() => this.visiblePosts().length);
-  readonly totalCount = computed(() => this.archiveData().total);
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
-
   // ─── Template helpers ────────────────────────────────────────────
   timeAgo(post: BlogPostListItem): string {
     return timeAgo(post.publishedAt, this.locale());
@@ -357,9 +276,4 @@ export class BlogList {
       [QUERY.PAGE]: null,
     });
   }
-}
-
-function parsePageParam(raw: string | null): number {
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 1;
 }

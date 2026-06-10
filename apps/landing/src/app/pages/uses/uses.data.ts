@@ -1,4 +1,4 @@
-import type { ContentSectionData } from '@portfolio/landing/shared/ui';
+import type { BreadcrumbItem, ContentSectionData } from '@portfolio/landing/shared/ui';
 
 // Procida Rule 4 (specific, not generic). Tool name + 1-line reason + link per entry.
 export const USES_SECTIONS: readonly ContentSectionData[] = [
@@ -136,3 +136,7 @@ export const USES_SECTIONS: readonly ContentSectionData[] = [
     ],
   },
 ];
+
+export const BREADCRUMB: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Uses' }];
+
+export const LAST_UPDATED = '2026-05';

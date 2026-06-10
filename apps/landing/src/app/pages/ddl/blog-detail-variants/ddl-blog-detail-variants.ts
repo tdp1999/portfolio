@@ -13,37 +13,16 @@ import {
   TocSidebar,
   Segmented,
   Chip,
+  Figure,
   type BreadcrumbItem,
   type InPageSection,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
-import {
-  BlogDataService,
-  MarkdownService,
-  type BlogPostDetail,
-  type RenderedMarkdown,
-} from '@portfolio/landing/shared/data-access';
-import { Figure } from '@portfolio/landing/shared/ui';
+import { BlogDataService, MarkdownService, type BlogPostDetail } from '@portfolio/landing/shared/data-access';
 import { DdlBlogShareRow } from './ddl-blog-share-row';
-
-type Tab = 'v4' | 'v1' | 'v2' | 'v3' | 'prototypes' | 'usage';
-
-type LoadedPost = {
-  post: BlogPostDetail | null;
-  rendered: RenderedMarkdown;
-};
-
-const EMPTY: LoadedPost = { post: null, rendered: { html: '', toc: [] } };
-const DEEP_DIVE_SLUG = 'seed-angular-ssr-transfer-cache';
-const NOTE_SLUG = 'seed-til-postgres-partial-unique-indexes';
-const ESSAY_SLUG = 'seed-design-system-before-screen';
-const RETRO_SLUG = 'seed-shipping-document-engine-console';
-
-/** Minimum H2/H3 sections before a TOC is worth rendering. Below this the
- *  TOC is auto-hidden (it would show 1-2 entries and waste rail real estate).
- *  Replaces the earlier word-count threshold — section count is a better
- *  proxy for "this post benefits from a TOC". */
-const TOC_MIN_SECTIONS = 3;
+import type { Tab, LoadedPost } from './ddl-blog-detail-variants.types';
+import { EMPTY, DEEP_DIVE_SLUG, NOTE_SLUG, ESSAY_SLUG, RETRO_SLUG } from './ddl-blog-detail-variants.data';
+import { wordCount, shouldHideToc, tocFromEntries } from './ddl-blog-detail-variants.util';
 
 @Component({
   selector: 'landing-ddl-blog-detail-variants',
@@ -87,9 +66,6 @@ export class DdlBlogDetailVariants {
     { id: 'prototypes', label: 'Prototypes' },
     { id: 'usage', label: 'Usage' },
   ];
-  setTab(value: string): void {
-    this.tab.set((value as Tab) ?? 'v4');
-  }
 
   // ─── Data loading ────────────────────────────────────────────────
   // Load the deep-dive + a note in parallel so V1's auto-hide TOC branch can
@@ -116,11 +92,6 @@ export class DdlBlogDetailVariants {
     { initialValue: { deep: EMPTY, note: EMPTY, essay: EMPTY, retro: EMPTY } }
   );
 
-  private renderOrEmpty(post: BlogPostDetail | null) {
-    if (!post) return of(EMPTY);
-    return from(this.markdown.render(post.content)).pipe(map((rendered): LoadedPost => ({ post, rendered })));
-  }
-
   readonly deepPost = computed(() => this.loaded().deep.post);
   readonly notePost = computed(() => this.loaded().note.post);
   readonly essayPost = computed(() => this.loaded().essay.post);
@@ -131,17 +102,10 @@ export class DdlBlogDetailVariants {
   readonly essayHtml = computed<SafeHtml>(() => this.html(this.loaded().essay.rendered.html));
   readonly retroHtml = computed<SafeHtml>(() => this.html(this.loaded().retro.rendered.html));
 
-  readonly deepToc = computed<readonly InPageSection[]>(() => this.toc(this.loaded().deep.rendered.toc));
-  readonly noteToc = computed<readonly InPageSection[]>(() => this.toc(this.loaded().note.rendered.toc));
-  readonly essayToc = computed<readonly InPageSection[]>(() => this.toc(this.loaded().essay.rendered.toc));
-  readonly retroToc = computed<readonly InPageSection[]>(() => this.toc(this.loaded().retro.rendered.toc));
-
-  private html(raw: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(raw);
-  }
-  private toc(entries: readonly { id: string; text: string; level: 2 | 3 }[]): InPageSection[] {
-    return entries.map((e) => ({ id: e.id, title: e.text, level: e.level }));
-  }
+  readonly deepToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().deep.rendered.toc));
+  readonly noteToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().note.rendered.toc));
+  readonly essayToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().essay.rendered.toc));
+  readonly retroToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().retro.rendered.toc));
 
   // ─── V4 content-shape sub-tabs ────────────────────────────────────
   readonly v4Type = signal<'deep' | 'essay' | 'retro' | 'note'>('deep');
@@ -151,9 +115,7 @@ export class DdlBlogDetailVariants {
     { id: 'retro', label: 'Retro' },
     { id: 'note', label: 'Note' },
   ];
-  setV4Type(value: string): void {
-    this.v4Type.set((value as 'deep' | 'essay' | 'retro' | 'note') ?? 'deep');
-  }
+
   readonly v4Active = computed(() => {
     switch (this.v4Type()) {
       case 'essay':
@@ -166,6 +128,7 @@ export class DdlBlogDetailVariants {
         return { post: this.deepPost(), html: this.deepHtml(), toc: this.deepToc() };
     }
   });
+
   readonly v4HideToc = computed(() => shouldHideToc(this.v4Active().post, this.v4Active().toc.length));
 
   // ─── V1 auto-hide TOC branch ─────────────────────────────────────
@@ -195,6 +158,23 @@ export class DdlBlogDetailVariants {
     });
   }
 
+  private renderOrEmpty(post: BlogPostDetail | null) {
+    if (!post) return of(EMPTY);
+    return from(this.markdown.render(post.content)).pipe(map((rendered): LoadedPost => ({ post, rendered })));
+  }
+
+  private html(raw: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(raw);
+  }
+
+  setTab(value: string): void {
+    this.tab.set((value as Tab) ?? 'v4');
+  }
+
+  setV4Type(value: string): void {
+    this.v4Type.set((value as 'deep' | 'essay' | 'retro' | 'note') ?? 'deep');
+  }
+
   // ─── Template helpers ────────────────────────────────────────────
   formatDate(iso: string | null): string {
     if (!iso) return '';
@@ -216,15 +196,4 @@ export class DdlBlogDetailVariants {
     if (isPlatformBrowser(this.platformId)) return `${window.location.origin}/blog/${slug}`;
     return `/blog/${slug}`;
   }
-}
-
-function wordCount(content: string | null | undefined): number {
-  if (!content) return 0;
-  return content.split(/\s+/).filter(Boolean).length;
-}
-
-function shouldHideToc(post: BlogPostDetail | null, sectionCount: number): boolean {
-  if (!post) return true;
-  const isNote = post.categories.some((c) => c.slug === 'notes');
-  return isNote || sectionCount < TOC_MIN_SECTIONS;
 }

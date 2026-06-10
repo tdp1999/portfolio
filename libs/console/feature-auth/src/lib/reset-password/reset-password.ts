@@ -17,6 +17,7 @@ import {
 } from '@portfolio/console/shared/util';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { AuthErrorCode } from '@portfolio/shared/errors';
+import { TOKEN_REGEX } from './reset-password.constants';
 
 @Component({
   selector: 'console-reset-password',
@@ -37,19 +38,19 @@ import { AuthErrorCode } from '@portfolio/shared/errors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResetPassword implements OnInit {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly errorDataService = inject(ErrorDataService);
 
+  // ── Writable signals ──────────────────────────────────────────────
   readonly submitting = signal(false);
   readonly showPassword = signal(false);
   readonly tokenError = signal(false);
 
-  private token = '';
-  private userId = '';
-
+  // ── Forms ─────────────────────────────────────────────────────────
   readonly form = new FormGroup(
     {
       password: new FormControl('', {
@@ -64,6 +65,10 @@ export default class ResetPassword implements OnInit {
     { validators: [passwordsMatchValidator()] }
   );
 
+  // ── Plain state ───────────────────────────────────────────────────
+  private token = '';
+  private userId = '';
+
   constructor() {
     effect(() => {
       const err = this.errorDataService.lastError();
@@ -75,15 +80,13 @@ export default class ResetPassword implements OnInit {
     });
   }
 
-  private static readonly TOKEN_REGEX = /^[0-9a-f]{64}$/;
-
   ngOnInit(): void {
     this.errorDataService.clear();
     const params = this.route.snapshot.queryParamMap;
     this.token = params.get('token') ?? '';
     this.userId = params.get('userId') ?? '';
 
-    if (!this.token || !this.userId || !ResetPassword.TOKEN_REGEX.test(this.token)) {
+    if (!this.token || !this.userId || !TOKEN_REGEX.test(this.token)) {
       this.tokenError.set(true);
     }
   }

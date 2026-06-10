@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import type { Renderer } from 'marked';
-import type { BundledLanguage, SpecialLanguage, codeToHtml as CodeToHtml } from 'shiki';
+import type { BundledLanguage, SpecialLanguage } from 'shiki';
 import type { MarkdownRenderOptions, RenderedMarkdown, TocEntry } from './markdown.types';
+import { isSupportedLang, slugify, escAttr, decodeHtml } from './markdown.util';
+import type { ConfiguredRenderer, MarkedModule, ShikiCodeToHtml } from './markdown.service.types';
 
 /**
  * `marked` and `shiki` together weigh ~140 KB gzipped. They are only needed when
@@ -11,48 +13,6 @@ import type { MarkdownRenderOptions, RenderedMarkdown, TocEntry } from './markdo
  * tree-shake away even when no consumer injects this service. We cache the
  * dynamic-imported modules on the singleton service so each is fetched once.
  */
-type MarkedModule = typeof import('marked');
-type ShikiCodeToHtml = typeof CodeToHtml;
-
-const SUPPORTED_LANGS = new Set<BundledLanguage>([
-  'typescript',
-  'javascript',
-  'tsx',
-  'jsx',
-  'python',
-  'go',
-  'sql',
-  'css',
-  'html',
-  'bash',
-  'shell',
-  'json',
-  'yaml',
-  'markdown',
-]);
-
-function isSupportedLang(value: string | undefined): value is BundledLanguage {
-  return value !== undefined && SUPPORTED_LANGS.has(value as BundledLanguage);
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .slice(0, 80);
-}
-
-/** Escape values that will be interpolated into an HTML attribute. The marked
- *  renderer below builds raw HTML strings, so values containing `"`, `&`, or
- *  angle brackets would otherwise break attribute parsing — e.g. an image
- *  `title` of `My "special" doc` would terminate the title attribute early. */
-function escAttr(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-type ConfiguredRenderer = { renderer: Renderer; toc: TocEntry[] };
 
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
@@ -189,13 +149,4 @@ export class MarkdownService {
     }
     return result;
   }
-}
-
-function decodeHtml(s: string): string {
-  return s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&');
 }

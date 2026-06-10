@@ -28,6 +28,7 @@ export class DdlFeedFilterBar {
   readonly years = distinctYears(FAKE_PROJECTS);
   readonly statuses = LIFECYCLE_STATUSES;
   readonly skillGroups = groupedTopSkills(FAKE_PROJECTS, { perCategory: 4 });
+  readonly total = FAKE_PROJECTS.length;
 
   // V1 demo — collapsed by default; user toggles to expand
   readonly v1FiltersOpen = signal(false);
@@ -58,6 +59,10 @@ export class DdlFeedFilterBar {
 
   readonly activeFilterCount = computed(
     () => this.selectedYears().size + this.selectedStatuses().size + this.selectedSkills().size
+  );
+
+  readonly hasFilters = computed(
+    () => this.selectedYears().size + this.selectedStatuses().size + this.selectedSkills().size > 0
   );
 
   toggleV1Filters(): void {
@@ -94,12 +99,6 @@ export class DdlFeedFilterBar {
     this.selectedStatuses.set(new Set());
     this.selectedSkills.set(new Set());
   }
-
-  readonly hasFilters = computed(
-    () => this.selectedYears().size + this.selectedStatuses().size + this.selectedSkills().size > 0
-  );
-
-  readonly total = FAKE_PROJECTS.length;
 
   toggleV2Facet(name: string): void {
     this.v2OpenFacet.set(this.v2OpenFacet() === name ? null : name);

@@ -30,10 +30,6 @@ export class DdlFeedPagination {
   readonly loadMoreLimit = signal(3);
   readonly loadMoreVisible = computed(() => this.all.slice(0, this.loadMoreLimit()));
 
-  loadMore(): void {
-    this.loadMoreLimit.update((n) => Math.min(n + this.pageSize, this.total));
-  }
-
   // V3: Paged
   readonly currentPage = signal(1);
   readonly totalPages = computed(() => Math.ceil(this.total / this.pageSize));
@@ -41,6 +37,10 @@ export class DdlFeedPagination {
     const start = (this.currentPage() - 1) * this.pageSize;
     return this.all.slice(start, start + this.pageSize);
   });
+
+  loadMore(): void {
+    this.loadMoreLimit.update((n) => Math.min(n + this.pageSize, this.total));
+  }
 
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;

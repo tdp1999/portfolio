@@ -1,27 +1,37 @@
 import { ChangeDetectorRef, Directive, effect, inject, input, DestroyRef } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
 import { ValidationErrorService } from './validation-error.service';
+import { SERVER_ERROR_FALLBACK } from './server-error.tokens';
 
-export interface ServerErrorFallback {
-  showError(message: string): void;
-}
-
-/** Injection token allowing the directive to toast unmatched field errors. */
-import { InjectionToken } from '@angular/core';
-export const SERVER_ERROR_FALLBACK = new InjectionToken<ServerErrorFallback>('SERVER_ERROR_FALLBACK');
+export type { ServerErrorFallback } from './server-error.types';
+export { SERVER_ERROR_FALLBACK } from './server-error.tokens';
 
 @Directive({
   selector: '[formGroup][consoleServerErrorMap]',
   standalone: true,
 })
 export class ServerErrorDirective {
+  // ── DI ───────────────────────────────────────────────────────────────
   private readonly formGroupDir = inject(FormGroupDirective);
   private readonly validationErrorService = inject(ValidationErrorService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly fallback = inject(SERVER_ERROR_FALLBACK, { optional: true });
 
+  // ── Inputs ────────────────────────────────────────────────────────────
   /** Maps API field names to form control names. Default: identity (API name = control name). */
   consoleServerErrorMap = input<Record<string, string>>({});
+
+  // ── Outputs ───────────────────────────────────────────────────────────
+
+  // ── Queries ───────────────────────────────────────────────────────────
+
+  // ── Writable signals ──────────────────────────────────────────────────
+
+  // ── Derived ───────────────────────────────────────────────────────────
+
+  // ── Forms ─────────────────────────────────────────────────────────────
+
+  // ── Plain state ───────────────────────────────────────────────────────
 
   constructor() {
     const destroyRef = inject(DestroyRef);

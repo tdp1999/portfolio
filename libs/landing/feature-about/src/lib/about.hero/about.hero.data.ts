@@ -1,12 +1,10 @@
-import type { LandingStatusDotState } from '@portfolio/landing/shared/ui';
-
 /**
  * Maps `ProfileAvailability` to the green/amber/grey status-dot states the
  * landing system already uses (`available` = pill green, `busy` = amber,
  * `away` = grey). Open-to-work + freelancing both signal availability;
  * employed reads as busy; not-available collapses to away.
  */
-export const AVAILABILITY_TO_DOT: Record<string, LandingStatusDotState> = {
+export const AVAILABILITY_TO_DOT: Record<string, 'available' | 'busy' | 'away'> = {
   OPEN_TO_WORK: 'available',
   FREELANCING: 'available',
   EMPLOYED: 'busy',

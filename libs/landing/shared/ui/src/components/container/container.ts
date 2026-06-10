@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-export type ContainerSize = 'content' | 'wide' | 'full';
+import type { ContainerSize } from './container.types';
 
 @Component({
   selector: 'landing-container',
@@ -14,9 +13,11 @@ export type ContainerSize = 'content' | 'wide' | 'full';
   styleUrl: './container.scss',
 })
 export class Container {
-  size = input<ContainerSize>('content');
+  // ── Inputs ────────────────────────────────────────────────────────
+  readonly size = input<ContainerSize>('content');
 
-  containerClasses = computed(() => {
+  // ── Derived ───────────────────────────────────────────────────────
+  protected readonly containerClasses = computed(() => {
     switch (this.size()) {
       case 'wide':
         return 'landing-container landing-container--wide';
@@ -28,3 +29,5 @@ export class Container {
     }
   });
 }
+
+export type { ContainerSize } from './container.types';

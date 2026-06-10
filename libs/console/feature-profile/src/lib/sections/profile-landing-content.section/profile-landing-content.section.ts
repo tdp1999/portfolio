@@ -25,10 +25,7 @@ import {
 import { ServerErrorDirective } from '@portfolio/console/shared/util';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse } from '../../profile.types';
-
-function isEmpty(t: { en: string; vi: string }): boolean {
-  return !t.en.trim() && !t.vi.trim();
-}
+import { isEmpty } from './profile-landing-content.section.util';
 
 @Component({
   selector: 'console-profile-landing-content-section',

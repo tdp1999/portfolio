@@ -1,19 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-/** Map a file extension to its `<source type>` MIME string. */
-const MIME: Record<string, string> = {
-  avif: 'image/avif',
-  webp: 'image/webp',
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-};
-
-interface SourceEntry {
-  type: string;
-  srcset: string;
-}
+import { MIME } from './image.constants';
+import type { SourceEntry } from './image.types';
 
 /**
  * Responsive `<picture>` primitive. See `.context/design/responsive-contract.md` §13.
@@ -80,14 +67,6 @@ export class Image {
 
   private readonly explicit = computed(() => this.srcset().trim());
 
-  /** Build `"<base>-<w>.<fmt> <w>w, …"` for one format. */
-  private srcsetFor(fmt: string): string {
-    const base = this.src();
-    return this.widths()
-      .map((w) => `${base}-${w}.${fmt} ${w}w`)
-      .join(', ');
-  }
-
   /** `<source>` entries — every format except the last (mode a only). */
   protected readonly sources = computed<SourceEntry[]>(() => {
     if (this.explicit()) return [];
@@ -114,4 +93,12 @@ export class Image {
     const fmts = this.formats();
     return this.srcsetFor(fmts[fmts.length - 1] ?? 'jpg');
   });
+
+  /** Build `"<base>-<w>.<fmt> <w>w, …"` for one format. */
+  private srcsetFor(fmt: string): string {
+    const base = this.src();
+    return this.widths()
+      .map((w) => `${base}-${w}.${fmt} ${w}w`)
+      .join(', ');
+  }
 }

@@ -18,27 +18,8 @@ import {
   StatusDot,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
-
-type Scope = 'whole-landing' | 'home' | 'project-detail';
-type Effort = 'S' | 'M' | 'L';
-type DemoKind = 'live' | 'descriptive';
-
-interface WishlistItem {
-  readonly id: string;
-  readonly title: string;
-  readonly detail: string;
-  readonly scope: Scope;
-  readonly effort: Effort;
-  readonly demoKind: DemoKind;
-}
-
-interface WishlistGroup {
-  readonly category: string;
-  readonly description: string;
-  readonly items: readonly WishlistItem[];
-}
-
-const PICKS_STORAGE_KEY = 'ddl-interactions-picks-v1';
+import type { WishlistGroup } from './ddl-interactions.types';
+import { PICKS_STORAGE_KEY } from './ddl-interactions.constants';
 
 /**
  * /ddl/interactions — landing-wide micro-interaction wishlist with live demos.
@@ -273,6 +254,35 @@ export class DdlInteractions {
   protected readonly picks = signal<ReadonlySet<string>>(new Set());
   protected readonly pickedCount = computed(() => this.picks().size);
 
+  // ── Demo-local state ─────────────────────────────────────────────────────
+
+  protected readonly anchorPulseKey = signal(0);
+
+  /** Used to replay the page-fade demo by toggling between two mock pages. */
+  protected readonly routerPage = signal<'A' | 'B'>('A');
+  protected readonly routerFadeKey = signal(0);
+
+  /** Mask reveal replay key. */
+  protected readonly maskRevealKey = signal(0);
+
+  /** Project tab demo: index 0..2, default to middle as "active". */
+  protected readonly activeTab = signal(1);
+
+  /** Theme demo: dark vs light surface inside one card. */
+  protected readonly demoTheme = signal<'dark' | 'light'>('dark');
+
+  // ── Blueprint parallax (scroll-tied) ─────────────────────────────────────
+
+  private readonly parallaxBox = viewChild<ElementRef<HTMLElement>>('parallaxBox');
+  protected readonly parallaxOffset = signal(0);
+
+  // ── Clock minute tick (faked: blink every 6s) ────────────────────────────
+
+  protected readonly clockTickKey = signal(0);
+  protected readonly clockMinute = signal(new Date().getMinutes());
+
+  private clockTimer: ReturnType<typeof setInterval> | null = null;
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       try {
@@ -299,56 +309,32 @@ export class DdlInteractions {
     this.picks.set(next);
   }
 
-  // ── Demo-local state ─────────────────────────────────────────────────────
-
-  protected readonly anchorPulseKey = signal(0);
   pulseAnchor(): void {
     this.anchorPulseKey.update((k) => k + 1);
   }
 
-  /** Used to replay the page-fade demo by toggling between two mock pages. */
-  protected readonly routerPage = signal<'A' | 'B'>('A');
-  protected readonly routerFadeKey = signal(0);
   flipRouterPage(): void {
     this.routerPage.update((p) => (p === 'A' ? 'B' : 'A'));
     this.routerFadeKey.update((k) => k + 1);
   }
 
-  /** Mask reveal replay key. */
-  protected readonly maskRevealKey = signal(0);
   replayMaskReveal(): void {
     this.maskRevealKey.update((k) => k + 1);
   }
 
-  /** Project tab demo: index 0..2, default to middle as "active". */
-  protected readonly activeTab = signal(1);
   setActiveTab(i: number): void {
     this.activeTab.set(i);
   }
 
-  /** Theme demo: dark vs light surface inside one card. */
-  protected readonly demoTheme = signal<'dark' | 'light'>('dark');
   toggleDemoTheme(): void {
     this.demoTheme.update((t) => (t === 'dark' ? 'light' : 'dark'));
   }
-
-  // ── Blueprint parallax (scroll-tied) ─────────────────────────────────────
-
-  private readonly parallaxBox = viewChild<ElementRef<HTMLElement>>('parallaxBox');
-  protected readonly parallaxOffset = signal(0);
 
   onParallaxScroll(event: Event): void {
     const el = event.currentTarget as HTMLElement;
     const ratio = el.scrollTop / Math.max(1, el.scrollHeight - el.clientHeight);
     this.parallaxOffset.set(Math.round(ratio * 24));
   }
-
-  // ── Clock minute tick (faked: blink every 6s) ────────────────────────────
-
-  protected readonly clockTickKey = signal(0);
-  protected readonly clockMinute = signal(new Date().getMinutes());
-
-  private clockTimer: ReturnType<typeof setInterval> | null = null;
 
   /** Lazy-start interval when the clock demo is first visible. */
   startClockDemo(): void {

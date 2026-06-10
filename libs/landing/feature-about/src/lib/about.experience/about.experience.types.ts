@@ -1,0 +1,20 @@
+export type ExperienceVm = {
+  id: string;
+  slug: string;
+  companyName: string;
+  companyUrl: string | null;
+  companyLogoUrl: string | null;
+  companyInitial: string;
+  position: string;
+  domain: string | null;
+  dateRangeLabel: string;
+  isCurrent: boolean;
+  metaItems: readonly string[];
+  highlights: readonly string[];
+  responsibilities: readonly string[];
+  skillChips: readonly { id: string; name: string }[];
+  links: readonly { url: string; label: string }[];
+  tabId: string;
+  panelId: string;
+  fragment: string;
+};

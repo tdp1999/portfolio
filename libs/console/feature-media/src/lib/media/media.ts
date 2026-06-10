@@ -32,20 +32,14 @@ import {
   type UploadFn,
   type UploadFolder,
 } from '@portfolio/console/shared/ui';
-import {
-  DEFAULT_PAGE_SIZE,
-  MEDIA_PICKER_MIN_LOADING_MS,
-  PAGE_SIZE_OPTIONS,
-  STORAGE_KEYS,
-} from '@portfolio/console/shared/util';
+import { DEFAULT_PAGE_SIZE, MEDIA_PICKER_MIN_LOADING_MS, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { filter, forkJoin, map, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MediaDrawer } from '../media.drawer/media.drawer';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
 import { MediaService } from '../media.service';
 import { MediaItem, MediaMimeGroup, StorageStats } from '../media.types';
-
-const VIEW_MODE_KEY = STORAGE_KEYS.mediaPickerViewMode;
+import { VIEW_MODE_KEY } from './media.constants';
 
 @Component({
   selector: 'console-media',
@@ -67,6 +61,7 @@ const VIEW_MODE_KEY = STORAGE_KEYS.mediaPickerViewMode;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Media implements OnInit {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
@@ -75,33 +70,25 @@ export default class Media implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  // ── Writable signals ──────────────────────────────────────────────
   readonly selectedDetailId = signal<string | null>(null);
-
-  // Data
   readonly media = signal<MediaItem[]>([]);
   readonly total = signal(0);
   readonly stats = signal<StorageStats | null>(null);
   readonly trashCount = signal(0);
   readonly loading = signal(false);
 
-  // Filters
   readonly pageIndex = signal(0);
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
-  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly mimeGroup = signal<MimeGroup | null>(null);
   readonly folder = signal<UploadFolder | null>(null);
   readonly sort = signal<SortOption>(DEFAULT_SORT);
   readonly viewMode = signal<AssetGridViewMode>('grid');
-  readonly viewModeOptions: ChipSelectOption[] = [
-    { value: 'grid', label: 'Grid view', icon: 'grid_view' },
-    { value: 'list', label: 'List view', icon: 'view_list' },
-  ];
 
-  // Selection
   readonly selectedIds = signal<string[]>([]);
 
-  // Computed
+  // ── Derived ───────────────────────────────────────────────────────
   readonly selectedCount = computed(() => this.selectedIds().length);
   readonly currentPage = computed(() => this.pageIndex() + 1);
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
@@ -118,6 +105,13 @@ export default class Media implements OnInit {
       })),
     };
   });
+
+  // ── Plain state ───────────────────────────────────────────────────
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+  readonly viewModeOptions: ChipSelectOption[] = [
+    { value: 'grid', label: 'Grid view', icon: 'grid_view' },
+    { value: 'list', label: 'List view', icon: 'view_list' },
+  ];
 
   readonly uploadFn: UploadFn = (file: File) =>
     this.mediaService.upload(file).pipe(
@@ -261,6 +255,7 @@ export default class Media implements OnInit {
       });
   }
 
+  // ── Private helpers ───────────────────────────────────────────────
   private resetPage(): void {
     this.pageIndex.set(0);
   }

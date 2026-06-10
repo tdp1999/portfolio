@@ -1,7 +1,6 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Directive, inject, input, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
-
-export type CopyState = 'idle' | 'copied' | 'error';
+import type { CopyState } from './copy-to-clipboard.types';
 
 /**
  * Copy a piece of text to the clipboard on click, with a self-resetting state
@@ -78,3 +77,5 @@ export class CopyToClipboardDirective implements OnDestroy {
     if (this.timer !== null) clearTimeout(this.timer);
   }
 }
+
+export type { CopyState } from './copy-to-clipboard.types';

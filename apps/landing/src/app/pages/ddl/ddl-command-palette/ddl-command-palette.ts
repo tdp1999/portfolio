@@ -16,13 +16,7 @@ import {
   filterResults,
   groupByKind,
 } from '../command-palette/command-palette.data';
-
-type Variant = 'v1' | 'v2' | 'v3' | 'v4' | null;
-
-interface FlatRow {
-  readonly result: SearchResult;
-  readonly groupHeader?: string;
-}
+import type { FlatRow, Variant } from './ddl-command-palette.types';
 
 @Component({
   selector: 'landing-ddl-command-palette',

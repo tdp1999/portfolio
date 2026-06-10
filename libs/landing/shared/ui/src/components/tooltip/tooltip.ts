@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, input } from '@angular/core';
+import type { LandingTooltipAlign, LandingTooltipPosition } from './tooltip.types';
 
-export type LandingTooltipPosition = 'top' | 'bottom';
-export type LandingTooltipAlign = 'start' | 'center' | 'end';
+export type { LandingTooltipAlign, LandingTooltipPosition } from './tooltip.types';
 
 /**
  * Tooltip / popover wrapper. CSS-only — visibility flips on `:hover` and `:focus-within`, so this

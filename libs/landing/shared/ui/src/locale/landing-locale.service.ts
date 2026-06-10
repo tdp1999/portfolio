@@ -1,10 +1,7 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import type { Locale } from '@portfolio/shared/types';
-
-const STORAGE_KEY = 'landing_locale';
-const COOKIE_KEY = 'landing_locale';
-const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365;
+import { STORAGE_KEY, COOKIE_KEY, COOKIE_MAX_AGE_S } from './landing-locale.constants';
 
 /**
  * Root-provided locale state for the landing app.

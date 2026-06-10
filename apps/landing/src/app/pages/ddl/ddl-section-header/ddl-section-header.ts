@@ -1,34 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Container, Eyebrow, Breadcrumb, SectionHeader, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-
-type SectionPreview = {
-  readonly id: string;
-  readonly label: string;
-  readonly note: string;
-};
-
-const SECTIONS: readonly SectionPreview[] = [
-  {
-    id: 's03',
-    label: '§03 · Selected Work',
-    note: 'Shipped — left-anchored. Heading sourced from Profile.selectedWorkIntro; BE-parses *word* into <em>. Project title font also switched to Newsreader (display).',
-  },
-  {
-    id: 's04',
-    label: '§04 · The Stack',
-    note: 'Shipped 2026-05-12 — centered, no trailing period, fully centered groups (column + chip rows). ⚠️ Eyebrow + heading currently tautological ("THE STACK" / "toolkit") — see reframe candidates below.',
-  },
-  {
-    id: 's05',
-    label: '§05 · The Story',
-    note: 'Currently eyebrow + trailingRule, no heading. Adding a visible heading is a new commitment.',
-  },
-  {
-    id: 's06',
-    label: '§06 · Get in Touch',
-    note: 'Already has "Let\'s talk." in landing-heading. Promote to section-header with italic accent.',
-  },
-];
+import { SECTIONS } from './ddl-section-header.data';
 
 @Component({
   selector: 'landing-ddl-section-header',
@@ -618,6 +590,7 @@ const SECTIONS: readonly SectionPreview[] = [
   ],
 })
 export class DdlSectionHeader {
+  // ── Properties ─────────────────────────────────────────────────────
   readonly sections = SECTIONS;
   readonly breadcrumb: readonly BreadcrumbItem[] = [
     { label: 'DDL', href: '/ddl' },

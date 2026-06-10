@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-export type LandingChipSize = 'sm' | 'md' | 'lg';
-export type LandingChipProminence = 'default' | 'strong' | 'strongest';
+import type { LandingChipSize, LandingChipProminence } from './chip.types';
 
 @Component({
   selector: 'landing-chip',
@@ -18,6 +16,7 @@ export type LandingChipProminence = 'default' | 'strong' | 'strongest';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Chip {
+  // ── Inputs ────────────────────────────────────────────────────────
   readonly label = input<string>('');
   readonly size = input<LandingChipSize>('md');
   /**
@@ -33,9 +32,12 @@ export class Chip {
    */
   readonly iconUrl = input<string | null | undefined>(null);
 
+  // ── Derived ───────────────────────────────────────────────────────
   protected readonly chipClasses = computed(() => {
     const classes = ['landing-chip', `landing-chip--${this.size()}`, `landing-chip--${this.prominence()}`];
     if (this.iconUrl()) classes.push('landing-chip--with-icon');
     return classes.join(' ');
   });
 }
+
+export type { LandingChipSize, LandingChipProminence } from './chip.types';

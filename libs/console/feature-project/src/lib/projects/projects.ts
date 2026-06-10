@@ -15,7 +15,6 @@ import {
   FilterBar,
   FilterSearch,
   FilterSelect,
-  type FilterOption,
   SkeletonTable,
   RelativeTime,
   ProgressBarService,
@@ -27,11 +26,7 @@ import {
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
-
-const STATUS_OPTIONS: FilterOption[] = [
-  { value: 'PUBLISHED', label: 'Published' },
-  { value: 'DRAFT', label: 'Draft' },
-];
+import { STATUS_OPTIONS } from './projects.data';
 
 @Component({
   selector: 'console-projects',

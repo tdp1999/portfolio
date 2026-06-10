@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Container, Link, PageShell, Section, StatusDot, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-
-const BREADCRUMB_ABOUT: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'About' }];
-const BREADCRUMB_PRIVACY: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Privacy' }];
-const BREADCRUMB_USES: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Uses' }];
-const BREADCRUMB_CONTACT: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Contact' }];
+import { Container, Link, PageShell, Section, StatusDot } from '@portfolio/landing/shared/ui';
+import {
+  BREADCRUMB_ABOUT,
+  BREADCRUMB_PRIVACY,
+  BREADCRUMB_USES,
+  BREADCRUMB_CONTACT,
+  SKELETON,
+} from './ddl-page-shell.data';
 
 /**
  * `/ddl/page-shell` — canonical structure showcase for every landing feature
@@ -351,25 +353,10 @@ const BREADCRUMB_CONTACT: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/
   ],
 })
 export class DdlPageShell {
+  // ── Properties ─────────────────────────────────────────────────────
   protected readonly bcAbout = BREADCRUMB_ABOUT;
   protected readonly bcPrivacy = BREADCRUMB_PRIVACY;
   protected readonly bcUses = BREADCRUMB_USES;
   protected readonly bcContact = BREADCRUMB_CONTACT;
-
-  protected readonly skeleton = `<landing-page-shell [breadcrumb]="breadcrumb" align="center">
-  <span hero-heading><em>About</em>.</span>
-  <p hero-lede>One-sentence positioning.</p>
-  <p meta-strip>Last updated <time datetime="2026-05-22">May 2026</time>.</p>
-
-  <section aria-labelledby="exp-h">
-    <landing-container>
-      <h2 id="exp-h">Experience</h2>
-      …
-    </landing-container>
-  </section>
-
-  <div page-footer>
-    <a routerLink="/contact">Get in touch →</a>
-  </div>
-</landing-page-shell>`;
+  protected readonly skeleton = SKELETON;
 }

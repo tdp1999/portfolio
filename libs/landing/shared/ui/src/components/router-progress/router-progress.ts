@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-const MIN_DISPLAY_MS = 250;
+import { MIN_DISPLAY_MS } from './router-progress.data';
 
 /**
  * Top-of-viewport 2px progress bar that shows during router navigations. Fixes the

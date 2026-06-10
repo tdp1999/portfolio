@@ -51,11 +51,11 @@ import { HasUnsavedChanges } from '@portfolio/console/shared/util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class DdlLongForm implements HasUnsavedChanges {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
 
-  // --- Per-section forms (status: editing, saved) ---
-
+  // ── Forms ─────────────────────────────────────────────────────────
   /** Basics — demonstrates the recommended nested bilingual shape: { name: { en, vi } } */
   readonly basicsForm = this.fb.group({
     name: this.fb.group({
@@ -77,8 +77,6 @@ export default class DdlLongForm implements HasUnsavedChanges {
     phone: this.fb.control('', { nonNullable: true }),
   });
 
-  // --- Atomic forms (status: untouched, error) ---
-
   /** Skills — atomic mode, starts untouched */
   readonly skillsForm = this.fb.group({
     primaryStack: this.fb.control('Angular, NestJS, TypeScript', { nonNullable: true }),
@@ -90,21 +88,11 @@ export default class DdlLongForm implements HasUnsavedChanges {
     summary: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
   });
 
-  // --- Section statuses (each card = one of the 4 statuses) ---
-
+  // ── Writable signals ──────────────────────────────────────────────
   private readonly basicsStatus = signal<SectionStatus>('editing');
   private readonly contactStatus = signal<SectionStatus>('saved');
   private readonly skillsStatus = signal<SectionStatus>('untouched');
   private readonly achievementsStatus = signal<SectionStatus>('error');
-
-  readonly sections: SectionDescriptor[] = [
-    { id: 'section-basics', label: 'Basics', status: this.basicsStatus.asReadonly() },
-    { id: 'section-contact', label: 'Contact', status: this.contactStatus.asReadonly() },
-    { id: 'section-skills', label: 'Skills', status: this.skillsStatus.asReadonly() },
-    { id: 'section-achievements', label: 'Achievements', status: this.achievementsStatus.asReadonly() },
-  ];
-
-  // --- Per-section save state (Basics, Contact) ---
 
   readonly basicsSaving = signal(false);
   readonly basicsLastSavedAt = signal<Date | null>(null);
@@ -114,11 +102,22 @@ export default class DdlLongForm implements HasUnsavedChanges {
   readonly contactLastSavedAt = signal<Date | null>(new Date(Date.now() - 30_000));
   readonly contactError = signal<string | null>(null);
 
-  // --- Atomic save state (Skills + Achievements) ---
-
   readonly atomicSaving = signal(false);
   /** Dirty = any atomic section has unsaved edits */
   readonly atomicDirty = signal(false);
+
+  // ── Derived ───────────────────────────────────────────────────────
+  readonly isDirty = computed(
+    () => this.basicsForm.dirty || this.contactForm.dirty || this.skillsForm.dirty || this.achievementsForm.dirty
+  );
+
+  // ── Plain state ───────────────────────────────────────────────────
+  readonly sections: SectionDescriptor[] = [
+    { id: 'section-basics', label: 'Basics', status: this.basicsStatus.asReadonly() },
+    { id: 'section-contact', label: 'Contact', status: this.contactStatus.asReadonly() },
+    { id: 'section-skills', label: 'Skills', status: this.skillsStatus.asReadonly() },
+    { id: 'section-achievements', label: 'Achievements', status: this.achievementsStatus.asReadonly() },
+  ];
 
   constructor() {
     // Track atomic dirty state from both atomic forms
@@ -129,8 +128,7 @@ export default class DdlLongForm implements HasUnsavedChanges {
     this.achievementsForm.events.subscribe(updateDirty);
   }
 
-  // --- Per-section save handlers ---
-
+  // ── Per-section save handlers ─────────────────────────────────────
   saveBasics(): void {
     this.basicsSaving.set(true);
     this.basicsError.set(null);
@@ -155,8 +153,7 @@ export default class DdlLongForm implements HasUnsavedChanges {
     }, 600);
   }
 
-  // --- Atomic save handlers ---
-
+  // ── Atomic save handlers ──────────────────────────────────────────
   saveAtomic(): void {
     if (this.achievementsForm.invalid) {
       this.achievementsStatus.set('error');
@@ -185,12 +182,7 @@ export default class DdlLongForm implements HasUnsavedChanges {
     this.achievementsStatus.set('error');
   }
 
-  // --- UnsavedChangesGuard contract ---
-
-  readonly isDirty = computed(
-    () => this.basicsForm.dirty || this.contactForm.dirty || this.skillsForm.dirty || this.achievementsForm.dirty
-  );
-
+  // ── UnsavedChangesGuard contract ──────────────────────────────────
   hasUnsavedChanges() {
     return this.isDirty;
   }

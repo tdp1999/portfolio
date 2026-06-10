@@ -5,9 +5,7 @@ import { Background } from '../components/background';
 import { Container } from '../components/container';
 import { Eyebrow } from '../components/eyebrow';
 import { Link } from '../components/link';
-
-type FooterRoute = { readonly label: string; readonly href: string; readonly external?: boolean };
-type FooterColumn = { readonly title: string; readonly routes: readonly FooterRoute[] };
+import type { FooterColumn } from './footer-banner.types';
 
 /**
  * Site-wide footer banner — Parth-style fat site map (brand block + nav columns).
@@ -55,3 +53,5 @@ export class FooterBanner {
     },
   ];
 }
+
+export type { FooterRoute, FooterColumn } from './footer-banner.types';

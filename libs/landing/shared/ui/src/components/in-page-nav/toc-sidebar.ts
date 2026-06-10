@@ -12,8 +12,9 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LandingScrollspyService } from './landing-scrollspy.service';
-import { InPageSection } from './section.types';
+import type { InPageSection } from './section.types';
 import { Eyebrow } from '../eyebrow';
+import { indentForLevel } from './toc-sidebar.util';
 
 /**
  * Sticky table-of-contents sidebar with scrollspy active highlighting.
@@ -274,10 +275,4 @@ export class TocSidebar {
       host.scrollBy({ top: delta, behavior: 'smooth' });
     });
   }
-}
-
-// h2 rail at left:0 (border at margin-left:0). h3 at 16px. h4 at 32px.
-// → rail visibly steps inward with depth.
-function indentForLevel(level: 2 | 3 | 4): number {
-  return (level - 2) * 16;
 }

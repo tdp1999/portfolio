@@ -8,8 +8,7 @@ import type {
   BlogPostListItem,
   BlogPostListResponse,
 } from './blog.types';
-
-const EMPTY_LIST: BlogPostListResponse = { data: [], total: 0, page: 1, limit: 10 };
+import { EMPTY_LIST } from './blog.data';
 
 @Injectable({ providedIn: 'root' })
 export class BlogDataService {

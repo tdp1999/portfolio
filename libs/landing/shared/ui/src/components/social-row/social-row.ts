@@ -1,23 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { SOCIAL_PLATFORM_LABELS } from '@portfolio/shared/enum-labels';
-import { type SocialLink, type SocialPlatform } from '@portfolio/shared/types';
+import { type SocialLink } from '@portfolio/shared/types';
 import { Icon } from '../icon';
+import { SOCIAL_ICON } from './social-row.data';
+import type { SocialIcon } from './social-row.types';
 
-type SocialIcon = { readonly icon: string; readonly url: string; readonly label: string };
-
-const SOCIAL_ICON: Record<SocialPlatform, string> = {
-  GITHUB: 'github',
-  LINKEDIN: 'linkedin',
-  TWITTER: 'twitter',
-  BLUESKY: 'external-link',
-  STACKOVERFLOW: 'external-link',
-  DEV_TO: 'external-link',
-  HASHNODE: 'external-link',
-  TELEGRAM: 'external-link',
-  ZALO: 'external-link',
-  WEBSITE: 'globe',
-  OTHER: 'external-link',
-};
+export type { SocialIcon } from './social-row.types';
 
 /**
  * Compact icon row for a profile's social links. Renders a `<ul>` of

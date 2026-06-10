@@ -18,10 +18,8 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Figure } from '../figure/figure';
 import { LightboxDirective } from '../lightbox';
 import { CarouselSlide } from './carousel-slide.directive';
+import { nextCarouselGroupId } from './carousel.util';
 import type { GalleryImage } from '../gallery/gallery.types';
-
-/** Per-instance fallback group id (SSR-safe: deterministic instantiation order). */
-let carouselSeq = 0;
 
 /**
  * `landing-carousel` — a full-feature, breakpoint-agnostic image slider.
@@ -65,6 +63,11 @@ let carouselSeq = 0;
   host: { class: 'landing-carousel' },
 })
 export class Carousel {
+  // ── DI ────────────────────────────────────────────────────────────
+  private readonly zone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ── Inputs ────────────────────────────────────────────────────────
   /**
    * Image-mode slides. Optional so the carousel can also run in content mode
    * (`[items]` + `landingCarouselSlide`). Existing image callers are unchanged.
@@ -92,27 +95,16 @@ export class Carousel {
   /** Lightbox group key. Defaults to a per-instance id so carousels don't merge. */
   readonly lightboxGroup = input<string>('');
 
-  private readonly autoGroup = `lb-carousel-${carouselSeq++}`;
-  protected readonly effectiveGroup = computed(() => this.lightboxGroup() || this.autoGroup);
-
+  // ── Model ─────────────────────────────────────────────────────────
   /** Active slide index. Two-way so a consumer can drive/observe it. */
   readonly index = model<number>(0);
 
-  private readonly zone = inject(NgZone);
-  private readonly destroyRef = inject(DestroyRef);
+  // ── Queries ───────────────────────────────────────────────────────
   private readonly track = viewChild<ElementRef<HTMLElement>>('track');
-
   /** Present → content mode; absent → image mode. */
   protected readonly slide = contentChild(CarouselSlide);
-  protected readonly slideTemplate = computed(() => this.slide()?.template ?? null);
-  /** Content mode projects cards — arrows move to a bottom row so they never cover content. */
-  protected readonly isContent = computed(() => this.slideTemplate() !== null);
-  /** Unified slide source — drives count, dots, and the active-index sync. */
-  protected readonly slideList = computed<readonly unknown[]>(() =>
-    this.slideTemplate() ? this.items() : this.images()
-  );
 
-  protected readonly count = computed(() => this.slideList().length);
+  // ── Writable ───────────────────────────────────────────────────────
   /**
    * Whether the track actually overflows its viewport. When every slide already
    * fits (e.g. a 2-up view with only 2 cards), there is nothing to navigate — so
@@ -120,39 +112,25 @@ export class Carousel {
    * renders controls for the common overflowing case.
    */
   protected readonly scrollable = signal(true);
-  /** Set once the track is live (client only); lets the count effect re-measure. */
-  private remeasureScrollable: (() => void) | null = null;
+
+  // ── Derived ───────────────────────────────────────────────────────
+  private readonly autoGroup = nextCarouselGroupId();
+  protected readonly effectiveGroup = computed(() => this.lightboxGroup() || this.autoGroup);
+  protected readonly slideTemplate = computed(() => this.slide()?.template ?? null);
+  /** Content mode projects cards — arrows move to a bottom row so they never cover content. */
+  protected readonly isContent = computed(() => this.slideTemplate() !== null);
+  /** Unified slide source — drives count, dots, and the active-index sync. */
+  protected readonly slideList = computed<readonly unknown[]>(() =>
+    this.slideTemplate() ? this.items() : this.images()
+  );
+  protected readonly count = computed(() => this.slideList().length);
   protected readonly atStart = computed(() => this.index() <= 0);
   protected readonly atEnd = computed(() => this.index() >= this.count() - 1);
   protected readonly liveLabel = computed(() => `Slide ${this.index() + 1} of ${this.count()}`);
 
-  /** Step by ±1, wrapping when `loop` is on. */
-  protected go(dir: -1 | 1): void {
-    const n = this.count();
-    if (n === 0) return;
-    let next = this.index() + dir;
-    if (this.loop()) next = (next + n) % n;
-    else next = Math.min(n - 1, Math.max(0, next));
-    this.goTo(next);
-  }
-
-  /** Scroll a given slide into view; the scroll listener updates `index`. */
-  protected goTo(i: number): void {
-    const el = this.track()?.nativeElement;
-    const child = el?.children[i] as HTMLElement | undefined;
-    if (!el || !child) return;
-    el.scrollTo({ left: child.offsetLeft - el.offsetLeft, behavior: 'smooth' });
-  }
-
-  protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      this.go(1);
-    } else if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      this.go(-1);
-    }
-  }
+  // ── Plain state ───────────────────────────────────────────────────
+  /** Set once the track is live (client only); lets the count effect re-measure. */
+  private remeasureScrollable: (() => void) | null = null;
 
   constructor() {
     // Re-measure overflow when the slide count changes — the ResizeObserver below
@@ -316,5 +294,35 @@ export class Carousel {
         el.removeEventListener('dragstart', onDragStart);
       });
     });
+  }
+
+  // ── Keyboard listener ──────────────────────────────────────────────
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      this.go(1);
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      this.go(-1);
+    }
+  }
+
+  // ── Navigation methods ────────────────────────────────────────────
+  /** Step by ±1, wrapping when `loop` is on. */
+  protected go(dir: -1 | 1): void {
+    const n = this.count();
+    if (n === 0) return;
+    let next = this.index() + dir;
+    if (this.loop()) next = (next + n) % n;
+    else next = Math.min(n - 1, Math.max(0, next));
+    this.goTo(next);
+  }
+
+  /** Scroll a given slide into view; the scroll listener updates `index`. */
+  protected goTo(i: number): void {
+    const el = this.track()?.nativeElement;
+    const child = el?.children[i] as HTMLElement | undefined;
+    if (!el || !child) return;
+    el.scrollTo({ left: child.offsetLeft - el.offsetLeft, behavior: 'smooth' });
   }
 }

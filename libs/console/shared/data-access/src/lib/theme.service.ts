@@ -1,9 +1,7 @@
 import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { STORAGE_KEYS } from '@portfolio/console/shared/util';
 import { Theme } from './theme.types';
-
-const STORAGE_KEY = STORAGE_KEYS.consoleTheme;
+import { STORAGE_KEY } from './theme.constants';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

@@ -1,11 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-export interface BreadcrumbItem {
-  readonly label: string;
-  /** Omit on the trailing item to mark it as the current page (rendered as plain text). */
-  readonly href?: string;
-}
+import type { BreadcrumbItem } from './breadcrumb.types';
 
 /**
  * Mono-caps breadcrumb trail. Last item is rendered as plain text (current page);
@@ -47,6 +42,10 @@ export class Breadcrumb {
    */
   readonly align = input<'start' | 'center'>('start');
 
-  /** Tally retained for tests / consumers; not used by the template. */
+  /**
+   * Tally retained for tests / consumers; not used by the template.
+   */
   protected readonly count = computed(() => this.items().length);
 }
+
+export type { BreadcrumbItem } from './breadcrumb.types';

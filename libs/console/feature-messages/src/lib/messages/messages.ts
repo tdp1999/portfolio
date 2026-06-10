@@ -21,22 +21,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { MessageService } from '../message.service';
 import { ContactMessageListItem } from '../message.types';
 import { RelativeTimePipe } from '../pipes/relative-time.pipe';
-
-const STATUS_OPTIONS = [
-  { value: 'UNREAD', label: 'Unread' },
-  { value: 'READ', label: 'Read' },
-  { value: 'REPLIED', label: 'Replied' },
-  { value: 'ARCHIVED', label: 'Archived' },
-];
-
-const PURPOSE_OPTIONS = [
-  { value: 'GENERAL', label: 'General' },
-  { value: 'JOB_OPPORTUNITY', label: 'Job Opportunity' },
-  { value: 'FREELANCE', label: 'Freelance' },
-  { value: 'COLLABORATION', label: 'Collaboration' },
-  { value: 'BUG_REPORT', label: 'Bug Report' },
-  { value: 'OTHER', label: 'Other' },
-];
+import { PURPOSE_OPTIONS, STATUS_OPTIONS } from './messages.data';
 
 @Component({
   selector: 'console-messages',
@@ -59,28 +44,28 @@ const PURPOSE_OPTIONS = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Messages implements OnInit {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly messageService = inject(MessageService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
 
+  // ── Queries ───────────────────────────────────────────────────────
   readonly paginator = viewChild.required(MatPaginator);
-  readonly displayedColumns = ['select', 'status', 'name', 'purpose', 'subject', 'createdAt'];
-  readonly statusOptions = STATUS_OPTIONS;
-  readonly purposeOptions = PURPOSE_OPTIONS;
 
+  // ── Writable signals ──────────────────────────────────────────────
   readonly messages = signal<ContactMessageListItem[]>([]);
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly pageIndex = signal(0);
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
-  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly search = signal('');
   readonly statusFilter = signal('');
   readonly purposeFilter = signal('');
   readonly selected = signal<Set<string>>(new Set());
 
+  // ── Derived ───────────────────────────────────────────────────────
   readonly activeFilters = computed(() => {
     const filters: { key: string; label: string }[] = [];
     const s = this.search();
@@ -100,6 +85,12 @@ export default class Messages implements OnInit {
     const items = this.messages();
     return items.length > 0 && this.selected().size === items.length;
   });
+
+  // ── Plain state ───────────────────────────────────────────────────
+  readonly displayedColumns = ['select', 'status', 'name', 'purpose', 'subject', 'createdAt'];
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+  readonly statusOptions = STATUS_OPTIONS;
+  readonly purposeOptions = PURPOSE_OPTIONS;
 
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
@@ -236,6 +227,7 @@ export default class Messages implements OnInit {
     return message.status === 'UNREAD' && !message.isSpam;
   }
 
+  // ── Private helpers ───────────────────────────────────────────────
   private executeBulkAction(ids: string[], action: (id: string) => Observable<unknown>, successMessage: string): void {
     forkJoin(ids.map((id) => action(id))).subscribe({
       next: () => {

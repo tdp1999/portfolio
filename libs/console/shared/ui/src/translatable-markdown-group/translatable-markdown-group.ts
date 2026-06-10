@@ -2,16 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormErrorPipe } from '@portfolio/console/shared/util';
 import { MarkdownEditor as MarkdownEditor } from '../markdown-editor/markdown-editor';
+import { DEFAULT_LANGUAGES } from './translatable-markdown-group.data';
+import type { MarkdownLanguageConfig } from './translatable-markdown-group.types';
 
-export interface MarkdownLanguageConfig {
-  key: string;
-  label: string;
-}
-
-const DEFAULT_LANGUAGES: MarkdownLanguageConfig[] = [
-  { key: 'en', label: 'EN' },
-  { key: 'vi', label: 'VI' },
-];
+export type { MarkdownLanguageConfig } from './translatable-markdown-group.types';
 
 /**
  * Translatable markdown editor — wraps MarkdownEditor in a per-locale stack.

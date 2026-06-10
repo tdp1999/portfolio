@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import type { FailureEssay } from '@portfolio/landing/feature-about';
+import type { NumberedEssay } from './ddl-failures.v2.types';
 
 /**
  * Failures · V2 — Numbered editorial.
@@ -10,8 +11,6 @@ import type { FailureEssay } from '@portfolio/landing/feature-about';
  * pace than V1, more space for the prose to breathe. Best when essays are
  * read top-to-bottom rather than scanned.
  */
-
-type NumberedEssay = FailureEssay & { readonly num: string };
 
 @Component({
   selector: 'landing-ddl-failures-v2',

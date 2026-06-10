@@ -1,6 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-
-const SIZE_MAP = { sm: 'h-5 w-5', md: 'h-8 w-8', lg: 'h-12 w-12' } as const;
+import { SIZE_MAP } from './spinner-overlay.constants';
 
 @Component({
   selector: 'console-spinner-overlay',

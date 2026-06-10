@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import type { LandingBackgroundPattern } from './background.types';
 
-export type LandingBackgroundPattern = 'blueprint' | 'topo' | 'hatch' | 'dots' | 'crosshair' | 'aurora';
+export type { LandingBackgroundPattern } from './background.types';
 
 /**
  * Decorative full-bleed background patterns rendered with pure CSS.

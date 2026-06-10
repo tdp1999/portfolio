@@ -11,8 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { Icon } from '../icon';
-
-let uid = 0;
+import { nextUid } from './show-more.util';
 
 /**
  * Reusable "see more" disclosure. Projects arbitrary content; when it exceeds
@@ -84,7 +83,7 @@ export class ShowMore {
   /** `'toggle'` clamps behind a button; `'scroll'` caps and scrolls inside the box. */
   readonly mode = input<'toggle' | 'scroll'>('toggle');
 
-  protected readonly contentId = `show-more-${uid++}`;
+  protected readonly contentId = nextUid();
   private readonly contentRef = viewChild.required<ElementRef<HTMLElement>>('content');
 
   /** Starts expanded for SSR/no-JS reachability; collapses after the first browser measure. */

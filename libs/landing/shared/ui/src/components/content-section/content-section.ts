@@ -1,20 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconArrow } from '../icon';
-
-export type ContentEntry = {
-  readonly name: string;
-  readonly monogram: string;
-  readonly reason: string;
-  readonly href?: string;
-};
-
-export type ContentSectionData = {
-  readonly num: string;
-  readonly id: string;
-  readonly title: string;
-  readonly entries: readonly ContentEntry[];
-};
+import type { ContentSectionData } from './content-section.types';
 
 /**
  * Quiet-tone sub-page category block — monogram-tile mini-card grid under a
@@ -37,5 +24,8 @@ export type ContentSectionData = {
   styleUrl: './content-section.scss',
 })
 export class ContentSection {
+  // ── Inputs ────────────────────────────────────────────────────────
   readonly section = input.required<ContentSectionData>();
 }
+
+export type { ContentEntry, ContentSectionData } from './content-section.types';

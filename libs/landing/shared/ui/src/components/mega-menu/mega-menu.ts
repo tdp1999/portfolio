@@ -13,13 +13,8 @@ import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
 import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem } from './mega-menu.types';
-
-const OPEN_DELAY_MS = 80;
-const CLOSE_DELAY_MS = 200;
-/** After a hover-open, clicks within this window are treated as "keep open"
- *  (defeats the hover→click-toggle-off race). Past this window, click toggles
- *  off normally — otherwise users feel like they need to click twice to close. */
-const HOVER_GRACE_MS = 250;
+import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './mega-menu.constants';
+import { nextMegaMenuId } from './mega-menu.util';
 
 /**
  * Mega-menu dropdown — "featured hero + compact rows" layout (V5 from DDL).
@@ -298,9 +293,4 @@ export class MegaMenu {
       this.closeTimer = null;
     }
   }
-}
-
-let megaMenuSeq = 0;
-function nextMegaMenuId(): string {
-  return (++megaMenuSeq).toString(36);
 }

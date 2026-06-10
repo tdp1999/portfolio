@@ -18,25 +18,7 @@ import { AboutExperience } from '../about.experience/about.experience';
 import { AboutHowIThink } from '../about.how-i-think/about.how-i-think';
 import { AboutFailures } from '../about.failures/about.failures';
 import { AboutCta } from '../about.cta/about.cta';
-
-const ABOUT_URL = 'https://thunderphong.com/about';
-
-const TITLE_BY_LOCALE = {
-  en: 'About — Phương Trần',
-  vi: 'Về tôi — Phương Trần',
-} as const;
-
-/** Fallback hero copy — used when `Profile.aboutHeading` / `aboutLede` is
- *  null (fresh DB, or pre-seed). Kept tight + locale-aware so the page never
- *  flashes a blank H1 while the author is still wiring console content. */
-const DEFAULT_HEADING_BY_LOCALE = {
-  en: 'Senior software engineer building DDD-grade web platforms for fintech & SaaS teams.',
-  vi: 'Kỹ sư phần mềm xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
-} as const;
-const DEFAULT_LEDE_BY_LOCALE = {
-  en: 'Six years shipping production systems — payments, dashboards, content tools. I keep teams honest about complexity and trade-offs, and I am picky about who I work with.',
-  vi: 'Sáu năm xây dựng hệ thống production — payments, dashboard, content tools. Mình giúp team giữ thái độ trung thực với độ phức tạp và đánh đổi, và khá kén chọn đối tác làm cùng.',
-} as const;
+import { ABOUT_URL, TITLE_BY_LOCALE, DEFAULT_HEADING_BY_LOCALE, DEFAULT_LEDE_BY_LOCALE } from './about.data';
 
 @Component({
   selector: 'landing-about',
@@ -57,15 +39,20 @@ export class About {
   private readonly document = inject(DOCUMENT);
 
   private readonly profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
-  protected readonly locale = this.localeService.locale;
 
-  /** Author-managed via Console; falls back to the per-locale defaults when
-   *  the field is null (pre-seed or unconfigured). Template uses `||` so an
-   *  empty string from a half-translated locale also falls back. */
+  protected readonly locale = this.localeService.locale;
   protected readonly aboutHeading = computed(() => getLocalized(this.profile()?.aboutHeading, this.locale()));
   protected readonly aboutLede = computed(() => getLocalized(this.profile()?.aboutLede, this.locale()));
   protected readonly defaultAboutHeading = computed(() => DEFAULT_HEADING_BY_LOCALE[this.locale()]);
   protected readonly defaultAboutLede = computed(() => DEFAULT_LEDE_BY_LOCALE[this.locale()]);
+
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'About' }];
+  readonly navSections: readonly InPageSection[] = [
+    { id: 'experience', title: 'Experience' },
+    { id: 'how-i-think', title: 'How I think' },
+    { id: 'failures', title: 'Failures' },
+    { id: 'cta', title: 'Next steps' },
+  ];
 
   constructor() {
     this.scrollspy.setSections(this.navSections);
@@ -104,16 +91,4 @@ export class About {
         });
     }
   }
-
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'About' }];
-
-  /** Section anchors fed to the floating pill + minimap. Hero is the page
-   *  header (no anchor) — when the user is scrolled at the top, the pill
-   *  defaults to Experience as the active section. */
-  readonly navSections: readonly InPageSection[] = [
-    { id: 'experience', title: 'Experience' },
-    { id: 'how-i-think', title: 'How I think' },
-    { id: 'failures', title: 'Failures' },
-    { id: 'cta', title: 'Next steps' },
-  ];
 }

@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-export type EyebrowInput = string | readonly string[];
-export type EyebrowTone = 'default' | 'accent';
+import type { EyebrowInput, EyebrowTone } from './eyebrow.types';
 
 @Component({
   selector: 'landing-eyebrow',
@@ -33,6 +31,7 @@ export type EyebrowTone = 'default' | 'accent';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Eyebrow {
+  // ── Inputs ────────────────────────────────────────────────────────
   readonly label = input<EyebrowInput>([]);
   /** Overall color tone. `accent` paints every part in indigo (use for section-block labels). */
   readonly tone = input<EyebrowTone>('default');
@@ -43,9 +42,12 @@ export class Eyebrow {
   /** Prepend a short fixed-width hairline before the label (editorial accent). */
   readonly leadingRule = input<boolean>(false);
 
+  // ── Derived ───────────────────────────────────────────────────────
   protected readonly parts = computed<readonly string[]>(() => {
     const value = this.label();
     if (typeof value === 'string') return value ? [value] : [];
     return value;
   });
 }
+
+export type { EyebrowInput, EyebrowTone } from './eyebrow.types';

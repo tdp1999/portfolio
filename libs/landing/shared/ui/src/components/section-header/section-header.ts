@@ -1,10 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Eyebrow, type EyebrowInput } from '../eyebrow';
+import type {
+  LandingSectionHeaderAlign,
+  LandingSectionHeaderLevel,
+  LandingSectionHeaderSize,
+} from './section-header.types';
 
-export type LandingSectionHeaderAlign = 'center' | 'left';
-export type LandingSectionHeaderSize = 'lg' | 'md' | 'sm';
-export type LandingSectionHeaderLevel = 1 | 2;
+export type {
+  LandingSectionHeaderAlign,
+  LandingSectionHeaderLevel,
+  LandingSectionHeaderSize,
+} from './section-header.types';
 
 /**
  * Canonical section header: eyebrow + display heading with optional italic accent word.
