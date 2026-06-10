@@ -28,7 +28,7 @@ import { LandingThemeService } from '../theme/theme.service';
     <div
       class="flex min-h-screen flex-col bg-ink-0 text-landing-text-300"
       fxSpotlight
-      scope="viewport"
+      fxSpotlightScope="viewport"
       fxKeyboardShortcuts
     >
       <landing-header [resumeUrl]="resumeUrl()" [resumeName]="resumeName()" />

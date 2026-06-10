@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import type { ArrowDirection } from './icon-arrow.types';
 
-export type ArrowDirection = 'right' | 'up-right' | 'left';
+export type { ArrowDirection } from './icon-arrow.types';
 
 @Component({
   selector: 'landing-icon-arrow',

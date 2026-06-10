@@ -44,7 +44,7 @@ export class SpotlightDirective {
    * `viewport` makes the overlay fixed to the viewport — apply once at the
    * highest level (e.g. landing-shell) for a site-wide spotlight.
    */
-  readonly scope = input<SpotlightScope>('host');
+  readonly scope = input<SpotlightScope>('host', { alias: 'fxSpotlightScope' });
 
   private overlay?: HTMLSpanElement;
 

@@ -32,9 +32,9 @@ const DEMO = {
           <h1 class="font-display text-display-md text-landing-text-300">Hero direction variants</h1>
           <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
             <strong class="text-landing-text-300">α picked.</strong> Graduated to <code>landing-home-hero</code> with
-            <code>landing-stagger-text</code>. The spotlight (<code>fxSpotlight scope="viewport"</code>) is now applied
-            once on <code>landing-shell</code> — follows the cursor across every page, theme-aware (white tint on dark,
-            slate tint on light). β / γ kept for visual reference; safe to delete next sweep.
+            <code>landing-stagger-text</code>. The spotlight (<code>fxSpotlight fxSpotlightScope="viewport"</code>) is
+            now applied once on <code>landing-shell</code> — follows the cursor across every page, theme-aware (white
+            tint on dark, slate tint on light). β / γ kept for visual reference; safe to delete next sweep.
           </p>
         </div>
       </landing-container>
@@ -209,7 +209,7 @@ const DEMO = {
           <ul class="hv-summary__list">
             <li><strong>α</strong> → live in <code>landing-home-hero</code> via <code>landing-stagger-text</code>.</li>
             <li>
-              <strong>Spotlight</strong> → site-wide via <code>fxSpotlight scope="viewport"</code> on
+              <strong>Spotlight</strong> → site-wide via <code>fxSpotlight fxSpotlightScope="viewport"</code> on
               <code>landing-shell</code>. Theme-aware.
             </li>
             <li>

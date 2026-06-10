@@ -68,7 +68,6 @@ function safeFormatter(timezone: string): Intl.DateTimeFormat {
     });
   } catch (err) {
     if (isDevMode()) {
-      // eslint-disable-next-line no-console
       console.warn(`[liveClock] Invalid timezone "${timezone}", falling back to local`, err);
     }
     return new Intl.DateTimeFormat('en-GB', {

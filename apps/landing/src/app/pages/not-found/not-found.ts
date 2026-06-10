@@ -14,10 +14,10 @@ export class NotFound {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 
+  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Not found' }];
+
   constructor() {
     this.title.setTitle('Not found · Phuong Tran');
     this.meta.updateTag({ name: 'robots', content: 'noindex' });
   }
-
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Not found' }];
 }

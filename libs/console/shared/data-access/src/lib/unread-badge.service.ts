@@ -8,13 +8,13 @@ interface UnreadCountResponse {
 @Injectable({ providedIn: 'root' })
 export class UnreadBadgeService {
   private readonly api = inject(ApiService);
-  private readonly _count = signal(0);
+  private readonly countSignal = signal(0);
 
-  readonly count = this._count.asReadonly();
+  readonly count = this.countSignal.asReadonly();
 
   refresh(): void {
     this.api.get<UnreadCountResponse>('/contact-messages/unread-count').subscribe({
-      next: (res) => this._count.set(res.unreadCount),
+      next: (res) => this.countSignal.set(res.unreadCount),
       error: () => {
         // Silently fail — badge is non-critical
       },

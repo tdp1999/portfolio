@@ -91,7 +91,8 @@ describe('AssetUploadZoneComponent', () => {
 
       const fill: HTMLElement | null = fixture.nativeElement.querySelector('.upload-row__fill');
       expect(fill).toBeTruthy();
-      expect(fill!.style.width).toBe('50%');
+      if (!fill) throw new Error('fill element not found');
+      expect(fill.style.width).toBe('50%');
     });
   });
 
@@ -121,8 +122,7 @@ describe('AssetUploadZoneComponent', () => {
   describe('retry', () => {
     it('restarts upload on retry', () => {
       let callCount = 0;
-      const progress$ = new Subject<UploadProgress>();
-      create((file: File) => {
+      create((_file: File) => {
         callCount++;
         return throwError(() => new Error(`fail-${callCount}`));
       });

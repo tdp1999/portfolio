@@ -193,11 +193,11 @@ test.describe('Landing - /blog/:slug - SEO', () => {
 
     const description = await page.locator('meta[name="description"]').getAttribute('content');
     expect(description).toBeTruthy();
-    expect(description!.length).toBeGreaterThan(0);
+    expect((description ?? '').length).toBeGreaterThan(0);
 
     const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
     expect(ogImage).toBeTruthy();
-    expect(ogImage!).toMatch(/^https?:\/\//);
+    expect(ogImage ?? '').toMatch(/^https?:\/\//);
   });
 
   test('SSR HTML contains a valid JSON-LD <script> with @type BlogPosting + matching headline', async ({ request }) => {
@@ -207,8 +207,9 @@ test.describe('Landing - /blog/:slug - SEO', () => {
 
     const match = html.match(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/);
     expect(match, 'JSON-LD script tag was not found in SSR HTML').toBeTruthy();
+    if (!match) throw new Error('JSON-LD script tag was not found in SSR HTML');
 
-    const json = JSON.parse(match![1]);
+    const json = JSON.parse(match[1]);
     expect(json['@context']).toBe('https://schema.org');
     expect(json['@type']).toBe('BlogPosting');
     expect(json.headline).toBe(BLOG_TITLES.FEATURED_DESIGN_SYSTEM);

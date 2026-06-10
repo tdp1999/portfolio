@@ -56,7 +56,8 @@ describe('AssetFilterBarComponent', () => {
   });
 
   function typeInSearch(value: string): void {
-    const input = el.querySelector<HTMLInputElement>('input[type="search"]')!;
+    const input = el.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!input) throw new Error('search input not found');
     input.value = value;
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -107,7 +108,8 @@ describe('AssetFilterBarComponent', () => {
     it('marks selected chip with aria-pressed=true', () => {
       host.mimeGroup.set('video');
       fixture.detectChanges();
-      const videoChip = chipButtons().find((b) => b.textContent?.trim() === 'Video')!;
+      const videoChip = chipButtons().find((b) => b.textContent?.trim() === 'Video');
+      if (!videoChip) throw new Error('video chip not found');
       expect(videoChip.getAttribute('aria-pressed')).toBe('true');
     });
   });
@@ -131,7 +133,8 @@ describe('AssetFilterBarComponent', () => {
       fixture.detectChanges();
       await wait(DEBOUNCE_MS + 20);
 
-      const clearBtn = el.querySelector<HTMLButtonElement>('.asset-filter-bar__clear')!;
+      const clearBtn = el.querySelector<HTMLButtonElement>('.asset-filter-bar__clear');
+      if (!clearBtn) throw new Error('clear button not found');
       clearBtn.click();
       await wait(DEBOUNCE_MS + 20);
 

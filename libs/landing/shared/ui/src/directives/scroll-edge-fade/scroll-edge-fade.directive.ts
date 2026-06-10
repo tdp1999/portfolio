@@ -73,17 +73,17 @@ export class ScrollEdgeFadeDirective {
   private readonly zone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly _atStart = signal(true);
-  private readonly _atEnd = signal(true);
+  private readonly atStartSignal = signal(true);
+  private readonly atEndSignal = signal(true);
   /** `true` when scrolled to the start/end edge (or nothing overflows). Read in a
    *  consumer template (via `exportAs`) to toggle chevron indicators. */
-  readonly atStart = this._atStart.asReadonly();
-  readonly atEnd = this._atEnd.asReadonly();
+  readonly atStart = this.atStartSignal.asReadonly();
+  readonly atEnd = this.atEndSignal.asReadonly();
 
   protected readonly mask = computed<string | null>(() => {
     if (!this.maskEnabled()) return null;
-    const fadeStart = !this._atStart();
-    const fadeEnd = !this._atEnd();
+    const fadeStart = !this.atStartSignal();
+    const fadeEnd = !this.atEndSignal();
     if (!fadeStart && !fadeEnd) return null; // nothing overflows → no mask (don't clip)
     const direction = this.axis() === 'x' ? 'to right' : 'to bottom';
     const head = fadeStart ? `transparent, #000 ${FADE_PX}px` : '#000';
@@ -157,12 +157,12 @@ export class ScrollEdgeFadeDirective {
     const pos = horizontal ? node.scrollLeft : node.scrollTop;
     const nextStart = overflow <= 1 || pos <= 1;
     const nextEnd = overflow <= 1 || pos >= overflow - 1;
-    if (nextStart === this._atStart() && nextEnd === this._atEnd()) return;
+    if (nextStart === this.atStartSignal() && nextEnd === this.atEndSignal()) return;
     // Commit inside the zone so the host style binding re-renders (listeners run
     // outside it). No-op cost when unchanged thanks to the early return above.
     this.zone.run(() => {
-      this._atStart.set(nextStart);
-      this._atEnd.set(nextEnd);
+      this.atStartSignal.set(nextStart);
+      this.atEndSignal.set(nextEnd);
     });
   }
 }

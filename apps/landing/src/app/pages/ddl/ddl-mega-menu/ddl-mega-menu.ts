@@ -65,5 +65,5 @@ export class DdlMegaMenu {
 
   readonly items = ITEMS;
   readonly nonFeatured = ITEMS.filter((i) => !i.featured);
-  readonly featured = ITEMS.find((i) => i.featured)!;
+  readonly featured: MoreItem = ITEMS.find((i) => i.featured) ?? ITEMS[0];
 }

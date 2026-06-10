@@ -14,6 +14,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { merge, startWith } from 'rxjs';
 import {
   CONTACT_PURPOSES,
   ContactFormService,
@@ -22,53 +23,25 @@ import {
   mapContactSubmitError,
   ProfileService,
 } from '@portfolio/landing/shared/data-access';
-import { merge, startWith } from 'rxjs';
 import {
   Checkbox,
   Container,
   FormField,
-  Input,
   Globe,
-  Link,
+  Input,
   LandingLocaleService,
+  Link,
   PageShell,
-  T,
   Segmented,
+  T,
   Textarea,
   type BreadcrumbItem,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
 import type { SocialPlatform } from '@portfolio/shared/types';
-
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
-
-/**
- * Strip the URL chrome (`https://`, `www.`, trailing slash) for a more
- * scannable display value beside the link. The full URL stays on the `href`.
- */
-function prettyChannelValue(url: string): string {
-  if (url.startsWith('mailto:')) return url.slice('mailto:'.length);
-  return url
-    .replace(/^https?:\/\//, '')
-    .replace(/^www\./, '')
-    .replace(/\/$/, '');
-}
-
-/**
- * Cloudflare Turnstile site key. Public (safe to commit), but tied to the
- * registered hostname in the Cloudflare dashboard. Replace with the real key
- * once a Turnstile widget is provisioned. While the value starts with
- * `placeholder`, FE skips widget rendering and relies on the BE dev-bypass.
- */
-const TURNSTILE_SITE_KEY = '0x4AAAAAADSVhb9pL9g3tkbz';
-
-interface TurnstileRenderOptions {
-  sitekey: string;
-  callback: (token: string) => void;
-  'error-callback'?: () => void;
-  'expired-callback'?: () => void;
-  theme?: 'light' | 'dark' | 'auto';
-}
+import { TURNSTILE_SITE_KEY } from './contact.data';
+import type { FormState, TurnstileRenderOptions } from './contact.types';
+import { prettyChannelValue } from './contact.util';
 
 declare global {
   interface Window {
@@ -98,6 +71,7 @@ declare global {
   styleUrl: './contact.scss',
 })
 export class Contact {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly route = inject(ActivatedRoute);
   private readonly contactService = inject(ContactFormService);
@@ -107,6 +81,7 @@ export class Contact {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 
+  // ── Writable signals ──────────────────────────────────────────────
   protected readonly state = signal<FormState>('idle');
   protected readonly errorMessage = signal<string>('');
   protected readonly purpose = signal<ContactPurpose>('hi');
@@ -118,11 +93,10 @@ export class Contact {
    * fails. See `renderTurnstile` for the state transitions.
    */
   protected readonly turnstileStatus = signal<'loading' | 'ready' | 'error' | 'expired' | 'idle'>('idle');
-  private turnstileWidgetId: string | null = null;
+  protected readonly copiedChannel = signal<string | null>(null);
 
-  /** Initial purpose from `?purpose=<chip>`; defaults to `'hi'`. */
-  private readonly queryPurpose = toSignal(this.route.queryParamMap, { initialValue: null });
-
+  // ── Forms ─────────────────────────────────────────────────────────
+  // Declared before derived signals that observe form events (formEvents depends on this.form).
   protected readonly form = this.fb.group({
     name: this.fb.control('', { validators: [Validators.required, Validators.maxLength(100)] }),
     email: this.fb.control('', { validators: [Validators.required, Validators.email] }),
@@ -133,6 +107,12 @@ export class Contact {
     /** Honeypot — bots fill hidden fields; legitimate users don't see it. */
     website: this.fb.control(''),
   });
+
+  // ── Derived ───────────────────────────────────────────────────────
+  /** Initial purpose from `?purpose=<chip>`; defaults to `'hi'`. */
+  private readonly queryPurpose = toSignal(this.route.queryParamMap, { initialValue: null });
+
+  private readonly profile = toSignal(inject(ProfileService).getPublicProfile(), { initialValue: null });
 
   /**
    * Reactive bridge so the `*Error()` computeds tick on every blur / status
@@ -233,8 +213,6 @@ export class Contact {
     return this.locale() === 'vi' ? 'Gửi tin nhắn' : 'Send message';
   });
 
-  private readonly profile = toSignal(inject(ProfileService).getPublicProfile(), { initialValue: null });
-
   /**
    * Channels surfaced beside the form. Profile-driven — `Profile.email` is the
    * primary channel, the rest come from `Profile.socialLinks` filtered to the
@@ -296,8 +274,24 @@ export class Contact {
     return rows;
   });
 
-  protected readonly copiedChannel = signal<string | null>(null);
+  protected readonly turnstileMessage = computed(() => {
+    const vi = this.locale() === 'vi';
+    switch (this.turnstileStatus()) {
+      case 'error':
+        return vi
+          ? 'Không tải được bước xác minh chống bot. Thử lại nhé.'
+          : "Couldn't load the bot challenge. Try again.";
+      case 'expired':
+        return vi ? 'Bước xác minh đã hết hạn. Bấm để làm lại.' : 'The challenge expired. Tap to refresh it.';
+      default:
+        return '';
+    }
+  });
 
+  protected readonly turnstileRetryLabel = computed(() => (this.locale() === 'vi' ? 'Tải lại' : 'Refresh'));
+
+  // ── Plain state ───────────────────────────────────────────────────
+  private turnstileWidgetId: string | null = null;
   protected readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Contact' }];
 
   constructor() {
@@ -406,22 +400,6 @@ export class Contact {
     }
     this.renderTurnstile();
   }
-
-  protected readonly turnstileMessage = computed(() => {
-    const vi = this.locale() === 'vi';
-    switch (this.turnstileStatus()) {
-      case 'error':
-        return vi
-          ? 'Không tải được bước xác minh chống bot. Thử lại nhé.'
-          : "Couldn't load the bot challenge. Try again.";
-      case 'expired':
-        return vi ? 'Bước xác minh đã hết hạn. Bấm để làm lại.' : 'The challenge expired. Tap to refresh it.';
-      default:
-        return '';
-    }
-  });
-
-  protected readonly turnstileRetryLabel = computed(() => (this.locale() === 'vi' ? 'Tải lại' : 'Refresh'));
 
   protected submit(): void {
     if (this.state() === 'submitting') return;

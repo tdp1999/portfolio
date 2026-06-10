@@ -61,21 +61,9 @@ import {
   TranslatableJson,
   UpdateProjectPayload,
 } from '../project.types';
-
-const EMPTY_TRANSLATABLE: TranslatableJson = { en: '', vi: '' };
-
-function requiredTranslatableGroup(fb: FormBuilder, value: TranslatableJson = EMPTY_TRANSLATABLE): FormGroup {
-  return fb.group({
-    en: fb.control(value['en'] ?? '', { nonNullable: true, validators: [Validators.required] }),
-    vi: fb.control(value['vi'] ?? '', { nonNullable: true, validators: [Validators.required] }),
-  });
-}
-
-interface GalleryImage {
-  mediaId: string;
-  url: string;
-  altText: string | null;
-}
+import { EMPTY_TRANSLATABLE } from './project.form.data';
+import type { GalleryImage } from './project.form.types';
+import { requiredTranslatableGroup } from './project.form.util';
 
 @Component({
   selector: 'console-project-form',

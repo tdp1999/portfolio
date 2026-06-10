@@ -15,13 +15,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Icon } from '../icon/icon';
 import type { SelectAlign, SelectOption, SelectTriggerValue } from './select.types';
-
-const OPEN_DELAY_MS = 80;
-const CLOSE_DELAY_MS = 200;
-/** After a hover-open, clicks within this window are treated as "keep open"
- *  (defeats the hover→click-toggle-off race). Past this window, click toggles
- *  off normally — otherwise users feel like they need to click twice to close. */
-const HOVER_GRACE_MS = 250;
+import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './select.data';
+import { nextSelectId } from './select.util';
 
 /**
  * Generic dropdown select. Works two ways:
@@ -139,14 +134,12 @@ const HOVER_GRACE_MS = 250;
   styleUrl: './select.scss',
 })
 export class Select<T = string> implements ControlValueAccessor {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  constructor() {
-    this.destroyRef.onDestroy(() => this.clearTimers());
-  }
-
+  // ── Inputs ────────────────────────────────────────────────────────
   readonly options = input.required<readonly SelectOption<T>[]>();
   readonly value = input<T | null>(null);
   readonly placeholder = input<string>('Select…');
@@ -169,26 +162,18 @@ export class Select<T = string> implements ControlValueAccessor {
   /** Stable id used for `aria-controls`. */
   readonly panelId = input<string>(`landing-select-${nextSelectId()}`);
 
+  // ── Outputs ───────────────────────────────────────────────────────
   readonly valueChange = output<T>();
 
+  // ── Writable signals ──────────────────────────────────────────────
   protected readonly open = signal(false);
   protected readonly cursor = signal(0);
 
-  private openTimer: ReturnType<typeof setTimeout> | null = null;
-  private closeTimer: ReturnType<typeof setTimeout> | null = null;
-  /** Tracks WHICH gesture opened the panel so a click that follows a hover-open
-   *  doesn't get misread as "toggle off". `null` while closed. */
-  private openedBy: 'hover' | 'click' | null = null;
-  /** Timestamp of the last hover-open. Bounds the grace window in which a
-   *  click is treated as "keep open" instead of toggling off. */
-  private hoverOpenedAt = 0;
-
-  // ─── ControlValueAccessor state ────────────────────────────────
+  // ── CVA writable signals ──────────────────────────────────────────
   private readonly cvaValue = signal<T | null>(null);
   private readonly cvaDisabled = signal(false);
-  private onChange: (value: T | null) => void = () => {};
-  private onTouched: () => void = () => {};
 
+  // ── Derived ───────────────────────────────────────────────────────
   /** Effective value combines imperative `value` input + CVA-written value. */
   protected readonly effectiveValue = computed<T | null>(() => this.value() ?? this.cvaValue());
   protected readonly effectiveDisabled = computed(() => this.disabled() || this.cvaDisabled());
@@ -213,7 +198,30 @@ export class Select<T = string> implements ControlValueAccessor {
     }
   });
 
-  // ─── CVA implementation ────────────────────────────────────────
+  // ── Plain state ───────────────────────────────────────────────────
+  private openTimer: ReturnType<typeof setTimeout> | null = null;
+  private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Tracks WHICH gesture opened the panel so a click that follows a hover-open
+   *  doesn't get misread as "toggle off". `null` while closed. */
+  private openedBy: 'hover' | 'click' | null = null;
+  /** Timestamp of the last hover-open. Bounds the grace window in which a
+   *  click is treated as "keep open" instead of toggling off. */
+  private hoverOpenedAt = 0;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.clearTimers());
+  }
+
+  // ── ControlValueAccessor ──────────────────────────────────────────
+  // onChange / onTouched are arrow-function properties (reassigned by register* methods).
+  // Declared after constructor so the member-ordering rule sees: fields → constructor → methods.
+  private onChange: (value: T | null) => void = () => {
+    /* noop — replaced by ControlValueAccessor.registerOnChange */
+  };
+  private onTouched: () => void = () => {
+    /* noop — replaced by ControlValueAccessor.registerOnTouched */
+  };
+
   writeValue(value: T | null): void {
     this.cvaValue.set(value);
   }
@@ -227,7 +235,7 @@ export class Select<T = string> implements ControlValueAccessor {
     this.cvaDisabled.set(isDisabled);
   }
 
-  // ─── UI handlers ───────────────────────────────────────────────
+  // ── UI handlers ───────────────────────────────────────────────────
   protected isSelected(v: T): boolean {
     return this.effectiveValue() === v;
   }
@@ -364,9 +372,4 @@ export class Select<T = string> implements ControlValueAccessor {
       this.closeTimer = null;
     }
   }
-}
-
-let selectSeq = 0;
-function nextSelectId(): string {
-  return (++selectSeq).toString(36);
 }

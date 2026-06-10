@@ -9,8 +9,7 @@ import {
   type BreadcrumbItem,
   type MegaMenuItem,
 } from '@portfolio/landing/shared/ui';
-
-type Lang = 'en' | 'vi';
+import type { Lang } from './ddl-language-switcher.types';
 
 @Component({
   selector: 'landing-ddl-language-switcher',
@@ -32,6 +31,22 @@ export class DdlLanguageSwitcher {
   readonly v4Open = signal(false);
   readonly v5Lang = signal<Lang>('en');
   readonly v6Lang = signal<Lang>('en');
+
+  /** Mock items for mega-menu variant to demonstrate "shared dropdown shell". */
+  readonly megaMenuItems: readonly MegaMenuItem[] = [
+    {
+      label: 'English',
+      description: 'Default — site copy in English.',
+      href: '#en',
+      iconName: 'globe',
+    },
+    {
+      label: 'Tiếng Việt',
+      description: 'Bản tiếng Việt — same content, localized.',
+      href: '#vi',
+      iconName: 'globe',
+    },
+  ];
 
   toggleV1(): void {
     this.v1Lang.update((l) => (l === 'en' ? 'vi' : 'en'));
@@ -75,20 +90,4 @@ export class DdlLanguageSwitcher {
   toggleV6(): void {
     this.v6Lang.update((l) => (l === 'en' ? 'vi' : 'en'));
   }
-
-  /** Mock items for mega-menu variant to demonstrate "shared dropdown shell". */
-  readonly megaMenuItems: readonly MegaMenuItem[] = [
-    {
-      label: 'English',
-      description: 'Default — site copy in English.',
-      href: '#en',
-      iconName: 'globe',
-    },
-    {
-      label: 'Tiếng Việt',
-      description: 'Bản tiếng Việt — same content, localized.',
-      href: '#vi',
-      iconName: 'globe',
-    },
-  ];
 }

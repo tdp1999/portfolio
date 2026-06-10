@@ -16,22 +16,9 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 import { LightboxService } from '../lightbox/lightbox.service';
 import type { LightboxItem } from '../lightbox/lightbox.types';
-
-/** Resolved display source for one slide. */
-interface ResolvedSource {
-  readonly src: string;
-  readonly srcset: string | null;
-  readonly download: string;
-}
-
-const MIN_SCALE = 1;
-const MAX_SCALE = 4;
-const DOUBLE_TAP_SCALE = 2.5;
-/** Rendered CSS width to request from Cloudinary for the full-res view. */
-const FULL_WIDTH = 1600;
-/** Close fade duration (ms) — kept in sync with `--lightbox-flip` in the SCSS. */
-const CLOSE_MS = 240;
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+import { CLOSE_MS, DOUBLE_TAP_SCALE, FULL_WIDTH, MAX_SCALE, MIN_SCALE } from './lightbox-overlay.data';
+import type { ResolvedSource } from './lightbox-overlay.types';
+import { clamp } from './lightbox-overlay.util';
 
 /**
  * Full-screen lightbox UI. Mounted by {@link LightboxService} in a CDK Overlay.
@@ -52,27 +39,36 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
   host: { class: 'landing-lightbox' },
 })
 export class LightboxOverlay {
+  // ── DI ────────────────────────────────────────────────────────────
   private readonly lightbox = inject(LightboxService);
   private readonly zone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  // ── Queries ───────────────────────────────────────────────────────
   private readonly stageRef = viewChild.required<ElementRef<HTMLElement>>('stage');
   private readonly trackRef = viewChild.required<ElementRef<HTMLElement>>('track');
 
+  // ── Derived ───────────────────────────────────────────────────────
   protected readonly items = this.lightbox.items;
   protected readonly index = this.lightbox.index;
   protected readonly count = computed(() => this.items().length);
+  protected readonly current = computed(() => this.items()[this.index()] ?? null);
+  protected readonly dialogLabel = computed(() => {
+    const cur = this.current();
+    return `Image ${this.index() + 1} of ${this.count()}${cur?.alt ? ` — ${cur.alt}` : ''}`;
+  });
+  protected readonly liveLabel = computed(() => `Image ${this.index() + 1} of ${this.count()}`);
+
+  // ── Writable signals ──────────────────────────────────────────────
   protected readonly zoomed = signal(false);
   /** Current scale, mirrored as a signal for the toolbar button disabled-state. */
   protected readonly scaleSig = signal(1);
+
+  // ── Plain state (constants exposed to template) ───────────────────
   protected readonly minScale = MIN_SCALE;
   protected readonly maxScale = MAX_SCALE;
-  protected readonly current = computed(() => this.items()[this.index()] ?? null);
-  protected readonly dialogLabel = computed(
-    () => `Image ${this.index() + 1} of ${this.count()}${this.current()?.alt ? ` — ${this.current()!.alt}` : ''}`
-  );
-  protected readonly liveLabel = computed(() => `Image ${this.index() + 1} of ${this.count()}`);
 
   // ── Transform state (plain fields, written via rAF — not signals) ──
   private idx = 0;
@@ -100,21 +96,6 @@ export class LightboxOverlay {
 
   private readonly reduceMotion = this.isBrowser && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /** Resolve the best display source: explicit full > Cloudinary upscale > inline. */
-  protected resolveBest(item: LightboxItem): ResolvedSource {
-    if (item.fullSrc) {
-      return { src: item.fullSrc, srcset: item.srcset ?? null, download: item.downloadUrl || item.fullSrc };
-    }
-    if (item.srcset) {
-      return { src: item.url, srcset: item.srcset, download: item.downloadUrl || item.url };
-    }
-    const cl = buildCloudinarySrcset(item.url, FULL_WIDTH);
-    if (cl.srcset) {
-      return { src: cl.src, srcset: cl.srcset, download: item.downloadUrl || cl.src };
-    }
-    return { src: item.url, srcset: null, download: item.downloadUrl || item.url };
-  }
-
   constructor() {
     this.idx = this.lightbox.index();
     afterNextRender(() => {
@@ -129,6 +110,21 @@ export class LightboxOverlay {
       track.classList.remove('is-grabbing');
       this.flipOpen();
     });
+  }
+
+  /** Resolve the best display source: explicit full > Cloudinary upscale > inline. */
+  protected resolveBest(item: LightboxItem): ResolvedSource {
+    if (item.fullSrc) {
+      return { src: item.fullSrc, srcset: item.srcset ?? null, download: item.downloadUrl || item.fullSrc };
+    }
+    if (item.srcset) {
+      return { src: item.url, srcset: item.srcset, download: item.downloadUrl || item.url };
+    }
+    const cl = buildCloudinarySrcset(item.url, FULL_WIDTH);
+    if (cl.srcset) {
+      return { src: cl.src, srcset: cl.srcset, download: item.downloadUrl || cl.src };
+    }
+    return { src: item.url, srcset: null, download: item.downloadUrl || item.url };
   }
 
   // ── Navigation ──

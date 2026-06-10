@@ -145,7 +145,7 @@ export class ProfileSeoOgSection {
           mode: 'single',
           mimeFilter: 'image/',
           defaultFolder: 'logos',
-          selectedIds: this.ogImageId() ? [this.ogImageId()!] : [],
+          selectedIds: this.ogImageId() ? [this.ogImageId() as string] : [],
           dataSource: this.mediaDataSource(),
         } satisfies MediaPickerDialogData,
         width: '900px',

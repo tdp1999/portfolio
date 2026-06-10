@@ -172,7 +172,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
           mimeFilter: 'image/svg+xml, image/png, image/webp',
           mimeGroup: 'image',
           defaultFolder: 'skills',
-          selectedIds: this.iconId() ? [this.iconId()!] : [],
+          selectedIds: this.iconId() ? [this.iconId() as string] : [],
           dataSource: this.mediaDataSource,
         } satisfies MediaPickerDialogData,
         width: '900px',

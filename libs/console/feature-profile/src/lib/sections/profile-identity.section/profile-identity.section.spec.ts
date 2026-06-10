@@ -113,7 +113,8 @@ describe('IdentitySectionComponent', () => {
     expect(component.saving()).toBe(false);
     expect(component.lastSaved()).toBeInstanceOf(Date);
     expect(patch).not.toBeNull();
-    expect(patch!.fullName).toEqual({ en: 'Updated', vi: 'Phương Trần' });
+    if (!patch) throw new Error('patch was not emitted');
+    expect(patch.fullName).toEqual({ en: 'Updated', vi: 'Phương Trần' });
   });
 
   it('clears saving spinner on API error and does not emit patch', () => {

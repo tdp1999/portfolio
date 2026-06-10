@@ -3,6 +3,7 @@
     #backdrop
     class="cp-backdrop"
     (click)="onBackdropClick($event, backdrop)"
+    (keydown.escape)="close()"
     role="dialog"
     aria-modal="true"
     aria-label="Search"
@@ -51,8 +52,10 @@
                 class="cp-row"
                 [class.cp-row--selected]="cursor() === i"
                 role="option"
+                tabindex="-1"
                 [attr.aria-selected]="cursor() === i"
                 (click)="activate(row.result)"
+                (keydown.enter)="activate(row.result)"
                 (mouseenter)="cursor.set(i)"
               >
                 <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>

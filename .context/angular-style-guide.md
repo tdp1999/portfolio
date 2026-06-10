@@ -446,6 +446,96 @@ Use as escape hatch when semantic selectors are insufficient (looped items, cust
 
 ---
 
+## 16. Logic/Component File Layout
+
+The internal layout of every `.ts` component/directive/injectable. Companion to the filename grammar
+in `patterns-file-structure.md` (which governs the *file*; this governs what's *inside* it).
+
+### 16.1 — A component file holds only the class
+
+At module scope, only three things are allowed: `import` statements, **one** decorated `export` class,
+and (rare, unavoidable) `declare global { … }`. Everything else — local `type`/`interface`, hardcoded
+`const` data, pure helpers, validators, regexes, `enum`, id-counters, `InjectionToken` — is extracted
+to a sibling/shared role file. See `patterns-file-structure.md §5.5` for the orphan→role mapping and
+local-vs-shared decision.
+
+### 16.2 — Member order (fields by kind, methods by cluster)
+
+```
+FIELDS (grouped by reactive role, blank line between groups)
+ 1. DI            inject()                                   private readonly
+ 2. Inputs        input() / input.required() / model()       readonly      (public, no modifier)
+ 3. Outputs       output()                                   readonly      (public, no modifier)
+ 4. Queries       viewChild / contentChild(ren)              private readonly
+ 5. Writable      signal()                                   protected/private readonly
+ 6. Derived       computed() / linkedSignal() / toSignal()   protected/private readonly
+ 7. Forms         form / FormControl / FormArray             protected readonly
+ 8. Plain state   counters, Map, timer handle, cache$, mode  private (NOT readonly — intentional)
+CONSTRUCTOR  (only effect(), destroyRef.onDestroy(), order-dependent init — no business logic)
+METHODS
+ 9.  Lifecycle hooks    ngOnChanges → ngOnInit → ngAfterViewInit → … → ngOnDestroy
+ 10. Host listeners     @HostListener (next to lifecycle)
+ 11. Custom methods     grouped by CLUSTER, not by accessibility (see below)
+```
+
+**Methods cluster, they do not sort by public/private.** A public/template-facing method is followed
+immediately by the private helpers that serve only it: `onSubmit()` → `buildPayload()` → `handleError()`,
+then the next cluster. Read top-to-bottom = behavior flow. Helpers shared by ≥2 clusters drop to a final
+`// ── shared helpers ──` group. For large multi-domain classes (e.g. a list with featured/archive/facets),
+each domain is one cluster holding **both its fields and methods**, ordered by UI flow — the only exception
+to "fields before methods".
+
+### 16.3 — Access modifier & readonly
+
+- **Narrowest by default:** `private` < `protected` (only when the template needs it) < public (only when
+  an external contract requires it, e.g. CVA `writeValue`).
+- **Never write the `public` keyword** — omit it (inputs/outputs/CVA methods are public-by-omission).
+- **Use the `private` keyword, never `#field`.**
+- **`readonly` is mandatory** on every `inject`, `input`, `output`, `model`, `viewChild`, `signal`,
+  `computed`, `linkedSignal`, `toSignal`, and `form` field (the *reference* is immutable). **Omit `readonly`**
+  on plain mutable state you reassign (`private idx = 0`, timer handles, `cache$`) — that's a valid exception.
+
+### 16.4 — Naming
+
+| Target | Rule | Example |
+|--------|------|---------|
+| Class / type / interface / enum | PascalCase (class enforced by `fe-naming`) | `ProjectForm` |
+| Field / signal / computed / method | camelCase | `selectedSkills`, `isInvalid` |
+| Boolean | `is/has/can/should` prefix | `isEdit`, `hasError` |
+| **Event handler** (template binding, DOM/host listener) | **`on<Event>`** | `onSubmit`, `onKeydown`, `onBeforeUnload` |
+| Non-handler business method | descriptive verb | `loadSkills`, `hydrateForm` |
+| Observable field | `$` suffix | `archive$` |
+| Injected service | role noun | `router`, `route`, `toast`, `fb` |
+| Extracted constant | UPPER_SNAKE_CASE | `PAGE_SIZE`, `SORT_OPTIONS` |
+| Private member | no leading underscore | `private timer` not `private _timer` |
+
+> Anything bound to an event (`(click)="onSubmit()"`, `@HostListener`, DOM listener) uses the `on<Event>`
+> form. This is about *method* names — unrelated to `@angular-eslint/no-output-on-prefix`, which only bans
+> "on"-prefixed `output()` names (an `output()` is named `change`, not `onChange`).
+
+### 16.5 — Export style
+
+- **Lazy-loaded routed component** (`loadComponent`) → `export default class`.
+- **Everything else** (shared/ui primitive, directive, service, presentational, dialog) → **named export**.
+
+### 16.6 — Import order
+
+Four groups, blank line between, alphabetical within: (1) `@angular/*`, (2) third-party (rxjs, material,
+zod), (3) cross-lib `@portfolio/*`, (4) relative `./`.
+
+### 16.7 — Enforcement
+
+Lint at **warning** level (root `eslint.config.mjs`, FE-scoped): `@typescript-eslint/member-ordering`
+(field→constructor→method only — fine field grouping & method clustering are by convention),
+`explicit-member-accessibility` (no-public), `naming-convention` (no leading underscore),
+`no-restricted-syntax` (bans `#private`). Field sub-grouping, method clustering, constructor/lifecycle
+content, `on<Event>`, `$`-suffix, and import order are **convention (doc), not lintable**. File purity
+(16.1), orphan placement, export style, and one-class-per-file are tracked for a future custom rule;
+until then they are convention. There is **no Prettier action** for any of this (Prettier cannot reorder,
+rename, or regroup); auto-fix only applies to import-sort once that plugin is added.
+
+---
+
 ## Quick Reference
 
 ### Signal APIs

@@ -7,12 +7,7 @@ import {
   LightboxDirective,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
-
-interface Shot {
-  readonly url: string;
-  readonly alt: string;
-  readonly caption: string;
-}
+import type { Shot } from './ddl-lightbox.types';
 
 /**
  * `landing-lightbox` — opt-in full-screen viewer with carousel + zoom/pan.

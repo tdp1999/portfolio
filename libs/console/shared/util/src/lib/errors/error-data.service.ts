@@ -3,14 +3,14 @@ import { ApiError } from './api-error';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorDataService {
-  private readonly _lastError = signal<ApiError | null>(null);
-  readonly lastError = this._lastError.asReadonly();
+  private readonly lastErrorSignal = signal<ApiError | null>(null);
+  readonly lastError = this.lastErrorSignal.asReadonly();
 
   push(error: ApiError): void {
-    this._lastError.set(error);
+    this.lastErrorSignal.set(error);
   }
 
   clear(): void {
-    this._lastError.set(null);
+    this.lastErrorSignal.set(null);
   }
 }

@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Router, RouterLink } from '@angular/router';
-import { delay, map, mergeMap, of, throwError, timer } from 'rxjs';
+import { map, mergeMap, of, throwError, timer } from 'rxjs';
 
 @Component({
   selector: 'console-ddl',

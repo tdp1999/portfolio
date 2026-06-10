@@ -14,7 +14,6 @@ import { KeyboardShortcutService } from './keyboard-shortcut.service';
  * ```
  */
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[fxKeyboardShortcuts]',
   standalone: true,
   host: {

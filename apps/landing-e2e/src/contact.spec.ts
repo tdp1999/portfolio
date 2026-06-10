@@ -129,7 +129,8 @@ test.describe('Landing /contact submission', () => {
     await expect(page.locator('.contact-success__heading')).toBeVisible({ timeout: 10000 });
 
     expect(capturedBody).not.toBeNull();
-    expect(capturedBody!.purpose).toBe('PRESS');
+    if (!capturedBody) throw new Error('expected request body to be captured');
+    expect(capturedBody.purpose).toBe('PRESS');
   });
 
   test('renders an inline error and stays on the form when name is missing', async ({ page }) => {
@@ -259,7 +260,8 @@ test.describe('Landing /contact submission', () => {
     await expect(page.locator('.contact-success__heading')).toBeVisible({ timeout: 10000 });
 
     expect(captured).not.toBeNull();
-    expect(captured!.name).toBeTruthy();
-    expect(captured!.email).toContain('@');
+    if (!captured) throw new Error('expected request body to be captured');
+    expect(captured.name).toBeTruthy();
+    expect(captured.email).toContain('@');
   });
 });

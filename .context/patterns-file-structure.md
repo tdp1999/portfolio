@@ -180,6 +180,44 @@ services is useful; typing "component" is not):
 
 ---
 
+## 5.5 What may live in a component file (orphan extraction)
+
+A component/directive/injectable `.ts` file holds, at module scope, only: `import`s, **one** decorated
+`export` class, and (rare) `declare global`. Every other top-level construct is extracted. For the
+class-internal layout (member order, access modifiers, naming) see `angular-style-guide.md §16`.
+
+### Orphan → role file
+
+| Orphan in a component file | Goes to |
+| --- | --- |
+| local `type` / `interface` (incl. `declare global`) | `<base>.types.ts` |
+| hardcoded data, option lists, copy/i18n strings | `<base>.data.ts` |
+| primitive constants / `enum` / config `Set` | `<base>.constants.ts` |
+| pure helper functions (formatter, builder, `clamp`) | `<base>.util.ts` |
+| validators / matchers / predicates (incl. validator-arrow fields) | `<base>.validator.ts` |
+| `InjectionToken` | `<base>.tokens.ts` |
+| `let` id-counter + factory | `<base>.util.ts`, or a shared `id.util.ts` |
+
+### Local (sibling) vs shared — by reusability
+
+- **Specific to one component, not reusable** → sibling file in the component's own folder
+  (`project.form/project.form.data.ts`).
+- **Reused by ≥2 components in the same lib** → lib-root flat file (`project.types.ts`).
+- **Generically reusable across libs** → the matching shared lib:
+  - pure fn / type / constants / validator → `libs/<scope>/shared/util` (or `libs/shared/utils/*` cross-scope)
+  - HTTP / store / guard / DI token tied to data → `libs/<scope>/shared/data-access`
+  - type/constant used by both landing and console → `libs/shared/*`
+
+> **Boundary constraint (`@nx/enforce-module-boundaries`):** a `shared/ui` component may import **only**
+> from `util` — so anything extracted from a shared/ui component must land in `shared/util`, never
+> `data-access`. **Heuristic:** "does this stand on its own without knowing which component uses it?"
+> → shared. "Does it exist only to serve this one component (and its name reflects that)?" → local.
+
+> **Enforcement:** convention (doc) today, plus the `angular-style-guide.md §16.7` warning-level lint
+> for class internals. A custom `fe-naming` rule for file purity / export style is a tracked follow-up.
+
+---
+
 ## 6. Three representations — one deterministic mapping
 
 The filename uses dots; HTML selectors cannot, so they map by rule. Lint checks all three agree:

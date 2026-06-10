@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import type { HeadingLevel } from './heading.types';
 
-export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+export type { HeadingLevel } from './heading.types';
 
 /**
  * Section heading with a hover-revealed anchor link (`#`), like modern docs sites

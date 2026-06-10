@@ -4,7 +4,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs';
 import { AuthStore } from '../auth.store';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
 

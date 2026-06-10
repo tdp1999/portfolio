@@ -101,7 +101,7 @@ export class TimezonePicker implements ControlValueAccessor {
     });
     return sortedRegions.map((region) => ({
       region,
-      zones: byRegion.get(region)!.sort((a, b) => a.city.localeCompare(b.city)),
+      zones: (byRegion.get(region) ?? []).sort((a, b) => a.city.localeCompare(b.city)),
     }));
   });
 

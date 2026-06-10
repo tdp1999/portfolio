@@ -14,7 +14,13 @@ import { DdlDepthMapV2 } from '../about-signatures/ddl-depth-map.v2/ddl-depth-ma
 import { DdlDepthMapV3 } from '../about-signatures/ddl-depth-map.v3/ddl-depth-map.v3';
 import { DdlFailuresV2 } from '../about-signatures/ddl-failures.v2/ddl-failures.v2';
 import { DdlFailuresV3 } from '../about-signatures/ddl-failures.v3/ddl-failures.v3';
-import { AboutFailures, type FailureEssay } from '@portfolio/landing/feature-about';
+import type { FailureEssay } from '@portfolio/landing/feature-about';
+// DDL sandbox renders the real graduated `AboutFailures` (V1) component to keep the showcase
+// faithful to production. feature-about is lazy-loaded at /about; this DDL-only page pulls it
+// eagerly by design. A clean fix would re-export AboutFailures from a non-lazy entry point
+// (lib restructure) — deferred. Scoped disable, not an allow-list change.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AboutFailures } from '@portfolio/landing/feature-about';
 import { DdlCurrentlyShippingV1 } from '../about-signatures/ddl-currently-shipping.v1/ddl-currently-shipping.v1';
 import { DdlCurrentlyShippingV2 } from '../about-signatures/ddl-currently-shipping.v2/ddl-currently-shipping.v2';
 import { DdlCurrentlyShippingV3 } from '../about-signatures/ddl-currently-shipping.v3/ddl-currently-shipping.v3';

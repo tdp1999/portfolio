@@ -111,11 +111,12 @@ export class AboutExperience {
       default:
         return;
     }
+    if (next === null) return;
     event.preventDefault();
     this.selectedIndex.set(next);
     this.updateFragment(next);
     queueMicrotask(() => {
-      const el = this.document.getElementById(list[next!].tabId);
+      const el = this.document.getElementById(list[next].tabId);
       el?.focus();
     });
   }

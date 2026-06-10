@@ -7,8 +7,8 @@ let nextId = 0;
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private readonly _toasts = signal<Toast[]>([]);
-  readonly toasts = this._toasts.asReadonly();
+  private readonly toastsSignal = signal<Toast[]>([]);
+  readonly toasts = this.toastsSignal.asReadonly();
 
   success(message: string, duration = DEFAULT_DURATION): void {
     this.add(message, 'success', duration);
@@ -27,12 +27,12 @@ export class ToastService {
   }
 
   dismiss(id: string): void {
-    this._toasts.update((toasts) => toasts.filter((t) => t.id !== id));
+    this.toastsSignal.update((toasts) => toasts.filter((t) => t.id !== id));
   }
 
   private add(message: string, type: ToastType, duration: number): void {
     const id = `toast-${++nextId}`;
     const toast: Toast = { id, message, type, duration };
-    this._toasts.update((toasts) => [...toasts, toast]);
+    this.toastsSignal.update((toasts) => [...toasts, toast]);
   }
 }

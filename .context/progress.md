@@ -242,6 +242,7 @@
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
 - [→] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — **in-progress**, see In Progress section
+- [ ] 362-fe-logic-file-layout-rollout - Roll out FE logic-file layout standard (member order/access/naming/file purity); foundation (doc §16 + §5.5 + warning lint) shipped, remaining = migrate complex files + custom purity rule + import-sort plugin (L) (standalone)
 - [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓

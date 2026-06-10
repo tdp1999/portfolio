@@ -12,7 +12,9 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'landing',
+          // `landing` is the house prefix; `fx` namespaces motion/effect directives
+          // (fxSpotlight, fxTypeOut) and `lightbox` is the lightbox directive's public API.
+          prefix: ['landing', 'fx', 'lightbox'],
           style: 'camelCase',
         },
       ],
@@ -24,6 +26,15 @@ export default [
           style: 'kebab-case',
         },
       ],
+    },
+  },
+  {
+    // Attribute directives must alias their inputs to namespace them under the directive
+    // selector (Angular's idiom for attribute directives, e.g. `lightboxGroup`,
+    // `edgeFadeAxis`). no-input-rename fights that pattern, so disable it for directives.
+    files: ['**/*.directive.ts'],
+    rules: {
+      '@angular-eslint/no-input-rename': 'off',
     },
   },
   {

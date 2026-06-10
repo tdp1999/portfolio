@@ -22,13 +22,13 @@ export class LandingLocaleService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  private readonly _locale = signal<Locale>(this.readInitial());
-  readonly locale = this._locale.asReadonly();
+  private readonly localeSignal = signal<Locale>(this.readInitial());
+  readonly locale = this.localeSignal.asReadonly();
 
   constructor() {
     // Persist + reflect on root element so SSR/CSR can pick it up.
     effect(() => {
-      const loc = this._locale();
+      const loc = this.localeSignal();
       this.document.documentElement.setAttribute('lang', loc);
       if (!this.isBrowser) return;
       try {
@@ -41,11 +41,11 @@ export class LandingLocaleService {
   }
 
   setLocale(locale: Locale): void {
-    this._locale.set(locale);
+    this.localeSignal.set(locale);
   }
 
   toggle(): void {
-    this._locale.update((l) => (l === 'en' ? 'vi' : 'en'));
+    this.localeSignal.update((l) => (l === 'en' ? 'vi' : 'en'));
   }
 
   private readInitial(): Locale {

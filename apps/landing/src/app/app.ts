@@ -12,17 +12,11 @@ import { getLocalized } from '@portfolio/shared/utils/lite';
   styleUrl: './app.scss',
 })
 export class App {
-  private profileService = inject(ProfileService);
-  private localeService = inject(LandingLocaleService);
+  private readonly profileService = inject(ProfileService);
+  private readonly localeService = inject(LandingLocaleService);
 
   /** Reactive locale — switching the language switcher in the header triggers re-localization here. */
   readonly locale = this.localeService.locale;
-
-  constructor() {
-    // Reset <title>/description to defaults on every navigation, so a page
-    // that doesn't explicitly set them won't inherit the previous page's.
-    inject(LandingMetaService).start();
-  }
 
   private readonly profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
 
@@ -38,4 +32,10 @@ export class App {
   });
   readonly resumeUrl = computed(() => this.resumeEntry()?.url ?? '');
   readonly resumeName = computed(() => this.resumeEntry()?.name ?? 'CV');
+
+  constructor() {
+    // Reset <title>/description to defaults on every navigation, so a page
+    // that doesn't explicitly set them won't inherit the previous page's.
+    inject(LandingMetaService).start();
+  }
 }

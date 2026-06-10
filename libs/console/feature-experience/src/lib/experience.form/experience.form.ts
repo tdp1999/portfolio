@@ -55,9 +55,7 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
 import { LIMITS } from '@portfolio/shared/validation';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
-
-type BulletGroup = FormGroup<{ text: FormControl<string> }>;
-type LinkGroup = FormGroup<{ label: FormControl<string>; url: FormControl<string> }>;
+import type { BulletGroup, LinkGroup } from './experience.form.types';
 
 @Component({
   selector: 'console-experience-form',
@@ -170,6 +168,19 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
   readonly isInvalid = computed(() => this.form.invalid);
   private readonly initialSnapshot = signal<unknown>(null);
 
+  readonly sections: SectionDescriptor[] = [
+    { id: 'section-company', label: 'Company' },
+    { id: 'section-role', label: 'Role' },
+    { id: 'section-dates', label: 'Dates' },
+    { id: 'section-location', label: 'Location' },
+    { id: 'section-skills', label: 'Skills' },
+    { id: 'section-responsibilities', label: 'Responsibilities' },
+    { id: 'section-highlights', label: 'Highlights' },
+    { id: 'section-links', label: 'Links' },
+    { id: 'section-context', label: 'Context' },
+    { id: 'section-settings', label: 'Admin' },
+  ];
+
   /** Cross-field: teamSizeMin must be <= teamSizeMax when both are set. Mirrors BE refine. */
   private readonly teamSizeRangeValidator = (group: AbstractControl) => {
     const min = group.get('teamSizeMin')?.value as number | null;
@@ -185,19 +196,6 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
     if (!start || !end || start < end) return null;
     return { dateRange: true };
   };
-
-  readonly sections: SectionDescriptor[] = [
-    { id: 'section-company', label: 'Company' },
-    { id: 'section-role', label: 'Role' },
-    { id: 'section-dates', label: 'Dates' },
-    { id: 'section-location', label: 'Location' },
-    { id: 'section-skills', label: 'Skills' },
-    { id: 'section-responsibilities', label: 'Responsibilities' },
-    { id: 'section-highlights', label: 'Highlights' },
-    { id: 'section-links', label: 'Links' },
-    { id: 'section-context', label: 'Context' },
-    { id: 'section-settings', label: 'Admin' },
-  ];
 
   ngOnInit(): void {
     this.form.addValidators(this.teamSizeRangeValidator);

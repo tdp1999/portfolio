@@ -9,10 +9,10 @@ import { InPageSection } from './section.types';
  */
 @Injectable()
 export class LandingScrollspyService {
-  private readonly _active = signal<string>('');
-  private _sections: readonly InPageSection[] = [];
+  private readonly activeSignal = signal<string>('');
+  private sections: readonly InPageSection[] = [];
 
-  readonly active = this._active.asReadonly();
+  readonly active = this.activeSignal.asReadonly();
 
   constructor() {
     if (typeof window === 'undefined') return;
@@ -22,22 +22,22 @@ export class LandingScrollspyService {
   }
 
   setSections(sections: readonly InPageSection[]): void {
-    this._sections = sections;
-    if (this._active() === '' && sections.length > 0) {
-      this._active.set(sections[0].id);
+    this.sections = sections;
+    if (this.activeSignal() === '' && sections.length > 0) {
+      this.activeSignal.set(sections[0].id);
     }
     this.update();
   }
 
   private update(): void {
-    if (typeof document === 'undefined' || this._sections.length === 0) return;
+    if (typeof document === 'undefined' || this.sections.length === 0) return;
     const offset = window.innerHeight * 0.35;
-    let current = this._sections[0].id;
-    for (const s of this._sections) {
+    let current = this.sections[0].id;
+    for (const s of this.sections) {
       const el = document.getElementById(s.id);
       if (!el) continue;
       if (el.getBoundingClientRect().top - offset <= 0) current = s.id;
     }
-    if (current !== this._active()) this._active.set(current);
+    if (current !== this.activeSignal()) this.activeSignal.set(current);
   }
 }

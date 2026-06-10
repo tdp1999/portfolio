@@ -238,6 +238,8 @@
     class="cp-backdrop"
     [class.cp-backdrop--top]="which === 'v1' || which === 'v2' || which === 'v4'"
     (click)="onBackdropClick($event, backdrop)"
+    (keydown.escape)="close()"
+    tabindex="-1"
     role="dialog"
     aria-modal="true"
     aria-label="Search"
@@ -286,8 +288,10 @@
                   class="cp-row cp-row--v1"
                   [class.cp-row--selected]="cursor() === i"
                   role="option"
+                  tabindex="-1"
                   [attr.aria-selected]="cursor() === i"
                   (click)="activate(row.result)"
+                  (keydown.enter)="activate(row.result)"
                   (mouseenter)="cursor.set(i)"
                 >
                   <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>
@@ -310,8 +314,10 @@
                   class="cp-row cp-row--v2"
                   [class.cp-row--selected]="cursor() === i"
                   role="option"
+                  tabindex="-1"
                   [attr.aria-selected]="cursor() === i"
                   (click)="activate(row.result)"
+                  (keydown.enter)="activate(row.result)"
                   (mouseenter)="cursor.set(i)"
                 >
                   <span class="cp-row__icon"><landing-icon [name]="row.result.iconName" [size]="14" /></span>
@@ -332,8 +338,10 @@
                   class="cp-row cp-row--v3"
                   [class.cp-row--selected]="cursor() === i"
                   role="option"
+                  tabindex="-1"
                   [attr.aria-selected]="cursor() === i"
                   (click)="activate(row.result)"
+                  (keydown.enter)="activate(row.result)"
                   (mouseenter)="cursor.set(i)"
                 >
                   <span class="cp-row__icon-frame">
@@ -360,8 +368,10 @@
                   class="cp-row cp-row--v4"
                   [class.cp-row--selected]="cursor() === i"
                   role="option"
+                  tabindex="-1"
                   [attr.aria-selected]="cursor() === i"
                   (click)="activate(row.result)"
+                  (keydown.enter)="activate(row.result)"
                   (mouseenter)="cursor.set(i)"
                 >
                   <span class="cp-row__title">{{ row.result.title }}</span>

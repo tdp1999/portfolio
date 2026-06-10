@@ -138,7 +138,7 @@ export class ProfileIdentitySection {
           mode: 'single',
           mimeFilter: 'image/',
           defaultFolder: 'avatars',
-          selectedIds: this.avatarId() ? [this.avatarId()!] : [],
+          selectedIds: this.avatarId() ? [this.avatarId() as string] : [],
           dataSource: this.mediaDataSource(),
         } satisfies MediaPickerDialogData,
         width: '900px',

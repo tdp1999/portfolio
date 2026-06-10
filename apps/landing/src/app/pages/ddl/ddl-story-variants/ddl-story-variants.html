@@ -277,7 +277,9 @@
   [class.is-active]="isLampActive()"
   [attr.data-active]="activeE()"
   aria-label="Option E — Anglepoise lamp"
+  tabindex="-1"
   (click)="onSectionClick()"
+  (keydown.escape)="onSectionClick()"
 >
   <landing-container size="wide">
     <landing-eyebrow [label]="['05', 'The Story']" [accentFirst]="true" class="sv-opt-e__eyebrow" />
@@ -435,7 +437,9 @@
   [class.is-active]="isPenActive()"
   [attr.data-active]="activeG()"
   aria-label="Option G — Fountain pen"
+  tabindex="-1"
   (click)="onPenSectionClick()"
+  (keydown.escape)="onPenSectionClick()"
 >
   <landing-container size="wide">
     <landing-eyebrow [label]="['05', 'The Story']" [accentFirst]="true" class="sv-opt-g__eyebrow" />

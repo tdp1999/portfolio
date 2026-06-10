@@ -44,17 +44,17 @@ export class KeyboardShortcutService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly shortcuts = signal<readonly KeyboardShortcut[]>([]);
   private readonly suspendedCount = signal(0);
-  private readonly _isMac = signal<boolean>(false);
+  private readonly isMacSignal = signal<boolean>(false);
 
   /** Public, read-only view of all currently registered shortcuts. */
   readonly all = this.shortcuts.asReadonly();
   readonly suspended = computed(() => this.suspendedCount() > 0);
-  readonly isMac = this._isMac.asReadonly();
+  readonly isMac = this.isMacSignal.asReadonly();
 
   constructor() {
     if (this.isBrowser) {
       const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-      this._isMac.set(/Mac|iPhone|iPad|iPod/.test(ua));
+      this.isMacSignal.set(/Mac|iPhone|iPad|iPod/.test(ua));
     }
   }
 
@@ -109,7 +109,6 @@ export class KeyboardShortcutService {
           shortcut.handler();
         } catch (err) {
           // Don't let a handler error tear down the listener — log + move on.
-          // eslint-disable-next-line no-console
           console.error('[keyboard-shortcut] handler failed for', shortcut.id, err);
         }
         return true;
@@ -120,7 +119,7 @@ export class KeyboardShortcutService {
 
   /** Pretty-print a combo using the platform's modifier glyphs. */
   format(combo: string): string {
-    return formatCombo(combo, this._isMac());
+    return formatCombo(combo, this.isMacSignal());
   }
 }
 

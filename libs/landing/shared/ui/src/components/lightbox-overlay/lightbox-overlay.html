@@ -162,7 +162,7 @@
   @if (current(); as item) {
     @if (item.caption) {
       <figcaption class="landing-lightbox__caption">
-        @if (item.figureNumber != null) {
+        @if (item.figureNumber !== null) {
           <span class="landing-lightbox__fig"
             >FIG. {{ item.figureNumber! < 10 ? '0' + item.figureNumber : item.figureNumber }}</span
           >

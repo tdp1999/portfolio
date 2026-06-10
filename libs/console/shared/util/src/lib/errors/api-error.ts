@@ -13,7 +13,7 @@ export function extractApiError(err: HttpErrorResponse): ApiError {
   if (typeof body === 'string' && body.trim() !== '') {
     try {
       body = JSON.parse(body);
-    } catch (e) {
+    } catch (_e) {
       // Nếu là string thường không parse được, gán nó luôn vào message để không mất dữ liệu
       body = { message: body };
     }

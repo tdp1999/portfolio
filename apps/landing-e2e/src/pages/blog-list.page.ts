@@ -19,7 +19,7 @@ import { expect, type Locator, type Page } from '@playwright/test';
 export class BlogListPage {
   constructor(private readonly page: Page) {}
 
-  async goto(query: string = ''): Promise<void> {
+  async goto(query = ''): Promise<void> {
     const url = query ? `/blog?${query}` : '/blog';
     await this.page.goto(url);
     await this.page.waitForURL((u) => u.pathname === '/blog');

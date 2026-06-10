@@ -8,14 +8,7 @@ import {
   type BreadcrumbItem,
   type GalleryImage,
 } from '@portfolio/landing/shared/ui';
-
-interface DemoCard {
-  readonly href: string;
-  readonly image: string;
-  readonly meta: string;
-  readonly title: string;
-  readonly excerpt: string;
-}
+import type { DemoCard } from './ddl-carousel.types';
 
 /**
  * `landing-carousel` — one full-feature, breakpoint-agnostic slider.

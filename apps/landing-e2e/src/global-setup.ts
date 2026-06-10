@@ -3,6 +3,12 @@ import { resolve } from 'path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+// The deterministic blog dataset lives in the api project's Prisma seed. `api` is an
+// application (not a buildable lib) and exposes no npm-scope entry point for its seeds, so
+// there is no `@portfolio/...` alias to import this through. Scoped disable for this single
+// cross-project test-fixture import; not an allow-list change. Follow-up: extract the shared
+// seed into a buildable lib (e.g. @portfolio/api/seeds) if more e2e suites need it.
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { seedBlogPosts } from '../../api/prisma/seeds/blog-posts.seed';
 
 config({ path: resolve(process.cwd(), '.env') });
