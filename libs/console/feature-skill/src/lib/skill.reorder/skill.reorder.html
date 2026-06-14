@@ -1,0 +1,51 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Reorder Skills</h1>
+      <p class="crud-header__subtitle">
+        Drag within each tier to set the order. This matches the home “Stack” section — chips group by tier, then follow
+        this order.
+      </p>
+    </div>
+    <a mat-stroked-button routerLink="../">
+      <mat-icon class="icon-md">arrow_back</mat-icon>
+      Back to list
+    </a>
+  </div>
+
+  @if (loading()) {
+    <p class="py-8 text-center text-text-muted">Loading skills…</p>
+  } @else {
+    <div class="reorder-tiers" [class.reorder-tiers--busy]="reordering()">
+      @for (group of groups(); track group.tier) {
+        <section class="reorder-tier">
+          <h2 class="text-section-heading reorder-tier__title">
+            {{ group.label }}
+            <span class="text-text-muted">({{ group.items.length }})</span>
+          </h2>
+
+          @if (group.items.length === 0) {
+            <p class="reorder-empty text-text-muted">No skills in this tier.</p>
+          } @else {
+            <div
+              cdkDropList
+              [cdkDropListData]="group.items"
+              (cdkDropListDropped)="drop($event, group.tier)"
+              class="reorder-list"
+            >
+              @for (skill of group.items; track skill.id) {
+                <div cdkDrag class="reorder-item bg-surface border border-border rounded-lg">
+                  <mat-icon class="reorder-item__handle text-text-muted">drag_indicator</mat-icon>
+                  <span class="reorder-item__name">{{ skill.name }}</span>
+                  @if (skill.parentSkillId) {
+                    <span class="reorder-item__parent text-text-muted">{{ parentName(skill.parentSkillId) }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </section>
+      }
+    </div>
+  }
+</div>

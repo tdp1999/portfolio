@@ -10,6 +10,7 @@ import {
   UpdateSkillHandler,
   DeleteSkillHandler,
   RestoreSkillHandler,
+  ReorderSkillsHandler,
 } from './application/commands';
 import {
   ListSkillsHandler,
@@ -19,7 +20,13 @@ import {
   GetSkillChildrenHandler,
 } from './application/queries';
 
-const commandHandlers = [CreateSkillHandler, UpdateSkillHandler, DeleteSkillHandler, RestoreSkillHandler];
+const commandHandlers = [
+  CreateSkillHandler,
+  UpdateSkillHandler,
+  DeleteSkillHandler,
+  RestoreSkillHandler,
+  ReorderSkillsHandler,
+];
 const queryHandlers = [
   ListSkillsHandler,
   ListAllSkillsHandler,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { ConflictError, ErrorLayer, SkillErrorCode } from '@portfolio/shared/errors';
+import { ConflictError, ErrorLayer, NotFoundError, SkillErrorCode } from '@portfolio/shared/errors';
 import { PaginatedResult } from '@portfolio/shared/types';
 import { PrismaService } from '../../../../infrastructure/prisma';
 import { ISkillRepository, SkillFindAllOptions } from '../../application/ports/skill.repository.port';
@@ -159,5 +159,28 @@ export class SkillRepository implements ISkillRepository {
       data: data.map(SkillMapper.toDomain),
       total,
     };
+  }
+
+  // INVARIANT: displayOrder is sorted WITHIN a tier, not globally. The reorder UI
+  // assigns 0-based indices per tier, so the same values (0, 1, 2…) recur across
+  // tiers. Consumers MUST group by tier first, then sort by displayOrder (see the
+  // landing groupByTier()); sorting by displayOrder alone interleaves tiers.
+  async reorder(items: { id: string; displayOrder: number }[]): Promise<void> {
+    try {
+      await this.prisma.$transaction(
+        items.map(({ id, displayOrder }) => this.prisma.skill.update({ where: { id }, data: { displayOrder } }))
+      );
+    } catch (err) {
+      // A concurrent delete leaves a stale id in the batch; the whole transaction
+      // rolls back. Map P2025 to a domain NotFoundError so the client gets a
+      // dictionary-mapped message instead of an opaque 500.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+        throw NotFoundError('One or more skills no longer exist; reload and try again', {
+          errorCode: SkillErrorCode.NOT_FOUND,
+          layer: ErrorLayer.INFRASTRUCTURE,
+        });
+      }
+      throw err;
+    }
   }
 }

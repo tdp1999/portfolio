@@ -1,4 +1,4 @@
-import { CreateSkillSchema, UpdateSkillSchema, SkillQuerySchema } from './skill.dto';
+import { CreateSkillSchema, UpdateSkillSchema, SkillQuerySchema, ReorderSkillsSchema } from './skill.dto';
 
 describe('Skill DTOs', () => {
   describe('CreateSkillSchema', () => {
@@ -56,6 +56,30 @@ describe('Skill DTOs', () => {
         expect(result.data.category).toBe('TECHNICAL');
         expect(result.data.search).toBe('react');
       }
+    });
+  });
+
+  describe('ReorderSkillsSchema', () => {
+    const id = '550e8400-e29b-41d4-a716-446655440000';
+
+    it('should accept a non-empty array of {id, displayOrder}', () => {
+      const result = ReorderSkillsSchema.safeParse([
+        { id, displayOrder: 0 },
+        { id: '550e8400-e29b-41d4-a716-446655440001', displayOrder: 1 },
+      ]);
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject an empty array', () => {
+      expect(ReorderSkillsSchema.safeParse([]).success).toBe(false);
+    });
+
+    it('should reject a non-uuid id', () => {
+      expect(ReorderSkillsSchema.safeParse([{ id: 'not-a-uuid', displayOrder: 0 }]).success).toBe(false);
+    });
+
+    it('should reject a negative displayOrder', () => {
+      expect(ReorderSkillsSchema.safeParse([{ id, displayOrder: -1 }]).success).toBe(false);
     });
   });
 });

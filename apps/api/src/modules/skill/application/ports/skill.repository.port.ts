@@ -18,4 +18,10 @@ export type ISkillRepository = ICrudRepository<Skill> & {
   hasChildren(skillId: string): Promise<boolean>;
   findAll(options: SkillFindAllOptions): Promise<PaginatedResult<Skill>>;
   findAllNoLimit(): Promise<Skill[]>;
+  /**
+   * Persists displayOrder for a batch of skills atomically. displayOrder is
+   * tier-scoped (0-based within each tier), so consumers must group by tier
+   * before sorting by displayOrder — see the landing groupByTier().
+   */
+  reorder(items: { id: string; displayOrder: number }[]): Promise<void>;
 };

@@ -1,6 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from '@portfolio/console/shared/data-access';
-import { AdminSkill, CreateSkillPayload, SkillsListResponse, UpdateSkillPayload } from './skill.types';
+import {
+  AdminSkill,
+  CreateSkillPayload,
+  ReorderSkillsPayload,
+  SkillsListResponse,
+  UpdateSkillPayload,
+} from './skill.types';
 
 @Injectable({ providedIn: 'root' })
 export class SkillService {
@@ -49,5 +55,9 @@ export class SkillService {
 
   delete(id: string) {
     return this.api.delete<{ success: boolean }>(`/skills/${id}`);
+  }
+
+  reorder(items: ReorderSkillsPayload) {
+    return this.api.patch<{ success: boolean }>('/skills/reorder', items);
   }
 }

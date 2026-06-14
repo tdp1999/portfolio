@@ -47,6 +47,13 @@ export interface CreateSkillPayload {
   tier?: SkillTier;
 }
 
+export interface ReorderSkillItem {
+  id: string;
+  displayOrder: number;
+}
+
+export type ReorderSkillsPayload = ReorderSkillItem[];
+
 export interface UpdateSkillPayload {
   name?: string;
   category?: string;

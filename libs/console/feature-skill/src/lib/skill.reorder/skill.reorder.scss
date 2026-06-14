@@ -1,0 +1,101 @@
+.reorder-tiers {
+  // One column per tier; auto-fit fills the available width (no media queries —
+  // console is deferred from the landing responsive system) and wraps when narrow.
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+
+  &--busy {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+}
+
+.reorder-tier__title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.reorder-empty {
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+}
+
+.reorder-list {
+  // No flex `gap` here: CDK drag-drop mis-measures placeholder position when the
+  // drop list uses gap, which makes siblings jump/lag. Use per-item margin instead.
+  display: block;
+  min-height: 3rem;
+}
+
+.reorder-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  // Settle quickly when picked back up; CDK toggles transform during drag.
+  transition: box-shadow 150ms ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &__handle {
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-weight: 500;
+  }
+
+  &__parent {
+    margin-left: auto;
+    font-size: var(--text-xs);
+  }
+}
+
+// --- CDK drag-drop visual states ---
+
+// The floating card under the cursor.
+.cdk-drag-preview {
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.28);
+  cursor: grabbing;
+}
+
+// The gap left where the dragged card will land: a clear dashed snap slot so the
+// drop target reads at a glance and siblings reserve the right amount of space.
+.cdk-drag-placeholder {
+  border: 1px dashed var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  opacity: 0.7;
+
+  // Hide the cloned card's inner content — only the slot outline shows.
+  > * {
+    visibility: hidden;
+  }
+}
+
+// Smooth settle animation when a card is dropped.
+.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Siblings glide out of the way as the dragged card moves over them.
+.reorder-list.cdk-drop-list-dragging .reorder-item:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}

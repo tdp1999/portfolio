@@ -51,9 +51,21 @@ export const SkillQuerySchema = PaginatedQuerySchema.extend({
   sortBy: z.enum(['updatedAt', 'name', 'displayOrder']).default('updatedAt'),
 });
 
+// --- ReorderSkillsSchema ---
+
+export const ReorderSkillsSchema = z
+  .array(
+    z.object({
+      id: z.uuid(),
+      displayOrder: DisplayOrderSchema,
+    })
+  )
+  .min(1);
+
 export type CreateSkillDto = z.infer<typeof CreateSkillSchema>;
 export type UpdateSkillDto = z.infer<typeof UpdateSkillSchema>;
 export type SkillQueryDto = z.infer<typeof SkillQuerySchema>;
+export type ReorderSkillsDto = z.infer<typeof ReorderSkillsSchema>;
 
 export type SkillResponseDto = {
   id: string;

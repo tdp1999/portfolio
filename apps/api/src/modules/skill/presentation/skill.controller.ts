@@ -21,6 +21,7 @@ import {
   UpdateSkillCommand,
   DeleteSkillCommand,
   RestoreSkillCommand,
+  ReorderSkillsCommand,
 } from '../application/commands';
 import {
   ListSkillsQuery,
@@ -69,6 +70,15 @@ export class SkillController {
   async create(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
     const id = await this.commandBus.execute(new CreateSkillCommand(body, req.user.id));
     return { id };
+  }
+
+  // NOTE: PATCH /skills/reorder must be registered BEFORE /:id to avoid route conflict
+  @Patch('reorder')
+  @UseGuards(JwtAccessGuard, RoleGuard)
+  @Roles(['ADMIN'])
+  async reorder(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<{ success: boolean }> {
+    await this.commandBus.execute(new ReorderSkillsCommand(body, req.user.id));
+    return { success: true };
   }
 
   @Patch(':id')

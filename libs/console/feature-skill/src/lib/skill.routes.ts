@@ -7,6 +7,10 @@ export const skillRoutes: Route[] = [
     loadComponent: () => import('./skills/skills'),
   },
   {
+    path: 'reorder',
+    loadComponent: () => import('./skill.reorder/skill.reorder'),
+  },
+  {
     path: 'new',
     loadComponent: () => import('./skill.form/skill.form'),
     canDeactivate: [unsavedChangesGuard],

@@ -2,6 +2,7 @@ import { CreateSkillCommand, CreateSkillHandler } from './create-skill.command';
 import { UpdateSkillCommand, UpdateSkillHandler } from './update-skill.command';
 import { DeleteSkillCommand, DeleteSkillHandler } from './delete-skill.command';
 import { RestoreSkillCommand, RestoreSkillHandler } from './restore-skill.command';
+import { ReorderSkillsCommand, ReorderSkillsHandler } from './reorder-skills.command';
 import { ISkillRepository } from '../ports/skill.repository.port';
 import { Skill } from '../../domain/entities/skill.entity';
 import { ISkillProps } from '../../domain/skill.types';
@@ -51,6 +52,7 @@ describe('Skill Commands', () => {
       findAllNoLimit: jest.fn(),
       hasChildren: jest.fn(),
       findAll: jest.fn(),
+      reorder: jest.fn(),
     };
   });
 
@@ -218,6 +220,38 @@ describe('Skill Commands', () => {
       await expect(handler.execute(new RestoreSkillCommand(skillId, userId))).rejects.toMatchObject({
         errorCode: 'SKILL_PARENT_DELETED',
       });
+    });
+  });
+
+  // --- Reorder ---
+
+  describe('ReorderSkillsHandler', () => {
+    let handler: ReorderSkillsHandler;
+    beforeEach(() => (handler = new ReorderSkillsHandler(repo)));
+
+    it('should persist the validated order', async () => {
+      const items = [
+        { id: skillId, displayOrder: 0 },
+        { id: parentId, displayOrder: 1 },
+      ];
+
+      await handler.execute(new ReorderSkillsCommand(items, userId));
+
+      expect(repo.reorder).toHaveBeenCalledWith(items);
+    });
+
+    it('should reject an invalid payload', async () => {
+      await expect(
+        handler.execute(new ReorderSkillsCommand([{ id: 'not-a-uuid', displayOrder: 0 }], userId))
+      ).rejects.toMatchObject({ errorCode: 'SKILL_INVALID_INPUT' });
+      expect(repo.reorder).not.toHaveBeenCalled();
+    });
+
+    it('should reject an empty payload', async () => {
+      await expect(handler.execute(new ReorderSkillsCommand([], userId))).rejects.toMatchObject({
+        errorCode: 'SKILL_INVALID_INPUT',
+      });
+      expect(repo.reorder).not.toHaveBeenCalled();
     });
   });
 });
