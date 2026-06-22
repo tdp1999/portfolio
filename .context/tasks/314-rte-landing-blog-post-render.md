@@ -12,9 +12,9 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 6.
 
 ## Acceptance Criteria
 - [ ] `post-detail.component.ts` no longer imports `marked` or any Markdown utility for the body. `marked` may stay in `package.json` for the Obsidian importer (task 318) but not in the runtime page bundle.
-- [ ] Template uses `<redoc-rte-render [html]="post().contentHtml">`.
+- [ ] Template uses `<redoc-rte-render [html]="post().contentHtml.en">` (`contentHtml` is the `{ en, vi }` envelope per task 305 — bind the active locale).
 - [ ] Existing TOC + reading-progress-bar (Blog Post epic, Apr 2026) keep working. ToC selector should target the rendered headings (h2/h3) inside the RTE output container.
-- [ ] Shiki syntax highlighting for code blocks: decide same as task 313 — write-time (in `RichTextService`) or read-time. If write-time, applied during BE pipeline; if read-time, a small client-side pass after render.
+- [ ] Code blocks render as plain `<pre><code>` **without syntax highlighting in V1** (decided 2026-06-10 — Shiki deferred, same as task 313).
 - [ ] No regression in /blog/:slug Lighthouse Perf score (existing E5 gate ≥ 80).
 
 ## Technical Notes

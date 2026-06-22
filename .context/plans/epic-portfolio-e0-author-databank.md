@@ -22,7 +22,7 @@
 | Location | Ho Chi Minh City, Vietnam |
 | Email | `tdp99.business@gmail.com` |
 | LinkedIn | `linkedin.com/in/tdp1999` |
-| Personal site (legacy, to be replaced) | <https://thunderphong.com/> |
+| Personal site (legacy) | DELETED (2026-06). Old Angular 14 portfolio at `thunderphong.com` taken down — code removed, cannot be referenced. This initiative is its replacement. |
 | English | TOEIC 970/990 (2022–2024). Daily working language. International recruiter audience is realistic. |
 | Education | B.E. in Computer Networks & Communications, Can Tho University (09/2017 – 02/2022). Valedictorian. |
 | Current employer | Redoc (Singapore-based; HCMC office). At Redoc since 08/2022. Current title: Senior Frontend Engineer (held ~1 year as of 2026-05). |
@@ -122,7 +122,7 @@ Stated outcomes drawn from the CV (verifiable on request):
 ### 6.4 Smaller artifacts (one-line mention only)
 
 - **Arch Studio** — Angular 17 + Nx Standalone solution to a FrontendMentor advanced challenge. Demo: <https://thunderphuong-arch-studio.vercel.app>. Repo: <https://github.com/phuong-tran-1999/arch-studio>.
-- **Legacy portfolio** — Angular 14 + Tailwind, with dark/light mode and language switching. Live at <https://thunderphong.com/>. Repo: <https://github.com/tdp1999/porfolio> (note typo in repo name). **This is the site being replaced by the v1 of this initiative.**
+- **Legacy portfolio** — Angular 14 + Tailwind, with dark/light mode and language switching. **DELETED (2026-06): site taken down and code removed; `thunderphong.com` no longer hosts it.** Cannot be linked or referenced anywhere on the new site. (Note: the Document Engine demo at `document-engine.thunderphong.com` is a separate subdomain and is unaffected.) This was the site replaced by v1 of this initiative.
 
 ## 7. Working style — observations from session
 
@@ -151,6 +151,11 @@ For E2 to preserve in English drafts. Goal: the spirit, not literal translation.
 - *"Cảm giác mãn nguyện thôi."* — success metric framed as feeling, not number.
 
 Tone signature: short sentences with parenthetical clarifications, mixed VN+EN tech terms, willing to admit not-knowing without performance ("hơi khó nói", "cũng khó nói", "đợi mình suy nghĩ"). EN drafts should not become more polished than this — that would erase the voice.
+
+### Locale & spelling conventions (author-confirmed 2026-06-13)
+
+- **English copy = American English.** American spelling (`color`, `optimize`, `behavior`) and American idiom/register. Not British.
+- **Vietnamese copy = pure Vietnamese**, *except* technical terms which stay in English (e.g. "frontend", "design system", "monorepo", "signals"). Do not force-translate established tech vocabulary into Vietnamese; do not let everyday words drift into Vietglish.
 
 ## 9. Aesthetic — what is liked, what is hated
 
@@ -217,11 +222,11 @@ Where each fact in this file came from, for traceability.
 
 Things this databank does not yet know. Add as they get answered.
 
-- Salary band targeted (rough number) — useful for negative-persona filter sharpness.
+- Salary band targeted (rough number) — useful for negative-persona filter sharpness. **DEFERRED: author wants Claude to research a market-average reference number later, then decide.**
 - Exact freelance rate the author has in mind, if any.
 - Specific company-size sweet spot beyond "any if professional" — some sub-epic may want this.
-- Whether the author has a usable headshot photo (Franco-style hero option depends on this).
-- Whether the author wants to surface the legacy portfolio (`thunderphong.com`) anywhere or fully replace its URL.
+- ~~Usable headshot photo?~~ **RESOLVED (2026-06-13): yes, a usable headshot exists. Franco-style photo-led hero is on the table.**
+- ~~Surface the legacy portfolio?~~ **RESOLVED (2026-06-13): no — legacy site deleted, cannot reference. See §1 / §6.4.**
 - Color preferences / brand-personal palette starting points (E4 territory, but a hint here would help).
 - Any prior writing — blog posts, conference talks, internal docs that could anchor a "writing" surface — to consider for a future "writings" section (parking-lot v2+ unless surfaced).
 
@@ -229,3 +234,53 @@ Things this databank does not yet know. Add as they get answered.
 
 - 2026-05-01 — Databank created. Synthesized from CV, three planning sessions, and repo inspection of Document Engine + claude-code-ctx. E1 outputs depend on this; E2 will write directly from it.
 - 2026-05-01 — Senior-title duration corrected: ~1 year, not the full 3.5 years at Redoc. Note added that copy should lean on years-shipping over years-at-title.
+- 2026-06-13 — Content-authoring session start. Added locale conventions (§8: EN=American, VI=pure-except-tech). Resolved §14 gaps: headshot exists; legacy portfolio deleted (updated §1, §6.4). Audience reach confirmed: write for broadest reach, intl recruiter top priority → domestic recruiter → freelance job hunter → curious dev. Salary-band research deferred to Claude.
+
+## 16. Finalized copy (canonical — databank chính chủ)
+
+Locked, author-approved strings. This is the source of truth; prod should match. Each entry notes the DB field + where to publish.
+
+### /about — §04 "Next steps" CTA (`Profile.ctaHeading` + `Profile.ctaLede`)
+
+Publish: Console → `/profile` → **Landing Content** section → "/about — §04 Next steps heading" + "…lede". Locked 2026-06-13.
+
+- **Heading**
+  - EN: *Still here? Then maybe we should talk.*
+  - VI: *Bạn vẫn ở lại, chưa đi? Có hứng thú trò chuyện với mình không?*
+- **Lede**
+  - EN: *Whether you're hiring, partnering, or just here to say hi — reach out. I'd love to hear from you.*
+  - VI: *Muốn tìm kiếm thành viên mới cho team, muốn hợp tác công việc, hay đơn giản là tò mò muốn trò chuyện một xíu với mình, bạn cứ liên hệ nha. Mình luôn sẵn lòng.*
+
+### Skill taxonomy (canonical — Skill records)
+
+Drives home §04 "The Stack" (chips grouped by `tier`; umbrellas excluded — `skill.util.ts:12`) + base data for project/blog skill tags. Locked 2026-06-13.
+
+**Principles:** chip = recognizable **tool** token only. Capabilities (System Design, Responsive Design, OOP, RESTful API, State Management, Custom Extension Dev) AND **Angular-native features (Signals, SSR/hydration, standalone, complex reactive forms — part of Angular, not separate packages)** → live in `stackIntro` prose, NOT chips. The Angular depth (every version v8→v21, signals, SSR, forms) is the frontend story; it belongs in prose where it has room to impress, not scattered as thin feature-chips. Dropped: PM tools (Agile/Scrum, Jira, Trello, ClickUp), Adobe XD (sunset). **React** is OFF the stack (author still learning) → surface as a "currently learning" line on `/now`. **AI** = one chip "Claude Code" (tools-only rule); the "plugin author / built a harness" differentiation belongs in `stackIntro` prose + TDP case study (#3), not the chip.
+
+Umbrellas (parents, not chips): Languages · Frontend · Library work · Backend · Tooling · Workflow & AI.
+
+| Leaf | Parent | Category | Tier | isLibrary |
+| --- | --- | --- | --- | --- |
+| TypeScript | Languages | TECHNICAL | DAILY | no |
+| JavaScript | Languages | TECHNICAL | DAILY | no |
+| Angular | Frontend | TECHNICAL | DAILY | yes |
+| SCSS | Frontend | TECHNICAL | DAILY | no |
+| RxJS | Frontend | TECHNICAL | FREQUENT | yes |
+| Angular Material | Frontend | TECHNICAL | FREQUENT | yes |
+| Tailwind | Frontend | TECHNICAL | FREQUENT | yes |
+| NgRx | Frontend | TECHNICAL | SHIPPED | yes |
+| Tiptap / ProseMirror | Library work | TECHNICAL | FREQUENT | yes |
+| NestJS | Backend | TECHNICAL | FREQUENT | yes |
+| Node.js | Backend | TECHNICAL | FREQUENT | no |
+| Prisma | Backend | TECHNICAL | FREQUENT | yes |
+| Postgres | Backend | TECHNICAL | FREQUENT | no |
+| Nx | Tooling | TOOLS | FREQUENT | yes |
+| Jest | Tooling | TOOLS | FREQUENT | yes |
+| Playwright | Tooling | TOOLS | FREQUENT | yes |
+| Git | Tooling | TOOLS | DAILY | no |
+| Postman | Tooling | TOOLS | FREQUENT | no |
+| Figma | Tooling | TOOLS | FREQUENT | no |
+| Cloudflare Pages | Tooling | TOOLS | SHIPPED | no |
+| Claude Code | Workflow & AI | TOOLS | FREQUENT | no |
+
+Confirmed 2026-06-13: keep Git/JavaScript/Node.js (ATS-recognizable tokens). Signals & SSR removed as chips (Angular-native features → prose). **21 leaves total.** Prod state: 6 umbrellas already exist; only the 21 leaves need entering. Watch item: FREQUENT bucket (now 14) — review when rendered live and rebalance to SHIPPED if heavy.

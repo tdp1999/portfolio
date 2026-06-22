@@ -12,10 +12,12 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 2.
 
 ## Acceptance Criteria
 - [ ] `Profile.bioLong` → `bioLongJson` (jsonb), `bioLongHtml` (jsonb), `bioLongSchemaVersion` (int default 1). JSON/HTML payload shape: `{ en, vi }` per the translatable pattern.
-- [ ] `Project.body` → `bodyJson`, `bodyHtml`, `bodySchemaVersion` (3 cols).
-- [ ] `BlogPost.content` → `contentJson`, `contentHtml`, `contentSchemaVersion` (3 cols).
-- [ ] `TechnicalHighlight.challenge / approach / outcome` → 9 cols total (3 per sub-field).
-- [ ] `Experience.description / responsibilities / highlights` → 9 cols total.
+- [ ] `Project.body` → `bodyJson`, `bodyHtml`, `bodySchemaVersion` (3 cols). JSON/HTML payload shape: `{ en, vi }`.
+- [ ] `BlogPost.content` → `contentJson`, `contentHtml`, `contentSchemaVersion` (3 cols). JSON/HTML payload shape: `{ en, vi }`.
+- [ ] `TechnicalHighlight.challenge / approach / outcome` → 9 cols total (3 per sub-field). Each JSON/HTML payload: `{ en, vi }`.
+- [ ] `Experience.description / responsibilities / highlights` → 9 cols total. Each JSON/HTML payload: `{ en, vi }`.
+
+> **Translatable scope (decided 2026-06-10):** ALL five field groups use the `{ en, vi }` envelope inside the JSONB (uniform with the Profile-module precedent). `*SchemaVersion` stays a single int per field group (not per locale).
 - [ ] All new columns nullable through expand phase. Old `*` columns untouched.
 - [ ] Prisma client regenerates; `apps/api` repos return both old and new fields side-by-side.
 - [ ] `pnpm db:seed` succeeds with empty new columns.
@@ -39,7 +41,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 2.
 - `apps/api/prisma/seed.ts`
 
 ## Dependencies
-- External: `@phuong-tran-redoc/document-engine-core` v0.1.0 published (so we know the JSON shape we are storing). See `epic-document-engine-portfolio-bridge.md` in `C:\study\document-engine`.
+- External: `@phuong-tran-redoc/document-engine-core` v0.1.0 published (so we know the JSON shape we are storing). Tracked in the `document-engine` repo as epic `epic-document-engine-v0.1.0-stable-release.md` — `de-003` defines `schemaVersion`/`migrateDoc`, `de-008` publishes.
 
 ## Complexity: L
 

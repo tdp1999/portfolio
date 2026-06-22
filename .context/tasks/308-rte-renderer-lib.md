@@ -22,7 +22,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 3.3.
 
 ## Technical Notes
 - Use `isomorphic-dompurify` (works in Node + browser) so SSR pre-render can run the pipe.
-- Whitelist constant must be re-exportable to the BE `RichTextService` (task 310) — both layers share the same allowlist.
+- Whitelist constant must be re-exportable to the BE `RichTextService` (task 310) — both layers share the same allowlist. It is the **single source of truth**: tasks needing extra tags/attrs (e.g. task 313 adds `id` on h2-h4) must **import and extend** it additively, never fork or redefine. Keep the base list minimal; call-site extensions apply to both BE and FE.
 - The pipe is `pure: true` for caching; recompute only when `html` reference changes.
 
 **Specialized Skill:** ng-lib — read `~/.claude/skills/ng-lib/SKILL.md`.

@@ -5,7 +5,7 @@
 > Depends on: `epic-portfolio-e2-content-scaffolding`, `epic-portfolio-e5-implementation` (Phases 1–4 complete).
 > Feeds: future content authoring (E5 Phase 6, blog post body, project case-study body).
 > Followed by: [`epic-portfolio-prose-block-renderer`](./epic-portfolio-prose-block-renderer.md) (`redoc-blocks`) — opens AFTER this epic ships; replaces the Phase 6/7 `[innerHTML]` + `data-block` read-path with an AST renderer + block registry once a 2nd block type is needed. The Phase 6/7 approach here is the sanctioned interim for the single `image-ref` block.
-> External dependency: `document-engine` repo (`C:\study\document-engine`) — see [Sprint 1 / Sprint 2 issue list](#external-dependencies-document-engine-repo).
+> External dependency: `document-engine` repo (sibling working directory) — its v0.1.0 release ships these. See [Sprint 1 / Sprint 2 issue list](#external-dependencies-document-engine-repo). That repo tracks this work as its own epic `epic-document-engine-v0.1.0-stable-release.md` (tasks `de-001`…`de-009`); `de-002/003/004` define the JSON shape, `de-008` publishes.
 
 ## Purpose
 
@@ -145,7 +145,7 @@ Coordinated upgrade required before portfolio integration begins. Upon completio
 
 ### Phase 1 — `document-engine` Sprint 1
 
-External work in `C:\study\document-engine`. Until this lands, portfolio side is blocked.
+External work in the `document-engine` repo — tracked there as epic `epic-document-engine-v0.1.0-stable-release.md` (tasks `de-001`…`de-009`). Until v0.1.0 publishes to npm, the portfolio side is blocked.
 
 Exit: E v0.1.0 published to npm with all 7 Sprint 1 issues closed.
 
@@ -163,7 +163,7 @@ Use `prisma-migrate` skill. Single migration set adding 3 columns per rich field
 
 **Translatable fields**: JSON contains `{ en: EditorDocument, vi: EditorDocument }`. HTML cache contains `{ en: string, vi: string }` (also JSONB). Schema version is single int per field group.
 
-Old `*` (string/markdown) columns remain through expand/contract. Drop in a follow-up migration after backfill confirms zero referencing reads.
+Old `*` (string/markdown) columns remain through expand/contract. Drop in a follow-up migration after backfill confirms zero referencing reads — tracked as **task 363** (`363-rte-drop-legacy-prose-columns`).
 
 Exit: migration applied to dev DB, Prisma client regenerated, all repos return both old and new fields side-by-side.
 
@@ -296,7 +296,7 @@ Exit: E READMEs accurate, no `#` placeholders.
 - `.context/patterns-architecture.md` — DI patterns, layering rules
 - `.context/patterns-error-handling.md` — sanitization handoff to ServerErrorDirective (errors are separate from content sanitization)
 - `.context/design/foundations/` — typography classes that landing renderer composes
-- `C:\study\document-engine\` — external repo, see `package.json` for current version
+- `document-engine` repo (sibling working directory) — external package source; see its `package.json` for current version (`0.0.41` → target `0.1.0`)
 - [Tiptap output guide](https://tiptap.dev/docs/guides/output-json-html)
 - [ProseMirror schema migration discussion](https://discuss.prosemirror.net/t/schema-versioning-and-migrations/321)
 - [Ghost's Lexical migration story](https://ghost.org/docs/architecture/) (reference for JSON-canonical + HTML-cache pattern)
