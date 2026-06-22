@@ -59,6 +59,8 @@ describe('ListUsersHandler', () => {
       search: undefined,
       status: undefined,
       includeDeleted: true,
+      sortBy: 'updatedAt',
+      sortDir: 'desc',
     });
   });
 
@@ -73,6 +75,8 @@ describe('ListUsersHandler', () => {
       search: 'john',
       status: undefined,
       includeDeleted: true,
+      sortBy: 'updatedAt',
+      sortDir: 'desc',
     });
   });
 
@@ -87,6 +91,8 @@ describe('ListUsersHandler', () => {
       search: undefined,
       status: 'active',
       includeDeleted: true,
+      sortBy: 'updatedAt',
+      sortDir: 'desc',
     });
   });
 

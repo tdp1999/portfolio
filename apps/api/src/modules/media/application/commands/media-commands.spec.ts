@@ -30,6 +30,7 @@ describe('Media Commands', () => {
     height: 600,
     altText: null,
     caption: null,
+    folder: 'avatars',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -101,7 +102,13 @@ describe('Media Commands', () => {
 
       expect(result).toBe(mediaId);
       expect(scanner.validate).toHaveBeenCalledWith(mockFile, 'image/jpeg');
-      expect(storage.upload).toHaveBeenCalledWith(mockFile, { folder: 'avatars', resourceType: 'image' });
+      expect(storage.upload).toHaveBeenCalledWith(mockFile, {
+        folder: 'avatars',
+        resourceType: 'image',
+        originalFilename: 'photo.jpg',
+        mimeType: 'image/jpeg',
+        uploadedByUserId: userId,
+      });
       expect(repo.add).toHaveBeenCalled();
     });
 

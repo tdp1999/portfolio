@@ -94,6 +94,7 @@ describe('Experience Commands', () => {
       hasChildren: jest.fn(),
       findAll: jest.fn(),
       findAllNoLimit: jest.fn(),
+      reorder: jest.fn(),
     } as jest.Mocked<ISkillRepository>;
 
     mediaRepo = {

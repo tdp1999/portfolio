@@ -28,6 +28,7 @@ describe('MediaCleanupJob', () => {
       height: 100,
       altText: null,
       caption: null,
+      folder: 'general',
       createdAt: new Date('2026-01-01'),
       updatedAt: new Date('2026-01-01'),
       createdById: userId,

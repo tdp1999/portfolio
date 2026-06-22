@@ -97,7 +97,7 @@ describe('Media DTOs', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.mimeTypePrefix).toBe('image/');
+        expect(result.data.mimeTypePrefix).toEqual(['image/']);
       }
     });
 

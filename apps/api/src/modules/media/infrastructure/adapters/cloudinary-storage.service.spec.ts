@@ -29,6 +29,10 @@ describe('CloudinaryStorageService', () => {
     process.env['CLOUDINARY_CLOUD_NAME'] = 'demo';
     process.env['CLOUDINARY_API_KEY'] = 'key123';
     process.env['CLOUDINARY_API_SECRET'] = 'secret123';
+    // Reset the optional prefix so the default-folder tests are hermetic — onModuleInit()
+    // below reads it, and a leaked value (e.g. from the prefix test, or another suite
+    // sharing this jest worker) would otherwise flip asset_folder under parallel runs.
+    delete process.env['CLOUDINARY_FOLDER_PREFIX'];
 
     service = new CloudinaryStorageService();
     service.onModuleInit();
@@ -39,6 +43,7 @@ describe('CloudinaryStorageService', () => {
     delete process.env['CLOUDINARY_CLOUD_NAME'];
     delete process.env['CLOUDINARY_API_KEY'];
     delete process.env['CLOUDINARY_API_SECRET'];
+    delete process.env['CLOUDINARY_FOLDER_PREFIX'];
   });
 
   describe('onModuleInit()', () => {

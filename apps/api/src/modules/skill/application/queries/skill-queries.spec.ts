@@ -50,6 +50,7 @@ describe('Skill Queries', () => {
       findAllNoLimit: jest.fn(),
       hasChildren: jest.fn(),
       findAll: jest.fn(),
+      reorder: jest.fn(),
     };
   });
 

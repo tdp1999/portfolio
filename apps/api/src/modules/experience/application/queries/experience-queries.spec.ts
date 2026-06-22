@@ -69,6 +69,7 @@ describe('Experience Queries', () => {
     proficiencyNote: null,
     isFeatured: false,
     displayOrder: 0,
+    tier: 'FREQUENT',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,
@@ -108,6 +109,7 @@ describe('Experience Queries', () => {
       hasChildren: jest.fn(),
       findAll: jest.fn(),
       findAllNoLimit: jest.fn(),
+      reorder: jest.fn(),
     } as jest.Mocked<ISkillRepository>;
 
     mediaRepo = {

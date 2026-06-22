@@ -17,6 +17,7 @@ describe('Media Entity', () => {
     height: 1080,
     altText: 'Project screenshot',
     caption: 'Main dashboard view',
+    folder: 'portfolio/projects',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     createdById: userId,

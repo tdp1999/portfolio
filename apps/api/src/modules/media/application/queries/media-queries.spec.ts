@@ -115,7 +115,7 @@ describe('Media Queries', () => {
       expect(repo.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
           search: 'hero',
-          mimeTypePrefix: ['image'],
+          mimeTypePrefix: ['image/'],
           folder: 'posts',
           sort: 'bytes_desc',
         })
@@ -174,7 +174,7 @@ describe('Media Queries', () => {
             'application/vnd.ms-powerpoint',
             'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             'text/plain',
-            'text/csv',
+            'text/markdown',
           ]),
           mimeTypePrefix: undefined,
         })
@@ -324,7 +324,7 @@ describe('Media Queries', () => {
     });
 
     it('should throw on invalid params', async () => {
-      await expect(handler.execute(new ListDeletedMediaQuery({ limit: 999 }))).rejects.toMatchObject({
+      await expect(handler.execute(new ListDeletedMediaQuery({ limit: 1001 }))).rejects.toMatchObject({
         statusCode: 400,
       });
     });
