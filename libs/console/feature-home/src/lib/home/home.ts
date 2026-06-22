@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { AuthStore } from '@portfolio/console/shared/data-access';
-import { ACTIVITIES, STATS } from './home.data';
+import { AuthStore, DashboardService, type DashboardStats } from '@portfolio/console/shared/data-access';
+import { ACTIVITIES } from './home.data';
 import type { ActivityItem, DashboardStat } from './home.types';
 
 @Component({
@@ -16,8 +17,12 @@ import type { ActivityItem, DashboardStat } from './home.types';
       <p class="mt-2 text-page-subtitle">Here's what's happening with your portfolio today.</p>
 
       <div class="mt-8 mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        @for (stat of stats; track stat.label) {
-          <div class="stat-card flex items-center gap-4 rounded-xl border p-6">
+        @for (stat of stats(); track stat.label) {
+          <a
+            [routerLink]="stat.link"
+            [queryParams]="stat.queryParams"
+            class="stat-card flex items-center gap-4 rounded-xl border p-6 no-underline text-inherit"
+          >
             <div class="stat-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
               <mat-icon class="icon-md">{{ stat.icon }}</mat-icon>
             </div>
@@ -25,7 +30,7 @@ import type { ActivityItem, DashboardStat } from './home.types';
               <p class="text-stat-label mb-1">{{ stat.label }}</p>
               <p class="text-stat-value">{{ stat.value }}</p>
             </div>
-          </div>
+          </a>
         }
       </div>
 
@@ -103,11 +108,51 @@ import type { ActivityItem, DashboardStat } from './home.types';
 export default class Home {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly authStore = inject(AuthStore);
+  private readonly dashboardService = inject(DashboardService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ── State ─────────────────────────────────────────────────────────
+  private readonly statValues = signal<DashboardStats | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────────
   readonly userName = computed(() => this.authStore.user()?.name?.split(' ')[0] ?? 'User');
 
-  // ── Plain state ───────────────────────────────────────────────────
-  readonly stats: DashboardStat[] = STATS;
+  // Labels + icons are presentation; values come from the API (0 until loaded).
+  readonly stats = computed<DashboardStat[]>(() => {
+    const s = this.statValues();
+    return [
+      { label: 'Total Posts', value: s?.totalPosts ?? 0, icon: 'article', link: '/admin/blog' },
+      { label: 'Media Files', value: s?.mediaFiles ?? 0, icon: 'perm_media', link: '/media' },
+      {
+        label: 'Published',
+        value: s?.published ?? 0,
+        icon: 'check_circle',
+        link: '/admin/blog',
+        queryParams: { status: 'PUBLISHED' },
+      },
+      {
+        label: 'Drafts',
+        value: s?.drafts ?? 0,
+        icon: 'edit_note',
+        link: '/admin/blog',
+        queryParams: { status: 'DRAFT' },
+      },
+    ];
+  });
+
+  // TODO(task-194 descope): activity feed still mocked — revisit with a derived
+  // recent-activity query once higher-priority features land.
   readonly activities: ActivityItem[] = ACTIVITIES;
+
+  constructor() {
+    this.dashboardService
+      .getStats()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (stats) => this.statValues.set(stats),
+        error: () => {
+          // Stat cards stay at 0 — dashboard is non-critical, no toast.
+        },
+      });
+  }
 }

@@ -1,6 +1,6 @@
 # Task: Rich-Text Storage — Prisma Migrations
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
 Add the 3-column rich-text storage pattern (`*Json`, `*Html`, `*SchemaVersion`) to every model that holds long-form prose, in a single migration set.
@@ -46,3 +46,4 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 2.
 ## Complexity: L
 
 ## Progress Log
+- [2026-06-22] Started. Verified external dep satisfied (`@phuong-tran-redoc/document-engine-core` + `-angular` v0.1.0 in package.json). Read all 5 target models + 4 module mappers (explicit `toDomain`/`toPrisma` pattern) + seed (sets old fields via object literals → new nullable cols safe). Using `prisma-migrate` skill: all 27 additions are SAFE changes (nullable Json cols + NOT NULL Int with default).

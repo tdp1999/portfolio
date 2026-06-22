@@ -19,6 +19,7 @@ import { AboutFailureModule } from '../modules/about-failure/about-failure.modul
 import { ExperienceModule } from '../modules/experience';
 import { ProjectModule } from '../modules/project';
 import { BlogPostModule } from '../modules/blog-post';
+import { DashboardModule } from '../modules/dashboard';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -45,6 +46,7 @@ const isTest = process.env['NODE_ENV'] === 'test';
     ExperienceModule,
     ProjectModule,
     BlogPostModule,
+    DashboardModule,
     ThrottlerModule.forRoot({
       skipIf: () => isTest,
       throttlers: [{ ttl: 60000, limit: 60 }],

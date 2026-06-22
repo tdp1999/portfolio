@@ -240,7 +240,7 @@
 ## Standalone Tasks
 
 - [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
-- [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M) (standalone)
+- [x] 194-dashboard-backend-apis - **Descoped 2026-06-22** → shipped real `GET /api/dashboard/stats` (CQRS read-model + `DashboardService` + console-home wired); cut Search + Notifications, deferred Activity. Repo spec ✅ → `tasks-done/other/` (S)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [~] 304-component-bank-audit-and-docs-polish - **Superseded 2026-06-22** → folded into `epic-component-docs-and-ddl` Phase 0 (audit done; restructure/docs-polish relocated). Archived to `tasks-done/other/`
 - [x] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — Completed 2026-06-22; 220 renames / 43 keep via ts-morph codemod, `shared/ui` flattened, `fe-naming` lint + generator enforcement; shipped in `7422fa2` + `5b33cc9`, merged via PR #1 (`8e58991`) → `tasks-done/other/` ✓

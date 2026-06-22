@@ -1,12 +1,8 @@
-import type { ActivityItem, DashboardStat } from './home.types';
+import type { ActivityItem } from './home.types';
 
-export const STATS: DashboardStat[] = [
-  { label: 'Total Posts', value: 24, icon: 'article' },
-  { label: 'Media Files', value: 156, icon: 'perm_media' },
-  { label: 'Published', value: 18, icon: 'check_circle' },
-  { label: 'Drafts', value: 6, icon: 'edit_note' },
-];
-
+// NOTE(task-194 descope): activity feed is intentionally still mock data.
+// Stats are now real (`GET /api/dashboard/stats`); a derived recent-activity
+// query was deferred. Search + notifications were cut from scope.
 export const ACTIVITIES: ActivityItem[] = [
   { icon: 'publish', description: "Published 'Getting Started with NestJS'", timestamp: '2 hours ago' },
   { icon: 'upload_file', description: 'Uploaded 3 new media files', timestamp: '5 hours ago' },

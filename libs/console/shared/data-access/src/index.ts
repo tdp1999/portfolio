@@ -10,3 +10,5 @@ export type { Theme } from './lib/theme.types';
 export { UnreadBadgeService } from './lib/unread-badge.service';
 export { MediaService } from './lib/media/media.service';
 export type { MediaMimeGroup } from '@portfolio/console/shared/util';
+export { DashboardService } from './lib/dashboard/dashboard.service';
+export type { DashboardStats } from './lib/dashboard/dashboard.types';

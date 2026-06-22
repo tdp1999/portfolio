@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -62,6 +62,7 @@ export default class Posts implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly progress = inject(ProgressBarService);
+  private readonly route = inject(ActivatedRoute);
 
   // ── Queries ───────────────────────────────────────────────────────
   readonly paginator = viewChild.required(MatPaginator);
@@ -85,6 +86,11 @@ export default class Posts implements OnInit {
   readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
 
   ngOnInit(): void {
+    // Deep-link from the dashboard stat cards: ?status=PUBLISHED|DRAFT pre-applies the filter.
+    const status = this.route.snapshot.queryParamMap.get('status');
+    if (status && STATUS_OPTIONS.some((option) => option.value === status)) {
+      this.status.set(status);
+    }
     this.loadPosts();
   }
 
