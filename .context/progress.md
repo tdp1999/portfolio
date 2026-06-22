@@ -353,10 +353,10 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v0.1.0) blocks tasks 305–319 below.
 
 ### Phase 2 — Schema migrations
-- [ ] 305-rte-prisma-migrations (L)
+- [x] 305-rte-prisma-migrations (L) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 3 — `redoc-rte` shared libs
-- [ ] 306-rte-contract-lib (S) — deps: ext doc-engine v0.1.0
+- [x] 306-rte-contract-lib (S) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 - [ ] 307-rte-tiptap-concrete (M) — deps: 306, ext doc-engine v0.1.0
 - [ ] 308-rte-renderer-lib (S) — deps: 306
 - [ ] 309-rte-textarea-fallback (S) — deps: 306
