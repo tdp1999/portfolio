@@ -15,6 +15,9 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
   featured: false,
   displayOrder: 0,
   body: { en: 'Long-form body', vi: 'Noi dung dai' },
+  bodyJson: null,
+  bodyHtml: null,
+  bodySchemaVersion: 1,
   links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
   thumbnailId: null,
   createdAt: new Date('2025-01-01'),
@@ -50,6 +53,15 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
       challenge: { en: 'C2', vi: 'C2' },
       approach: { en: 'A2', vi: 'A2' },
       outcome: { en: 'O2', vi: 'O2' },
+      challengeJson: null,
+      challengeHtml: null,
+      challengeSchemaVersion: 1,
+      approachJson: null,
+      approachHtml: null,
+      approachSchemaVersion: 1,
+      outcomeJson: null,
+      outcomeHtml: null,
+      outcomeSchemaVersion: 1,
       codeUrl: null,
       displayOrder: 1,
     },
@@ -59,6 +71,15 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
       challenge: { en: 'C1', vi: 'C1' },
       approach: { en: 'A1', vi: 'A1' },
       outcome: { en: 'O1', vi: 'O1' },
+      challengeJson: null,
+      challengeHtml: null,
+      challengeSchemaVersion: 1,
+      approachJson: null,
+      approachHtml: null,
+      approachSchemaVersion: 1,
+      outcomeJson: null,
+      outcomeHtml: null,
+      outcomeSchemaVersion: 1,
       codeUrl: 'https://github.com/pr/1',
       displayOrder: 0,
     },
@@ -175,6 +196,50 @@ describe('ProjectMapper', () => {
       expect(relations.skills).toEqual([
         { id: '00000000-0000-0000-0000-000000000040', name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' },
       ]);
+    });
+  });
+
+  describe('rich-text storage passthrough', () => {
+    it('toDomain maps body Json/Html/SchemaVersion onto matching fields (no field swap)', () => {
+      const bodyJson = { en: { doc: 'body-json-en' }, vi: { doc: 'body-json-vi' } };
+      const bodyHtml = { en: '<p>body-html-en</p>', vi: '<p>body-html-vi</p>' };
+      const raw: PrismaProjectWithRelations = { ...RAW_PROJECT, bodyJson, bodyHtml, bodySchemaVersion: 5 };
+
+      const entity = ProjectMapper.toDomain(raw);
+
+      expect(entity.bodyJson).toEqual(bodyJson);
+      expect(entity.bodyHtml).toEqual(bodyHtml);
+      expect(entity.bodySchemaVersion).toBe(5);
+    });
+
+    it('toRelations maps each highlight Json/Html/SchemaVersion onto matching fields (no field swap)', () => {
+      const json = (k: string) => ({ en: { doc: `${k}-en` }, vi: { doc: `${k}-vi` } });
+      const html = (k: string) => ({ en: `<p>${k}-en</p>`, vi: `<p>${k}-vi</p>` });
+      const highlight = {
+        ...RAW_PROJECT.highlights[0],
+        challengeJson: json('challenge'),
+        challengeHtml: html('challenge'),
+        challengeSchemaVersion: 2,
+        approachJson: json('approach'),
+        approachHtml: html('approach'),
+        approachSchemaVersion: 3,
+        outcomeJson: json('outcome'),
+        outcomeHtml: html('outcome'),
+        outcomeSchemaVersion: 4,
+      };
+      const raw: PrismaProjectWithRelations = { ...RAW_PROJECT, highlights: [highlight] };
+
+      const { highlights } = ProjectMapper.toRelations(raw);
+
+      expect(highlights[0].challengeJson).toEqual(json('challenge'));
+      expect(highlights[0].challengeHtml).toEqual(html('challenge'));
+      expect(highlights[0].challengeSchemaVersion).toBe(2);
+      expect(highlights[0].approachJson).toEqual(json('approach'));
+      expect(highlights[0].approachHtml).toEqual(html('approach'));
+      expect(highlights[0].approachSchemaVersion).toBe(3);
+      expect(highlights[0].outcomeJson).toEqual(json('outcome'));
+      expect(highlights[0].outcomeHtml).toEqual(html('outcome'));
+      expect(highlights[0].outcomeSchemaVersion).toBe(4);
     });
   });
 });

@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } from '@portfolio/shared/validation/zod';
 import { POST_STATUS } from '../domain/blog-post.types';
@@ -130,6 +131,10 @@ export type BlogPostPublicListItemDto = {
 
 export type BlogPostPublicDetailDto = BlogPostPublicListItemDto & {
   content: string;
+  /** Rich-text storage for `content` (RTE epic Phase 2). Null until Phase 4. */
+  contentJson: TranslatableRichText | null;
+  contentHtml: TranslatableJson | null;
+  contentSchemaVersion: number;
   metaTitle: string | null;
   metaDescription: string | null;
   author: BlogPostAuthorDto | null;
@@ -179,6 +184,10 @@ export type BlogPostAdminListItemDto = {
 export type BlogPostAdminDetailDto = BlogPostAdminListItemDto & {
   excerpt: string | null;
   content: string;
+  /** Rich-text storage for `content` (RTE epic Phase 2). Null until Phase 4. */
+  contentJson: TranslatableRichText | null;
+  contentHtml: TranslatableJson | null;
+  contentSchemaVersion: number;
   readTimeMinutes: number | null;
   metaTitle: string | null;
   metaDescription: string | null;

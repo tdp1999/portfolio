@@ -1,6 +1,7 @@
 import { IBaseAuditProps } from '@portfolio/shared/types';
 import type {
   TranslatableJson,
+  TranslatableRichText,
   SocialLink,
   Certification,
   ResumeUrls,
@@ -23,6 +24,13 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   title: TranslatableJson;
   bioShort: TranslatableJson;
   bioLong: TranslatableJson | null;
+
+  // Rich-text storage (RTE epic Phase 2, expand phase). JSON canonical + sanitized
+  // HTML cache; null until Phase 4 RichTextService populates them. Old markdown
+  // `bioLong` kept side-by-side until task 363 drop.
+  bioLongJson: TranslatableRichText | null;
+  bioLongHtml: TranslatableJson | null;
+  bioLongSchemaVersion: number;
 
   // Work
   yearsOfExperience: number;

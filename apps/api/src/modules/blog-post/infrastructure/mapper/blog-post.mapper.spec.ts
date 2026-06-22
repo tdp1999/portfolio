@@ -8,6 +8,9 @@ describe('BlogPostMapper', () => {
     title: 'Test Post',
     excerpt: 'A test excerpt',
     content: 'This is test content for the blog post.',
+    contentJson: null,
+    contentHtml: null,
+    contentSchemaVersion: 1,
     readTimeMinutes: 1,
     status: 'DRAFT',
     featured: false,
@@ -160,6 +163,20 @@ describe('BlogPostMapper', () => {
       expect(prismaData.authorId).toBe(rawBlogPost.authorId);
       expect(prismaData.createdById).toBe(rawBlogPost.createdById);
       expect(prismaData.updatedById).toBe(rawBlogPost.updatedById);
+    });
+  });
+
+  describe('toDomain() — rich-text storage passthrough', () => {
+    it('maps content Json/Html/SchemaVersion onto matching fields (no field swap)', () => {
+      const contentJson = { en: { doc: 'content-json-en' }, vi: { doc: 'content-json-vi' } };
+      const contentHtml = { en: '<p>content-html-en</p>', vi: '<p>content-html-vi</p>' };
+      const raw: PrismaBlogPostWithRelations = { ...rawBlogPost, contentJson, contentHtml, contentSchemaVersion: 4 };
+
+      const post = BlogPostMapper.toDomain(raw);
+
+      expect(post.contentJson).toEqual(contentJson);
+      expect(post.contentHtml).toEqual(contentHtml);
+      expect(post.contentSchemaVersion).toBe(4);
     });
   });
 });

@@ -1,5 +1,10 @@
 import { Prisma, Experience as PrismaExperience, ExperienceSkill } from '@prisma/client';
-import { ExperienceLink, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import {
+  ExperienceLink,
+  TranslatableJson,
+  TranslatableRichText,
+  TranslatableStringArray,
+} from '@portfolio/shared/types';
 import { Experience } from '../../domain/entities/experience.entity';
 import { IExperienceProps, EmploymentType, LocationType } from '../../domain/experience.types';
 
@@ -20,6 +25,16 @@ export class ExperienceMapper {
       responsibilities: raw.responsibilities as unknown as TranslatableStringArray,
       highlights: raw.highlights as unknown as TranslatableStringArray,
       teamRole: raw.teamRole as unknown as TranslatableJson | null,
+      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      descriptionJson: (raw.descriptionJson as TranslatableRichText | null) ?? null,
+      descriptionHtml: (raw.descriptionHtml as unknown as TranslatableJson | null) ?? null,
+      descriptionSchemaVersion: raw.descriptionSchemaVersion,
+      responsibilitiesJson: (raw.responsibilitiesJson as TranslatableRichText | null) ?? null,
+      responsibilitiesHtml: (raw.responsibilitiesHtml as unknown as TranslatableJson | null) ?? null,
+      responsibilitiesSchemaVersion: raw.responsibilitiesSchemaVersion,
+      highlightsJson: (raw.highlightsJson as TranslatableRichText | null) ?? null,
+      highlightsHtml: (raw.highlightsHtml as unknown as TranslatableJson | null) ?? null,
+      highlightsSchemaVersion: raw.highlightsSchemaVersion,
       links: raw.links as unknown as ExperienceLink[],
       employmentType: raw.employmentType as EmploymentType,
       locationType: raw.locationType as LocationType,

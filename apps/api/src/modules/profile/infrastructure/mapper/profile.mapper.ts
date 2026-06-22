@@ -2,7 +2,13 @@ import { Profile as PrismaProfile, Media, Prisma } from '@prisma/client';
 import { Profile } from '../../domain/entities/profile.entity';
 import { IProfileProps, Availability, WorkingHoursValue } from '../../domain/profile.types';
 import type { ProfileWithMedia } from '../../application/ports/profile.repository.port';
-import type { TranslatableJson, SocialLink, OpenToValue, SocialPlatform } from '@portfolio/shared/types';
+import type {
+  TranslatableJson,
+  TranslatableRichText,
+  SocialLink,
+  OpenToValue,
+  SocialPlatform,
+} from '@portfolio/shared/types';
 import {
   PersistenceTranslatableSchema,
   SocialLinksArraySchema,
@@ -49,6 +55,10 @@ export class ProfileMapper {
       title: PersistenceTranslatableSchema.parse(raw.title),
       bioShort: PersistenceTranslatableSchema.parse(raw.bioShort),
       bioLong: parseTranslatableNullable(raw.bioLong),
+      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      bioLongJson: (raw.bioLongJson as TranslatableRichText | null) ?? null,
+      bioLongHtml: (raw.bioLongHtml as unknown as TranslatableJson | null) ?? null,
+      bioLongSchemaVersion: raw.bioLongSchemaVersion,
       yearsOfExperience: raw.yearsOfExperience,
       availability: raw.availability as Availability,
       openTo: OpenToSchema.parse(raw.openTo) as OpenToValue[],

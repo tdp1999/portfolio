@@ -1,4 +1,4 @@
-import { IBaseAuditProps } from '@portfolio/shared/types';
+import { IBaseAuditProps, TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 
 export const POST_STATUS = {
   DRAFT: 'DRAFT',
@@ -17,6 +17,12 @@ export interface IBlogPostProps extends IBaseAuditProps {
   title: string;
   excerpt: string | null;
   content: string;
+  // Rich-text storage for `content` (RTE epic Phase 2, expand phase). JSON canonical +
+  // sanitized HTML cache ({ en, vi } envelope per the 2026-06-10 uniform-scope decision);
+  // null until Phase 4 RichTextService populates them. Old markdown `content` kept.
+  contentJson: TranslatableRichText | null;
+  contentHtml: TranslatableJson | null;
+  contentSchemaVersion: number;
   readTimeMinutes: number | null;
 
   // Status & Display

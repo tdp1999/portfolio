@@ -1,4 +1,10 @@
-import { ExperienceLink, IBaseAuditProps, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import {
+  ExperienceLink,
+  IBaseAuditProps,
+  TranslatableJson,
+  TranslatableRichText,
+  TranslatableStringArray,
+} from '@portfolio/shared/types';
 
 export const EMPLOYMENT_TYPE = {
   FULL_TIME: 'FULL_TIME',
@@ -34,6 +40,20 @@ export interface IExperienceProps extends IBaseAuditProps {
   responsibilities: TranslatableStringArray;
   highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
+
+  // Rich-text storage (RTE epic Phase 2, expand phase) — 3 cols per prose sub-field.
+  // JSON canonical + sanitized HTML cache ({ en, vi } envelope); null until Phase 4
+  // RichTextService populates them. Old `description`/`responsibilities`/`highlights`
+  // columns kept side-by-side until task 363 drop.
+  descriptionJson: TranslatableRichText | null;
+  descriptionHtml: TranslatableJson | null;
+  descriptionSchemaVersion: number;
+  responsibilitiesJson: TranslatableRichText | null;
+  responsibilitiesHtml: TranslatableJson | null;
+  responsibilitiesSchemaVersion: number;
+  highlightsJson: TranslatableRichText | null;
+  highlightsHtml: TranslatableJson | null;
+  highlightsSchemaVersion: number;
 
   // Links (non-translatable)
   links: ExperienceLink[];

@@ -1,4 +1,5 @@
 import { Prisma, BlogPost as PrismaBlogPost, PostCategory, PostTag, Category, Tag, Media } from '@prisma/client';
+import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostProps, PostStatus } from '../../domain/blog-post.types';
 
@@ -40,6 +41,10 @@ export class BlogPostMapper {
       title: raw.title,
       excerpt: raw.excerpt,
       content: raw.content,
+      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      contentJson: (raw.contentJson as TranslatableRichText | null) ?? null,
+      contentHtml: (raw.contentHtml as unknown as TranslatableJson | null) ?? null,
+      contentSchemaVersion: raw.contentSchemaVersion,
       readTimeMinutes: raw.readTimeMinutes,
       status: raw.status as PostStatus,
       featured: raw.featured,

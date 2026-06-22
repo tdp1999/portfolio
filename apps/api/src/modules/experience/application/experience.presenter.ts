@@ -1,4 +1,9 @@
-import type { ExperienceLink, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import type {
+  ExperienceLink,
+  TranslatableJson,
+  TranslatableRichText,
+  TranslatableStringArray,
+} from '@portfolio/shared/types';
 import { Experience } from '../domain/entities/experience.entity';
 import type { EmploymentType, LocationType } from '../domain/experience.types';
 
@@ -25,6 +30,16 @@ export type ExperiencePublicResponseDto = {
   responsibilities: TranslatableStringArray;
   highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
+  // Rich-text storage (RTE epic Phase 2) per prose sub-field. Null until Phase 4.
+  descriptionJson: TranslatableRichText | null;
+  descriptionHtml: TranslatableJson | null;
+  descriptionSchemaVersion: number;
+  responsibilitiesJson: TranslatableRichText | null;
+  responsibilitiesHtml: TranslatableJson | null;
+  responsibilitiesSchemaVersion: number;
+  highlightsJson: TranslatableRichText | null;
+  highlightsHtml: TranslatableJson | null;
+  highlightsSchemaVersion: number;
   links: ExperienceLink[];
   employmentType: EmploymentType;
   locationType: LocationType;
@@ -76,6 +91,15 @@ export class ExperiencePresenter {
       responsibilities: entity.responsibilities,
       highlights: entity.highlights,
       teamRole: entity.teamRole,
+      descriptionJson: entity.descriptionJson,
+      descriptionHtml: entity.descriptionHtml,
+      descriptionSchemaVersion: entity.descriptionSchemaVersion,
+      responsibilitiesJson: entity.responsibilitiesJson,
+      responsibilitiesHtml: entity.responsibilitiesHtml,
+      responsibilitiesSchemaVersion: entity.responsibilitiesSchemaVersion,
+      highlightsJson: entity.highlightsJson,
+      highlightsHtml: entity.highlightsHtml,
+      highlightsSchemaVersion: entity.highlightsSchemaVersion,
       links: entity.links,
       employmentType: entity.employmentType,
       locationType: entity.locationType,

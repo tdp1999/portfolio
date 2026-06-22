@@ -1,4 +1,9 @@
-import { IBaseAuditProps, TranslatableJson, PartialTranslatableJson } from '@portfolio/shared/types';
+import {
+  IBaseAuditProps,
+  TranslatableJson,
+  TranslatableRichText,
+  PartialTranslatableJson,
+} from '@portfolio/shared/types';
 import type { ProjectLinkProps } from './value-objects';
 
 export const CONTENT_STATUS = {
@@ -30,6 +35,12 @@ export interface IProjectProps extends IBaseAuditProps {
 
   // Long-form case-study body — translatable, optional
   body: TranslatableJson | null;
+
+  // Rich-text storage for `body` (RTE epic Phase 2, expand phase). JSON canonical +
+  // sanitized HTML cache; null until Phase 4 RichTextService populates them.
+  bodyJson: TranslatableRichText | null;
+  bodyHtml: TranslatableJson | null;
+  bodySchemaVersion: number;
 
   // Dates
   startDate: Date;

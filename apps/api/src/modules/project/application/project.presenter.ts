@@ -1,4 +1,4 @@
-import type { TranslatableJson } from '@portfolio/shared/types';
+import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { Project } from '../domain/entities/project.entity';
 import type { ProjectLinkProps } from '../domain/value-objects';
 import type { ProjectLifecycleStatus } from '../domain/project.types';
@@ -27,6 +27,16 @@ export type ProjectHighlightResponseDto = {
   challenge: TranslatableJson;
   approach: TranslatableJson;
   outcome: TranslatableJson;
+  // Rich-text storage per CAO sub-field (RTE epic Phase 2). Null until Phase 4.
+  challengeJson: TranslatableRichText | null;
+  challengeHtml: TranslatableJson | null;
+  challengeSchemaVersion: number;
+  approachJson: TranslatableRichText | null;
+  approachHtml: TranslatableJson | null;
+  approachSchemaVersion: number;
+  outcomeJson: TranslatableRichText | null;
+  outcomeHtml: TranslatableJson | null;
+  outcomeSchemaVersion: number;
   codeUrl: string | null;
 };
 
@@ -43,6 +53,10 @@ export type ProjectDetailDto = {
   motivation: TranslatableJson;
   role: TranslatableJson;
   body: TranslatableJson | null;
+  /** Rich-text storage for `body` (RTE epic Phase 2). Null until Phase 4. */
+  bodyJson: TranslatableRichText | null;
+  bodyHtml: TranslatableJson | null;
+  bodySchemaVersion: number;
   startDate: Date;
   endDate: Date | null;
   links: ProjectLinkProps[];
@@ -102,6 +116,9 @@ export class ProjectPresenter {
       motivation: item.entity.motivation,
       role: item.entity.role,
       body: item.entity.body,
+      bodyJson: item.entity.bodyJson,
+      bodyHtml: item.entity.bodyHtml,
+      bodySchemaVersion: item.entity.bodySchemaVersion,
       startDate: item.entity.startDate,
       endDate: item.entity.endDate,
       links: item.entity.links,
@@ -112,6 +129,15 @@ export class ProjectPresenter {
         challenge: h.challenge,
         approach: h.approach,
         outcome: h.outcome,
+        challengeJson: h.challengeJson,
+        challengeHtml: h.challengeHtml,
+        challengeSchemaVersion: h.challengeSchemaVersion,
+        approachJson: h.approachJson,
+        approachHtml: h.approachHtml,
+        approachSchemaVersion: h.approachSchemaVersion,
+        outcomeJson: h.outcomeJson,
+        outcomeHtml: h.outcomeHtml,
+        outcomeSchemaVersion: h.outcomeSchemaVersion,
         codeUrl: h.codeUrl,
       })),
       images: item.relations.images.map((i) => ({

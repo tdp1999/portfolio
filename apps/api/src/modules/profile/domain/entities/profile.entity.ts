@@ -1,6 +1,7 @@
 import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
 import type {
   TranslatableJson,
+  TranslatableRichText,
   SocialLink,
   ResumeUrls,
   Certification,
@@ -28,6 +29,12 @@ interface ProfileAggregateProps {
   socialLinks: SocialLinks;
   seoOg: SeoOg;
   landingContent: LandingContentBlocks;
+  /** Rich-text storage for `bioLong` (RTE epic Phase 2). Flat aggregate props
+   *  (no VO yet — opaque nullable payloads with no invariant to enforce until
+   *  Phase 4 RichTextService owns generation). */
+  bioLongJson: TranslatableRichText | null;
+  bioLongHtml: TranslatableJson | null;
+  bioLongSchemaVersion: number;
   /** Set by `markContentUpdated()` whenever the author saves narrative copy.
    *  Null on a freshly-created profile that hasn't been content-edited yet. */
   contentUpdatedAt: Date | null;
@@ -94,6 +101,18 @@ export class Profile {
 
   get bioLong(): TranslatableJson | null {
     return this.props.identity.bioLong;
+  }
+
+  get bioLongJson(): TranslatableRichText | null {
+    return this.props.bioLongJson;
+  }
+
+  get bioLongHtml(): TranslatableJson | null {
+    return this.props.bioLongHtml;
+  }
+
+  get bioLongSchemaVersion(): number {
+    return this.props.bioLongSchemaVersion;
   }
 
   get avatarId(): string | null {
@@ -310,6 +329,10 @@ export class Profile {
         ctaLede: data.ctaLede ?? null,
         coreStack: data.coreStack ?? [],
       }),
+      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      bioLongJson: null,
+      bioLongHtml: null,
+      bioLongSchemaVersion: 1,
       contentUpdatedAt: null,
       createdAt: now,
       updatedAt: now,
@@ -373,6 +396,9 @@ export class Profile {
         ctaLede: props.ctaLede,
         coreStack: props.coreStack ?? [],
       }),
+      bioLongJson: props.bioLongJson,
+      bioLongHtml: props.bioLongHtml,
+      bioLongSchemaVersion: props.bioLongSchemaVersion,
       contentUpdatedAt: props.contentUpdatedAt,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
@@ -514,6 +540,9 @@ export class Profile {
       ctaHeading: this.props.landingContent.ctaHeading,
       ctaLede: this.props.landingContent.ctaLede,
       coreStack: this.props.landingContent.coreStack,
+      bioLongJson: this.props.bioLongJson,
+      bioLongHtml: this.props.bioLongHtml,
+      bioLongSchemaVersion: this.props.bioLongSchemaVersion,
       contentUpdatedAt: this.props.contentUpdatedAt,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,

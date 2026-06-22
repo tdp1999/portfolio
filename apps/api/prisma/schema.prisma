@@ -87,11 +87,11 @@ enum ProjectSize {
 /// Audience-facing lifecycle state for a project.
 /// Distinct from `Project.status` (DRAFT/PUBLISHED publishing flag).
 enum ProjectLifecycleStatus {
-  LIVE      // Active in production, still maintained
-  SHIPPED   // Completed and delivered, no longer actively iterated
-  ARCHIVED  // Sunset / deprecated
-  BETA      // Released but not at v1 quality bar
-  ONGOING   // In active development, not yet shipped
+  LIVE // Active in production, still maintained
+  SHIPPED // Completed and delivered, no longer actively iterated
+  ARCHIVED // Sunset / deprecated
+  BETA // Released but not at v1 quality bar
+  ONGOING // In active development, not yet shipped
 }
 
 enum EmploymentType {
@@ -164,9 +164,9 @@ model User {
   profilesUpdated Profile[] @relation("ProfileUpdatedBy")
 
   // Tag relations
-  tagsCreated    Tag[] @relation("TagCreatedBy")
-  tagsUpdated    Tag[] @relation("TagUpdatedBy")
-  tagsDeleted    Tag[] @relation("TagDeletedBy")
+  tagsCreated Tag[] @relation("TagCreatedBy")
+  tagsUpdated Tag[] @relation("TagUpdatedBy")
+  tagsDeleted Tag[] @relation("TagDeletedBy")
 
   // Category relations
   categoriesCreated Category[] @relation("CategoryCreatedBy")
@@ -194,10 +194,10 @@ model User {
   projectsDeleted Project[] @relation("ProjectDeletedBy")
 
   // BlogPost relations
-  postsAuthored  BlogPost[] @relation("PostAuthor")
-  postsCreated   BlogPost[] @relation("PostCreatedBy")
-  postsUpdated   BlogPost[] @relation("PostUpdatedBy")
-  postsDeleted   BlogPost[] @relation("PostDeletedBy")
+  postsAuthored BlogPost[] @relation("PostAuthor")
+  postsCreated  BlogPost[] @relation("PostCreatedBy")
+  postsUpdated  BlogPost[] @relation("PostUpdatedBy")
+  postsDeleted  BlogPost[] @relation("PostDeletedBy")
 
   @@map("users")
 }
@@ -213,10 +213,10 @@ model Tag {
   deletedAt   DateTime?
   deletedById String?   @db.Uuid
 
-  createdBy   User      @relation("TagCreatedBy", fields: [createdById], references: [id])
-  updatedBy   User      @relation("TagUpdatedBy", fields: [updatedById], references: [id])
-  deletedBy   User?     @relation("TagDeletedBy", fields: [deletedById], references: [id])
-  posts       PostTag[]
+  createdBy User      @relation("TagCreatedBy", fields: [createdById], references: [id])
+  updatedBy User      @relation("TagUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User?     @relation("TagDeletedBy", fields: [deletedById], references: [id])
+  posts     PostTag[]
 
   @@index([name])
   @@index([slug])
@@ -267,14 +267,14 @@ model Skill {
   deletedAt         DateTime?
   deletedById       String?       @db.Uuid
 
-  parentSkill  Skill?           @relation("SkillParent", fields: [parentSkillId], references: [id])
-  childSkills  Skill[]          @relation("SkillParent")
-  icon         Media?           @relation("SkillIcon", fields: [iconId], references: [id])
-  createdBy    User             @relation("SkillCreatedBy", fields: [createdById], references: [id])
-  updatedBy    User             @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
-  deletedBy    User?            @relation("SkillDeletedBy", fields: [deletedById], references: [id])
-  experiences  ExperienceSkill[]
-  projects     ProjectSkill[]
+  parentSkill Skill?            @relation("SkillParent", fields: [parentSkillId], references: [id])
+  childSkills Skill[]           @relation("SkillParent")
+  icon        Media?            @relation("SkillIcon", fields: [iconId], references: [id])
+  createdBy   User              @relation("SkillCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User              @relation("SkillUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy   User?             @relation("SkillDeletedBy", fields: [deletedById], references: [id])
+  experiences ExperienceSkill[]
+  projects    ProjectSkill[]
 
   @@map("skills")
 }
@@ -315,7 +315,7 @@ model Media {
   projectCovers     Project[]      @relation("ProjectThumbnail")
 
   // Skill relations
-  skillIcons  Skill[] @relation("SkillIcon")
+  skillIcons Skill[] @relation("SkillIcon")
 
   // BlogPost relations
   postFeaturedImages BlogPost[] @relation("PostFeaturedImage")
@@ -360,10 +360,17 @@ model Profile {
   userId String @unique @db.Uuid
 
   // Translatable
-  fullName  Json
-  title     Json
-  bioShort  Json
-  bioLong   Json?
+  fullName Json
+  title    Json
+  bioShort Json
+  bioLong  Json?
+
+  // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
+  // both JSONB holding { en, vi }. Single int schemaVersion per field group. Old markdown
+  // `bioLong` column kept side-by-side until task 363 drops it post-backfill.
+  bioLongJson          Json? @db.JsonB
+  bioLongHtml          Json? @db.JsonB
+  bioLongSchemaVersion Int   @default(1)
 
   // Work
   yearsOfExperience Int
@@ -371,18 +378,18 @@ model Profile {
   openTo            Json         @default("[]")
 
   // Contact
-  email                    String       @db.VarChar(320)
-  phone                    String?      @db.VarChar(20)
-  phoneZalo                String?      @db.VarChar(20)
+  email                    String         @db.VarChar(320)
+  phone                    String?        @db.VarChar(20)
+  phoneZalo                String?        @db.VarChar(20)
   preferredContactPlatform SocialPlatform @default(LINKEDIN)
-  preferredContactValue    String       @db.VarChar(500)
+  preferredContactValue    String         @db.VarChar(500)
 
   // Location
-  locationCountry     String  @db.VarChar(100)
-  locationCity        String  @db.VarChar(100)
-  locationPostalCode  String? @db.VarChar(20)
-  locationAddress1    String? @db.VarChar(200)
-  locationAddress2    String? @db.VarChar(200)
+  locationCountry    String  @db.VarChar(100)
+  locationCity       String  @db.VarChar(100)
+  locationPostalCode String? @db.VarChar(20)
+  locationAddress1   String? @db.VarChar(200)
+  locationAddress2   String? @db.VarChar(200)
 
   // Social/Resume
   socialLinks Json @default("[]")
@@ -397,28 +404,28 @@ model Profile {
   ogImageId       String? @db.Uuid
 
   // Landing content blocks (translatable JSON markdown — nullable)
-  tagline            Json?
-  stackIntro         Json?
-  selectedWorkIntro  Json?
-  contactIntro       Json?
-  footerTagline      Json?
+  tagline           Json?
+  stackIntro        Json?
+  selectedWorkIntro Json?
+  contactIntro      Json?
+  footerTagline     Json?
   // /about narrative copy — page-shell hero + §04 Next steps. Plain text per
   // locale; console-managed so the author can edit without a code deploy.
-  aboutHeading       Json?
-  aboutLede          Json?
-  ctaHeading         Json?
-  ctaLede            Json?
+  aboutHeading      Json?
+  aboutLede         Json?
+  ctaHeading        Json?
+  ctaLede           Json?
   // Last time the author bumped /about narrative content (separate from
   // `updatedAt` which also bumps on avatar/social-link saves). Drives the
   // "Last updated <month>" line in the about hero meta strip.
-  contentUpdatedAt   DateTime?
+  contentUpdatedAt  DateTime?
 
   // Hero core-stack chips: Array<string> (3–4 short tokens, rendered uppercase).
   // Decoupled from `stackIntro` (which is prose for §5) so the hero strip stays terse.
-  coreStack    Json    @default("[]")
+  coreStack Json @default("[]")
 
   // Misc
-  timezones    Json    @default("[]")  // Array<string> of IANA zones
+  timezones    Json    @default("[]") // Array<string> of IANA zones
   // Owner's working hours, expressed as { start: "HH:mm", end: "HH:mm" }.
   // The trailing TZ short label is derived from `timezones[0]` (no duplicate field).
   workingHours Json?
@@ -491,16 +498,29 @@ model Experience {
   slug String @db.VarChar(200)
 
   // Company
-  companyName    String  @db.VarChar(200)
-  companyUrl     String? @db.VarChar(500)
-  companyLogoId  String? @db.Uuid
+  companyName   String  @db.VarChar(200)
+  companyUrl    String? @db.VarChar(500)
+  companyLogoId String? @db.Uuid
 
   // Translatable (JSONB)
   position         Json  @db.JsonB
   description      Json? @db.JsonB
   responsibilities Json  @default("{}") @db.JsonB
   highlights       Json  @default("{}") @db.JsonB
-  teamRole         Json? @db.JsonB
+
+  // Rich-text storage (expand phase, task 305) — 3 cols per prose sub-field.
+  // JSON canonical + sanitized HTML cache (both JSONB { en, vi }); old cols kept (task 363).
+  descriptionJson               Json? @db.JsonB
+  descriptionHtml               Json? @db.JsonB
+  descriptionSchemaVersion      Int   @default(1)
+  responsibilitiesJson          Json? @db.JsonB
+  responsibilitiesHtml          Json? @db.JsonB
+  responsibilitiesSchemaVersion Int   @default(1)
+  highlightsJson                Json? @db.JsonB
+  highlightsHtml                Json? @db.JsonB
+  highlightsSchemaVersion       Int   @default(1)
+
+  teamRole Json? @db.JsonB
 
   // Links (non-translatable JSON array of { label, url })
   links Json @default("[]") @db.JsonB
@@ -563,21 +583,21 @@ model ExperienceSkill {
 }
 
 model Project {
-  id           String        @id @db.Uuid
-  slug         String        @db.VarChar(200)
+  id   String @id @db.Uuid
+  slug String @db.VarChar(200)
 
   // Not translatable
-  title        String        @db.VarChar(200)
+  title String @db.VarChar(200)
 
   // Translatable (JSONB)
-  oneLiner     Json          @db.JsonB
-  description  Json          @db.JsonB
-  motivation   Json          @db.JsonB
-  role         Json          @db.JsonB
+  oneLiner    Json @db.JsonB
+  description Json @db.JsonB
+  motivation  Json @db.JsonB
+  role        Json @db.JsonB
 
   // Dates
-  startDate    DateTime      @db.Date
-  endDate      DateTime?     @db.Date
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
 
   // Status & Display
   status          ContentStatus          @default(DRAFT)
@@ -587,30 +607,36 @@ model Project {
   displayOrder    Int                    @default(0)
 
   // Links — Array<{label, url, type: 'repo'|'demo'|'case-study'|'doc'|'post'}>
-  links        Json          @default("[]")
+  links Json @default("[]")
 
   // Long-form case-study body (translatable markdown for D3.c reading column)
-  body         Json?
+  body Json?
+
+  // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
+  // both JSONB holding { en, vi }. Old markdown `body` kept until task 363 drop.
+  bodyJson          Json? @db.JsonB
+  bodyHtml          Json? @db.JsonB
+  bodySchemaVersion Int   @default(1)
 
   // Media
-  thumbnailId  String?       @db.Uuid
+  thumbnailId String? @db.Uuid
 
   // Audit
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  createdById  String        @db.Uuid
-  updatedById  String        @db.Uuid
-  deletedAt    DateTime?
-  deletedById  String?       @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String    @db.Uuid
+  updatedById String    @db.Uuid
+  deletedAt   DateTime?
+  deletedById String?   @db.Uuid
 
   // Relations
-  thumbnail    Media?              @relation("ProjectThumbnail", fields: [thumbnailId], references: [id])
-  createdBy    User                @relation("ProjectCreatedBy", fields: [createdById], references: [id])
-  updatedBy    User                @relation("ProjectUpdatedBy", fields: [updatedById], references: [id])
-  deletedBy    User?               @relation("ProjectDeletedBy", fields: [deletedById], references: [id])
-  highlights   TechnicalHighlight[]
-  images       ProjectImage[]
-  skills       ProjectSkill[]
+  thumbnail  Media?               @relation("ProjectThumbnail", fields: [thumbnailId], references: [id])
+  createdBy  User                 @relation("ProjectCreatedBy", fields: [createdById], references: [id])
+  updatedBy  User                 @relation("ProjectUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy  User?                @relation("ProjectDeletedBy", fields: [deletedById], references: [id])
+  highlights TechnicalHighlight[]
+  images     ProjectImage[]
+  skills     ProjectSkill[]
 
   @@index([status, deletedAt])
   @@index([featured, status, deletedAt])
@@ -621,31 +647,43 @@ model Project {
 }
 
 model TechnicalHighlight {
-  id           String  @id @db.Uuid
-  projectId    String  @db.Uuid
+  id        String @id @db.Uuid
+  projectId String @db.Uuid
 
   // CAO structure — all translatable
-  challenge    Json    @db.JsonB
-  approach     Json    @db.JsonB
-  outcome      Json    @db.JsonB
+  challenge Json @db.JsonB
+  approach  Json @db.JsonB
+  outcome   Json @db.JsonB
+
+  // Rich-text storage (expand phase, task 305) — 3 cols per CAO sub-field.
+  // JSON canonical + sanitized HTML cache (both JSONB { en, vi }); old cols kept (task 363).
+  challengeJson          Json? @db.JsonB
+  challengeHtml          Json? @db.JsonB
+  challengeSchemaVersion Int   @default(1)
+  approachJson           Json? @db.JsonB
+  approachHtml           Json? @db.JsonB
+  approachSchemaVersion  Int   @default(1)
+  outcomeJson            Json? @db.JsonB
+  outcomeHtml            Json? @db.JsonB
+  outcomeSchemaVersion   Int   @default(1)
 
   codeUrl      String? @db.VarChar(500)
   displayOrder Int     @default(0)
 
-  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, displayOrder])
   @@map("technical_highlights")
 }
 
 model ProjectImage {
-  id           String  @id @db.Uuid
-  projectId    String  @db.Uuid
-  mediaId      String  @db.Uuid
-  displayOrder Int     @default(0)
+  id           String @id @db.Uuid
+  projectId    String @db.Uuid
+  mediaId      String @db.Uuid
+  displayOrder Int    @default(0)
 
-  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  media        Media   @relation("ProjectImageMedia", fields: [mediaId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media   Media   @relation("ProjectImageMedia", fields: [mediaId], references: [id])
 
   @@unique([projectId, mediaId])
   @@index([projectId, displayOrder])
@@ -656,44 +694,51 @@ model ProjectSkill {
   projectId String @db.Uuid
   skillId   String @db.Uuid
 
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  skill     Skill   @relation(fields: [skillId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id])
 
   @@id([projectId, skillId])
   @@map("project_skills")
 }
 
 model BlogPost {
-  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  slug            String     @db.VarChar(200)
-  language        Language   @default(EN)
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug     String   @db.VarChar(200)
+  language Language @default(EN)
 
   // Content
-  title           String     @db.VarChar(300)
-  excerpt         String?    @db.VarChar(500)
-  content         String     @db.Text
+  title   String  @db.VarChar(300)
+  excerpt String? @db.VarChar(500)
+  content String  @db.Text
+
+  // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
+  // both JSONB holding { en, vi }. Old markdown `content` kept until task 363 drop.
+  contentJson          Json? @db.JsonB
+  contentHtml          Json? @db.JsonB
+  contentSchemaVersion Int   @default(1)
+
   readTimeMinutes Int?
 
   // Status & Display
-  status          PostStatus @default(DRAFT)
-  featured        Boolean    @default(false)
-  publishedAt     DateTime?
+  status      PostStatus @default(DRAFT)
+  featured    Boolean    @default(false)
+  publishedAt DateTime?
 
   // SEO
-  metaTitle       String?    @db.VarChar(200)
-  metaDescription String?    @db.VarChar(500)
+  metaTitle       String? @db.VarChar(200)
+  metaDescription String? @db.VarChar(500)
 
   // Relations
-  authorId        String     @db.Uuid
-  featuredImageId String     @db.Uuid
+  authorId        String @db.Uuid
+  featuredImageId String @db.Uuid
 
   // Audit
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  createdById     String     @db.Uuid
-  updatedById     String     @db.Uuid
-  deletedAt       DateTime?
-  deletedById     String?    @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String    @db.Uuid
+  updatedById String    @db.Uuid
+  deletedAt   DateTime?
+  deletedById String?   @db.Uuid
 
   // Relation definitions
   author        User           @relation("PostAuthor", fields: [authorId], references: [id])

@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 import type {
   TranslatableJson,
+  TranslatableRichText,
   SocialLink,
   Certification,
   ResumeUrls,
@@ -29,6 +30,11 @@ export type ProfilePublicResponseDto = {
   title: TranslatableJson;
   bioShort: TranslatableJson;
   bioLong: TranslatableJson | null;
+  /** Rich-text storage for `bioLong` (RTE epic Phase 2). JSON canonical +
+   *  sanitized HTML cache; null until Phase 4 populates them. */
+  bioLongJson: TranslatableRichText | null;
+  bioLongHtml: TranslatableJson | null;
+  bioLongSchemaVersion: number;
   yearsOfExperience: number;
   availability: AvailabilityType;
   openTo: OpenToValue[];

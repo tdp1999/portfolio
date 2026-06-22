@@ -8,6 +8,9 @@ const RAW_PROFILE: PrismaProfile = {
   title: { en: 'Software Engineer', vi: 'Ky su phan mem' },
   bioShort: { en: 'I build things', vi: 'Toi xay dung' },
   bioLong: null,
+  bioLongJson: null,
+  bioLongHtml: null,
+  bioLongSchemaVersion: 1,
   yearsOfExperience: 8,
   availability: 'EMPLOYED',
   openTo: ['FREELANCE'],
@@ -129,6 +132,20 @@ describe('ProfileMapper', () => {
       expect(prisma.ctaHeading).toEqual({ en: 'CTA', vi: 'Hanh dong' });
       expect(prisma.ctaLede).toEqual({ en: 'Door', vi: 'Cua' });
       expect(prisma.contentUpdatedAt).toEqual(stamp);
+    });
+  });
+
+  describe('toDomain — rich-text storage passthrough', () => {
+    it('maps bioLong Json/Html/SchemaVersion onto matching fields (no field swap)', () => {
+      const bioLongJson = { en: { doc: 'bio-json-en' }, vi: { doc: 'bio-json-vi' } };
+      const bioLongHtml = { en: '<p>bio-html-en</p>', vi: '<p>bio-html-vi</p>' };
+      const raw: PrismaProfile = { ...RAW_PROFILE, bioLongJson, bioLongHtml, bioLongSchemaVersion: 3 };
+
+      const profile = ProfileMapper.toDomain(raw);
+
+      expect(profile.bioLongJson).toEqual(bioLongJson);
+      expect(profile.bioLongHtml).toEqual(bioLongHtml);
+      expect(profile.bioLongSchemaVersion).toBe(3);
     });
   });
 });

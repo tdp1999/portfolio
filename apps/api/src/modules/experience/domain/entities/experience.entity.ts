@@ -1,4 +1,11 @@
-import { BaseCrudEntity, ExperienceLink, SlugValue, TranslatableStringArray } from '@portfolio/shared/types';
+import {
+  BaseCrudEntity,
+  ExperienceLink,
+  SlugValue,
+  TranslatableJson,
+  TranslatableRichText,
+  TranslatableStringArray,
+} from '@portfolio/shared/types';
 import {
   IExperienceProps,
   ICreateExperiencePayload,
@@ -46,6 +53,42 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
 
   get teamRole() {
     return this.props.teamRole;
+  }
+
+  get descriptionJson(): TranslatableRichText | null {
+    return this.props.descriptionJson;
+  }
+
+  get descriptionHtml(): TranslatableJson | null {
+    return this.props.descriptionHtml;
+  }
+
+  get descriptionSchemaVersion(): number {
+    return this.props.descriptionSchemaVersion;
+  }
+
+  get responsibilitiesJson(): TranslatableRichText | null {
+    return this.props.responsibilitiesJson;
+  }
+
+  get responsibilitiesHtml(): TranslatableJson | null {
+    return this.props.responsibilitiesHtml;
+  }
+
+  get responsibilitiesSchemaVersion(): number {
+    return this.props.responsibilitiesSchemaVersion;
+  }
+
+  get highlightsJson(): TranslatableRichText | null {
+    return this.props.highlightsJson;
+  }
+
+  get highlightsHtml(): TranslatableJson | null {
+    return this.props.highlightsHtml;
+  }
+
+  get highlightsSchemaVersion(): number {
+    return this.props.highlightsSchemaVersion;
   }
 
   get links(): ExperienceLink[] {
@@ -130,6 +173,16 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       responsibilities: data.responsibilities ?? { en: [], vi: [] },
       highlights: data.highlights ?? { en: [], vi: [] },
       teamRole: data.teamRole ?? null,
+      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      descriptionJson: null,
+      descriptionHtml: null,
+      descriptionSchemaVersion: 1,
+      responsibilitiesJson: null,
+      responsibilitiesHtml: null,
+      responsibilitiesSchemaVersion: 1,
+      highlightsJson: null,
+      highlightsHtml: null,
+      highlightsSchemaVersion: 1,
       links: data.links ?? [],
       employmentType: data.employmentType ?? 'FULL_TIME',
       locationType: data.locationType ?? 'ONSITE',

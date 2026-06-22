@@ -7,7 +7,7 @@ import {
   Media,
   Skill,
 } from '@prisma/client';
-import { TranslatableJson } from '@portfolio/shared/types';
+import { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { Project } from '../../domain/entities/project.entity';
 import { IProjectProps, ContentStatus, ProjectLifecycleStatus } from '../../domain/project.types';
 import { ProjectLinkProps, PROJECT_LINK_TYPES, ProjectLinkType } from '../../domain/value-objects';
@@ -24,6 +24,16 @@ export interface ProjectHighlightDto {
   challenge: TranslatableJson;
   approach: TranslatableJson;
   outcome: TranslatableJson;
+  // Rich-text storage per CAO sub-field (RTE epic Phase 2). Null until Phase 4.
+  challengeJson: TranslatableRichText | null;
+  challengeHtml: TranslatableJson | null;
+  challengeSchemaVersion: number;
+  approachJson: TranslatableRichText | null;
+  approachHtml: TranslatableJson | null;
+  approachSchemaVersion: number;
+  outcomeJson: TranslatableRichText | null;
+  outcomeHtml: TranslatableJson | null;
+  outcomeSchemaVersion: number;
   codeUrl: string | null;
   displayOrder: number;
 }
@@ -84,6 +94,10 @@ export class ProjectMapper {
       motivation: raw.motivation as unknown as TranslatableJson,
       role: raw.role as unknown as TranslatableJson,
       body: raw.body == null ? null : (raw.body as unknown as TranslatableJson),
+      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      bodyJson: (raw.bodyJson as TranslatableRichText | null) ?? null,
+      bodyHtml: (raw.bodyHtml as unknown as TranslatableJson | null) ?? null,
+      bodySchemaVersion: raw.bodySchemaVersion,
       startDate: raw.startDate,
       endDate: raw.endDate,
       status: raw.status as ContentStatus,
@@ -111,6 +125,15 @@ export class ProjectMapper {
           challenge: h.challenge as unknown as TranslatableJson,
           approach: h.approach as unknown as TranslatableJson,
           outcome: h.outcome as unknown as TranslatableJson,
+          challengeJson: (h.challengeJson as TranslatableRichText | null) ?? null,
+          challengeHtml: (h.challengeHtml as unknown as TranslatableJson | null) ?? null,
+          challengeSchemaVersion: h.challengeSchemaVersion,
+          approachJson: (h.approachJson as TranslatableRichText | null) ?? null,
+          approachHtml: (h.approachHtml as unknown as TranslatableJson | null) ?? null,
+          approachSchemaVersion: h.approachSchemaVersion,
+          outcomeJson: (h.outcomeJson as TranslatableRichText | null) ?? null,
+          outcomeHtml: (h.outcomeHtml as unknown as TranslatableJson | null) ?? null,
+          outcomeSchemaVersion: h.outcomeSchemaVersion,
           codeUrl: h.codeUrl,
           displayOrder: h.displayOrder,
         })),

@@ -1,4 +1,10 @@
-import { BaseCrudEntity, SlugValue, TranslatableJson, PartialTranslatableJson } from '@portfolio/shared/types';
+import {
+  BaseCrudEntity,
+  SlugValue,
+  TranslatableJson,
+  TranslatableRichText,
+  PartialTranslatableJson,
+} from '@portfolio/shared/types';
 import {
   IProjectProps,
   ICreateProjectPayload,
@@ -45,6 +51,18 @@ export class Project extends BaseCrudEntity<IProjectProps> {
 
   get body(): TranslatableJson | null {
     return this.props.body;
+  }
+
+  get bodyJson(): TranslatableRichText | null {
+    return this.props.bodyJson;
+  }
+
+  get bodyHtml(): TranslatableJson | null {
+    return this.props.bodyHtml;
+  }
+
+  get bodySchemaVersion(): number {
+    return this.props.bodySchemaVersion;
   }
 
   get startDate(): Date {
@@ -99,6 +117,10 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       motivation: data.motivation,
       role: data.role,
       body: data.body ?? null,
+      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      bodyJson: null,
+      bodyHtml: null,
+      bodySchemaVersion: 1,
       startDate: data.startDate,
       endDate: data.endDate ?? null,
       status: 'DRAFT',

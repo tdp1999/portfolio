@@ -1,4 +1,4 @@
-import { BaseCrudEntity, SlugValue } from '@portfolio/shared/types';
+import { BaseCrudEntity, SlugValue, TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { BadRequestError, BlogPostErrorCode, ErrorLayer } from '@portfolio/shared/errors';
 import { IBlogPostProps, ICreateBlogPostPayload, IUpdateBlogPostPayload, PostStatus } from '../blog-post.types';
 
@@ -25,6 +25,18 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
 
   get content(): string {
     return this.props.content;
+  }
+
+  get contentJson(): TranslatableRichText | null {
+    return this.props.contentJson;
+  }
+
+  get contentHtml(): TranslatableJson | null {
+    return this.props.contentHtml;
+  }
+
+  get contentSchemaVersion(): number {
+    return this.props.contentSchemaVersion;
   }
 
   get readTimeMinutes(): number | null {
@@ -82,6 +94,10 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       title: data.title,
       excerpt: data.excerpt ?? null,
       content: data.content,
+      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      contentJson: null,
+      contentHtml: null,
+      contentSchemaVersion: 1,
       readTimeMinutes: BlogPost.calculateReadTime(data.content),
       status: 'DRAFT',
       featured: data.featured ?? false,
