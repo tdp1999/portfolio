@@ -77,10 +77,13 @@ import { indentForLevel } from './toc-sidebar.util';
   styles: `
     :host {
       display: block;
-      /* Position sticky on the host so the scroll container has a stable height. */
+      /* Position sticky on the host so the scroll container has a stable height.
+         The offset is tokenised: document-scroll pages clear the sticky header
+         (96px default); an app-shell whose scroller excludes the header overrides
+         --toc-sticky-top to a small value. */
       position: sticky;
-      top: 96px;
-      max-height: calc(var(--vh-full) - 96px - 16px);
+      top: var(--toc-sticky-top, 96px);
+      max-height: calc(var(--vh-full) - var(--toc-sticky-top, 96px) - 16px);
       overflow-y: auto;
       /* Hide scrollbar — long TOCs still scroll via wheel/touch, but the
          scrollbar chrome was visually noisy. */

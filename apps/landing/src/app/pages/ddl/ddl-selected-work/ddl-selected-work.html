@@ -1,0 +1,196 @@
+<landing-ddl-doc-page slug="selected-work" [width]="'wide'">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Four ways to handle the panel swap when the active project changes — weighing motion richness against restraint. All four assume the gallery is height-locked (aspect-ratio 4 / 3) so image-count differences never shift the surrounding layout. Click between projects in each demo to feel the motion before picking.'
+    "
+  />
+
+  <!-- ═══ V1 — Crossfade whole panel ═══════════════════════════════════════ -->
+  <landing-ddl-section anchor="v1-crossfade" heading="V1 — Crossfade whole panel">
+    <p class="swt__deck">
+      Outgoing panel fades out, incoming fades in. 360ms ease-out with a 60ms lead so the swap doesn't read as a flash.
+      Opacity only — simplest treatment, cohesive but a touch flat.
+    </p>
+    <section class="swt swt--v1" [attr.aria-label]="'V1 demo'">
+      <landing-segmented
+        [segments]="segments()"
+        [active]="activeV1()"
+        (activeChange)="activeV1.set($event)"
+        variant="underline"
+        idPrefix="swt-v1"
+        ariaLabel="V1 projects"
+        class="swt__tabs"
+      />
+      <div class="swt__panel swt__panel--v1">
+        @for (p of [projectV1()]; track p.slug) {
+          <div class="swt__inner">
+            <div class="swt__left">
+              <div class="swt__meta">
+                <span class="swt__meta-year">{{ p.year }}</span>
+                <span class="swt__meta-role">{{ p.role }}</span>
+              </div>
+              <h3 class="swt__name">{{ p.title }}</h3>
+              <p class="swt__desc">{{ p.description }}</p>
+              <ul class="swt__chips">
+                @for (s of p.skills; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </div>
+            <div class="swt__right">
+              @for (url of p.imageUrls; track url; let i = $index) {
+                @if (i < 4) {
+                  <img [src]="url" alt="" class="swt__img" />
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  </landing-ddl-section>
+
+  <!-- ═══ V2 — Text fade-up + Gallery crossfade ════════════════════════════ -->
+  <landing-ddl-section anchor="v2-text-fade-up" heading="V2 — Text fade-up · gallery crossfade">
+    <p class="swt__deck">
+      Text column: opacity 0→1 + translateY 8px (420ms). Gallery: crossfade in place (360ms), both with an 80ms lead.
+      Image stays anchored; the prose feels like new content settling in. Reads as craft without drawing too much
+      attention.
+    </p>
+    <section class="swt swt--v2" [attr.aria-label]="'V2 demo'">
+      <landing-segmented
+        [segments]="segments()"
+        [active]="activeV2()"
+        (activeChange)="activeV2.set($event)"
+        variant="underline"
+        idPrefix="swt-v2"
+        ariaLabel="V2 projects"
+        class="swt__tabs"
+      />
+      <div class="swt__panel">
+        <div class="swt__inner">
+          @for (p of [projectV2()]; track p.slug) {
+            <div class="swt__left swt__left--v2">
+              <div class="swt__meta">
+                <span class="swt__meta-year">{{ p.year }}</span>
+                <span class="swt__meta-role">{{ p.role }}</span>
+              </div>
+              <h3 class="swt__name">{{ p.title }}</h3>
+              <p class="swt__desc">{{ p.description }}</p>
+              <ul class="swt__chips">
+                @for (s of p.skills; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @for (p of [projectV2()]; track p.slug) {
+            <div class="swt__right swt__right--v2">
+              @for (url of p.imageUrls; track url; let i = $index) {
+                @if (i < 4) {
+                  <img [src]="url" alt="" class="swt__img" />
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </landing-ddl-section>
+
+  <!-- ═══ V3 — Stagger text (cascade) + Gallery crossfade ══════════════════ -->
+  <landing-ddl-section anchor="v3-cascade" heading="V3 — Staggered text · gallery crossfade">
+    <p class="swt__deck">
+      Each text block (meta → title → desc → chips) enters with an 80ms cascade (60–300ms delays, 380ms per element).
+      Stripe / Linear style — feels crafted but heavier; can read as "busy" if the user swaps tabs rapidly.
+    </p>
+    <section class="swt swt--v3" [attr.aria-label]="'V3 demo'">
+      <landing-segmented
+        [segments]="segments()"
+        [active]="activeV3()"
+        (activeChange)="activeV3.set($event)"
+        variant="underline"
+        idPrefix="swt-v3"
+        ariaLabel="V3 projects"
+        class="swt__tabs"
+      />
+      <div class="swt__panel">
+        <div class="swt__inner">
+          @for (p of [projectV3()]; track p.slug) {
+            <div class="swt__left swt__left--v3">
+              <div class="swt__meta swt__stagger-1">
+                <span class="swt__meta-year">{{ p.year }}</span>
+                <span class="swt__meta-role">{{ p.role }}</span>
+              </div>
+              <h3 class="swt__name swt__stagger-2">{{ p.title }}</h3>
+              <p class="swt__desc swt__stagger-3">{{ p.description }}</p>
+              <ul class="swt__chips swt__stagger-4">
+                @for (s of p.skills; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @for (p of [projectV3()]; track p.slug) {
+            <div class="swt__right swt__right--v2">
+              @for (url of p.imageUrls; track url; let i = $index) {
+                @if (i < 4) {
+                  <img [src]="url" alt="" class="swt__img" />
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </landing-ddl-section>
+
+  <!-- ═══ V4 — Directional slide + crossfade gallery ═══════════════════════ -->
+  <landing-ddl-section anchor="v4-slide" heading="V4 — Directional slide · gallery crossfade">
+    <p class="swt__deck">
+      Text slides horizontally in the direction of the tab move (next → slides from R; previous → slides from L), 24px
+      translate + opacity, 440ms with a 60ms lead. Gallery crossfades in place. Adds wayfinding; can feel like a page
+      nav rather than a content swap.
+    </p>
+    <section class="swt swt--v4" [attr.data-direction]="directionV4()" [attr.aria-label]="'V4 demo'">
+      <landing-segmented
+        [segments]="segments()"
+        [active]="activeV4()"
+        (activeChange)="setActiveV4($event)"
+        variant="underline"
+        idPrefix="swt-v4"
+        ariaLabel="V4 projects"
+        class="swt__tabs"
+      />
+      <div class="swt__panel">
+        <div class="swt__inner">
+          @for (p of [projectV4()]; track p.slug) {
+            <div class="swt__left swt__left--v4">
+              <div class="swt__meta">
+                <span class="swt__meta-year">{{ p.year }}</span>
+                <span class="swt__meta-role">{{ p.role }}</span>
+              </div>
+              <h3 class="swt__name">{{ p.title }}</h3>
+              <p class="swt__desc">{{ p.description }}</p>
+              <ul class="swt__chips">
+                @for (s of p.skills; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @for (p of [projectV4()]; track p.slug) {
+            <div class="swt__right swt__right--v2">
+              @for (url of p.imageUrls; track url; let i = $index) {
+                @if (i < 4) {
+                  <img [src]="url" alt="" class="swt__img" />
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

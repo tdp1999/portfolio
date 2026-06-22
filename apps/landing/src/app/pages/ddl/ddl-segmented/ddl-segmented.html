@@ -1,0 +1,141 @@
+<landing-ddl-doc-page slug="segmented" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <div class="space-y-8">
+      <div>
+        <h3 id="seg-default" data-toc="Default" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          default · variant=apple · 3 segments
+        </h3>
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="segDemoA()"
+          (activeChange)="segDemoA.set($event)"
+          ariaLabel="Showcase example A"
+          idPrefix="seg-demo-a"
+        />
+      </div>
+      <div>
+        <h3 id="seg-two-segments" data-toc="Two segments" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          2 segments · the no-prototype shape (Showcase / Usage)
+        </h3>
+        <landing-segmented
+          [segments]="tabsNoPrototypes"
+          [active]="segDemoB()"
+          (activeChange)="segDemoB.set($event)"
+          ariaLabel="Showcase example B"
+          idPrefix="seg-demo-b"
+        />
+      </div>
+      <div>
+        <h3 id="seg-disabled" data-toc="Disabled" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          with disabled segment · the middle option is unavailable
+        </h3>
+        <landing-segmented
+          [segments]="[
+            { id: 's1', label: 'Day' },
+            { id: 's2', label: 'Week', disabled: true },
+            { id: 's3', label: 'Month' },
+          ]"
+          [active]="segDemoC()"
+          (activeChange)="segDemoC.set($event)"
+          ariaLabel="Showcase example C"
+          idPrefix="seg-demo-c"
+        />
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="prototypes" heading="Prototypes">
+    <div class="space-y-10 max-w-3xl">
+      <div>
+        <h3 id="seg-variant-a" data-toc="A · Apple" class="font-mono text-mono-md text-landing-accent mb-2">
+          A · Apple-classic (default)
+        </h3>
+        <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+          Recessed ink-1 track inside a hairline border, raised ink-2 active segment. The "raised" feel comes from tone
+          alone — no box-shadow, in line with the project rule.
+        </p>
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="'showcase'"
+          variant="apple"
+          ariaLabel="Variant A demo"
+          idPrefix="seg-var-a"
+        />
+      </div>
+      <div>
+        <h3 id="seg-variant-b" data-toc="B · Hairline" class="font-mono text-mono-md text-landing-accent mb-2">
+          B · Hairline rectangle
+        </h3>
+        <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+          Outlined group with vertical separators between segments. Active fills with ink-2. Less iOS, more
+          technical-spec; pairs well with mono-heavy reading surfaces.
+        </p>
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="'prototypes'"
+          variant="hairline"
+          ariaLabel="Variant B demo"
+          idPrefix="seg-var-b"
+        />
+      </div>
+      <div>
+        <h3 id="seg-variant-c" data-toc="C · Underline" class="font-mono text-mono-md text-landing-accent mb-2">
+          C · Indigo underline
+        </h3>
+        <p class="font-sans text-body-sm text-landing-text-500 mb-4 max-w-md">
+          Flat row sitting on a single hairline. The active segment is marked by a 2px indigo underline — closer to
+          editorial tabs. Spends the indigo budget; use sparingly.
+        </p>
+        <landing-segmented
+          [segments]="tabsWithPrototypes"
+          [active]="'usage'"
+          variant="underline"
+          ariaLabel="Variant C demo"
+          idPrefix="seg-var-c"
+        />
+      </div>
+
+      <div class="border-l-2 border-landing-accent pl-4">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">recommendation</p>
+        <p class="font-sans text-body-md text-landing-text-400">
+          <strong>A · Apple-classic</strong> is the default — neutral on indigo budget, works inside cards, reads as a
+          control without claiming editorial weight. Reach for <strong>C · Underline</strong> only on a dedicated docs
+          page where the indigo moment makes sense; <strong>B · Hairline</strong> for inline filters in tables / dense
+          data views.
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-segmented</strong> for switching between mutually exclusive views
+        of the same conceptual unit (Day / Week / Month, Showcase / Prototypes / Usage, Software / Hardware / Services).
+        Don't use it as navigation between unrelated pages — that's a job for
+        <code class="font-mono text-mono-sm text-landing-text-300">landing-link</code> or a regular nav.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Cap segments at 4.</strong> Five or more reads as a list; switch to a
+        dropdown / select instead. Disabled segments are supported via the
+        <code class="font-mono text-mono-sm text-landing-text-300">disabled</code> flag on the segment object.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Use mono caps labels.</strong> Short, declarative — one or two words. The
+        visual rhythm matches the rest of the landing label vocabulary (eyebrow, chip, status-dot).
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Two-way bind active state to a signal.</strong> Pattern:
+        <code class="font-mono text-mono-sm text-landing-text-300"
+          >[active]="tab()" (activeChange)="tab.set($event)"</code
+        >. On a multi-family page like DDL, every family owns its own signal so switching one tab doesn't move the
+        others.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Keyboard.</strong> Arrow keys move between segments; Home / End jump to
+        the first / last enabled segment; disabled segments are skipped. Roving tabindex follows the ARIA tablist
+        pattern.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

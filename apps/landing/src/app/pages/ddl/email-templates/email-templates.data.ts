@@ -19,6 +19,35 @@
  * too hard" — not corporate, not stiff, but recognizably this brand.
  */
 
+import type { DdlVariant } from '../ddl.types';
+
+// Decision record — this page is still EXPLORING: V0 in each row is the current
+// production baseline (reference, not a candidate), V1 / V2 are the two
+// directions on the board per email type. No `selected`; each carries its
+// trade-off as a `note`, so the widget tags them all "Candidate".
+export const EMAIL_TEMPLATES_VARIANTS: readonly DdlVariant[] = [
+  {
+    id: 'auto-v1',
+    label: 'Auto-reply V1 — Friendly transactional',
+    note: 'Railway-style: wordmark, bold heading, summary as a tight list, accent CTA. Reads as a real product touchpoint — but the CTA can feel cold for a simple hello.',
+  },
+  {
+    id: 'auto-v2',
+    label: 'Auto-reply V2 — Warm letter',
+    note: 'Serif heading, single-column letter rhythm, the message echoed back as a quote, "Until soon" signoff. Warmer and more personal — but no CTA, so it nudges toward nothing.',
+  },
+  {
+    id: 'admin-v1',
+    label: 'Admin V1 — Friendly triage',
+    note: 'Same scaffold as auto-reply V1: eyebrow + heading, metadata row, quoted body, "View in Console" button. Scans at a glance — but heavier chrome than a raw inbox row.',
+  },
+  {
+    id: 'admin-v2',
+    label: 'Admin V2 — Inbox-ready compact',
+    note: 'Lowest chrome, mimics a native Gmail/Apple Mail row: subject as heading, unboxed body, right-aligned Reply + View. Minimal weight — but less on-brand, closer to a plain forward.',
+  },
+];
+
 export interface EmailSampleData {
   readonly name: string;
   readonly email: string;

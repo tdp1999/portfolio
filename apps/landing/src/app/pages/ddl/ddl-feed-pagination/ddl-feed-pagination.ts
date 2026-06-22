@@ -1,26 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import {
-  Container,
-  Eyebrow,
-  Breadcrumb,
-  SectionHeader,
-  LoadMore,
-  Pagination,
-  ResultsCount,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { LoadMore, Pagination, ResultsCount } from '@portfolio/landing/shared/ui';
+
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 import { FAKE_PROJECTS } from '../feed-fake-data';
+import { FEED_PAGINATION_VARIANTS } from './ddl-feed-pagination.data';
 
 @Component({
   selector: 'landing-ddl-feed-pagination',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, SectionHeader, LoadMore, Pagination, ResultsCount],
+  imports: [LoadMore, Pagination, ResultsCount, DdlDocPage, DdlSection, DdlDecisionRecord],
   templateUrl: './ddl-feed-pagination.html',
   styleUrl: './ddl-feed-pagination.scss',
 })
 export class DdlFeedPagination {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Feed — pagination' }];
+  protected readonly variants = FEED_PAGINATION_VARIANTS;
 
   readonly all = FAKE_PROJECTS;
   readonly total = FAKE_PROJECTS.length;

@@ -1,20 +1,19 @@
-<div class="border-b border-landing-border bg-ink-1/60">
-  <landing-container size="wide">
-    <div class="py-6">
-      <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
-      <landing-section-header align="left" size="sm" [level]="1"> Feed — <em>filter bar</em>. </landing-section-header>
-      <p class="afb__intro">
-        Filter UX for any feed/index page (/projects, /blog, future). Four UI strategies on the same filter set (year ·
-        status · stack). V1 is fully wired; V2–V4 are visual mocks. Marks: 🟢 <em>recommend</em>, 💡 <em>candidate</em>,
-        ⚠ <em>not recommended</em>.
-      </p>
-    </div>
-  </landing-container>
-</div>
+<landing-ddl-doc-page slug="feed-filter-bar" [width]="'wide'">
+  <p class="afb__intro">
+    Filter UX for any feed/index page (/projects, /blog, future). Four UI strategies on the same filter set (year ·
+    status · stack). V1 is fully wired; V2–V4 are visual mocks. Marks: 🟢 <em>recommend</em>, 💡 <em>candidate</em>, ⚠
+    <em>not recommended</em>.
+  </p>
 
-<!-- ═══ V1 — chip-row inline (collapsed by default) ══════════════ -->
-<section class="afb-block" aria-label="V1 chip-row inline">
-  <landing-container size="wide">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Four filter-bar UX strategies on the same filter set (year · status · stack), weighed against affordance visibility, portfolio scale, and mobile behavior. V1 (chip-row inline) is fully wired and the standing recommendation; V2/V4 stay candidates pending real density, V3 is wrong-tool. None is locked yet — tick the chips in V1 below to feel the wired behavior.'
+    "
+  />
+
+  <!-- ═══ V1 — chip-row inline (wired, recommended) ════════════════ -->
+  <landing-ddl-section anchor="v1-chip-row" heading="V1 — chip-row inline (collapsed by default)">
     <div class="afb-variant__head">
       <span class="afb-variant__tag">V1 · chip-row inline (collapsed by default)</span>
       <span class="afb-variant__note">
@@ -157,84 +156,83 @@
         (tag/category facets) or future search lands.
       </p>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ V2 — dropdown-per-facet ═══════════════════════════════════ -->
-<section class="afb-block afb-block--alt" aria-label="V2 dropdown-per-facet">
-  <landing-container size="wide">
+  <!-- ═══ V2 — dropdown-per-facet (candidate, kept visible) ════════ -->
+  <landing-ddl-section anchor="v2-dropdown-per-facet" heading="V2 — dropdown-per-facet (Linear style)">
     <div class="afb-variant__head">
       <span class="afb-variant__tag">V2 · dropdown-per-facet (Linear style)</span>
       <span class="afb-variant__note">
         💡 candidate · single horizontal row of facet buttons. Click → dropdown of options. Compact, but affordance is
-        hidden — user must click each facet to see what is filterable.
+        hidden — user must click each facet to see what is filterable. Visual mock.
       </span>
     </div>
 
-    <div class="dropdown-bar">
-      <button
-        type="button"
-        class="dropdown-btn"
-        [class.dropdown-btn--open]="v2OpenFacet() === 'year'"
-        (click)="toggleV2Facet('year')"
-      >
-        Year
-        <landing-icon name="chevron-down" [size]="14" />
-      </button>
-      <button
-        type="button"
-        class="dropdown-btn"
-        [class.dropdown-btn--open]="v2OpenFacet() === 'status'"
-        (click)="toggleV2Facet('status')"
-      >
-        Status
-        <landing-icon name="chevron-down" [size]="14" />
-      </button>
-      <button
-        type="button"
-        class="dropdown-btn"
-        [class.dropdown-btn--open]="v2OpenFacet() === 'stack'"
-        (click)="toggleV2Facet('stack')"
-      >
-        Stack
-        <landing-icon name="chevron-down" [size]="14" />
-      </button>
-    </div>
-
-    @if (v2OpenFacet(); as facet) {
-      <div class="dropdown-panel">
-        @switch (facet) {
-          @case ('year') {
-            @for (year of years; track year) {
-              <label class="dropdown-option"> <input type="checkbox" /> {{ year }} </label>
-            }
-          }
-          @case ('status') {
-            @for (status of statuses; track status) {
-              <label class="dropdown-option"> <input type="checkbox" /> {{ status }} </label>
-            }
-          }
-          @case ('stack') {
-            @for (group of skillGroups; track group.category) {
-              <div class="dropdown-section">
-                <span class="dropdown-section__title">{{ group.category }}</span>
-                @for (skill of group.skills; track skill.skill.slug) {
-                  <label class="dropdown-option">
-                    <input type="checkbox" /> {{ skill.skill.name }} ({{ skill.count }})
-                  </label>
-                }
-              </div>
-            }
-          }
-        }
+    <landing-ddl-stage label="V2 · dropdown-per-facet" width="wide">
+      <div class="dropdown-bar">
+        <button
+          type="button"
+          class="dropdown-btn"
+          [class.dropdown-btn--open]="v2OpenFacet() === 'year'"
+          (click)="toggleV2Facet('year')"
+        >
+          Year
+          <landing-icon name="chevron-down" [size]="14" />
+        </button>
+        <button
+          type="button"
+          class="dropdown-btn"
+          [class.dropdown-btn--open]="v2OpenFacet() === 'status'"
+          (click)="toggleV2Facet('status')"
+        >
+          Status
+          <landing-icon name="chevron-down" [size]="14" />
+        </button>
+        <button
+          type="button"
+          class="dropdown-btn"
+          [class.dropdown-btn--open]="v2OpenFacet() === 'stack'"
+          (click)="toggleV2Facet('stack')"
+        >
+          Stack
+          <landing-icon name="chevron-down" [size]="14" />
+        </button>
       </div>
-    }
-  </landing-container>
-</section>
 
-<!-- ═══ V3 — sidebar facets ═════════════════════════════════════ -->
-<section class="afb-block" aria-label="V3 sidebar facets">
-  <landing-container size="wide">
+      @if (v2OpenFacet(); as facet) {
+        <div class="dropdown-panel">
+          @switch (facet) {
+            @case ('year') {
+              @for (year of years; track year) {
+                <label class="dropdown-option"> <input type="checkbox" /> {{ year }} </label>
+              }
+            }
+            @case ('status') {
+              @for (status of statuses; track status) {
+                <label class="dropdown-option"> <input type="checkbox" /> {{ status }} </label>
+              }
+            }
+            @case ('stack') {
+              @for (group of skillGroups; track group.category) {
+                <div class="dropdown-section">
+                  <span class="dropdown-section__title">{{ group.category }}</span>
+                  @for (skill of group.skills; track skill.skill.slug) {
+                    <label class="dropdown-option">
+                      <input type="checkbox" /> {{ skill.skill.name }} ({{ skill.count }})
+                    </label>
+                  }
+                </div>
+              }
+            }
+          }
+        </div>
+      }
+    </landing-ddl-stage>
+  </landing-ddl-section>
+
+  <!-- ═══ Considered — weaker / wrong-tool directions ══════════════ -->
+  <landing-ddl-considered label="V3 — sidebar facets (not recommended) · V4 — search + auto-chips (candidate)">
+    <!-- V3 — sidebar facets -->
     <div class="afb-variant__head">
       <span class="afb-variant__tag">V3 · sidebar facets (Algolia / Shopify style)</span>
       <span class="afb-variant__note">
@@ -295,12 +293,8 @@
         <span class="sidebar-results__placeholder">[ project list goes here — 240px sidebar steals space ]</span>
       </div>
     </div>
-  </landing-container>
-</section>
 
-<!-- ═══ V4 — search + auto-chips ═════════════════════════════════ -->
-<section class="afb-block afb-block--alt" aria-label="V4 search + auto-chips">
-  <landing-container size="wide">
+    <!-- V4 — search + auto-chips -->
     <div class="afb-variant__head">
       <span class="afb-variant__tag">V4 · search + auto-chips</span>
       <span class="afb-variant__note">
@@ -322,13 +316,10 @@
       <span class="search-chip search-chip--mock">live ✕</span>
       <span class="search-chip search-chip--mock">typescript ✕</span>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-considered>
 
-<!-- ═══ Pick summary ═════════════════════════════════════════════ -->
-<section class="afb-summary">
-  <landing-container size="wide">
-    <landing-eyebrow [label]="['adoption', 'recommendation', 'pick one for prod']" tone="accent" class="afb-eyebrow" />
+  <!-- ═══ Adoption · pick one for prod ═════════════════════════════ -->
+  <landing-ddl-section anchor="adoption" heading="Adoption · pick one for prod">
     <dl class="afb-pick">
       <div class="afb-pick__row">
         <dt>Ship</dt>
@@ -346,5 +337,5 @@
         <dd><strong>V3 (sidebar) · V4 (search)</strong> — wrong tool for portfolio scale.</dd>
       </div>
     </dl>
-  </landing-container>
-</section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

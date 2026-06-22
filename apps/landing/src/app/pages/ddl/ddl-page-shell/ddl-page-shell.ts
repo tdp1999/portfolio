@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Container, Link, PageShell, Section, StatusDot } from '@portfolio/landing/shared/ui';
+import { Container, Link, PageShell, StatusDot } from '@portfolio/landing/shared/ui';
+
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 import {
   BREADCRUMB_ABOUT,
   BREADCRUMB_PRIVACY,
@@ -22,22 +25,11 @@ import {
   selector: 'landing-ddl-page-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Section, Container, PageShell, Link, StatusDot, RouterLink],
+  imports: [Container, PageShell, Link, StatusDot, RouterLink, DdlDocPage, DdlSection],
   template: `
-    <landing-section>
-      <landing-container>
-        <h1 class="psl__title">Page shell · canonical feature-page composition</h1>
-        <p class="psl__lede">
-          Wrapper every <strong>feature page</strong> (subpage) shares: <code>/about</code>, <code>/projects</code>,
-          <code>/blog</code>, <code>/uses</code>, <code>/contact</code>, <code>/colophon</code>, <code>/privacy</code>,
-          <code>/terms</code>. Home (root) is excluded — it has its own hero. The shell renders
-          <code>&lt;article&gt;</code> with a <code>&lt;header&gt;</code> block (breadcrumb + <code>landing-page-hero</code> +
-          optional meta strip) and projects body sections + an optional <code>&lt;footer&gt;</code>. Variants below show the
-          four meta-strip patterns currently in scope.
-        </p>
-
+    <landing-ddl-doc-page slug="page-shell" [width]="'wide'">
+      <landing-ddl-section anchor="structural-contract" heading="Structural contract">
         <section class="psl__contract">
-          <h2 class="psl__h2">Structural contract</h2>
           <pre class="psl__code"><code>{{ skeleton }}</code></pre>
           <ul class="psl__rules" role="list">
             <li>One <code>&lt;h1&gt;</code> per page — emitted by <code>landing-page-hero</code> (level=1).</li>
@@ -51,10 +43,12 @@ import {
           </ul>
         </section>
 
-        <!-- ═══ Variant A · About (composite, multi-meta strip) ═══════════ -->
+      </landing-ddl-section>
+
+      <!-- ═══ Variant A · About (composite, multi-meta strip) ═══════════ -->
+      <landing-ddl-section anchor="variant-a-composite" heading="Variant A · Composite (about)">
         <article class="psl__variant">
           <header class="psl__variant-head">
-            <h2 class="psl__h2">Variant A · Composite page (about)</h2>
             <p>
               Center-aligned hero, multi-fact <code>&lt;ul meta-strip&gt;</code> with a status dot. Body sections supply
               their own containers. Footer projects a final CTA.
@@ -94,10 +88,12 @@ import {
           </div>
         </article>
 
-        <!-- ═══ Variant B · Privacy / Terms (long-form, last-updated only) ═ -->
+      </landing-ddl-section>
+
+      <!-- ═══ Variant B · Privacy / Terms (long-form, last-updated only) ═ -->
+      <landing-ddl-section anchor="variant-b-legal" heading="Variant B · Long-form legal">
         <article class="psl__variant">
           <header class="psl__variant-head">
-            <h2 class="psl__h2">Variant B · Long-form legal (privacy, terms)</h2>
             <p>
               Center hero, single-line <code>&lt;p meta-strip&gt;</code> with <code>&lt;time datetime&gt;</code>. No
               eyebrow (legal pages sit outside primary IA). Prose body constrained to ~70ch.
@@ -126,10 +122,12 @@ import {
           </div>
         </article>
 
-        <!-- ═══ Variant C · Uses / Colophon (eyebrow + last-updated) ══════ -->
+      </landing-ddl-section>
+
+      <!-- ═══ Variant C · Uses / Colophon (eyebrow + last-updated) ══════ -->
+      <landing-ddl-section anchor="variant-c-catalogue" heading="Variant C · Indexed catalogue">
         <article class="psl__variant">
           <header class="psl__variant-head">
-            <h2 class="psl__h2">Variant C · Indexed catalogue (uses, colophon)</h2>
             <p>
               Center hero, <code>last-updated</code> meta line, body composed of independent
               <code>&lt;section&gt;</code> entries. No eyebrow — page-shell intentionally drops eyebrow from feature
@@ -159,10 +157,12 @@ import {
           </div>
         </article>
 
-        <!-- ═══ Variant D · Contact (left, no meta, form below) ══════════ -->
+      </landing-ddl-section>
+
+      <!-- ═══ Variant D · Contact (left, no meta, form below) ══════════ -->
+      <landing-ddl-section anchor="variant-d-contact" heading="Variant D · Talk-to-me (contact)">
         <article class="psl__variant">
           <header class="psl__variant-head">
-            <h2 class="psl__h2">Variant D · Talk-to-me (contact)</h2>
             <p>
               Center hero, no meta strip (form is the surface). Body section hosts the form column + side channels.
               This is the page that historically diverged most — the shell makes it conform.
@@ -185,8 +185,10 @@ import {
           </div>
         </article>
 
+      </landing-ddl-section>
+
+      <landing-ddl-section anchor="migration-status" heading="Migration status">
         <section class="psl__migration">
-          <h2 class="psl__h2">Migration status</h2>
           <ul class="psl__rules" role="list">
             <li><code>landing-page-shell</code> shipped — exported from <code>@portfolio/landing/shared/ui</code>.</li>
             <li>
@@ -202,8 +204,8 @@ import {
             <li>See also <landing-link [routerLink]="['/ddl/page-hero']">page-hero</landing-link> for the inner heading composition.</li>
           </ul>
         </section>
-      </landing-container>
-    </landing-section>
+      </landing-ddl-section>
+    </landing-ddl-doc-page>
   `,
   styles: [
     `

@@ -1,26 +1,21 @@
-<div class="ls-page-head">
-  <landing-container size="wide">
-    <div class="ls-page-head__inner">
-      <landing-breadcrumb [items]="breadcrumb" class="ls-page-head__crumbs" />
-      <landing-section-header align="left" size="sm">
-        Language switcher — <em>direction</em> variants
-      </landing-section-header>
-      <p class="ls-page-head__intro">
-        Six directions for the EN / VI toggle that lives in the header. Each variant is interactive — click to see
-        active state behavior. Pick by weight you want to give bilingualism:
-        <strong>visible-by-default</strong> (variants 1, 3, 5) treats VI as a first-class peer;
-        <strong>menu-hidden</strong> (2, 4) treats it as a setting. Variant 6 is the absolute-minimal one for a
-        portfolio that has barely any localized content yet.
-      </p>
-    </div>
-  </landing-container>
-</div>
+<landing-ddl-doc-page slug="language-switcher" [width]="'wide'">
+  <p class="ls-intro">
+    Six directions for the EN / VI toggle that lives in the header. Each demo is interactive — click to see active-state
+    behavior. Pick by the weight you want to give bilingualism: <strong>visible-by-default</strong> (V1, V2, V5) treats
+    VI as a first-class peer; <strong>menu-hidden</strong> (V3, V4) treats it as a setting; V6 is the most expressive,
+    minimal one for a portfolio with little localized content yet.
+  </p>
 
-<!-- ═══ Research stepback ═══════════════════════════════════════ -->
-<section class="ls-block ls-block--research" aria-label="Research stepback">
-  <landing-container size="wide">
-    <landing-eyebrow [label]="['research', 'stepback', 'pattern categories']" tone="accent" class="ls-block__eyebrow" />
-    <p class="ls-block__intro">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Six directions for the header EN / VI toggle, weighed on visual weight, how many languages they scale to, and the editorial voice they project. No winner yet — the pick depends on how much bilingualism the portfolio wants to declare. V2 (mono inline) fits the restrained lowercase voice today; V3 (dropdown) is the safe pick if a 3rd language ever lands. Click each demo to feel the difference before deciding.'
+    "
+  />
+
+  <!-- ═══ Research stepback ═══════════════════════════════════════ -->
+  <landing-ddl-section anchor="research" heading="Research · pattern categories">
+    <p class="ls-intro">
       Surveyed patterns from Stripe, Vercel, Linear, Apple, Notion, Mr.Doob, GitHub, and indie portfolios. Five distinct
       categories surfaced:
     </p>
@@ -30,22 +25,22 @@
         <span class="ls-research__tag">A · segmented</span>
         <span class="ls-research__body">
           Both languages always visible. Toggle-as-pill or text duo. <strong>Use when:</strong> bilingualism is a
-          feature, both langs ~equally important. Variants <strong>1, 3</strong> below.
+          feature, both langs ~equally important. Variants <strong>V1, V2</strong> below.
         </span>
       </li>
       <li class="ls-research__item">
         <span class="ls-research__tag">B · dropdown</span>
         <span class="ls-research__body">
           Active language as trigger, menu reveals all options. Standard pattern. <strong>Use when:</strong> 3+ langs,
-          or when one lang is clearly primary. Variants <strong>2, 4</strong> below.
+          or when one lang is clearly primary. Variants <strong>V3, V4</strong> below.
         </span>
       </li>
       <li class="ls-research__item">
         <span class="ls-research__tag">C · contextual</span>
         <span class="ls-research__body">
           A small "Read in [lang]" link surfaces only on pages where translation exists.
-          <strong>Use when:</strong> translations are partial — VI only for /blog/* but not /uses. Variant
-          <strong>5</strong> below.
+          <strong>Use when:</strong> translations are partial — VI only for /blog/* but not /uses. Akin to
+          <strong>V5</strong>.
         </span>
       </li>
       <li class="ls-research__item">
@@ -63,71 +58,17 @@
         </span>
       </li>
     </ul>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ Side-by-side header preview ═══════════════════════════════════════ -->
-<section class="ls-block" aria-label="In-header preview">
-  <landing-container size="wide">
-    <landing-eyebrow
-      [label]="['previews', 'in-header context', 'how each feels in real chrome']"
-      tone="accent"
-      class="ls-block__eyebrow"
-    />
-    <p class="ls-block__intro">
-      Each variant is rendered inside a mock of the scrolled-state header pill so you can judge weight, balance, and how
-      it sits next to the ⌘K hint + theme toggle.
-    </p>
-
-    <!-- ─── V1: Segmented pill ─────────────────────────────────────── -->
-    <div class="ls-variant">
-      <div class="ls-variant__head">
-        <span class="ls-variant__tag">v1 · segmented pill</span>
-        <p class="ls-variant__desc">
-          Both labels visible inside a single capsule. Active state is filled accent; inactive is muted. Click on
-          inactive snaps the active state. <strong>Weight:</strong> heavy — declares bilingualism prominently.
-        </p>
-      </div>
-      <div class="ls-variant__stage">
-        <div class="ls-mock-pill">
-          <span class="ls-mock-pill__nav">Home · Projects · More</span>
-          <span class="ls-mock-pill__sep" aria-hidden="true"></span>
-          <!-- The segmented switcher -->
-          <div class="ls-seg" role="group" aria-label="Switch language">
-            <button
-              type="button"
-              class="ls-seg__btn"
-              [class.ls-seg__btn--active]="v1Lang() === 'en'"
-              (click)="setV1('en')"
-              aria-pressed="false"
-              [attr.aria-pressed]="v1Lang() === 'en'"
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              class="ls-seg__btn"
-              [class.ls-seg__btn--active]="v1Lang() === 'vi'"
-              (click)="setV1('vi')"
-              [attr.aria-pressed]="v1Lang() === 'vi'"
-            >
-              VI
-            </button>
-          </div>
-          <span class="ls-mock-pill__kbd" aria-hidden="true">⌘K</span>
-          <span class="ls-mock-pill__theme" aria-hidden="true">☀</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── V2: Mono inline toggle ─────────────────────────────────── -->
+  <!-- ═══ V2 — strongest: mono inline ═════════════════════════════ -->
+  <landing-ddl-section anchor="v2-mono-inline" heading="V2 — mono inline toggle (lightest)">
     <div class="ls-variant">
       <div class="ls-variant__head">
         <span class="ls-variant__tag">v2 · mono inline toggle</span>
         <p class="ls-variant__desc">
-          Two lowercase mono codes separated by a slash. Active one in accent + text-300, inactive muted. Whole thing is
-          one button — clicking anywhere flips. <strong>Weight:</strong> the lightest possible. Editorial vibe — looks
-          like a footer credit.
+          Two lowercase mono codes separated by a slash. Active one in accent, inactive muted. Whole thing is one button
+          — clicking anywhere flips. <strong>Weight:</strong> the lightest possible. Editorial vibe — fits the lowercase
+          "tdp." mark.
         </p>
       </div>
       <div class="ls-variant__stage">
@@ -144,15 +85,17 @@
         </div>
       </div>
     </div>
+  </landing-ddl-section>
 
-    <!-- ─── V3: Single-trigger dropdown ────────────────────────────── -->
+  <!-- ═══ V3 — strongest: single-trigger dropdown ═════════════════ -->
+  <landing-ddl-section anchor="v3-dropdown" heading="V3 — single-trigger dropdown (safe pick)">
     <div class="ls-variant">
       <div class="ls-variant__head">
         <span class="ls-variant__tag">v3 · single-trigger dropdown</span>
         <p class="ls-variant__desc">
-          Active code "EN" with a chevron → click opens a small menu with both languages shown in their native names
-          ("English", "Tiếng Việt") and a checkmark on the active one. <strong>Weight:</strong> medium — same
-          compactness as today's pill but discoverable.
+          Active code "EN" with a chevron → click opens a small menu with both languages in their native names
+          ("English", "Tiếng Việt") and a check on the active one. <strong>Weight:</strong> medium — as compact as
+          today's pill but discoverable, and scales cleanly to a 3rd language.
         </p>
       </div>
       <div class="ls-variant__stage">
@@ -193,6 +136,48 @@
                 </button>
               </div>
             }
+          </div>
+          <span class="ls-mock-pill__kbd" aria-hidden="true">⌘K</span>
+          <span class="ls-mock-pill__theme" aria-hidden="true">☀</span>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <!-- ═══ Weaker directions — collapsed ═══════════════════════════ -->
+  <landing-ddl-considered label="V1, V4, V5, V6 — other directions on the board">
+    <!-- ─── V1: Segmented pill ─────────────────────────────────────── -->
+    <div class="ls-variant">
+      <div class="ls-variant__head">
+        <span class="ls-variant__tag">v1 · segmented pill</span>
+        <p class="ls-variant__desc">
+          Both labels visible inside a single capsule. Active state is filled accent; inactive is muted. Click on
+          inactive snaps the active state. <strong>Weight:</strong> heavy — declares bilingualism prominently.
+        </p>
+      </div>
+      <div class="ls-variant__stage">
+        <div class="ls-mock-pill">
+          <span class="ls-mock-pill__nav">Home · Projects · More</span>
+          <span class="ls-mock-pill__sep" aria-hidden="true"></span>
+          <div class="ls-seg" role="group" aria-label="Switch language">
+            <button
+              type="button"
+              class="ls-seg__btn"
+              [class.ls-seg__btn--active]="v1Lang() === 'en'"
+              (click)="setV1('en')"
+              [attr.aria-pressed]="v1Lang() === 'en'"
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              class="ls-seg__btn"
+              [class.ls-seg__btn--active]="v1Lang() === 'vi'"
+              (click)="setV1('vi')"
+              [attr.aria-pressed]="v1Lang() === 'vi'"
+            >
+              VI
+            </button>
           </div>
           <span class="ls-mock-pill__kbd" aria-hidden="true">⌘K</span>
           <span class="ls-mock-pill__theme" aria-hidden="true">☀</span>
@@ -307,18 +292,11 @@
         </div>
       </div>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-considered>
 
-<!-- ═══ Mega-menu reuse note ══════════════════════════════════════ -->
-<section class="ls-block ls-block--note" aria-label="Mega-menu reuse note">
-  <landing-container size="wide">
-    <landing-eyebrow
-      [label]="['note', 'shared dropdown shell', 'when v3 / v4 graduates']"
-      tone="accent"
-      class="ls-block__eyebrow"
-    />
-    <p class="ls-block__intro">
+  <!-- ═══ Mega-menu reuse note ══════════════════════════════════════ -->
+  <landing-ddl-section anchor="shared-shell" heading="Shared dropdown shell (when V3 / V4 graduates)">
+    <p class="ls-intro">
       If V3 or V4 wins, the chosen variant should reuse <code>&lt;landing-mega-menu&gt;</code> (already used by the More
       dropdown in the header) instead of a one-off menu — same visual chrome, same a11y, same animation. The mega-menu
       version below shows what that looks like with 2 items (compact, single-column mode).
@@ -330,13 +308,10 @@
       <span class="ls-mock-pill__kbd" aria-hidden="true">⌘K</span>
       <span class="ls-mock-pill__theme" aria-hidden="true">☀</span>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ Decision matrix ═══════════════════════════════════════════ -->
-<section class="ls-block ls-block--matrix" aria-label="Decision matrix">
-  <landing-container size="wide">
-    <landing-eyebrow [label]="['decision matrix', 'when each variant wins']" tone="accent" class="ls-block__eyebrow" />
+  <!-- ═══ Decision matrix ═══════════════════════════════════════════ -->
+  <landing-ddl-section anchor="decision-matrix" heading="Decision matrix · when each variant wins">
     <table class="ls-matrix">
       <thead>
         <tr>
@@ -392,10 +367,10 @@
         </tr>
       </tbody>
     </table>
-    <p class="ls-block__intro">
-      <strong>My recommendation:</strong> <em>v2 (mono inline)</em> for the current portfolio voice — editorial,
-      restrained, fits the "tdp." lowercase mark. <em>v3 (dropdown)</em> as the conservative pick if you may add more
-      langs. <em>v6 (marquee)</em> if you want a personality marker that pays off the craft signal.
+    <p class="ls-intro">
+      <strong>Leaning:</strong> <em>v2 (mono inline)</em> for the current portfolio voice — editorial, restrained, fits
+      the "tdp." lowercase mark. <em>v3 (dropdown)</em> as the conservative pick if you may add more langs.
+      <em>v6 (marquee)</em> if you want a personality marker that pays off the craft signal.
     </p>
-  </landing-container>
-</section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

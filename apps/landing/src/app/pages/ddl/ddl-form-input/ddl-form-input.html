@@ -1,144 +1,147 @@
-<landing-section>
-  <landing-container>
-    <header class="fi-ddl__intro">
-      <h1 class="fi-ddl__title">Form input · primitive variants</h1>
-      <p class="fi-ddl__lede">
-        Three visual directions for <code>landing-input</code> + <code>landing-textarea</code>. They share rest / focus
-        / error / disabled behavior, so they ship as a single design pick.
-        <strong>Variant B picked, shipped 2026-05-21</strong> — production primitive uses Variant B. The other two stay
-        below as historical record.
-      </p>
-      <p class="fi-ddl__note">
-        See <a href="/ddl/form-lib">/ddl/form-lib</a> for the full shipped suite (input · textarea · checkbox · radio ·
-        form-field) wired through reactive forms.
-      </p>
-    </header>
+<landing-ddl-doc-page slug="form-input" [width]="'wide'">
+  <p>
+    Historical record. Three early visual directions for <code>landing-input</code> + <code>landing-textarea</code> —
+    direction B (sunken card) was picked and shipped, then superseded by the full shipped suite at
+    <a href="/ddl/form-lib">/ddl/form-lib</a> (input · textarea · checkbox · radio · form-field wired through reactive
+    forms). Kept for the decision trail.
+  </p>
 
-    <!-- ═══════════════════════════ Variant A ═══════════════════════════ -->
-    <article class="fi-ddl__variant fi-variant-a">
-      <header class="fi-ddl__variant-head">
-        <h2>Variant A · Hairline rest, underline focus</h2>
-        <p>
-          Transparent background, only a bottom border. On focus the underline thickens to 2px and turns accent. Reads
-          as <em>editorial</em> — the form disappears into the page until you touch it.
-        </p>
-      </header>
-      <div class="fi-ddl__stage">
-        <div class="fi-stack">
-          <label class="fi-label" for="va-name">Name</label>
-          <input id="va-name" class="fi-input fi-input--a" type="text" value="Phương Trần" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="va-email">Email — focused</label>
-          <input id="va-email" class="fi-input fi-input--a is-focused" type="email" value="hello@thunderphong.com" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label fi-label--error" for="va-error">Email — error</label>
-          <input id="va-error" class="fi-input fi-input--a is-error" type="email" value="not-an-email" />
-          <p class="fi-help fi-help--error">Please enter a valid email address.</p>
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="va-message">Message</label>
-          <textarea id="va-message" class="fi-input fi-input--a fi-textarea" rows="4">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Historical: direction B (sunken card) shipped 2026-05-21 as the production input/textarea primitive — A (hairline/underline) and C (outline + glow) were rejected. The whole page is now superseded by /ddl/form-lib, which wires the full form suite through reactive forms. Demos below are kept collapsed as the decision trail.'
+    "
+  />
+
+  <!-- Deprecated/historical — all three direction demos collapsed. -->
+  <landing-ddl-considered label="Historical — A/B/C input & textarea direction demos">
+    <landing-container>
+      <!-- ═══════════════════════════ Variant A ═══════════════════════════ -->
+      <article class="fi-ddl__variant fi-variant-a">
+        <header class="fi-ddl__variant-head">
+          <h3>A — Hairline rest, underline focus (rejected)</h3>
+          <p>
+            Transparent background, only a bottom border. On focus the underline thickens to 2px and turns accent. Reads
+            as <em>editorial</em> — the form disappears into the page until you touch it.
+          </p>
+        </header>
+        <div class="fi-ddl__stage">
+          <div class="fi-stack">
+            <label class="fi-label" for="va-name">Name</label>
+            <input id="va-name" class="fi-input fi-input--a" type="text" value="Phương Trần" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="va-email">Email — focused</label>
+            <input id="va-email" class="fi-input fi-input--a is-focused" type="email" value="hello@thunderphong.com" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label fi-label--error" for="va-error">Email — error</label>
+            <input id="va-error" class="fi-input fi-input--a is-error" type="email" value="not-an-email" />
+            <p class="fi-help fi-help--error">Please enter a valid email address.</p>
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="va-message">Message</label>
+            <textarea id="va-message" class="fi-input fi-input--a fi-textarea" rows="4">
 A few sentences about why you're reaching out…</textarea
-          >
+            >
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="va-disabled">Disabled</label>
+            <input id="va-disabled" class="fi-input fi-input--a" disabled value="Not available right now" />
+          </div>
         </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="va-disabled">Disabled</label>
-          <input id="va-disabled" class="fi-input fi-input--a" disabled value="Not available right now" />
-        </div>
-      </div>
-    </article>
+      </article>
 
-    <!-- ═══════════════════════════ Variant B ═══════════════════════════ -->
-    <article class="fi-ddl__variant fi-variant-b">
-      <header class="fi-ddl__variant-head">
-        <h2>Variant B · Sunken card — <span class="fi-ddl__picked">picked, shipped 2026-05-21</span></h2>
-        <p>
-          Subtle sunken background (ink-1 50%), 1px hairline border, 6px radius. On focus the border turns accent and
-          the background deepens. Reads as a <em>form, clearly</em> — defined affordance, low contrast at rest.
-        </p>
-      </header>
-      <div class="fi-ddl__stage">
-        <div class="fi-stack">
-          <label class="fi-label" for="vb-name">Name</label>
-          <input id="vb-name" class="fi-input fi-input--b" type="text" value="Phương Trần" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vb-email">Email — focused</label>
-          <input id="vb-email" class="fi-input fi-input--b is-focused" type="email" value="hello@thunderphong.com" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label fi-label--error" for="vb-error">Email — error</label>
-          <input id="vb-error" class="fi-input fi-input--b is-error" type="email" value="not-an-email" />
-          <p class="fi-help fi-help--error">Please enter a valid email address.</p>
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vb-message">Message</label>
-          <textarea id="vb-message" class="fi-input fi-input--b fi-textarea" rows="4">
+      <!-- ═══════════════════════════ Variant B ═══════════════════════════ -->
+      <article class="fi-ddl__variant fi-variant-b">
+        <header class="fi-ddl__variant-head">
+          <h3>B — Sunken card <span class="fi-ddl__picked">picked, shipped 2026-05-21</span></h3>
+          <p>
+            Subtle sunken background (ink-1 50%), 1px hairline border, 6px radius. On focus the border turns accent and
+            the background deepens. Reads as a <em>form, clearly</em> — defined affordance, low contrast at rest.
+          </p>
+        </header>
+        <div class="fi-ddl__stage">
+          <div class="fi-stack">
+            <label class="fi-label" for="vb-name">Name</label>
+            <input id="vb-name" class="fi-input fi-input--b" type="text" value="Phương Trần" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vb-email">Email — focused</label>
+            <input id="vb-email" class="fi-input fi-input--b is-focused" type="email" value="hello@thunderphong.com" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label fi-label--error" for="vb-error">Email — error</label>
+            <input id="vb-error" class="fi-input fi-input--b is-error" type="email" value="not-an-email" />
+            <p class="fi-help fi-help--error">Please enter a valid email address.</p>
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vb-message">Message</label>
+            <textarea id="vb-message" class="fi-input fi-input--b fi-textarea" rows="4">
 A few sentences about why you're reaching out…</textarea
-          >
+            >
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vb-disabled">Disabled</label>
+            <input id="vb-disabled" class="fi-input fi-input--b" disabled value="Not available right now" />
+          </div>
         </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vb-disabled">Disabled</label>
-          <input id="vb-disabled" class="fi-input fi-input--b" disabled value="Not available right now" />
-        </div>
-      </div>
-    </article>
+      </article>
 
-    <!-- ═══════════════════════════ Variant C ═══════════════════════════ -->
-    <article class="fi-ddl__variant fi-variant-c">
-      <header class="fi-ddl__variant-head">
-        <h2>Variant C · Outline + soft accent glow on focus</h2>
-        <p>
-          Transparent background, 1.5px hairline border. On focus the border turns accent and a soft 4px glow radiates
-          out. Mid-weight — more <em>designed</em> than A, less <em>boxy</em> than B.
-        </p>
-      </header>
-      <div class="fi-ddl__stage">
-        <div class="fi-stack">
-          <label class="fi-label" for="vc-name">Name</label>
-          <input id="vc-name" class="fi-input fi-input--c" type="text" value="Phương Trần" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vc-email">Email — focused</label>
-          <input id="vc-email" class="fi-input fi-input--c is-focused" type="email" value="hello@thunderphong.com" />
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label fi-label--error" for="vc-error">Email — error</label>
-          <input id="vc-error" class="fi-input fi-input--c is-error" type="email" value="not-an-email" />
-          <p class="fi-help fi-help--error">Please enter a valid email address.</p>
-        </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vc-message">Message</label>
-          <textarea id="vc-message" class="fi-input fi-input--c fi-textarea" rows="4">
+      <!-- ═══════════════════════════ Variant C ═══════════════════════════ -->
+      <article class="fi-ddl__variant fi-variant-c">
+        <header class="fi-ddl__variant-head">
+          <h3>C — Outline + soft accent glow on focus (rejected)</h3>
+          <p>
+            Transparent background, 1.5px hairline border. On focus the border turns accent and a soft 4px glow radiates
+            out. Mid-weight — more <em>designed</em> than A, less <em>boxy</em> than B.
+          </p>
+        </header>
+        <div class="fi-ddl__stage">
+          <div class="fi-stack">
+            <label class="fi-label" for="vc-name">Name</label>
+            <input id="vc-name" class="fi-input fi-input--c" type="text" value="Phương Trần" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vc-email">Email — focused</label>
+            <input id="vc-email" class="fi-input fi-input--c is-focused" type="email" value="hello@thunderphong.com" />
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label fi-label--error" for="vc-error">Email — error</label>
+            <input id="vc-error" class="fi-input fi-input--c is-error" type="email" value="not-an-email" />
+            <p class="fi-help fi-help--error">Please enter a valid email address.</p>
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vc-message">Message</label>
+            <textarea id="vc-message" class="fi-input fi-input--c fi-textarea" rows="4">
 A few sentences about why you're reaching out…</textarea
-          >
+            >
+          </div>
+          <div class="fi-stack">
+            <label class="fi-label" for="vc-disabled">Disabled</label>
+            <input id="vc-disabled" class="fi-input fi-input--c" disabled value="Not available right now" />
+          </div>
         </div>
-        <div class="fi-stack">
-          <label class="fi-label" for="vc-disabled">Disabled</label>
-          <input id="vc-disabled" class="fi-input fi-input--c" disabled value="Not available right now" />
-        </div>
-      </div>
-    </article>
+      </article>
 
-    <section class="fi-ddl__notes">
-      <h2>Notes for the decision</h2>
-      <ul>
-        <li>
-          All variants will ship as the same component with a <code>variant</code> input. The DDL just makes the visual
-          difference legible.
-        </li>
-        <li>
-          The actual component is reactive-form-ready (<code>ControlValueAccessor</code>, supports
-          <code>formControlName</code>) and exposes the same props regardless of variant — picking a default here
-          doesn't lock anyone out of a per-page override.
-        </li>
-        <li>
-          Variant A pairs best with center-aligned heros (e.g. /uses, /colophon) — it dissolves into the page. Variant B
-          / C handle high-density forms better (e.g. an eventual newsletter, multi-field /contact).
-        </li>
-      </ul>
-    </section>
-  </landing-container>
-</landing-section>
+      <section class="fi-ddl__notes">
+        <h3>Notes from the decision</h3>
+        <ul>
+          <li>
+            All variants shipped as the same component with a <code>variant</code> input. The DDL just made the visual
+            difference legible.
+          </li>
+          <li>
+            The component is reactive-form-ready (<code>ControlValueAccessor</code>, supports
+            <code>formControlName</code>) and exposes the same props regardless of variant — picking a default didn't
+            lock anyone out of a per-page override.
+          </li>
+          <li>
+            Variant A pairs best with center-aligned heros (e.g. /uses, /colophon) — it dissolves into the page. Variant
+            B / C handle high-density forms better (e.g. an eventual newsletter, multi-field /contact).
+          </li>
+        </ul>
+      </section>
+    </landing-container>
+  </landing-ddl-considered>
+</landing-ddl-doc-page>

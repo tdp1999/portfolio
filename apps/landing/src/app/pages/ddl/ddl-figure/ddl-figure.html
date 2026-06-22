@@ -1,0 +1,143 @@
+<landing-ddl-doc-page slug="figure" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div class="space-y-10">
+      <!-- Figure · standard pair -->
+      <div>
+        <h3 id="standard-pair" data-toc="Standard pair" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          landing-figure · numbered caption + lazy load (default)
+        </h3>
+        <div class="grid grid-cols-1 tablet:grid-cols-2 gap-6 max-w-3xl">
+          <landing-figure
+            src="https://placehold.co/640x400/1a2030/cbd5e1.png?text=Hero+shot"
+            alt="Hero shot of a product page"
+            caption="Hero treatment for the project detail header"
+            [figureNumber]="1"
+          />
+          <landing-figure
+            src="https://placehold.co/640x400/11151c/cbd5e1.png?text=System+map"
+            alt="Architecture diagram"
+            caption="System map without numbering"
+          />
+        </div>
+      </div>
+
+      <!-- Figure · full-width breakout -->
+      <div>
+        <h3 id="full-width" data-toc="Full-width" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          full-width breakout · spans the reading column for hero shots / wide diagrams
+        </h3>
+        <landing-figure
+          src="https://placehold.co/1600x600/1a2030/e2e8f0.png?text=Full-width+breakout"
+          alt="Wide hero shot breaking out of the reading column"
+          caption="Full-width breakout — used at the top of project detail pages"
+          [figureNumber]="2"
+        />
+      </div>
+
+      <!-- Figure · bg-matching colour (border carries the edge) -->
+      <div>
+        <h3 id="edge-matching" data-toc="Edge-matching" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          edge-matching surface · image colour ≈ ink-1; the 1px hairline is the only edge cue
+        </h3>
+        <div class="bg-ink-1 p-6 rounded">
+          <landing-figure
+            src="https://placehold.co/960x420/11151c/64748b.png?text=Same+tone+as+background"
+            alt="Diagram on a surface that matches the page background"
+            caption="When the image tone matches the surface, the hairline border is what gives it edges"
+            [figureNumber]="3"
+          />
+        </div>
+      </div>
+
+      <!-- Figure · portrait inline pair -->
+      <div>
+        <h3 id="portrait-pair" data-toc="Portrait pair" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          portrait inline pair · two narrow shots side by side (mobile screens, devices, posters)
+        </h3>
+        <div class="grid grid-cols-2 tablet:grid-cols-4 gap-4 max-w-3xl">
+          <landing-figure
+            src="https://placehold.co/300x600/1a2030/cbd5e1.png?text=Mobile+1"
+            alt="Mobile screen 1"
+            caption="Onboarding"
+            [figureNumber]="4"
+          />
+          <landing-figure
+            src="https://placehold.co/300x600/11151c/cbd5e1.png?text=Mobile+2"
+            alt="Mobile screen 2"
+            caption="Editor"
+            [figureNumber]="5"
+          />
+          <landing-figure
+            src="https://placehold.co/300x600/1a2030/cbd5e1.png?text=Mobile+3"
+            alt="Mobile screen 3"
+            caption="Settings"
+            [figureNumber]="6"
+          />
+          <landing-figure
+            src="https://placehold.co/300x600/11151c/cbd5e1.png?text=Mobile+4"
+            alt="Mobile screen 4"
+            caption="Empty state"
+            [figureNumber]="7"
+          />
+        </div>
+      </div>
+
+      <!-- Figure · no caption -->
+      <div>
+        <h3 id="no-caption" data-toc="No caption" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          no caption · decorative or context-clear shots; figcaption is omitted entirely
+        </h3>
+        <div class="max-w-md">
+          <landing-figure
+            src="https://placehold.co/480x320/1a2030/cbd5e1.png?text=Quiet+supporting+image"
+            alt="Supporting image without caption"
+          />
+        </div>
+      </div>
+
+      <!-- Figure · caption only, no number -->
+      <div>
+        <h3 id="caption-only" data-toc="Caption only" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          caption-only · screenshots / quick refs that don't need to be cross-referenced
+        </h3>
+        <div class="max-w-md">
+          <landing-figure
+            src="https://placehold.co/480x300/11151c/94a3b8.png?text=Plain+caption"
+            alt="Image with caption but no number"
+            caption="A quick reference shot — captioned but unnumbered"
+          />
+        </div>
+      </div>
+
+      <!-- Figure · above-the-fold preload -->
+      <div>
+        <h3 id="preload" data-toc="Preload" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          preload override · above-the-fold use; drops <code>loading=lazy</code> and adds
+          <code>fetchpriority=high</code>
+        </h3>
+        <div class="max-w-md">
+          <landing-figure
+            src="https://placehold.co/480x280/1a2030/e2e8f0.png?text=Preloaded+hero"
+            alt="Hero image preloaded for above-the-fold rendering"
+            caption="Hero render with preload=true"
+            [preload]="true"
+            [figureNumber]="8"
+          />
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-4 font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-figure</strong> for any image with non-trivial context — keep
+        <code class="font-mono text-mono-sm text-landing-text-300">alt</code> meaningful, prefer numbered captions in
+        long-form project detail (<code class="font-mono text-mono-sm text-landing-text-300">FIG. 0X</code>) so prose
+        can refer back. Default to <code class="font-mono text-mono-sm text-landing-text-300">loading="lazy"</code>;
+        only set <code class="font-mono text-mono-sm text-landing-text-300">[preload]="true"</code> for the single hero
+        shot above the fold.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

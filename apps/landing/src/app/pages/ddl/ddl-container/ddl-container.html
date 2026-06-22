@@ -1,0 +1,38 @@
+<landing-ddl-doc-page slug="container" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div class="space-y-6">
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="content" · max-w-6xl · 1152px (default)</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0">
+          <landing-container>
+            <div class="bg-landing-accent/15 border border-landing-accent/40 p-4 my-4 rounded text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-6xl</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="wide" · max-w-7xl · 1280px</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0">
+          <landing-container size="wide">
+            <div class="bg-landing-accent/15 border border-landing-accent/40 p-4 my-4 rounded text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-7xl</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md text-landing-text-500 mb-2">size="full" · 100% (full-bleed)</p>
+        <div class="rounded-lg ring-1 ring-landing-border bg-ink-0 overflow-hidden">
+          <landing-container size="full">
+            <div class="bg-landing-accent/15 border-y border-landing-accent/40 p-4 my-4 text-center">
+              <p class="font-mono text-mono-md text-landing-text-300">max-w-none</p>
+            </div>
+          </landing-container>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

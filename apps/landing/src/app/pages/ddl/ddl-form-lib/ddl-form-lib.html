@@ -1,21 +1,15 @@
-<landing-section>
-  <landing-container>
-    <header class="fl-ddl__intro">
-      <h1 class="fl-ddl__title">Form lib · shipped suite (C21)</h1>
-      <p class="fl-ddl__lede">
-        Live playground for the landing form primitives. The form is a real
-        <code>FormGroup</code> — fields validate, the meta row swaps between hint and error, the radio group
-        deduplicates via <code>name</code>, the checkbox carries the consent flow. Click
-        <strong>Validate all</strong> to fire validators without typing.
-      </p>
-      <p class="fl-ddl__note">
-        <strong>Components shipped:</strong> <code>landing-input</code>, <code>landing-textarea</code>,
-        <code>landing-checkbox</code>, <code>landing-radio</code> + <code>landing-radio-group</code>,
-        <code>landing-form-field</code>. Existing <code>landing-select</code> already covers dropdown.
-      </p>
-    </header>
+<landing-ddl-doc-page slug="form-lib" [width]="'wide'">
+  <p class="fl-ddl__lede">
+    Live playground for the landing form primitives shipped in C21 —
+    <code>landing-input</code>, <code>landing-textarea</code>, <code>landing-checkbox</code>,
+    <code>landing-radio</code> + <code>landing-radio-group</code>, and <code>landing-form-field</code> (existing
+    <code>landing-select</code> already covers dropdown). The form is a real <code>FormGroup</code>: fields validate,
+    the meta row swaps between hint and error, the radio group deduplicates via <code>name</code>, the checkbox carries
+    the consent flow. Click <strong>Validate all</strong> to fire validators without typing.
+  </p>
 
-    <section class="fl-ddl__stage">
+  <landing-ddl-section anchor="playground" heading="Live form playground">
+    <div class="fl-ddl__stage">
       <form [formGroup]="form" novalidate class="fl-form">
         <landing-form-field
           label="Name"
@@ -75,22 +69,21 @@
       </form>
 
       <aside class="fl-debug">
-        <h2 class="fl-debug__title">Form state</h2>
+        <h3 class="fl-debug__title">Form state</h3>
         <p class="fl-debug__status">
           Status: <code>{{ formStatus() }}</code>
         </p>
         <pre class="fl-debug__json">{{ submittedJson() }}</pre>
       </aside>
-    </section>
+    </div>
+  </landing-ddl-section>
 
-    <section class="fl-ddl__notes">
-      <h2>Hint / error layout contract</h2>
-      <ul>
-        <li><strong>Hint</strong> sits on the right of the meta row.</li>
-        <li><strong>Error</strong> sits on the left.</li>
-        <li>When both are present, <strong>error wins</strong> — never split user attention.</li>
-        <li>When neither is set, the meta row collapses (no reserved height).</li>
-      </ul>
-    </section>
-  </landing-container>
-</landing-section>
+  <landing-ddl-section anchor="meta-contract" heading="Hint / error layout contract">
+    <ul class="fl-ddl__notes-list">
+      <li><strong>Hint</strong> sits on the right of the meta row.</li>
+      <li><strong>Error</strong> sits on the left.</li>
+      <li>When both are present, <strong>error wins</strong> — never split user attention.</li>
+      <li>When neither is set, the meta row collapses (no reserved height).</li>
+    </ul>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

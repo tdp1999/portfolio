@@ -1,36 +1,14 @@
-<div class="abs-header">
-  <landing-container size="wide">
-    <div class="abs-header__inner">
-      <landing-breadcrumb [items]="breadcrumb" class="abs-header__crumb" />
-      <h1 class="abs-header__title">About — signature sections</h1>
-      <p class="abs-header__lede">
-        Sandbox for the three /about elements still under design. Each section reserves 2–3 variant slots; winners
-        graduate to <a class="abs-link" routerLink="/about">/about</a> via task 337 and stay here as historical record
-        per the <span class="abs-mono">DDL pages stay after graduation</span> rule.
-      </p>
+<landing-ddl-doc-page slug="about-signatures" [width]="'wide'">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Staging ground for the three /about signature elements still under design — depth-map, failures, and currently-shipping — each with its own variant set. There is no single page-wide winner: winners graduate to /about per element, and the explored sandboxes stay here as historical record per the &quot;DDL pages stay after graduation&quot; rule. Use the “Full width” button on any variant to see it at its true /about width.'
+    "
+  />
 
-      <nav class="abs-toc" aria-label="On this page">
-        @for (s of tocItems; track s.id) {
-          <a class="abs-toc__item" [routerLink]="[]" [fragment]="s.id">
-            <span class="abs-toc__num">{{ s.num }}</span>
-            <span class="abs-toc__title">{{ s.title }}</span>
-          </a>
-        }
-      </nav>
-    </div>
-  </landing-container>
-</div>
-
-<!-- ═══ §01 · Depth map (populated — task 334) ═══════════════════════════ -->
-<section class="abs-section" id="depth-map" aria-labelledby="depth-map-h">
-  <landing-container size="wide">
+  <!-- ═══ §01 · Depth map (populated — task 334) ═══════════════════════════ -->
+  <landing-ddl-section anchor="depth-map" heading="Depth map">
     <header class="abs-section__head">
-      <landing-eyebrow
-        [label]="[depthMapTocItem.num, depthMapTocItem.title]"
-        [accentFirst]="true"
-        [trailingRule]="true"
-      />
-      <h2 id="depth-map-h" class="abs-section__title">{{ depthMapTocItem.title }}</h2>
       <p class="abs-section__summary">{{ depthMapSummary }}</p>
       <p class="abs-section__question">
         <span class="abs-section__question-label">Open question:</span> {{ depthMapQuestion }}
@@ -44,7 +22,9 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ depthMapVariants[0].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-depth-map-v1 [groups]="tierGroups()" />
+          <landing-ddl-stage [label]="depthMapVariants[0].label">
+            <landing-ddl-depth-map-v1 [groups]="tierGroups()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ depthMapVariants[0].hint }}</p>
       </article>
@@ -52,7 +32,9 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ depthMapVariants[1].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-depth-map-v2 [groups]="tierGroups()" />
+          <landing-ddl-stage [label]="depthMapVariants[1].label">
+            <landing-ddl-depth-map-v2 [groups]="tierGroups()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ depthMapVariants[1].hint }}</p>
       </article>
@@ -60,24 +42,18 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ depthMapVariants[2].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-depth-map-v3 [groups]="tierGroups()" />
+          <landing-ddl-stage [label]="depthMapVariants[2].label">
+            <landing-ddl-depth-map-v3 [groups]="tierGroups()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ depthMapVariants[2].hint }}</p>
       </article>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ §02 · Failures & lessons (populated — task 335) ═════════════════ -->
-<section class="abs-section" id="failures" aria-labelledby="failures-h">
-  <landing-container size="wide">
+  <!-- ═══ §02 · Failures & lessons (populated — task 335) ═════════════════ -->
+  <landing-ddl-section anchor="failures" heading="Failures & lessons">
     <header class="abs-section__head">
-      <landing-eyebrow
-        [label]="[failuresTocItem.num, failuresTocItem.title]"
-        [accentFirst]="true"
-        [trailingRule]="true"
-      />
-      <h2 id="failures-h" class="abs-section__title">{{ failuresTocItem.title }}</h2>
       <p class="abs-section__summary">{{ failuresSummary }}</p>
       <p class="abs-section__question">
         <span class="abs-section__question-label">Open question:</span> {{ failuresQuote }}
@@ -94,7 +70,9 @@
           <span class="abs-badge">GRADUATED</span>
         </p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-about-failures />
+          <landing-ddl-stage [label]="failuresVariants[0].label">
+            <landing-about-failures />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ failuresVariants[0].hint }}</p>
       </article>
@@ -102,7 +80,9 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ failuresVariants[1].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-failures-v2 [essays]="failureEssays()" />
+          <landing-ddl-stage [label]="failuresVariants[1].label">
+            <landing-ddl-failures-v2 [essays]="failureEssays()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ failuresVariants[1].hint }}</p>
       </article>
@@ -110,24 +90,18 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ failuresVariants[2].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-failures-v3 [essays]="failureEssays()" />
+          <landing-ddl-stage [label]="failuresVariants[2].label">
+            <landing-ddl-failures-v3 [essays]="failureEssays()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ failuresVariants[2].hint }}</p>
       </article>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ §03 · Currently shipping (populated — task 336, mock data) ══════ -->
-<section class="abs-section" id="currently-shipping" aria-labelledby="currently-shipping-h">
-  <landing-container size="wide">
+  <!-- ═══ §03 · Currently shipping (populated — task 336, mock data) ══════ -->
+  <landing-ddl-section anchor="currently-shipping" heading="Currently shipping">
     <header class="abs-section__head">
-      <landing-eyebrow
-        [label]="[currentlyShippingTocItem.num, currentlyShippingTocItem.title]"
-        [accentFirst]="true"
-        [trailingRule]="true"
-      />
-      <h2 id="currently-shipping-h" class="abs-section__title">{{ currentlyShippingTocItem.title }}</h2>
       <p class="abs-section__summary">{{ currentlyShippingSummary }}</p>
       <p class="abs-section__question">
         <span class="abs-section__question-label">Open question:</span> {{ currentlyShippingQuestion }}
@@ -141,7 +115,9 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ currentlyShippingVariants[0].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-currently-shipping-v1 [entry]="nowEntry()" />
+          <landing-ddl-stage [label]="currentlyShippingVariants[0].label">
+            <landing-ddl-currently-shipping-v1 [entry]="nowEntry()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ currentlyShippingVariants[0].hint }}</p>
       </article>
@@ -149,7 +125,9 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ currentlyShippingVariants[1].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-currently-shipping-v2 [entry]="nowEntry()" />
+          <landing-ddl-stage [label]="currentlyShippingVariants[1].label">
+            <landing-ddl-currently-shipping-v2 [entry]="nowEntry()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ currentlyShippingVariants[1].hint }}</p>
       </article>
@@ -157,10 +135,12 @@
       <article class="abs-variant abs-variant--filled">
         <p class="abs-variant__label">{{ currentlyShippingVariants[2].label }}</p>
         <div class="abs-variant__stage abs-variant__stage--filled">
-          <landing-ddl-currently-shipping-v3 [entry]="nowEntry()" />
+          <landing-ddl-stage [label]="currentlyShippingVariants[2].label">
+            <landing-ddl-currently-shipping-v3 [entry]="nowEntry()" />
+          </landing-ddl-stage>
         </div>
         <p class="abs-variant__hint">{{ currentlyShippingVariants[2].hint }}</p>
       </article>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

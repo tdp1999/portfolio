@@ -1,12 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  Container,
-  Eyebrow,
-  Figure,
-  Breadcrumb,
-  LightboxDirective,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { Figure, LightboxDirective } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 import { GALLERY, SOLO } from './ddl-lightbox.data';
 
 /**
@@ -21,16 +16,12 @@ import { GALLERY, SOLO } from './ddl-lightbox.data';
   selector: 'landing-ddl-lightbox',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Figure, Breadcrumb, LightboxDirective],
+  imports: [DdlDocPage, DdlSection, Figure, LightboxDirective],
   templateUrl: './ddl-lightbox.html',
   styleUrl: './ddl-lightbox.scss',
 })
 export class DdlLightbox {
   // ── Properties ─────────────────────────────────────────────────────
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Lightbox — full-screen viewer + zoom/carousel' },
-  ];
   readonly gallery = GALLERY;
   readonly solo = SOLO;
 }

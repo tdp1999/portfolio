@@ -1,21 +1,13 @@
-<landing-container size="content">
-  <landing-breadcrumb [items]="breadcrumb" class="mb-8 block" />
+<landing-ddl-doc-page slug="scroll-edge-fade" [width]="'wide'">
+  <p class="sef__lede">
+    Overflow affordance for any horizontally- or vertically-scrolling container. The
+    <code>landingScrollEdgeFade</code> directive fades the edge(s) that have content out of view, so a clipped child
+    reads as “scroll for more” rather than “cut off”. It also exposes its edge state + a
+    <code>scrollStep()</code> method, so you can add explicit clickable chevrons. Resize the window narrow to see the
+    strips overflow.
+  </p>
 
-  <header class="sef__head">
-    <landing-eyebrow label="Patterns · primitive" />
-    <h1 class="sef__title">Scroll edge fade</h1>
-    <p class="sef__lede">
-      Overflow affordance for any horizontally- or vertically-scrolling container. The
-      <code>landingScrollEdgeFade</code> directive fades the edge(s) that have content out of view, so a clipped child
-      reads as “scroll for more” rather than “cut off”. It also exposes its edge state + a
-      <code>scrollStep()</code> method, so you can add explicit clickable chevrons. Resize the window narrow to see the
-      strips overflow.
-    </p>
-  </header>
-
-  <!-- Variant A · fade only -->
-  <section class="sef__demo">
-    <h2 class="sef__demo-title">A · Fade only</h2>
+  <landing-ddl-section anchor="fade-only" heading="Fade only">
     <p class="sef__demo-note">
       Bare directive. Mask appears only when the strip overflows and dissolves at each end so the first/last item is
       never clipped.
@@ -25,11 +17,9 @@
         <span class="sef__pill">{{ tab }}</span>
       }
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Variant B · gradient-scrim chevrons (the shipped Selected Work pattern) -->
-  <section class="sef__demo">
-    <h2 class="sef__demo-title">B · Fade + chevron indicators</h2>
+  <landing-ddl-section anchor="fade-chevrons" heading="Fade + chevron indicators">
     <p class="sef__demo-note">
       The shipped pattern (Selected Work tab strip): a gradient-scrim chevron fades the content INTO the arrow, so fade
       and affordance are one element. The strip sets <code>[edgeFadeMask]="false"</code> (the scrim is the fade);
@@ -85,21 +75,18 @@
         </svg>
       </button>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Variant C · vertical -->
-  <section class="sef__demo">
-    <h2 class="sef__demo-title">C · Vertical axis</h2>
+  <landing-ddl-section anchor="vertical-axis" heading="Vertical axis">
     <p class="sef__demo-note"><code>edgeFadeAxis="y"</code> on a fixed-height list — top/bottom fade as you scroll.</p>
     <div class="sef__vlist" landingScrollEdgeFade edgeFadeAxis="y">
       @for (row of rows; track row) {
         <div class="sef__vrow">{{ row }}</div>
       }
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <section class="sef__demo">
-    <h2 class="sef__demo-title">Usage</h2>
+  <landing-ddl-section anchor="usage" heading="Usage">
     <pre class="sef__code">
 &lt;!-- horizontal (default) --&gt;
 &lt;div class="tabs" landingScrollEdgeFade&gt;…&lt;/div&gt;
@@ -112,5 +99,5 @@
 &lt;!-- vertical --&gt;
 &lt;div landingScrollEdgeFade edgeFadeAxis="y"&gt;…&lt;/div&gt;</pre
     >
-  </section>
-</landing-container>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

@@ -1,0 +1,188 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
+.arrow-fx-test {
+  .fx-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+
+    @include bp.respond-down('tablet') {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .fx-demos {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // Baseline link reset shared by all three prototypes
+  .fx {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--landing-text-300);
+    text-decoration: none;
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  .fx__arrow {
+    display: inline-flex;
+    line-height: 0;
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .fx__text {
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // ───────── A · Connector line ─────────
+  // A hairline rail draws between text and arrow on hover; arrow rides
+  // along it. The rail is THE indigo accent moment for this link.
+  // Both glyphs use a horizontal rail (the "runway"); the arrow itself
+  // expresses the direction. Diagonal rail was tried + dropped — it
+  // visually disconnected from the arrow.
+  .fx-a {
+    gap: 0; // override .fx default so rail sits flush against text + arrow
+
+    .fx__text {
+      // Restore the natural breathing room on the text side
+      padding-right: 4px;
+    }
+
+    .fx__rail {
+      display: inline-block;
+      height: 1px;
+      width: 0;
+      background: var(--landing-accent);
+      transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+      align-self: center;
+    }
+
+    .fx__arrow {
+      // No left margin until rail expands — arrow stays close to text
+      margin-left: 4px;
+    }
+
+    &:hover {
+      color: var(--landing-accent-hover);
+
+      .fx__rail {
+        width: 14px;
+      }
+      .fx__arrow {
+        transform: translateX(2px);
+        color: var(--landing-accent-hover);
+      }
+    }
+  }
+
+  // ───────── B · Lift-off (with ghost) ─────────
+  // Lead arrow shoots in its direction + scales slightly; a ghost copy
+  // fades at the origin like a vapor trail. Maps cleanly to the
+  // "external = leaving" semantic of up-right.
+  .fx-b {
+    .fx__stack {
+      position: relative;
+      display: inline-flex;
+      width: 14px;
+      height: 14px;
+    }
+
+    .fx__arrow--ghost,
+    .fx__arrow--lead {
+      position: absolute;
+      inset: 0;
+      transition:
+        transform 280ms cubic-bezier(0.34, 1.3, 0.64, 1),
+        opacity 280ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 220ms ease;
+    }
+
+    .fx__arrow--ghost {
+      color: var(--landing-accent);
+      opacity: 0;
+    }
+
+    .fx__arrow--lead {
+      color: currentColor;
+      opacity: 1;
+    }
+
+    &:hover {
+      color: var(--landing-accent-hover);
+
+      // Right glyph: lead pushes right, ghost stays + fades indigo
+      &:has(landing-icon-arrow[direction='right']) {
+        .fx__arrow--lead {
+          transform: translateX(6px) scale(1.05);
+        }
+      }
+      // Up-right glyph: lead lifts diagonally
+      &:has(landing-icon-arrow[direction='up-right']) {
+        .fx__arrow--lead {
+          transform: translate(4px, -4px) scale(1.05);
+        }
+      }
+      .fx__arrow--ghost {
+        opacity: 0.45;
+      }
+    }
+  }
+
+  // ───────── C · Letter-press hand-off ─────────
+  // Text retreats 1px left; arrow advances 3px right (or up-right).
+  // No colors change. Pure micro-tactile — almost subliminal.
+  .fx-c {
+    &:hover {
+      .fx__text {
+        transform: translateX(-1px);
+      }
+      .fx__arrow {
+        transform: translateX(3px);
+      }
+      &:has(landing-icon-arrow[direction='up-right']) .fx__arrow {
+        transform: translate(2px, -2px);
+      }
+    }
+  }
+
+  // Reduced motion — kill all transitions, keep static states
+  .fx__arrow,
+  .fx__text,
+  .fx__rail,
+  .fx__arrow--ghost,
+  .fx__arrow--lead {
+    @include prefers.reduce-motion {
+      transition: none !important;
+    }
+  }
+  .fx-a:hover .fx__rail {
+    @include prefers.reduce-motion {
+      width: 0;
+    }
+  }
+  .fx-b:hover .fx__arrow--lead {
+    @include prefers.reduce-motion {
+      transform: none;
+    }
+  }
+  .fx-b:hover .fx__arrow--ghost {
+    @include prefers.reduce-motion {
+      opacity: 0;
+    }
+  }
+  .fx-c:hover .fx__text,
+  .fx-c:hover .fx__arrow {
+    @include prefers.reduce-motion {
+      transform: none;
+    }
+  }
+}

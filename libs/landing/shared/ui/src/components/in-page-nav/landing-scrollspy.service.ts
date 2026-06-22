@@ -14,11 +14,13 @@ export class LandingScrollspyService {
 
   readonly active = this.activeSignal.asReadonly();
 
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor() {
     if (typeof window === 'undefined') return;
     const handler = () => this.update();
     window.addEventListener('scroll', handler, { passive: true });
-    inject(DestroyRef).onDestroy(() => window.removeEventListener('scroll', handler));
+    this.destroyRef.onDestroy(() => window.removeEventListener('scroll', handler));
   }
 
   setSections(sections: readonly InPageSection[]): void {
@@ -27,6 +29,17 @@ export class LandingScrollspyService {
       this.activeSignal.set(sections[0].id);
     }
     this.update();
+  }
+
+  /** Also drive scrollspy from a nested scroll container (e.g. an app-shell content
+   *  pane that scrolls internally while the window stays locked). Additive — the
+   *  window listener stays wired, so normal document-scroll pages are unaffected.
+   *  `update()` reads viewport-relative rects, so it is correct for either source. */
+  observeScrollContainer(el: HTMLElement): void {
+    if (typeof window === 'undefined') return;
+    const handler = () => this.update();
+    el.addEventListener('scroll', handler, { passive: true });
+    this.destroyRef.onDestroy(() => el.removeEventListener('scroll', handler));
   }
 
   private update(): void {

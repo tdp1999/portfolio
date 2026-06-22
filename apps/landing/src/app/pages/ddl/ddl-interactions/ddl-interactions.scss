@@ -5,35 +5,21 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   Layout — same wishlist scaffolding as before; demos live in `.ix-demo`
+   Layout — wishlist scaffolding inside the doc-shell; demos live in `.ix-demo`.
+   Section headings + per-section spacing come from `landing-ddl-section`.
    ══════════════════════════════════════════════════════════════════════════ */
 
-.ix-section {
-  padding-block: 64px;
+.ix-lead {
+  margin: 0 0 8px 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+  max-width: 56rem;
 }
 
-.ix-group {
-  margin-bottom: 64px;
-}
-.ix-group:last-child {
-  margin-bottom: 0;
-}
-
-.ix-group__header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--landing-border);
-}
-.ix-group__category {
-  margin: 0 0 4px 0;
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-md);
-  letter-spacing: var(--landing-tracking-mono);
-  text-transform: uppercase;
-  color: var(--landing-accent);
-}
 .ix-group__description {
-  margin: 0;
+  margin: 0 0 24px 0;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-sm);
   line-height: var(--landing-body-md-lh);

@@ -1,0 +1,21 @@
+<landing-ddl-doc-page slug="loading-spinner" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+        landing-loading-spinner · block · rotating ring · optional message
+      </p>
+      <div class="p-6 bg-ink-0 border border-landing-border rounded">
+        <landing-loading-spinner message="Loading projects…" />
+      </div>
+      <p class="font-sans text-body-sm text-landing-text-400 mt-3 max-w-2xl">
+        Pair with
+        <code class="font-mono text-mono-sm text-landing-text-300">asyncResource(source$, opts)</code>. The helper
+        exposes <code class="font-mono text-mono-sm">showSpinner()</code> with deliberate timing — don't show under
+        200ms (avoid flash on fast responses), once shown stay 500ms (avoid flicker). Template:
+      </p>
+      <pre
+        class="font-mono text-mono-sm text-landing-text-400 mt-3 p-4 bg-ink-1 border border-landing-border rounded overflow-x-auto"
+      ><code [innerText]="loadingSnippet"></code></pre>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

@@ -1,9 +1,11 @@
+import { InjectionToken } from '@angular/core';
+
 export interface FlatRow {
   readonly result: CommandResult;
   readonly groupHeader?: string;
 }
 
-export type CommandKind = 'page' | 'section' | 'action' | 'project' | 'blog';
+export type CommandKind = 'page' | 'section' | 'action' | 'project' | 'blog' | 'doc';
 
 export interface CommandResult {
   readonly id: string;
@@ -25,12 +27,23 @@ export interface CommandResult {
 export const KIND_LABEL: Record<CommandKind, string> = {
   page: 'Pages',
   section: 'Sections',
+  doc: 'DDL',
   action: 'Actions',
   project: 'Projects',
   blog: 'Blog',
 };
 
-export const KIND_ORDER: readonly CommandKind[] = ['page', 'section', 'project', 'blog', 'action'];
+export const KIND_ORDER: readonly CommandKind[] = ['page', 'section', 'doc', 'project', 'blog', 'action'];
+
+/**
+ * Extra command results contributed by the app (e.g. the DDL design-system
+ * registry). These surface ONLY while the user is searching — they don't pad the
+ * default (empty-query) list. Provide at the app root with `useValue`.
+ */
+export const COMMAND_PALETTE_SEARCH_SOURCES = new InjectionToken<readonly CommandResult[]>(
+  'landing.command-palette.search-sources',
+  { factory: () => [] }
+);
 
 /** Static manifest of top-level pages — ships with the bundle. */
 export const PAGE_MANIFEST: readonly CommandResult[] = [

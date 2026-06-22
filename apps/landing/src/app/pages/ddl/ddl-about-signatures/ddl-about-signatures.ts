@@ -1,14 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
-import {
-  Container,
-  Eyebrow,
-  Breadcrumb,
-  LandingLocaleService,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { LandingLocaleService } from '@portfolio/landing/shared/ui';
 import { FailureService, SkillService, type PublicAboutFailure } from '@portfolio/landing/shared/data-access';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlStage } from '../ddl-stage/ddl-stage';
 import { DdlDepthMapV1 } from '../about-signatures/ddl-depth-map.v1/ddl-depth-map.v1';
 import { DdlDepthMapV2 } from '../about-signatures/ddl-depth-map.v2/ddl-depth-map.v2';
 import { DdlDepthMapV3 } from '../about-signatures/ddl-depth-map.v3/ddl-depth-map.v3';
@@ -25,7 +22,12 @@ import { DdlCurrentlyShippingV1 } from '../about-signatures/ddl-currently-shippi
 import { DdlCurrentlyShippingV2 } from '../about-signatures/ddl-currently-shipping.v2/ddl-currently-shipping.v2';
 import { DdlCurrentlyShippingV3 } from '../about-signatures/ddl-currently-shipping.v3/ddl-currently-shipping.v3';
 import { getNowEntry } from '../about-signatures/now-mock';
-import { DEPTH_MAP_VARIANTS, FAILURES_VARIANTS, CURRENTLY_SHIPPING_VARIANTS } from './ddl-about-signatures.data';
+import {
+  ABOUT_SIGNATURES_VARIANTS,
+  DEPTH_MAP_VARIANTS,
+  FAILURES_VARIANTS,
+  CURRENTLY_SHIPPING_VARIANTS,
+} from './ddl-about-signatures.data';
 
 /**
  * /ddl/about-signatures — staging ground for the /about signature elements.
@@ -44,10 +46,10 @@ import { DEPTH_MAP_VARIANTS, FAILURES_VARIANTS, CURRENTLY_SHIPPING_VARIANTS } fr
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
-    Container,
-    Eyebrow,
-    Breadcrumb,
+    DdlDocPage,
+    DdlSection,
+    DdlDecisionRecord,
+    DdlStage,
     DdlDepthMapV1,
     DdlDepthMapV2,
     DdlDepthMapV3,
@@ -70,10 +72,8 @@ export class DdlAboutSignatures {
     initialValue: [] as readonly PublicAboutFailure[],
   });
 
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'About — signature sections' },
-  ];
+  // Decision record — three /about elements explored here, no page-wide winner.
+  readonly variants = ABOUT_SIGNATURES_VARIANTS;
 
   // ─── §01 · Depth map (DROPPED, sandbox kept) ───
   readonly tierGroups = toSignal(this.skillService.getSkillsByTier(), { initialValue: [] });
@@ -132,6 +132,4 @@ export class DdlAboutSignatures {
   readonly currentlyShippingSummary =
     'Originally a 4-field teaser pulling from /now data with a "See /now →" link. Section removed from /about IA — /now is already the canonical surface for this content and the teaser added no information density beyond a link click. Three variants kept below as a historical sandbox.';
   readonly currentlyShippingQuestion = 'Resolved by removal — no further variants needed.';
-
-  readonly tocItems = [this.depthMapTocItem, this.failuresTocItem, this.currentlyShippingTocItem] as const;
 }

@@ -1,23 +1,20 @@
-<div class="cp-page-head">
-  <landing-container size="wide">
-    <div class="cp-page-head__inner">
-      <landing-breadcrumb [items]="breadcrumb" class="cp-page-head__crumbs" />
-      <landing-section-header align="left" size="sm">
-        Command palette — <em>Cmd+K</em> directions
-      </landing-section-header>
-      <p class="cp-page-head__intro">
-        Four directions for the Cmd+K (Ctrl+K on Win/Linux) search experience. Each variant uses the same mock dataset
-        (pages · sections · projects · actions) and the same keyboard model (↑↓ navigate, ↵ activate, Esc close).
-        Differences are visual chrome, density, and how the action category is positioned. Press <kbd>⌘K</kbd> /
-        <kbd>Ctrl+K</kbd> anywhere on this page — it opens <strong>variant 1</strong>.
-      </p>
-    </div>
-  </landing-container>
-</div>
+<landing-ddl-doc-page slug="command-palette" [width]="'wide'">
+  <p class="cp-page-head__intro">
+    Four directions for the Cmd+K (Ctrl+K on Win/Linux) search experience. Each variant uses the same mock dataset
+    (pages · sections · projects · actions) and the same keyboard model (↑↓ navigate, ↵ activate, Esc close).
+    Differences are visual chrome, density, and how the kind category is surfaced. Press <kbd>⌘K</kbd> /
+    <kbd>Ctrl+K</kbd> anywhere on this page — it opens <strong>variant 1</strong>.
+  </p>
 
-<!-- ═══ Search architecture ════════════════════════════════════════ -->
-<section class="cp-block cp-block--research" aria-label="Search architecture">
-  <landing-container size="wide">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Four Cmd+K palette directions on one shared dataset and keyboard model — Linear-style, Spotlight (flat), Raycast (rich rows), and a stripped minimal. None has won: still weighing density vs. chrome and whether section headers or a kind-chip best surfaces the category mix. Launch each below (or press ⌘K) and feel the rhythm before committing.'
+    "
+  />
+
+  <!-- ═══ Search architecture ════════════════════════════════════════ -->
+  <landing-ddl-section anchor="search-architecture" heading="Search architecture">
     <landing-eyebrow
       [label]="['architecture', 'how search works', 'hybrid static + API']"
       tone="accent"
@@ -67,27 +64,18 @@
       Filter algorithm: case-insensitive substring on <code>title + description + kind</code>. Production should upgrade
       to a fuzzy matcher (Fuse.js / minisearch / a custom trigram index) — gives typo tolerance and substring scoring.
     </p>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ Side-by-side variant launchers ═══════════════════════════════ -->
-<section class="cp-block" aria-label="Variants">
-  <landing-container size="wide">
-    <landing-eyebrow
-      [label]="['variants', 'four directions', 'click to preview']"
-      tone="accent"
-      class="cp-block__eyebrow"
-    />
-
-    <div class="cp-variants">
-      <!-- V1 · Linear-style -->
+  <!-- ═══ V1 · Linear-style ════════════════════════════════════════ -->
+  <landing-ddl-section anchor="v1-linear" heading="V1 — Linear-style (leading)">
+    <p class="cp-variant__desc">
+      Centered modal, top-third position. Section headers above each group ("Pages", "Projects", "Actions"). Subtle
+      hover + selected states. Keyboard hint footer (↑↓ ↵ esc). Standard pattern most users recognize.
+    </p>
+    <landing-ddl-stage label="V1 — Linear-style launcher" width="content">
       <article class="cp-variant">
         <div class="cp-variant__head">
-          <span class="cp-variant__tag">v1 · linear-style (recommended)</span>
-          <p class="cp-variant__desc">
-            Centered modal, top-third position. Section headers above each group ("Pages", "Projects", "Actions").
-            Subtle hover + selected states. Keyboard hint footer (↑↓ ↵ esc). Standard pattern most users recognize.
-          </p>
+          <span class="cp-variant__tag">v1 · linear-style</span>
           <button type="button" class="cp-variant__cta" (click)="open('v1')">Open variant 1 · <kbd>⌘K</kbd></button>
         </div>
         <div class="cp-variant__schematic cp-variant__schematic--v1" aria-hidden="true">
@@ -100,15 +88,19 @@
           <div class="cp-schematic__footer"></div>
         </div>
       </article>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-      <!-- V2 · Spotlight-style -->
+  <!-- ═══ V2 · Spotlight-style ═════════════════════════════════════ -->
+  <landing-ddl-section anchor="v2-spotlight" heading="V2 — Spotlight (flat)">
+    <p class="cp-variant__desc">
+      Top-third position like macOS Spotlight. No section headers — flat list with a small uppercase mono "kind" chip on
+      the right of each row. Less chrome, more speed. No footer.
+    </p>
+    <landing-ddl-stage label="V2 — Spotlight launcher" width="content">
       <article class="cp-variant">
         <div class="cp-variant__head">
           <span class="cp-variant__tag">v2 · spotlight (flat)</span>
-          <p class="cp-variant__desc">
-            Top-third position like macOS Spotlight. No section headers — flat list with a small uppercase mono "kind"
-            chip on the right of each row. Less chrome, more speed. No footer.
-          </p>
           <button type="button" class="cp-variant__cta" (click)="open('v2')">Open variant 2</button>
         </div>
         <div class="cp-variant__schematic cp-variant__schematic--v2" aria-hidden="true">
@@ -121,15 +113,19 @@
           <div class="cp-schematic__row"><span class="cp-schematic__chip"></span></div>
         </div>
       </article>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-      <!-- V3 · Raycast-style -->
+  <!-- ═══ V3 · Raycast-style ═══════════════════════════════════════ -->
+  <landing-ddl-section anchor="v3-raycast" heading="V3 — Raycast (rich rows)">
+    <p class="cp-variant__desc">
+      Wider modal. Each row has a framed icon on the left, two-line content (title + description), and a hint on the
+      right. Sections have subdued mono headers. Best when items have meaningful descriptions to disambiguate.
+    </p>
+    <landing-ddl-stage label="V3 — Raycast launcher" width="content">
       <article class="cp-variant">
         <div class="cp-variant__head">
           <span class="cp-variant__tag">v3 · raycast (rich rows)</span>
-          <p class="cp-variant__desc">
-            Wider modal. Each row has a framed icon on the left, two-line content (title + description), and a hint on
-            the right. Sections have subdued mono headers. Best when items have meaningful descriptions to disambiguate.
-          </p>
           <button type="button" class="cp-variant__cta" (click)="open('v3')">Open variant 3</button>
         </div>
         <div class="cp-variant__schematic cp-variant__schematic--v3" aria-hidden="true">
@@ -151,15 +147,19 @@
           </div>
         </div>
       </article>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-      <!-- V4 · Minimal -->
+  <!-- ═══ V4 · Minimal ═════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="v4-minimal" heading="V4 — minimal">
+    <p class="cp-variant__desc">
+      Centered modal, narrower. Just the input and a flat list of titles. No icons, no descriptions, no chips, no
+      footer. Closest to a Linear-clone with all chrome stripped. Quiet, fast, opinionated.
+    </p>
+    <landing-ddl-stage label="V4 — minimal launcher" width="content">
       <article class="cp-variant">
         <div class="cp-variant__head">
           <span class="cp-variant__tag">v4 · minimal</span>
-          <p class="cp-variant__desc">
-            Centered modal, narrower. Just the input and a flat list of titles. No icons, no descriptions, no chips, no
-            footer. Closest to a Linear-clone with all chrome stripped. Quiet, fast, opinionated.
-          </p>
           <button type="button" class="cp-variant__cta" (click)="open('v4')">Open variant 4</button>
         </div>
         <div class="cp-variant__schematic cp-variant__schematic--v4" aria-hidden="true">
@@ -171,14 +171,11 @@
           <div class="cp-schematic__row cp-schematic__row--bare"></div>
         </div>
       </article>
-    </div>
-  </landing-container>
-</section>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-<!-- ═══ Decision matrix ══════════════════════════════════════════════ -->
-<section class="cp-block cp-block--matrix" aria-label="Decision matrix">
-  <landing-container size="wide">
-    <landing-eyebrow [label]="['decision matrix', 'when each variant wins']" tone="accent" class="cp-block__eyebrow" />
+  <!-- ═══ Decision matrix ══════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="decision-matrix" heading="Decision matrix — when each wins">
     <table class="cp-matrix">
       <thead>
         <tr>
@@ -223,14 +220,15 @@
       </tbody>
     </table>
     <p class="cp-block__intro">
-      <strong>My recommendation:</strong> <em>v1 (Linear-style)</em> as the canonical pick. It pays off the
-      bilingualism/category richness of the underlying data (pages, sections, actions, projects) without committing to
-      tall rows. <em>v2 (Spotlight)</em> is the strong alternative if you want the palette to feel like an OS tool.
+      <strong>Leaning:</strong> <em>v1 (Linear-style)</em> as the likely canonical pick — it pays off the category
+      richness of the underlying data (pages, sections, actions, projects) without committing to tall rows.
+      <em>v2 (Spotlight)</em> is the strong alternative if you want the palette to feel like an OS tool. Still
+      exploring; no commitment yet.
     </p>
-  </landing-container>
-</section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>
 
-<!-- ═══ Active modal ═════════════════════════════════════════════════ -->
+<!-- ═══ Active modal — fixed overlay, lives outside the doc shell ═════ -->
 @if (active(); as which) {
   <!-- prettier-ignore -->
   <div

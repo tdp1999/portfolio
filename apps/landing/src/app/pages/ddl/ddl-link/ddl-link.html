@@ -1,0 +1,82 @@
+<landing-ddl-doc-page slug="link" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <div class="space-y-8">
+      <!-- Link with arrows -->
+      <div>
+        <h3 id="hover-arrow" data-toc="Hover & arrow" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          landing-link · color-only hover, no underline
+        </h3>
+        <div class="space-y-2 mb-4">
+          <div><landing-link href="/projects">Projects (router, internal)</landing-link></div>
+          <div><landing-link href="/projects" [arrow]="true">Projects with arrow</landing-link></div>
+          <div>
+            <landing-link href="https://github.com" [arrow]="true">
+              External resource (auto-detected from https://)
+            </landing-link>
+          </div>
+          <div>
+            <landing-link href="/projects" [active]="true">Active route (indigo)</landing-link>
+          </div>
+        </div>
+        <p class="font-sans text-body-md text-landing-text-400">
+          Inline prose example: read the
+          <landing-link href="/projects" [arrow]="true" [inline]="true">latest projects</landing-link>
+          or jump to
+          <landing-link href="https://github.com" [arrow]="true" [inline]="true">my GitHub</landing-link>
+          for source.
+        </p>
+      </div>
+
+      <!-- Link kinds with action icons -->
+      <div>
+        <h3 id="semantic-kinds" data-toc="Semantic kinds" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          landing-link · semantic kinds · auto-detected from href
+        </h3>
+        <p class="font-sans text-body-sm text-landing-text-500 mb-3">
+          mailto:, tel:, and download links get a leading icon so they read as actions, not navigation. Anchor (#hash)
+          links stay icon-less. Kind is detected from the href prefix; the
+          <code class="font-mono text-mono-sm">[kind]</code> input overrides it (required for
+          <code class="font-mono text-mono-sm">download</code> — no URL prefix to detect from).
+        </p>
+        <div class="space-y-2 mb-4">
+          <div>
+            <landing-link href="mailto:hello@thunderphong.com"> hello&#64;thunderphong.com </landing-link>
+            <span class="font-mono text-mono-sm text-landing-text-600 ml-2">mail · envelope</span>
+          </div>
+          <div>
+            <landing-link href="tel:+84901234567">+84 901 234 567</landing-link>
+            <span class="font-mono text-mono-sm text-landing-text-600 ml-2">tel · phone</span>
+          </div>
+          <div>
+            <landing-link href="/cv-phuong-tran.pdf" kind="download">Download CV (PDF)</landing-link>
+            <span class="font-mono text-mono-sm text-landing-text-600 ml-2">download · file</span>
+          </div>
+          <div>
+            <landing-link href="#overview">Jump to overview</landing-link>
+            <span class="font-mono text-mono-sm text-landing-text-600 ml-2">anchor · same page</span>
+          </div>
+        </div>
+        <p class="font-sans text-body-md text-landing-text-400">
+          Inline prose example: email me at
+          <landing-link href="mailto:hello@thunderphong.com" [inline]="true"> hello&#64;thunderphong.com </landing-link>
+          or call
+          <landing-link href="tel:+84901234567" [inline]="true">+84 901 234 567</landing-link>
+          — for a longer brief,
+          <landing-link href="/cv-phuong-tran.pdf" kind="download" [inline]="true"> grab the CV </landing-link>
+          .
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-link</strong> for plain navigation — internal routes, external
+        resources, inline prose. Never style it like a button. Color-only hover, never adds underline. External links
+        automatically get the up-right arrow +
+        <code class="font-mono text-mono-sm text-landing-text-300">target=_blank</code>.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

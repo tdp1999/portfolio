@@ -1,0 +1,286 @@
+<landing-ddl-doc-page slug="typography" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <p class="font-sans text-body-md text-landing-text-400 mb-6 max-w-3xl">
+      One serif (Newsreader) for editorial moments, one sans (Inter) for everything readable, one mono (JetBrains) for
+      labels and metadata. A single text node should always have one obvious owner — never reach for "looks nice", reach
+      for the role.
+    </p>
+
+    <!-- Role table -->
+    <h3
+      id="voices"
+      data-toc="Three voices"
+      class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4"
+    >
+      Three voices, three jobs
+    </h3>
+    <div class="grid grid-cols-1 tablet:grid-cols-3 gap-4 mb-10">
+      <div class="bg-ink-0 border border-landing-border rounded p-4">
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+          newsreader · display
+        </p>
+        <p class="font-display text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+        <p class="font-sans text-body-sm text-landing-text-400 mb-1">Use for: hero h1, page titles, pull-quotes.</p>
+        <p class="font-sans text-body-sm text-landing-text-600">Don't: buttons, body, repeated card titles.</p>
+      </div>
+      <div class="bg-ink-0 border border-landing-border rounded p-4">
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">inter · body / ui</p>
+        <p class="font-sans text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+        <p class="font-sans text-body-sm text-landing-text-400 mb-1">
+          Use for: paragraphs, buttons, links, card bodies — anything the reader scans.
+        </p>
+        <p class="font-sans text-body-sm text-landing-text-600">Don't: tags, captions, hero phrase.</p>
+      </div>
+      <div class="bg-ink-0 border border-landing-border rounded p-4">
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500 mb-2">
+          jetbrains mono · meta
+        </p>
+        <p class="font-mono text-display-md text-landing-text-300 mb-2 leading-tight">Aa</p>
+        <p class="font-sans text-body-sm text-landing-text-400 mb-1">
+          Use for: chips, eyebrows, captions, code, dates, status labels.
+        </p>
+        <p class="font-sans text-body-sm text-landing-text-600">Don't: full sentences, paragraphs.</p>
+      </div>
+    </div>
+
+    <!-- Display scale -->
+    <div class="mb-10">
+      <h3
+        id="display-scale"
+        data-toc="Display scale"
+        class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4"
+      >
+        display scale · newsreader · fluid (mobile 375 → wide 1440)
+      </h3>
+      <div class="space-y-4">
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">xl · 36→56</span>
+          <span class="font-display text-display-xl text-landing-text-300 leading-none">Hero h1</span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 32→48</span>
+          <span class="font-display text-display-lg text-landing-text-300 leading-none">Page h1</span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 28→40</span>
+          <span class="font-display text-display-md text-landing-text-300 leading-none">Sub-hero</span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 24→32</span>
+          <span class="font-display text-display-sm text-landing-text-300 leading-none">Section h2</span>
+        </div>
+      </div>
+      <p class="font-sans text-body-sm text-landing-text-500 mt-3 max-w-2xl">
+        Sizes resize smoothly with the viewport — the mobile end (left) avoids a 56px hero eating a phone screen; the
+        wide end (right) is unchanged from before. Line-heights are unitless ratios so they track the fluid size. Resize
+        this window to watch them scale.
+      </p>
+
+      <!-- Element default mapping + prose override (locked) -->
+      <div class="mt-6 p-4 border border-landing-border rounded bg-ink-0 max-w-2xl">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+          element default · outside prose
+        </p>
+        <ul class="font-sans text-body-sm text-landing-text-400 space-y-1 list-disc pl-5 mb-4">
+          <li>
+            Bare <code class="font-mono">&lt;h1&gt;</code> → display-lg (Page h1). Hero overrides via utility class to
+            xl.
+          </li>
+          <li>Bare <code class="font-mono">&lt;h2&gt;</code> → display-md (Sub-hero).</li>
+          <li>Bare <code class="font-mono">&lt;h3&gt;</code> → display-sm.</li>
+          <li>Bare <code class="font-mono">&lt;h4&gt;</code> → body-xl (fluid 16→20). Below display scale.</li>
+        </ul>
+
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+          prose override · inside .landing-prose
+        </p>
+        <ul class="font-sans text-body-sm text-landing-text-400 space-y-1 list-disc pl-5">
+          <li>
+            Font switches from Newsreader → <strong>Inter 600</strong>. Newsreader stays for h1 page titles OUTSIDE
+            prose (e.g. project header).
+          </li>
+          <li>
+            Every level downsizes one step: h1 → md, <strong>h2 → sm</strong> (Section h2 role), h3 → body-xl, h4 →
+            body-lg.
+          </li>
+          <li>Long-form reading doesn't compete with display-scale headings.</li>
+          <li>
+            See <a href="/ddl/prose-flow" class="text-landing-accent hover:underline">/ddl/prose-flow</a> for full spec.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Body scale -->
+    <div class="mb-10">
+      <h3
+        id="body-scale"
+        data-toc="Body scale"
+        class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4"
+      >
+        body scale · inter
+      </h3>
+      <div class="space-y-3">
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">lg · 15→17</span>
+          <span class="font-sans text-body-lg text-landing-text-300">
+            Reading column body — long-form paragraphs sit at this size.
+          </span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 14→16 · X</span>
+          <span class="font-sans text-body-md text-landing-text-400">
+            Default UI text, card body, descriptions in dense layouts.
+          </span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 12→13</span>
+          <span class="font-sans text-body-sm text-landing-text-500">
+            Small labels and helper text near captions.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mono scale -->
+    <div class="mb-10">
+      <h3
+        id="mono-scale"
+        data-toc="Mono scale"
+        class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4"
+      >
+        mono scale · jetbrains mono · ALL CAPS · 0.06em
+      </h3>
+      <div class="space-y-3">
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">md · 12/16</span>
+          <span class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
+            EYEBROW · CHIP MD · FIG. 03 · CAPTION
+          </span>
+        </div>
+        <div class="flex items-baseline gap-6">
+          <span class="font-mono text-mono-sm text-landing-text-600 w-20 shrink-0">sm · 11/16</span>
+          <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-500">
+            CHIP SM · DENSE META STRIP · 2026
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pairing recipe -->
+    <div>
+      <h3
+        id="pairing"
+        data-toc="Canonical pairing"
+        class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4"
+      >
+        canonical pairing · eyebrow + display + body
+      </h3>
+      <div class="bg-ink-0 border border-landing-border rounded p-6 max-w-2xl">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">Selected work</p>
+        <h3 class="font-display text-display-md text-landing-text-300 leading-tight mb-4">
+          Quiet ink, restrained accent.
+        </h3>
+        <p class="font-sans text-body-lg text-landing-text-400 mb-4">
+          Inter at 15→17 (fluid) — the reading size. Newsreader carries the headline, Inter carries the prose, mono caps
+          flag the section above.
+        </p>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500">
+          FIG. 01 · canonical pairing
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <!-- Typography · Usage -->
+    <div class="space-y-8 max-w-4xl">
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">pairing rules</p>
+        <ol class="font-sans text-body-md text-landing-text-400 space-y-3 list-decimal pl-6">
+          <li>
+            <strong>One display moment per view.</strong> A page gets one Newsreader headline. Outside prose (page
+            titles, hero, project header) Newsreader carries display headings. Inside
+            <code class="font-mono text-mono-sm">.landing-prose</code> editorial columns, sub-headings (h2/h3/h4) switch
+            to Inter 600 for sustained readability.
+          </li>
+          <li>
+            <strong>Eyebrow above display.</strong> Mono caps eyebrow + Newsreader headline is the canonical pattern
+            (hero, section openers, project detail header).
+          </li>
+          <li>
+            <strong>Chips never under headings of the same type.</strong> A chip cluster (mono caps) belongs in card
+            meta or under a project title — not directly under another mono label.
+          </li>
+          <li>
+            <strong>Pull-quote interrupts body.</strong> When using
+            <code class="font-mono text-mono-sm text-landing-text-300">landing-pull-quote</code> inside reading copy,
+            leave 24px padding above/below; the indigo border carries the "this is a moment" cue.
+          </li>
+          <li>
+            <strong>Captions are always mono.</strong> Any text labeling a media element (image, code block, diagram) is
+            Mono caps — not Inter italic, not Newsreader.
+          </li>
+        </ol>
+      </div>
+
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3">
+          quick decision table
+        </p>
+        <div class="border border-landing-border rounded overflow-hidden">
+          <table class="w-full font-sans text-body-md">
+            <thead class="bg-ink-0 text-landing-text-500 font-mono text-mono-md uppercase tracking-[0.06em]">
+              <tr>
+                <th class="text-left p-3 border-b border-landing-border">Question</th>
+                <th class="text-left p-3 border-b border-landing-border">Use</th>
+              </tr>
+            </thead>
+            <tbody class="text-landing-text-400">
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this a page-defining headline or hero phrase?</td>
+                <td class="p-3 font-display text-landing-text-300">Newsreader</td>
+              </tr>
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this a paragraph the reader is meant to read fully?</td>
+                <td class="p-3 font-sans text-landing-text-300">Inter</td>
+              </tr>
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this a button, input, link, or card title?</td>
+                <td class="p-3 font-sans text-landing-text-300">Inter</td>
+              </tr>
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this labeling, tagging, or pointing at something?</td>
+                <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+              </tr>
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this a short ALL-CAPS metadata string?</td>
+                <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+              </tr>
+              <tr class="border-b border-landing-border">
+                <td class="p-3">Is this code or a file path?</td>
+                <td class="p-3 font-mono text-landing-text-300 uppercase tracking-[0.06em]">Mono</td>
+              </tr>
+              <tr>
+                <td class="p-3">Is this a quote inside reading copy?</td>
+                <td class="p-3 font-display italic text-landing-text-300">Newsreader italic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="border-l-2 border-landing-accent pl-4">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">reference</p>
+        <p class="font-sans text-body-md text-landing-text-400">
+          Full system documented in
+          <code class="font-mono text-mono-sm text-landing-text-300">.context/design/landing-typography.md</code>. Token
+          source:
+          <code class="font-mono text-mono-sm text-landing-text-300"
+            >libs/landing/shared/ui/src/tokens/typography.scss</code
+          >.
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

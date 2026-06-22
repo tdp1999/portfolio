@@ -1,0 +1,133 @@
+// Decision record — the standardized verdict block. Landing-scoped tokens only.
+
+.ddl-decision {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--landing-border);
+  border-left: 2px solid var(--landing-accent);
+  border-radius: 12px;
+  background: var(--landing-ink-1);
+
+  // Exploring (no winner yet) → drop the accent spine to a neutral hairline.
+  &:has(.ddl-decision__verdict--exploring) {
+    border-left-color: var(--landing-border);
+  }
+
+  // ── Verdict (the winner) ───────────────────────────────────────────────
+  &__verdict {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  &__check {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--landing-accent);
+    color: var(--landing-bg);
+    font-size: var(--landing-body-sm);
+    line-height: 1;
+
+    // Exploring marker — hollow, muted, no accent fill.
+    &--exploring {
+      background: transparent;
+      border: 1px solid var(--landing-border);
+      color: var(--landing-text-500);
+    }
+  }
+
+  &__verdict-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__label {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--landing-font-display);
+    font-size: var(--landing-display-sm);
+    line-height: 1.2;
+    color: var(--landing-text-300);
+  }
+
+  &__tag {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--landing-accent);
+
+    &--exploring {
+      color: var(--landing-text-500);
+    }
+  }
+
+  &__note {
+    font-size: var(--landing-body-md);
+    line-height: 1.5;
+    color: var(--landing-text-400);
+  }
+
+  // ── Considered (the losers) ────────────────────────────────────────────
+  &__considered {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 16px 0 0;
+    list-style: none;
+    border-top: 1px solid var(--landing-border);
+  }
+
+  &__item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+
+  &__item-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: 0.04em;
+    color: var(--landing-text-400);
+  }
+
+  &__considered-tag,
+  &__rejected {
+    font-size: var(--landing-mono-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__considered-tag {
+    color: var(--landing-text-500);
+  }
+
+  &__rejected {
+    color: var(--landing-text-500);
+    text-decoration: line-through;
+  }
+
+  &__item-note {
+    flex: 1 1 16ch;
+    min-width: 0;
+    font-size: var(--landing-body-sm);
+    line-height: 1.5;
+    color: var(--landing-text-500);
+  }
+}

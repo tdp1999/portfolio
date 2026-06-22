@@ -18,6 +18,7 @@ import { Icon } from '../components/icon/icon';
 import { KeyboardShortcutService } from '../keyboard/keyboard-shortcut.service';
 import { CommandPaletteService } from './command-palette.service';
 import {
+  COMMAND_PALETTE_SEARCH_SOURCES,
   KIND_LABEL,
   KIND_ORDER,
   PAGE_MANIFEST,
@@ -62,6 +63,9 @@ export class CommandPalette {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  // App-contributed, search-only results (e.g. DDL registry) — folded in only
+  // when there's an active query, so the default list stays lean.
+  private readonly searchSources = inject(COMMAND_PALETTE_SEARCH_SOURCES);
 
   readonly visible = this.state.visible;
   readonly query = signal('');
@@ -89,7 +93,13 @@ export class CommandPalette {
     return [...PAGE_MANIFEST, ...SECTION_MANIFEST, ...this.actionResults()];
   });
 
-  protected readonly filtered = computed(() => filterCommands(this.query(), this.allResults()));
+  protected readonly filtered = computed(() => {
+    const q = this.query();
+    const base = filterCommands(q, this.allResults());
+    // Search-only sources never show in the default list.
+    if (!q.trim()) return base;
+    return [...base, ...filterCommands(q, this.searchSources)];
+  });
   protected readonly grouped = computed(() => groupCommandsByKind(this.filtered()));
 
   protected readonly flatRows = computed<readonly FlatRow[]>(() => {

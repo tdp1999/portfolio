@@ -1,16 +1,12 @@
-<landing-section>
-  <landing-container size="content">
-    <landing-breadcrumb [items]="breadcrumb" class="mb-6 block" />
+<landing-ddl-doc-page slug="prose-flow" [width]="'wide'">
+  <p>
+    Vertical rhythm spec for long-form content. Every element below sits inside
+    <code class="font-mono">.landing-prose</code> — what you see is the source of truth applied to project-detail,
+    blog-detail, and any future long-form page.
+  </p>
 
-    <landing-section-header size="md" [level]="1"> Prose flow · <em>spec</em>. </landing-section-header>
-
-    <p class="text-landing-text-400 text-body-md mt-4 max-w-2xl">
-      Vertical rhythm spec for long-form content. Every element below sits inside
-      <code class="font-mono">.landing-prose</code> — what you see is the source of truth applied to project-detail,
-      blog-detail, and any future long-form page.
-    </p>
-
-    <div class="prose-flow__legend mt-8">
+  <landing-ddl-section anchor="rhythm-legend" heading="Rhythm legend">
+    <div class="prose-flow__legend">
       <span class="prose-flow__legend-row">
         <span class="prose-flow__legend-tag">h1</span>
         <span>mt 96 · mb 24</span>
@@ -52,11 +48,9 @@
         <span>Inter 600 (Newsreader only h1 outside prose)</span>
       </span>
     </div>
-  </landing-container>
-</landing-section>
+  </landing-ddl-section>
 
-<landing-section>
-  <landing-container size="content">
+  <landing-ddl-section anchor="headings" heading="Headings — leading vs trailing">
     <article class="landing-prose">
       <landing-heading id="overview" [level]="2">Overview — h2 leading 72, trailing 16</landing-heading>
 
@@ -90,9 +84,11 @@
         Paragraph after h4. The hierarchy of breaks creates a clear visual outline: h2 = biggest section break, h3 =
         sub-section, h4 = paragraph-group label.
       </p>
+    </article>
+  </landing-ddl-section>
 
-      <landing-heading id="content-blocks" [level]="2">Content blocks — blockquote, figure, code</landing-heading>
-
+  <landing-ddl-section anchor="content-blocks" heading="Content blocks — blockquote, figure, code">
+    <article class="landing-prose">
       <p>Each standout block declares its own halo. Margin collapsing handles the joining.</p>
 
       <blockquote>
@@ -122,9 +118,11 @@
   // 24px halo · 16/20 padding · scrollable horizontally
   return source$.pipe(...);
 &#125;</code></pre>
+    </article>
+  </landing-ddl-section>
 
-      <landing-heading id="lists" [level]="2">Lists</landing-heading>
-
+  <landing-ddl-section anchor="lists" heading="Lists">
+    <article class="landing-prose">
       <p>Unordered list — 8px between items, 16px after the list as a whole:</p>
 
       <ul>
@@ -150,9 +148,11 @@
         Above is an <code>&lt;hr&gt;</code> — 48px above and below, single horizontal rule in border color. Used for
         major thematic breaks within a long-form post.
       </p>
+    </article>
+  </landing-ddl-section>
 
-      <landing-heading id="inline" [level]="2">Inline emphasis</landing-heading>
-
+  <landing-ddl-section anchor="inline" heading="Inline emphasis">
+    <article class="landing-prose">
       <p>
         Inline <strong>strong</strong> uses text-300 + weight 600 (slightly bolder against body color). Inline
         <em>emphasis</em> uses font-style italic — Inter italic by default. <a href="#overview">Inline link</a> uses
@@ -160,9 +160,11 @@
         <strong>strong with <em>nested em</em> and a <a href="#">link</a></strong
         >.
       </p>
+    </article>
+  </landing-ddl-section>
 
-      <landing-heading id="back-to-back" [level]="2">Back-to-back headings</landing-heading>
-
+  <landing-ddl-section anchor="back-to-back" heading="Back-to-back headings">
+    <article class="landing-prose">
       <landing-heading id="immediate-h3" [level]="3">Edge case — h3 right after h2</landing-heading>
 
       <p>
@@ -171,5 +173,5 @@
         block, not jarring.
       </p>
     </article>
-  </landing-container>
-</landing-section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

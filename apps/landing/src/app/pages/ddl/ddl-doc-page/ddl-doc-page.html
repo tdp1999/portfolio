@@ -1,0 +1,36 @@
+<article class="ddl-doc">
+  <header class="ddl-doc__header">
+    <p class="ddl-doc__eyebrow">{{ displayEyebrow() }}</p>
+    <div class="ddl-doc__title-row">
+      <h1 class="ddl-doc__title">{{ displayTitle() }}</h1>
+      @if (entry(); as e) {
+        <landing-ddl-status-chip [status]="e.status" />
+      }
+    </div>
+    <p class="ddl-doc__summary">{{ displaySummary() }}</p>
+  </header>
+
+  <div class="ddl-doc__body">
+    <ng-content />
+  </div>
+
+  @if (entry()) {
+    <nav class="ddl-doc__pager" aria-label="Page navigation">
+      @if (prev(); as p) {
+        <a class="ddl-doc__pager-link ddl-doc__pager-link--prev" [routerLink]="linkFor(p)" [fragment]="fragmentFor(p)">
+          <span class="ddl-doc__pager-dir">← Previous</span>
+          <span class="ddl-doc__pager-title">{{ p.title }}</span>
+        </a>
+      } @else {
+        <span></span>
+      }
+
+      @if (next(); as n) {
+        <a class="ddl-doc__pager-link ddl-doc__pager-link--next" [routerLink]="linkFor(n)" [fragment]="fragmentFor(n)">
+          <span class="ddl-doc__pager-dir">Next →</span>
+          <span class="ddl-doc__pager-title">{{ n.title }}</span>
+        </a>
+      }
+    </nav>
+  }
+</article>

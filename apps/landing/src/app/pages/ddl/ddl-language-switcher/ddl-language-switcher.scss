@@ -5,52 +5,7 @@
   display: block;
 }
 
-.ls-page-head {
-  border-bottom: 1px solid var(--landing-border);
-  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
-}
-
-.ls-page-head__inner {
-  padding-block: 24px;
-}
-
-.ls-page-head__crumbs {
-  display: block;
-  margin-bottom: 16px;
-}
-
-.ls-page-head__intro {
-  margin: 16px 0 0;
-  max-width: 56rem;
-  font-family: var(--landing-font-body);
-  font-size: var(--landing-body-md);
-  line-height: var(--landing-body-md-lh);
-  color: var(--landing-text-400);
-}
-
-.ls-block {
-  padding-block: 64px;
-  border-bottom: 1px solid var(--landing-border);
-}
-
-.ls-block--research {
-  background-color: var(--landing-ink-1);
-}
-
-.ls-block--note {
-  background-color: var(--landing-ink-1);
-}
-
-.ls-block--matrix {
-  background-color: var(--landing-ink-0);
-}
-
-.ls-block__eyebrow {
-  display: block;
-  margin-bottom: 24px;
-}
-
-.ls-block__intro {
+.ls-intro {
   margin: 0 0 32px;
   max-width: 56rem;
   font-family: var(--landing-font-body);
@@ -59,14 +14,19 @@
   color: var(--landing-text-400);
 }
 
-.ls-block__intro code {
+.ls-intro code {
   font-family: var(--landing-font-mono);
   color: var(--landing-text-300);
 }
 
-.ls-block__intro strong {
+.ls-intro strong {
   color: var(--landing-text-300);
   font-weight: 600;
+}
+
+.ls-intro em {
+  color: var(--landing-text-300);
+  font-style: italic;
 }
 
 /* ─── Research stepback list ─────────────────────────────────────── */

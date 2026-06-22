@@ -1,0 +1,14 @@
+<section [id]="anchor()" class="ddl-section">
+  <div class="ddl-section__head">
+    <h2 class="ddl-section__heading">{{ heading() }}</h2>
+    @if (framed() && code()) {
+      <button type="button" class="ddl-section__copy" (click)="copy()">
+        {{ copied() ? 'Copied ✓' : 'Copy code' }}
+      </button>
+    }
+  </div>
+
+  <div class="ddl-section__body" [class.is-framed]="framed()">
+    <ng-content />
+  </div>
+</section>

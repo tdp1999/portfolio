@@ -1,0 +1,34 @@
+<div class="ddl-stage" [class.ddl-stage--expanded]="expanded()">
+  <div class="ddl-stage__toolbar">
+    <button type="button" class="ddl-stage__expand" (click)="open()" aria-label="Open full-width preview">
+      <span aria-hidden="true">⤢</span>
+      <span>Full width</span>
+    </button>
+  </div>
+
+  <div
+    class="ddl-stage__frame"
+    [attr.role]="expanded() ? 'dialog' : null"
+    [attr.aria-modal]="expanded() ? 'true' : null"
+    [attr.aria-label]="expanded() ? label() + ' — full-width preview' : null"
+  >
+    @if (expanded()) {
+      <div class="ddl-stage__bar">
+        <span class="ddl-stage__bar-label">{{ label() }} · full width</span>
+        <button type="button" class="ddl-stage__close" (click)="close()">
+          <span>Esc</span>
+          <span aria-hidden="true">✕</span>
+        </button>
+      </div>
+    }
+
+    <div
+      class="ddl-stage__body"
+      [class.ddl-stage__body--content]="width() === 'content'"
+      [class.ddl-stage__body--wide]="width() === 'wide'"
+      [class.ddl-stage__body--full]="width() === 'full'"
+    >
+      <ng-content />
+    </div>
+  </div>
+</div>

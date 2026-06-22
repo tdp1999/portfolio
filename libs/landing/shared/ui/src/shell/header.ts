@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { A11yModule } from '@angular/cdk/a11y';
-import { filter } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { ThemeToggle } from '../theme';
 import { Container } from '../components/container';
 import { MegaMenu, type MegaMenuItem } from '../components/mega-menu';
@@ -35,21 +35,29 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
   styleUrl: './header.scss',
   host: {
     class: 'sticky top-0 z-50 block w-full',
-    '[class.pointer-events-none]': 'scrolled()',
+    '[class.pointer-events-none]': 'headerScrolled()',
     '(window:scroll)': 'onWindowScroll()',
     '(document:keydown.escape)': 'closeMenu()',
   },
   template: `
-    <header class="block h-16 w-full bg-transparent" role="banner">
-      @if (scrolled()) {
+    <header
+      class="block h-16 w-full bg-transparent transition-colors duration-motion-base ease-landing-ease"
+      [class.header-solid]="docsBarSolid()"
+      role="banner"
+    >
+      @if (headerScrolled()) {
         <!-- Scrolled state: logo pinned left, single centered pill -->
         <div class="relative h-full">
-          <a
-            routerLink="/"
-            class="pointer-events-auto absolute left-4 tablet:left-6 laptop:left-8 top-1/2 -translate-y-1/2 inline-flex items-center rounded-full px-4 py-2 font-display text-body-lg font-medium text-landing-text-300 backdrop-blur-md transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
-          >
-            <brand-monogram class="header-logo" />
-          </a>
+          <!-- The pinned-left logo overlaps the docs sidebar, so it is suppressed
+               on /ddl (the centred pill still carries the nav). -->
+          @if (!isDocs()) {
+            <a
+              routerLink="/"
+              class="pointer-events-auto absolute left-4 tablet:left-6 laptop:left-8 top-1/2 -translate-y-1/2 inline-flex items-center rounded-full px-4 py-2 font-display text-body-lg font-medium text-landing-text-300 backdrop-blur-md transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent header-pop"
+            >
+              <brand-monogram class="header-logo" />
+            </a>
+          }
 
           <div class="flex h-full items-center justify-end pr-4 tablet:justify-center tablet:pr-0">
             <div
@@ -113,8 +121,13 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
       } @else {
         <!-- Top state: 3-column grid so the centre nav stays page-centred regardless of side widths -->
         <landing-container size="wide">
+          <!-- On /ddl the docs-nav toggle sits fixed at the top-left below laptop
+               (mobile AND tablet), so the brand logo is nudged right (pl-12) to clear
+               it; reset only at laptop+ where the toggle is gone and the shell becomes
+               the 3-col app-shell. -->
           <div
-            class="flex h-16 items-center justify-between header-fade-in tablet:grid tablet:grid-cols-[1fr_auto_1fr]"
+            class="flex h-16 items-center justify-between header-fade-in tablet:grid tablet:grid-cols-[1fr_auto_1fr] laptop:pl-0"
+            [class.pl-12]="isDocs()"
           >
             <a
               routerLink="/"
@@ -285,6 +298,30 @@ export class Header {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
 
+  // Route-aware docs flag — used to suppress the scrolled pinned-left logo on the
+  // /ddl docs surface, where it would overlap the docs sidebar.
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+  protected readonly isDocs = computed(() => this.url().startsWith('/ddl'));
+
+  // On the /ddl docs surface the header is pinned to its full top-bar state: the
+  // docs shell is an app-shell (the content pane scrolls internally, the window
+  // does not), so the header sits above a fixed frame and must NOT flip to the
+  // floating pill. Forcing it false guarantees the top-bar even if the window
+  // twitches. Marketing routes keep the scroll-driven bar↔pill behaviour.
+  protected readonly headerScrolled = computed(() => !this.isDocs() && this.scrolled());
+
+  // On /ddl the header stays a full top-bar, but at mobile the docs surface scrolls
+  // the DOCUMENT (the app-shell window-lock is laptop+ only), so content slides under
+  // the transparent bar. Give the bar an opaque background once scrolled there — same
+  // "solidify on scroll" affordance the marketing pill provides elsewhere.
+  protected readonly docsBarSolid = computed(() => this.isDocs() && this.scrolled());
+
   protected readonly kbdMod = computed(() => (this.shortcuts.isMac() ? '⌘' : 'Ctrl'));
   protected readonly paletteAriaLabel = computed(() => `Open command palette (${this.kbdMod()}+K)`);
 
@@ -343,6 +380,11 @@ export class Header {
       const open = this.menuOpen();
       if (this.document.defaultView) {
         this.document.body.style.overflow = open ? 'hidden' : '';
+        // Signal a full-screen overlay so fixed siblings outside this stacking
+        // context (e.g. the /ddl docs-nav toggle) can hide themselves — they'd
+        // otherwise poke through, since the sheet is trapped under the header's
+        // own z-50 sticky stacking context.
+        this.document.body.classList.toggle('overlay-open', open);
       }
     });
   }

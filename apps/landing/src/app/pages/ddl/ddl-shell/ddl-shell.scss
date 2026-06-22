@@ -1,0 +1,238 @@
+// DDL component-docs shell — app-shell layout: a fixed sidebar beside a scroll
+// region that spans content + TOC. At laptop+ the window is locked and the scroll
+// region scrolls internally (header stays a fixed full top-bar above it). The TOC
+// is pinned (sticky) inside the scroll region; the footer scrolls in at the very
+// end spanning content + TOC. The content column stays optically centred in the
+// viewport because the left sidebar width == the right TOC width (equal 1fr
+// gutters around the content within the scroll region).
+
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
+.ddl-shell {
+  --ddl-sidebar-w: 264px;
+  --ddl-toc-w: 264px; // == sidebar-w so content centres in the viewport
+  --ddl-content-w: 768px;
+
+  display: block;
+  min-height: var(--vh-full);
+  background: var(--landing-bg);
+
+  // ── App-shell (laptop+) ────────────────────────────────────────────────
+  // Lock the docs surface to the viewport BELOW the 64px top-bar header so the
+  // window never scrolls — the scroll region (__scroll) scrolls internally. The
+  // header (full top-bar), sidebar, and TOC stay fixed; navigating only swaps +
+  // resets the content (no jump, no header morph). Below laptop it's a single
+  // column on document scroll.
+  @include bp.respond-to('laptop') {
+    height: calc(var(--vh-full) - 64px);
+    min-height: 0;
+    overflow: hidden;
+    // Anchors offset via the scroll region's scroll-padding, and the TOC sticks
+    // near the top — the header sits OUTSIDE this scroller.
+    --ddl-anchor-offset: 0;
+    --toc-sticky-top: 32px;
+  }
+
+  // ── Content-width variants (set by the active doc page via DdlDocsService) ─
+  &--wide {
+    --ddl-content-w: 1120px;
+  }
+
+  // Full-bleed: content reclaims the whole scroll region (TOC forced off). Desktop
+  // only — below laptop the layout is already a single column.
+  &--full {
+    @include bp.respond-to('laptop') {
+      .ddl-shell__layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .ddl-shell__main {
+        grid-column: 1;
+      }
+
+      .ddl-shell__toc {
+        display: none;
+      }
+    }
+  }
+
+  // ── Docs-nav toggle (floating, below laptop only) ──────────────────────
+  // A bare panel-left icon aligned to the header's left padding — same flat,
+  // borderless treatment as the header's own icons. It sits in the header band
+  // (h-16) but to the LEFT of where the brand logo would be; the logo is
+  // suppressed on /ddl mobile (header handles that) so they never overlap.
+  &__menu {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 16px;
+    z-index: 60;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--landing-text-300);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color var(--duration-motion-base) var(--ease-landing-ease);
+
+    &:hover {
+      color: var(--landing-accent);
+    }
+  }
+
+  // Hide the toggle while a full-screen overlay is open (header's mobile menu
+  // sheet sets body.overlay-open). The toggle is fixed above the header, so it
+  // can't be covered by z-index alone — the sheet lives inside the header's z-50
+  // stacking context while the toggle sits at the root.
+  :host-context(.overlay-open) &__menu {
+    display: none;
+  }
+
+  // Also hide it while the docs drawer itself is open — the slid-in sidebar +
+  // backdrop are the active surface; tapping the backdrop closes it. (The toggle
+  // sits above the drawer at z-60, so it would otherwise float over its content.)
+  &.is-drawer-open &__menu {
+    display: none;
+  }
+
+  // ── Body: sidebar | scroll-region ──────────────────────────────────────
+  &__body {
+    display: flex;
+
+    @include bp.respond-to('laptop') {
+      height: 100%;
+      min-height: 0;
+    }
+  }
+
+  &__sidebar {
+    flex: 0 0 var(--ddl-sidebar-w);
+    height: 100%;
+    overflow: hidden; // inner nav owns the scroll
+    border-right: 1px solid var(--landing-border);
+  }
+
+  // The scroll region (laptop+) — spans content + TOC so the footer can run their
+  // full width. Below laptop the document scrolls instead.
+  //
+  // `position: relative` makes this the containing block for any absolutely-
+  // positioned descendant (e.g. landing-carousel's fade arrows). Without it those
+  // escape to the initial containing block — the `overflow:auto` clip no longer
+  // applies, so they grow the DOCUMENT instead of scrolling inside this pane, which
+  // unlocked the window on carousel-bearing pages.
+  &__scroll {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+
+    @include bp.respond-to('laptop') {
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      scroll-padding-top: 32px;
+    }
+  }
+
+  // Content row inside the scroll region. At laptop the TOC is dropped so the
+  // content reclaims its width (sidebar + TOC would otherwise eat 528px, squeezing
+  // content below prose on smaller laptops); the row is gutter | content | gutter,
+  // content centred in the scroller. The TOC column returns only at wide.
+  &__layout {
+    display: grid;
+    grid-template-columns:
+      1fr
+      minmax(0, var(--ddl-content-w))
+      1fr;
+  }
+
+  &__main {
+    grid-column: 2;
+    min-width: 0; // let wide children shrink instead of overflowing the row
+  }
+
+  &__toc {
+    display: none; // shown only at wide (see below)
+  }
+
+  // Wide (1440+): enough room to bring the TOC back as a 4th column.
+  @include bp.respond-to('wide') {
+    &__layout {
+      grid-template-columns:
+        1fr
+        minmax(0, var(--ddl-content-w))
+        1fr
+        var(--ddl-toc-w);
+    }
+
+    &__toc {
+      display: block;
+      grid-column: 4;
+      padding: 24px 16px 0 0;
+      // Stretch to the full row height (default) so the toc-sidebar inside has room
+      // to travel — it pins itself (sticky --toc-sticky-top) while content scrolls.
+    }
+  }
+
+  // Footer spans the full scroll region (content + TOC) and scrolls in at the end.
+  &__footer {
+    border-top: 1px solid var(--landing-border);
+    margin-top: 48px;
+  }
+
+  &__backdrop {
+    display: none;
+    padding: 0;
+    border: none;
+  }
+
+  // ── Below laptop: sidebar → off-canvas drawer, TOC hidden, single column ─
+  @include bp.respond-down('laptop') {
+    &__layout {
+      grid-template-columns: 1fr;
+    }
+
+    &__main {
+      grid-column: 1;
+    }
+
+    &__menu {
+      display: inline-flex;
+    }
+
+    &__toc {
+      display: none;
+    }
+
+    &__sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+      height: auto;
+      width: min(82vw, var(--ddl-sidebar-w));
+      background: var(--landing-bg);
+      transform: translateX(-100%);
+      transition: transform 220ms ease;
+
+      @include prefers.reduce-motion {
+        transition: none;
+      }
+    }
+
+    &.is-drawer-open &__sidebar {
+      transform: translateX(0);
+    }
+
+    &.is-drawer-open &__backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: color-mix(in srgb, var(--landing-text) 32%, transparent);
+    }
+  }
+}

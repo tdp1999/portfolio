@@ -1,0 +1,135 @@
+// DDL component-docs sidebar — registry-driven, grouped, collapsible.
+// Landing-scoped: landing tokens + landing type scale only.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.ddl-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  // ── Scrolling nav region ───────────────────────────────────────────────
+  &__nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 8px 24px;
+  }
+
+  &__group {
+    margin-bottom: 8px;
+  }
+
+  // ── Group header (collapsible) ─────────────────────────────────────────
+  &__group-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 32px;
+    padding: 4px 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1;
+    color: var(--landing-text-500);
+    transition: color 160ms ease;
+
+    &:hover {
+      color: var(--landing-text);
+    }
+  }
+
+  &__group-label {
+    flex: 1 1 auto;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__group-count {
+    flex: 0 0 auto;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: 1;
+    color: var(--landing-text-400);
+  }
+
+  // Down-caret triangle; rotates to point right when the group is collapsed.
+  &__group-chevron {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    transition: transform 180ms ease;
+
+    .ddl-sidebar__group-toggle[aria-expanded='false'] & {
+      transform: rotate(-90deg);
+    }
+  }
+
+  // ── Entries ────────────────────────────────────────────────────────────
+  &__list {
+    margin: 0 0 4px;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 16px;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+    color: var(--landing-text-600);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--landing-text);
+      background-color: var(--landing-ink-1);
+      outline: none;
+    }
+
+    &.is-active {
+      color: var(--landing-accent);
+      border-left-color: var(--landing-accent);
+      background-color: var(--landing-ink-1);
+    }
+  }
+
+  &__link-title {
+    flex: 1 1 auto;
+    font-size: var(--landing-body-sm);
+    line-height: 1.3;
+  }
+
+  // ── Overview (docs home) — sits above the groups, divided off ────────────
+  &__overview {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--landing-border);
+
+    .ddl-sidebar__link-title {
+      font-family: var(--landing-font-mono);
+      font-size: var(--landing-mono-sm);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  }
+}

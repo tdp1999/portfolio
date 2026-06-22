@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { type BreadcrumbItem, Breadcrumb, Container, ThemeToggle } from '@portfolio/landing/shared/ui';
 import { Loader, Monogram, Motif, Signature, TDP_BRAND, Wordmark } from '@portfolio/shared/features/brand';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 
 /**
  * /ddl/identity — showcase of the Brand system (the `@portfolio/shared/features/brand`
@@ -14,13 +15,11 @@ import { Loader, Monogram, Motif, Signature, TDP_BRAND, Wordmark } from '@portfo
   selector: 'landing-ddl-identity',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Breadcrumb, ThemeToggle, Monogram, Wordmark, Signature, Loader, Motif],
+  imports: [DdlDocPage, DdlSection, Monogram, Wordmark, Signature, Loader, Motif],
   templateUrl: './ddl-identity.html',
   styleUrl: './ddl-identity.scss',
 })
 export class DdlIdentity {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Identity' }];
-
   readonly brand = TDP_BRAND;
 
   /** Live recolour → drives `[accent]` on every mark (per-product theming demo). */

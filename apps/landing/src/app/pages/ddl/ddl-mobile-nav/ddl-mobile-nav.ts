@@ -1,206 +1,158 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Container, Breadcrumb, ThemeToggle, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
+import { ThemeToggle } from '@portfolio/landing/shared/ui';
+
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { DdlStage } from '../ddl-stage/ddl-stage';
+import { MOBILE_NAV_VARIANTS, PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
 
 /**
  * DDL · Mobile nav — design directions for the `< tablet` full-screen nav sheet.
  * Same content as the shipped sheet (primary nav + "elsewhere" links + locale/theme);
- * three visual treatments rendered in phone-width frames for side-by-side comparison.
- * Winner graduates into `landing-header.component.ts`; this page stays as the spec.
+ * three visual treatments rendered full-bleed (pop each to full width to judge at
+ * true phone/viewport scale) for side-by-side comparison. Still exploring — no winner.
  */
 @Component({
   selector: 'landing-ddl-mobile-nav',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Breadcrumb, ThemeToggle],
+  imports: [ThemeToggle, DdlDocPage, DdlSection, DdlDecisionRecord, DdlStage],
   template: `
-    <div class="border-b border-landing-border bg-ink-1/60">
-      <landing-container size="wide">
-        <div class="py-6">
-          <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
-          <h1 class="font-display text-display-md text-landing-text-300">Mobile nav · design directions</h1>
-          <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
-            Three looks for the <code>&lt; tablet</code> full-screen nav sheet — same content (primary nav · "elsewhere"
-            links · locale + theme), different visual treatment. Compare at phone width and pick one; the winner
-            graduates into the header and this page becomes the spec.
-          </p>
-        </div>
-      </landing-container>
-    </div>
+    <landing-ddl-doc-page slug="mobile-nav" [width]="'wide'">
+      <p class="mn-lead font-sans text-body-md text-landing-text-400 max-w-2xl">
+        Three looks for the <code>&lt; tablet</code> full-screen nav sheet — same content (primary nav · "elsewhere"
+        links · locale + theme), different visual treatment. Each renders full-bleed; pop one to full width to judge it
+        at true phone/viewport scale, then pick. Still exploring — none has won yet.
+      </p>
 
-    <landing-container size="wide">
-      <div class="grid gap-8 py-12 grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-3">
-        <!-- ─── A · Editorial index ─── -->
-        <figure class="mn-col">
-          <figcaption class="mn-cap">
-            <span class="mn-cap__tag">A</span>
-            <span class="mn-cap__name">Editorial index</span>
-            <span class="mn-cap__note">Mono group eyebrows · numbered 01–04 · arrow on active. Most on-brand.</span>
-          </figcaption>
-          <div class="mn-phone">
-            <div class="mn-sheet">
-              <div class="mn-sheet__top">
-                <span class="mn-logo">tdp.</span>
-                <span class="mn-x">✕</span>
-              </div>
-              <p class="mn-eyebrow">Menu</p>
-              <nav class="mn-a__nav">
-                @for (item of primary; track item.label) {
-                  <a class="mn-a__row" [class.is-active]="item.active">
-                    <span class="mn-a__idx">{{ item.index }}</span>
-                    <span class="mn-a__label">{{ item.label }}</span>
-                    @if (item.active) {
-                      <span class="mn-a__arrow">→</span>
-                    }
-                  </a>
-                }
-              </nav>
-              <p class="mn-eyebrow mn-eyebrow--mt">Elsewhere</p>
-              <div class="mn-secondary">
-                @for (s of secondary; track s.label) {
-                  <a class="mn-secondary__row">
-                    <span>{{ s.label }}</span>
-                    <span class="mn-secondary__hint">{{ s.hint }}</span>
-                  </a>
-                }
-              </div>
-              <div class="mn-foot">
-                <span class="mn-foot__locale">⊕ EN</span>
-                <landing-theme-toggle />
-              </div>
+      <landing-ddl-decision-record
+        [variants]="variants"
+        [summary]="
+          'Three visual treatments for the &lt; tablet full-screen nav sheet — editorial index, big-type, and airy arrow list — same content throughout. None has won; the call is a taste/brand judgement best made at real phone width, so pop each look full-screen before deciding. The winner graduates into landing-header and this page becomes its spec.'
+        "
+      />
+
+      <!-- ═══ A · Editorial index ═════════════════════════════════════ -->
+      <landing-ddl-section anchor="a-editorial-index" heading="A — Editorial index">
+        <landing-ddl-stage width="full" label="A — editorial index sheet">
+          <div class="mn-sheet">
+            <div class="mn-sheet__top">
+              <span class="mn-logo">tdp.</span>
+              <span class="mn-x">✕</span>
             </div>
-          </div>
-        </figure>
-
-        <!-- ─── B · Big type, edge index ─── -->
-        <figure class="mn-col">
-          <figcaption class="mn-cap">
-            <span class="mn-cap__tag">B</span>
-            <span class="mn-cap__name">Big type, edge index</span>
-            <span class="mn-cap__note"
-              >Oversized serif · index pushed to the right edge · secondary as one mono row.</span
-            >
-          </figcaption>
-          <div class="mn-phone">
-            <div class="mn-sheet">
-              <div class="mn-sheet__top">
-                <span class="mn-logo">tdp.</span>
-                <span class="mn-x">✕</span>
-              </div>
-              <nav class="mn-b__nav">
-                @for (item of primary; track item.label) {
-                  <a class="mn-b__row" [class.is-active]="item.active">
-                    <span class="mn-b__label">{{ item.label }}</span>
-                    <span class="mn-b__idx">{{ item.index }}</span>
-                  </a>
-                }
-              </nav>
-              <p class="mn-b__compact">
-                @for (s of secondary; track s.label; let last = $last) {
-                  <span class="mn-b__compact-item">{{ s.label }}</span>
-                  @if (!last) {
-                    <span class="mn-b__dot">·</span>
+            <p class="mn-eyebrow">Menu</p>
+            <nav class="mn-a__nav">
+              @for (item of primary; track item.label) {
+                <a class="mn-a__row" [class.is-active]="item.active">
+                  <span class="mn-a__idx">{{ item.index }}</span>
+                  <span class="mn-a__label">{{ item.label }}</span>
+                  @if (item.active) {
+                    <span class="mn-a__arrow">→</span>
                   }
-                }
-              </p>
-              <div class="mn-foot mn-foot--ruled">
-                <span class="mn-foot__locale">⊕ EN</span>
-                <landing-theme-toggle />
-              </div>
+                </a>
+              }
+            </nav>
+            <p class="mn-eyebrow mn-eyebrow--mt">Elsewhere</p>
+            <div class="mn-secondary">
+              @for (s of secondary; track s.label) {
+                <a class="mn-secondary__row">
+                  <span>{{ s.label }}</span>
+                  <span class="mn-secondary__hint">{{ s.hint }}</span>
+                </a>
+              }
+            </div>
+            <div class="mn-foot">
+              <span class="mn-foot__locale">⊕ EN</span>
+              <landing-theme-toggle />
             </div>
           </div>
-        </figure>
+        </landing-ddl-stage>
+      </landing-ddl-section>
 
-        <!-- ─── C · Arrow list, airy ─── -->
-        <figure class="mn-col">
-          <figcaption class="mn-cap">
-            <span class="mn-cap__tag">C · ✓ shipped</span>
-            <span class="mn-cap__name">Arrow list, airy</span>
-            <span class="mn-cap__note"
-              >No numbers · trailing arrow on every link · generous spacing · single MORE eyebrow. This is the direction
-              live in the header sheet.</span
-            >
-          </figcaption>
-          <div class="mn-phone">
-            <div class="mn-sheet">
-              <div class="mn-sheet__top">
-                <span class="mn-logo">tdp.</span>
-                <span class="mn-x">✕</span>
-              </div>
-              <nav class="mn-c__nav">
-                @for (item of primary; track item.label) {
-                  <a class="mn-c__row" [class.is-active]="item.active">
-                    <span class="mn-c__label">{{ item.label }}</span>
-                    <span class="mn-c__arrow">→</span>
-                  </a>
+      <!-- ═══ B · Big type, edge index ════════════════════════════════ -->
+      <landing-ddl-section anchor="b-big-type" heading="B — Big type, edge index">
+        <landing-ddl-stage width="full" label="B — big type, edge index sheet">
+          <div class="mn-sheet">
+            <div class="mn-sheet__top">
+              <span class="mn-logo">tdp.</span>
+              <span class="mn-x">✕</span>
+            </div>
+            <nav class="mn-b__nav">
+              @for (item of primary; track item.label) {
+                <a class="mn-b__row" [class.is-active]="item.active">
+                  <span class="mn-b__label">{{ item.label }}</span>
+                  <span class="mn-b__idx">{{ item.index }}</span>
+                </a>
+              }
+            </nav>
+            <p class="mn-b__compact">
+              @for (s of secondary; track s.label; let last = $last) {
+                <span class="mn-b__compact-item">{{ s.label }}</span>
+                @if (!last) {
+                  <span class="mn-b__dot">·</span>
                 }
-              </nav>
-              <p class="mn-eyebrow mn-eyebrow--mt">More</p>
-              <div class="mn-secondary">
-                @for (s of secondary; track s.label) {
-                  <a class="mn-secondary__row">
-                    <span>{{ s.label }}</span>
-                    <span class="mn-secondary__hint">{{ s.hint }}</span>
-                  </a>
-                }
-              </div>
-              <div class="mn-foot">
-                <span class="mn-foot__locale">⊕ EN</span>
-                <landing-theme-toggle />
-              </div>
+              }
+            </p>
+            <div class="mn-foot mn-foot--ruled">
+              <span class="mn-foot__locale">⊕ EN</span>
+              <landing-theme-toggle />
             </div>
           </div>
-        </figure>
-      </div>
-    </landing-container>
+        </landing-ddl-stage>
+      </landing-ddl-section>
+
+      <!-- ═══ C · Arrow list, airy ════════════════════════════════════ -->
+      <landing-ddl-section anchor="c-arrow-list-airy" heading="C — Arrow list, airy">
+        <landing-ddl-stage width="full" label="C — arrow list, airy sheet">
+          <div class="mn-sheet">
+            <div class="mn-sheet__top">
+              <span class="mn-logo">tdp.</span>
+              <span class="mn-x">✕</span>
+            </div>
+            <nav class="mn-c__nav">
+              @for (item of primary; track item.label) {
+                <a class="mn-c__row" [class.is-active]="item.active">
+                  <span class="mn-c__label">{{ item.label }}</span>
+                  <span class="mn-c__arrow">→</span>
+                </a>
+              }
+            </nav>
+            <p class="mn-eyebrow mn-eyebrow--mt">More</p>
+            <div class="mn-secondary">
+              @for (s of secondary; track s.label) {
+                <a class="mn-secondary__row">
+                  <span>{{ s.label }}</span>
+                  <span class="mn-secondary__hint">{{ s.hint }}</span>
+                </a>
+              }
+            </div>
+            <div class="mn-foot">
+              <span class="mn-foot__locale">⊕ EN</span>
+              <landing-theme-toggle />
+            </div>
+          </div>
+        </landing-ddl-stage>
+      </landing-ddl-section>
+    </landing-ddl-doc-page>
   `,
   styles: [
     `
       :host {
         display: block;
       }
-      .mn-col {
-        margin: 0;
-      }
-      .mn-cap {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        margin-bottom: 16px;
-      }
-      .mn-cap__tag {
-        font-family: var(--landing-font-mono);
-        font-size: var(--landing-mono-sm);
-        color: var(--landing-accent);
-        letter-spacing: 0.08em;
-      }
-      .mn-cap__name {
-        font-family: var(--landing-font-display);
-        font-size: var(--landing-display-sm);
-        color: var(--landing-text-300);
-      }
-      .mn-cap__note {
-        font-family: var(--landing-font-sans);
-        font-size: var(--landing-body-sm);
-        color: var(--landing-text-500);
-      }
 
-      /* Phone frame */
-      .mn-phone {
-        width: 100%;
-        max-width: 390px;
-        aspect-ratio: 390 / 760;
-        border: 1px solid var(--landing-border);
-        border-radius: 28px;
-        overflow: hidden;
-        background-color: var(--landing-ink-0);
-        box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.4);
-      }
+      /* Full-bleed nav sheet — fills the stage; content held to a phone measure
+         and centered, the way the real header sheet pads itself. */
       .mn-sheet {
-        height: 100%;
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        min-height: 560px;
         display: flex;
         flex-direction: column;
         padding: 24px;
+        background-color: var(--landing-ink-0);
       }
       .mn-sheet__top {
         display: flex;
@@ -217,7 +169,7 @@ import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
       }
       .mn-x {
         color: var(--landing-text-400);
-        font-size: 18px;
+        font-size: 20px;
       }
       .mn-eyebrow {
         font-family: var(--landing-font-mono);
@@ -260,9 +212,6 @@ import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
         align-items: center;
         gap: 16px;
         padding-top: 16px;
-      }
-      .mn-foot--ruled,
-      .mn-foot {
         border-top: 1px solid var(--landing-border);
       }
       .mn-foot__locale {
@@ -346,7 +295,7 @@ import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
       }
       .mn-c__arrow {
         color: var(--landing-text-600);
-        font-size: 18px;
+        font-size: 20px;
       }
       .mn-c__row.is-active .mn-c__label,
       .mn-c__row.is-active .mn-c__arrow {
@@ -357,7 +306,7 @@ import { PRIMARY_ITEMS, SECONDARY_ITEMS } from './ddl-mobile-nav.data';
 })
 export class DdlMobileNav {
   // ── Properties ─────────────────────────────────────────────────────
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Mobile nav' }];
+  protected readonly variants = MOBILE_NAV_VARIANTS;
   readonly primary = PRIMARY_ITEMS;
   readonly secondary = SECONDARY_ITEMS;
 }

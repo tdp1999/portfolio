@@ -42,6 +42,15 @@
   animation: header-fade-in 200ms ease-out;
 }
 
+/* Solid bar — used on /ddl mobile, where the document scrolls under the
+   otherwise-transparent top-bar. Mirrors the marketing pill's frosted surface so
+   content never bleeds through behind the header. */
+.header-solid {
+  background: var(--landing-header-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--landing-border);
+}
+
 .nav-link {
   position: relative;
 }

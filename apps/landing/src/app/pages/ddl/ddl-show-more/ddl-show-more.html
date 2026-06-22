@@ -1,21 +1,13 @@
-<landing-container size="wide">
-  <landing-breadcrumb [items]="breadcrumb" class="sm__crumb" />
+<landing-ddl-doc-page slug="show-more" [width]="'wide'">
+  <p class="sm__lede">
+    A single reusable <code>landing-show-more</code>: it projects any content and, when that content exceeds
+    <code>maxHeight</code>, either clamps it behind a <strong>See more / See less</strong> toggle
+    (<code>mode="toggle"</code>) or caps it and lets the overflow <strong>scroll inside the box</strong>
+    (<code>mode="scroll"</code>). It is SSR / no-JS-safe (renders expanded on the server, collapses on hydration) and
+    self-measuring — short content renders untouched with no chrome.
+  </p>
 
-  <header class="sm__head">
-    <landing-eyebrow [label]="['DDL', 'Show more']" />
-    <h1 class="sm__title">Show more — clamp / scroll disclosure</h1>
-    <p class="sm__lede">
-      A single reusable <code>landing-show-more</code>: it projects any content and, when that content exceeds
-      <code>maxHeight</code>, either clamps it behind a <strong>See more / See less</strong> toggle
-      (<code>mode="toggle"</code>) or caps it and lets the overflow <strong>scroll inside the box</strong>
-      (<code>mode="scroll"</code>). It is SSR / no-JS-safe (renders expanded on the server, collapses on hydration) and
-      self-measuring — short content renders untouched with no chrome.
-    </p>
-  </header>
-
-  <!-- Toggle mode — long content -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">Toggle — long content clamps behind a button</p>
+  <landing-ddl-section anchor="toggle" heading="Toggle — long content clamps behind a button">
     <p class="sm__demo-note">
       <code>mode="toggle"</code> (default). Content over <code>maxHeight</code> clamps with a bottom fade; the toggle
       flips label + chevron. This is what the <strong>project-detail rails</strong> use.
@@ -30,11 +22,9 @@
         </ul>
       </landing-show-more>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- No overflow -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">No overflow — no chrome</p>
+  <landing-ddl-section anchor="no-overflow" heading="No overflow — no chrome">
     <p class="sm__demo-note">Content that fits within <code>maxHeight</code> renders fully, with no toggle at all.</p>
     <div class="sm__box">
       <landing-show-more [maxHeight]="120">
@@ -46,11 +36,9 @@
         </ul>
       </landing-show-more>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Toggle, no fade -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">Toggle — fade off</p>
+  <landing-ddl-section anchor="fade-off" heading="Toggle — fade off">
     <p class="sm__demo-note"><code>[fade]="false"</code> drops the bottom gradient (use for hard-edged content).</p>
     <div class="sm__box">
       <landing-show-more [maxHeight]="120" [fade]="false">
@@ -62,11 +50,9 @@
         </ul>
       </landing-show-more>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Scroll mode -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">Scroll — cap + scroll inside the box</p>
+  <landing-ddl-section anchor="scroll" heading="Scroll — cap + scroll inside the box">
     <p class="sm__demo-note">
       <code>mode="scroll"</code>. No button — the overflow scrolls internally (hidden scrollbar; wheel / touch). Use for
       a <strong>fixed-height</strong> block instead of a disclosure.
@@ -81,11 +67,9 @@
         </ul>
       </landing-show-more>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Even-height 2-col rail pattern -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">2-col rail — even heights (scroll mode + stretch)</p>
+  <landing-ddl-section anchor="rail-pattern" heading="2-col rail — even heights (scroll mode + stretch)">
     <p class="sm__demo-note">
       The project-detail pattern below <code>wide</code>: two rails in a flex row with
       <code>align-items: stretch</code>. Scroll mode caps each at <code>maxHeight</code>, so a long column and a short
@@ -113,11 +97,9 @@
         </landing-show-more>
       </div>
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- API -->
-  <section class="sm__demo">
-    <p class="sm__demo-title">Inputs</p>
+  <landing-ddl-section anchor="inputs" heading="Inputs">
     <ul class="sm__api">
       <li><code>[maxHeight]</code> — collapsed/cap height in px (default <code>300</code>).</li>
       <li>
@@ -130,5 +112,5 @@
       </li>
       <li><code>[fade]</code> — bottom gradient on the clamped content (toggle mode; default <code>true</code>).</li>
     </ul>
-  </section>
-</landing-container>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

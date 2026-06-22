@@ -1,27 +1,24 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import {
-  Container,
-  Eyebrow,
-  Icon,
-  Breadcrumb,
-  SectionHeader,
-  MegaMenu,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { Icon, MegaMenu } from '@portfolio/landing/shared/ui';
+
+import { DdlConsidered } from '../ddl-considered/ddl-considered';
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { LANGUAGE_SWITCHER_VARIANTS, MEGA_MENU_ITEMS } from './ddl-language-switcher.data';
 import type { Lang } from './ddl-language-switcher.types';
-import { MEGA_MENU_ITEMS } from './ddl-language-switcher.data';
 
 @Component({
   selector: 'landing-ddl-language-switcher',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Icon, Breadcrumb, SectionHeader, MegaMenu],
+  imports: [Icon, MegaMenu, DdlDocPage, DdlSection, DdlDecisionRecord, DdlConsidered],
   templateUrl: './ddl-language-switcher.html',
   styleUrl: './ddl-language-switcher.scss',
 })
 export class DdlLanguageSwitcher {
   // ── Properties ─────────────────────────────────────────────────────
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Language switcher' }];
+  protected readonly variants = LANGUAGE_SWITCHER_VARIANTS;
   readonly megaMenuItems = MEGA_MENU_ITEMS;
 
   // ── State ──────────────────────────────────────────────────────────

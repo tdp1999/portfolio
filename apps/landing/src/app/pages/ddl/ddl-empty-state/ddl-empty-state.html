@@ -1,0 +1,29 @@
+<landing-ddl-doc-page slug="empty-state" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div class="space-y-8">
+      <div>
+        <h3 id="empty-feed-empty" data-toc="Feed empty" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          landing-empty-state · icon + message (feed empty)
+        </h3>
+        <div class="p-6 bg-ink-0 border border-landing-border rounded">
+          <landing-empty-state icon="folder-open" message="No projects published yet" />
+        </div>
+      </div>
+
+      <div>
+        <h3 id="empty-not-found" data-toc="Not found" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          landing-empty-state · with title + projected CTA (404 / not-found shape)
+        </h3>
+        <div class="p-6 bg-ink-0 border border-landing-border rounded">
+          <landing-empty-state
+            icon="file-x"
+            title="Post not found"
+            message="This article may have been moved, unpublished, or never existed."
+          >
+            <landing-link href="/blog" [arrow]="true" class="mt-4">Browse all articles</landing-link>
+          </landing-empty-state>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

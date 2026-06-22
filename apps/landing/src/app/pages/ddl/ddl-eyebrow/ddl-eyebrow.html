@@ -1,0 +1,26 @@
+<landing-ddl-doc-page slug="eyebrow" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <!-- Eyebrow -->
+    <div>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+        landing-eyebrow · single label or array with separator
+      </p>
+      <div class="space-y-3">
+        <div><landing-eyebrow label="Selected work" /></div>
+        <div><landing-eyebrow [label]="['Angular', 'TypeScript', 'NestJS']" /></div>
+        <div><landing-eyebrow [label]="['2024', 'Case study', 'In progress']" /></div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-eyebrow</strong> sits ABOVE a heading to flag what the section is
+        about (Selected work, About, Now reading). Pass an array to chain related parts with
+        <code class="font-mono text-mono-sm text-landing-text-300">·</code> separators. Never used as a standalone
+        heading — it's always paired with a Newsreader display below.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

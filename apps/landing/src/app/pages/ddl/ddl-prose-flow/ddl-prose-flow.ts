@@ -1,25 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  Container,
-  Breadcrumb,
-  Heading,
-  SectionHeader,
-  Section,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { Heading } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 
 @Component({
   selector: 'landing-ddl-prose-flow',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Section, Breadcrumb, Heading, SectionHeader],
+  imports: [DdlDocPage, DdlSection, Heading],
   templateUrl: './ddl-prose-flow.html',
   styleUrl: './ddl-prose-flow.scss',
 })
-export class DdlProseFlow {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'Home', href: '/' },
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Prose flow' },
-  ];
-}
+export class DdlProseFlow {}

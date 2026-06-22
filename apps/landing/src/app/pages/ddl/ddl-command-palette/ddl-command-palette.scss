@@ -5,22 +5,8 @@
   display: block;
 }
 
-.cp-page-head {
-  border-bottom: 1px solid var(--landing-border);
-  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
-}
-
-.cp-page-head__inner {
-  padding-block: 24px;
-}
-
-.cp-page-head__crumbs {
-  display: block;
-  margin-bottom: 16px;
-}
-
 .cp-page-head__intro {
-  margin: 16px 0 0;
+  margin: 0;
   max-width: 64rem;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-md);
@@ -43,19 +29,6 @@
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);
   color: var(--landing-text-300);
-}
-
-.cp-block {
-  padding-block: 64px;
-  border-bottom: 1px solid var(--landing-border);
-}
-
-.cp-block--research {
-  background-color: var(--landing-ink-1);
-}
-
-.cp-block--matrix {
-  background-color: var(--landing-ink-0);
 }
 
 .cp-block__eyebrow {
@@ -135,19 +108,7 @@
   }
 }
 
-/* ─── Variant cards (launchers) ──────────────────────────────────── */
-.cp-variants {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-@include bp.respond-down('laptop') {
-  .cp-variants {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ─── Variant card (launcher inside a stage) ─────────────────────── */
 .cp-variant {
   display: grid;
   grid-template-columns: 1fr 200px;
@@ -373,7 +334,9 @@
 .cp-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  // Above the DDL stage overlay (z-index 200) so the palette stays on top
+  // when launched from inside an expanded "Full width" stage.
+  z-index: 300;
   background-color: color-mix(in srgb, var(--landing-ink-0) 60%, transparent);
   backdrop-filter: blur(6px);
   display: flex;

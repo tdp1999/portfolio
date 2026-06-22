@@ -1,11 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  Container,
-  Eyebrow,
-  Breadcrumb,
-  ScrollEdgeFadeDirective,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { ScrollEdgeFadeDirective } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 
 /**
  * `landingScrollEdgeFade` — reusable overflow affordance for scroll containers.
@@ -17,16 +13,11 @@ import {
   selector: 'landing-ddl-scroll-edge-fade',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, ScrollEdgeFadeDirective],
+  imports: [DdlDocPage, DdlSection, ScrollEdgeFadeDirective],
   templateUrl: './ddl-scroll-edge-fade.html',
   styleUrl: './ddl-scroll-edge-fade.scss',
 })
 export class DdlScrollEdgeFade {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Scroll edge fade — overflow affordance' },
-  ];
-
   /** Long, wide labels so the strips overflow at any viewport width. */
   readonly tabs: readonly string[] = [
     'Permissions Console',

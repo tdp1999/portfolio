@@ -4,13 +4,6 @@
   display: block;
 }
 
-.afb-block {
-  padding-block: 64px;
-  border-bottom: 1px solid var(--landing-border);
-}
-.afb-block--alt {
-  background: var(--landing-ink-1);
-}
 .afb__intro {
   margin: 16px 0 0;
   max-width: 56rem;
@@ -18,10 +11,6 @@
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
-}
-.afb-eyebrow {
-  display: block;
-  margin-bottom: 16px;
 }
 .afb-variant__head {
   margin-bottom: 32px;
@@ -480,10 +469,6 @@
 }
 
 /* ─── Summary ──────────────────────────────────────────────────── */
-.afb-summary {
-  padding-block: 64px;
-  background: var(--landing-ink-1);
-}
 .afb-pick {
   margin: 0;
   display: grid;

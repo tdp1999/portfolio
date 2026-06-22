@@ -1,50 +1,33 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import {
-  Container,
-  Background,
-  Breadcrumb,
-  Segmented,
-  type BreadcrumbItem,
-  type LandingBackgroundPattern,
-} from '@portfolio/landing/shared/ui';
+import { Background, Segmented, type LandingBackgroundPattern } from '@portfolio/landing/shared/ui';
+
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { PATTERNS } from './ddl-backgrounds.data';
 
 @Component({
   selector: 'landing-ddl-backgrounds',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Background, Breadcrumb, Segmented],
+  imports: [Background, Segmented, DdlDocPage],
   template: `
-    <div class="border-b border-landing-border bg-ink-1/60">
-      <landing-container size="wide">
-        <div class="py-6">
-          <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
-          <h1 class="font-display text-display-md text-landing-text-300">Hero background variants</h1>
-          <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
-            Pure-CSS decorative backgrounds rendered via one <code>landing-background</code> primitive. Pick a pattern,
-            see it at hero scale, and read the use-case notes before applying it to a real surface.
-          </p>
-        </div>
-      </landing-container>
-    </div>
+    <landing-ddl-doc-page slug="backgrounds" [width]="'full'">
+      <p class="bg-lead font-sans text-body-md text-landing-text-400 max-w-2xl">
+        Pure-CSS decorative backgrounds rendered via one <code>landing-background</code> primitive. Pick a pattern, see
+        it at hero scale, and read the use-case notes before applying it to a real surface.
+      </p>
 
-    <landing-container size="wide">
-      <div class="py-8">
-        <landing-segmented
-          [segments]="segments"
-          [active]="active()"
-          (activeChange)="setActive($event)"
-          ariaLabel="Background pattern"
-          idPrefix="bg-pattern"
-          class="block"
-        />
-      </div>
-    </landing-container>
+      <landing-segmented
+        [segments]="segments"
+        [active]="active()"
+        (activeChange)="setActive($event)"
+        ariaLabel="Background pattern"
+        idPrefix="bg-pattern"
+        class="block"
+      />
 
-    <!-- Hero-scale preview with sample headline overlay -->
-    <section class="bg-preview">
-      <landing-background [pattern]="active()" />
-      <landing-container size="wide">
+      <!-- Hero-scale preview with sample headline overlay -->
+      <section class="bg-preview">
+        <landing-background [pattern]="active()" />
         <div class="bg-preview__inner">
           <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent">
             {{ entry().label }}
@@ -56,11 +39,10 @@ import { PATTERNS } from './ddl-backgrounds.data';
             {{ entry().sampleTagline }}
           </p>
         </div>
-      </landing-container>
-    </section>
+      </section>
 
-    <landing-container size="wide">
-      <div class="py-12 grid gap-8 tablet:grid-cols-[2fr_1fr]">
+      <!-- Use-case notes -->
+      <div class="grid gap-8 tablet:grid-cols-[2fr_1fr]">
         <article>
           <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
             use case · {{ entry().id }}
@@ -94,33 +76,27 @@ import { PATTERNS } from './ddl-backgrounds.data';
           </div>
         </aside>
       </div>
-    </landing-container>
 
-    <!-- Gallery — all 5 patterns at thumbnail scale for at-a-glance comparison -->
-    <div class="border-t border-landing-border">
-      <landing-container size="wide">
-        <div class="py-12">
-          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">
-            gallery · all five
-          </p>
-          <h3 class="font-display text-display-sm text-landing-text-300 mb-6">At a glance</h3>
-          <div class="grid gap-4 grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5">
-            @for (p of patterns; track p.id) {
-              <button
-                type="button"
-                class="bg-thumb"
-                [class.bg-thumb--active]="p.id === active()"
-                (click)="setActive(p.id)"
-                [attr.aria-pressed]="p.id === active()"
-              >
-                <landing-background [pattern]="p.id" />
-                <span class="bg-thumb__label">{{ p.label }}</span>
-              </button>
-            }
-          </div>
+      <!-- Gallery — all five patterns at thumbnail scale for at-a-glance comparison -->
+      <div>
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">gallery · all five</p>
+        <h3 class="font-display text-display-sm text-landing-text-300 mb-6">At a glance</h3>
+        <div class="grid gap-4 grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5">
+          @for (p of patterns; track p.id) {
+            <button
+              type="button"
+              class="bg-thumb"
+              [class.bg-thumb--active]="p.id === active()"
+              (click)="setActive(p.id)"
+              [attr.aria-pressed]="p.id === active()"
+            >
+              <landing-background [pattern]="p.id" />
+              <span class="bg-thumb__label">{{ p.label }}</span>
+            </button>
+          }
         </div>
-      </landing-container>
-    </div>
+      </div>
+    </landing-ddl-doc-page>
   `,
   styles: [
     `
@@ -182,7 +158,6 @@ import { PATTERNS } from './ddl-backgrounds.data';
 export class DdlBackgrounds {
   readonly patterns = PATTERNS;
   readonly segments = PATTERNS.map((p) => ({ id: p.id, label: p.label }));
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Backgrounds' }];
   readonly active = signal<LandingBackgroundPattern>('blueprint');
   readonly entry = computed(() => PATTERNS.find((p) => p.id === this.active()) ?? PATTERNS[0]);
 

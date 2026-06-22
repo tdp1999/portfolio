@@ -1,39 +1,35 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Container, Eyebrow, Breadcrumb, SectionHeader, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-import { SECTIONS } from './ddl-section-header.data';
+import { Eyebrow, SectionHeader } from '@portfolio/landing/shared/ui';
+
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import type { DdlVariant } from '../ddl.types';
+import { SECTIONS, SECTION_HEADER_VARIANTS } from './ddl-section-header.data';
 
 @Component({
   selector: 'landing-ddl-section-header',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, SectionHeader],
+  imports: [Eyebrow, SectionHeader, DdlDocPage, DdlSection, DdlDecisionRecord],
   template: `
-    <div class="border-b border-landing-border bg-ink-1/60">
-      <landing-container size="wide">
-        <div class="py-6">
-          <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
-          <landing-section-header align="left" size="sm">
-            Section header — <em>cii</em> pattern propagation
-          </landing-section-header>
-          <p class="font-sans text-body-md text-landing-text-400 mt-4 max-w-3xl">
-            New primitive <code>&lt;landing-section-header&gt;</code> = eyebrow + centered display heading with italic
-            accent word(s) in <span class="text-landing-accent">indigo</span>. Same pattern as cii on
-            <code>/ddl/stack</code>. The accent word is whatever you wrap in <code>&lt;em&gt;</code> — any position, any
-            number of words. Aim for meaning-carriers, not connectors (skip <em>in</em>, <em>the</em>, <em>and</em>;
-            favor verbs and nouns).
-          </p>
-        </div>
-      </landing-container>
-    </div>
+    <landing-ddl-doc-page slug="section-header" [width]="'wide'">
+      <p>
+        The <code>&lt;landing-section-header&gt;</code> primitive = eyebrow + centered display heading with italic
+        accent word(s) in <span class="text-landing-accent">indigo</span>. Same cii pattern as <code>/ddl/stack</code>.
+        The accent word is whatever you wrap in <code>&lt;em&gt;</code> — any position, any number of words. Aim for
+        meaning-carriers, not connectors (skip <em>in</em>, <em>the</em>, <em>and</em>; favor verbs and nouns).
+      </p>
 
-    <!-- ═══ Size comparison ═══════════════════════════════════════════ -->
-    <section class="sh-block sh-block--sizes" aria-label="Size variants">
-      <landing-container size="wide">
-        <landing-eyebrow
-          [label]="['size variants', 'three nấcs', 'lg · md · sm']"
-          tone="accent"
-          class="sh-block__eyebrow"
-        />
+      <landing-ddl-decision-record
+        [variants]="variants"
+        [summary]="
+          'Decided: the centered display + eyebrow + italic-accent treatment is the default section opener and propagates across §03–§06. Left-anchored and no-eyebrow stay in the primitive API as contextual options (kept under Considered). Open: pick a §04 reframe before the eyebrow/heading tautology becomes a habit.'
+        "
+      />
+
+      <!-- ═══ Size comparison ═══════════════════════════════════════════ -->
+      <landing-ddl-section anchor="size-variants" heading="Size variants">
         <p class="sh-block__intro">
           Primitive offers <strong>3 size variants</strong>. Desktop sizes shown below — each variant collapses one step
           down at <code>≤768px</code> (md → md, lg → md, sm → display-sm). Pick by section weight, not by gut:
@@ -67,18 +63,10 @@ import { SECTIONS } from './ddl-section-header.data';
             </div>
           </div>
         </div>
-      </landing-container>
-    </section>
+      </landing-ddl-section>
 
-    <!-- ═══ Primitive — use cases ══════════════════════════════════════ -->
-    <section class="sh-block" aria-label="Primitive use cases">
-      <landing-container size="wide">
-        <landing-eyebrow
-          [label]="['primitive', 'use cases', 'when each variant is for']"
-          tone="accent"
-          class="sh-block__eyebrow"
-        />
-
+      <!-- ═══ Primitive — use cases ══════════════════════════════════════ -->
+      <landing-ddl-section anchor="use-cases" heading="Use cases">
         <div class="sh-block__grid">
           <div class="sh-card">
             <span class="sh-card__tag">home section · default</span>
@@ -116,17 +104,10 @@ import { SECTIONS } from './ddl-section-header.data';
             <landing-section-header> What I <em>reach for</em>. </landing-section-header>
           </div>
         </div>
-      </landing-container>
-    </section>
+      </landing-ddl-section>
 
-    <!-- ═══ Per-section copy candidates ════════════════════════════════ -->
-    <section class="sh-block sh-block--candidates" aria-label="Per-section candidates">
-      <landing-container size="wide">
-        <landing-eyebrow
-          [label]="['home sections', 'candidate copy', 'pick a row']"
-          tone="accent"
-          class="sh-block__eyebrow"
-        />
+      <!-- ═══ Per-section copy candidates ════════════════════════════════ -->
+      <landing-ddl-section anchor="per-section-candidates" heading="Per-section candidate copy">
         <p class="sh-block__intro">
           Each section has candidates demoing where the accent can land — last word, middle word, multi-word phrase. §02
           (Who I Am) intentionally <strong>not here</strong>: it stays eyebrow-only — no display heading needed. §03 and
@@ -260,19 +241,11 @@ import { SECTIONS } from './ddl-section-header.data';
             }
           </div>
         }
-      </landing-container>
-    </section>
+      </landing-ddl-section>
 
-    <!-- ═══ Adoption punch list ═════════════════════════════════════════ -->
-    <div class="border-t border-landing-border">
-      <landing-container size="wide">
+      <!-- ═══ Adoption punch list ═════════════════════════════════════════ -->
+      <landing-ddl-section anchor="adoption" heading="Adoption">
         <div class="sh-summary">
-          <landing-eyebrow
-            [label]="['adoption', 'what swap looks like per section']"
-            tone="accent"
-            class="sh-summary__eyebrow"
-          />
-
           <dl class="sh-cost">
             <div class="sh-cost__row">
               <dt class="sh-cost__key">§03 · WORK</dt>
@@ -313,8 +286,8 @@ import { SECTIONS } from './ddl-section-header.data';
             right voice). Open question on §04 — pick a reframe variant before the tautology becomes a habit.
           </p>
         </div>
-      </landing-container>
-    </div>
+      </landing-ddl-section>
+    </landing-ddl-doc-page>
   `,
   styles: [
     `
@@ -322,17 +295,6 @@ import { SECTIONS } from './ddl-section-header.data';
 
       :host {
         display: block;
-      }
-
-      .sh-block {
-        padding-block: 80px;
-        border-block: 1px solid var(--landing-border);
-      }
-      .sh-block--candidates {
-        background-color: var(--landing-ink-1);
-      }
-      .sh-block--sizes {
-        background-color: var(--landing-ink-0);
       }
 
       /* ─── Size comparison rows ───────────────────────────────────── */
@@ -392,10 +354,6 @@ import { SECTIONS } from './ddl-section-header.data';
         }
       }
 
-      .sh-block__eyebrow {
-        display: block;
-        margin-bottom: 24px;
-      }
       .sh-block__intro {
         margin: 0 0 40px 0;
         max-width: 56rem;
@@ -518,10 +476,6 @@ import { SECTIONS } from './ddl-section-header.data';
         max-width: 56rem;
         margin-inline: auto;
       }
-      .sh-summary__eyebrow {
-        display: block;
-        margin-bottom: 24px;
-      }
       .sh-cost {
         margin: 0;
         display: grid;
@@ -590,10 +544,9 @@ import { SECTIONS } from './ddl-section-header.data';
   ],
 })
 export class DdlSectionHeader {
+  // ── Decision record ─────────────────────────────────────────────────
+  protected readonly variants: readonly DdlVariant[] = SECTION_HEADER_VARIANTS;
+
   // ── Properties ─────────────────────────────────────────────────────
   readonly sections = SECTIONS;
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Section header — cii propagation' },
-  ];
 }

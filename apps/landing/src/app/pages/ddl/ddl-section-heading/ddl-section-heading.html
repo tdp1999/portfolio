@@ -1,0 +1,141 @@
+<landing-ddl-doc-page slug="section-heading" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Variants">
+    <div class="space-y-6">
+      <p class="font-sans text-body-md text-landing-text-500 max-w-2xl">
+        The current heading reads like a blog post. These five candidates push it more "home/editorial." All on
+        <code class="font-mono text-body-sm">--landing-ink-1</code> surface. Each variant ships its own micro-rules
+        (number block, deck line, accent rule). Pick one and we promote to
+        <code class="font-mono text-body-sm">home-selected-work</code>.
+      </p>
+
+      <!-- A · Editorial mix (current, baseline-fixed) -->
+      <div class="p-8 bg-landing-ink-1 border border-landing-border space-y-4">
+        <h3
+          id="variant-a"
+          data-toc="Variant A"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500"
+        >
+          VARIANT A · Editorial mix
+        </h3>
+        <header class="space-y-2">
+          <landing-eyebrow [label]="['§ 04', 'Selected Work']" />
+          <h2 class="m-0 text-display-md tracking-tight text-landing-text-300">
+            <span class="font-body font-bold mr-2">Three projects,</span
+            ><em
+              class="font-display not-italic-fix italic font-normal text-landing-text-400 text-[1.06em]"
+              style="position: relative; top: 0.03em"
+              >each one a question.</em
+            >
+          </h2>
+        </header>
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">
+          CURRENT · sans bold + Newsreader italic, equal size, baseline-tuned.
+        </p>
+      </div>
+
+      <!-- B · Numbered hero (huge serif numeral) -->
+      <div class="p-8 bg-landing-ink-1 border border-landing-border space-y-4">
+        <h3
+          id="variant-b"
+          data-toc="Variant B"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500"
+        >
+          VARIANT B · Numbered hero
+        </h3>
+        <header class="flex items-baseline gap-6">
+          <span class="font-display italic font-light text-[88px] leading-none text-landing-accent">04</span>
+          <div class="flex-1">
+            <landing-eyebrow [label]="['SELECTED WORK', '03 of 12 in archive']" />
+            <h2
+              class="m-0 mt-2 font-body font-bold text-display-md leading-[44px] tracking-tight text-landing-text-300"
+            >
+              Three projects,
+            </h2>
+            <p class="m-0 font-display italic font-normal text-body-xl text-landing-text-400">
+              each one a question I had to answer.
+            </p>
+          </div>
+        </header>
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">
+          Big serif numeral leads · sans bold heading + serif italic deck.
+        </p>
+      </div>
+
+      <!-- C · Index card (mono-anchored, indigo rule) -->
+      <div class="p-8 bg-landing-ink-1 border border-landing-border space-y-4">
+        <h3
+          id="variant-c"
+          data-toc="Variant C"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500"
+        >
+          VARIANT C · Index card
+        </h3>
+        <header class="space-y-3">
+          <div class="flex items-center justify-between font-mono text-mono-md uppercase tracking-[0.06em]">
+            <span class="text-landing-text-500">INDEX <span class="text-landing-accent">04</span> / 08</span>
+            <span class="text-landing-text-600">PUBLISHED · 2025</span>
+          </div>
+          <h2 class="m-0 font-body font-bold text-display-lg tracking-tight text-landing-text-300">Selected work.</h2>
+          <div class="h-px w-16 bg-landing-accent"></div>
+          <p class="m-0 font-display italic text-body-lg text-landing-text-400 max-w-xl">
+            Three deep cuts — the rest live at <span class="font-mono not-italic">/projects</span>.
+          </p>
+        </header>
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">
+          Index-card metadata bar + clean sans heading + indigo accent rule.
+        </p>
+      </div>
+
+      <!-- D · All-serif Newsreader (most magazine) -->
+      <div class="p-8 bg-landing-ink-1 border border-landing-border space-y-4">
+        <h3
+          id="variant-d"
+          data-toc="Variant D"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500"
+        >
+          VARIANT D · All-serif
+        </h3>
+        <header class="space-y-3 max-w-3xl">
+          <landing-eyebrow [label]="['§ 04', 'Selected Work']" />
+          <h2 class="m-0 font-display text-display-xl leading-[60px] tracking-tight text-landing-text-300">
+            Selected <em class="italic font-light text-landing-text-400">projects</em>,
+            <br />
+            <em class="italic font-light text-landing-accent">deeper than a tile.</em>
+          </h2>
+        </header>
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">
+          All-Newsreader, two-line treatment with italic + accent. Most "magazine."
+        </p>
+      </div>
+
+      <!-- E · Deck-led (eyebrow-large + sub-line) -->
+      <div class="p-8 bg-landing-ink-1 border border-landing-border space-y-4">
+        <h3
+          id="variant-e"
+          data-toc="Variant E"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500"
+        >
+          VARIANT E · Deck-led
+        </h3>
+        <header class="space-y-2 max-w-3xl">
+          <div class="flex items-baseline gap-3">
+            <span class="font-mono text-mono-md uppercase tracking-[0.08em] text-landing-accent">04</span>
+            <span class="font-mono text-mono-md uppercase tracking-[0.08em] text-landing-text-400"
+              >SELECTED · WORK</span
+            >
+            <span class="flex-1 h-px bg-landing-border ml-2"></span>
+          </div>
+          <h2 class="m-0 font-body font-bold text-[44px] leading-[52px] tracking-tight text-landing-text-300">
+            Three projects.
+          </h2>
+          <p class="m-0 font-display italic text-[22px] leading-[30px] text-landing-text-400">
+            A console, a fintech engine, an editor I had to ship myself.
+          </p>
+        </header>
+        <p class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-text-600">
+          Mono-rule across the top + sans heading + serif italic prose deck.
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

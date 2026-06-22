@@ -3,17 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  Checkbox,
-  Container,
-  FormField,
-  Input,
-  Link,
-  Radio,
-  RadioGroup,
-  Section,
-  Textarea,
-} from '@portfolio/landing/shared/ui';
+import { Checkbox, FormField, Input, Link, Radio, RadioGroup, Textarea } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 
 /**
  * `/ddl/form-lib` — live showcase of the landing form primitives shipped in
@@ -28,7 +20,7 @@ import {
   selector: 'landing-ddl-form-lib',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, Container, Section, Input, Textarea, Checkbox, FormField, RadioGroup, Radio, Link],
+  imports: [ReactiveFormsModule, DdlDocPage, DdlSection, Input, Textarea, Checkbox, FormField, RadioGroup, Radio, Link],
   templateUrl: './ddl-form-lib.html',
   styleUrl: './ddl-form-lib.scss',
 })

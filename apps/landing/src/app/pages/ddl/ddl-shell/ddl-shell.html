@@ -1,0 +1,66 @@
+<div
+  class="ddl-shell"
+  [class.is-drawer-open]="drawerOpen()"
+  [class.ddl-shell--wide]="docs.width() === 'wide'"
+  [class.ddl-shell--full]="docs.width() === 'full'"
+>
+  <button
+    type="button"
+    class="ddl-shell__menu"
+    [attr.aria-expanded]="drawerOpen()"
+    aria-label="Toggle documentation navigation"
+    (click)="toggleDrawer()"
+  >
+    <!-- Panel-left (sidebar) icon — reads as "open the docs nav" and is visually
+         distinct from the header's hamburger (site menu) sitting on the right. -->
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="3" y="4.5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5" />
+      <line x1="8" y1="4.5" x2="8" y2="15.5" stroke="currentColor" stroke-width="1.5" />
+    </svg>
+  </button>
+
+  <div class="ddl-shell__body">
+    <aside class="ddl-shell__sidebar">
+      <landing-ddl-sidebar (click)="closeDrawer()" />
+    </aside>
+
+    <button
+      type="button"
+      class="ddl-shell__backdrop"
+      tabindex="-1"
+      aria-label="Close navigation"
+      (click)="closeDrawer()"
+    ></button>
+
+    <!-- The scroll region spans content + TOC (everything right of the sidebar), so
+         the footer can scroll in at the end spanning that full width. The TOC stays
+         pinned (sticky) inside it while the content scrolls. -->
+    <div #scroll class="ddl-shell__scroll">
+      <div class="ddl-shell__layout">
+        <main class="ddl-shell__main">
+          <router-outlet />
+        </main>
+
+        <!-- TOC column is always reserved (keeps the content optically centred in
+             the viewport: left sidebar width == right TOC width). Content shows
+             only when the active page has at least one heading. -->
+        <aside class="ddl-shell__toc">
+          @if (showToc()) {
+            <landing-toc-sidebar [sections]="docs.sections()" label="On this page" />
+          }
+        </aside>
+      </div>
+
+      <!-- Footer spans content + TOC and scrolls in at the very end. -->
+      <footer class="ddl-shell__footer">
+        <landing-footer-banner
+          [fullName]="fullName()"
+          [tagline]="footerTagline()"
+          [email]="email()"
+          [socialLinks]="socialLinks()"
+        />
+        <landing-footer-signature [fullName]="fullName()" [socialLinks]="socialLinks()" />
+      </footer>
+    </div>
+  </div>
+</div>

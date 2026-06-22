@@ -1,8 +1,32 @@
+import type { DdlVariant } from '../ddl.types';
+
 export type VariantMeta = {
   readonly label: string;
   readonly hint: string;
   readonly picked?: boolean;
 };
+
+// Decision record — this page is a STAGING SANDBOX, not a single decision.
+// It explores three independent /about elements (each with its own variant set);
+// there is no page-wide winner. No `selected`; each entry carries a `note`
+// summarizing that element's status, so the widget tags them all "Candidate".
+export const ABOUT_SIGNATURES_VARIANTS: readonly DdlVariant[] = [
+  {
+    id: 'depth-map',
+    label: 'Depth map (v1 / v2 / v3)',
+    note: 'DROPPED 2026-05-22 — all three variants duplicate the home §04 "The Stack" surface; sandbox kept as historical record.',
+  },
+  {
+    id: 'failures',
+    label: 'Failures & lessons (v1 / v2 / v3)',
+    note: 'V1 (three-column cards) GRADUATED to /about 2026-05-22; V2 + V3 kept as the considered alternatives.',
+  },
+  {
+    id: 'currently-shipping',
+    label: 'Currently shipping (v1 / v2 / v3)',
+    note: 'DROPPED 2026-05-22 — duplicates the standalone /now page; sandbox kept as historical record.',
+  },
+];
 
 export const DEPTH_MAP_VARIANTS: readonly VariantMeta[] = [
   {

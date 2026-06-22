@@ -1,5 +1,38 @@
 import type { InPageSection } from '@portfolio/landing/shared/ui';
 
+import type { DdlVariant } from '../ddl.types';
+
+// Decision record — this page is still EXPLORING: five in-page navigation
+// patterns are on the board, none has won yet. No `selected`; each variant
+// carries its trade-off as a `note`, so the widget tags them all "Candidate".
+export const FRAGMENT_NAVIGATION_VARIANTS: readonly DdlVariant[] = [
+  {
+    id: 'fab',
+    label: 'Scroll-to-top FAB',
+    note: 'A single floating button — zero scan cost, but it only goes up; it offers no overview of where the sections are.',
+  },
+  {
+    id: 'toc',
+    label: 'Sticky TOC sidebar',
+    note: 'Full outline always in view with live scrollspy. Richest wayfinding, but needs a laptop-width rail it can dock into.',
+  },
+  {
+    id: 'inline',
+    label: 'Inline TOC (mobile)',
+    note: 'Outline folded into the content column up top. Works at any width, but scrolls away — no persistent "you are here".',
+  },
+  {
+    id: 'dots',
+    label: 'Section dots + reading bar',
+    note: 'Minimal dot rail plus a top progress bar. Compact and ambient, but the dots are unlabelled until hovered.',
+  },
+  {
+    id: 'pill',
+    label: 'Floating pill + mini-map',
+    note: 'A compact pill that expands to a mini-map. Space-efficient and playful, but the extra tap hides the outline by default.',
+  },
+];
+
 export const SECTIONS: readonly InPageSection[] = [
   { id: 'intro', title: 'Introduction' },
   { id: 'principles', title: 'Principles' },

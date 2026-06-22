@@ -1,0 +1,112 @@
+<landing-ddl-doc-page slug="status-dot" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <!-- Status dot -->
+    <div>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-3">
+        landing-status-dot · available / busy / away (only pill radius in design)
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <landing-status-dot
+          state="available"
+          label="Available for work"
+          ariaLabel="Currently available for new projects"
+        />
+        <landing-status-dot state="busy" label="In a sprint" ariaLabel="Booked through next month" />
+        <landing-status-dot state="away" label="Off the grid" ariaLabel="Not currently available" />
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="prototypes" heading="Prototypes">
+    <!-- Status-dot interactions (research, not yet baked into the component) -->
+    <div class="interaction-fx-test">
+      <!-- ── STATUS DOT ── -->
+      <h3 id="status-protos" data-toc="Protos" class="font-display text-display-sm text-landing-text-300 mb-4">
+        Status dot
+      </h3>
+      <div class="space-y-8">
+        <!-- A · Dot pulse -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="status-dot-pulse" data-toc="A · Pulse" class="font-mono text-mono-md text-landing-accent">
+              A · Dot pulse (always-on)
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              On the <em>available</em> state only, the dot pulses gently in a 2.4s loop — a subtle "live signal". No
+              interaction needed; passive presence. Pauses on `prefers-reduced-motion`.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <span class="status-fx status-fx--a status-fx--available">
+              <span class="status-fx__dot" aria-hidden="true"></span>
+              <span class="status-fx__label">AVAILABLE FOR WORK</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- B · Radar ring on hover -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="status-radar-ring" data-toc="B · Radar" class="font-mono text-mono-md text-landing-accent">
+              B · Radar ring (on hover) — shipped
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Hover triggers a single concentric ring expanding outward from the dot, fading as it goes. One-shot, not a
+              loop — feels like a ping rather than a heartbeat. Now live in
+              <code class="font-mono text-mono-sm text-landing-text-300">landing-status-dot</code> on
+              <code class="font-mono text-mono-sm text-landing-text-300">available</code> only.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <span class="status-fx status-fx--b status-fx--available">
+              <span class="status-fx__dot" aria-hidden="true"></span>
+              <span class="status-fx__label">AVAILABLE FOR WORK</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- C · Pill brighten -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="status-pill-brighten" data-toc="C · Brighten" class="font-mono text-mono-md text-landing-accent">
+              C · Pill brighten
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Pill border + label both shift one tier brighter on hover. Mirrors chip option A — the most consistent
+              option if chip A is also the winner. No motion at all, ideal for reduced-motion contexts.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <span class="status-fx status-fx--c status-fx--available">
+              <span class="status-fx__dot" aria-hidden="true"></span>
+              <span class="status-fx__label">AVAILABLE FOR WORK</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="mt-10 border-l-2 border-landing-accent pl-4 max-w-3xl">
+        <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">recommendation</p>
+        <p class="font-sans text-body-md text-landing-text-400">
+          Chip <strong>A · Border lift</strong> + Status dot <strong>B · Radar ring</strong> on
+          <code class="font-mono text-mono-sm text-landing-text-300">available</code> — they share a hover language
+          (one-tier brighten), and the radar adds just enough life to the bio card without a permanent loop. Falls back
+          gracefully under reduced-motion: brighten still applies, ring is suppressed.
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-status-dot</strong> for live operational state — am I taking work,
+        am I in a sprint, am I off the grid. The only pill-radius surface in the design (E4 C2 rule); reach for it
+        sparingly. Use
+        <code class="font-mono text-mono-sm text-landing-text-300">ariaLabel</code>
+        to provide the full sentence for screen readers (the visible label is necessarily terse).
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

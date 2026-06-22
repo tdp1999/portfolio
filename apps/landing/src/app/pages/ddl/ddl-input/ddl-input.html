@@ -1,0 +1,20 @@
+<landing-ddl-doc-page slug="input" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div>
+      <div class="flex items-baseline gap-3 mb-3">
+        <p class="font-mono text-mono-md text-landing-text-500">landing-input · placeholder design</p>
+        <span class="font-mono text-mono-sm uppercase tracking-[0.06em] text-landing-accent">redesign pending</span>
+      </div>
+      <div class="space-y-4 p-6 bg-ink-0 border border-landing-border rounded max-w-xl">
+        <landing-input placeholder="Enter text..." />
+        <landing-input type="email" placeholder="email@example.com" />
+        <landing-input placeholder="Error state" [error]="true" />
+        <landing-input placeholder="Disabled state" [disabled]="true" />
+      </div>
+      <p class="font-sans text-body-sm text-landing-text-500 mt-3 max-w-2xl">
+        Currently inherits console-side input surface. Will be redesigned alongside the contact form / future search
+        treatments — keep here so the API (signal inputs, ControlValueAccessor) stays exercised.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

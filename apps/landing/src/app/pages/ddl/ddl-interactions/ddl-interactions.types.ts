@@ -12,6 +12,8 @@ export interface WishlistItem {
 }
 
 export interface WishlistGroup {
+  /** Stable id for the trigger group — drives the section anchor + right-hand TOC entry. */
+  readonly anchor: string;
   readonly category: string;
   readonly description: string;
   readonly items: readonly WishlistItem[];

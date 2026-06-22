@@ -2,44 +2,18 @@
 
 :host {
   display: block;
-  padding-block: var(--landing-space-2xl, 4rem);
 }
 
+/* Section headings + per-section spacing come from `landing-ddl-section`;
+   only the lede and per-demo content styles live here. */
+
 .sm {
-  &__crumb {
-    display: block;
-    margin-bottom: 2rem;
-  }
-
-  &__head {
-    margin-bottom: var(--landing-space-2xl, 4rem);
-  }
-
-  &__title {
-    margin-top: 0.75rem;
-    font-family: var(--landing-font-display);
-    font-size: var(--landing-display-md);
-    line-height: var(--landing-display-md-lh);
-  }
-
   &__lede {
-    margin-top: 1rem;
+    margin: 0 0 8px 0;
     max-width: 64ch;
     color: var(--landing-text-400);
-    font-size: var(--landing-body-lg);
-    line-height: var(--landing-body-lg-lh);
-  }
-
-  &__demo {
-    margin-bottom: var(--landing-space-2xl, 4rem);
-  }
-
-  &__demo-title {
-    font-family: var(--landing-font-mono);
-    font-size: var(--landing-mono-md);
-    text-transform: uppercase;
-    letter-spacing: var(--landing-tracking-mono);
-    color: var(--landing-text-300);
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
   }
 
   &__demo-note {

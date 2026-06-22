@@ -1,0 +1,137 @@
+<landing-ddl-doc-page slug="arrow" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <!-- Arrow icon -->
+    <div>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-icon-arrow · right / up-right / left</p>
+      <div class="flex flex-wrap items-center gap-6 text-landing-text-300">
+        <span class="inline-flex items-center gap-2">
+          <landing-icon-arrow direction="right" [size]="16" />
+          <code class="font-mono text-mono-sm text-landing-text-500">right · 16</code>
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <landing-icon-arrow direction="up-right" [size]="16" />
+          <code class="font-mono text-mono-sm text-landing-text-500">up-right · 16</code>
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <landing-icon-arrow direction="left" [size]="16" />
+          <code class="font-mono text-mono-sm text-landing-text-500">left · 16</code>
+        </span>
+        <span class="inline-flex items-center gap-2 text-landing-accent">
+          <landing-icon-arrow direction="right" [size]="24" />
+          <code class="font-mono text-mono-sm text-landing-text-500">currentColor · indigo · 24</code>
+        </span>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="prototypes" heading="Prototypes">
+    <!-- Arrow Hover Prototypes (task 278 — A & C kept as reference; B was promoted into landing-link/landing-button) -->
+    <div class="arrow-fx-test">
+      <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-4">
+        arrow hover prototypes · reference
+      </p>
+      <h3 id="three-takes" data-toc="Overview" class="font-display text-display-sm text-landing-text-300 mb-2">
+        Three takes on a tired pattern
+      </h3>
+      <p class="font-sans text-body-md text-landing-text-400 mb-8">
+        Hover each row. B (Lift-off) is the chosen pattern, now live on landing-link & landing-button. A and C are kept
+        here as design references. Reduced-motion users get the static state.
+      </p>
+
+      <div class="space-y-10">
+        <!-- A: Connector line -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h3 id="proto-a-connector" data-toc="A · Connector" class="font-mono text-mono-md text-landing-accent">
+              A · Connector line
+            </h3>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Hairline indigo rail draws from text to arrow, arrow slides along it. The rail IS the indigo accent
+              moment.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <a href="#" class="fx fx-a">
+              <span class="fx__text">Read the case study</span>
+              <span class="fx__rail" aria-hidden="true"></span>
+              <landing-icon-arrow direction="right" [size]="14" class="fx__arrow" />
+            </a>
+            <a href="#" class="fx fx-a">
+              <span class="fx__text">Open on GitHub</span>
+              <span class="fx__rail" aria-hidden="true"></span>
+              <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow" />
+            </a>
+          </div>
+        </div>
+
+        <!-- B: Lift-off (chosen) -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h3 id="proto-b-liftoff" data-toc="B · Lift-off" class="font-mono text-mono-md text-landing-accent">
+              B · Lift-off (with ghost) — shipped
+            </h3>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Arrow lifts in its direction + scales slightly. A ghost copy fades at the original spot — like a vapor
+              trail. Promoted into landing-link & landing-button.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <a href="#" class="fx fx-b">
+              <span class="fx__text">Read the case study</span>
+              <span class="fx__stack" aria-hidden="true">
+                <landing-icon-arrow direction="right" [size]="14" class="fx__arrow fx__arrow--ghost" />
+                <landing-icon-arrow direction="right" [size]="14" class="fx__arrow fx__arrow--lead" />
+              </span>
+            </a>
+            <a href="#" class="fx fx-b">
+              <span class="fx__text">Open on GitHub</span>
+              <span class="fx__stack" aria-hidden="true">
+                <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow fx__arrow--ghost" />
+                <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow fx__arrow--lead" />
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <!-- C: Letter-press hand-off -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h3 id="proto-c-letterpress" data-toc="C · Letter-press" class="font-mono text-mono-md text-landing-accent">
+              C · Letter-press hand-off
+            </h3>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Text shifts left 1px, arrow shifts right 3px. No new elements, no color change. Maximum restraint — feels
+              tactile, almost imperceptible until you notice.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <a href="#" class="fx fx-c">
+              <span class="fx__text">Read the case study</span>
+              <landing-icon-arrow direction="right" [size]="14" class="fx__arrow" />
+            </a>
+            <a href="#" class="fx fx-c">
+              <span class="fx__text">Open on GitHub</span>
+              <landing-icon-arrow direction="up-right" [size]="14" class="fx__arrow" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-icon-arrow</strong> is composed inside button / link, not placed
+        alone. The two glyphs (<code class="font-mono text-mono-sm text-landing-text-300">right</code>,
+        <code class="font-mono text-mono-sm text-landing-text-300">up-right</code>) carry semantic weight: same-domain
+        vs leaving the site. Don't mix.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Indigo budget.</strong> A page gets one indigo moment. The arrow's
+        lift-off animation, the active link state, and the solid button background all draw from the same budget — pick
+        one.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

@@ -1,0 +1,45 @@
+<div class="ddl-sidebar">
+  <nav class="ddl-sidebar__nav" aria-label="Component documentation">
+    <a
+      class="ddl-sidebar__link ddl-sidebar__overview"
+      routerLink="/ddl"
+      routerLinkActive="is-active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="ddl-sidebar__link-title">Overview</span>
+    </a>
+
+    @for (group of visibleGroups(); track group.id) {
+      <section class="ddl-sidebar__group">
+        <button
+          type="button"
+          class="ddl-sidebar__group-toggle"
+          [attr.aria-expanded]="!isCollapsed(group.id)"
+          (click)="toggleGroup(group.id)"
+        >
+          <span class="ddl-sidebar__group-label">{{ group.label }}</span>
+          <span class="ddl-sidebar__group-count">{{ group.entries.length }}</span>
+          <span class="ddl-sidebar__group-chevron" aria-hidden="true"></span>
+        </button>
+
+        @if (!isCollapsed(group.id)) {
+          <ul class="ddl-sidebar__list">
+            @for (entry of group.entries; track entry.slug) {
+              <li>
+                <a
+                  class="ddl-sidebar__link"
+                  [routerLink]="linkFor(entry)"
+                  [fragment]="fragmentFor(entry)"
+                  [routerLinkActive]="isRoute(entry) ? 'is-active' : ''"
+                  [title]="entry.summary"
+                >
+                  <span class="ddl-sidebar__link-title">{{ entry.title }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </nav>
+</div>

@@ -4,38 +4,19 @@
   display: block;
 }
 
-/* ═══ Intro bar (shared pattern) ═══════════════════════════════════════ */
-.gt-intro {
-  border-bottom: 1px solid var(--landing-border);
-  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
-}
-.gt-intro__inner {
-  padding-block: 32px;
-}
-.gt-intro__crumb {
-  display: block;
-  margin-bottom: 16px;
-}
-.gt-intro__title {
-  margin: 0 0 16px;
-  font-family: var(--landing-font-display);
-  font-size: var(--landing-display-sm);
-  line-height: var(--landing-display-sm-lh);
-  letter-spacing: var(--landing-tracking-tight);
-  color: var(--landing-text-300);
-  font-weight: 500;
-}
-.gt-intro__title em {
-  font-style: italic;
-  color: var(--landing-accent);
-}
-.gt-intro__lede {
+/* ═══ Shipped section prose ════════════════════════════════════════════ */
+.gt-prose {
   margin: 0;
   max-width: 64rem;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
+}
+.gt-prose em {
+  font-family: var(--landing-font-display);
+  font-style: italic;
+  color: var(--landing-text-300);
 }
 
 /* ═══ Variant label (shared pattern) ═══════════════════════════════════ */
@@ -371,41 +352,6 @@
   font-size: var(--landing-mono-sm);
   letter-spacing: var(--landing-tracking-mono);
   color: var(--landing-text-600);
-}
-
-/* ═══ Notes (shared pattern) ═══════════════════════════════════════════ */
-.gt-notes {
-  padding-block: 64px 96px;
-  border-top: 1px solid var(--landing-border);
-  margin-top: 64px;
-  background-color: color-mix(in srgb, var(--landing-ink-1) 40%, transparent);
-}
-.gt-notes__heading {
-  margin: 0 0 16px;
-  font-family: var(--landing-font-display);
-  font-size: var(--landing-display-sm);
-  line-height: var(--landing-display-sm-lh);
-  color: var(--landing-text-300);
-}
-.gt-notes__list {
-  margin: 0;
-  padding: 0 0 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 64rem;
-  font-family: var(--landing-font-body);
-  font-size: var(--landing-body-md);
-  line-height: var(--landing-body-md-lh);
-  color: var(--landing-text-400);
-}
-.gt-notes__list strong {
-  color: var(--landing-text-300);
-}
-.gt-notes__list em {
-  font-family: var(--landing-font-display);
-  font-style: italic;
-  color: var(--landing-text-300);
 }
 
 @include bp.respond-down('tablet') {

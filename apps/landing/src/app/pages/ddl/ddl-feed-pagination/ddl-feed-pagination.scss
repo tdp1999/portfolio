@@ -4,24 +4,13 @@
   display: block;
 }
 
-.ap-block {
-  padding-block: 64px;
-  border-bottom: 1px solid var(--landing-border);
-}
-.ap-block--alt {
-  background: var(--landing-ink-1);
-}
 .ap__intro {
-  margin: 16px 0 0;
+  margin: 0;
   max-width: 56rem;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
   color: var(--landing-text-400);
-}
-.ap-eyebrow {
-  display: block;
-  margin-bottom: 16px;
 }
 .ap-variant__head {
   margin-bottom: 24px;
@@ -89,10 +78,6 @@
 }
 
 /* ─── Summary ─────────────────────────────────────────────────── */
-.ap-summary {
-  padding-block: 64px;
-  background: var(--landing-ink-1);
-}
 .ap-pick {
   margin: 0;
   display: grid;

@@ -1,13 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  Container,
-  Eyebrow,
-  Breadcrumb,
-  Carousel,
-  CarouselSlide,
-  type BreadcrumbItem,
-  type GalleryImage,
-} from '@portfolio/landing/shared/ui';
+import { Carousel, CarouselSlide, type GalleryImage } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { DdlStage } from '../ddl-stage/ddl-stage';
 import type { DemoCard } from './ddl-carousel.types';
 
 /**
@@ -22,16 +17,11 @@ import type { DemoCard } from './ddl-carousel.types';
   selector: 'landing-ddl-carousel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, Carousel, CarouselSlide],
+  imports: [DdlDocPage, DdlSection, DdlStage, Carousel, CarouselSlide],
   templateUrl: './ddl-carousel.html',
   styleUrl: './ddl-carousel.scss',
 })
 export class DdlCarousel {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Carousel — full-feature slider' },
-  ];
-
   readonly slides: readonly GalleryImage[] = [
     {
       url: 'https://placehold.co/960x720/1a2030/e2e8f0.png?text=01',

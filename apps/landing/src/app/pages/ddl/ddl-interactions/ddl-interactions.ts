@@ -10,14 +10,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import {
-  Container,
-  CopyToClipboardDirective,
-  Icon,
-  Breadcrumb,
-  StatusDot,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { CopyToClipboardDirective, Icon, StatusDot } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 import type { WishlistGroup } from './ddl-interactions.types';
 import { PICKS_STORAGE_KEY } from './ddl-interactions.constants';
 
@@ -32,17 +27,16 @@ import { PICKS_STORAGE_KEY } from './ddl-interactions.constants';
   selector: 'landing-ddl-interactions',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Breadcrumb, Icon, StatusDot, CopyToClipboardDirective],
+  imports: [DdlDocPage, DdlSection, Icon, StatusDot, CopyToClipboardDirective],
   templateUrl: './ddl-interactions.html',
   styleUrl: './ddl-interactions.scss',
 })
 export class DdlInteractions {
   private readonly platformId = inject(PLATFORM_ID);
 
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Interactions' }];
-
   readonly groups: readonly WishlistGroup[] = [
     {
+      anchor: 'hover',
       category: 'Hover · cursor',
       description:
         'Triggered by mouse hover. Lightweight, high frequency. Default tier for "feels polished" without ceremony.',
@@ -85,6 +79,7 @@ export class DdlInteractions {
       ],
     },
     {
+      anchor: 'click',
       category: 'Click · feedback',
       description: 'Confirmation that the action registered. Inline icon swap is the locked pattern (see §D).',
       items: [
@@ -126,6 +121,7 @@ export class DdlInteractions {
       ],
     },
     {
+      anchor: 'scroll',
       category: 'Scroll · ambient',
       description:
         'Triggered by scroll position. Use sparingly — the brand direction explicitly says "no scroll-triggered reveal."',
@@ -158,6 +154,7 @@ export class DdlInteractions {
       ],
     },
     {
+      anchor: 'focus',
       category: 'Focus · keyboard',
       description: 'Triggered by Tab navigation. Must be visible — accessibility hard requirement.',
       items: [
@@ -190,6 +187,7 @@ export class DdlInteractions {
       ],
     },
     {
+      anchor: 'idle',
       category: 'Idle · life signs',
       description:
         'Triggered by time, no user action required. Risk: distraction. Always cap to ≤1 motion at a time per viewport.',
@@ -222,6 +220,7 @@ export class DdlInteractions {
       ],
     },
     {
+      anchor: 'transition',
       category: 'Page transitions',
       description: 'Triggered on route navigation. Prevents harsh swap between pages.',
       items: [

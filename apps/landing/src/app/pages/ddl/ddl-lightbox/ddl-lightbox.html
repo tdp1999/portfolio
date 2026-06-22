@@ -1,22 +1,13 @@
-<landing-container size="wide">
-  <landing-breadcrumb [items]="breadcrumb" class="lb__crumb" />
+<landing-ddl-doc-page slug="lightbox" [width]="'wide'">
+  <p class="lb__lede">
+    Opt-in per figure: add <code>lightbox</code> to any <code>landing-figure</code> and it becomes clickable into a
+    full-screen viewer. Figures sharing a <code>lightboxGroup</code> navigate together — swipe / drag / ←→ keys /
+    filmstrip. The overlay loads the <strong>largest available candidate</strong> (srcset always-best) and supports
+    <strong>double-tap / pinch / ⌘-wheel zoom</strong>, pan-when-zoomed, and a FLIP open/close from the thumbnail.
+    Clickable figures signal themselves on hover: <code>cursor: zoom-in</code> plus a subtle image zoom (motion-gated).
+  </p>
 
-  <header class="lb__head">
-    <landing-eyebrow [label]="['DDL', 'Lightbox']" />
-    <h1 class="lb__title">Lightbox — full-screen viewer + zoom/carousel</h1>
-    <p class="lb__lede">
-      Opt-in per figure: add <code>lightbox</code> to any <code>landing-figure</code> and it becomes clickable into a
-      full-screen viewer. Figures sharing a <code>lightboxGroup</code> navigate together — swipe / drag / ←→ keys /
-      filmstrip. The overlay loads the <strong>largest available candidate</strong> (srcset always-best) and supports
-      <strong>double-tap / pinch / ⌘-wheel zoom</strong>, pan-when-zoomed, and a FLIP open/close from the thumbnail.
-      Clickable figures signal themselves on hover: <code>cursor: zoom-in</code> plus a subtle image zoom
-      (motion-gated).
-    </p>
-  </header>
-
-  <!-- Grouped gallery -->
-  <section class="lb__demo">
-    <p class="lb__demo-title">Grouped — click any to open the carousel</p>
+  <landing-ddl-section anchor="grouped" heading="Grouped — click any to open the carousel">
     <p class="lb__demo-note">
       All four share <code>lightboxGroup="case-study"</code>, so opening one lets you swipe/arrow through the set. Try
       double-tap (touch) / double-click (mouse) / ⌘+scroll to zoom, then drag to pan.
@@ -34,11 +25,9 @@
         />
       }
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Standalone -->
-  <section class="lb__demo">
-    <p class="lb__demo-title">Standalone — no group</p>
+  <landing-ddl-section anchor="standalone" heading="Standalone — no group">
     <p class="lb__demo-note">
       A lone figure opens on its own (no prev/next, no filmstrip). Download is opt-in
       (<code>lightboxShowDownload</code>) — enabled here, hidden by default elsewhere.
@@ -53,11 +42,9 @@
         lightboxShowDownload
       />
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- API -->
-  <section class="lb__demo">
-    <p class="lb__demo-title">Inputs (directive)</p>
+  <landing-ddl-section anchor="inputs" heading="Inputs (directive)">
     <ul class="lb__api">
       <li><code>lightbox</code> — enable (bare attribute). <code>[lightbox]="false"</code> disables.</li>
       <li>
@@ -73,5 +60,5 @@
         hosts.
       </li>
     </ul>
-  </section>
-</landing-container>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

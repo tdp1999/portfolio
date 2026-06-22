@@ -1,82 +1,71 @@
-<landing-container size="wide">
-  <landing-breadcrumb [items]="breadcrumb" class="car__crumb" />
+<landing-ddl-doc-page slug="carousel" [width]="'wide'">
+  <p class="car__lede">
+    A single reusable <code>landing-carousel</code>: touch swipe (native snap), mouse drag, ←/→ keys, prev/next arrows,
+    dots, optional thumbnails / peek / loop, and per-slide <code>landing-figure</code> caption + FIG number. It is
+    <strong>not</strong> responsive by itself — when a layout needs a slider on small screens, the consumer swaps
+    components by breakpoint (Selected Work keeps the curated grid on laptop+ and swaps to this below).
+  </p>
 
-  <header class="car__head">
-    <landing-eyebrow [label]="['DDL', 'Carousel']" />
-    <h1 class="car__title">Carousel — one full-feature slider</h1>
-    <p class="car__lede">
-      A single reusable <code>landing-carousel</code>: touch swipe (native snap), mouse drag, ←/→ keys, prev/next
-      arrows, dots, optional thumbnails / peek / loop, and per-slide <code>landing-figure</code> caption + FIG number.
-      It is <strong>not</strong> responsive by itself — when a layout needs a slider on small screens, the consumer
-      swaps components by breakpoint (Selected Work keeps the curated grid on laptop+ and swaps to this below).
-    </p>
-  </header>
-
-  <!-- Default: arrows + dots -->
-  <section class="car__demo">
-    <p class="car__demo-title">Default — arrows + dots</p>
+  <landing-ddl-section anchor="default" heading="Default — arrows + dots">
     <p class="car__demo-note">Swipe / drag / arrow-keys / click arrows or dots. Arrows fade out at the ends.</p>
     <div class="car__frame">
       <landing-carousel [images]="slides" ariaLabel="Default carousel" />
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Peek -->
-  <section class="car__demo">
-    <p class="car__demo-title">Peek — a sliver of the neighbour</p>
-    <p class="car__demo-note">A visible edge of the next frame makes "there's more" obvious without controls.</p>
-    <div class="car__frame">
-      <landing-carousel [images]="slides" [peek]="true" ariaLabel="Peek carousel" />
-    </div>
-  </section>
+  <landing-ddl-section anchor="peek" heading="Peek — a sliver of the neighbour">
+    <p class="car__demo-note">
+      A visible edge of the next frame makes "there's more" obvious without controls. Pop the demo to full width to see
+      the true peek sliver — the doc column crops it.
+    </p>
+    <landing-ddl-stage label="Peek carousel — true content width" width="wide">
+      <div class="car__frame car__frame--peek">
+        <landing-carousel [images]="slides" [peek]="true" ariaLabel="Peek carousel" />
+      </div>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-  <!-- Thumbnails -->
-  <section class="car__demo">
-    <p class="car__demo-title">Thumbnails — random access</p>
+  <landing-ddl-section anchor="thumbnails" heading="Thumbnails — random access">
     <p class="car__demo-note">A filmstrip replaces the dots when the shots are distinct and jumping around matters.</p>
     <div class="car__frame">
       <landing-carousel [images]="slides" [showThumbnails]="true" ariaLabel="Thumbnail carousel" />
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Loop -->
-  <section class="car__demo">
-    <p class="car__demo-title">Loop — wrap at the ends</p>
+  <landing-ddl-section anchor="loop" heading="Loop — wrap at the ends">
     <p class="car__demo-note">Next from the last slide wraps to the first; arrows never disable.</p>
     <div class="car__frame">
       <landing-carousel [images]="slides" [loop]="true" ariaLabel="Looping carousel" />
     </div>
-  </section>
+  </landing-ddl-section>
 
-  <!-- Content mode -->
-  <section class="car__demo">
-    <p class="car__demo-title">Content mode — cards, not just images</p>
+  <landing-ddl-section anchor="content-mode" heading="Content mode — cards, not just images">
     <p class="car__demo-note">
       Pass <code>[items]</code> + an <code>&lt;ng-template landingCarouselSlide&gt;</code> to project arbitrary content
       per slide. The carousel still owns track / snap / peek / dots / arrows; the consumer owns what's inside. Used by
       the blog featured strip below <code>tablet</code> (lead hero stays, secondary cards swipe).
     </p>
-    <div class="car__frame">
-      <landing-carousel [items]="cards" [peek]="true" ariaLabel="Content carousel">
-        <ng-template landingCarouselSlide [landingCarouselSlideTypeOf]="cards" let-card>
-          <a class="car__card" [href]="card.href">
-            <div class="car__card-media">
-              <img [src]="card.image" alt="" loading="lazy" decoding="async" />
-            </div>
-            <div class="car__card-body">
-              <p class="car__card-meta">{{ card.meta }}</p>
-              <h3 class="car__card-title">{{ card.title }}</h3>
-              <p class="car__card-excerpt">{{ card.excerpt }}</p>
-            </div>
-          </a>
-        </ng-template>
-      </landing-carousel>
-    </div>
-  </section>
+    <landing-ddl-stage label="Content-mode carousel — true content width" width="wide">
+      <div class="car__frame car__frame--peek">
+        <landing-carousel [items]="cards" [peek]="true" ariaLabel="Content carousel">
+          <ng-template landingCarouselSlide [landingCarouselSlideTypeOf]="cards" let-card>
+            <a class="car__card" [href]="card.href">
+              <div class="car__card-media">
+                <img [src]="card.image" alt="" loading="lazy" decoding="async" />
+              </div>
+              <div class="car__card-body">
+                <p class="car__card-meta">{{ card.meta }}</p>
+                <h3 class="car__card-title">{{ card.title }}</h3>
+                <p class="car__card-excerpt">{{ card.excerpt }}</p>
+              </div>
+            </a>
+          </ng-template>
+        </landing-carousel>
+      </div>
+    </landing-ddl-stage>
+  </landing-ddl-section>
 
-  <!-- API -->
-  <section class="car__demo">
-    <p class="car__demo-title">Inputs</p>
+  <landing-ddl-section anchor="inputs" heading="Inputs">
     <ul class="car__api">
       <li><code>[images]</code> — <code>GalleryImage[]</code> (url / alt / caption). Image mode.</li>
       <li>
@@ -92,5 +81,5 @@
       </li>
       <li><code>[(index)]</code> — two-way active slide. <code>[ariaLabel]</code> — carousel label.</li>
     </ul>
-  </section>
-</landing-container>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

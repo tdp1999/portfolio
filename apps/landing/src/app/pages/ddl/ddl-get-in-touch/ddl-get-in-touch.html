@@ -1,251 +1,185 @@
-<!-- ═══ Intro bar ════════════════════════════════════════════════════════ -->
-<div class="gt-intro">
-  <landing-container size="wide">
-    <div class="gt-intro__inner">
-      <landing-breadcrumb [items]="breadcrumb" class="gt-intro__crumb" />
-      <h1 class="gt-intro__title">§07 Get in Touch — <em>direction</em> variants</h1>
-      <p class="gt-intro__lede gt-intro__lede--historical">
-        <strong>Historical sandbox.</strong> The three variants below explored what lives in §7's right column (globe
-        variations). The decision later evolved past this question — §7 became a centered 1-col router (no right column
-        at all) and the globe graduated to the new <code>/contact</code> page. What you see on home today is the
-        <em>centered + 3-purpose + email-fallback</em> direction, locked 2026-05-19. The variants here are kept as a
-        record of how the section got there.
-      </p>
-      <p class="gt-intro__lede">
-        Production §7 has an empty right column and a channel-row that duplicates the footer + §3 bio card. Variants
-        below rebuild the layout around a two-column composition, replace the single "Send a message" button with three
-        intent-split CTAs, and explore three answers to "what lives on the right". A CV-placement comparison strip at
-        the bottom decides where the resume link gets its own ceremony.
-      </p>
-    </div>
-  </landing-container>
-</div>
+<landing-ddl-doc-page slug="get-in-touch" [width]="'wide'">
+  <landing-ddl-decision-record [variants]="variants" />
 
-<!-- ═══ V1 — SVG GLOBE CONSTELLATION ═════════════════════════════════════ -->
-<header class="gt-label">
-  <landing-container size="wide">
-    <div class="gt-label__inner">
-      <span class="gt-label__letter">1</span>
-      <span class="gt-label__name">SVG globe constellation · static + pulsing nodes</span>
-      <span class="gt-label__hint">
-        Lightweight (~8kb) · orthographic projection · 3 client locations as glow nodes · no WebGL, no drag · cheapest
-        delivery of the "served across SE Asia + AU" story
-      </span>
-    </div>
-  </landing-container>
-</header>
+  <!-- ═══ Shipped — centered 3-purpose direction (the winner) ════════════════ -->
+  <landing-ddl-section anchor="shipped" heading="Shipped — centered direction">
+    <p class="gt-prose">
+      The right-column explorations below answered the wrong question. The section that ships on home today is
+      <em>centered, single-column</em>: a 3-intent CTA split (full-time · freelance · say hi) with an email fallback, no
+      illustration. The globe graduated to its own <code>/contact</code> page. Locked 2026-05-19 — the mocks under
+      <em>Considered</em> are kept as the record of how it got there.
+    </p>
+  </landing-ddl-section>
 
-<div class="gt-frame">
-  <section class="gt-v1" aria-labelledby="gt-v1-heading">
-    <landing-container size="wide">
-      <div class="gt-v1__grid">
-        <!-- Left: copy + split CTAs -->
-        <div class="gt-v1__left">
-          <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
-          <landing-heading [level]="2" id="gt-v1-heading" [anchor]="false" class="gt-v1__heading">
-            Let's talk.
-          </landing-heading>
-          <p class="gt-v1__copy">
-            I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
-            freelance on the side — full-stack with frontend depth.
-          </p>
-          <div class="gt-v1__ctas">
-            <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
-            <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
-            <landing-button variant="link" arrow="right">Or just say hi</landing-button>
-          </div>
-        </div>
-
-        <!-- Right: shared globe component, static -->
-        <div class="gt-v1__right">
-          <landing-globe />
-        </div>
+  <!-- ═══ Considered — right-column globe variants + CV placement ═════════════ -->
+  <landing-ddl-considered label="Considered — V1/V2/V3 globe · a/b/c CV placement">
+    <!-- ─── V1 — SVG globe constellation ─────────────────────────────────── -->
+    <header class="gt-label">
+      <div class="gt-label__inner">
+        <span class="gt-label__letter">1</span>
+        <span class="gt-label__name">SVG globe constellation · static + pulsing nodes</span>
+        <span class="gt-label__hint">
+          Lightweight (~8kb) · orthographic projection · 3 client locations as glow nodes · no WebGL, no drag · cheapest
+          delivery of the "served across SE Asia + AU" story
+        </span>
       </div>
-    </landing-container>
-  </section>
-</div>
+    </header>
 
-<!-- ═══ V2 — DRAG-ROTATE GLOBE ═══════════════════════════════════════════ -->
-<header class="gt-label">
-  <landing-container size="wide">
-    <div class="gt-label__inner">
-      <span class="gt-label__letter">2</span>
-      <span class="gt-label__name">Drag-rotate globe · interactive proxy</span>
-      <span class="gt-label__hint">
-        SVG sphere with pointer-drag spinning the underlying coordinate system · cities reproject in real time · proxy
-        for production globe.gl WebGL (atmosphere + texture would live there, swap on graduation)
-      </span>
-    </div>
-  </landing-container>
-</header>
+    <div class="gt-frame">
+      <section class="gt-v1" aria-labelledby="gt-v1-heading">
+        <div class="gt-v1__grid">
+          <!-- Left: copy + split CTAs -->
+          <div class="gt-v1__left">
+            <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
+            <landing-heading [level]="2" id="gt-v1-heading" [anchor]="false" class="gt-v1__heading">
+              Let's talk.
+            </landing-heading>
+            <p class="gt-v1__copy">
+              I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
+              freelance on the side — full-stack with frontend depth.
+            </p>
+            <div class="gt-v1__ctas">
+              <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
+              <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
+              <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+            </div>
+          </div>
 
-<div class="gt-frame">
-  <section class="gt-v2" aria-labelledby="gt-v2-heading">
-    <landing-container size="wide">
-      <div class="gt-v2__grid">
-        <div class="gt-v2__left">
-          <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
-          <landing-heading [level]="2" id="gt-v2-heading" [anchor]="false" class="gt-v2__heading">
-            Let's talk.
-          </landing-heading>
-          <p class="gt-v2__copy">
-            I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
-            freelance on the side — full-stack with frontend depth.
-          </p>
-          <div class="gt-v2__ctas">
-            <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
-            <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
-            <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+          <!-- Right: shared globe component, static -->
+          <div class="gt-v1__right">
+            <landing-globe />
           </div>
         </div>
+      </section>
+    </div>
 
-        <div class="gt-v2__right">
-          <landing-globe [interactive]="true" />
-        </div>
+    <!-- ─── V2 — drag-rotate globe ───────────────────────────────────────── -->
+    <header class="gt-label">
+      <div class="gt-label__inner">
+        <span class="gt-label__letter">2</span>
+        <span class="gt-label__name">Drag-rotate globe · interactive proxy</span>
+        <span class="gt-label__hint">
+          SVG sphere with pointer-drag spinning the underlying coordinate system · cities reproject in real time · proxy
+          for production globe.gl WebGL (atmosphere + texture would live there, swap on graduation)
+        </span>
       </div>
-    </landing-container>
-  </section>
-</div>
+    </header>
 
-<!-- ═══ V3 — INFO PANEL (no globe) ═══════════════════════════════════════ -->
-<header class="gt-label">
-  <landing-container size="wide">
-    <div class="gt-label__inner">
-      <span class="gt-label__letter">3</span>
-      <span class="gt-label__name">Info panel · status + served-from + response window</span>
-      <span class="gt-label__hint">
-        No illustration — info-dense right column · live-feel without live data · zero JS · pairs status badge,
-        timezone, response window, and 3-city served-from chips
-      </span>
-    </div>
-  </landing-container>
-</header>
+    <div class="gt-frame">
+      <section class="gt-v2" aria-labelledby="gt-v2-heading">
+        <div class="gt-v2__grid">
+          <div class="gt-v2__left">
+            <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
+            <landing-heading [level]="2" id="gt-v2-heading" [anchor]="false" class="gt-v2__heading">
+              Let's talk.
+            </landing-heading>
+            <p class="gt-v2__copy">
+              I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
+              freelance on the side — full-stack with frontend depth.
+            </p>
+            <div class="gt-v2__ctas">
+              <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
+              <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
+              <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+            </div>
+          </div>
 
-<div class="gt-frame">
-  <section class="gt-v3" aria-labelledby="gt-v3-heading">
-    <landing-container size="wide">
-      <div class="gt-v3__grid">
-        <div class="gt-v3__left">
-          <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
-          <landing-heading [level]="2" id="gt-v3-heading" [anchor]="false" class="gt-v3__heading">
-            Let's talk.
-          </landing-heading>
-          <p class="gt-v3__copy">
-            I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
-            freelance on the side — full-stack with frontend depth.
-          </p>
-          <div class="gt-v3__ctas">
-            <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
-            <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
-            <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+          <div class="gt-v2__right">
+            <landing-globe [interactive]="true" />
           </div>
         </div>
+      </section>
+    </div>
 
-        <aside class="gt-v3__right" aria-label="Availability and reach">
-          <div class="gt-panel">
-            <div class="gt-panel__row">
-              <span class="gt-panel__key">Status</span>
-              <span class="gt-panel__val">
-                <span class="gt-panel__dot" aria-hidden="true"></span>
-                Open · FT + ~6 hr/wk freelance
-              </span>
-            </div>
-            <div class="gt-panel__row">
-              <span class="gt-panel__key">Based in</span>
-              <span class="gt-panel__val">Ho Chi Minh City · GMT+7</span>
-            </div>
-            <div class="gt-panel__row">
-              <span class="gt-panel__key">Reply within</span>
-              <span class="gt-panel__val">24 hours, weekdays</span>
-            </div>
-            <div class="gt-panel__rule" aria-hidden="true"></div>
-            <div class="gt-panel__served">
-              <span class="gt-panel__key">Served clients in</span>
-              <ul class="gt-panel__chips" role="list">
-                <li><span class="gt-chip">Saigon</span></li>
-                <li><span class="gt-chip">Singapore</span></li>
-                <li><span class="gt-chip">Sydney</span></li>
-              </ul>
-            </div>
-          </div>
-        </aside>
+    <!-- ─── V3 — info panel (no globe) ───────────────────────────────────── -->
+    <header class="gt-label">
+      <div class="gt-label__inner">
+        <span class="gt-label__letter">3</span>
+        <span class="gt-label__name">Info panel · status + served-from + response window</span>
+        <span class="gt-label__hint">
+          No illustration — info-dense right column · live-feel without live data · zero JS · pairs status badge,
+          timezone, response window, and 3-city served-from chips
+        </span>
       </div>
-    </landing-container>
-  </section>
-</div>
+    </header>
 
-<!-- ═══ CV PLACEMENT COMPARISON ══════════════════════════════════════════ -->
-<header class="gt-label gt-label--secondary">
-  <landing-container size="wide">
-    <div class="gt-label__inner">
-      <span class="gt-label__letter">CV</span>
-      <span class="gt-label__name">Resume placement · 3 options</span>
-      <span class="gt-label__hint">
-        Where does the CV link live now that the channel-row is gone? Three options, all using V1 left column as the
-        anchor (CTAs hidden for brevity). Pick one to graduate.
-      </span>
+    <div class="gt-frame">
+      <section class="gt-v3" aria-labelledby="gt-v3-heading">
+        <div class="gt-v3__grid">
+          <div class="gt-v3__left">
+            <landing-eyebrow [label]="['07', 'Get in Touch']" [accentFirst]="true" [trailingRule]="true" />
+            <landing-heading [level]="2" id="gt-v3-heading" [anchor]="false" class="gt-v3__heading">
+              Let's talk.
+            </landing-heading>
+            <p class="gt-v3__copy">
+              I'm in HCMC, working with Singapore and Sydney clients. Open to full-time roles, and a small slice of
+              freelance on the side — full-stack with frontend depth.
+            </p>
+            <div class="gt-v3__ctas">
+              <landing-button variant="ghost" arrow="right">Let's talk about a full-time role</landing-button>
+              <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
+              <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+            </div>
+          </div>
+
+          <aside class="gt-v3__right" aria-label="Availability and reach">
+            <div class="gt-panel">
+              <div class="gt-panel__row">
+                <span class="gt-panel__key">Status</span>
+                <span class="gt-panel__val">
+                  <span class="gt-panel__dot" aria-hidden="true"></span>
+                  Open · FT + ~6 hr/wk freelance
+                </span>
+              </div>
+              <div class="gt-panel__row">
+                <span class="gt-panel__key">Based in</span>
+                <span class="gt-panel__val">Ho Chi Minh City · GMT+7</span>
+              </div>
+              <div class="gt-panel__row">
+                <span class="gt-panel__key">Reply within</span>
+                <span class="gt-panel__val">24 hours, weekdays</span>
+              </div>
+              <div class="gt-panel__rule" aria-hidden="true"></div>
+              <div class="gt-panel__served">
+                <span class="gt-panel__key">Served clients in</span>
+                <ul class="gt-panel__chips" role="list">
+                  <li><span class="gt-chip">Saigon</span></li>
+                  <li><span class="gt-chip">Singapore</span></li>
+                  <li><span class="gt-chip">Sydney</span></li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
     </div>
-  </landing-container>
-</header>
 
-<div class="gt-frame gt-frame--cv">
-  <landing-container size="wide">
-    <div class="gt-cv-grid">
-      <!-- (a) Standalone calling-card row -->
-      <article class="gt-cv-option">
-        <header class="gt-cv-option__head">
-          <span class="gt-cv-option__letter">a</span>
-          <span class="gt-cv-option__title">Calling card · standalone row</span>
-          <span class="gt-cv-option__hint">Below CTAs, full width, dignified rest. PDF icon + filesize + updated.</span>
-        </header>
-        <div class="gt-cv-card">
-          <span class="gt-cv-card__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"
-                opacity="0.85"
-              />
-            </svg>
-          </span>
-          <div class="gt-cv-card__text">
-            <span class="gt-cv-card__title">Curriculum vitae</span>
-            <span class="gt-cv-card__meta">PDF · 412 KB · last updated Mar 2026</span>
-          </div>
-          <landing-link href="#" [arrow]="true">Download</landing-link>
-        </div>
-      </article>
+    <!-- ─── CV placement comparison ──────────────────────────────────────── -->
+    <header class="gt-label gt-label--secondary">
+      <div class="gt-label__inner">
+        <span class="gt-label__letter">CV</span>
+        <span class="gt-label__name">Resume placement · 3 options</span>
+        <span class="gt-label__hint">
+          Where does the CV link live now that the channel-row is gone? Three options, all using V1 left column as the
+          anchor (CTAs hidden for brevity). Pick one to graduate.
+        </span>
+      </div>
+    </header>
 
-      <!-- (b) 4th CTA in the split -->
-      <article class="gt-cv-option">
-        <header class="gt-cv-option__head">
-          <span class="gt-cv-option__letter">b</span>
-          <span class="gt-cv-option__title">4th CTA · part of the split</span>
-          <span class="gt-cv-option__hint">CV is just another intent. Outline-weighted, slightly de-emphasised.</span>
-        </header>
-        <div class="gt-cv-ctas">
-          <landing-button variant="solid" arrow="right">Let's talk about a full-time role</landing-button>
-          <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
-          <landing-button variant="link" arrow="right">Or just say hi</landing-button>
-          <landing-link href="#" [arrow]="true" class="gt-cv-ctas__resume">Download CV (PDF · 412 KB)</landing-link>
-        </div>
-      </article>
-
-      <!-- (c) Inside right column under the globe/panel -->
-      <article class="gt-cv-option">
-        <header class="gt-cv-option__head">
-          <span class="gt-cv-option__letter">c</span>
-          <span class="gt-cv-option__title">Right column · under globe/info</span>
-          <span class="gt-cv-option__hint"
-            >CV lives on the right, anchoring the column. Free-floats the left CTAs.</span
-          >
-        </header>
-        <div class="gt-cv-aside">
-          <div class="gt-cv-aside__placeholder" aria-hidden="true">
-            <span>Globe / info panel above</span>
-          </div>
-          <div class="gt-cv-card gt-cv-card--compact">
+    <div class="gt-frame gt-frame--cv">
+      <div class="gt-cv-grid">
+        <!-- (a) Standalone calling-card row -->
+        <article class="gt-cv-option">
+          <header class="gt-cv-option__head">
+            <span class="gt-cv-option__letter">a</span>
+            <span class="gt-cv-option__title">Calling card · standalone row</span>
+            <span class="gt-cv-option__hint"
+              >Below CTAs, full width, dignified rest. PDF icon + filesize + updated.</span
+            >
+          </header>
+          <div class="gt-cv-card">
             <span class="gt-cv-card__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                 <path
                   d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"
                   opacity="0.85"
@@ -253,55 +187,59 @@
               </svg>
             </span>
             <div class="gt-cv-card__text">
-              <span class="gt-cv-card__title">CV</span>
-              <span class="gt-cv-card__meta">PDF · 412 KB</span>
+              <span class="gt-cv-card__title">Curriculum vitae</span>
+              <span class="gt-cv-card__meta">PDF · 412 KB · last updated Mar 2026</span>
             </div>
-            <landing-link href="#" [arrow]="true">Get</landing-link>
+            <landing-link href="#" [arrow]="true">Download</landing-link>
           </div>
-        </div>
-      </article>
-    </div>
-  </landing-container>
-</div>
+        </article>
 
-<!-- ═══ Notes ════════════════════════════════════════════════════════════ -->
-<section class="gt-notes" aria-label="Notes">
-  <landing-container size="wide">
-    <div class="gt-notes__inner">
-      <h2 class="gt-notes__heading">Notes</h2>
-      <ul class="gt-notes__list">
-        <li>
-          All three variants share a left-column rebuild: <em>3 split-intent CTAs</em> replace the single "Send a
-          message" button. Long-form phrasing (one full clause per CTA) gives the user a verbal off-ramp instead of a
-          generic "send".
-        </li>
-        <li>
-          Channel row (GitHub · LinkedIn · X · Resume) is <em>removed</em> from all variants — duplicates the footer and
-          §3 bio card. Resume relocates via the CV placement strip below the variants.
-        </li>
-        <li>
-          <strong>V1 (SVG globe)</strong> — static constellation. ~8kb. Cheapest cost, strongest narrative compression
-          (HCMC + SGN + SYD as one image). Pulsing nodes draw the eye without rotating geography.
-        </li>
-        <li>
-          <strong>V2 (drag-rotate)</strong> — adds interactivity. The drag UX is the differentiator vs V1; in production
-          this is the slot for globe.gl WebGL with atmosphere + texture. Risk: feels like an unnecessary toy for a
-          contact section, and mobile drag is awkward.
-        </li>
-        <li>
-          <strong>V3 (info panel)</strong> — no illustration. Strongest signal density (status + timezone + response
-          window + served-from). Best for "hiring manager scanning" use case. Risk: less memorable visually.
-        </li>
-        <li>
-          <strong>CV placement</strong> — (a) gives the document its own ceremony but adds a new row; (b) keeps the
-          single-CTA-stack rhythm but flattens the resume's weight; (c) anchors the right column but creates competition
-          with the globe/info above.
-        </li>
-        <li>
-          Recommendation pending visual review. V1 + CV (a) is the safest aesthetic floor. V3 + CV (b) is the most
-          information-efficient. V2 only if drag interactivity earns its keep on first impression.
-        </li>
-      </ul>
+        <!-- (b) 4th CTA in the split -->
+        <article class="gt-cv-option">
+          <header class="gt-cv-option__head">
+            <span class="gt-cv-option__letter">b</span>
+            <span class="gt-cv-option__title">4th CTA · part of the split</span>
+            <span class="gt-cv-option__hint">CV is just another intent. Outline-weighted, slightly de-emphasised.</span>
+          </header>
+          <div class="gt-cv-ctas">
+            <landing-button variant="solid" arrow="right">Let's talk about a full-time role</landing-button>
+            <landing-button variant="ghost" arrow="right">Tell me about a freelance project</landing-button>
+            <landing-button variant="link" arrow="right">Or just say hi</landing-button>
+            <landing-link href="#" [arrow]="true" class="gt-cv-ctas__resume">Download CV (PDF · 412 KB)</landing-link>
+          </div>
+        </article>
+
+        <!-- (c) Inside right column under the globe/panel -->
+        <article class="gt-cv-option">
+          <header class="gt-cv-option__head">
+            <span class="gt-cv-option__letter">c</span>
+            <span class="gt-cv-option__title">Right column · under globe/info</span>
+            <span class="gt-cv-option__hint"
+              >CV lives on the right, anchoring the column. Free-floats the left CTAs.</span
+            >
+          </header>
+          <div class="gt-cv-aside">
+            <div class="gt-cv-aside__placeholder" aria-hidden="true">
+              <span>Globe / info panel above</span>
+            </div>
+            <div class="gt-cv-card gt-cv-card--compact">
+              <span class="gt-cv-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"
+                    opacity="0.85"
+                  />
+                </svg>
+              </span>
+              <div class="gt-cv-card__text">
+                <span class="gt-cv-card__title">CV</span>
+                <span class="gt-cv-card__meta">PDF · 412 KB</span>
+              </div>
+              <landing-link href="#" [arrow]="true">Get</landing-link>
+            </div>
+          </div>
+        </article>
+      </div>
     </div>
-  </landing-container>
-</section>
+  </landing-ddl-considered>
+</landing-ddl-doc-page>

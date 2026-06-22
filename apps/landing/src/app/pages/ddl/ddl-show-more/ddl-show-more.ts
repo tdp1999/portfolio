@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Container, Eyebrow, Breadcrumb, ShowMore, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
+import { ShowMore } from '@portfolio/landing/shared/ui';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 
 /**
  * `landing-show-more` — reusable clamp/scroll disclosure.
@@ -12,16 +14,11 @@ import { Container, Eyebrow, Breadcrumb, ShowMore, type BreadcrumbItem } from '@
   selector: 'landing-ddl-show-more',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, ShowMore],
+  imports: [DdlDocPage, DdlSection, ShowMore],
   templateUrl: './ddl-show-more.html',
   styleUrl: './ddl-show-more.scss',
 })
 export class DdlShowMore {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Show more — clamp / scroll disclosure' },
-  ];
-
   // A long list so the clamp/scroll actually engages.
   readonly stack: readonly string[] = [
     'TypeScript',

@@ -1,20 +1,19 @@
-<div class="border-b border-landing-border bg-ink-1/60">
-  <landing-container size="wide">
-    <div class="py-6">
-      <landing-breadcrumb [items]="breadcrumb" class="mb-4 block" />
-      <landing-section-header align="left" size="sm" [level]="1"> Feed — <em>pagination</em>. </landing-section-header>
-      <p class="ap__intro">
-        Pagination strategies for any feed/index page (/projects, /blog, future). Three strategies on the same 8-item
-        dataset (page size = 3). All are wired — click around to feel the rhythm. Marks: 🟢 <em>recommend</em>, 💡
-        <em>fallback</em>, ⚠ <em>do not ship</em>.
-      </p>
-    </div>
-  </landing-container>
-</div>
+<landing-ddl-doc-page slug="feed-pagination" [width]="'wide'">
+  <p class="ap__intro">
+    Pagination strategies for any feed/index page (/projects, /blog, future). Three strategies on the same 8-item
+    dataset (page size = 3). All are wired — click around to feel the rhythm. Marks: 🟢 <em>recommend</em>, 💡
+    <em>fallback</em>, ⚠ <em>do not ship</em>.
+  </p>
 
-<!-- ═══ V1 — render-all ═════════════════════════════════════════ -->
-<section class="ap-block" aria-label="V1 render all">
-  <landing-container size="wide">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Three pagination strategies for a feed/index page, weighed against scroll behavior, SSR prerendering, and footer reachability. The pick depends on item count, so none wins outright yet — click around each demo (8-item dataset, page size 3) to feel the rhythm before deciding when to switch.'
+    "
+  />
+
+  <!-- ═══ V1 — render-all ═════════════════════════════════════════ -->
+  <landing-ddl-section anchor="v1-render-all" heading="V1 — render-all (no pagination)">
     <div class="ap-variant__head">
       <span class="ap-variant__tag">V1 · render-all (no pagination)</span>
       <span class="ap-variant__note">
@@ -33,12 +32,10 @@
         </li>
       }
     </ul>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ V2 — load-more ══════════════════════════════════════════ -->
-<section class="ap-block ap-block--alt" aria-label="V2 load more">
-  <landing-container size="wide">
+  <!-- ═══ V2 — load-more ══════════════════════════════════════════ -->
+  <landing-ddl-section anchor="v2-load-more" heading="V2 — load-more">
     <div class="ap-variant__head">
       <span class="ap-variant__tag">V2 · load-more</span>
       <span class="ap-variant__note">
@@ -59,12 +56,10 @@
     </ul>
 
     <landing-load-more [loaded]="loadMoreVisible().length" [total]="total" (loadMore)="loadMore()" />
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ V3 — paged ══════════════════════════════════════════════ -->
-<section class="ap-block" aria-label="V3 paged">
-  <landing-container size="wide">
+  <!-- ═══ V3 — paged ══════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="v3-paged" heading="V3 — paged (Page 1 of N)">
     <div class="ap-variant__head">
       <span class="ap-variant__tag">V3 · paged (Page 1 of N)</span>
       <span class="ap-variant__note">
@@ -90,13 +85,10 @@
       Component: <code>&lt;landing-pagination&gt;</code> · auto-ellipsis when total &gt; window (default 7). Tested
       below with the 8-item dataset — 3 pages × size 3.
     </p>
-  </landing-container>
-</section>
+  </landing-ddl-section>
 
-<!-- ═══ Summary ═════════════════════════════════════════════════ -->
-<section class="ap-summary">
-  <landing-container size="wide">
-    <landing-eyebrow [label]="['adoption', 'recommendation', 'when to switch']" tone="accent" class="ap-eyebrow" />
+  <!-- ═══ Summary ═════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="when-to-switch" heading="Adoption · when to switch">
     <dl class="ap-pick">
       <div class="ap-pick__row">
         <dt>Now (≤ 12 projects)</dt>
@@ -114,5 +106,5 @@
         </dd>
       </div>
     </dl>
-  </landing-container>
-</section>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

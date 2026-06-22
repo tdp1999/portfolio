@@ -1,29 +1,37 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { distinctYears, groupedTopSkills } from '@portfolio/landing/shared/data-access';
-import {
-  Chip,
-  Container,
-  Eyebrow,
-  Icon,
-  Breadcrumb,
-  FilterChip,
-  IconArrow,
-  ResultsCount,
-  SectionHeader,
-  type BreadcrumbItem,
-} from '@portfolio/landing/shared/ui';
+import { Chip, Eyebrow, Icon, FilterChip, IconArrow, ResultsCount } from '@portfolio/landing/shared/ui';
+
+import { DdlConsidered } from '../ddl-considered/ddl-considered';
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { DdlStage } from '../ddl-stage/ddl-stage';
 import { FAKE_PROJECTS, LIFECYCLE_STATUSES } from '../feed-fake-data';
+import { FEED_FILTER_BAR_VARIANTS } from './ddl-feed-filter-bar.data';
 
 @Component({
   selector: 'landing-ddl-feed-filter-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Breadcrumb, SectionHeader, FilterChip, ResultsCount, IconArrow, Chip, Icon],
+  imports: [
+    Eyebrow,
+    FilterChip,
+    ResultsCount,
+    IconArrow,
+    Chip,
+    Icon,
+    DdlDocPage,
+    DdlSection,
+    DdlDecisionRecord,
+    DdlConsidered,
+    DdlStage,
+  ],
   templateUrl: './ddl-feed-filter-bar.html',
   styleUrl: './ddl-feed-filter-bar.scss',
 })
 export class DdlFeedFilterBar {
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Feed — filter bar' }];
+  protected readonly variants = FEED_FILTER_BAR_VARIANTS;
 
   readonly years = distinctYears(FAKE_PROJECTS);
   readonly statuses = LIFECYCLE_STATUSES;

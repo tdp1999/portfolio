@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { Header } from './header';
 import { FooterBanner } from './footer-banner';
 import { FooterSignature } from './footer-signature';
@@ -35,14 +37,16 @@ import { LandingThemeService } from '../theme/theme.service';
       <main class="flex-1">
         <ng-content />
       </main>
-      <landing-footer-banner
-        id="shell-footer-banner"
-        [fullName]="fullName()"
-        [tagline]="footerTagline()"
-        [email]="email()"
-        [socialLinks]="socialLinks()"
-      />
-      <landing-footer-signature [fullName]="fullName()" [socialLinks]="socialLinks()" />
+      @if (!isDocs()) {
+        <landing-footer-banner
+          id="shell-footer-banner"
+          [fullName]="fullName()"
+          [tagline]="footerTagline()"
+          [email]="email()"
+          [socialLinks]="socialLinks()"
+        />
+        <landing-footer-signature [fullName]="fullName()" [socialLinks]="socialLinks()" />
+      }
       <landing-scroll-to-top />
       <landing-command-palette />
     </div>
@@ -60,6 +64,18 @@ export class Shell {
   private readonly theme = inject(LandingThemeService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+
+  // The DDL docs route renders its own footer inside its content column, so the
+  // shell's full-width marketing footer is suppressed there (it would otherwise
+  // bleed below the docs sidebar). Header + command palette stay.
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(() => this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+  protected readonly isDocs = computed(() => this.url().startsWith('/ddl'));
 
   constructor() {
     // Register baseline app-wide shortcuts. The command palette surfaces these

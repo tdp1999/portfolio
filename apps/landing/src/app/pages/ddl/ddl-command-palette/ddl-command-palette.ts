@@ -8,7 +8,7 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { Container, Eyebrow, Icon, Breadcrumb, SectionHeader, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
+import { Eyebrow, Icon } from '@portfolio/landing/shared/ui';
 import {
   KIND_LABEL,
   MOCK_RESULTS,
@@ -16,13 +16,18 @@ import {
   filterResults,
   groupByKind,
 } from '../command-palette/command-palette.data';
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { DdlStage } from '../ddl-stage/ddl-stage';
+import { COMMAND_PALETTE_VARIANTS } from './ddl-command-palette.data';
 import type { FlatRow, Variant } from './ddl-command-palette.types';
 
 @Component({
   selector: 'landing-ddl-command-palette',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Icon, Breadcrumb, SectionHeader],
+  imports: [Eyebrow, Icon, DdlDocPage, DdlSection, DdlDecisionRecord, DdlStage],
   templateUrl: './ddl-command-palette.html',
   styleUrl: './ddl-command-palette.scss',
   host: {
@@ -33,7 +38,7 @@ export class DdlCommandPalette {
   protected readonly searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   protected readonly rowEls = viewChildren<ElementRef<HTMLElement>>('rowEl');
 
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Command palette' }];
+  protected readonly variants = COMMAND_PALETTE_VARIANTS;
 
   /** Active variant — null means no modal open. */
   readonly active = signal<Variant>(null);

@@ -1,107 +1,96 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Chip, Container, Eyebrow, Breadcrumb, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
-import { SKILLS } from './ddl-stack.data';
+import { Chip, Eyebrow } from '@portfolio/landing/shared/ui';
+
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
+import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
 
 @Component({
   selector: 'landing-ddl-stack',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Chip, Container, Eyebrow, Breadcrumb],
+  imports: [Chip, Eyebrow, DdlDocPage, DdlSection, DdlDecisionRecord],
   template: `
-    <div class="border-b border-landing-border bg-ink-1/60">
-      <landing-container size="wide">
-        <div class="py-6">
-          <landing-breadcrumb [items]="breadcrumb" class="mb-3 block" />
-          <h1 class="font-display text-display-md text-landing-text-300">Stack — consolidated proposal</h1>
-          <p class="font-sans text-body-md text-landing-text-400 mt-2 max-w-2xl">
-            Picks locked: <strong class="text-landing-text-300">tier grouping · action voice</strong>,
-            <strong class="text-landing-text-300">brand-color icons</strong> (Iconify CDN here for prototype only —
-            production uses MediaPicker upload, see notes),
-            <strong class="text-landing-text-300">L3 effect — stagger only, no background</strong> (audit verdict: don't
-            break the quiet middle). Open: <strong class="text-landing-text-300">center-aligned intro</strong> — three
-            takes below for you to pick.
+    <landing-ddl-doc-page slug="stack" [width]="'wide'">
+      <landing-ddl-decision-record
+        [variants]="variants"
+        [summary]="
+          'Decided: tier grouping · action voice, brand-color icons (Iconify CDN here for prototype only — production uses MediaPicker upload), and the L3 effect (stagger only, no background — audit verdict: don\\'t break the quiet middle). Still weighing the center-aligned intro — three takes below.'
+        "
+      />
+
+      <!-- ═══ Proposal: full section as currently composed ════════════════ -->
+      <landing-ddl-section anchor="proposal" heading="Consolidated proposal">
+        <section #proposal class="stk stk--proposal" aria-label="Proposal — full section composition">
+          <button type="button" class="stk__replay" (click)="replay(proposal)" aria-label="Replay entrance animation">
+            <span aria-hidden="true">↻</span>
+            <span>replay entrance</span>
+          </button>
+
+          <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" [trailingRule]="true" />
+
+          <!-- intro slot — defaults to variant ci (eyebrow + tagline center). User picks final below. -->
+          <div class="stk__intro stk__intro--ci">
+            <p class="stk__tagline">What I reach for, daily.</p>
+          </div>
+
+          <div class="stk__tiers">
+            <div class="stk__tier stk__tier--enter">
+              <div class="stk__tier-head">
+                <span class="stk__rule stk__rule--accent stk__rule--pulse" aria-hidden="true"></span>
+                <landing-eyebrow label="Daily drivers" />
+              </div>
+              <ul class="stk__chips stk__chips--enter" role="list">
+                @for (s of skills.daily; track s.name; let i = $index) {
+                  <li [style.--stk-i]="i">
+                    <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <div class="stk__tier stk__tier--enter">
+              <div class="stk__tier-head">
+                <span class="stk__rule" aria-hidden="true"></span>
+                <landing-eyebrow label="Frequent" />
+              </div>
+              <ul class="stk__chips stk__chips--enter" role="list">
+                @for (s of skills.frequent; track s.name; let i = $index) {
+                  <li [style.--stk-i]="i + 3">
+                    <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <div class="stk__tier stk__tier--enter">
+              <div class="stk__tier-head">
+                <span class="stk__rule stk__rule--muted" aria-hidden="true"></span>
+                <landing-eyebrow label="Shipped with" />
+              </div>
+              <ul class="stk__chips stk__chips--enter" role="list">
+                @for (s of skills.shipped; track s.name; let i = $index) {
+                  <li [style.--stk-i]="i + 12">
+                    <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <div class="stk-notes">
+          <p class="stk-notes__label">proposal · notes</p>
+          <p class="stk-notes__text">
+            Background: none (audit said adding a third pattern vocabulary breaks the home's quiet middle). Effect: L3
+            stagger on chip entry (40ms cascade across the full rack so it reads as one wave), plus a quiet pulse on the
+            accent rule next to the active tier. Reduced-motion users get the final state instantly. Chips use the new
+            <code>landing-chip</code> <code>iconUrl</code> input + <code>size="lg"</code>. Hit replay to feel the
+            entrance.
           </p>
         </div>
-      </landing-container>
-    </div>
 
-    <!-- ═══ Proposal: full section as currently composed ════════════════ -->
-    <section #proposal class="stk stk--proposal" aria-label="Proposal — full section composition">
-      <button type="button" class="stk__replay" (click)="replay(proposal)" aria-label="Replay entrance animation">
-        <span aria-hidden="true">↻</span>
-        <span>replay entrance</span>
-      </button>
-
-      <landing-container size="wide">
-        <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" [trailingRule]="true" />
-
-        <!-- intro slot — defaults to variant ci (eyebrow + tagline center). User picks final below. -->
-        <div class="stk__intro stk__intro--ci">
-          <p class="stk__tagline">What I reach for, daily.</p>
-        </div>
-
-        <div class="stk__tiers">
-          <div class="stk__tier stk__tier--enter">
-            <div class="stk__tier-head">
-              <span class="stk__rule stk__rule--accent stk__rule--pulse" aria-hidden="true"></span>
-              <landing-eyebrow label="Daily drivers" />
-            </div>
-            <ul class="stk__chips stk__chips--enter" role="list">
-              @for (s of skills.daily; track s.name; let i = $index) {
-                <li [style.--stk-i]="i">
-                  <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
-                </li>
-              }
-            </ul>
-          </div>
-
-          <div class="stk__tier stk__tier--enter">
-            <div class="stk__tier-head">
-              <span class="stk__rule" aria-hidden="true"></span>
-              <landing-eyebrow label="Frequent" />
-            </div>
-            <ul class="stk__chips stk__chips--enter" role="list">
-              @for (s of skills.frequent; track s.name; let i = $index) {
-                <li [style.--stk-i]="i + 3">
-                  <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
-                </li>
-              }
-            </ul>
-          </div>
-
-          <div class="stk__tier stk__tier--enter">
-            <div class="stk__tier-head">
-              <span class="stk__rule stk__rule--muted" aria-hidden="true"></span>
-              <landing-eyebrow label="Shipped with" />
-            </div>
-            <ul class="stk__chips stk__chips--enter" role="list">
-              @for (s of skills.shipped; track s.name; let i = $index) {
-                <li [style.--stk-i]="i + 12">
-                  <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
-                </li>
-              }
-            </ul>
-          </div>
-        </div>
-      </landing-container>
-    </section>
-
-    <landing-container size="wide">
-      <div class="stk-notes">
-        <p class="stk-notes__label">proposal · notes</p>
-        <p class="stk-notes__text">
-          Background: none (audit said adding a third pattern vocabulary breaks the home's quiet middle). Effect: L3
-          stagger on chip entry (40ms cascade across the full rack so it reads as one wave), plus a quiet pulse on the
-          accent rule next to the active tier. Reduced-motion users get the final state instantly. Chips use the new
-          <code>landing-chip</code> <code>iconUrl</code> input + <code>size="lg"</code>. Hit replay to feel the
-          entrance.
-        </p>
-      </div>
-    </landing-container>
-
-    <!-- ═══ Icon strategy — note ═══════════════════════════════════════ -->
-    <div class="border-t border-landing-border">
-      <landing-container size="wide">
         <div class="stk-summary">
           <p class="stk-summary__label">icon strategy · production = mediapicker (single source)</p>
           <p class="stk-summary__intro">
@@ -129,92 +118,88 @@ import { SKILLS } from './ddl-stack.data';
             won't have this — Cloudinary URLs are stored in the rendered HTML at SSR time.
           </p>
         </div>
-      </landing-container>
-    </div>
+      </landing-ddl-section>
 
-    <!-- ═══ Intro variants — center-aligned · pick one ═════════════════ -->
-    <section class="stk stk--intros" aria-label="Center-aligned intro variants">
-      <landing-container size="wide">
-        <div class="stk__caption">
-          <p class="stk__caption-label">intro · three center-aligned takes</p>
-          <p class="stk__caption-hint">Same chip rack; only the intro changes</p>
+      <!-- ═══ Intro variants — center-aligned · pick one ═════════════════ -->
+      <landing-ddl-section anchor="intros" heading="Center-aligned intro — three takes">
+        <section class="stk stk--intros" aria-label="Center-aligned intro variants">
+          <div class="stk__caption">
+            <p class="stk__caption-label">intro · three center-aligned takes</p>
+            <p class="stk__caption-hint">Same chip rack; only the intro changes</p>
+          </div>
+
+          <!-- ci · Eyebrow + tagline (no display heading) -->
+          <div class="stk__variant">
+            <div class="stk__variant-meta">
+              <span class="stk__variant-tag">ci</span>
+              <span class="stk__variant-desc">eyebrow + tagline, center · the proposal default</span>
+            </div>
+            <div class="stk__variant-body">
+              <div class="stk__intro stk__intro--ci">
+                <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" />
+                <p class="stk__tagline">What I reach for, daily.</p>
+              </div>
+              <div class="stk__sample-chips" aria-hidden="true">
+                <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
+                <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
+                <landing-chip [label]="'+ 14 more'" size="lg" />
+              </div>
+            </div>
+          </div>
+
+          <!-- cii · Display heading center + italic accent -->
+          <div class="stk__variant">
+            <div class="stk__variant-meta">
+              <span class="stk__variant-tag">cii</span>
+              <span class="stk__variant-desc">display heading center + italic accent · editorial bookmark</span>
+            </div>
+            <div class="stk__variant-body">
+              <div class="stk__intro stk__intro--cii">
+                <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" />
+                <h2 class="stk__display">The <em class="stk__display-em">toolkit</em></h2>
+              </div>
+              <div class="stk__sample-chips" aria-hidden="true">
+                <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
+                <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
+                <landing-chip [label]="'+ 14 more'" size="lg" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ciii · Condensed tagline only (no eyebrow above) -->
+          <div class="stk__variant">
+            <div class="stk__variant-meta">
+              <span class="stk__variant-tag">ciii</span>
+              <span class="stk__variant-desc">condensed center · just one line, drop eyebrow</span>
+            </div>
+            <div class="stk__variant-body">
+              <div class="stk__intro stk__intro--ciii">
+                <p class="stk__tagline stk__tagline--lg">A small stack, kept <em class="stk__tagline-em">sharp</em>.</p>
+              </div>
+              <div class="stk__sample-chips" aria-hidden="true">
+                <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
+                <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
+                <landing-chip [label]="'+ 14 more'" size="lg" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="stk-notes">
+          <p class="stk-notes__label">intro variants · pick a row</p>
+          <p class="stk-notes__text">
+            <strong>ci</strong> — most cohesive with the rest of the home (eyebrow stays consistent across sections).
+            Quiet, leaves the chips to do the talking. <strong>cii</strong> — strongest editorial register, closest to
+            the reference portfolio. Costs vertical space; pressures other sections to also display-heading.
+            <strong>ciii</strong>
+            — purest minimalism, drops the section number eyebrow entirely. Risks losing wayfinding (eyebrow is the
+            "where am I" cue elsewhere on the page).
+          </p>
         </div>
+      </landing-ddl-section>
 
-        <!-- ci · Eyebrow + tagline (no display heading) -->
-        <div class="stk__variant">
-          <div class="stk__variant-meta">
-            <span class="stk__variant-tag">ci</span>
-            <span class="stk__variant-desc">eyebrow + tagline, center · the proposal default</span>
-          </div>
-          <div class="stk__variant-body">
-            <div class="stk__intro stk__intro--ci">
-              <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" />
-              <p class="stk__tagline">What I reach for, daily.</p>
-            </div>
-            <div class="stk__sample-chips" aria-hidden="true">
-              <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
-              <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
-              <landing-chip [label]="'+ 14 more'" size="lg" />
-            </div>
-          </div>
-        </div>
-
-        <!-- cii · Display heading center + italic accent -->
-        <div class="stk__variant">
-          <div class="stk__variant-meta">
-            <span class="stk__variant-tag">cii</span>
-            <span class="stk__variant-desc">display heading center + italic accent · editorial bookmark</span>
-          </div>
-          <div class="stk__variant-body">
-            <div class="stk__intro stk__intro--cii">
-              <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" />
-              <h2 class="stk__display">The <em class="stk__display-em">toolkit</em></h2>
-            </div>
-            <div class="stk__sample-chips" aria-hidden="true">
-              <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
-              <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
-              <landing-chip [label]="'+ 14 more'" size="lg" />
-            </div>
-          </div>
-        </div>
-
-        <!-- ciii · Condensed tagline only (no eyebrow above) -->
-        <div class="stk__variant">
-          <div class="stk__variant-meta">
-            <span class="stk__variant-tag">ciii</span>
-            <span class="stk__variant-desc">condensed center · just one line, drop eyebrow</span>
-          </div>
-          <div class="stk__variant-body">
-            <div class="stk__intro stk__intro--ciii">
-              <p class="stk__tagline stk__tagline--lg">A small stack, kept <em class="stk__tagline-em">sharp</em>.</p>
-            </div>
-            <div class="stk__sample-chips" aria-hidden="true">
-              <landing-chip [label]="skills.daily[0].name" [iconUrl]="skills.daily[0].icon" size="lg" />
-              <landing-chip [label]="skills.daily[1].name" [iconUrl]="skills.daily[1].icon" size="lg" />
-              <landing-chip [label]="'+ 14 more'" size="lg" />
-            </div>
-          </div>
-        </div>
-      </landing-container>
-    </section>
-
-    <landing-container size="wide">
-      <div class="stk-notes">
-        <p class="stk-notes__label">intro variants · pick a row</p>
-        <p class="stk-notes__text">
-          <strong>ci</strong> — most cohesive with the rest of the home (eyebrow stays consistent across sections).
-          Quiet, leaves the chips to do the talking. <strong>cii</strong> — strongest editorial register, closest to the
-          reference portfolio. Costs vertical space; pressures other sections to also display-heading.
-          <strong>ciii</strong>
-          — purest minimalism, drops the section number eyebrow entirely. Risks losing wayfinding (eyebrow is the "where
-          am I" cue elsewhere on the page).
-        </p>
-      </div>
-    </landing-container>
-
-    <!-- ═══ Implications punch list ═════════════════════════════════════ -->
-    <div class="border-t border-landing-border">
-      <landing-container size="wide">
+      <!-- ═══ Implications punch list ═════════════════════════════════════ -->
+      <landing-ddl-section anchor="punch-list" heading="BE / DB / console punch list">
         <div class="stk-summary">
           <p class="stk-summary__label">be / db / console — what these picks cost</p>
           <p class="stk-summary__intro">Total ~18 files across 3 features. UI ships first; BE follows.</p>
@@ -256,8 +241,8 @@ import { SKILLS } from './ddl-stack.data';
             grouping switch, so do it last when you're committed).
           </p>
         </div>
-      </landing-container>
-    </div>
+      </landing-ddl-section>
+    </landing-ddl-doc-page>
   `,
   styles: [
     `
@@ -686,7 +671,7 @@ import { SKILLS } from './ddl-stack.data';
 export class DdlStack {
   // ── Properties ─────────────────────────────────────────────────────
   readonly skills = SKILLS;
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'DDL', href: '/ddl' }, { label: 'Stack — proposal' }];
+  readonly variants = STACK_VARIANTS;
 
   // ── Methods ────────────────────────────────────────────────────────
   protected replay(host: HTMLElement): void {

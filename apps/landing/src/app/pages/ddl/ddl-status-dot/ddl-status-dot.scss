@@ -1,0 +1,190 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
+.interaction-fx-test {
+  .fx-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+
+    @include bp.respond-down('tablet') {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ── Chip prototypes ─────────────────────────────────────
+  // Chips are metadata, NOT buttons — cursor stays default,
+  // no active/click effect (don't lie about clickability).
+  .chip-fx {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--landing-border);
+    background-color: transparent;
+    color: var(--landing-text-500);
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    line-height: var(--landing-mono-md-lh);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: default;
+    user-select: none;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease,
+      background-color 180ms ease,
+      letter-spacing 220ms ease;
+  }
+
+  // A · Border lift — brighten one tier
+  .chip-fx--a:hover {
+    border-color: var(--landing-text-500);
+    color: var(--landing-text-300);
+  }
+
+  // B · Tonal fill — bg fades to ink-2 (SHIPPED into landing-chip)
+  .chip-fx--b:hover {
+    background-color: var(--landing-ink-2);
+    color: var(--landing-text-300);
+  }
+
+  // C · Letter shift — tracking widens
+  .chip-fx--c:hover {
+    letter-spacing: 0.1em;
+    color: var(--landing-text-300);
+  }
+
+  // ── Chip prominence row labels ──────────────────────────
+  // Reused by the shipped prominence ladder showcase below the hover prototypes.
+  .chip-prom-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 4px 0;
+  }
+  .chip-prom-row__label {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: 16px;
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-600);
+    width: 96px;
+    flex-shrink: 0;
+  }
+
+  // ── Status dot prototypes ───────────────────────────────
+  .status-fx {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border: 1px solid var(--landing-border);
+    border-radius: 9999px;
+    background-color: transparent;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-md);
+    line-height: var(--landing-mono-md-lh);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-500);
+    cursor: default;
+    position: relative;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .status-fx__dot {
+    display: inline-block;
+    position: relative;
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+  }
+
+  .status-fx--available .status-fx__dot {
+    background-color: #22c55e;
+  }
+
+  // A · Always-on dot pulse (2.4s loop)
+  .status-fx--a .status-fx__dot {
+    animation: chip-fx-dot-pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes chip-fx-dot-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(1.18);
+    }
+  }
+
+  // B · Radar ring on hover (SHIPPED into landing-status-dot)
+  // Explicit dimensions + center-anchored transform = guaranteed circular ring,
+  // independent of how flex sizes the dot.
+  .status-fx--b .status-fx__dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    border: 1px solid #22c55e;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1);
+  }
+
+  .status-fx--b:hover .status-fx__dot::after {
+    animation: chip-fx-radar 900ms ease-out 1;
+  }
+
+  @keyframes chip-fx-radar {
+    0% {
+      transform: scale(1);
+      opacity: 0.85;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  // C · Pill brighten — mirrors chip A
+  .status-fx--c:hover {
+    border-color: var(--landing-text-500);
+    color: var(--landing-text-300);
+  }
+
+  .chip-fx {
+    @include prefers.reduce-motion {
+      transition: none;
+    }
+  }
+  .chip-fx--c:hover {
+    @include prefers.reduce-motion {
+      letter-spacing: var(--landing-tracking-mono);
+    }
+  }
+  .status-fx--a .status-fx__dot {
+    @include prefers.reduce-motion {
+      animation: none;
+    }
+  }
+  .status-fx--b:hover .status-fx__dot::after {
+    @include prefers.reduce-motion {
+      animation: none;
+    }
+  }
+}

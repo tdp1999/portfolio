@@ -5,23 +5,8 @@
   display: block;
 }
 
-.mm-page-head {
-  border-bottom: 1px solid var(--landing-border);
-  background-color: color-mix(in srgb, var(--landing-ink-1) 60%, transparent);
-}
-
-.mm-page-head__inner {
-  padding-block: 24px;
-}
-
-.mm-page-head__crumbs {
-  display: block;
-  margin-bottom: 16px;
-}
-
 .mm-page-head__intro {
-  margin: 16px 0 0;
-  max-width: 64rem;
+  margin: 0;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
@@ -31,28 +16,6 @@
 .mm-page-head__intro strong {
   color: var(--landing-text-300);
   font-weight: 600;
-}
-
-.mm-block {
-  padding-block: 64px;
-  border-bottom: 1px solid var(--landing-border);
-}
-
-.mm-block--research {
-  background-color: var(--landing-ink-1);
-}
-
-.mm-block--context {
-  background-color: var(--landing-ink-0);
-}
-
-.mm-block--matrix {
-  background-color: var(--landing-ink-1);
-}
-
-.mm-block__eyebrow {
-  display: block;
-  margin-bottom: 24px;
 }
 
 .mm-block__intro {
@@ -132,45 +95,9 @@
   }
 }
 
-/* ─── Variants grid ──────────────────────────────────────────────── */
-.mm-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-}
-
-@include bp.respond-down('laptop') {
-  .mm-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.mm-variant {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-  background-color: var(--landing-ink-1);
-  border: 1px solid var(--landing-border);
-  border-radius: 12px;
-}
-
-.mm-variant__head {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mm-variant__tag {
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-mono-sm);
-  letter-spacing: var(--landing-tracking-mono);
-  text-transform: uppercase;
-  color: var(--landing-accent);
-}
-
+/* ─── Variant blurb ──────────────────────────────────────────────── */
 .mm-variant__desc {
-  margin: 0;
+  margin: 0 0 16px;
   font-family: var(--landing-font-body);
   font-size: var(--landing-body-sm);
   line-height: var(--landing-body-sm-lh);

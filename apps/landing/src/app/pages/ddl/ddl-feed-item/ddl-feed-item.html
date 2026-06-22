@@ -1,0 +1,271 @@
+<landing-ddl-doc-page slug="feed-item" [width]="'wide'">
+  <landing-ddl-decision-record
+    [variants]="variants"
+    [summary]="
+      'Three shape families weighed on the same 4-project sample. Pick one default for /projects and /blog; a view-toggle in the toolbar lets users switch between the rest.'
+    "
+  />
+
+  <!-- ═══ Row family ════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="row" heading="Row family">
+    <p class="ai-section__intro">
+      Editorial row — typographic, scannable, no images required. Three density tiers (A · B · C), shown alongside the
+      simplifications that led to the C3 candidate.
+    </p>
+
+    <!-- A. minimal (current) -->
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">A · minimal — current ship</span>
+        <span class="ai-variant__note">⚠ fallback only · year + title + oneliner. No visual hook for skimmers.</span>
+      </div>
+      <ul class="row-list" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="row-a">
+            <span class="row-a__year">{{ yearOf(project.startDate) }}</span>
+            <div class="row-a__body">
+              <span class="row-a__title">{{ project.title }}</span>
+              <span class="row-a__sum">{{ project.oneLiner.en }}</span>
+            </div>
+            <landing-icon-arrow direction="right" [size]="14" class="row-a__arrow" />
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- B. + cover thumbnail (left) -->
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">B · cover-left — editorial blend</span>
+        <span class="ai-variant__note">💡 candidate · adds 96×64 thumb. Empty cover = placeholder block, no jump.</span>
+      </div>
+      <ul class="row-list" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="row-b">
+            <span class="row-b__year">{{ yearOf(project.startDate) }}</span>
+            <div class="row-b__thumb">
+              @if (project.thumbnailUrl) {
+                <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+              } @else {
+                <span class="row-b__thumb-empty">—</span>
+              }
+            </div>
+            <div class="row-b__body">
+              <span class="row-b__title">{{ project.title }}</span>
+              <span class="row-b__sum">{{ project.oneLiner.en }}</span>
+            </div>
+            <landing-icon-arrow direction="right" [size]="14" class="row-b__arrow" />
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- C1. + cover + status pill + stack chips (original C, kept for reference) -->
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">C1 · cover + status pill + chips (full)</span>
+        <span class="ai-variant__note">
+          ⚠ rejected · too noisy — 5 info groups per row. Reference only. C2 and C3 are simplifications.
+        </span>
+      </div>
+      <ul class="row-list" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="row-c">
+            <span class="row-c__year">{{ yearOf(project.startDate) }}</span>
+            <div class="row-c__thumb">
+              @if (project.thumbnailUrl) {
+                <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+              } @else {
+                <span class="row-c__thumb-empty">—</span>
+              }
+            </div>
+            <div class="row-c__body">
+              <div class="row-c__top">
+                <span class="row-c__title">{{ project.title }}</span>
+                <span [class]="statusToneClass(project.lifecycleStatus)">{{ project.lifecycleStatus }}</span>
+              </div>
+              <span class="row-c__sum">{{ project.oneLiner.en }}</span>
+              <div class="row-c__chips">
+                @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                  <landing-chip [label]="skill.name" size="sm" />
+                }
+                @if (project.skills.length > 3) {
+                  <span class="row-c__chip-more">+{{ project.skills.length - 3 }}</span>
+                }
+              </div>
+            </div>
+            <landing-icon-arrow direction="right" [size]="14" class="row-c__arrow" />
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- C2. status as colored dot (saves space), top-3 chips no overflow -->
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">C2 · cover + status dot + chips</span>
+        <span class="ai-variant__note">
+          ⚠ rejected · the dot is too cryptic — users won't decode green/indigo/amber as LIVE/SHIPPED/ONGOING without a
+          legend. Tooltip on hover doesn't help mobile or scanners.
+        </span>
+      </div>
+      <ul class="row-list" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="row-c2">
+            <span class="row-c2__year">{{ yearOf(project.startDate) }}</span>
+            <div class="row-c2__thumb">
+              @if (project.thumbnailUrl) {
+                <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+              } @else {
+                <span class="row-c2__thumb-empty">—</span>
+              }
+            </div>
+            <div class="row-c2__body">
+              <div class="row-c2__top">
+                <span
+                  class="row-c2__dot"
+                  [class]="'row-c2__dot row-c2__dot--' + project.lifecycleStatus.toLowerCase()"
+                  [attr.title]="project.lifecycleStatus"
+                  aria-hidden="true"
+                ></span>
+                <span class="row-c2__title">{{ project.title }}</span>
+                <span class="visually-hidden">— status: {{ project.lifecycleStatus }}</span>
+              </div>
+              <span class="row-c2__sum">{{ project.oneLiner.en }}</span>
+              <div class="row-c2__chips">
+                @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                  <landing-chip [label]="skill.name" size="sm" />
+                }
+              </div>
+            </div>
+            <landing-icon-arrow direction="right" [size]="14" class="row-c2__arrow" />
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- C3. minimal — drop status entirely, chips inline with year+title -->
+    <div class="ai-variant ai-variant--rec">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">C3 · cover + chips only (lead candidate)</span>
+        <span class="ai-variant__note">
+          🟢 lead candidate · status dropped from the row entirely — lives only in the filter bar. Year + cover + title
+          + italic one-liner + top-3 chips. Calmest reading rhythm, lowest cognitive load. The status-at-a-glance signal
+          is sacrificed; status filter chip is the source of truth.
+        </span>
+      </div>
+      <ul class="row-list" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="row-c3">
+            <span class="row-c3__year">{{ yearOf(project.startDate) }}</span>
+            <div class="row-c3__thumb">
+              @if (project.thumbnailUrl) {
+                <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+              } @else {
+                <span class="row-c3__thumb-empty">—</span>
+              }
+            </div>
+            <div class="row-c3__body">
+              <span class="row-c3__title">{{ project.title }}</span>
+              <span class="row-c3__sum">{{ project.oneLiner.en }}</span>
+              <div class="row-c3__chips">
+                @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                  <landing-chip [label]="skill.name" size="sm" />
+                }
+              </div>
+            </div>
+            <landing-icon-arrow direction="right" [size]="14" class="row-c3__arrow" />
+          </li>
+        }
+      </ul>
+    </div>
+  </landing-ddl-section>
+
+  <!-- ═══ Card family ═══════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="card" heading="Card family">
+    <p class="ai-section__intro">Visual browsing mode. 3-col on desktop, 2-col tablet, 1-col mobile.</p>
+
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">D · cover-dominant card</span>
+        <span class="ai-variant__note">
+          💡 candidate · 16:10 cover + title/oneliner/status below. Status pill top-right. Status indicators + cover
+          lets visual scanners parse stack-fit before reading text.
+        </span>
+      </div>
+      <ul class="card-grid" role="list">
+        @for (project of previewProjects(); track project.slug) {
+          <li class="card">
+            <div class="card__media">
+              @if (project.thumbnailUrl) {
+                <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
+              } @else {
+                <span class="card__media-empty">{{ project.title }}</span>
+              }
+              <span [class]="statusToneClass(project.lifecycleStatus) + ' card__status'">
+                {{ project.lifecycleStatus }}
+              </span>
+            </div>
+            <div class="card__body">
+              <div class="card__head">
+                <span class="card__year">{{ yearRange(project.startDate, project.endDate) }}</span>
+                <span class="card__title">{{ project.title }}</span>
+              </div>
+              <p class="card__sum">{{ project.oneLiner.en }}</p>
+              <div class="card__chips">
+                @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                  <landing-chip [label]="skill.name" size="sm" />
+                }
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </landing-ddl-section>
+
+  <!-- ═══ Timeline family ═══════════════════════════════════════════ -->
+  <landing-ddl-section anchor="timeline" heading="Timeline family">
+    <p class="ai-section__intro">Year is the spine. Editorial framing — "the long arc". Single column.</p>
+
+    <div class="ai-variant">
+      <div class="ai-variant__head">
+        <span class="ai-variant__tag">E · year-grouped timeline</span>
+        <span class="ai-variant__note">
+          💡 candidate · vertical rail with year dots. Each entry stacked under its year header. Great for
+          career-narrative framing. Tradeoff: scrollheight grows fast with 20+ projects.
+        </span>
+      </div>
+      <div class="timeline">
+        @for (group of grouped(); track group.year) {
+          <div class="timeline__group">
+            <div class="timeline__year-row">
+              <span class="timeline__dot" aria-hidden="true"></span>
+              <span class="timeline__year">{{ group.year }}</span>
+              <span class="timeline__year-rule" aria-hidden="true"></span>
+            </div>
+            <ul class="timeline__items" role="list">
+              @for (project of group.items; track project.slug) {
+                <li class="timeline-entry">
+                  <span class="timeline-entry__connector" aria-hidden="true"></span>
+                  <div class="timeline-entry__body">
+                    <div class="timeline-entry__head">
+                      <span class="timeline-entry__title">{{ project.title }}</span>
+                      <span [class]="statusToneClass(project.lifecycleStatus)">{{ project.lifecycleStatus }}</span>
+                    </div>
+                    <p class="timeline-entry__sum">{{ project.oneLiner.en }}</p>
+                    <div class="timeline-entry__chips">
+                      @for (skill of project.skills.slice(0, 3); track skill.slug) {
+                        <landing-chip [label]="skill.name" size="sm" />
+                      }
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

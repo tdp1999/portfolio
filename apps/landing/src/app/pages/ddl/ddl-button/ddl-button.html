@@ -1,0 +1,55 @@
+<landing-ddl-doc-page slug="button" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <div class="space-y-8">
+      <!-- Variants × sizes -->
+      <div>
+        <h3 id="variants" data-toc="Variants" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          variant · solid / ghost / link
+        </h3>
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <landing-button variant="solid" size="sm">Small solid</landing-button>
+          <landing-button variant="solid" size="md">Medium solid</landing-button>
+          <landing-button variant="ghost" size="sm">Small ghost</landing-button>
+          <landing-button variant="ghost" size="md">Medium ghost</landing-button>
+          <landing-button variant="link" size="md">Inline link button</landing-button>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <landing-button variant="solid" size="md" [disabled]="true">Disabled</landing-button>
+        </div>
+      </div>
+
+      <!-- With arrows -->
+      <div>
+        <h3 id="arrow" data-toc="Arrow" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          arrow · right (internal) / up-right (external)
+        </h3>
+        <div class="flex flex-wrap items-center gap-3">
+          <landing-button variant="solid" size="md" arrow="right">Read more</landing-button>
+          <landing-button variant="ghost" size="md" arrow="up-right">External</landing-button>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        Use <strong class="text-landing-text-300">landing-button</strong> for any action that triggers something
+        (submit, toggle, navigate-after-confirm). Reach for
+        <code class="font-mono text-mono-sm text-landing-text-300">solid</code>
+        only when the action is the page's single primary moment — every other CTA is
+        <code class="font-mono text-mono-sm text-landing-text-300">ghost</code>.
+      </p>
+      <p>
+        The <code class="font-mono text-mono-sm text-landing-text-300">arrow</code> input composes
+        <code class="font-mono text-mono-sm text-landing-text-300">landing-icon-arrow</code> inline — never place the
+        arrow alone. <code class="font-mono text-mono-sm text-landing-text-300">right</code> reads as same-domain,
+        <code class="font-mono text-mono-sm text-landing-text-300">up-right</code> as leaving the site.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Indigo budget.</strong> A page gets one indigo moment — the solid button
+        background, the active link, and the arrow lift-off all draw from the same budget. Pick one.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

@@ -1,0 +1,159 @@
+<landing-ddl-doc-page slug="chip" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase" [framed]="true" [code]="usageSnippet">
+    <!-- Chip variants -->
+    <div>
+      <p class="font-mono text-mono-md text-landing-text-500 mb-3">landing-chip · sm / md, hairline border, no fill</p>
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <landing-chip label="Angular" size="sm" />
+        <landing-chip label="TypeScript" size="sm" />
+        <landing-chip label="NestJS" size="sm" />
+        <landing-chip label="Nx" size="sm" />
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <landing-chip label="Angular" />
+        <landing-chip label="TypeScript" />
+        <landing-chip label="NestJS" />
+        <landing-chip label="TailwindCSS" />
+        <landing-chip label="Nx" />
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="prototypes" heading="Prototypes">
+    <!-- Chip interactions (research, not yet baked into the component) -->
+    <div class="interaction-fx-test">
+      <p class="font-sans text-body-md text-landing-text-400 mb-8 max-w-3xl">
+        Hover and click each row. Subtle by design — labels aren't buttons, they're metadata that occasionally accepts a
+        press. Once a winner is chosen these graduate into
+        <code class="font-mono text-mono-sm text-landing-text-300">landing-chip</code> /
+        <code class="font-mono text-mono-sm text-landing-text-300">landing-status-dot</code>; reduced-motion users
+        always get the static state.
+      </p>
+
+      <!-- ── CHIP ── -->
+      <h3 id="chip-hover" data-toc="Hover protos" class="font-display text-display-sm text-landing-text-300 mb-4">
+        Chip
+      </h3>
+      <div class="space-y-8 mb-12">
+        <!-- A · Border lift -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="chip-border-lift" data-toc="A · Border" class="font-mono text-mono-md text-landing-accent">
+              A · Border lift
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Border + label brighten one tier on hover. Press settles 1px down. Most restrained option — preserves the
+              "no fill" rule strictly.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="chip-fx chip-fx--a">ANGULAR</span>
+              <span class="chip-fx chip-fx--a">TYPESCRIPT</span>
+              <span class="chip-fx chip-fx--a">NESTJS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B · Tonal fill -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="chip-tonal-fill" data-toc="B · Tonal" class="font-mono text-mono-md text-landing-accent">
+              B · Tonal fill — shipped
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Background fades from transparent to ink-2 on hover. Now live in
+              <code class="font-mono text-mono-sm text-landing-text-300">landing-chip</code>. No cursor:pointer, no
+              click effect — chips are metadata, not buttons; don't lie about clickability.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="chip-fx chip-fx--b">ANGULAR</span>
+              <span class="chip-fx chip-fx--b">TYPESCRIPT</span>
+              <span class="chip-fx chip-fx--b">NESTJS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- C · Letter shift -->
+        <div class="fx-row">
+          <div class="fx-label">
+            <h4 id="chip-letter-shift" data-toc="C · Letter" class="font-mono text-mono-md text-landing-accent">
+              C · Letter shift
+            </h4>
+            <p class="font-sans text-body-sm text-landing-text-500 mt-1 max-w-md">
+              Tracking widens from 0.06em to 0.1em on hover. Pure typographic micro-interaction — feels mechanical,
+              deliberate; only really works on mono.
+            </p>
+          </div>
+          <div class="fx-demos">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="chip-fx chip-fx--c">ANGULAR</span>
+              <span class="chip-fx chip-fx--c">TYPESCRIPT</span>
+              <span class="chip-fx chip-fx--c">NESTJS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CHIP PROMINENCE · shipped ── -->
+      <h4 id="prominence" data-toc="Prominence" class="font-display text-display-sm text-landing-text-300 mt-12 mb-2">
+        Prominence ladder · shipped
+      </h4>
+      <p class="font-sans text-body-md text-landing-text-400 mb-8 max-w-3xl">
+        Picked combo:
+        <span class="font-mono text-landing-text-300">Ladder A · Fill backplate</span> static +
+        <span class="font-mono text-landing-text-300">Effect 3 · Fill tint (indigo wash)</span> on hover. Wired into
+        <code class="font-mono text-mono-sm text-landing-text-300">landing-chip[prominence]</code>. Used by home Stack —
+        DAILY = strongest, FREQUENT = strong, SHIPPED = default. Hover any chip below to see the indigo wash on
+        strongest / promotion to ink-2 on strong.
+      </p>
+
+      <div class="mb-12">
+        <div class="chip-prom-row">
+          <span class="chip-prom-row__label">strongest</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <landing-chip label="Angular" prominence="strongest" />
+            <landing-chip label="TypeScript" prominence="strongest" />
+            <landing-chip label="Angular Material" prominence="strongest" />
+            <landing-chip label="RxJS" prominence="strongest" />
+          </div>
+        </div>
+        <div class="chip-prom-row">
+          <span class="chip-prom-row__label">strong</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <landing-chip label="Claude Code" prominence="strong" />
+            <landing-chip label="NestJS" prominence="strong" />
+            <landing-chip label="Nx" prominence="strong" />
+            <landing-chip label="Playwright" prominence="strong" />
+          </div>
+        </div>
+        <div class="chip-prom-row">
+          <span class="chip-prom-row__label">default</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <landing-chip label="TipTap" />
+            <landing-chip label="Jest" />
+            <landing-chip label="Prisma" />
+            <landing-chip label="SSR" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        <strong class="text-landing-text-300">landing-chip</strong> for tech tags, categories, topics — anything you'd
+        describe as a "label" rather than a "state". Always mono caps, hairline border, no fill. Cluster them with
+        <code class="font-mono text-mono-sm text-landing-text-300">gap-2</code>; let them wrap.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Don't mix.</strong> A status indicator is a status-dot, never a chip. A
+        tech tag is a chip, never a status-dot. A section label is an eyebrow, never a chip. The grammar holds the
+        design together.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

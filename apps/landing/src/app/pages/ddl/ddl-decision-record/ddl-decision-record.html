@@ -1,0 +1,51 @@
+<aside class="ddl-decision" aria-label="Decision record">
+  @if (selected(); as s) {
+    <div class="ddl-decision__verdict">
+      <span class="ddl-decision__check" aria-hidden="true">✓</span>
+      <div class="ddl-decision__verdict-body">
+        <p class="ddl-decision__label">
+          <span class="ddl-decision__tag">Selected</span>
+          {{ s.label }}
+        </p>
+        @if (s.decision) {
+          <p class="ddl-decision__note">{{ s.decision }}</p>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="ddl-decision__verdict ddl-decision__verdict--exploring">
+      <span class="ddl-decision__check ddl-decision__check--exploring" aria-hidden="true">⋯</span>
+      <div class="ddl-decision__verdict-body">
+        <p class="ddl-decision__label">
+          <span class="ddl-decision__tag ddl-decision__tag--exploring">Exploring</span>
+          No decision yet
+        </p>
+        @if (summary(); as sum) {
+          <p class="ddl-decision__note">{{ sum }}</p>
+        }
+      </div>
+    </div>
+  }
+
+  @if (considered().length) {
+    <ul class="ddl-decision__considered" role="list">
+      @for (v of considered(); track v.id) {
+        <li class="ddl-decision__item">
+          <span class="ddl-decision__item-label">
+            {{ v.label }}
+            @if (v.state === 'rejected') {
+              <span class="ddl-decision__rejected">Rejected</span>
+            } @else if (exploring()) {
+              <span class="ddl-decision__considered-tag">Candidate</span>
+            } @else {
+              <span class="ddl-decision__considered-tag">Considered</span>
+            }
+          </span>
+          @if (v.note) {
+            <span class="ddl-decision__item-note">{{ v.note }}</span>
+          }
+        </li>
+      }
+    </ul>
+  }
+</aside>

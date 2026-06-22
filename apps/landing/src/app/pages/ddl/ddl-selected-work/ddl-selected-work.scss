@@ -1,0 +1,227 @@
+/* DDL — Selected Work transition variants (V1–V4). Each section renders the
+ * same panel (left text column + right image grid) with a different CSS
+ * animation strategy when the active project changes. The active project is
+ * re-rendered via `@for ... track p.slug`, so the element is destroyed and
+ * recreated on every swap — letting the `animation: <variant> ... both` play
+ * on each entrance without needing Angular animations. */
+
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
+:host {
+  display: block;
+}
+
+.swt {
+  display: block;
+}
+
+/* Per-variant intro prose, sits above the live demo inside each doc section. */
+.swt__deck {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+  max-width: 64ch;
+  margin: 0 0 24px;
+}
+
+.swt__tabs {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.swt__panel {
+  position: relative;
+  min-height: 360px;
+}
+
+.swt__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @include bp.respond-to('laptop') {
+    grid-template-columns: 40fr 60fr;
+    gap: 48px;
+  }
+}
+
+.swt__left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.swt__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--landing-font-mono);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+.swt__meta-year {
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-600);
+}
+.swt__meta-role {
+  font-size: var(--landing-mono-md);
+  line-height: var(--landing-mono-md-lh);
+  color: var(--landing-accent);
+}
+
+.swt__name {
+  font-family: var(--landing-font-body);
+  font-weight: 700;
+  font-size: var(--landing-display-lg);
+  line-height: var(--landing-display-lg-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+  margin: 0;
+}
+
+.swt__desc {
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
+  margin: 0;
+}
+
+.swt__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  li {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: var(--landing-mono-sm-lh);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-400);
+    border: 1px solid var(--landing-border);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+}
+
+.swt__right {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include bp.respond-to('laptop') {
+    aspect-ratio: 4 / 3;
+  }
+}
+.swt__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--landing-border);
+  display: block;
+  min-height: 0;
+}
+
+/* Durations tuned so each swap reads as a deliberate transition, not a flash.
+ * Baseline: ~360–440ms with a small leading delay (60–80ms) so the eye can
+ * register the cue. Earlier draft at 180–220ms felt instant on fast hardware. */
+
+/* ═══════════════════ V1 — crossfade whole panel ═══════════════════ */
+.swt--v1 .swt__inner {
+  animation: swt-fade 360ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+
+/* ═══════════════════ V2 — text fade-up + gallery crossfade ═══════════ */
+.swt--v2 .swt__left--v2 {
+  animation: swt-fade-up 420ms cubic-bezier(0.2, 0, 0.1, 1) 80ms both;
+}
+.swt--v2 .swt__right--v2,
+.swt--v3 .swt__right--v2,
+.swt--v4 .swt__right--v2 {
+  animation: swt-fade 360ms cubic-bezier(0.2, 0, 0.1, 1) 80ms both;
+}
+
+/* ═══════════════════ V3 — staggered text cascade ════════════════════ */
+.swt--v3 .swt__stagger-1 {
+  animation: swt-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+.swt--v3 .swt__stagger-2 {
+  animation: swt-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 140ms both;
+}
+.swt--v3 .swt__stagger-3 {
+  animation: swt-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 220ms both;
+}
+.swt--v3 .swt__stagger-4 {
+  animation: swt-fade-up 380ms cubic-bezier(0.2, 0, 0.1, 1) 300ms both;
+}
+
+/* ═══════════════════ V4 — directional slide ═════════════════════════ */
+.swt--v4[data-direction='forward'] .swt__left--v4 {
+  animation: swt-slide-from-right 440ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+.swt--v4[data-direction='back'] .swt__left--v4 {
+  animation: swt-slide-from-left 440ms cubic-bezier(0.2, 0, 0.1, 1) 60ms both;
+}
+
+@keyframes swt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes swt-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes swt-slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes swt-slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.swt--v1 .swt__inner,
+.swt--v2 .swt__left--v2,
+.swt--v2 .swt__right--v2,
+.swt--v3 .swt__right--v2,
+.swt--v4 .swt__right--v2,
+.swt--v3 [class*='swt__stagger'],
+.swt--v4 .swt__left--v4 {
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}

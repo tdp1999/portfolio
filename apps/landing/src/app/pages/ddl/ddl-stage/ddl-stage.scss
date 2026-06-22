@@ -1,0 +1,147 @@
+// DDL stage — column thumbnail ⇄ full-viewport overlay. Landing tokens only.
+
+@use 'base/breakpoints' as bp;
+@use 'base/prefers' as prefers;
+
+.ddl-stage {
+  position: relative;
+}
+
+.ddl-stage__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.ddl-stage__expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+  background: transparent;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--landing-accent);
+    border-color: var(--landing-accent);
+    outline: none;
+  }
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}
+
+// ── Expanded: the frame is promoted to a fixed full-viewport surface so the
+//    projected demo renders at its true production width. ────────────────────
+.ddl-stage--expanded .ddl-stage__frame {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: var(--landing-bg);
+  overflow: auto;
+}
+
+.ddl-stage__bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--landing-bg);
+  border-bottom: 1px solid var(--landing-border);
+}
+
+.ddl-stage__bar-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.ddl-stage__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: 16px;
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-400);
+  background: transparent;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--landing-accent);
+    border-color: var(--landing-accent);
+    outline: none;
+  }
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}
+
+// Frame the projected demo like a real page — centered, max-width + the
+// landing gutter steps (24 / 32 / 48). Applies inline and expanded so the
+// thumbnail and the full-width view share the same reading width.
+.ddl-stage__body {
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: 24px;
+
+  @include bp.respond-to('tablet') {
+    padding-inline: 32px;
+  }
+
+  @include bp.respond-to('laptop') {
+    padding-inline: 48px;
+  }
+
+  &--content {
+    max-width: 72rem; // == max-w-6xl (landing-container default)
+  }
+
+  &--wide {
+    max-width: 80rem; // == max-w-7xl (landing-container --wide)
+  }
+
+  &--full {
+    // Demo brings its own landing-container — don't double-constrain or double-pad.
+    max-width: none;
+    padding-inline: 0;
+  }
+}
+
+// In the overlay, give the demo room to breathe at true width.
+.ddl-stage--expanded .ddl-stage__body {
+  flex: 1;
+  padding-block: 48px;
+}

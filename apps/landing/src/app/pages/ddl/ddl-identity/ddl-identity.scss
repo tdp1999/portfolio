@@ -1,6 +1,11 @@
-.identity {
-  min-height: 100vh;
-  color: var(--landing-text-300);
+// Intro lede inside the doc-page shell.
+.id-lead {
+  color: var(--landing-text-400);
+
+  code,
+  strong {
+    color: var(--landing-text-300);
+  }
 }
 
 // ── recolor controls ─────────────────────────────────────────────────
@@ -61,20 +66,18 @@
 }
 
 // ── sections ─────────────────────────────────────────────────────────
-.bsec {
-  padding: 40px 0;
-  border-bottom: 1px solid var(--landing-border);
-
-  &__head {
-    margin-bottom: 24px;
-  }
-
-  &__note {
-    margin-top: 6px;
-    max-width: 64ch;
-  }
+// Per-element note rendered inside each `landing-ddl-section` (the section
+// already supplies the H2 + spacing; this is just the explanatory line above
+// the demo).
+.bsec__note {
+  margin-bottom: 24px;
+  max-width: 64ch;
 
   code {
+    color: var(--landing-text-300);
+  }
+
+  strong {
     color: var(--landing-text-300);
   }
 }
@@ -398,14 +401,5 @@
 
   &--recolor {
     color: #f43f5e;
-  }
-}
-
-// ── next ─────────────────────────────────────────────────────────────
-.bnext {
-  padding: 32px 0 64px;
-
-  code {
-    color: var(--landing-text-300);
   }
 }

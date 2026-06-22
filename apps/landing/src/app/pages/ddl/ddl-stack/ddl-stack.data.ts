@@ -1,9 +1,31 @@
+import type { DdlVariant } from '../ddl.types';
 import { buildIconUrl } from './ddl-stack.util';
 
 export interface Skill {
   readonly name: string;
   readonly icon: string;
 }
+
+// Open decision (exploring): the center-aligned intro above the chip rack — three
+// takes, no winner yet. Tier grouping, brand-color icons, and the L3 stagger are
+// already decided (noted in the lead prose); this record tracks only the intro pick.
+export const STACK_VARIANTS: readonly DdlVariant[] = [
+  {
+    id: 'ci',
+    label: 'ci — eyebrow + tagline, center',
+    note: 'Most cohesive with the rest of the home (eyebrow stays consistent across sections). Quiet — leaves the chips to do the talking. The proposal default.',
+  },
+  {
+    id: 'cii',
+    label: 'cii — display heading center + italic accent',
+    note: 'Strongest editorial register, closest to the reference portfolio. Costs vertical space and pressures other sections to also display-heading.',
+  },
+  {
+    id: 'ciii',
+    label: 'ciii — condensed center, one line, no eyebrow',
+    note: 'Purest minimalism; drops the section-number eyebrow entirely. Risks losing wayfinding (the eyebrow is the "where am I" cue elsewhere on the page).',
+  },
+];
 
 export const SKILLS = {
   daily: [

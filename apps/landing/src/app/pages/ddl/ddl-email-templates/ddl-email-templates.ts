@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Container, Breadcrumb, type BreadcrumbItem } from '@portfolio/landing/shared/ui';
+
+import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
+import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
+import { DdlSection } from '../ddl-section/ddl-section';
 import {
   ADMIN_NOTIFICATION_VARIANTS,
   AUTO_REPLY_VARIANTS,
+  EMAIL_TEMPLATES_VARIANTS,
   SAMPLE_ADMIN,
   SAMPLE_AUTO_REPLY,
   type EmailVariant,
@@ -24,15 +28,12 @@ import {
   selector: 'landing-ddl-email-templates',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Breadcrumb],
+  imports: [DdlDocPage, DdlSection, DdlDecisionRecord],
   templateUrl: './ddl-email-templates.html',
   styleUrl: './ddl-email-templates.scss',
 })
 export class DdlEmailTemplates {
-  protected readonly breadcrumb: readonly BreadcrumbItem[] = [
-    { label: 'DDL', href: '/ddl' },
-    { label: 'Email templates' },
-  ];
+  protected readonly variants = EMAIL_TEMPLATES_VARIANTS;
 
   protected readonly autoReplyVariants = AUTO_REPLY_VARIANTS;
   protected readonly adminVariants = ADMIN_NOTIFICATION_VARIANTS;

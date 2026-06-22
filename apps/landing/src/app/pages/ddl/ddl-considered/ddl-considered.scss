@@ -1,0 +1,54 @@
+// Considered-alternatives disclosure. Landing-scoped tokens only.
+@use 'base/prefers' as prefers;
+
+.ddl-considered {
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  background: var(--landing-ink-1);
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none; // hide native marker (Firefox)
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none; // hide native marker (WebKit)
+    }
+  }
+
+  &__label {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--landing-text-400);
+  }
+
+  &__chevron {
+    font-size: var(--landing-body-lg);
+    line-height: 1;
+    color: var(--landing-text-500);
+    transition: transform 200ms ease;
+
+    @include prefers.reduce-motion {
+      transition: none;
+    }
+  }
+
+  &[open] &__chevron {
+    transform: rotate(90deg);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding: 8px 20px 24px;
+    border-top: 1px solid var(--landing-border);
+  }
+}

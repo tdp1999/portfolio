@@ -8,7 +8,7 @@ import type { ContentSectionData } from './content-section.types';
  * display-sm heading. Used on `/uses`, `/colophon`, and any future quiet
  * sub-page that lists named things with a one-line reason and optional link.
  *
- * Origin: DDL `uses-card-variants` V2 + S1 (locked 2026-05-16). Promoted to a
+ * Origin: DDL `uses-card` V2 + S1 (locked 2026-05-16). Promoted to a
  * shared landing primitive when /colophon became a second consumer.
  *
  * Layout: 2-col responsive grid of mini-cards (monogram + name + reason).

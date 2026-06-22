@@ -1,0 +1,86 @@
+<landing-ddl-doc-page slug="section-rule" [sections]="sections">
+  <landing-ddl-section anchor="showcase" heading="Showcase">
+    <div class="space-y-10">
+      <!-- Section rule · plain demo -->
+      <div>
+        <h3 id="variant-plain" data-toc="Plain" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          variant: plain · "paragraph break" between equally-weighted sections
+        </h3>
+        <div class="bg-ink-0 p-6 rounded">
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">About</p>
+          <p class="font-sans text-body-md text-landing-text-400 mb-6">Section A — preceding content sits on ink-0.</p>
+          <landing-section-rule />
+          <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mt-6 mb-2">Writing</p>
+          <p class="font-sans text-body-md text-landing-text-400">
+            Section B — following content stays on ink-0. The hairline is the only signal of transition.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section rule · lift demo -->
+      <div>
+        <h3 id="variant-lift" data-toc="Lift" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          variant: lift · "chapter break" — indigo stripe + tonal lift on next section
+        </h3>
+        <div class="bg-ink-0 rounded overflow-hidden">
+          <div class="p-6">
+            <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-2">Intro</p>
+            <p class="font-sans text-body-md text-landing-text-400">
+              Section above the rule sits on ink-0 (the page background).
+            </p>
+          </div>
+          <landing-section-rule variant="lift" />
+          <div class="p-6">
+            <p class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-accent mb-2">Selected work</p>
+            <p class="font-sans text-body-md text-landing-text-400">
+              Section below picks up the tonal lift to ink-1 — used by Selected Work and Get In Touch (per B2.c). The
+              indigo stripe is the page's single accent moment for this transition.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage">
+    <div class="space-y-8 max-w-3xl">
+      <div>
+        <h3
+          id="what-is-it"
+          data-toc="What is it"
+          class="font-mono text-mono-md uppercase tracking-[0.06em] text-landing-text-500 mb-3"
+        >
+          what is a section rule?
+        </h3>
+        <div class="bg-ink-0 border border-landing-border rounded p-6">
+          <p class="font-sans text-body-md text-landing-text-400 mb-3">
+            A <strong>section rule</strong> is the 1px horizontal hairline that separates major content blocks down a
+            long page — hero → about → selected work → contact. Without it, sections bleed into each other; with it, the
+            page reads like a deliberate, paced document instead of a stack.
+          </p>
+          <p class="font-sans text-body-md text-landing-text-400 mb-3">
+            The <code class="font-mono text-mono-sm text-landing-text-300">plain</code> variant is a quiet hairline that
+            just says "section change". The
+            <code class="font-mono text-mono-sm text-landing-text-300">lift</code> variant adds a 1px indigo stripe on
+            top of the rule AND lifts the section that follows from
+            <code class="font-mono text-mono-sm text-landing-text-300">ink-0</code> to
+            <code class="font-mono text-mono-sm text-landing-text-300">ink-1</code> — a tonal step-up that says "what
+            comes next is featured" (used between intro → Selected Work, and copy → Get In Touch, per B2.c).
+          </p>
+          <p class="font-sans text-body-sm text-landing-text-500">
+            Mental model: <em>plain</em> = paragraph break · <em>lift</em> = chapter break.
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 font-sans text-body-md text-landing-text-400">
+        <p>
+          <strong class="text-landing-text-300">landing-section-rule</strong> separates major page sections. Use
+          <code class="font-mono text-mono-sm text-landing-text-300">plain</code> by default; reach for
+          <code class="font-mono text-mono-sm text-landing-text-300">lift</code> only when the section that follows
+          deserves to read as a chapter break (Selected Work, Get In Touch). One lift per page is usually plenty.
+        </p>
+      </div>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

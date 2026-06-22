@@ -1,34 +1,5 @@
 @use 'base/breakpoints' as bp;
 
-.email-templates-page {
-  display: block;
-  padding: 48px 0 96px;
-  color: var(--landing-text-300);
-}
-
-.email-templates-page__intro {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 48px;
-  max-width: 76ch;
-}
-
-.email-templates-page__crumb {
-  display: block;
-  margin-bottom: 4px;
-}
-
-.email-templates-page__title {
-  margin: 0;
-  font-family: var(--landing-font-body);
-  font-weight: 600;
-  font-size: var(--landing-display-sm);
-  line-height: var(--landing-display-sm-lh);
-  letter-spacing: var(--landing-tracking-tight);
-  color: var(--landing-text-300);
-}
-
 .email-templates-page__lede {
   margin: 0;
   font-size: var(--landing-body-md);
@@ -45,29 +16,8 @@
   }
 }
 
-.email-templates-page__section {
-  margin-top: 48px;
-}
-
-.email-templates-page__section-head {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.email-templates-page__section-title {
-  margin: 0;
-  font-family: var(--landing-font-body);
-  font-weight: 600;
-  font-size: var(--landing-display-xs);
-  line-height: var(--landing-display-xs-lh);
-  letter-spacing: var(--landing-tracking-tight);
-  color: var(--landing-text-300);
-}
-
 .email-templates-page__section-meta {
-  margin: 0;
+  margin: 0 0 24px;
   font-size: var(--landing-body-sm);
   line-height: var(--landing-body-sm-lh);
   color: var(--landing-text-500);
@@ -158,15 +108,6 @@
   border-radius: 12px;
   background: var(--landing-surface-50);
   border: 1px solid var(--landing-border-200);
-}
-
-.email-templates-page__notes-heading {
-  margin: 0 0 12px 0;
-  font-family: var(--landing-font-body);
-  font-weight: 600;
-  font-size: var(--landing-body-lg);
-  line-height: var(--landing-body-lg-lh);
-  color: var(--landing-text-300);
 }
 
 .email-templates-page__notes ul {

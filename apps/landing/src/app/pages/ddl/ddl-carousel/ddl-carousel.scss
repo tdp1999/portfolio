@@ -1,47 +1,10 @@
-:host {
-  display: block;
-  padding-block: var(--landing-space-2xl, 4rem);
-}
-
 .car {
-  &__crumb {
-    display: block;
-    margin-bottom: 2rem;
-  }
-
-  &__head {
-    margin-bottom: var(--landing-space-2xl, 4rem);
-  }
-
-  &__title {
-    margin-top: 0.75rem;
-    font-family: var(--landing-font-display);
-    font-size: var(--landing-display-md);
-    line-height: var(--landing-display-md-lh);
-  }
-
   &__lede {
-    margin-top: 1rem;
-    max-width: 64ch;
-    color: var(--landing-text-400);
-    font-size: var(--landing-body-lg);
-    line-height: var(--landing-body-lg-lh);
-  }
-
-  &__demo {
-    margin-bottom: var(--landing-space-2xl, 4rem);
-  }
-
-  &__demo-title {
-    font-family: var(--landing-font-mono);
-    font-size: var(--landing-mono-md);
-    text-transform: uppercase;
-    letter-spacing: var(--landing-tracking-mono);
-    color: var(--landing-text-300);
+    margin: 0;
   }
 
   &__demo-note {
-    margin: 0.5rem 0 1.5rem;
+    margin: 0 0 1.5rem;
     max-width: 60ch;
     color: var(--landing-text-500);
     font-size: var(--landing-body-md);
@@ -56,6 +19,12 @@
     border: 1px solid var(--landing-border);
     border-radius: 20px;
     background: var(--landing-ink-1);
+
+    /* Peek / content demos breathe wider so the neighbour sliver is visible —
+       especially once popped to full width via the stage. */
+    &--peek {
+      max-width: 720px;
+    }
   }
 
   &__api {
