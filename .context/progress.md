@@ -189,18 +189,18 @@
   - Direction epic (no task breakdown): visual signature locked — typography, indigo-violet accent, density, hero "type + ambient blueprint", tabbed mini-gallery card rule, Stitch-as-layout-reference contract. Handoff to E5
 - [x] **Landing Lightbox** (lightbox / `landing-lightbox`) - Completed (shipped v1) 2026-06; archived to `plans-done/` (sync 2026-06-07)
   - `[lightbox]` directive + FLIP open/close, figure auto-pull, grouped galleries, ⌘/Ctrl download hint, `.lightbox-enabled` hover-zoom affordance (reduce-motion gated); behavior contract lives in `.context/design/components/lightbox.md`. Project-detail in-content figures deferred to `epic-portfolio-prose-block-renderer` (architecture limit — `[innerHTML]` can't carry a directive)
+- [x] **Brand Identity System & Portable Mark Skill** (epic-portfolio-brand-identity) - Completed 2026-06-22; archived to `plans-done/` (sync 2026-06-22)
+  - Implemented inline (no task breakdown): Phase 1 (brand lib + `/ddl/identity`), Phase 2 (two-stage `brand-identity` skill + favicon/OG/email assets), site integration (3 ad-hoc mark systems replaced, verified live), Phase 3 (`<brand-motif>` lines-only grid, duration-adaptive animated/variable mark, do/don't guideline section), brand-lib tests (`master.util.spec.ts`, 19 specs)
+  - Non-blocking deferred: true variable-font weight (needs `wght`-axis woff2), video sting (Remotion)
 - [x] **DDL → Component Docs (3-column)** (epic-ddl-component-docs) - Completed 2026-06-22; archived to `plans-done/` (sync 2026-06-22)
   - All 4 phases ✅ (inline-tracked, no task breakdown): refactored `/ddl` from a 1654-line scroll page + 25 ad-hoc subroutes into a shadcn-class component-docs site — 3-column app-shell (window-locked at laptop+, internal content scroller, fixed full top-bar), scope-based taxonomy (Foundations/Components/Sections/Pages/Patterns), registry-driven sidebar + auto-derived multi-level TOC, standardized decision convention (`landing-ddl-decision-record` + `landing-ddl-considered`), `landing-ddl-stage` full-width primitive. Phase 4 polish: responsive QA across 4 BPs (TOC drops at laptop, returns at wide; carousel window-lock fix), deprecated hidden from rail + pager, console clean. Scroll-model + mobile-chrome rules captured in the `ddl-docs-scroll-model` memory.
 
 ## In Progress
 
-### Standalone Tasks
-
-- [ ] 360-fe-file-naming-standard-migration — Big-bang FE file/folder naming migration (XL); mechanical migration + lint/generator enforcement done & build-verified, **commit pending** (13/14 ACs)
-
 ### Active Epics (broken-down / queued — work not yet started)
 
 - [ ] **Console Tab Redesign** (epic-console-tab-redesign) — status `ready`; UX research → direction → system-wide migration, not yet broken down (M)
+- [ ] **Component Docs & DDL Canonical** (epic-component-docs-and-ddl) — status `open`; research/audit done 2026-06-22 (`_audit.md`), folds task 304. DDL → canonical doc site for all components (landing+console); 6 phases (foundations → DDL primitives → extractions → landing rollout → console parity → lint sweep), not yet broken down (L)
 
 ---
 
@@ -239,11 +239,11 @@
 
 ## Standalone Tasks
 
-- [ ] 065-optimize-landing-serve-performance - Optimize dev server startup time (M) (standalone)
+- [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
 - [ ] 194-dashboard-backend-apis - Dashboard real API wiring (M) (standalone)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
-- [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
-- [→] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — **in-progress**, see In Progress section
+- [~] 304-component-bank-audit-and-docs-polish - **Superseded 2026-06-22** → folded into `epic-component-docs-and-ddl` Phase 0 (audit done; restructure/docs-polish relocated). Archived to `tasks-done/other/`
+- [x] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — Completed 2026-06-22; 220 renames / 43 keep via ts-morph codemod, `shared/ui` flattened, `fe-naming` lint + generator enforcement; shipped in `7422fa2` + `5b33cc9`, merged via PR #1 (`8e58991`) → `tasks-done/other/` ✓
 - [x] 362-fe-logic-file-layout-rollout - Roll out FE logic-file layout standard (member order/access/naming/file purity) (L) (standalone) — Completed 2026-06-10; 123 files migrated + `tools/eslint/fe-file-layout.mjs`; `pnpm lint` 0 errors/0 warnings across 38 projects → `tasks-done/other/` ✓
 - [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
@@ -406,11 +406,11 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 336     |
-| In Progress               | 1       |
+| Done (archived)           | 337     |
+| In Progress               | 0       |
 | Pending                   | 24      |
 | **Total Created**         | **360** |
-| Epics completed           | 47      |
+| Epics completed           | 48      |
 
 ## Notes
 

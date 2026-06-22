@@ -33,10 +33,11 @@ Nx cache is healthy (0.3s hits across the board). No perf crisis. `.nx/cache` wa
   and NestJS DI correctness can only be confirmed at runtime — unverifiable here without
   starting the server. Not worth the unverifiable risk for a marginal cold-build saving.
 
-### Open (needs user, non-blocking)
-- Live dev-server cold-start (Vite `optimizeDeps`/HMR) was NOT measured — repo policy is
-  to never auto-start `nx serve`. If `pnpm dev:landing` cold start is ~10–15s, this task
-  is fully closed; if it spikes, reopen with the serve log.
+### Not measured (accepted, by policy)
+- Live dev-server cold-start (Vite `optimizeDeps`/HMR) was not measured — repo policy is to
+  never auto-start `nx serve`. The build portion that dominates cold-start was measured
+  (landing ~10s) and is healthy, so this is accepted as-is. If a future `pnpm dev:landing`
+  cold start feels slow, open a fresh task with the serve log rather than reopening this one.
 
 ### Discovered (tracked separately)
 - Pre-existing **test failures** surfaced by the benchmark: 8 stale api tests + the whole

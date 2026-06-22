@@ -1,6 +1,12 @@
 # Task: Component bank audit, landing/console split, and design-doc polish
 
-## Status: pending
+## Status: superseded — archived, work continues in epic Phase 0
+
+> **2026-06-22 — superseded by [Epic: Component Docs & DDL-as-Canonical-Documentation](../../plans/epic-component-docs-and-ddl.md).**
+> Archived here (NOT "done"): of this task's ACs only the **audit** is complete. The restructure, `_index.md`, `landing-segmented.md`, mislabel fixes, and docs-polish tails are **not done** — relocated to the epic's **Phase 0** checklist and executed there. Kept for provenance; do not treat its ACs as completed.
+> - ✅ Full audit produced → [`_audit.md`](../../design/components/_audit.md) (every landing/console/shared component, doc-status, priority, extraction candidates, DDL gap summary).
+> - ⏳ Restructure (domain subfolders, `_index.md`, fix segmented/chips mislabels), `landing-segmented.md`, docs-polish tails (CLAUDE.md / landing.md → landing-typography) → epic Phase 0.
+> Do not work this file standalone; pick up via the epic / `/ctx:breakdown` when Phase 0 opens.
 
 ## Goal
 Audit every component currently exported from `libs/landing/shared/ui/` and `libs/console/shared/ui/` against `.context/design/components/`, identify what's missing, restructure the bank to clearly separate landing vs console, write the highest-priority missing docs (starting with `landing-segmented`), and patch the small docs gaps from the E5 segmented-control session.

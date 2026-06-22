@@ -1,6 +1,6 @@
 # Task: Migrate FE file/folder naming to patterns-file-structure standard
 
-## Status: in-progress (mechanical migration + enforcement done & build-verified; commit pending)
+## Status: done
 
 ## Goal
 
@@ -72,7 +72,7 @@ same commit as** the rename — otherwise freshly-cleaned code drifts again imme
 - [x] `fe-naming` lint clean (0 findings); `@nx/enforce-module-boundaries` unaffected.
       ⚠ `nx test` (unit) not yet run for the rename.
 - [x] Selectors verified by build (no orphaned tags; element-selector rewrites compiled).
-- [ ] One atomic commit + `.git-blame-ignore-revs` — **PENDING** (user holding commit for review).
+- [x] One atomic commit + `.git-blame-ignore-revs` — done: `7422fa2` (migration) + `5b33cc9` (git-blame-ignore), merged to `master` via PR #1 (`8e58991`).
 
 ## Technical Notes
 
