@@ -1,6 +1,50 @@
 # Task: Optimize Landing Page Dev Server Performance
 
-## Status: pending
+## Status: done (resolved-by-environment + structural wins)
+
+## Resolution (2026-06-22)
+
+The original 113s symptom was **Windows-environment-specific** (antivirus scanning
+`node_modules`/`.nx`, slow file-watcher, lockfile timestamp churn). After moving to
+macOS (Node v24.16, pnpm 10.16) it **does not reproduce** — so chasing the original
+bug is chasing a ghost. Reframed to: measure the current dev-loop baseline on the new
+machine, apply OS-independent structural wins, and record numbers so any future
+regression is verifiable.
+
+### Measured baseline (macOS, n=3, median; harness = scratchpad `perf-bench.cjs`)
+
+| Task | Cold compute | Cache hit |
+|---|---|---|
+| build:api (webpack+tsc) | 2.7s | 0.3s |
+| build:landing (esbuild SSR) | 9.9–11s | 0.3s |
+| build:console (esbuild) | 4.0–4.9s | 0.3s |
+
+Nx cache is healthy (0.3s hits across the board). No perf crisis. `.nx/cache` was 1.4G
+(periodic `nx reset` is the only housekeeping note). `.angular` build cache 105M (fine).
+
+### Applied
+- **Lint cache restored:** removed hardcoded `--skip-nx-cache` from the `lint` script
+  (it defeated the cacheable `@nx/eslint:lint` target). Verified: repeat lint on
+  unchanged code 14.3s → ~6s (`existing outputs match the cache`).
+
+### Assessed and rejected
+- **api webpack `compiler: 'tsc' → 'swc'`:** rejected. api build is already 2.7s (not a
+  bottleneck); the swap is not a 1-line change (needs the `swc-loader` dep + a `.swcrc`),
+  and NestJS DI correctness can only be confirmed at runtime — unverifiable here without
+  starting the server. Not worth the unverifiable risk for a marginal cold-build saving.
+
+### Open (needs user, non-blocking)
+- Live dev-server cold-start (Vite `optimizeDeps`/HMR) was NOT measured — repo policy is
+  to never auto-start `nx serve`. If `pnpm dev:landing` cold start is ~10–15s, this task
+  is fully closed; if it spikes, reopen with the serve log.
+
+### Discovered (tracked separately)
+- Pre-existing **test failures** surfaced by the benchmark: 8 stale api tests + the whole
+  landing `ddl.spec.ts` (stale after the /ddl 3-column rebuild). Being fixed outside this
+  task's perf scope.
+
+## Original investigation (historical — Windows-era)
+
 
 ## Goal
 
