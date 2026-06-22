@@ -189,6 +189,8 @@
   - Direction epic (no task breakdown): visual signature locked — typography, indigo-violet accent, density, hero "type + ambient blueprint", tabbed mini-gallery card rule, Stitch-as-layout-reference contract. Handoff to E5
 - [x] **Landing Lightbox** (lightbox / `landing-lightbox`) - Completed (shipped v1) 2026-06; archived to `plans-done/` (sync 2026-06-07)
   - `[lightbox]` directive + FLIP open/close, figure auto-pull, grouped galleries, ⌘/Ctrl download hint, `.lightbox-enabled` hover-zoom affordance (reduce-motion gated); behavior contract lives in `.context/design/components/lightbox.md`. Project-detail in-content figures deferred to `epic-portfolio-prose-block-renderer` (architecture limit — `[innerHTML]` can't carry a directive)
+- [x] **DDL → Component Docs (3-column)** (epic-ddl-component-docs) - Completed 2026-06-22; archived to `plans-done/` (sync 2026-06-22)
+  - All 4 phases ✅ (inline-tracked, no task breakdown): refactored `/ddl` from a 1654-line scroll page + 25 ad-hoc subroutes into a shadcn-class component-docs site — 3-column app-shell (window-locked at laptop+, internal content scroller, fixed full top-bar), scope-based taxonomy (Foundations/Components/Sections/Pages/Patterns), registry-driven sidebar + auto-derived multi-level TOC, standardized decision convention (`landing-ddl-decision-record` + `landing-ddl-considered`), `landing-ddl-stage` full-width primitive. Phase 4 polish: responsive QA across 4 BPs (TOC drops at laptop, returns at wide; carousel window-lock fix), deprecated hidden from rail + pager, console clean. Scroll-model + mobile-chrome rules captured in the `ddl-docs-scroll-model` memory.
 
 ## In Progress
 
@@ -242,7 +244,7 @@
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
 - [ ] 304-component-bank-audit-and-docs-polish - Component bank audit, landing/console split, design-doc polish (M) (standalone)
 - [→] 360-fe-file-naming-standard-migration - Big-bang migrate FE files/folders to `patterns-file-structure.md` grammar + lint/generator enforcement (XL) (standalone) — **in-progress**, see In Progress section
-- [ ] 362-fe-logic-file-layout-rollout - Roll out FE logic-file layout standard (member order/access/naming/file purity); foundation (doc §16 + §5.5 + warning lint) shipped, remaining = migrate complex files + custom purity rule + import-sort plugin (L) (standalone)
+- [x] 362-fe-logic-file-layout-rollout - Roll out FE logic-file layout standard (member order/access/naming/file purity) (L) (standalone) — Completed 2026-06-10; 123 files migrated + `tools/eslint/fe-file-layout.mjs`; `pnpm lint` 0 errors/0 warnings across 38 projects → `tasks-done/other/` ✓
 - [x] 320-landing-prod-fouc-investigation - Eliminate FOUC flash on prod landing (Cloudflare + Railway SSR) (M) (standalone) ✓
 - [x] 321-profile-corestack-tests - Backfill unit tests for `Profile.coreStack` (S) (standalone, follow-up from E3) ✓
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
