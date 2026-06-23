@@ -25,8 +25,8 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 - Insert flow uses Tiptap's `editor.commands.insertImageRef({...})` (custom command added in doc-engine sprint 1).
 
 ## Files to Touch
-- `libs/shared/redoc-rte-tiptap/src/lib/extensions/image-ref-bridge.ts` (any glue config the concrete needs)
-- `libs/shared/redoc-rte-tiptap/src/lib/redoc-rte-tiptap.component.ts` (toolbar config, conditional on mode)
+- `libs/shared/features/rte-tiptap/src/lib/extensions/image-ref-bridge.ts` (any glue config the concrete needs)
+- `libs/shared/features/rte-tiptap/src/lib/rte-tiptap.editor.ts` (toolbar config, conditional on mode)
 - `apps/console/src/app/app.config.ts` (refines the `MEDIA_PICKER_HOOK` factory)
 
 ## Dependencies

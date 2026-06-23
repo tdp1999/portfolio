@@ -355,10 +355,10 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 ### Phase 2 — Schema migrations
 - [x] 305-rte-prisma-migrations (L) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
-### Phase 3 — `redoc-rte` shared libs
-- [x] 306-rte-contract-lib (S) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/)
-- [ ] 307-rte-tiptap-concrete (M) — deps: 306, ext doc-engine v0.1.0
-- [ ] 308-rte-renderer-lib (S) — deps: 306
+### Phase 3 — `rte-*` shared libs (rte-core / rte-contract / rte-tiptap / rte-renderer)
+- [x] 306-rte-contract-lib (S) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/); lib later renamed `redoc-rte`→`rte-contract` in 308
+- [x] 307-rte-tiptap-concrete (M) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); `rte-tiptap`
+- [x] 308-rte-renderer-lib (S) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); added Angular-free `rte-core` + `rte-renderer`; renamed the RTE libs
 - [ ] 309-rte-textarea-fallback (S) — deps: 306
 
 ### Phase 4 — BE pipeline

@@ -11,7 +11,7 @@ The HTML cache stores the semantic figure with `data-image-id`. At render time, 
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 
 ## Acceptance Criteria
-- [ ] `<redoc-rte-render>` (or a sibling component) walks the HTML and replaces every `<figure data-block="image-ref">` with `<landing-figure>` instances. Implementation: post-render DOM transform inside the component, OR an Angular structural pattern using `[innerHTML]` + a directive that scans descendants — pick the simpler approach.
+- [ ] `<rte-render-html>` (or a sibling component) walks the HTML and replaces every `<figure data-block="image-ref">` with `<landing-figure>` instances. Implementation: post-render DOM transform inside the component, OR an Angular structural pattern using `[innerHTML]` + a directive that scans descendants — pick the simpler approach.
 - [ ] Media metadata (URL variants, alt, dimensions, caption) is resolved via the existing landing data-access — single API call batched per page.
 - [ ] If `Media` row deleted: renderer falls back to broken-image placeholder + the original alt text (per epic risk row).
 - [ ] SSR-safe: the transform runs on both server and client; first paint includes the fully-hydrated `landing-figure`.
@@ -26,7 +26,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 - Caption numbering: scoped to the rendered HTML root, not page-global. Use `IntersectionObserver`-free counter at render time.
 
 ## Files to Touch
-- `libs/shared/redoc-rte-renderer/**` (new transform pass)
+- `libs/shared/features/rte-renderer/**` (new transform pass)
 - `libs/landing/shared/ui/figure/**` (no change expected; verify selector + signal inputs match)
 - `libs/landing/data-access/**` (batch media metadata fetch)
 

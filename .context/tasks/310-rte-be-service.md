@@ -6,7 +6,7 @@
 Centralize the JSON → HTML generation + sanitization pipeline so every command handler that writes a rich field produces all 3 columns in a single transaction.
 
 ## Context
-Write-time: `contentJson` arrives from console → `generateHTML` (Tiptap headless, Node-side) → `DOMPurify.sanitize` → persist `{ json, html, schemaVersion }`. Sharing the sanitization whitelist with FE renderer (task 308) is the belt-and-braces guarantee.
+Write-time: `contentJson` arrives from console → `generateHTML` (Tiptap headless, Node-side) → `sanitizeRichText` → persist `{ json, html, schemaVersion }`. The whitelist + sanitizer live in the **Angular-free** `rte-core` lib (task 308), so this Node service shares them with the FE renderer without bundling Angular — that shared gate is the belt-and-braces guarantee.
 
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 4.
 
@@ -15,7 +15,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 4.
 - [ ] `RichTextService.toCanonicalForm(json: EditorDocument): { json: EditorDocument, html: string, schemaVersion: number }`:
   - runs `migrateDoc(json)` first (lazy migration on write)
   - calls `generateHTML(json, extensionList)` from `@phuong-tran-redoc/document-engine-core` (re-exported in sprint 1)
-  - sanitizes via `isomorphic-dompurify` with `RICH_TEXT_WHITELIST` imported from `@portfolio/shared/redoc-rte-renderer`
+  - sanitizes by calling `sanitizeRichText` (DOMPurify + `RICH_TEXT_WHITELIST`) imported from `@portfolio/shared/features/rte-core` (Angular-free — no Angular pulled into the API)
   - returns the latest schema version from doc-engine-core
 - [ ] Translatable variant: `toCanonicalFormTranslatable({ en, vi }): { json: { en, vi }, html: { en, vi }, schemaVersion }`.
 - [ ] Module imported by Profile, Project, BlogPost, Experience, TechnicalHighlight modules.
@@ -25,8 +25,8 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 4.
 
 ## Technical Notes
 - Tiptap headless (`@tiptap/html`) + extension list re-exported from doc-engine-core (sprint 1 issue E-S1.6).
-- Sanitization whitelist must be a **single shared constant** between BE and FE — import from `@portfolio/shared/redoc-rte-renderer`.
-- `isomorphic-dompurify` already pulled in by task 308; reuse the dep.
+- Sanitization whitelist + `sanitizeRichText` are the **single shared gate** between BE and FE — import from the Angular-free `@portfolio/shared/features/rte-core`. (They were deliberately split out of the Angular renderer lib so importing them here does not bundle Angular into the Node API.)
+- `isomorphic-dompurify` already pulled in by `rte-core` (task 308); reuse the dep. No Angular dependency in this module.
 - Validate cold-start time after this lands (epic risk R: "BE Tiptap headless adds bundle weight ~150KB Node-side").
 - Test patterns: see `.context/testing-guide.md` and the be-test skill output gates in personal memory.
 
@@ -42,8 +42,8 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 4.
 
 ## Dependencies
 - 305-rte-prisma-migrations
-- 307-rte-tiptap-concrete (only for shared `EditorDocument` type — no runtime dep on Angular lib)
-- 308-rte-renderer-lib (for the shared whitelist constant)
+- 306/307 — for the shared `EditorDocument` type, now sourced from the Angular-free `rte-core` (type-only; no runtime Angular dep)
+- 308-rte-renderer-lib (delivers `rte-core` with `RICH_TEXT_WHITELIST` + `sanitizeRichText`)
 - External: doc-engine-core v0.1.0 with `generateHTML` + extensions + `migrateDoc` re-exports.
 
 ## Complexity: M

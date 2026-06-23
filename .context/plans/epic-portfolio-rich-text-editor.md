@@ -1,4 +1,4 @@
-# Epic: Rich-Text Editor Integration (`redoc-rte`)
+# Epic: Rich-Text Editor Integration (`rte-contract`)
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
 > Status: broken-down (2026-05-05). 15 tasks created (305–319) in `.context/tasks/`.
@@ -14,7 +14,7 @@ Replace ad-hoc textarea-with-parser patterns (`taglineSplit`, `coreStack`, `pars
 1. Uses an in-house Tiptap-based editor (`@phuong-tran-redoc/document-engine-angular`, hereafter "**E**") for long-form content.
 2. Uses CommonMark Markdown for short-form content (taglines, intros, footers).
 3. Stores rich content as **JSON AST canonical + sanitized HTML cache**, with `schema_version` for safe migrations.
-4. Decouples editor implementation from consumers via an abstract `RichTextEditor` token (`redoc-rte`), so the underlying engine can be swapped without rewriting call sites.
+4. Decouples editor implementation from consumers via an abstract `RichTextEditor` token (`rte-contract`), so the underlying engine can be swapped without rewriting call sites.
 5. Renders read-side HTML SSR-safely with two-layer DOMPurify sanitization (write + read).
 
 ## Non-goals
@@ -62,11 +62,11 @@ Consumer (portfolio) ships glue script `apps/api/scripts/migrate-rich-text.ts` e
 | Field | Strategy | Rationale |
 |---|---|---|
 | Tagline, stackIntro, contactIntro, footerTagline | **Markdown plain text** (CommonMark subset: bold/italic/link) | <200 chars, edit hiếm, E overkill, parser custom hiện tại là smell |
-| `Profile.bioLong` | **`redoc-rte` (E, semantic-only)** | ~450 từ, italic/bold/list essential |
-| `Project.body` (case study) | **`redoc-rte` (E, full config)** | ~1500 từ, image-ref blocks, code blocks |
-| `TechnicalHighlight.challenge/approach/outcome` | **`redoc-rte` (E, semantic-only)** | ~150 từ × 3, italic/bold/list |
-| `Experience.description/responsibilities/highlights` | **`redoc-rte` (E, semantic-only)** | Lists + emphasis |
-| `BlogPost.content` | **`redoc-rte` (E, full config)** | Long-form, code blocks, images |
+| `Profile.bioLong` | **`rte-contract` (E, semantic-only)** | ~450 từ, italic/bold/list essential |
+| `Project.body` (case study) | **`rte-contract` (E, full config)** | ~1500 từ, image-ref blocks, code blocks |
+| `TechnicalHighlight.challenge/approach/outcome` | **`rte-contract` (E, semantic-only)** | ~150 từ × 3, italic/bold/list |
+| `Experience.description/responsibilities/highlights` | **`rte-contract` (E, semantic-only)** | Lists + emphasis |
+| `BlogPost.content` | **`rte-contract` (E, full config)** | Long-form, code blocks, images |
 | `Project.oneLiner`, `Project.description` | Markdown plain text | <300 chars per field |
 | Identity, social links, URLs, structured arrays | Plain inputs / structured JSON | No prose |
 
@@ -81,20 +81,25 @@ Consumer (portfolio) ships glue script `apps/api/scripts/migrate-rich-text.ts` e
 ### DI / swap-ability
 
 ```
-libs/shared/redoc-rte/             — contract (token, abstract CVA, EditorDocument type, ToolbarConfig enum)
-libs/shared/redoc-rte-tiptap/      — concrete impl wrapping E
-libs/shared/redoc-rte-renderer/    — SSR-safe read-side renderer (innerHTML + DOMPurify pipe)
-libs/shared/redoc-rte-textarea/    — fallback impl, plain textarea (test/dev)
+libs/shared/features/rte-core/         — Angular-free shared values (EditorDocument + EditorMode types, RICH_TEXT_WHITELIST, sanitizeRichText) imported by BOTH the Angular FE and the Node BE at runtime
+libs/shared/features/rte-contract/     — Angular DI contract (RTE_EDITOR token, abstract RteEditor CVA, ToolbarConfig enum)
+libs/shared/features/rte-tiptap/       — concrete impl wrapping E
+libs/shared/features/rte-renderer/     — SSR-safe read-side renderer (innerHTML + DOMPurify pipe)
+libs/shared/features/rte-textarea/     — fallback impl, plain textarea (test/dev)
 ```
+
+The framework-agnostic bits (the `EditorDocument`/`EditorMode` types, the `RICH_TEXT_WHITELIST` constant, and the `sanitizeRichText` function) live in the new Angular-free `rte-core` lib so the Node BE can import them at runtime without bundling Angular. The Angular DI contract (`RTE_EDITOR` token, abstract `RteEditor`) stays in `rte-contract`.
 
 Console `app.config.ts`:
 ```ts
-provide(REDOC_RTE_EDITOR, RedocRteTiptapComponent)
+provide(RTE_EDITOR, RteTiptapEditor)
 ```
 
 Concrete impl never leaks into consumer code. Swapping to Quill/Lexical = new concrete impl + provider change.
 
 ### Sanitization whitelist (initial — extend per content need)
+
+`RICH_TEXT_WHITELIST` and `sanitizeRichText` live in the Angular-free `rte-core` lib (built on `isomorphic-dompurify`). Both the renderer's `SafeHtmlPipe` and the BE `RichTextService` import them from `@portfolio/shared/features/rte-core` — the BE (NestJS, Node) must use the whitelist + sanitizer without bundling Angular, which it could not do if they lived in the Angular renderer lib.
 
 ```ts
 ALLOWED_TAGS = [
@@ -167,32 +172,33 @@ Old `*` (string/markdown) columns remain through expand/contract. Drop in a foll
 
 Exit: migration applied to dev DB, Prisma client regenerated, all repos return both old and new fields side-by-side.
 
-### Phase 3 — `redoc-rte` shared libs
+### Phase 3 — `rte-contract` shared libs
 
 Generate via `ng-lib` skill:
 
-- `libs/shared/redoc-rte` (contract): `EditorDocument` type, `REDOC_RTE_EDITOR` token, abstract `RedocRteEditorComponent extends ControlValueAccessor`, `ToolbarConfig` enum, `EditorMode` ('semantic' | 'full').
-- `libs/shared/redoc-rte-tiptap` (concrete): `RedocRteTiptapComponent` wrapping E, `tiptapExtensionsFor(mode)` factory, `MEDIA_PICKER_HOOK` token.
-- `libs/shared/redoc-rte-renderer` (read-side): `<redoc-rte-render>` component with `[innerHTML]="html | safeHtml"`, `SafeHtmlPipe` running DOMPurify with shared whitelist.
-- `libs/shared/redoc-rte-textarea` (fallback): plain textarea concrete impl satisfying contract. For tests, SSR fallback, future debug.
+- `libs/shared/features/rte-core` (Angular-free shared values): `EditorDocument` + `EditorMode` ('semantic' | 'full') types, `RICH_TEXT_WHITELIST` constant, `sanitizeRichText(html, whitelist?)` (built on `isomorphic-dompurify`). Imported by BOTH the Angular FE and the Node BE at runtime — no Angular dependency.
+- `libs/shared/features/rte-contract` (contract): `RTE_EDITOR` token, abstract `RteEditor extends ControlValueAccessor`. Re-uses the `EditorDocument`/`EditorMode` types from `rte-core`. The framework-agnostic bits (types, whitelist, sanitize) now live in `rte-core`; only the Angular DI contract lives here.
+- `libs/shared/features/rte-tiptap` (concrete): `RteTiptapEditor` wrapping E, `documentEngineConfigFor(mode)` factory (returns `Partial<DocumentEngineConfig>` — the delivered engine builds extensions from a config flag object, not a raw extension array), `MEDIA_PICKER_HOOK` token (reuses engine `ImagePickHook`/`MediaResult`).
+- `libs/shared/features/rte-renderer` (read-side): `<rte-render-html>` component with `[innerHTML]="html | safeHtml"`, `SafeHtmlPipe` running `sanitizeRichText` (from `rte-core`) then `bypassSecurityTrustHtml`.
+- `libs/shared/features/rte-textarea` (fallback): plain textarea concrete impl satisfying contract. For tests, SSR fallback, future debug.
 
 Both concrete impls implement CVA — `formControlName` works seamlessly.
 
-Exit: contract published in tsconfig path mappings, console can `provide(REDOC_RTE_EDITOR, RedocRteTiptapComponent)`.
+Exit: contract published in tsconfig path mappings, console can `provide(RTE_EDITOR, RteTiptapEditor)`.
 
 ### Phase 4 — BE rich-text service
 
 `apps/api/src/modules/shared/rich-text/`:
 
-- `RichTextService.toCanonicalForm(json: EditorDocument): { json: EditorDocument, html: string, schemaVersion: number }` — runs `migrateDoc`, `generateHTML`, `DOMPurify.sanitize`.
-- `RICH_TEXT_WHITELIST` constant exported, shared with FE pipe.
+- `RichTextService.toCanonicalForm(json: EditorDocument): { json: EditorDocument, html: string, schemaVersion: number }` — runs `migrateDoc`, `generateHTML`, then `sanitizeRichText` (imported from `@portfolio/shared/features/rte-core`).
+- `RICH_TEXT_WHITELIST` + `sanitizeRichText` imported from `rte-core` (the Angular-free lib), shared with the FE renderer pipe. The BE imports them without bundling Angular.
 - Module imported by Profile, Project, BlogPost, Experience modules. Each command handler that accepts a rich field calls the service before persisting.
 
 Exit: writing a JSON to DB also writes sanitized HTML, all in one transaction.
 
 ### Phase 5 — Console editor swap
 
-`libs/console/shared/ui/markdown-editor/` is currently a façade with a textarea placeholder. Swap concrete to `RedocRteTiptapComponent`:
+`libs/console/shared/ui/markdown-editor/` is currently a façade with a textarea placeholder. Swap concrete to `RteTiptapEditor`:
 
 - Refactor `console-markdown-editor` → `console-rich-text-editor`. Old `markdown-editor` selector kept as deprecated alias for one release.
 - Wire `MEDIA_PICKER_HOOK` to existing `MediaPickerDialog`.
@@ -206,13 +212,13 @@ Exit: every console form page using a rich field renders the new editor; saves s
 
 Replace ad-hoc parsers in landing components:
 
-- `home-intro.component.ts` — drop `parseBioLong`, render `<redoc-rte-render [html]="profile.bioLongHtml.en">`.
+- `home-intro.component.ts` — drop `parseBioLong`, render `<rte-render-html [html]="profile.bioLongHtml.en">`.
 - `home-stack.component.ts` (when 285b lands) — same pattern for stackIntro, but `stackIntro` is Markdown-only (Phase 8), uses `MarkdownPipe` not RTE renderer.
 - Future `project-detail.component.ts` (task 290) — render `body`, `highlights[*].challenge/approach/outcome` via renderer.
-- Blog `post-detail.component.ts` — replace `marked.parse(content)` with `<redoc-rte-render [html]="post.contentHtml">`.
+- Blog `post-detail.component.ts` — replace `marked.parse(content)` with `<rte-render-html [html]="post.contentHtml">`.
 - SSR: renderer is server-safe (no Tiptap, no `window`); HTML already sanitized at write-time, pipe sanitizes again.
 
-Exit: every landing page that previously called a custom parser now consumes pre-sanitized HTML.
+Exit: every landing page that previously called a custom parser now consumes pre-sanitized HTML via `<rte-render-html>`.
 
 ### Phase 7 — Image-ref + MediaPicker integration
 
@@ -235,7 +241,7 @@ Delete custom parsers, replace with CommonMark via `marked`:
 
 `libs/landing/shared/util/` gains a `MarkdownPipe` (`text | markdown`) wrapping `marked.parse` + DOMPurify for short Markdown fields.
 
-Exit: 7 custom parsers deleted; landing reads short fields through `MarkdownPipe`, long fields through `<redoc-rte-render>`.
+Exit: 7 custom parsers deleted; landing reads short fields through `MarkdownPipe`, long fields through `<rte-render-html>`.
 
 ### Phase 9 — `document-engine` Sprint 2
 
@@ -260,16 +266,16 @@ Exit: E READMEs accurate, no `#` placeholders.
 
 - [ ] E v0.1.0 published with all Sprint 1 issues closed.
 - [ ] Prisma schema includes `*Json`, `*Html`, `*SchemaVersion` columns for every rich field.
-- [ ] `libs/shared/redoc-rte` (+ 3 concrete impls) shipped, contract documented.
-- [ ] `RichTextService` in BE generates HTML + sanitizes on every write.
-- [ ] Every console form page using a rich field renders `RedocRteTiptapComponent` via DI token (no hard import of E in form pages).
-- [ ] `home-intro` no longer calls `parseBioLong`; renders via `<redoc-rte-render>`.
-- [ ] Blog post content renders via `<redoc-rte-render>`, not `marked.parse`.
+- [ ] `libs/shared/features/rte-core` + `rte-contract` (+ 3 concrete impls) shipped, contract documented.
+- [ ] `RichTextService` in BE generates HTML + sanitizes on every write (via `sanitizeRichText` from `rte-core`).
+- [ ] Every console form page using a rich field renders `RteTiptapEditor` via DI token (no hard import of E in form pages).
+- [ ] `home-intro` no longer calls `parseBioLong`; renders via `<rte-render-html>`.
+- [ ] Blog post content renders via `<rte-render-html>`, not `marked.parse`.
 - [ ] Image picked in editor displays correctly on public blog page (Phase 7).
 - [ ] Custom parsers (`taglineSplit`, `coreStack`, `parseBioLong`, `convertObsidianMarkdown`, `renderMarkdownPreview`, `extractTitleFromMarkdown`, `extractH1Title`) deleted from runtime (Obsidian importer kept as one-shot tool).
 - [ ] No `[innerHTML]` binding in landing or console without `| safeHtml` pipe.
 - [ ] No `bypassSecurityTrustHtml` call without preceding DOMPurify sanitize.
-- [ ] No `import { ... } from '@phuong-tran-redoc/document-engine-angular'` outside `libs/shared/redoc-rte-tiptap`.
+- [ ] No `import { ... } from '@phuong-tran-redoc/document-engine-angular'` outside `libs/shared/features/rte-tiptap`.
 - [ ] `pnpm migrate:editor` script exists and runs idempotently against dev DB.
 - [ ] Landing SSR initial paint contains rendered HTML (no client-side editor load on read pages).
 - [ ] Lighthouse perf budget on `/blog/:slug` and `/projects/:slug` ≥ 80 (existing E5 gate).
@@ -282,8 +288,8 @@ Exit: E READMEs accurate, no `#` placeholders.
 - ~~Image picker?~~ → async `onPick` callback into existing MediaPicker (Q5).
 - ~~Markdown round-trip?~~ → one-shot import only (Q6).
 - ~~Tagline structured fields?~~ → no, keep generic Markdown (Q8).
-- ~~DI architecture?~~ → token + abstract CVA + 3 concrete impls under `libs/shared/redoc-rte*` (Q9).
-- ~~Lib name?~~ → `redoc-rte` (Q9).
+- ~~DI architecture?~~ → token + abstract CVA + 3 concrete impls under `libs/shared/features/rte-*` (Q9).
+- ~~Lib name?~~ → `rte-contract` (Q9).
 - ~~Toolbar?~~ → use E default toolbar, theme via CSS vars; revisit if mismatch (Q10).
 - ~~Sanitize where?~~ → BE write + FE read (belt + braces) (Q11).
 - ~~SSR strategy?~~ → editor browser-only via `@defer`; landing renders sanitized HTML (Q11).

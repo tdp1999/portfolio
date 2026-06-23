@@ -1,4 +1,4 @@
-# Task: `redoc-rte-textarea` — Fallback Editor Implementation
+# Task: `rte-textarea` — Fallback Editor Implementation
 
 ## Status: pending
 
@@ -11,8 +11,8 @@ Multiple concrete impls of the same contract prove the abstraction is real. Test
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 3.4.
 
 ## Acceptance Criteria
-- [ ] New lib `libs/shared/redoc-rte-textarea` (via `ng-lib`).
-- [ ] `RedocRteTextareaComponent` extends the abstract from `@portfolio/shared/redoc-rte`. Implements `ControlValueAccessor`.
+- [ ] New lib `libs/shared/features/rte-textarea` (via `ng-lib`).
+- [ ] `RteTextareaEditor` extends the abstract `RteEditor` from `@portfolio/shared/features/rte-contract`. Implements `ControlValueAccessor`. (The `EditorDocument` type comes from `@portfolio/shared/features/rte-core`.)
 - [ ] Renders a `<textarea>` showing the raw JSON serialized as pretty-printed string (debug-friendly).
 - [ ] CVA `writeValue` accepts `EditorDocument`, displays `JSON.stringify(value, null, 2)`.
 - [ ] CVA `onChange` re-parses textarea content on blur. Invalid JSON keeps last valid value + sets `touched`.
@@ -26,7 +26,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 3.4.
 **Specialized Skill:** ng-lib — read `~/.claude/skills/ng-lib/SKILL.md`.
 
 ## Files to Touch
-- `libs/shared/redoc-rte-textarea/` (new lib)
+- `libs/shared/features/rte-textarea/` (new lib)
 - `tsconfig.base.json`
 
 ## Dependencies

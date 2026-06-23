@@ -1,4 +1,4 @@
-# Task: Landing — Replace `home-intro` Custom Parser with `<redoc-rte-render>`
+# Task: Landing — Replace `home-intro` Custom Parser with `<rte-render-html>`
 
 ## Status: pending
 
@@ -12,7 +12,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 6.
 
 ## Acceptance Criteria
 - [ ] `home-intro.component.ts` no longer imports or calls `parseBioLong`.
-- [ ] Template uses `<redoc-rte-render [html]="profile().bioLongHtml.en">`.
+- [ ] Template uses `<rte-render-html [html]="profile().bioLongHtml.en">`.
 - [ ] Landing `Profile` data-access type updated to expose `bioLongJson` + `bioLongHtml` + `bioLongSchemaVersion`. Old `bioLong` may stay during transition if other readers exist; flag for cleanup in task 317.
 - [ ] Visual parity verified on `/` against pre-task screenshot (chrome-devtools MCP per `.context/design/visual-feedback.md`).
 - [ ] No `[innerHTML]` binding without `| safeHtml` introduced (lint rule still passes).

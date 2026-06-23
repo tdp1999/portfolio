@@ -100,7 +100,7 @@ Each prose item carries two checkboxes: **EN** and **VI**. Language-neutral item
 
 ## Dependencies (technical gates)
 
-- Long-form with multi-block content (images + lightbox) in case studies / blog: gated on RTE epic (`redoc-rte`, 305–319) + Prose Block Renderer (`redoc-blocks`).
+- Long-form with multi-block content (images + lightbox) in case studies / blog: gated on RTE epic (`rte-*` libs, 305–319) + Prose Block Renderer (`redoc-blocks`).
 
 ## Related
 

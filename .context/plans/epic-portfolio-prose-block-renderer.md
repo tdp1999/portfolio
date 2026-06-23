@@ -21,7 +21,7 @@ The landing read-path renders from the canonical JSON document, walked node-by-n
 
 ### D2 — Canonical contract owned by us, decoupled from `document-engine` (E)
 
-Landing never reads E's (Tiptap) JSON shape directly. We define our own stable contract in `redoc-rte` (the existing RTE contract lib):
+Landing never reads E's (Tiptap) JSON shape directly. We define our own stable contract: the `PortableNode`/`PortableDocument` types + per-block Zod attr schemas go into the Angular-free `rte-core` lib (so the BE can import the Zod schemas + types at runtime without bundling Angular), while the Angular DI bits (`BLOCK_RENDERERS` token, `provideBlockRenderers`) stay in `rte-contract` (the existing RTE contract lib):
 
 ```ts
 export interface PortableNode {
@@ -68,10 +68,10 @@ The renderer walks the tree and injects conditionally — declaratively, so Angu
 @let r = rendererFor(node.type); @if (r) {
 <ng-container *ngComponentOutlet="r.component; inputs: r.inputs(node, ctx)" />
 } @else if (node.text != null) {
-<redoc-inline [node]="node" />
+<rte-inline [node]="node" />
 <!-- D5 -->
 } @else {
-<redoc-element [node]="node" />
+<rte-element [node]="node" />
 <!-- recursive p/h2/ul/... -->
 }
 ```
@@ -82,7 +82,7 @@ The renderer walks the tree and injects conditionally — declaratively, so Angu
 
 Three artifacts must agree; the **Zod schema is the stable anchor between them** (project already uses Zod v4):
 
-1. **Contract** (`redoc-rte`): node `type` + `z.object(...)` attr schema. The source of truth.
+1. **Contract** (`rte-core` — node `type` + `z.object(...)` attr schema, Angular-free so the BE can import it): the source of truth.
 2. **Editor (E) produces it**: the D3 adapter maps E's node → `{ type, attrs }` then `Schema.parse(attrs)` — invalid attrs are dropped (this is also the primary security gate, D6).
 3. **Component consumes it**: the registry's `inputs(node, ctx)` maps validated attrs → the component's typed `input()`s.
 
@@ -109,19 +109,20 @@ Angular SSR emits full HTML from the AST renderer, so Googlebot / AI crawlers ge
 
 | Lib                                | Change                                                                                                                                                                                                                                             |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `libs/shared/redoc-rte` (contract) | **Add** `PortableDocument`/`PortableNode`/`Mark`, `BlockRenderer`, `BLOCK_RENDERERS` token, `provideBlockRenderers()`, `RenderContext`, and per-block Zod attr schemas.                                                                            |
-| `libs/shared/redoc-rte-renderer`   | **Rewrite** read-path from "innerHTML + DOMPurify" to an **AST walker + `NgComponentOutlet`** (`<redoc-rte-render [doc]="...">`). Keep a separate `<redoc-rte-render-html [html]="...">` for the cache-fallback consumers (RSS/llms.txt/OG/no-JS). |
+| `libs/shared/features/rte-core` (Angular-free) | **Add** `PortableDocument`/`PortableNode`/`Mark` types and per-block Zod attr schemas — so the BE can import the Zod schemas + types at runtime without bundling Angular.                                                                            |
+| `libs/shared/features/rte-contract` (contract) | **Add** the Angular DI bits: `BlockRenderer`, `BLOCK_RENDERERS` token, `provideBlockRenderers()`, `RenderContext`.                                                                            |
+| `libs/shared/features/rte-renderer`   | **Rewrite** read-path from "innerHTML + DOMPurify" to an **AST walker + `NgComponentOutlet`** (`<rte-render [doc]="...">`). Keep a separate `<rte-render-html [html]="...">` for the cache-fallback consumers (RSS/llms.txt/OG/no-JS). |
 | BE `RichTextService` (RTE Phase 4) | **Extend** `toCanonicalForm` to run the E→canonical adapter (D3) before HTML generation; persist canonical JSON.                                                                                                                                   |
 | Block component libs               | New thin wrappers (e.g. `FigureBlockComponent`, `GalleryBlockComponent`) over existing `landing-figure` / `landing-gallery` primitives.                                                                                                            |
 
 ## Phases (provisional — detail when this epic opens)
 
-1. **Contract** — `PortableDocument` types, `BlockRenderer`/`BLOCK_RENDERERS`/`provideBlockRenderers`, `RenderContext`, first Zod attr schemas (`paragraph`/`heading`/`image-ref`).
+1. **Contract** — `PortableDocument` types + first Zod attr schemas (`paragraph`/`heading`/`image-ref`) in `rte-core`; `BlockRenderer`/`BLOCK_RENDERERS`/`provideBlockRenderers`, `RenderContext` in `rte-contract`.
 2. **E→canonical adapter** — anti-corruption mapper + Zod validation in `RichTextService` (BE write-time). Migrate stored docs lazily (reuse RTE `schemaVersion`/`migrateDoc` discipline, but on **our** version).
-3. **AST renderer** — `<redoc-rte-render [doc]>` walker, `redoc-element` (recursive structural), `redoc-inline` (declarative marks, D5b), unknown-block fallback.
+3. **AST renderer** — `<rte-render [doc]>` walker, `rte-element` (recursive structural), `rte-inline` (declarative marks, D5b), unknown-block fallback.
 4. **Block registry + first blocks** — wire `BLOCK_RENDERERS` in landing `app.config.ts`; ship `image-ref` (replacing the RTE Phase 7 `data-block` directive) + one additional block (`gallery`) as the proof that "register a new block" is one provider entry. Both block components wrap the **lightbox-enabled** landing primitives (`image-ref` → `<landing-figure lightbox>`, `gallery` → `<landing-gallery [lightbox]>`), so **in-content figures gain the full-screen viewer** here — this is the sanctioned solution to project-detail/blog content figures that the current `[innerHTML]` read-path cannot lightbox (see `lightbox.md` §6).
-5. **Cache-fallback split** — `<redoc-rte-render-html>` for RSS/llms.txt/OG/no-JS; confirm SSR output of the AST path is crawler-complete (drop reliance on the cache for SEO).
-6. **Consumer swap** — point `project-detail` + `blog-detail` read-paths at `<redoc-rte-render [doc]>`; retire the RTE Phase 6/7 `[innerHTML]` + `data-block` hydration.
+5. **Cache-fallback split** — `<rte-render-html>` for RSS/llms.txt/OG/no-JS; confirm SSR output of the AST path is crawler-complete (drop reliance on the cache for SEO).
+6. **Consumer swap** — point `project-detail` + `blog-detail` read-paths at `<rte-render [doc]>`; retire the RTE Phase 6/7 `[innerHTML]` + `data-block` hydration.
 
 ## Risks & mitigations
 
@@ -136,20 +137,20 @@ Angular SSR emits full HTML from the AST renderer, so Googlebot / AI crawlers ge
 
 ## Acceptance criteria
 
-- [ ] `redoc-rte` exports `PortableDocument`/`PortableNode`, `BlockRenderer`, `BLOCK_RENDERERS`, `provideBlockRenderers`, `RenderContext`, and ≥2 Zod block attr schemas.
+- [ ] `rte-core` exports `PortableDocument`/`PortableNode` and ≥2 Zod block attr schemas; `rte-contract` exports `BlockRenderer`, `BLOCK_RENDERERS`, `provideBlockRenderers`, `RenderContext`.
 - [ ] BE write-time normalizes E JSON → canonical `PortableDocument` (adapter is the only code that knows E's node names).
-- [ ] `<redoc-rte-render [doc]>` renders an AST with **no `[innerHTML]`** on the canonical path (inline marks declarative).
+- [ ] `<rte-render [doc]>` renders an AST with **no `[innerHTML]`** on the canonical path (inline marks declarative).
 - [ ] Registering a new block on landing is exactly one `provideBlockRenderers` entry — demonstrated with a 2nd block (`gallery`) beyond `image-ref`.
 - [ ] Unknown node type renders the fallback, never throws.
 - [ ] Security: a doc with a disallowed node/attr/`javascript:` URL is stripped at write-time; renderer ignores unknown types at read-time. Test asserts both.
 - [ ] SSR initial paint contains the fully-rendered block HTML (crawler-complete) without loading Tiptap or the editor.
-- [ ] `<redoc-rte-render-html>` retained for RSS/llms.txt/OG/no-JS fallback (DOMPurify), and is the only `[innerHTML]` binding.
+- [ ] `<rte-render-html>` retained for RSS/llms.txt/OG/no-JS fallback (DOMPurify), and is the only `[innerHTML]` binding.
 - [ ] RTE Phase 6/7 `[innerHTML]` + `data-block` hydration retired from `project-detail` and `blog-detail`.
 
 ## References
 
 - [`epic-portfolio-rich-text-editor`](./epic-portfolio-rich-text-editor.md) — parent pipeline (JSON canonical, write-time HTML, DI swap-ability). This epic supersedes its Phase 6/7 read-path.
-- RTE task 308 (`redoc-rte-renderer`) and 316 (`image-ref` hydrate) — superseded/folded into Phases 3–4 here.
+- RTE task 308 (`rte-renderer`) and 316 (`image-ref` hydrate) — superseded/folded into Phases 3–4 here.
 - Task 323 (`landing-llms-txt`) — consumer of the HTML-cache fallback (D7).
 - Gutenberg block registration & Interactivity API (reference model for D4/D5).
 - Sanity Portable Text / ProseMirror node-tree rendering (reference for AST-renderer registry).
