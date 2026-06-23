@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+textarea {
+  width: 100%;
+  min-height: 12rem;
+  padding: 12px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  white-space: pre;
+  resize: vertical;
+}

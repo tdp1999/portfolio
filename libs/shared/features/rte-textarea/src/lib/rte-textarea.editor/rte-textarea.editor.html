@@ -1,0 +1,10 @@
+<textarea
+  #ta
+  [value]="text()"
+  [attr.placeholder]="placeholder() || null"
+  [readonly]="readonly()"
+  [disabled]="disabled()"
+  (blur)="commit(ta.value)"
+  rows="12"
+  spellcheck="false"
+></textarea>
