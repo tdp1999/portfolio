@@ -13,7 +13,7 @@ export interface TranslatableJson {
 /**
  * A single rich-text document payload (Tiptap/ProseMirror JSON). Opaque at the
  * storage/API boundary; the canonical typed `EditorDocument` arrives with the
- * `redoc-rte` contract lib (RTE epic Phase 3). Used as the `*Json` half of the
+ * `rte-core` lib (RTE epic Phase 3). Used as the `*Json` half of the
  * 3-column rich-text storage pattern.
  */
 export type RichTextDocument = Record<string, unknown>;

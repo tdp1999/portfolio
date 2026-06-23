@@ -27,36 +27,62 @@ export default [
             {
               sourceTag: 'scope:landing',
               onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Console scope - can depend on shared and console
             {
               sourceTag: 'scope:console',
               onlyDependOnLibsWithTags: ['scope:console', 'scope:shared'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // API scope - can depend on shared and api
             {
               sourceTag: 'scope:api',
               onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Features cannot depend on other features
             {
               sourceTag: 'type:feature',
               notDependOnLibsWithTags: ['type:feature'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Data-access cannot depend on UI or features (unidirectional)
             {
               sourceTag: 'type:shared-data-access',
               notDependOnLibsWithTags: ['type:shared-ui', 'type:feature'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Shared UI cannot depend on features or data-access (purely presentational)
             {
               sourceTag: 'type:shared-ui',
               notDependOnLibsWithTags: ['type:shared-data-access', 'type:feature'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Shared util is the lowest level — cannot depend on ui, data-access, or features
             {
               sourceTag: 'type:shared-util',
               notDependOnLibsWithTags: ['type:shared-ui', 'type:shared-data-access', 'type:feature'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
+            },
+            // RTE engine isolation: only the concrete editor wrapper (type:rte-impl,
+            // libs/shared/features/rte-tiptap) may import the Tiptap engine package.
+            // The abstract contract (type:contract, rte-contract) and generic shared
+            // features (type:shared-feature, incl. rte-renderer) must stay
+            // engine-agnostic, so the engine is a banned external import for them.
+            // rte-renderer additionally must never depend on the rte-impl lib, so the
+            // Tiptap tree can never leak into the landing read-path. Swapping engines =
+            // a new type:rte-impl lib + a provider change, nothing else. Shared
+            // values (RICH_TEXT_WHITELIST, sanitizeRichText) live in the Angular-free
+            // rte-core (type:shared-util) so BE can import them without bundling Angular.
+            {
+              sourceTag: 'type:contract',
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
+            },
+            {
+              sourceTag: 'type:shared-feature',
+              notDependOnLibsWithTags: ['type:rte-impl'],
+              bannedExternalImports: ['@phuong-tran-redoc/document-engine-angular'],
             },
             // Fallback for untagged libs (temporary during migration)
             {

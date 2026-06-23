@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+// Reserved space shown during SSR and until the deferred engine loads on the
+// client. Sized to roughly match the editor so layout does not jump on swap.
+.rte-tiptap__skeleton {
+  min-height: 12rem;
+  border: 1px solid var(--mat-sys-outline-variant, rgb(0 0 0 / 12%));
+  border-radius: 4px;
+  background-color: var(--mat-sys-surface-container-low, rgb(0 0 0 / 2%));
+}

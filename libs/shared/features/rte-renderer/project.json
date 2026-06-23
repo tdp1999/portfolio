@@ -1,0 +1,21 @@
+{
+  "name": "rte-renderer",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/features/rte-renderer/src",
+  "prefix": "rte",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:shared-feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/features/rte-renderer/jest.config.cts",
+        "tsConfig": "libs/shared/features/rte-renderer/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

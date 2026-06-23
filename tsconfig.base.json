@@ -57,7 +57,10 @@
       "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
       "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"],
       "@portfolio/shared/features/brand": ["libs/shared/features/brand/src/index.ts"],
-      "@portfolio/shared/redoc-rte": ["libs/shared/redoc-rte/src/index.ts"]
+      "@portfolio/shared/features/rte-core": ["libs/shared/features/rte-core/src/index.ts"],
+      "@portfolio/shared/features/rte-contract": ["libs/shared/features/rte-contract/src/index.ts"],
+      "@portfolio/shared/features/rte-tiptap": ["libs/shared/features/rte-tiptap/src/index.ts"],
+      "@portfolio/shared/features/rte-renderer": ["libs/shared/features/rte-renderer/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

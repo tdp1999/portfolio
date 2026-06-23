@@ -1,8 +1,13 @@
 module.exports = {
-  displayName: 'redoc-rte',
-  preset: '../../../jest.preset.js',
+  displayName: 'rte-renderer',
+  preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/libs/shared/redoc-rte',
+  coverageDirectory: '../../../../coverage/libs/shared/features/rte-renderer',
+  // Use isomorphic-dompurify's browser build (ambient jsdom window) so jest never
+  // loads its jsdom-backed node build (untransformable ESM dep tree). See rte-core.
+  moduleNameMapper: {
+    '^isomorphic-dompurify$': '<rootDir>/../../../../node_modules/isomorphic-dompurify/dist/browser.js',
+  },
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

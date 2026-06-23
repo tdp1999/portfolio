@@ -1,0 +1,7 @@
+@defer (on idle) {
+  <document-engine-editor #docEditor [config]="engineConfig()">
+    <tiptap-editor [editor]="docEditor.editor" outputFormat="json" [formControl]="innerControl"></tiptap-editor>
+  </document-engine-editor>
+} @placeholder {
+  <div class="rte-tiptap__skeleton" aria-hidden="true"></div>
+}
