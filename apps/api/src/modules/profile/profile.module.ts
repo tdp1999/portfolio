@@ -3,6 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth';
 import { UserModule } from '../user';
 import { MediaModule } from '../media/media.module';
+import { RichTextModule } from '../shared/rich-text';
 import { PROFILE_REPOSITORY } from './application/profile.token';
 import {
   UpdateAvatarHandler,
@@ -35,7 +36,13 @@ const CommandHandlers = [
 const QueryHandlers = [GetProfileHandler, GetPublicProfileHandler, GetJsonLdHandler];
 
 @Module({
-  imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule), forwardRef(() => MediaModule)],
+  imports: [
+    CqrsModule,
+    forwardRef(() => AuthModule),
+    forwardRef(() => UserModule),
+    forwardRef(() => MediaModule),
+    RichTextModule,
+  ],
   controllers: [ProfileController, AdminProfileController],
   providers: [
     {

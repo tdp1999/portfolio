@@ -484,6 +484,26 @@ export class Profile {
     return this.withSeoOg(newSeoOg, userId);
   }
 
+  /** Atomic setter for the `bioLong` rich-text group: the canonical JSON, its
+   *  sanitized HTML cache, and the schema version are written together so the
+   *  three columns can never be persisted partially. The values are produced by
+   *  `RichTextService` (RTE epic Phase 4) on the write path. */
+  updateBioLongRichText(
+    bioLongJson: TranslatableRichText,
+    bioLongHtml: TranslatableJson,
+    bioLongSchemaVersion: number,
+    userId: string
+  ): Profile {
+    return new Profile({
+      ...this.props,
+      bioLongJson,
+      bioLongHtml,
+      bioLongSchemaVersion,
+      updatedAt: TemporalValue.now(),
+      updatedById: userId,
+    });
+  }
+
   /** Stamps `contentUpdatedAt` to "now". Called explicitly by the author from
    *  the console (separate from any per-save bump) so the /about hero "Last
    *  updated" line tracks narrative-edit cadence rather than every DB write. */

@@ -24,6 +24,18 @@ import { IProfileRepository } from '../ports/profile.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
 import { IProfileProps } from '../../domain/profile.types';
+import type { RichTextService } from '../../../shared/rich-text';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
+
+// UpdateProfileIdentityHandler imports RichTextService, which pulls in the ESM-only
+// document-engine-core and the jsdom-backed sanitizer. Mock the service module so
+// this suite never loads that tree; the identity tests inject their own stub.
+jest.mock('../../../shared/rich-text/rich-text.service', () => ({
+  RichTextService: class {
+    toCanonicalForm = jest.fn();
+    toCanonicalFormTranslatable = jest.fn();
+  },
+}));
 
 describe('Profile Commands', () => {
   let profileRepo: jest.Mocked<IProfileRepository>;
@@ -171,7 +183,16 @@ describe('Profile Commands', () => {
 
   describe('UpdateProfileIdentityHandler', () => {
     let handler: UpdateProfileIdentityHandler;
-    beforeEach(() => (handler = new UpdateProfileIdentityHandler(profileRepo)));
+    let richText: { toCanonicalForm: jest.Mock; toCanonicalFormTranslatable: jest.Mock };
+    beforeEach(() => {
+      richText = { toCanonicalForm: jest.fn(), toCanonicalFormTranslatable: jest.fn() };
+      handler = new UpdateProfileIdentityHandler(profileRepo, richText as unknown as RichTextService);
+    });
+
+    const richDoc = (text: string): EditorDocument => ({
+      schemaVersion: 1,
+      content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] },
+    });
 
     const validDto = {
       fullName: { en: 'Jane Doe', vi: 'Tran Thi B' },
@@ -185,7 +206,8 @@ describe('Profile Commands', () => {
 
       await handler.execute(new UpdateProfileIdentityCommand(validDto, userId));
 
-      expect(profileRepo.updateIdentity).toHaveBeenCalledWith(userId, expect.anything(), userId);
+      // no bioLongJson → identity-only write, rich-text arg is null
+      expect(profileRepo.updateIdentity).toHaveBeenCalledWith(userId, expect.anything(), userId, null);
     });
 
     // Shared NOT_FOUND branch — tested once here, same logic in all 6 section handlers.
@@ -203,6 +225,33 @@ describe('Profile Commands', () => {
         errorCode: 'PROFILE_INVALID_INPUT',
       });
       expect(profileRepo.findByUserId).not.toHaveBeenCalled();
+    });
+
+    it('does not touch the rich-text path when bioLongJson is absent', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+
+      await handler.execute(new UpdateProfileIdentityCommand(validDto, userId));
+
+      expect(richText.toCanonicalFormTranslatable).not.toHaveBeenCalled();
+      expect(profileRepo.updateIdentity).toHaveBeenCalledWith(userId, expect.anything(), userId, null);
+    });
+
+    it('canonicalizes bioLongJson and persists the 3-value group atomically when present', async () => {
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+      const triple = {
+        json: { en: richDoc('hi'), vi: richDoc('chao') },
+        html: { en: '<p>hi</p>', vi: '<p>chao</p>' },
+        schemaVersion: 1,
+      };
+      richText.toCanonicalFormTranslatable.mockResolvedValue(triple);
+      const bioLongJson = { en: richDoc('hi'), vi: richDoc('chao') };
+
+      await handler.execute(new UpdateProfileIdentityCommand({ ...validDto, bioLongJson }, userId));
+
+      expect(richText.toCanonicalFormTranslatable).toHaveBeenCalledWith(bioLongJson, 'profile.bioLong');
+      // identity + rich-text triple persist in a SINGLE atomic write (one call, 4th arg)
+      expect(profileRepo.updateIdentity).toHaveBeenCalledTimes(1);
+      expect(profileRepo.updateIdentity).toHaveBeenCalledWith(userId, expect.anything(), userId, triple);
     });
   });
 

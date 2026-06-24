@@ -1,7 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { ValidationError, NotFoundError, ErrorLayer, ProfileErrorCode } from '@portfolio/shared/errors';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
+import { RichTextService } from '../../../shared/rich-text';
 import { IProfileRepository } from '../ports/profile.repository.port';
 import { PROFILE_REPOSITORY } from '../profile.token';
 import { Identity } from '../../domain/value-objects';
@@ -18,7 +20,10 @@ export class UpdateProfileIdentityCommand extends BaseCommand {
 
 @CommandHandler(UpdateProfileIdentityCommand)
 export class UpdateProfileIdentityHandler implements ICommandHandler<UpdateProfileIdentityCommand> {
-  constructor(@Inject(PROFILE_REPOSITORY) private readonly repo: IProfileRepository) {}
+  constructor(
+    @Inject(PROFILE_REPOSITORY) private readonly repo: IProfileRepository,
+    private readonly richText: RichTextService
+  ) {}
 
   async execute(command: UpdateProfileIdentityCommand): Promise<void> {
     const { success, data, error } = UpdateProfileIdentitySchema.safeParse(command.dto);
@@ -46,6 +51,19 @@ export class UpdateProfileIdentityHandler implements ICommandHandler<UpdateProfi
       avatarId: profile.avatarId,
     });
     const updated = profile.withIdentity(newIdentity, command.userId);
-    await this.repo.updateIdentity(command.userId, updated.identity, command.userId);
+
+    // Rich-text bioLong: when the console sends the bilingual editor document, run it
+    // through the canonical pipeline (migrate → headless HTML → sanitize) BEFORE the
+    // write, so a bad document throws (shaped 400) without leaving a half-applied
+    // identity. The triple is then persisted in the SAME update as identity (atomic).
+    // Additive — absent bioLongJson means an identity-only update, exactly as before.
+    const bioLongRichText = data.bioLongJson
+      ? await this.richText.toCanonicalFormTranslatable(
+          data.bioLongJson as { en: EditorDocument; vi: EditorDocument },
+          'profile.bioLong'
+        )
+      : null;
+
+    await this.repo.updateIdentity(command.userId, updated.identity, command.userId, bioLongRichText);
   }
 }

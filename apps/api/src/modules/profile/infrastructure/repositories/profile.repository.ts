@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../infrastructure/prisma';
-import { IProfileRepository, ProfileWithMedia } from '../../application/ports/profile.repository.port';
+import {
+  IProfileRepository,
+  ProfileWithMedia,
+  ProfileBioLongRichText,
+} from '../../application/ports/profile.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
 import {
   Identity,
@@ -54,7 +58,12 @@ export class ProfileRepository implements IProfileRepository {
     });
   }
 
-  async updateIdentity(userId: string, identity: Identity, updatedById: string): Promise<void> {
+  async updateIdentity(
+    userId: string,
+    identity: Identity,
+    updatedById: string,
+    bioLongRichText?: ProfileBioLongRichText | null
+  ): Promise<void> {
     await this.prisma.profile.update({
       where: { userId },
       data: {
@@ -63,6 +72,14 @@ export class ProfileRepository implements IProfileRepository {
         bioShort: identity.bioShort as unknown as Prisma.InputJsonValue,
         bioLong: (identity.bioLong as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         avatarId: identity.avatarId,
+        // Same row, same `where` → fold the rich-text triple into this one UPDATE so
+        // identity and bioLong commit atomically (no partial-write window). Absent
+        // input leaves the bioLong* columns untouched (identity-only update).
+        ...(bioLongRichText && {
+          bioLongJson: bioLongRichText.json as unknown as Prisma.InputJsonValue,
+          bioLongHtml: bioLongRichText.html as unknown as Prisma.InputJsonValue,
+          bioLongSchemaVersion: bioLongRichText.schemaVersion,
+        }),
         updatedById,
       },
     });
