@@ -50,6 +50,7 @@ export interface CreateSkillPayload {
 export interface ReorderSkillItem {
   id: string;
   displayOrder: number;
+  tier: SkillTier;
 }
 
 export type ReorderSkillsPayload = ReorderSkillItem[];

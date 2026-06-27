@@ -9,6 +9,7 @@ export const skillRoutes: Route[] = [
   {
     path: 'reorder',
     loadComponent: () => import('./skill.reorder/skill.reorder'),
+    canDeactivate: [unsavedChangesGuard],
   },
   {
     path: 'new',

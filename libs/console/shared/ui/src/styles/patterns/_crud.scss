@@ -22,6 +22,14 @@
   margin-top: 4px;
 }
 
+/* Header action cluster: one or more buttons aligned to the right of the header */
+.crud-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Table container */
 .crud-table-container {
   background: var(--color-surface);

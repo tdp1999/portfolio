@@ -74,3 +74,4 @@ export type { MarkdownEditorApi, MarkdownEditorChange } from './markdown-editor/
 export { TranslatableMarkdownGroup } from './translatable-markdown-group/translatable-markdown-group';
 export type { MarkdownLanguageConfig } from './translatable-markdown-group/translatable-markdown-group';
 export { EnumLabelPipe } from './enum-label/enum-label.pipe';
+export { QuickLook } from './quick-look/quick-look';

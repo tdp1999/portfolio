@@ -1,37 +1,24 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
-  EnumLabelPipe,
   SpinnerOverlay,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { SKILL_CATEGORY_LABELS, SKILL_TIER_LABELS } from '@portfolio/shared/enum-labels';
 import { filter, forkJoin, of, switchMap } from 'rxjs';
 import { SkillService } from '../skill.service';
+import { SkillDetailCard } from '../skill.detail-card/skill.detail-card';
 import { AdminSkill } from '../skill.types';
 
 @Component({
   selector: 'console-skill-detail',
   standalone: true,
-  imports: [
-    DatePipe,
-    RouterLink,
-    MatButtonModule,
-    MatChipsModule,
-    MatIconModule,
-    MatTooltipModule,
-    SpinnerOverlay,
-    EnumLabelPipe,
-  ],
+  imports: [RouterLink, MatButtonModule, MatIconModule, SpinnerOverlay, SkillDetailCard],
   templateUrl: './skill.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -48,14 +35,16 @@ export default class SkillDetail implements OnInit {
   readonly parent = signal<AdminSkill | null>(null);
   readonly loading = signal(false);
 
-  readonly skillCategoryLabels = SKILL_CATEGORY_LABELS;
-  readonly skillTierLabels = SKILL_TIER_LABELS;
-
-  readonly hasChildren = computed(() => this.children().length > 0);
-
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.load(id);
+  }
+
+  goToSkill(id: string): void {
+    this.router.navigate(['/skills', id]).then(() => {
+      // Same-route param change does not re-run ngOnInit; reload explicitly.
+      this.load(id);
+    });
   }
 
   confirmDelete(): void {

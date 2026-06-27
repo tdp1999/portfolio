@@ -3,49 +3,96 @@
     <div>
       <h1 class="text-page-title">Reorder Skills</h1>
       <p class="crud-header__subtitle">
-        Drag within each tier to set the order. This matches the home “Stack” section — chips group by tier, then follow
-        this order.
+        Drag the handle to reorder within a tier or move a skill across tiers. Click a card to preview it. Changes are
+        staged — press Save to apply, or Discard to revert.
       </p>
     </div>
-    <a mat-stroked-button routerLink="../">
-      <mat-icon class="icon-md">arrow_back</mat-icon>
-      Back to list
-    </a>
+    <div class="crud-header__actions">
+      <a mat-stroked-button routerLink="../">
+        <mat-icon class="icon-md">arrow_back</mat-icon>
+        Back to list
+      </a>
+      <button mat-stroked-button type="button" [disabled]="!dirty() || saving()" (click)="discard()">Discard</button>
+      <button mat-flat-button type="button" [disabled]="!dirty() || saving()" (click)="save()">
+        <mat-icon class="icon-md">save</mat-icon>
+        Save
+      </button>
+    </div>
   </div>
 
   @if (loading()) {
     <p class="py-8 text-center text-text-muted">Loading skills…</p>
   } @else {
-    <div class="reorder-tiers" [class.reorder-tiers--busy]="reordering()">
-      @for (group of groups(); track group.tier) {
+    <div class="reorder-tiers" [class.reorder-tiers--busy]="saving()" cdkDropListGroup>
+      @for (group of groups(); track group.tier; let t = $index) {
         <section class="reorder-tier">
           <h2 class="text-section-heading reorder-tier__title">
             {{ group.label }}
             <span class="text-text-muted">({{ group.items.length }})</span>
           </h2>
 
-          @if (group.items.length === 0) {
-            <p class="reorder-empty text-text-muted">No skills in this tier.</p>
-          } @else {
-            <div
-              cdkDropList
-              [cdkDropListData]="group.items"
-              (cdkDropListDropped)="drop($event, group.tier)"
-              class="reorder-list"
-            >
-              @for (skill of group.items; track skill.id) {
-                <div cdkDrag class="reorder-item bg-surface border border-border rounded-lg">
-                  <mat-icon class="reorder-item__handle text-text-muted">drag_indicator</mat-icon>
+          <div
+            cdkDropList
+            [id]="group.tier"
+            [cdkDropListData]="group.items"
+            (cdkDropListDropped)="drop($event)"
+            class="reorder-list"
+          >
+            @for (skill of group.items; track skill.id; let r = $index) {
+              <div
+                #cardEl
+                cdkDrag
+                tabindex="0"
+                role="button"
+                class="reorder-item bg-surface border border-border rounded-lg"
+                [attr.aria-label]="skill.name + ' — press Space to preview, arrow keys to move between cards'"
+                (keydown)="onCardKeydown($event, t, r, skill)"
+              >
+                <button
+                  type="button"
+                  tabindex="-1"
+                  class="reorder-item__handle text-text-muted"
+                  cdkDragHandle
+                  aria-label="Drag to reorder"
+                >
+                  <mat-icon>drag_indicator</mat-icon>
+                </button>
+                <div class="reorder-item__body">
                   <span class="reorder-item__name">{{ skill.name }}</span>
                   @if (skill.parentSkillId) {
                     <span class="reorder-item__parent text-text-muted">{{ parentName(skill.parentSkillId) }}</span>
                   }
                 </div>
-              }
-            </div>
-          }
+                <button
+                  type="button"
+                  tabindex="-1"
+                  class="reorder-item__preview text-text-muted"
+                  (click)="openPreview(skill)"
+                  [attr.aria-label]="'Preview ' + skill.name"
+                >
+                  <mat-icon class="icon-sm">visibility</mat-icon>
+                </button>
+              </div>
+            } @empty {
+              <p class="reorder-empty text-text-muted">No skills in this tier.</p>
+            }
+          </div>
         </section>
       }
     </div>
   }
 </div>
+
+<console-quick-look
+  [(open)]="previewOpen"
+  [title]="previewSkill()?.name ?? 'Skill'"
+  [loading]="previewLoading()"
+  [hasPrev]="hasPrev()"
+  [hasNext]="hasNext()"
+  (prev)="previewPrev()"
+  (next)="previewNext()"
+>
+  @if (previewSkill(); as s) {
+    <console-skill-detail-card [skill]="s" [parent]="previewParent()" [children]="previewChildren()" />
+  }
+</console-quick-look>
