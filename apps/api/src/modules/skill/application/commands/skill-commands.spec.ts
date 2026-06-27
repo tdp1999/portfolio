@@ -229,10 +229,10 @@ describe('Skill Commands', () => {
     let handler: ReorderSkillsHandler;
     beforeEach(() => (handler = new ReorderSkillsHandler(repo)));
 
-    it('should persist the validated order', async () => {
+    it('should persist the validated order with tier', async () => {
       const items = [
-        { id: skillId, displayOrder: 0 },
-        { id: parentId, displayOrder: 1 },
+        { id: skillId, displayOrder: 0, tier: 'DAILY' },
+        { id: parentId, displayOrder: 1, tier: 'SHIPPED' },
       ];
 
       await handler.execute(new ReorderSkillsCommand(items, userId));
@@ -242,7 +242,14 @@ describe('Skill Commands', () => {
 
     it('should reject an invalid payload', async () => {
       await expect(
-        handler.execute(new ReorderSkillsCommand([{ id: 'not-a-uuid', displayOrder: 0 }], userId))
+        handler.execute(new ReorderSkillsCommand([{ id: 'not-a-uuid', displayOrder: 0, tier: 'DAILY' }], userId))
+      ).rejects.toMatchObject({ errorCode: 'SKILL_INVALID_INPUT' });
+      expect(repo.reorder).not.toHaveBeenCalled();
+    });
+
+    it('should reject an item missing tier', async () => {
+      await expect(
+        handler.execute(new ReorderSkillsCommand([{ id: skillId, displayOrder: 0 }], userId))
       ).rejects.toMatchObject({ errorCode: 'SKILL_INVALID_INPUT' });
       expect(repo.reorder).not.toHaveBeenCalled();
     });

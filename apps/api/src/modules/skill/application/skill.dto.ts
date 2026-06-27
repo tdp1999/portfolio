@@ -58,6 +58,9 @@ export const ReorderSkillsSchema = z
     z.object({
       id: z.uuid(),
       displayOrder: DisplayOrderSchema,
+      // Cross-tier moves change a skill's tier; the reorder UI sends the target
+      // tier alongside the new per-tier displayOrder so both persist atomically.
+      tier: SkillTierEnum,
     })
   )
   .min(1);

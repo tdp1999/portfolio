@@ -1,6 +1,6 @@
 import { ICrudRepository, PaginatedQuery, PaginatedResult } from '@portfolio/shared/types';
 import { Skill } from '../../domain/entities/skill.entity';
-import { SkillCategory } from '../../domain/skill.types';
+import { SkillCategory, SkillTier } from '../../domain/skill.types';
 
 export interface SkillFindAllOptions extends PaginatedQuery {
   category?: SkillCategory;
@@ -19,9 +19,10 @@ export type ISkillRepository = ICrudRepository<Skill> & {
   findAll(options: SkillFindAllOptions): Promise<PaginatedResult<Skill>>;
   findAllNoLimit(): Promise<Skill[]>;
   /**
-   * Persists displayOrder for a batch of skills atomically. displayOrder is
-   * tier-scoped (0-based within each tier), so consumers must group by tier
-   * before sorting by displayOrder — see the landing groupByTier().
+   * Persists tier + displayOrder for a batch of skills atomically. displayOrder
+   * is tier-scoped (0-based within each tier), so consumers must group by tier
+   * before sorting by displayOrder — see the landing groupByTier(). Cross-tier
+   * moves pass the target tier so the column change persists in the same batch.
    */
-  reorder(items: { id: string; displayOrder: number }[]): Promise<void>;
+  reorder(items: { id: string; displayOrder: number; tier: SkillTier }[]): Promise<void>;
 };

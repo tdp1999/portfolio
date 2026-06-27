@@ -5,7 +5,7 @@ import { PaginatedResult } from '@portfolio/shared/types';
 import { PrismaService } from '../../../../infrastructure/prisma';
 import { ISkillRepository, SkillFindAllOptions } from '../../application/ports/skill.repository.port';
 import { Skill } from '../../domain/entities/skill.entity';
-import { SkillCategory } from '../../domain/skill.types';
+import { SkillCategory, SkillTier } from '../../domain/skill.types';
 import { SkillMapper } from '../mapper/skill.mapper';
 
 @Injectable()
@@ -165,10 +165,15 @@ export class SkillRepository implements ISkillRepository {
   // assigns 0-based indices per tier, so the same values (0, 1, 2…) recur across
   // tiers. Consumers MUST group by tier first, then sort by displayOrder (see the
   // landing groupByTier()); sorting by displayOrder alone interleaves tiers.
-  async reorder(items: { id: string; displayOrder: number }[]): Promise<void> {
+  async reorder(items: { id: string; displayOrder: number; tier: SkillTier }[]): Promise<void> {
     try {
       await this.prisma.$transaction(
-        items.map(({ id, displayOrder }) => this.prisma.skill.update({ where: { id }, data: { displayOrder } }))
+        items.map(({ id, displayOrder, tier }) =>
+          this.prisma.skill.update({
+            where: { id },
+            data: { displayOrder, tier: tier as Prisma.EnumSkillTierFieldUpdateOperationsInput['set'] },
+          })
+        )
       );
     } catch (err) {
       // A concurrent delete leaves a stale id in the batch; the whole transaction
