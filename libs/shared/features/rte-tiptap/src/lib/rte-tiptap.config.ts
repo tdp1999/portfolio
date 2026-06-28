@@ -59,16 +59,72 @@ const FULL: Partial<DocumentEngineConfig> = {
   imageRef: true,
 };
 
+// List mode = a deliberately stripped surface for fields that ARE a list
+// (experience responsibilities/highlights). Only bullet/ordered list + the inline
+// marks that make sense inside a list item. Block structure that does not belong
+// in a list — headings, blockquote, code block, inline code — is OFF, so the
+// toolbar can't offer them and the stored document stays a clean list. We can't
+// forbid a stray paragraph (ProseMirror always permits one at the doc root), so
+// this constrains rather than hard-enforces; the form seeds an empty bullet list.
+const LIST: Partial<DocumentEngineConfig> = {
+  list: true,
+
+  // Inline marks usable inside list items.
+  bold: true,
+  italic: true,
+  underline: true,
+  link: true,
+
+  undoRedo: true,
+
+  // Block structure that doesn't belong in a list — OFF.
+  heading: false,
+  blockquote: false,
+  codeBlock: false,
+  code: false,
+  strike: false,
+
+  // Presentation concerns — OFF (owned by landing render), same as every mode.
+  textStyleKit: false,
+  fontSize: false,
+  lineHeight: false,
+  textAlign: false,
+  textCase: false,
+  indent: false,
+  subscript: false,
+  superscript: false,
+
+  // Heavy / unused features — OFF.
+  tables: false,
+  specialCharacters: false,
+  pageBreak: false,
+  dynamicField: false,
+  restrictedEditing: false,
+  markdown: false,
+
+  // Media — OFF.
+  image: false,
+  imageRef: false,
+};
+
 /**
  * Build the {@link DocumentEngineConfig} for an {@link EditorMode}.
  *
  * `'semantic'` enables the restricted block/mark set; `'full'` additionally
- * enables the `image-ref` node. Both modes disable all presentation extensions
- * (TextStyle/Color/FontSize/Alignment).
+ * enables the `image-ref` node; `'list'` is a list-only surface (bullet/ordered
+ * list + inline marks, no headings/quote/code/media). All modes disable every
+ * presentation extension (TextStyle/Color/FontSize/Alignment).
  *
  * Returns a fresh object each call so callers may safely layer runtime overrides
  * (editable, placeholder, image.onPick) without mutating the shared template.
  */
 export function documentEngineConfigFor(mode: EditorMode): Partial<DocumentEngineConfig> {
-  return mode === 'full' ? { ...FULL } : { ...SEMANTIC };
+  switch (mode) {
+    case 'full':
+      return { ...FULL };
+    case 'list':
+      return { ...LIST };
+    default:
+      return { ...SEMANTIC };
+  }
 }

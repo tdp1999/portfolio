@@ -15,6 +15,11 @@
 /* Console Material component token overrides (loaded as module, emitted in source order) */
 @use '../../../libs/console/shared/ui/src/styles/material/overrides' as console-material;
 
+/* Rich-text editor (document-engine): engine stylesheet + console-token theming
+   + focus/dropdown integration fixes. Lives with console's other non-component
+   styles (material/, patterns/) in the console shared-ui lib. */
+@use '../../../libs/console/shared/ui/src/styles/vendor/document-engine';
+
 html {
   color-scheme: light dark;
 

@@ -56,6 +56,32 @@ describe('documentEngineConfigFor', () => {
     });
   });
 
+  describe("'list' mode", () => {
+    const cfg = documentEngineConfigFor('list');
+
+    it('enables lists + inline marks usable inside a list item', () => {
+      expect(cfg.list).toBe(true);
+      expect(cfg.bold).toBe(true);
+      expect(cfg.italic).toBe(true);
+      expect(cfg.underline).toBe(true);
+      expect(cfg.link).toBe(true);
+    });
+
+    it('disables block structure that does not belong in a list', () => {
+      expect(cfg.heading).toBe(false);
+      expect(cfg.blockquote).toBe(false);
+      expect(cfg.codeBlock).toBe(false);
+      expect(cfg.code).toBe(false);
+    });
+
+    it('disables media and every presentation extension', () => {
+      expect(cfg.image).toBe(false);
+      expect(cfg.imageRef).toBe(false);
+      expect(cfg.textStyleKit).toBe(false);
+      expect(cfg.textAlign).toBe(false);
+    });
+  });
+
   it('returns a fresh object each call so callers can layer overrides safely', () => {
     expect(documentEngineConfigFor('semantic')).not.toBe(documentEngineConfigFor('semantic'));
   });

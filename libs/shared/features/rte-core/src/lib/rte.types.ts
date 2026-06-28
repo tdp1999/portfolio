@@ -7,6 +7,8 @@ import type { EditorDocument } from '@phuong-tran-redoc/document-engine-core';
 export type { EditorDocument };
 
 // Editing surface level. 'semantic' = restricted block set (headings/lists/quote);
-// 'full' = adds the URL-free `image-ref` node. Drives which toolbar a concrete
-// editor renders.
-export type EditorMode = 'semantic' | 'full';
+// 'full' = adds the URL-free `image-ref` node; 'list' = a stripped list-only
+// surface (bullet/ordered list + inline marks, no headings/quote/code/media) for
+// fields that are conceptually a list (e.g. experience responsibilities/highlights).
+// Drives which toolbar a concrete editor renders.
+export type EditorMode = 'semantic' | 'full' | 'list';

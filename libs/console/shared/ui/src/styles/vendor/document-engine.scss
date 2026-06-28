@@ -1,0 +1,82 @@
+// =============================================================================
+// Vendor: document-engine (Tiptap) rich-text editor.
+//
+// Owns everything CSS-side for the editor used by `console-rich-text-editor`:
+//   1. pulls in the engine's own stylesheet (toolbar / buttons / select / etc.),
+//   2. remaps the engine's shadcn-style CSS vars to the console design tokens so
+//      it follows light/dark,
+//   3. tames focus + dropdown-stacking quirks that only surface inside the app.
+//
+// Imported once from `apps/console/src/styles.scss`. Kept out of any TS file, so
+// the engine module boundary (no `-angular` import in console libs) is untouched
+// — this is plain CSS.
+// =============================================================================
+
+@use '@phuong-tran-redoc/document-engine-angular/styles';
+
+// The engine ships light-mode shadcn defaults (--card: #fff, --foreground: #000,
+// …). Without remapping, the editor content is a white box in dark mode. Scoped
+// to the editor element; the select/list dropdowns are position:absolute *inside*
+// it (not portalled to body), so this scope reaches them too.
+document-engine-editor {
+  --background: var(--color-surface);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --muted: var(--color-surface-alt);
+  --muted-foreground: var(--color-text-muted);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-text-on-primary);
+  --secondary: var(--color-surface-alt);
+  --secondary-foreground: var(--color-text);
+  --accent: var(--color-surface-hover);
+  --accent-foreground: var(--color-text);
+  --destructive: var(--color-error);
+  --ring: var(--color-primary);
+  --document-engine-background: var(--color-surface);
+  --document-engine-border: var(--color-border);
+  --document-engine-text-muted: var(--color-text-muted);
+  --shadow-elevation-1: 0 1px 2px rgb(0 0 0 / 18%);
+
+  // The editing surface shows a blinking caret on focus — that is the focus
+  // indicator. Suppress the global a11y focus-visible ring (base/_focus.scss,
+  // intentionally specificity-0 via :where()) so it doesn't draw a box around
+  // the content area. The engine itself ships no editable focus style; the demo
+  // has none either.
+  .tiptap:focus,
+  .tiptap:focus-visible,
+  [contenteditable]:focus,
+  [contenteditable]:focus-visible {
+    outline: none;
+  }
+}
+
+// Editable-area sizing. The engine ships no min-height on the content surface, so
+// an empty editor collapses to ~1 line. Give each mode a sensible floor via the
+// host's reflected `data-rte-mode` (set by `console-rich-text-editor`). Min-height,
+// not height: the surface still grows with content. Tuned, not lib-patched.
+//   full     → long-form body (blog/project) — tall
+//   semantic → descriptions / project highlights — medium
+//   list     → bullet lists (responsibilities/highlights) — compact
+console-rich-text-editor .tiptap {
+  min-height: 14rem;
+}
+console-rich-text-editor[data-rte-mode='full'] .tiptap {
+  min-height: 22rem;
+}
+console-rich-text-editor[data-rte-mode='list'] .tiptap {
+  min-height: 6rem;
+}
+
+// In the All view two locale editors stack as flex siblings. The block-type /
+// list dropdown is an in-flow absolutely-positioned element, so the open dropdown
+// of the upper editor must paint above the lower editor. The engine toolbar is
+// `position:sticky; z-index:20`, so the lower editor's toolbar (later in the DOM,
+// same z) would otherwise paint over the upper dropdown — the raised locale must
+// clear that 20. Flex items honour z-index without `position`. Global rule: the
+// engine `--open` class lives outside the group component's encapsulation.
+.trt-locale:has(.document-engine-select__trigger--open) {
+  z-index: 30;
+}

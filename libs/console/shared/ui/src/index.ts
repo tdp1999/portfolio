@@ -73,5 +73,8 @@ export { MarkdownEditor as MarkdownEditorComponent } from './markdown-editor/mar
 export type { MarkdownEditorApi, MarkdownEditorChange } from './markdown-editor/markdown-editor.types';
 export { TranslatableMarkdownGroup } from './translatable-markdown-group/translatable-markdown-group';
 export type { MarkdownLanguageConfig } from './translatable-markdown-group/translatable-markdown-group';
+export { RichTextEditor } from './rich-text-editor/rich-text-editor';
+export { TranslatableRichTextGroup } from './translatable-rich-text-group/translatable-rich-text-group';
+export type { RichTextLanguageConfig, LocaleView } from './translatable-rich-text-group/translatable-rich-text-group';
 export { EnumLabelPipe } from './enum-label/enum-label.pipe';
 export { QuickLook } from './quick-look/quick-look';
