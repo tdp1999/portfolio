@@ -7,6 +7,8 @@ import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
 import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { CreateBlogPostSchema } from '../blog-post.dto';
+import { RichTextService } from '../../../shared/rich-text';
+import { wrapContentByLanguage } from '../blog-content-rich.util';
 
 export class CreatePostCommand extends BaseCommand {
   constructor(
@@ -19,7 +21,10 @@ export class CreatePostCommand extends BaseCommand {
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
-  constructor(@Inject(BLOG_POST_REPOSITORY) private readonly repo: IBlogPostRepository) {}
+  constructor(
+    @Inject(BLOG_POST_REPOSITORY) private readonly repo: IBlogPostRepository,
+    private readonly richText: RichTextService
+  ) {}
 
   async execute(command: CreatePostCommand): Promise<string> {
     const { success, data, error } = CreateBlogPostSchema.safeParse(command.dto);
@@ -64,8 +69,20 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
           ? BlogPost.load({ ...finalEntity.toProps(), status: data.status })
           : finalEntity;
 
+    // Rich-text write path: the console sends a single editor document; wrap it
+    // into the bilingual envelope keyed by the post's language and canonicalize.
+    const persisted = data.contentJson
+      ? withStatus.withContentRichText(
+          await this.richText.toCanonicalFormTranslatable(
+            wrapContentByLanguage(data.contentJson, withStatus.language),
+            'blog-post.content'
+          ),
+          command.userId
+        )
+      : withStatus;
+
     return this.repo.add({
-      entity: withStatus,
+      entity: persisted,
       categoryIds: data.categoryIds,
       tagIds: data.tagIds,
     });

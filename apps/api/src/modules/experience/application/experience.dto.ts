@@ -20,6 +20,9 @@ import {
   withDateRange,
 } from '@portfolio/shared/validation/zod';
 import { LIMITS } from '@portfolio/shared/validation';
+// Import the schema file directly (not the barrel) so the zod schema doesn't pull
+// in RichTextService → ESM document-engine-core, which breaks node-env specs.
+import { BilingualEditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
 
 const LinkSchema = z.object({
   label: requiredShortText(LIMITS.NAME_MAX),
@@ -40,6 +43,11 @@ export const CreateExperienceSchema = withDateRange(
     description: OptionalTranslatableSchema.optional(),
     responsibilities: TranslatableStringArraySchema.default({ en: [], vi: [] }),
     highlights: TranslatableStringArraySchema.default({ en: [], vi: [] }),
+    // Rich-text source of truth (the console editor emits these). Legacy string
+    // fields above stay populated/defaulted for the transition; dropped in task 363.
+    descriptionJson: BilingualEditorDocumentSchema.optional(),
+    responsibilitiesJson: BilingualEditorDocumentSchema.optional(),
+    highlightsJson: BilingualEditorDocumentSchema.optional(),
     teamRole: OptionalTranslatableSchema.optional(),
     links: z.array(LinkSchema).default([]),
     employmentType: z.nativeEnum(EmploymentType).default('FULL_TIME'),
@@ -73,6 +81,9 @@ const UpdateExperienceBaseSchema = z.object({
   description: OptionalTranslatableSchema.optional(),
   responsibilities: TranslatableStringArraySchema,
   highlights: TranslatableStringArraySchema,
+  descriptionJson: BilingualEditorDocumentSchema.optional(),
+  responsibilitiesJson: BilingualEditorDocumentSchema.optional(),
+  highlightsJson: BilingualEditorDocumentSchema.optional(),
   teamRole: OptionalTranslatableSchema.optional(),
   links: z.array(LinkSchema),
   employmentType: z.nativeEnum(EmploymentType),

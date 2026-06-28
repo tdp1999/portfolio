@@ -8,6 +8,8 @@ import { IProjectRepository } from '../ports/project.repository.port';
 import { PROJECT_REPOSITORY } from '../project.token';
 import { CreateProjectSchema } from '../project.dto';
 import { ICreateProjectPayload } from '../../domain/project.types';
+import { RichTextService } from '../../../shared/rich-text';
+import { mapHighlightDtoToInput } from '../project-highlight.mapper';
 
 export class CreateProjectCommand extends BaseCommand {
   constructor(
@@ -20,7 +22,10 @@ export class CreateProjectCommand extends BaseCommand {
 
 @CommandHandler(CreateProjectCommand)
 export class CreateProjectHandler implements ICommandHandler<CreateProjectCommand> {
-  constructor(@Inject(PROJECT_REPOSITORY) private readonly repo: IProjectRepository) {}
+  constructor(
+    @Inject(PROJECT_REPOSITORY) private readonly repo: IProjectRepository,
+    private readonly richText: RichTextService
+  ) {}
 
   async execute(command: CreateProjectCommand): Promise<string> {
     const { success, data, error } = CreateProjectSchema.safeParse(command.dto);
@@ -40,10 +45,14 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
     }
 
     const entity = Project.create(data as ICreateProjectPayload, command.userId);
-    const finalEntity =
-      candidateSlug !== baseSlug ? Project.load({ ...entity.toProps(), slug: candidateSlug }) : entity;
+    let finalEntity = candidateSlug !== baseSlug ? Project.load({ ...entity.toProps(), slug: candidateSlug }) : entity;
 
-    const highlights = data.highlights.map((h, i) => ({ ...h, codeUrl: h.codeUrl ?? null, displayOrder: i }));
+    if (data.bodyJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.bodyJson, 'project.body');
+      finalEntity = finalEntity.withBodyRichText(rich, command.userId);
+    }
+
+    const highlights = await Promise.all(data.highlights.map((h, i) => mapHighlightDtoToInput(this.richText, h, i)));
 
     return this.repo.create({
       entity: finalEntity,

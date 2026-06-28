@@ -239,6 +239,48 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
     });
   }
 
+  /** Set the `description` rich-text triple atomically (RTE write path). */
+  withDescriptionRichText(
+    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    userId: string
+  ): Experience {
+    return new Experience({
+      ...this.props,
+      descriptionJson: rich.json,
+      descriptionHtml: rich.html,
+      descriptionSchemaVersion: rich.schemaVersion,
+      ...BaseCrudEntity.updateTimestamp(userId),
+    });
+  }
+
+  /** Set the `responsibilities` rich-text triple atomically (RTE write path). */
+  withResponsibilitiesRichText(
+    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    userId: string
+  ): Experience {
+    return new Experience({
+      ...this.props,
+      responsibilitiesJson: rich.json,
+      responsibilitiesHtml: rich.html,
+      responsibilitiesSchemaVersion: rich.schemaVersion,
+      ...BaseCrudEntity.updateTimestamp(userId),
+    });
+  }
+
+  /** Set the `highlights` rich-text triple atomically (RTE write path). */
+  withHighlightsRichText(
+    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    userId: string
+  ): Experience {
+    return new Experience({
+      ...this.props,
+      highlightsJson: rich.json,
+      highlightsHtml: rich.html,
+      highlightsSchemaVersion: rich.schemaVersion,
+      ...BaseCrudEntity.updateTimestamp(userId),
+    });
+  }
+
   softDelete(userId: string): Experience {
     return new Experience({
       ...this.props,

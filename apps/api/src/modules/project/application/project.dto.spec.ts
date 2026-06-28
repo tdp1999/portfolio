@@ -88,8 +88,21 @@ describe('TechnicalHighlightSchema', () => {
     expect(withoutUrl.success).toBe(true);
   });
 
-  it('should reject missing CAO fields', () => {
-    expect(TechnicalHighlightSchema.safeParse({ challenge: { en: 'C', vi: 'C' } }).success).toBe(false);
+  it('accepts a rich-text-only highlight (legacy CAO optional during the RTE transition)', () => {
+    const doc = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+    const richOnly = TechnicalHighlightSchema.safeParse({
+      challengeJson: { en: doc, vi: doc },
+      approachJson: { en: doc, vi: doc },
+      outcomeJson: { en: doc, vi: doc },
+    });
+    expect(richOnly.success).toBe(true);
+  });
+
+  it('rejects a malformed rich-text doc (missing schemaVersion)', () => {
+    const bad = TechnicalHighlightSchema.safeParse({
+      challengeJson: { en: { content: {} }, vi: { content: {} } },
+    });
+    expect(bad.success).toBe(false);
   });
 });
 

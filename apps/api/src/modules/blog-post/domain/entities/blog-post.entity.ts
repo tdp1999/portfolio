@@ -163,6 +163,24 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
     });
   }
 
+  /**
+   * Set the `content` rich-text triple atomically (RTE write path). The incoming
+   * `rich` is the bilingual canonical form (`{ [language]: doc }` envelope) the
+   * `RichTextService` produces; legacy `content` (plain text) is left untouched.
+   */
+  withContentRichText(
+    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    userId: string
+  ): BlogPost {
+    return new BlogPost({
+      ...this.props,
+      contentJson: rich.json,
+      contentHtml: rich.html,
+      contentSchemaVersion: rich.schemaVersion,
+      ...BaseCrudEntity.updateTimestamp(userId),
+    });
+  }
+
   publish(userId: string): BlogPost {
     if (!this.props.title || !this.props.content) {
       throw BadRequestError('Title and content are required before publishing', {

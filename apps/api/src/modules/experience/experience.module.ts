@@ -20,6 +20,7 @@ import {
 } from './application/queries';
 import { SkillModule } from '../skill/skill.module';
 import { MediaModule } from '../media/media.module';
+import { RichTextModule } from '../shared/rich-text';
 
 const commandHandlers = [
   CreateExperienceHandler,
@@ -37,7 +38,14 @@ const queryHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule), SkillModule, MediaModule],
+  imports: [
+    CqrsModule,
+    forwardRef(() => AuthModule),
+    forwardRef(() => UserModule),
+    SkillModule,
+    MediaModule,
+    RichTextModule,
+  ],
   controllers: [ExperienceController],
   providers: [
     {

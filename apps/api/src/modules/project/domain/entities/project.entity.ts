@@ -166,6 +166,20 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     });
   }
 
+  /** Set the body rich-text triple atomically (RTE write path, task 311). */
+  withBodyRichText(
+    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    userId: string
+  ): Project {
+    return new Project({
+      ...this.props,
+      bodyJson: rich.json,
+      bodyHtml: rich.html,
+      bodySchemaVersion: rich.schemaVersion,
+      ...BaseCrudEntity.updateTimestamp(userId),
+    });
+  }
+
   softDelete(userId: string): Project {
     return new Project({
       ...this.props,

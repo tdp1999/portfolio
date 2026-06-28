@@ -18,6 +18,7 @@ import { SKILL_REPOSITORY } from '../../../skill/application/skill.token';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { MEDIA_REPOSITORY } from '../../../media/application/media.token';
 import { CreateExperienceSchema } from '../experience.dto';
+import { RichTextService } from '../../../shared/rich-text';
 
 export class CreateExperienceCommand extends BaseCommand {
   constructor(
@@ -33,7 +34,8 @@ export class CreateExperienceHandler implements ICommandHandler<CreateExperience
   constructor(
     @Inject(EXPERIENCE_REPOSITORY) private readonly repo: IExperienceRepository,
     @Inject(SKILL_REPOSITORY) private readonly skillRepo: ISkillRepository,
-    @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository
+    @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository,
+    private readonly richText: RichTextService
   ) {}
 
   async execute(command: CreateExperienceCommand): Promise<string> {
@@ -72,8 +74,25 @@ export class CreateExperienceHandler implements ICommandHandler<CreateExperience
     }
 
     const entity = Experience.create(data as ICreateExperiencePayload, command.userId);
-    const finalEntity =
+    let finalEntity =
       candidateSlug !== baseSlug ? Experience.load({ ...entity.toProps(), slug: candidateSlug }) : entity;
+
+    // Rich-text write path: canonicalize each provided prose field and apply it.
+    if (data.descriptionJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.descriptionJson, 'experience.description');
+      finalEntity = finalEntity.withDescriptionRichText(rich, command.userId);
+    }
+    if (data.responsibilitiesJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(
+        data.responsibilitiesJson,
+        'experience.responsibilities'
+      );
+      finalEntity = finalEntity.withResponsibilitiesRichText(rich, command.userId);
+    }
+    if (data.highlightsJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.highlightsJson, 'experience.highlights');
+      finalEntity = finalEntity.withHighlightsRichText(rich, command.userId);
+    }
 
     return this.repo.add(finalEntity, data.skillIds);
   }

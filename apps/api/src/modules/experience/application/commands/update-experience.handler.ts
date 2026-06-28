@@ -17,6 +17,7 @@ import { SKILL_REPOSITORY } from '../../../skill/application/skill.token';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { MEDIA_REPOSITORY } from '../../../media/application/media.token';
 import { UpdateExperienceSchema } from '../experience.dto';
+import { RichTextService } from '../../../shared/rich-text';
 
 export class UpdateExperienceCommand extends BaseCommand {
   constructor(
@@ -33,7 +34,8 @@ export class UpdateExperienceHandler implements ICommandHandler<UpdateExperience
   constructor(
     @Inject(EXPERIENCE_REPOSITORY) private readonly repo: IExperienceRepository,
     @Inject(SKILL_REPOSITORY) private readonly skillRepo: ISkillRepository,
-    @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository
+    @Inject(MEDIA_REPOSITORY) private readonly mediaRepo: IMediaRepository,
+    private readonly richText: RichTextService
   ) {}
 
   async execute(command: UpdateExperienceCommand): Promise<void> {
@@ -73,7 +75,25 @@ export class UpdateExperienceHandler implements ICommandHandler<UpdateExperience
         });
     }
 
-    const updated = experience.update(data as IUpdateExperiencePayload, command.userId);
+    let updated = experience.update(data as IUpdateExperiencePayload, command.userId);
+
+    // Rich-text write path: canonicalize each provided prose field and apply it.
+    if (data.descriptionJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.descriptionJson, 'experience.description');
+      updated = updated.withDescriptionRichText(rich, command.userId);
+    }
+    if (data.responsibilitiesJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(
+        data.responsibilitiesJson,
+        'experience.responsibilities'
+      );
+      updated = updated.withResponsibilitiesRichText(rich, command.userId);
+    }
+    if (data.highlightsJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.highlightsJson, 'experience.highlights');
+      updated = updated.withHighlightsRichText(rich, command.userId);
+    }
+
     await this.repo.update(command.experienceId, updated, data.skillIds ?? experience.skillIds);
   }
 }

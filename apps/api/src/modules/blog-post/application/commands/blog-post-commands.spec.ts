@@ -1,3 +1,15 @@
+// Mock the rich-text barrel with a factory so the real RichTextService — which
+// imports the ESM `document-engine-core` — is never loaded into this node-env spec.
+jest.mock('../../../shared/rich-text', () => ({
+  RichTextService: class {
+    toCanonicalFormTranslatable = jest.fn().mockResolvedValue({
+      json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+      html: { en: '', vi: '' },
+      schemaVersion: 1,
+    });
+  },
+}));
+
 import { CreatePostCommand, CreatePostHandler } from './create-post.command';
 import { UpdatePostCommand, UpdatePostHandler } from './update-post.command';
 import { DeletePostCommand, DeletePostHandler } from './delete-post.command';
@@ -68,6 +80,18 @@ function makeRepoMock(): jest.Mocked<IBlogPostRepository> {
   };
 }
 
+// Stubbed rich-text pipeline (the real service is jest.mocked above). Not exercised
+// by these specs (no contentJson sent), but required by the handler constructors.
+const richTextStub = {
+  toCanonicalFormTranslatable: jest.fn().mockResolvedValue({
+    json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+    html: { en: '', vi: '' },
+    schemaVersion: 1,
+  }),
+} as never;
+type RichTextStub = { toCanonicalFormTranslatable: jest.Mock };
+const rtStub = richTextStub as RichTextStub;
+
 describe('BlogPost Commands', () => {
   let repo: jest.Mocked<IBlogPostRepository>;
 
@@ -77,7 +101,7 @@ describe('BlogPost Commands', () => {
 
   // ---------- CreatePostCommand ----------
   describe('CreatePostHandler', () => {
-    const handler = () => new CreatePostHandler(repo);
+    const handler = () => new CreatePostHandler(repo, richTextStub);
     const validDto = { title: 'Hello', content: 'Body', featuredImageId: COVER_ID };
 
     it('creates a draft post and returns id', async () => {
@@ -122,11 +146,35 @@ describe('BlogPost Commands', () => {
       expect(arg.categoryIds).toEqual([CAT_ID]);
       expect(arg.tagIds).toEqual([TAG_ID]);
     });
+
+    it('canonicalizes contentJson wrapped under the post language and stores the triple', async () => {
+      const contentJson = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+      rtStub.toCanonicalFormTranslatable.mockClear();
+      await handler().execute(new CreatePostCommand({ ...validDto, language: 'VI', contentJson }, USER_ID));
+
+      // Single doc wrapped into the bilingual envelope keyed by language (VI carries it).
+      const [envelope, fieldName] = rtStub.toCanonicalFormTranslatable.mock.calls[0];
+      expect(envelope.vi).toEqual(contentJson);
+      expect(envelope.en.content.content).toEqual([]);
+      expect(fieldName).toBe('blog-post.content');
+
+      const arg = repo.add.mock.calls[0][0];
+      expect(arg.entity.toProps().contentJson).toEqual({
+        en: { schemaVersion: 1, content: {} },
+        vi: { schemaVersion: 1, content: {} },
+      });
+    });
+
+    it('skips the rich pipeline when no contentJson is sent', async () => {
+      rtStub.toCanonicalFormTranslatable.mockClear();
+      await handler().execute(new CreatePostCommand(validDto, USER_ID));
+      expect(rtStub.toCanonicalFormTranslatable).not.toHaveBeenCalled();
+    });
   });
 
   // ---------- UpdatePostCommand ----------
   describe('UpdatePostHandler', () => {
-    const handler = () => new UpdatePostHandler(repo);
+    const handler = () => new UpdatePostHandler(repo, richTextStub);
 
     it('updates an existing post', async () => {
       repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult());
@@ -172,6 +220,31 @@ describe('BlogPost Commands', () => {
       await handler().execute(new UpdatePostCommand(POST_ID, { categoryIds: [NEW_CAT] }, USER_ID));
       const input = repo.update.mock.calls[0][1];
       expect(input.categoryIds).toEqual([NEW_CAT]);
+    });
+
+    it('canonicalizes contentJson wrapped under the post language and stores the triple', async () => {
+      const contentJson = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+      rtStub.toCanonicalFormTranslatable.mockClear();
+      repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult({ language: 'EN' }));
+      await handler().execute(new UpdatePostCommand(POST_ID, { contentJson }, USER_ID));
+
+      const [envelope, fieldName] = rtStub.toCanonicalFormTranslatable.mock.calls[0];
+      expect(envelope.en).toEqual(contentJson);
+      expect(envelope.vi.content.content).toEqual([]);
+      expect(fieldName).toBe('blog-post.content');
+
+      const input = repo.update.mock.calls[0][1];
+      expect(input.entity.toProps().contentJson).toEqual({
+        en: { schemaVersion: 1, content: {} },
+        vi: { schemaVersion: 1, content: {} },
+      });
+    });
+
+    it('skips the rich pipeline when no contentJson is sent', async () => {
+      rtStub.toCanonicalFormTranslatable.mockClear();
+      repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult());
+      await handler().execute(new UpdatePostCommand(POST_ID, { title: 'X' }, USER_ID));
+      expect(rtStub.toCanonicalFormTranslatable).not.toHaveBeenCalled();
     });
   });
 

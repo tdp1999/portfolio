@@ -4,10 +4,12 @@ import { ValidationError, NotFoundError, ErrorLayer, ProjectErrorCode } from '@p
 import { IdentifierValue, SlugValue } from '@portfolio/shared/types';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { Project } from '../../domain/entities/project.entity';
-import { IProjectRepository } from '../ports/project.repository.port';
+import { IProjectRepository, TechnicalHighlightInput } from '../ports/project.repository.port';
 import { PROJECT_REPOSITORY } from '../project.token';
 import { UpdateProjectSchema } from '../project.dto';
 import { IUpdateProjectPayload } from '../../domain/project.types';
+import { RichTextService } from '../../../shared/rich-text';
+import { mapHighlightDtoToInput, mapStoredHighlightToInput } from '../project-highlight.mapper';
 
 export class UpdateProjectCommand extends BaseCommand {
   constructor(
@@ -21,7 +23,10 @@ export class UpdateProjectCommand extends BaseCommand {
 
 @CommandHandler(UpdateProjectCommand)
 export class UpdateProjectHandler implements ICommandHandler<UpdateProjectCommand> {
-  constructor(@Inject(PROJECT_REPOSITORY) private readonly repo: IProjectRepository) {}
+  constructor(
+    @Inject(PROJECT_REPOSITORY) private readonly repo: IProjectRepository,
+    private readonly richText: RichTextService
+  ) {}
 
   async execute(command: UpdateProjectCommand): Promise<void> {
     IdentifierValue.from(command.projectId);
@@ -58,13 +63,16 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProjectComman
       }
     }
 
-    const highlights = (data.highlights ?? result.relations.highlights).map((h, i) => ({
-      challenge: h.challenge,
-      approach: h.approach,
-      outcome: h.outcome,
-      codeUrl: h.codeUrl ?? null,
-      displayOrder: i,
-    }));
+    if (data.bodyJson) {
+      const rich = await this.richText.toCanonicalFormTranslatable(data.bodyJson, 'project.body');
+      updated = updated.withBodyRichText(rich, command.userId);
+    }
+
+    // Highlights are delete+recreate. When the DTO carries them, run the RTE
+    // pipeline per CAO field; otherwise rebuild the input from the stored docs.
+    const highlights: TechnicalHighlightInput[] = data.highlights
+      ? await Promise.all(data.highlights.map((h, i) => mapHighlightDtoToInput(this.richText, h, i)))
+      : result.relations.highlights.map(mapStoredHighlightToInput);
 
     const imageIds = data.imageIds ?? result.relations.images.map((i) => i.mediaId);
     const skillIds = data.skillIds ?? result.relations.skills.map((s) => s.id);

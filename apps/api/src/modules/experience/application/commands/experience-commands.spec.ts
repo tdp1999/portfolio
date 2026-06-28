@@ -1,3 +1,15 @@
+// Mock the rich-text barrel with a factory so the real RichTextService — which
+// imports the ESM `document-engine-core` — is never loaded into this node-env spec.
+jest.mock('../../../shared/rich-text', () => ({
+  RichTextService: class {
+    toCanonicalFormTranslatable = jest.fn().mockResolvedValue({
+      json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+      html: { en: '', vi: '' },
+      schemaVersion: 1,
+    });
+  },
+}));
+
 import { CreateExperienceCommand, CreateExperienceHandler } from './create-experience.handler';
 import { UpdateExperienceCommand, UpdateExperienceHandler } from './update-experience.handler';
 import { DeleteExperienceCommand, DeleteExperienceHandler } from './delete-experience.handler';
@@ -7,8 +19,6 @@ import { IExperienceRepository } from '../ports/experience.repository.port';
 import { ISkillRepository } from '../../../skill/application/ports/skill.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Experience } from '../../domain/entities/experience.entity';
-import { Skill } from '../../../skill/domain/entities/skill.entity';
-import { Media } from '../../../media/domain/entities/media.entity';
 import { IExperienceProps } from '../../domain/experience.types';
 
 describe('Experience Commands', () => {
@@ -66,6 +76,25 @@ describe('Experience Commands', () => {
   };
 
   const loadExperience = (overrides: Partial<IExperienceProps> = {}) => Experience.load({ ...baseProps, ...overrides });
+
+  // Stubbed rich-text pipeline (the real service is jest.mocked above). Not exercised
+  // by these specs (no *Json sent), but required by the handler constructors.
+  // The canonical `json` the stub returns — entities store exactly this.
+  const canonicalJson = { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } };
+  const richTextStub = {
+    toCanonicalFormTranslatable: jest.fn().mockResolvedValue({
+      json: canonicalJson,
+      html: { en: '', vi: '' },
+      schemaVersion: 1,
+    }),
+  } as never;
+  type RichTextStub = { toCanonicalFormTranslatable: jest.Mock };
+
+  // A valid bilingual editor document the DTO schema accepts.
+  const bilingualDoc = {
+    en: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+    vi: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+  };
 
   const validCreateDto = {
     companyName: 'FPT Software',
@@ -128,7 +157,7 @@ describe('Experience Commands', () => {
 
   describe('CreateExperienceHandler', () => {
     let handler: CreateExperienceHandler;
-    beforeEach(() => (handler = new CreateExperienceHandler(repo, skillRepo, mediaRepo)));
+    beforeEach(() => (handler = new CreateExperienceHandler(repo, skillRepo, mediaRepo, richTextStub)));
 
     it('should create experience and return ID', async () => {
       const result = await handler.execute(new CreateExperienceCommand(validCreateDto, userId));
@@ -163,13 +192,42 @@ describe('Experience Commands', () => {
         handler.execute(new CreateExperienceCommand({ ...validCreateDto, companyLogoId: mediaId }, userId))
       ).rejects.toMatchObject({ statusCode: 404 });
     });
+
+    it('canonicalizes each provided *Json prose field and applies it to the entity', async () => {
+      (richTextStub as RichTextStub).toCanonicalFormTranslatable.mockClear();
+      await handler.execute(
+        new CreateExperienceCommand(
+          {
+            ...validCreateDto,
+            descriptionJson: bilingualDoc,
+            responsibilitiesJson: bilingualDoc,
+            highlightsJson: bilingualDoc,
+          },
+          userId
+        )
+      );
+
+      const fields = (richTextStub as RichTextStub).toCanonicalFormTranslatable.mock.calls.map((c) => c[1]);
+      expect(fields).toEqual(['experience.description', 'experience.responsibilities', 'experience.highlights']);
+
+      const [addedEntity] = (repo.add as jest.Mock).mock.calls[0];
+      expect(addedEntity.toProps().descriptionJson).toEqual(canonicalJson);
+      expect(addedEntity.toProps().responsibilitiesJson).toEqual(canonicalJson);
+      expect(addedEntity.toProps().highlightsJson).toEqual(canonicalJson);
+    });
+
+    it('skips the rich pipeline when no *Json is sent', async () => {
+      (richTextStub as RichTextStub).toCanonicalFormTranslatable.mockClear();
+      await handler.execute(new CreateExperienceCommand(validCreateDto, userId));
+      expect((richTextStub as RichTextStub).toCanonicalFormTranslatable).not.toHaveBeenCalled();
+    });
   });
 
   // --- Update ---
 
   describe('UpdateExperienceHandler', () => {
     let handler: UpdateExperienceHandler;
-    beforeEach(() => (handler = new UpdateExperienceHandler(repo, skillRepo, mediaRepo)));
+    beforeEach(() => (handler = new UpdateExperienceHandler(repo, skillRepo, mediaRepo, richTextStub)));
 
     it('should update experience without changing slug', async () => {
       const experience = loadExperience();
@@ -188,6 +246,26 @@ describe('Experience Commands', () => {
       await expect(
         handler.execute(new UpdateExperienceCommand(experienceId, { companyName: 'X' }, userId))
       ).rejects.toMatchObject({ statusCode: 404, errorCode: 'EXPERIENCE_NOT_FOUND' });
+    });
+
+    it('canonicalizes provided *Json prose fields and applies them on update', async () => {
+      (richTextStub as RichTextStub).toCanonicalFormTranslatable.mockClear();
+      repo.findById.mockResolvedValue(loadExperience());
+
+      await handler.execute(
+        new UpdateExperienceCommand(
+          experienceId,
+          { descriptionJson: bilingualDoc, highlightsJson: bilingualDoc },
+          userId
+        )
+      );
+
+      const fields = (richTextStub as RichTextStub).toCanonicalFormTranslatable.mock.calls.map((c) => c[1]);
+      expect(fields).toEqual(['experience.description', 'experience.highlights']);
+
+      const [, updatedEntity] = (repo.update as jest.Mock).mock.calls[0];
+      expect(updatedEntity.toProps().descriptionJson).toEqual(canonicalJson);
+      expect(updatedEntity.toProps().highlightsJson).toEqual(canonicalJson);
     });
   });
 

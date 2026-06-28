@@ -8,6 +8,7 @@ import {
   ProjectCreateInput,
   ProjectUpdateInput,
   ProjectFindAllOptions,
+  TechnicalHighlightInput,
 } from '../../application/ports/project.repository.port';
 import { Project } from '../../domain/entities/project.entity';
 import { ProjectMapper, PrismaProjectWithRelations, ProjectReadResult } from '../mapper/project.mapper';
@@ -23,6 +24,24 @@ const fullInclude = {
 export class ProjectRepository implements IProjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Legacy + rich-text columns for a single highlight (shared by create + update). */
+  private static highlightRichData(h: TechnicalHighlightInput) {
+    return {
+      challenge: h.challenge as unknown as Prisma.InputJsonValue,
+      approach: h.approach as unknown as Prisma.InputJsonValue,
+      outcome: h.outcome as unknown as Prisma.InputJsonValue,
+      challengeJson: (h.challengeRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      challengeHtml: (h.challengeRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      challengeSchemaVersion: h.challengeRich?.schemaVersion ?? 1,
+      approachJson: (h.approachRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      approachHtml: (h.approachRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      approachSchemaVersion: h.approachRich?.schemaVersion ?? 1,
+      outcomeJson: (h.outcomeRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      outcomeHtml: (h.outcomeRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      outcomeSchemaVersion: h.outcomeRich?.schemaVersion ?? 1,
+    };
+  }
+
   async create(input: ProjectCreateInput): Promise<string> {
     const { entity, highlights, imageIds, skillIds } = input;
     try {
@@ -33,9 +52,7 @@ export class ProjectRepository implements IProjectRepository {
           highlights: {
             create: highlights.map((h) => ({
               id: IdentifierValue.v7(),
-              challenge: h.challenge as unknown as Prisma.InputJsonValue,
-              approach: h.approach as unknown as Prisma.InputJsonValue,
-              outcome: h.outcome as unknown as Prisma.InputJsonValue,
+              ...ProjectRepository.highlightRichData(h),
               codeUrl: h.codeUrl ?? null,
               displayOrder: h.displayOrder,
             })),
@@ -86,15 +103,16 @@ export class ProjectRepository implements IProjectRepository {
           featured: entity.featured,
           displayOrder: entity.displayOrder,
           body: (entity.body as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+          bodyJson: (entity.bodyJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+          bodyHtml: (entity.bodyHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
+          bodySchemaVersion: entity.bodySchemaVersion,
           links: entity.links as unknown as Prisma.InputJsonValue,
           thumbnailId: entity.thumbnailId,
           updatedById: entity.updatedById,
           highlights: {
             create: highlights.map((h) => ({
               id: IdentifierValue.v7(),
-              challenge: h.challenge as unknown as Prisma.InputJsonValue,
-              approach: h.approach as unknown as Prisma.InputJsonValue,
-              outcome: h.outcome as unknown as Prisma.InputJsonValue,
+              ...ProjectRepository.highlightRichData(h),
               codeUrl: h.codeUrl ?? null,
               displayOrder: h.displayOrder,
             })),

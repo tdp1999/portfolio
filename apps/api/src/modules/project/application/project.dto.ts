@@ -9,13 +9,21 @@ import { ContentStatus, ProjectLifecycleStatus } from '@prisma/client';
 import { DisplayOrderSchema, TitleSchema, UrlSchema } from '@portfolio/shared/validation/zod';
 import { LIMITS } from '@portfolio/shared/validation';
 import { PROJECT_LINK_TYPES } from '../domain/value-objects';
+// Import the schema file directly (not the barrel) so the zod schema doesn't pull
+// in RichTextService → the ESM document-engine-core, which breaks node-env specs.
+import { BilingualEditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
 
 // --- TechnicalHighlightSchema ---
 
 export const TechnicalHighlightSchema = z.object({
-  challenge: TranslatableSchema,
-  approach: TranslatableSchema,
-  outcome: TranslatableSchema,
+  // Legacy markdown — optional during the RTE transition; the `*Json` docs below
+  // are the source of truth (the console editor emits them). Landing render swap: task 313.
+  challenge: TranslatableSchema.optional(),
+  approach: TranslatableSchema.optional(),
+  outcome: TranslatableSchema.optional(),
+  challengeJson: BilingualEditorDocumentSchema.optional(),
+  approachJson: BilingualEditorDocumentSchema.optional(),
+  outcomeJson: BilingualEditorDocumentSchema.optional(),
   codeUrl: UrlSchema.nullable().optional(),
 });
 
@@ -36,6 +44,7 @@ export const CreateProjectSchema = z.object({
   motivation: TranslatableSchema,
   role: TranslatableSchema,
   body: TranslatableSchema.nullable().optional(),
+  bodyJson: BilingualEditorDocumentSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   links: z.array(ProjectLinkSchema).default([]),
@@ -62,6 +71,7 @@ const UpdateProjectBaseSchema = z.object({
   motivation: PartialTranslatableSchema,
   role: PartialTranslatableSchema,
   body: PartialTranslatableSchema.nullable(),
+  bodyJson: BilingualEditorDocumentSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   status: z.nativeEnum(ContentStatus),

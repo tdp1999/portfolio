@@ -5,6 +5,7 @@ import { UserModule } from '../user';
 import { CategoryModule } from '../category';
 import { TagModule } from '../tag';
 import { ProfileModule } from '../profile';
+import { RichTextModule } from '../shared/rich-text';
 import { BlogPostPublicController } from './presentation/blog-post-public.controller';
 import { BlogPostAdminController } from './presentation/blog-post-admin.controller';
 import { BlogPostRepository } from './infrastructure/repositories/blog-post.repository';
@@ -43,6 +44,7 @@ const queryHandlers = [
 @Module({
   imports: [
     CqrsModule,
+    RichTextModule,
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
     CategoryModule,

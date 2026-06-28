@@ -3,6 +3,9 @@ import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/t
 import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } from '@portfolio/shared/validation/zod';
 import { POST_STATUS } from '../domain/blog-post.types';
+// Import the schema file directly (not the barrel) so the zod schema doesn't pull
+// in RichTextService → ESM document-engine-core, which breaks node-env specs.
+import { EditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
 
 const ContentSchema = z.string().min(1);
 
@@ -15,6 +18,10 @@ const PostStatusSchema = z.enum([POST_STATUS.DRAFT, POST_STATUS.PUBLISHED, POST_
 export const CreateBlogPostSchema = z.object({
   title: TitleSchema,
   content: ContentSchema,
+  // Single editor document (a post is one language). The handler wraps it into
+  // the bilingual `{ [language]: doc }` storage envelope. Legacy `content`
+  // (plain text) stays populated for the transition until the landing render swap.
+  contentJson: EditorDocumentSchema.optional(),
   language: LanguageSchema.default('EN'),
   excerpt: ExcerptSchema.optional(),
   categoryIds: z.array(z.uuid()).default([]),
@@ -33,6 +40,7 @@ export type CreateBlogPostDto = z.infer<typeof CreateBlogPostSchema>;
 const UpdateBlogPostBaseSchema = z.object({
   title: TitleSchema,
   content: ContentSchema,
+  contentJson: EditorDocumentSchema.optional(),
   language: LanguageSchema,
   excerpt: ExcerptSchema.nullable(),
   categoryIds: z.array(z.uuid()),
