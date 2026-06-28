@@ -11,6 +11,7 @@ The Obsidian importer is the only tool that needs Markdown→JSON conversion. Ro
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 8.
 
 ## Acceptance Criteria
+- [ ] Restore the console blog-form "Import Markdown" entry point. Task 311 (S3) **removed** the form's client-side markdown file-import (the `<input type=file>` + `importMarkdownFile()` + `convertObsidianMarkdown`/`extractTitleFromMarkdown` usage in `post.form.ts`/`.html`) because the editor is now RTE and there is no md→doc path yet. This task brings it back, feeding the editor an `EditorDocument` (or invoking the BE import). The BE `ImportMarkdownHandler`/`ImportMarkdownCommand` were left intact.
 - [ ] Importer (likely `apps/api/src/modules/blog-post/import/` or wherever it currently lives) calls `prosemirror-markdown` parser to produce a Tiptap-compatible `EditorDocument`.
 - [ ] Importer passes the `EditorDocument` through `RichTextService.toCanonicalForm` to produce the 3-column triplet, then persists via the existing import command.
 - [ ] Custom utilities (`convertObsidianMarkdown`, `extractTitleFromMarkdown`, `extractH1Title`) kept ONLY in this importer module. They no longer ship to runtime bundles.

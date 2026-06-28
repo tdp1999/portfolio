@@ -51,10 +51,10 @@ Each prose item carries two checkboxes: **EN** and **VI**. Language-neutral item
 ## Tier 0 — Micro (token → one line)
 
 - EN [x] · VI [x] — About CTA (/about §04 Next steps heading+lede) · **DONE 2026-06-13**, canonical in E0 §16 (`Profile.ctaHeading`/`ctaLede`) (T340)
-- [] (neutral) — **Skill taxonomy**: 21 leaves under 6 umbrellas + tier/category/isLibrary. **LOCKED 2026-06-13, canonical in E0 §16.** Remaining: enter on prod via Console (`/skills`); React→/now; capabilities + Angular-native features (Signals, SSR)→stackIntro prose; AI=one "Claude Code" chip.
+- [x] (neutral) — **Skill taxonomy**: 21 leaves under 6 umbrellas + tier/category/isLibrary. **DONE 2026-06-27** — all 21 leaves entered on prod via Console (`/skills`); built drag-drop reorder tool to make displayOrder manageable. Canonical in E0 §16. Downstream content lives in *separate* items below: React→/now; capabilities + Angular-native features (Signals, SSR)→`stackIntro` prose; AI=one "Claude Code" chip.
 - EN [] · VI [] — `Skill.proficiencyNote` × N ("why default-reach", 1 line). **DEFERRED**: only surface was the depth-map, which is now hidden; home stack chips don't render it. Revisit when a surface consumes it. · `[draft]` (T340)
 - EN [] · VI [] — Footer link labels (5 pages) — E2 §7 · `[draft]`
-- [] (neutral) — `Profile.coreStack`: 3–4 hero chips (`TYPESCRIPT / ANGULAR / SSR`) · `[blank]`
+- [x] (neutral) — `Profile.coreStack`: 3 hero chips · **LOCKED 2026-06-27 `ANGULAR / TYPESCRIPT / NESTJS`, canonical in E0 §16.** Pending prod Console entry. Differentiation deferred to `stackIntro`/tagline/case studies; SSR/Tiptap/SCSS dropped from hero.
 - EN [] · VI [] — `Profile.footerTagline`: one-line footer tagline · `[blank]`
 - EN [] · VI [] — `Skill.description` × 16 (optional; skip unless wanted) · `[blank]`
 - EN [] · VI [] — PWA manifest `name` / `short_name` / `description` (T324) · `[blank]`
@@ -68,7 +68,8 @@ Each prose item carries two checkboxes: **EN** and **VI**. Language-neutral item
 - EN [] · VI [] — About hero sub-paragraph: 2–3 sentences (~30–50 words) · `[draft: aboutLede]` (T340)
 - EN [] · VI [] — Home Get-in-touch copy + 3 CTA labels (Hire/Freelance/Hi) · `[in-code]` `libs/landing/feature-home/src/lib/home.get-in-touch/home.get-in-touch.ts:20-40`
 - EN [] · VI [] — Home Bio-card bridge: 2–3 sentences hero ↔ gallery (E2 §6) · `[draft]`
-- EN [] · VI [] — `Profile.tagline` / `Profile.stackIntro`: review draft · `[draft]`
+- EN [] · VI [] — `Profile.tagline`: review draft · `[draft]`
+- EN [x] · VI [x] — `Profile.stackIntro`: §5 prose (3 ¶: Angular depth → architecture/NestJS → AI differentiator). **DONE 2026-06-27, canonical in E0 §16, on prod.** Voice-led, not a tool list (grid carries tools).
 - EN [] · VI [] — Contact page microcopy (~40 strings: hero "Let's talk", form labels, success, globe caption) · `[in-code]` `apps/landing/src/app/pages/contact/contact.{ts,html}`
 
 ## Tier 2 — Medium (paragraph / multi-item)
@@ -109,6 +110,10 @@ Each prose item carries two checkboxes: **EN** and **VI**. Language-neutral item
 
 ## Progress Log
 
+- 2026-06-27: **`stackIntro` DONE → on prod** (EN+VI canonical in E0 §16). 3 ¶ voice-led narrative (Angular journey small→large → architectural judgment bridging to NestJS, frontend-first → AI differentiator: built own workflow/harness, "this site shipped with it"). Key frame: prose = narrative+judgment, NOT a tool list (the §5 chip-grid carries tools). VI authored first → EN built spirit-not-literal. "harness" kept (author-confirmed; E0 §6.3 noted). Next in hero-stack cluster: `tagline`.
+- 2026-06-27: **`coreStack` LOCKED → `ANGULAR / TYPESCRIPT / NESTJS`** (E0 §16). Frame: hero chip = 3-sec positioning keyword, not a dependency graph (explicit>implied). Chips place category honestly; differentiation lives in tagline/stackIntro/case studies. Dropped SSR (honesty — author not strong), Tiptap (needs context→§5), SCSS (supporting), Git/JS (generic). Angular-first keeps frontend-first read; Nx held as reserve 4th. Next: `stackIntro`. Pending prod entry.
+- 2026-06-27: **Tier 0 #2 (skill taxonomy) CLOSED.** All 21 leaves entered on prod via Console; reorder tool made the displayOrder entry manageable. Tier 0 #2 ticked done.
+- 2026-06-27: Reorder tool — author **feedback + bug-fix round** completed after the initial build (`52688ce`, Jun 14). Bugs surfaced during real prod data entry were fixed and verified working on prod. _(Specifics to be filled in by author if needed.)_
 - 2026-06-13: Built console **skill reorder** tool (drag-drop, grouped by tier) to fix displayOrder pain. New `PATCH /skills/reorder` (mirrors Experience reorder) + `/skills/reorder` route + `skill.reorder` component (CDK drag-drop, within-tier only, optimistic). displayOrder now per-tier (0-based index within tier). Both API + console builds clean. Follow-ups (optional): handler unit test; sort skills LIST by (tier, displayOrder); cross-tier drag = change tier (v2).
 - 2026-06-13: Item #2 (skill taxonomy) locked → E0 §16. 23 leaves/6 umbrellas, chips=tools-only, dropped capabilities+PM tools+Adobe XD, React→/now, AI=one Claude Code chip. proficiencyNote deferred (no live surface). Pending prod Console entry.
 - 2026-06-13: Item #1 (Tier 0 — About §04 CTA heading+lede) locked EN+VI → E0 §16. Added per-item analysis frame to collaboration contract.

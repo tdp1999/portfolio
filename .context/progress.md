@@ -250,6 +250,7 @@
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
+- [ ] 380-style-architecture-standardization (M) — pending (standalone)
 
 ## Pending — Portfolio E5 Implementation (broken down 2026-05-02)
 
@@ -359,13 +360,13 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 306-rte-contract-lib (S) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/); lib later renamed `redoc-rte`→`rte-contract` in 308
 - [x] 307-rte-tiptap-concrete (M) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); `rte-tiptap`
 - [x] 308-rte-renderer-lib (S) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); added Angular-free `rte-core` + `rte-renderer`; renamed the RTE libs
-- [ ] 309-rte-textarea-fallback (S) — deps: 306
+- [x] 309-rte-textarea-fallback (S) — done 2026-06-28 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 4 — BE pipeline
-- [ ] 310-rte-be-service (M) — deps: 305, 307, 308
+- [x] 310-rte-be-service (M) — done 2026-06-28 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 5 — Console swap
-- [ ] 311-rte-console-editor-swap (L) — deps: 307, 310
+- [x] 311-rte-console-editor-swap (L) — done 2026-06-28 (S1 profile.bioLong, S2 project body/highlights, S3 blog content, S4 experience desc/resp/highlights; archived → tasks-done/epic-portfolio-rich-text-editor/). Follow-ups spun out: 318 (restore blog md-import), 363 (drop legacy cols), 382 (landing-accurate preview)
 
 ### Phase 6 — Landing renderer
 - [ ] 312-rte-landing-home-intro-render (S) — deps: 305, 308, 310, 311
@@ -382,6 +383,11 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ### Cross-cutting — Migration script
 - [ ] 319-rte-migrate-editor-script (S) — deps: 305, 307, 310
+
+### Contract — drop legacy prose columns
+- [ ] 363-rte-drop-legacy-prose-columns (M) — deps: 305, 311, 312, 313, 314, 317, 318, 319. Includes the 311 dual-field cleanup (all 5 field groups).
+- [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
+- [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
 
 ## Planned — Prose Block Renderer (not broken down)
 

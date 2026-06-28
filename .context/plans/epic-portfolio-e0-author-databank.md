@@ -116,6 +116,7 @@ Stated outcomes drawn from the CV (verifiable on request):
 
 - **What:** Claude Code plugin marketplace. Task-driven development workflow: project setup, vision, architecture, epic breakdown, task tracking, progress, TDD support.
 - **Honest framing (locked):** *"an AI workflow system I built for myself"* — not "harness engineering" (term too narrow), not "plugin marketplace" (term too commercial). Built for the author and team; the very tool used to plan and ship the portfolio you're reading.
+  - Note (author-confirmed 2026-06-27): the word **"harness"** is fine inside prose (e.g. `stackIntro` ¶3: "my own workflow and harness") — the lock above only rules out making *"harness engineering"* the **sole positioning label**, not the casual noun.
 - **Repo:** <https://github.com/tdp1999/claude-code-ctx>
 - **Portfolio role:** **Third case study.** Closes the loop: site reader can click into the meta-tool that built the site.
 
@@ -284,3 +285,26 @@ Umbrellas (parents, not chips): Languages · Frontend · Library work · Backend
 | Claude Code | Workflow & AI | TOOLS | FREQUENT | no |
 
 Confirmed 2026-06-13: keep Git/JavaScript/Node.js (ATS-recognizable tokens). Signals & SSR removed as chips (Angular-native features → prose). **21 leaves total.** Prod state: 6 umbrellas already exist; only the 21 leaves need entering. Watch item: FREQUENT bucket (now 14) — review when rendered live and rebalance to SHIPPED if heavy.
+
+### Home hero — `Profile.coreStack` (3 chips)
+
+Publish: Console → `/profile` → **Landing Content** → "Core stack chips" (comma-separated; rendered uppercase, joined ` / `). Locked 2026-06-27.
+
+- **Chips:** `ANGULAR / TYPESCRIPT / NESTJS`
+
+**Reasoning (locked):** A hero chip is a 3-second positioning keyword (eye + ATS), NOT a dependency graph — so explicit > implied (TypeScript stays even though Angular implies it; here it reads as "TS across the stack", the FE↔BE through-line). Chips place you in a category *honestly*; differentiation lives in `tagline` + `stackIntro` + case studies, so the strip carries no clever/rare token. Dropped from hero: **SSR** (author not strongly confident — honesty rule, E0 §7), **Tiptap/ProseMirror** (needs context to land → §5 + Document Engine case study), **SCSS** (supporting → §5), **Git/JS** (generic / subsumed). NestJS kept (author owns real backend work, E0 §3) with **Angular first** so positioning stays frontend-first. Considered but not added: 4th chip **Nx** (monorepo/architecture, systems-thinker signal) — held in reserve.
+
+### Home §05 "The Stack" — `Profile.stackIntro` (prose above the tier chip-grid)
+
+Publish: Console → `/profile` → **Landing Content** → "Stack Intro" (markdown; `**bold**` = tech names, `*italic*` = Newsreader accent). Locked 2026-06-27. On prod.
+
+**Structure (3 paragraphs):** ¶1 Angular depth (the journey small→large), ¶2 architectural judgment → bridge to NestJS (frontend-first, backend "when it serves my part"), ¶3 the AI differentiator (built own workflow/harness; the loop — this very site shipped with it). The §5 chip-grid below carries the tool enumeration, so the prose carries *narrative + judgment*, not a tool list.
+
+- **EN**
+  - ¶1: *Most of my five years writing code have been with **Angular**. I started at the smallest steps — slicing UI, building landing pages — and worked up to bigger ones: complex form modules in an ERP project, **Angular Material**, then hand-rolling my own components on **Material CDK**. These days I build libraries for Angular apps to reuse.*
+  - ¶2: *That stretch of time — along with **Nx** — shaped how I approach code: scale first, an architecture that holds up under enterprise problems. Whether it's an Angular app or some other stack, I push myself to find the best pattern I know to keep a system scaling, and a design system right-sized for the problem. I also wanted to understand the backend properly — to work better with it and do my own part well. That's how I drifted into **NestJS**, a **Node.js** framework I genuinely like.*
+  - ¶3: *And when AI arrived, it brought new energy — and anxieties I'd never felt before. I use **Claude Code** as a new tool, but I didn't stop at using it: I built my own workflow and harness on top, tailored to how my team and I actually work. It speeds me up, and it's also how I level myself up. The very site you're reading was planned, built, and shipped with it.*
+- **VI**
+  - ¶1: *Phần lớn hành trình viết code của mình, 5 năm, là làm việc với **Angular**. Mình đã đi từ những bước nhỏ nhất — cắt UI, làm landing page, cho đến những bước lớn hơn: phát triển các module form phức tạp trong dự án ERP, dùng **Angular Material** rồi tự viết component bằng **Material CDK**. Và hiện tại là viết library cho chính các app Angular tái sử dụng.*
+  - ¶2: *Với khoảng thời gian không ngắn đó, cùng với **Nx**, chúng dần định hình cách mình tiếp cận với code: ưu tiên khả năng scale, kiến trúc vững cho bài toán doanh nghiệp. Dù là một app Angular hay một stack khác, mình luôn bắt bản thân tìm ra pattern tốt nhất trong tầm hiểu biết để hệ thống scale được, tìm design system đủ phù hợp để giải quyết vấn đề. Mình cũng muốn hiểu rõ phía Backend, để phối hợp tốt hơn và làm tròn phần việc của mình. Cũng vì vậy mà dần dà mình tìm hiểu và làm việc với **NestJS** — một framework **Node.js** mà mình thích.*
+  - ¶3: *Và khi thời đại AI đến, nó cho mình nhiều động lực mới, cũng như tạo ra những lo âu chưa từng có. Mình dùng **Claude Code** như một công cụ mới, nhưng không chỉ dừng ở đó — mình có dựng một workflow và harness riêng, may đo cho cách mình và team làm việc. Nó vừa giúp mình tăng tốc, vừa là cách để mình nâng cấp năng lực. Site bạn đang đọc cũng được lên kế hoạch, xây dựng và ship bằng nó.*
