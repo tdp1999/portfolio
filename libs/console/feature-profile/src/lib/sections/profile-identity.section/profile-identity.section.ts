@@ -27,12 +27,14 @@ import {
   SectionStatus,
   ToastService,
   TranslatableGroup,
+  TranslatableRichTextGroup,
 } from '@portfolio/console/shared/ui';
 import { ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { LIMITS } from '@portfolio/shared/validation';
 import { EMPTY, map, startWith, switchMap } from 'rxjs';
 import { ProfileService } from '../../profile.service';
-import { ProfileAdminResponse } from '../../profile.types';
+import { ProfileAdminResponse, UpdateIdentityPayload, type TranslatableRichText } from '../../profile.types';
 
 @Component({
   selector: 'console-profile-identity-section',
@@ -47,6 +49,7 @@ import { ProfileAdminResponse } from '../../profile.types';
     FormSnapshotDirective,
     ServerErrorDirective,
     TranslatableGroup,
+    TranslatableRichTextGroup,
   ],
   templateUrl: './profile-identity.section.html',
   styleUrl: './profile-identity.section.scss',
@@ -67,7 +70,10 @@ export class ProfileIdentitySection {
     fullName: this.bilingualGroup({ required: true, maxLength: LIMITS.NAME_MAX }),
     title: this.bilingualGroup({ required: true, maxLength: LIMITS.TITLE_MAX }),
     bioShort: this.bilingualGroup({ required: true, maxLength: LIMITS.BIO_SHORT_MAX }),
-    bioLong: this.bilingualGroup({ required: false }),
+    bioLong: this.fb.group({
+      en: this.fb.control<EditorDocument | null>(null),
+      vi: this.fb.control<EditorDocument | null>(null),
+    }),
   });
 
   readonly saving = signal(false);
@@ -87,16 +93,20 @@ export class ProfileIdentitySection {
   });
 
   private hydrated = false;
+  // Legacy markdown bio captured at hydrate, echoed back on save so the BE keeps
+  // it until the landing render swap (task 312) stops reading it.
+  private legacyBioLong: ProfileAdminResponse['bioLong'] = null;
 
   constructor() {
     effect(() => {
       const data = this.initialData();
       if (!data || this.hydrated) return;
+      this.legacyBioLong = data.bioLong ?? null;
       this.form.reset({
         fullName: { en: data.fullName.en, vi: data.fullName.vi },
         title: { en: data.title.en, vi: data.title.vi },
         bioShort: { en: data.bioShort.en, vi: data.bioShort.vi },
-        bioLong: { en: data.bioLong?.en ?? '', vi: data.bioLong?.vi ?? '' },
+        bioLong: { en: data.bioLongJson?.en ?? null, vi: data.bioLongJson?.vi ?? null },
       });
       this.avatarId.set(data.avatarId);
       this.avatarPreview.set(data.avatarUrl);
@@ -115,8 +125,9 @@ export class ProfileIdentitySection {
       return;
     }
     this.saving.set(true);
+    const payload = this.buildIdentityPayload();
     this.profileService
-      .updateIdentity(this.form.getRawValue())
+      .updateIdentity(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -124,11 +135,41 @@ export class ProfileIdentitySection {
           this.form.markAsPristine();
           this.lastSaved.set(new Date());
           this.toast.success('Identity saved');
-          const v = this.form.getRawValue();
-          this.saved.emit({ fullName: v.fullName, title: v.title, bioShort: v.bioShort, bioLong: v.bioLong });
+          this.saved.emit({
+            fullName: payload.fullName,
+            title: payload.title,
+            bioShort: payload.bioShort,
+            bioLong: payload.bioLong,
+            bioLongJson: payload.bioLongJson ?? null,
+          });
         },
         error: () => this.saving.set(false),
       });
+  }
+
+  private buildIdentityPayload(): UpdateIdentityPayload {
+    const v = this.form.getRawValue();
+    return {
+      fullName: v.fullName,
+      title: v.title,
+      bioShort: v.bioShort,
+      // Legacy markdown isn't edited via the RTE; echo it back unchanged.
+      bioLong: this.legacyBioLong,
+      bioLongJson: this.buildBioLongJson(v.bioLong),
+    };
+  }
+
+  // The BE schema requires both locales as valid documents when bioLongJson is
+  // present. Omit it entirely when both are empty (identity-only update); when
+  // only one locale has content, fill the other with an empty doc.
+  private buildBioLongJson(value: {
+    en: EditorDocument | null;
+    vi: EditorDocument | null;
+  }): TranslatableRichText | undefined {
+    const seed = value.en ?? value.vi;
+    if (!seed) return undefined;
+    const empty: EditorDocument = { schemaVersion: seed.schemaVersion, content: { type: 'doc', content: [] } };
+    return { en: value.en ?? empty, vi: value.vi ?? empty };
   }
 
   openAvatarPicker(): void {

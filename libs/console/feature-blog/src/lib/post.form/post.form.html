@@ -11,28 +11,7 @@
         }}
       </p>
     </div>
-    <div class="flex items-center gap-2">
-      <input #mdInput type="file" accept=".md,text/markdown" class="hidden" (change)="importMarkdownFile($event)" />
-      <button mat-stroked-button type="button" (click)="mdInput.click()">
-        <mat-icon class="icon-sm">upload_file</mat-icon>
-        Import Markdown
-      </button>
-    </div>
   </div>
-
-  @if (importWarnings().length > 0) {
-    <div class="import-warnings">
-      <mat-icon class="text-amber-600">warning</mat-icon>
-      <ul>
-        @for (w of importWarnings(); track w) {
-          <li>{{ w }}</li>
-        }
-      </ul>
-      <button mat-icon-button type="button" (click)="importWarnings.set([])">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  }
 
   <div class="post-form-page__body">
     <!-- LEFT: large editor area -->
@@ -41,40 +20,17 @@
         id="section-body"
         bucket="PUBLIC"
         title="Body"
-        description="The post content in Markdown. Renders publicly on the post page."
+        description="The post content. Rich text with headings, lists, quotes, and images. Renders publicly on the post page."
         saveMode="atomic"
       >
         <div class="form-stack">
-          <div class="editor-toolbar">
-            <button
-              mat-icon-button
-              type="button"
-              (click)="insertImage()"
-              matTooltip="Insert image"
-              aria-label="Insert image"
-              [disabled]="previewMode()"
-            >
-              <mat-icon>image</mat-icon>
-            </button>
-            <button mat-stroked-button type="button" (click)="togglePreview()">
-              <mat-icon class="icon-sm">{{ previewMode() ? 'edit' : 'visibility' }}</mat-icon>
-              {{ previewMode() ? 'Edit' : 'Preview' }}
-            </button>
-          </div>
-
-          @if (previewMode()) {
-            <div class="preview-container">
-              <article class="preview-article" [innerHTML]="previewHtml()"></article>
-            </div>
-          } @else {
-            <textarea
-              class="content-textarea"
-              placeholder="Write your post in markdown…"
-              formControlName="content"
-            ></textarea>
-            @if (form.controls.content.touched && form.controls.content.errors) {
-              <span class="text-caption text-error mt-1">{{ form.controls.content | formError }}</span>
-            }
+          <console-rich-text-editor
+            formControlName="content"
+            mode="full"
+            placeholder="Write your post — use H2/H3 for sections, the toolbar for images…"
+          />
+          @if (form.controls.content.touched && form.controls.content.errors) {
+            <span class="text-caption text-error mt-1">{{ form.controls.content | formError }}</span>
           }
         </div>
       </console-section-card>

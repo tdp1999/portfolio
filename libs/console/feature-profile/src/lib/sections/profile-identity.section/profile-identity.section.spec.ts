@@ -15,6 +15,7 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   title: { en: 'Engineer', vi: 'Kỹ sư' },
   bioShort: { en: 'Short bio', vi: 'Tiểu sử ngắn' },
   bioLong: null,
+  bioLongJson: null,
   yearsOfExperience: 10,
   availability: 'EMPLOYED',
   openTo: [],
@@ -90,7 +91,30 @@ describe('IdentitySectionComponent', () => {
 
   it('hydrates form from initialData on first input', () => {
     expect(component.form.controls.fullName.value).toEqual({ en: 'Phuong Tran', vi: 'Phương Trần' });
-    expect(component.form.controls.bioLong.value).toEqual({ en: '', vi: '' });
+    expect(component.form.controls.bioLong.value).toEqual({ en: null, vi: null });
+  });
+
+  it('hydrates bioLong editor controls from bioLongJson', () => {
+    const doc = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+    // Fresh instance: the live one already hydrated (guarded against re-hydration).
+    const f = TestBed.createComponent(ProfileIdentitySection);
+    f.componentRef.setInput('initialData', { ...MOCK_PROFILE, bioLongJson: { en: doc, vi: doc } });
+    f.componentRef.setInput('mediaDataSource', stubDataSource);
+    f.detectChanges();
+    expect(f.componentInstance.form.controls.bioLong.value).toEqual({ en: doc, vi: doc });
+  });
+
+  it('sends bioLongJson (both locales) when one locale has content, omits when empty', () => {
+    const doc = { schemaVersion: 1, content: { type: 'doc', content: [{ type: 'paragraph' }] } };
+    component.form.controls.bioLong.controls.en.setValue(doc);
+    component.form.markAsDirty();
+    component.save();
+
+    const payload = profileService.updateIdentity.mock.calls[0][0];
+    expect(payload.bioLongJson.en).toEqual(doc);
+    expect(payload.bioLongJson.vi).toEqual({ schemaVersion: 1, content: { type: 'doc', content: [] } });
+    // Legacy markdown echoed back untouched.
+    expect(payload.bioLong).toBeNull();
   });
 
   it('does not call API when form is invalid', () => {

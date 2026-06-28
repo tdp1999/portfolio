@@ -10,16 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,8 +23,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import {
   LongFormLayout,
-  SegmentedControl,
-  SegmentedControlOption,
   MonthYearPicker,
   ScrollspyRail,
   SectionCard,
@@ -42,6 +31,7 @@ import {
   StickySaveBar,
   ToastService,
   TranslatableGroup,
+  TranslatableRichTextGroup,
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
@@ -50,19 +40,21 @@ import {
   onBeforeUnload,
   scrollToFirstError,
   ServerErrorDirective,
+  toBilingualRichTextPayload,
 } from '@portfolio/console/shared/util';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
 import { LIMITS } from '@portfolio/shared/validation';
 import { AdminExperience, SkillOption } from '../experience.types';
 import { ExperienceService } from '../experience.service';
-import type { BulletGroup, LinkGroup } from './experience.form.types';
+import type { LinkGroup } from './experience.form.types';
+import { richTextGroup } from './experience.form.util';
 
 @Component({
   selector: 'console-experience-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    FormsModule,
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
@@ -75,7 +67,6 @@ import type { BulletGroup, LinkGroup } from './experience.form.types';
     MatProgressSpinnerModule,
     FormErrorPipe,
     ServerErrorDirective,
-    SegmentedControl,
     LongFormLayout,
     MonthYearPicker,
     ScrollspyRail,
@@ -83,6 +74,7 @@ import type { BulletGroup, LinkGroup } from './experience.form.types';
     StickySaveBar,
     SpinnerOverlay,
     TranslatableGroup,
+    TranslatableRichTextGroup,
   ],
   templateUrl: './experience.form.html',
   styleUrl: './experience.form.scss',
@@ -111,13 +103,6 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
   readonly employmentTypeOptions = Object.entries(EMPLOYMENT_TYPE_LABELS).map(([value, label]) => ({ value, label }));
   readonly locationTypeOptions = Object.entries(LOCATION_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 
-  readonly localeOptions: SegmentedControlOption[] = [
-    { value: 'en', label: 'English' },
-    { value: 'vi', label: 'Vietnamese' },
-  ];
-  readonly responsibilitiesLocale = signal<'en' | 'vi'>('en');
-  readonly highlightsLocale = signal<'en' | 'vi'>('en');
-
   readonly form = this.fb.nonNullable.group({
     companyName: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
     companyUrl: ['', baselineFor.url()],
@@ -127,10 +112,7 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       en: ['', [Validators.required]],
       vi: ['', [Validators.required]],
     }),
-    description: this.fb.nonNullable.group({
-      en: [''],
-      vi: [''],
-    }),
+    description: richTextGroup(this.fb),
     teamRole: this.fb.nonNullable.group({
       en: [''],
       vi: [''],
@@ -156,10 +138,8 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
 
     displayOrder: [0, baselineFor.displayOrder()],
 
-    responsibilities_en: this.fb.array<BulletGroup>([]),
-    responsibilities_vi: this.fb.array<BulletGroup>([]),
-    highlights_en: this.fb.array<BulletGroup>([]),
-    highlights_vi: this.fb.array<BulletGroup>([]),
+    responsibilities: richTextGroup(this.fb),
+    highlights: richTextGroup(this.fb),
 
     links: this.fb.array<LinkGroup>([]),
   });
@@ -238,30 +218,6 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
     return control as FormGroup;
   }
 
-  addResponsibility(lang: 'en' | 'vi'): void {
-    const arr = lang === 'en' ? this.form.controls.responsibilities_en : this.form.controls.responsibilities_vi;
-    arr.push(this.createBulletGroup());
-    arr.markAsDirty();
-  }
-
-  removeResponsibility(lang: 'en' | 'vi', index: number): void {
-    const arr = lang === 'en' ? this.form.controls.responsibilities_en : this.form.controls.responsibilities_vi;
-    arr.removeAt(index);
-    arr.markAsDirty();
-  }
-
-  addHighlight(lang: 'en' | 'vi'): void {
-    const arr = lang === 'en' ? this.form.controls.highlights_en : this.form.controls.highlights_vi;
-    arr.push(this.createBulletGroup());
-    arr.markAsDirty();
-  }
-
-  removeHighlight(lang: 'en' | 'vi', index: number): void {
-    const arr = lang === 'en' ? this.form.controls.highlights_en : this.form.controls.highlights_vi;
-    arr.removeAt(index);
-    arr.markAsDirty();
-  }
-
   addLink(): void {
     this.form.controls.links.push(this.createLinkGroup());
     this.form.controls.links.markAsDirty();
@@ -327,23 +283,18 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
     const v = this.form.getRawValue();
     const isCurrent = v.isCurrent;
 
-    const responsibilities = {
-      en: v.responsibilities_en.map((a) => a.text).filter(Boolean),
-      vi: v.responsibilities_vi.map((a) => a.text).filter(Boolean),
-    };
-    const highlights = {
-      en: v.highlights_en.map((a) => a.text).filter(Boolean),
-      vi: v.highlights_vi.map((a) => a.text).filter(Boolean),
-    };
+    type LocalePair = { en: EditorDocument | null; vi: EditorDocument | null };
     const links = v.links.filter((l) => l.label && l.url);
 
     const basePayload = {
       companyName: v.companyName,
       companyUrl: v.companyUrl || undefined,
       position: v.position,
-      description: v.description.en || v.description.vi ? v.description : undefined,
-      responsibilities,
-      highlights,
+      // Rich-text fields are the source of truth; legacy string arrays are omitted
+      // (the update is partial so the BE keeps them; create defaults them empty).
+      descriptionJson: toBilingualRichTextPayload(v.description as LocalePair),
+      responsibilitiesJson: toBilingualRichTextPayload(v.responsibilities as LocalePair),
+      highlightsJson: toBilingualRichTextPayload(v.highlights as LocalePair),
       teamRole: v.teamRole.en || v.teamRole.vi ? v.teamRole : undefined,
       links,
       employmentType: v.employmentType,
@@ -410,17 +361,11 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
 
   discard(): void {
     const snapshot = this.initialSnapshot() as {
-      responsibilities_en?: Array<{ text: string }>;
-      responsibilities_vi?: Array<{ text: string }>;
-      highlights_en?: Array<{ text: string }>;
-      highlights_vi?: Array<{ text: string }>;
       links?: Array<{ label: string; url: string }>;
     } | null;
     if (snapshot) {
-      this.rebuildBullets(this.form.controls.responsibilities_en, snapshot.responsibilities_en ?? []);
-      this.rebuildBullets(this.form.controls.responsibilities_vi, snapshot.responsibilities_vi ?? []);
-      this.rebuildBullets(this.form.controls.highlights_en, snapshot.highlights_en ?? []);
-      this.rebuildBullets(this.form.controls.highlights_vi, snapshot.highlights_vi ?? []);
+      // Rich-text groups are plain controls — `reset(snapshot)` restores them.
+      // Only the links FormArray needs its length rebuilt before reset.
       this.rebuildLinks(snapshot.links ?? []);
       this.form.reset(snapshot as never);
     } else {
@@ -443,20 +388,11 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
     this.initialSnapshot.set(this.form.getRawValue());
   }
 
-  private createBulletGroup(text = ''): BulletGroup {
-    return this.fb.nonNullable.group({ text: [text] }) as BulletGroup;
-  }
-
   private createLinkGroup(label = '', url = ''): LinkGroup {
     return this.fb.nonNullable.group({
       label: [label, [Validators.required, Validators.maxLength(LIMITS.NAME_MAX)]],
       url: [url, [Validators.required, ...baselineFor.url()]],
     }) as LinkGroup;
-  }
-
-  private rebuildBullets(arr: FormArray<BulletGroup>, items: Array<{ text: string }>): void {
-    arr.clear({ emitEvent: false });
-    for (const item of items) arr.push(this.createBulletGroup(item.text), { emitEvent: false });
   }
 
   private rebuildLinks(items: Array<{ label: string; url: string }>): void {
@@ -502,7 +438,9 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
         companyUrl: exp.companyUrl ?? '',
         companyLogoId: exp.companyLogoId ?? '',
         position: { en: exp.position?.en ?? '', vi: exp.position?.vi ?? '' },
-        description: { en: exp.description?.en ?? '', vi: exp.description?.vi ?? '' },
+        description: exp.descriptionJson ?? { en: null, vi: null },
+        responsibilities: exp.responsibilitiesJson ?? { en: null, vi: null },
+        highlights: exp.highlightsJson ?? { en: null, vi: null },
         teamRole: { en: exp.teamRole?.en ?? '', vi: exp.teamRole?.vi ?? '' },
         employmentType: exp.employmentType,
         startDate: exp.startDate ? new Date(exp.startDate) : null,
@@ -523,22 +461,6 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       { emitEvent: false }
     );
 
-    this.rebuildBullets(
-      this.form.controls.responsibilities_en,
-      (exp.responsibilities?.en ?? []).map((text) => ({ text }))
-    );
-    this.rebuildBullets(
-      this.form.controls.responsibilities_vi,
-      (exp.responsibilities?.vi ?? []).map((text) => ({ text }))
-    );
-    this.rebuildBullets(
-      this.form.controls.highlights_en,
-      (exp.highlights?.en ?? []).map((text) => ({ text }))
-    );
-    this.rebuildBullets(
-      this.form.controls.highlights_vi,
-      (exp.highlights?.vi ?? []).map((text) => ({ text }))
-    );
     this.rebuildLinks(exp.links ?? []);
 
     if (exp.companyLogoUrl) {

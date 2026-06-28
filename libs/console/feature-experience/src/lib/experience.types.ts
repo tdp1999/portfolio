@@ -1,3 +1,5 @@
+import type { BilingualEditorDocument } from '@portfolio/console/shared/util';
+
 export interface TranslatableJson {
   en: string;
   vi: string;
@@ -30,6 +32,13 @@ export interface AdminExperience {
   description: TranslatableJson | null;
   responsibilities: TranslatableStringArray;
   highlights: TranslatableStringArray;
+  /**
+   * Rich-text storage (bilingual `{ en, vi }` docs). Null on records not yet
+   * authored/migrated to the RTE; the form hydrates the editors from these.
+   */
+  descriptionJson: BilingualEditorDocument | null;
+  responsibilitiesJson: BilingualEditorDocument | null;
+  highlightsJson: BilingualEditorDocument | null;
   teamRole: TranslatableJson | null;
   links: ExperienceLink[];
   employmentType: string;
@@ -64,9 +73,14 @@ export interface CreateExperiencePayload {
   companyUrl?: string;
   companyLogoId?: string;
   position: TranslatableJson;
+  // Legacy string fields are no longer sent by the console (RTE replaced them);
+  // optional so the editor-only payload type-checks. Dropped in task 363.
   description?: TranslatableJson;
-  responsibilities: TranslatableStringArray;
-  highlights: TranslatableStringArray;
+  responsibilities?: TranslatableStringArray;
+  highlights?: TranslatableStringArray;
+  descriptionJson?: BilingualEditorDocument;
+  responsibilitiesJson?: BilingualEditorDocument;
+  highlightsJson?: BilingualEditorDocument;
   teamRole?: TranslatableJson;
   links: ExperienceLink[];
   employmentType: string;
@@ -94,6 +108,9 @@ export interface UpdateExperiencePayload {
   description?: TranslatableJson;
   responsibilities?: TranslatableStringArray;
   highlights?: TranslatableStringArray;
+  descriptionJson?: BilingualEditorDocument;
+  responsibilitiesJson?: BilingualEditorDocument;
+  highlightsJson?: BilingualEditorDocument;
   teamRole?: TranslatableJson;
   links?: ExperienceLink[];
   employmentType?: string;

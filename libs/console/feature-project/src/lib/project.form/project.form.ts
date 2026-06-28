@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import {
   ChipBoolean,
   ChipSelect,
@@ -37,7 +38,7 @@ import {
   StickySaveBar,
   ToastService,
   TranslatableGroup,
-  TranslatableMarkdownGroup,
+  TranslatableRichTextGroup,
   type MediaPickerDataSource,
   type MediaPickerDialogData,
 } from '@portfolio/console/shared/ui';
@@ -48,22 +49,23 @@ import {
   onBeforeUnload,
   scrollToFirstError,
   ServerErrorDirective,
+  toBilingualRichTextPayload,
 } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
 import { ProjectService } from '../project.service';
 import {
+  AdminHighlight,
   AdminProject,
   CreateProjectPayload,
   HighlightPayload,
   ProjectLink,
   ProjectLinkType,
   SkillOption,
-  TranslatableJson,
   UpdateProjectPayload,
 } from '../project.types';
 import { EMPTY_TRANSLATABLE } from './project.form.data';
 import type { GalleryImage } from './project.form.types';
-import { requiredTranslatableGroup } from './project.form.util';
+import { requiredRichTextGroup, requiredTranslatableGroup, richTextGroup } from './project.form.util';
 
 @Component({
   selector: 'console-project-form',
@@ -83,7 +85,7 @@ import { requiredTranslatableGroup } from './project.form.util';
     ChipBoolean,
     ChipSelect,
     TranslatableGroup,
-    TranslatableMarkdownGroup,
+    TranslatableRichTextGroup,
     FormErrorPipe,
     LongFormLayout,
     MonthYearPicker,
@@ -134,10 +136,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
     motivation: requiredTranslatableGroup(this.fb),
     description: requiredTranslatableGroup(this.fb),
     role: requiredTranslatableGroup(this.fb),
-    body: this.fb.group({
-      en: this.fb.control('', { nonNullable: true }),
-      vi: this.fb.control('', { nonNullable: true }),
-    }),
+    body: richTextGroup(this.fb),
 
     highlights: this.fb.array<FormGroup>([], { validators: Validators.maxLength(LIMITS.PROJECT_HIGHLIGHTS_ARRAY_MAX) }),
 
@@ -197,16 +196,11 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
   // --- Highlights ---
 
-  createHighlightGroup(data?: {
-    challenge: TranslatableJson;
-    approach: TranslatableJson;
-    outcome: TranslatableJson;
-    codeUrl: string | null;
-  }) {
+  createHighlightGroup(data?: AdminHighlight) {
     return this.fb.group({
-      challenge: requiredTranslatableGroup(this.fb, data?.challenge ?? EMPTY_TRANSLATABLE),
-      approach: requiredTranslatableGroup(this.fb, data?.approach ?? EMPTY_TRANSLATABLE),
-      outcome: requiredTranslatableGroup(this.fb, data?.outcome ?? EMPTY_TRANSLATABLE),
+      challenge: requiredRichTextGroup(this.fb, data?.challengeJson),
+      approach: requiredRichTextGroup(this.fb, data?.approachJson),
+      outcome: requiredRichTextGroup(this.fb, data?.outcomeJson),
       codeUrl: [data?.codeUrl ?? '', baselineFor.url()],
     });
   }
@@ -345,10 +339,11 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
     this.saving.set(true);
     const raw = this.form.getRawValue();
 
+    type LocalePair = { en: EditorDocument | null; vi: EditorDocument | null };
     const highlights: HighlightPayload[] = raw.highlights.map((h: Record<string, unknown>) => ({
-      challenge: h['challenge'] as TranslatableJson,
-      approach: h['approach'] as TranslatableJson,
-      outcome: h['outcome'] as TranslatableJson,
+      challengeJson: toBilingualRichTextPayload(h['challenge'] as LocalePair),
+      approachJson: toBilingualRichTextPayload(h['approach'] as LocalePair),
+      outcomeJson: toBilingualRichTextPayload(h['outcome'] as LocalePair),
       codeUrl: (h['codeUrl'] as string) || null,
     }));
 
@@ -358,7 +353,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
       type: l['type'] as ProjectLinkType,
     }));
 
-    const body: TranslatableJson | null = raw.body.en || raw.body.vi ? raw.body : null;
+    const bodyJson = toBilingualRichTextPayload(raw.body as LocalePair);
 
     const imageIds = this.galleryImages().map((img) => img.mediaId);
 
@@ -372,7 +367,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
         description: raw.description,
         motivation: raw.motivation,
         role: raw.role,
-        body,
+        bodyJson,
         startDate: raw.startDate?.toISOString() ?? undefined,
         endDate: raw.endDate?.toISOString() ?? null,
         status: raw.status,
@@ -404,7 +399,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
         description: raw.description,
         motivation: raw.motivation,
         role: raw.role,
-        body,
+        bodyJson,
         startDate: raw.startDate?.toISOString() ?? '',
         endDate: raw.endDate?.toISOString() ?? null,
         links,
@@ -503,7 +498,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
         motivation: p.motivation ?? EMPTY_TRANSLATABLE,
         description: p.description ?? EMPTY_TRANSLATABLE,
         role: p.role ?? EMPTY_TRANSLATABLE,
-        body: p.body ?? EMPTY_TRANSLATABLE,
+        body: p.bodyJson ?? { en: null, vi: null },
         skillIds: p.skills?.map((s) => s.id) ?? [],
         status: p.status,
         featured: p.featured,

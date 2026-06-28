@@ -53,12 +53,11 @@
       [showCounter]="true"
     />
 
-    <console-translatable-group
+    <console-translatable-rich-text-group
       [group]="form.controls.bioLong"
       label="Long Bio"
-      type="textarea"
-      [rows]="5"
-      [showCounter]="true"
+      mode="semantic"
+      helperText="Rich text — headings, lists, quotes, links. Saved as a structured document."
     />
   </div>
 </console-section-card>

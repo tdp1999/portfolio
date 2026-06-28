@@ -1,3 +1,5 @@
+import type { BilingualEditorDocument } from '@portfolio/console/shared/util';
+
 export interface TranslatableJson {
   [key: string]: string;
 }
@@ -22,6 +24,8 @@ export interface AdminProject {
   motivation: TranslatableJson;
   role: TranslatableJson;
   body: TranslatableJson | null;
+  /** RTE canonical doc for the long-form body (full mode). Null until saved via the editor. */
+  bodyJson: BilingualEditorDocument | null;
   startDate: string;
   endDate: string | null;
   status: 'DRAFT' | 'PUBLISHED';
@@ -46,6 +50,10 @@ export interface AdminHighlight {
   challenge: TranslatableJson;
   approach: TranslatableJson;
   outcome: TranslatableJson;
+  /** RTE canonical docs (semantic mode). Null until saved via the editor. */
+  challengeJson: BilingualEditorDocument | null;
+  approachJson: BilingualEditorDocument | null;
+  outcomeJson: BilingualEditorDocument | null;
   codeUrl: string | null;
   displayOrder: number;
 }
@@ -76,9 +84,14 @@ export interface ProjectListResponse {
 // --- Payloads ---
 
 export interface HighlightPayload {
-  challenge: TranslatableJson;
-  approach: TranslatableJson;
-  outcome: TranslatableJson;
+  // Legacy markdown — optional during the RTE transition; the editor now emits the
+  // `*Json` docs below as the source of truth (landing render swap: task 313).
+  challenge?: TranslatableJson;
+  approach?: TranslatableJson;
+  outcome?: TranslatableJson;
+  challengeJson?: BilingualEditorDocument;
+  approachJson?: BilingualEditorDocument;
+  outcomeJson?: BilingualEditorDocument;
   codeUrl?: string | null;
 }
 
@@ -89,6 +102,7 @@ export interface CreateProjectPayload {
   motivation: TranslatableJson;
   role: TranslatableJson;
   body?: TranslatableJson | null;
+  bodyJson?: BilingualEditorDocument;
   startDate: string;
   endDate?: string | null;
   links?: ProjectLink[];
@@ -107,6 +121,7 @@ export interface UpdateProjectPayload {
   motivation?: TranslatableJson;
   role?: TranslatableJson;
   body?: TranslatableJson | null;
+  bodyJson?: BilingualEditorDocument;
   startDate?: string;
   endDate?: string | null;
   status?: 'DRAFT' | 'PUBLISHED';

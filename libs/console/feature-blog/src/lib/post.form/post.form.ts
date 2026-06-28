@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   ChipBoolean,
   MediaPickerDialogComponent,
+  RichTextEditor,
   SectionCard,
   StickySaveBar,
   ToastService,
@@ -30,7 +31,15 @@ import {
 } from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
-import { baselineFor, FormErrorPipe, HasUnsavedChanges, ServerErrorDirective } from '@portfolio/console/shared/util';
+import {
+  baselineFor,
+  editorDocToPlainText,
+  FormErrorPipe,
+  HasUnsavedChanges,
+  richTextRequiredValidator,
+  ServerErrorDirective,
+} from '@portfolio/console/shared/util';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { LIMITS } from '@portfolio/shared/validation';
 import { BlogService } from '../blog.service';
 import {
@@ -42,17 +51,11 @@ import {
   CreateBlogPostPayload,
   UpdateBlogPostPayload,
 } from '../blog.types';
-import {
-  convertObsidianMarkdown,
-  extractTitleFromMarkdown,
-  renderMarkdownPreview,
-} from '../post-form-page/markdown-utils';
 
 @Component({
   selector: 'console-post-form',
   standalone: true,
   imports: [
-    CommonModule,
     DatePipe,
     DecimalPipe,
     ReactiveFormsModule,
@@ -68,6 +71,7 @@ import {
     ServerErrorDirective,
     SectionCard,
     StickySaveBar,
+    RichTextEditor,
   ],
   templateUrl: './post.form.html',
   styleUrl: './post.form.scss',
@@ -95,7 +99,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(LIMITS.TITLE_MAX)]],
     slug: ['', [Validators.maxLength(LIMITS.NAME_MAX)]],
-    content: ['', [Validators.required]],
+    content: this.fb.control<EditorDocument | null>(null, { validators: [richTextRequiredValidator()] }),
     excerpt: ['', baselineFor.longText(LIMITS.DESCRIPTION_SHORT_MAX)],
     language: ['EN' as BlogLanguage, [Validators.required]],
     status: ['DRAFT' as BlogStatus, [Validators.required]],
@@ -117,16 +121,12 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
   // ui state
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly previewMode = signal(false);
-  readonly importWarnings = signal<string[]>([]);
 
   // lookups
   readonly categories = signal<BlogCategoryRef[]>([]);
   readonly tags = signal<BlogTagRef[]>([]);
 
   readonly dirty = signal(false);
-
-  readonly previewHtml = computed(() => renderMarkdownPreview(this.form.controls.content.value));
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -166,16 +166,8 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     }
   }
 
-  togglePreview(): void {
-    this.previewMode.update((v) => !v);
-  }
-
   autoGenerateExcerpt(): void {
-    const plain = this.form.controls.content.value
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/[#>*_`~\-![]()]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const plain = editorDocToPlainText(this.form.controls.content.value);
     this.form.controls.excerpt.setValue(plain.slice(0, LIMITS.DESCRIPTION_SHORT_MAX));
     this.form.controls.excerpt.markAsDirty();
   }
@@ -213,50 +205,6 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     this.dirty.set(true);
   }
 
-  insertImage(): void {
-    const ref = this.dialog.open<MediaPickerDialogComponent, MediaPickerDialogData, MediaItem | undefined>(
-      MediaPickerDialogComponent,
-      {
-        width: '900px',
-        maxHeight: '90vh',
-        data: {
-          mode: 'single',
-          mimeFilter: 'image/',
-          dataSource: this.mediaDataSource,
-        } satisfies MediaPickerDialogData,
-      }
-    );
-    ref
-      .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((item) => {
-        if (!item) return;
-        const alt = item.altText ?? item.originalFilename;
-        const md = `\n![${alt}](${item.url})\n`;
-        this.form.controls.content.setValue(this.form.controls.content.value + md);
-      });
-  }
-
-  importMarkdownFile(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const raw = String(reader.result ?? '');
-      const { content: converted, warnings } = convertObsidianMarkdown(raw);
-      const extractedTitle = extractTitleFromMarkdown(converted);
-      if (extractedTitle && !this.form.controls.title.value) {
-        this.form.controls.title.setValue(extractedTitle);
-      }
-      this.form.controls.content.setValue(converted);
-      this.form.controls.status.setValue('DRAFT');
-      this.importWarnings.set(warnings);
-      input.value = '';
-    };
-    reader.readAsText(file);
-  }
-
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -267,11 +215,17 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     this.saving.set(true);
 
     const raw = this.form.getRawValue();
+    // Canonical content is the editor document (contentJson). The legacy `content`
+    // column (still NOT NULL until task 363) is kept in sync with a plain-text
+    // flattening; fall back to the title so it never violates min-length.
+    const contentDoc = raw.content ?? undefined;
+    const legacyContent = editorDocToPlainText(raw.content) || raw.title;
 
     if (this.isEditMode()) {
       const payload: UpdateBlogPostPayload = {
         title: raw.title,
-        content: raw.content,
+        content: legacyContent,
+        contentJson: contentDoc,
         language: raw.language,
         excerpt: raw.excerpt || null,
         categoryIds: raw.categoryIds,
@@ -293,7 +247,8 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     } else {
       const payload: CreateBlogPostPayload = {
         title: raw.title,
-        content: raw.content,
+        content: legacyContent,
+        contentJson: contentDoc,
         language: raw.language,
         excerpt: raw.excerpt || undefined,
         categoryIds: raw.categoryIds,
@@ -328,7 +283,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
       this.form.reset({
         title: '',
         slug: '',
-        content: '',
+        content: null,
         excerpt: '',
         language: 'EN',
         status: 'DRAFT',
@@ -349,10 +304,13 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     this.loading.set(true);
     this.blogService.getById(id).subscribe({
       next: (post: AdminBlogPostDetail) => {
+        // A post is single-language: pull that locale's document out of the
+        // bilingual storage envelope. Null (legacy/not-yet-migrated) → empty editor.
+        const lang = post.language === 'VI' ? 'vi' : 'en';
         this.form.setValue({
           title: post.title,
           slug: post.slug,
-          content: post.content,
+          content: post.contentJson ? post.contentJson[lang] : null,
           excerpt: post.excerpt ?? '',
           language: post.language,
           status: post.status,
