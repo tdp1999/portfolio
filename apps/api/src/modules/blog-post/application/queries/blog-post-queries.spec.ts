@@ -8,6 +8,7 @@ import { ICategoryRepository } from '../../../category/application/ports/categor
 import { ITagRepository } from '../../../tag/application/ports/tag.repository.port';
 import { IProfileRepository } from '../../../profile/application/ports/profile.repository.port';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
+import { MediaRefResolverService } from '../../../media/application/media-ref-resolver.service';
 import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostProps } from '../../domain/blog-post.types';
 import { BlogPostReadResult } from '../../infrastructure/mapper/blog-post.mapper';
@@ -210,7 +211,13 @@ describe('BlogPost Queries', () => {
       profileRepo = { findWithMedia: jest.fn() } as unknown as jest.Mocked<IProfileRepository>;
       userRepo = { findById: jest.fn() } as unknown as jest.Mocked<IUserRepository>;
       repo.findRelatedByPrimaryCategory.mockResolvedValue([]);
-      handler = new GetPublicPostBySlugHandler(repo, profileRepo, userRepo);
+      const mediaRefs = { resolveForDocuments: jest.fn().mockResolvedValue({}) };
+      handler = new GetPublicPostBySlugHandler(
+        repo,
+        profileRepo,
+        userRepo,
+        mediaRefs as unknown as MediaRefResolverService
+      );
     });
 
     it('returns full detail with related and author from profile', async () => {

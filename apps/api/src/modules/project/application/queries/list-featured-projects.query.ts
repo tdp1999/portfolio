@@ -12,6 +12,8 @@ export class ListFeaturedProjectsHandler implements IQueryHandler<ListFeaturedPr
 
   async execute(): Promise<ProjectDetailDto[]> {
     const results = await this.repo.findFeatured();
-    return results.map(ProjectPresenter.toDetail);
+    // Featured cards don't render the case-study body, so no image-ref resolution
+    // is needed — mediaRefs defaults to empty.
+    return results.map((p) => ProjectPresenter.toDetail(p));
   }
 }

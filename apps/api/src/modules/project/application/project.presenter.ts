@@ -1,3 +1,4 @@
+import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { Project } from '../domain/entities/project.entity';
 import type { ProjectLinkProps } from '../domain/value-objects';
@@ -57,6 +58,10 @@ export type ProjectDetailDto = {
   bodyJson: TranslatableRichText | null;
   bodyHtml: TranslatableJson | null;
   bodySchemaVersion: number;
+  /** Resolved media for the `image-ref` blocks in `bodyHtml`, keyed by
+   *  `data-image-id` (RTE epic Phase 7, task 315). Locale-independent; empty when
+   *  the body references no media. The landing renderer injects `<img>` from this. */
+  mediaRefs: MediaRefMap;
   startDate: Date;
   endDate: Date | null;
   links: ProjectLinkProps[];
@@ -107,7 +112,7 @@ export class ProjectPresenter {
     };
   }
 
-  static toDetail(item: ProjectWithRelations): ProjectDetailDto {
+  static toDetail(item: ProjectWithRelations, mediaRefs: MediaRefMap = {}): ProjectDetailDto {
     return {
       slug: item.entity.slug,
       title: item.entity.title,
@@ -119,6 +124,7 @@ export class ProjectPresenter {
       bodyJson: item.entity.bodyJson,
       bodyHtml: item.entity.bodyHtml,
       bodySchemaVersion: item.entity.bodySchemaVersion,
+      mediaRefs,
       startDate: item.entity.startDate,
       endDate: item.entity.endDate,
       links: item.entity.links,

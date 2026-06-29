@@ -1,6 +1,6 @@
 # Task: Editor — `image-ref` Node + MediaPicker Insert Flow
 
-## Status: pending
+## Status: in-progress (code complete; pending manual round-trip verify on running servers)
 
 ## Goal
 Activate the `image-ref` custom node in the editor (full mode) and wire its insert button to the existing `MediaPickerDialog`, producing semantic `<figure data-block="image-ref" data-image-id="...">` output.
@@ -11,13 +11,13 @@ Decouples editor content from media URLs — the JSON stores only `data-image-id
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 
 ## Acceptance Criteria
-- [ ] Editor toolbar in `'full'` mode shows an Image button.
-- [ ] Click → `MEDIA_PICKER_HOOK` resolves a `MediaPickerResult` via `MediaPickerDialog`.
-- [ ] Editor inserts `<figure data-block="image-ref" data-image-id="<uuid>" data-caption-position="bottom"><img src="<url>" alt="<alt>" /><figcaption>...</figcaption></figure>` into the document.
-- [ ] JSON output uses the `image-ref` node type (semantic) — not the default Tiptap `image`.
-- [ ] `RICH_TEXT_WHITELIST` (BE + FE) confirms allowed attrs: `data-block, data-image-id, data-caption-position` already covered.
-- [ ] Image Picker only enabled on `Project.body` and `BlogPost.content` form pages (full-mode editor). Other fields (`Profile.bioLong`, `Experience.*`, `TechnicalHighlight.*`) remain semantic mode without image button.
-- [ ] Selecting an image via MediaPicker, saving, reloading the page, re-opening the editor — image still renders (via `data-image-id` resolution; no broken `<img src>`).
+- [x] Editor toolbar in `'full'` mode shows an Image button. *(wired in 311: `imageRef:true` in FULL config; engine renders the button.)*
+- [x] Click → `MEDIA_PICKER_HOOK` resolves a `MediaResult` via `MediaPickerDialog`. *(provider in `app.config.ts`; editor wires `image.onPick` in full mode.)* — **manual verify pending**
+- [x] Editor inserts a `<figure data-block="image-ref" data-image-id data-caption-position>` block. *Correction: the engine emits **no `<img>`** (URL-free by design); the `<img>` is injected read-time on landing.*
+- [x] JSON output uses the `image-ref` node type (semantic) — not the default Tiptap `image`. *(engine inserts `imageRef` since the node is enabled.)* — **manual verify pending**
+- [x] `RICH_TEXT_WHITELIST` (BE + FE) allows `data-block, data-image-id, data-caption-position`. *Added `data-caption-position` to the base list (engine emits it at write-time).*
+- [x] Image Picker only enabled on `Project.body` and `BlogPost.content` (full-mode); other fields stay semantic/list with no image button. *(verified in form templates.)*
+- [x] Selecting an image, saving, reloading, re-rendering — image renders via `data-image-id` resolution (no broken `<img src>`). *Implemented as read-time hydration; **manual round-trip verify pending** on running servers.*
 
 ## Technical Notes
 - The `image-ref` node ships from `@phuong-tran-redoc/document-engine-core` v0.1.0 (sprint 1 issue E-S1.5). If the published version does not include it, this task is blocked.
@@ -35,3 +35,9 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 ## Complexity: M
 
 ## Progress Log
+- [2026-06-29] **Implemented.** Scan revealed the editor/console wiring (config, `image.onPick`, `MEDIA_PICKER_HOOK` provider, form modes) was already landed in task 311. Two real gaps remained and were closed:
+  - **Whitelist:** added `data-caption-position` to base `RICH_TEXT_WHITELIST` (engine emits it at write-time → BE sanitize must keep it). Added `RICH_TEXT_MEDIA_WHITELIST` (base + `img`/`src`/`alt`/`width`/`height`/`loading`) for the read-time render only — base stays URL-free, so the persisted HTML cache never embeds resolved URLs.
+  - **Read-time hydration (the missing piece):** the engine stores `image-ref` figures **URL-free** (no `<img>`). Resolution path chosen (Q&A): BE resolves `data-image-id` → media and ships a locale-independent `mediaRefs` map in the public Project/Blog detail DTOs; landing injects `<img>` via `hydrateImageRefs(html, mediaRefs)` (pure string transform, mirrors `addHeadingAnchors`, SSR-safe) right after `addHeadingAnchors`; `<rte-render-html [allowMedia]="true">` widens its browser re-sanitize whitelist so the injected `<img>` survives (SSR/browser parity held).
+  - **Architecture note:** task's sample `<img>` in the figure was aspirational — actual engine output is URL-free `<figure>`; `insertImageRef` is engine-internal (not called by us); `MediaResult` is `{id,url,alt}` (no width/height).
+  - New: `collectImageIds` + `MediaRef`/`MediaRefMap` (rte-core, exposed via node-safe `/image-refs` entry to avoid the isomorphic-dompurify barrel), `MediaRefResolverService` (media module, exported), `hydrateImageRefs` (landing util). Tests added for all + sanitize whitelist + `allowMedia` parity. Type-check, lint, and 304 BE + FE specs green.
+- **TODO (block F):** manual round-trip verify on running console+landing — insert image → save → reload editor (placeholder persists) → landing renders real `<img>`. Requires the user to start `pnpm dev:console` + `pnpm dev:landing`.

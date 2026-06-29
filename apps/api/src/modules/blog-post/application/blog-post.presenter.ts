@@ -1,3 +1,4 @@
+import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import { BlogPostReadResult } from '../infrastructure/mapper/blog-post.mapper';
 import {
   BlogPostAdminDetailDto,
@@ -31,7 +32,8 @@ export class BlogPostPresenter {
   static toPublicDetail(
     item: BlogPostReadResult,
     author: BlogPostAuthorDto | null,
-    relatedPosts: BlogPostReadResult[]
+    relatedPosts: BlogPostReadResult[],
+    mediaRefs: MediaRefMap = {}
   ): BlogPostPublicDetailDto {
     return {
       ...BlogPostPresenter.toPublicList(item),
@@ -39,6 +41,7 @@ export class BlogPostPresenter {
       contentJson: item.entity.contentJson,
       contentHtml: item.entity.contentHtml,
       contentSchemaVersion: item.entity.contentSchemaVersion,
+      mediaRefs,
       metaTitle: item.entity.metaTitle,
       metaDescription: item.entity.metaDescription,
       author,

@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } from '@portfolio/shared/validation/zod';
@@ -143,6 +144,10 @@ export type BlogPostPublicDetailDto = BlogPostPublicListItemDto & {
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
   contentSchemaVersion: number;
+  /** Resolved media for the `image-ref` blocks in `contentHtml`, keyed by
+   *  `data-image-id` (RTE epic Phase 7, task 315). Empty when the body references
+   *  no media. The landing renderer injects `<img>` from this at read-time. */
+  mediaRefs: MediaRefMap;
   metaTitle: string | null;
   metaDescription: string | null;
   author: BlogPostAuthorDto | null;

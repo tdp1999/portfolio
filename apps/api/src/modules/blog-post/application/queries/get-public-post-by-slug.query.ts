@@ -3,6 +3,8 @@ import { Inject } from '@nestjs/common';
 import { NotFoundError, ErrorLayer, BlogPostErrorCode } from '@portfolio/shared/errors';
 import { getLocalized } from '@portfolio/shared/utils';
 import type { Locale } from '@portfolio/shared/types';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core/image-refs';
+import { MediaRefResolverService } from '../../../media/application/media-ref-resolver.service';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
 import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { IProfileRepository } from '../../../profile/application/ports/profile.repository.port';
@@ -21,7 +23,8 @@ export class GetPublicPostBySlugHandler implements IQueryHandler<GetPublicPostBy
   constructor(
     @Inject(BLOG_POST_REPOSITORY) private readonly repo: IBlogPostRepository,
     @Inject(PROFILE_REPOSITORY) private readonly profileRepo: IProfileRepository,
-    @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository
+    @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository,
+    private readonly mediaRefs: MediaRefResolverService
   ) {}
 
   async execute(query: GetPublicPostBySlugQuery): Promise<BlogPostPublicDetailDto> {
@@ -42,7 +45,12 @@ export class GetPublicPostBySlugHandler implements IQueryHandler<GetPublicPostBy
       ? await this.repo.findRelatedByPrimaryCategory(post.entity.id, primaryCategoryId, 3)
       : [];
 
-    return BlogPostPresenter.toPublicDetail(post, author, related);
+    // Resolve the body's image-ref ids (both stored locales) so landing can
+    // hydrate the URL-free figures into real <img> at read-time.
+    const content = post.entity.contentJson as { en?: EditorDocument; vi?: EditorDocument } | null;
+    const mediaRefs = await this.mediaRefs.resolveForDocuments([content?.en, content?.vi]);
+
+    return BlogPostPresenter.toPublicDetail(post, author, related, mediaRefs);
   }
 
   private async resolveAuthor(authorId: string, language: 'EN' | 'VI'): Promise<BlogPostAuthorDto | null> {

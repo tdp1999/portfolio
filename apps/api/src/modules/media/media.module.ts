@@ -22,6 +22,7 @@ import {
   ListDeletedMediaHandler,
 } from './application/queries';
 import { MediaCleanupJob } from './application/jobs/media-cleanup.job';
+import { MediaRefResolverService } from './application/media-ref-resolver.service';
 
 const commandHandlers = [
   UploadMediaHandler,
@@ -53,7 +54,8 @@ const queryHandlers = [ListMediaHandler, GetMediaByIdHandler, GetStorageStatsHan
     ...commandHandlers,
     ...queryHandlers,
     MediaCleanupJob,
+    MediaRefResolverService,
   ],
-  exports: [MEDIA_REPOSITORY],
+  exports: [MEDIA_REPOSITORY, MediaRefResolverService],
 })
 export class MediaModule {}

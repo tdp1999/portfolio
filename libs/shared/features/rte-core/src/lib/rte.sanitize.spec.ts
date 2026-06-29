@@ -1,5 +1,5 @@
 import { sanitizeRichText } from './rte.sanitize';
-import { RICH_TEXT_WHITELIST } from './rte.constants';
+import { RICH_TEXT_MEDIA_WHITELIST, RICH_TEXT_WHITELIST } from './rte.constants';
 
 describe('sanitizeRichText', () => {
   it('strips a <script> tag entirely', () => {
@@ -51,5 +51,47 @@ describe('sanitizeRichText', () => {
     const out = sanitizeRichText('<p id="x">p</p><a href="https://e.com" id="y">a</a>');
     expect(out).not.toContain('id="x"');
     expect(out).not.toContain('id="y"');
+  });
+
+  // --- image-ref figures (task 315) ---
+
+  it('keeps an image-ref figure with data-image-id + data-caption-position (base whitelist)', () => {
+    const out = sanitizeRichText(
+      '<figure data-block="image-ref" data-image-id="abc" data-caption-position="bottom"><figcaption>cap</figcaption></figure>'
+    );
+    expect(out).toContain('data-block="image-ref"');
+    expect(out).toContain('data-image-id="abc"');
+    expect(out).toContain('data-caption-position="bottom"');
+    expect(out).toContain('<figcaption>cap</figcaption>');
+  });
+
+  it('strips an <img> under the base whitelist (stored cache stays URL-free)', () => {
+    const out = sanitizeRichText(
+      '<figure data-block="image-ref" data-image-id="abc"><img src="https://cdn/x.png" /></figure>'
+    );
+    expect(out).not.toContain('<img');
+    expect(out).toContain('data-image-id="abc"');
+  });
+
+  it('keeps a hydrated landing-figure (div frame + img srcset + class) under RICH_TEXT_MEDIA_WHITELIST', () => {
+    const out = sanitizeRichText(
+      '<figure class="landing-figure"><div class="landing-figure__frame"><img src="https://cdn/x.png" srcset="https://cdn/x.png 1x, https://cdn/x2.png 2x" alt="a" width="800" height="600" loading="lazy" /></div></figure>',
+      RICH_TEXT_MEDIA_WHITELIST
+    );
+    expect(out).toContain('<div class="landing-figure__frame">');
+    expect(out).toContain('class="landing-figure"');
+    expect(out).toContain('srcset="https://cdn/x.png 1x, https://cdn/x2.png 2x"');
+    expect(out).toContain('width="800"');
+    expect(out).toContain('height="600"');
+  });
+
+  it('still strips a <div> under the base whitelist (media tags are read-time only)', () => {
+    const out = sanitizeRichText('<div class="x">hi</div>');
+    expect(out).not.toContain('<div');
+  });
+
+  it('still drops a javascript: src even with the media whitelist', () => {
+    const out = sanitizeRichText('<img src="javascript:alert(1)" />', RICH_TEXT_MEDIA_WHITELIST);
+    expect(out).not.toContain('javascript:');
   });
 });
