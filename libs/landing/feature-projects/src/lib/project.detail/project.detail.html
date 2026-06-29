@@ -63,7 +63,12 @@
                  lands `.landing-prose` on the same div as the rendered <p>/<h2> so the
                  direct-child rhythm in _prose.scss matches; headings are slugged at
                  read-time (addHeadingAnchors) for the sticky ToC. -->
-            <rte-render-html contentClass="landing-prose" [html]="contentHtml()" landingProseAnchors />
+            <rte-render-html
+              contentClass="landing-prose"
+              [html]="contentHtml()"
+              [allowMedia]="true"
+              landingProseAnchors
+            />
           } @else {
             <!-- No rich-text body — synthesize sections from existing fields -->
             <div class="landing-prose">

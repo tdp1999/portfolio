@@ -30,7 +30,7 @@ import {
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
 import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-import { addHeadingAnchors, type TocEntry } from '@portfolio/landing/shared/util';
+import { addHeadingAnchors, hydrateImageRefs, type TocEntry } from '@portfolio/landing/shared/util';
 import { BlogShareRow } from './blog.share-row';
 import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
 import type { DetailState } from './blog.detail.types';
@@ -117,7 +117,7 @@ export class BlogDetail {
     const locale = p?.language === 'VI' ? 'vi' : 'en';
     return addHeadingAnchors(getLocalized(p?.contentHtml, locale));
   });
-  readonly contentHtml = computed(() => this.rendered().html);
+  readonly contentHtml = computed(() => hydrateImageRefs(this.rendered().html, this.post()?.mediaRefs));
   readonly hasBody = computed(() => this.contentHtml().length > 0);
   readonly toc = computed<readonly InPageSection[]>(() =>
     this.rendered().toc.map((e: TocEntry) => ({ id: e.id, title: e.text, level: e.level }))

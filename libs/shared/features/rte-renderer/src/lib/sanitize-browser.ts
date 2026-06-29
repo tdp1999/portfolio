@@ -3,7 +3,11 @@ import * as DOMPurifyModule from 'dompurify';
 // barrel re-exports `rte.sanitize`, which top-level-imports `isomorphic-dompurify`
 // (jsdom). Pulling that into the server bundle is exactly the `__dirname` crash
 // this module exists to avoid.
-import { ID_ALLOWED_TAGS, RICH_TEXT_WHITELIST } from '@portfolio/shared/features/rte-core/constants';
+import {
+  ID_ALLOWED_TAGS,
+  RICH_TEXT_WHITELIST,
+  type RichTextWhitelist,
+} from '@portfolio/shared/features/rte-core/constants';
 
 // Browser-only read-time sanitize.
 //
@@ -42,10 +46,10 @@ function ensureHooks(): void {
   hooksRegistered = true;
 }
 
-export function sanitizeRichTextBrowser(html: string): string {
+export function sanitizeRichTextBrowser(html: string, whitelist: RichTextWhitelist = RICH_TEXT_WHITELIST): string {
   ensureHooks();
   return DOMPurify.sanitize(html ?? '', {
-    ALLOWED_TAGS: [...RICH_TEXT_WHITELIST.ALLOWED_TAGS],
-    ALLOWED_ATTR: [...RICH_TEXT_WHITELIST.ALLOWED_ATTR],
+    ALLOWED_TAGS: [...whitelist.ALLOWED_TAGS],
+    ALLOWED_ATTR: [...whitelist.ALLOWED_ATTR],
   });
 }

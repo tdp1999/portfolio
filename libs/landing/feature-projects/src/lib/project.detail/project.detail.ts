@@ -34,7 +34,12 @@ import {
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
 import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-import { addHeadingAnchors, buildCloudinarySrcset, type TocEntry } from '@portfolio/landing/shared/util';
+import {
+  addHeadingAnchors,
+  buildCloudinarySrcset,
+  hydrateImageRefs,
+  type TocEntry,
+} from '@portfolio/landing/shared/util';
 import {
   FALLBACK_TOC,
   HERO_WIDTH,
@@ -113,7 +118,7 @@ export class ProjectDetail {
    *  re-sanitizes the result (id survives via the heading-only whitelist rule).
    *  Locale-reactive: recomputes when the active locale flips. */
   private readonly rendered = computed(() => addHeadingAnchors(getLocalized(this.project()?.bodyHtml, this.locale())));
-  readonly contentHtml = computed(() => this.rendered().html);
+  readonly contentHtml = computed(() => hydrateImageRefs(this.rendered().html, this.project()?.mediaRefs));
   readonly toc = computed<readonly TocEntry[]>(() => this.rendered().toc);
   /** Body wins over the synthesized fallback whenever the rich-text body has content. */
   readonly hasBody = computed(() => this.contentHtml().length > 0);

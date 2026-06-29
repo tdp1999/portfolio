@@ -1,3 +1,4 @@
+import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import type { TranslatableJson } from '@portfolio/shared/types';
 
 export type BlogPostCategory = {
@@ -40,6 +41,10 @@ export type BlogPostDetail = BlogPostListItem & {
    *  Envelope keyed by the post's own `language` (blog posts are single-language).
    *  Null until the post is saved through the console rich-text editor. */
   contentHtml: TranslatableJson | null;
+  /** Resolved media for the `image-ref` blocks in `contentHtml`, keyed by
+   *  `data-image-id` (RTE epic Phase 7, task 315). The body is stored URL-free;
+   *  `hydrateImageRefs` injects `<img>` from this map at read-time. */
+  mediaRefs: MediaRefMap;
   metaTitle: string | null;
   metaDescription: string | null;
   author: BlogPostAuthor | null;

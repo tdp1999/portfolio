@@ -1,6 +1,6 @@
 # Task: Landing — Hydrate `image-ref` Blocks via `landing-figure`
 
-## Status: pending
+## Status: in-progress (code complete; pending manual visual verify on running landing)
 
 ## Goal
 Teach the renderer to recognize `<figure data-block="image-ref" data-image-id="...">` and render through the existing `landing-figure` component (responsive `<picture>` + caption).
@@ -11,12 +11,12 @@ The HTML cache stores the semantic figure with `data-image-id`. At render time, 
 Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 
 ## Acceptance Criteria
-- [ ] `<rte-render-html>` (or a sibling component) walks the HTML and replaces every `<figure data-block="image-ref">` with `<landing-figure>` instances. Implementation: post-render DOM transform inside the component, OR an Angular structural pattern using `[innerHTML]` + a directive that scans descendants — pick the simpler approach.
-- [ ] Media metadata (URL variants, alt, dimensions, caption) is resolved via the existing landing data-access — single API call batched per page.
-- [ ] If `Media` row deleted: renderer falls back to broken-image placeholder + the original alt text (per epic risk row).
-- [ ] SSR-safe: the transform runs on both server and client; first paint includes the fully-hydrated `landing-figure`.
-- [ ] Image-ref scope confirmed: only used in `Project.body` and `BlogPost.content` reads (other fields don't trigger this code path).
-- [ ] Visual: figure caption uses mono caps `FIG. 0X · CAPTION` per E4 typography rules. Numbering computed per-page (1, 2, 3...).
+- [x] Renderer replaces every `<figure data-block="image-ref">` with `landing-figure`-shaped markup. *Strategy 1 (string transform `hydrateImageRefs`) — chosen over DOM/createComponent because AC#4 (SSR first-paint) rules out the browser-only `afterNextRender` walk.*
+- [x] Media metadata resolved via landing data-access — **single API call per page**: the BE embeds a `mediaRefs` map in the Project/Blog detail DTO (no separate media fetch from landing).
+- [x] `Media` deleted → broken `<img>` (no `src`) carrying the caption as `alt`. *Note: the `image-ref` node stores no alt (only `imageId`/`caption`/`captionPosition`), so "original alt" = the caption, which IS stored and survives a deleted asset.*
+- [x] SSR-safe: pure string/regex transform in the `contentHtml` computed → identical on server + client, image present at first paint.
+- [x] Scope: only `Project.body` + `BlogPost.content` render via `[allowMedia]="true"`; other fields stay on the strict whitelist with no `<img>`.
+- [x] Caption uses mono caps `FIG. 0X · CAPTION` (component-matching `__number`/`__sep`/`__text` spans), numbered per-page across captioned figures. — **manual visual verify pending**
 
 ## Technical Notes
 - Two implementation strategies:
@@ -37,3 +37,11 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
 ## Complexity: M
 
 ## Progress Log
+- [2026-06-29] **Implemented (interim string-transform path).** Builds on the read-time hydration plumbing landed alongside 315 (BE `mediaRefs` resolver + DTO, `RICH_TEXT_MEDIA_WHITELIST`, `<rte-render-html [allowMedia]>`).
+  - **Output upgraded to `landing-figure`:** `hydrateImageRefs` now emits `<figure class="landing-figure"><div class="landing-figure__frame"><img src srcset alt w h loading></div><figcaption …FIG. 0X · CAPTION></figcaption></figure>` — responsive 1×/2× Cloudinary srcset (`buildCloudinarySrcset`, 800px), per-page contiguous numbering of captioned figures, deleted-media fallback (broken img + caption-as-alt).
+  - **Whitelist:** `RICH_TEXT_MEDIA_WHITELIST` widened with `div` + `class` + `srcset` (read-time only; base/BE write-time stays URL- and presentation-free).
+  - **CSS:** the orphaned `figure.landing-figure` block in `_prose.scss` (left over from the now-deleted markdown renderer, with an `opacity:0`/`.is-loaded` fade that needed JS that no longer exists) was **repurposed** into a JS-free, SSR-safe version matching the `landing-figure` component (frame border, natural ratio, mono-caps caption spans). No component touched.
+  - **Blog BE** was already wired (done with 315): `get-public-post-by-slug` + presenter ship `mediaRefs`.
+  - Tests: `hydrate-image-refs.spec` rewritten for the new markup (numbering, srcset, fallback, escaping); sanitize + `rte-render-html` specs assert `div`/`class`/`srcset` survive under the media whitelist only. FE 50 specs + 304 BE specs green; lint + stylelint clean.
+  - **Relationship to epic:** per `epic-portfolio-prose-block-renderer.md` (D1/Phase 4/6), this `[innerHTML]` + string-transform approach is the sanctioned **interim** for the single `image-ref` block; that epic later replaces it with an AST renderer mounting the real `<landing-figure>` component (+ in-content lightbox) once a 2nd block type is needed. **No in-content lightbox here** (deferred to the epic).
+- **TODO (verify):** manual visual check on running landing — figure renders responsive image + `FIG. 0X` caption; deleted-media shows broken img + alt. Requires the user to start `pnpm dev:landing` (+ `pnpm dev:api`).

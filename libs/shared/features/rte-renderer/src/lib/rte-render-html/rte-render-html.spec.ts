@@ -5,9 +5,10 @@ import { RteRenderHtml } from './rte-render-html';
 // through the component's [innerHTML] binding. Proves the read-path strips dangerous
 // markup, hardens anchors, and keeps id only on headings before anything reaches the DOM.
 describe('RteRenderHtml (read-path sanitization)', () => {
-  function render(html: string): HTMLElement {
+  function render(html: string, allowMedia = false): HTMLElement {
     const fixture = TestBed.createComponent(RteRenderHtml);
     fixture.componentRef.setInput('html', html);
+    fixture.componentRef.setInput('allowMedia', allowMedia);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   }
@@ -43,5 +44,27 @@ describe('RteRenderHtml (read-path sanitization)', () => {
     const el = render('<p id="spoof">text</p><a href="https://example.com" id="hijack">link</a>');
     expect(el.querySelector('p')?.hasAttribute('id')).toBe(false);
     expect(el.querySelector('a')?.hasAttribute('id')).toBe(false);
+  });
+
+  // --- image-ref hydration whitelist (task 315) ---
+
+  it('strips a hydrated <img> by default (allowMedia off)', () => {
+    const el = render(
+      '<figure data-block="image-ref" data-image-id="a"><img src="https://cdn/x.png" alt="x" /></figure>'
+    );
+    expect(el.querySelector('img')).toBeNull();
+    expect(el.querySelector('figure')?.getAttribute('data-image-id')).toBe('a');
+  });
+
+  it('keeps a hydrated landing-figure (div frame + img) when allowMedia is true', () => {
+    const el = render(
+      '<figure class="landing-figure"><div class="landing-figure__frame"><img src="https://cdn/x.png" alt="x" width="800" height="600" /></div></figure>',
+      true
+    );
+    expect(el.querySelector('div.landing-figure__frame')).not.toBeNull();
+    const img = el.querySelector('img');
+    expect(img).not.toBeNull();
+    expect(img?.getAttribute('src')).toBe('https://cdn/x.png');
+    expect(img?.getAttribute('alt')).toBe('x');
   });
 });

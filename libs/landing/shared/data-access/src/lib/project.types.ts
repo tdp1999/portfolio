@@ -1,3 +1,4 @@
+import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import type { TranslatableJson } from '@portfolio/shared/types';
 
 export const PROJECT_LIFECYCLE_STATUSES = ['LIVE', 'SHIPPED', 'ARCHIVED', 'BETA', 'ONGOING'] as const;
@@ -61,6 +62,10 @@ export type ProjectDetailData = {
   /** Sanitized rich-text HTML cache per locale (RTE epic Phase 6) — the rendered
    *  case-study body. Null until saved through the editor. */
   bodyHtml: TranslatableJson | null;
+  /** Resolved media for the `image-ref` blocks in `bodyHtml`, keyed by
+   *  `data-image-id` (RTE epic Phase 7, task 315). Locale-independent. The body is
+   *  stored URL-free; `hydrateImageRefs` injects `<img>` from this map at read-time. */
+  mediaRefs: MediaRefMap;
   startDate: string;
   endDate: string | null;
   links: ProjectLink[];

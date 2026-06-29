@@ -1,6 +1,7 @@
 import { inject, Pipe, PLATFORM_ID, type PipeTransform } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
+import type { RichTextWhitelist } from '@portfolio/shared/features/rte-core/constants';
 import { sanitizeRichTextBrowser } from './sanitize-browser';
 
 /**
@@ -24,9 +25,9 @@ export class SafeHtmlPipe implements PipeTransform {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  transform(html: string | null | undefined): SafeHtml {
+  transform(html: string | null | undefined, whitelist?: RichTextWhitelist): SafeHtml {
     const raw = html ?? '';
-    const clean = this.isBrowser ? sanitizeRichTextBrowser(raw) : raw;
+    const clean = this.isBrowser ? sanitizeRichTextBrowser(raw, whitelist) : raw;
     return this.sanitizer.bypassSecurityTrustHtml(clean);
   }
 }

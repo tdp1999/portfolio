@@ -78,7 +78,12 @@
                render an empty prose container. -->
           @if (hasBody()) {
             <div class="blog-prose">
-              <rte-render-html contentClass="landing-prose" [html]="contentHtml()" landingProseAnchors />
+              <rte-render-html
+                contentClass="landing-prose"
+                [html]="contentHtml()"
+                [allowMedia]="true"
+                landingProseAnchors
+              />
             </div>
           }
         </article>
