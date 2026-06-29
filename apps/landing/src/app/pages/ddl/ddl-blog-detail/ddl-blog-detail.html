@@ -100,7 +100,9 @@
               <p class="v4-toc-note">TOC auto-hidden — post is a Note OR fewer than 3 H2/H3 sections.</p>
             }
 
-            <div class="v4-prose landing-prose" landingProseAnchors [innerHTML]="v4Active().html"></div>
+            <div class="v4-prose">
+              <rte-render-html contentClass="landing-prose" [html]="v4Active().html" landingProseAnchors />
+            </div>
 
             <footer class="v4-footer">
               @if (p.relatedPosts.length > 0) {
@@ -206,7 +208,9 @@
               </nav>
             }
 
-            <div class="v1-prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+            <div class="v1-prose">
+              <rte-render-html contentClass="landing-prose" [html]="deepHtml()" landingProseAnchors />
+            </div>
 
             <footer class="v1-footer">
               <landing-ddl-blog-share-row [slug]="p.slug" [title]="p.title" />
@@ -263,7 +267,9 @@
 
             <p class="v1-toc-note">TOC auto-hidden — post is Note OR fewer than 3 H2/H3 sections.</p>
 
-            <div class="v1-prose landing-prose" landingProseAnchors [innerHTML]="noteHtml()"></div>
+            <div class="v1-prose">
+              <rte-render-html contentClass="landing-prose" [html]="noteHtml()" landingProseAnchors />
+            </div>
 
             <footer class="v1-footer">
               <landing-ddl-blog-share-row [slug]="p.slug" [title]="p.title" />
@@ -294,7 +300,9 @@
               <p class="v2-hero__date">{{ formatDate(p.publishedAt) }}</p>
             </header>
 
-            <div class="v2-prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+            <div class="v2-prose">
+              <rte-render-html contentClass="landing-prose" [html]="deepHtml()" landingProseAnchors />
+            </div>
 
             <footer class="v2-footer">
               @if (p.tags.length > 0) {
@@ -359,7 +367,9 @@
             </header>
 
             <div class="v3-grid">
-              <div class="v3-grid__prose landing-prose" landingProseAnchors [innerHTML]="deepHtml()"></div>
+              <div class="v3-grid__prose">
+                <rte-render-html contentClass="landing-prose" [html]="deepHtml()" landingProseAnchors />
+              </div>
 
               <aside class="v3-rail">
                 <div class="v3-rail__inner">
@@ -511,10 +521,11 @@
       <div class="usage__row">
         <h3>Page-level rules (all variants)</h3>
         <p>
-          Markdown rendering goes through <code>MarkdownService.render()</code> (Shiki highlighter + heading slugify).
-          Anchors inside prose use <code>landingProseAnchors</code>. Copy-link uses <code>landingCopyToClipboard</code>.
-          The share row is a single shared component (<code>landing-ddl-blog-share-row</code>) reused across all three
-          variants — never duplicate the X/LinkedIn markup.
+          The body renders through <code>&lt;rte-render-html&gt;</code> from the BE's sanitized rich-text HTML cache
+          (<code>contentHtml</code>); a read-time slugger (<code>addHeadingAnchors</code>) adds the h2/h3 anchors the
+          TOC targets. Anchors inside prose use <code>landingProseAnchors</code>. The share row is a single shared
+          component (<code>landing-ddl-blog-share-row</code>) reused across all three variants — never duplicate the
+          X/LinkedIn markup.
         </p>
       </div>
 

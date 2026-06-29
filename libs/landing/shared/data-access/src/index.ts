@@ -8,8 +8,6 @@ export * from './lib/blog.types';
 export * from './lib/blog.service';
 export * from './lib/skill.types';
 export * from './lib/skill.service';
-export * from './lib/markdown.types';
-export * from './lib/markdown.service';
 export * from './lib/skill-grouping';
 export * from './lib/projects-query.port';
 export * from './lib/contact-form.types';

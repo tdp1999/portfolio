@@ -28,7 +28,7 @@ export const BLOG_DETAIL_VARIANTS: readonly DdlVariant[] = [
   },
 ];
 
-export const EMPTY: LoadedPost = { post: null, rendered: { html: '', toc: [] } };
+export const EMPTY: LoadedPost = { post: null, html: '', toc: [] };
 export const DEEP_DIVE_SLUG = 'seed-angular-ssr-transfer-cache';
 export const NOTE_SLUG = 'seed-til-postgres-partial-unique-indexes';
 export const ESSAY_SLUG = 'seed-design-system-before-screen';

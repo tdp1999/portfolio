@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser, JsonPipe } from '@angular/common';
-import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, from, of, switchMap, map } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 import {
   LandingProseAnchorsDirective,
   LandingScrollspyService,
@@ -14,7 +13,10 @@ import {
   type InPageSection,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
-import { BlogDataService, MarkdownService, type BlogPostDetail } from '@portfolio/landing/shared/data-access';
+import { BlogDataService, type BlogPostDetail } from '@portfolio/landing/shared/data-access';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import { addHeadingAnchors } from '@portfolio/landing/shared/util';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 
 import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
@@ -43,6 +45,7 @@ import { wordCount, shouldHideToc, tocFromEntries } from './ddl-blog-detail.util
     DdlDecisionRecord,
     DdlSection,
     DdlStage,
+    RteRenderHtml,
   ],
   providers: [LandingScrollspyService],
   templateUrl: './ddl-blog-detail.html',
@@ -50,8 +53,6 @@ import { wordCount, shouldHideToc, tocFromEntries } from './ddl-blog-detail.util
 })
 export class DdlBlogDetail {
   private readonly blogService = inject(BlogDataService);
-  private readonly markdown = inject(MarkdownService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly scrollspy = inject(LandingScrollspyService);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -59,10 +60,10 @@ export class DdlBlogDetail {
 
   // ─── Data loading ────────────────────────────────────────────────
   // Load the deep-dive + a note in parallel so V1's auto-hide TOC branch can
-  // be demonstrated against a real short post. Marshal each through
-  // MarkdownService to get HTML + toc[]. The DDL accepts duplicate heading
-  // IDs across stacked variants — anchor clicks may scroll to the first
-  // occurrence (V1's). Acceptable for a sandbox preview.
+  // be demonstrated against a real short post. Each post's sanitized rich-text
+  // HTML cache is slugged at read-time (addHeadingAnchors) to get HTML + toc[].
+  // The DDL accepts duplicate heading IDs across stacked variants — anchor
+  // clicks may scroll to the first occurrence (V1's). Acceptable for a sandbox.
   private readonly loaded = toSignal(
     combineLatest([
       this.blogService.getBySlug(DEEP_DIVE_SLUG),
@@ -70,14 +71,14 @@ export class DdlBlogDetail {
       this.blogService.getBySlug(ESSAY_SLUG),
       this.blogService.getBySlug(RETRO_SLUG),
     ]).pipe(
-      switchMap(([deep, note, essay, retro]) =>
-        combineLatest([
-          this.renderOrEmpty(deep),
-          this.renderOrEmpty(note),
-          this.renderOrEmpty(essay),
-          this.renderOrEmpty(retro),
-        ]).pipe(map(([d, n, e, r]) => ({ deep: d, note: n, essay: e, retro: r })))
-      )
+      // Rendering is synchronous now (the BE ships the sanitized rich-text HTML cache);
+      // the read-time slugger only adds h2/h3 anchors. No async markdown step.
+      map(([deep, note, essay, retro]) => ({
+        deep: this.renderOrEmpty(deep),
+        note: this.renderOrEmpty(note),
+        essay: this.renderOrEmpty(essay),
+        retro: this.renderOrEmpty(retro),
+      }))
     ),
     { initialValue: { deep: EMPTY, note: EMPTY, essay: EMPTY, retro: EMPTY } }
   );
@@ -87,15 +88,15 @@ export class DdlBlogDetail {
   readonly essayPost = computed(() => this.loaded().essay.post);
   readonly retroPost = computed(() => this.loaded().retro.post);
 
-  readonly deepHtml = computed<SafeHtml>(() => this.html(this.loaded().deep.rendered.html));
-  readonly noteHtml = computed<SafeHtml>(() => this.html(this.loaded().note.rendered.html));
-  readonly essayHtml = computed<SafeHtml>(() => this.html(this.loaded().essay.rendered.html));
-  readonly retroHtml = computed<SafeHtml>(() => this.html(this.loaded().retro.rendered.html));
+  readonly deepHtml = computed(() => this.loaded().deep.html);
+  readonly noteHtml = computed(() => this.loaded().note.html);
+  readonly essayHtml = computed(() => this.loaded().essay.html);
+  readonly retroHtml = computed(() => this.loaded().retro.html);
 
-  readonly deepToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().deep.rendered.toc));
-  readonly noteToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().note.rendered.toc));
-  readonly essayToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().essay.rendered.toc));
-  readonly retroToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().retro.rendered.toc));
+  readonly deepToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().deep.toc));
+  readonly noteToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().note.toc));
+  readonly essayToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().essay.toc));
+  readonly retroToc = computed<readonly InPageSection[]>(() => tocFromEntries(this.loaded().retro.toc));
 
   // ─── V4 content-shape sub-tabs ────────────────────────────────────
   readonly v4Type = signal<'deep' | 'essay' | 'retro' | 'note'>('deep');
@@ -137,13 +138,11 @@ export class DdlBlogDetail {
     });
   }
 
-  private renderOrEmpty(post: BlogPostDetail | null) {
-    if (!post) return of(EMPTY);
-    return from(this.markdown.render(post.content)).pipe(map((rendered): LoadedPost => ({ post, rendered })));
-  }
-
-  private html(raw: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(raw);
+  private renderOrEmpty(post: BlogPostDetail | null): LoadedPost {
+    if (!post) return EMPTY;
+    const locale = post.language === 'VI' ? 'vi' : 'en';
+    const { html, toc } = addHeadingAnchors(getLocalized(post.contentHtml, locale));
+    return { post, html, toc };
   }
 
   setV4Type(value: string): void {
