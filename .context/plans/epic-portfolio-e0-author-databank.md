@@ -294,6 +294,21 @@ Publish: Console → `/profile` → **Landing Content** → "Core stack chips" (
 
 **Reasoning (locked):** A hero chip is a 3-second positioning keyword (eye + ATS), NOT a dependency graph — so explicit > implied (TypeScript stays even though Angular implies it; here it reads as "TS across the stack", the FE↔BE through-line). Chips place you in a category *honestly*; differentiation lives in `tagline` + `stackIntro` + case studies, so the strip carries no clever/rare token. Dropped from hero: **SSR** (author not strongly confident — honesty rule, E0 §7), **Tiptap/ProseMirror** (needs context to land → §5 + Document Engine case study), **SCSS** (supporting → §5), **Git/JS** (generic / subsumed). NestJS kept (author owns real backend work, E0 §3) with **Angular first** so positioning stays frontend-first. Considered but not added: 4th chip **Nx** (monorepo/architecture, systems-thinker signal) — held in reserve.
 
+### Home hero — `Profile.tagline` (sub-line under the headline)
+
+Publish: Console → `/profile` → **Landing Content** → "Tagline" (EN + VI). Rendered by `landing-home-hero`: split at the first sentence boundary → line 1 sans lead + line 2 Newsreader italic accent (`home.hero.ts` `taglineSplit`). Locked 2026-06-28. On prod.
+
+**Structure:** sentence 1 = positioning claim (tenure + domain + market); sentence 2 (italic) = the proof that earns it — capability *areas*, not a padded list.
+
+- **EN**
+  - *Four years shipping fintech tools for the Singapore market. Permissions, loan flows, document processing — the core modules.*
+- **VI**
+  - *Bốn năm xây dựng sản phẩm fintech cho thị trường Singapore. Phân quyền người dùng, nghiệp vụ cho vay và xử lý văn bản, những module cốt lõi.*
+
+**Reasoning (locked):** "Four years" attaches to the *fintech career* (since Jan 2022, ~4.5 yrs, rounded down — honest-conservative), distinct from §5's "five years writing code" (total coding) — two different counts, no contradiction. "tools" → VI **"sản phẩm fintech"**, NOT "công cụ tài chính" (the latter reads as *financial instruments*, a domain mistranslation). Line 2 names three *capability areas* (permissions / loan flows / document processing) instead of named products → kills the plural over-claim ("a document engine" → "document processing"). Tail **"core modules / module cốt lõi"** chosen over "load-bearing parts / phần chịu lực" (author preference: literal/technical over metaphor). VI uses a comma before the appositive tail, not an em-dash.
+
+**Render dependency (RTE Phase 8 / task 317):** current `taglineSplit` auto-splits at the first period and does NOT parse Markdown — shipped now as plain prose (renders correctly under the current engine). When task 317 lands (drops `taglineSplit`, adds `MarkdownPipe`), the two-block split moves to author-controlled Markdown (blank-line paragraph break + `*italic*`). → tagline needs a one-time **re-mark** then: blank line before sentence 2 + wrap it in `*…*`.
+
 ### Home §05 "The Stack" — `Profile.stackIntro` (prose above the tier chip-grid)
 
 Publish: Console → `/profile` → **Landing Content** → "Stack Intro" (markdown; `**bold**` = tech names, `*italic*` = Newsreader accent). Locked 2026-06-27. On prod.

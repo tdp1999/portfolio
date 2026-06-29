@@ -1,6 +1,21 @@
 # Task: Landing — Replace `home-intro` Custom Parser with `<rte-render-html>`
 
-## Status: pending
+## Status: blocked
+
+## Blocker
+Deferred (2026-06-28) until `epic-portfolio-prose-block-renderer` (AST renderer) opens.
+`home-intro` is an interactive **per-paragraph** consumer: the lamp-aim, pen-dock,
+`is-active`/`is-dim`, and per-paragraph underline SVG are all keyed to `#storyPara`
+`viewChildren` + per-`<p>` bindings. `<rte-render-html>` (AC #2) dumps the whole bio into
+one `[innerHTML]` div and structurally cannot expose per-paragraph Angular handles — so the
+literal swap kills the signature interaction. The clean tool is the future `<rte-render [doc]>`
++ `rte-element`/`rte-inline` (declarative per-node, D5b), which that epic deliberately holds
+until a 2nd block type is needed. Migrate `home-intro` to `<rte-render [doc]>` then; keep
+`parseBioLong` until that point. Phase 6 still proceeds for the passive consumers
+(blog-detail, project-detail) where `<rte-render-html>` fits.
+
+Data is already in place (API returns `bioLongJson` + `bioLongHtml` + `bioLongSchemaVersion`),
+so re-opening is a FE-only change.
 
 ## Goal
 Drop the `parseBioLong` custom parser from `home-intro.component.ts` and render the API-provided `bioLongHtml` via the shared renderer.
@@ -36,3 +51,4 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 6.
 ## Complexity: S
 
 ## Progress Log
+- [2026-06-28] Investigated; blocked/deferred to prose-block-renderer epic (AST renderer needed to preserve the per-paragraph lamp/pen interaction). See Blocker.

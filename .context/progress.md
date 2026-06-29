@@ -369,9 +369,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 311-rte-console-editor-swap (L) — done 2026-06-28 (S1 profile.bioLong, S2 project body/highlights, S3 blog content, S4 experience desc/resp/highlights; archived → tasks-done/epic-portfolio-rich-text-editor/). Follow-ups spun out: 318 (restore blog md-import), 363 (drop legacy cols), 382 (landing-accurate preview)
 
 ### Phase 6 — Landing renderer
-- [ ] 312-rte-landing-home-intro-render (S) — deps: 305, 308, 310, 311
-- [ ] 313-rte-landing-project-detail-render (M) — deps: 290, 305, 308, 310, 311
-- [ ] 314-rte-landing-blog-post-render (S) — deps: 305, 308, 310, 311
+- [ ] 312-rte-landing-home-intro-render (S) — **blocked**: per-paragraph lamp/pen interaction incompatible with single `[innerHTML]`; deferred to the prose-block-renderer AST epic. deps: 305, 308, 310, 311
+- [x] 313-rte-landing-project-detail-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `<rte-render-html>` for body + highlight CAO; FE read-time slugger for ToC; browser-only sanitize (plain `dompurify`) to keep `isomorphic-dompurify`/jsdom out of the SSR bundle (ADR-019)
+- [x] 314-rte-landing-blog-post-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); blog body via `<rte-render-html>` + slugger; cover-image CLS/eager/aspect-ratio fix; **removed `marked` + `shiki`** entirely (incl. `/ddl/blog-detail` + 5 `markdown.*` files) + dropped `jest-extended`/`jest-util` devDeps
 
 ### Phase 7 — Image-ref + MediaPicker
 - [ ] 315-rte-image-ref-mediapicker (M) — deps: 311
@@ -412,9 +412,10 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 337     |
+| Done (archived)           | 339     |
 | In Progress               | 0       |
-| Pending                   | 24      |
+| Pending                   | 21      |
+| Blocked                   | 1       |
 | **Total Created**         | **360** |
 | Epics completed           | 48      |
 
