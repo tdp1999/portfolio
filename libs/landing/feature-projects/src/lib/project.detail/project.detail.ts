@@ -10,9 +10,9 @@ import {
   makeStateKey,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta, DomSanitizer, type SafeHtml } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, from, of, map, combineLatest } from 'rxjs';
+import { switchMap, of, map, combineLatest } from 'rxjs';
 import {
   Container,
   Section,
@@ -31,13 +31,11 @@ import {
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
-import { ProjectDataService, MarkdownService } from '@portfolio/landing/shared/data-access';
-import type { TocEntry } from '@portfolio/landing/shared/data-access';
-import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
+import { ProjectDataService } from '@portfolio/landing/shared/data-access';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
+import { addHeadingAnchors, buildCloudinarySrcset, type TocEntry } from '@portfolio/landing/shared/util';
 import {
-  EMPTY_RENDER,
   FALLBACK_TOC,
   HERO_WIDTH,
   LIFECYCLE_STATUS_LABEL,
@@ -45,7 +43,7 @@ import {
   LINK_TYPE_LABEL,
   type DetailState,
 } from './project.detail.types';
-import { sortedIndex, yearRange, zero } from './project.detail.util';
+import { plainToHtml, sortedIndex, yearRange, zero } from './project.detail.util';
 
 @Component({
   selector: 'landing-project-detail',
@@ -65,8 +63,8 @@ import { sortedIndex, yearRange, zero } from './project.detail.util';
     Breadcrumb,
     BrowserWindow,
     Eyebrow,
-    TranslatablePipe,
     CloudinarySrcsetPipe,
+    RteRenderHtml,
   ],
   templateUrl: './project.detail.html',
   styleUrl: './project.detail.scss',
@@ -74,8 +72,6 @@ import { sortedIndex, yearRange, zero } from './project.detail.util';
 export class ProjectDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly projectService = inject(ProjectDataService);
-  private readonly markdown = inject(MarkdownService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly platformId = inject(PLATFORM_ID);
@@ -97,37 +93,30 @@ export class ProjectDetail {
           return of<DetailState>({ ...cached, loaded: true });
         }
         return combineLatest([this.projectService.getBySlug(slug), this.projectService.getPublicProjects()]).pipe(
-          switchMap(([project, list]) => {
-            const index = sortedIndex(list);
-            if (!project) {
-              return of<DetailState>({ project: null, rendered: EMPTY_RENDER, index, loaded: true });
+          map(([project, list]): DetailState => {
+            const next: DetailState = { project, index: sortedIndex(list), loaded: true };
+            if (!isPlatformBrowser(this.platformId)) {
+              this.transferState.set(stateKey, next);
             }
-            const md = getLocalized(project.body, this.locale());
-            const render$ = md
-              ? from(this.markdown.render(md, { basePath: `/projects/${project.slug}` }))
-              : of(EMPTY_RENDER);
-            return render$.pipe(
-              map((rendered): DetailState => {
-                const next: DetailState = { project, rendered, index, loaded: true };
-                if (!isPlatformBrowser(this.platformId)) {
-                  this.transferState.set(stateKey, next);
-                }
-                return next;
-              })
-            );
+            return next;
           })
         );
       })
     ),
-    { initialValue: { project: null, rendered: EMPTY_RENDER, index: [], loaded: false } satisfies DetailState }
+    { initialValue: { project: null, index: [], loaded: false } satisfies DetailState }
   );
 
   readonly project = computed(() => this.state().project);
-  readonly toc = computed<readonly TocEntry[]>(() => this.state().rendered.toc);
-  // Markdown source is repo-controlled (lives in project content fields written by the site
-  // owner, not user input), so the `marked` output is trusted as-is without DOMPurify. If
-  // user-submitted markdown ever flows through this path, add sanitization here first.
-  readonly contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
+
+  /** Case-study body: the pre-sanitized rich-text HTML cache, slugged at read-time
+   *  so the sticky ToC + scrollspy have h2/h3 anchors to target. `<rte-render-html>`
+   *  re-sanitizes the result (id survives via the heading-only whitelist rule).
+   *  Locale-reactive: recomputes when the active locale flips. */
+  private readonly rendered = computed(() => addHeadingAnchors(getLocalized(this.project()?.bodyHtml, this.locale())));
+  readonly contentHtml = computed(() => this.rendered().html);
+  readonly toc = computed<readonly TocEntry[]>(() => this.rendered().toc);
+  /** Body wins over the synthesized fallback whenever the rich-text body has content. */
+  readonly hasBody = computed(() => this.contentHtml().length > 0);
 
   // Derived from reactive state, NOT route.snapshot — `state.loaded` flips true on the first
   // emission from the fetch pipeline, so we only show "not found" after the pipeline has
@@ -157,6 +146,19 @@ export class ProjectDetail {
     return p ? getLocalized(p.role, this.locale()) : '';
   });
 
+  /** Highlight CAO blocks rendered through `<rte-render-html>`. Prefers each
+   *  sub-field's sanitized rich-text cache (`*Html`); falls back to the legacy
+   *  plain text (escaped, wrapped) while data is mid-migration so a not-yet-saved
+   *  highlight never renders blank. Locale-reactive. */
+  readonly highlightBlocks = computed(() => {
+    const loc = this.locale();
+    return (this.project()?.highlights ?? []).map((h) => ({
+      challenge: getLocalized(h.challengeHtml, loc) || plainToHtml(getLocalized(h.challenge, loc)),
+      approach: getLocalized(h.approachHtml, loc) || plainToHtml(getLocalized(h.approach, loc)),
+      outcome: getLocalized(h.outcomeHtml, loc) || plainToHtml(getLocalized(h.outcome, loc)),
+    }));
+  });
+
   readonly metadataRows = computed(() => {
     const p = this.project();
     if (!p) return [];
@@ -176,12 +178,11 @@ export class ProjectDetail {
       .map((link) => ({ ...link, displayLabel: link.label || LINK_TYPE_LABEL[link.type] }));
   });
 
-  /** Sidebar ToC anchors. Uses markdown-derived headings when body is present;
-   *  otherwise synthesizes anchors from the in-template fallback sections. */
+  /** Sidebar ToC anchors. Uses the rich-text body's slugged headings when a body is
+   *  present; otherwise synthesizes anchors from the in-template fallback sections. */
   readonly tocSections = computed<readonly InPageSection[]>(() => {
-    const entries = this.toc();
-    if (entries.length > 0) {
-      return entries.map((e) => ({ id: e.id, title: e.text }));
+    if (this.hasBody()) {
+      return this.toc().map((e) => ({ id: e.id, title: e.text }));
     }
     return FALLBACK_TOC.filter((s) => this.hasFallbackSection(s.id));
   });

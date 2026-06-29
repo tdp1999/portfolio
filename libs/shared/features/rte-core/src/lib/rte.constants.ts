@@ -6,10 +6,13 @@
  * task 308) — so write and read can never drift. Both run `sanitizeRichText`,
  * which keys on this list.
  *
- * It is intentionally minimal. Tasks that need extra tags/attrs (e.g. task 313
- * adds `id` on `h2`–`h4` for ToC anchors) must **import and extend** it
- * additively at the call site — never fork or redefine it. Call-site extensions
- * then apply to both BE and FE because both read the same base.
+ * It is intentionally minimal. Tasks that need extra tags/attrs must **import and
+ * extend** it additively at the call site — never fork or redefine it. Call-site
+ * extensions then apply to both BE and FE because both read the same base.
+ *
+ * `id` is allowed (task 313) so ToC anchors survive sanitization, but
+ * {@link sanitizeRichText}'s hook strips it from every element except
+ * `h2`/`h3`/`h4` — keeping it off `<a>` (anchor spoofing) and everything else.
  *
  * Shape matches DOMPurify's config keys so it can be spread straight into
  * `DOMPurify.sanitize(html, RICH_TEXT_WHITELIST)`.
@@ -36,8 +39,12 @@ export const RICH_TEXT_WHITELIST = {
     'br',
     'span',
   ],
-  ALLOWED_ATTR: ['href', 'target', 'rel', 'data-block', 'data-image-id', 'data-variant'],
+  ALLOWED_ATTR: ['href', 'target', 'rel', 'data-block', 'data-image-id', 'data-variant', 'id'],
 } as const;
+
+/** Tags `id` may survive on — every other element is stripped of it by the
+ *  sanitize hook (ToC anchors only; keeps `id` off `<a>` etc.). */
+export const ID_ALLOWED_TAGS = ['H2', 'H3', 'H4'] as const;
 
 export type RichTextWhitelist = {
   ALLOWED_TAGS: readonly string[];

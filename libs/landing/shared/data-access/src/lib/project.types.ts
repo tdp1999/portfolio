@@ -26,6 +26,12 @@ export type ProjectHighlight = {
   challenge: TranslatableJson;
   approach: TranslatableJson;
   outcome: TranslatableJson;
+  /** Sanitized rich-text HTML cache per locale (RTE epic Phase 6). Null until the
+   *  field is saved through the editor; render via `<rte-render-html>`. The plain
+   *  `challenge`/`approach`/`outcome` above stay as the legacy/fallback text. */
+  challengeHtml: TranslatableJson | null;
+  approachHtml: TranslatableJson | null;
+  outcomeHtml: TranslatableJson | null;
   codeUrl: string | null;
 };
 
@@ -49,7 +55,12 @@ export type ProjectDetailData = {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
+  /** Legacy long-form markdown body. Kept until task 363 drops it; superseded by
+   *  `bodyHtml` for rendering. */
   body: TranslatableJson | null;
+  /** Sanitized rich-text HTML cache per locale (RTE epic Phase 6) — the rendered
+   *  case-study body. Null until saved through the editor. */
+  bodyHtml: TranslatableJson | null;
   startDate: string;
   endDate: string | null;
   links: ProjectLink[];

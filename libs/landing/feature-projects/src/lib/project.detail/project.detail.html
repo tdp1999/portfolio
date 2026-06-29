@@ -58,72 +58,73 @@
             }
           </header>
 
-          @if (contentHtml(); as html) {
-            @if (toc().length > 0) {
-              <!-- Markdown body wins when project.body is populated -->
-              <div class="landing-prose" landingProseAnchors [innerHTML]="html"></div>
-            } @else {
-              <!-- No markdown body — synthesize sections from existing fields -->
-              <div class="landing-prose">
-                @if (description(); as text) {
-                  <landing-heading id="overview" [level]="2">Overview</landing-heading>
-                  <p>{{ text }}</p>
-                }
+          @if (hasBody()) {
+            <!-- Rich-text body wins when project.bodyHtml is populated. `contentClass`
+                 lands `.landing-prose` on the same div as the rendered <p>/<h2> so the
+                 direct-child rhythm in _prose.scss matches; headings are slugged at
+                 read-time (addHeadingAnchors) for the sticky ToC. -->
+            <rte-render-html contentClass="landing-prose" [html]="contentHtml()" landingProseAnchors />
+          } @else {
+            <!-- No rich-text body — synthesize sections from existing fields -->
+            <div class="landing-prose">
+              @if (description(); as text) {
+                <landing-heading id="overview" [level]="2">Overview</landing-heading>
+                <p>{{ text }}</p>
+              }
 
-                @if (motivation(); as text) {
-                  <landing-heading id="motivation" [level]="2">Motivation</landing-heading>
-                  <blockquote>{{ text }}</blockquote>
-                }
+              @if (motivation(); as text) {
+                <landing-heading id="motivation" [level]="2">Motivation</landing-heading>
+                <blockquote>{{ text }}</blockquote>
+              }
 
-                @if (role(); as text) {
-                  <landing-heading id="role" [level]="2">My role</landing-heading>
-                  <p>{{ text }}</p>
-                }
+              @if (role(); as text) {
+                <landing-heading id="role" [level]="2">My role</landing-heading>
+                <p>{{ text }}</p>
+              }
 
-                @if (project.highlights.length > 0) {
-                  <landing-heading id="highlights" [level]="2">Highlights</landing-heading>
-                  @for (h of project.highlights; track $index; let i = $index) {
-                    <div class="project-reading__highlight">
-                      <h3 class="project-reading__sub">// {{ i + 1 | number: '2.0-0' }}</h3>
-                      <p>
-                        <span class="project-reading__label">Challenge —</span>
-                        {{ h.challenge | translatable: locale() }}
-                      </p>
-                      <p>
-                        <span class="project-reading__label">Approach —</span>
-                        {{ h.approach | translatable: locale() }}
-                      </p>
-                      <p>
-                        <span class="project-reading__label">Outcome —</span>
-                        {{ h.outcome | translatable: locale() }}
-                      </p>
+              @if (highlightBlocks().length > 0) {
+                <landing-heading id="highlights" [level]="2">Highlights</landing-heading>
+                @for (h of highlightBlocks(); track $index; let i = $index) {
+                  <div class="project-reading__highlight">
+                    <h3 class="project-reading__sub">// {{ i + 1 | number: '2.0-0' }}</h3>
+                    <div class="project-reading__cao">
+                      <span class="project-reading__label">Challenge</span>
+                      <rte-render-html [html]="h.challenge" />
                     </div>
-                  }
+                    <div class="project-reading__cao">
+                      <span class="project-reading__label">Approach</span>
+                      <rte-render-html [html]="h.approach" />
+                    </div>
+                    <div class="project-reading__cao">
+                      <span class="project-reading__label">Outcome</span>
+                      <rte-render-html [html]="h.outcome" />
+                    </div>
+                  </div>
                 }
+              }
 
-                @if (project.images.length > 0) {
-                  @for (img of project.images; track img.url; let i = $index) {
-                    @let imgSet = img.url | cloudinarySrcset: 720;
-                    <figure>
-                      <img
-                        [src]="imgSet.src"
-                        [attr.srcset]="imgSet.srcset || null"
-                        [alt]="img.alt ?? project.title"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <figcaption>
-                        <span class="project-reading__fig-num">FIG. {{ i + 1 | number: '2.0-0' }}</span>
-                        @if (img.alt) {
-                          <span class="project-reading__fig-sep" aria-hidden="true">·</span>
-                          <span>{{ img.alt }}</span>
-                        }
-                      </figcaption>
-                    </figure>
-                  }
+              @if (project.images.length > 0) {
+                @for (img of project.images; track img.url; let i = $index) {
+                  @let imgSet = img.url | cloudinarySrcset: 720;
+                  <figure>
+                    <img
+                      [src]="imgSet.src"
+                      [attr.srcset]="imgSet.srcset || null"
+                      [alt]="img.alt ?? project.title"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <figcaption>
+                      <span class="project-reading__fig-num">FIG. {{ i + 1 | number: '2.0-0' }}</span>
+                      @if (img.alt) {
+                        <span class="project-reading__fig-sep" aria-hidden="true">·</span>
+                        <span>{{ img.alt }}</span>
+                      }
+                    </figcaption>
+                  </figure>
                 }
-              </div>
-            }
+              }
+            </div>
           }
 
           @if (footerNav(); as nav) {

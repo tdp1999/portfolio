@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { RteRenderHtml } from './rte-render-html';
 
-// Integration test: drive the real pipe (real isomorphic-dompurify) through the
-// component's [innerHTML] binding. Proves the read-path strips dangerous markup
-// and hardens anchors before anything reaches the DOM.
+// Integration test: drive the real pipe (browser DOMPurify via sanitizeRichTextBrowser)
+// through the component's [innerHTML] binding. Proves the read-path strips dangerous
+// markup, hardens anchors, and keeps id only on headings before anything reaches the DOM.
 describe('RteRenderHtml (read-path sanitization)', () => {
   function render(html: string): HTMLElement {
     const fixture = TestBed.createComponent(RteRenderHtml);
@@ -31,5 +31,17 @@ describe('RteRenderHtml (read-path sanitization)', () => {
     const a = el.querySelector('a');
     expect(a?.getAttribute('target')).toBe('_blank');
     expect(a?.getAttribute('rel')).toBe('noopener nofollow');
+  });
+
+  it('keeps id on headings (ToC anchors survive)', () => {
+    const el = render('<h2 id="overview">Overview</h2><h3 id="why">Why</h3>');
+    expect(el.querySelector('h2')?.getAttribute('id')).toBe('overview');
+    expect(el.querySelector('h3')?.getAttribute('id')).toBe('why');
+  });
+
+  it('strips id from non-heading elements (blocks anchor spoofing)', () => {
+    const el = render('<p id="spoof">text</p><a href="https://example.com" id="hijack">link</a>');
+    expect(el.querySelector('p')?.hasAttribute('id')).toBe(false);
+    expect(el.querySelector('a')?.hasAttribute('id')).toBe(false);
   });
 });

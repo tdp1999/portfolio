@@ -1,11 +1,10 @@
-import type { ProjectDetailData, ProjectLinkType, RenderedMarkdown } from '@portfolio/landing/shared/data-access';
+import type { ProjectDetailData, ProjectLinkType } from '@portfolio/landing/shared/data-access';
 import type { InPageSection } from '@portfolio/landing/shared/ui';
 
 export type ProjectIndexEntry = { readonly slug: string; readonly title: string };
 
 export type DetailState = {
   readonly project: ProjectDetailData | null;
-  readonly rendered: RenderedMarkdown;
   readonly index: readonly ProjectIndexEntry[];
   /** `false` for the toSignal initial value, `true` for every emission from the fetch
    *  pipeline. Lets `notFound` distinguish "still loading" from "loaded with no match". */
@@ -38,5 +37,3 @@ export const FALLBACK_TOC: readonly InPageSection[] = [
 ];
 
 export const HERO_WIDTH = 960;
-
-export const EMPTY_RENDER: RenderedMarkdown = { html: '', toc: [] };

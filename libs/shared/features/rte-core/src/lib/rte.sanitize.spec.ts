@@ -39,4 +39,17 @@ describe('sanitizeRichText', () => {
     const out = sanitizeRichText('<h2 id="intro">T</h2>', extended);
     expect(out).toContain('id="intro"');
   });
+
+  it('keeps id on h2/h3/h4 with the base whitelist (ToC anchors)', () => {
+    const out = sanitizeRichText('<h2 id="a">A</h2><h3 id="b">B</h3><h4 id="c">C</h4>');
+    expect(out).toContain('id="a"');
+    expect(out).toContain('id="b"');
+    expect(out).toContain('id="c"');
+  });
+
+  it('strips id from non-heading elements (no anchor spoofing on <a>/<p>)', () => {
+    const out = sanitizeRichText('<p id="x">p</p><a href="https://e.com" id="y">a</a>');
+    expect(out).not.toContain('id="x"');
+    expect(out).not.toContain('id="y"');
+  });
 });

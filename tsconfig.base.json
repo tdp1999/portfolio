@@ -58,6 +58,7 @@
       "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"],
       "@portfolio/shared/features/brand": ["libs/shared/features/brand/src/index.ts"],
       "@portfolio/shared/features/rte-core": ["libs/shared/features/rte-core/src/index.ts"],
+      "@portfolio/shared/features/rte-core/constants": ["libs/shared/features/rte-core/src/lib/rte.constants.ts"],
       "@portfolio/shared/features/rte-contract": ["libs/shared/features/rte-contract/src/index.ts"],
       "@portfolio/shared/features/rte-tiptap": ["libs/shared/features/rte-tiptap/src/index.ts"],
       "@portfolio/shared/features/rte-renderer": ["libs/shared/features/rte-renderer/src/index.ts"],

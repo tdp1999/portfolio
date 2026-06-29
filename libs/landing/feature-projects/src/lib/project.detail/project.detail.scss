@@ -225,8 +225,20 @@
     border-top: none;
   }
 
+  /* Descendant selector so it reaches the <p> inside <rte-render-html>'s
+     `.rte-content` wrapper as well as bare fallback paragraphs. */
   & p {
     margin: 8px 0;
+  }
+}
+
+/* One challenge/approach/outcome group: a stacked mono label above its
+   rich-text block (rendered by <rte-render-html>). */
+.project-reading__cao {
+  margin-top: 12px;
+
+  &:first-of-type {
+    margin-top: 4px;
   }
 }
 
@@ -240,12 +252,13 @@
 }
 
 .project-reading__label {
+  display: block;
+  margin-bottom: 4px;
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);
   letter-spacing: var(--landing-tracking-mono);
   color: var(--landing-accent);
   text-transform: uppercase;
-  margin-right: 4px;
 }
 
 /* Figure chrome (caption border) — sits inside .landing-prose which controls

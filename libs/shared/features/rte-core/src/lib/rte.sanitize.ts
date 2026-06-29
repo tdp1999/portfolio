@@ -1,5 +1,5 @@
 import DOMPurify from 'isomorphic-dompurify';
-import { RICH_TEXT_WHITELIST, type RichTextWhitelist } from './rte.constants';
+import { ID_ALLOWED_TAGS, RICH_TEXT_WHITELIST, type RichTextWhitelist } from './rte.constants';
 
 // `isomorphic-dompurify` runs the real DOMPurify in the browser and a jsdom-backed
 // DOMPurify in Node — so this one function sanitizes identically on the server
@@ -13,9 +13,15 @@ let anchorHookRegistered = false;
 function ensureAnchorHook(): void {
   if (anchorHookRegistered) return;
   DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.nodeName === 'A' && (node as Element).hasAttribute('href')) {
-      (node as Element).setAttribute('target', '_blank');
-      (node as Element).setAttribute('rel', 'noopener nofollow');
+    const el = node as Element;
+    if (node.nodeName === 'A' && el.hasAttribute('href')) {
+      el.setAttribute('target', '_blank');
+      el.setAttribute('rel', 'noopener nofollow');
+    }
+    // `id` is whitelisted only so ToC heading anchors survive — strip it from
+    // every other element (e.g. `<a>`, to block anchor spoofing).
+    if (el.hasAttribute?.('id') && !ID_ALLOWED_TAGS.includes(node.nodeName as (typeof ID_ALLOWED_TAGS)[number])) {
+      el.removeAttribute('id');
     }
   });
   anchorHookRegistered = true;

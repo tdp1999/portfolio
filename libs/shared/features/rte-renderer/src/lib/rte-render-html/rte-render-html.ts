@@ -18,9 +18,20 @@ import { SafeHtmlPipe } from '../safe-html.pipe';
   selector: 'rte-render-html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SafeHtmlPipe],
-  template: `<div class="rte-content" [innerHTML]="html() | safeHtml"></div>`,
+  template: `<div [class]="('rte-content ' + contentClass()).trim()" [innerHTML]="html() | safeHtml"></div>`,
   styleUrl: './rte-render-html.scss',
 })
 export class RteRenderHtml {
   readonly html = input<string>('');
+
+  /**
+   * Extra class(es) applied to the content `<div>` alongside `rte-content`.
+   *
+   * The rendered `<p>`/`<h2>`/`<ul>`… are direct children of this div, so a
+   * consumer whose prose styles use direct-child selectors (e.g. landing's
+   * `.landing-prose > h2` vertical rhythm in `_prose.scss`) must land that class
+   * on this same div — not on a wrapper — or the rhythm selectors won't match.
+   * Pass `contentClass="landing-prose"` to do exactly that.
+   */
+  readonly contentClass = input<string>('');
 }

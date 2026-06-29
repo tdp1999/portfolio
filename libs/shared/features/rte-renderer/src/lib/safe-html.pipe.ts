@@ -1,24 +1,32 @@
-import { inject, Pipe, type PipeTransform } from '@angular/core';
+import { inject, Pipe, PLATFORM_ID, type PipeTransform } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
-import { sanitizeRichText } from '@portfolio/shared/features/rte-core';
+import { sanitizeRichTextBrowser } from './sanitize-browser';
 
 /**
  * Read-time sanitization gate for rich-text HTML.
  *
- * Runs the shared {@link sanitizeRichText} (DOMPurify + `RICH_TEXT_WHITELIST`,
- * the same allowlist the BE write pipeline uses — belt-and-braces) and only then
- * marks the result trusted for `[innerHTML]`. Never trust the stored HTML
- * directly: the DB cache could have been edited, seeded, or written under an
- * older whitelist.
+ * The `*Html` cache bound here is already write-sanitized by the BE
+ * (`sanitizeRichText` in rte-core, same `RICH_TEXT_WHITELIST`). On the
+ * **server/prerender** we therefore trust the cache as-is and only mark it
+ * `SafeHtml` — crucially this keeps `isomorphic-dompurify` (whose top-level
+ * `new JSDOM()` breaks the ESM server bundle with `__dirname is not defined`)
+ * out of the server graph entirely. In the **browser** we re-run DOMPurify via
+ * {@link sanitizeRichTextBrowser} as defense-in-depth (the cache could have been
+ * edited, seeded, or written under an older whitelist). DOMPurify is idempotent
+ * on already-clean HTML, so the browser pass matches the server output → no
+ * hydration mismatch for a correctly write-sanitized cache.
  *
  * `pure: true` — recomputes only when the input string reference changes.
- * SSR-safe: `sanitizeRichText` uses `isomorphic-dompurify`, no `window`.
  */
 @Pipe({ name: 'safeHtml', pure: true })
 export class SafeHtmlPipe implements PipeTransform {
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   transform(html: string | null | undefined): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(sanitizeRichText(html ?? ''));
+    const raw = html ?? '';
+    const clean = this.isBrowser ? sanitizeRichTextBrowser(raw) : raw;
+    return this.sanitizer.bypassSecurityTrustHtml(clean);
   }
 }
