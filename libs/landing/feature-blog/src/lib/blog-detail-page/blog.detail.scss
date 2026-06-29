@@ -99,6 +99,26 @@
 }
 .blog-hero__figure {
   margin: 12px 0 0;
+  aspect-ratio: 16 / 9;
+}
+/* Pin the browser-window + screenshot to the 16:9 frame so the cover reserves its
+   space before load (no layout shift) and tall images crop to cover instead of
+   rendering full-height and pushing the article down. Mirrors the project hero. */
+:host ::ng-deep .blog-hero__figure landing-browser-window {
+  display: block;
+  height: 100%;
+}
+:host ::ng-deep .blog-hero__figure .lbw {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+:host ::ng-deep .blog-hero__figure .lbw__shot {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 0;
 }
 
 /* ─── Inline TOC (shown below 1280px) ─────────────────────────────────

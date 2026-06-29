@@ -1,3 +1,5 @@
+import type { TranslatableJson } from '@portfolio/shared/types';
+
 export type BlogPostCategory = {
   id: string;
   name: string;
@@ -31,7 +33,13 @@ export type BlogPostListItem = {
 };
 
 export type BlogPostDetail = BlogPostListItem & {
+  /** Legacy authoring markdown. Retained for word-count/read-type heuristics and as
+   *  the source the Obsidian importer round-trips; no longer rendered at runtime. */
   content: string;
+  /** Sanitized rich-text HTML cache (RTE epic Phase 6) — the rendered post body.
+   *  Envelope keyed by the post's own `language` (blog posts are single-language).
+   *  Null until the post is saved through the console rich-text editor. */
+  contentHtml: TranslatableJson | null;
   metaTitle: string | null;
   metaDescription: string | null;
   author: BlogPostAuthor | null;

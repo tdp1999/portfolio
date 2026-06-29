@@ -53,7 +53,13 @@
 
             @if (p.featuredImageUrl) {
               <div class="blog-hero__figure">
-                <landing-browser-window [src]="p.featuredImageUrl" [alt]="p.title" [url]="'/blog/' + p.slug" />
+                <landing-browser-window
+                  [src]="p.featuredImageUrl"
+                  [alt]="p.title"
+                  [url]="'/blog/' + p.slug"
+                  [width]="760"
+                  [eager]="true"
+                />
               </div>
             }
           </header>
@@ -64,7 +70,17 @@
             </div>
           }
 
-          <div class="blog-prose landing-prose" landingProseAnchors [innerHTML]="contentHtml()"></div>
+          <!-- Rich-text body. `contentClass` lands `.landing-prose` on the same div as the
+               rendered <p>/<h2> so the direct-child rhythm in _prose.scss matches; headings are
+               slugged at read-time (addHeadingAnchors) for the sticky ToC. `<rte-render-html>`
+               re-sanitizes the BE cache browser-side. Gated on hasBody() so a post whose
+               contentHtml is still null (not yet re-saved through the console RTE) doesn't
+               render an empty prose container. -->
+          @if (hasBody()) {
+            <div class="blog-prose">
+              <rte-render-html contentClass="landing-prose" [html]="contentHtml()" landingProseAnchors />
+            </div>
+          }
         </article>
 
         <footer class="blog-footer">

@@ -10,9 +10,9 @@ import {
   makeStateKey,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta, DomSanitizer, type SafeHtml } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { from, of, map, startWith, switchMap } from 'rxjs';
+import { of, map, startWith, switchMap } from 'rxjs';
 import {
   Chip,
   Container,
@@ -27,11 +27,14 @@ import {
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
-import { BlogDataService, MarkdownService } from '@portfolio/landing/shared/data-access';
+import { BlogDataService } from '@portfolio/landing/shared/data-access';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import { getLocalized } from '@portfolio/shared/utils/lite';
+import { addHeadingAnchors, type TocEntry } from '@portfolio/landing/shared/util';
 import { BlogShareRow } from './blog.share-row';
 import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
 import type { DetailState } from './blog.detail.types';
-import { EMPTY_RENDER, INITIAL_STATE } from './blog.detail.data';
+import { INITIAL_STATE } from './blog.detail.data';
 import { shouldHideToc, wordCount } from './blog.detail.util';
 
 @Component({
@@ -51,6 +54,7 @@ import { shouldHideToc, wordCount } from './blog.detail.util';
     BlogShareRow,
     Monogram,
     Wordmark,
+    RteRenderHtml,
   ],
   providers: [LandingScrollspyService],
   templateUrl: './blog.detail.html',
@@ -59,8 +63,6 @@ import { shouldHideToc, wordCount } from './blog.detail.util';
 export class BlogDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly blogService = inject(BlogDataService);
-  private readonly markdown = inject(MarkdownService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly platformId = inject(PLATFORM_ID);
@@ -69,9 +71,9 @@ export class BlogDetail {
   private readonly scrollspy = inject(LandingScrollspyService);
 
   // ─── Data pipeline (SSR transfer cache) ──────────────────────────
-  // Cache the rendered post in TransferState so the client doesn't refetch
-  // + re-render markdown after hydration. Pattern shared with the previous
-  // baseline; preserved through graduation.
+  // Cache the fetched post in TransferState so the client doesn't refetch
+  // after hydration. Rendering is now synchronous (the BE already ships the
+  // sanitized rich-text HTML cache), so the pipeline only awaits the HTTP fetch.
   private readonly state = toSignal(
     this.route.paramMap.pipe(
       switchMap((params) => {
@@ -86,21 +88,16 @@ export class BlogDetail {
         }
 
         // Emit `loading` immediately so the template doesn't flash the 404
-        // empty state during the fetch+render window.
+        // empty state during the fetch window.
         return this.blogService.getBySlug(slug).pipe(
-          switchMap((post) => {
-            if (!post) return of<DetailState>({ status: 'not-found', post: null, rendered: EMPTY_RENDER });
-            return from(this.markdown.render(post.content, { basePath: `/blog/${post.slug}` })).pipe(
-              map((rendered): DetailState => {
-                const next: DetailState = { status: 'loaded', post, rendered };
-                if (!isPlatformBrowser(this.platformId)) {
-                  this.transferState.set(stateKey, next);
-                }
-                return next;
-              })
-            );
+          map((post): DetailState => {
+            const next: DetailState = post ? { status: 'loaded', post } : { status: 'not-found', post: null };
+            if (!isPlatformBrowser(this.platformId)) {
+              this.transferState.set(stateKey, next);
+            }
+            return next;
           }),
-          startWith<DetailState>({ status: 'loading', post: null, rendered: EMPTY_RENDER })
+          startWith<DetailState>({ status: 'loading', post: null })
         );
       })
     ),
@@ -110,9 +107,20 @@ export class BlogDetail {
   readonly post = computed(() => this.state().post);
   readonly loading = computed(() => this.state().status === 'loading');
   readonly notFound = computed(() => this.state().status === 'not-found');
-  readonly contentHtml = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(this.state().rendered.html));
+
+  /** Post body: the pre-sanitized rich-text HTML cache, slugged at read-time so the
+   *  sticky ToC + scrollspy have h2/h3 anchors to target. `<rte-render-html>` re-sanitizes
+   *  the result (id survives via the heading-only whitelist rule). Blog posts are
+   *  single-language, so the content envelope is resolved by the post's own `language`. */
+  private readonly rendered = computed(() => {
+    const p = this.post();
+    const locale = p?.language === 'VI' ? 'vi' : 'en';
+    return addHeadingAnchors(getLocalized(p?.contentHtml, locale));
+  });
+  readonly contentHtml = computed(() => this.rendered().html);
+  readonly hasBody = computed(() => this.contentHtml().length > 0);
   readonly toc = computed<readonly InPageSection[]>(() =>
-    this.state().rendered.toc.map((e) => ({ id: e.id, title: e.text, level: e.level }))
+    this.rendered().toc.map((e: TocEntry) => ({ id: e.id, title: e.text, level: e.level }))
   );
   readonly hideToc = computed(() => shouldHideToc(this.post(), this.toc().length));
 
