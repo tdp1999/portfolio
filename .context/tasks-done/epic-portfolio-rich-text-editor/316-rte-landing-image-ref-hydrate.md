@@ -1,6 +1,6 @@
 # Task: Landing — Hydrate `image-ref` Blocks via `landing-figure`
 
-## Status: in-progress (code complete; pending manual visual verify on running landing)
+## Status: done
 
 ## Goal
 Teach the renderer to recognize `<figure data-block="image-ref" data-image-id="...">` and render through the existing `landing-figure` component (responsive `<picture>` + caption).
@@ -44,4 +44,4 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
   - **Blog BE** was already wired (done with 315): `get-public-post-by-slug` + presenter ship `mediaRefs`.
   - Tests: `hydrate-image-refs.spec` rewritten for the new markup (numbering, srcset, fallback, escaping); sanitize + `rte-render-html` specs assert `div`/`class`/`srcset` survive under the media whitelist only. FE 50 specs + 304 BE specs green; lint + stylelint clean.
   - **Relationship to epic:** per `epic-portfolio-prose-block-renderer.md` (D1/Phase 4/6), this `[innerHTML]` + string-transform approach is the sanctioned **interim** for the single `image-ref` block; that epic later replaces it with an AST renderer mounting the real `<landing-figure>` component (+ in-content lightbox) once a 2nd block type is needed. **No in-content lightbox here** (deferred to the epic).
-- **TODO (verify):** manual visual check on running landing — figure renders responsive image + `FIG. 0X` caption; deleted-media shows broken img + alt. Requires the user to start `pnpm dev:landing` (+ `pnpm dev:api`).
+- [2026-06-29] **Verified live + shipped.** Landing SSR (`/blog/test-new-editor`) first-paint HTML contains the hydrated `<figure class="landing-figure"><div class="landing-figure__frame"><img src srcset w=1600 h=900 loading=lazy></div><figcaption>FIG. 01 · …</figcaption></figure>` — no URL-free figure left, image loads (Cloudinary 1×/2× srcset), caption mono-caps, 0 console errors. Committed `feat(landing): render image-ref blocks as landing-figure` and pushed to origin/master.

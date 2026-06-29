@@ -3,7 +3,7 @@ import { Chip, Link } from '@portfolio/landing/shared/ui';
 import type { ProjectDetailData, ProjectHighlight } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { Locale } from '@portfolio/shared/types';
-import { parseItalicRuns } from './bio-long-runs';
+import { parseInlineRuns } from '@portfolio/landing/shared/util';
 import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-shared';
 import type { Decision } from './home.selected-work-fallback.types';
 
@@ -25,12 +25,12 @@ export class HomeSelectedWorkFallback {
 
   protected readonly descriptionRuns = computed(() => {
     const text = getLocalized(this.project().description, this.locale());
-    return parseItalicRuns(text);
+    return parseInlineRuns(text);
   });
 
   protected readonly extendedRuns = computed(() => {
     const text = getLocalized(this.project().motivation, this.locale());
-    return parseItalicRuns(text);
+    return parseInlineRuns(text);
   });
 
   protected readonly caseStudyHref = computed(() => `/projects/${this.project().slug}`);

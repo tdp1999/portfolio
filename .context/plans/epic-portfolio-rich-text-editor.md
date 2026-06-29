@@ -213,7 +213,7 @@ Exit: every console form page using a rich field renders the new editor; saves s
 Replace ad-hoc parsers in landing components:
 
 - `home-intro.component.ts` — drop `parseBioLong`, render `<rte-render-html [html]="profile.bioLongHtml.en">`.
-- `home-stack.component.ts` (when 285b lands) — same pattern for stackIntro, but `stackIntro` is Markdown-only (Phase 8), uses `MarkdownPipe` not RTE renderer.
+- `home-stack.component.ts` (when 285b lands) — `stackIntro` is a short field, not RTE: rendered via the shared declarative inline-markdown parser (`parseInlineParagraphs`), see Phase 8.
 - Future `project-detail.component.ts` (task 290) — render `body`, `highlights[*].challenge/approach/outcome` via renderer.
 - Blog `post-detail.component.ts` — replace `marked.parse(content)` with `<rte-render-html [html]="post.contentHtml">`.
 - SSR: renderer is server-safe (no Tiptap, no `window`); HTML already sanitized at write-time, pipe sanitizes again.
@@ -230,18 +230,27 @@ Renderer recognizes `data-block="image-ref"`, fetches Media metadata, renders `l
 
 Exit: blog post can embed an image picked from MediaPicker; renders correctly on public page.
 
-### Phase 8 — Markdown for short fields (Q8 Option C)
+### Phase 8 — Short fields = shared declarative inline-markdown (task 317)
 
-Delete custom parsers, replace with CommonMark via `marked`:
+**Resolved 2026-06-29 (re-scoped from the original "`marked` pipe" plan).** The `marked`
+dependency was removed from the repo when the `markdown.*` services were deleted, and no short
+field ever rendered via `[innerHTML]` — they already used declarative runs parsers. That
+declarative model *is* the prose-block epic's D5b, so a `marked` + DOMPurify + `[innerHTML]` pipe
+would have regressed away from the locked direction. The intent (one path for short inline
+markdown; kill duplicated ad-hoc parsers) is kept, realised declaratively:
 
-- `taglineSplit()` → drop. Tagline interpreted by hero UI via paragraph break + `<em>` semantic.
-- `coreStack()` → drop. Stack intro rendered as paragraphs; Tier 2 pills come from `Skill.displayGroup` (already structured).
-- `parseBioLong()` → drop (replaced by Phase 6 RTE renderer for Profile.bioLong).
-- `convertObsidianMarkdown()` + `extractTitleFromMarkdown()` + `renderMarkdownPreview()` → kept as one-shot Obsidian importer; on import, convert MD → Tiptap JSON via `prosemirror-markdown`, store JSON+HTML as canonical. Markdown utilities deleted from runtime.
+- `libs/landing/shared/util/inline-markdown.ts` — single shared `parseInlineRuns` /
+  `parseInlineParagraphs` returning typed `InlineRun`s (`**bold**` / `*italic*`). Consumers render
+  runs as real `<strong>`/`<em>` elements. **No `marked`, no DOMPurify, no `[innerHTML]`.**
+- Deleted the duplicated parsers: `parseStackIntro` (home.stack) and `parseItalicRuns`
+  (selected-work). `convertObsidianMarkdown`/`extractTitleFromMarkdown`/`extractH1Title`/
+  `renderMarkdownPreview` were already gone.
+- **Kept** `parseBioLong` — task 312 is blocked (deferred to the prose-block AST renderer, which
+  keeps it until then). `taglineSplit` / `coreStack` are hero layout/token extractors, not markdown
+  rendering — also kept.
 
-`libs/landing/shared/util/` gains a `MarkdownPipe` (`text | markdown`) wrapping `marked.parse` + DOMPurify for short Markdown fields.
-
-Exit: 7 custom parsers deleted; landing reads short fields through `MarkdownPipe`, long fields through `<rte-render-html>`.
+Exit: duplicated short-field parsers consolidated into one shared declarative util; long fields
+render through `<rte-render-html>`.
 
 ### Phase 9 — `document-engine` Sprint 2
 

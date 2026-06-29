@@ -19,10 +19,16 @@
     @if (descriptionRuns().length > 0) {
       <p class="selected-work-tab__desc">
         @for (run of descriptionRuns(); track $index) {
-          @if (run.italic) {
-            <em class="selected-work-tab__desc-em">{{ run.text }}</em>
-          } @else {
-            <span>{{ run.text }}</span>
+          @switch (run.emphasis) {
+            @case ('bold') {
+              <strong>{{ run.text }}</strong>
+            }
+            @case ('italic') {
+              <em class="selected-work-tab__desc-em">{{ run.text }}</em>
+            }
+            @default {
+              <span>{{ run.text }}</span>
+            }
           }
         }
         <landing-link [href]="caseStudyHref()" [arrow]="true" [inline]="true" class="selected-work-tab__read-more">

@@ -1,6 +1,6 @@
 # Task: Editor — `image-ref` Node + MediaPicker Insert Flow
 
-## Status: in-progress (code complete; pending manual round-trip verify on running servers)
+## Status: done
 
 ## Goal
 Activate the `image-ref` custom node in the editor (full mode) and wire its insert button to the existing `MediaPickerDialog`, producing semantic `<figure data-block="image-ref" data-image-id="...">` output.
@@ -40,4 +40,4 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 7.
   - **Read-time hydration (the missing piece):** the engine stores `image-ref` figures **URL-free** (no `<img>`). Resolution path chosen (Q&A): BE resolves `data-image-id` → media and ships a locale-independent `mediaRefs` map in the public Project/Blog detail DTOs; landing injects `<img>` via `hydrateImageRefs(html, mediaRefs)` (pure string transform, mirrors `addHeadingAnchors`, SSR-safe) right after `addHeadingAnchors`; `<rte-render-html [allowMedia]="true">` widens its browser re-sanitize whitelist so the injected `<img>` survives (SSR/browser parity held).
   - **Architecture note:** task's sample `<img>` in the figure was aspirational — actual engine output is URL-free `<figure>`; `insertImageRef` is engine-internal (not called by us); `MediaResult` is `{id,url,alt}` (no width/height).
   - New: `collectImageIds` + `MediaRef`/`MediaRefMap` (rte-core, exposed via node-safe `/image-refs` entry to avoid the isomorphic-dompurify barrel), `MediaRefResolverService` (media module, exported), `hydrateImageRefs` (landing util). Tests added for all + sanitize whitelist + `allowMedia` parity. Type-check, lint, and 304 BE + FE specs green.
-- **TODO (block F):** manual round-trip verify on running console+landing — insert image → save → reload editor (placeholder persists) → landing renders real `<img>`. Requires the user to start `pnpm dev:console` + `pnpm dev:landing`.
+- [2026-06-29] **Verified live + shipped.** Console edit of `test-new-editor` re-opens with the `image-ref` placeholder intact (correct `data-image-id`, no console errors) → round-trip confirmed. API detail returns the URL-free `<figure data-block="image-ref" data-image-id>` cache + a resolved `mediaRefs` map. Committed `feat(rte): resolve image-ref media for landing read-path` and pushed to origin/master.

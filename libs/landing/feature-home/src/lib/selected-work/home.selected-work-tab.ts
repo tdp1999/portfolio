@@ -4,7 +4,7 @@ import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint
 import type { ProjectDetailData } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { Locale } from '@portfolio/shared/types';
-import { parseItalicRuns } from './bio-long-runs';
+import { parseInlineRuns } from '@portfolio/landing/shared/util';
 import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-shared';
 
 @Component({
@@ -35,7 +35,7 @@ export class HomeSelectedWorkTab {
 
   protected readonly descriptionRuns = computed(() => {
     const text = getLocalized(this.project().description, this.locale());
-    return parseItalicRuns(text);
+    return parseInlineRuns(text);
   });
 
   /** Always-on inline "read more" link target — project detail (Case Study) page. */

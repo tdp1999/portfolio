@@ -1,54 +1,74 @@
-# Task: Landing — `MarkdownPipe` for Short Fields + Delete Custom Parsers
+# Task: Landing — Consolidate Short-Field Inline Markdown into a Shared Declarative Parser
 
-## Status: pending
+## Status: in-progress
 
 ## Goal
-Replace 5 custom regex parsers with a single CommonMark-via-`marked` pipe for short Markdown fields, and delete the parsers from the runtime.
+Replace the duplicated per-component inline-markdown regex parsers with a single shared,
+**declarative** runs parser in `libs/landing/shared/util`. No `[innerHTML]`, no DOMPurify, no
+`marked` dependency — short fields parse to typed runs and render as real `<strong>`/`<em>`
+elements (matches prose-block epic D5b).
 
 ## Context
-Long-form fields render via RTE (tasks 312-314). Short fields (taglines, intros, footers under ~300 chars) are CommonMark Markdown — no custom parsing. Per the locked Q8-Option-C strategy.
+**Plan drift, verified 2026-06-29.** This task was authored under epic Phase 8's original
+"`marked` pipe + DOMPurify + short-field whitelist" strategy. Two premises no longer hold:
 
-Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 8.
+- `marked` was **removed** from the repo when the `markdown.*` services were deleted — reusing it
+  would be a *new* dependency.
+- **No short field renders via `[innerHTML]` today.** They already render as declarative runs
+  (`parseStackIntro`, `parseItalicRuns`) or plain `{{ }}`. That declarative model *is* the
+  prose-block epic's D5b ("inline marks as nested real elements, never an injected HTML string"),
+  so adding a `marked` + `[innerHTML]` pipe would regress *away* from the locked direction.
+
+So the task's *intent* (one consistent path for short inline markdown; kill duplicated ad-hoc
+parsers) is kept, realised as a shared **declarative** parser rather than an HTML pipe.
+
+Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 8 (re-scoped); aligns with
+`.context/plans/epic-portfolio-prose-block-renderer.md` D5b.
 
 ## Acceptance Criteria
-- [ ] New `MarkdownPipe` in `libs/landing/shared/util/`. Signature: `value | markdown` returns sanitized HTML string.
-- [ ] Pipe pipeline: `marked.parse(value, { gfm: false })` → `DOMPurify.sanitize` with a **short-field whitelist** (subset of the rich-text whitelist: only `p, em, strong, a, br` allowed). Whitelist is a separate constant, not the rich-text one.
-- [ ] Pipe is `pure: true` so the same input string is parsed once.
-- [ ] Migrate every short Markdown field on landing to the pipe:
-  - `Profile.tagline` (hero) — drops `taglineSplit()`
-  - `Profile.stackIntro` (home-stack §5) — drops `coreStack()`
-  - `Profile.contactIntro` (get-in-touch)
-  - `Profile.footerTagline` (footer banner)
-  - `Project.oneLiner`, `Project.description`
-- [ ] Delete from runtime:
-  - `taglineSplit`
-  - `coreStack`
-  - `parseBioLong` (already replaced in task 312 — confirm it's gone)
-  - `convertObsidianMarkdown` runtime usage (kept only in the Obsidian importer — task 318)
-  - `extractTitleFromMarkdown`, `extractH1Title`, `renderMarkdownPreview` (audit each — many are likely already dead post-task-318; this task is the final sweep)
-- [ ] No `[innerHTML]` binding in landing without `| safeHtml` or `| markdown` (lint rule passes).
-- [ ] No `bypassSecurityTrustHtml` call without preceding sanitize.
+- [x] Shared `inline-markdown.ts` in `libs/landing/shared/util`: `parseInlineRuns` +
+  `parseInlineParagraphs` + `InlineRun`/`InlineEmphasis` types. Handles `**bold**` + `*italic*`.
+  **No `marked`, no DOMPurify, no `[innerHTML]`.**
+- [x] Parsers are pure functions invoked inside `computed()` (memoised per input — the `pure: true`
+  intent of the original pipe AC).
+- [x] `home.stack` consumes `parseInlineParagraphs`; deleted `parseStackIntro`,
+  `home.stack.types.ts`, and the local `TOKEN_PATTERN`.
+- [x] `selected-work` (tab + fallback) consume `parseInlineRuns`; deleted `bio-long-runs.ts`
+  (`parseItalicRuns`). Templates switched `@if run.italic` → `@switch run.emphasis` so `**bold**`
+  in descriptions now renders too (consistency).
+- [x] Dead parsers confirmed already gone: `convertObsidianMarkdown`, `extractTitleFromMarkdown`,
+  `extractH1Title`, `renderMarkdownPreview`.
+- [x] No new `[innerHTML]` binding introduced on landing (still zero markdown innerHTML sinks).
+- [x] `nx test util` green; `nx build landing` AOT-compiles clean.
+- [ ] Visual parity on `/` (§5 The Stack) and selected-work descriptions / project cards.
 
-## Technical Notes
-- `marked` is already in `package.json` from blog work — reuse, no new dep.
-- Bold convention `**phrase**` was reserved for E5 Phase 4 task 285b (home-stack). This task formalizes it — `marked` handles it natively.
-- Italic emphasis convention `*phrase*` (locked 2026-05-04 in E5 epic) is also `marked`-native.
+## Out of scope / intentionally kept
+- `parseBioLong` (home-intro) — **kept**; task 312 is **blocked** (deferred to the prose-block AST
+  renderer, which keeps `parseBioLong` until then). The original "confirm parseBioLong is gone" AC
+  is dropped.
+- `taglineSplit` (hero) — layout split (sans lead / Newsreader-italic emphasis), not markdown
+  rendering.
+- `coreStack` (hero) — chip-token extractor (uppercases `**bold**` runs into chips), not prose.
+- Inline link (`[text](url)`) parsing — no short field uses it; add a token to
+  `inline-markdown.ts` when a field needs it.
 
-## Files to Touch
-- `libs/landing/shared/util/markdown.pipe.ts` (new)
-- `libs/landing/feature-home/**/home-hero.component.{ts,html}` (drop `taglineSplit`)
-- `libs/landing/feature-home/**/home-stack.component.{ts,html}` (drop `coreStack`)
-- `libs/landing/feature-home/**/home-get-in-touch.component.{ts,html}`
-- `libs/landing/feature-home/**/home-footer-banner.component.{ts,html}` (or wherever footerTagline renders)
-- `libs/landing/feature-projects/**/project-card.component.{ts,html}` (oneLiner)
-- Search-and-delete the named utility functions from `libs/landing/shared/**`
+## Files Touched
+- `libs/landing/shared/util/src/lib/inline-markdown.ts` (new) + `inline-markdown.spec.ts` (new) +
+  `src/index.ts` export
+- `libs/landing/feature-home/src/lib/home.stack/{home.stack.ts, home.stack.data.ts}`;
+  **deleted** `home.stack.util.ts`, `home.stack.types.ts`
+- `libs/landing/feature-home/src/lib/selected-work/{home.selected-work-tab,home.selected-work-fallback}.{ts,html}`;
+  **deleted** `bio-long-runs.ts`
 
 ## Dependencies
-- 312-rte-landing-home-intro-render
-- 313-rte-landing-project-detail-render
-- 314-rte-landing-blog-post-render
-- 285b-home-stack (must already be using `Profile.stackIntro` so we have something to migrate)
+- 313, 314 (done). 285b (home-stack uses `Profile.stackIntro`).
+- NOT 312 (blocked) — decoupled by keeping `parseBioLong`.
 
-## Complexity: M
+## Complexity: S (re-scoped down from M)
 
 ## Progress Log
+- [2026-06-29] Verified plan drift (`marked` removed; short fields already declarative-runs).
+  Re-scoped per user (Consolidate-runs option). Built shared declarative parser
+  (`parseInlineRuns`/`parseInlineParagraphs`), migrated home.stack + selected-work, deleted 3 dead
+  parser files. `nx test util` green (34 tests); `nx build landing` AOT-compiles clean. Pending:
+  visual parity on a running server.

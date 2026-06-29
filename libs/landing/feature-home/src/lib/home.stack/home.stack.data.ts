@@ -6,5 +6,3 @@ export const TIER_PROMINENCE: Record<SkillTier, LandingChipProminence> = {
   FREQUENT: 'strong',
   SHIPPED: 'default',
 };
-
-export const TOKEN_PATTERN = /\*\*([^*]+)\*\*|\*([^*]+)\*/g;

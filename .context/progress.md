@@ -374,11 +374,11 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 314-rte-landing-blog-post-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); blog body via `<rte-render-html>` + slugger; cover-image CLS/eager/aspect-ratio fix; **removed `marked` + `shiki`** entirely (incl. `/ddl/blog-detail` + 5 `markdown.*` files) + dropped `jest-extended`/`jest-util` devDeps
 
 ### Phase 7 — Image-ref + MediaPicker
-- [ ] 315-rte-image-ref-mediapicker (M) — deps: 311
-- [ ] 316-rte-landing-image-ref-hydrate (M) — deps: 308, 315
+- [x] 315-rte-image-ref-mediapicker (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); console insert wiring pre-landed in 311; closed the two real gaps — `data-caption-position` in base whitelist + a `MediaRefResolverService` (node-safe `rte-core/image-refs` entry, `collectImageIds`) that ships a resolved `mediaRefs` map in the project/blog public detail DTOs. Verified live: console edit re-opens with the `image-ref` placeholder intact.
+- [x] 316-rte-landing-image-ref-hydrate (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `hydrateImageRefs` rebuilds URL-free figures into the `landing-figure` primitive (responsive Cloudinary srcset + mono-caps `FIG. 0X` caption + deleted-media fallback), `[allowMedia]` widens the read-time sanitize whitelist. Interim string-transform path (prose-block-renderer epic supersedes later). Verified live: landing SSR first-paint contains the hydrated figure.
 
 ### Phase 8 — Markdown short fields + Obsidian importer
-- [ ] 317-rte-markdown-pipe-and-parser-cleanup (M) — deps: 312, 313, 314, 285b
+- [ ] 317-rte-markdown-pipe-and-parser-cleanup (S) — **in-progress** (7/8 ACs): re-scoped from the `marked` pipe to a shared **declarative** inline-markdown parser (`parseInlineRuns`/`parseInlineParagraphs` in landing/shared/util) — no `marked`, no `[innerHTML]`. Consolidated home.stack + selected-work; deleted `parseStackIntro`/`parseItalicRuns`. `parseBioLong` kept (312 blocked). Visual-parity AC pending. deps: 313, 314, 285b (decoupled from blocked 312)
 - [ ] 318-rte-obsidian-importer-migration (S) — deps: 307, 310, 317
 
 ### Cross-cutting — Migration script
@@ -412,9 +412,9 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 339     |
-| In Progress               | 0       |
-| Pending                   | 21      |
+| Done (archived)           | 341     |
+| In Progress               | 1       |
+| Pending                   | 18      |
 | Blocked                   | 1       |
 | **Total Created**         | **360** |
 | Epics completed           | 48      |
