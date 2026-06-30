@@ -32,11 +32,39 @@ function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
 }
 
+// PST-011: every post needs a cover. Create one throwaway Media row for the whole
+// suite and reuse its id; cleaned up in afterAll.
+let coverId: string;
+
+async function ensureCoverMedia(): Promise<string> {
+  const admin = await prisma.user.findFirst({
+    where: { email: 'test-admin@e2e.local' },
+    select: { id: true },
+  });
+  if (!admin) throw new Error('test-admin user not seeded');
+  const id = crypto.randomUUID();
+  await prisma.media.create({
+    data: {
+      id,
+      originalFilename: `${PREFIX}cover.png`,
+      mimeType: 'image/png',
+      publicId: `${PREFIX}${id}`,
+      url: 'https://res.cloudinary.com/demo/image/upload/sample.png',
+      format: 'png',
+      bytes: 1024,
+      createdById: admin.id,
+      updatedById: admin.id,
+    },
+  });
+  return id;
+}
+
 function validPayload(overrides: Record<string, unknown> = {}) {
   return {
     title: `${PREFIX}test-post`,
     content: 'This is the blog post content for E2E testing. '.repeat(10),
     language: 'EN',
+    featuredImageId: coverId,
     ...overrides,
   };
 }
@@ -62,10 +90,12 @@ describe('BlogPost API', () => {
   beforeAll(async () => {
     adminToken = await loginAsAdmin();
     await cleanupTestPosts();
+    coverId = await ensureCoverMedia();
   });
 
   afterAll(async () => {
     await cleanupTestPosts();
+    if (coverId) await prisma.media.deleteMany({ where: { id: coverId } });
     await prisma.$disconnect();
   });
 
@@ -123,20 +153,103 @@ describe('BlogPost API', () => {
     });
   });
 
-  // ── Import Markdown ───────────────────────────────────
+  // ── Convert Markdown (editor prefill, no persistence) ──
 
-  describe('POST /api/admin/blog/import-markdown', () => {
-    it('should import markdown and return { id }', async () => {
+  describe('POST /api/admin/blog/convert-markdown', () => {
+    // Collect every node `type` present anywhere in a ProseMirror doc tree.
+    function collectTypes(node: unknown, acc = new Set<string>()): Set<string> {
+      if (!node || typeof node !== 'object') return acc;
+      const n = node as { type?: string; content?: unknown[] };
+      if (n.type) acc.add(n.type);
+      if (Array.isArray(n.content)) n.content.forEach((c) => collectTypes(c, acc));
+      return acc;
+    }
+
+    type DocNode = { type?: string; attrs?: { level?: number }; content?: unknown[] };
+    function collectHeadings(node: unknown, acc: DocNode[] = []): DocNode[] {
+      if (!node || typeof node !== 'object') return acc;
+      const n = node as DocNode;
+      if (n.type === 'heading') acc.push(n);
+      if (Array.isArray(n.content)) n.content.forEach((c) => collectHeadings(c, acc));
+      return acc;
+    }
+
+    const note = [
+      `# ${PREFIX}converted-note`,
+      '',
+      '## A Section',
+      '',
+      '- one',
+      '- two',
+      '',
+      '```ts',
+      'const x = 1;',
+      '```',
+      '',
+      '![[diagram.png]]',
+      '',
+      '![remote](https://cdn.example.com/p.png)',
+      '',
+    ].join('\n');
+
+    let body: { title: string; contentJson: { content?: unknown }; warnings: string[] };
+
+    beforeAll(async () => {
       const res = await axios.post(
-        `${ADMIN_API}/import-markdown`,
-        {
-          content: `# ${PREFIX}imported\n\nSome markdown content here with enough words for read time.`,
-          language: 'EN',
-        },
+        `${ADMIN_API}/convert-markdown`,
+        { content: note },
         { headers: authHeaders(adminToken) }
       );
-      expect(res.status).toBe(201);
-      expect(res.data.id).toBeDefined();
+      expect(res.status).toBe(200);
+      body = res.data;
+    });
+
+    it('does NOT create a post (stateless transform)', async () => {
+      const list = await axios.get(ADMIN_API, { headers: authHeaders(adminToken) });
+      const titles = list.data.data.map((p: { title: string }) => p.title);
+      expect(titles).not.toContain(`${PREFIX}converted-note`);
+    });
+
+    it('extracts the H1 as the title (stripped from the body)', () => {
+      expect(body.title).toBe(`${PREFIX}converted-note`);
+    });
+
+    it('converts the body into editor JSON with h2, list, and code-block nodes', () => {
+      const types = collectTypes(body.contentJson?.content);
+      expect(types.has('heading')).toBe(true);
+      expect(types.has('bulletList')).toBe(true);
+      expect(types.has('codeBlock')).toBe(true);
+      const headings = collectHeadings(body.contentJson?.content);
+      expect(headings.some((h) => h.attrs?.level === 2)).toBe(true);
+    });
+
+    it('drops all images (no image node survives) and warns', () => {
+      const types = collectTypes(body.contentJson?.content);
+      expect(types.has('image')).toBe(false);
+      expect(JSON.stringify(body.contentJson)).not.toContain('example.com');
+      expect(body.warnings.join(' ')).toMatch(/image.*skipped/i);
+    });
+
+    it('rejects content with no h1 and no explicit title (400)', async () => {
+      try {
+        await axios.post(
+          `${ADMIN_API}/convert-markdown`,
+          { content: 'body without any heading' },
+          { headers: authHeaders(adminToken) }
+        );
+        fail('Expected 400');
+      } catch (err) {
+        expect((err as AxiosError).response?.status).toBe(400);
+      }
+    });
+
+    it('returns 401 without auth', async () => {
+      try {
+        await axios.post(`${ADMIN_API}/convert-markdown`, { content: '# x\n\ny' });
+        fail('Expected 401');
+      } catch (err) {
+        expect((err as AxiosError).response?.status).toBe(401);
+      }
     });
   });
 
@@ -147,7 +260,7 @@ describe('BlogPost API', () => {
       await cleanupTestPosts();
 
       // Create and publish two posts
-      const res1 = await axios.post(ADMIN_API, validPayload({ title: `${PREFIX}published-1`, status: 'PUBLISHED' }), {
+      await axios.post(ADMIN_API, validPayload({ title: `${PREFIX}published-1`, status: 'PUBLISHED' }), {
         headers: authHeaders(adminToken),
       });
       await axios.post(
