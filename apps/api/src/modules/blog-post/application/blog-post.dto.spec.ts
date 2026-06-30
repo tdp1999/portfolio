@@ -3,7 +3,7 @@ import {
   UpdateBlogPostSchema,
   BlogPostQuerySchema,
   PublicBlogPostQuerySchema,
-  ImportMarkdownSchema,
+  ConvertMarkdownSchema,
 } from './blog-post.dto';
 
 const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
@@ -142,17 +142,21 @@ describe('PublicBlogPostQuerySchema', () => {
   });
 });
 
-describe('ImportMarkdownSchema', () => {
-  it('requires content', () => {
-    expect(ImportMarkdownSchema.safeParse({}).success).toBe(false);
+describe('ConvertMarkdownSchema', () => {
+  it('requires non-empty content', () => {
+    expect(ConvertMarkdownSchema.safeParse({}).success).toBe(false);
+    expect(ConvertMarkdownSchema.safeParse({ content: '' }).success).toBe(false);
   });
 
-  it('allows missing title (cover still required)', () => {
-    const r = ImportMarkdownSchema.safeParse({ content: '# Title\n\nbody', featuredImageId: COVER_ID });
-    expect(r.success).toBe(true);
+  it('allows missing title', () => {
+    expect(ConvertMarkdownSchema.safeParse({ content: '# Title\n\nbody' }).success).toBe(true);
   });
 
-  it('PST-011: rejects missing featuredImageId', () => {
-    expect(ImportMarkdownSchema.safeParse({ content: '# Title\n\nbody' }).success).toBe(false);
+  it('accepts an explicit title', () => {
+    expect(ConvertMarkdownSchema.safeParse({ content: 'body', title: 'Explicit' }).success).toBe(true);
+  });
+
+  it('is a stateless transform — does not require a cover', () => {
+    expect(ConvertMarkdownSchema.safeParse({ content: '# Title\n\nbody' }).success).toBe(true);
   });
 });
