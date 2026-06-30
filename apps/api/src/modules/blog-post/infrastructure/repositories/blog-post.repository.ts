@@ -251,7 +251,10 @@ export class BlogPostRepository implements IBlogPostRepository {
   }
 
   async slugExists(slug: string, excludeId?: string): Promise<boolean> {
-    const where: Prisma.BlogPostWhereInput = { slug };
+    // Slug uniqueness is among ACTIVE posts only — soft-deleted rows don't hold a
+    // slug. Without this filter, restoring a post would detect its own still-present
+    // (soft-deleted) row and always 409 (see RestorePostHandler).
+    const where: Prisma.BlogPostWhereInput = { slug, deletedAt: null };
     if (excludeId) {
       where.id = { not: excludeId };
     }

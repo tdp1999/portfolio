@@ -228,7 +228,10 @@ export class ProjectRepository implements IProjectRepository {
   }
 
   async slugExists(slug: string, excludeId?: string): Promise<boolean> {
-    const where: Prisma.ProjectWhereInput = { slug };
+    // Slug uniqueness is among ACTIVE projects only — soft-deleted rows don't hold
+    // a slug. Without this filter, restoring a project would detect its own
+    // still-present (soft-deleted) row and always 409 (see RestoreProjectHandler).
+    const where: Prisma.ProjectWhereInput = { slug, deletedAt: null };
     if (excludeId) {
       where.id = { not: excludeId };
     }
