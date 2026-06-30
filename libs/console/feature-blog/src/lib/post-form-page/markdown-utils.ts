@@ -1,43 +1,10 @@
-export interface ConvertResult {
-  content: string;
-  warnings: string[];
-}
-
 /**
- * Converts common Obsidian-flavored markdown syntax to standard markdown.
- * Flags missing image embeds and local image paths as warnings.
+ * NOTE: Obsidian→Markdown conversion (`convertObsidianMarkdown`,
+ * `extractTitleFromMarkdown`) moved to the BE importer module
+ * (`apps/api/.../blog-post/import/obsidian-import.util.ts`) in task 318 — it is
+ * the sole owner of the legacy Markdown→document path and must not ship to the
+ * console runtime bundle. Only the preview renderer below remains here.
  */
-export function convertObsidianMarkdown(raw: string): ConvertResult {
-  const warnings: string[] = [];
-  let content = raw;
-
-  // ==highlight== -> <mark>highlight</mark>
-  content = content.replace(/==([^=]+)==/g, '<mark>$1</mark>');
-
-  // > [!note] / > [!warning] etc -> blockquote (strip callout marker)
-  content = content.replace(/>\s*\[!\w+\]\s*\n?/g, '> ');
-
-  // ![[image.png]] -> flagged as missing
-  const embedMatches = content.match(/!\[\[([^\]]+)\]\]/g);
-  if (embedMatches) {
-    warnings.push(`${embedMatches.length} Obsidian image embed(s) found (![[...]]) — upload manually via image button`);
-    content = content.replace(/!\[\[([^\]]+)\]\]/g, '<!-- missing image: $1 -->');
-  }
-
-  // Local image paths: ![alt](./path.png) or ![alt](/path.png) or relative without http(s)
-  const localImageRegex = /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g;
-  const localImages = content.match(localImageRegex);
-  if (localImages) {
-    warnings.push(`${localImages.length} image(s) have local paths — upload manually via image button`);
-  }
-
-  return { content, warnings };
-}
-
-export function extractTitleFromMarkdown(content: string): string | null {
-  const match = content.match(/^\s*#\s+(.+)$/m);
-  return match ? match[1].trim() : null;
-}
 
 /**
  * Basic markdown preview renderer. Lightweight; handles headings, code, images,

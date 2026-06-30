@@ -16,14 +16,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthenticatedRequest } from '../../../shared/types';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
-import {
-  CreatePostCommand,
-  UpdatePostCommand,
-  DeletePostCommand,
-  RestorePostCommand,
-  ImportMarkdownCommand,
-} from '../application/commands';
-import { ListPostsQuery, GetPostByIdQuery } from '../application/queries';
+import { CreatePostCommand, UpdatePostCommand, DeletePostCommand, RestorePostCommand } from '../application/commands';
+import { ListPostsQuery, GetPostByIdQuery, ConvertMarkdownQuery } from '../application/queries';
+import type { ConvertMarkdownResultDto } from '../application/blog-post.dto';
 
 @Controller('admin/blog')
 @UseGuards(JwtAccessGuard, RoleGuard)
@@ -51,11 +46,12 @@ export class BlogPostAdminController {
     return { id };
   }
 
-  @Post('import-markdown')
-  @HttpCode(HttpStatus.CREATED)
-  async importMarkdown(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<{ id: string }> {
-    const id = await this.commandBus.execute(new ImportMarkdownCommand(body, req.user.id));
-    return { id };
+  // Stateless transform — converts Markdown to editor JSON for the console to
+  // prefill the editor. Does NOT create a post (the author Saves via POST / above).
+  @Post('convert-markdown')
+  @HttpCode(HttpStatus.OK)
+  async convertMarkdown(@Body() body: unknown): Promise<ConvertMarkdownResultDto> {
+    return this.queryBus.execute(new ConvertMarkdownQuery(body));
   }
 
   @Put(':id')

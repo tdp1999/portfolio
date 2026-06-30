@@ -5,7 +5,8 @@ import {
   BlogPostListResponse,
   CreateBlogPostPayload,
   UpdateBlogPostPayload,
-  ImportMarkdownPayload,
+  ConvertMarkdownPayload,
+  ConvertMarkdownResult,
   BlogCategoryRef,
   BlogTagRef,
   ListBlogPostsParams,
@@ -49,8 +50,8 @@ export class BlogService {
     return this.api.post<{ success: boolean }>(`/admin/blog/${id}/restore`, {});
   }
 
-  importMarkdown(data: ImportMarkdownPayload) {
-    return this.api.post<{ id: string }>('/admin/blog/import-markdown', data);
+  convertMarkdown(data: ConvertMarkdownPayload) {
+    return this.api.post<ConvertMarkdownResult>('/admin/blog/convert-markdown', data);
   }
 
   listAllCategories() {

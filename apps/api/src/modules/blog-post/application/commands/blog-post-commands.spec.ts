@@ -14,7 +14,6 @@ import { CreatePostCommand, CreatePostHandler } from './create-post.command';
 import { UpdatePostCommand, UpdatePostHandler } from './update-post.command';
 import { DeletePostCommand, DeletePostHandler } from './delete-post.command';
 import { RestorePostCommand, RestorePostHandler } from './restore-post.command';
-import { ImportMarkdownCommand, ImportMarkdownHandler, extractH1Title } from './import-markdown.command';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
 import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostProps } from '../../domain/blog-post.types';
@@ -287,44 +286,6 @@ describe('BlogPost Commands', () => {
     it('throws when not found', async () => {
       repo.findByIdIncludeDeleted.mockResolvedValue(null);
       await expect(handler().execute(new RestorePostCommand(POST_ID, USER_ID))).rejects.toThrow();
-    });
-  });
-
-  // ---------- ImportMarkdownCommand ----------
-  describe('ImportMarkdownHandler', () => {
-    const handler = () => new ImportMarkdownHandler(repo);
-
-    it('extracts title from h1', () => {
-      expect(extractH1Title('# My Title\n\nbody')).toBe('My Title');
-      expect(extractH1Title('no heading here')).toBeNull();
-    });
-
-    it('imports markdown with h1 heading as DRAFT', async () => {
-      const id = await handler().execute(
-        new ImportMarkdownCommand({ content: '# Imported\n\nbody', featuredImageId: COVER_ID }, USER_ID)
-      );
-      expect(id).toBe(POST_ID);
-      const arg = repo.add.mock.calls[0][0];
-      expect(arg.entity.title).toBe('Imported');
-      expect(arg.entity.status).toBe('DRAFT');
-    });
-
-    it('imports with explicit title when no h1', async () => {
-      await handler().execute(
-        new ImportMarkdownCommand({ title: 'Manual', content: 'no heading body', featuredImageId: COVER_ID }, USER_ID)
-      );
-      const arg = repo.add.mock.calls[0][0];
-      expect(arg.entity.title).toBe('Manual');
-    });
-
-    it('throws when no h1 and no explicit title', async () => {
-      await expect(
-        handler().execute(new ImportMarkdownCommand({ content: 'body without heading' }, USER_ID))
-      ).rejects.toThrow();
-    });
-
-    it('throws on empty content', async () => {
-      await expect(handler().execute(new ImportMarkdownCommand({ content: '' }, USER_ID))).rejects.toThrow();
     });
   });
 });

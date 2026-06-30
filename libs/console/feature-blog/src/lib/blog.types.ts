@@ -103,8 +103,13 @@ export interface UpdateBlogPostPayload {
   metaDescription?: string | null;
 }
 
-export interface ImportMarkdownPayload {
-  title?: string;
+export interface ConvertMarkdownPayload {
   content: string;
-  language?: BlogLanguage;
+  title?: string;
+}
+
+export interface ConvertMarkdownResult {
+  title: string;
+  contentJson: EditorDocument;
+  warnings: string[];
 }

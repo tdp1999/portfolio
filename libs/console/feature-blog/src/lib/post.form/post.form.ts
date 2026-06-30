@@ -121,6 +121,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
   // ui state
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly importing = signal(false);
 
   // lookups
   readonly categories = signal<BlogCategoryRef[]>([]);
@@ -170,6 +171,46 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     const plain = editorDocToPlainText(this.form.controls.content.value);
     this.form.controls.excerpt.setValue(plain.slice(0, LIMITS.DESCRIPTION_SHORT_MAX));
     this.form.controls.excerpt.markAsDirty();
+  }
+
+  /**
+   * Obsidian/Markdown import (create mode). Reads the chosen `.md` file and asks
+   * the BE to convert it to editor JSON, then **prefills the editor** (title +
+   * body) — it does NOT save. The author reviews and clicks Save through the
+   * normal create flow (cover, validation, persistence happen there). Image
+   * warnings are surfaced as a toast.
+   */
+  onImportFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file
+    if (!file) return;
+
+    this.importing.set(true);
+    file
+      .text()
+      .then((content) => {
+        this.blogService.convertMarkdown({ content }).subscribe({
+          next: (res) => {
+            this.importing.set(false);
+            // Prefill the title only if the field is still empty (don't clobber
+            // a title the author already typed); always load the body.
+            if (!this.form.controls.title.value.trim()) {
+              this.form.controls.title.setValue(res.title);
+            }
+            this.form.controls.content.setValue(res.contentJson);
+            this.form.controls.content.markAsDirty();
+            this.dirty.set(true);
+            if (res.warnings.length) this.toast.info(res.warnings.join('\n'));
+            this.toast.success('Markdown loaded — review and Save');
+          },
+          error: () => this.importing.set(false),
+        });
+      })
+      .catch(() => {
+        this.importing.set(false);
+        this.toast.error('Could not read the selected file');
+      });
   }
 
   openFeaturedImagePicker(): void {

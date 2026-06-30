@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
+import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { nonEmptyPartial, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } from '@portfolio/shared/validation/zod';
@@ -91,18 +92,27 @@ export const PublicBlogPostQuerySchema = PaginatedQuerySchema.extend({
 
 export type PublicBlogPostQueryDto = z.infer<typeof PublicBlogPostQuerySchema>;
 
-// --- Import Markdown ---
+// --- Convert Markdown ---
+// Stateless transform: Obsidian/Markdown → editor JSON for the console to prefill
+// the editor. It does NOT create a post — the author reviews and Saves through the
+// normal create flow (cover, validation, persistence happen there). So no
+// `featuredImageId`/`status` here.
 
-export const ImportMarkdownSchema = z.object({
-  title: TitleSchema.optional(),
+export const ConvertMarkdownSchema = z.object({
   content: ContentSchema,
-  language: LanguageSchema.default('EN'),
-  // PST-011: cover required at import time too — markdown imports must pick a
-  // cover before the post can be created, same rule as the create form.
-  featuredImageId: z.uuid(),
+  title: TitleSchema.optional(),
 });
 
-export type ImportMarkdownDto = z.infer<typeof ImportMarkdownSchema>;
+export type ConvertMarkdownDto = z.infer<typeof ConvertMarkdownSchema>;
+
+export type ConvertMarkdownResultDto = {
+  /** H1 (or explicit) title, for prefilling the title field. */
+  title: string;
+  /** Converted editor document, for prefilling the body editor. */
+  contentJson: EditorDocument;
+  /** Non-fatal conversion notes (e.g. images that must be re-inserted). */
+  warnings: string[];
+};
 
 // --- Response shapes ---
 

@@ -11,6 +11,20 @@
         }}
       </p>
     </div>
+
+    @if (!isEditMode()) {
+      <input #mdInput type="file" accept=".md,.markdown,text/markdown" hidden (change)="onImportFile($event)" />
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="importing()"
+        (click)="mdInput.click()"
+        matTooltip="Load an Obsidian/Markdown note into the editor (review, then Save)."
+      >
+        <mat-icon>upload_file</mat-icon>
+        {{ importing() ? 'Importing…' : 'Import Markdown' }}
+      </button>
+    }
   </div>
 
   <div class="post-form-page__body">
