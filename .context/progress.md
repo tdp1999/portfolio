@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (336 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (353 tasks)
 
 ## Completed Milestones
 
@@ -378,7 +378,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 316-rte-landing-image-ref-hydrate (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `hydrateImageRefs` rebuilds URL-free figures into the `landing-figure` primitive (responsive Cloudinary srcset + mono-caps `FIG. 0X` caption + deleted-media fallback), `[allowMedia]` widens the read-time sanitize whitelist. Interim string-transform path (prose-block-renderer epic supersedes later). Verified live: landing SSR first-paint contains the hydrated figure.
 
 ### Phase 8 — Markdown short fields + Obsidian importer
-- [ ] 317-rte-markdown-pipe-and-parser-cleanup (S) — **in-progress** (7/8 ACs): re-scoped from the `marked` pipe to a shared **declarative** inline-markdown parser (`parseInlineRuns`/`parseInlineParagraphs` in landing/shared/util) — no `marked`, no `[innerHTML]`. Consolidated home.stack + selected-work; deleted `parseStackIntro`/`parseItalicRuns`. `parseBioLong` kept (312 blocked). Visual-parity AC pending. deps: 313, 314, 285b (decoupled from blocked 312)
+- [x] 317-rte-markdown-pipe-and-parser-cleanup (S) — done 2026-06-29 (shipped `8de4355`; archived → tasks-done/epic-portfolio-rich-text-editor/). Re-scoped from the `marked` pipe to a shared **declarative** inline-markdown parser (`parseInlineRuns`/`parseInlineParagraphs` in landing/shared/util) — no `marked`, no `[innerHTML]`. Consolidated home.stack + selected-work; deleted `parseStackIntro`/`parseItalicRuns`. `parseBioLong` kept (312 blocked). deps: 313, 314, 285b (decoupled from blocked 312)
 - [ ] 318-rte-obsidian-importer-migration (S) — deps: 307, 310, 317
 
 ### Cross-cutting — Migration script
@@ -412,12 +412,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 341     |
+| Done (archived)           | 353     |
 | In Progress               | 1       |
-| Pending                   | 18      |
+| Pending                   | 12      |
 | Blocked                   | 1       |
-| **Total Created**         | **360** |
+| **Total Created**         | **367** |
 | Epics completed           | 48      |
+
+_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (14): blocked 312; in-progress 361 (content-authoring master tracker); pending 318, 319, 323, 324, 326, 328, 340, 341, 363, 380, 381, 382._
 
 ## Notes
 

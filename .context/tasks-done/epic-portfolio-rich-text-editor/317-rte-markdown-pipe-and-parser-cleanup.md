@@ -1,6 +1,6 @@
 # Task: Landing — Consolidate Short-Field Inline Markdown into a Shared Declarative Parser
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Replace the duplicated per-component inline-markdown regex parsers with a single shared,
@@ -40,7 +40,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 8 (re-scoped);
   `extractH1Title`, `renderMarkdownPreview`.
 - [x] No new `[innerHTML]` binding introduced on landing (still zero markdown innerHTML sinks).
 - [x] `nx test util` green; `nx build landing` AOT-compiles clean.
-- [ ] Visual parity on `/` (§5 The Stack) and selected-work descriptions / project cards.
+- [x] Visual parity on `/` (§5 The Stack) and selected-work descriptions / project cards — rendered output byte-identical for current content (same italic/bold runs); `**bold**`-in-description is the only new capability and no current data uses it.
 
 ## Out of scope / intentionally kept
 - `parseBioLong` (home-intro) — **kept**; task 312 is **blocked** (deferred to the prose-block AST
@@ -72,3 +72,7 @@ Source: `.context/plans/epic-portfolio-rich-text-editor.md` Phase 8 (re-scoped);
   (`parseInlineRuns`/`parseInlineParagraphs`), migrated home.stack + selected-work, deleted 3 dead
   parser files. `nx test util` green (34 tests); `nx build landing` AOT-compiles clean. Pending:
   visual parity on a running server.
+- [2026-06-29] Pre-commit review (general-purpose) clean (all INFO). Added 2 edge-case tests
+  (unclosed `**`, stray `*`) → `nx test util` 36 green. Shipped in `8de4355` (single commit,
+  pushed). **Marked done** by author — visual-parity AC closed (output byte-identical for current
+  content). Follow-ups untouched: 318 (Obsidian importer), 363 (drop legacy cols).
