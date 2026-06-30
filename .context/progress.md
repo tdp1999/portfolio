@@ -379,10 +379,10 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ### Phase 8 — Markdown short fields + Obsidian importer
 - [x] 317-rte-markdown-pipe-and-parser-cleanup (S) — done 2026-06-29 (shipped `8de4355`; archived → tasks-done/epic-portfolio-rich-text-editor/). Re-scoped from the `marked` pipe to a shared **declarative** inline-markdown parser (`parseInlineRuns`/`parseInlineParagraphs` in landing/shared/util) — no `marked`, no `[innerHTML]`. Consolidated home.stack + selected-work; deleted `parseStackIntro`/`parseItalicRuns`. `parseBioLong` kept (312 blocked). deps: 313, 314, 285b (decoupled from blocked 312)
-- [ ] 318-rte-obsidian-importer-migration (S) — deps: 307, 310, 317
+- [x] 318-rte-obsidian-importer-migration (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). deps: 307, 310, 317
 
 ### Cross-cutting — Migration script
-- [ ] 319-rte-migrate-editor-script (S) — deps: 305, 307, 310
+- [x] 319-rte-migrate-editor-script (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). `pnpm migrate:editor` escape hatch: metadata-driven scan of all rich-text rows, re-canonicalizes below-latest fields via `RichTextService` (migrate→HTML→sanitize), idempotent, `--dry-run`/`--module=` flags, direct Prisma (no server). deps: 305, 307, 310
 
 ### Contract — drop legacy prose columns
 - [ ] 363-rte-drop-legacy-prose-columns (M) — deps: 305, 311, 312, 313, 314, 317, 318, 319. Includes the 311 dual-field cleanup (all 5 field groups).
@@ -412,14 +412,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 353     |
+| Done (archived)           | 355     |
 | In Progress               | 1       |
-| Pending                   | 12      |
+| Pending                   | 11      |
 | Blocked                   | 1       |
 | **Total Created**         | **367** |
 | Epics completed           | 48      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (14): blocked 312; in-progress 361 (content-authoring master tracker); pending 318, 319, 323, 324, 326, 328, 340, 341, 363, 380, 381, 382._
+_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (13): blocked 312; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 363, 380, 381, 382, 383._
 
 ## Notes
 
