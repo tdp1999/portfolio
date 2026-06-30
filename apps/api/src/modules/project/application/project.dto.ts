@@ -11,7 +11,7 @@ import { LIMITS } from '@portfolio/shared/validation';
 import { PROJECT_LINK_TYPES } from '../domain/value-objects';
 // Import the schema file directly (not the barrel) so the zod schema doesn't pull
 // in RichTextService → the ESM document-engine-core, which breaks node-env specs.
-import { BilingualEditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
+import { BilingualEditorDocumentSchema } from '../../rich-text/rich-text.schema';
 
 // --- TechnicalHighlightSchema ---
 

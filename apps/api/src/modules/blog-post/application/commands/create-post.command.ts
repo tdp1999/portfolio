@@ -7,7 +7,7 @@ import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
 import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { CreateBlogPostSchema } from '../blog-post.dto';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 import { wrapContentByLanguage } from '../blog-content-rich.util';
 
 export class CreatePostCommand extends BaseCommand {

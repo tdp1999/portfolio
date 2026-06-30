@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import { TranslatableSchema, OptionalTranslatableSchema } from '@portfolio/shared/utils';
-import { BilingualEditorDocumentSchema } from '../../../shared/rich-text';
+import { BilingualEditorDocumentSchema } from '../../../rich-text';
 
 export const UpdateProfileIdentitySchema = z.object({
   fullName: TranslatableSchema,

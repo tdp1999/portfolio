@@ -8,7 +8,7 @@ import {
   IContactMessageRepository,
 } from '../../application/ports/contact-message.repository.port';
 import { ContactMessage } from '../../domain/entities/contact-message.entity';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { ContactMessageMapper } from '../mapper/contact-message.mapper';
 
 @Injectable()

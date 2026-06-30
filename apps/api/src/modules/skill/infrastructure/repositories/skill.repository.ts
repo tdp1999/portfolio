@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ConflictError, ErrorLayer, NotFoundError, SkillErrorCode } from '@portfolio/shared/errors';
 import { PaginatedResult } from '@portfolio/shared/types';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { ISkillRepository, SkillFindAllOptions } from '../../application/ports/skill.repository.port';
 import { Skill } from '../../domain/entities/skill.entity';
 import { SkillCategory, SkillTier } from '../../domain/skill.types';

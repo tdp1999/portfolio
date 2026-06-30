@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { ProfileRepository } from './profile.repository';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import {
   Identity,
   WorkAvailability,

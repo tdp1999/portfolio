@@ -7,7 +7,7 @@ import { ExcerptSchema, MetaDescriptionSchema, MetaTitleSchema, TitleSchema } fr
 import { POST_STATUS } from '../domain/blog-post.types';
 // Import the schema file directly (not the barrel) so the zod schema doesn't pull
 // in RichTextService → ESM document-engine-core, which breaks node-env specs.
-import { EditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
+import { EditorDocumentSchema } from '../../rich-text/rich-text.schema';
 
 const ContentSchema = z.string().min(1);
 

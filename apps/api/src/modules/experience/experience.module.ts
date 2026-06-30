@@ -20,7 +20,7 @@ import {
 } from './application/queries';
 import { SkillModule } from '../skill/skill.module';
 import { MediaModule } from '../media/media.module';
-import { RichTextModule } from '../shared/rich-text';
+import { RichTextModule } from '../rich-text';
 
 const commandHandlers = [
   CreateExperienceHandler,

@@ -11,7 +11,7 @@ import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
-import { DomainExceptionFilter, InfrastructureExceptionFilter } from './infrastructure/filters/domain-exception.filter';
+import { DomainExceptionFilter, InfrastructureExceptionFilter } from './shared/filters/domain-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -8,7 +8,7 @@ import { IProjectRepository } from '../ports/project.repository.port';
 import { PROJECT_REPOSITORY } from '../project.token';
 import { CreateProjectSchema } from '../project.dto';
 import { ICreateProjectPayload } from '../../domain/project.types';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 import { mapHighlightDtoToInput } from '../project-highlight.mapper';
 
 export class CreateProjectCommand extends BaseCommand {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import {
   IProfileRepository,
   ProfileWithMedia,

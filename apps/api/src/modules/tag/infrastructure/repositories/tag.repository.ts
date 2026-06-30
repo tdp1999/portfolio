@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginatedResult } from '@portfolio/shared/types';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { ITagRepository, TagFindAllOptions } from '../../application/ports/tag.repository.port';
 import { Tag } from '../../domain/entities/tag.entity';
 import { TagMapper } from '../mapper/tag.mapper';

@@ -188,7 +188,7 @@ Exit: contract published in tsconfig path mappings, console can `provide(RTE_EDI
 
 ### Phase 4 — BE rich-text service
 
-`apps/api/src/modules/shared/rich-text/`:
+`apps/api/src/modules/rich-text/`:
 
 - `RichTextService.toCanonicalForm(json: EditorDocument): { json: EditorDocument, html: string, schemaVersion: number }` — runs `migrateDoc`, `generateHTML`, then `sanitizeRichText` (imported from `@portfolio/shared/features/rte-core`).
 - `RICH_TEXT_WHITELIST` + `sanitizeRichText` imported from `rte-core` (the Angular-free lib), shared with the FE renderer pipe. The BE imports them without bundling Angular.

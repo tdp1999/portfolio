@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { IdentifierValue, PaginatedResult } from '@portfolio/shared/types';
 import { ConflictError, ErrorLayer, ProjectErrorCode } from '@portfolio/shared/errors';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import {
   IProjectRepository,
   ProjectCreateInput,

@@ -1,6 +1,6 @@
 // Mock the rich-text barrel with a factory so the real RichTextService — which
 // imports the ESM `document-engine-core` — is never loaded into this node-env spec.
-jest.mock('../../../shared/rich-text', () => ({
+jest.mock('../../../rich-text', () => ({
   RichTextService: class {
     toCanonicalFormTranslatable = jest.fn().mockResolvedValue({
       json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },

@@ -1,5 +1,5 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+import { PrismaService } from '../../shared/prisma/prisma.service';
 
 @Controller('health')
 export class HealthController {

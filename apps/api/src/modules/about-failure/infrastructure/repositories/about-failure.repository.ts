@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { IAboutFailureRepository } from '../../application/ports/about-failure.repository.port';
 import { AboutFailure } from '../../domain/entities/about-failure.entity';
 import { AboutFailureMapper } from '../mapper/about-failure.mapper';

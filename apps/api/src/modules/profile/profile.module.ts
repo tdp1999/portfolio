@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth';
 import { UserModule } from '../user';
 import { MediaModule } from '../media/media.module';
-import { RichTextModule } from '../shared/rich-text';
+import { RichTextModule } from '../rich-text';
 import { PROFILE_REPOSITORY } from './application/profile.token';
 import {
   UpdateAvatarHandler,

@@ -1,6 +1,6 @@
 import { PostStatus } from '@prisma/client';
 import { DashboardRepository } from './dashboard.repository';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 
 describe('DashboardRepository', () => {
   let repo: DashboardRepository;

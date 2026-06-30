@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { User } from '../../domain/entities/user.entity';
 import { UserRepository } from './user.repository';
 

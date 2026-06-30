@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostStatus } from '@prisma/client';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { IDashboardRepository } from '../../application/ports/dashboard.repository.port';
 import { DashboardStatsDto } from '../../application/dashboard.dto';
 

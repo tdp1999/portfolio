@@ -6,7 +6,7 @@ import { BaseCommand } from '../../../../shared/cqrs/base.command';
 import { IBlogPostRepository } from '../ports/blog-post.repository.port';
 import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { UpdateBlogPostSchema } from '../blog-post.dto';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 import { wrapContentByLanguage } from '../blog-content-rich.util';
 
 export class UpdatePostCommand extends BaseCommand {

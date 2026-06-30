@@ -18,7 +18,7 @@ import { SKILL_REPOSITORY } from '../../../skill/application/skill.token';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { MEDIA_REPOSITORY } from '../../../media/application/media.token';
 import { CreateExperienceSchema } from '../experience.dto';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 
 export class CreateExperienceCommand extends BaseCommand {
   constructor(

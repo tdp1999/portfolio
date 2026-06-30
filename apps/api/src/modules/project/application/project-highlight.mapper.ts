@@ -1,6 +1,6 @@
 import { TechnicalHighlightInput } from './ports/project.repository.port';
 import { ProjectHighlightDto } from '../infrastructure/mapper/project.mapper';
-import { RichTextService } from '../../shared/rich-text';
+import { RichTextService } from '../../rich-text';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 
 /** A highlight as it arrives in the create/update DTO (identical schema). */

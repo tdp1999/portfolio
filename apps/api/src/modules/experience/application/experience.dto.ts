@@ -22,7 +22,7 @@ import {
 import { LIMITS } from '@portfolio/shared/validation';
 // Import the schema file directly (not the barrel) so the zod schema doesn't pull
 // in RichTextService → ESM document-engine-core, which breaks node-env specs.
-import { BilingualEditorDocumentSchema } from '../../shared/rich-text/rich-text.schema';
+import { BilingualEditorDocumentSchema } from '../../rich-text/rich-text.schema';
 
 const LinkSchema = z.object({
   label: requiredShortText(LIMITS.NAME_MAX),

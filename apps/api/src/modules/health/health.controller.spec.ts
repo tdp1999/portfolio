@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { HealthController } from './health.controller';
-import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+import { PrismaService } from '../../shared/prisma/prisma.service';
 
 describe('HealthController', () => {
   let controller: HealthController;

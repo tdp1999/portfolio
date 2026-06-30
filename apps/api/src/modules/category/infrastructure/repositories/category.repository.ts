@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginatedResult } from '@portfolio/shared/types';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { ICategoryRepository, CategoryFindAllOptions } from '../../application/ports/category.repository.port';
 import { Category } from '../../domain/entities/category.entity';
 import { CategoryMapper } from '../mapper/category.mapper';

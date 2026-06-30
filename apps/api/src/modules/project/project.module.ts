@@ -2,7 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user';
-import { RichTextModule } from '../shared/rich-text';
+import { RichTextModule } from '../rich-text';
 import { MediaModule } from '../media/media.module';
 import { ProjectController } from './presentation/project.controller';
 import { ProjectRepository } from './infrastructure/repositories/project.repository';

@@ -24,13 +24,13 @@ import { IProfileRepository } from '../ports/profile.repository.port';
 import { IMediaRepository } from '../../../media/application/ports/media.repository.port';
 import { Profile } from '../../domain/entities/profile.entity';
 import { IProfileProps } from '../../domain/profile.types';
-import type { RichTextService } from '../../../shared/rich-text';
+import type { RichTextService } from '../../../rich-text';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 
 // UpdateProfileIdentityHandler imports RichTextService, which pulls in the ESM-only
 // document-engine-core and the jsdom-backed sanitizer. Mock the service module so
 // this suite never loads that tree; the identity tests inject their own stub.
-jest.mock('../../../shared/rich-text/rich-text.service', () => ({
+jest.mock('../../../rich-text/rich-text.service', () => ({
   RichTextService: class {
     toCanonicalForm = jest.fn();
     toCanonicalFormTranslatable = jest.fn();

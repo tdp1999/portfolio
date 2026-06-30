@@ -6,7 +6,7 @@ import { CategoryModule } from '../category';
 import { TagModule } from '../tag';
 import { ProfileModule } from '../profile';
 import { MediaModule } from '../media/media.module';
-import { RichTextModule } from '../shared/rich-text';
+import { RichTextModule } from '../rich-text';
 import { BlogPostPublicController } from './presentation/blog-post-public.controller';
 import { BlogPostAdminController } from './presentation/blog-post-admin.controller';
 import { BlogPostRepository } from './infrastructure/repositories/blog-post.repository';

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ConflictError, ErrorLayer, ExperienceErrorCode } from '@portfolio/shared/errors';
 import { PaginatedResult } from '@portfolio/shared/types';
-import { PrismaService } from '../../../../infrastructure/prisma';
+import { PrismaService } from '../../../../shared/prisma';
 import { IExperienceRepository, ExperienceFindAllOptions } from '../../application/ports/experience.repository.port';
 import { Experience } from '../../domain/entities/experience.entity';
 import { ExperienceMapper } from '../mapper/experience.mapper';

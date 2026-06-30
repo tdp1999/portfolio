@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import request from 'supertest';
 import { AppModule } from './app.module';
-import { PrismaService } from '../infrastructure/prisma';
+import { PrismaService } from '../shared/prisma';
 import { EMAIL_SERVICE } from '../modules/email';
 import { GoogleStrategy } from '../modules/auth/infrastructure/strategies/google.strategy';
 
@@ -124,18 +124,14 @@ describe('AppController Integration Tests', () => {
     });
 
     it('should include CORS headers for allowed origin', async () => {
-      const response = await request(corsApp.getHttpServer())
-        .get('/')
-        .set('Origin', 'http://localhost:4300');
+      const response = await request(corsApp.getHttpServer()).get('/').set('Origin', 'http://localhost:4300');
 
       expect(response.headers['access-control-allow-origin']).toBe('http://localhost:4300');
       expect(response.headers['access-control-allow-credentials']).toBe('true');
     });
 
     it('should not include CORS headers for disallowed origin', async () => {
-      const response = await request(corsApp.getHttpServer())
-        .get('/')
-        .set('Origin', 'http://evil.com');
+      const response = await request(corsApp.getHttpServer()).get('/').set('Origin', 'http://evil.com');
 
       expect(response.headers['access-control-allow-origin']).toBeUndefined();
     });

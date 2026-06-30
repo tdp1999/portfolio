@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { ValidationError, NotFoundError, ErrorLayer, ProfileErrorCode } from '@portfolio/shared/errors';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { BaseCommand } from '../../../../shared/cqrs/base.command';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 import { IProfileRepository } from '../ports/profile.repository.port';
 import { PROFILE_REPOSITORY } from '../profile.token';
 import { Identity } from '../../domain/value-objects';

@@ -8,7 +8,7 @@ import { IProjectRepository, TechnicalHighlightInput } from '../ports/project.re
 import { PROJECT_REPOSITORY } from '../project.token';
 import { UpdateProjectSchema } from '../project.dto';
 import { IUpdateProjectPayload } from '../../domain/project.types';
-import { RichTextService } from '../../../shared/rich-text';
+import { RichTextService } from '../../../rich-text';
 import { mapHighlightDtoToInput, mapStoredHighlightToInput } from '../project-highlight.mapper';
 
 export class UpdateProjectCommand extends BaseCommand {

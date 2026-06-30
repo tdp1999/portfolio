@@ -1,6 +1,6 @@
 // Mock the rich-text barrel with a factory so the real RichTextService — which
 // imports the ESM `document-engine-core` — is never loaded into this node-env spec.
-jest.mock('../../shared/rich-text', () => ({ RichTextService: class {} }));
+jest.mock('../../rich-text', () => ({ RichTextService: class {} }));
 
 import { mapHighlightDtoToInput, mapStoredHighlightToInput, type HighlightDto } from './project-highlight.mapper';
 import type { ProjectHighlightDto } from '../infrastructure/mapper/project.mapper';

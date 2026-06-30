@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from '../infrastructure/prisma';
+import { PrismaModule } from '../shared/prisma';
 import { UserModule } from '../modules/user';
 import { AuthModule } from '../modules/auth';
 import { EmailModule } from '../modules/email';
