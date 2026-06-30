@@ -46,6 +46,7 @@
     "prisma:migrate:deploy": "prisma migrate deploy --config=apps/api/prisma/prisma.config.ts",
     "prisma:studio": "prisma studio --config=apps/api/prisma/prisma.config.ts",
     "prisma:seed": "tsx --tsconfig apps/api/tsconfig.json apps/api/prisma/seed.ts",
+    "migrate:editor": "tsx --tsconfig apps/api/tsconfig.json apps/api/scripts/migrate-rich-text.ts",
     "postinstall": "prisma generate --config=apps/api/prisma/prisma.config.ts",
     "prepare": "husky"
   },
