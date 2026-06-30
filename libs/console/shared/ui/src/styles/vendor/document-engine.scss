@@ -70,6 +70,202 @@ console-rich-text-editor[data-rte-mode='list'] .tiptap {
   min-height: 6rem;
 }
 
+// -- Editor content prose ----------------------------------------------------
+// The published engine stylesheet (`@…/document-engine-angular/styles`) ships
+// only chrome — toolbar, buttons, select, the editor wrapper. The *content*
+// prose (blockquote, code, hr, img, ordered-list counters) lives ONLY in the
+// engine's demo app (`apps/document-engine/.../scss/components/_editor.scss`)
+// and is not part of the lib, so the editing surface here renders unstyled.
+//
+// This block does two things:
+//   1. ports the demo's engine-coupled rules (structure unchanged, shadcn vars
+//      swapped to console tokens) — incl. `<ol data-list-style-type>` counters
+//      the consumer can't re-derive (Tailwind preflight kills `list-style`, so
+//      `list-style: decimal` would be wrong);
+//   2. adds the heading / bullet-list / spacing layer the engine is MISSING —
+//      even document-engine's own editor renders these flat (its preflight
+//      resets `<h1>`–`<h6>` to body size, `NotumHeading` emits a class-less
+//      `<h2>`, and bullets get no marker). Without this the surface is unusable.
+//
+// Both belong in an opt-in, token-driven prose theme shipped from the lib —
+// tracked as document-engine DE-015. When that lands, drop this block and
+// `@use` it. Scoped to the editing surface (`.tiptap`) only; the public
+// read-path has its own prose.
+console-rich-text-editor .tiptap {
+  // --- Block rhythm: preflight stripped all margins; restore a vertical flow.
+  > * + * {
+    margin-top: 0.75rem;
+  }
+
+  // --- Headings (missing from the engine) -----------------------------------
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text);
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
+  h4 {
+    font-size: 1.125rem;
+  }
+  // Extra air above a heading that follows other content.
+  * + :is(h1, h2, h3, h4) {
+    margin-top: 1.5rem;
+  }
+
+  // --- Inline marks ---------------------------------------------------------
+  strong {
+    font-weight: 600;
+  }
+  em {
+    font-style: italic;
+  }
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  // --- Bullet lists (missing from the engine) -------------------------------
+  ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  ul ul {
+    list-style: circle;
+  }
+  ul ul ul {
+    list-style: square;
+  }
+  li + li {
+    margin-top: 0.25rem;
+  }
+  li > p {
+    margin: 0;
+  }
+
+  blockquote {
+    border-left: 4px solid var(--color-border);
+    padding-left: 1rem;
+    color: var(--color-text-muted);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  img {
+    display: block;
+    height: auto;
+    margin: 1rem 0;
+    max-width: 100%;
+    width: 100%;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--color-primary);
+    }
+  }
+
+  code {
+    background-color: var(--color-surface-alt);
+    border-radius: 0.4rem;
+    color: var(--color-text);
+    font-size: 0.85em;
+    padding: 0.25em 0.3em;
+  }
+
+  pre {
+    background-color: var(--color-surface-alt);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  // Ordered lists render their marker via CSS counters keyed off the engine's
+  // `data-list-style-type` attribute (decimal / lower-alpha / lower-roman …).
+  ol[data-list-style-type] {
+    counter-reset: list-counter;
+    list-style: none;
+    padding-left: 3rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    > li {
+      position: relative;
+      display: block;
+
+      &:not(:first-child) {
+        margin-top: 0.25rem;
+      }
+
+      &::before {
+        position: absolute;
+        left: -2rem;
+        width: 2rem;
+        display: inline-block;
+        text-align: left;
+        font-variant-numeric: tabular-nums;
+        font-weight: normal;
+      }
+    }
+
+    // Reset the counter on each nested level so sub-lists restart.
+    ol {
+      counter-reset: list-counter;
+    }
+  }
+
+  ol[data-list-style-type='decimal'] > li::before {
+    counter-increment: list-counter;
+    content: counter(list-counter) '.';
+  }
+  ol[data-list-style-type='lower-alpha-dot'] > li::before {
+    counter-increment: list-counter;
+    content: counter(list-counter, lower-alpha) '.';
+  }
+  ol[data-list-style-type='lower-alpha-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-alpha) ')';
+  }
+  ol[data-list-style-type='lower-roman-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-roman) ')';
+  }
+
+  // List items wrap their text in a <p>; kill its block margin so rows stay tight.
+  ol p {
+    margin: 0;
+  }
+
+  // --- Placeholder (empty editor / empty line) ------------------------------
+  p.is-editor-empty:first-child::before,
+  .is-empty::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--color-text-muted);
+  }
+}
+
 // In the All view two locale editors stack as flex siblings. The block-type /
 // list dropdown is an in-flow absolutely-positioned element, so the open dropdown
 // of the upper editor must paint above the lower editor. The engine toolbar is
