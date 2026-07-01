@@ -3,7 +3,9 @@
 > The micro-convention for naming and locating files **inside** a library: filename grammar, role
 > vocabulary, folder rules, and the lint/generator enforcement that keeps it from drifting.
 > For the macro picture (Nx lib types, scope/type tags, module boundaries) see
-> `patterns-architecture.md`. For Angular template/signal syntax see `angular-style-guide.md`.
+> `patterns-architecture.md`; for how a **shared-ui library** is laid out internally (bucket
+> taxonomy, barrel, style organization) see `patterns-lib-structure.md`. For Angular
+> template/signal syntax see `angular-style-guide.md`.
 >
 > **Scope:** Frontend-first (`apps/landing`, `apps/console`, `libs/landing/**`, `libs/console/**`,
 > `libs/shared/**`). The NestJS API already follows DDD/hexagonal naming and is documented as-is in
@@ -295,22 +297,12 @@ and any types other libs consume. Everything else is private to the lib.
 
 ### shared/ui lib (`libs/<scope>/shared/ui`)
 
-- Layout is **flat under `/src`** (no `/src/lib/` nesting) — standardized across landing and
-  console. (Nx generators default to `/src/lib`; the generator config in §11 overrides this.)
-- One folder per component; the component is self-named (no entity prefix — the component *is* the
-  entity): `button/button.ts`, `card/card.ts`.
-- Cross-cutting buckets allowed here only: `styles/`, `tokens/`, `motion/`, `theme/`, `shell/`.
-
-```
-libs/landing/shared/ui/src/
-├── button/      button.ts  button.scss  button.spec.ts  index.ts
-├── card/        card.ts    card.scss    index.ts
-├── icon/        icon.ts    icon.types.ts  providers/…  index.ts
-├── theme/       theme.service.ts  theme-toggle.ts  index.ts
-├── tokens/      colors.scss  typography.scss  index.scss
-├── styles/      _prose.scss  index.scss
-└── index.ts     ← barrel re-exporting every component
-```
+> **Moved.** The shared-ui internal layout is a **macro** (library-level) concern and lives in its
+> own doc: **`patterns-lib-structure.md`** — the bucket taxonomy (`components/ directives/ pipes/
+> services/ styles/`), the public-API barrel, style organization, and project granularity. This doc
+> (`patterns-file-structure.md`) governs only the **micro** conventions — filenames, role
+> vocabulary, and folder-per-component **within a feature** — which still apply *inside* each
+> shared-ui `components/<x>/` folder.
 
 ### data-access lib (`libs/<scope>/shared/data-access`)
 

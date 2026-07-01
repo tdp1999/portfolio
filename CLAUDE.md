@@ -51,6 +51,7 @@ Use these skills for specific workflows. More will be added over time.
 - `vision.md` - Project goals and philosophy
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
 - `patterns-file-structure.md` - **Read before naming or moving any FE file/folder, or creating a component/service/lib.** Filename grammar (`<entity>.[variant].<role|kind>.[spec].<ext>`, dot=structural / dash=word-joiner), role vocabulary, folder-per-component rule, file↔class↔selector mapping, lint/generator enforcement
+- `patterns-lib-structure.md` - **Read before touching any `shared/ui` library layout.** Bucket taxonomy (`components/ directives/ pipes/ services/ styles/`), primary-artifact placement rule, compound-component rule, single public-API barrel, style organization (`styles/_index.scss` + includePaths), one shared-ui lib per scope
 - `patterns-error-handling.md` - **Read before adding error codes or wiring submit forms.** BE throw → FE toast/inline-error flow, dictionary, ServerErrorDirective procedure
 - `design/` - Design system (foundations, landing, console, shared)
 - `design/console-cookbook.md` - **Read before writing console HTML/SCSS.** Spacing decision table, typography class picker, surface/text pairings, pre-report checklist
