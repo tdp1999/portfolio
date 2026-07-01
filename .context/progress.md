@@ -251,6 +251,7 @@
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
 - [ ] 380-style-architecture-standardization (M) — pending (standalone)
+- [ ] 384-test-lint-cleanup-sweep (M) — full-monorepo sweep + fix of pre-existing test/lint failures surfaced during 380 verification (standalone)
 
 ## Pending — Portfolio E5 Implementation (broken down 2026-05-02)
 
@@ -385,7 +386,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 319-rte-migrate-editor-script (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). `pnpm migrate:editor` escape hatch: metadata-driven scan of all rich-text rows, re-canonicalizes below-latest fields via `RichTextService` (migrate→HTML→sanitize), idempotent, `--dry-run`/`--module=` flags, direct Prisma (no server). deps: 305, 307, 310
 
 ### Contract — drop legacy prose columns
-- [ ] 363-rte-drop-legacy-prose-columns (M) — deps: 305, 311, 312, 313, 314, 317, 318, 319. Includes the 311 dual-field cleanup (all 5 field groups).
+- [~] 363-rte-drop-legacy-prose-columns (M) — **blocked** (2026-06-30). All-five drop gated: profile (312 blocked), blog (read-time/presenter cutover needed), experience (no render-swap task — decision required). Project render-safe but needs its 311 BE/FE cleanup. Held to drop all five at once once unblocked. deps: 305, 311, 312, 313, 314, 317, 318, 319.
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
 
@@ -419,7 +420,7 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 | **Total Created**         | **367** |
 | Epics completed           | 48      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (13): blocked 312; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 363, 380, 381, 382, 383._
+_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (13): blocked 312, 363; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 380, 381, 382, 383._
 
 ## Notes
 

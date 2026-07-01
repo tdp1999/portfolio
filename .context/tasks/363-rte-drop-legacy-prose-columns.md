@@ -1,6 +1,15 @@
 # Task 363: Rich-Text — Drop Legacy Prose Columns (Contract)
 
-## Status: pending
+## Status: blocked
+
+## Blocked On (verified 2026-06-30)
+A single contract migration dropping all five legacy field groups is the locked AC, but 3 of 5 groups still have **live runtime reads** off the legacy columns. Dropping now breaks landing. Prerequisites before this task can run:
+
+1. **Profile** — land **task 312** (home-intro per-paragraph render off `bioLongJson`). Today `home.intro.ts:33` / `home.ts:72` read legacy `Profile.bioLong` via `parseBioLong`. Task 312 is itself `blocked`.
+2. **Blog** — cutover read-time: landing `blog.detail.ts:141` `wordCount(p.content)` → API `readTimeMinutes` (or derive from `contentHtml`); drop `content` from the public presenter (`blog-post.presenter.ts:40,109`) + DTO; move entity `calculateReadTime` off legacy `content`. `BlogPost.content` is `NOT NULL`, so the FE plain-text derivation and the column go together.
+3. **Experience** — **DECISION REQUIRED + missing task.** Landing renders legacy string arrays (`about.experience.util.ts:18-19`, `.html:180-198`). No RTE render-swap task exists. Either (a) create an experience landing render-swap task, or (b) declare experience fields non-rich → then the `*Json` triplet from 311 S4 is what gets dropped, not the legacy side (reverses drop direction for this group).
+
+**Project** group is render-safe today (landing reads rich HTML) but still needs its task-311 dual-field BE/FE cleanup before its columns can drop. If we later choose to split, Project is the only group shippable now.
 
 ## Goal
 Complete the expand/contract migration started in task 305 by dropping the old string/markdown columns once every reader consumes the new `*Json` / `*Html` columns.
@@ -69,6 +78,7 @@ Grepped every runtime read of a legacy prose column (BE presenter/repo + landing
 **Task 318 note:** the importer writes the full triplet (`contentJson/Html/SchemaVersion`) AND keeps raw markdown in legacy `content` — required because read-time still derives from it (entity `calculateReadTime` + landing `wordCount`). 318 adds no new legacy debt; it makes import match create/update.
 
 ## Progress Log
+- [2026-06-30] Status → **blocked**. Re-verified all 5 groups against current code (post-318): audit holds exactly. Profile reads legacy via `parseBioLong` (312 still blocked); blog `wordCount(p.content)` + presenter `content:40,109` still live; experience renders legacy string arrays, no render-swap task. Project render-safe but BE still plumbs legacy fields. Recorded prerequisites in "Blocked On". User decision (2026-06-30): hold 363, unblock prerequisites first, then drop all five at once.
 - [2026-06-30] Recorded live legacy-read audit (above) during task 318. Blog content is the only group near-droppable; profile/experience blocked; flagged the missing experience render-swap task.
 - [2026-06-28] Clear-field check (pre-commit review flag): NOT a regression. `toBilingualRichTextPayload` / `buildBioLongJson` gate on `null` (`??`), not emptiness — a cleared editor emits a present-but-empty doc, so it is sent and the BE wipes the field. Only a never-touched field with no doc is omitted (nothing to clear). Locked by `rich-text.validator.spec.ts` ("sends a present-but-empty doc so a cleared field can be wiped"). No action needed here.
 - [2026-06-28] Added "311 dual-field cleanup" checklist — task 311 is now COMPLETE (S1 Profile.bioLong, S2 Project body/highlights, S3 Blog content, S4 Experience description/responsibilities/highlights) and all five groups dual-write legacy + `*Json`. This task gates removal of the legacy side after the landing render swaps (312–314, + an experience render swap) land. Blog adds a wrinkle: legacy `content` is NOT NULL and the FE derives plain text to fill it — that derivation and the column go together here.
