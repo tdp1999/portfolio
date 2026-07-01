@@ -1,0 +1,117 @@
+<!-- Top level: walk the document's block array. -->
+<ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: nodes() }" />
+
+<!-- Render a list of nodes (comment-only container → children stay direct DOM children). -->
+<ng-template #kids let-nodes="nodes">
+  @for (node of nodes; track $index) {
+    <ng-container [ngTemplateOutlet]="one" [ngTemplateOutletContext]="{ node: node }" />
+  }
+</ng-template>
+
+<!-- Render a single node: registered block → text → structural → fallback. -->
+<ng-template #one let-node="node">
+  @let renderer = rendererFor(node.type);
+  @if (renderer) {
+    <ng-container *ngComponentOutlet="renderer.component; inputs: inputsFor(renderer, node)" />
+  } @else if (node.type === 'text') {
+    <ng-container
+      [ngTemplateOutlet]="inline"
+      [ngTemplateOutletContext]="{ marks: node.marks ?? [], text: node.text ?? '' }"
+    />
+  } @else {
+    @switch (node.type) {
+      @case ('paragraph') {
+        <p><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" /></p>
+      }
+      @case ('heading') {
+        @switch (headingLevel(node)) {
+          @case (3) {
+            <h3 [id]="headingIdFor(node)">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            </h3>
+          }
+          @case (4) {
+            <h4 [id]="headingIdFor(node)">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            </h4>
+          }
+          @default {
+            <h2 [id]="headingIdFor(node)">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            </h2>
+          }
+        }
+      }
+      @case ('blockquote') {
+        <blockquote>
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </blockquote>
+      }
+      @case ('bulletList') {
+        <ul>
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </ul>
+      }
+      @case ('orderedList') {
+        <ol>
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </ol>
+      }
+      @case ('listItem') {
+        <li><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" /></li>
+      }
+      @case ('codeBlock') {
+        <pre><code>{{ codeText(node) }}</code></pre>
+      }
+      @case ('hardBreak') {
+        <br />
+      }
+      @default {
+        @if (isDev) {
+          <span class="rte-unknown-block" data-rte-unknown>⚠ unknown block: {{ node.type }}</span>
+        }
+      }
+    }
+  }
+</ng-template>
+
+<!-- Render a text node's marks as nested real elements — peel one mark per level.
+     Base case = the raw text. Link marks are forced target/rel here (D5b). Boundary
+     whitespace Angular collapses around {{ text }} is harmless in flow content;
+     whitespace-significant <pre> is handled separately via codeText (see #one). -->
+<ng-template #inline let-marks="marks" let-text="text">
+  @if (marks.length === 0) {
+    {{ text }}
+  } @else {
+    @let rest = marks.slice(1);
+    @switch (marks[0].type) {
+      @case ('bold') {
+        <strong
+          ><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }"
+        /></strong>
+      }
+      @case ('italic') {
+        <em><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }" /></em>
+      }
+      @case ('underline') {
+        <u><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }" /></u>
+      }
+      @case ('strike') {
+        <s><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }" /></s>
+      }
+      @case ('code') {
+        <code
+          ><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }"
+        /></code>
+      }
+      @case ('link') {
+        <a [href]="href(marks[0])" target="_blank" rel="noopener nofollow"
+          ><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }"
+        /></a>
+      }
+      @default {
+        <ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }" />
+      }
+    }
+  }
+</ng-template>
