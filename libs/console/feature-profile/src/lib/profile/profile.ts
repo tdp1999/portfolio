@@ -12,6 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import {
+  HasUnsavedChanges,
   LongFormLayout,
   MediaPickerDataSource,
   ScrollspyRail,
@@ -19,8 +20,7 @@ import {
   SpinnerOverlay,
 } from '@portfolio/console/shared/ui';
 import { extractApiError } from '@portfolio/console/shared/util';
-import { HasUnsavedChanges } from '@portfolio/console/shared/util';
-import { SidebarState } from '@portfolio/shared/ui/sidebar';
+import { SidebarState } from '@portfolio/shared/ui';
 import { ProfileAdminContactAddressSection } from '../sections/profile-admin-contact-address.section/profile-admin-contact-address.section';
 import { ProfileContactSection } from '../sections/profile-contact.section/profile-contact.section';
 import { ProfileIdentitySection } from '../sections/profile-identity.section/profile-identity.section';

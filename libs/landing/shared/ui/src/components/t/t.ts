@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import type { Locale } from '@portfolio/shared/types';
-import { LandingLocaleService } from '../../locale';
+import { LandingLocaleService } from '../../services/locale';
 
 /**
  * Bilingual content primitive. Replaces inline `@if (locale() === 'vi')` blocks

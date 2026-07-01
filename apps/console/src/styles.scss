@@ -12,13 +12,9 @@
 @use 'base/components' as component-classes;
 @use 'material/icons' as icon-overrides;
 
-/* Console Material component token overrides (loaded as module, emitted in source order) */
-@use '../../../libs/console/shared/ui/src/styles/material/overrides' as console-material;
-
-/* Rich-text editor (document-engine): engine stylesheet + console-token theming
-   + focus/dropdown integration fixes. Lives with console's other non-component
-   styles (material/, patterns/) in the console shared-ui lib. */
-@use '../../../libs/console/shared/ui/src/styles/vendor/document-engine';
+/* Console shared-ui styles barrel — Material overrides + patterns + RTE (document-engine)
+   engine stylesheet & theming. See libs/console/shared/ui/src/styles/_index.scss. */
+@use '../../../libs/console/shared/ui/src/styles' as console-ui;
 
 html {
   color-scheme: light dark;

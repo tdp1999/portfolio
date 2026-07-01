@@ -30,7 +30,7 @@ import {
 } from '@portfolio/landing/shared/data-access';
 import { LandingUrlStateService } from '@portfolio/landing/shared/util';
 import { asyncResource } from '@portfolio/shared/async-state';
-import { TranslatablePipe } from '@portfolio/shared/ui/pipes';
+import { TranslatablePipe } from '@portfolio/shared/ui';
 import { QUERY, VIEW_OPTIONS, type ProjectRow, type ViewMode } from './projects.types';
 import { initialViewMode, isViewMode, parseCsvSet, yearOf } from './projects.util';
 

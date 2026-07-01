@@ -1,5 +1,5 @@
 /* Landing base typography — element-level defaults bound to landing tokens.
-   Mirrors the shape of `libs/shared/ui/styles/src/base/typography.scss` but
+   Mirrors the shape of `libs/shared/ui/src/styles/base/typography.scss` but
    uses --landing-* vars so landing has no dependency on the shared --text-*
    fluid scale. Bare <h1>..<h6>/<p>/<small>/<code> in landing pages render
    from this file; component-scoped classes still override as needed. */

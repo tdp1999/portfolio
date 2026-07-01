@@ -22,6 +22,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import {
+  HasUnsavedChanges,
+  onBeforeUnload,
   LongFormLayout,
   MonthYearPicker,
   ScrollspyRail,
@@ -36,8 +38,6 @@ import {
 import {
   baselineFor,
   FormErrorPipe,
-  HasUnsavedChanges,
-  onBeforeUnload,
   scrollToFirstError,
   ServerErrorDirective,
   toBilingualRichTextPayload,

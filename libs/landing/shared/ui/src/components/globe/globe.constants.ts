@@ -1,5 +1,5 @@
 import type { COBEOptions } from 'cobe';
-import type { LandingTheme } from '../../theme';
+import type { LandingTheme } from '../../services/theme';
 import type { GlobeCity } from './globe.types';
 
 /** Fixed backing-buffer size — decouples cobe init from CSS layout timing.

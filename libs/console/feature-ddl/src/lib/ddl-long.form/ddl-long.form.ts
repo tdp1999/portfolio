@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import {
   FormSnapshotDirective,
   LongFormLayout,
+  HasUnsavedChanges,
   ScrollspyRail,
   SectionCard,
   SectionDescriptor,
@@ -15,7 +16,6 @@ import {
   ToastService,
   TranslatableGroup,
 } from '@portfolio/console/shared/ui';
-import { HasUnsavedChanges } from '@portfolio/console/shared/util';
 
 /**
  * Demo page for the long-form chassis (ADR-013 / ADR-014).

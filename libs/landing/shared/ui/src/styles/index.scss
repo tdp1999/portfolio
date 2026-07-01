@@ -20,8 +20,10 @@
 @use 'base/focus' as focus;
 @use 'tokens/responsive' as responsive-tokens;
 
-/* Landing-specific tokens (E4 lock — ink/slate/indigo, Newsreader display scale, motion) */
-@use '../tokens' as landing-tokens;
+/* Landing-specific tokens (E4 lock — ink/slate/indigo, Newsreader display scale, motion).
+   Local `styles/tokens/` — its palette file is `palette.scss` (not `colors.scss`) so the bare
+   `tokens/colors` above still resolves to the GLOBAL foundation via includePaths, not this folder. */
+@use 'tokens' as landing-tokens;
 
 /* Landing element-level typography (h1..h6, p, small, code…) */
 @use 'base-typography' as landing-base-typography;
@@ -32,8 +34,8 @@
 /* Lightbox hover affordance — `.lightbox-enabled` figures zoom slightly on hover. */
 @use 'lightbox-affordance' as landing-lightbox-affordance;
 
-/* Motion library — one file per effect. See libs/landing/shared/ui/src/motion/. */
-@use '../motion/motion' as landing-motion;
+/* Motion library — one file per effect. See styles/motion/. */
+@use 'motion' as landing-motion;
 
 /* Tailwind CSS v3 directives */
 @tailwind base;

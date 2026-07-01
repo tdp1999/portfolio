@@ -1,0 +1,7 @@
+/* Console shared-ui styles barrel.
+   One entry point for the app's global stylesheet — emits, in order:
+     • material/overrides → Material component token overrides + patterns (crud/detail)
+     • vendor/document-engine → RTE engine stylesheet + console-token theming
+   Consumed by apps/console/src/styles.scss via a single `@use`. */
+@forward 'material/overrides';
+@forward 'vendor/document-engine';

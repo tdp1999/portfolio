@@ -85,15 +85,15 @@
       "id": "console-light",
       "system": "console",
       "mode": "light",
-      "layers": [{ "file": "libs/shared/ui/styles/src/tokens/colors.scss", "selector": ":root" }]
+      "layers": [{ "file": "libs/shared/ui/src/styles/tokens/colors.scss", "selector": ":root" }]
     },
     {
       "id": "console-dark",
       "system": "console",
       "mode": "dark",
       "layers": [
-        { "file": "libs/shared/ui/styles/src/tokens/colors.scss", "selector": ":root" },
-        { "file": "libs/shared/ui/styles/src/themes/dark.scss", "selector": ".dark" }
+        { "file": "libs/shared/ui/src/styles/tokens/colors.scss", "selector": ":root" },
+        { "file": "libs/shared/ui/src/styles/themes/dark.scss", "selector": ".dark" }
       ]
     }
   ],

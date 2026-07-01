@@ -21,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ChipBoolean,
+  HasUnsavedChanges,
   MediaPickerDialogComponent,
   RichTextEditor,
   SectionCard,
@@ -35,7 +36,6 @@ import {
   baselineFor,
   editorDocToPlainText,
   FormErrorPipe,
-  HasUnsavedChanges,
   richTextRequiredValidator,
   ServerErrorDirective,
 } from '@portfolio/console/shared/util';

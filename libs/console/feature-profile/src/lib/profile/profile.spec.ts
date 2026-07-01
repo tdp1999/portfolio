@@ -3,7 +3,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { API_CONFIG, ApiService, MediaService } from '@portfolio/console/shared/data-access';
 import { ToastService } from '@portfolio/console/shared/ui';
-import { SidebarState } from '@portfolio/shared/ui/sidebar';
+import { SidebarState } from '@portfolio/shared/ui';
 import { ProfileService } from '../profile.service';
 import { ProfileAdminResponse } from '../profile.types';
 import Profile from './profile';

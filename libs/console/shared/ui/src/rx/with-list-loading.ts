@@ -1,7 +1,7 @@
 import { WritableSignal } from '@angular/core';
 import { defer, finalize, MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { SKELETON_MIN_DURATION_MS, withMinDuration } from '@portfolio/console/shared/util';
-import { ProgressBarService } from '../loading-bar/progress-bar.service';
+import { ProgressBarService } from '../components/loading-bar/progress-bar.service';
 
 export interface ListLoadingOptions {
   /** When true, no skeleton — top progress bar shows for background refresh. */

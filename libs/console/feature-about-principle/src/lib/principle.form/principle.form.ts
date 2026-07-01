@@ -15,14 +15,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { ChipBoolean, SectionCard, SpinnerOverlay, StickySaveBar, ToastService } from '@portfolio/console/shared/ui';
 import {
-  FormErrorPipe,
+  ChipBoolean,
   HasUnsavedChanges,
-  ServerErrorDirective,
   onBeforeUnload,
-  scrollToFirstError,
-} from '@portfolio/console/shared/util';
+  SectionCard,
+  SpinnerOverlay,
+  StickySaveBar,
+  ToastService,
+} from '@portfolio/console/shared/ui';
+import { FormErrorPipe, ServerErrorDirective, scrollToFirstError } from '@portfolio/console/shared/util';
 import { AboutPrincipleService } from '../about-principle.service';
 import { ABOUT_PRINCIPLE_LIMITS, AdminAboutPrinciple } from '../about-principle.types';
 

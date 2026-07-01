@@ -27,7 +27,7 @@
         ],
         "styles": ["apps/console/src/styles.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/shared/ui/styles/src"]
+          "includePaths": ["libs/shared/ui/src/styles"]
         }
       },
       "configurations": {

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { unsavedChangesGuard } from '@portfolio/console/shared/util';
+import { unsavedChangesGuard } from '@portfolio/console/shared/ui';
 
 export const tagRoutes: Route[] = [
   {

@@ -22,10 +22,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import {
+  HasUnsavedChanges,
   LongFormLayout,
   MediaPickerDialogComponent,
   MediaPickerDataSource,
   MediaPickerDialogData,
+  onBeforeUnload,
   ScrollspyRail,
   SectionCard,
   SpinnerOverlay,
@@ -35,8 +37,6 @@ import {
 import {
   baselineFor,
   FormErrorPipe,
-  HasUnsavedChanges,
-  onBeforeUnload,
   scrollToFirstError,
   ServerErrorDirective,
   type MediaItem,

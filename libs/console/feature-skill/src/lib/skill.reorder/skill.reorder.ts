@@ -15,8 +15,13 @@ import { RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ProgressBarService, QuickLook, ToastService, withListLoading } from '@portfolio/console/shared/ui';
-import { type HasUnsavedChanges } from '@portfolio/console/shared/util';
+import {
+  type HasUnsavedChanges,
+  ProgressBarService,
+  QuickLook,
+  ToastService,
+  withListLoading,
+} from '@portfolio/console/shared/ui';
 import { finalize, firstValueFrom, forkJoin, of, switchMap } from 'rxjs';
 import { SkillService } from '../skill.service';
 import { SkillDetailCard } from '../skill.detail-card/skill.detail-card';

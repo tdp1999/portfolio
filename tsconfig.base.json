@@ -30,7 +30,6 @@
       "@portfolio/landing/feature-home": ["./libs/landing/feature-home/src/index.ts"],
       "@portfolio/shared/errors": ["./libs/shared/utils/errors/src/index.ts"],
       "@portfolio/shared/features/breakpoint-observer": ["./libs/shared/features/breakpoint-observer/src/index.ts"],
-      "@portfolio/shared/ui/sidebar": ["./libs/shared/ui/sidebar/src/index.ts"],
       "@portfolio/console/shared/ui": ["./libs/console/shared/ui/src/index.ts"],
       "@portfolio/console/shared/data-access": ["./libs/console/shared/data-access/src/index.ts"],
       "@portfolio/console/shared/util": ["./libs/console/shared/util/src/index.ts"],
@@ -55,7 +54,6 @@
       "@portfolio/console/feature-ddl": ["./libs/console/feature-ddl/src/index.ts"],
       "@portfolio/landing/feature-projects": ["libs/landing/feature-projects/src/index.ts"],
       "@portfolio/landing/feature-blog": ["libs/landing/feature-blog/src/index.ts"],
-      "@portfolio/shared/ui/pipes": ["libs/shared/ui/pipes/src/index.ts"],
       "@portfolio/shared/features/brand": ["libs/shared/features/brand/src/index.ts"],
       "@portfolio/shared/features/rte-core": ["libs/shared/features/rte-core/src/index.ts"],
       "@portfolio/shared/features/rte-core/constants": ["libs/shared/features/rte-core/src/lib/rte.constants.ts"],
@@ -63,7 +61,8 @@
       "@portfolio/shared/features/rte-contract": ["libs/shared/features/rte-contract/src/index.ts"],
       "@portfolio/shared/features/rte-tiptap": ["libs/shared/features/rte-tiptap/src/index.ts"],
       "@portfolio/shared/features/rte-renderer": ["libs/shared/features/rte-renderer/src/index.ts"],
-      "@portfolio/shared/features/rte-textarea": ["libs/shared/features/rte-textarea/src/index.ts"]
+      "@portfolio/shared/features/rte-textarea": ["libs/shared/features/rte-textarea/src/index.ts"],
+      "@portfolio/shared/ui": ["libs/shared/ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

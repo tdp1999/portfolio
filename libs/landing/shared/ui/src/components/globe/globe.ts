@@ -13,8 +13,8 @@ import {
   viewChild,
 } from '@angular/core';
 import type { Globe as CobeGlobe } from 'cobe';
-import { LandingThemeService } from '../../theme';
-import type { LandingTheme } from '../../theme';
+import { LandingThemeService } from '../../services/theme';
+import type { LandingTheme } from '../../services/theme';
 import {
   AUTO_ROTATE_RESUME_MS,
   AUTO_ROTATE_STEP,

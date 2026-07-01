@@ -20,11 +20,11 @@
   "overrides": [
     {
       "files": [
-        "libs/shared/ui/styles/src/base/_breakpoints.scss",
-        "libs/shared/ui/styles/src/base/_prefers.scss",
-        "libs/shared/ui/styles/src/base/_viewport.scss",
-        "libs/shared/ui/styles/src/base/_input-modality.scss",
-        "libs/shared/ui/styles/src/base/_focus.scss"
+        "libs/shared/ui/src/styles/base/_breakpoints.scss",
+        "libs/shared/ui/src/styles/base/_prefers.scss",
+        "libs/shared/ui/src/styles/base/_viewport.scss",
+        "libs/shared/ui/src/styles/base/_input-modality.scss",
+        "libs/shared/ui/src/styles/base/_focus.scss"
       ],
       "rules": {
         "media-feature-name-disallowed-list": null,

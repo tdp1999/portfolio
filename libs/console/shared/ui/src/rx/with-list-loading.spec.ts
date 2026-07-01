@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { ProgressBarService } from '../loading-bar/progress-bar.service';
+import { ProgressBarService } from '../components/loading-bar/progress-bar.service';
 import { withListLoading } from './with-list-loading';
 
 describe('withListLoading', () => {

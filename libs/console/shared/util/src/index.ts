@@ -5,10 +5,4 @@ export * from './lib/types';
 export * from './lib/validators';
 export { withMinDuration } from './lib/rx/with-min-duration';
 export { scrollToFirstError } from './lib/scroll-to-first-error';
-export {
-  unsavedChangesGuard,
-  onBeforeUnload,
-  UnsavedChangesDialog,
-  type HasUnsavedChanges,
-  type UnsavedChangesResult,
-} from './lib/unsaved-changes.dialog/unsaved-changes.dialog';
+// unsaved-changes.dialog (component + guard) moved to console-shared-ui — see ADR-021.

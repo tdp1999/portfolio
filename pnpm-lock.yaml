@@ -369,6 +369,9 @@ importers:
       jest-preset-angular:
         specifier: ~16.0.0
         version: 16.0.0(a21a9e0d2fcbb4738ce4f0fb494dce5d)
+      jest-util:
+        specifier: ^30.0.2
+        version: 30.2.0
       jsonc-eslint-parser:
         specifier: ^2.1.0
         version: 2.4.2
