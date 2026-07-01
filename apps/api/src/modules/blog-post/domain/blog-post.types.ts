@@ -23,6 +23,10 @@ export interface IBlogPostProps extends IBaseAuditProps {
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
   contentSchemaVersion: number;
+  // Canonical PortableDocument per locale (prose-block renderer epic, D3 adapter) —
+  // the AST renderer's read source. Derived from `contentJson` at write-time; null
+  // until the next save populates it.
+  contentCanonical: TranslatableJson | null;
   readTimeMinutes: number | null;
 
   // Status & Display

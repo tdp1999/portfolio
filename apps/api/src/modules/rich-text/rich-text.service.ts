@@ -6,23 +6,35 @@ import {
   migrateDoc,
 } from '@phuong-tran-redoc/document-engine-core';
 import { sanitizeRichText, type EditorDocument } from '@portfolio/shared/features/rte-core';
+import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { BadRequestError, CommonErrorCode, ErrorLayer } from '@portfolio/shared/errors';
+import { tiptapToCanonical } from './rich-text.adapter';
 
-/** A single field's canonical form: versioned JSON source + sanitized HTML cache. */
+/**
+ * A single field's canonical form.
+ *
+ * - `json` — E's Tiptap document, migrated to the latest E schema. This stays the
+ *   **re-edit source** (console loads it back into the editor), so it is lossless.
+ * - `canonical` — our engine-agnostic {@link PortableDocument} (via the D3 adapter),
+ *   the AST renderer's read-path source. Decoupled from E and semantic-only.
+ * - `html` — the sanitized HTML cache (fallback path: RSS/llms.txt/OG/no-JS).
+ */
 export interface CanonicalRichText {
   json: EditorDocument;
+  canonical: PortableDocument;
   html: string;
   schemaVersion: number;
 }
 
 /**
  * A bilingual field's canonical form — shaped to drop straight into the
- * `*Json` / `*Html` / `*SchemaVersion` storage triple. One schema version covers
- * both locales (both are migrated to the latest on the way through).
+ * `*Json` / `*Canonical` / `*Html` / `*SchemaVersion` storage columns. One schema
+ * version covers both locales (both are migrated to the latest on the way through).
  */
 export interface CanonicalRichTextTranslatable {
   json: TranslatableRichText;
+  canonical: TranslatableJson;
   html: TranslatableJson;
   schemaVersion: number;
 }
@@ -77,7 +89,12 @@ export class RichTextService {
       );
     }
 
-    return { json, html, schemaVersion: LATEST_SCHEMA_VERSION };
+    // D3 adapter: normalize E's Tiptap JSON → our canonical PortableDocument. Pure
+    // and total (never throws — unsupported nodes/marks are dropped), so it runs
+    // after the migrate/HTML steps that own the error handling above.
+    const canonical = tiptapToCanonical(json);
+
+    return { json, canonical, html, schemaVersion: LATEST_SCHEMA_VERSION };
   }
 
   /**
@@ -98,6 +115,9 @@ export class RichTextService {
       // `EditorDocument` doesn't carry an index signature, so widen to the opaque
       // `RichTextDocument` (Record<string, unknown>) the storage column expects.
       json: { en: en.json, vi: vi.json } as unknown as TranslatableRichText,
+      // Canonical PortableDocument per locale — the AST renderer's read source. The
+      // `TranslatableJson` column type is a plain `{ en, vi }` JSON bag.
+      canonical: { en: en.canonical, vi: vi.canonical } as unknown as TranslatableJson,
       html: { en: en.html, vi: vi.html },
       schemaVersion: LATEST_SCHEMA_VERSION,
     };

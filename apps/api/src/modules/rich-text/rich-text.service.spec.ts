@@ -61,6 +61,8 @@ describe('RichTextService', () => {
       expect(sanitize).toHaveBeenCalledWith('<p>raw</p>');
       expect(result).toEqual({
         json: { schemaVersion: 1, content: input.content },
+        // D3 adapter output: E's Tiptap doc normalized to our PortableDocument.
+        canonical: { schemaVersion: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] },
         html: '<p>cln</p>',
         schemaVersion: 1,
       });
@@ -120,6 +122,11 @@ describe('RichTextService', () => {
       });
       expect(result.html).toEqual({ en: '<p>en</p>', vi: '<p>vi</p>' });
       expect(result.schemaVersion).toBe(1);
+      // Both locales carry the normalized canonical PortableDocument.
+      expect(result.canonical).toEqual({
+        en: { schemaVersion: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hi' }] }] },
+        vi: { schemaVersion: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: 'chao' }] }] },
+      });
     });
 
     it('routes each locale through the sanitizer independently', async () => {

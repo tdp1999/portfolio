@@ -39,6 +39,10 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
     return this.props.contentSchemaVersion;
   }
 
+  get contentCanonical(): TranslatableJson | null {
+    return this.props.contentCanonical;
+  }
+
   get readTimeMinutes(): number | null {
     return this.props.readTimeMinutes;
   }
@@ -98,6 +102,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       contentJson: null,
       contentHtml: null,
       contentSchemaVersion: 1,
+      contentCanonical: null,
       readTimeMinutes: BlogPost.calculateReadTime(data.content),
       status: 'DRAFT',
       featured: data.featured ?? false,
@@ -169,7 +174,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
    * `RichTextService` produces; legacy `content` (plain text) is left untouched.
    */
   withContentRichText(
-    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
     userId: string
   ): BlogPost {
     return new BlogPost({
@@ -177,6 +182,7 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       contentJson: rich.json,
       contentHtml: rich.html,
       contentSchemaVersion: rich.schemaVersion,
+      contentCanonical: rich.canonical,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }

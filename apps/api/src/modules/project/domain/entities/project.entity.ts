@@ -65,6 +65,10 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     return this.props.bodySchemaVersion;
   }
 
+  get bodyCanonical(): TranslatableJson | null {
+    return this.props.bodyCanonical;
+  }
+
   get startDate(): Date {
     return this.props.startDate;
   }
@@ -121,6 +125,7 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       bodyJson: null,
       bodyHtml: null,
       bodySchemaVersion: 1,
+      bodyCanonical: null,
       startDate: data.startDate,
       endDate: data.endDate ?? null,
       status: 'DRAFT',
@@ -166,9 +171,10 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     });
   }
 
-  /** Set the body rich-text triple atomically (RTE write path, task 311). */
+  /** Set the body rich-text columns atomically (RTE write path, task 311; +canonical
+   *  from the prose-block epic). */
   withBodyRichText(
-    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
     userId: string
   ): Project {
     return new Project({
@@ -176,6 +182,7 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       bodyJson: rich.json,
       bodyHtml: rich.html,
       bodySchemaVersion: rich.schemaVersion,
+      bodyCanonical: rich.canonical,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }

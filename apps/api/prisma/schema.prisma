@@ -617,6 +617,10 @@ model Project {
   bodyJson          Json? @db.JsonB
   bodyHtml          Json? @db.JsonB
   bodySchemaVersion Int   @default(1)
+  // Prose-block renderer epic: engine-agnostic PortableDocument (D3 adapter), the
+  // AST renderer's read source. `bodyJson` (E's Tiptap JSON) stays the re-edit
+  // source; this is derived from it at write-time. Nullable → lazy-filled on next save.
+  bodyCanonical Json? @db.JsonB
 
   // Media
   thumbnailId String? @db.Uuid
@@ -716,6 +720,10 @@ model BlogPost {
   contentJson          Json? @db.JsonB
   contentHtml          Json? @db.JsonB
   contentSchemaVersion Int   @default(1)
+  // Prose-block renderer epic: engine-agnostic PortableDocument (D3 adapter), the
+  // AST renderer's read source. `contentJson` (E's Tiptap JSON) stays the re-edit
+  // source; this is derived from it at write-time. Nullable → lazy-filled on next save.
+  contentCanonical Json? @db.JsonB
 
   readTimeMinutes Int?
 

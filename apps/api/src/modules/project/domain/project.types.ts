@@ -41,6 +41,10 @@ export interface IProjectProps extends IBaseAuditProps {
   bodyJson: TranslatableRichText | null;
   bodyHtml: TranslatableJson | null;
   bodySchemaVersion: number;
+  // Canonical PortableDocument per locale (prose-block renderer epic, D3 adapter) —
+  // the AST renderer's read source. Derived from `bodyJson` at write-time; null until
+  // the next save populates it.
+  bodyCanonical: TranslatableJson | null;
 
   // Dates
   startDate: Date;

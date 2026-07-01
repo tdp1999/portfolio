@@ -46,6 +46,9 @@ interface FieldCols {
   json: string;
   html: string;
   version: string;
+  /** Optional canonical PortableDocument column (prose-block epic) — only the
+   *  AST-rendered fields (project.body, blog.content) have one. */
+  canonical?: string;
 }
 
 /** A model that carries one or more rich-text fields. */
@@ -57,11 +60,12 @@ interface ModuleSpec {
   fields: FieldCols[];
 }
 
-const field = (name: string): FieldCols => ({
+const field = (name: string, canonical?: string): FieldCols => ({
   name,
   json: `${name}Json`,
   html: `${name}Html`,
   version: `${name}SchemaVersion`,
+  canonical,
 });
 
 /** Every model with rich-text columns, in a stable processing order. */
@@ -72,13 +76,13 @@ const MODULES: ModuleSpec[] = [
     delegate: 'experience',
     fields: [field('description'), field('responsibilities'), field('highlights')],
   },
-  { key: 'project', delegate: 'project', fields: [field('body')] },
+  { key: 'project', delegate: 'project', fields: [field('body', 'bodyCanonical')] },
   {
     key: 'technical-highlight',
     delegate: 'technicalHighlight',
     fields: [field('challenge'), field('approach'), field('outcome')],
   },
-  { key: 'blog-post', delegate: 'blogPost', fields: [field('content')] },
+  { key: 'blog-post', delegate: 'blogPost', fields: [field('content', 'contentCanonical')] },
 ];
 
 interface Flags {
@@ -151,6 +155,7 @@ async function migrateModule(
         data[f.json] = canonical.json as unknown as Prisma.InputJsonValue;
         data[f.html] = canonical.html as unknown as Prisma.InputJsonValue;
         data[f.version] = canonical.schemaVersion;
+        if (f.canonical) data[f.canonical] = canonical.canonical as unknown as Prisma.InputJsonValue;
         touched.push(`${f.name} v${version}→v${canonical.schemaVersion}`);
       } catch (cause) {
         tally.errors += 1;

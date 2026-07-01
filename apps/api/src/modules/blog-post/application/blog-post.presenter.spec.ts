@@ -16,6 +16,7 @@ const baseProps: IBlogPostProps = {
   contentJson: null,
   contentHtml: null,
   contentSchemaVersion: 1,
+  contentCanonical: null,
   readTimeMinutes: 3,
   status: 'PUBLISHED',
   featured: true,

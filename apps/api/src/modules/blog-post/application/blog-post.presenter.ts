@@ -40,6 +40,7 @@ export class BlogPostPresenter {
       content: item.entity.content,
       contentJson: item.entity.contentJson,
       contentHtml: item.entity.contentHtml,
+      contentCanonical: item.entity.contentCanonical,
       contentSchemaVersion: item.entity.contentSchemaVersion,
       mediaRefs,
       metaTitle: item.entity.metaTitle,

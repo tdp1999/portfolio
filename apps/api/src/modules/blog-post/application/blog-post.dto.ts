@@ -153,6 +153,10 @@ export type BlogPostPublicDetailDto = BlogPostPublicListItemDto & {
   /** Rich-text storage for `content` (RTE epic Phase 2). Null until Phase 4. */
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
+  /** Canonical `PortableDocument` per locale (prose-block renderer epic) — the AST
+   *  render source. Null until the post is (re)saved through the editor; the landing
+   *  read-path falls back to `contentHtml` when null. */
+  contentCanonical: TranslatableJson | null;
   contentSchemaVersion: number;
   /** Resolved media for the `image-ref` blocks in `contentHtml`, keyed by
    *  `data-image-id` (RTE epic Phase 7, task 315). Empty when the body references

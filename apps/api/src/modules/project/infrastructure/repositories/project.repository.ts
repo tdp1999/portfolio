@@ -106,6 +106,7 @@ export class ProjectRepository implements IProjectRepository {
           bodyJson: (entity.bodyJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           bodyHtml: (entity.bodyHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           bodySchemaVersion: entity.bodySchemaVersion,
+          bodyCanonical: (entity.bodyCanonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           links: entity.links as unknown as Prisma.InputJsonValue,
           thumbnailId: entity.thumbnailId,
           updatedById: entity.updatedById,

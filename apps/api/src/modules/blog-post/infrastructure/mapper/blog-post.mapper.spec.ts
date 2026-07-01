@@ -11,6 +11,7 @@ describe('BlogPostMapper', () => {
     contentJson: null,
     contentHtml: null,
     contentSchemaVersion: 1,
+    contentCanonical: null,
     readTimeMinutes: 1,
     status: 'DRAFT',
     featured: false,

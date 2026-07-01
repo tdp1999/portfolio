@@ -57,6 +57,10 @@ export type ProjectDetailDto = {
   /** Rich-text storage for `body` (RTE epic Phase 2). Null until Phase 4. */
   bodyJson: TranslatableRichText | null;
   bodyHtml: TranslatableJson | null;
+  /** Canonical `PortableDocument` per locale (prose-block renderer epic) — the AST
+   *  render source. Null until the body is (re)saved through the editor; the landing
+   *  read-path falls back to `bodyHtml` when null. */
+  bodyCanonical: TranslatableJson | null;
   bodySchemaVersion: number;
   /** Resolved media for the `image-ref` blocks in `bodyHtml`, keyed by
    *  `data-image-id` (RTE epic Phase 7, task 315). Locale-independent; empty when
@@ -123,6 +127,7 @@ export class ProjectPresenter {
       body: item.entity.body,
       bodyJson: item.entity.bodyJson,
       bodyHtml: item.entity.bodyHtml,
+      bodyCanonical: item.entity.bodyCanonical,
       bodySchemaVersion: item.entity.bodySchemaVersion,
       mediaRefs,
       startDate: item.entity.startDate,

@@ -18,6 +18,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
   bodyJson: null,
   bodyHtml: null,
   bodySchemaVersion: 1,
+  bodyCanonical: null,
   links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
   thumbnailId: null,
   createdAt: new Date('2025-01-01'),
