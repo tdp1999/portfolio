@@ -57,3 +57,9 @@ export * from './components/footer-signature';
 export * from './components/scroll-to-top';
 export * from './directives';
 export * from './pipes/cloudinary-srcset.pipe';
+
+// Prose-block renderers (redoc-blocks epic) — `components/blocks/`. Each maps a
+// canonical AST node onto a landing primitive + is registered via
+// `provideBlockRenderers(...)` in the landing app config.
+export * from './components/blocks/image-ref-block';
+export * from './components/blocks/gallery-block';

@@ -8,8 +8,11 @@ import {
   COMMAND_PALETTE_SEARCH_SOURCES,
   provideIcons,
   lucideProvider,
+  imageRefBlockRenderer,
+  galleryBlockRenderer,
   type CommandResult,
 } from '@portfolio/landing/shared/ui';
+import { provideBlockRenderers } from '@portfolio/shared/features/rte-contract';
 import { DDL_GROUPS, DDL_REGISTRY, entryFragment, entryLink } from './pages/ddl/ddl.registry';
 
 // DDL design-system entries, exposed to the command palette as search-only
@@ -37,6 +40,10 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' })
     ),
     provideIcons(lucideProvider),
+    // Prose-block registry (epic redoc-blocks, Phase 4): one entry per block. The
+    // AST renderer (`<rte-render>`) mounts these via NgComponentOutlet; adding a
+    // block is exactly one more entry here.
+    provideBlockRenderers(imageRefBlockRenderer, galleryBlockRenderer),
     provideHttpClient(withFetch()),
     { provide: COMMAND_PALETTE_SEARCH_SOURCES, useValue: DDL_COMMAND_RESULTS },
     // Anchor scroll offset for sticky header (h-16 = 64px) + breathing room (16px)

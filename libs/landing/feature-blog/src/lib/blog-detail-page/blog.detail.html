@@ -70,13 +70,20 @@
             </div>
           }
 
-          <!-- Rich-text body. `contentClass` lands `.landing-prose` on the same div as the
-               rendered <p>/<h2> so the direct-child rhythm in _prose.scss matches; headings are
-               slugged at read-time (addHeadingAnchors) for the sticky ToC. `<rte-render-html>`
-               re-sanitizes the BE cache browser-side. Gated on hasBody() so a post whose
-               contentHtml is still null (not yet re-saved through the console RTE) doesn't
-               render an empty prose container. -->
-          @if (hasBody()) {
+          <!-- Rich-text body. `contentClass` lands `.landing-prose` on the rendered host
+               so the direct-child rhythm in _prose.scss matches. Canonical AST wins; the
+               bodyHtml cache is the fallback. Rendered only when a body exists so a post
+               whose content is still null doesn't emit an empty prose container. -->
+          @if (useAst()) {
+            <!-- Canonical path: AST → live component tree (declarative marks +
+                 lightbox-enabled image-ref/gallery blocks). The renderer slugs heading
+                 ids for the sticky ToC + scrollspy. -->
+            <div class="blog-prose">
+              <rte-render contentClass="landing-prose" [doc]="bodyDoc()" [context]="renderContext()" />
+            </div>
+          } @else if (hasBody()) {
+            <!-- Fallback (canonical null): the pre-sanitized contentHtml cache, slugged
+                 at read-time for the ToC. Only [innerHTML] path left. -->
             <div class="blog-prose">
               <rte-render-html
                 contentClass="landing-prose"

@@ -62,9 +62,13 @@ export type ProjectDetailData = {
   /** Sanitized rich-text HTML cache per locale (RTE epic Phase 6) — the rendered
    *  case-study body. Null until saved through the editor. */
   bodyHtml: TranslatableJson | null;
+  /** Canonical `PortableDocument` per locale (prose-block renderer epic) — the AST
+   *  render source for `<rte-render [doc]>`. Null until the body is (re)saved through
+   *  the editor; the detail page falls back to `bodyHtml` + `<rte-render-html>`. */
+  bodyCanonical: TranslatableJson | null;
   /** Resolved media for the `image-ref` blocks in `bodyHtml`, keyed by
    *  `data-image-id` (RTE epic Phase 7, task 315). Locale-independent. The body is
-   *  stored URL-free; `hydrateImageRefs` injects `<img>` from this map at read-time. */
+   *  stored URL-free; the renderer injects `<img>` from this map at read-time. */
   mediaRefs: MediaRefMap;
   startDate: string;
   endDate: string | null;

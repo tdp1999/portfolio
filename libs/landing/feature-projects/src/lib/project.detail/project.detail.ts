@@ -8,6 +8,7 @@ import {
   effect,
   inject,
   makeStateKey,
+  viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -32,7 +33,9 @@ import {
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
-import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import { RteRender, RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import type { RenderContext } from '@portfolio/shared/features/rte-contract';
+import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import {
   addHeadingAnchors,
@@ -69,6 +72,7 @@ import { plainToHtml, sortedIndex, yearRange, zero } from './project.detail.util
     BrowserWindow,
     Eyebrow,
     CloudinarySrcsetPipe,
+    RteRender,
     RteRenderHtml,
   ],
   templateUrl: './project.detail.html',
@@ -113,15 +117,43 @@ export class ProjectDetail {
 
   readonly project = computed(() => this.state().project);
 
-  /** Case-study body: the pre-sanitized rich-text HTML cache, slugged at read-time
-   *  so the sticky ToC + scrollspy have h2/h3 anchors to target. `<rte-render-html>`
-   *  re-sanitizes the result (id survives via the heading-only whitelist rule).
-   *  Locale-reactive: recomputes when the active locale flips. */
+  /** Canonical AST body for the active locale (prose-block renderer epic). When
+   *  present it drives `<rte-render [doc]>` — the declarative read-path with live,
+   *  lightbox-enabled figures. Null/empty → fall back to the `bodyHtml` cache below
+   *  (also covers content not yet re-saved through the editor). Locale-reactive. */
+  readonly bodyDoc = computed<PortableDocument | null>(() => {
+    const doc = getLocalized(this.project()?.bodyCanonical, this.locale()) as unknown as PortableDocument | null;
+    return doc && Array.isArray(doc.content) && doc.content.length > 0 ? doc : null;
+  });
+  readonly useAst = computed(() => this.bodyDoc() !== null);
+
+  /** Synchronous media resolver for `image-ref` / `gallery` blocks — the page's
+   *  pre-resolved `mediaRefs` map exposed as `RenderContext.media` (D3; no fetch at
+   *  render time, SSR-safe). */
+  readonly renderContext = computed<RenderContext>(() => {
+    const refs = this.project()?.mediaRefs ?? {};
+    return { locale: this.locale(), media: (id: string) => refs[id] };
+  });
+
+  /** Fallback body: the pre-sanitized rich-text HTML cache, slugged at read-time so
+   *  the sticky ToC + scrollspy have h2/h3 anchors. Used only when canonical is null
+   *  (`<rte-render-html>` re-sanitizes; ids survive the heading-only whitelist). */
   private readonly rendered = computed(() => addHeadingAnchors(getLocalized(this.project()?.bodyHtml, this.locale())));
   readonly contentHtml = computed(() => hydrateImageRefs(this.rendered().html, this.project()?.mediaRefs));
-  readonly toc = computed<readonly TocEntry[]>(() => this.rendered().toc);
-  /** Body wins over the synthesized fallback whenever the rich-text body has content. */
-  readonly hasBody = computed(() => this.contentHtml().length > 0);
+
+  /** The AST renderer instance (present only while the AST body is rendered) — its
+   *  `headings()` is the single slug source for the ToC on the canonical path. */
+  private readonly bodyRenderer = viewChild(RteRender);
+  readonly toc = computed<readonly TocEntry[]>(() => {
+    if (this.useAst()) {
+      return (this.bodyRenderer()?.headings() ?? [])
+        .filter((h) => h.level <= 3)
+        .map((h) => ({ id: h.id, text: h.text, level: h.level as 2 | 3 }));
+    }
+    return this.rendered().toc;
+  });
+  /** Body wins over the synthesized fallback whenever a rich-text body exists (AST or cache). */
+  readonly hasBody = computed(() => this.useAst() || this.contentHtml().length > 0);
 
   // Derived from reactive state, NOT route.snapshot — `state.loaded` flips true on the first
   // emission from the fetch pipeline, so we only show "not found" after the pipeline has

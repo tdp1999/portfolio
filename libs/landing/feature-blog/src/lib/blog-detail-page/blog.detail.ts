@@ -8,6 +8,7 @@ import {
   effect,
   inject,
   makeStateKey,
+  viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -28,7 +29,9 @@ import {
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
-import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import { RteRender, RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
+import type { RenderContext } from '@portfolio/shared/features/rte-contract';
+import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import { addHeadingAnchors, hydrateImageRefs, type TocEntry } from '@portfolio/landing/shared/util';
 import { BlogShareRow } from './blog.share-row';
@@ -54,6 +57,7 @@ import { shouldHideToc, wordCount } from './blog.detail.util';
     BlogShareRow,
     Monogram,
     Wordmark,
+    RteRender,
     RteRenderHtml,
   ],
   providers: [LandingScrollspyService],
@@ -108,20 +112,42 @@ export class BlogDetail {
   readonly loading = computed(() => this.state().status === 'loading');
   readonly notFound = computed(() => this.state().status === 'not-found');
 
-  /** Post body: the pre-sanitized rich-text HTML cache, slugged at read-time so the
-   *  sticky ToC + scrollspy have h2/h3 anchors to target. `<rte-render-html>` re-sanitizes
-   *  the result (id survives via the heading-only whitelist rule). Blog posts are
-   *  single-language, so the content envelope is resolved by the post's own `language`. */
-  private readonly rendered = computed(() => {
-    const p = this.post();
-    const locale = p?.language === 'VI' ? 'vi' : 'en';
-    return addHeadingAnchors(getLocalized(p?.contentHtml, locale));
+  /** Blog posts are single-language — the content envelope is resolved by the post's
+   *  own `language`, not the site locale. */
+  private readonly locale = computed(() => (this.post()?.language === 'VI' ? 'vi' : 'en'));
+
+  /** Canonical AST body (prose-block renderer epic). Present → `<rte-render [doc]>`
+   *  (declarative marks + lightbox-enabled blocks). Null/empty → fall back to the
+   *  `contentHtml` cache (also covers posts not yet re-saved through the editor). */
+  readonly bodyDoc = computed<PortableDocument | null>(() => {
+    const doc = getLocalized(this.post()?.contentCanonical, this.locale()) as unknown as PortableDocument | null;
+    return doc && Array.isArray(doc.content) && doc.content.length > 0 ? doc : null;
   });
+  readonly useAst = computed(() => this.bodyDoc() !== null);
+
+  /** Synchronous media resolver for `image-ref` / `gallery` blocks (D3; SSR-safe). */
+  readonly renderContext = computed<RenderContext>(() => {
+    const refs = this.post()?.mediaRefs ?? {};
+    return { locale: this.locale(), media: (id: string) => refs[id] };
+  });
+
+  /** Fallback body: the pre-sanitized HTML cache, slugged for the ToC. Used only when
+   *  canonical is null (`<rte-render-html>` re-sanitizes browser-side). */
+  private readonly rendered = computed(() => addHeadingAnchors(getLocalized(this.post()?.contentHtml, this.locale())));
   readonly contentHtml = computed(() => hydrateImageRefs(this.rendered().html, this.post()?.mediaRefs));
-  readonly hasBody = computed(() => this.contentHtml().length > 0);
-  readonly toc = computed<readonly InPageSection[]>(() =>
-    this.rendered().toc.map((e: TocEntry) => ({ id: e.id, title: e.text, level: e.level }))
-  );
+  readonly hasBody = computed(() => this.useAst() || this.contentHtml().length > 0);
+
+  /** AST renderer instance (present on the canonical path) — its `headings()` is the
+   *  single slug source for the ToC. */
+  private readonly bodyRenderer = viewChild(RteRender);
+  readonly toc = computed<readonly InPageSection[]>(() => {
+    if (this.useAst()) {
+      return (this.bodyRenderer()?.headings() ?? [])
+        .filter((h) => h.level <= 3)
+        .map((h) => ({ id: h.id, title: h.text, level: h.level as 2 | 3 }));
+    }
+    return this.rendered().toc.map((e: TocEntry) => ({ id: e.id, title: e.text, level: e.level }));
+  });
   readonly hideToc = computed(() => shouldHideToc(this.post(), this.toc().length));
 
   readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {

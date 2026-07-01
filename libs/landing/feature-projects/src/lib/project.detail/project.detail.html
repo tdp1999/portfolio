@@ -58,11 +58,16 @@
             }
           </header>
 
-          @if (hasBody()) {
-            <!-- Rich-text body wins when project.bodyHtml is populated. `contentClass`
-                 lands `.landing-prose` on the same div as the rendered <p>/<h2> so the
-                 direct-child rhythm in _prose.scss matches; headings are slugged at
-                 read-time (addHeadingAnchors) for the sticky ToC. -->
+          @if (useAst()) {
+            <!-- Canonical path: walk the PortableDocument AST into a live component
+                 tree (declarative marks + lightbox-enabled image-ref/gallery blocks).
+                 `contentClass` lands `.landing-prose` on the host so the direct-child
+                 rhythm in _prose.scss matches; the renderer slugs heading ids for the
+                 sticky ToC + scrollspy. -->
+            <rte-render contentClass="landing-prose" [doc]="bodyDoc()" [context]="renderContext()" />
+          } @else if (hasBody()) {
+            <!-- Fallback (canonical null): the pre-sanitized bodyHtml cache, slugged at
+                 read-time (addHeadingAnchors) for the ToC. Only [innerHTML] path left. -->
             <rte-render-html
               contentClass="landing-prose"
               [html]="contentHtml()"
