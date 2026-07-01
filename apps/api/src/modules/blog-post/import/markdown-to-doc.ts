@@ -1,10 +1,7 @@
 import { marked } from 'marked';
 import { defaultExtensions, LATEST_SCHEMA_VERSION } from '@phuong-tran-redoc/document-engine-core';
-import type { Extensions, JSONContent } from '@tiptap/core';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { convertObsidianMarkdown, stripFirstH1 } from './obsidian-import.util';
-
-type GenerateJSON = (html: string, extensions: Extensions) => JSONContent;
 
 /**
  * Markdown → editor-JSON conversion — the **sole owner** of the legacy
@@ -24,18 +21,13 @@ export async function markdownToEditorDocument(markdown: string): Promise<{ doc:
   const { content, warnings } = convertObsidianMarkdown(stripFirstH1(markdown));
   const html = marked.parse(content, { async: false }) as string;
 
-  // Load Tiptap's Node serializer via a `new Function` indirection so webpack
-  // never sees the specifier: a runtime-built string + `webpackIgnore` is not
-  // enough (ts-loader strips the magic comment, and webpack then compiles the
-  // dynamic import into an empty context that throws "Cannot find module" at
-  // runtime). Hiding it from static analysis lets the Node runtime resolve
-  // `@tiptap/html/server` from node_modules natively. Also dodges the TS
-  // `moduleResolution: node` subpath-export limitation. This module is Node-only
-  // (the importer), so a native dynamic import is always safe here.
-  const importEsm = new Function('s', 'return import(s)') as (s: string) => Promise<{
-    generateJSON: GenerateJSON;
-  }>;
-  const { generateJSON } = await importEsm('@tiptap/html/server');
+  // Tiptap's Node serializer lives at the ESM-only `@tiptap/html/server` subpath
+  // (backed by happy-dom). This module is Node-only, so a plain dynamic import is
+  // safe: the webpack Node build externalizes it (happy-dom stays out of the
+  // bundle) and `generatePackageJson` lists `@tiptap/html` in the api's dist deps.
+  // TS resolution of the subpath is provided by the ambient shim in
+  // `src/types/tiptap-html-server.d.ts` (the api tsconfig is node10).
+  const { generateJSON } = await import('@tiptap/html/server');
   const docNode = generateJSON(html, defaultExtensions);
 
   return { doc: { schemaVersion: LATEST_SCHEMA_VERSION, content: docNode }, warnings };
