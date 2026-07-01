@@ -1,4 +1,6 @@
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationStart, Router } from '@angular/router';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { LightboxOverlay } from '../lightbox-overlay/lightbox-overlay';
@@ -18,6 +20,18 @@ import type { LightboxEntry, LightboxItem } from './lightbox.types';
 export class LightboxService {
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);
+  /** Optional so the lib stays usable in tests / non-routed hosts. */
+  private readonly router = inject(Router, { optional: true });
+
+  constructor() {
+    // An open lightbox is a CDK overlay, not a routed view — so a browser
+    // back/forward (or the history-back keyboard shortcut), which the router
+    // handles via popstate, would leave it stranded over the new page. Close it
+    // on any in-app navigation.
+    this.router?.events.pipe(takeUntilDestroyed()).subscribe((e) => {
+      if (e instanceof NavigationStart && this.overlayRef) this.close();
+    });
+  }
 
   private readonly groups = new Map<string, Set<LightboxEntry>>();
   private overlayRef: OverlayRef | null = null;

@@ -11,6 +11,12 @@
     transition: transform 240ms ease;
   }
 
+  /* The caption is a reading target, not the image trigger — keep the normal
+   * cursor there (clicks on it don't open the viewer; see LightboxDirective). */
+  figcaption {
+    cursor: auto;
+  }
+
   &:hover img,
   &:focus-visible img {
     transform: scale(1.03);

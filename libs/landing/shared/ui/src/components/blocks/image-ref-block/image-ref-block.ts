@@ -26,6 +26,7 @@ import { LightboxDirective } from '../../lightbox';
         [alt]="alt()"
         [caption]="caption()"
         [cloudinaryWidth]="960"
+        inline
         lightbox
         lightboxGroup="prose"
         [lightboxFullSrc]="fullSrc()"

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
 import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 
 @Component({
@@ -9,6 +9,7 @@ import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
       class="landing-figure"
       [class.landing-figure--cropped]="!!aspectRatio() || fill()"
       [class.landing-figure--fill]="fill()"
+      [class.landing-figure--inline]="inline()"
     >
       <div class="landing-figure__frame" [style.aspect-ratio]="!fill() ? aspectRatio() || null : null">
         <img
@@ -18,6 +19,7 @@ import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
           [attr.loading]="preload() ? null : 'lazy'"
           [attr.fetchpriority]="preload() ? 'high' : null"
           [attr.decoding]="preload() ? 'sync' : 'async'"
+          draggable="false"
         />
       </div>
       @if (caption()) {
@@ -61,6 +63,13 @@ export class Figure {
    * plain `src`. Default `0` (auto = no srcset).
    */
   readonly cloudinaryWidth = input<number>(0);
+  /**
+   * In-prose reading variant. The image is capped at its real pixel size (never
+   * upscaled) AND at `--figure-inline-max-h` (default 72vh) so a tall portrait
+   * can't force endless scrolling; the framed image is centred in the column.
+   * Landscape images wide enough still fill the column. Used by `image-ref` blocks.
+   */
+  readonly inline = input(false, { transform: booleanAttribute });
 
   protected readonly hasCaption = computed(() => this.caption().length > 0);
 

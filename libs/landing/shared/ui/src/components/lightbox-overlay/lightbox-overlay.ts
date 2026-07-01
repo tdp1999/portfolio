@@ -352,6 +352,11 @@ export class LightboxOverlay {
     const track = this.trackRef().nativeElement;
 
     const onDown = (e: PointerEvent) => {
+      // Only the primary mouse button drives gestures. A right/middle click opens
+      // the native context menu (which swallows `pointerup`), so starting a
+      // swipe/pan here would leave the gesture stuck and the image trailing the
+      // cursor. Touch/pen have no non-primary button, so this is a no-op for them.
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
       this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       // Record this before capturing the pointer — setPointerCapture retargets the
       // subsequent `click` to the stage, so the click's own target is unreliable.

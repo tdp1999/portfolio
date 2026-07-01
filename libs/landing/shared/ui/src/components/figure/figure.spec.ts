@@ -69,4 +69,21 @@ describe('FigureComponent', () => {
     expect(fig.querySelector('.landing-figure__number')).toBeNull();
     expect(fig.textContent).toContain('Screenshot');
   });
+
+  it('should mark the image non-draggable to avoid the native drag ghost', () => {
+    fixture.detectChanges();
+    const img = fixture.nativeElement.querySelector('img');
+    expect(img.getAttribute('draggable')).toBe('false');
+  });
+
+  it('should not carry the inline modifier by default', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).not.toContain('landing-figure--inline');
+  });
+
+  it('should add the inline modifier when [inline] is set (in-prose height cap + no upscale)', () => {
+    fixture.componentRef.setInput('inline', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).toContain('landing-figure--inline');
+  });
 });

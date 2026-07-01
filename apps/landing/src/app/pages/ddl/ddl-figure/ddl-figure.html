@@ -21,6 +21,41 @@
         </div>
       </div>
 
+      <!-- Figure · inline (in-prose) variant -->
+      <div>
+        <h3 id="inline" data-toc="Inline (in-prose)" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          inline variant · in-prose reading images — capped at real pixels (never upscaled) AND at
+          <code>--figure-inline-max-h</code> (default 72vh); the framed image centres in the column. Used by
+          <code>image-ref</code> prose blocks.
+        </h3>
+        <div class="max-w-2xl space-y-8">
+          <!-- tall portrait → height-capped, centred, narrower than the column -->
+          <landing-figure
+            inline
+            src="https://placehold.co/900x1600/1a2030/cbd5e1.png?text=Tall+portrait"
+            alt="Tall portrait capped at 72vh"
+            caption="Tall portrait — capped at 72vh so it can't force endless scrolling"
+            [figureNumber]="9"
+          />
+          <!-- small image → shown at real size, centred, never upscaled (crisp) -->
+          <landing-figure
+            inline
+            src="https://placehold.co/240x160/11151c/cbd5e1.png?text=Small"
+            alt="Small image shown at natural size"
+            caption="Small image — shown at its real size, centred, never upscaled (stays crisp)"
+            [figureNumber]="10"
+          />
+          <!-- wide-enough landscape → still fills the reading column -->
+          <landing-figure
+            inline
+            src="https://placehold.co/1200x600/1a2030/e2e8f0.png?text=Wide+landscape"
+            alt="Wide landscape filling the column"
+            caption="Landscape wide enough still fills the reading column"
+            [figureNumber]="11"
+          />
+        </div>
+      </div>
+
       <!-- Figure · full-width breakout -->
       <div>
         <h3 id="full-width" data-toc="Full-width" class="font-mono text-mono-md text-landing-text-500 mb-3">
@@ -137,6 +172,15 @@
         can refer back. Default to <code class="font-mono text-mono-sm text-landing-text-300">loading="lazy"</code>;
         only set <code class="font-mono text-mono-sm text-landing-text-300">[preload]="true"</code> for the single hero
         shot above the fold.
+      </p>
+      <p>
+        For images rendered inside prose (the
+        <code class="font-mono text-mono-sm text-landing-text-300">image-ref</code> block), add
+        <code class="font-mono text-mono-sm text-landing-text-300">inline</code>: the image is never upscaled past its
+        real pixels (so small shots stay crisp instead of blurring) and is capped at
+        <code class="font-mono text-mono-sm text-landing-text-300">--figure-inline-max-h</code> (72vh) so a tall
+        portrait can't force endless scrolling — the framed image centres in the column, while a wide-enough landscape
+        still fills it.
       </p>
     </div>
   </landing-ddl-section>

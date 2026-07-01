@@ -74,6 +74,10 @@ export class LightboxDirective {
 
   protected activate(event: Event): void {
     if (!this.entry) return;
+    // A mouse click on the caption is a reading/selection target, not the image
+    // trigger — don't open the viewer from there. Keyboard (Enter/Space) always
+    // opens: its target is the focused host, never the caption.
+    if (event.type === 'click' && (event.target as HTMLElement | null)?.closest?.('figcaption')) return;
     event.preventDefault();
     this.service.open(this.group(), this.entry);
   }

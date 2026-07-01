@@ -26,6 +26,27 @@
   object-fit: cover;
 }
 
+/* Inline (in-prose) variant — the image is capped at BOTH its real pixel size
+ * (never upscaled → always crisp) and `--figure-inline-max-h` (default 72vh, so a
+ * tall portrait can't force endless scrolling). The hairline border/background
+ * moves from the frame onto the image itself, so it hugs the (possibly narrower)
+ * image, which is centred in the column. A wide-enough landscape still fills it. */
+.landing-figure--inline .landing-figure__frame {
+  border: 0;
+  background: transparent;
+  text-align: center;
+
+  img {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: var(--figure-inline-max-h, 72vh);
+    border: 1px solid var(--landing-border);
+    background-color: var(--landing-ink-1);
+  }
+}
+
 /* Fill variant — figure stretches to parent height; caption keeps its natural
  * height, frame consumes the remaining space. Use inside a height-locked
  * container (e.g. one with `aspect-ratio` or fixed `height`). */
