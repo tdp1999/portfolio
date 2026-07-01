@@ -133,3 +133,19 @@ Inputs:
 - Reserve `Router.navigate` for **actual route changes** (transitioning to a new page).
 - Do NOT read `ActivatedRoute.queryParamMap` after a patch — `Location.replaceState` does not update it; the local signal is the source of truth.
 - Browser back/forward will navigate between *page* history entries, not between filter states (intentional — filter churn shouldn't pollute history).
+
+## 5. Rich-text read-path — SSR is the SEO source, HTML cache is a fallback
+
+**Two renderers, two jobs** (prose-block epic, decision D7):
+
+- `<rte-render [doc]="...">` — the **canonical read-path**. Walks the stored `PortableDocument` AST node-by-node into a real Angular component tree (structural tags + declarative inline marks + registered blocks via `NgComponentOutlet`). This is the path project-detail / blog-detail render.
+- `<rte-render-html [html]="...">` — the **only** surviving `[innerHTML]` binding (a second DOMPurify pass via `SafeHtmlPipe`). It is a **fallback for non-Angular consumers**: RSS, `llms.txt` (task 323), OG snippets, hard no-JS safety. It is *not* the SEO path.
+
+**Why SEO doesn't need the HTML cache:** the AST path is fully declarative — no `@defer`, no `afterRender`, no browser-only API on the render branch — so Angular SSR serializes the entire prose tree, **including** the `image-ref` / `gallery` blocks with their real resolved `<img src>`, into the first-paint HTML. A no-JS crawler (Googlebot / an AI reader) receives complete content without loading Tiptap or any editor code. This is asserted by `prose-blocks.ssr.spec.ts` (a real `@angular/platform-server` `renderApplication` render whose serialized string is checked for every tag + block + resolved image URL, and for the *absence* of any editor engine).
+
+**Rules for anything that renders stored rich text on landing:**
+
+- Prefer `<rte-render [doc]>`. Reach for `<rte-render-html>` only for a genuinely non-Angular consumer (feed/OG/no-JS) — and keep it the *only* `[innerHTML]` in the read-path.
+- A block component mounted by the registry must render **synchronously on first change-detection** (no `@defer`, no `afterRender`-gated content, no `isPlatformBrowser` guard around the visible output) or it will be missing from the SSR HTML and silently drop out of the crawler's view. Browser-only behavior (e.g. the lightbox's `getBoundingClientRect` on *activation*) is fine — it runs on interaction, not on render.
+- Media for blocks is resolved **before** render into the synchronous `RenderContext.media` map (batched per page); never fetch inside a block component.
+- If you add a block, extend `prose-blocks.ssr.spec.ts` to assert its server-rendered output — the SSR-completeness guarantee is per-block.

@@ -1,9 +1,9 @@
 # Epic: Prose Block Renderer (`redoc-blocks`)
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
-> Status: planned (2026-06-03). Not broken down — opens AFTER the RTE epic ships.
-> Depends on: [`epic-portfolio-rich-text-editor`](./epic-portfolio-rich-text-editor.md) (must be complete — this epic consumes its JSON canonical + write pipeline).
-> Supersedes: RTE epic **Phase 6 + Phase 7 read-path** (the `[innerHTML]` HTML-cache + `data-block` hydration approach). RTE ships that approach first as the MVP; this epic replaces it with an AST renderer once a second block type is needed.
+> Status: **complete (2026-07-01)** — implemented directly from this epic (no task breakdown), all 6 phases shipped. Two-gate protocol per phase. See ADR-022 for the load-bearing decisions.
+> Depends on: [`epic-portfolio-rich-text-editor`](./epic-portfolio-rich-text-editor.md) (complete — this epic consumes its JSON canonical + write pipeline).
+> Supersedes: RTE epic **Phase 6 + Phase 7 read-path** (the `[innerHTML]` HTML-cache + `data-block` hydration approach). That approach is now the **fallback** (D7) behind the AST canonical path — retained, not deleted, until all stored content carries `bodyCanonical`/`contentCanonical`.
 
 ## Why this exists
 
@@ -115,14 +115,14 @@ Angular SSR emits full HTML from the AST renderer, so Googlebot / AI crawlers ge
 | BE `RichTextService` (RTE Phase 4) | **Extend** `toCanonicalForm` to run the E→canonical adapter (D3) before HTML generation; persist canonical JSON.                                                                                                                                   |
 | Block component libs               | New thin wrappers (e.g. `FigureBlockComponent`, `GalleryBlockComponent`) over existing `landing-figure` / `landing-gallery` primitives.                                                                                                            |
 
-## Phases (provisional — detail when this epic opens)
+## Phases (all shipped 2026-07-01)
 
-1. **Contract** — `PortableDocument` types + first Zod attr schemas (`paragraph`/`heading`/`image-ref`) in `rte-core`; `BlockRenderer`/`BLOCK_RENDERERS`/`provideBlockRenderers`, `RenderContext` in `rte-contract`.
-2. **E→canonical adapter** — anti-corruption mapper + Zod validation in `RichTextService` (BE write-time). Migrate stored docs lazily (reuse RTE `schemaVersion`/`migrateDoc` discipline, but on **our** version).
-3. **AST renderer** — `<rte-render [doc]>` walker, `rte-element` (recursive structural), `rte-inline` (declarative marks, D5b), unknown-block fallback.
-4. **Block registry + first blocks** — wire `BLOCK_RENDERERS` in landing `app.config.ts`; ship `image-ref` (replacing the RTE Phase 7 `data-block` directive) + one additional block (`gallery`) as the proof that "register a new block" is one provider entry. Both block components wrap the **lightbox-enabled** landing primitives (`image-ref` → `<landing-figure lightbox>`, `gallery` → `<landing-gallery [lightbox]>`), so **in-content figures gain the full-screen viewer** here — this is the sanctioned solution to project-detail/blog content figures that the current `[innerHTML]` read-path cannot lightbox (see `lightbox.md` §6).
-5. **Cache-fallback split** — `<rte-render-html>` for RSS/llms.txt/OG/no-JS; confirm SSR output of the AST path is crawler-complete (drop reliance on the cache for SEO).
-6. **Consumer swap** — point `project-detail` + `blog-detail` read-paths at `<rte-render [doc]>`; retire the RTE Phase 6/7 `[innerHTML]` + `data-block` hydration.
+1. ✅ **Contract** — `PortableDocument`/`PortableNode`/`Mark` types + Zod attr schemas (`paragraph`/`heading`/`image-ref`, later `gallery`) in `rte-core` (Angular-free, deep alias `rte-core/portable`); `BlockRenderer`/`BLOCK_RENDERERS`/`provideBlockRenderers`, `RenderContext` in `rte-contract`.
+2. ✅ **E→canonical adapter** — anti-corruption mapper (`rich-text.adapter.ts`) + Zod validation in `RichTextService` (BE write-time); `bodyCanonical`/`contentCanonical` columns added (migration `add_prose_block_canonical_columns`). Un-migrated rows stay `null` → fallback path.
+3. ✅ **AST renderer** — `<rte-render [doc]>` walker (recursive structural + declarative marks D5b + unknown-block dev placeholder that never throws).
+4. ✅ **Block registry + first blocks** — `provideBlockRenderers(imageRefBlockRenderer, galleryBlockRenderer)` wired in landing `app.config.ts`. Block components live in `libs/landing/shared/ui/src/components/blocks/` (sanctioned sub-bucket, not a 4th lib). `image-ref` → `<landing-figure lightbox>`, `gallery` → `<landing-gallery [lightbox]>` → **in-content figures now get the full-screen viewer**. `gallery` is a **dormant seam**: full Zod schema + block + registration, but no adapter path yet (E has no gallery node) — proves "register a block = one entry."
+5. ✅ **Cache-fallback split** — `<rte-render-html>` retained for RSS/llms.txt/OG/no-JS; SSR crawler-completeness of the AST path proven via a real `renderApplication` node test (`prose-blocks.ssr.spec.ts`).
+6. ✅ **Consumer swap** — `project-detail` + `blog-detail` render `<rte-render [doc]>` when canonical present, else fall back to `<rte-render-html>`. Renderer owns heading slugs (`collectHeadings` → `[id]` + `headings()`); consumer ToC reads `viewChild(RteRender).headings()`. Highlights CAO stay on `<rte-render-html>` (separate HTML fields, no canonical).
 
 ## Risks & mitigations
 
@@ -137,15 +137,22 @@ Angular SSR emits full HTML from the AST renderer, so Googlebot / AI crawlers ge
 
 ## Acceptance criteria
 
-- [ ] `rte-core` exports `PortableDocument`/`PortableNode` and ≥2 Zod block attr schemas; `rte-contract` exports `BlockRenderer`, `BLOCK_RENDERERS`, `provideBlockRenderers`, `RenderContext`.
-- [ ] BE write-time normalizes E JSON → canonical `PortableDocument` (adapter is the only code that knows E's node names).
-- [ ] `<rte-render [doc]>` renders an AST with **no `[innerHTML]`** on the canonical path (inline marks declarative).
-- [ ] Registering a new block on landing is exactly one `provideBlockRenderers` entry — demonstrated with a 2nd block (`gallery`) beyond `image-ref`.
-- [ ] Unknown node type renders the fallback, never throws.
-- [ ] Security: a doc with a disallowed node/attr/`javascript:` URL is stripped at write-time; renderer ignores unknown types at read-time. Test asserts both.
-- [ ] SSR initial paint contains the fully-rendered block HTML (crawler-complete) without loading Tiptap or the editor.
-- [ ] `<rte-render-html>` retained for RSS/llms.txt/OG/no-JS fallback (DOMPurify), and is the only `[innerHTML]` binding.
-- [ ] RTE Phase 6/7 `[innerHTML]` + `data-block` hydration retired from `project-detail` and `blog-detail`.
+- [x] `rte-core` exports `PortableDocument`/`PortableNode` and ≥2 Zod block attr schemas; `rte-contract` exports `BlockRenderer`, `BLOCK_RENDERERS`, `provideBlockRenderers`, `RenderContext`.
+- [x] BE write-time normalizes E JSON → canonical `PortableDocument` (adapter is the only code that knows E's node names).
+- [x] `<rte-render [doc]>` renders an AST with **no `[innerHTML]`** on the canonical path (inline marks declarative).
+- [x] Registering a new block on landing is exactly one `provideBlockRenderers` entry — demonstrated with a 2nd block (`gallery`) beyond `image-ref`.
+- [x] Unknown node type renders the fallback, never throws.
+- [x] Security: a doc with a disallowed node/attr/`javascript:` URL is stripped at write-time; renderer ignores unknown types at read-time. Test asserts both.
+- [x] SSR initial paint contains the fully-rendered block HTML (crawler-complete) without loading Tiptap or the editor (proven via `renderApplication` node test).
+- [x] `<rte-render-html>` retained for RSS/llms.txt/OG/no-JS fallback (DOMPurify), and is the only `[innerHTML]` binding.
+- [x] RTE Phase 6/7 `[innerHTML]` + `data-block` hydration retired from `project-detail` and `blog-detail` **on the canonical path** — the HTML path survives as the graceful fallback for rows without canonical (D7). Full removal of the fallback branch is gated on a data backfill — tracked as a follow-up below.
+
+## Post-epic follow-ups
+
+- **Data backfill to activate the AST path — DONE (2026-07-01).** `useAst()` is `false` until `bodyCanonical`/`contentCanonical` are populated; without it a page renders via the identical HTML fallback. **`pnpm migrate:editor` does NOT fill canonical** — it skips rows already at `LATEST_SCHEMA_VERSION`, and existing content is already at latest with `canonical = null`. The dedicated **`pnpm backfill:canonical`** (`apps/api/scripts/backfill-canonical.ts`) closes the gap: it reads each row's existing `bodyJson`/`contentJson`, runs `RichTextService.toCanonicalFormTranslatable`, and writes back **only** the `*Canonical` column (`--dry-run` / `--force` / `--module=`). Idempotent; reverting a row is `SET "…Canonical" = NULL` → falls back to HTML. First run: 3 blog rows filled, 0 errors. **What backfill can/can’t reach:** it only helps rows that carry an editor `*Json` source. Portfolio content seeded before the editor (all 8 projects’ `bodyJson`, ~13 markdown-seeded posts’ `contentJson`) is `null` → not backfillable, stays on the HTML fallback (correct). Those must be **re-saved through the console** to gain an editor source, then backfilled (or the save fills canonical directly).
+- **Known behavioral shift on activation:** the AST path renders only **media-backed** figures (`imageRef` → `<landing-figure>`); a bare URL `<img>` node that the HTML fallback would show is **dropped** by the D3 adapter (D6). Content authored via the media picker is unaffected; any body that embedded a raw-URL image will lose it on the AST path until re-inserted through the picker.
+- **Retire the fallback branch** once all content carries canonical: delete the `@else` `<rte-render-html>` branch + `hydrateImageRefs` + `addHeadingAnchors` read-time slugger from `project.detail`/`blog.detail`. Coordinate with task 363 (drop legacy prose columns) and task 323 (llms.txt still consumes the HTML cache).
+- **home-intro (task 312)** — still blocked on per-paragraph lamp/pen; the AST renderer is the sanctioned path when it unblocks.
 
 ## References
 

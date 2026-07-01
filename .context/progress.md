@@ -192,6 +192,14 @@
 - [x] **Brand Identity System & Portable Mark Skill** (epic-portfolio-brand-identity) - Completed 2026-06-22; archived to `plans-done/` (sync 2026-06-22)
   - Implemented inline (no task breakdown): Phase 1 (brand lib + `/ddl/identity`), Phase 2 (two-stage `brand-identity` skill + favicon/OG/email assets), site integration (3 ad-hoc mark systems replaced, verified live), Phase 3 (`<brand-motif>` lines-only grid, duration-adaptive animated/variable mark, do/don't guideline section), brand-lib tests (`master.util.spec.ts`, 19 specs)
   - Non-blocking deferred: true variable-font weight (needs `wght`-axis woff2), video sting (Remotion)
+- [x] **Prose Block Renderer** (epic-portfolio-prose-block-renderer / `redoc-blocks`) - Completed 2026-07-01; archived to `plans-done/`
+  - Implemented directly from epic (no task breakdown); all 6 phases + two-gate protocol per phase. ADR-022 logged the load-bearing decisions.
+  - Landing read-path now renders the **canonical JSON AST** via `<rte-render [doc]>` (declarative structural nodes + inline marks, zero `[innerHTML]`) with a **DI block registry** (`provideBlockRenderers`, `NgComponentOutlet`). `image-ref` + `gallery` block components wrap the lightbox-enabled `landing-figure`/`landing-gallery` → **in-content prose figures gain the full-screen viewer** (closes the `[innerHTML]` limit from the lightbox epic).
+  - BE write-time E→canonical adapter (`rich-text.adapter.ts`) + `bodyCanonical`/`contentCanonical` columns (migration `add_prose_block_canonical_columns`); shipped through public presenter/DTO + landing data types.
+  - Renderer **owns heading slugs** (`collectHeadings` in rte-core → stamps `[id]` on h2–h4 + exposes `headings()`); consumer ToC/scrollspy reads `viewChild(RteRender).headings()` — single slug source.
+  - **Graceful fallback (D7):** canonical present → AST; canonical null → the existing `<rte-render-html>` HTML cache (RSS/llms.txt/OG/no-JS also keep it). Fallback is **retained, not deleted** — full retirement gated on a data backfill + task 363/323 (tracked in the epic's follow-ups). Highlights CAO stay on `<rte-render-html>` (separate HTML fields).
+  - SSR crawler-completeness proven via a real `renderApplication` node test; verified: rte-core 38, rte-renderer 17, ui blocks 12 (incl SSR), API project/blog/rich-text 215, `nx build landing` AOT green, lint clean. Live browser verify (Playwright): a fixture post exercising every block + mark + 3 lightbox figures — 13/13 checks, 0 console errors (AST render, ToC scroll, lightbox open/page/close).
+  - **Activation (2026-07-01):** new `pnpm backfill:canonical` (`apps/api/scripts/backfill-canonical.ts`, idempotent, `--dry-run`/`--force`/`--module=`) fills `*Canonical` from existing `*Json` via the real write pipeline (only column touched). First run activated the 3 editor-authored blog rows; the 8 projects + ~13 markdown-seeded posts have no `*Json` source so they stay on the HTML fallback until re-saved. Two throwaway-friendly dev scripts kept: `seed-prose-demo.ts` (the fixture post `/blog/ast-renderer-showcase`) + `backfill-canonical.ts`. Note: AST path drops bare URL `<img>` (only media-picker `imageRef` figures render — D6).
 - [x] **DDL → Component Docs (3-column)** (epic-ddl-component-docs) - Completed 2026-06-22; archived to `plans-done/` (sync 2026-06-22)
   - All 4 phases ✅ (inline-tracked, no task breakdown): refactored `/ddl` from a 1654-line scroll page + 25 ad-hoc subroutes into a shadcn-class component-docs site — 3-column app-shell (window-locked at laptop+, internal content scroller, fixed full top-bar), scope-based taxonomy (Foundations/Components/Sections/Pages/Patterns), registry-driven sidebar + auto-derived multi-level TOC, standardized decision convention (`landing-ddl-decision-record` + `landing-ddl-considered`), `landing-ddl-stage` full-width primitive. Phase 4 polish: responsive QA across 4 BPs (TOC drops at laptop, returns at wide; carousel window-lock fix), deprecated hidden from rail + pager, console clean. Scroll-model + mobile-chrome rules captured in the `ddl-docs-scroll-model` memory.
 
@@ -250,7 +258,7 @@
 - [x] 273-shared-ui-invert-service-deps - Make main-layout + media-picker-dialog pure so strict shared-ui boundary can be restored (L) (standalone) ✓
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
-- [ ] 380-style-architecture-standardization (M) — pending (standalone)
+- [x] 380-style-architecture-standardization — bucket taxonomy applied to all shared-ui libs; consolidated `libs/shared/ui` 3→1 project; split docs into `patterns-lib-structure.md` + ADR-021; no behavioral change (M) (standalone) — Completed 2026-06-30 → `tasks-done/other/` ✓
 - [ ] 384-test-lint-cleanup-sweep (M) — full-monorepo sweep + fix of pre-existing test/lint failures surfaced during 380 verification (standalone)
 
 ## Pending — Portfolio E5 Implementation (broken down 2026-05-02)
@@ -390,9 +398,9 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
 
-## Planned — Prose Block Renderer (not broken down)
+## Done — Prose Block Renderer (implemented directly from epic)
 
-From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RTE epic ships. Replaces the RTE Phase 6/7 `[innerHTML]` + `data-block` landing read-path with an AST renderer + DI block registry (`PortableDocument` canonical, `NgComponentOutlet` conditional injection, Zod-anchored editor↔component contract, declarative inline marks, HTML-cache demoted to RSS/llms.txt/OG fallback). Locked 2026-06-03; no tasks created yet.
+From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-07-01** — all 6 phases shipped inline (no task breakdown). AST renderer + DI block registry live on `project-detail` + `blog-detail` canonical path; HTML cache demoted to graceful fallback. See Completed Epics entry above + ADR-022. Follow-ups (data backfill to activate AST + fallback-branch retirement) tracked in the epic file; coordinate with 363/323/312.
 
 ---
 
@@ -413,14 +421,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). Opens AFTER the RT
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 355     |
+| Done (archived)           | 356     |
 | In Progress               | 1       |
-| Pending                   | 11      |
-| Blocked                   | 1       |
-| **Total Created**         | **367** |
-| Epics completed           | 48      |
+| Pending                   | 10      |
+| Blocked                   | 2       |
+| **Total Created**         | **369** |
+| Epics completed           | 49      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-06-30. Active (13): blocked 312, 363; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 380, 381, 382, 383._
+_Counts reconciled to task files via `/ctx:sync` on 2026-07-01. Active (13): blocked 312, 363; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 381, 382, 383, 384._
 
 ## Notes
 

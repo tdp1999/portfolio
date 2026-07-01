@@ -45,9 +45,9 @@ libs/<scope>/shared/ui/src/
 
 - **No `lib/` tier.** Buckets sit directly under `src/` (Nx generators default to `src/lib/` —
   override / flatten it).
-- **No sub-categories inside `components/`.** Flat folder-per-component; do **not** create
-  `components/forms/`, `components/overlays/`. (Material/MUI don't sub-categorize; sub-folders
-  reignite the "which group does this go in?" churn.)
+- **No sub-categories inside `components/`** — with one sanctioned exception (§6, `components/blocks/`).
+  Otherwise flat folder-per-component; do **not** create `components/forms/`, `components/overlays/`.
+  (Material/MUI don't sub-categorize; sub-folders reignite the "which group does this go in?" churn.)
 - DI tokens (`InjectionToken`) **co-locate** with their component (Material-style); there is no
   separate TS `tokens/` bucket. SCSS design tokens live under `styles/tokens/` (or a top-level
   `tokens/` — see §6).
@@ -124,6 +124,13 @@ These are the *only* sanctioned deviations from §2; new ones require updating t
   frees `tokens/colors` to resolve to the global file while landing's own palette loads via the local
   `styles/tokens/index.scss`. (Local `typography.scss`/`motion.scss` don't clash — landing never
   references the global `tokens/typography`.)
+- **`components/blocks/` sub-group (landing `ui`).** The prose-block renderers of the `redoc-blocks`
+  epic (`image-ref-block/`, `gallery-block/`, …) are grouped under `components/blocks/` rather than sitting
+  flat among the primitives. They are a distinct **kind** — thin wrappers that map a canonical AST node
+  onto a landing primitive and are registered via `provideBlockRenderers(...)` — so co-locating them keeps
+  the block set legible as it grows and separates "renderer glue" from plain presentational primitives.
+  Each block is still one folder-per-component (name === base) *inside* `blocks/`; the sub-group is the only
+  permitted nesting level (no deeper categories). This is the sole exception to §2's flat-`components/` rule.
 - **`services/` in a `type:ui` lib.** Nx defines `type:ui` as injecting no services. Our shared-ui
   libs already ship non-data services (theme, toast, breakpoint, locale…); we keep that reality and
   bucket them under `services/` rather than forcing them into `data-access`. Conscious deviation —
