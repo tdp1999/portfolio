@@ -28,6 +28,8 @@ export type { SocialIcon } from './social-row.types';
               target="_blank"
               rel="noopener noreferrer"
               [attr.aria-label]="icon.label"
+              data-umami-event="social-link"
+              [attr.data-umami-event-platform]="icon.label"
             >
               <landing-icon [name]="icon.icon" [size]="iconSize()" />
             </a>

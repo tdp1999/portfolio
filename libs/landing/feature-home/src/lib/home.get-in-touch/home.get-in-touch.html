@@ -21,6 +21,8 @@
             [arrow]="true"
             [class.home-get-in-touch__cta--quiet]="cta.quiet"
             class="home-get-in-touch__cta"
+            data-umami-event="contact-cta"
+            [attr.data-umami-event-purpose]="cta.purpose"
           >
             {{ cta.label }}
           </landing-link>
@@ -30,7 +32,9 @@
       @if (mailtoHref()) {
         <p class="home-get-in-touch__fallback">
           {{ fallbackPrompt() }}
-          <landing-link [href]="mailtoHref()" [inline]="true">{{ email() }}</landing-link>
+          <landing-link [href]="mailtoHref()" [inline]="true" data-umami-event="contact-email">{{
+            email()
+          }}</landing-link>
         </p>
       }
     </div>

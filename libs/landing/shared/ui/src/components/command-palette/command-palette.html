@@ -54,6 +54,8 @@
                 role="option"
                 tabindex="-1"
                 [attr.aria-selected]="cursor() === i"
+                data-umami-event="palette-select"
+                [attr.data-umami-event-item]="row.result.title"
                 (click)="activate(row.result)"
                 (keydown.enter)="activate(row.result)"
                 (mouseenter)="cursor.set(i)"

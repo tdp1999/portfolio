@@ -101,7 +101,12 @@
               <h2 id="related-h" class="related-block__title">Related posts</h2>
               <div class="related-grid">
                 @for (r of p.relatedPosts; track r.slug) {
-                  <a [routerLink]="['/blog', r.slug]" class="related-card">
+                  <a
+                    [routerLink]="['/blog', r.slug]"
+                    class="related-card"
+                    data-umami-event="blog-related"
+                    [attr.data-umami-event-slug]="r.slug"
+                  >
                     @if (r.featuredImageUrl) {
                       <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />
                     }

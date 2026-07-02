@@ -27,6 +27,7 @@
             [class.projects-toolbar__toggle--open]="filtersOpen()"
             [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
             (click)="toggleFilters()"
+            data-umami-event="projects-filters-toggle"
           >
             <landing-icon name="filter" [size]="14" />
             <span>Filters</span>
@@ -106,7 +107,12 @@
             <ul class="projects-list" role="list">
               @for (project of rows(); track project.slug) {
                 <li class="projects-row">
-                  <a [routerLink]="['/projects', project.slug]" class="projects-row__link">
+                  <a
+                    [routerLink]="['/projects', project.slug]"
+                    class="projects-row__link"
+                    data-umami-event="project-open"
+                    [attr.data-umami-event-slug]="project.slug"
+                  >
                     <span class="projects-row__year">{{ project.year }}</span>
 
                     <div class="projects-row__thumb">
@@ -161,7 +167,12 @@
             <ul class="projects-grid" role="list">
               @for (project of rows(); track project.slug) {
                 <li class="projects-card">
-                  <a [routerLink]="['/projects', project.slug]" class="projects-card__link">
+                  <a
+                    [routerLink]="['/projects', project.slug]"
+                    class="projects-card__link"
+                    data-umami-event="project-open"
+                    [attr.data-umami-event-slug]="project.slug"
+                  >
                     <div class="projects-card__media">
                       @if (project.thumbnailUrl) {
                         @let cardSet = project.thumbnailUrl | cloudinarySrcset: 480;
@@ -214,7 +225,12 @@
                     @for (project of group.items; track project.slug) {
                       <li class="projects-timeline__entry">
                         <span class="projects-timeline__connector" aria-hidden="true"></span>
-                        <a [routerLink]="['/projects', project.slug]" class="projects-timeline__link">
+                        <a
+                          [routerLink]="['/projects', project.slug]"
+                          class="projects-timeline__link"
+                          data-umami-event="project-open"
+                          [attr.data-umami-event-slug]="project.slug"
+                        >
                           <div class="projects-timeline__body">
                             <span class="projects-timeline__title">{{ project.title }}</span>
                             @if (project.oneLiner | translatable: locale() : ''; as line) {

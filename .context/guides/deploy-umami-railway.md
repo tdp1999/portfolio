@@ -228,3 +228,34 @@ Concrete values for the portfolio's Umami instance. Fill the blanks as you go.
 | `data-website-id` | `d26e36be-b1c7-4be2-9bf7-0a9d5e394921` |
 | Tracker `src` | `https://analytics.thunderphong.com/script.js` (custom domain, not the raw `*.up.railway.app` Umami suggests) |
 | Umami listen port | `8080` (Railway target port) |
+
+---
+
+## Custom event catalog (landing)
+
+Events fire via Umami's native **`data-umami-event`** attribute — the tracker auto-listens for clicks and walks up the DOM (`closest('[data-umami-event]')`), so the attribute can sit on a `<landing-link>` host and still catch clicks on its inner `<a>`. Zero JS, SSR-safe, no coupling into component logic. Optional properties use `data-umami-event-<key>` (dynamic values via `[attr.data-umami-event-<key>]`). Events surface under **Traffic → Events** and are reusable as steps in **Behavior → Goals / Funnels / Journeys**.
+
+**Naming convention:** `area-action` (kebab). Keep the event name stable (renaming splits historical data); put the variable part in a property.
+
+| Event | Property | Where it fires |
+|---|---|---|
+| `contact-cta` | `purpose` | Home §Get-in-touch purpose CTAs |
+| `contact-email` | — | `mailto:` links |
+| `about-cta` | `target` (contact/linkedin/github/cv) | About §Next-steps list (**captures CV download**) |
+| `social-link` | `platform` | Social row (leaf primitive — all usages) |
+| `work-read-more` | `title` | Selected-work "Read more" |
+| `work-link` | `label` | Project external links in selected-work |
+| `work-view-archive` | — | "View the full archive" |
+| `project-open` | `slug` | /projects list — row, grid, timeline views |
+| `projects-filters-toggle` | — | /projects filter-panel toggle |
+| `nav-primary` | `to` | Header primary nav (both scroll states) |
+| `nav-footer` | `to` | Footer nav links |
+| `palette-open` | — | ⌘K search trigger |
+| `palette-select` | `item` | Command-palette result activation |
+| `menu-open` | — | Mobile menu open |
+| `theme-toggle` | `to` (light/dark) | Theme switch |
+| `blog-open` | `slug` | Blog list (hero/side/archive/row/card) |
+| `blog-related` | `slug` | Related post on blog detail |
+| `blog-share` | `channel` (x/linkedin/copy) | Blog share row |
+
+**Deliberately not instrumented** (low signal / noisy): per filter-chip toggles, language switcher, gallery/lightbox open, view-toggle mode, scroll-to-top. Add later if a specific question needs them.

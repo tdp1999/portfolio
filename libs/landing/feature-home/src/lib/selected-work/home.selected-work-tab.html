@@ -31,7 +31,14 @@
             }
           }
         }
-        <landing-link [href]="caseStudyHref()" [arrow]="true" [inline]="true" class="selected-work-tab__read-more">
+        <landing-link
+          [href]="caseStudyHref()"
+          [arrow]="true"
+          [inline]="true"
+          class="selected-work-tab__read-more"
+          data-umami-event="work-read-more"
+          [attr.data-umami-event-title]="title()"
+        >
           Read more
         </landing-link>
       </p>
@@ -53,7 +60,13 @@
           <ul class="selected-work-tab__links">
             @for (link of group.links; track link.href) {
               <li>
-                <landing-link [href]="link.href" [external]="link.external" [arrow]="true">
+                <landing-link
+                  [href]="link.href"
+                  [external]="link.external"
+                  [arrow]="true"
+                  data-umami-event="work-link"
+                  [attr.data-umami-event-label]="link.label"
+                >
                   {{ link.label }}
                 </landing-link>
               </li>

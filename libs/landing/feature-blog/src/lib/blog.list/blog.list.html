@@ -11,7 +11,12 @@
         <!-- Lead hero — shared by the desktop grid and the compact (< tablet) layout. -->
         <ng-template #v1HeroCard let-hero>
           <article class="mag-hero mag-hero--center">
-            <a [routerLink]="['/blog', hero.slug]" class="mag-hero__link">
+            <a
+              [routerLink]="['/blog', hero.slug]"
+              class="mag-hero__link"
+              data-umami-event="blog-open"
+              [attr.data-umami-event-slug]="hero.slug"
+            >
               <h3 class="mag-title mag-title--hero">{{ hero.title }}</h3>
               @if (hero.excerpt; as ex) {
                 <p class="mag-excerpt mag-excerpt--hero">{{ ex }}</p>
@@ -42,7 +47,12 @@
         <!-- Side card — shared by the desktop columns and the compact carousel. -->
         <ng-template #v1SideCard let-post>
           <article class="mag-side">
-            <a [routerLink]="['/blog', post.slug]" class="mag-side__link">
+            <a
+              [routerLink]="['/blog', post.slug]"
+              class="mag-side__link"
+              data-umami-event="blog-open"
+              [attr.data-umami-event-slug]="post.slug"
+            >
               <div class="mag-side__media">
                 @if (post.featuredImageUrl; as url) {
                   @let sideSet = url | cloudinarySrcset: 320;
@@ -118,7 +128,12 @@
         <!-- Lead hero — shared by the desktop grid and the compact (< tablet) layout. -->
         <ng-template #v3HeroCard let-hero>
           <article class="mag-hero mag-hero--top">
-            <a [routerLink]="['/blog', hero.slug]" class="mag-hero__link">
+            <a
+              [routerLink]="['/blog', hero.slug]"
+              class="mag-hero__link"
+              data-umami-event="blog-open"
+              [attr.data-umami-event-slug]="hero.slug"
+            >
               <div class="mag-hero__split-media mag-hero__split-media--top">
                 @if (hero.featuredImageUrl; as url) {
                   @let v3HeroSet = url | cloudinarySrcset: 720;
@@ -151,7 +166,12 @@
         <!-- Archive card — shared by the desktop grid and the compact carousel. -->
         <ng-template #v3ArchiveCard let-post>
           <article class="mag-archive">
-            <a [routerLink]="['/blog', post.slug]" class="mag-archive__link">
+            <a
+              [routerLink]="['/blog', post.slug]"
+              class="mag-archive__link"
+              data-umami-event="blog-open"
+              [attr.data-umami-event-slug]="post.slug"
+            >
               <div class="mag-archive__media">
                 @if (post.featuredImageUrl; as url) {
                   @let archSet = url | cloudinarySrcset: 240;
@@ -285,7 +305,12 @@
             <ul class="list-rows" role="list">
               @for (post of visiblePosts(); track post.slug) {
                 <li class="list-row">
-                  <a [routerLink]="['/blog', post.slug]" class="list-row__link">
+                  <a
+                    [routerLink]="['/blog', post.slug]"
+                    class="list-row__link"
+                    data-umami-event="blog-open"
+                    [attr.data-umami-event-slug]="post.slug"
+                  >
                     <div class="list-row__thumb">
                       @if (post.featuredImageUrl; as url) {
                         @let rowSet = url | cloudinarySrcset: 160;
@@ -320,7 +345,12 @@
             <ul class="list-grid" role="list">
               @for (post of visiblePosts(); track post.slug) {
                 <li class="list-card">
-                  <a [routerLink]="['/blog', post.slug]" class="list-card__link">
+                  <a
+                    [routerLink]="['/blog', post.slug]"
+                    class="list-card__link"
+                    data-umami-event="blog-open"
+                    [attr.data-umami-event-slug]="post.slug"
+                  >
                     <div class="list-card__media">
                       @if (post.featuredImageUrl; as url) {
                         @let cardSet = url | cloudinarySrcset: 480;

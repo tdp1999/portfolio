@@ -18,7 +18,15 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
   imports: [CopyToClipboardDirective, Icon],
   template: `
     <div class="share-row" [class.share-row--compact]="compact()" role="group" aria-label="Share">
-      <a class="share-row__btn" [href]="xUrl()" target="_blank" rel="noopener noreferrer" aria-label="Share on X">
+      <a
+        class="share-row__btn"
+        [href]="xUrl()"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on X"
+        data-umami-event="blog-share"
+        data-umami-event-channel="x"
+      >
         <landing-icon name="twitter" [size]="iconSize()" />
         @if (!compact()) {
           <span>X</span>
@@ -30,6 +38,8 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Share on LinkedIn"
+        data-umami-event="blog-share"
+        data-umami-event-channel="linkedin"
       >
         <landing-icon name="linkedin" [size]="iconSize()" />
         @if (!compact()) {
@@ -43,6 +53,8 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
         #copy="landingCopyToClipboard"
         [attr.aria-label]="copy.state() === 'copied' ? 'Link copied' : 'Copy link'"
         [title]="copy.state() === 'copied' ? 'Copied' : 'Copy link'"
+        data-umami-event="blog-share"
+        data-umami-event-channel="copy"
       >
         <landing-icon [name]="copy.state() === 'copied' ? 'check' : 'link'" [size]="iconSize()" />
         @if (!compact()) {

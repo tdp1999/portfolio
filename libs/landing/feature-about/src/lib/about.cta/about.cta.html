@@ -13,7 +13,13 @@
     <ul class="cta__list" role="list">
       @for (item of ctas(); track item.id) {
         <li class="cta__item">
-          <landing-link [href]="item.href" [kind]="item.kind ?? null" [arrow]="true">
+          <landing-link
+            [href]="item.href"
+            [kind]="item.kind ?? null"
+            [arrow]="true"
+            data-umami-event="about-cta"
+            [attr.data-umami-event-target]="item.id"
+          >
             {{ locale() === 'vi' ? item.labelVi : item.labelEn }}
           </landing-link>
         </li>
