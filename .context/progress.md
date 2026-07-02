@@ -321,12 +321,12 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 ## Done — Landing follow-up (post-E5)
 
 - [x] 325-landing-legal-pages (M) — Privacy + Terms pages, VN/EN i18n, sitemap hreflang. Side effects: shared `.landing-prose` extended (list markers + table styling); `landing-link` gained semantic kinds (mail/tel/download/anchor) auto-detected from href, exposed in DDL.
+- [x] 324-landing-pwa-manifest-and-icons (M) — done 2026-07-02 → `tasks-done/other/`. Minimal `manifest.webmanifest` + standard icon set + `theme-color` meta on landing.
+- [x] 326-landing-analytics-umami-self-host (M) — done 2026-07-02 → `tasks-done/other/`. Self-hosted Umami on Railway (`analytics.thunderphong.com`), cookieless script embedded in landing `index.html`, custom `data-umami-event` events wired across nav/theme/social/palette.
 
 ## Pending — Landing follow-up
 
 - [ ] 323-landing-llms-txt (S)
-- [ ] 324-landing-pwa-manifest-and-icons (M)
-- [ ] 326-landing-analytics-umami-self-host (M)
 - [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
 
 ## Pending — Portfolio About (broken down 2026-05-22)
@@ -378,7 +378,8 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 311-rte-console-editor-swap (L) — done 2026-06-28 (S1 profile.bioLong, S2 project body/highlights, S3 blog content, S4 experience desc/resp/highlights; archived → tasks-done/epic-portfolio-rich-text-editor/). Follow-ups spun out: 318 (restore blog md-import), 363 (drop legacy cols), 382 (landing-accurate preview)
 
 ### Phase 6 — Landing renderer
-- [ ] 312-rte-landing-home-intro-render (S) — **blocked**: per-paragraph lamp/pen interaction incompatible with single `[innerHTML]`; deferred to the prose-block-renderer AST epic. deps: 305, 308, 310, 311
+- [x] 312-rte-landing-home-intro-render (S) — done 2026-07-02. `home-intro` drops `parseBioLong`, reads `profile.bioLongCanonical` (canonical PortableDocument) via shared `paragraphsFromDoc` (rte-core/portable), lamp/pen interaction preserved. Verified end-to-end: authored demo bioLong → `PATCH /api/admin/profile/identity` (real console write path) populated all 3 cols; Playwright on `/` confirmed 3 paragraphs from canonical + serif italics + active/dim/lamp-on toggles; Lighthouse TBT 40ms/CLS 0 (change removes client parsing → no perf regression). deps: 305, 308, 310, 311, 385
+- [x] 385-rte-canonical-column-parity (M) — done 2026-07-02. Canonical column + persist + generalized backfill for all 7 RTE fields lacking one (profile.bioLong, experience ×3, technicalHighlight ×3); self-enforced by `rte-canonical-contract.spec.ts`. ADR-023 + guardrails. Migration `add_rte_canonical_columns`. Split from 312. API sweep 303 ✓.
 - [x] 313-rte-landing-project-detail-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `<rte-render-html>` for body + highlight CAO; FE read-time slugger for ToC; browser-only sanitize (plain `dompurify`) to keep `isomorphic-dompurify`/jsdom out of the SSR bundle (ADR-019)
 - [x] 314-rte-landing-blog-post-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); blog body via `<rte-render-html>` + slugger; cover-image CLS/eager/aspect-ratio fix; **removed `marked` + `shiki`** entirely (incl. `/ddl/blog-detail` + 5 `markdown.*` files) + dropped `jest-extended`/`jest-util` devDeps
 
@@ -394,7 +395,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 319-rte-migrate-editor-script (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). `pnpm migrate:editor` escape hatch: metadata-driven scan of all rich-text rows, re-canonicalizes below-latest fields via `RichTextService` (migrate→HTML→sanitize), idempotent, `--dry-run`/`--module=` flags, direct Prisma (no server). deps: 305, 307, 310
 
 ### Contract — drop legacy prose columns
-- [~] 363-rte-drop-legacy-prose-columns (M) — **blocked** (2026-06-30). All-five drop gated: profile (312 blocked), blog (read-time/presenter cutover needed), experience (no render-swap task — decision required). Project render-safe but needs its 311 BE/FE cleanup. Held to drop all five at once once unblocked. deps: 305, 311, 312, 313, 314, 317, 318, 319.
+- [~] 363-rte-drop-legacy-prose-columns (M) — **blocked** (2026-06-30; experience decision folded 2026-07-01). All-five drop gated behind a "cutover reads" phase: profile (task 312, now hardware-unblocked by prose-block-renderer), blog (read-time/presenter cutover — inline), experience (render-swap **folded inline** — rich w/ constrained schema: lists + marks, no block elements). Project render-safe but needs its 311 BE/FE cleanup. Single atomic drop after all reads cut over. deps: 305, 311, 312, 313, 314, 317, 318, 319.
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
 
@@ -421,14 +422,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 356     |
+| Done (archived)           | 360     |
 | In Progress               | 1       |
-| Pending                   | 10      |
-| Blocked                   | 2       |
-| **Total Created**         | **369** |
+| Pending                   | 8       |
+| Blocked                   | 1       |
+| **Total Created**         | **370** |
 | Epics completed           | 49      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-07-01. Active (13): blocked 312, 363; in-progress 361 (content-authoring master tracker); pending 323, 324, 326, 328, 340, 341, 381, 382, 383, 384._
+_Counts reconciled to task files via `/ctx:sync` on 2026-07-02. Active (10): blocked 363; in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383, 384. Archived this sync: 312 + 385 (RTE, done 2026-07-02), 324 + 326 (landing PWA + Umami, done 2026-07-02)._
 
 ## Notes
 

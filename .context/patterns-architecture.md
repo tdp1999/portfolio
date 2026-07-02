@@ -25,6 +25,21 @@ Monorepo structure with two applications sharing common packages:
 - **Pattern:** Dependency injection, repository pattern, CQRS
 - **Domain Approach:** CRUD with structured data models
 
+#### Rich-Text Field Storage Contract (ADR-023)
+
+**Every rich-text (RTE) field carries the full four-column set — no exceptions:**
+
+| Column | Holds | Role |
+|---|---|---|
+| `<field>Json` | Tiptap `EditorDocument` (root-wrapped) | Lossless re-edit source (console loads it back) |
+| `<field>Canonical` | `PortableDocument` (engine-agnostic AST) | **AST renderer read-path** (`<rte-render [doc]>`) |
+| `<field>Html` | Sanitized HTML string | Fallback cache (RSS / llms.txt / OG / no-JS) |
+| `<field>SchemaVersion` | `Int` | Migration marker (identifies an RTE field group) |
+
+- The write pipeline (`RichTextService.toCanonicalForm*`) computes all of these together; the entity MUST persist `<field>Canonical: rich.canonical` (never drop it).
+- Adding an RTE field: add all four columns (nullable JSONB except `SchemaVersion`), wire the entity persist, add the field to `apps/api/scripts/backfill-canonical.ts`'s declaration table.
+- **Enforced by `apps/api/src/rte-canonical-contract.spec.ts`** — it fails CI if any `<field>SchemaVersion` group is missing a sibling column. Do not weaken it to accommodate a partial field; complete the field instead.
+
 #### Validation Rule
 
 **Validation belongs in Command/Query Handlers (Application Layer), never in Controllers.**

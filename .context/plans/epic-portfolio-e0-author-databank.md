@@ -309,6 +309,17 @@ Publish: Console → `/profile` → **Landing Content** → "Tagline" (EN + VI).
 
 **Render dependency (RTE Phase 8 / task 317):** current `taglineSplit` auto-splits at the first period and does NOT parse Markdown — shipped now as plain prose (renders correctly under the current engine). When task 317 lands (drops `taglineSplit`, adds `MarkdownPipe`), the two-block split moves to author-controlled Markdown (blank-line paragraph break + `*italic*`). → tagline needs a one-time **re-mark** then: blank line before sentence 2 + wrap it in `*…*`.
 
+### Home §03 "Selected Work" — `Profile.selectedWorkIntro` (heading + deck above the project tabs)
+
+Publish: Console → `/profile` → **Landing Content** → "Selected Work Intro" (EN + VI). Rendered by `landing-home-selected-work`: split at the first sentence boundary → sentence 1 = section **heading** (`landing-emphasis-text`, Newsreader `<em>` on a keyword), the rest = **deck** paragraph. Locked 2026-06-28. On prod.
+
+**Structure:** heading = generic noun that encompasses the section (house style, cf. §04 "The toolkit."); the *personal-projects* lens lives in the deck. Section features **personal projects only** (author-confirmed).
+
+- **EN** — *Passion projects. A few personal ideas I made real.*
+- **VI** — *Những điều ấp ủ. Một vài ý tưởng cá nhân mình cụ thể hóa thành sản phẩm.*
+
+**Reasoning (locked):** Heading must be a generic **noun** summarizing the section (not a claim/attitude line, not a count — "Three projects" rejected; house style = "The toolkit."-type). Chose a *soft* register over "tác phẩm / sản phẩm" (harder/commercial): VI **"Những điều ấp ủ"** (long-nurtured things — warm, personal, no clash with "sản phẩm" in the deck) ⟷ EN **"Passion projects"** (the standard warm label). Rejected the playful-humble set (vọc vạch / sân chơi / pet projects) — undersells what are real *shipped* products (incl. a published npm library). Deck: "một vài / a few" keeps it honest-modest; "cụ thể hóa / made real" carries the builder act without repeating the heading noun. Eyebrow "Selected Work"↔heading overlap accepted as unavoidable.
+
 ### Home §05 "The Stack" — `Profile.stackIntro` (prose above the tier chip-grid)
 
 Publish: Console → `/profile` → **Landing Content** → "Stack Intro" (markdown; `**bold**` = tech names, `*italic*` = Newsreader accent). Locked 2026-06-27. On prod.
@@ -323,3 +334,14 @@ Publish: Console → `/profile` → **Landing Content** → "Stack Intro" (markd
   - ¶1: *Phần lớn hành trình viết code của mình, 5 năm, là làm việc với **Angular**. Mình đã đi từ những bước nhỏ nhất — cắt UI, làm landing page, cho đến những bước lớn hơn: phát triển các module form phức tạp trong dự án ERP, dùng **Angular Material** rồi tự viết component bằng **Material CDK**. Và hiện tại là viết library cho chính các app Angular tái sử dụng.*
   - ¶2: *Với khoảng thời gian không ngắn đó, cùng với **Nx**, chúng dần định hình cách mình tiếp cận với code: ưu tiên khả năng scale, kiến trúc vững cho bài toán doanh nghiệp. Dù là một app Angular hay một stack khác, mình luôn bắt bản thân tìm ra pattern tốt nhất trong tầm hiểu biết để hệ thống scale được, tìm design system đủ phù hợp để giải quyết vấn đề. Mình cũng muốn hiểu rõ phía Backend, để phối hợp tốt hơn và làm tròn phần việc của mình. Cũng vì vậy mà dần dà mình tìm hiểu và làm việc với **NestJS** — một framework **Node.js** mà mình thích.*
   - ¶3: *Và khi thời đại AI đến, nó cho mình nhiều động lực mới, cũng như tạo ra những lo âu chưa từng có. Mình dùng **Claude Code** như một công cụ mới, nhưng không chỉ dừng ở đó — mình có dựng một workflow và harness riêng, may đo cho cách mình và team làm việc. Nó vừa giúp mình tăng tốc, vừa là cách để mình nâng cấp năng lực. Site bạn đang đọc cũng được lên kế hoạch, xây dựng và ship bằng nó.*
+
+### Site-wide footer — `Profile.footerTagline` (brand-block sign-off)
+
+Publish: Console → `/profile` → **Landing Content** → "Footer Tagline" (EN + VI). Rendered by `landing-footer-banner` as a single `<p>` in the **brand block** under the wordmark (no split), site-wide on every page except /ddl docs. Locked 2026-06-28. On prod.
+
+**Role:** the last line a visitor reads. **Not a CTA** — the brand block has no adjacent contact action (the component's `email`/`socialLinks` inputs aren't rendered here; only a small "Contact" nav link to `/#get-in-touch`). So the line is a passive **thank-you / sign-off**, not an invitation.
+
+- **EN** — *You reached the end of the page. Genuinely, thanks for reading.*
+- **VI** — *Bạn đã đi tới cuối trang rồi. Thật lòng cảm ơn bạn đã đọc.*
+
+**Reasoning (locked):** Explored an invitation vibe first ("might as well say hi") but rejected it for the footer — an invitation-to-contact dead-ends where there's no contact action (author caught this via page-level thinking). Dropped the location signature ("in Saigon") and the maker's-mark ("built by hand") per author preference. Landed on a deadpan self-aware opener + sincere thanks: "Genuinely / Thật lòng" is the word that keeps it off generic "thanks for visiting"; "reading" (not "visiting") implies real engagement. **No em-dash** (author flags it as an AI tell — see feedback memory). The "say hi" invitation is **earmarked for the Get-in-touch section** (where the CTA action lives). Watch for tonal overlap with /about §04 Next steps (`ctaHeading`/`ctaLede`) when authoring /about.
