@@ -11,6 +11,8 @@ import { LandingThemeService } from '../../services/theme/theme.service';
       class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-landing-border text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:border-landing-border-strong hover:text-landing-text-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
       [attr.aria-label]="ariaLabel()"
       [attr.aria-pressed]="isDark()"
+      data-umami-event="theme-toggle"
+      [attr.data-umami-event-to]="isDark() ? 'light' : 'dark'"
       (click)="toggle()"
     >
       @if (isDark()) {
