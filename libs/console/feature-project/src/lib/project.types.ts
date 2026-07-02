@@ -23,7 +23,6 @@ export interface AdminProject {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
-  body: TranslatableJson | null;
   /** RTE canonical doc for the long-form body (full mode). Null until saved via the editor. */
   bodyJson: BilingualEditorDocument | null;
   startDate: string;
@@ -47,13 +46,14 @@ export interface AdminProject {
 
 export interface AdminHighlight {
   id: string;
-  challenge: TranslatableJson;
-  approach: TranslatableJson;
-  outcome: TranslatableJson;
   /** RTE canonical docs (semantic mode). Null until saved via the editor. */
   challengeJson: BilingualEditorDocument | null;
   approachJson: BilingualEditorDocument | null;
   outcomeJson: BilingualEditorDocument | null;
+  /** Sanitized HTML cache per CAO sub-field — the read-only detail preview render source. */
+  challengeHtml: TranslatableJson | null;
+  approachHtml: TranslatableJson | null;
+  outcomeHtml: TranslatableJson | null;
   codeUrl: string | null;
   displayOrder: number;
 }
@@ -84,11 +84,7 @@ export interface ProjectListResponse {
 // --- Payloads ---
 
 export interface HighlightPayload {
-  // Legacy markdown — optional during the RTE transition; the editor now emits the
-  // `*Json` docs below as the source of truth (landing render swap: task 313).
-  challenge?: TranslatableJson;
-  approach?: TranslatableJson;
-  outcome?: TranslatableJson;
+  // The editor emits the `*Json` docs as the source of truth.
   challengeJson?: BilingualEditorDocument;
   approachJson?: BilingualEditorDocument;
   outcomeJson?: BilingualEditorDocument;
@@ -101,7 +97,6 @@ export interface CreateProjectPayload {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
-  body?: TranslatableJson | null;
   bodyJson?: BilingualEditorDocument;
   startDate: string;
   endDate?: string | null;
@@ -120,7 +115,6 @@ export interface UpdateProjectPayload {
   description?: TranslatableJson;
   motivation?: TranslatableJson;
   role?: TranslatableJson;
-  body?: TranslatableJson | null;
   bodyJson?: BilingualEditorDocument;
   startDate?: string;
   endDate?: string | null;

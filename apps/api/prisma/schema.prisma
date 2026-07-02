@@ -363,14 +363,18 @@ model Profile {
   fullName Json
   title    Json
   bioShort Json
-  bioLong  Json?
 
-  // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
-  // both JSONB holding { en, vi }. Single int schemaVersion per field group. Old markdown
-  // `bioLong` column kept side-by-side until task 363 drops it post-backfill.
+  // Rich-text storage. JSON canonical + sanitized HTML cache, both JSONB holding
+  // { en, vi }. Single int schemaVersion per field group. The legacy plain `bioLong`
+  // column was dropped in task 363 (contract phase); the rich triple + canonical are
+  // the sole source.
   bioLongJson          Json? @db.JsonB
   bioLongHtml          Json? @db.JsonB
   bioLongSchemaVersion Int   @default(1)
+  // Engine-agnostic PortableDocument (D3 adapter) — AST renderer's read source,
+  // derived from `bioLongJson` at write-time. Mandatory for every RTE field
+  // (see ADR-023 / patterns-architecture "RTE field column contract").
+  bioLongCanonical Json? @db.JsonB
 
   // Work
   yearsOfExperience Int
@@ -503,22 +507,23 @@ model Experience {
   companyLogoId String? @db.Uuid
 
   // Translatable (JSONB)
-  position         Json  @db.JsonB
-  description      Json? @db.JsonB
-  responsibilities Json  @default("{}") @db.JsonB
-  highlights       Json  @default("{}") @db.JsonB
+  position Json @db.JsonB
 
-  // Rich-text storage (expand phase, task 305) — 3 cols per prose sub-field.
+  // Rich-text storage (task 305) — 4 cols per prose sub-field (description /
+  // responsibilities / highlights). The legacy plain columns were dropped in task 363.
   // JSON canonical + sanitized HTML cache (both JSONB { en, vi }); old cols kept (task 363).
   descriptionJson               Json? @db.JsonB
   descriptionHtml               Json? @db.JsonB
   descriptionSchemaVersion      Int   @default(1)
+  descriptionCanonical          Json? @db.JsonB
   responsibilitiesJson          Json? @db.JsonB
   responsibilitiesHtml          Json? @db.JsonB
   responsibilitiesSchemaVersion Int   @default(1)
+  responsibilitiesCanonical     Json? @db.JsonB
   highlightsJson                Json? @db.JsonB
   highlightsHtml                Json? @db.JsonB
   highlightsSchemaVersion       Int   @default(1)
+  highlightsCanonical           Json? @db.JsonB
 
   teamRole Json? @db.JsonB
 
@@ -609,8 +614,8 @@ model Project {
   // Links — Array<{label, url, type: 'repo'|'demo'|'case-study'|'doc'|'post'}>
   links Json @default("[]")
 
-  // Long-form case-study body (translatable markdown for D3.c reading column)
-  body Json?
+  // Long-form case-study body: the legacy plain `body` column was dropped in task 363;
+  // the rich `body*` triple + canonical below are the sole source.
 
   // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
   // both JSONB holding { en, vi }. Old markdown `body` kept until task 363 drop.
@@ -654,22 +659,23 @@ model TechnicalHighlight {
   id        String @id @db.Uuid
   projectId String @db.Uuid
 
-  // CAO structure — all translatable
-  challenge Json @db.JsonB
-  approach  Json @db.JsonB
-  outcome   Json @db.JsonB
+  // CAO structure (challenge / approach / outcome). The legacy plain columns were
+  // dropped in task 363; the rich triple + canonical below are the sole source.
 
-  // Rich-text storage (expand phase, task 305) — 3 cols per CAO sub-field.
-  // JSON canonical + sanitized HTML cache (both JSONB { en, vi }); old cols kept (task 363).
+  // Rich-text storage (expand phase, task 305) — 4 cols per CAO sub-field.
+  // JSON canonical + sanitized HTML cache (both JSONB { en, vi }).
   challengeJson          Json? @db.JsonB
   challengeHtml          Json? @db.JsonB
   challengeSchemaVersion Int   @default(1)
+  challengeCanonical     Json? @db.JsonB
   approachJson           Json? @db.JsonB
   approachHtml           Json? @db.JsonB
   approachSchemaVersion  Int   @default(1)
+  approachCanonical      Json? @db.JsonB
   outcomeJson            Json? @db.JsonB
   outcomeHtml            Json? @db.JsonB
   outcomeSchemaVersion   Int   @default(1)
+  outcomeCanonical       Json? @db.JsonB
 
   codeUrl      String? @db.VarChar(500)
   displayOrder Int     @default(0)
@@ -713,10 +719,10 @@ model BlogPost {
   // Content
   title   String  @db.VarChar(300)
   excerpt String? @db.VarChar(500)
-  content String  @db.Text
 
   // Rich-text storage (expand phase, task 305). JSON canonical + sanitized HTML cache,
-  // both JSONB holding { en, vi }. Old markdown `content` kept until task 363 drop.
+  // both JSONB holding { en, vi }. The legacy plain `content` column was dropped in
+  // task 363 (contract phase); the rich triple + canonical are the sole body source.
   contentJson          Json? @db.JsonB
   contentHtml          Json? @db.JsonB
   contentSchemaVersion Int   @default(1)

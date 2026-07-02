@@ -14,6 +14,7 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { filter, switchMap } from 'rxjs';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { ExperienceService } from '../experience.service';
 import { AdminExperience } from '../experience.types';
 import { DateRangePipe } from '@portfolio/shared/ui';
@@ -32,6 +33,7 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
     SpinnerOverlay,
     DateRangePipe,
     EnumLabelPipe,
+    RteRenderHtml,
   ],
   templateUrl: './experience.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

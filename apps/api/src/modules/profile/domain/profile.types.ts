@@ -23,14 +23,14 @@ export interface IProfileProps extends Omit<IBaseAuditProps, 'deletedAt' | 'dele
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong: TranslatableJson | null;
 
-  // Rich-text storage (RTE epic Phase 2, expand phase). JSON canonical + sanitized
-  // HTML cache; null until Phase 4 RichTextService populates them. Old markdown
-  // `bioLong` kept side-by-side until task 363 drop.
+  // Rich-text storage for the long bio (ADR-023). JSON canonical + sanitized
+  // HTML cache + engine-agnostic canonical AST.
   bioLongJson: TranslatableRichText | null;
   bioLongHtml: TranslatableJson | null;
   bioLongSchemaVersion: number;
+  // Canonical PortableDocument per locale (ADR-023) — AST read source.
+  bioLongCanonical: TranslatableJson | null;
 
   // Work
   yearsOfExperience: number;
@@ -97,7 +97,6 @@ export interface ICreateProfilePayload {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong?: TranslatableJson;
 
   // Work
   yearsOfExperience: number;

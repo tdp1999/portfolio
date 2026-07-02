@@ -29,12 +29,14 @@ export type ProfilePublicResponseDto = {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong: TranslatableJson | null;
-  /** Rich-text storage for `bioLong` (RTE epic Phase 2). JSON canonical +
-   *  sanitized HTML cache; null until Phase 4 populates them. */
+  /** Rich-text storage for the long bio (ADR-023). JSON canonical +
+   *  sanitized HTML cache; null until first saved via the editor. */
   bioLongJson: TranslatableRichText | null;
   bioLongHtml: TranslatableJson | null;
   bioLongSchemaVersion: number;
+  /** Engine-agnostic canonical PortableDocument per locale (ADR-023) — landing's
+   *  AST read source for §6 "The Story". */
+  bioLongCanonical: TranslatableJson | null;
   yearsOfExperience: number;
   availability: AvailabilityType;
   openTo: OpenToValue[];

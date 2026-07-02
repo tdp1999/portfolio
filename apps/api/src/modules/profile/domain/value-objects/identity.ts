@@ -5,7 +5,6 @@ export interface IdentityProps {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong: TranslatableJson | null;
   avatarId: string | null;
 }
 
@@ -52,10 +51,6 @@ export class Identity {
     return this.props.bioShort;
   }
 
-  get bioLong(): TranslatableJson | null {
-    return this.props.bioLong;
-  }
-
   get avatarId(): string | null {
     return this.props.avatarId;
   }
@@ -68,8 +63,6 @@ export class Identity {
       this.props.title.vi === other.props.title.vi &&
       this.props.bioShort.en === other.props.bioShort.en &&
       this.props.bioShort.vi === other.props.bioShort.vi &&
-      this.props.bioLong?.en === other.props.bioLong?.en &&
-      this.props.bioLong?.vi === other.props.bioLong?.vi &&
       this.props.avatarId === other.props.avatarId
     );
   }

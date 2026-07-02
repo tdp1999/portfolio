@@ -90,10 +90,17 @@
               <span class="detail-field__value">{{ exp.teamRole.en }}</span>
             </div>
           }
-          @if (exp.description) {
+          @if (exp.descriptionHtml?.en || exp.descriptionHtml?.vi) {
             <div class="detail-field">
               <span class="detail-field__label">Description</span>
-              <span class="detail-field__value">{{ exp.description.en }}</span>
+              <div class="detail-field__value space-y-2">
+                @if (exp.descriptionHtml?.en) {
+                  <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.en" />
+                }
+                @if (exp.descriptionHtml?.vi) {
+                  <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.vi" />
+                }
+              </div>
             </div>
           }
         </div>
@@ -131,49 +138,33 @@
         }
 
         <!-- Responsibilities -->
-        @if (exp.responsibilities.en.length > 0 || exp.responsibilities.vi.length > 0) {
+        @if (exp.responsibilitiesHtml?.en || exp.responsibilitiesHtml?.vi) {
           <div class="detail-section">
             <h3 class="detail-section__title">Responsibilities</h3>
 
-            @if (exp.responsibilities.en.length > 0) {
+            @if (exp.responsibilitiesHtml?.en) {
               <p class="text-xs font-medium text-text-muted mb-2">English</p>
-              <ul class="list-disc pl-5 mb-4 text-sm">
-                @for (item of exp.responsibilities.en; track $index) {
-                  <li class="mb-1">{{ item }}</li>
-                }
-              </ul>
+              <rte-render-html class="block text-sm mb-4" [html]="exp.responsibilitiesHtml!.en" />
             }
-            @if (exp.responsibilities.vi.length > 0) {
+            @if (exp.responsibilitiesHtml?.vi) {
               <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
-              <ul class="list-disc pl-5 text-sm">
-                @for (item of exp.responsibilities.vi; track $index) {
-                  <li class="mb-1">{{ item }}</li>
-                }
-              </ul>
+              <rte-render-html class="block text-sm" [html]="exp.responsibilitiesHtml!.vi" />
             }
           </div>
         }
 
         <!-- Highlights -->
-        @if (exp.highlights.en.length > 0 || exp.highlights.vi.length > 0) {
+        @if (exp.highlightsHtml?.en || exp.highlightsHtml?.vi) {
           <div class="detail-section">
             <h3 class="detail-section__title">Highlights</h3>
 
-            @if (exp.highlights.en.length > 0) {
+            @if (exp.highlightsHtml?.en) {
               <p class="text-xs font-medium text-text-muted mb-2">English</p>
-              <ul class="list-disc pl-5 mb-4 text-sm">
-                @for (item of exp.highlights.en; track $index) {
-                  <li class="mb-1">{{ item }}</li>
-                }
-              </ul>
+              <rte-render-html class="block text-sm mb-4" [html]="exp.highlightsHtml!.en" />
             }
-            @if (exp.highlights.vi.length > 0) {
+            @if (exp.highlightsHtml?.vi) {
               <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
-              <ul class="list-disc pl-5 text-sm">
-                @for (item of exp.highlights.vi; track $index) {
-                  <li class="mb-1">{{ item }}</li>
-                }
-              </ul>
+              <rte-render-html class="block text-sm" [html]="exp.highlightsHtml!.vi" />
             }
           </div>
         }

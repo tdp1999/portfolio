@@ -15,7 +15,6 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   fullName: { en: 'Phuong Tran', vi: 'Phương Trần' },
   title: { en: 'Engineer', vi: 'Kỹ sư' },
   bioShort: { en: 'Short bio', vi: 'Tiểu sử ngắn' },
-  bioLong: null,
   yearsOfExperience: 10,
   availability: 'EMPLOYED',
   openTo: ['FREELANCE'],

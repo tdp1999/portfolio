@@ -37,7 +37,6 @@ export class BlogPostPresenter {
   ): BlogPostPublicDetailDto {
     return {
       ...BlogPostPresenter.toPublicList(item),
-      content: item.entity.content,
       contentJson: item.entity.contentJson,
       contentHtml: item.entity.contentHtml,
       contentCanonical: item.entity.contentCanonical,
@@ -107,7 +106,6 @@ export class BlogPostPresenter {
     return {
       ...BlogPostPresenter.toAdminList(item),
       excerpt: entity.excerpt,
-      content: entity.content,
       contentJson: entity.contentJson,
       contentHtml: entity.contentHtml,
       contentSchemaVersion: entity.contentSchemaVersion,

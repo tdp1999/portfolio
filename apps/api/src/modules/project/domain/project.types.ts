@@ -33,9 +33,6 @@ export interface IProjectProps extends IBaseAuditProps {
   motivation: TranslatableJson;
   role: TranslatableJson;
 
-  // Long-form case-study body — translatable, optional
-  body: TranslatableJson | null;
-
   // Rich-text storage for `body` (RTE epic Phase 2, expand phase). JSON canonical +
   // sanitized HTML cache; null until Phase 4 RichTextService populates them.
   bodyJson: TranslatableRichText | null;
@@ -70,7 +67,6 @@ export interface ICreateProjectPayload {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
-  body?: TranslatableJson | null;
   startDate: Date;
   endDate?: Date;
   links?: ProjectLinkProps[];
@@ -88,7 +84,6 @@ export interface IUpdateProjectPayload {
   description?: PartialTranslatableJson;
   motivation?: PartialTranslatableJson;
   role?: PartialTranslatableJson;
-  body?: PartialTranslatableJson | null;
   startDate?: Date;
   endDate?: Date | null;
   status?: ContentStatus;

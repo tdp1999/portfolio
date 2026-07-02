@@ -93,15 +93,11 @@ export class ProfileIdentitySection {
   });
 
   private hydrated = false;
-  // Legacy markdown bio captured at hydrate, echoed back on save so the BE keeps
-  // it until the landing render swap (task 312) stops reading it.
-  private legacyBioLong: ProfileAdminResponse['bioLong'] = null;
 
   constructor() {
     effect(() => {
       const data = this.initialData();
       if (!data || this.hydrated) return;
-      this.legacyBioLong = data.bioLong ?? null;
       this.form.reset({
         fullName: { en: data.fullName.en, vi: data.fullName.vi },
         title: { en: data.title.en, vi: data.title.vi },
@@ -139,7 +135,6 @@ export class ProfileIdentitySection {
             fullName: payload.fullName,
             title: payload.title,
             bioShort: payload.bioShort,
-            bioLong: payload.bioLong,
             bioLongJson: payload.bioLongJson ?? null,
           });
         },
@@ -153,8 +148,6 @@ export class ProfileIdentitySection {
       fullName: v.fullName,
       title: v.title,
       bioShort: v.bioShort,
-      // Legacy markdown isn't edited via the RTE; echo it back unchanged.
-      bioLong: this.legacyBioLong,
       bioLongJson: this.buildBioLongJson(v.bioLong),
     };
   }

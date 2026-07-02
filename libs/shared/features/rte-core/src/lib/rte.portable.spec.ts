@@ -7,6 +7,7 @@ import {
   imageRefAttrsSchema,
   isSafeContentUrl,
   linkMarkAttrsSchema,
+  paragraphsFromDoc,
   parseBlockAttrs,
   portableDocumentSchema,
   PORTABLE_SCHEMA_VERSION,
@@ -139,6 +140,75 @@ describe('collectHeadings (ToC / scroll anchors)', () => {
     const h = heading(2, 'Overview');
     const refs = collectHeadings({ schemaVersion: 1, content: [h] });
     expect(refs[0].node).toBe(h);
+  });
+});
+
+describe('paragraphsFromDoc (per-paragraph run projection)', () => {
+  it('flattens each top-level paragraph to text runs with their marks', () => {
+    const runs = paragraphsFromDoc({
+      schemaVersion: 1,
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Plain then ' },
+            { type: 'text', text: 'emphasised', marks: [{ type: 'italic' }] },
+            { type: 'text', text: ' tail.' },
+          ],
+        },
+        { type: 'paragraph', content: [{ type: 'text', text: 'Second.' }] },
+      ],
+    });
+    expect(runs).toEqual([
+      [
+        { text: 'Plain then ', marks: [] },
+        { text: 'emphasised', marks: ['italic'] },
+        { text: ' tail.', marks: [] },
+      ],
+      [{ text: 'Second.', marks: [] }],
+    ]);
+  });
+
+  it('preserves multiple marks on a run in order', () => {
+    const runs = paragraphsFromDoc({
+      schemaVersion: 1,
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'bold' }, { type: 'italic' }] }] },
+      ],
+    });
+    expect(runs).toEqual([[{ text: 'x', marks: ['bold', 'italic'] }]]);
+  });
+
+  it('skips non-paragraph blocks and non-text/empty inline nodes', () => {
+    const runs = paragraphsFromDoc({
+      schemaVersion: 1,
+      content: [
+        { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Title' }] },
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'kept' }, { type: 'hardBreak' }, { type: 'text', text: '' }],
+        },
+        { type: 'bulletList', content: [] },
+      ],
+    });
+    expect(runs).toEqual([[{ text: 'kept', marks: [] }]]);
+  });
+
+  it('drops paragraphs that have no text runs', () => {
+    const runs = paragraphsFromDoc({
+      schemaVersion: 1,
+      content: [
+        { type: 'paragraph', content: [{ type: 'hardBreak' }] },
+        { type: 'paragraph', content: [{ type: 'text', text: 'real' }] },
+      ],
+    });
+    expect(runs).toEqual([[{ text: 'real', marks: [] }]]);
+  });
+
+  it('returns an empty list for a null/empty document', () => {
+    expect(paragraphsFromDoc(null)).toEqual([]);
+    expect(paragraphsFromDoc(undefined)).toEqual([]);
+    expect(paragraphsFromDoc({ schemaVersion: 1, content: [] })).toEqual([]);
   });
 });
 

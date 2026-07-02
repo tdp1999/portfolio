@@ -54,11 +54,11 @@ export class ProfileMapper {
       fullName: PersistenceTranslatableSchema.parse(raw.fullName),
       title: PersistenceTranslatableSchema.parse(raw.title),
       bioShort: PersistenceTranslatableSchema.parse(raw.bioShort),
-      bioLong: parseTranslatableNullable(raw.bioLong),
-      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      // Rich-text columns — opaque passthrough (read side).
       bioLongJson: (raw.bioLongJson as TranslatableRichText | null) ?? null,
       bioLongHtml: (raw.bioLongHtml as unknown as TranslatableJson | null) ?? null,
       bioLongSchemaVersion: raw.bioLongSchemaVersion,
+      bioLongCanonical: (raw.bioLongCanonical as unknown as TranslatableJson | null) ?? null,
       yearsOfExperience: raw.yearsOfExperience,
       availability: raw.availability as Availability,
       openTo: OpenToSchema.parse(raw.openTo) as OpenToValue[],
@@ -108,7 +108,6 @@ export class ProfileMapper {
       fullName: profile.fullName as unknown as Prisma.InputJsonValue,
       title: profile.title as unknown as Prisma.InputJsonValue,
       bioShort: profile.bioShort as unknown as Prisma.InputJsonValue,
-      bioLong: (profile.bioLong as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       yearsOfExperience: profile.yearsOfExperience,
       availability: profile.availability,
       openTo: profile.openTo as unknown as Prisma.InputJsonValue,

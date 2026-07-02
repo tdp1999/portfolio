@@ -7,6 +7,8 @@ import type { ProjectHighlightDto } from '../infrastructure/mapper/project.mappe
 
 const EMPTY_LOCALE = { en: '', vi: '' };
 const richDoc = { en: { schemaVersion: 3, content: {} }, vi: { schemaVersion: 3, content: {} } };
+// Canonical is stored as TranslatableJson (one string per locale) at the storage boundary.
+const canonicalDoc = { en: 'canon-en', vi: 'canon-vi' };
 
 // Canonicalize result the stub returns for any field given a `*Json` input.
 const canonical = { json: richDoc, html: { en: '<p>c</p>', vi: '<p>v</p>' }, schemaVersion: 3 };
@@ -33,8 +35,6 @@ describe('mapHighlightDtoToInput', () => {
     expect(result.challengeRich).toEqual(canonical);
     expect(result.approachRich).toEqual(canonical);
     expect(result.outcomeRich).toEqual(canonical);
-    // Legacy markdown stays empty during the transition (RTE is the source).
-    expect(result.challenge).toEqual(EMPTY_LOCALE);
     expect(result.codeUrl).toBe('https://x');
     expect(result.displayOrder).toBe(2);
   });
@@ -54,25 +54,30 @@ describe('mapHighlightDtoToInput', () => {
 describe('mapStoredHighlightToInput', () => {
   const base: ProjectHighlightDto = {
     id: 'h1',
-    challenge: { en: 'c', vi: 'c' },
-    approach: { en: 'a', vi: 'a' },
-    outcome: { en: 'o', vi: 'o' },
     challengeJson: richDoc,
     challengeHtml: { en: '<p>c</p>', vi: '<p>c</p>' },
     challengeSchemaVersion: 3,
+    challengeCanonical: canonicalDoc,
     approachJson: null,
     approachHtml: null,
     approachSchemaVersion: 3,
+    approachCanonical: null,
     outcomeJson: richDoc,
     outcomeHtml: null,
     outcomeSchemaVersion: 5,
+    outcomeCanonical: null,
     codeUrl: null,
     displayOrder: 1,
   };
 
   it('rebuilds a triple from a stored doc', () => {
     const result = mapStoredHighlightToInput(base, 4);
-    expect(result.challengeRich).toEqual({ json: richDoc, html: base.challengeHtml, schemaVersion: 3 });
+    expect(result.challengeRich).toEqual({
+      json: richDoc,
+      canonical: canonicalDoc,
+      html: base.challengeHtml,
+      schemaVersion: 3,
+    });
     expect(result.displayOrder).toBe(4);
   });
 
@@ -82,6 +87,11 @@ describe('mapStoredHighlightToInput', () => {
 
   it('falls back to empty html when the stored html is null', () => {
     const result = mapStoredHighlightToInput(base, 0);
-    expect(result.outcomeRich).toEqual({ json: richDoc, html: EMPTY_LOCALE, schemaVersion: 5 });
+    expect(result.outcomeRich).toEqual({
+      json: richDoc,
+      canonical: EMPTY_LOCALE,
+      html: EMPTY_LOCALE,
+      schemaVersion: 5,
+    });
   });
 });

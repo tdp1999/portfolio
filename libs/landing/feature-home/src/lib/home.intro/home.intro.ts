@@ -16,8 +16,8 @@ import {
   viewChildren,
 } from '@angular/core';
 import { Container, Eyebrow, LandingThemeService } from '@portfolio/landing/shared/ui';
+import { paragraphsFromDoc, type PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import type { PenAnchor } from './home.intro.types';
-import { parseBioLong } from './home.intro.util';
 
 @Component({
   selector: 'landing-home-intro',
@@ -28,9 +28,16 @@ import { parseBioLong } from './home.intro.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeIntro {
-  readonly bioLong = input<string>('');
+  /** Canonical story doc (`Profile.bioLongJson`, localized by the parent). Projected
+   *  to per-paragraph runs so each `<p>` can drive the lamp/pen aim + underline — the
+   *  generic `<rte-render>` component can't hand out those per-node handles. */
+  readonly bioDoc = input<PortableDocument | null>(null);
 
-  protected readonly paragraphs = computed(() => parseBioLong(this.bioLong()));
+  protected readonly paragraphs = computed(() =>
+    paragraphsFromDoc(this.bioDoc()).map((runs) =>
+      runs.map((run) => ({ text: run.text, italic: run.marks.includes('italic') }))
+    )
+  );
 
   // ─── Light-source interaction ────────────────────────────────────────
   // -1 = off (lamp dark / pen at rest in inkwell), prose reads normally. Click

@@ -1,15 +1,19 @@
 /**
- * `pnpm backfill:canonical` — one-off backfill of the prose-block renderer's
- * `*Canonical` columns for content authored BEFORE those columns existed.
+ * `pnpm backfill:canonical` — one-off backfill of the `*Canonical` columns for
+ * content authored BEFORE those columns existed.
  *
- * Only the two AST-rendered fields have a canonical column: `project.body →
- * bodyCanonical` and `blog-post.content → contentCanonical`. Rows saved before this
- * epic are already at `LATEST_SCHEMA_VERSION` with `canonical = null`, so
- * `pnpm migrate:editor` skips them (its `version >= LATEST` guard). This script fills
- * the gap: it reads each row's existing `*Json` (E's Tiptap doc, the re-edit source),
- * runs it back through {@link RichTextService} (the SAME write pipeline the console
- * uses), and writes back **only** the `*Canonical` column — `*Json` and `*Html` are
- * left untouched.
+ * Covers EVERY rich-text field (ADR-023 contract): `project.body`,
+ * `blog-post.content`, `profile.bioLong`, `experience.{description,responsibilities,
+ * highlights}`, and `technical-highlight.{challenge,approach,outcome}`. Rows saved
+ * before their canonical column existed are already at `LATEST_SCHEMA_VERSION` with
+ * `canonical = null`, so `pnpm migrate:editor` skips them (its `version >= LATEST`
+ * guard). This script fills the gap: it reads each row's existing `*Json` (E's Tiptap
+ * doc, the re-edit source), runs it back through {@link RichTextService} (the SAME
+ * write pipeline the console uses), and writes back **only** the `*Canonical` column
+ * — `*Json` and `*Html` are left untouched.
+ *
+ * Adding a new RTE field → add one entry to {@link MODULES} (that's the whole change
+ * here; the loop is field-agnostic).
  *
  * Once a row has canonical, the landing read-path switches from the `<rte-render-html>`
  * HTML fallback to the live `<rte-render [doc]>` AST path for that content.
@@ -24,11 +28,14 @@
  * Flags:
  *   --dry-run          report what would change without writing
  *   --force            recompute + overwrite canonical even if already present
- *   --module=<name>    scope to one model: project | blog-post
+ *   --module=<name>    scope to one model (project | blog-post | profile |
+ *                      experience | technical-highlight) or one exact field key
+ *                      (e.g. experience.highlights)
  *
  *   pnpm backfill:canonical --dry-run
  *   pnpm backfill:canonical
- *   pnpm backfill:canonical --module=project
+ *   pnpm backfill:canonical --module=profile
+ *   pnpm backfill:canonical --module=experience.highlights
  */
 import { config } from 'dotenv';
 import { resolve } from 'node:path';
@@ -42,10 +49,12 @@ import { RichTextService } from '../src/modules/rich-text';
 const LOG = '[backfill:canonical]';
 
 interface ModuleSpec {
-  /** `--module=` flag value. */
+  /** Unique field key (`<model>.<field>`), used in logs + exact `--module=` match. */
   key: string;
+  /** Model name for `--module=` scoping + logs. */
+  model: string;
   /** `PrismaClient` delegate name. */
-  delegate: 'project' | 'blogPost';
+  delegate: 'project' | 'blogPost' | 'profile' | 'experience' | 'technicalHighlight';
   /** Source column (E's Tiptap `{ en, vi }` envelope). */
   jsonCol: string;
   /** Destination column (our PortableDocument `{ en, vi }` envelope). */
@@ -54,14 +63,80 @@ interface ModuleSpec {
   label: string;
 }
 
+// One entry per RTE field (ADR-023). The loop below is field-agnostic — extending
+// coverage is purely additive here.
 const MODULES: ModuleSpec[] = [
-  { key: 'project', delegate: 'project', jsonCol: 'bodyJson', canonicalCol: 'bodyCanonical', label: 'body' },
   {
-    key: 'blog-post',
+    key: 'project.body',
+    model: 'project',
+    delegate: 'project',
+    jsonCol: 'bodyJson',
+    canonicalCol: 'bodyCanonical',
+    label: 'body',
+  },
+  {
+    key: 'blog-post.content',
+    model: 'blog-post',
     delegate: 'blogPost',
     jsonCol: 'contentJson',
     canonicalCol: 'contentCanonical',
     label: 'content',
+  },
+  {
+    key: 'profile.bioLong',
+    model: 'profile',
+    delegate: 'profile',
+    jsonCol: 'bioLongJson',
+    canonicalCol: 'bioLongCanonical',
+    label: 'bioLong',
+  },
+  {
+    key: 'experience.description',
+    model: 'experience',
+    delegate: 'experience',
+    jsonCol: 'descriptionJson',
+    canonicalCol: 'descriptionCanonical',
+    label: 'description',
+  },
+  {
+    key: 'experience.responsibilities',
+    model: 'experience',
+    delegate: 'experience',
+    jsonCol: 'responsibilitiesJson',
+    canonicalCol: 'responsibilitiesCanonical',
+    label: 'responsibilities',
+  },
+  {
+    key: 'experience.highlights',
+    model: 'experience',
+    delegate: 'experience',
+    jsonCol: 'highlightsJson',
+    canonicalCol: 'highlightsCanonical',
+    label: 'highlights',
+  },
+  {
+    key: 'technical-highlight.challenge',
+    model: 'technical-highlight',
+    delegate: 'technicalHighlight',
+    jsonCol: 'challengeJson',
+    canonicalCol: 'challengeCanonical',
+    label: 'challenge',
+  },
+  {
+    key: 'technical-highlight.approach',
+    model: 'technical-highlight',
+    delegate: 'technicalHighlight',
+    jsonCol: 'approachJson',
+    canonicalCol: 'approachCanonical',
+    label: 'approach',
+  },
+  {
+    key: 'technical-highlight.outcome',
+    model: 'technical-highlight',
+    delegate: 'technicalHighlight',
+    jsonCol: 'outcomeJson',
+    canonicalCol: 'outcomeCanonical',
+    label: 'outcome',
   },
 ];
 
@@ -177,9 +252,14 @@ async function main(): Promise<void> {
 
   let modules = MODULES;
   if (flags.module) {
-    const picked = MODULES.find((m) => m.key === flags.module);
-    if (!picked) throw new Error(`Unknown --module=${flags.module}. Valid: ${MODULES.map((m) => m.key).join(', ')}`);
-    modules = [picked];
+    // Match a whole model (e.g. `experience`) or one exact field key (e.g.
+    // `experience.highlights`).
+    modules = MODULES.filter((m) => m.model === flags.module || m.key === flags.module);
+    if (modules.length === 0) {
+      const models = [...new Set(MODULES.map((m) => m.model))].join(', ');
+      const keys = MODULES.map((m) => m.key).join(', ');
+      throw new Error(`Unknown --module=${flags.module}. Valid models: ${models}. Valid keys: ${keys}`);
+    }
   }
 
   console.log(

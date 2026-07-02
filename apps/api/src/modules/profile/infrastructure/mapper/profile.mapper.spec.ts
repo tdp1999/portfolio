@@ -11,6 +11,7 @@ const RAW_PROFILE: PrismaProfile = {
   bioLongJson: null,
   bioLongHtml: null,
   bioLongSchemaVersion: 1,
+  bioLongCanonical: null,
   yearsOfExperience: 8,
   availability: 'EMPLOYED',
   openTo: ['FREELANCE'],

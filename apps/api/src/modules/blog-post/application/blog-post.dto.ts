@@ -19,11 +19,10 @@ const PostStatusSchema = z.enum([POST_STATUS.DRAFT, POST_STATUS.PUBLISHED, POST_
 
 export const CreateBlogPostSchema = z.object({
   title: TitleSchema,
-  content: ContentSchema,
   // Single editor document (a post is one language). The handler wraps it into
-  // the bilingual `{ [language]: doc }` storage envelope. Legacy `content`
-  // (plain text) stays populated for the transition until the landing render swap.
-  contentJson: EditorDocumentSchema.optional(),
+  // the bilingual `{ [language]: doc }` storage envelope and canonicalizes it.
+  // This is the sole body source (legacy plain `content` dropped in task 363).
+  contentJson: EditorDocumentSchema,
   language: LanguageSchema.default('EN'),
   excerpt: ExcerptSchema.optional(),
   categoryIds: z.array(z.uuid()).default([]),
@@ -41,7 +40,6 @@ export type CreateBlogPostDto = z.infer<typeof CreateBlogPostSchema>;
 
 const UpdateBlogPostBaseSchema = z.object({
   title: TitleSchema,
-  content: ContentSchema,
   contentJson: EditorDocumentSchema.optional(),
   language: LanguageSchema,
   excerpt: ExcerptSchema.nullable(),
@@ -149,8 +147,7 @@ export type BlogPostPublicListItemDto = {
 };
 
 export type BlogPostPublicDetailDto = BlogPostPublicListItemDto & {
-  content: string;
-  /** Rich-text storage for `content` (RTE epic Phase 2). Null until Phase 4. */
+  /** Rich-text body storage. `content*` legacy plain column dropped in task 363. */
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
   /** Canonical `PortableDocument` per locale (prose-block renderer epic) — the AST
@@ -210,8 +207,7 @@ export type BlogPostAdminListItemDto = {
 
 export type BlogPostAdminDetailDto = BlogPostAdminListItemDto & {
   excerpt: string | null;
-  content: string;
-  /** Rich-text storage for `content` (RTE epic Phase 2). Null until Phase 4. */
+  /** Rich-text body storage. `content*` legacy plain column dropped in task 363. */
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
   contentSchemaVersion: number;

@@ -57,12 +57,15 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
+      challengeCanonical: null,
       approachJson: null,
       approachHtml: null,
       approachSchemaVersion: 1,
+      approachCanonical: null,
       outcomeJson: null,
       outcomeHtml: null,
       outcomeSchemaVersion: 1,
+      outcomeCanonical: null,
       codeUrl: null,
       displayOrder: 1,
     },
@@ -75,12 +78,15 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
+      challengeCanonical: null,
       approachJson: null,
       approachHtml: null,
       approachSchemaVersion: 1,
+      approachCanonical: null,
       outcomeJson: null,
       outcomeHtml: null,
       outcomeSchemaVersion: 1,
+      outcomeCanonical: null,
       codeUrl: 'https://github.com/pr/1',
       displayOrder: 0,
     },
@@ -144,10 +150,9 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
 
 describe('ProjectMapper', () => {
   describe('toDomain', () => {
-    it('should map body and links from raw row', () => {
+    it('should map links from raw row', () => {
       const entity = ProjectMapper.toDomain(RAW_PROJECT);
 
-      expect(entity.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
       expect(entity.links).toEqual([{ label: 'Source', url: 'https://github.com/example', type: 'repo' }]);
     });
 
@@ -166,11 +171,6 @@ describe('ProjectMapper', () => {
       });
       expect(entity.links).toHaveLength(1);
       expect(entity.links[0].label).toBe('OK');
-    });
-
-    it('should map body=null', () => {
-      const entity = ProjectMapper.toDomain({ ...RAW_PROJECT, body: null });
-      expect(entity.body).toBeNull();
     });
   });
 

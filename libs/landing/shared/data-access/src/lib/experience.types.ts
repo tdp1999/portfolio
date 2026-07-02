@@ -1,4 +1,4 @@
-import type { ExperienceLink, TranslatableJson, TranslatableStringArray } from '@portfolio/shared/types';
+import type { ExperienceLink, TranslatableJson } from '@portfolio/shared/types';
 
 export type EmploymentType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'FREELANCE' | 'INTERNSHIP' | 'SELF_EMPLOYED';
 export type LocationType = 'REMOTE' | 'HYBRID' | 'ONSITE';
@@ -16,9 +16,13 @@ export type PublicExperience = {
   companyUrl: string | null;
   companyLogoUrl: string | null;
   position: TranslatableJson;
-  description: TranslatableJson | null;
-  responsibilities: TranslatableStringArray;
-  highlights: TranslatableStringArray;
+  /** Canonical `PortableDocument` per locale (task 363) — the AST render source for
+   *  `<rte-render [doc]>`. Null until the experience is (re)saved through the console
+   *  rich-text editor. Supersedes the legacy `description`/`responsibilities`/`highlights`
+   *  string columns (dropped in the contract migration). */
+  descriptionCanonical: TranslatableJson | null;
+  responsibilitiesCanonical: TranslatableJson | null;
+  highlightsCanonical: TranslatableJson | null;
   teamRole: TranslatableJson | null;
   links: ExperienceLink[];
   employmentType: EmploymentType;

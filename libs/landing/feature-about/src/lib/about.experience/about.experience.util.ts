@@ -1,9 +1,18 @@
 import type { PublicExperience } from '@portfolio/landing/shared/data-access';
 import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/enum-labels';
-import type { Locale } from '@portfolio/shared/types';
+import type { Locale, TranslatableJson } from '@portfolio/shared/types';
+import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import { FRAGMENT_PREFIX } from './about.experience.data';
 import type { ExperienceVm } from './about.experience.types';
+
+/** Localize a canonical `*Canonical` envelope and drop empty docs to `null`
+ *  (mirrors home `bioDoc` / project-detail `bodyDoc`), so the template renders
+ *  `<rte-render>` only when there is actual content. */
+function canonicalDoc(canonical: TranslatableJson | null, lang: Locale): PortableDocument | null {
+  const doc = getLocalized(canonical, lang) as unknown as PortableDocument | null;
+  return doc && Array.isArray(doc.content) && doc.content.length > 0 ? doc : null;
+}
 
 export function sortReverseChrono(a: PublicExperience, b: PublicExperience): number {
   const aEnd = a.endDate ? new Date(a.endDate).getTime() : Number.POSITIVE_INFINITY;
@@ -15,8 +24,6 @@ export function sortReverseChrono(a: PublicExperience, b: PublicExperience): num
 export function toVm(exp: PublicExperience, lang: Locale): ExperienceVm {
   const position = getLocalized(exp.position, lang);
   const teamRole = getLocalized(exp.teamRole, lang);
-  const highlights = exp.highlights?.[lang] ?? [];
-  const responsibilities = exp.responsibilities?.[lang] ?? [];
 
   return {
     id: exp.id,
@@ -30,8 +37,8 @@ export function toVm(exp: PublicExperience, lang: Locale): ExperienceVm {
     dateRangeLabel: formatDateRange(exp.startDate, exp.endDate),
     isCurrent: !exp.endDate,
     metaItems: buildMetaItems(exp, teamRole),
-    highlights,
-    responsibilities,
+    highlightsDoc: canonicalDoc(exp.highlightsCanonical, lang),
+    responsibilitiesDoc: canonicalDoc(exp.responsibilitiesCanonical, lang),
     skillChips: exp.skills.map((s) => ({ id: s.id, name: getLocalized(s.name, lang) })),
     links: exp.links.map((l) => ({ url: l.url, label: l.label })),
     tabId: `${FRAGMENT_PREFIX}${exp.slug}-tab`,

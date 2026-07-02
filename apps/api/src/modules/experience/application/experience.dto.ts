@@ -3,7 +3,6 @@ import { EmploymentType, LocationType } from '@prisma/client';
 import {
   TranslatableSchema,
   OptionalTranslatableSchema,
-  TranslatableStringArraySchema,
   PaginatedQuerySchema,
   nonEmptyPartial,
 } from '@portfolio/shared/utils';
@@ -40,11 +39,7 @@ export const CreateExperienceSchema = withDateRange(
     companyUrl: UrlSchema.optional(),
     companyLogoId: z.uuid().optional(),
     position: TranslatableSchema,
-    description: OptionalTranslatableSchema.optional(),
-    responsibilities: TranslatableStringArraySchema.default({ en: [], vi: [] }),
-    highlights: TranslatableStringArraySchema.default({ en: [], vi: [] }),
-    // Rich-text source of truth (the console editor emits these). Legacy string
-    // fields above stay populated/defaulted for the transition; dropped in task 363.
+    // Rich-text source of truth — the console editor emits these bilingual docs.
     descriptionJson: BilingualEditorDocumentSchema.optional(),
     responsibilitiesJson: BilingualEditorDocumentSchema.optional(),
     highlightsJson: BilingualEditorDocumentSchema.optional(),
@@ -78,9 +73,6 @@ const UpdateExperienceBaseSchema = z.object({
   companyUrl: UrlSchema.optional(),
   companyLogoId: z.uuid().nullable().optional(),
   position: TranslatableSchema,
-  description: OptionalTranslatableSchema.optional(),
-  responsibilities: TranslatableStringArraySchema,
-  highlights: TranslatableStringArraySchema,
   descriptionJson: BilingualEditorDocumentSchema.optional(),
   responsibilitiesJson: BilingualEditorDocumentSchema.optional(),
   highlightsJson: BilingualEditorDocumentSchema.optional(),

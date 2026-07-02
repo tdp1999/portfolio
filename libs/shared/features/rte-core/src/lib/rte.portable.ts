@@ -278,6 +278,63 @@ export function collectHeadings(doc: PortableDocument | null | undefined): Headi
   return out;
 }
 
+// ---------------------------------------------------------------------------
+// Paragraph → text-run projection. For consumers that render prose with their
+// OWN per-paragraph DOM (not the generic <rte-render> component tree) — e.g.
+// landing's interactive "story", where each <p> drives a lamp/pen aim + an ink
+// underline and therefore needs consumer-owned element handles the renderer
+// can't hand out. Reads the SAME canonical PortableDocument, so there's no
+// second parser to keep in sync with the write path.
+// ---------------------------------------------------------------------------
+
+/** One inline text run: its visible text plus the marks it carries. */
+export interface TextRun {
+  readonly text: string;
+  readonly marks: readonly MarkType[];
+}
+
+/**
+ * Flatten a document's **top-level `paragraph` nodes** to inline text runs, marks
+ * preserved. Each paragraph → an array of {@link TextRun}s (one per text node), in
+ * order. Non-paragraph blocks (headings, lists, code, image-ref, …) and non-text
+ * inline nodes (e.g. `hardBreak`) are skipped; empty paragraphs are dropped.
+ *
+ * This is a lossy, deliberately shallow projection — it exists for prose whose
+ * design is only paragraphs + inline emphasis. Anything richer should render
+ * through `<rte-render [doc]>` instead.
+ */
+export function paragraphsFromDoc(doc: PortableDocument | null | undefined): readonly (readonly TextRun[])[] {
+  const paragraphs: TextRun[][] = [];
+  for (const node of doc?.content ?? []) {
+    if (node.type !== 'paragraph') continue;
+    const runs: TextRun[] = [];
+    for (const child of node.content ?? []) {
+      if (child.type !== 'text' || !child.text) continue;
+      runs.push({ text: child.text, marks: child.marks?.map((m) => m.type) ?? [] });
+    }
+    if (runs.length > 0) paragraphs.push(runs);
+  }
+  return paragraphs;
+}
+
+/**
+ * Flatten a whole document to a single plain-text string — every text node in
+ * reading order, block boundaries collapsed to single spaces. Marks and block
+ * structure are discarded. Used for word-count / read-time estimation off the
+ * canonical doc (the AST replacement for counting words in legacy markdown).
+ */
+export function plainTextFromDoc(doc: PortableDocument | null | undefined): string {
+  const walk = (nodes: readonly PortableNode[] | undefined): string =>
+    (nodes ?? [])
+      .map((n) => {
+        const own = n.text ?? '';
+        const kids = walk(n.content);
+        return kids ? `${own} ${kids}` : own;
+      })
+      .join(' ');
+  return walk(doc?.content).replace(/\s+/g, ' ').trim();
+}
+
 /** The outcome of validating one node's attrs against its block schema. */
 export type BlockAttrsResult =
   | { readonly ok: true; readonly attrs: Record<string, unknown> }

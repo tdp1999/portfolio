@@ -5,7 +5,6 @@ describe('Identity VO', () => {
     fullName: { en: 'John Doe', vi: 'Nguyen Van A' },
     title: { en: 'Developer', vi: 'Lap trinh vien' },
     bioShort: { en: 'A dev', vi: 'Mot dev' },
-    bioLong: null,
     avatarId: null,
   };
 

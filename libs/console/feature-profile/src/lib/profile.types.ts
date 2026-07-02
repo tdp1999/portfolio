@@ -1,4 +1,4 @@
-import { OptionalTranslatableJson, ResumeUrls, TranslatableJson } from '@portfolio/shared/types';
+import { ResumeUrls, TranslatableJson } from '@portfolio/shared/types';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { PROFILE_SECTIONS } from './profile.data';
 
@@ -15,7 +15,6 @@ export interface ProfileAdminResponse {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong: OptionalTranslatableJson | null;
   /** RTE canonical doc for the long bio. Null until first saved via the editor. */
   bioLongJson: TranslatableRichText | null;
   yearsOfExperience: number;
@@ -66,8 +65,6 @@ export interface UpdateIdentityPayload {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  /** Legacy markdown bio — echoed back unchanged during the RTE transition (BE keeps it). */
-  bioLong: OptionalTranslatableJson | null;
   /** RTE bio document pair. Omitted when both locales are empty (identity-only update). */
   bioLongJson?: TranslatableRichText;
 }

@@ -1,9 +1,4 @@
-import type {
-  ExperienceLink,
-  TranslatableJson,
-  TranslatableRichText,
-  TranslatableStringArray,
-} from '@portfolio/shared/types';
+import type { ExperienceLink, TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { Experience } from '../domain/entities/experience.entity';
 import type { EmploymentType, LocationType } from '../domain/experience.types';
 
@@ -26,20 +21,20 @@ export type ExperiencePublicResponseDto = {
   companyUrl: string | null;
   companyLogoUrl: string | null;
   position: TranslatableJson;
-  description: TranslatableJson | null;
-  responsibilities: TranslatableStringArray;
-  highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
-  // Rich-text storage (RTE epic Phase 2) per prose sub-field. Null until Phase 4.
+  // Rich-text storage per prose sub-field. Null until authored through the RTE.
   descriptionJson: TranslatableRichText | null;
   descriptionHtml: TranslatableJson | null;
   descriptionSchemaVersion: number;
+  descriptionCanonical: TranslatableJson | null;
   responsibilitiesJson: TranslatableRichText | null;
   responsibilitiesHtml: TranslatableJson | null;
   responsibilitiesSchemaVersion: number;
+  responsibilitiesCanonical: TranslatableJson | null;
   highlightsJson: TranslatableRichText | null;
   highlightsHtml: TranslatableJson | null;
   highlightsSchemaVersion: number;
+  highlightsCanonical: TranslatableJson | null;
   links: ExperienceLink[];
   employmentType: EmploymentType;
   locationType: LocationType;
@@ -87,19 +82,19 @@ export class ExperiencePresenter {
       companyUrl: entity.companyUrl,
       companyLogoUrl,
       position: entity.position,
-      description: entity.description,
-      responsibilities: entity.responsibilities,
-      highlights: entity.highlights,
       teamRole: entity.teamRole,
       descriptionJson: entity.descriptionJson,
       descriptionHtml: entity.descriptionHtml,
       descriptionSchemaVersion: entity.descriptionSchemaVersion,
+      descriptionCanonical: entity.descriptionCanonical,
       responsibilitiesJson: entity.responsibilitiesJson,
       responsibilitiesHtml: entity.responsibilitiesHtml,
       responsibilitiesSchemaVersion: entity.responsibilitiesSchemaVersion,
+      responsibilitiesCanonical: entity.responsibilitiesCanonical,
       highlightsJson: entity.highlightsJson,
       highlightsHtml: entity.highlightsHtml,
       highlightsSchemaVersion: entity.highlightsSchemaVersion,
+      highlightsCanonical: entity.highlightsCanonical,
       links: entity.links,
       employmentType: entity.employmentType,
       locationType: entity.locationType,

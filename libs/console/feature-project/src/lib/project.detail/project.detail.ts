@@ -17,6 +17,7 @@ import { filter, switchMap } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { AdminProject, SkillOption } from '../project.types';
 import { DateRangePipe, TranslatablePipe } from '@portfolio/shared/ui';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 
 @Component({
   selector: 'console-project-detail',
@@ -30,6 +31,7 @@ import { DateRangePipe, TranslatablePipe } from '@portfolio/shared/ui';
     SpinnerOverlay,
     DateRangePipe,
     TranslatablePipe,
+    RteRenderHtml,
   ],
   templateUrl: './project.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

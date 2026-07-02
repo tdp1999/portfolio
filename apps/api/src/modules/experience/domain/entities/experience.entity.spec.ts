@@ -11,19 +11,19 @@ describe('Experience Entity', () => {
     companyUrl: 'https://fpt-software.com',
     companyLogoId: null,
     position: { en: 'Senior Frontend Engineer', vi: 'Kỹ sư Frontend cấp cao' },
-    description: { en: 'Built enterprise apps', vi: 'Xây dựng ứng dụng doanh nghiệp' },
-    responsibilities: { en: ['Reduced load time by 40%'], vi: ['Giảm thời gian tải 40%'] },
-    highlights: { en: [], vi: [] },
     teamRole: null,
     descriptionJson: null,
     descriptionHtml: null,
     descriptionSchemaVersion: 1,
+    descriptionCanonical: null,
     responsibilitiesJson: null,
     responsibilitiesHtml: null,
     responsibilitiesSchemaVersion: 1,
+    responsibilitiesCanonical: null,
     highlightsJson: null,
     highlightsHtml: null,
     highlightsSchemaVersion: 1,
+    highlightsCanonical: null,
     links: [],
     employmentType: 'FULL_TIME',
     locationType: 'ONSITE',
@@ -84,20 +84,6 @@ describe('Experience Entity', () => {
 
       expect(exp.slug).toBe('fpt-software-senior-frontend-engineer');
     });
-
-    it('should default responsibilities to { en: [], vi: [] }', () => {
-      const exp = Experience.create(
-        {
-          companyName: 'Acme',
-          position: { en: 'Dev', vi: 'Dev' },
-          locationCountry: 'VN',
-          startDate: new Date('2023-01-01'),
-        },
-        userId
-      );
-
-      expect(exp.responsibilities).toEqual({ en: [], vi: [] });
-    });
   });
 
   describe('update()', () => {
@@ -127,7 +113,6 @@ describe('Experience Entity', () => {
     it('should clear nullable fields when set to null', () => {
       const exp = Experience.load({
         ...validProps,
-        description: { en: 'desc', vi: 'mô tả' },
         teamRole: { en: 'lead', vi: 'trưởng nhóm' },
         endDate: new Date('2024-01-01'),
         clientName: 'Client X',
@@ -136,11 +121,10 @@ describe('Experience Entity', () => {
       });
 
       const updated = exp.update(
-        { description: null, teamRole: null, endDate: null, clientName: null, teamSizeMin: null, teamSizeMax: null },
+        { teamRole: null, endDate: null, clientName: null, teamSizeMin: null, teamSizeMax: null },
         userId
       );
 
-      expect(updated.description).toBeNull();
       expect(updated.teamRole).toBeNull();
       expect(updated.endDate).toBeNull();
       expect(updated.clientName).toBeNull();

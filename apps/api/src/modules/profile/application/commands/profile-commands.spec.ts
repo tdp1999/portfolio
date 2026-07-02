@@ -51,10 +51,10 @@ describe('Profile Commands', () => {
     fullName: { en: 'John Doe', vi: 'Nguyen Van A' },
     title: { en: 'Developer', vi: 'Lap trinh vien' },
     bioShort: { en: 'A dev', vi: 'Mot dev' },
-    bioLong: null,
     bioLongJson: null,
     bioLongHtml: null,
     bioLongSchemaVersion: 1,
+    bioLongCanonical: null,
     yearsOfExperience: 5,
     availability: 'EMPLOYED',
     openTo: [],
@@ -198,7 +198,6 @@ describe('Profile Commands', () => {
       fullName: { en: 'Jane Doe', vi: 'Tran Thi B' },
       title: { en: 'Designer', vi: 'Nha thiet ke' },
       bioShort: { en: 'Short bio', vi: 'Tieu su' },
-      bioLong: null,
     };
 
     it('should update identity when valid', async () => {

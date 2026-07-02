@@ -2,18 +2,15 @@ import { PaginatedQuery, PaginatedResult, TranslatableJson, TranslatableRichText
 import { Project } from '../../domain/entities/project.entity';
 import { ProjectReadResult } from '../../infrastructure/mapper/project.mapper';
 
-/** Canonical rich-text triple written to the `*Json`/`*Html`/`*SchemaVersion` columns. */
+/** Canonical rich-text set written to the `*Json`/`*Canonical`/`*Html`/`*SchemaVersion` columns. */
 export interface RichFieldTriple {
   json: TranslatableRichText;
+  canonical: TranslatableJson;
   html: TranslatableJson;
   schemaVersion: number;
 }
 
 export interface TechnicalHighlightInput {
-  // Legacy markdown (kept for the transition; empty when the editor only emits RTE).
-  challenge: { en: string; vi: string };
-  approach: { en: string; vi: string };
-  outcome: { en: string; vi: string };
   // RTE triples (source of truth). Null when the field had no authored content.
   challengeRich?: RichFieldTriple | null;
   approachRich?: RichFieldTriple | null;

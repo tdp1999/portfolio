@@ -16,9 +16,9 @@ import {
 } from '@portfolio/console/shared/ui';
 import { BLOG_POST_STATUS_LABELS } from '@portfolio/shared/enum-labels';
 import { filter, switchMap } from 'rxjs';
+import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { BlogService } from '../blog.service';
 import { AdminBlogPostDetail, BlogStatus } from '../blog.types';
-import { renderMarkdownPreview } from '../post-form-page/markdown-utils';
 
 @Component({
   selector: 'console-blog-post-detail',
@@ -32,6 +32,7 @@ import { renderMarkdownPreview } from '../post-form-page/markdown-utils';
     SpinnerOverlay,
     EnumLabelPipe,
     RouterLink,
+    RteRenderHtml,
   ],
   templateUrl: './blog-post.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,9 +50,11 @@ export default class BlogPostDetail implements OnInit {
 
   readonly statusLabels = BLOG_POST_STATUS_LABELS;
 
+  /** Sanitized HTML body for the post's own language (blog posts are single-language). */
   readonly renderedBody = computed(() => {
     const p = this.post();
-    return p?.content ? renderMarkdownPreview(p.content) : '';
+    if (!p?.contentHtml) return '';
+    return p.contentHtml[p.language.toLowerCase() as 'en' | 'vi'] ?? '';
   });
 
   ngOnInit(): void {

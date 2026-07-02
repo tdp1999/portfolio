@@ -49,10 +49,6 @@ export class Project extends BaseCrudEntity<IProjectProps> {
     return this.props.role;
   }
 
-  get body(): TranslatableJson | null {
-    return this.props.body;
-  }
-
   get bodyJson(): TranslatableRichText | null {
     return this.props.bodyJson;
   }
@@ -120,7 +116,6 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       description: data.description,
       motivation: data.motivation,
       role: data.role,
-      body: data.body ?? null,
       // Rich-text columns default empty; write path lands in RTE epic Phase 4.
       bodyJson: null,
       bodyHtml: null,
@@ -153,12 +148,6 @@ export class Project extends BaseCrudEntity<IProjectProps> {
       description: mergeTranslatable(this.props.description, data.description),
       motivation: mergeTranslatable(this.props.motivation, data.motivation),
       role: mergeTranslatable(this.props.role, data.role),
-      body:
-        data.body === undefined
-          ? this.props.body
-          : data.body === null
-            ? null
-            : mergeTranslatable(this.props.body ?? { en: '', vi: '' }, data.body),
       startDate: data.startDate ?? this.props.startDate,
       endDate: data.endDate !== undefined ? data.endDate : this.props.endDate,
       status: data.status ?? this.props.status,

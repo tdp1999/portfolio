@@ -38,7 +38,6 @@ describe('ProfileRepository — section updates', () => {
       fullName: { en: 'Jane', vi: 'Tran' },
       title: { en: 'Designer', vi: 'Nha thiet ke' },
       bioShort: { en: 'Short', vi: 'Ngan' },
-      bioLong: { en: 'Long', vi: 'Dai' },
       avatarId,
     });
 
@@ -46,24 +45,10 @@ describe('ProfileRepository — section updates', () => {
       await repo.updateIdentity(userId, identity, updatedById);
 
       expect(whereOf(update)).toEqual({ userId });
-      expect(keysOf(update)).toEqual(['avatarId', 'bioLong', 'bioShort', 'fullName', 'title', 'updatedById'].sort());
+      expect(keysOf(update)).toEqual(['avatarId', 'bioShort', 'fullName', 'title', 'updatedById'].sort());
       const data = dataOf(update);
       expect(data.avatarId).toBe(avatarId);
       expect(data.updatedById).toBe(updatedById);
-    });
-
-    it('translates bioLong=null to Prisma.DbNull', async () => {
-      const identityNoBio = Identity.fromPersistence({
-        fullName: { en: 'Jane', vi: 'Tran' },
-        title: { en: 'Designer', vi: 'Nha thiet ke' },
-        bioShort: { en: 'Short', vi: 'Ngan' },
-        bioLong: null,
-        avatarId: null,
-      });
-
-      await repo.updateIdentity(userId, identityNoBio, updatedById);
-
-      expect(dataOf(update).bioLong).toBe(Prisma.DbNull);
     });
   });
 

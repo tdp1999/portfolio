@@ -35,6 +35,9 @@ interface ProfileAggregateProps {
   bioLongJson: TranslatableRichText | null;
   bioLongHtml: TranslatableJson | null;
   bioLongSchemaVersion: number;
+  /** Engine-agnostic canonical PortableDocument per locale (ADR-023) — the AST
+   *  renderer's read source, derived from `bioLongJson` at write-time. */
+  bioLongCanonical: TranslatableJson | null;
   /** Set by `markContentUpdated()` whenever the author saves narrative copy.
    *  Null on a freshly-created profile that hasn't been content-edited yet. */
   contentUpdatedAt: Date | null;
@@ -99,16 +102,16 @@ export class Profile {
     return this.props.identity.bioShort;
   }
 
-  get bioLong(): TranslatableJson | null {
-    return this.props.identity.bioLong;
-  }
-
   get bioLongJson(): TranslatableRichText | null {
     return this.props.bioLongJson;
   }
 
   get bioLongHtml(): TranslatableJson | null {
     return this.props.bioLongHtml;
+  }
+
+  get bioLongCanonical(): TranslatableJson | null {
+    return this.props.bioLongCanonical;
   }
 
   get bioLongSchemaVersion(): number {
@@ -282,7 +285,6 @@ export class Profile {
         fullName: data.fullName,
         title: data.title,
         bioShort: data.bioShort,
-        bioLong: data.bioLong ?? null,
         avatarId: data.avatarId ?? null,
       }),
       workAvailability: WorkAvailability.create({
@@ -333,6 +335,7 @@ export class Profile {
       bioLongJson: null,
       bioLongHtml: null,
       bioLongSchemaVersion: 1,
+      bioLongCanonical: null,
       contentUpdatedAt: null,
       createdAt: now,
       updatedAt: now,
@@ -349,7 +352,6 @@ export class Profile {
         fullName: props.fullName,
         title: props.title,
         bioShort: props.bioShort,
-        bioLong: props.bioLong,
         avatarId: props.avatarId,
       }),
       workAvailability: WorkAvailability.fromPersistence({
@@ -399,6 +401,7 @@ export class Profile {
       bioLongJson: props.bioLongJson,
       bioLongHtml: props.bioLongHtml,
       bioLongSchemaVersion: props.bioLongSchemaVersion,
+      bioLongCanonical: props.bioLongCanonical,
       contentUpdatedAt: props.contentUpdatedAt,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
@@ -490,6 +493,7 @@ export class Profile {
    *  `RichTextService` (RTE epic Phase 4) on the write path. */
   updateBioLongRichText(
     bioLongJson: TranslatableRichText,
+    bioLongCanonical: TranslatableJson,
     bioLongHtml: TranslatableJson,
     bioLongSchemaVersion: number,
     userId: string
@@ -497,6 +501,7 @@ export class Profile {
     return new Profile({
       ...this.props,
       bioLongJson,
+      bioLongCanonical,
       bioLongHtml,
       bioLongSchemaVersion,
       updatedAt: TemporalValue.now(),
@@ -526,7 +531,6 @@ export class Profile {
       fullName: this.props.identity.fullName,
       title: this.props.identity.title,
       bioShort: this.props.identity.bioShort,
-      bioLong: this.props.identity.bioLong,
       avatarId: this.props.identity.avatarId,
       yearsOfExperience: this.props.workAvailability.yearsOfExperience,
       availability: this.props.workAvailability.availability,
@@ -563,6 +567,7 @@ export class Profile {
       bioLongJson: this.props.bioLongJson,
       bioLongHtml: this.props.bioLongHtml,
       bioLongSchemaVersion: this.props.bioLongSchemaVersion,
+      bioLongCanonical: this.props.bioLongCanonical,
       contentUpdatedAt: this.props.contentUpdatedAt,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,

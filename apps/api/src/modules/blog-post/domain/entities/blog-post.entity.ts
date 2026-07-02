@@ -23,10 +23,6 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
     return this.props.excerpt;
   }
 
-  get content(): string {
-    return this.props.content;
-  }
-
   get contentJson(): TranslatableRichText | null {
     return this.props.contentJson;
   }
@@ -97,13 +93,14 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       language: data.language ?? 'EN',
       title: data.title,
       excerpt: data.excerpt ?? null,
-      content: data.content,
-      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      // Rich-text body is applied via withContentRichText once canonicalized.
       contentJson: null,
       contentHtml: null,
       contentSchemaVersion: 1,
       contentCanonical: null,
-      readTimeMinutes: BlogPost.calculateReadTime(data.content),
+      // Read-time derives from the rich canonical, set via withContentRichText once
+      // the editor document is canonicalized (task 363). Null until then.
+      readTimeMinutes: null,
       status: 'DRAFT',
       featured: data.featured ?? false,
       publishedAt: null,
@@ -121,12 +118,12 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
   update(data: IUpdateBlogPostPayload, userId: string): BlogPost {
     const title = data.title ?? this.props.title;
     const slug = data.title !== undefined ? SlugValue.from(data.title) : this.props.slug;
-    const content = data.content ?? this.props.content;
-    const readTimeMinutes =
-      data.content !== undefined ? BlogPost.calculateReadTime(content) : this.props.readTimeMinutes;
+    // Read-time is recomputed from the rich canonical in withContentRichText, not
+    // from legacy `content` (task 363). Carry the existing value through here.
+    const readTimeMinutes = this.props.readTimeMinutes;
     const status = data.status ?? this.props.status;
 
-    if ((status === 'PUBLISHED' || status === 'UNLISTED') && (!title || !content)) {
+    if ((status === 'PUBLISHED' || status === 'UNLISTED') && (!title || !this.props.contentJson)) {
       throw BadRequestError('Title and content are required for Published or Unlisted posts', {
         errorCode: BlogPostErrorCode.CONTENT_REQUIRED,
         layer: ErrorLayer.DOMAIN,
@@ -154,7 +151,6 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       ...this.props,
       title,
       slug,
-      content,
       readTimeMinutes,
       status,
       publishedAt,
@@ -172,9 +168,12 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
    * Set the `content` rich-text triple atomically (RTE write path). The incoming
    * `rich` is the bilingual canonical form (`{ [language]: doc }` envelope) the
    * `RichTextService` produces; legacy `content` (plain text) is left untouched.
+   * `readTimeMinutes` is derived by the caller from the rich canonical (task 363)
+   * and travels with the content so read-time stays in sync with the body.
    */
   withContentRichText(
     rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
+    readTimeMinutes: number,
     userId: string
   ): BlogPost {
     return new BlogPost({
@@ -183,12 +182,13 @@ export class BlogPost extends BaseCrudEntity<IBlogPostProps> {
       contentHtml: rich.html,
       contentSchemaVersion: rich.schemaVersion,
       contentCanonical: rich.canonical,
+      readTimeMinutes,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }
 
   publish(userId: string): BlogPost {
-    if (!this.props.title || !this.props.content) {
+    if (!this.props.title || !this.props.contentJson) {
       throw BadRequestError('Title and content are required before publishing', {
         errorCode: BlogPostErrorCode.CONTENT_REQUIRED,
         layer: ErrorLayer.DOMAIN,

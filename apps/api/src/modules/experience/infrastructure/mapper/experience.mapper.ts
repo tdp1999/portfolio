@@ -1,10 +1,5 @@
 import { Prisma, Experience as PrismaExperience, ExperienceSkill } from '@prisma/client';
-import {
-  ExperienceLink,
-  TranslatableJson,
-  TranslatableRichText,
-  TranslatableStringArray,
-} from '@portfolio/shared/types';
+import { ExperienceLink, TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 import { Experience } from '../../domain/entities/experience.entity';
 import { IExperienceProps, EmploymentType, LocationType } from '../../domain/experience.types';
 
@@ -21,20 +16,20 @@ export class ExperienceMapper {
       companyUrl: raw.companyUrl,
       companyLogoId: raw.companyLogoId,
       position: raw.position as unknown as TranslatableJson,
-      description: raw.description as unknown as TranslatableJson | null,
-      responsibilities: raw.responsibilities as unknown as TranslatableStringArray,
-      highlights: raw.highlights as unknown as TranslatableStringArray,
       teamRole: raw.teamRole as unknown as TranslatableJson | null,
-      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      // Rich-text columns — opaque passthrough on the read side.
       descriptionJson: (raw.descriptionJson as TranslatableRichText | null) ?? null,
       descriptionHtml: (raw.descriptionHtml as unknown as TranslatableJson | null) ?? null,
       descriptionSchemaVersion: raw.descriptionSchemaVersion,
+      descriptionCanonical: (raw.descriptionCanonical as unknown as TranslatableJson | null) ?? null,
       responsibilitiesJson: (raw.responsibilitiesJson as TranslatableRichText | null) ?? null,
       responsibilitiesHtml: (raw.responsibilitiesHtml as unknown as TranslatableJson | null) ?? null,
       responsibilitiesSchemaVersion: raw.responsibilitiesSchemaVersion,
+      responsibilitiesCanonical: (raw.responsibilitiesCanonical as unknown as TranslatableJson | null) ?? null,
       highlightsJson: (raw.highlightsJson as TranslatableRichText | null) ?? null,
       highlightsHtml: (raw.highlightsHtml as unknown as TranslatableJson | null) ?? null,
       highlightsSchemaVersion: raw.highlightsSchemaVersion,
+      highlightsCanonical: (raw.highlightsCanonical as unknown as TranslatableJson | null) ?? null,
       links: raw.links as unknown as ExperienceLink[],
       employmentType: raw.employmentType as EmploymentType,
       locationType: raw.locationType as LocationType,
@@ -69,19 +64,19 @@ export class ExperienceMapper {
       companyUrl: entity.companyUrl,
       companyLogoId: entity.companyLogoId,
       position: entity.position as unknown as Prisma.InputJsonValue,
-      description:
-        entity.description !== null ? (entity.description as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
-      responsibilities: entity.responsibilities as unknown as Prisma.InputJsonValue,
-      highlights: entity.highlights as unknown as Prisma.InputJsonValue,
       descriptionJson: (entity.descriptionJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       descriptionHtml: (entity.descriptionHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       descriptionSchemaVersion: entity.descriptionSchemaVersion,
+      descriptionCanonical: (entity.descriptionCanonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       responsibilitiesJson: (entity.responsibilitiesJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       responsibilitiesHtml: (entity.responsibilitiesHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       responsibilitiesSchemaVersion: entity.responsibilitiesSchemaVersion,
+      responsibilitiesCanonical:
+        (entity.responsibilitiesCanonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       highlightsJson: (entity.highlightsJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       highlightsHtml: (entity.highlightsHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       highlightsSchemaVersion: entity.highlightsSchemaVersion,
+      highlightsCanonical: (entity.highlightsCanonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       teamRole: entity.teamRole !== null ? (entity.teamRole as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
       links: entity.links as unknown as Prisma.InputJsonValue,
       employmentType: entity.employmentType,

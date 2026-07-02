@@ -4,7 +4,6 @@ import {
   SlugValue,
   TranslatableJson,
   TranslatableRichText,
-  TranslatableStringArray,
 } from '@portfolio/shared/types';
 import {
   IExperienceProps,
@@ -39,18 +38,6 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
     return this.props.position;
   }
 
-  get description() {
-    return this.props.description;
-  }
-
-  get responsibilities(): TranslatableStringArray {
-    return this.props.responsibilities;
-  }
-
-  get highlights(): TranslatableStringArray {
-    return this.props.highlights;
-  }
-
   get teamRole() {
     return this.props.teamRole;
   }
@@ -61,6 +48,10 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
 
   get descriptionHtml(): TranslatableJson | null {
     return this.props.descriptionHtml;
+  }
+
+  get descriptionCanonical(): TranslatableJson | null {
+    return this.props.descriptionCanonical;
   }
 
   get descriptionSchemaVersion(): number {
@@ -75,6 +66,10 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
     return this.props.responsibilitiesHtml;
   }
 
+  get responsibilitiesCanonical(): TranslatableJson | null {
+    return this.props.responsibilitiesCanonical;
+  }
+
   get responsibilitiesSchemaVersion(): number {
     return this.props.responsibilitiesSchemaVersion;
   }
@@ -85,6 +80,10 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
 
   get highlightsHtml(): TranslatableJson | null {
     return this.props.highlightsHtml;
+  }
+
+  get highlightsCanonical(): TranslatableJson | null {
+    return this.props.highlightsCanonical;
   }
 
   get highlightsSchemaVersion(): number {
@@ -169,20 +168,20 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       companyUrl: data.companyUrl ?? null,
       companyLogoId: data.companyLogoId ?? null,
       position: data.position,
-      description: data.description ?? null,
-      responsibilities: data.responsibilities ?? { en: [], vi: [] },
-      highlights: data.highlights ?? { en: [], vi: [] },
       teamRole: data.teamRole ?? null,
-      // Rich-text columns default empty; write path lands in RTE epic Phase 4.
+      // Rich-text columns default empty; the RTE write path fills them on save.
       descriptionJson: null,
       descriptionHtml: null,
       descriptionSchemaVersion: 1,
+      descriptionCanonical: null,
       responsibilitiesJson: null,
       responsibilitiesHtml: null,
       responsibilitiesSchemaVersion: 1,
+      responsibilitiesCanonical: null,
       highlightsJson: null,
       highlightsHtml: null,
       highlightsSchemaVersion: 1,
+      highlightsCanonical: null,
       links: data.links ?? [],
       employmentType: data.employmentType ?? 'FULL_TIME',
       locationType: data.locationType ?? 'ONSITE',
@@ -214,9 +213,6 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       companyUrl: data.companyUrl !== undefined ? data.companyUrl : this.props.companyUrl,
       companyLogoId: data.companyLogoId !== undefined ? data.companyLogoId : this.props.companyLogoId,
       position: data.position ?? this.props.position,
-      description: data.description !== undefined ? data.description : this.props.description,
-      responsibilities: data.responsibilities ?? this.props.responsibilities,
-      highlights: data.highlights ?? this.props.highlights,
       teamRole: data.teamRole !== undefined ? data.teamRole : this.props.teamRole,
       links: data.links ?? this.props.links,
       employmentType: data.employmentType ?? this.props.employmentType,
@@ -241,7 +237,7 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
 
   /** Set the `description` rich-text triple atomically (RTE write path). */
   withDescriptionRichText(
-    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
     userId: string
   ): Experience {
     return new Experience({
@@ -249,13 +245,14 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       descriptionJson: rich.json,
       descriptionHtml: rich.html,
       descriptionSchemaVersion: rich.schemaVersion,
+      descriptionCanonical: rich.canonical,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }
 
   /** Set the `responsibilities` rich-text triple atomically (RTE write path). */
   withResponsibilitiesRichText(
-    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
     userId: string
   ): Experience {
     return new Experience({
@@ -263,13 +260,14 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       responsibilitiesJson: rich.json,
       responsibilitiesHtml: rich.html,
       responsibilitiesSchemaVersion: rich.schemaVersion,
+      responsibilitiesCanonical: rich.canonical,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }
 
   /** Set the `highlights` rich-text triple atomically (RTE write path). */
   withHighlightsRichText(
-    rich: { json: TranslatableRichText; html: TranslatableJson; schemaVersion: number },
+    rich: { json: TranslatableRichText; canonical: TranslatableJson; html: TranslatableJson; schemaVersion: number },
     userId: string
   ): Experience {
     return new Experience({
@@ -277,6 +275,7 @@ export class Experience extends BaseCrudEntity<IExperienceProps> {
       highlightsJson: rich.json,
       highlightsHtml: rich.html,
       highlightsSchemaVersion: rich.schemaVersion,
+      highlightsCanonical: rich.canonical,
       ...BaseCrudEntity.updateTimestamp(userId),
     });
   }

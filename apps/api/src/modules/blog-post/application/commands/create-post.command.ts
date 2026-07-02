@@ -9,6 +9,7 @@ import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { CreateBlogPostSchema } from '../blog-post.dto';
 import { RichTextService } from '../../../rich-text';
 import { wrapContentByLanguage } from '../blog-content-rich.util';
+import { plainTextFromDoc, type PortableDocument } from '@portfolio/shared/features/rte-core';
 
 export class CreatePostCommand extends BaseCommand {
   constructor(
@@ -46,7 +47,6 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     const entity = BlogPost.create(
       {
         title: data.title,
-        content: data.content,
         language: data.language,
         excerpt: data.excerpt,
         featured: data.featured,
@@ -58,28 +58,29 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
       command.userId
     );
 
-    const finalEntity =
-      candidateSlug !== baseSlug ? BlogPost.load({ ...entity.toProps(), slug: candidateSlug }) : entity;
+    const withSlug = candidateSlug !== baseSlug ? BlogPost.load({ ...entity.toProps(), slug: candidateSlug }) : entity;
 
-    // Apply requested status (entity defaults to DRAFT, then publish() if needed)
-    const withStatus =
+    // Rich-text body (the sole body source): wrap the single editor document into the
+    // bilingual envelope keyed by the post's language, canonicalize, derive read-time
+    // from the canonical plain text (task 363), and apply — BEFORE status so publish()'s
+    // body guard sees the content.
+    const rich = await this.richText.toCanonicalFormTranslatable(
+      wrapContentByLanguage(data.contentJson, withSlug.language),
+      'blog-post.content'
+    );
+    const lang = withSlug.language.toLowerCase() as 'en' | 'vi';
+    const readTime = BlogPost.calculateReadTime(
+      plainTextFromDoc(rich.canonical[lang] as unknown as PortableDocument | undefined)
+    );
+    const withBody = withSlug.withContentRichText(rich, readTime, command.userId);
+
+    // Apply requested status (entity defaults to DRAFT, then publish() if needed).
+    const persisted =
       data.status === 'PUBLISHED'
-        ? finalEntity.publish(command.userId)
+        ? withBody.publish(command.userId)
         : data.status !== 'DRAFT'
-          ? BlogPost.load({ ...finalEntity.toProps(), status: data.status })
-          : finalEntity;
-
-    // Rich-text write path: the console sends a single editor document; wrap it
-    // into the bilingual envelope keyed by the post's language and canonicalize.
-    const persisted = data.contentJson
-      ? withStatus.withContentRichText(
-          await this.richText.toCanonicalFormTranslatable(
-            wrapContentByLanguage(data.contentJson, withStatus.language),
-            'blog-post.content'
-          ),
-          command.userId
-        )
-      : withStatus;
+          ? BlogPost.load({ ...withBody.toProps(), status: data.status })
+          : withBody;
 
     return this.repo.add({
       entity: persisted,

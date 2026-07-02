@@ -11,6 +11,7 @@ import { HomeSelectedWork } from '../selected-work/home.selected-work';
 import { HomeStack } from '../home.stack/home.stack';
 import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
+import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import {
   FloatingPillNav,
   LandingLocaleService,
@@ -69,7 +70,12 @@ export class Home {
   stackIntro = computed(() => getLocalized(this.profile()?.stackIntro, this.locale()));
   selectedWorkIntro = computed(() => getLocalized(this.profile()?.selectedWorkIntro, this.locale()));
   coreStack = computed<readonly string[]>(() => this.profile()?.coreStack ?? []);
-  bioLong = computed(() => getLocalized(this.profile()?.bioLong, this.locale()));
+  // Canonical story doc, localized. Null (→ story hidden) until authored/backfilled;
+  // mirrors project-detail's `bodyDoc` guard so an empty doc never renders a blank §.
+  bioDoc = computed<PortableDocument | null>(() => {
+    const doc = getLocalized(this.profile()?.bioLongCanonical, this.locale()) as unknown as PortableDocument | null;
+    return doc && Array.isArray(doc.content) && doc.content.length > 0 ? doc : null;
+  });
   bioShort = computed(() => getLocalized(this.profile()?.bioShort, this.locale()));
   isOpenToWork = computed(() => this.profile()?.availability === 'OPEN_TO_WORK');
   locationCity = computed(() => this.profile()?.locationCity ?? null);

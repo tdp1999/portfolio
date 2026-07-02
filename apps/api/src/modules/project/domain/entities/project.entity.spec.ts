@@ -26,14 +26,13 @@ describe('Project Entity', () => {
       expect(project.updatedById).toBe(USER_ID);
       expect(project.deletedAt).toBeNull();
       expect(project.links).toEqual([]);
-      expect(project.body).toBeNull();
+      expect(project.bodyJson).toBeNull();
     });
 
-    it('should accept body and links and validate them', () => {
+    it('should accept links and validate them', () => {
       const project = Project.create(
         {
           ...VALID_PAYLOAD,
-          body: { en: 'Long-form body', vi: 'Noi dung dai' },
           links: [
             { label: 'Source', url: 'https://github.com/example', type: 'repo' },
             { label: 'Live', url: 'https://example.com', type: 'demo' },
@@ -42,7 +41,6 @@ describe('Project Entity', () => {
         USER_ID
       );
 
-      expect(project.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
       expect(project.links).toHaveLength(2);
       expect(project.links[0]).toEqual({ label: 'Source', url: 'https://github.com/example', type: 'repo' });
     });
@@ -73,14 +71,6 @@ describe('Project Entity', () => {
       const updated = project.update({ featured: true }, USER_ID);
 
       expect(updated.slug).toBe(originalSlug);
-    });
-
-    it('should clear body via null', () => {
-      const project = Project.create({ ...VALID_PAYLOAD, body: { en: 'Old body', vi: 'Cu' } }, USER_ID);
-
-      const updated = project.update({ body: null }, USER_ID);
-
-      expect(updated.body).toBeNull();
     });
 
     it('should replace links array on update', () => {

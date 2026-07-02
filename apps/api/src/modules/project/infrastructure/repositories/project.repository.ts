@@ -24,21 +24,23 @@ const fullInclude = {
 export class ProjectRepository implements IProjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Legacy + rich-text columns for a single highlight (shared by create + update). */
+  /** Rich-text columns for a single highlight (shared by create + update).
+   *  The authored content lives in the `*Json`/`*Html`/`*Canonical` columns; the
+   *  legacy plain `challenge`/`approach`/`outcome` columns were dropped in task 363. */
   private static highlightRichData(h: TechnicalHighlightInput) {
     return {
-      challenge: h.challenge as unknown as Prisma.InputJsonValue,
-      approach: h.approach as unknown as Prisma.InputJsonValue,
-      outcome: h.outcome as unknown as Prisma.InputJsonValue,
       challengeJson: (h.challengeRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       challengeHtml: (h.challengeRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       challengeSchemaVersion: h.challengeRich?.schemaVersion ?? 1,
+      challengeCanonical: (h.challengeRich?.canonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       approachJson: (h.approachRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       approachHtml: (h.approachRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       approachSchemaVersion: h.approachRich?.schemaVersion ?? 1,
+      approachCanonical: (h.approachRich?.canonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       outcomeJson: (h.outcomeRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       outcomeHtml: (h.outcomeRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       outcomeSchemaVersion: h.outcomeRich?.schemaVersion ?? 1,
+      outcomeCanonical: (h.outcomeRich?.canonical as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
     };
   }
 
@@ -102,7 +104,6 @@ export class ProjectRepository implements IProjectRepository {
           status: entity.status,
           featured: entity.featured,
           displayOrder: entity.displayOrder,
-          body: (entity.body as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           bodyJson: (entity.bodyJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           bodyHtml: (entity.bodyHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           bodySchemaVersion: entity.bodySchemaVersion,

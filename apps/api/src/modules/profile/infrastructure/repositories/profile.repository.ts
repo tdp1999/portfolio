@@ -70,13 +70,13 @@ export class ProfileRepository implements IProfileRepository {
         fullName: identity.fullName as unknown as Prisma.InputJsonValue,
         title: identity.title as unknown as Prisma.InputJsonValue,
         bioShort: identity.bioShort as unknown as Prisma.InputJsonValue,
-        bioLong: (identity.bioLong as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
         avatarId: identity.avatarId,
         // Same row, same `where` → fold the rich-text triple into this one UPDATE so
-        // identity and bioLong commit atomically (no partial-write window). Absent
-        // input leaves the bioLong* columns untouched (identity-only update).
+        // identity and the rich-text bio commit atomically (no partial-write window).
+        // Absent input leaves the bioLong* columns untouched (identity-only update).
         ...(bioLongRichText && {
           bioLongJson: bioLongRichText.json as unknown as Prisma.InputJsonValue,
+          bioLongCanonical: bioLongRichText.canonical as unknown as Prisma.InputJsonValue,
           bioLongHtml: bioLongRichText.html as unknown as Prisma.InputJsonValue,
           bioLongSchemaVersion: bioLongRichText.schemaVersion,
         }),

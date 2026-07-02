@@ -63,7 +63,6 @@ export class BlogPostRepository implements IBlogPostRepository {
           language: entity.language,
           title: entity.title,
           excerpt: entity.excerpt,
-          content: entity.content,
           contentJson: (entity.contentJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           contentHtml: (entity.contentHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
           contentSchemaVersion: entity.contentSchemaVersion,

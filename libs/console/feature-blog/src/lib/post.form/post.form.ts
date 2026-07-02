@@ -256,16 +256,14 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     this.saving.set(true);
 
     const raw = this.form.getRawValue();
-    // Canonical content is the editor document (contentJson). The legacy `content`
-    // column (still NOT NULL until task 363) is kept in sync with a plain-text
-    // flattening; fall back to the title so it never violates min-length.
+    // The editor document (contentJson) is the sole body source; the BE canonicalizes
+    // it and derives read-time. Guaranteed present here (richTextRequiredValidator +
+    // the form.invalid guard above).
     const contentDoc = raw.content ?? undefined;
-    const legacyContent = editorDocToPlainText(raw.content) || raw.title;
 
     if (this.isEditMode()) {
       const payload: UpdateBlogPostPayload = {
         title: raw.title,
-        content: legacyContent,
         contentJson: contentDoc,
         language: raw.language,
         excerpt: raw.excerpt || null,
@@ -288,7 +286,6 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     } else {
       const payload: CreateBlogPostPayload = {
         title: raw.title,
-        content: legacyContent,
         contentJson: contentDoc,
         language: raw.language,
         excerpt: raw.excerpt || undefined,

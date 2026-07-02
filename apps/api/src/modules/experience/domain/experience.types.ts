@@ -1,10 +1,4 @@
-import {
-  ExperienceLink,
-  IBaseAuditProps,
-  TranslatableJson,
-  TranslatableRichText,
-  TranslatableStringArray,
-} from '@portfolio/shared/types';
+import { ExperienceLink, IBaseAuditProps, TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
 
 export const EMPLOYMENT_TYPE = {
   FULL_TIME: 'FULL_TIME',
@@ -36,24 +30,23 @@ export interface IExperienceProps extends IBaseAuditProps {
 
   // Translatable
   position: TranslatableJson;
-  description: TranslatableJson | null;
-  responsibilities: TranslatableStringArray;
-  highlights: TranslatableStringArray;
   teamRole: TranslatableJson | null;
 
-  // Rich-text storage (RTE epic Phase 2, expand phase) — 3 cols per prose sub-field.
-  // JSON canonical + sanitized HTML cache ({ en, vi } envelope); null until Phase 4
-  // RichTextService populates them. Old `description`/`responsibilities`/`highlights`
-  // columns kept side-by-side until task 363 drop.
+  // Rich-text storage (RTE epic) — 4 cols per prose sub-field: JSON source of truth,
+  // canonical AST, sanitized HTML cache ({ en, vi } envelope), and schema version.
+  // Null until the RichTextService write path populates them.
   descriptionJson: TranslatableRichText | null;
   descriptionHtml: TranslatableJson | null;
   descriptionSchemaVersion: number;
+  descriptionCanonical: TranslatableJson | null;
   responsibilitiesJson: TranslatableRichText | null;
   responsibilitiesHtml: TranslatableJson | null;
   responsibilitiesSchemaVersion: number;
+  responsibilitiesCanonical: TranslatableJson | null;
   highlightsJson: TranslatableRichText | null;
   highlightsHtml: TranslatableJson | null;
   highlightsSchemaVersion: number;
+  highlightsCanonical: TranslatableJson | null;
 
   // Links (non-translatable)
   links: ExperienceLink[];
@@ -92,9 +85,6 @@ export interface ICreateExperiencePayload {
   companyLogoId?: string;
 
   position: TranslatableJson;
-  description?: TranslatableJson;
-  responsibilities?: TranslatableStringArray;
-  highlights?: TranslatableStringArray;
   teamRole?: TranslatableJson;
 
   links?: ExperienceLink[];
@@ -125,9 +115,6 @@ export interface IUpdateExperiencePayload {
   companyLogoId?: string | null;
 
   position?: TranslatableJson;
-  description?: TranslatableJson | null;
-  responsibilities?: TranslatableStringArray;
-  highlights?: TranslatableStringArray;
   teamRole?: TranslatableJson | null;
 
   links?: ExperienceLink[];

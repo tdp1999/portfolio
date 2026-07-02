@@ -20,6 +20,7 @@ export interface ProfileWithMedia {
  *  its sanitized HTML cache, and the schema version, produced by `RichTextService`. */
 export interface ProfileBioLongRichText {
   json: TranslatableRichText;
+  canonical: TranslatableJson;
   html: TranslatableJson;
   schemaVersion: number;
 }

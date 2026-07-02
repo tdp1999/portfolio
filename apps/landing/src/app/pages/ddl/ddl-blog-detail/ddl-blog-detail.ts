@@ -26,7 +26,7 @@ import type { DdlVariant } from '../ddl.types';
 import { DdlBlogShareRow } from './ddl-blog-share-row';
 import type { LoadedPost } from './ddl-blog-detail.types';
 import { EMPTY, DEEP_DIVE_SLUG, NOTE_SLUG, ESSAY_SLUG, RETRO_SLUG, BLOG_DETAIL_VARIANTS } from './ddl-blog-detail.data';
-import { wordCount, shouldHideToc, tocFromEntries } from './ddl-blog-detail.util';
+import { shouldHideToc, tocFromEntries } from './ddl-blog-detail.util';
 
 @Component({
   selector: 'landing-ddl-blog-detail',
@@ -160,8 +160,8 @@ export class DdlBlogDetail {
   postType(post: BlogPostDetail | null): string {
     if (!post) return '—';
     if (post.categories[0]?.slug === 'notes') return 'Note';
-    const wc = wordCount(post.content);
-    if (wc >= 1500) return 'Deep dive';
+    // Deep dive ≈ 1500+ words; read-time is ceil(words / 200), so 1500 words ≈ 8 min.
+    if ((post.readTimeMinutes ?? 0) >= 8) return 'Deep dive';
     return 'Essay';
   }
 

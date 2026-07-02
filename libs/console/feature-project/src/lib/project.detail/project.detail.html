@@ -111,15 +111,18 @@
                 <p class="mb-2 text-sm font-medium text-text-muted">Highlight {{ i + 1 }}</p>
                 <div class="detail-field">
                   <span class="detail-field__label">Challenge</span>
-                  <span class="detail-field__value">{{ h.challenge | translatable }}</span>
+                  <rte-render-html
+                    class="detail-field__value"
+                    [html]="h.challengeHtml | translatable: undefined : ''"
+                  />
                 </div>
                 <div class="detail-field">
                   <span class="detail-field__label">Approach</span>
-                  <span class="detail-field__value">{{ h.approach | translatable }}</span>
+                  <rte-render-html class="detail-field__value" [html]="h.approachHtml | translatable: undefined : ''" />
                 </div>
                 <div class="detail-field">
                   <span class="detail-field__label">Outcome</span>
-                  <span class="detail-field__value">{{ h.outcome | translatable }}</span>
+                  <rte-render-html class="detail-field__value" [html]="h.outcomeHtml | translatable: undefined : ''" />
                 </div>
                 @if (h.codeUrl) {
                   <div class="detail-field">

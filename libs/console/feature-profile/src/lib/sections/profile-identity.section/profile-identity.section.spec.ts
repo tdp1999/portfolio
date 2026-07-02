@@ -14,7 +14,6 @@ const MOCK_PROFILE: ProfileAdminResponse = {
   fullName: { en: 'Phuong Tran', vi: 'Phương Trần' },
   title: { en: 'Engineer', vi: 'Kỹ sư' },
   bioShort: { en: 'Short bio', vi: 'Tiểu sử ngắn' },
-  bioLong: null,
   bioLongJson: null,
   yearsOfExperience: 10,
   availability: 'EMPLOYED',
@@ -113,8 +112,6 @@ describe('IdentitySectionComponent', () => {
     const payload = profileService.updateIdentity.mock.calls[0][0];
     expect(payload.bioLongJson.en).toEqual(doc);
     expect(payload.bioLongJson.vi).toEqual({ schemaVersion: 1, content: { type: 'doc', content: [] } });
-    // Legacy markdown echoed back untouched.
-    expect(payload.bioLong).toBeNull();
   });
 
   it('does not call API when form is invalid', () => {

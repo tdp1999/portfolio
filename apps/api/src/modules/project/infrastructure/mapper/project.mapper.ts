@@ -21,19 +21,19 @@ export type PrismaProjectWithRelations = PrismaProject & {
 
 export interface ProjectHighlightDto {
   id: string;
-  challenge: TranslatableJson;
-  approach: TranslatableJson;
-  outcome: TranslatableJson;
-  // Rich-text storage per CAO sub-field (RTE epic Phase 2). Null until Phase 4.
+  // Rich-text storage per CAO sub-field.
   challengeJson: TranslatableRichText | null;
   challengeHtml: TranslatableJson | null;
   challengeSchemaVersion: number;
+  challengeCanonical: TranslatableJson | null;
   approachJson: TranslatableRichText | null;
   approachHtml: TranslatableJson | null;
   approachSchemaVersion: number;
+  approachCanonical: TranslatableJson | null;
   outcomeJson: TranslatableRichText | null;
   outcomeHtml: TranslatableJson | null;
   outcomeSchemaVersion: number;
+  outcomeCanonical: TranslatableJson | null;
   codeUrl: string | null;
   displayOrder: number;
 }
@@ -93,7 +93,6 @@ export class ProjectMapper {
       description: raw.description as unknown as TranslatableJson,
       motivation: raw.motivation as unknown as TranslatableJson,
       role: raw.role as unknown as TranslatableJson,
-      body: raw.body == null ? null : (raw.body as unknown as TranslatableJson),
       // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
       bodyJson: (raw.bodyJson as TranslatableRichText | null) ?? null,
       bodyHtml: (raw.bodyHtml as unknown as TranslatableJson | null) ?? null,
@@ -123,18 +122,18 @@ export class ProjectMapper {
         .sort((a, b) => a.displayOrder - b.displayOrder)
         .map((h) => ({
           id: h.id,
-          challenge: h.challenge as unknown as TranslatableJson,
-          approach: h.approach as unknown as TranslatableJson,
-          outcome: h.outcome as unknown as TranslatableJson,
           challengeJson: (h.challengeJson as TranslatableRichText | null) ?? null,
           challengeHtml: (h.challengeHtml as unknown as TranslatableJson | null) ?? null,
           challengeSchemaVersion: h.challengeSchemaVersion,
+          challengeCanonical: (h.challengeCanonical as unknown as TranslatableJson | null) ?? null,
           approachJson: (h.approachJson as TranslatableRichText | null) ?? null,
           approachHtml: (h.approachHtml as unknown as TranslatableJson | null) ?? null,
           approachSchemaVersion: h.approachSchemaVersion,
+          approachCanonical: (h.approachCanonical as unknown as TranslatableJson | null) ?? null,
           outcomeJson: (h.outcomeJson as TranslatableRichText | null) ?? null,
           outcomeHtml: (h.outcomeHtml as unknown as TranslatableJson | null) ?? null,
           outcomeSchemaVersion: h.outcomeSchemaVersion,
+          outcomeCanonical: (h.outcomeCanonical as unknown as TranslatableJson | null) ?? null,
           codeUrl: h.codeUrl,
           displayOrder: h.displayOrder,
         })),
@@ -173,7 +172,6 @@ export class ProjectMapper {
       description: entity.description as unknown as Prisma.InputJsonValue,
       motivation: entity.motivation as unknown as Prisma.InputJsonValue,
       role: entity.role as unknown as Prisma.InputJsonValue,
-      body: (entity.body as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       bodyJson: (entity.bodyJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       bodyHtml: (entity.bodyHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       bodySchemaVersion: entity.bodySchemaVersion,

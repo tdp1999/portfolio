@@ -177,15 +177,11 @@
     }
   </header>
 
-  @if (vm.highlights.length) {
-    <ul class="exp-detail__highlights">
-      @for (h of vm.highlights; track $index) {
-        <li>{{ h }}</li>
-      }
-    </ul>
+  @if (vm.highlightsDoc) {
+    <rte-render contentClass="exp-detail__highlights" [doc]="vm.highlightsDoc" />
   }
 
-  @if (vm.responsibilities.length) {
+  @if (vm.responsibilitiesDoc) {
     <details class="exp-detail__day-to-day" open>
       <summary class="exp-detail__day-to-day-summary">
         <landing-t>
@@ -194,11 +190,7 @@
         </landing-t>
         <landing-icon name="chevron-down" [size]="14" class="exp-detail__day-to-day-chevron" />
       </summary>
-      <ul class="exp-detail__responsibilities">
-        @for (r of vm.responsibilities; track $index) {
-          <li>{{ r }}</li>
-        }
-      </ul>
+      <rte-render contentClass="exp-detail__responsibilities" [doc]="vm.responsibilitiesDoc" />
     </details>
   }
 

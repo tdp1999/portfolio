@@ -45,13 +45,15 @@ export interface AdminBlogPostListItem {
 
 export interface AdminBlogPostDetail extends AdminBlogPostListItem {
   excerpt: string | null;
-  content: string;
   /**
-   * Rich-text storage for `content` — the bilingual `{ en, vi }` envelope (one
-   * locale populated, keyed by `language`). Null on posts not yet authored/migrated
-   * to the RTE. The form extracts the active-language document to hydrate the editor.
+   * Rich-text body — the bilingual `{ en, vi }` envelope (one locale populated,
+   * keyed by `language`). The form extracts the active-language document to hydrate
+   * the editor. Legacy plain `content` was dropped in task 363.
    */
   contentJson: BilingualEditorDocument | null;
+  /** Sanitized rich-text HTML cache ({ en, vi }); the admin detail read-view renders
+   *  it via `<rte-render-html>`. Null until the post is authored through the editor. */
+  contentHtml: { en: string; vi: string } | null;
   readTimeMinutes: number | null;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -71,9 +73,9 @@ export interface BlogPostListResponse {
 
 export interface CreateBlogPostPayload {
   title: string;
-  /** Legacy plain-text content (kept during the RTE transition; dropped in task 363). */
-  content: string;
-  /** Single editor document; the BE wraps it into the `{ [language]: doc }` envelope. */
+  /** Single editor document (the sole body source); the BE wraps it into the
+   *  `{ [language]: doc }` envelope and canonicalizes it. Required by the BE + the
+   *  form's richTextRequiredValidator; optional here only to avoid null-narrowing noise. */
   contentJson?: EditorDocument;
   language: BlogLanguage;
   excerpt?: string;
@@ -88,8 +90,6 @@ export interface CreateBlogPostPayload {
 
 export interface UpdateBlogPostPayload {
   title?: string;
-  /** Legacy plain-text content (kept during the RTE transition; dropped in task 363). */
-  content?: string;
   /** Single editor document; the BE wraps it into the `{ [language]: doc }` envelope. */
   contentJson?: EditorDocument;
   language?: BlogLanguage;

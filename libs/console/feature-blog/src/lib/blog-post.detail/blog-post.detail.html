@@ -123,10 +123,10 @@
         }
 
         <!-- Body preview -->
-        @if (p.content) {
+        @if (renderedBody()) {
           <div class="detail-section">
             <h3 class="detail-section__title">Body</h3>
-            <div class="markdown-preview" [innerHTML]="renderedBody()"></div>
+            <rte-render-html class="markdown-preview" [html]="renderedBody()" />
           </div>
         }
 

@@ -1,5 +1,6 @@
 import type {
   TranslatableJson,
+  TranslatableRichText,
   SocialLink,
   Certification,
   ResumeUrls,
@@ -18,7 +19,14 @@ export type PublicProfileResponse = {
   fullName: TranslatableJson;
   title: TranslatableJson;
   bioShort: TranslatableJson;
-  bioLong: TranslatableJson | null;
+  /** Raw Tiptap editor document per locale — re-edit source (console). Not read on landing. */
+  bioLongJson: TranslatableRichText | null;
+  /** Sanitized HTML cache per locale — RSS / llms.txt / no-JS fallback only. */
+  bioLongHtml: TranslatableJson | null;
+  bioLongSchemaVersion: number;
+  /** Canonical `PortableDocument` per locale (ADR-023) — the story's AST read-path
+   *  source. `home-intro` projects it to per-paragraph runs (`paragraphsFromDoc`). */
+  bioLongCanonical: TranslatableJson | null;
   yearsOfExperience: number;
   availability: ProfileAvailability;
   openTo: OpenToValue[];

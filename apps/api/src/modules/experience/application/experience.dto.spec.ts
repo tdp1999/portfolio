@@ -30,19 +30,19 @@ function buildExperienceProps(overrides: Partial<IExperienceProps> = {}): IExper
     companyUrl: 'https://acme.com',
     companyLogoId: null,
     position: { en: 'Software Engineer', vi: 'Kỹ sư phần mềm' },
-    description: { en: 'Building great things', vi: 'Xây dựng những thứ tuyệt vời' },
-    responsibilities: { en: ['Built a feature'], vi: ['Xây dựng tính năng'] },
-    highlights: { en: [], vi: [] },
     teamRole: null,
     descriptionJson: null,
     descriptionHtml: null,
     descriptionSchemaVersion: 1,
+    descriptionCanonical: null,
     responsibilitiesJson: null,
     responsibilitiesHtml: null,
     responsibilitiesSchemaVersion: 1,
+    responsibilitiesCanonical: null,
     highlightsJson: null,
     highlightsHtml: null,
     highlightsSchemaVersion: 1,
+    highlightsCanonical: null,
     links: [],
     employmentType: 'FULL_TIME',
     locationType: 'REMOTE',
@@ -77,8 +77,6 @@ describe('CreateExperienceSchema', () => {
       buildValidCreatePayload({
         companyUrl: 'https://acme.com',
         companyLogoId: '550e8400-e29b-41d4-a716-446655440000',
-        description: { en: 'Great company', vi: 'Công ty tuyệt vời' },
-        responsibilities: { en: ['Led team'], vi: ['Dẫn dắt nhóm'] },
         teamRole: { en: 'Tech Lead', vi: 'Trưởng nhóm kỹ thuật' },
         employmentType: 'CONTRACT',
         locationType: 'HYBRID',
@@ -108,22 +106,6 @@ describe('CreateExperienceSchema', () => {
   it('should validate translatable fields structure requiring both en and vi', () => {
     const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ position: { en: '', vi: '' } }));
     expect(result.success).toBe(false);
-  });
-
-  it('should default responsibilities to { en: [], vi: [] } when omitted', () => {
-    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload());
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.responsibilities).toEqual({ en: [], vi: [] });
-    }
-  });
-
-  it('should default highlights to { en: [], vi: [] } when omitted', () => {
-    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload());
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.highlights).toEqual({ en: [], vi: [] });
-    }
   });
 
   it('should default links to [] when omitted', () => {
@@ -204,11 +186,6 @@ describe('CreateExperienceSchema', () => {
   it('should reject companyName exceeding max length', () => {
     const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ companyName: 'a'.repeat(201) }));
     expect(result.success).toBe(false);
-  });
-
-  it('should accept null description', () => {
-    const result = CreateExperienceSchema.safeParse(buildValidCreatePayload({ description: null }));
-    expect(result.success).toBe(true);
   });
 
   // Regression: `z.coerce.date().optional()` coerces `null` to epoch (1970-01-01),

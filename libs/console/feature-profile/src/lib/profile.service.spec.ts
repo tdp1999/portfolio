@@ -48,7 +48,6 @@ describe('ProfileService', () => {
       fullName: { en: 'Phuong Tran', vi: 'Phương Trần' },
       title: { en: 'Engineer', vi: 'Kỹ sư' },
       bioShort: { en: 'Short', vi: 'Ngắn' },
-      bioLong: null,
     };
     service.updateIdentity(payload).subscribe();
     expect(api.patch).toHaveBeenCalledWith('/admin/profile/identity', payload);

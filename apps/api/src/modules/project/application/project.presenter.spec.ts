@@ -12,7 +12,6 @@ function createTestProject() {
       description: { en: 'Full description', vi: 'Mo ta day du' },
       motivation: { en: 'To learn new tech', vi: 'De hoc cong nghe moi' },
       role: { en: 'Full-stack dev', vi: 'Lap trinh vien' },
-      body: { en: 'Long-form body', vi: 'Noi dung dai' },
       startDate: new Date('2025-01-01'),
       links: [{ label: 'Source', url: 'https://github.com/example', type: 'repo' }],
     },
@@ -24,18 +23,18 @@ const TEST_RELATIONS: ProjectRelations = {
   highlights: [
     {
       id: '00000000-0000-0000-0000-000000000010',
-      challenge: { en: 'Challenge', vi: 'Thach thuc' },
-      approach: { en: 'Approach', vi: 'Cach tiep can' },
-      outcome: { en: 'Outcome', vi: 'Ket qua' },
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
+      challengeCanonical: null,
       approachJson: null,
       approachHtml: null,
       approachSchemaVersion: 1,
+      approachCanonical: null,
       outcomeJson: null,
       outcomeHtml: null,
       outcomeSchemaVersion: 1,
+      outcomeCanonical: null,
       codeUrl: 'https://github.com/pr/1',
       displayOrder: 0,
     },
@@ -83,13 +82,15 @@ describe('ProjectPresenter', () => {
         thumbnailUrl: 'https://cdn.example.com/thumb.png',
       });
 
-      expect(result.highlights[0].challenge).toEqual({ en: 'Challenge', vi: 'Thach thuc' });
+      expect(result.highlights[0].challengeJson).toBeNull();
+      expect(result.highlights[0].challengeCanonical).toBeNull();
+      expect(result.highlights[0].codeUrl).toBe('https://github.com/pr/1');
       expect(result.images[0]).toEqual({ url: 'https://cdn.example.com/screenshot.png', alt: 'Screenshot' });
       expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' }]);
       expect(result.lifecycleStatus).toBe('LIVE');
     });
 
-    it('should expose body and links', () => {
+    it('should expose body rich fields and links', () => {
       const entity = createTestProject();
       const result = ProjectPresenter.toDetail({
         entity,
@@ -97,7 +98,8 @@ describe('ProjectPresenter', () => {
         thumbnailUrl: null,
       });
 
-      expect(result.body).toEqual({ en: 'Long-form body', vi: 'Noi dung dai' });
+      expect(result.bodyJson).toBeNull();
+      expect(result.bodyCanonical).toBeNull();
       expect(result.links).toEqual([{ label: 'Source', url: 'https://github.com/example', type: 'repo' }]);
     });
 

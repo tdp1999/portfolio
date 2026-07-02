@@ -5,11 +5,6 @@ export interface TranslatableJson {
   vi: string;
 }
 
-export interface TranslatableStringArray {
-  en: string[];
-  vi: string[];
-}
-
 export interface ExperienceSkillDto {
   id: string;
   name: TranslatableJson;
@@ -29,16 +24,17 @@ export interface AdminExperience {
   companyLogoUrl: string | null;
   companyLogoId: string | null;
   position: TranslatableJson;
-  description: TranslatableJson | null;
-  responsibilities: TranslatableStringArray;
-  highlights: TranslatableStringArray;
   /**
-   * Rich-text storage (bilingual `{ en, vi }` docs). Null on records not yet
-   * authored/migrated to the RTE; the form hydrates the editors from these.
+   * Rich-text storage (bilingual `{ en, vi }` docs). `*Json` hydrates the form
+   * editors; `*Html` is the sanitized cache the detail view renders. Null on
+   * records not yet authored through the RTE. Legacy plain columns dropped in task 363.
    */
   descriptionJson: BilingualEditorDocument | null;
+  descriptionHtml: TranslatableJson | null;
   responsibilitiesJson: BilingualEditorDocument | null;
+  responsibilitiesHtml: TranslatableJson | null;
   highlightsJson: BilingualEditorDocument | null;
+  highlightsHtml: TranslatableJson | null;
   teamRole: TranslatableJson | null;
   links: ExperienceLink[];
   employmentType: string;
@@ -73,11 +69,6 @@ export interface CreateExperiencePayload {
   companyUrl?: string;
   companyLogoId?: string;
   position: TranslatableJson;
-  // Legacy string fields are no longer sent by the console (RTE replaced them);
-  // optional so the editor-only payload type-checks. Dropped in task 363.
-  description?: TranslatableJson;
-  responsibilities?: TranslatableStringArray;
-  highlights?: TranslatableStringArray;
   descriptionJson?: BilingualEditorDocument;
   responsibilitiesJson?: BilingualEditorDocument;
   highlightsJson?: BilingualEditorDocument;
@@ -105,9 +96,6 @@ export interface UpdateExperiencePayload {
   companyUrl?: string;
   companyLogoId?: string | null;
   position?: TranslatableJson;
-  description?: TranslatableJson;
-  responsibilities?: TranslatableStringArray;
-  highlights?: TranslatableStringArray;
   descriptionJson?: BilingualEditorDocument;
   responsibilitiesJson?: BilingualEditorDocument;
   highlightsJson?: BilingualEditorDocument;

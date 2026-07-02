@@ -31,8 +31,6 @@ const NOW = new Date('2026-01-15T00:00:00.000Z');
 
 /** Translatable scalar: EN authored, VI left empty (falls back to EN on landing). */
 const t = (en: string) => ({ en, vi: '' });
-/** Translatable string array (responsibilities / highlights). */
-const tArr = (en: string[]) => ({ en, vi: [] as string[] });
 
 type LinkTypeUpper = 'GITHUB' | 'DEMO' | 'DOCS' | 'ARTICLE' | 'OTHER';
 /** Map authored DTO-style link types onto the landing's lowercase vocabulary. */
@@ -43,14 +41,6 @@ const LINK_TYPE: Record<LinkTypeUpper, 'repo' | 'demo' | 'doc' | 'post' | 'case-
   ARTICLE: 'post',
   OTHER: 'doc',
 };
-
-// --- Profile bioLong (The Story §6) -----------------------------------------
-
-const BIO_LONG_EN = [
-  'I started where a lot of us do — gluing screens to endpoints and calling it a feature. *What changed me was a permissions bug that took down a loan desk for half a day.* The fix was three lines; finding it took six hours because nothing in the system could tell me what a role was actually allowed to do.',
-  'Since then I build the boring scaffolding first. A design system before the first screen, a test before the bug report, a workflow before the task piles up. It is less glamorous than a demo, but it is the part that is still standing a year later.',
-  'These days I work from Ho Chi Minh City with a Singapore product team — document engines, loan systems, the permission frameworks underneath them. *I like the seams of a product: the editor that has to round-trip cleanly, the export nobody notices until it breaks.* That is the work I reach for.',
-].join('\n\n');
 
 // --- Skills (16 members under 6 existing umbrellas) --------------------------
 
@@ -938,12 +928,12 @@ async function main() {
           ...audit,
           skills: { create: skillIds.map((skillId) => ({ skillId })) },
           images: { create: galleryIds.map((mediaId, i) => ({ id: uuidv7(), mediaId, displayOrder: i })) },
+          // Prose (challenge/approach/outcome) is authored via console now — the legacy
+          // columns were dropped in task 363 and the seed can't compute the rich form.
+          // Rows are created skeletally to preserve highlight-count variance for layout.
           highlights: {
-            create: p.highlights.map((h, i) => ({
+            create: p.highlights.map((_h, i) => ({
               id: uuidv7(),
-              challenge: t(h.challenge),
-              approach: t(h.approach),
-              outcome: t(h.outcome),
               displayOrder: i,
             })),
           },
@@ -970,9 +960,8 @@ async function main() {
           companyLogoId: mediaIds.get(e.companyLogoKey) ?? null,
           position: t(e.position),
           teamRole: t(e.teamRole),
-          description: t(e.description),
-          responsibilities: tArr(e.responsibilities),
-          highlights: tArr(e.highlights),
+          // Prose (description/responsibilities/highlights) authored via console now —
+          // legacy columns dropped in task 363; the seed can't compute the rich form.
           links: [],
           employmentType: e.employmentType,
           locationType: e.locationType,
@@ -1028,7 +1017,8 @@ async function main() {
     await prisma.profile.update({
       where: { id: profile.id },
       data: {
-        bioLong: t(BIO_LONG_EN),
+        // bioLong (The Story §6) authored via console now — legacy column dropped in
+        // task 363; the seed can't compute the rich form.
         availability: 'OPEN_TO_WORK',
         openTo: ['FULL_TIME', 'FREELANCE'],
         preferredContactPlatform: 'LINKEDIN',

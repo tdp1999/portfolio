@@ -41,13 +41,10 @@ export class UpdateProfileIdentityHandler implements ICommandHandler<UpdateProfi
         layer: ErrorLayer.APPLICATION,
       });
 
-    // bioLong schema allows partial bilingual; coerce missing locales to empty strings
-    // so the domain receives the full TranslatableJson shape it expects.
     const newIdentity = Identity.create({
       fullName: data.fullName,
       title: data.title,
       bioShort: data.bioShort,
-      bioLong: data.bioLong ? { en: data.bioLong.en ?? '', vi: data.bioLong.vi ?? '' } : null,
       avatarId: profile.avatarId,
     });
     const updated = profile.withIdentity(newIdentity, command.userId);

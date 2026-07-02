@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import { Chip, Container, Eyebrow, Icon, Heading, Link, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
+import { RteRender } from '@portfolio/shared/features/rte-renderer';
 import { ExperienceService } from '@portfolio/landing/shared/data-access';
 import { FRAGMENT_PREFIX } from './about.experience.data';
 import type { ExperienceVm } from './about.experience.types';
@@ -13,7 +14,7 @@ import { sortReverseChrono, toVm } from './about.experience.util';
   selector: 'landing-about-experience',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, Chip, Container, Eyebrow, Icon, Heading, Link, T],
+  imports: [NgTemplateOutlet, Chip, Container, Eyebrow, Icon, Heading, Link, T, RteRender],
   templateUrl: './about.experience.html',
   styleUrl: './about.experience.scss',
 })

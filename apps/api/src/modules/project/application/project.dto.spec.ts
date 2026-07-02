@@ -9,6 +9,13 @@ const VALID_CREATE = {
   startDate: '2025-01-01',
 };
 
+const DOC = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+const RICH_HIGHLIGHT = {
+  challengeJson: { en: DOC, vi: DOC },
+  approachJson: { en: DOC, vi: DOC },
+  outcomeJson: { en: DOC, vi: DOC },
+};
+
 describe('CreateProjectSchema', () => {
   it('should parse valid input and apply defaults', () => {
     const result = CreateProjectSchema.safeParse(VALID_CREATE);
@@ -50,51 +57,32 @@ describe('CreateProjectSchema', () => {
   });
 
   it('should accept up to 4 highlights', () => {
-    const highlight = {
-      challenge: { en: 'C', vi: 'C' },
-      approach: { en: 'A', vi: 'A' },
-      outcome: { en: 'O', vi: 'O' },
-    };
-    expect(CreateProjectSchema.safeParse({ ...VALID_CREATE, highlights: Array(4).fill(highlight) }).success).toBe(true);
+    expect(CreateProjectSchema.safeParse({ ...VALID_CREATE, highlights: Array(4).fill(RICH_HIGHLIGHT) }).success).toBe(
+      true
+    );
   });
 
   it('should reject more than 4 highlights', () => {
-    const highlight = {
-      challenge: { en: 'C', vi: 'C' },
-      approach: { en: 'A', vi: 'A' },
-      outcome: { en: 'O', vi: 'O' },
-    };
-    expect(CreateProjectSchema.safeParse({ ...VALID_CREATE, highlights: Array(5).fill(highlight) }).success).toBe(
+    expect(CreateProjectSchema.safeParse({ ...VALID_CREATE, highlights: Array(5).fill(RICH_HIGHLIGHT) }).success).toBe(
       false
     );
   });
 });
 
 describe('TechnicalHighlightSchema', () => {
-  it('should parse valid highlight with optional codeUrl', () => {
+  it('should parse valid rich highlight with optional codeUrl', () => {
     const withUrl = TechnicalHighlightSchema.safeParse({
-      challenge: { en: 'Problem', vi: 'Van de' },
-      approach: { en: 'Solution', vi: 'Giai phap' },
-      outcome: { en: 'Result', vi: 'Ket qua' },
+      ...RICH_HIGHLIGHT,
       codeUrl: 'https://github.com/pr/1',
     });
     expect(withUrl.success).toBe(true);
 
-    const withoutUrl = TechnicalHighlightSchema.safeParse({
-      challenge: { en: 'C', vi: 'C' },
-      approach: { en: 'A', vi: 'A' },
-      outcome: { en: 'O', vi: 'O' },
-    });
+    const withoutUrl = TechnicalHighlightSchema.safeParse(RICH_HIGHLIGHT);
     expect(withoutUrl.success).toBe(true);
   });
 
-  it('accepts a rich-text-only highlight (legacy CAO optional during the RTE transition)', () => {
-    const doc = { schemaVersion: 1, content: { type: 'doc', content: [] } };
-    const richOnly = TechnicalHighlightSchema.safeParse({
-      challengeJson: { en: doc, vi: doc },
-      approachJson: { en: doc, vi: doc },
-      outcomeJson: { en: doc, vi: doc },
-    });
+  it('accepts a rich-text highlight built from the `*Json` docs', () => {
+    const richOnly = TechnicalHighlightSchema.safeParse(RICH_HIGHLIGHT);
     expect(richOnly.success).toBe(true);
   });
 
@@ -113,10 +101,6 @@ describe('UpdateProjectSchema', () => {
 
   it('should reject empty object', () => {
     expect(UpdateProjectSchema.safeParse({}).success).toBe(false);
-  });
-
-  it('should accept body=null to clear case-study body', () => {
-    expect(UpdateProjectSchema.safeParse({ body: null }).success).toBe(true);
   });
 
   it('should accept links array', () => {

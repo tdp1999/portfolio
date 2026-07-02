@@ -8,6 +8,8 @@ import { BLOG_POST_REPOSITORY } from '../blog-post.token';
 import { UpdateBlogPostSchema } from '../blog-post.dto';
 import { RichTextService } from '../../../rich-text';
 import { wrapContentByLanguage } from '../blog-content-rich.util';
+import { BlogPost } from '../../domain/entities/blog-post.entity';
+import { plainTextFromDoc, type PortableDocument } from '@portfolio/shared/features/rte-core';
 
 export class UpdatePostCommand extends BaseCommand {
   constructor(
@@ -48,7 +50,6 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
     let updated = existing.entity.update(
       {
         title: data.title,
-        content: data.content,
         language: data.language,
         excerpt: data.excerpt,
         status: data.status,
@@ -67,7 +68,11 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
         wrapContentByLanguage(data.contentJson, updated.language),
         'blog-post.content'
       );
-      updated = updated.withContentRichText(rich, command.userId);
+      const lang = updated.language.toLowerCase() as 'en' | 'vi';
+      const readTime = BlogPost.calculateReadTime(
+        plainTextFromDoc(rich.canonical[lang] as unknown as PortableDocument | undefined)
+      );
+      updated = updated.withContentRichText(rich, readTime, command.userId);
     }
 
     // Junction tables: replace-all when arrays provided, else keep existing

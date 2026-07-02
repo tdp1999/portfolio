@@ -16,10 +16,9 @@ export interface IBlogPostProps extends IBaseAuditProps {
   // Content
   title: string;
   excerpt: string | null;
-  content: string;
-  // Rich-text storage for `content` (RTE epic Phase 2, expand phase). JSON canonical +
-  // sanitized HTML cache ({ en, vi } envelope per the 2026-06-10 uniform-scope decision);
-  // null until Phase 4 RichTextService populates them. Old markdown `content` kept.
+  // Rich-text storage for the post body. JSON canonical + sanitized HTML cache
+  // ({ en, vi } envelope); the legacy plain-markdown `content` column was dropped
+  // in task 363 — the rich triple + canonical are the sole body source.
   contentJson: TranslatableRichText | null;
   contentHtml: TranslatableJson | null;
   contentSchemaVersion: number;
@@ -45,7 +44,6 @@ export interface IBlogPostProps extends IBaseAuditProps {
 
 export interface ICreateBlogPostPayload {
   title: string;
-  content: string;
   language?: 'EN' | 'VI';
   excerpt?: string;
   featured?: boolean;
@@ -59,7 +57,6 @@ export interface ICreateBlogPostPayload {
 export interface IUpdateBlogPostPayload {
   title?: string;
   excerpt?: string | null;
-  content?: string;
   language?: 'EN' | 'VI';
   status?: PostStatus;
   featured?: boolean;

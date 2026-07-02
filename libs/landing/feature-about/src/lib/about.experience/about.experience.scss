@@ -331,9 +331,18 @@
   color: var(--landing-text-300);
 }
 
+// Host is the <rte-render> element (contentClass); the bulletList canonical renders
+// <ul><li><p>…</p></li></ul> beneath it, so list/bullet styling targets descendants.
 .exp-detail__highlights {
-  list-style: none;
   margin: 0 0 24px;
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-300);
+}
+
+.exp-detail__highlights ul {
+  list-style: none;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -343,9 +352,6 @@
 .exp-detail__highlights li {
   position: relative;
   padding-left: 24px;
-  font-size: var(--landing-body-md);
-  line-height: var(--landing-body-md-lh);
-  color: var(--landing-text-300);
 }
 
 .exp-detail__highlights li::before {
@@ -354,6 +360,10 @@
   left: 0;
   top: 0;
   color: var(--landing-accent);
+}
+
+.exp-detail__highlights p {
+  margin: 0;
 }
 
 .exp-detail__day-to-day {
@@ -390,15 +400,24 @@
   transform: rotate(180deg);
 }
 
+// Host is the <rte-render> element; the bulletList renders <ul><li><p>…</p></li></ul>.
 .exp-detail__responsibilities {
-  list-style: disc;
   margin: 0 0 12px;
+  font-size: var(--landing-body-sm);
+  color: var(--landing-text-400);
+}
+
+.exp-detail__responsibilities ul {
+  list-style: disc;
+  margin: 0;
   padding: 0 0 0 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: var(--landing-body-sm);
-  color: var(--landing-text-400);
+}
+
+.exp-detail__responsibilities p {
+  margin: 0;
 }
 
 .exp-detail__skills {

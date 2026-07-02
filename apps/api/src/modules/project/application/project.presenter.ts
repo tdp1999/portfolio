@@ -25,19 +25,19 @@ export type ProjectListItemDto = {
 };
 
 export type ProjectHighlightResponseDto = {
-  challenge: TranslatableJson;
-  approach: TranslatableJson;
-  outcome: TranslatableJson;
-  // Rich-text storage per CAO sub-field (RTE epic Phase 2). Null until Phase 4.
+  // Rich-text storage per CAO sub-field.
   challengeJson: TranslatableRichText | null;
   challengeHtml: TranslatableJson | null;
   challengeSchemaVersion: number;
+  challengeCanonical: TranslatableJson | null;
   approachJson: TranslatableRichText | null;
   approachHtml: TranslatableJson | null;
   approachSchemaVersion: number;
+  approachCanonical: TranslatableJson | null;
   outcomeJson: TranslatableRichText | null;
   outcomeHtml: TranslatableJson | null;
   outcomeSchemaVersion: number;
+  outcomeCanonical: TranslatableJson | null;
   codeUrl: string | null;
 };
 
@@ -53,8 +53,7 @@ export type ProjectDetailDto = {
   description: TranslatableJson;
   motivation: TranslatableJson;
   role: TranslatableJson;
-  body: TranslatableJson | null;
-  /** Rich-text storage for `body` (RTE epic Phase 2). Null until Phase 4. */
+  /** Rich-text storage for `body`. */
   bodyJson: TranslatableRichText | null;
   bodyHtml: TranslatableJson | null;
   /** Canonical `PortableDocument` per locale (prose-block renderer epic) — the AST
@@ -124,7 +123,6 @@ export class ProjectPresenter {
       description: item.entity.description,
       motivation: item.entity.motivation,
       role: item.entity.role,
-      body: item.entity.body,
       bodyJson: item.entity.bodyJson,
       bodyHtml: item.entity.bodyHtml,
       bodyCanonical: item.entity.bodyCanonical,
@@ -137,18 +135,18 @@ export class ProjectPresenter {
       featured: item.entity.featured,
       lifecycleStatus: item.entity.lifecycleStatus,
       highlights: item.relations.highlights.map((h) => ({
-        challenge: h.challenge,
-        approach: h.approach,
-        outcome: h.outcome,
         challengeJson: h.challengeJson,
         challengeHtml: h.challengeHtml,
         challengeSchemaVersion: h.challengeSchemaVersion,
+        challengeCanonical: h.challengeCanonical,
         approachJson: h.approachJson,
         approachHtml: h.approachHtml,
         approachSchemaVersion: h.approachSchemaVersion,
+        approachCanonical: h.approachCanonical,
         outcomeJson: h.outcomeJson,
         outcomeHtml: h.outcomeHtml,
         outcomeSchemaVersion: h.outcomeSchemaVersion,
+        outcomeCanonical: h.outcomeCanonical,
         codeUrl: h.codeUrl,
       })),
       images: item.relations.images.map((i) => ({

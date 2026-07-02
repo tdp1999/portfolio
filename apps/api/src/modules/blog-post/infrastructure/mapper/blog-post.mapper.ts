@@ -40,8 +40,7 @@ export class BlogPostMapper {
       language: raw.language as 'EN' | 'VI',
       title: raw.title,
       excerpt: raw.excerpt,
-      content: raw.content,
-      // Rich-text columns — opaque passthrough (read side); write path is Phase 4.
+      // Rich-text body columns — opaque passthrough (read side).
       contentJson: (raw.contentJson as TranslatableRichText | null) ?? null,
       contentHtml: (raw.contentHtml as unknown as TranslatableJson | null) ?? null,
       contentSchemaVersion: raw.contentSchemaVersion,
@@ -94,7 +93,6 @@ export class BlogPostMapper {
       language: entity.language,
       title: entity.title,
       excerpt: entity.excerpt,
-      content: entity.content,
       contentJson: (entity.contentJson as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       contentHtml: (entity.contentHtml as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       contentSchemaVersion: entity.contentSchemaVersion,

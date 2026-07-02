@@ -16,11 +16,7 @@ import { BilingualEditorDocumentSchema } from '../../rich-text/rich-text.schema'
 // --- TechnicalHighlightSchema ---
 
 export const TechnicalHighlightSchema = z.object({
-  // Legacy markdown — optional during the RTE transition; the `*Json` docs below
-  // are the source of truth (the console editor emits them). Landing render swap: task 313.
-  challenge: TranslatableSchema.optional(),
-  approach: TranslatableSchema.optional(),
-  outcome: TranslatableSchema.optional(),
+  // The `*Json` docs are the source of truth (the console editor emits them).
   challengeJson: BilingualEditorDocumentSchema.optional(),
   approachJson: BilingualEditorDocumentSchema.optional(),
   outcomeJson: BilingualEditorDocumentSchema.optional(),
@@ -43,7 +39,6 @@ export const CreateProjectSchema = z.object({
   description: TranslatableSchema,
   motivation: TranslatableSchema,
   role: TranslatableSchema,
-  body: TranslatableSchema.nullable().optional(),
   bodyJson: BilingualEditorDocumentSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
@@ -70,7 +65,6 @@ const UpdateProjectBaseSchema = z.object({
   description: PartialTranslatableSchema,
   motivation: PartialTranslatableSchema,
   role: PartialTranslatableSchema,
-  body: PartialTranslatableSchema.nullable(),
   bodyJson: BilingualEditorDocumentSchema.optional(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
