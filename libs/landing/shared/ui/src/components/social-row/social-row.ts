@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { SOCIAL_PLATFORM_LABELS } from '@portfolio/shared/enum-labels';
 import { type SocialLink } from '@portfolio/shared/types';
 import { Icon } from '../icon';
+import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import { SOCIAL_ICON } from './social-row.data';
 import type { SocialIcon } from './social-row.types';
 
@@ -16,7 +17,7 @@ export type { SocialIcon } from './social-row.types';
   selector: 'landing-social-row',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, UmamiEventDirective],
   template: `
     @if (icons().length > 0) {
       <ul class="social-row" role="list">
@@ -28,8 +29,8 @@ export type { SocialIcon } from './social-row.types';
               target="_blank"
               rel="noopener noreferrer"
               [attr.aria-label]="icon.label"
-              data-umami-event="social-link"
-              [attr.data-umami-event-platform]="icon.label"
+              umamiEvent="social-link"
+              [umamiData]="{ platform: icon.label }"
             >
               <landing-icon [name]="icon.icon" [size]="iconSize()" />
             </a>

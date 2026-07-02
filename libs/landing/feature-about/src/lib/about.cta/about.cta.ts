@@ -1,7 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
-import { Container, Eyebrow, Heading, Link, LandingLocaleService } from '@portfolio/landing/shared/ui';
+import {
+  Container,
+  Eyebrow,
+  Heading,
+  Link,
+  LandingLocaleService,
+  UmamiEventDirective,
+} from '@portfolio/landing/shared/ui';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import { DEFAULT_HEADING_BY_LOCALE, DEFAULT_LEDE_BY_LOCALE } from './about.cta.data';
 import type { CtaItem } from './about.cta.types';
@@ -23,7 +30,7 @@ import type { CtaItem } from './about.cta.types';
   selector: 'landing-about-cta',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Heading, Link],
+  imports: [Container, Eyebrow, Heading, Link, UmamiEventDirective],
   templateUrl: './about.cta.html',
   styleUrl: './about.cta.scss',
 })

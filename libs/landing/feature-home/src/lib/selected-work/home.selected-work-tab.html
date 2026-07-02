@@ -36,8 +36,8 @@
           [arrow]="true"
           [inline]="true"
           class="selected-work-tab__read-more"
-          data-umami-event="work-read-more"
-          [attr.data-umami-event-title]="title()"
+          umamiEvent="work-read-more"
+          [umamiData]="{ title: title() }"
         >
           Read more
         </landing-link>
@@ -64,8 +64,8 @@
                   [href]="link.href"
                   [external]="link.external"
                   [arrow]="true"
-                  data-umami-event="work-link"
-                  [attr.data-umami-event-label]="link.label"
+                  umamiEvent="work-link"
+                  [umamiData]="{ label: link.label }"
                 >
                   {{ link.label }}
                 </landing-link>

@@ -1,12 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Container, Eyebrow, Heading, Link, LandingLocaleService } from '@portfolio/landing/shared/ui';
+import {
+  Container,
+  SectionHeader,
+  Link,
+  LandingLocaleService,
+  UmamiEventDirective,
+} from '@portfolio/landing/shared/ui';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'landing-home-get-in-touch',
   standalone: true,
-  imports: [Container, Eyebrow, Heading, Link],
+  imports: [Container, SectionHeader, Link, UmamiEventDirective],
   templateUrl: './home.get-in-touch.html',
   styleUrl: './home.get-in-touch.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

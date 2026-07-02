@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
+import { CopyToClipboardDirective, Icon, UmamiEventDirective } from '@portfolio/landing/shared/ui';
 
 /**
  * Share row for the blog detail page. Three actions:
@@ -15,7 +15,7 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
   selector: 'landing-blog-share-row',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CopyToClipboardDirective, Icon],
+  imports: [CopyToClipboardDirective, Icon, UmamiEventDirective],
   template: `
     <div class="share-row" [class.share-row--compact]="compact()" role="group" aria-label="Share">
       <a
@@ -24,8 +24,8 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Share on X"
-        data-umami-event="blog-share"
-        data-umami-event-channel="x"
+        umamiEvent="blog-share"
+        [umamiData]="{ channel: 'x' }"
       >
         <landing-icon name="twitter" [size]="iconSize()" />
         @if (!compact()) {
@@ -38,8 +38,8 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Share on LinkedIn"
-        data-umami-event="blog-share"
-        data-umami-event-channel="linkedin"
+        umamiEvent="blog-share"
+        [umamiData]="{ channel: 'linkedin' }"
       >
         <landing-icon name="linkedin" [size]="iconSize()" />
         @if (!compact()) {
@@ -53,8 +53,8 @@ import { CopyToClipboardDirective, Icon } from '@portfolio/landing/shared/ui';
         #copy="landingCopyToClipboard"
         [attr.aria-label]="copy.state() === 'copied' ? 'Link copied' : 'Copy link'"
         [title]="copy.state() === 'copied' ? 'Copied' : 'Copy link'"
-        data-umami-event="blog-share"
-        data-umami-event-channel="copy"
+        umamiEvent="blog-share"
+        [umamiData]="{ channel: 'copy' }"
       >
         <landing-icon [name]="copy.state() === 'copied' ? 'check' : 'link'" [size]="iconSize()" />
         @if (!compact()) {

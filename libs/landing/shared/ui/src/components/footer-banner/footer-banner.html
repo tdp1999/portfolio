@@ -18,11 +18,7 @@
             <ul class="landing-footer-banner__list" role="list">
               @for (route of column.routes; track route.href) {
                 <li>
-                  <landing-link
-                    [href]="route.href"
-                    data-umami-event="nav-footer"
-                    [attr.data-umami-event-to]="route.label"
-                  >
+                  <landing-link [href]="route.href" umamiEvent="nav-footer" [umamiData]="{ to: route.label }">
                     {{ route.label }}
                   </landing-link>
                 </li>

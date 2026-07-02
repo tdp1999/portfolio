@@ -104,8 +104,8 @@
                   <a
                     [routerLink]="['/blog', r.slug]"
                     class="related-card"
-                    data-umami-event="blog-related"
-                    [attr.data-umami-event-slug]="r.slug"
+                    umamiEvent="blog-related"
+                    [umamiData]="{ slug: r.slug }"
                   >
                     @if (r.featuredImageUrl) {
                       <img [src]="r.featuredImageUrl" [alt]="r.title" class="related-card__media" />

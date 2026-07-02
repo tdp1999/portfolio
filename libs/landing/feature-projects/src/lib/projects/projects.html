@@ -27,7 +27,7 @@
             [class.projects-toolbar__toggle--open]="filtersOpen()"
             [attr.aria-expanded]="filtersOpen() ? 'true' : 'false'"
             (click)="toggleFilters()"
-            data-umami-event="projects-filters-toggle"
+            umamiEvent="projects-filters-toggle"
           >
             <landing-icon name="filter" [size]="14" />
             <span>Filters</span>
@@ -110,8 +110,8 @@
                   <a
                     [routerLink]="['/projects', project.slug]"
                     class="projects-row__link"
-                    data-umami-event="project-open"
-                    [attr.data-umami-event-slug]="project.slug"
+                    umamiEvent="project-open"
+                    [umamiData]="{ slug: project.slug }"
                   >
                     <span class="projects-row__year">{{ project.year }}</span>
 
@@ -170,8 +170,8 @@
                   <a
                     [routerLink]="['/projects', project.slug]"
                     class="projects-card__link"
-                    data-umami-event="project-open"
-                    [attr.data-umami-event-slug]="project.slug"
+                    umamiEvent="project-open"
+                    [umamiData]="{ slug: project.slug }"
                   >
                     <div class="projects-card__media">
                       @if (project.thumbnailUrl) {
@@ -228,8 +228,8 @@
                         <a
                           [routerLink]="['/projects', project.slug]"
                           class="projects-timeline__link"
-                          data-umami-event="project-open"
-                          [attr.data-umami-event-slug]="project.slug"
+                          umamiEvent="project-open"
+                          [umamiData]="{ slug: project.slug }"
                         >
                           <div class="projects-timeline__body">
                             <span class="projects-timeline__title">{{ project.title }}</span>

@@ -13,6 +13,7 @@ import { CommandPaletteService } from '../command-palette/command-palette.servic
 import { KeyboardShortcutService } from '../../services/keyboard/keyboard-shortcut.service';
 import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { HydrationSafeActiveDirective } from '../../directives/hydration-safe-active/hydration-safe-active.directive';
+import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
 import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
@@ -24,6 +25,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
   imports: [
     RouterLink,
     HydrationSafeActiveDirective,
+    UmamiEventDirective,
     ThemeToggle,
     Container,
     MegaMenu,
@@ -70,8 +72,8 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                     [hydrationSafeActive]="item.path"
                     [hydrationSafeActiveExact]="!!item.exact"
                     class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
-                    data-umami-event="nav-primary"
-                    [attr.data-umami-event-to]="item.label"
+                    umamiEvent="nav-primary"
+                    [umamiData]="{ to: item.label }"
                   >
                     {{ item.label }}
                   </a>
@@ -97,7 +99,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300 hover:border-landing-text-500 laptop:inline-flex"
                 (click)="palette.show()"
                 [attr.aria-label]="paletteAriaLabel()"
-                data-umami-event="palette-open"
+                umamiEvent="palette-open"
               >
                 <kbd class="font-mono pointer-events-none">{{ kbdMod() }}</kbd>
                 <kbd class="font-mono pointer-events-none">K</kbd>
@@ -110,7 +112,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 class="inline-flex tablet:hidden h-9 w-9 items-center justify-center rounded-md text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
                 (click)="openMenu()"
                 aria-label="Open menu"
-                data-umami-event="menu-open"
+                umamiEvent="menu-open"
                 aria-haspopup="dialog"
                 aria-controls="mobile-menu-sheet"
                 [attr.aria-expanded]="menuOpen()"
@@ -147,8 +149,8 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                   [hydrationSafeActive]="item.path"
                   [hydrationSafeActiveExact]="!!item.exact"
                   class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
-                  data-umami-event="nav-primary"
-                  [attr.data-umami-event-to]="item.label"
+                  umamiEvent="nav-primary"
+                  [umamiData]="{ to: item.label }"
                 >
                   {{ item.label }}
                 </a>
@@ -173,7 +175,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 class="hidden h-9 items-center gap-1 rounded-md border border-landing-border px-2 font-mono text-mono-sm text-landing-text-500 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300 hover:border-landing-text-500 laptop:inline-flex"
                 (click)="palette.show()"
                 [attr.aria-label]="paletteAriaLabel()"
-                data-umami-event="palette-open"
+                umamiEvent="palette-open"
               >
                 <kbd class="font-mono pointer-events-none">{{ kbdMod() }}</kbd>
                 <kbd class="font-mono pointer-events-none">K</kbd>
@@ -186,7 +188,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 class="inline-flex tablet:hidden h-9 w-9 items-center justify-center rounded-md text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
                 (click)="openMenu()"
                 aria-label="Open menu"
-                data-umami-event="menu-open"
+                umamiEvent="menu-open"
                 aria-haspopup="dialog"
                 aria-controls="mobile-menu-sheet"
                 [attr.aria-expanded]="menuOpen()"

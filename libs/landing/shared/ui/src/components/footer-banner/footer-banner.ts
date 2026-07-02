@@ -5,6 +5,7 @@ import { Background } from '../background';
 import { Container } from '../container';
 import { Eyebrow } from '../eyebrow';
 import { Link } from '../link';
+import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import type { FooterColumn } from './footer-banner.types';
 
 /**
@@ -15,7 +16,7 @@ import type { FooterColumn } from './footer-banner.types';
 @Component({
   selector: 'landing-footer-banner',
   standalone: true,
-  imports: [Background, Container, Eyebrow, Link, Wordmark],
+  imports: [Background, Container, Eyebrow, Link, Wordmark, UmamiEventDirective],
   templateUrl: './footer-banner.html',
   styleUrl: './footer-banner.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

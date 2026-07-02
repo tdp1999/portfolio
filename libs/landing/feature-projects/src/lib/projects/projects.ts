@@ -16,6 +16,7 @@ import {
   ResultsCount,
   ViewToggle,
   CloudinarySrcsetPipe,
+  UmamiEventDirective,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 import {
@@ -51,6 +52,7 @@ import { initialViewMode, isViewMode, parseCsvSet, yearOf } from './projects.uti
     ViewToggle,
     TranslatablePipe,
     CloudinarySrcsetPipe,
+    UmamiEventDirective,
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',

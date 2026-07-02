@@ -1,16 +1,13 @@
 <section id="get-in-touch" class="home-get-in-touch" aria-labelledby="home-get-in-touch-heading">
   <landing-container size="wide">
     <div class="home-get-in-touch__inner">
-      <landing-eyebrow
-        [label]="['06', 'Get in Touch']"
-        [accentFirst]="true"
-        [trailingRule]="true"
-        class="home-get-in-touch__eyebrow"
-      />
-
-      <landing-heading [level]="2" id="home-get-in-touch-heading" [anchor]="false" class="home-get-in-touch__heading">
-        Let's talk.
-      </landing-heading>
+      <landing-section-header
+        [eyebrowLabel]="['06', 'Get in Touch']"
+        id="home-get-in-touch-heading"
+        class="home-get-in-touch__header"
+      >
+        Let's <em>talk</em>.
+      </landing-section-header>
 
       <p class="home-get-in-touch__copy">{{ copy() }}</p>
 
@@ -21,8 +18,8 @@
             [arrow]="true"
             [class.home-get-in-touch__cta--quiet]="cta.quiet"
             class="home-get-in-touch__cta"
-            data-umami-event="contact-cta"
-            [attr.data-umami-event-purpose]="cta.purpose"
+            umamiEvent="contact-cta"
+            [umamiData]="{ purpose: cta.purpose }"
           >
             {{ cta.label }}
           </landing-link>
@@ -32,9 +29,7 @@
       @if (mailtoHref()) {
         <p class="home-get-in-touch__fallback">
           {{ fallbackPrompt() }}
-          <landing-link [href]="mailtoHref()" [inline]="true" data-umami-event="contact-email">{{
-            email()
-          }}</landing-link>
+          <landing-link [href]="mailtoHref()" [inline]="true" umamiEvent="contact-email">{{ email() }}</landing-link>
         </p>
       }
     </div>

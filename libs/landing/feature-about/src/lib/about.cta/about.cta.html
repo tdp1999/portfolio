@@ -17,8 +17,8 @@
             [href]="item.href"
             [kind]="item.kind ?? null"
             [arrow]="true"
-            data-umami-event="about-cta"
-            [attr.data-umami-event-target]="item.id"
+            umamiEvent="about-cta"
+            [umamiData]="{ target: item.id }"
           >
             {{ locale() === 'vi' ? item.labelVi : item.labelEn }}
           </landing-link>

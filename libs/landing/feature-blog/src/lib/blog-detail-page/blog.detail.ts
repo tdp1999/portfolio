@@ -25,6 +25,7 @@ import {
   LandingScrollspyService,
   TocInline,
   TocSidebar,
+  UmamiEventDirective,
   type BreadcrumbItem,
   type InPageSection,
 } from '@portfolio/landing/shared/ui';
@@ -38,7 +39,7 @@ import { BlogShareRow } from './blog.share-row';
 import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
 import type { DetailState } from './blog.detail.types';
 import { INITIAL_STATE } from './blog.detail.data';
-import { shouldHideToc, wordCount } from './blog.detail.util';
+import { shouldHideToc } from './blog.detail.util';
 
 @Component({
   selector: 'landing-blog-detail',
@@ -59,6 +60,7 @@ import { shouldHideToc, wordCount } from './blog.detail.util';
     Wordmark,
     RteRender,
     RteRenderHtml,
+    UmamiEventDirective,
   ],
   providers: [LandingScrollspyService],
   templateUrl: './blog.detail.html',
@@ -164,8 +166,8 @@ export class BlogDetail {
     const p = this.post();
     if (!p) return '—';
     if (p.categories[0]?.slug === 'notes') return 'Note';
-    const wc = wordCount(p.content);
-    if (wc >= 1500) return 'Deep dive';
+    // Deep dive ≈ 1500+ words; read-time is ceil(words / 200), so 1500 words ≈ 8 min.
+    if ((p.readTimeMinutes ?? 0) >= 8) return 'Deep dive';
     return 'Essay';
   });
 

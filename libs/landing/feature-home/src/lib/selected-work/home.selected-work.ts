@@ -6,6 +6,7 @@ import {
   Link,
   SectionHeader,
   Segmented,
+  UmamiEventDirective,
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
 import { ProjectDataService, type ProjectDetailData } from '@portfolio/landing/shared/data-access';
@@ -17,7 +18,16 @@ import { MAX_TABS } from './home.selected-work.data';
 @Component({
   selector: 'landing-home-selected-work',
   standalone: true,
-  imports: [Container, EmphasisText, Link, SectionHeader, Segmented, HomeSelectedWorkTab, HomeSelectedWorkFallback],
+  imports: [
+    Container,
+    EmphasisText,
+    Link,
+    SectionHeader,
+    Segmented,
+    HomeSelectedWorkTab,
+    HomeSelectedWorkFallback,
+    UmamiEventDirective,
+  ],
   templateUrl: './home.selected-work.html',
   styleUrl: './home.selected-work.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

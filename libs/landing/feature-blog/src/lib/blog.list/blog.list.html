@@ -14,8 +14,8 @@
             <a
               [routerLink]="['/blog', hero.slug]"
               class="mag-hero__link"
-              data-umami-event="blog-open"
-              [attr.data-umami-event-slug]="hero.slug"
+              umamiEvent="blog-open"
+              [umamiData]="{ slug: hero.slug }"
             >
               <h3 class="mag-title mag-title--hero">{{ hero.title }}</h3>
               @if (hero.excerpt; as ex) {
@@ -50,8 +50,8 @@
             <a
               [routerLink]="['/blog', post.slug]"
               class="mag-side__link"
-              data-umami-event="blog-open"
-              [attr.data-umami-event-slug]="post.slug"
+              umamiEvent="blog-open"
+              [umamiData]="{ slug: post.slug }"
             >
               <div class="mag-side__media">
                 @if (post.featuredImageUrl; as url) {
@@ -131,8 +131,8 @@
             <a
               [routerLink]="['/blog', hero.slug]"
               class="mag-hero__link"
-              data-umami-event="blog-open"
-              [attr.data-umami-event-slug]="hero.slug"
+              umamiEvent="blog-open"
+              [umamiData]="{ slug: hero.slug }"
             >
               <div class="mag-hero__split-media mag-hero__split-media--top">
                 @if (hero.featuredImageUrl; as url) {
@@ -169,8 +169,8 @@
             <a
               [routerLink]="['/blog', post.slug]"
               class="mag-archive__link"
-              data-umami-event="blog-open"
-              [attr.data-umami-event-slug]="post.slug"
+              umamiEvent="blog-open"
+              [umamiData]="{ slug: post.slug }"
             >
               <div class="mag-archive__media">
                 @if (post.featuredImageUrl; as url) {
@@ -308,8 +308,8 @@
                   <a
                     [routerLink]="['/blog', post.slug]"
                     class="list-row__link"
-                    data-umami-event="blog-open"
-                    [attr.data-umami-event-slug]="post.slug"
+                    umamiEvent="blog-open"
+                    [umamiData]="{ slug: post.slug }"
                   >
                     <div class="list-row__thumb">
                       @if (post.featuredImageUrl; as url) {
@@ -348,8 +348,8 @@
                   <a
                     [routerLink]="['/blog', post.slug]"
                     class="list-card__link"
-                    data-umami-event="blog-open"
-                    [attr.data-umami-event-slug]="post.slug"
+                    umamiEvent="blog-open"
+                    [umamiData]="{ slug: post.slug }"
                   >
                     <div class="list-card__media">
                       @if (post.featuredImageUrl; as url) {

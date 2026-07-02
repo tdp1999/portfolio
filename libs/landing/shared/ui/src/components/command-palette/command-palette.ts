@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Icon } from '../icon/icon';
+import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import { KeyboardShortcutService } from '../../services/keyboard/keyboard-shortcut.service';
 import { CommandPaletteService } from './command-palette.service';
 import {
@@ -52,7 +53,7 @@ import {
   selector: 'landing-command-palette',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, UmamiEventDirective],
   templateUrl: './command-palette.html',
   styleUrl: './command-palette.scss',
 })

@@ -30,6 +30,7 @@ import {
   Carousel,
   CarouselSlide,
   CloudinarySrcsetPipe,
+  UmamiEventDirective,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
@@ -72,6 +73,7 @@ import { timeAgo, parsePageParam } from './blog.list.util';
     Carousel,
     CarouselSlide,
     CloudinarySrcsetPipe,
+    UmamiEventDirective,
   ],
   templateUrl: './blog.list.html',
   styleUrl: './blog.list.scss',

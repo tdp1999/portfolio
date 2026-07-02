@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { Chip, Carousel, Gallery, Link, type GalleryImage } from '@portfolio/landing/shared/ui';
+import { Chip, Carousel, Gallery, Link, UmamiEventDirective, type GalleryImage } from '@portfolio/landing/shared/ui';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import type { ProjectDetailData } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
@@ -10,7 +10,7 @@ import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-sh
 @Component({
   selector: 'landing-home-selected-work-tab',
   standalone: true,
-  imports: [Chip, Gallery, Carousel, Link],
+  imports: [Chip, Gallery, Carousel, Link, UmamiEventDirective],
   templateUrl: './home.selected-work-tab.html',
   styleUrl: './home.selected-work-tab.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

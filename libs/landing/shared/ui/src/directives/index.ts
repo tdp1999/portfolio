@@ -5,3 +5,4 @@ export * from './hydration-safe-active';
 export * from './keyboard-shortcuts';
 export * from './spotlight';
 export * from './type-out';
+export * from './umami-event';

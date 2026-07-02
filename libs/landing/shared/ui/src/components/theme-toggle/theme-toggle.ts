@@ -1,18 +1,20 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { LandingThemeService } from '../../services/theme/theme.service';
+import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 
 @Component({
   selector: 'landing-theme-toggle',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [UmamiEventDirective],
   template: `
     <button
       type="button"
       class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-landing-border text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:border-landing-border-strong hover:text-landing-text-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
       [attr.aria-label]="ariaLabel()"
       [attr.aria-pressed]="isDark()"
-      data-umami-event="theme-toggle"
-      [attr.data-umami-event-to]="isDark() ? 'light' : 'dark'"
+      umamiEvent="theme-toggle"
+      [umamiData]="{ to: isDark() ? 'light' : 'dark' }"
       (click)="toggle()"
     >
       @if (isDark()) {
