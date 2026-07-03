@@ -47,15 +47,25 @@ function authHeaders(token: string): Record<string, string> {
   return { Authorization: `Bearer ${token}` };
 }
 
+// A single editor document carrying `text` — experience highlights are rich-text now
+// (legacy plain string-array `highlights` dropped in task 363); the server canonicalizes
+// each locale's `highlightsJson`, and the landing renders it via <rte-render>.
+function hlDoc(text: string) {
+  return {
+    schemaVersion: 1,
+    content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] },
+  };
+}
+
 async function createExperience(token: string, overrides: Record<string, unknown> = {}): Promise<string> {
   const res = await axios.post(
     `${API_BASE}/api/experiences`,
     {
       companyName: `${EXP_PREFIX}corp`,
       position: { en: 'Senior Engineer', vi: 'Kỹ sư cao cấp' },
-      highlights: {
-        en: ['Improved system performance by 40%'],
-        vi: ['Cải thiện hiệu suất hệ thống 40%'],
+      highlightsJson: {
+        en: hlDoc('Improved system performance by 40%'),
+        vi: hlDoc('Cải thiện hiệu suất hệ thống 40%'),
       },
       employmentType: 'FULL_TIME',
       locationType: 'REMOTE',
@@ -111,9 +121,9 @@ test.beforeAll(async () => {
     await createExperience(adminToken, {
       companyName: COMPANY_CURRENT,
       position: { en: 'Senior Engineer', vi: 'Kỹ sư cao cấp' },
-      highlights: {
-        en: ['Led architecture decisions across 4 squads.'],
-        vi: ['Dẫn dắt các quyết định kiến trúc qua 4 squad.'],
+      highlightsJson: {
+        en: hlDoc('Led architecture decisions across 4 squads.'),
+        vi: hlDoc('Dẫn dắt các quyết định kiến trúc qua 4 squad.'),
       },
       startDate: '2023-06-01T00:00:00.000Z',
     })
@@ -124,9 +134,9 @@ test.beforeAll(async () => {
     await createExperience(adminToken, {
       companyName: COMPANY_PAST,
       position: { en: 'Mid-level Developer', vi: 'Lập trình viên middle' },
-      highlights: {
-        en: ['Shipped a dashboard that cut report time 6h → 12m.'],
-        vi: ['Ship dashboard rút thời gian báo cáo từ 6 giờ xuống 12 phút.'],
+      highlightsJson: {
+        en: hlDoc('Shipped a dashboard that cut report time 6h → 12m.'),
+        vi: hlDoc('Ship dashboard rút thời gian báo cáo từ 6 giờ xuống 12 phút.'),
       },
       employmentType: 'CONTRACT',
       startDate: '2020-01-01T00:00:00.000Z',

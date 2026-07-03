@@ -7,7 +7,6 @@ describe('BlogPostMapper', () => {
     language: 'EN',
     title: 'Test Post',
     excerpt: 'A test excerpt',
-    content: 'This is test content for the blog post.',
     contentJson: null,
     contentHtml: null,
     contentSchemaVersion: 1,
@@ -92,7 +91,6 @@ describe('BlogPostMapper', () => {
       expect(entity.slug).toBe('test-post');
       expect(entity.title).toBe('Test Post');
       expect(entity.language).toBe('EN');
-      expect(entity.content).toBe(rawBlogPost.content);
       expect(entity.status).toBe('DRAFT');
       expect(entity.featured).toBe(false);
       expect(entity.publishedAt).toBeNull();

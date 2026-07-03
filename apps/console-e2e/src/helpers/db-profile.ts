@@ -14,7 +14,6 @@ export async function seedProfile(userId: string, email: string): Promise<string
         fullName: { en: 'E2E Admin', vi: 'Quản trị E2E' },
         title: { en: 'QA Engineer', vi: 'Kỹ sư QA' },
         bioShort: { en: 'E2E test bio.', vi: 'Tiểu sử E2E.' },
-        bioLong: null,
         yearsOfExperience: 5,
         availability: 'EMPLOYED',
         openTo: [],

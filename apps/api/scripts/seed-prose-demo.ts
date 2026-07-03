@@ -404,7 +404,6 @@ async function main(): Promise<void> {
         title: 'Rendering Prose as a Tree, Not a String',
         excerpt:
           'Why we replaced the HTML-string read-path with a validated AST + a DI block registry — and how in-content figures finally got a lightbox.',
-        content: plain,
         contentJson: canonical.json as unknown as Prisma.InputJsonValue,
         contentHtml: canonical.html as unknown as Prisma.InputJsonValue,
         contentCanonical: canonical.canonical as unknown as Prisma.InputJsonValue,

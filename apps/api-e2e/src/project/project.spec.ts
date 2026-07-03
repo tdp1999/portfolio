@@ -33,6 +33,15 @@ function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
 }
 
+// A single editor document carrying `text` — highlights are rich-text now (legacy plain
+// challenge/approach/outcome dropped in task 363); the server canonicalizes each `*Json`.
+function hlDoc(text: string) {
+  return {
+    schemaVersion: 1,
+    content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] },
+  };
+}
+
 function validPayload(overrides: Record<string, unknown> = {}) {
   return {
     title: `${PREFIX}portfolio-site`,
@@ -96,9 +105,9 @@ describe('Project API', () => {
           title: `${PREFIX}with-highlights`,
           highlights: [
             {
-              challenge: { en: 'Challenge 1', vi: 'Thách thức 1' },
-              approach: { en: 'Approach 1', vi: 'Cách tiếp cận 1' },
-              outcome: { en: 'Outcome 1', vi: 'Kết quả 1' },
+              challengeJson: { en: hlDoc('Challenge 1'), vi: hlDoc('Thách thức 1') },
+              approachJson: { en: hlDoc('Approach 1'), vi: hlDoc('Cách tiếp cận 1') },
+              outcomeJson: { en: hlDoc('Outcome 1'), vi: hlDoc('Kết quả 1') },
               codeUrl: null,
             },
           ],
@@ -122,9 +131,9 @@ describe('Project API', () => {
 
     it('should reject > 4 highlights (PRJ-002)', async () => {
       const highlight = {
-        challenge: { en: 'C', vi: 'C' },
-        approach: { en: 'A', vi: 'A' },
-        outcome: { en: 'O', vi: 'O' },
+        challengeJson: { en: hlDoc('C'), vi: hlDoc('C') },
+        approachJson: { en: hlDoc('A'), vi: hlDoc('A') },
+        outcomeJson: { en: hlDoc('O'), vi: hlDoc('O') },
         codeUrl: null,
       };
       try {
@@ -142,11 +151,13 @@ describe('Project API', () => {
       }
     });
 
-    it('should reject invalid sourceUrl', async () => {
+    it('should reject invalid link url', async () => {
       try {
-        await axios.post(PUBLIC_API, validPayload({ title: `${PREFIX}bad-url`, sourceUrl: 'not-a-url' }), {
-          headers: authHeaders(adminToken),
-        });
+        await axios.post(
+          PUBLIC_API,
+          validPayload({ title: `${PREFIX}bad-url`, links: [{ label: 'Source', url: 'not-a-url', type: 'repo' }] }),
+          { headers: authHeaders(adminToken) }
+        );
         fail('Expected 400');
       } catch (err) {
         expect((err as AxiosError).response?.status).toBe(400);

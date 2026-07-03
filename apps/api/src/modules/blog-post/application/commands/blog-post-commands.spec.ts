@@ -1,9 +1,17 @@
 // Mock the rich-text barrel with a factory so the real RichTextService — which
 // imports the ESM `document-engine-core` — is never loaded into this node-env spec.
+// The commands import `plainTextFromDoc` from the rte-core barrel, which also pulls
+// `rte.sanitize` → the ESM `isomorphic-dompurify`; stub it so this node-env spec loads.
+// Read-time asserts nothing here (the mocked canonical is empty), so returning '' is fine.
+jest.mock('@portfolio/shared/features/rte-core', () => ({
+  plainTextFromDoc: jest.fn(() => ''),
+}));
+
 jest.mock('../../../rich-text', () => ({
   RichTextService: class {
     toCanonicalFormTranslatable = jest.fn().mockResolvedValue({
       json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+      canonical: { en: { schemaVersion: 1, content: [] }, vi: { schemaVersion: 1, content: [] } },
       html: { en: '', vi: '' },
       schemaVersion: 1,
     });
@@ -25,13 +33,19 @@ const CAT_ID = '550e8400-e29b-41d4-a716-446655440010';
 const TAG_ID = '550e8400-e29b-41d4-a716-446655440020';
 const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
 
+// A single editor document — the create schema requires `contentJson`, so every
+// create payload carries one; the mocked rich-text service canonicalizes it.
+const CONTENT_JSON = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+// A persisted bilingual body — publishing an existing post (update → PUBLISHED without
+// re-sending contentJson) requires the loaded entity to already carry contentJson.
+const BILINGUAL_JSON = { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } };
+
 const baseProps: IBlogPostProps = {
   id: POST_ID,
   slug: 'hello-world',
   language: 'EN',
   title: 'Hello World',
   excerpt: null,
-  content: 'Body',
   contentJson: null,
   contentHtml: null,
   contentSchemaVersion: 1,
@@ -80,11 +94,13 @@ function makeRepoMock(): jest.Mocked<IBlogPostRepository> {
   };
 }
 
-// Stubbed rich-text pipeline (the real service is jest.mocked above). Not exercised
-// by these specs (no contentJson sent), but required by the handler constructors.
+// Stubbed rich-text pipeline (the real service is jest.mocked above). Exercised on
+// create (contentJson is required) and on update when contentJson is sent. `canonical`
+// is an empty PortableDocument per locale so read-time derivation resolves to 0.
 const richTextStub = {
   toCanonicalFormTranslatable: jest.fn().mockResolvedValue({
     json: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+    canonical: { en: { schemaVersion: 1, content: [] }, vi: { schemaVersion: 1, content: [] } },
     html: { en: '', vi: '' },
     schemaVersion: 1,
   }),
@@ -102,7 +118,7 @@ describe('BlogPost Commands', () => {
   // ---------- CreatePostCommand ----------
   describe('CreatePostHandler', () => {
     const handler = () => new CreatePostHandler(repo, richTextStub);
-    const validDto = { title: 'Hello', content: 'Body', featuredImageId: COVER_ID };
+    const validDto = { title: 'Hello', contentJson: CONTENT_JSON, featuredImageId: COVER_ID };
 
     it('creates a draft post and returns id', async () => {
       const id = await handler().execute(new CreatePostCommand(validDto, USER_ID));
@@ -128,7 +144,7 @@ describe('BlogPost Commands', () => {
 
     it('PST-011: rejects payload without featuredImageId', async () => {
       await expect(
-        handler().execute(new CreatePostCommand({ title: 'Hello', content: 'Body' }, USER_ID))
+        handler().execute(new CreatePostCommand({ title: 'Hello', contentJson: CONTENT_JSON }, USER_ID))
       ).rejects.toThrow();
       expect(repo.add).not.toHaveBeenCalled();
     });
@@ -165,10 +181,10 @@ describe('BlogPost Commands', () => {
       });
     });
 
-    it('skips the rich pipeline when no contentJson is sent', async () => {
+    it('always runs the rich pipeline (contentJson is required on create)', async () => {
       rtStub.toCanonicalFormTranslatable.mockClear();
       await handler().execute(new CreatePostCommand(validDto, USER_ID));
-      expect(rtStub.toCanonicalFormTranslatable).not.toHaveBeenCalled();
+      expect(rtStub.toCanonicalFormTranslatable).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -191,19 +207,13 @@ describe('BlogPost Commands', () => {
     });
 
     it('auto-sets publishedAt on first PUBLISHED transition', async () => {
-      repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult({ status: 'DRAFT', publishedAt: null }));
+      repo.findByIdIncludeDeleted.mockResolvedValue(
+        makeReadResult({ status: 'DRAFT', publishedAt: null, contentJson: BILINGUAL_JSON })
+      );
       await handler().execute(new UpdatePostCommand(POST_ID, { status: 'PUBLISHED' }, USER_ID));
       const input = repo.update.mock.calls[0][1];
       expect(input.entity.status).toBe('PUBLISHED');
       expect(input.entity.publishedAt).toBeInstanceOf(Date);
-    });
-
-    it('recalculates readTime when content changes', async () => {
-      const longContent = Array(600).fill('word').join(' ');
-      repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult({ readTimeMinutes: 1 }));
-      await handler().execute(new UpdatePostCommand(POST_ID, { content: longContent }, USER_ID));
-      const input = repo.update.mock.calls[0][1];
-      expect(input.entity.readTimeMinutes).toBe(3);
     });
 
     it('preserves existing categories when not provided', async () => {

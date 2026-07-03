@@ -62,7 +62,20 @@ async function ensureCoverMedia(): Promise<string> {
 function validPayload(overrides: Record<string, unknown> = {}) {
   return {
     title: `${PREFIX}test-post`,
-    content: 'This is the blog post content for E2E testing. '.repeat(10),
+    // Rich-text body is the sole content source (legacy plain `content` dropped in task 363).
+    // A single editor document; the server wraps it into the bilingual envelope + canonicalizes.
+    contentJson: {
+      schemaVersion: 1,
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'This is the blog post content for E2E testing. '.repeat(10) }],
+          },
+        ],
+      },
+    },
     language: 'EN',
     featuredImageId: coverId,
     ...overrides,
@@ -122,9 +135,9 @@ describe('BlogPost API', () => {
       }
     });
 
-    it('should reject missing content', async () => {
+    it('should reject missing contentJson', async () => {
       try {
-        await axios.post(ADMIN_API, validPayload({ title: `${PREFIX}no-content`, content: undefined }), {
+        await axios.post(ADMIN_API, validPayload({ title: `${PREFIX}no-content`, contentJson: undefined }), {
           headers: authHeaders(adminToken),
         });
         fail('Expected 400');
@@ -345,7 +358,7 @@ describe('BlogPost API', () => {
       expect(res.status).toBe(200);
       expect(res.data).toHaveProperty('slug', publishedSlug);
       expect(res.data).toHaveProperty('title');
-      expect(res.data).toHaveProperty('content');
+      expect(res.data).toHaveProperty('contentHtml');
       expect(res.data).toHaveProperty('author');
       expect(res.data).toHaveProperty('relatedPosts');
     });

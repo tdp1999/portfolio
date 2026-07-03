@@ -24,9 +24,8 @@ const baseProps: IBlogPostProps = {
   language: 'EN',
   title: 'Hello',
   excerpt: null,
-  content: 'Body',
   contentJson: null,
-  contentHtml: null,
+  contentHtml: { en: '<p>Body</p>', vi: '' },
   contentSchemaVersion: 1,
   contentCanonical: null,
   readTimeMinutes: 1,
@@ -123,7 +122,7 @@ describe('BlogPost Queries', () => {
       repo.findByIdIncludeDeleted.mockResolvedValue(makeReadResult());
       const r = await handler.execute(new GetPostByIdQuery(POST_ID));
       expect(r.id).toBe(POST_ID);
-      expect(r.content).toBe('Body');
+      expect(r.contentHtml).toEqual({ en: '<p>Body</p>', vi: '' });
     });
 
     it('throws NotFound when missing', async () => {
@@ -235,7 +234,7 @@ describe('BlogPost Queries', () => {
       expect(r.author).toEqual({ id: USER_ID, name: 'Phong', avatarUrl: 'https://cdn/a.png', shortBio: 'Dev' });
       expect(r.relatedPosts).toHaveLength(1);
       expect(r.relatedPosts[0].slug).toBe('rel-1');
-      expect(r.content).toBe('Body');
+      expect(r.contentHtml).toEqual({ en: '<p>Body</p>', vi: '' });
     });
 
     // ---------- PST-010 related-posts selection ----------

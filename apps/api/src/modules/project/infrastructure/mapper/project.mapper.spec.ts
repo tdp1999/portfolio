@@ -14,7 +14,6 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
   lifecycleStatus: 'LIVE',
   featured: false,
   displayOrder: 0,
-  body: { en: 'Long-form body', vi: 'Noi dung dai' },
   bodyJson: null,
   bodyHtml: null,
   bodySchemaVersion: 1,
@@ -51,9 +50,6 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
     {
       id: '00000000-0000-0000-0000-000000000011',
       projectId: '00000000-0000-0000-0000-000000000001',
-      challenge: { en: 'C2', vi: 'C2' },
-      approach: { en: 'A2', vi: 'A2' },
-      outcome: { en: 'O2', vi: 'O2' },
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
@@ -72,9 +68,6 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
     {
       id: '00000000-0000-0000-0000-000000000010',
       projectId: '00000000-0000-0000-0000-000000000001',
-      challenge: { en: 'C1', vi: 'C1' },
-      approach: { en: 'A1', vi: 'A1' },
-      outcome: { en: 'O1', vi: 'O1' },
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,

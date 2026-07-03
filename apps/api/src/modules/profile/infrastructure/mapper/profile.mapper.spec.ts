@@ -7,7 +7,6 @@ const RAW_PROFILE: PrismaProfile = {
   fullName: { en: 'John Doe', vi: 'Nguyen Van A' },
   title: { en: 'Software Engineer', vi: 'Ky su phan mem' },
   bioShort: { en: 'I build things', vi: 'Toi xay dung' },
-  bioLong: null,
   bioLongJson: null,
   bioLongHtml: null,
   bioLongSchemaVersion: 1,

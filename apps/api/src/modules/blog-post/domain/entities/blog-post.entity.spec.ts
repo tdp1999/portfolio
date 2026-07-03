@@ -4,14 +4,20 @@ import { IBlogPostProps } from '../blog-post.types';
 describe('BlogPost Entity', () => {
   const userId = '550e8400-e29b-41d4-a716-446655440000';
 
+  // A non-null rich body so publish()/update-to-PUBLISHED guards (which check
+  // contentJson) pass. Tests exercising the "missing body" branch override it to null.
+  const CONTENT_JSON = {
+    en: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+    vi: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+  };
+
   const validProps: IBlogPostProps = {
     id: '550e8400-e29b-41d4-a716-446655440001',
     slug: 'my-first-post',
     language: 'EN',
     title: 'My First Post',
     excerpt: 'A short excerpt',
-    content: 'This is the body of my first blog post with enough words.',
-    contentJson: null,
+    contentJson: CONTENT_JSON,
     contentHtml: null,
     contentSchemaVersion: 1,
     contentCanonical: null,
@@ -38,7 +44,6 @@ describe('BlogPost Entity', () => {
       const post = BlogPost.create(
         {
           title: 'TypeScript Tips & Tricks',
-          content: 'Some content here',
           authorId: userId,
           featuredImageId: COVER_ID,
         },
@@ -52,23 +57,15 @@ describe('BlogPost Entity', () => {
       expect(post.language).toBe('EN');
       expect(post.publishedAt).toBeNull();
       expect(post.isDeleted).toBe(false);
-    });
-
-    it('should calculate readTimeMinutes from content', () => {
-      const words = Array(400).fill('word').join(' ');
-      const post = BlogPost.create(
-        { title: 'Long Post', content: words, authorId: userId, featuredImageId: COVER_ID },
-        userId
-      );
-
-      expect(post.readTimeMinutes).toBe(2);
+      // Read-time + rich body are applied later via withContentRichText, not at create.
+      expect(post.readTimeMinutes).toBeNull();
+      expect(post.contentJson).toBeNull();
     });
 
     it('should apply optional fields when provided', () => {
       const post = BlogPost.create(
         {
           title: 'Test',
-          content: 'Content',
           authorId: userId,
           language: 'VI',
           excerpt: 'Excerpt text',
@@ -92,16 +89,16 @@ describe('BlogPost Entity', () => {
       expect(() =>
         BlogPost.create(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          { title: 'No Cover', content: 'Body', authorId: userId } as any,
+          { title: 'No Cover', authorId: userId } as any,
           userId
         )
       ).toThrow(/cover image is required/i);
     });
 
     it('PST-011: throws when featuredImageId is empty string', () => {
-      expect(() =>
-        BlogPost.create({ title: 'No Cover', content: 'Body', authorId: userId, featuredImageId: '' }, userId)
-      ).toThrow(/cover image is required/i);
+      expect(() => BlogPost.create({ title: 'No Cover', authorId: userId, featuredImageId: '' }, userId)).toThrow(
+        /cover image is required/i
+      );
     });
   });
 
@@ -131,6 +128,40 @@ describe('BlogPost Entity', () => {
     });
   });
 
+  describe('withContentRichText()', () => {
+    const rich = {
+      json: {
+        en: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+        vi: { schemaVersion: 1, content: { type: 'doc', content: [] } },
+      },
+      canonical: { en: 'canon-en', vi: 'canon-vi' },
+      html: { en: '<p>en</p>', vi: '<p>vi</p>' },
+      schemaVersion: 2,
+    };
+
+    it('applies the rich-text triple + read-time atomically', () => {
+      const post = BlogPost.create({ title: 'Body Post', authorId: userId, featuredImageId: COVER_ID }, userId);
+
+      const withBody = post.withContentRichText(rich, 4, userId);
+
+      expect(withBody.contentJson).toEqual(rich.json);
+      expect(withBody.contentHtml).toEqual(rich.html);
+      expect(withBody.contentCanonical).toEqual(rich.canonical);
+      expect(withBody.contentSchemaVersion).toBe(2);
+      expect(withBody.readTimeMinutes).toBe(4);
+    });
+
+    it('leaves the source post unchanged (immutability)', () => {
+      const post = BlogPost.load(validProps);
+
+      const next = post.withContentRichText(rich, 9, userId);
+
+      expect(next).not.toBe(post);
+      expect(post.readTimeMinutes).toBe(validProps.readTimeMinutes);
+      expect(post.contentJson).toEqual(validProps.contentJson);
+    });
+  });
+
   describe('update()', () => {
     it('should regenerate slug when title changes', () => {
       const post = BlogPost.load(validProps);
@@ -141,13 +172,12 @@ describe('BlogPost Entity', () => {
       expect(updated.title).toBe('New Title Here');
     });
 
-    it('should recalculate readTimeMinutes when content changes', () => {
-      const post = BlogPost.load(validProps);
-      const newContent = Array(600).fill('word').join(' ');
+    it('should carry existing readTimeMinutes through (body edits go via withContentRichText)', () => {
+      const post = BlogPost.load({ ...validProps, readTimeMinutes: 7 });
 
-      const updated = post.update({ content: newContent }, userId);
+      const updated = post.update({ title: 'New Title Here' }, userId);
 
-      expect(updated.readTimeMinutes).toBe(3);
+      expect(updated.readTimeMinutes).toBe(7);
     });
 
     it('should preserve unchanged fields', () => {
@@ -157,7 +187,6 @@ describe('BlogPost Entity', () => {
 
       expect(updated.title).toBe(validProps.title);
       expect(updated.slug).toBe(validProps.slug);
-      expect(updated.content).toBe(validProps.content);
       expect(updated.readTimeMinutes).toBe(validProps.readTimeMinutes);
       expect(updated.featured).toBe(true);
     });
@@ -185,7 +214,7 @@ describe('BlogPost Entity', () => {
     });
 
     it('should throw CONTENT_REQUIRED when transitioning to PUBLISHED without content', () => {
-      const post = BlogPost.load({ ...validProps, content: '' });
+      const post = BlogPost.load({ ...validProps, contentJson: null });
 
       expect(() => post.update({ status: 'PUBLISHED' }, userId)).toThrow();
     });
@@ -250,7 +279,7 @@ describe('BlogPost Entity', () => {
     });
 
     it('should throw CONTENT_REQUIRED if content is empty', () => {
-      const post = BlogPost.load({ ...validProps, content: '' });
+      const post = BlogPost.load({ ...validProps, contentJson: null });
 
       expect(() => post.publish(userId)).toThrow('Title and content are required before publishing');
     });

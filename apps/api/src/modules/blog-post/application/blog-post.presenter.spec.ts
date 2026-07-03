@@ -12,9 +12,8 @@ const baseProps: IBlogPostProps = {
   language: 'EN',
   title: 'Hello World',
   excerpt: 'A short excerpt',
-  content: 'Body content here.',
-  contentJson: null,
-  contentHtml: null,
+  contentJson: { en: { schemaVersion: 1, content: {} }, vi: { schemaVersion: 1, content: {} } },
+  contentHtml: { en: '<p>Body content here.</p>', vi: '' },
   contentSchemaVersion: 1,
   contentCanonical: null,
   readTimeMinutes: 3,
@@ -64,7 +63,8 @@ describe('BlogPostPresenter', () => {
       const related = [makeReadResult({ id: 'rel-1', slug: 'related-1', title: 'Related 1' })];
       const r = BlogPostPresenter.toPublicDetail(makeReadResult(), author, related);
 
-      expect(r.content).toBe('Body content here.');
+      expect(r.contentHtml).toEqual({ en: '<p>Body content here.</p>', vi: '' });
+      expect(r.contentJson).not.toBeNull();
       expect(r.metaTitle).toBe('Meta T');
       expect(r.author).toEqual(author);
       expect(r.relatedPosts).toHaveLength(1);
@@ -159,7 +159,7 @@ describe('BlogPostPresenter', () => {
   describe('toAdmin', () => {
     it('exposes full entity data including audit fields', () => {
       const r = BlogPostPresenter.toAdmin(makeReadResult());
-      expect(r.content).toBe('Body content here.');
+      expect(r.contentHtml).toEqual({ en: '<p>Body content here.</p>', vi: '' });
       expect(r.excerpt).toBe('A short excerpt');
       expect(r.metaDescription).toBe('Meta D');
       expect(r.authorId).toBe(USER_ID);

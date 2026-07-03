@@ -8,9 +8,13 @@ import {
 
 const COVER_ID = '550e8400-e29b-41d4-a716-446655440099';
 
+// Single editor document — `contentJson` is the required body source (legacy plain
+// `content` dropped in task 363). EditorDocumentSchema = { schemaVersion, content }.
+const CONTENT_JSON = { schemaVersion: 1, content: { type: 'doc', content: [] } };
+
 const VALID_CREATE = {
   title: 'Hello World',
-  content: 'Some body content',
+  contentJson: CONTENT_JSON,
   featuredImageId: COVER_ID,
 };
 
@@ -28,15 +32,17 @@ describe('CreateBlogPostSchema', () => {
   });
 
   it('rejects missing title', () => {
-    expect(CreateBlogPostSchema.safeParse({ content: 'x', featuredImageId: COVER_ID }).success).toBe(false);
+    expect(CreateBlogPostSchema.safeParse({ contentJson: CONTENT_JSON, featuredImageId: COVER_ID }).success).toBe(
+      false
+    );
   });
 
-  it('rejects missing content', () => {
+  it('rejects missing contentJson', () => {
     expect(CreateBlogPostSchema.safeParse({ title: 'x', featuredImageId: COVER_ID }).success).toBe(false);
   });
 
   it('PST-011: rejects missing featuredImageId', () => {
-    expect(CreateBlogPostSchema.safeParse({ title: 'x', content: 'y' }).success).toBe(false);
+    expect(CreateBlogPostSchema.safeParse({ title: 'x', contentJson: CONTENT_JSON }).success).toBe(false);
   });
 
   it('strips HTML from title', () => {

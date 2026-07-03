@@ -19,7 +19,6 @@ function seedPayload() {
     fullName: { en: 'E2E Landing User', vi: 'Nguoi Dung Landing' },
     title: { en: 'Full Stack Developer', vi: 'Lap Trinh Vien Full Stack' },
     bioShort: { en: 'Building great web apps.', vi: 'Xay dung ung dung web tuyet voi.' },
-    bioLong: null,
     yearsOfExperience: 8,
     availability: 'OPEN_TO_WORK',
     openTo: ['FREELANCE', 'CONSULTING'],
