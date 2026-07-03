@@ -48,7 +48,7 @@
           <div class="detail-field">
             <span class="detail-field__label">Parent</span>
             <span class="detail-field__value">
-              <button type="button" class="text-primary hover:underline" (click)="select.emit(p.id)">
+              <button type="button" class="text-primary hover:underline" (click)="skillSelect.emit(p.id)">
                 {{ p.name }}
               </button>
             </span>
@@ -60,7 +60,7 @@
             <span class="detail-field__value">
               <div class="flex flex-wrap gap-1">
                 @for (c of children(); track c.id) {
-                  <button type="button" (click)="select.emit(c.id)">
+                  <button type="button" (click)="skillSelect.emit(c.id)">
                     <mat-chip class="chip-sm">{{ c.name }}</mat-chip>
                   </button>
                 }

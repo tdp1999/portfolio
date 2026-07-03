@@ -109,9 +109,10 @@ describe('ScrollspyRailComponent', () => {
       });
     });
 
-    it('should set aria-current="true" on the active item', () => {
-      const railComponent = fixture.debugElement.children[0].componentInstance as ScrollspyRail;
-      railComponent.activeId.set('work');
+    it('should set aria-current="true" on the active item', async () => {
+      // activeId is a computed() driven by the route fragment (falling back to the
+      // IntersectionObserver). Drive it by navigating to the section's fragment.
+      await router.navigate([], { fragment: 'work' });
       fixture.detectChanges();
 
       const items = nativeEl.querySelectorAll('.scrollspy-rail__item');

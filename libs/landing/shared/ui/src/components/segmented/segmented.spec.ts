@@ -25,8 +25,10 @@ describe('SegmentedComponent', () => {
     fixture.detectChanges();
   });
 
+  // Scope to the tab buttons only — the strip also renders two chevron scroll
+  // affordances (role-less, tabindex -1) that must not be counted as segments.
   function buttons(): HTMLButtonElement[] {
-    return Array.from(fixture.nativeElement.querySelectorAll('button'));
+    return Array.from(fixture.nativeElement.querySelectorAll('button[role="tab"]'));
   }
 
   function press(btn: HTMLButtonElement, key: string): void {

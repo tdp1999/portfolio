@@ -23,7 +23,11 @@ import { DashboardModule } from '../modules/dashboard';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-const isTest = process.env['NODE_ENV'] === 'test';
+// Rate limiting is a production security control (login brute-force, etc.).
+// Skip it in dev and e2e (which log in many times from a single IP and would
+// otherwise trip the throttler with 429s). Fail-safe: unknown / unset NODE_ENV
+// keeps throttling ON, so a misconfigured prod host never silently loses it.
+const throttleEnabled = process.env['NODE_ENV'] !== 'test' && process.env['NODE_ENV'] !== 'development';
 
 @Module({
   imports: [
@@ -48,7 +52,7 @@ const isTest = process.env['NODE_ENV'] === 'test';
     BlogPostModule,
     DashboardModule,
     ThrottlerModule.forRoot({
-      skipIf: () => isTest,
+      skipIf: () => !throttleEnabled,
       throttlers: [{ ttl: 60000, limit: 60 }],
     }),
   ],

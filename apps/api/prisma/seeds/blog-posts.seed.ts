@@ -1045,7 +1045,12 @@ export async function seedBlogPosts(prisma: PrismaClient, env: SeedEnv): Promise
         language: p.language,
         title: p.title,
         excerpt: p.excerpt,
-        content: p.content,
+        // Post body is no longer seeded here. Task 363 dropped the legacy plain
+        // `content` column; the body is now the RTE contract (contentJson/canonical/
+        // html/schemaVersion) authored in the console (prod = content source of
+        // truth). The markdown in `p.content` is kept as a reference for that
+        // authoring but is not persisted — the seed stays self-contained (no
+        // monorepo engine imports) so it still runs in the Docker production image.
         status: PostStatus.PUBLISHED,
         featured: p.featured,
         publishedAt: p.publishedAt,

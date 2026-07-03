@@ -26,7 +26,7 @@ export class SkillDetailCard {
   readonly children = input<AdminSkill[]>([]);
 
   /** Emits a skill id when a parent or child chip is activated. */
-  readonly select = output<string>();
+  readonly skillSelect = output<string>();
 
   readonly skillCategoryLabels = SKILL_CATEGORY_LABELS;
   readonly skillTierLabels = SKILL_TIER_LABELS;

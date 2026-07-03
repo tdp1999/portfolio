@@ -62,10 +62,10 @@ describe('Skill DTOs', () => {
   describe('ReorderSkillsSchema', () => {
     const id = '550e8400-e29b-41d4-a716-446655440000';
 
-    it('should accept a non-empty array of {id, displayOrder}', () => {
+    it('should accept a non-empty array of {id, displayOrder, tier}', () => {
       const result = ReorderSkillsSchema.safeParse([
-        { id, displayOrder: 0 },
-        { id: '550e8400-e29b-41d4-a716-446655440001', displayOrder: 1 },
+        { id, displayOrder: 0, tier: 'FREQUENT' },
+        { id: '550e8400-e29b-41d4-a716-446655440001', displayOrder: 1, tier: 'DAILY' },
       ]);
       expect(result.success).toBe(true);
     });
@@ -75,11 +75,17 @@ describe('Skill DTOs', () => {
     });
 
     it('should reject a non-uuid id', () => {
-      expect(ReorderSkillsSchema.safeParse([{ id: 'not-a-uuid', displayOrder: 0 }]).success).toBe(false);
+      expect(ReorderSkillsSchema.safeParse([{ id: 'not-a-uuid', displayOrder: 0, tier: 'FREQUENT' }]).success).toBe(
+        false
+      );
     });
 
     it('should reject a negative displayOrder', () => {
-      expect(ReorderSkillsSchema.safeParse([{ id, displayOrder: -1 }]).success).toBe(false);
+      expect(ReorderSkillsSchema.safeParse([{ id, displayOrder: -1, tier: 'FREQUENT' }]).success).toBe(false);
+    });
+
+    it('should reject a missing tier', () => {
+      expect(ReorderSkillsSchema.safeParse([{ id, displayOrder: 0 }]).success).toBe(false);
     });
   });
 });

@@ -1,5 +1,13 @@
 @if (open()) {
-  <div class="ql-backdrop" (click)="close()"></div>
+  <div
+    class="ql-backdrop"
+    role="button"
+    tabindex="0"
+    aria-label="Close"
+    (click)="close()"
+    (keydown.enter)="close()"
+    (keydown.space)="close()"
+  ></div>
 
   <div
     #panel

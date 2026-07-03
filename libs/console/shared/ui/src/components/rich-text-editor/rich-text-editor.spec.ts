@@ -9,7 +9,7 @@ import { RichTextEditor } from './rich-text-editor';
 // Minimal concrete editor standing in for RteTiptapEditor — records every CVA
 // hook so we can assert the host proxies down to it.
 @Component({
-  selector: 'stub-rte-editor',
+  selector: 'console-stub-rte-editor',
   standalone: true,
   template: '',
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => StubEditor), multi: true }],

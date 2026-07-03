@@ -16,7 +16,7 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
       <landing-ddl-decision-record
         [variants]="variants"
         [summary]="
-          'Decided: tier grouping · action voice, brand-color icons (Iconify CDN here for prototype only — production uses MediaPicker upload), and the L3 effect (stagger only, no background — audit verdict: don\\'t break the quiet middle). Still weighing the center-aligned intro — three takes below.'
+          'Decided: tier grouping · action voice, brand-color icons (Iconify CDN here for prototype only — production uses MediaPicker upload), and the L3 effect (stagger only, no background — audit verdict: do not break the quiet middle). Still weighing the center-aligned intro — three takes below.'
         "
       />
 

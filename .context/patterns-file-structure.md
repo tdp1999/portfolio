@@ -135,9 +135,9 @@ lint allowlist (§11). This is what stops `popup` vs `modal` vs `dialog` drift.
 
 | Group | Role words | Routable? | Example file |
 | --- | --- | --- | --- |
-| Screen | `list` · `detail` · `form` | ✅ | `project.list.ts`, `project.form.ts` |
+| Screen | `list` · `detail` · `form` · `reorder` | ✅ | `project.list.ts`, `skill.reorder.ts` |
 | Overlay | `dialog` · `drawer` · `panel` · `sheet` · `menu` · `popover` | ✖ | `project.delete-dialog.ts` |
-| Presentational | `card` · `row` · `item` · `cell` · `badge` · `chip` · `tag` · `header` · `toolbar` · `filter-bar` · `section` | ✖ | `project.card.ts` |
+| Presentational | `card` · `detail-card` · `row` · `item` · `cell` · `badge` · `chip` · `tag` · `header` · `toolbar` · `filter-bar` · `section` | ✖ | `project.card.ts`, `skill.detail-card.ts` |
 | State | `empty` · `skeleton` · `fallback` · `error` | ✖ | `project.list.skeleton.ts` |
 | Layout | `layout` · `shell` | ✖ | `console.blank.layout.ts` |
 

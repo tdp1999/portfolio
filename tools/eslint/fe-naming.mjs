@@ -17,11 +17,11 @@
 // ── §5 controlled vocabulary ───────────────────────────────────────────────
 const ROLES = new Set([
   // screen
-  'list', 'detail', 'form',
+  'list', 'detail', 'form', 'reorder',
   // overlay
   'dialog', 'drawer', 'panel', 'sheet', 'menu', 'popover',
   // presentational
-  'card', 'row', 'item', 'cell', 'badge', 'chip', 'tag', 'header', 'toolbar', 'filter-bar', 'section',
+  'card', 'detail-card', 'row', 'item', 'cell', 'badge', 'chip', 'tag', 'header', 'toolbar', 'filter-bar', 'section',
   // state
   'empty', 'skeleton', 'fallback', 'error',
   // layout
