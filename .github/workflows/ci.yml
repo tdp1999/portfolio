@@ -48,6 +48,14 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
 
+    # Shard the Playwright suite across parallel jobs. Each shard is a separate
+    # runner with its own Postgres service + api/console servers, so shards never
+    # share DB state (tests inside a shard still run serially via workers:1).
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -95,13 +103,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: npx nx e2e console-e2e
+        run: npx nx e2e console-e2e -- --shard=${{ matrix.shard }}/3
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: |
             playwright-report/
             apps/console-e2e/playwright-report/
@@ -111,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-test-results
+          name: playwright-test-results-shard-${{ matrix.shard }}
           path: |
             test-results/
             apps/console-e2e/test-results/
