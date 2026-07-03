@@ -395,7 +395,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [x] 319-rte-migrate-editor-script (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). `pnpm migrate:editor` escape hatch: metadata-driven scan of all rich-text rows, re-canonicalizes below-latest fields via `RichTextService` (migrate→HTML→sanitize), idempotent, `--dry-run`/`--module=` flags, direct Prisma (no server). deps: 305, 307, 310
 
 ### Contract — drop legacy prose columns
-- [~] 363-rte-drop-legacy-prose-columns (M) — **blocked** (2026-06-30; experience decision folded 2026-07-01). All-five drop gated behind a "cutover reads" phase: profile (task 312, now hardware-unblocked by prose-block-renderer), blog (read-time/presenter cutover — inline), experience (render-swap **folded inline** — rich w/ constrained schema: lists + marks, no block elements). Project render-safe but needs its 311 BE/FE cleanup. Single atomic drop after all reads cut over. deps: 305, 311, 312, 313, 314, 317, 318, 319.
+- [x] 363-rte-drop-legacy-prose-columns (M) — done 2026-07-03 (archived → tasks-done/epic-portfolio-rich-text-editor/). Dropped all 9 legacy prose columns (profile.bioLong, experience desc/resp/highlights, project.body, technicalHighlight CAO ×3, blog.content) across 5 field groups; migration `drop_legacy_prose_columns` applied. Read cutover: blog read-time from canonical, experience/project/blog console detail → `<rte-render-html>`, landing renders from canonical. Verified: unit 408/408 + rte-canonical-contract 22/22, tsc EXIT 0, builds console/landing/api, live e2e (blog 29 / exp 21 / project 27 / profile 20), `/about` renders from canonical. Also fixed 2 pre-existing broken e2e specs (project invalid-link-url, profile rewritten to granular PATCH). deps: 305, 311, 312, 313, 314, 317, 318, 319.
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
 
@@ -429,7 +429,7 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 | **Total Created**         | **370** |
 | Epics completed           | 49      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-07-02. Active (10): blocked 363; in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383, 384. Archived this sync: 312 + 385 (RTE, done 2026-07-02), 324 + 326 (landing PWA + Umami, done 2026-07-02)._
+_Counts reconciled to task files via `/ctx:sync` on 2026-07-03. Active (9): in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383, 384. Archived this sync: 363 (RTE drop legacy prose columns, done 2026-07-03 → tasks-done/epic-portfolio-rich-text-editor/)._
 
 ## Notes
 
