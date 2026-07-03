@@ -16,46 +16,51 @@ const prisma = new PrismaClient({ adapter });
 
 const ADMIN_API = '/api/admin/profile';
 const PUBLIC_API = '/api/profile';
+const ADMIN_EMAIL = 'test-admin@e2e.local';
 
 // ── Helpers ───────────────────────────────────────────────
 
-function validPayload(overrides: Record<string, unknown> = {}) {
+// A single editor document carrying `text`. `bioLongJson` is the rich-text source
+// (legacy plain `bioLong` dropped in task 363); the server canonicalizes it into the
+// bioLong* triple. EditorDocumentSchema = { schemaVersion, content }.
+function doc(text: string) {
   return {
-    fullName: { en: 'E2E Test User', vi: 'Nguoi Dung E2E' },
-    title: { en: 'Software Engineer', vi: 'Ky Su Phan Mem' },
-    bioShort: { en: 'A short bio for testing.', vi: 'Tieu su ngan de kiem tra.' },
-    bioLong: { en: 'A longer bio for testing purposes.', vi: 'Tieu su dai de kiem tra.' },
-    yearsOfExperience: 5,
-    availability: 'EMPLOYED',
-    openTo: ['FREELANCE', 'CONSULTING'],
-    email: 'e2e-profile@test-safe.com',
-    phone: '+84 123 456 789',
-    preferredContactPlatform: 'LINKEDIN',
-    preferredContactValue: 'https://linkedin.com/in/e2e-test',
-    locationCountry: 'Vietnam',
-    locationCity: 'Ho Chi Minh City',
-    locationPostalCode: '70000',
-    locationAddress1: '123 Test Street',
-    locationAddress2: 'Suite 456',
-    socialLinks: [
-      { platform: 'GITHUB', url: 'https://github.com/e2e-test', handle: 'e2e-test' },
-      { platform: 'LINKEDIN', url: 'https://linkedin.com/in/e2e-test' },
-    ],
-    resumeUrls: { en: 'https://example.com/resume-en.pdf', vi: 'https://example.com/resume-vi.pdf' },
-    certifications: [
-      { name: 'AWS Solutions Architect', issuer: 'Amazon', year: 2024, url: 'https://aws.amazon.com/cert' },
-    ],
-    metaTitle: 'E2E Test Profile',
-    metaDescription: 'Profile created during E2E testing.',
-    timezone: 'Asia/Ho_Chi_Minh',
-    canonicalUrl: 'https://example.com',
-    ...overrides,
+    schemaVersion: 1,
+    content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] },
   };
 }
 
+// Valid payloads per granular PATCH endpoint (the profile API is slice-based now —
+// there is no single PUT upsert; a profile row is seeded directly below).
+const identityPayload = (overrides: Record<string, unknown> = {}) => ({
+  fullName: { en: 'E2E Test User', vi: 'Nguoi Dung E2E' },
+  title: { en: 'Software Engineer', vi: 'Ky Su Phan Mem' },
+  bioShort: { en: 'A short bio for testing.', vi: 'Tieu su ngan de kiem tra.' },
+  bioLongJson: { en: doc('A longer bio for testing purposes.'), vi: doc('Tieu su dai de kiem tra.') },
+  ...overrides,
+});
+
+const contactPayload = (overrides: Record<string, unknown> = {}) => ({
+  email: 'e2e-profile@test-safe.com',
+  phone: '+84 123 456 789',
+  phoneZalo: null,
+  preferredContactPlatform: 'LINKEDIN',
+  preferredContactValue: 'https://linkedin.com/in/e2e-test',
+  ...overrides,
+});
+
+const locationPayload = (overrides: Record<string, unknown> = {}) => ({
+  locationCountry: 'Vietnam',
+  locationCity: 'Ho Chi Minh City',
+  locationPostalCode: '70000',
+  locationAddress1: '123 Test Street',
+  locationAddress2: 'Suite 456',
+  ...overrides,
+});
+
 async function loginAsAdmin(): Promise<string> {
   const res = await axios.post('/api/auth/login', {
-    email: 'test-admin@e2e.local',
+    email: ADMIN_EMAIL,
     password: 'TestPass1!',
     rememberMe: false,
   });
@@ -66,6 +71,34 @@ function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
 }
 
+// The admin profile API has no create endpoint — a row is seeded directly (mirrors
+// how prisma/seed.ts bootstraps the real admin). Upsert so reruns start from a known
+// baseline (avatar/phone/address cleared) without depending on prior test order.
+async function seedTestAdminProfile(): Promise<void> {
+  const admin = await prisma.user.findFirst({ where: { email: ADMIN_EMAIL }, select: { id: true } });
+  if (!admin) throw new Error('test-admin user not seeded');
+  const base = {
+    fullName: { en: 'E2E Test User', vi: 'Nguoi Dung E2E' },
+    title: { en: 'Software Engineer', vi: 'Ky Su Phan Mem' },
+    bioShort: { en: 'A short bio for testing.', vi: 'Tieu su ngan de kiem tra.' },
+    yearsOfExperience: 5,
+    email: 'e2e-profile@test-safe.com',
+    preferredContactValue: 'https://linkedin.com/in/e2e-test',
+    locationCountry: 'Vietnam',
+    locationCity: 'Ho Chi Minh City',
+    avatarId: null,
+    phone: null,
+    locationPostalCode: null,
+    locationAddress1: null,
+    locationAddress2: null,
+  };
+  await prisma.profile.upsert({
+    where: { userId: admin.id },
+    update: base,
+    create: { id: randomUUID(), userId: admin.id, createdById: admin.id, updatedById: admin.id, ...base },
+  });
+}
+
 // ── Tests ─────────────────────────────────────────────────
 
 describe('Profile API', () => {
@@ -73,46 +106,33 @@ describe('Profile API', () => {
 
   beforeAll(async () => {
     adminToken = await loginAsAdmin();
-
-    // Only delete the test admin's profile, not the real admin's
-    await prisma.profile.deleteMany({
-      where: { user: { email: 'test-admin@e2e.local' } },
-    });
+    await seedTestAdminProfile();
   });
 
   afterAll(async () => {
-    await prisma.profile.deleteMany({
-      where: { user: { email: 'test-admin@e2e.local' } },
-    });
+    await prisma.profile.deleteMany({ where: { user: { email: ADMIN_EMAIL } } });
     await prisma.$disconnect();
   });
 
-  // ── Admin Operations ──────────────────────────────────
+  // ── Identity (incl. rich-text bioLong) ────────────────
 
-  describe('PUT /api/admin/profile (upsert)', () => {
-    it('should create profile with full valid payload and return { id }', async () => {
-      const res = await axios.put(ADMIN_API, validPayload(), {
-        headers: authHeaders(adminToken),
-      });
+  describe('PATCH /api/admin/profile/identity', () => {
+    it('updates identity + canonicalizes bioLongJson into the bioLong* triple', async () => {
+      const res = await axios.patch(`${ADMIN_API}/identity`, identityPayload(), { headers: authHeaders(adminToken) });
       expect(res.status).toBe(200);
-      expect(res.data.id).toBeDefined();
-      expect(typeof res.data.id).toBe('string');
+
+      const profile = await axios.get(ADMIN_API, { headers: authHeaders(adminToken) });
+      expect(profile.data.fullName).toEqual({ en: 'E2E Test User', vi: 'Nguoi Dung E2E' });
+      expect(profile.data.title).toEqual({ en: 'Software Engineer', vi: 'Ky Su Phan Mem' });
+      // Rich-text body persisted; legacy plain `bioLong` column dropped in task 363.
+      expect(profile.data.bioLongHtml).not.toBeNull();
+      expect(profile.data.bioLongCanonical).not.toBeNull();
+      expect(profile.data).not.toHaveProperty('bioLong');
     });
 
-    it('should update profile on second PUT and return same id (PRF-002: upsert)', async () => {
-      const first = await axios.put(ADMIN_API, validPayload({ yearsOfExperience: 6 }), {
-        headers: authHeaders(adminToken),
-      });
-      const second = await axios.put(ADMIN_API, validPayload({ yearsOfExperience: 7 }), {
-        headers: authHeaders(adminToken),
-      });
-      expect(second.status).toBe(200);
-      expect(second.data.id).toBe(first.data.id);
-    });
-
-    it('should reject missing required translatable field (both en + vi)', async () => {
+    it('rejects missing required translatable field (en only)', async () => {
       try {
-        await axios.put(ADMIN_API, validPayload({ fullName: { en: 'Only English' } }), {
+        await axios.patch(`${ADMIN_API}/identity`, identityPayload({ fullName: { en: 'Only English' } }), {
           headers: authHeaders(adminToken),
         });
         fail('Expected 400');
@@ -120,14 +140,45 @@ describe('Profile API', () => {
         expect((err as AxiosError).response?.status).toBe(400);
       }
     });
+  });
 
-    it('should reject invalid socialLinks (bad URL)', async () => {
+  // ── Contact ───────────────────────────────────────────
+
+  describe('PATCH /api/admin/profile/contact', () => {
+    it('updates contact fields', async () => {
+      const res = await axios.patch(`${ADMIN_API}/contact`, contactPayload(), { headers: authHeaders(adminToken) });
+      expect(res.status).toBe(200);
+    });
+
+    it('rejects an invalid email', async () => {
       try {
-        await axios.put(
-          ADMIN_API,
-          validPayload({
-            socialLinks: [{ platform: 'GITHUB', url: 'not-a-url' }],
-          }),
+        await axios.patch(`${ADMIN_API}/contact`, contactPayload({ email: 'not-an-email' }), {
+          headers: authHeaders(adminToken),
+        });
+        fail('Expected 400');
+      } catch (err) {
+        expect((err as AxiosError).response?.status).toBe(400);
+      }
+    });
+  });
+
+  // ── Location ──────────────────────────────────────────
+
+  describe('PATCH /api/admin/profile/location', () => {
+    it('updates location (private address fields)', async () => {
+      const res = await axios.patch(`${ADMIN_API}/location`, locationPayload(), { headers: authHeaders(adminToken) });
+      expect(res.status).toBe(200);
+    });
+  });
+
+  // ── Social links / certifications ─────────────────────
+
+  describe('PATCH /api/admin/profile/social-links', () => {
+    it('rejects invalid socialLinks (bad URL)', async () => {
+      try {
+        await axios.patch(
+          `${ADMIN_API}/social-links`,
+          { socialLinks: [{ platform: 'GITHUB', url: 'not-a-url' }], resumeUrls: {}, certifications: [] },
           { headers: authHeaders(adminToken) }
         );
         fail('Expected 400');
@@ -136,13 +187,11 @@ describe('Profile API', () => {
       }
     });
 
-    it('should reject invalid certifications (year out of range)', async () => {
+    it('rejects invalid certifications (year out of range)', async () => {
       try {
-        await axios.put(
-          ADMIN_API,
-          validPayload({
-            certifications: [{ name: 'Cert', issuer: 'Org', year: 1800 }],
-          }),
+        await axios.patch(
+          `${ADMIN_API}/social-links`,
+          { socialLinks: [], resumeUrls: {}, certifications: [{ name: 'Cert', issuer: 'Org', year: 1800 }] },
           { headers: authHeaders(adminToken) }
         );
         fail('Expected 400');
@@ -150,63 +199,16 @@ describe('Profile API', () => {
         expect((err as AxiosError).response?.status).toBe(400);
       }
     });
-
-    it('should reject non-existent avatarId with MEDIA_NOT_FOUND error', async () => {
-      try {
-        await axios.put(ADMIN_API, validPayload({ avatarId: randomUUID() }), {
-          headers: authHeaders(adminToken),
-        });
-        fail('Expected error');
-      } catch (err) {
-        const e = err as AxiosError;
-        expect(e.response?.status).toBe(404);
-        expect((e.response?.data as Record<string, unknown>)?.errorCode).toBe('PROFILE_MEDIA_NOT_FOUND');
-      }
-    });
   });
 
-  describe('GET /api/admin/profile', () => {
-    it('should return full profile including private fields', async () => {
-      // Ensure profile exists
-      await axios.put(ADMIN_API, validPayload(), {
-        headers: authHeaders(adminToken),
-      });
-
-      const res = await axios.get(ADMIN_API, {
-        headers: authHeaders(adminToken),
-      });
-      expect(res.status).toBe(200);
-
-      // Public fields present
-      expect(res.data.fullName).toEqual({ en: 'E2E Test User', vi: 'Nguoi Dung E2E' });
-      expect(res.data.title).toEqual({ en: 'Software Engineer', vi: 'Ky Su Phan Mem' });
-      expect(res.data.locationCity).toBe('Ho Chi Minh City');
-      expect(res.data.locationCountry).toBe('Vietnam');
-
-      // Private fields present (admin only)
-      expect(res.data).toHaveProperty('id');
-      expect(res.data).toHaveProperty('userId');
-      expect(res.data).toHaveProperty('phone');
-      expect(res.data.phone).toBe('+84 123 456 789');
-      expect(res.data).toHaveProperty('locationPostalCode');
-      expect(res.data.locationPostalCode).toBe('70000');
-      expect(res.data).toHaveProperty('locationAddress1');
-      expect(res.data.locationAddress1).toBe('123 Test Street');
-      expect(res.data).toHaveProperty('locationAddress2');
-      expect(res.data.locationAddress2).toBe('Suite 456');
-      expect(res.data).toHaveProperty('createdAt');
-      expect(res.data).toHaveProperty('updatedAt');
-    });
-  });
+  // ── Avatar ────────────────────────────────────────────
 
   describe('PATCH /api/admin/profile/avatar', () => {
     it('should clear avatar with null', async () => {
       const res = await axios.patch(`${ADMIN_API}/avatar`, { avatarId: null }, { headers: authHeaders(adminToken) });
       expect(res.status).toBe(200);
 
-      const profile = await axios.get(ADMIN_API, {
-        headers: authHeaders(adminToken),
-      });
+      const profile = await axios.get(ADMIN_API, { headers: authHeaders(adminToken) });
       expect(profile.data.avatarId).toBeNull();
       expect(profile.data.avatarUrl).toBeNull();
     });
@@ -223,19 +225,35 @@ describe('Profile API', () => {
     });
   });
 
+  // ── Admin GET (full profile incl. private fields) ─────
+
+  describe('GET /api/admin/profile', () => {
+    it('returns full profile including private fields', async () => {
+      // Re-apply contact + location so the private fields are deterministic here.
+      await axios.patch(`${ADMIN_API}/contact`, contactPayload(), { headers: authHeaders(adminToken) });
+      await axios.patch(`${ADMIN_API}/location`, locationPayload(), { headers: authHeaders(adminToken) });
+
+      const res = await axios.get(ADMIN_API, { headers: authHeaders(adminToken) });
+      expect(res.status).toBe(200);
+
+      expect(res.data.locationCity).toBe('Ho Chi Minh City');
+      expect(res.data.locationCountry).toBe('Vietnam');
+      expect(res.data).toHaveProperty('id');
+      expect(res.data).toHaveProperty('userId');
+      expect(res.data.phone).toBe('+84 123 456 789');
+      expect(res.data.locationPostalCode).toBe('70000');
+      expect(res.data.locationAddress1).toBe('123 Test Street');
+      expect(res.data.locationAddress2).toBe('Suite 456');
+      expect(res.data).toHaveProperty('createdAt');
+      expect(res.data).toHaveProperty('updatedAt');
+    });
+  });
+
   // ── Public Access (PRF-003) ───────────────────────────
-  // Note: GET /profile returns the owner (first admin) profile.
-  // Tests assert structure and field filtering, not exact values,
-  // to avoid coupling with the real admin's data.
+  // GET /profile returns the owner (first admin) profile. Assert structure + field
+  // filtering only, not exact values, to avoid coupling with the real admin's data.
 
   describe('GET /api/profile (public)', () => {
-    beforeAll(async () => {
-      // Ensure at least one admin profile exists
-      await axios.put(ADMIN_API, validPayload(), {
-        headers: authHeaders(adminToken),
-      });
-    });
-
     it('should return 200 without auth', async () => {
       const res = await axios.get(PUBLIC_API);
       expect(res.status).toBe(200);
@@ -259,25 +277,9 @@ describe('Profile API', () => {
       expect(typeof res.data.locationCountry).toBe('string');
     });
 
-    it('should return 404 when no admin profile exists', async () => {
-      // Temporarily remove ALL admin profiles to trigger 404
-      const backupToken = adminToken;
-      await prisma.profile.deleteMany({
-        where: { user: { role: 'ADMIN' } },
-      });
-
-      try {
-        await axios.get(PUBLIC_API);
-        fail('Expected 404');
-      } catch (err) {
-        expect((err as AxiosError).response?.status).toBe(404);
-      }
-
-      // Restore test admin's profile for subsequent tests
-      await axios.put(ADMIN_API, validPayload(), {
-        headers: authHeaders(backupToken),
-      });
-    });
+    // NOTE: the previous "404 when no admin profile exists" case was dropped — it
+    // deleted ALL admin profiles (destroying real dev data) and the API has no create
+    // endpoint to restore them. The empty-profile branch is covered by unit tests.
   });
 
   // ── JSON-LD ───────────────────────────────────────────
@@ -316,9 +318,9 @@ describe('Profile API', () => {
   // ── Auth Protection ───────────────────────────────────
 
   describe('Auth Protection', () => {
-    it('should return 401 for PUT /admin/profile without auth', async () => {
+    it('should return 401 for PATCH /admin/profile/identity without auth', async () => {
       try {
-        await axios.put(ADMIN_API, validPayload(), { headers: { Authorization: '' } });
+        await axios.patch(`${ADMIN_API}/identity`, identityPayload(), { headers: { Authorization: '' } });
         fail('Expected 401');
       } catch (err) {
         expect((err as AxiosError).response?.status).toBe(401);
@@ -335,10 +337,6 @@ describe('Profile API', () => {
     });
 
     it('should return 200 for GET /profile without auth (public)', async () => {
-      // Ensure profile exists
-      await axios.put(ADMIN_API, validPayload(), {
-        headers: authHeaders(adminToken),
-      });
       const res = await axios.get(PUBLIC_API);
       expect(res.status).toBe(200);
     });
