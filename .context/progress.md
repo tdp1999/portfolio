@@ -259,7 +259,7 @@
 - [x] 066-docker-local-db - Docker PostgreSQL for local development (S) ✓
 - [x] 193-foundations-audit-landing - Audit landing page vs Design Foundations (M) ✓
 - [x] 380-style-architecture-standardization — bucket taxonomy applied to all shared-ui libs; consolidated `libs/shared/ui` 3→1 project; split docs into `patterns-lib-structure.md` + ADR-021; no behavioral change (M) (standalone) — Completed 2026-06-30 → `tasks-done/other/` ✓
-- [ ] 384-test-lint-cleanup-sweep (M) — full-monorepo sweep + fix of pre-existing test/lint failures surfaced during 380 verification (standalone)
+- [x] 384-test-lint-cleanup-sweep (M) — full-monorepo sweep + fix of pre-existing test/lint failures surfaced during 380 verification; also root-caused + fixed the CI e2e `429` login-throttle (throttle now prod-only, fail-safe) during a pre-`/cap` GitHub CI review (standalone) — Completed 2026-07-03 → `tasks-done/other/` ✓
 
 ## Pending — Portfolio E5 Implementation (broken down 2026-05-02)
 
@@ -422,14 +422,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 360     |
+| Done (archived)           | 361     |
 | In Progress               | 1       |
-| Pending                   | 8       |
+| Pending                   | 7       |
 | Blocked                   | 1       |
 | **Total Created**         | **370** |
 | Epics completed           | 49      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-07-03. Active (9): in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383, 384. Archived this sync: 363 (RTE drop legacy prose columns, done 2026-07-03 → tasks-done/epic-portfolio-rich-text-editor/)._
+_Counts reconciled to task files via `/ctx:sync` on 2026-07-03. Active (8): in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383. Archived this sync: 384 (test/lint cleanup sweep + CI e2e throttle fix, done 2026-07-03 → tasks-done/other/). Prior sync archived 363 → tasks-done/epic-portfolio-rich-text-editor/._
 
 ## Notes
 
