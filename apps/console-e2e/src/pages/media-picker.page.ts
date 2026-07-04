@@ -13,8 +13,9 @@ export class MediaPickerPage {
 
   constructor(readonly page: Page) {
     this.dialog = page.locator('console-media-picker-dialog');
-    this.libraryTab = page.locator('mat-tab-label', { hasText: 'Library' });
-    this.uploadTab = page.locator('mat-tab-label', { hasText: 'Upload' });
+    // Library/Upload are a mat-button-toggle group (role="radio"), not mat-tabs
+    this.libraryTab = this.dialog.getByRole('radio', { name: 'Library' });
+    this.uploadTab = this.dialog.getByRole('radio', { name: 'Upload' });
     this.closeButton = this.dialog.locator('button[aria-label="Close dialog"]');
     this.filterBar = this.dialog.locator('console-asset-filter-bar');
     this.grid = this.dialog.locator('console-asset-grid');
