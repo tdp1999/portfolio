@@ -25,8 +25,8 @@ export class HomeGetInTouch {
 
   protected readonly copy = computed(() =>
     this.locale() === 'vi'
-      ? 'Mình ở TP.HCM, đang mở cho vị trí toàn thời gian và một ít freelance song song. Thường phản hồi trong vài ngày.'
-      : "I'm in HCMC, open to full-time roles and a small slice of freelance on the side. Usually reply within a few days."
+      ? 'Nhắn tin cho mình nha, mình đọc hết và thường phản hồi trong vài ngày.'
+      : "Whatever the reason, the door's open.\nI read every message and usually reply within a few days."
   );
 
   protected readonly ctas = computed(() => {
@@ -34,20 +34,20 @@ export class HomeGetInTouch {
     return [
       {
         purpose: 'hire',
-        label: vi ? 'Trò chuyện về vị trí toàn thời gian' : "Let's talk about a full-time role",
+        label: vi ? 'Bàn bạc về một vị trí full-time' : "Let's talk about a full-time role",
         quiet: false,
       },
       {
         purpose: 'freelance',
-        label: vi ? 'Kể mình nghe về dự án freelance' : 'Tell me about a freelance project',
+        label: vi ? 'Nói về một dự án freelance' : 'Tell me about a freelance or contract project',
         quiet: false,
       },
-      { purpose: 'hi', label: vi ? 'Hoặc chỉ chào một tiếng' : 'Or just say hi', quiet: true },
+      { purpose: 'hi', label: vi ? 'Hoặc chỉ muốn chào mình một tiếng' : 'Or just say hi', quiet: true },
     ] as const;
   });
 
   protected readonly fallbackPrompt = computed(() =>
-    this.locale() === 'vi' ? 'Thích dùng email client của bạn?' : 'Prefer your own mail client?'
+    this.locale() === 'vi' ? 'Dùng email client của bạn:' : 'Prefer your own mail client?'
   );
 
   protected readonly mailtoHref = computed(() => {

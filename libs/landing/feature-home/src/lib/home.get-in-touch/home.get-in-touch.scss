@@ -40,6 +40,9 @@
 .home-get-in-touch__copy {
   margin: 0 0 32px;
   max-width: 56ch;
+  /* EN copy carries an explicit line break between its two sentences; VI is a
+     single flowing line (no \n) so it's unaffected. */
+  white-space: pre-line;
   font-family: var(--landing-font-display);
   font-style: italic;
   font-weight: 400;
