@@ -23,8 +23,3 @@ export interface IUpdateAboutPrinciplePayload {
   expansion?: TranslatableJson;
   isPublished?: boolean;
 }
-
-export const ABOUT_PRINCIPLE_LIMITS = {
-  CLAIM_MAX: 200,
-  EXPANSION_MAX: 1500,
-} as const;

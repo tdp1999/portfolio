@@ -30,6 +30,7 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { baselineFor, FormErrorPipe, ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse } from '../../profile.types';
 
@@ -62,6 +63,9 @@ export class ProfileSeoOgSection {
   readonly initialData = input.required<ProfileAdminResponse | null>();
   readonly mediaDataSource = input.required<MediaPickerDataSource>();
   readonly saved = output<Partial<ProfileAdminResponse>>();
+
+  /** Exposed for template maxLength attrs — char caps live in the shared LIMITS constant. */
+  protected readonly LIMITS = LIMITS;
 
   readonly form = this.fb.group({
     metaTitle: this.fb.control('', { nonNullable: true, validators: baselineFor.metaTitle() }),

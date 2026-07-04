@@ -39,6 +39,7 @@ import {
   type SegmentOption,
 } from '@portfolio/landing/shared/ui';
 import type { SocialPlatform } from '@portfolio/shared/types';
+import { LIMITS } from '@portfolio/shared/validation';
 import { TURNSTILE_SITE_KEY } from './contact.data';
 import type { FormState, TurnstileRenderOptions } from './contact.types';
 import { prettyChannelValue } from './contact.util';
@@ -71,6 +72,9 @@ declare global {
   styleUrl: './contact.scss',
 })
 export class Contact {
+  // ── Constants ─────────────────────────────────────────────────────
+  protected readonly LIMITS = LIMITS;
+
   // ── DI ────────────────────────────────────────────────────────────
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly route = inject(ActivatedRoute);
@@ -98,10 +102,14 @@ export class Contact {
   // ── Forms ─────────────────────────────────────────────────────────
   // Declared before derived signals that observe form events (formEvents depends on this.form).
   protected readonly form = this.fb.group({
-    name: this.fb.control('', { validators: [Validators.required, Validators.maxLength(100)] }),
+    name: this.fb.control('', { validators: [Validators.required, Validators.maxLength(LIMITS.CONTACT_NAME_MAX)] }),
     email: this.fb.control('', { validators: [Validators.required, Validators.email] }),
     message: this.fb.control('', {
-      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(5000)],
+      validators: [
+        Validators.required,
+        Validators.minLength(LIMITS.CONTACT_MESSAGE_MIN),
+        Validators.maxLength(LIMITS.CONTACT_MESSAGE_MAX),
+      ],
     }),
     consent: this.fb.control(false, { validators: [Validators.requiredTrue] }),
     /** Honeypot — bots fill hidden fields; legitimate users don't see it. */

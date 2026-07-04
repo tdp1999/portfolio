@@ -1,5 +1,5 @@
 import { PrincipleClaim } from './principle-claim.value';
-import { ABOUT_PRINCIPLE_LIMITS } from '../about-principle.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 describe('PrincipleClaim', () => {
   describe('create()', () => {
@@ -24,21 +24,21 @@ describe('PrincipleClaim', () => {
     });
 
     it('rejects EN longer than CLAIM_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.PRINCIPLE_CLAIM_MAX + 1);
       expect(() => PrincipleClaim.create({ en: longText, vi: '' })).toThrow(
-        `claim.en must be ≤ ${ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX} chars`
+        `claim.en must be ≤ ${LIMITS.PRINCIPLE_CLAIM_MAX} chars`
       );
     });
 
     it('rejects VI longer than CLAIM_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.PRINCIPLE_CLAIM_MAX + 1);
       expect(() => PrincipleClaim.create({ en: 'short', vi: longText })).toThrow(
-        `claim.vi must be ≤ ${ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX} chars`
+        `claim.vi must be ≤ ${LIMITS.PRINCIPLE_CLAIM_MAX} chars`
       );
     });
 
     it('accepts exactly CLAIM_MAX chars', () => {
-      const maxText = 'a'.repeat(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX);
+      const maxText = 'a'.repeat(LIMITS.PRINCIPLE_CLAIM_MAX);
       const claim = PrincipleClaim.create({ en: maxText, vi: maxText });
       expect(claim.en).toBe(maxText);
       expect(claim.vi).toBe(maxText);

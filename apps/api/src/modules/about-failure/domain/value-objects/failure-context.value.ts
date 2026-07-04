@@ -1,6 +1,6 @@
 import { BadRequestError, ErrorLayer, AboutFailureErrorCode } from '@portfolio/shared/errors';
 import type { TranslatableJson } from '@portfolio/shared/types';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 /**
  * Bilingual anonymized context label ("At a B2B SaaS · team of 8"). EN
@@ -23,14 +23,14 @@ export class FailureContext {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (en.length > ABOUT_FAILURE_LIMITS.CONTEXT_MAX) {
-      throw BadRequestError(`context.en must be ≤ ${ABOUT_FAILURE_LIMITS.CONTEXT_MAX} chars`, {
+    if (en.length > LIMITS.FAILURE_CONTEXT_MAX) {
+      throw BadRequestError(`context.en must be ≤ ${LIMITS.FAILURE_CONTEXT_MAX} chars`, {
         errorCode: AboutFailureErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (vi.length > ABOUT_FAILURE_LIMITS.CONTEXT_MAX) {
-      throw BadRequestError(`context.vi must be ≤ ${ABOUT_FAILURE_LIMITS.CONTEXT_MAX} chars`, {
+    if (vi.length > LIMITS.FAILURE_CONTEXT_MAX) {
+      throw BadRequestError(`context.vi must be ≤ ${LIMITS.FAILURE_CONTEXT_MAX} chars`, {
         errorCode: AboutFailureErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });

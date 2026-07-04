@@ -34,8 +34,3 @@ export interface UpdateAboutPrinciplePayload {
 export interface ReorderAboutPrinciplesPayload {
   ids: string[];
 }
-
-export const ABOUT_PRINCIPLE_LIMITS = {
-  CLAIM_MAX: 200,
-  EXPANSION_MAX: 1500,
-} as const;

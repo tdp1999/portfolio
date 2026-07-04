@@ -1,6 +1,6 @@
 import { BadRequestError, ErrorLayer, AboutPrincipleErrorCode } from '@portfolio/shared/errors';
 import type { TranslatableJson } from '@portfolio/shared/types';
-import { ABOUT_PRINCIPLE_LIMITS } from '../about-principle.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 /**
  * Bilingual one-line claim ("Complexity is a constraint, not a flex."). EN
@@ -23,14 +23,14 @@ export class PrincipleClaim {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (en.length > ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX) {
-      throw BadRequestError(`claim.en must be ≤ ${ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX} chars`, {
+    if (en.length > LIMITS.PRINCIPLE_CLAIM_MAX) {
+      throw BadRequestError(`claim.en must be ≤ ${LIMITS.PRINCIPLE_CLAIM_MAX} chars`, {
         errorCode: AboutPrincipleErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (vi.length > ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX) {
-      throw BadRequestError(`claim.vi must be ≤ ${ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX} chars`, {
+    if (vi.length > LIMITS.PRINCIPLE_CLAIM_MAX) {
+      throw BadRequestError(`claim.vi must be ≤ ${LIMITS.PRINCIPLE_CLAIM_MAX} chars`, {
         errorCode: AboutPrincipleErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });

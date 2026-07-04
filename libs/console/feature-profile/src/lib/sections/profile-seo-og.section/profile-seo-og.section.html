@@ -39,15 +39,22 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Meta Title</mat-label>
-      <input matInput formControlName="metaTitle" maxlength="70" />
-      <mat-hint align="end">{{ form.controls.metaTitle.value.length }}/70</mat-hint>
+      <input matInput formControlName="metaTitle" [attr.maxlength]="LIMITS.META_TITLE_MAX" />
+      <mat-hint align="end">{{ form.controls.metaTitle.value.length }}/{{ LIMITS.META_TITLE_MAX }}</mat-hint>
       <mat-error>{{ form.controls.metaTitle | formError }}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Meta Description</mat-label>
-      <textarea matInput formControlName="metaDescription" rows="3" maxlength="160"></textarea>
-      <mat-hint align="end">{{ form.controls.metaDescription.value.length }}/160</mat-hint>
+      <textarea
+        matInput
+        formControlName="metaDescription"
+        rows="3"
+        [attr.maxlength]="LIMITS.META_DESCRIPTION_MAX"
+      ></textarea>
+      <mat-hint align="end"
+        >{{ form.controls.metaDescription.value.length }}/{{ LIMITS.META_DESCRIPTION_MAX }}</mat-hint
+      >
       <mat-error>{{ form.controls.metaDescription | formError }}</mat-error>
     </mat-form-field>
 

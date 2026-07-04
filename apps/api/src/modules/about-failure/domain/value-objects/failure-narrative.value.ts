@@ -1,6 +1,6 @@
 import { BadRequestError, ErrorLayer, AboutFailureErrorCode } from '@portfolio/shared/errors';
 import type { TranslatableJson } from '@portfolio/shared/types';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 /**
  * Bilingual long-form narrative beat — used for `decision`, `consequence`,
@@ -27,14 +27,14 @@ export class FailureNarrative {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (en.length > ABOUT_FAILURE_LIMITS.NARRATIVE_MAX) {
-      throw BadRequestError(`${fieldName}.en must be ≤ ${ABOUT_FAILURE_LIMITS.NARRATIVE_MAX} chars`, {
+    if (en.length > LIMITS.FAILURE_NARRATIVE_MAX) {
+      throw BadRequestError(`${fieldName}.en must be ≤ ${LIMITS.FAILURE_NARRATIVE_MAX} chars`, {
         errorCode: AboutFailureErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (vi.length > ABOUT_FAILURE_LIMITS.NARRATIVE_MAX) {
-      throw BadRequestError(`${fieldName}.vi must be ≤ ${ABOUT_FAILURE_LIMITS.NARRATIVE_MAX} chars`, {
+    if (vi.length > LIMITS.FAILURE_NARRATIVE_MAX) {
+      throw BadRequestError(`${fieldName}.vi must be ≤ ${LIMITS.FAILURE_NARRATIVE_MAX} chars`, {
         errorCode: AboutFailureErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });

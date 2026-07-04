@@ -1,6 +1,6 @@
 import { BadRequestError, ErrorLayer, AboutPrincipleErrorCode } from '@portfolio/shared/errors';
 import type { TranslatableJson } from '@portfolio/shared/types';
-import { ABOUT_PRINCIPLE_LIMITS } from '../about-principle.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 /**
  * Bilingual 2–3 sentence expansion of a claim. EN required; VI optional
@@ -22,14 +22,14 @@ export class PrincipleExpansion {
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (en.length > ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX) {
-      throw BadRequestError(`expansion.en must be ≤ ${ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX} chars`, {
+    if (en.length > LIMITS.PRINCIPLE_EXPANSION_MAX) {
+      throw BadRequestError(`expansion.en must be ≤ ${LIMITS.PRINCIPLE_EXPANSION_MAX} chars`, {
         errorCode: AboutPrincipleErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (vi.length > ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX) {
-      throw BadRequestError(`expansion.vi must be ≤ ${ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX} chars`, {
+    if (vi.length > LIMITS.PRINCIPLE_EXPANSION_MAX) {
+      throw BadRequestError(`expansion.vi must be ≤ ${LIMITS.PRINCIPLE_EXPANSION_MAX} chars`, {
         errorCode: AboutPrincipleErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });

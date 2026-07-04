@@ -1,5 +1,5 @@
 import { FailureContext } from './failure-context.value';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 describe('FailureContext', () => {
   describe('create()', () => {
@@ -24,16 +24,16 @@ describe('FailureContext', () => {
     });
 
     it('rejects EN longer than CONTEXT_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_FAILURE_LIMITS.CONTEXT_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.FAILURE_CONTEXT_MAX + 1);
       expect(() => FailureContext.create({ en: longText, vi: '' })).toThrow(
-        `context.en must be ≤ ${ABOUT_FAILURE_LIMITS.CONTEXT_MAX} chars`
+        `context.en must be ≤ ${LIMITS.FAILURE_CONTEXT_MAX} chars`
       );
     });
 
     it('rejects VI longer than CONTEXT_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_FAILURE_LIMITS.CONTEXT_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.FAILURE_CONTEXT_MAX + 1);
       expect(() => FailureContext.create({ en: 'short', vi: longText })).toThrow(
-        `context.vi must be ≤ ${ABOUT_FAILURE_LIMITS.CONTEXT_MAX} chars`
+        `context.vi must be ≤ ${LIMITS.FAILURE_CONTEXT_MAX} chars`
       );
     });
   });

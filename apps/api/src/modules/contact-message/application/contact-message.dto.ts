@@ -1,26 +1,27 @@
 import { z } from 'zod/v4';
 
 import { stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
+import { LIMITS } from '@portfolio/shared/validation';
 
 export const SubmitContactMessageSchema = z.object({
   name: z
     .string()
     .min(1)
-    .max(200)
+    .max(LIMITS.CONTACT_NAME_MAX)
     .transform((v) => stripHtmlTags(v.trim())),
-  email: z.email().max(320),
+  email: z.email().max(LIMITS.EMAIL_MAX),
   purpose: z
     .enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER'])
     .default('GENERAL'),
   subject: z
     .string()
-    .max(500)
+    .max(LIMITS.CONTACT_SUBJECT_MAX)
     .transform((v) => stripHtmlTags(v.trim()))
     .optional(),
   message: z
     .string()
-    .min(10)
-    .max(5000)
+    .min(LIMITS.CONTACT_MESSAGE_MIN)
+    .max(LIMITS.CONTACT_MESSAGE_MAX)
     .transform((v) => v.trim()),
   locale: z.enum(['en', 'vi']).default('en'),
   consentGivenAt: z.iso.datetime(),

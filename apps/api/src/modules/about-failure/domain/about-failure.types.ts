@@ -32,9 +32,3 @@ export interface IUpdateAboutFailurePayload {
   lesson?: TranslatableJson;
   isPublished?: boolean;
 }
-
-export const ABOUT_FAILURE_LIMITS = {
-  CONTEXT_MAX: 200,
-  NARRATIVE_MAX: 1500,
-  YEAR_MIN: 2000,
-} as const;

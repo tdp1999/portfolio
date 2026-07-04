@@ -1,12 +1,12 @@
 import { FailureYear } from './failure-year.value';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 describe('FailureYear', () => {
   const currentYear = new Date().getFullYear();
 
   it('accepts the lower bound (YEAR_MIN)', () => {
-    const y = FailureYear.create(ABOUT_FAILURE_LIMITS.YEAR_MIN);
-    expect(y.value).toBe(ABOUT_FAILURE_LIMITS.YEAR_MIN);
+    const y = FailureYear.create(LIMITS.FAILURE_YEAR_MIN);
+    expect(y.value).toBe(LIMITS.FAILURE_YEAR_MIN);
   });
 
   it('accepts the current year', () => {
@@ -16,13 +16,13 @@ describe('FailureYear', () => {
 
   it('rejects a future year', () => {
     expect(() => FailureYear.create(currentYear + 1)).toThrow(
-      `year must be between ${ABOUT_FAILURE_LIMITS.YEAR_MIN} and ${currentYear}`
+      `year must be between ${LIMITS.FAILURE_YEAR_MIN} and ${currentYear}`
     );
   });
 
   it('rejects a year before YEAR_MIN', () => {
-    expect(() => FailureYear.create(ABOUT_FAILURE_LIMITS.YEAR_MIN - 1)).toThrow(
-      `year must be between ${ABOUT_FAILURE_LIMITS.YEAR_MIN} and ${currentYear}`
+    expect(() => FailureYear.create(LIMITS.FAILURE_YEAR_MIN - 1)).toThrow(
+      `year must be between ${LIMITS.FAILURE_YEAR_MIN} and ${currentYear}`
     );
   });
 

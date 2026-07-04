@@ -1,5 +1,5 @@
 import { BadRequestError, ErrorLayer, AboutFailureErrorCode } from '@portfolio/shared/errors';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 /**
  * Integer year tag (e.g., 2021) anchoring a failure to a moment in the
@@ -20,8 +20,8 @@ export class FailureYear {
       });
     }
     const currentYear = new Date().getFullYear();
-    if (value < ABOUT_FAILURE_LIMITS.YEAR_MIN || value > currentYear) {
-      throw BadRequestError(`year must be between ${ABOUT_FAILURE_LIMITS.YEAR_MIN} and ${currentYear}`, {
+    if (value < LIMITS.FAILURE_YEAR_MIN || value > currentYear) {
+      throw BadRequestError(`year must be between ${LIMITS.FAILURE_YEAR_MIN} and ${currentYear}`, {
         errorCode: AboutFailureErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });

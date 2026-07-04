@@ -66,6 +66,9 @@ export class ProfileIdentitySection {
   readonly mediaDataSource = input.required<MediaPickerDataSource>();
   readonly saved = output<Partial<ProfileAdminResponse>>();
 
+  /** Exposed for template maxLength bindings — char caps live in the shared LIMITS constant. */
+  protected readonly LIMITS = LIMITS;
+
   readonly form = this.fb.group({
     fullName: this.bilingualGroup({ required: true, maxLength: LIMITS.NAME_MAX }),
     title: this.bilingualGroup({ required: true, maxLength: LIMITS.TITLE_MAX }),

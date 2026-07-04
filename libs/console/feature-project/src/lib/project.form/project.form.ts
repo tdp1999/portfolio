@@ -221,7 +221,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
   createLinkGroup(data?: ProjectLink) {
     return this.fb.group({
-      label: [data?.label ?? '', [Validators.required, Validators.maxLength(80)]],
+      label: [data?.label ?? '', [Validators.required, Validators.maxLength(LIMITS.LABEL_MAX)]],
       url: [data?.url ?? '', [Validators.required, ...baselineFor.url()]],
       type: [data?.type ?? ('repo' as ProjectLinkType), Validators.required],
     });

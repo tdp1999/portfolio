@@ -25,8 +25,9 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { FormErrorPipe, ServerErrorDirective, scrollToFirstError } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { AboutPrincipleService } from '../about-principle.service';
-import { ABOUT_PRINCIPLE_LIMITS, AdminAboutPrinciple } from '../about-principle.types';
+import { AdminAboutPrinciple } from '../about-principle.types';
 
 @Component({
   selector: 'console-principle-form',
@@ -65,10 +66,10 @@ export default class PrincipleForm implements OnInit, HasUnsavedChanges {
   readonly isEditMode = computed(() => this.id() !== null);
 
   readonly form = this.fb.nonNullable.group({
-    claimEn: ['', [Validators.required, Validators.maxLength(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX)]],
-    claimVi: ['', [Validators.maxLength(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX)]],
-    expansionEn: ['', [Validators.required, Validators.maxLength(ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX)]],
-    expansionVi: ['', [Validators.maxLength(ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX)]],
+    claimEn: ['', [Validators.required, Validators.maxLength(LIMITS.PRINCIPLE_CLAIM_MAX)]],
+    claimVi: ['', [Validators.maxLength(LIMITS.PRINCIPLE_CLAIM_MAX)]],
+    expansionEn: ['', [Validators.required, Validators.maxLength(LIMITS.PRINCIPLE_EXPANSION_MAX)]],
+    expansionVi: ['', [Validators.maxLength(LIMITS.PRINCIPLE_EXPANSION_MAX)]],
     isPublished: [true],
   });
 

@@ -25,8 +25,9 @@ import {
   ToastService,
 } from '@portfolio/console/shared/ui';
 import { FormErrorPipe, ServerErrorDirective, scrollToFirstError } from '@portfolio/console/shared/util';
+import { LIMITS } from '@portfolio/shared/validation';
 import { AboutFailureService } from '../about-failure.service';
-import { ABOUT_FAILURE_LIMITS, AdminAboutFailure } from '../about-failure.types';
+import { AdminAboutFailure } from '../about-failure.types';
 
 @Component({
   selector: 'console-failure-form',
@@ -65,21 +66,21 @@ export default class FailureForm implements OnInit, HasUnsavedChanges {
   readonly isEditMode = computed(() => this.id() !== null);
 
   readonly currentYear = new Date().getFullYear();
-  readonly yearMin = ABOUT_FAILURE_LIMITS.YEAR_MIN;
+  readonly yearMin = LIMITS.FAILURE_YEAR_MIN;
 
   readonly form = this.fb.nonNullable.group({
     year: [
       this.currentYear,
-      [Validators.required, Validators.min(ABOUT_FAILURE_LIMITS.YEAR_MIN), Validators.max(this.currentYear)],
+      [Validators.required, Validators.min(LIMITS.FAILURE_YEAR_MIN), Validators.max(this.currentYear)],
     ],
-    contextEn: ['', [Validators.required, Validators.maxLength(ABOUT_FAILURE_LIMITS.CONTEXT_MAX)]],
-    contextVi: ['', [Validators.maxLength(ABOUT_FAILURE_LIMITS.CONTEXT_MAX)]],
-    decisionEn: ['', [Validators.required, Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
-    decisionVi: ['', [Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
-    consequenceEn: ['', [Validators.required, Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
-    consequenceVi: ['', [Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
-    lessonEn: ['', [Validators.required, Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
-    lessonVi: ['', [Validators.maxLength(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX)]],
+    contextEn: ['', [Validators.required, Validators.maxLength(LIMITS.FAILURE_CONTEXT_MAX)]],
+    contextVi: ['', [Validators.maxLength(LIMITS.FAILURE_CONTEXT_MAX)]],
+    decisionEn: ['', [Validators.required, Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
+    decisionVi: ['', [Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
+    consequenceEn: ['', [Validators.required, Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
+    consequenceVi: ['', [Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
+    lessonEn: ['', [Validators.required, Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
+    lessonVi: ['', [Validators.maxLength(LIMITS.FAILURE_NARRATIVE_MAX)]],
     isPublished: [true],
   });
 

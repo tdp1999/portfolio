@@ -20,8 +20,12 @@ export const LIMITS = {
   // Tag.name has a tighter cap than other names
   TAG_NAME_MAX: 50,
 
-  // Bio short
-  BIO_SHORT_MAX: 200,
+  // Short UI labels — project highlight labels, chips
+  LABEL_MAX: 80,
+
+  // Bio short (home philosophy card — lead sentence + italic emphasis tail).
+  // Raised 200→500 (2026-07-04) to fit the fuller EN+VI philosophy copy.
+  BIO_SHORT_MAX: 500,
 
   // Description / excerpt buckets
   DESCRIPTION_SHORT_MAX: 500,
@@ -62,6 +66,20 @@ export const LIMITS = {
   SOCIAL_LINKS_ARRAY_MAX: 20,
   CERTIFICATIONS_ARRAY_MAX: 50,
   PROJECT_HIGHLIGHTS_ARRAY_MAX: 4,
+
+  // About content — principle (claim + expansion) & failure (context + narrative + year) essays.
+  // Consolidated 2026-07-04 from duplicate FE/BE ABOUT_PRINCIPLE_LIMITS / ABOUT_FAILURE_LIMITS.
+  PRINCIPLE_CLAIM_MAX: 200,
+  PRINCIPLE_EXPANSION_MAX: 1500,
+  FAILURE_CONTEXT_MAX: 200,
+  FAILURE_NARRATIVE_MAX: 1500,
+  FAILURE_YEAR_MIN: 2000,
+
+  // Contact message form — FE validators mirror BE Zod atoms.
+  CONTACT_NAME_MAX: 100,
+  CONTACT_SUBJECT_MAX: 500,
+  CONTACT_MESSAGE_MIN: 10,
+  CONTACT_MESSAGE_MAX: 5000,
 
   // Password
   PASSWORD_MIN: 8,

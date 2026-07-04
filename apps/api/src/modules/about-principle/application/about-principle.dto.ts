@@ -1,5 +1,5 @@
 import { z } from 'zod/v4';
-import { ABOUT_PRINCIPLE_LIMITS } from '../domain/about-principle.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 const TranslatableTextSchema = (max: number, label: string) =>
   z.object({
@@ -9,16 +9,16 @@ const TranslatableTextSchema = (max: number, label: string) =>
 
 export const CreateAboutPrincipleSchema = z.object({
   order: z.number().int().min(0).optional(),
-  claim: TranslatableTextSchema(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX, 'claim'),
-  expansion: TranslatableTextSchema(ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX, 'expansion'),
+  claim: TranslatableTextSchema(LIMITS.PRINCIPLE_CLAIM_MAX, 'claim'),
+  expansion: TranslatableTextSchema(LIMITS.PRINCIPLE_EXPANSION_MAX, 'expansion'),
   isPublished: z.boolean().default(true),
 });
 
 export const UpdateAboutPrincipleSchema = z
   .object({
     order: z.number().int().min(0).optional(),
-    claim: TranslatableTextSchema(ABOUT_PRINCIPLE_LIMITS.CLAIM_MAX, 'claim').optional(),
-    expansion: TranslatableTextSchema(ABOUT_PRINCIPLE_LIMITS.EXPANSION_MAX, 'expansion').optional(),
+    claim: TranslatableTextSchema(LIMITS.PRINCIPLE_CLAIM_MAX, 'claim').optional(),
+    expansion: TranslatableTextSchema(LIMITS.PRINCIPLE_EXPANSION_MAX, 'expansion').optional(),
     isPublished: z.boolean().optional(),
   })
   .refine(

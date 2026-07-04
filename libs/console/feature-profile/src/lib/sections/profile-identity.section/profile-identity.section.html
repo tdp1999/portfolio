@@ -42,7 +42,7 @@
     <console-translatable-group
       [group]="form.controls.title"
       label="Title"
-      [placeholder]="{ en: 'e.g. Senior Software Engineer' }"
+      [placeholder]="{ en: 'e.g. Frontend Engineer' }"
     />
 
     <console-translatable-group
@@ -50,7 +50,7 @@
       label="Short Bio"
       type="textarea"
       [rows]="3"
-      [maxLength]="200"
+      [maxLength]="LIMITS.BIO_SHORT_MAX"
       [showCounter]="true"
     />
 

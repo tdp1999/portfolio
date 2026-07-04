@@ -1,5 +1,5 @@
 import { FailureNarrative } from './failure-narrative.value';
-import { ABOUT_FAILURE_LIMITS } from '../about-failure.types';
+import { LIMITS } from '@portfolio/shared/validation';
 
 describe('FailureNarrative', () => {
   describe('create()', () => {
@@ -15,21 +15,21 @@ describe('FailureNarrative', () => {
     });
 
     it('rejects EN longer than NARRATIVE_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.FAILURE_NARRATIVE_MAX + 1);
       expect(() => FailureNarrative.create({ en: longText, vi: '' }, 'lesson')).toThrow(
-        `lesson.en must be ≤ ${ABOUT_FAILURE_LIMITS.NARRATIVE_MAX} chars`
+        `lesson.en must be ≤ ${LIMITS.FAILURE_NARRATIVE_MAX} chars`
       );
     });
 
     it('rejects VI longer than NARRATIVE_MAX', () => {
-      const longText = 'a'.repeat(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX + 1);
+      const longText = 'a'.repeat(LIMITS.FAILURE_NARRATIVE_MAX + 1);
       expect(() => FailureNarrative.create({ en: 'ok', vi: longText }, 'lesson')).toThrow(
-        `lesson.vi must be ≤ ${ABOUT_FAILURE_LIMITS.NARRATIVE_MAX} chars`
+        `lesson.vi must be ≤ ${LIMITS.FAILURE_NARRATIVE_MAX} chars`
       );
     });
 
     it('accepts exactly NARRATIVE_MAX chars', () => {
-      const maxText = 'a'.repeat(ABOUT_FAILURE_LIMITS.NARRATIVE_MAX);
+      const maxText = 'a'.repeat(LIMITS.FAILURE_NARRATIVE_MAX);
       const n = FailureNarrative.create({ en: maxText, vi: maxText }, 'decision');
       expect(n.en).toBe(maxText);
       expect(n.vi).toBe(maxText);
