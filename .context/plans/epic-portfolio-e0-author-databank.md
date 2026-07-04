@@ -26,6 +26,7 @@
 | English | TOEIC 970/990 (2022–2024). Daily working language. International recruiter audience is realistic. |
 | Education | B.E. in Computer Networks & Communications, Can Tho University (09/2017 – 02/2022). Valedictorian. |
 | Current employer | Redoc (Singapore-based; HCMC office). At Redoc since 08/2022. Current title: Senior Frontend Engineer (held ~1 year as of 2026-05). |
+| **Positioning (locked 2026-07-04)** | **Frontend engineer** — NOT full-stack. Backend (NestJS/Prisma/Postgres) is a **supporting capability**, never the identity; frontend leads. Always the word **"engineer"**, never "developer/dev" (engineer = systems thinking, design/architecture, rigor, end-to-end ownership of quality — not just writing code). Applies to ALL content, EN + VI ("Frontend engineer" kept in English in VI copy). |
 
 ## 2. Career timeline
 
@@ -46,7 +47,7 @@
       • Title progression at Redoc fluid; Senior title held ~1 year       │
 ```
 
-**Total experience as of 2026-05:** ~5 years FE total; ~4 years at Redoc; Senior title held ~1 year. Note on title: in IT generally — and in this case specifically — role titles are fuzzy and company-defined. Treat "Senior" as a current label, not as a time-served credential. Copy should lean on **years shipping** ("five years building frontend for fintech") rather than **years at title** ("five years as Senior").
+**Total experience as of 2026-05:** ~5 years FE total; ~4 years at Redoc; Senior title held ~1 year. Note on title: in IT generally — and in this case specifically — role titles are fuzzy and company-defined. Treat "Senior" as a current label, not as a time-served credential. Copy should lean on **years shipping** ("five years building frontend for fintech") rather than **years at title** ("five years as Senior"). **Decision 2026-07-04:** public **positioning** copy (hero title, `Profile.title`, SEO metaTitle/description, /about heading, DDL demos) **drops the "Senior" label entirely** → presents as "Frontend Engineer". The factual Senior title is **retained as truth** here (§1) and in the **experience/CV record** (the Redoc entry keeps "Senior Frontend Engineer" — it is his real title and reads as honest progression in a CV context). So: lead as Frontend Engineer; never hide the real title where the context is factual employment history.
 
 ## 3. Notable accomplishments at Redoc
 
@@ -69,7 +70,7 @@ Stated outcomes drawn from the CV (verifiable on request):
 
 ### Secondary (working knowledge, real-world shipped)
 
-- **NestJS** + **Prisma** + **Postgres** — full-stack work, DDD patterns (visible in this monorepo's API).
+- **NestJS** + **Prisma** + **Postgres** — backend **capability** (a frontend engineer who can hold the backend when a project needs it, not a full-stack identity), DDD patterns (visible in this monorepo's API).
 - **HTML / SCSS / Tailwind / Angular Material** — responsive design, design systems written from scratch.
 - **Jest / Playwright** — testing discipline, TDD, E2E with POM.
 - **Nx** — monorepo orchestrator across all current personal/professional work.
@@ -236,6 +237,7 @@ Things this databank does not yet know. Add as they get answered.
 - 2026-05-01 — Databank created. Synthesized from CV, three planning sessions, and repo inspection of Document Engine + claude-code-ctx. E1 outputs depend on this; E2 will write directly from it.
 - 2026-05-01 — Senior-title duration corrected: ~1 year, not the full 3.5 years at Redoc. Note added that copy should lean on years-shipping over years-at-title.
 - 2026-06-13 — Content-authoring session start. Added locale conventions (§8: EN=American, VI=pure-except-tech). Resolved §14 gaps: headshot exists; legacy portfolio deleted (updated §1, §6.4). Audience reach confirmed: write for broadest reach, intl recruiter top priority → domestic recruiter → freelance job hunter → curious dev. Salary-band research deferred to Claude.
+- 2026-07-04 — **Positioning locked: Frontend engineer, not full-stack** (§1 new row). Backend = supporting capability only; always "engineer" not "developer/dev". Reframed §4 line 72 ("full-stack work" → backend capability). Ripple was small (most content still pending); only self-positioning spot already shipped was `contactIntro` seed, rewritten this session. Open flag for author: whether `coreStack` hero chip **NestJS** still fits a frontend-engineer positioning (not changed).
 
 ## 16. Finalized copy (canonical — databank chính chủ)
 
@@ -345,3 +347,12 @@ Publish: Console → `/profile` → **Landing Content** → "Footer Tagline" (EN
 - **VI** — *Bạn đã đi tới cuối trang rồi. Thật lòng cảm ơn bạn đã đọc.*
 
 **Reasoning (locked):** Explored an invitation vibe first ("might as well say hi") but rejected it for the footer — an invitation-to-contact dead-ends where there's no contact action (author caught this via page-level thinking). Dropped the location signature ("in Saigon") and the maker's-mark ("built by hand") per author preference. Landed on a deadpan self-aware opener + sincere thanks: "Genuinely / Thật lòng" is the word that keeps it off generic "thanks for visiting"; "reading" (not "visiting") implies real engagement. **No em-dash** (author flags it as an AI tell — see feedback memory). The "say hi" invitation is **earmarked for the Get-in-touch section** (where the CTA action lives). Watch for tonal overlap with /about §04 Next steps (`ctaHeading`/`ctaLede`) when authoring /about.
+
+### Home §2.3 contact card — `Profile.contactIntro` (note in bio-card Card C)
+
+Publish: Console → `/profile` → **Landing Content** → "Contact Intro" (EN + VI). Renders via `contactNote` inside the bio-card-grid **Card C "CONTACT"** on home — NOT a /contact hero (that page has its own microcopy). Sits under the status-dot ("AVAILABLE FOR WORK") + copy-email button, above the "Connect now" link (now → `/contact`). Small muted type (`text-body-sm`, text-500). Locked 2026-07-04.
+
+- **EN** — *Frontend Engineer, based in HCMC, open to full-time and a little freelance on the side.*
+- **VI** — *Frontend Engineer, mình ở TP.HCM, và sẵn sàng cho một vị trí full-time cũng như các dự án freelance.*
+
+**Role (locked):** Card C is a standalone scan-unit — a reader can land here without reading the hero, so the note is the card's core statement (not a caption), read at the "should I reach out?" moment to self-qualify before clicking Connect now. Job = compact who / where / open-to. **One sentence** (author's call): identity (Frontend engineer) + location (HCMC) + engagement (full-time + a little freelance). **Dropped "Singapore market"** (author's call — it already anchors in the hero tagline; no need to repeat in this small note) and **dropped the reply-time** (that's §06 Get-in-touch's job, right where the CTAs are). Positioning follows the 2026-07-04 lock: **frontend engineer, not full-stack** — no backend nod here (stackIntro carries backend depth). Tone = plain "business-card" register, confident-not-desperate. "Frontend engineer" / "full-time" kept in English in VI (tech terms).
