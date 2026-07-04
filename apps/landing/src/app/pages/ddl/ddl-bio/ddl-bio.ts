@@ -36,7 +36,7 @@ export class DdlBio {
 
   readonly demo = {
     fullName: 'Phuong Tran',
-    title: 'Senior Frontend Engineer',
+    title: 'Frontend Engineer',
     city: 'Ho Chi Minh City',
     email: 'hello@thunderphong.com',
     available: true,

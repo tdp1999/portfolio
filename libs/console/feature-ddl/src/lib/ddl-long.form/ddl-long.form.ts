@@ -63,8 +63,8 @@ export default class DdlLongForm implements HasUnsavedChanges {
       vi: this.fb.control('Phương Trần', { nonNullable: true, validators: [Validators.required] }),
     }),
     title: this.fb.group({
-      en: this.fb.control('Senior Software Engineer', { nonNullable: true }),
-      vi: this.fb.control('Kỹ sư phần mềm cao cấp', { nonNullable: true }),
+      en: this.fb.control('Frontend Engineer', { nonNullable: true }),
+      vi: this.fb.control('Kỹ sư Frontend', { nonNullable: true }),
     }),
   });
 

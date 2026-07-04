@@ -1028,9 +1028,9 @@ async function main() {
           { platform: 'LINKEDIN', url: 'https://www.linkedin.com/in/phuongtran/', handle: 'phuongtran' },
           { platform: 'TWITTER', url: 'https://x.com/thunderphong', handle: 'thunderphong' },
         ],
-        metaTitle: 'Phuong Tran — Senior Frontend Engineer',
+        metaTitle: 'Phuong Tran — Frontend Engineer',
         metaDescription:
-          'Senior frontend engineer in HCMC, four years on a Singapore-based product team. Document engines, design systems, dev workflows.',
+          'Frontend engineer in HCMC, four years on a Singapore-based product team. Document engines, design systems, dev workflows.',
         aboutHeading: t('How I work, and what it cost me to learn it.'),
         aboutLede: t(
           "Five years of frontend, four in Singapore-market banking. The principles below aren't slogans — each one has a bug, an outage, or a bad bet behind it."

@@ -87,7 +87,7 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
       id: uuidv7(),
       userId: user.id,
       fullName: { en: name, vi: name },
-      title: { en: 'Senior Frontend Engineer', vi: 'Kỹ sư Frontend Cao cấp' },
+      title: { en: 'Frontend Engineer', vi: 'Kỹ sư Frontend' },
       bioShort: {
         en: 'Five years in, four with a Singapore-based product team. I have come to like the feature work nobody asks me to brag about — the design system before the screen, the test before the bug, the workflow before the task. Less glamorous; more durable.',
         vi: '',

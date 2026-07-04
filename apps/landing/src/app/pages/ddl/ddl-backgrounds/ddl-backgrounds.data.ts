@@ -9,7 +9,7 @@ export const PATTERNS: readonly PatternEntry[] = [
       'Hero section for the engineering / systems-builder identity. The receding floor reads as "infrastructure, foundations, planning" — supports a type-led hero that names the engineer above the schematic.',
     bestFor: ['Home hero', 'Project case-study openers', 'Colophon "stack" intro'],
     avoidFor: ['Long-form reading sections', 'Card grids (competes with card borders)'],
-    sampleHeadline: 'Phuong Tran — Senior Frontend Engineer.',
+    sampleHeadline: 'Phuong Tran — Frontend Engineer.',
     sampleTagline: 'Four years shipping fintech tools for the Singapore market.',
   },
   {
@@ -54,6 +54,6 @@ export const PATTERNS: readonly PatternEntry[] = [
     bestFor: ['Contact / get-in-touch', 'Newsletter band', 'Bottom-of-page CTA', '404 page'],
     avoidFor: ['Heroes (too directional, distracts from name)', 'Long-form body'],
     sampleHeadline: 'Get in touch.',
-    sampleTagline: 'Open to senior frontend / full-stack roles. Singapore market preferred.',
+    sampleTagline: 'Open to frontend roles. Singapore market preferred.',
   },
 ];

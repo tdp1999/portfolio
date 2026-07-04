@@ -2,7 +2,7 @@ import type { DdlVariant } from '../ddl.types';
 
 export const DEMO = {
   fullName: 'Phuong Tran',
-  role: 'Senior Frontend Engineer',
+  role: 'Frontend Engineer',
   lead: 'Four years shipping fintech tools for the Singapore market.',
   emphasis: 'Document engines, loan systems, permission frameworks.',
   status: 'AVAILABLE FOR HIRE',

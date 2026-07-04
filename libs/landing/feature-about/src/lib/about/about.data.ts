@@ -6,8 +6,8 @@ export const TITLE_BY_LOCALE = {
 } as const;
 
 export const DEFAULT_HEADING_BY_LOCALE = {
-  en: 'Senior software engineer building DDD-grade web platforms for fintech & SaaS teams.',
-  vi: 'Kỹ sư phần mềm xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
+  en: 'Frontend engineer building DDD-grade web platforms for fintech & SaaS teams.',
+  vi: 'Kỹ sư Frontend xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
 } as const;
 
 export const DEFAULT_LEDE_BY_LOCALE = {
