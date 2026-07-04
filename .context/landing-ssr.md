@@ -65,6 +65,8 @@ Currently preloaded:
 
 Inter and JetBrains Mono fallbacks are metric-close to system fonts → only preload weights when the FOUT swap is visually obvious (typically Newsreader serif vs. Georgia, or any heavy/display weight).
 
+**Vietnamese subset — required for every self-hosted weight.** The `latin` woff2 subset does NOT contain Vietnamese-only glyphs (`ư ơ ă â ê ô đ` + stacked tone marks, ranges around U+1EA0–1EF9). Self-hosting only the latin file makes those glyphs fall back to system fonts (Georgia/system-ui) mid-word. So for each self-hosted latin `@font-face`, add a sibling `vietnamese` `@font-face` pointing at `<family>-vietnamese-<weight>-<style>.woff2` with `unicode-range: $vietnamese-range;` (the shared range declared at the top of `index.scss`). The vietnamese range is scoped to Vietnamese codepoints, so the latin block still wins for every latin character. Weights loaded via `@fontsource` aggregate CSS (`<family>/<weight>.css`) already bundle their vietnamese subset. No extra preload needed: the SSR shell always paints `lang="en"`, and Vietnamese only renders after client hydration / language toggle, where on-demand `font-display: swap` covers it.
+
 ## 2b. Post-hydration loading — use `asyncResource()`
 
 **Cause:** An HTTP call fired after hydration (e.g. client-side nav from `/` into `/projects`, where the SSR transfer cache hasn't pre-warmed the service for that page) lands in a signal whose `initialValue` is an empty payload (`{ items: [] }`, `null`, etc.). The template can't distinguish "still loading" from "loaded but empty" — it renders the empty state for a few frames, then snaps to the real list when the response arrives. Slow networks make the empty state visible; fast ones make it flash.
