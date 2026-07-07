@@ -2,7 +2,7 @@ export const ABOUT_URL = 'https://thunderphong.com/about';
 
 export const TITLE_BY_LOCALE = {
   en: 'About — Phương Trần',
-  vi: 'Về tôi — Phương Trần',
+  vi: 'Về mình — Phương Trần',
 } as const;
 
 export const DEFAULT_HEADING_BY_LOCALE = {

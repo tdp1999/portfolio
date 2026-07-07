@@ -89,8 +89,8 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
       fullName: { en: name, vi: name },
       title: { en: 'Frontend Engineer', vi: 'Kỹ sư Frontend' },
       bioShort: {
-        en: 'Five years in, four with a Singapore-based product team. I have come to like the feature work nobody asks me to brag about — the design system before the screen, the test before the bug, the workflow before the task. Less glamorous; more durable.',
-        vi: '',
+        en: 'Five years in, four with Redoc, a startup building document tools for the Singapore market. A frontend engineer who builds complex web platforms end to end, comfortable with architecture and design systems, and able to hold the backend when a project needs it.',
+        vi: '5 năm kinh nghiệm, với 4 năm mình ở Redoc, một startup xây dựng phần mềm cho người dùng Singapore. Frontend engineer, đã xây dựng nhiều hệ thống web đa chức năng, đã hands-on với kiến trúc và design system, và có thể đảm nhận phần backend khi dự án cần.',
       },
       // Landing content blocks (E2 §1, §4, §5, §7 locked copy)
       tagline: {
@@ -113,7 +113,7 @@ export async function seedProfile(prisma: Pick<PrismaClient, 'user' | 'profile'>
         en: "There's more, if you're still here.",
         vi: '',
       },
-      coreStack: ['Angular', 'TypeScript', 'Angular Material'],
+      coreStack: ['Angular', 'TypeScript'],
       yearsOfExperience: 5,
       timezones: ['Asia/Ho_Chi_Minh'],
       workingHours: { start: '09:00', end: '18:00' },
