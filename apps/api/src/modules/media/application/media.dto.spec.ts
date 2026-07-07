@@ -101,6 +101,17 @@ describe('Media DTOs', () => {
       }
     });
 
+    it('appends a slash to bare categories but leaves full mime types intact', () => {
+      const result = ListMediaSchema.safeParse({ mimeTypePrefix: 'image,application/pdf' });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        // "image" → "image/" (prefix match), but "application/pdf" must stay exact
+        // so `startsWith` matches the stored "application/pdf" mimeType.
+        expect(result.data.mimeTypePrefix).toEqual(['image/', 'application/pdf']);
+      }
+    });
+
     it('should accept search and pagination', () => {
       const result = ListMediaSchema.safeParse({ search: 'photo', page: 2, limit: 10 });
 

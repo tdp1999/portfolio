@@ -39,7 +39,11 @@ export const ListMediaSchema = PaginatedQuerySchema.extend({
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean)
-        .map((p) => (p.endsWith('/') ? p : `${p}/`))
+        // Bare top-level categories ("image") become "image/" so a startsWith
+        // match catches every subtype. Full/partial types that already contain a
+        // "/" ("application/pdf") pass through untouched — appending a slash there
+        // yields "application/pdf/", which matches no stored mimeType.
+        .map((p) => (p.includes('/') ? p : `${p}/`))
     )
     .optional(),
   mimeGroup: z.enum(MEDIA_MIME_GROUPS).optional(),

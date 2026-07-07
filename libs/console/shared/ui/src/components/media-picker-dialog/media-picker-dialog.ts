@@ -106,9 +106,10 @@ export default class MediaPickerDialog implements OnInit {
     if (this.data.selectedIds?.length) {
       this.selected.set(new Set(this.data.selectedIds));
     }
-    if (this.data.defaultFolder) {
-      this.folder.set(this.data.defaultFolder);
-    }
+    // NOTE: `defaultFolder` sets the UPLOAD destination (`uploadFolder`) only — it must
+    // NOT pre-filter the library. Pinning the folder here hid pre-existing assets stored
+    // under a different folder (e.g. a resume PDF uploaded to `general`). Leave the folder
+    // facet on "All" so every matching-type asset is selectable; the user can still narrow.
     this.viewMode.set(readViewMode());
 
     this.dialogRef.disableClose = true;
