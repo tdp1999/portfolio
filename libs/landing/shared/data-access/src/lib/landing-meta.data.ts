@@ -1,3 +1,3 @@
-export const DEFAULT_TITLE = 'Phuong Tran — Software Engineer';
+export const DEFAULT_TITLE = 'Phuong Tran | Frontend Engineer';
 export const DEFAULT_DESCRIPTION =
-  "Phuong Tran's personal portfolio — selected work, experience, and ways to get in touch.";
+  'The portfolio of Phuong Tran, a Frontend Engineer building complex, production-grade web platforms for banking and fintech with Angular and TypeScript.';

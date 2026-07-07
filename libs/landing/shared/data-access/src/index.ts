@@ -14,6 +14,7 @@ export * from './lib/contact-form.types';
 export * from './lib/contact-form.service';
 export * from './lib/contact-form.error-messages';
 export * from './lib/landing-meta.service';
+export * from './lib/landing-meta.data';
 export * from './lib/principle.types';
 export * from './lib/principle.service';
 export * from './lib/failure.types';

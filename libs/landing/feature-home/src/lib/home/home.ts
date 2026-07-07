@@ -1,4 +1,4 @@
-import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, effect, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY } from 'rxjs';
@@ -9,7 +9,12 @@ import { HomeIntro } from '../home.intro/home.intro';
 import { HomePhilosophyStrip } from '../home.philosophy-strip/home.philosophy-strip';
 import { HomeSelectedWork } from '../selected-work/home.selected-work';
 import { HomeStack } from '../home.stack/home.stack';
-import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  ProfileService,
+  SkillService,
+} from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import {
@@ -76,37 +81,39 @@ export class Home {
     const doc = getLocalized(this.profile()?.bioLongCanonical, this.locale()) as unknown as PortableDocument | null;
     return doc && Array.isArray(doc.content) && doc.content.length > 0 ? doc : null;
   });
+  /** OUTLOOK card quote (Card B) — rendered as one uniform passage. */
   bioShort = computed(() => getLocalized(this.profile()?.bioShort, this.locale()));
+  // Hero (§2) availability status — Card C's duplicate status-dot was removed.
   isOpenToWork = computed(() => this.profile()?.availability === 'OPEN_TO_WORK');
   locationCity = computed(() => this.profile()?.locationCity ?? null);
   email = computed(() => this.profile()?.email ?? '');
   timezones = computed<readonly string[]>(() => this.profile()?.timezones ?? []);
   workingHours = computed(() => this.profile()?.workingHours ?? null);
-  /** Splits bioShort at the first sentence boundary so the Outlook card has
-   *  a lead clause + an italicized emphasis tail. Mirrors the hero tagline split. */
-  private readonly bioShortSplit = computed<readonly [string, string]>(() => {
-    const raw = this.bioShort().trim();
-    if (!raw) return ['', ''];
-    const match = raw.match(/^([\s\S]+?[.!?])\s+([\s\S]+)$/);
-    if (match) return [match[1].trim(), match[2].replace(/\s+/g, ' ').trim()];
-    return [raw, ''];
-  });
-  philosophyLead = computed(() => this.bioShortSplit()[0]);
-  philosophyEmphasis = computed(() => this.bioShortSplit()[1]);
   contactNote = computed(() => {
     const intro = getLocalized(this.profile()?.contactIntro, this.locale());
     return intro || 'Open to talks · engagements from June';
   });
+  // Card C brand row — data-driven: renders whatever the author sets in the
+  // Console Links dropdown (LinkedIn / GitHub / Zalo / …), in order, capped by
+  // the row's `max`. Zalo just needs a ZALO link entry (brand icon wired).
   socialLinks = computed(() => this.profile()?.socialLinks ?? []);
 
   constructor() {
     this.scrollspy.setSections(this.navSections);
 
-    this.browserTitle.setTitle('Phuong Tran - Software Engineer');
-    this.browserMeta.updateTag({
-      name: 'description',
-      content:
-        'A software engineer specializing in TypeScript and Angular, with a passion for crafting performant and accessible web applications.',
+    // Homepage <title> + description + OG come from the SEO/OG profile fields
+    // (Console → /profile → SEO / OG), falling back to the site defaults when
+    // unset. In an effect because `profile` resolves async.
+    effect(() => {
+      const p = this.profile();
+      const title = p?.metaTitle || DEFAULT_TITLE;
+      const description = p?.metaDescription || DEFAULT_DESCRIPTION;
+      this.browserTitle.setTitle(title);
+      this.browserMeta.updateTag({ name: 'description', content: description });
+      this.browserMeta.updateTag({ property: 'og:title', content: title });
+      this.browserMeta.updateTag({ property: 'og:description', content: description });
+      this.browserMeta.updateTag({ name: 'twitter:title', content: title });
+      this.browserMeta.updateTag({ name: 'twitter:description', content: description });
     });
 
     if (isPlatformServer(this.platformId)) {

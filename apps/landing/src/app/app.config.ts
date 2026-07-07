@@ -7,7 +7,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
   COMMAND_PALETTE_SEARCH_SOURCES,
   provideIcons,
-  lucideProvider,
+  landingIconProvider,
   imageRefBlockRenderer,
   galleryBlockRenderer,
   type CommandResult,
@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
       appRoutes,
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' })
     ),
-    provideIcons(lucideProvider),
+    provideIcons(landingIconProvider),
     // Prose-block registry (epic redoc-blocks, Phase 4): one entry per block. The
     // AST renderer (`<rte-render>`) mounts these via NgComponentOutlet; adding a
     // block is exactly one more entry here.

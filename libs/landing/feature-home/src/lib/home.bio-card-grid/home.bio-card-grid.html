@@ -47,14 +47,13 @@
         }
       </landing-card>
 
-      <!-- ============================== Card B — OUTLOOK ============================== -->
+      <!-- ============================== Card B — BIO ============================== -->
       <landing-card [tilt]="true">
-        <landing-eyebrow label="§2.2 OUTLOOK" />
+        <landing-eyebrow label="§2.2 BIO" />
         @if (profileLoaded()) {
           <div class="bio-card__body">
-            <blockquote class="bio-card__quote font-display text-body-lg text-landing-text-300 italic leading-relaxed">
-              "{{ philosophyLead() }} <span class="text-landing-text-200 not-italic">{{ philosophyEmphasis() }}</span
-              >"
+            <blockquote class="bio-card__quote font-display text-body-lg text-landing-text-200 leading-relaxed">
+              "{{ philosophy() }}"
             </blockquote>
           </div>
         }
@@ -65,8 +64,6 @@
         <landing-eyebrow label="§2.3 CONTACT" />
         @if (profileLoaded()) {
           <div class="bio-card__body">
-            <landing-status-dot [state]="statusState()" variant="bare" [label]="statusLabel()" />
-
             @if (email()) {
               <button
                 type="button"

@@ -18,7 +18,6 @@ import {
   Background,
   Link,
   SocialRow,
-  StatusDot,
   TypeOutDirective,
 } from '@portfolio/landing/shared/ui';
 import { type SocialLink } from '@portfolio/shared/types';
@@ -41,18 +40,7 @@ import { formatOffset, shortTimezoneLabel, formatHoursInTimezone } from './home.
 @Component({
   selector: 'landing-home-bio-card-grid',
   standalone: true,
-  imports: [
-    Card,
-    Container,
-    CopyToClipboardDirective,
-    Eyebrow,
-    Icon,
-    Background,
-    Link,
-    SocialRow,
-    StatusDot,
-    TypeOutDirective,
-  ],
+  imports: [Card, Container, CopyToClipboardDirective, Eyebrow, Icon, Background, Link, SocialRow, TypeOutDirective],
   templateUrl: './home.bio-card-grid.html',
   styleUrl: './home.bio-card-grid.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,12 +53,10 @@ export class HomeBioCardGrid {
   readonly title = input<string>('');
   readonly city = input<string>('');
   readonly email = input<string>('');
-  readonly available = input<boolean>(false);
   /** Timezones array from the public profile; we render the primary one. */
   readonly timezones = input<readonly string[]>([]);
-  /** Philosophy lead + emphasis (italicized closing). Authored copy. */
-  readonly philosophyLead = input<string>('');
-  readonly philosophyEmphasis = input<string>('');
+  /** Card B bio quote — short authored self-summary (`Profile.bioShort`). */
+  readonly philosophy = input<string>('');
   /** Capacity / availability sentence. */
   readonly contactNote = input<string>('');
   /** Social platforms shown under the "Connect now" link in Card C (max 4 rendered). */
@@ -85,9 +71,6 @@ export class HomeBioCardGrid {
 
   /** GMT offset string ("GMT+7") derived from the primary timezone. */
   protected readonly utcOffset = computed(() => formatOffset(this.primaryTimezone()));
-
-  protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE FOR WORK' : 'CURRENTLY BUSY'));
-  protected readonly statusState = computed<'available' | 'busy'>(() => (this.available() ? 'available' : 'busy'));
 
   /* ─── HOURS row state ─────────────────────────────────────────────────── */
 

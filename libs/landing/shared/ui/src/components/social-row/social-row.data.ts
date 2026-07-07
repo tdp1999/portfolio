@@ -9,7 +9,7 @@ export const SOCIAL_ICON: Record<SocialPlatform, string> = {
   DEV_TO: 'external-link',
   HASHNODE: 'external-link',
   TELEGRAM: 'external-link',
-  ZALO: 'external-link',
+  ZALO: 'zalo',
   WEBSITE: 'globe',
   OTHER: 'external-link',
 };
