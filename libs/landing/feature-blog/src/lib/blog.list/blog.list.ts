@@ -178,11 +178,12 @@ export class BlogList {
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
   constructor() {
-    this.title.setTitle('Writing | Phuong Tran');
-    this.meta.updateTag({
-      name: 'description',
-      content: 'Long-form deep-dives, short notes, and the occasional retro from building this portfolio.',
-    });
+    const title = 'Writing | Phuong Tran';
+    const description = 'Long-form deep-dives, short notes, and the occasional retro from building this portfolio.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
 
     const destroyRef = inject(DestroyRef);
     this.searchControl.valueChanges

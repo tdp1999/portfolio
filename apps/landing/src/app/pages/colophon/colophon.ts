@@ -21,10 +21,11 @@ export class Colophon {
   private readonly meta = inject(Meta);
 
   constructor() {
-    this.title.setTitle('Colophon | Phuong Tran');
-    this.meta.updateTag({
-      name: 'description',
-      content: 'Stack, tools, and sources behind this site — credited honestly.',
-    });
+    const title = 'Colophon | Phuong Tran';
+    const description = 'The stack, tools, and sources behind this site, credited honestly.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
   }
 }

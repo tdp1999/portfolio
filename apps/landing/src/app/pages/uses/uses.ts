@@ -23,10 +23,11 @@ export class Uses {
 
   // ──────── Constructor ─────────────────────────────────────────────────
   constructor() {
-    this.title.setTitle('Uses | Phuong Tran');
-    this.meta.updateTag({
-      name: 'description',
-      content: 'Hardware, editor, terminal, CLI, browser, and fonts I reach for daily.',
-    });
+    const title = 'Uses | Phuong Tran';
+    const description = 'Hardware, editor, terminal, CLI, browser, and fonts I reach for daily.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
   }
 }

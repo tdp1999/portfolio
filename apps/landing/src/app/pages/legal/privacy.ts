@@ -29,8 +29,8 @@ export class Privacy {
       vi: 'Chính sách Bảo mật | Trần Đức Phương',
     },
     descriptions: {
-      en: 'How thunderphong.com collects, uses, stores, and protects personal data — minimal data approach, no tracking cookies, transparent processor list.',
-      vi: 'Cách thunderphong.com thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân — nguyên tắc dữ liệu tối thiểu, không cookie tracking, danh sách bên xử lý minh bạch.',
+      en: 'How thunderphong.com collects, uses, stores, and protects personal data. Minimal data, no tracking cookies, a transparent processor list.',
+      vi: 'Cách thunderphong.com thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân. Nguyên tắc dữ liệu tối thiểu, không cookie tracking, danh sách bên xử lý minh bạch.',
     },
     sections: { en: SECTIONS_EN, vi: SECTIONS_VI },
   });

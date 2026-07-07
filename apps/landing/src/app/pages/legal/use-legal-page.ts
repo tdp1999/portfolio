@@ -51,8 +51,12 @@ export function useLegalPage(config: LegalPageConfig): LegalPageState {
 
   effect(() => {
     const lang = locale();
-    title.setTitle(config.titles[lang]);
-    meta.updateTag({ name: 'description', content: config.descriptions[lang] });
+    const docTitle = config.titles[lang];
+    const description = config.descriptions[lang];
+    title.setTitle(docTitle);
+    meta.updateTag({ name: 'description', content: description });
+    meta.updateTag({ property: 'og:title', content: docTitle });
+    meta.updateTag({ property: 'og:description', content: description });
     setHreflangLinks(document, config.path, lang);
   });
 

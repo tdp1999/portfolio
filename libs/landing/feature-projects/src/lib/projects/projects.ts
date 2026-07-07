@@ -135,11 +135,12 @@ export class Projects {
   readonly filtersOpen = signal(false);
 
   constructor() {
-    this.title.setTitle('Projects | Phuong Tran');
-    this.meta.updateTag({
-      name: 'description',
-      content: 'Full archive of projects by Phuong Tran — what I have shipped, built, and learned from.',
-    });
+    const title = 'Projects | Phuong Tran';
+    const description = 'Full archive of projects by Phuong Tran: what I have shipped, built, and learned from.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
   }
 
   toggleFilters(): void {

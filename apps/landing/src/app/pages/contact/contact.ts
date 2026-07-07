@@ -303,12 +303,13 @@ export class Contact {
   protected readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Contact' }];
 
   constructor() {
-    this.title.setTitle('Get in touch — Phuong Tran');
-    this.meta.updateTag({
-      name: 'description',
-      content:
-        'Reach out about a full-time role, a freelance project, collaboration, press, or just to say hi. Usually reply within a few days.',
-    });
+    const title = 'Get in touch | Phuong Tran';
+    const description =
+      'Reach out about a full-time role, a freelance project, collaboration, press, or just to say hi. Usually reply within a few days.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
 
     effect(() => {
       const map = this.queryPurpose();

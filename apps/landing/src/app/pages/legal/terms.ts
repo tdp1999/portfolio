@@ -29,8 +29,8 @@ export class Terms {
       vi: 'Điều khoản Sử dụng | Trần Đức Phương',
     },
     descriptions: {
-      en: 'Terms governing your access to and use of thunderphong.com — IP rights, acceptable use, no warranty, governing law of Vietnam.',
-      vi: 'Điều khoản chi phối việc truy cập và sử dụng thunderphong.com — quyền sở hữu trí tuệ, sử dụng được chấp nhận, không bảo đảm, luật áp dụng Việt Nam.',
+      en: 'Terms governing your access to and use of thunderphong.com. IP rights, acceptable use, no warranty, governing law of Vietnam.',
+      vi: 'Điều khoản chi phối việc truy cập và sử dụng thunderphong.com. Quyền sở hữu trí tuệ, sử dụng được chấp nhận, không bảo đảm, luật áp dụng Việt Nam.',
     },
     sections: { en: SECTIONS_EN, vi: SECTIONS_VI },
   });
