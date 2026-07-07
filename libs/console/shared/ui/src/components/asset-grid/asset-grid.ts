@@ -15,7 +15,13 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { CloudinaryThumbPipe, IsImagePipe, ReadableSizePipe } from '@portfolio/shared/ui';
+import {
+  CloudinaryPdfThumbPipe,
+  CloudinaryThumbPipe,
+  FileIconPipe,
+  IsImagePipe,
+  ReadableSizePipe,
+} from '@portfolio/shared/ui';
 import { Skeleton } from '../skeleton/skeleton';
 import { AssetGridMode, AssetGridViewMode, MediaItem } from './asset-grid.types';
 
@@ -29,6 +35,8 @@ import { AssetGridMode, AssetGridViewMode, MediaItem } from './asset-grid.types'
     MatCheckboxModule,
     Skeleton,
     CloudinaryThumbPipe,
+    CloudinaryPdfThumbPipe,
+    FileIconPipe,
     IsImagePipe,
     ReadableSizePipe,
   ],
@@ -51,6 +59,8 @@ export class AssetGrid {
   readonly pageChange = output<number>();
 
   protected readonly focusedIndex = signal(0);
+  /** IDs whose PDF page-1 preview failed to load (e.g. legacy `raw` PDFs) → show the file icon. */
+  protected readonly brokenThumbs = signal<ReadonlySet<string>>(new Set());
   protected readonly container = viewChild<ElementRef<HTMLElement>>('container');
   protected readonly itemButtons = viewChildren<ElementRef<HTMLButtonElement>>('itemBtn');
 
@@ -76,6 +86,10 @@ export class AssetGrid {
 
   protected onItemDblClick(item: MediaItem): void {
     this.itemActivated.emit(item.id);
+  }
+
+  protected onThumbError(id: string): void {
+    this.brokenThumbs.update((set) => (set.has(id) ? set : new Set(set).add(id)));
   }
 
   protected toggleSelection(id: string): void {

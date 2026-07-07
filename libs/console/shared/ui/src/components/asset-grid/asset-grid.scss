@@ -94,6 +94,11 @@
     object-fit: cover;
     display: block;
 
+    &--pdf {
+      object-position: top center;
+      background: #fff;
+    }
+
     &--file {
       display: flex;
       align-items: center;
@@ -126,6 +131,11 @@
     object-fit: cover;
     border-radius: 4px;
     background: var(--color-surface-muted, var(--color-surface));
+
+    &--pdf {
+      object-position: top center;
+      background: #fff;
+    }
 
     &--file {
       display: flex;

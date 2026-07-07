@@ -8,6 +8,7 @@ export * from './pipes/is-image.pipe';
 export * from './pipes/date-range.pipe';
 export * from './pipes/month-year.pipe';
 export * from './pipes/cloudinary-thumb.pipe';
+export * from './pipes/cloudinary-pdf-thumb.pipe';
 export * from './pipes/initials.pipe';
 export * from './pipes/translatable.pipe';
 

@@ -63,9 +63,17 @@
                   [alt]="item.altText ?? item.originalFilename"
                   loading="lazy"
                 />
+              } @else if (item.mimeType === 'application/pdf' && !brokenThumbs().has(item.id)) {
+                <img
+                  class="asset-grid__thumb asset-grid__thumb--pdf"
+                  [src]="item.url | cloudinaryPdfThumb"
+                  [alt]="item.altText ?? item.originalFilename"
+                  loading="lazy"
+                  (error)="onThumbError(item.id)"
+                />
               } @else {
                 <div class="asset-grid__thumb asset-grid__thumb--file">
-                  <mat-icon>insert_drive_file</mat-icon>
+                  <mat-icon>{{ item.mimeType | fileIcon }}</mat-icon>
                 </div>
               }
               @if (mode() === 'multi') {
@@ -88,9 +96,17 @@
                 [alt]="item.altText ?? item.originalFilename"
                 loading="lazy"
               />
+            } @else if (item.mimeType === 'application/pdf' && !brokenThumbs().has(item.id)) {
+              <img
+                class="asset-grid__row-thumb asset-grid__row-thumb--pdf"
+                [src]="item.url | cloudinaryPdfThumb: 'pg_1,c_fill,g_north,w_96,h_96'"
+                [alt]="item.altText ?? item.originalFilename"
+                loading="lazy"
+                (error)="onThumbError(item.id)"
+              />
             } @else {
               <div class="asset-grid__row-thumb asset-grid__row-thumb--file">
-                <mat-icon>insert_drive_file</mat-icon>
+                <mat-icon>{{ item.mimeType | fileIcon }}</mat-icon>
               </div>
             }
             <span class="asset-grid__row-name">{{ item.originalFilename }}</span>
