@@ -18,7 +18,7 @@ export class NotFound {
   readonly breadcrumb = BREADCRUMB;
 
   constructor() {
-    this.title.setTitle('Not found · Phuong Tran');
+    this.title.setTitle('Not found | Phuong Tran');
     this.meta.updateTag({ name: 'robots', content: 'noindex' });
   }
 }

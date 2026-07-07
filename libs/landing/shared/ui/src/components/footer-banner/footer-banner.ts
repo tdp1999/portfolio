@@ -27,22 +27,25 @@ export class FooterBanner {
   readonly email = input<string>('');
   readonly socialLinks = input<readonly SocialLink[]>([]);
 
+  // Footer site-map — plain utility labels (scan-nav, not a voice surface).
+  // Uses + Colophon deliberately omitted: they live in the header "More" mega-menu,
+  // no need to repeat them here. Column title "Explore" (not "About") avoids
+  // colliding with the "About" link it contains.
   protected readonly columns: readonly FooterColumn[] = [
     {
       title: 'General',
       routes: [
         { label: 'Home', href: '/' },
         { label: 'Blog', href: '/blog' },
-        { label: 'Uses', href: '/uses' },
-        { label: 'Colophon', href: '/colophon' },
+        { label: 'Contact', href: '/contact' },
       ],
     },
     {
-      title: 'About',
+      title: 'Explore',
       routes: [
         { label: 'About', href: '/about' },
         { label: 'Projects', href: '/projects' },
-        { label: 'Contact', href: '/#get-in-touch' },
+        { label: 'DDL', href: '/ddl' },
       ],
     },
     {

@@ -341,7 +341,9 @@ export class Header {
     if (resume) {
       items.push({
         label: 'Resume',
-        description: `Download my CV — ${this.resumeName() || 'PDF'}.`,
+        // Keep the visible copy filename-free: the real CV filename is long and
+        // unbreakable (underscores), so interpolating it overflowed the hero card.
+        description: 'A PDF snapshot of my experience, roles, and stack.',
         href: resume,
         kind: 'download',
         iconName: 'download',
