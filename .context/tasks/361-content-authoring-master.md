@@ -81,7 +81,7 @@ Each prose item carries two checkboxes: **EN** and **VI**. Language-neutral item
 
 ## Tier 2 — Medium (paragraph / multi-item)
 
-- EN [] · VI [] — Home 90s story arc: ~450 words; **flagged "too literary", rewrite** (E2 line 104) · `[draft, rewrite]`
+- EN [x] · VI [x] — Home 90s story arc = `Profile.bioLong` (§05 The Story). **DONE 2026-07-09** — content finalized EN+VI, author to enter on prod Console. 3 đoạn: (1) niềm tin — engineer cũng phải hiểu người dùng sâu (khung BA/PO/UX Designer, bỏ QA sau fact-check); (2) proof qua domain ngân hàng, giọng humble "học bài học theo cách khó"; (3) vai trò hiện tại: frontend cho LOS **built for a Singapore bank** (client), làm end-to-end + đầu mối kỹ thuật. Render contract §05: mỗi paragraph = 1 beat click-rọi-đèn, chỉ `italic` render như nhấn (bold/link không render). Positioning giữ FE engineer (scope "hệ thống" = phần frontend). Đã killed lối viết literary bị flag ở E2 line 104. `chuyên môn`→"specialize in", `lĩnh vực`→"domain".
 - EN [] · VI [] — About manifesto: 5–7 principles (bold claim + 2–3 sentence expansion) · `[draft ×5]` (T340)
 - EN [] · VI [] — About failures: 3 essays ~150 words (context→decision→consequence→lesson) · `[draft ×3]` (T340)
 - EN [] · VI [] — Experience highlights audit: rewrite verb-scope-metric, 3 roles · `[draft]` (T340)

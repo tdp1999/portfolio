@@ -247,6 +247,8 @@
 
 ## Standalone Tasks
 
+- [ ] 388-landing-i18n-consolidation - Gom static UI copy landing (ternary `locale()==='vi'` + slot `<landing-t>`) về 1 nguồn JSON + pipe resolver; audit bản dịch VI (user kiểm chứng); giữ `<landing-t>` cho HTML-rich, giữ `translatable` cho data API (L) (standalone)
+- [ ] 387-railway-memory-cost-debug - Debug & tối ưu chi phí Memory trên Railway; Umami stack (~$3/mo, mới thêm 02/07) là thủ phạm chính, +điều tra spike Dashboard API 569 MB & App Sleeping (M) (standalone)
 - [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
 - [x] 194-dashboard-backend-apis - **Descoped 2026-06-22** → shipped real `GET /api/dashboard/stats` (CQRS read-model + `DashboardService` + console-home wired); cut Search + Notifications, deferred Activity. Repo spec ✅ → `tasks-done/other/` (S)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
