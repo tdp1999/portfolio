@@ -11,7 +11,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Home', path: '/', exact: true },
   { label: 'About', path: '/about' },
   { label: 'Projects', path: '/projects' },
-  { label: 'Blog', path: '/blog' },
+  { label: 'Contact', path: '/contact' },
 ];
 
 export const SCROLL_THRESHOLD = 8;

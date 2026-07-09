@@ -358,9 +358,9 @@ export class Header {
         href: '/uses',
       },
       {
-        label: 'Contact',
-        hint: 'reach me',
-        href: '/contact',
+        label: 'Blog',
+        hint: 'writing',
+        href: '/blog',
       },
       {
         label: 'Colophon',
