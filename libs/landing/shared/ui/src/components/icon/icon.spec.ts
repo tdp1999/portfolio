@@ -20,11 +20,12 @@ class MockIconProvider implements IconProvider {
 @Component({
   standalone: true,
   imports: [Icon],
-  template: `<landing-icon [name]="name()" [size]="size()" />`,
+  template: `<landing-icon [name]="name()" [size]="size()" [label]="label()" />`,
 })
 class TestHostComponent {
   readonly name = input('test');
   readonly size = input(24);
+  readonly label = input('');
 }
 
 describe('IconComponent', () => {
@@ -127,6 +128,25 @@ describe('IconComponent', () => {
     });
 
     consoleWarnSpy.mockRestore();
+  });
+
+  it('should be decorative (aria-hidden, no role/label) when no label is set', () => {
+    const span = fixture.nativeElement.querySelector('landing-icon span');
+
+    expect(span.getAttribute('aria-hidden')).toBe('true');
+    expect(span.getAttribute('role')).toBeNull();
+    expect(span.getAttribute('aria-label')).toBeNull();
+  });
+
+  it('should expose an accessible image (role=img + aria-label, not hidden) when a label is set', () => {
+    fixture.componentRef.setInput('label', 'Open menu');
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('landing-icon span');
+
+    expect(span.getAttribute('aria-hidden')).toBeNull();
+    expect(span.getAttribute('role')).toBe('img');
+    expect(span.getAttribute('aria-label')).toBe('Open menu');
   });
 
   it('should allow valid icon names with hyphens and numbers', () => {

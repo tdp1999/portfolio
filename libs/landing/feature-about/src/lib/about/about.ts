@@ -73,6 +73,7 @@ export class About {
       const ogImage = this.profile()?.ogImageUrl;
       if (ogImage) {
         this.meta.updateTag({ property: 'og:image', content: ogImage });
+        this.meta.updateTag({ property: 'og:image:alt', content: 'Phuong Tran, Frontend Engineer' });
       }
     });
 
