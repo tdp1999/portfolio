@@ -202,8 +202,8 @@ export class Contact {
 
   protected readonly heroCopy = computed(() =>
     this.locale() === 'vi'
-      ? 'Toàn thời gian, freelance, hợp tác, podcast — hay chỉ chào một tiếng. Mình thường phản hồi trong vài ngày.'
-      : "Full-time, freelance, collab, podcast — or just saying hi. I'll usually reply within a few days."
+      ? 'Nếu bạn muốn trò chuyện sâu, hay chỉ tán gẫu nhanh về bất cứ chuyện gì, bạn có thể tìm mình trên mạng xã hội, hoặc gửi tin nhắn ngay tại đây. Mình thường phản hồi trong vòng một ngày.'
+      : "If you want to have a deep conversation, or just a quick chat about anything, you can find me on social media, or send me a message here. I'll usually reply within a day."
   );
 
   /** Consent label text — the "Privacy Policy" link is rendered separately in
