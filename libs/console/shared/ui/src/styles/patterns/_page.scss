@@ -1,0 +1,62 @@
+/* ─── Shared page layout primitives ─────────────────────────────────────────
+ * Boxed-centered layout standard (see console-cookbook "Max-Width Rules" + ADR-025).
+ * Every console page is a horizontally-centred box so wide screens keep balanced
+ * margins on both sides (no one-sided void):
+ *   • Lists + forms  → boxed at `--console-page-max` (1440), centred (`.console-page`,
+ *                      `.crud-page`). Forms carry the section-rail so they need the width.
+ *   • Detail pages   → narrower reading column `--console-reading-max` (1200), centred
+ *                      (`.detail-page`, `.console-reading`).
+ *   • Page wrappers never set their own padding — the shell already applies `p-8`.
+ */
+
+:root {
+  /* Outer box for lists + forms (content that needs full width, incl. a rail). */
+  --console-page-max: 1440px;
+  /* Narrower reading column for detail content on wide screens. */
+  --console-reading-max: 1200px;
+}
+
+/* Boxed, centred page container — apply to any page root that isn't already a
+   `.crud-page` / `.detail-page` (e.g. section-tabs form roots). Width + centring
+   only, so it composes cleanly with a root's own flex/gap layout. */
+.console-page {
+  max-width: var(--console-page-max);
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* Reading-width cap, centred. Put on a form/detail content wrapper. */
+.console-reading {
+  max-width: var(--console-reading-max);
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* Unified page header: [optional back button] + titles (h1 + subtitle) + [actions].
+   Replaces per-page ad-hoc form headers so every page header reads the same. */
+.console-page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  /* The titles block (h1 + optional subtitle) takes the remaining space. */
+  &__titles {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    margin-top: 4px;
+  }
+
+  /* Right-aligned action cluster (buttons). */
+  &__actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+}

@@ -12,7 +12,7 @@ import type { ActivityItem, DashboardStat } from './home.types';
   standalone: true,
   imports: [MatIconModule, MatButtonModule, RouterLink],
   template: `
-    <div class="max-w-7xl mx-auto">
+    <div>
       <h1 class="text-page-title">Welcome back, {{ userName() }}</h1>
       <p class="mt-2 text-page-subtitle">Here's what's happening with your portfolio today.</p>
 

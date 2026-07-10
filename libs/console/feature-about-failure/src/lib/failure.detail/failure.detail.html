@@ -1,110 +1,98 @@
-<div class="failure-detail">
-  <console-spinner-overlay [loading]="loading()" />
-
+<div class="detail-page">
   @if (failure(); as f) {
-    <header class="failure-detail__header">
-      <a mat-icon-button routerLink="/about/failures" aria-label="Back to list">
+    <!-- Header: back + entity name + status badge, actions (full) on the right. -->
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/about/failures" aria-label="Back to failures">
         <mat-icon>arrow_back</mat-icon>
       </a>
-      <div class="failure-detail__title">
-        <div class="failure-detail__meta">
-          <span class="text-caption text-text-muted font-mono">#{{ f.order + 1 }}</span>
-          <span class="text-caption font-mono text-text-secondary">{{ f.year }}</span>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ f.context.en }}</h1>
           @if (f.isPublished) {
-            <span
-              class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
-              >Published</span
-            >
+            <span class="console-badge console-badge--success">Published</span>
           } @else {
-            <span
-              class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-              >Unpublished</span
-            >
+            <span class="console-badge console-badge--muted">Unpublished</span>
           }
         </div>
-        <h1 class="text-page-title">{{ f.context.en }}</h1>
+        <div class="detail-meta">
+          <span class="font-mono">#{{ f.order + 1 }}</span>
+          <span class="font-mono">{{ f.year }}</span>
+          <span>Created {{ f.createdAt | date: 'medium' }}</span>
+          <span>Updated {{ f.updatedAt | date: 'medium' }}</span>
+        </div>
       </div>
-      <div class="failure-detail__actions">
-        <a mat-stroked-button [routerLink]="['/about/failures', f.id, 'edit']">
-          <mat-icon class="icon-md">edit</mat-icon>
+      <div class="console-page-header__actions">
+        <a mat-flat-button color="primary" [routerLink]="['/about/failures', f.id, 'edit']">
+          <mat-icon class="icon-sm">edit</mat-icon>
           Edit
         </a>
         <button mat-stroked-button color="warn" (click)="confirmDelete()">
-          <mat-icon class="icon-md">delete</mat-icon>
+          <mat-icon class="icon-sm">delete</mat-icon>
           Delete
         </button>
       </div>
-    </header>
+    </div>
 
-    <section class="failure-detail__section">
-      <h2 class="text-section-heading">Context</h2>
-      <dl class="failure-detail__bilingual">
-        <dt class="text-caption text-text-muted">English</dt>
-        <dd class="text-body">{{ f.context.en }}</dd>
+    <div class="detail-card">
+      <section class="detail-section">
+        <h2 class="detail-section__title">Context</h2>
+        <dl class="detail-bilingual">
+          <dt>English</dt>
+          <dd>{{ f.context.en }}</dd>
+          <dt>Tiếng Việt</dt>
+          @if (f.context.vi) {
+            <dd>{{ f.context.vi }}</dd>
+          } @else {
+            <dd class="detail-bilingual__empty">— no translation —</dd>
+          }
+        </dl>
+      </section>
 
-        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
-        @if (f.context.vi) {
-          <dd class="text-body">{{ f.context.vi }}</dd>
-        } @else {
-          <dd class="text-body text-text-muted italic">— no translation —</dd>
-        }
-      </dl>
-    </section>
+      <section class="detail-section">
+        <h2 class="detail-section__title">Decision</h2>
+        <dl class="detail-bilingual">
+          <dt>English</dt>
+          <dd class="detail-bilingual__prose">{{ f.decision.en }}</dd>
+          <dt>Tiếng Việt</dt>
+          @if (f.decision.vi) {
+            <dd class="detail-bilingual__prose">{{ f.decision.vi }}</dd>
+          } @else {
+            <dd class="detail-bilingual__empty">— no translation —</dd>
+          }
+        </dl>
+      </section>
 
-    <section class="failure-detail__section">
-      <h2 class="text-section-heading">Decision</h2>
-      <dl class="failure-detail__bilingual">
-        <dt class="text-caption text-text-muted">English</dt>
-        <dd class="text-body failure-detail__prose">{{ f.decision.en }}</dd>
+      <section class="detail-section">
+        <h2 class="detail-section__title">Consequence</h2>
+        <dl class="detail-bilingual">
+          <dt>English</dt>
+          <dd class="detail-bilingual__prose">{{ f.consequence.en }}</dd>
+          <dt>Tiếng Việt</dt>
+          @if (f.consequence.vi) {
+            <dd class="detail-bilingual__prose">{{ f.consequence.vi }}</dd>
+          } @else {
+            <dd class="detail-bilingual__empty">— no translation —</dd>
+          }
+        </dl>
+      </section>
 
-        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
-        @if (f.decision.vi) {
-          <dd class="text-body failure-detail__prose">{{ f.decision.vi }}</dd>
-        } @else {
-          <dd class="text-body text-text-muted italic">— no translation —</dd>
-        }
-      </dl>
-    </section>
-
-    <section class="failure-detail__section">
-      <h2 class="text-section-heading">Consequence</h2>
-      <dl class="failure-detail__bilingual">
-        <dt class="text-caption text-text-muted">English</dt>
-        <dd class="text-body failure-detail__prose">{{ f.consequence.en }}</dd>
-
-        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
-        @if (f.consequence.vi) {
-          <dd class="text-body failure-detail__prose">{{ f.consequence.vi }}</dd>
-        } @else {
-          <dd class="text-body text-text-muted italic">— no translation —</dd>
-        }
-      </dl>
-    </section>
-
-    <section class="failure-detail__section">
-      <h2 class="text-section-heading">Lesson</h2>
-      <dl class="failure-detail__bilingual">
-        <dt class="text-caption text-text-muted">English</dt>
-        <dd class="text-body failure-detail__prose">{{ f.lesson.en }}</dd>
-
-        <dt class="text-caption text-text-muted">Tiếng Việt</dt>
-        @if (f.lesson.vi) {
-          <dd class="text-body failure-detail__prose">{{ f.lesson.vi }}</dd>
-        } @else {
-          <dd class="text-body text-text-muted italic">— no translation —</dd>
-        }
-      </dl>
-    </section>
-
-    <section class="failure-detail__section">
-      <h2 class="text-section-heading">Metadata</h2>
-      <dl class="failure-detail__bilingual">
-        <dt class="text-caption text-text-muted">Created</dt>
-        <dd class="text-body">{{ f.createdAt | date: 'medium' }}</dd>
-
-        <dt class="text-caption text-text-muted">Last updated</dt>
-        <dd class="text-body">{{ f.updatedAt | date: 'medium' }}</dd>
-      </dl>
-    </section>
+      <section class="detail-section">
+        <h2 class="detail-section__title">Lesson</h2>
+        <dl class="detail-bilingual">
+          <dt>English</dt>
+          <dd class="detail-bilingual__prose">{{ f.lesson.en }}</dd>
+          <dt>Tiếng Việt</dt>
+          @if (f.lesson.vi) {
+            <dd class="detail-bilingual__prose">{{ f.lesson.vi }}</dd>
+          } @else {
+            <dd class="detail-bilingual__empty">— no translation —</dd>
+          }
+        </dl>
+      </section>
+    </div>
+  } @else {
+    <div class="detail-content relative">
+      <console-spinner-overlay [loading]="loading()" />
+    </div>
   }
 </div>

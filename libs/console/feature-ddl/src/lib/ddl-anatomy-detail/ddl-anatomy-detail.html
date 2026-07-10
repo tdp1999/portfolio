@@ -1,0 +1,130 @@
+<!-- DETAIL reference — built on the shared .detail-page (boxed reading column, centred)
+     + .detail-card/.detail-section + .console-badge + console-segmented-control. -->
+<div class="detail-page">
+  <!-- Header: back + title + status + timestamps (top) + actions in the title row.
+         Actions are full buttons; a 3rd+ action folds into the overflow menu. -->
+  <div class="console-page-header">
+    <a mat-icon-button routerLink="/ddl" aria-label="Back"><mat-icon>arrow_back</mat-icon></a>
+    <div class="console-page-header__titles">
+      <div class="anatomy-title-row">
+        <h1 class="text-page-title">Realestatedoc Console</h1>
+        <span class="console-badge console-badge--success">Published</span>
+      </div>
+      <div class="anatomy-meta-strip">
+        <span>ID: p1</span>
+        <span>Created 3 weeks ago</span>
+        <span>Updated 2 days ago</span>
+        <span>Featured</span>
+      </div>
+    </div>
+    <div class="console-page-header__actions">
+      <button mat-flat-button color="primary"><mat-icon class="icon-sm">edit</mat-icon> Edit</button>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item><mat-icon>content_copy</mat-icon> Duplicate</button>
+        <button mat-menu-item><mat-icon>archive</mat-icon> Archive</button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Segmented content switch -->
+  <console-segmented-control [options]="segments" [ngModel]="tab()" (ngModelChange)="tab.set($event)" />
+
+  @switch (tab()) {
+    @case ('overview') {
+      <div class="detail-card">
+        <div class="detail-section">
+          <!-- Section HEADER carrying metadata / a section-level action on the right -->
+          <div class="detail-section__header">
+            <span class="detail-section__title">Basics</span>
+            <span class="detail-section__meta">
+              <span class="console-badge console-badge--success">Published</span>
+              <a routerLink="/ddl">Edit</a>
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Title</span>
+            <span class="detail-field__value">Realestatedoc Console</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">One-liner</span>
+            <span class="detail-field__value">Admin console for a bootstrapped Singapore real-estate startup.</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">Tags</span>
+            <span class="detail-field__value">
+              <span class="anatomy-tags"
+                ><span class="anatomy-tag">Angular</span><span class="anatomy-tag">NestJS</span></span
+              >
+            </span>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section__title">Dates</div>
+          <div class="detail-field">
+            <span class="detail-field__label">Start</span>
+            <span class="detail-field__value">Jan 2022</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">End</span>
+            <span class="detail-field__value detail-field__value--empty">Present</span>
+          </div>
+          <!-- Section FOOTER carrying metadata (e.g. timestamps live here per-section) -->
+          <div class="detail-section__footer">
+            <span>Created 3 weeks ago</span>
+            <span>Updated 2 days ago</span>
+          </div>
+        </div>
+      </div>
+    }
+    @case ('activity') {
+      <div class="detail-card">
+        <div class="detail-section">
+          <div class="detail-section__title">Activity log</div>
+          <div class="anatomy-timeline">
+            @for (a of activity; track $index) {
+              <div class="anatomy-timeline__item">
+                <span class="anatomy-timeline__dot"></span>
+                <span
+                  ><strong>{{ a.who }}</strong> {{ a.what }} ·
+                  <span class="anatomy-timeline__time">{{ a.when }}</span></span
+                >
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+    @case ('related') {
+      <div class="detail-card">
+        <div class="detail-section">
+          <div class="detail-section__title">Related records</div>
+          <div class="anatomy-related">
+            @for (r of related; track r.title) {
+              <div class="anatomy-related__item">
+                <span>{{ r.title }}</span>
+                <span class="console-badge console-badge--muted">{{ r.kind }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- Danger zone as its own titled section -->
+  <div class="detail-card anatomy-danger-card">
+    <div class="detail-section">
+      <div class="detail-section__title anatomy-danger-text">Danger zone</div>
+      <div class="anatomy-danger-row">
+        <div>
+          <div class="anatomy-danger-zone__title">Delete this project</div>
+          <div class="anatomy-danger-zone__text">Permanently remove it and its media. This cannot be undone.</div>
+        </div>
+        <button mat-stroked-button class="anatomy-danger-text">
+          <mat-icon class="icon-sm">delete</mat-icon> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

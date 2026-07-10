@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -16,7 +15,7 @@ import { AdminSkill } from '../skill.types';
 @Component({
   selector: 'console-skill-detail-card',
   standalone: true,
-  imports: [DatePipe, MatChipsModule, MatIconModule, MatTooltipModule, EnumLabelPipe],
+  imports: [MatChipsModule, MatIconModule, MatTooltipModule, EnumLabelPipe],
   templateUrl: './skill.detail-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

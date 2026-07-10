@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmDialogComponent,
@@ -18,7 +19,7 @@ import { ContactMessageDetail } from '../message.types';
 @Component({
   selector: 'console-message-detail',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, SpinnerOverlay, DatePipe],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, SpinnerOverlay, DatePipe],
   templateUrl: './message.detail.html',
   styleUrl: './message.detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,7 +40,7 @@ export default class MessageDetail implements OnInit {
     if (id) this.loadMessage(id);
   }
 
-  goBack(): void {
+  private goBack(): void {
     this.router.navigate(['/messages']);
   }
 

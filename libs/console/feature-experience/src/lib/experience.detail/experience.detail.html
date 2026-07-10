@@ -1,21 +1,30 @@
 <div class="detail-page">
-  <div class="detail-header">
-    <button mat-icon-button (click)="goBack()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="text-page-title ml-2">Experience Detail</h1>
-  </div>
-
-  <div class="detail-content relative">
-    <console-spinner-overlay [loading]="loading()" />
-
-    @if (experience(); as exp) {
-      <!-- Action bar -->
-      <div class="detail-actions">
-        <button mat-stroked-button (click)="openEditDialog()">
+  @if (experience(); as exp) {
+    <!-- Header: back + entity name + status badge, actions (full) on the right. -->
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/experiences" aria-label="Back to experiences">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ exp.position.en }} at {{ exp.companyName }}</h1>
+          @if (exp.deletedAt) {
+            <span class="console-badge console-badge--danger">Deleted</span>
+          }
+        </div>
+        <div class="detail-meta">
+          <span>Created {{ exp.createdAt | date: 'medium' }}</span>
+          <span>Updated {{ exp.updatedAt | date: 'medium' }}</span>
+          @if (exp.deletedAt) {
+            <span class="text-red-400">Deleted {{ exp.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+      <div class="console-page-header__actions">
+        <a mat-flat-button color="primary" routerLink="./edit">
           <mat-icon class="icon-sm">edit</mat-icon>
           Edit
-        </button>
+        </a>
         @if (exp.deletedAt) {
           <button mat-stroked-button (click)="confirmRestore()">
             <mat-icon class="icon-sm">restore_from_trash</mat-icon>
@@ -28,204 +37,195 @@
           </button>
         }
       </div>
+    </div>
 
-      <div class="detail-card mt-4">
-        <!-- Company -->
-        <div class="detail-section">
-          <h3 class="detail-section__title">Company</h3>
+    <div class="detail-card mt-4">
+      <!-- Company -->
+      <div class="detail-section">
+        <h3 class="detail-section__title">Company</h3>
 
-          <div class="detail-field">
-            <span class="detail-field__label">Slug</span>
-            <span class="detail-field__value font-mono text-sm">{{ exp.slug }}</span>
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Company</span>
-            <span class="detail-field__value font-medium">
-              <div class="flex items-center gap-2">
-                @if (exp.companyLogoUrl) {
-                  <img [src]="exp.companyLogoUrl" [alt]="exp.companyName" class="h-6 w-6 rounded object-contain" />
-                }
-                {{ exp.companyName }}
-              </div>
-            </span>
-          </div>
-          @if (exp.companyUrl) {
-            <div class="detail-field">
-              <span class="detail-field__label">Website</span>
-              <a
-                class="detail-field__value text-primary hover:underline"
-                [href]="exp.companyUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ exp.companyUrl }}
-              </a>
-            </div>
-          }
+        <div class="detail-field">
+          <span class="detail-field__label">Slug</span>
+          <span class="detail-field__value font-mono text-sm">{{ exp.slug }}</span>
         </div>
-
-        <!-- Role -->
-        <div class="detail-section">
-          <h3 class="detail-section__title">Role</h3>
-
-          <div class="detail-field">
-            <span class="detail-field__label">Position (EN)</span>
-            <span class="detail-field__value">{{ exp.position.en }}</span>
-          </div>
-          @if (exp.position.vi) {
-            <div class="detail-field">
-              <span class="detail-field__label">Position (VI)</span>
-              <span class="detail-field__value">{{ exp.position.vi }}</span>
+        <div class="detail-field">
+          <span class="detail-field__label">Company</span>
+          <span class="detail-field__value font-medium">
+            <div class="flex items-center gap-2">
+              @if (exp.companyLogoUrl) {
+                <img [src]="exp.companyLogoUrl" [alt]="exp.companyName" class="h-6 w-6 rounded object-contain" />
+              }
+              {{ exp.companyName }}
             </div>
-          }
-          <div class="detail-field">
-            <span class="detail-field__label">Employment Type</span>
-            <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ exp.employmentType | enumLabel: employmentTypeLabels }}</mat-chip>
-            </span>
-          </div>
-          @if (exp.teamRole) {
-            <div class="detail-field">
-              <span class="detail-field__label">Team Role</span>
-              <span class="detail-field__value">{{ exp.teamRole.en }}</span>
-            </div>
-          }
-          @if (exp.descriptionHtml?.en || exp.descriptionHtml?.vi) {
-            <div class="detail-field">
-              <span class="detail-field__label">Description</span>
-              <div class="detail-field__value space-y-2">
-                @if (exp.descriptionHtml?.en) {
-                  <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.en" />
-                }
-                @if (exp.descriptionHtml?.vi) {
-                  <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.vi" />
-                }
-              </div>
-            </div>
-          }
+          </span>
         </div>
+        @if (exp.companyUrl) {
+          <div class="detail-field">
+            <span class="detail-field__label">Website</span>
+            <a
+              class="detail-field__value text-primary hover:underline"
+              [href]="exp.companyUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ exp.companyUrl }}
+            </a>
+          </div>
+        }
+      </div>
 
-        <!-- Dates & Location -->
-        <div class="detail-section">
-          <h3 class="detail-section__title">Dates & Location</h3>
+      <!-- Role (position EN lives in the page header title) -->
+      <div class="detail-section">
+        <h3 class="detail-section__title">Role</h3>
 
+        @if (exp.position.vi) {
           <div class="detail-field">
-            <span class="detail-field__label">Period</span>
-            <span class="detail-field__value">{{ exp | dateRange }}</span>
+            <span class="detail-field__label">Position (VI)</span>
+            <span class="detail-field__value">{{ exp.position.vi }}</span>
           </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Location Type</span>
-            <span class="detail-field__value">
-              <mat-chip class="chip-sm">{{ exp.locationType | enumLabel: locationTypeLabels }}</mat-chip>
-            </span>
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Location</span>
-            <span class="detail-field__value">{{ formattedLocation() }}</span>
-          </div>
+        }
+        <div class="detail-field">
+          <span class="detail-field__label">Employment Type</span>
+          <span class="detail-field__value">
+            <mat-chip class="chip-sm">{{ exp.employmentType | enumLabel: employmentTypeLabels }}</mat-chip>
+          </span>
         </div>
-
-        <!-- Skills -->
-        @if (exp.skills.length > 0) {
-          <div class="detail-section">
-            <h3 class="detail-section__title">Skills</h3>
-            <div class="flex flex-wrap gap-1">
-              @for (skill of exp.skills; track skill.id) {
-                <mat-chip class="chip-sm">{{ skill.name.en || skill.slug }}</mat-chip>
+        @if (exp.teamRole) {
+          <div class="detail-field">
+            <span class="detail-field__label">Team Role</span>
+            <span class="detail-field__value">{{ exp.teamRole.en }}</span>
+          </div>
+        }
+        @if (exp.descriptionHtml?.en || exp.descriptionHtml?.vi) {
+          <div class="detail-field">
+            <span class="detail-field__label">Description</span>
+            <div class="detail-field__value space-y-2">
+              @if (exp.descriptionHtml?.en) {
+                <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.en" />
+              }
+              @if (exp.descriptionHtml?.vi) {
+                <rte-render-html class="block text-sm" [html]="exp.descriptionHtml!.vi" />
               }
             </div>
           </div>
         }
+      </div>
 
-        <!-- Responsibilities -->
-        @if (exp.responsibilitiesHtml?.en || exp.responsibilitiesHtml?.vi) {
-          <div class="detail-section">
-            <h3 class="detail-section__title">Responsibilities</h3>
+      <!-- Dates & Location -->
+      <div class="detail-section">
+        <h3 class="detail-section__title">Dates & Location</h3>
 
-            @if (exp.responsibilitiesHtml?.en) {
-              <p class="text-xs font-medium text-text-muted mb-2">English</p>
-              <rte-render-html class="block text-sm mb-4" [html]="exp.responsibilitiesHtml!.en" />
-            }
-            @if (exp.responsibilitiesHtml?.vi) {
-              <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
-              <rte-render-html class="block text-sm" [html]="exp.responsibilitiesHtml!.vi" />
-            }
-          </div>
-        }
-
-        <!-- Highlights -->
-        @if (exp.highlightsHtml?.en || exp.highlightsHtml?.vi) {
-          <div class="detail-section">
-            <h3 class="detail-section__title">Highlights</h3>
-
-            @if (exp.highlightsHtml?.en) {
-              <p class="text-xs font-medium text-text-muted mb-2">English</p>
-              <rte-render-html class="block text-sm mb-4" [html]="exp.highlightsHtml!.en" />
-            }
-            @if (exp.highlightsHtml?.vi) {
-              <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
-              <rte-render-html class="block text-sm" [html]="exp.highlightsHtml!.vi" />
-            }
-          </div>
-        }
-
-        <!-- Links -->
-        @if (exp.links.length > 0) {
-          <div class="detail-section">
-            <h3 class="detail-section__title">Links</h3>
-            <ul class="list-disc pl-5 text-sm">
-              @for (link of exp.links; track $index) {
-                <li class="mb-1">
-                  <a [href]="link.url" target="_blank" rel="noopener" class="text-link hover:underline">
-                    {{ link.label }}
-                  </a>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-        <!-- Context -->
-        @if (exp.clientName || exp.domain || exp.teamSizeMin || exp.teamSizeMax) {
-          <div class="detail-section">
-            <h3 class="detail-section__title">Context</h3>
-
-            @if (exp.clientName) {
-              <div class="detail-field">
-                <span class="detail-field__label">Client</span>
-                <span class="detail-field__value">{{ exp.clientName }}</span>
-              </div>
-            }
-            @if (exp.domain) {
-              <div class="detail-field">
-                <span class="detail-field__label">Domain</span>
-                <span class="detail-field__value">{{ exp.domain }}</span>
-              </div>
-            }
-            @if (exp.teamSizeMin || exp.teamSizeMax) {
-              <div class="detail-field">
-                <span class="detail-field__label">Team Size</span>
-                <span class="detail-field__value">
-                  @if (exp.teamSizeMin && exp.teamSizeMax && exp.teamSizeMin !== exp.teamSizeMax) {
-                    {{ exp.teamSizeMin }}–{{ exp.teamSizeMax }}
-                  } @else {
-                    {{ exp.teamSizeMin ?? exp.teamSizeMax }}
-                  }
-                </span>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Timestamps -->
-        <div class="detail-timestamps">
-          <span>Created: {{ exp.createdAt | date: 'medium' }}</span>
-          <span>Updated: {{ exp.updatedAt | date: 'medium' }}</span>
-          @if (exp.deletedAt) {
-            <span class="text-red-400">Deleted: {{ exp.deletedAt | date: 'medium' }}</span>
-          }
+        <div class="detail-field">
+          <span class="detail-field__label">Period</span>
+          <span class="detail-field__value">{{ exp | dateRange }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-field__label">Location Type</span>
+          <span class="detail-field__value">
+            <mat-chip class="chip-sm">{{ exp.locationType | enumLabel: locationTypeLabels }}</mat-chip>
+          </span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-field__label">Location</span>
+          <span class="detail-field__value">{{ formattedLocation() }}</span>
         </div>
       </div>
-    }
-  </div>
+
+      <!-- Skills -->
+      @if (exp.skills.length > 0) {
+        <div class="detail-section">
+          <h3 class="detail-section__title">Skills</h3>
+          <div class="flex flex-wrap gap-1">
+            @for (skill of exp.skills; track skill.id) {
+              <mat-chip class="chip-sm">{{ skill.name.en || skill.slug }}</mat-chip>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Responsibilities -->
+      @if (exp.responsibilitiesHtml?.en || exp.responsibilitiesHtml?.vi) {
+        <div class="detail-section">
+          <h3 class="detail-section__title">Responsibilities</h3>
+
+          @if (exp.responsibilitiesHtml?.en) {
+            <p class="text-xs font-medium text-text-muted mb-2">English</p>
+            <rte-render-html class="block text-sm mb-4" [html]="exp.responsibilitiesHtml!.en" />
+          }
+          @if (exp.responsibilitiesHtml?.vi) {
+            <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
+            <rte-render-html class="block text-sm" [html]="exp.responsibilitiesHtml!.vi" />
+          }
+        </div>
+      }
+
+      <!-- Highlights -->
+      @if (exp.highlightsHtml?.en || exp.highlightsHtml?.vi) {
+        <div class="detail-section">
+          <h3 class="detail-section__title">Highlights</h3>
+
+          @if (exp.highlightsHtml?.en) {
+            <p class="text-xs font-medium text-text-muted mb-2">English</p>
+            <rte-render-html class="block text-sm mb-4" [html]="exp.highlightsHtml!.en" />
+          }
+          @if (exp.highlightsHtml?.vi) {
+            <p class="text-xs font-medium text-text-muted mb-2">Vietnamese</p>
+            <rte-render-html class="block text-sm" [html]="exp.highlightsHtml!.vi" />
+          }
+        </div>
+      }
+
+      <!-- Links -->
+      @if (exp.links.length > 0) {
+        <div class="detail-section">
+          <h3 class="detail-section__title">Links</h3>
+          <ul class="list-disc pl-5 text-sm">
+            @for (link of exp.links; track $index) {
+              <li class="mb-1">
+                <a [href]="link.url" target="_blank" rel="noopener" class="text-link hover:underline">
+                  {{ link.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <!-- Context -->
+      @if (exp.clientName || exp.domain || exp.teamSizeMin || exp.teamSizeMax) {
+        <div class="detail-section">
+          <h3 class="detail-section__title">Context</h3>
+
+          @if (exp.clientName) {
+            <div class="detail-field">
+              <span class="detail-field__label">Client</span>
+              <span class="detail-field__value">{{ exp.clientName }}</span>
+            </div>
+          }
+          @if (exp.domain) {
+            <div class="detail-field">
+              <span class="detail-field__label">Domain</span>
+              <span class="detail-field__value">{{ exp.domain }}</span>
+            </div>
+          }
+          @if (exp.teamSizeMin || exp.teamSizeMax) {
+            <div class="detail-field">
+              <span class="detail-field__label">Team Size</span>
+              <span class="detail-field__value">
+                @if (exp.teamSizeMin && exp.teamSizeMax && exp.teamSizeMin !== exp.teamSizeMax) {
+                  {{ exp.teamSizeMin }}–{{ exp.teamSizeMax }}
+                } @else {
+                  {{ exp.teamSizeMin ?? exp.teamSizeMax }}
+                }
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="detail-content relative">
+      <console-spinner-overlay [loading]="loading()" />
+    </div>
+  }
 </div>

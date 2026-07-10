@@ -1,24 +1,10 @@
 @if (skill(); as s) {
   <div class="detail-card">
-    <!-- Identity -->
+    <!-- Identity (name + status live in the page header) -->
     <div class="detail-section">
-      <div class="flex items-center gap-3 mb-3">
-        @if (s.iconUrl) {
-          <img [src]="s.iconUrl" [alt]="s.name" class="w-10 h-10 object-contain rounded" />
-        }
-        <h2 class="text-section-heading m-0">{{ s.name }}</h2>
-        @if (s.isFeatured) {
-          <mat-icon class="icon-sm text-yellow-500" matTooltip="Featured">star</mat-icon>
-        }
-      </div>
-
       <div class="flex flex-wrap items-center gap-2 mb-3">
-        @if (s.deletedAt) {
-          <span
-            class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
-          >
-            Deleted
-          </span>
+        @if (s.iconUrl) {
+          <img [src]="s.iconUrl" [alt]="s.name" class="w-8 h-8 object-contain rounded" />
         }
         <mat-chip class="chip-sm">{{ s.category | enumLabel: skillCategoryLabels }}</mat-chip>
         <mat-chip class="chip-sm">{{ s.tier | enumLabel: skillTierLabels }}</mat-chip>
@@ -101,14 +87,6 @@
         <span class="detail-field__label">Featured</span>
         <span class="detail-field__value">{{ s.isFeatured ? 'Yes' : 'No' }}</span>
       </div>
-    </div>
-
-    <div class="detail-timestamps">
-      <span>Created: {{ s.createdAt | date: 'medium' }}</span>
-      <span>Updated: {{ s.updatedAt | date: 'medium' }}</span>
-      @if (s.deletedAt) {
-        <span class="text-red-400">Deleted: {{ s.deletedAt | date: 'medium' }}</span>
-      }
     </div>
   </div>
 }

@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -25,11 +24,11 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
   selector: 'console-experience-detail',
   standalone: true,
   imports: [
+    RouterLink,
     DatePipe,
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
-    MatTooltipModule,
     SpinnerOverlay,
     DateRangePipe,
     EnumLabelPipe,
@@ -66,12 +65,6 @@ export default class ExperienceDetail implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/experiences']);
-  }
-
-  openEditDialog(): void {
-    const exp = this.experience();
-    if (!exp) return;
-    this.router.navigate(['/experiences', exp.id, 'edit']);
   }
 
   confirmDelete(): void {

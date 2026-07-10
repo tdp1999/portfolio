@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
@@ -28,6 +29,7 @@ import { AdminBlogPostDetail, BlogStatus } from '../blog.types';
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
+    MatMenuModule,
     MatTooltipModule,
     SpinnerOverlay,
     EnumLabelPipe,
@@ -69,15 +71,13 @@ export default class BlogPostDetail implements OnInit {
   statusBadgeClass(status: BlogStatus): string {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+        return 'console-badge--success';
       case 'DRAFT':
-        return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
+        return 'console-badge--warn';
       case 'PRIVATE':
-        return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
       case 'UNLISTED':
-        return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'console-badge--muted';
     }
   }
 

@@ -12,7 +12,7 @@
   }
 
   &__content {
-    max-width: 720px;
+    max-width: var(--console-reading-max);
   }
 
   &__server-error {

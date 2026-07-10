@@ -1,0 +1,40 @@
+/* ─── Badge / status pill ───────────────────────────────────────────────────
+ * Shared inline pill for status (list tables, detail headers) and counts
+ * (page-header title row). Use instead of ad-hoc Tailwind pills so every badge
+ * reads the same. Pair a modifier with the base:
+ *   <span class="console-badge console-badge--success">Published</span>
+ *   <span class="console-badge console-badge--muted">12</span>   // count
+ */
+.console-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+
+  &--success {
+    background: color-mix(in srgb, var(--color-success, #16a34a) 15%, transparent);
+    color: var(--color-success, #16a34a);
+  }
+
+  &--warn {
+    background: color-mix(in srgb, #d97706 15%, transparent);
+    color: #b45309;
+  }
+
+  &--danger {
+    background: color-mix(in srgb, var(--color-error, #dc2626) 15%, transparent);
+    color: var(--color-error, #dc2626);
+  }
+
+  &--muted {
+    background: var(--color-surface-alt);
+    color: var(--color-text-muted);
+  }
+}

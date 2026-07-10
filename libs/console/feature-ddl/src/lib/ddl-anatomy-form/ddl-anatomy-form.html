@@ -1,0 +1,125 @@
+<!-- FORM reference — built on the shared .console-page (boxed, centred) + console-section-tabs
+     (rail + section cards) + console-sticky-save-bar. -->
+<div class="console-page flex flex-col gap-4">
+  <!-- Header: back + title + lede -->
+  <div class="console-page-header">
+    <a mat-icon-button routerLink="/ddl" aria-label="Back"><mat-icon>arrow_back</mat-icon></a>
+    <div class="console-page-header__titles">
+      <h1 class="text-page-title">Edit Project</h1>
+      <p class="console-page-header__subtitle">Realestatedoc Console · changes save as one block.</p>
+    </div>
+  </div>
+
+  <console-section-tabs [sections]="rail" [(activeId)]="activeId" [(showAll)]="showAll">
+    <form [formGroup]="form" class="flex flex-col gap-y-4">
+      <!-- Basics (required field + inline validation → rail error icon) -->
+      <div [hidden]="!showAll() && activeId() !== 'section-basics'">
+        <console-section-card
+          id="section-basics"
+          bucket="PUBLIC"
+          title="Basics"
+          description="Title and one-liner."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Title</mat-label>
+              <input matInput formControlName="title" required placeholder="e.g. Realestatedoc Console" />
+              @if (form.controls.title.touched && form.controls.title.invalid) {
+                <mat-error>Title is required.</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>One-liner</mat-label>
+              <input matInput formControlName="oneLiner" placeholder="Short summary" />
+            </mat-form-field>
+          </div>
+        </console-section-card>
+      </div>
+
+      <!-- Content -->
+      <div [hidden]="!showAll() && activeId() !== 'section-content'">
+        <console-section-card
+          id="section-content"
+          bucket="PUBLIC"
+          title="Content"
+          description="Long-form description."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Description</mat-label>
+              <textarea matInput rows="5" formControlName="description"></textarea>
+            </mat-form-field>
+          </div>
+        </console-section-card>
+      </div>
+
+      <!-- Media -->
+      <div [hidden]="!showAll() && activeId() !== 'section-media'">
+        <console-section-card
+          id="section-media"
+          bucket="PUBLIC"
+          title="Media"
+          description="Screenshots and cover image."
+          saveMode="atomic"
+        >
+          <p class="text-text-muted text-sm">Media picker / upload zone goes here.</p>
+        </console-section-card>
+      </div>
+
+      <!-- SEO -->
+      <div [hidden]="!showAll() && activeId() !== 'section-seo'">
+        <console-section-card
+          id="section-seo"
+          bucket="PUBLIC"
+          title="SEO / OG"
+          description="Search + social preview."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Meta title</mat-label>
+              <input matInput formControlName="metaTitle" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Meta description</mat-label>
+              <textarea matInput rows="2" formControlName="metaDescription"></textarea>
+            </mat-form-field>
+          </div>
+        </console-section-card>
+      </div>
+
+      <!-- Settings + danger zone -->
+      <div [hidden]="!showAll() && activeId() !== 'section-settings'">
+        <console-section-card
+          id="section-settings"
+          bucket="INTERNAL"
+          title="Settings"
+          description="Flags, ordering, and destructive actions."
+          saveMode="atomic"
+        >
+          <div class="form-stack">
+            <mat-checkbox formControlName="featured">Featured</mat-checkbox>
+            <mat-form-field appearance="outline" class="w-40">
+              <mat-label>Display order</mat-label>
+              <input matInput type="number" formControlName="displayOrder" />
+            </mat-form-field>
+
+            <div class="anatomy-danger-zone">
+              <div>
+                <div class="anatomy-danger-zone__title">Delete this project</div>
+                <div class="anatomy-danger-zone__text">Permanently remove it and its media. This cannot be undone.</div>
+              </div>
+              <button mat-stroked-button type="button" class="anatomy-danger-text">
+                <mat-icon class="icon-sm">delete</mat-icon> Delete
+              </button>
+            </div>
+          </div>
+        </console-section-card>
+      </div>
+    </form>
+  </console-section-tabs>
+
+  <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="save()" (discard)="discard()" />
+</div>

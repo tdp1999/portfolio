@@ -1,100 +1,102 @@
 <div class="detail-page">
-  <div class="detail-header">
-    <button mat-icon-button (click)="goBack()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="text-page-title ml-2">Message Detail</h1>
-  </div>
-
-  <div class="detail-content relative">
-    <console-spinner-overlay [loading]="loading()" />
-
-    @if (message(); as msg) {
-      <!-- Action bar -->
-      <div class="action-bar">
-        <button mat-stroked-button (click)="markAsUnread()">
-          <mat-icon class="icon-sm">mark_email_unread</mat-icon>
-          Mark Unread
-        </button>
-        <button mat-stroked-button (click)="reply()">
+  @if (message(); as msg) {
+    <!-- Header: back + sender name + status badge, actions (Reply full, rest overflow) on the right. -->
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/messages" aria-label="Back to messages">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ msg.name }}</h1>
+          @if (msg.deletedAt) {
+            <span class="console-badge console-badge--danger">Deleted</span>
+          } @else if (msg.isSpam) {
+            <span class="console-badge console-badge--muted">Spam</span>
+          } @else if (msg.status === 'UNREAD') {
+            <span class="console-badge console-badge--warn">Unread</span>
+          } @else if (msg.status === 'REPLIED') {
+            <span class="console-badge console-badge--success">Replied</span>
+          } @else if (msg.status === 'ARCHIVED') {
+            <span class="console-badge console-badge--muted">Archived</span>
+          }
+        </div>
+        <div class="detail-meta">
+          <span>Received {{ msg.createdAt | date: 'medium' }}</span>
+          @if (msg.readAt) {
+            <span>Read {{ msg.readAt | date: 'medium' }}</span>
+          }
+          @if (msg.repliedAt) {
+            <span>Replied {{ msg.repliedAt | date: 'medium' }}</span>
+          }
+          @if (msg.archivedAt) {
+            <span>Archived {{ msg.archivedAt | date: 'medium' }}</span>
+          }
+          @if (msg.deletedAt) {
+            <span class="text-red-400">Deleted {{ msg.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+      <div class="console-page-header__actions">
+        <button mat-flat-button color="primary" (click)="reply()">
           <mat-icon class="icon-sm">reply</mat-icon>
           Reply
         </button>
-        <button mat-stroked-button (click)="archive()">
-          <mat-icon class="icon-sm">archive</mat-icon>
-          Archive
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More actions">
+          <mat-icon>more_vert</mat-icon>
         </button>
-        @if (msg.deletedAt) {
-          <button mat-stroked-button (click)="restore()">
-            <mat-icon class="icon-sm">restore_from_trash</mat-icon>
-            Restore
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="markAsUnread()">
+            <mat-icon>mark_email_unread</mat-icon>
+            Mark Unread
           </button>
-        }
-        <button mat-stroked-button color="warn" (click)="confirmDelete()">
-          <mat-icon class="icon-sm">delete</mat-icon>
-          Delete
-        </button>
-      </div>
-
-      <!-- Message card -->
-      <div class="message-card">
-        <div class="message-meta">
-          <div class="meta-row">
-            <span class="meta-label">From</span>
-            <span class="meta-value">{{ msg.name }} &lt;{{ msg.email }}&gt;</span>
-          </div>
-          @if (msg.subject) {
-            <div class="meta-row">
-              <span class="meta-label">Subject</span>
-              <span class="meta-value font-semibold">{{ msg.subject }}</span>
-            </div>
-          }
-          <div class="meta-row">
-            <span class="meta-label">Purpose</span>
-            <span class="meta-value">{{ msg.purpose }}</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-label">Locale</span>
-            <span class="meta-value">{{ msg.locale }}</span>
-          </div>
-        </div>
-
-        <div class="message-body">
-          {{ msg.message }}
-        </div>
-
-        <!-- Timestamps -->
-        <div class="message-timestamps">
-          <div class="ts-row">
-            <span class="ts-label">Received</span>
-            <span>{{ msg.createdAt | date: 'medium' }}</span>
-          </div>
-          @if (msg.readAt) {
-            <div class="ts-row">
-              <span class="ts-label">Read</span>
-              <span>{{ msg.readAt | date: 'medium' }}</span>
-            </div>
-          }
-          @if (msg.repliedAt) {
-            <div class="ts-row">
-              <span class="ts-label">Replied</span>
-              <span>{{ msg.repliedAt | date: 'medium' }}</span>
-            </div>
-          }
-          @if (msg.archivedAt) {
-            <div class="ts-row">
-              <span class="ts-label">Archived</span>
-              <span>{{ msg.archivedAt | date: 'medium' }}</span>
-            </div>
-          }
+          <button mat-menu-item (click)="archive()">
+            <mat-icon>archive</mat-icon>
+            Archive
+          </button>
           @if (msg.deletedAt) {
-            <div class="ts-row text-red-400">
-              <span class="ts-label">Deleted</span>
-              <span>{{ msg.deletedAt | date: 'medium' }}</span>
-            </div>
+            <button mat-menu-item (click)="restore()">
+              <mat-icon>restore_from_trash</mat-icon>
+              Restore
+            </button>
           }
+          <button mat-menu-item class="text-red-400" (click)="confirmDelete()">
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <!-- Message card -->
+    <div class="message-card">
+      <div class="message-meta">
+        <div class="meta-row">
+          <span class="meta-label">Email</span>
+          <span class="meta-value">{{ msg.email }}</span>
+        </div>
+        @if (msg.subject) {
+          <div class="meta-row">
+            <span class="meta-label">Subject</span>
+            <span class="meta-value font-semibold">{{ msg.subject }}</span>
+          </div>
+        }
+        <div class="meta-row">
+          <span class="meta-label">Purpose</span>
+          <span class="meta-value">{{ msg.purpose }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Locale</span>
+          <span class="meta-value">{{ msg.locale }}</span>
         </div>
       </div>
-    }
-  </div>
+
+      <div class="message-body">
+        {{ msg.message }}
+      </div>
+    </div>
+  } @else {
+    <div class="detail-content relative">
+      <console-spinner-overlay [loading]="loading()" />
+    </div>
+  }
 </div>

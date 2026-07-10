@@ -1,17 +1,27 @@
 <div class="detail-page">
-  <div class="detail-header">
-    <a mat-icon-button routerLink="/tags" aria-label="Back to tags">
-      <mat-icon>arrow_back</mat-icon>
-    </a>
-    <h1 class="text-page-title ml-2">Tag</h1>
-  </div>
-
-  <div class="detail-content relative">
-    <console-spinner-overlay [loading]="loading()" />
-
-    @if (tag(); as t) {
-      <div class="detail-actions">
-        <a mat-stroked-button routerLink="./edit">
+  @if (tag(); as t) {
+    <!-- Header: back + entity name + status badge, actions (full) on the right. -->
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/tags" aria-label="Back to tags">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ t.name }}</h1>
+          @if (t.deletedAt) {
+            <span class="console-badge console-badge--danger">Deleted</span>
+          }
+        </div>
+        <div class="detail-meta">
+          <span>Created {{ t.createdAt | date: 'medium' }}</span>
+          <span>Updated {{ t.updatedAt | date: 'medium' }}</span>
+          @if (t.deletedAt) {
+            <span class="text-red-400">Deleted {{ t.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+      <div class="console-page-header__actions">
+        <a mat-flat-button color="primary" routerLink="./edit">
           <mat-icon class="icon-sm">edit</mat-icon>
           Edit
         </a>
@@ -22,33 +32,19 @@
           </button>
         }
       </div>
+    </div>
 
-      <div class="detail-card mt-4">
-        <div class="detail-section">
-          <h2 class="text-section-heading mb-3">{{ t.name }}</h2>
-
-          @if (t.deletedAt) {
-            <span
-              class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900 dark:text-red-300"
-            >
-              Deleted
-            </span>
-          }
-
-          <div class="detail-field">
-            <span class="detail-field__label">Slug</span>
-            <span class="detail-field__value font-mono text-sm">{{ t.slug }}</span>
-          </div>
-        </div>
-
-        <div class="detail-timestamps">
-          <span>Created: {{ t.createdAt | date: 'medium' }}</span>
-          <span>Updated: {{ t.updatedAt | date: 'medium' }}</span>
-          @if (t.deletedAt) {
-            <span class="text-red-400">Deleted: {{ t.deletedAt | date: 'medium' }}</span>
-          }
+    <div class="detail-card mt-4">
+      <div class="detail-section">
+        <div class="detail-field">
+          <span class="detail-field__label">Slug</span>
+          <span class="detail-field__value font-mono text-sm">{{ t.slug }}</span>
         </div>
       </div>
-    }
-  </div>
+    </div>
+  } @else {
+    <div class="detail-content relative">
+      <console-spinner-overlay [loading]="loading()" />
+    </div>
+  }
 </div>

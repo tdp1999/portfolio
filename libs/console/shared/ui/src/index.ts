@@ -23,6 +23,8 @@ export type { ConfirmDialogData } from './components/confirm-dialog/confirm-dial
 export { ErrorMessage } from './components/error-message/error-message';
 export { ScrollspyRail } from './components/scrollspy-rail/scrollspy-rail';
 export type { SectionDescriptor, SectionStatus } from './components/scrollspy-rail/scrollspy-rail.types';
+export { SectionTabsLayout } from './components/section-tabs/section-tabs';
+export type { SectionTabGroup } from './components/section-tabs/section-tabs.types';
 export { SectionCard } from './components/section-card/section-card';
 export { FormSnapshotDirective } from './components/section-card/form-snapshot.directive';
 export { LongFormLayout } from './components/long-form-layout/long-form-layout';

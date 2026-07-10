@@ -1,11 +1,16 @@
 /* ─── Detail page template ──────────────────────────────────────────────── */
 
-/* Page wrapper */
+/* Page wrapper — capped reading column, boxed + centred (see _page.scss standard).
+   No `height: 100%`: detail content must flow at its natural height so the shell
+   scroll container (.console-content) can scroll it. (Only list pages fill height,
+   for the sticky paginator.) */
 .detail-page {
   display: flex;
   flex-direction: column;
-  height: 100%;
   gap: 16px;
+  max-width: var(--console-reading-max);
+  width: 100%;
+  margin-inline: auto;
 }
 
 /* Header: back button + title + action buttons */
@@ -73,6 +78,16 @@
 }
 
 .detail-field__value--empty {
+  color: var(--color-text-muted);
+}
+
+/* Meta strip under the page title (ID / created / updated). Muted, inline, wraps. */
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
+  font-size: 0.8125rem;
   color: var(--color-text-muted);
 }
 

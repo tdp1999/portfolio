@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,7 +18,7 @@ import { AdminAboutFailure } from '../about-failure.types';
 @Component({
   selector: 'console-failure-detail',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, SpinnerOverlay],
+  imports: [DatePipe, RouterLink, MatButtonModule, MatIconModule, SpinnerOverlay],
   templateUrl: './failure.detail.html',
   styleUrl: './failure.detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

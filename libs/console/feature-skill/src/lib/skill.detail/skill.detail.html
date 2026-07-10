@@ -1,17 +1,29 @@
 <div class="detail-page">
-  <div class="detail-header">
-    <a mat-icon-button routerLink="/skills" aria-label="Back to skills">
-      <mat-icon>arrow_back</mat-icon>
-    </a>
-    <h1 class="text-page-title ml-2">Skill</h1>
-  </div>
-
-  <div class="detail-content relative">
-    <console-spinner-overlay [loading]="loading()" />
-
-    @if (skill(); as s) {
-      <div class="detail-actions">
-        <a mat-stroked-button routerLink="./edit">
+  @if (skill(); as s) {
+    <!-- Header: back + entity name + status badge, actions (full) on the right. -->
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/skills" aria-label="Back to skills">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ s.name }}</h1>
+          @if (s.deletedAt) {
+            <span class="console-badge console-badge--danger">Deleted</span>
+          } @else if (s.isFeatured) {
+            <span class="console-badge console-badge--warn">Featured</span>
+          }
+        </div>
+        <div class="detail-meta">
+          <span>Created {{ s.createdAt | date: 'medium' }}</span>
+          <span>Updated {{ s.updatedAt | date: 'medium' }}</span>
+          @if (s.deletedAt) {
+            <span class="text-red-400">Deleted {{ s.deletedAt | date: 'medium' }}</span>
+          }
+        </div>
+      </div>
+      <div class="console-page-header__actions">
+        <a mat-flat-button color="primary" routerLink="./edit">
           <mat-icon class="icon-sm">edit</mat-icon>
           Edit
         </a>
@@ -22,14 +34,17 @@
           </button>
         }
       </div>
+    </div>
 
-      <console-skill-detail-card
-        class="mt-4 block"
-        [skill]="s"
-        [parent]="parent()"
-        [children]="children()"
-        (skillSelect)="goToSkill($event)"
-      />
-    }
-  </div>
+    <console-skill-detail-card
+      [skill]="s"
+      [parent]="parent()"
+      [children]="children()"
+      (skillSelect)="goToSkill($event)"
+    />
+  } @else {
+    <div class="detail-content relative">
+      <console-spinner-overlay [loading]="loading()" />
+    </div>
+  }
 </div>

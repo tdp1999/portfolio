@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -23,11 +22,11 @@ import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
   selector: 'console-project-detail',
   standalone: true,
   imports: [
+    RouterLink,
     DatePipe,
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
-    MatTooltipModule,
     SpinnerOverlay,
     DateRangePipe,
     TranslatablePipe,
@@ -58,14 +57,8 @@ export default class ProjectDetail implements OnInit {
     }
   }
 
-  goBack(): void {
+  private goBack(): void {
     this.router.navigate(['/projects']);
-  }
-
-  openEditDialog(): void {
-    const p = this.project();
-    if (!p) return;
-    this.router.navigate(['/projects', p.id, 'edit']);
   }
 
   confirmDelete(): void {

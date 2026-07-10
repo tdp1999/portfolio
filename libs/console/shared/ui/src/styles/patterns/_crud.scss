@@ -1,11 +1,15 @@
 /* ─── CRUD page template ─────────────────────────────────────────────────── */
 
-/* Page layout */
+/* Page layout — boxed + centred (see _page.scss standard). Keeps height:100% so
+   the table fills and scrolls naturally with the shell. */
 .crud-page {
   display: flex;
   flex-direction: column;
   height: 100%;
   gap: 16px;
+  max-width: var(--console-page-max);
+  width: 100%;
+  margin-inline: auto;
 }
 
 /* Page header: title (left) + action button (right) */
@@ -101,12 +105,32 @@
   }
 }
 
-/* Pagination bar — mat-paginator styled as sticky bottom bar */
+/* Pagination bar — mat-paginator styled as sticky bottom bar. When it follows a
+   table container it joins flush into one card (no gap, shared border/radius).
+   The scroll container (.console-content) has 2rem bottom padding (p-8); sticky is
+   constrained to that content box, so a plain `bottom: 0` would pin the bar 2rem
+   short of the viewport and let rows peek beneath it while scrolling. Offset by the
+   padding so the bar stays flush to the scroll bottom (directly above the footer). */
 .crud-pagination {
   position: sticky;
-  bottom: 0;
+  bottom: -2rem;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
+}
+
+/* Flush join: table container + pagination read as a single bordered card. */
+.crud-table-container:has(+ .crud-pagination) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+.crud-table-container + .crud-pagination {
+  margin-top: -16px; /* cancel the .crud-page column gap → flush */
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 /* Compact search field — reusable class for topbar/toolbar search inputs */

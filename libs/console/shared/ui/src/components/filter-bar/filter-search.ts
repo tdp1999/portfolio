@@ -13,7 +13,7 @@ import { FILTER_DEBOUNCE_MS } from '@portfolio/console/shared/util';
   standalone: true,
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule],
   template: `
-    <mat-form-field subscriptSizing="dynamic" class="filter-field min-w-[250px]">
+    <mat-form-field subscriptSizing="dynamic" class="filter-field flex-1 min-w-[300px] max-w-[1200px]">
       <mat-label>{{ label() }}</mat-label>
       <input matInput [ngModel]="value" (ngModelChange)="onValueChange($event)" [placeholder]="placeholder()" />
       <mat-icon matPrefix>search</mat-icon>

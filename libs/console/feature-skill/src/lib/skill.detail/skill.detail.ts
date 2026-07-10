@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +19,7 @@ import { AdminSkill } from '../skill.types';
 @Component({
   selector: 'console-skill-detail',
   standalone: true,
-  imports: [RouterLink, MatButtonModule, MatIconModule, SpinnerOverlay, SkillDetailCard],
+  imports: [RouterLink, DatePipe, MatButtonModule, MatIconModule, SpinnerOverlay, SkillDetailCard],
   templateUrl: './skill.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,0 +1,260 @@
+/* Styles for the DDL page-anatomy references (list / detail / form).
+ * The pages are built on the REAL shared console components/classes (`.crud-page`,
+ * `console-filter-bar`, `.crud-table-container`, `.detail-page`, `.console-page`,
+ * `.console-badge`, `console-section-tabs`, `console-sticky-save-bar`), so they mirror
+ * production. What remains here is only the prototype-specific extras that have no
+ * shared equivalent: the demo-state switcher, the bulk-selection bar, filter chips,
+ * empty/error states, tag cells, timeline/related lists, detail section header/footer
+ * metadata, and the danger-zone treatment. */
+
+:host {
+  display: block;
+}
+
+/* Section header (title + right-aligned metadata / action) and footer (metadata). */
+.detail-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .detail-section__title {
+    margin-bottom: 0;
+  }
+}
+.detail-section__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+}
+.detail-section__footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.anatomy-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Demo state switcher (prototype only) */
+.anatomy-statebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  padding: 6px 10px;
+  border: 1px dashed var(--color-border, #e5e7eb);
+  border-radius: 8px;
+
+  &__btn {
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    background: transparent;
+    cursor: pointer;
+    text-transform: capitalize;
+
+    &--active {
+      background: var(--color-primary, #4f46e5);
+      border-color: var(--color-primary, #4f46e5);
+      color: #fff;
+    }
+  }
+}
+
+/* Bulk-selection contextual bar (replaces the toolbar) */
+.anatomy-bulkbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-primary, #4f46e5) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary, #4f46e5) 25%, transparent);
+
+  &__count {
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+  &__actions {
+    display: flex;
+    gap: 8px;
+    margin-right: auto;
+  }
+}
+
+/* Active filter chips */
+.anatomy-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.anatomy-chip-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 2px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-alt, #f1f5f9);
+  font-size: 0.75rem;
+
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--color-text-muted, #6b7280);
+    padding: 0 4px;
+  }
+}
+.anatomy-clear {
+  border: none;
+  background: transparent;
+  color: var(--color-primary, #4f46e5);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* Tags cell */
+.anatomy-tags {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.anatomy-tag {
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--color-surface-alt, #f1f5f9);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #475569);
+}
+
+.anatomy-col-select {
+  width: 48px;
+}
+
+/* Empty / error / no-match state (inside .crud-table-container) */
+.anatomy-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 56px 24px;
+
+  &__icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+    color: var(--color-text-muted, #94a3b8);
+  }
+  &__title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  &__desc {
+    color: var(--color-text-muted, #6b7280);
+    font-size: 0.8125rem;
+    margin-bottom: 8px;
+  }
+}
+
+.anatomy-danger-text {
+  color: var(--color-error, #dc2626) !important;
+}
+
+/* ── Detail-specific ─────────────────────────────────────────────────────── */
+.anatomy-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.anatomy-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__item {
+    display: flex;
+    gap: 10px;
+    font-size: 0.8125rem;
+  }
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary, #4f46e5);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  &__time {
+    color: var(--color-text-muted, #6b7280);
+  }
+}
+
+.anatomy-related {
+  display: flex;
+  flex-direction: column;
+}
+.anatomy-related__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  font-size: 0.875rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Danger zone as a titled section (detail) */
+.anatomy-danger-card {
+  border-color: color-mix(in srgb, var(--color-error, #dc2626) 40%, transparent);
+}
+.anatomy-danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Danger zone as a boxed callout (form settings section) */
+.anatomy-danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid color-mix(in srgb, var(--color-error, #dc2626) 40%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-error, #dc2626) 5%, transparent);
+
+  &__text {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary, #475569);
+  }
+  &__title {
+    font-weight: 600;
+    color: var(--color-text, #1f2937);
+    margin-bottom: 2px;
+  }
+}

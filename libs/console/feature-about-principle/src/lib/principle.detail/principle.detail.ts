@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -19,7 +18,7 @@ import { AdminAboutPrinciple } from '../about-principle.types';
 @Component({
   selector: 'console-principle-detail',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, SpinnerOverlay],
+  imports: [DatePipe, RouterLink, MatButtonModule, MatIconModule, SpinnerOverlay],
   templateUrl: './principle.detail.html',
   styleUrl: './principle.detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
