@@ -59,39 +59,49 @@ See [`atomic-save.md`](atomic-save.md) for the full atomic-save UX pattern.
 
 ## Project Decision (Console)
 
-**Universal chassis: sectioned cards + sticky scrollspy left rail. No tabs inside a page.**
+**Universal chassis: `console-section-tabs` — vertical-tab section navigation.** A grouped rail
+(desktop) / horizontal scrollable strip (mobile) swaps to show one section card at a time. This
+superseded the earlier scrollspy long-form (all cards stacked in one scroll) once profile grew to
+~10 screens and fields became hard to find. See ADR-024.
 
 Layout:
 ```
 ┌─────────────────────────────────────────────────┐
 │ Page Header — title           [Save bar (atomic)]│
 ├──────────────┬──────────────────────────────────┤
-│ ● Identity   │  [Section card: Identity]       │
-│ ○ Work       │  description-left/form-right    │
-│ ○ Skills     │                                  │
-│ ○ …          │  ──── 32px gap, no rule ────    │
-│              │  [Section card: Work]           │
-│ (sticky)     │                                  │
+│  PROFILE     │  [Section card: Identity]        │
+│ ✓ Identity   │  description-left / form-right    │
+│ ● Work       │                                   │
+│ ○ Skills     │  only the ACTIVE section shows;   │
+│  META        │  others stay mounted + hidden     │
+│ ○ SEO        │                                   │
+│ (sticky rail)│         [ ← Prev  ·  Next → ]     │
 └──────────────┴──────────────────────────────────┘
 ```
 
 ### Rules
-- **Cross-page navigation = routes, not tabs.** Profile / Account / Notifications / Billing are separate routes.
-- **In-page navigation = sticky scrollspy left rail.** Single source of in-page nav.
-- **No 3-column layouts.** Console sidebar may collapse on long-form detail pages to keep visual density low.
+- **Cross-page navigation = routes, not this.** Profile / Account / Notifications / Billing are separate routes.
+- **In-page navigation = `console-section-tabs`.** The rail swaps sections (click-to-show, not scroll-to). Single source of in-page nav.
+- **Sections stay mounted** via `[hidden]` (never `@if`), so unsaved edits + per-section status survive tab switches.
+- **Grouped or flat**: pass `groups` for a labelled rail (e.g. profile: Profile / Landing copy / Meta) or the flat `sections` convenience for one ungrouped list.
+- **Mobile**: the rail collapses to a horizontal scrollable strip below laptop.
+- **Deep-link** via URL fragment (`/profile#section-contact`), reactive to browser back/forward.
 - **Section cards**: each uses [Settings Section pattern](settings-section.md) (description-left / form-right).
-- **Save mechanic chosen by module type** (see decision tree above).
-- **Section status on rail**: dirty / error / saved indicators visible regardless of save mechanic.
+- **Save mechanic chosen by module type** (see decision tree above); per-section card footers or the atomic sticky save bar still apply.
+- **Section status on rail/strip**: untouched / editing / saved / error icons, regardless of save mechanic.
+- **Splitting an atomic BE block**: split into multiple tabs for findability but keep one shared form + one save (see ADR-024, profile Landing Content).
 
 ### Rejected alternatives (with reason)
-- Three-column layout (console sidebar + scrollspy rail + content) — visually crowded
-- Top tabs + scrollspy hybrid — duplicates navigation; tabs better expressed as routes
-- Accordion as primary structure — too click-heavy; 1-line summaries don't carry enough info
+- Scrollspy long-form (all cards stacked, scroll-to) — retired: grew to ~10 screens on profile; fields hard to locate.
+- Horizontal top tabs — 8+ sections with long labels exceed the NN/g 5–7 guideline; would overflow or force scrollable tabs (hidden tabs, worse scanning).
+- Three-column layout (console sidebar + rail + content) — visually crowded.
+- Accordion as primary structure — too click-heavy; 1-line summaries don't carry enough info.
 
 ## Angular Implementation Notes
-- **Scrollspy**: Angular CDK `ScrollDispatcher` + `IntersectionObserver` (no third-party library)
-- **Routing**: cross-page nav uses Angular Router; in-page nav uses fragment links + smooth scroll
-- **Form state**: see save mechanic — per-section uses child FormGroups with isolated dirty state; atomic uses single FormGroup + `CanDeactivate` guard
+- **Chassis**: `console-section-tabs` (`libs/console/shared/ui`) owns the rail/strip/stepper, active-tab state, and fragment deep-link; consumers project section cards gated by `[hidden]="activeId() !== '<id>'"`.
+- **Routing**: cross-page nav uses Angular Router; in-page tab state syncs to the URL fragment (reactive).
+- **Form state**: per-section uses child FormGroups with isolated dirty state; atomic uses a single FormGroup + sticky save bar + `CanDeactivate` guard.
+- **Legacy**: `LongFormLayout` + `ScrollspyRail` remain in the lib but are superseded — do not use them for new forms.
 
 ## Sources
 - [NN/G — Wizards: Definition and Design Recommendations](https://www.nngroup.com/articles/wizards/)

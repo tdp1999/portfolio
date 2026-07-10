@@ -376,3 +376,31 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - The seven new columns are nullable and lazy-filled: a row's canonical is null until the next console save OR a backfill run. Landing guards on `content.length > 0` (as project/blog already do), so a null canonical renders nothing rather than crashing.
 - The contract test couples to a naming convention (`*SchemaVersion` marks an RTE group). If a future non-RTE field is ever named `<x>SchemaVersion`, the test would wrongly demand canonical columns for it — acceptable, since `SchemaVersion` is reserved for RTE here.
 - Verification: contract spec 10; migration expand-only (safe, no data transform); backfill idempotent. Task 312 read-swap + seed fix ride on top.
+
+### ADR-024: Console Long-Form → Vertical-Tab Section Nav; Atomic-Block FE Split (epic `console-tab-redesign`)
+
+**Status:** Accepted (2026-07-10)
+**Context:** Console settings-style forms render as one tall long-form (scrollspy rail + all section cards stacked in an internally-scrolling pane). Profile alone was ~8,200px (about 10 screens); locating a field meant scrolling far. Five forms share this `LongFormLayout + ScrollspyRail` chassis (`profile`, `skill.form`, `project.form`, `experience.form`, `ddl-long.form`). An audit also retired the prior epic premise: console has no full-width tab component to redesign; only `segmented-control` (inline-flex) exists. Separately, profile's "Landing Content" section is a ~10-field monster, and its BE command `updateLandingContent` is an **atomic full-replace** (schema requires all keys; handler rebuilds the whole `LandingContentBlocks`).
+**Decision:**
+1. **Replace the long-form chassis with vertical-tab section navigation.** A grouped rail (desktop) / horizontal scrollable strip (`<1024px`) swaps to show one section at a time, instead of scrolling to it. Horizontal tabs were rejected: 8+ sections with long labels exceed the NN/g 5–7 guideline and Material 3 would force scrollable tabs (hidden tabs, worse scanning). Vertical is the natural evolution of the existing rail.
+2. **Sections stay mounted via `[hidden]`, not `@if`.** Keeping every section in the DOM preserves unsaved edits and the per-section `status()` (untouched/editing/saved/error) that feeds the rail icons across tab switches. Deep-link is preserved via URL fragment, read reactively so browser back/forward also switches tabs.
+3. **The oversized Landing Content section is split FE-only, never BE.** Because the BE block is atomic, the three sub-tabs (grouped by where the copy renders: **Home page** / **Footer** / **About page**) share a single form, a single save, and one shared `StickySaveBar`; the whole block is always sent on save (`form.getRawValue()`), so no field is wiped. Consequence accepted: status is **shared** across the three landing sub-tabs (editing any one marks all three), which is the honest UX for one atomic save unit. The sub-tabs buy findability, not independent saves.
+4. **Pilot on profile, extract the shared component on the 2nd use.** The tab-shell lives inline in `profile` for now; it graduates to a `libs/console/shared/ui` component when the first of the remaining four forms is migrated, avoiding premature abstraction.
+**Consequences:**
+- Profile scroll dropped from ~8,200px to ~1,500px; verified: tab swap, deep-link, mobile strip, landing dirty → sticky bar → discard-confirm → revert, all with 0 console errors and no BE/data change.
+- Four long-rail forms + the shared-component extraction remain (see epic requirements 6–10). The `/ddl/profile-tabs` prototype has diverged (it showed a 4-way landing split) and is slated for removal.
+- The atomic-block-with-shared-save pattern is reusable for any future FE split of an atomic BE resource: split for navigation, keep one form + one save.
+
+### ADR-025: Console Page Layout — Boxed-Centred Standard (Two Widths)
+
+**Status:** Accepted (2026-07-10), supersedes ADR-024's "hybrid left-aligned" layout note
+**Context:** Console page widths were fragmented ("manh mún"): some pages left-aligned with no cap, some centred with a `max-width`, some full-width — and a first pass at a "hybrid left-aligned" standard (ADR-024) capped forms/detail to a **left-aligned** 768px column. On wide monitors that left a large empty void on the right, which the user rejected. Three page archetypes exist: lists (`.crud-page`, 13 pages), detail (`.detail-page`, 9 pages), section-tabs forms (5 bespoke roots). A `/ddl` anatomy prototype (list/detail/form) was used to settle the model interactively.
+**Decision:**
+1. **Every page is a horizontally-centred box** (`margin-inline: auto`), not left-aligned — balanced margins on both sides, no one-sided void.
+2. **Two widths only**, as CSS custom properties in `_page.scss`: `--console-page-max: 1440px` (lists + forms, which carry a section rail and need the width) and `--console-reading-max: 1200px` (detail reading column). The reading column moved 768 → 1200 per the user's "ít nhất 1200px"; accepted that this reads as ~full-width on typical laptops (intended).
+3. **Bake the standard into shared classes for near-zero-churn rollout.** `.crud-page` and `.detail-page` gained the box + centring directly, so all 22 list/detail pages inherit automatically. Forms add a composable `.console-page` utility (width + centring only, no layout) alongside their bespoke root class. `.crud-page` keeps `height:100%` so the table scrolls naturally with the shell (no `flex:1` fill on the table group — user: "table sẽ tự scroll khi có nhiều record").
+4. **List toolbar search fills the row, clamped 300–1200px** (`console-filter-search` → `flex-1 min-w-[300px] max-w-[1200px]`), so filters/actions after it sit to the right. Applied on the shared component → all lists inherit.
+**Consequences:**
+- One documented standard (console-cookbook "Max-Width Rules"); the `/ddl` anatomy pages remain the living reference.
+- Intentional exceptions kept: auth/narrow forms (`max-w-md`), blog post editor (own 720px prose column), media galleries (full-width grids), dashboard.
+- Detail metadata may live in a section **header** (title + right-aligned badge/action) or **footer** (timestamps) — demonstrated in the anatomy detail; both are sanctioned placements.

@@ -68,14 +68,48 @@ All classes live in `base/components.scss`. Use exactly these; do not compose ad
 
 ---
 
-## Max-Width Rules
+## Page Layout & Max-Width Rules
+
+**Boxed-centred standard (ADR-025):** every page is a horizontally-**centred box** so
+wide screens keep balanced margins on both sides (no one-sided void). Page wrappers never
+set their own padding (the shell already applies `p-8`). Two widths only:
+
+- `--console-page-max` = **1440px** — lists + forms (content that needs the full width, incl. a section rail).
+- `--console-reading-max` = **1200px** — detail pages (narrower reading column).
 
 | Context | Rule |
 |---|---|
-| Console long-form page wrapper | No max-width (fluid — handled by `console-long-form-layout`) |
-| Section card form column | No extra max-width needed — card's 65% column + page margins keep lines ≤ ~70 chars |
-| If form column feels too wide | Add `max-w-2xl` (`max-width: 672px`) on the form slot's inner wrapper |
-| Auth / narrow forms | `max-w-md` (448px) |
+| CRUD list / dashboard page | Boxed 1440, centred. Baked into `.crud-page` (keeps `height:100%` so the table scrolls naturally). |
+| Detail page | Boxed reading column 1200, centred. Baked into `.detail-page` (`max-width: var(--console-reading-max)`). |
+| Multi-section form | `console-section-tabs` (rail + content) inside a `.console-page` root → boxed 1440, centred. |
+| Simple form (single column) | Wrap content in `.console-reading` (1200, centred). |
+| Section card form column | Card column keeps lines ≤ ~70 chars; add `.console-reading` on the slot only if it still feels wide. |
+| Auth / narrow forms | `max-w-md` (448px) — intentional exception. |
+
+**Boxing utility:** `.console-page` (max `--console-page-max`, `margin-inline:auto`, `width:100%`)
+adds width + centring only, so it composes with a root's own flex/grid layout. Use it on any
+page root that isn't already `.crud-page` / `.detail-page` (e.g. section-tabs form roots).
+
+**List toolbar:** use `console-filter-bar` (a **bare** flex row — no surrounding card) +
+`console-filter-search`. The search field fills the row (`flex-1`) clamped **300–1200px**, so
+filters/actions after it sit to the right (`ml-auto` on the first trailing control).
+
+**List table + pagination:** put the table in `.crud-table-container` with a sibling
+`<mat-paginator class="crud-pagination">`. Shared CSS joins them **flush** into one bordered
+card (no gap). Don't add your own wrapper or spacing.
+
+**Badges / status pills:** use the shared `.console-badge` class (`--success` / `--warn` /
+`--danger` / `--muted`) for status cells, detail-header status, and header count badges. Never
+hand-roll Tailwind pills (`rounded-full bg-green-100 …`).
+
+**Reference:** `/ddl/anatomy-{list,detail,form}` are built on these exact shared components —
+use them as the living spec.
+
+**Page header:** use the shared `.console-page-header` primitive (`__titles` + optional
+`__subtitle` + optional `__actions`) so every page header reads the same. List pages may
+keep `.crud-header`; detail pages `.detail-header`.
+
+**Never** add page-level `padding` (the shell owns it).
 
 ---
 
