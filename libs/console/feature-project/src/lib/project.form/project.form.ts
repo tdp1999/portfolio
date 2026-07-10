@@ -30,10 +30,9 @@ import {
   type ChipSelectOption,
   HasUnsavedChanges,
   onBeforeUnload,
-  LongFormLayout,
   MediaPickerDialogComponent,
   MonthYearPicker,
-  ScrollspyRail,
+  SectionTabsLayout,
   SectionCard,
   SectionDescriptor,
   SpinnerOverlay,
@@ -87,9 +86,8 @@ import { requiredRichTextGroup, requiredTranslatableGroup, richTextGroup } from 
     TranslatableGroup,
     TranslatableRichTextGroup,
     FormErrorPipe,
-    LongFormLayout,
     MonthYearPicker,
-    ScrollspyRail,
+    SectionTabsLayout,
     SectionCard,
     StickySaveBar,
     SpinnerOverlay,
@@ -165,6 +163,10 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
   readonly isInvalid = computed(() => this.form.invalid);
   private readonly initialSnapshot = signal<unknown>(null);
   private loadedProject: AdminProject | null = null;
+
+  readonly activeId = signal('section-basic');
+
+  readonly showAll = signal(false);
 
   readonly sections: SectionDescriptor[] = [
     { id: 'section-basic', label: 'Basic' },

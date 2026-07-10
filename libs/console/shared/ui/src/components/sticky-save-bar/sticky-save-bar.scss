@@ -15,7 +15,7 @@
     display: grid;
     // Match long-form-layout grid (rail + gap + content) so inner edges line up
     // with the rail label and the form card's right edge.
-    grid-template-columns: 160px 24px 1fr;
+    grid-template-columns: 240px 24px 1fr;
     align-items: center;
     max-width: var(--layout-long-form-max-width);
     margin: 0 auto;

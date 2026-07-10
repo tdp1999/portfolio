@@ -55,6 +55,19 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
       </section>
 
       <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Page Anatomy (references)</h2>
+        <p class="text-sm text-gray-500 mb-2">
+          Full-element reference pages for the console layout standard (boxed, centered container). List / Detail /
+          Form, each showing every element from the audit. Iterate on these directly.
+        </p>
+        <div class="flex gap-3 flex-wrap">
+          <a mat-stroked-button routerLink="/ddl/anatomy-list">List anatomy</a>
+          <a mat-stroked-button routerLink="/ddl/anatomy-detail">Detail anatomy</a>
+          <a mat-stroked-button routerLink="/ddl/anatomy-form">Form anatomy</a>
+        </div>
+      </section>
+
+      <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Toast Notifications</h2>
         <div class="flex gap-3 flex-wrap">
           <button

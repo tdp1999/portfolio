@@ -6,9 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import {
   FormSnapshotDirective,
-  LongFormLayout,
   HasUnsavedChanges,
-  ScrollspyRail,
+  SectionTabsLayout,
   SectionCard,
   SectionDescriptor,
   SectionStatus,
@@ -39,8 +38,7 @@ import {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    LongFormLayout,
-    ScrollspyRail,
+    SectionTabsLayout,
     SectionCard,
     FormSnapshotDirective,
     StickySaveBar,
@@ -112,6 +110,8 @@ export default class DdlLongForm implements HasUnsavedChanges {
   );
 
   // ── Plain state ───────────────────────────────────────────────────
+  readonly activeId = signal('section-basics');
+  readonly showAll = signal(false);
   readonly sections: SectionDescriptor[] = [
     { id: 'section-basics', label: 'Basics', status: this.basicsStatus.asReadonly() },
     { id: 'section-contact', label: 'Contact', status: this.contactStatus.asReadonly() },

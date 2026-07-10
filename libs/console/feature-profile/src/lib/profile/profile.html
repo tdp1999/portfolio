@@ -1,4 +1,4 @@
-<div class="profile-page">
+<div class="profile-page console-page">
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="profile-page__header">
@@ -8,39 +8,54 @@
     </div>
   </div>
 
-  <console-long-form-layout>
-    <div rail>
-      <console-scrollspy-rail title="Profile Settings" [sections]="sections" />
-    </div>
-
-    <div content class="flex flex-col gap-8">
+  <console-section-tabs [groups]="groups" [(activeId)]="activeId" [(showAll)]="showAll">
+    <div [hidden]="!showAll() && activeId() !== 'section-identity'">
       <console-profile-identity-section
         [initialData]="profile()"
         [mediaDataSource]="mediaDataSource"
         (saved)="onSectionSaved($event)"
       />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-work-availability'">
       <console-profile-work-availability-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-contact'">
       <console-profile-contact-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-location'">
       <console-profile-location-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-social-links'">
       <console-profile-social-links-section
         [initialData]="profile()"
         [mediaDataSource]="mediaDataSource"
         (saved)="onSectionSaved($event)"
       />
+    </div>
 
-      <console-profile-landing-content-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
+    <div [hidden]="!showAll() && !isLandingActive()">
+      <console-profile-landing-content-section
+        [initialData]="profile()"
+        [activeSubTab]="activeLandingSubTab()"
+        [showAll]="showAll()"
+        (saved)="onSectionSaved($event)"
+      />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-seo-og'">
       <console-profile-seo-og-section
         [initialData]="profile()"
         [mediaDataSource]="mediaDataSource"
         (saved)="onSectionSaved($event)"
       />
+    </div>
 
+    <div [hidden]="!showAll() && activeId() !== 'section-admin-contact-address'">
       <console-profile-admin-contact-address-section [initialData]="profile()" (saved)="onSectionSaved($event)" />
     </div>
-  </console-long-form-layout>
+  </console-section-tabs>
 </div>

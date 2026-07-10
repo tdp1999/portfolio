@@ -13,10 +13,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import {
   HasUnsavedChanges,
-  LongFormLayout,
   MediaPickerDataSource,
-  ScrollspyRail,
-  SectionDescriptor,
+  SectionTabGroup,
+  SectionTabsLayout,
   SpinnerOverlay,
 } from '@portfolio/console/shared/ui';
 import { extractApiError } from '@portfolio/console/shared/util';
@@ -37,8 +36,7 @@ import { ProfileAdminResponse } from '../profile.types';
   standalone: true,
   imports: [
     SpinnerOverlay,
-    LongFormLayout,
-    ScrollspyRail,
+    SectionTabsLayout,
     ProfileIdentitySection,
     ProfileWorkAvailabilitySection,
     ProfileContactSection,
@@ -69,7 +67,7 @@ export default class Profile implements OnInit, OnDestroy, HasUnsavedChanges {
   readonly loading = signal(false);
   readonly profile = signal<ProfileAdminResponse | null>(null);
 
-  // ── Section refs (for scrollspy rail status wiring) ───────────────────────
+  // ── Section refs (for tab status wiring) ──────────────────────────────────
   private readonly identitySection = viewChild.required(ProfileIdentitySection);
   private readonly workSection = viewChild.required(ProfileWorkAvailabilitySection);
   private readonly contactSection = viewChild.required(ProfileContactSection);
@@ -79,28 +77,67 @@ export default class Profile implements OnInit, OnDestroy, HasUnsavedChanges {
   private readonly seoOgSection = viewChild.required(ProfileSeoOgSection);
   private readonly adminSection = viewChild.required(ProfileAdminContactAddressSection);
 
-  readonly sections: SectionDescriptor[] = [
-    { id: 'section-identity', label: 'Identity', status: computed(() => this.identitySection().status()) },
+  // ── Tab IA: grouped rail. The three "Landing copy" sub-tabs share the single
+  // landing-content section instance + form + save, so they surface one status.
+  readonly groups: SectionTabGroup[] = [
     {
-      id: 'section-work-availability',
-      label: 'Work & Availability',
-      status: computed(() => this.workSection().status()),
+      label: 'Profile',
+      sections: [
+        { id: 'section-identity', label: 'Identity', status: computed(() => this.identitySection().status()) },
+        {
+          id: 'section-work-availability',
+          label: 'Work & Availability',
+          status: computed(() => this.workSection().status()),
+        },
+        { id: 'section-contact', label: 'Contact', status: computed(() => this.contactSection().status()) },
+        { id: 'section-location', label: 'Location', status: computed(() => this.locationSection().status()) },
+        {
+          id: 'section-social-links',
+          label: 'Social Links',
+          status: computed(() => this.socialLinksSection().status()),
+        },
+      ],
     },
-    { id: 'section-contact', label: 'Contact', status: computed(() => this.contactSection().status()) },
-    { id: 'section-location', label: 'Location', status: computed(() => this.locationSection().status()) },
-    { id: 'section-social-links', label: 'Social Links', status: computed(() => this.socialLinksSection().status()) },
     {
-      id: 'section-landing-content',
-      label: 'Landing Content',
-      status: computed(() => this.landingContentSection().status()),
+      label: 'Landing copy',
+      sections: [
+        {
+          id: 'section-landing-home',
+          label: 'Home page',
+          status: computed(() => this.landingContentSection().status()),
+        },
+        {
+          id: 'section-landing-footer',
+          label: 'Footer',
+          status: computed(() => this.landingContentSection().status()),
+        },
+        {
+          id: 'section-landing-about',
+          label: 'About page',
+          status: computed(() => this.landingContentSection().status()),
+        },
+      ],
     },
-    { id: 'section-seo-og', label: 'SEO / OG', status: computed(() => this.seoOgSection().status()) },
     {
-      id: 'section-admin-contact-address',
-      label: 'Admin Contact & Address',
-      status: computed(() => this.adminSection().status()),
+      label: 'Meta',
+      sections: [
+        { id: 'section-seo-og', label: 'SEO / OG', status: computed(() => this.seoOgSection().status()) },
+        {
+          id: 'section-admin-contact-address',
+          label: 'Admin Contact & Address',
+          status: computed(() => this.adminSection().status()),
+        },
+      ],
     },
   ];
+
+  readonly activeId = signal<string>('section-identity');
+  readonly showAll = signal(false);
+
+  // The three landing sub-tabs share one section instance; it is visible whenever
+  // any of them is active, and receives the active id to pick the sub-card.
+  readonly isLandingActive = computed(() => this.activeId().startsWith('section-landing-'));
+  readonly activeLandingSubTab = computed(() => (this.isLandingActive() ? this.activeId() : 'section-landing-home'));
 
   ngOnInit(): void {
     this.loadProfile();

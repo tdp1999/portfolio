@@ -24,9 +24,8 @@ import { MatSelectModule } from '@angular/material/select';
 import {
   HasUnsavedChanges,
   onBeforeUnload,
-  LongFormLayout,
   MonthYearPicker,
-  ScrollspyRail,
+  SectionTabsLayout,
   SectionCard,
   SectionDescriptor,
   SpinnerOverlay,
@@ -67,9 +66,8 @@ import { richTextGroup } from './experience.form.util';
     MatProgressSpinnerModule,
     FormErrorPipe,
     ServerErrorDirective,
-    LongFormLayout,
     MonthYearPicker,
-    ScrollspyRail,
+    SectionTabsLayout,
     SectionCard,
     StickySaveBar,
     SpinnerOverlay,
@@ -147,6 +145,10 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
   readonly dirty = signal(false);
   readonly isInvalid = computed(() => this.form.invalid);
   private readonly initialSnapshot = signal<unknown>(null);
+
+  readonly activeId = signal('section-company');
+
+  readonly showAll = signal(false);
 
   readonly sections: SectionDescriptor[] = [
     { id: 'section-company', label: 'Company' },

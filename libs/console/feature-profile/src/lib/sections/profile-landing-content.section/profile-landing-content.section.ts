@@ -16,17 +16,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { startWith } from 'rxjs';
 import {
-  FormSnapshotDirective,
   SectionCard,
   SectionStatus,
+  StickySaveBar,
   ToastService,
   TranslatableMarkdownGroup,
 } from '@portfolio/console/shared/ui';
-import { ServerErrorDirective } from '@portfolio/console/shared/util';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse } from '../../profile.types';
 import { isEmpty } from './profile-landing-content.section.util';
 
+/** Landing copy is one atomic BE block (`updateLandingContent` full-replace), so the
+ *  three sub-tabs share a single form and a single save. `activeSubTab` — driven by
+ *  the profile page's rail (`section-landing-home` | `-footer` | `-about`) — decides
+ *  which sub-card is shown; the sticky save bar commits the whole block regardless of
+ *  which sub-tab is open. */
 @Component({
   selector: 'console-profile-landing-content-section',
   standalone: true,
@@ -36,8 +40,7 @@ import { isEmpty } from './profile-landing-content.section.util';
     MatInputModule,
     MatButtonModule,
     SectionCard,
-    FormSnapshotDirective,
-    ServerErrorDirective,
+    StickySaveBar,
     TranslatableMarkdownGroup,
   ],
   templateUrl: './profile-landing-content.section.html',
@@ -50,6 +53,10 @@ export class ProfileLandingContentSection {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly initialData = input.required<ProfileAdminResponse | null>();
+  /** Which landing sub-tab the profile rail currently has active. */
+  readonly activeSubTab = input<string>('section-landing-home');
+  /** When the shell is in "show all" mode, render every sub-card at once. */
+  readonly showAll = input<boolean>(false);
   readonly saved = output<Partial<ProfileAdminResponse>>();
 
   readonly form = this.fb.group({
@@ -72,7 +79,8 @@ export class ProfileLandingContentSection {
    *  updated" line and the muted timestamp next to the Mark-updated button. */
   readonly contentUpdatedAt = signal<Date | null>(null);
   readonly markingUpdated = signal(false);
-  private readonly dirty = signal(false);
+  // Public so the shared sticky save bar can bind to it.
+  readonly dirty = signal(false);
   private readonly invalid = signal(false);
 
   readonly status = computed<SectionStatus>(() => {
@@ -88,21 +96,7 @@ export class ProfileLandingContentSection {
     effect(() => {
       const data = this.initialData();
       if (!data || this.hydrated) return;
-      this.form.reset({
-        tagline: { en: data.tagline?.en ?? '', vi: data.tagline?.vi ?? '' },
-        stackIntro: { en: data.stackIntro?.en ?? '', vi: data.stackIntro?.vi ?? '' },
-        selectedWorkIntro: {
-          en: data.selectedWorkIntro?.en ?? '',
-          vi: data.selectedWorkIntro?.vi ?? '',
-        },
-        contactIntro: { en: data.contactIntro?.en ?? '', vi: data.contactIntro?.vi ?? '' },
-        footerTagline: { en: data.footerTagline?.en ?? '', vi: data.footerTagline?.vi ?? '' },
-        aboutHeading: { en: data.aboutHeading?.en ?? '', vi: data.aboutHeading?.vi ?? '' },
-        aboutLede: { en: data.aboutLede?.en ?? '', vi: data.aboutLede?.vi ?? '' },
-        ctaHeading: { en: data.ctaHeading?.en ?? '', vi: data.ctaHeading?.vi ?? '' },
-        ctaLede: { en: data.ctaLede?.en ?? '', vi: data.ctaLede?.vi ?? '' },
-        coreStack: (data.coreStack ?? []).join(', '),
-      });
+      this.form.reset(this.mapToForm(data));
       this.contentUpdatedAt.set(data.contentUpdatedAt ? new Date(data.contentUpdatedAt) : null);
       this.hydrated = true;
     });
@@ -142,12 +136,21 @@ export class ProfileLandingContentSection {
         next: () => {
           this.saving.set(false);
           this.form.markAsPristine();
+          this.dirty.set(false);
           this.lastSaved.set(new Date());
           this.toast.success('Landing content saved');
           this.saved.emit(payload);
         },
         error: () => this.saving.set(false),
       });
+  }
+
+  /** Reverts every landing sub-tab back to the last-loaded/saved values. */
+  discard(): void {
+    const data = this.initialData();
+    if (data) this.form.reset(this.mapToForm(data));
+    this.form.markAsPristine();
+    this.dirty.set(false);
   }
 
   /** Stamp `Profile.contentUpdatedAt = now()` on the BE — author confirms
@@ -168,6 +171,24 @@ export class ProfileLandingContentSection {
         },
         error: () => this.markingUpdated.set(false),
       });
+  }
+
+  private mapToForm(data: ProfileAdminResponse) {
+    return {
+      tagline: { en: data.tagline?.en ?? '', vi: data.tagline?.vi ?? '' },
+      stackIntro: { en: data.stackIntro?.en ?? '', vi: data.stackIntro?.vi ?? '' },
+      selectedWorkIntro: {
+        en: data.selectedWorkIntro?.en ?? '',
+        vi: data.selectedWorkIntro?.vi ?? '',
+      },
+      contactIntro: { en: data.contactIntro?.en ?? '', vi: data.contactIntro?.vi ?? '' },
+      footerTagline: { en: data.footerTagline?.en ?? '', vi: data.footerTagline?.vi ?? '' },
+      aboutHeading: { en: data.aboutHeading?.en ?? '', vi: data.aboutHeading?.vi ?? '' },
+      aboutLede: { en: data.aboutLede?.en ?? '', vi: data.aboutLede?.vi ?? '' },
+      ctaHeading: { en: data.ctaHeading?.en ?? '', vi: data.ctaHeading?.vi ?? '' },
+      ctaLede: { en: data.ctaLede?.en ?? '', vi: data.ctaLede?.vi ?? '' },
+      coreStack: (data.coreStack ?? []).join(', '),
+    };
   }
 
   private bilingualGroup() {

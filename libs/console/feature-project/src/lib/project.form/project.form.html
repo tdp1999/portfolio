@@ -1,4 +1,4 @@
-<div class="project-form-page">
+<div class="project-form-page console-page">
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="project-form-page__header">
@@ -17,329 +17,338 @@
     </div>
   </div>
 
-  <console-long-form-layout>
-    <div rail>
-      <console-scrollspy-rail
-        [title]="isEdit() ? 'Edit Project' : 'New Project'"
-        [sections]="sections"
-        [activeIndicator]="false"
-      />
-    </div>
-
+  <console-section-tabs [sections]="sections" [(activeId)]="activeId" [(showAll)]="showAll">
     <div content>
       <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
         <!-- Basic -->
-        <console-section-card
-          id="section-basic"
-          bucket="PUBLIC"
-          title="Basic Info"
-          description="Project title, one-liner, and date range."
-          saveMode="atomic"
-        >
-          <div class="form-stack">
-            <mat-form-field appearance="outline">
-              <mat-label>Title</mat-label>
-              <input matInput formControlName="title" placeholder="Project title" />
-              <mat-error>{{ form.controls.title | formError }}</mat-error>
-            </mat-form-field>
+        <div [hidden]="!showAll() && activeId() !== 'section-basic'">
+          <console-section-card
+            id="section-basic"
+            bucket="PUBLIC"
+            title="Basic Info"
+            description="Project title, one-liner, and date range."
+            saveMode="atomic"
+          >
+            <div class="form-stack">
+              <mat-form-field appearance="outline">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title" placeholder="Project title" />
+                <mat-error>{{ form.controls.title | formError }}</mat-error>
+              </mat-form-field>
 
-            <console-translatable-group [group]="form.controls.oneLiner" label="One-Liner" type="textarea" [rows]="2" />
+              <console-translatable-group
+                [group]="form.controls.oneLiner"
+                label="One-Liner"
+                type="textarea"
+                [rows]="2"
+              />
 
-            <div class="flex gap-4">
-              <console-month-year-picker
-                class="flex-1"
-                label="Start Date"
-                controlName="startDate"
-                [control]="form.controls.startDate"
-              />
-              <console-month-year-picker
-                class="flex-1"
-                label="End Date"
-                controlName="endDate"
-                [control]="form.controls.endDate"
-                [clearable]="true"
-              />
+              <div class="flex gap-4">
+                <console-month-year-picker
+                  class="flex-1"
+                  label="Start Date"
+                  controlName="startDate"
+                  [control]="form.controls.startDate"
+                />
+                <console-month-year-picker
+                  class="flex-1"
+                  label="End Date"
+                  controlName="endDate"
+                  [control]="form.controls.endDate"
+                  [clearable]="true"
+                />
+              </div>
             </div>
-          </div>
-        </console-section-card>
+          </console-section-card>
+        </div>
 
         <!-- Story -->
-        <console-section-card
-          id="section-story"
-          bucket="PUBLIC"
-          title="Story"
-          description="Motivation, description, and your role. Provide English and Vietnamese."
-          saveMode="atomic"
-        >
-          <div class="form-stack">
-            <console-translatable-group [group]="form.controls.motivation" label="Motivation" type="textarea" />
-            <console-translatable-group [group]="form.controls.description" label="Description" type="textarea" />
-            <console-translatable-group [group]="form.controls.role" label="Role" type="textarea" />
+        <div [hidden]="!showAll() && activeId() !== 'section-story'">
+          <console-section-card
+            id="section-story"
+            bucket="PUBLIC"
+            title="Story"
+            description="Motivation, description, and your role. Provide English and Vietnamese."
+            saveMode="atomic"
+          >
+            <div class="form-stack">
+              <console-translatable-group [group]="form.controls.motivation" label="Motivation" type="textarea" />
+              <console-translatable-group [group]="form.controls.description" label="Description" type="textarea" />
+              <console-translatable-group [group]="form.controls.role" label="Role" type="textarea" />
 
-            <console-translatable-rich-text-group
-              [group]="form.controls.body"
-              label="Long-form body"
-              mode="full"
-              helperText="Rich-text case study. Use H2/H3 sections — they become the page ToC. Images via the toolbar."
-              [placeholder]="{
-                en: 'Background — what made this project worth doing…',
-                vi: 'Bối cảnh — lý do dự án này đáng làm…',
-              }"
-            />
-          </div>
-        </console-section-card>
+              <console-translatable-rich-text-group
+                [group]="form.controls.body"
+                label="Long-form body"
+                mode="full"
+                helperText="Rich-text case study. Use H2/H3 sections — they become the page ToC. Images via the toolbar."
+                [placeholder]="{
+                  en: 'Background — what made this project worth doing…',
+                  vi: 'Bối cảnh — lý do dự án này đáng làm…',
+                }"
+              />
+            </div>
+          </console-section-card>
+        </div>
 
         <!-- Highlights -->
-        <console-section-card
-          id="section-highlights"
-          bucket="PUBLIC"
-          title="Technical Highlights"
-          description="Up to 4 Challenge → Approach → Outcome blocks with an optional code link."
-          saveMode="atomic"
-        >
-          <div class="form-stack">
-            <div class="flex items-center justify-between">
-              <span class="text-body text-text-secondary">{{ form.controls.highlights.length }}/4 highlights</span>
-              <button
-                mat-stroked-button
-                type="button"
-                [disabled]="form.controls.highlights.length >= 4"
-                (click)="addHighlight()"
-              >
-                <mat-icon>add</mat-icon>
-                Add Highlight
-              </button>
-            </div>
-
-            @for (group of form.controls.highlights.controls; track $index; let i = $index) {
-              <div class="highlight-card">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium">Highlight {{ i + 1 }}</span>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    aria-label="Remove highlight"
-                    matTooltip="Remove"
-                    (click)="removeHighlight(i)"
-                  >
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
-
-                <ng-container [formGroup]="group">
-                  <console-translatable-rich-text-group [group]="group.controls['challenge']" label="Challenge" />
-                  <console-translatable-rich-text-group [group]="group.controls['approach']" label="Approach" />
-                  <console-translatable-rich-text-group [group]="group.controls['outcome']" label="Outcome" />
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>Code URL (optional)</mat-label>
-                    <input matInput formControlName="codeUrl" placeholder="https://github.com/..." />
-                    <mat-error>{{ group.controls['codeUrl'] | formError }}</mat-error>
-                  </mat-form-field>
-                </ng-container>
-              </div>
-            } @empty {
-              <p class="py-4 text-center text-body text-text-muted">No highlights added yet</p>
-            }
-          </div>
-        </console-section-card>
-
-        <!-- Media -->
-        <console-section-card
-          id="section-media"
-          bucket="PUBLIC"
-          title="Media"
-          description="Thumbnail and gallery images. Selections save when you click Save."
-          saveMode="atomic"
-        >
-          <div class="form-stack">
-            <div>
-              <p class="field-label">Thumbnail</p>
-              <div class="flex items-center gap-3">
-                @if (thumbnailUrl()) {
-                  <img [src]="thumbnailUrl()" alt="Thumbnail" class="h-16 w-16 rounded object-cover" />
-                } @else if (thumbnailId()) {
-                  <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
-                    <mat-icon>check_circle</mat-icon>
-                  </div>
-                } @else {
-                  <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
-                    <mat-icon class="text-text-muted">image</mat-icon>
-                  </div>
-                }
-                <button mat-stroked-button type="button" (click)="pickThumbnail()">
-                  {{ thumbnailId() ? 'Change' : 'Choose' }} Thumbnail
-                </button>
-                @if (thumbnailId()) {
-                  <button mat-icon-button type="button" aria-label="Clear thumbnail" (click)="clearThumbnail()">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                }
-              </div>
-            </div>
-
-            <div>
+        <div [hidden]="!showAll() && activeId() !== 'section-highlights'">
+          <console-section-card
+            id="section-highlights"
+            bucket="PUBLIC"
+            title="Technical Highlights"
+            description="Up to 4 Challenge → Approach → Outcome blocks with an optional code link."
+            saveMode="atomic"
+          >
+            <div class="form-stack">
               <div class="flex items-center justify-between">
-                <p class="field-label">Gallery Images ({{ galleryImages().length }})</p>
-                <button mat-stroked-button type="button" (click)="pickGalleryImages()">
-                  <mat-icon>add_photo_alternate</mat-icon>
-                  Add Images
-                </button>
-              </div>
-
-              @if (galleryImages().length > 0) {
-                <div class="flex flex-col gap-2 mt-3">
-                  @for (img of galleryImages(); track img.mediaId; let i = $index) {
-                    <div class="gallery-row">
-                      @if (img.url) {
-                        <img [src]="img.url" [alt]="img.altText ?? ''" class="h-10 w-10 rounded object-cover" />
-                      } @else {
-                        <div class="flex h-10 w-10 items-center justify-center rounded bg-surface">
-                          <mat-icon class="text-sm">image</mat-icon>
-                        </div>
-                      }
-                      <span class="flex-1 truncate text-sm">{{ img.altText || img.mediaId }}</span>
-                      <button
-                        mat-icon-button
-                        type="button"
-                        aria-label="Move up"
-                        [disabled]="i === 0"
-                        (click)="moveGalleryImage(i, -1)"
-                      >
-                        <mat-icon>arrow_upward</mat-icon>
-                      </button>
-                      <button
-                        mat-icon-button
-                        type="button"
-                        aria-label="Move down"
-                        [disabled]="i === galleryImages().length - 1"
-                        (click)="moveGalleryImage(i, 1)"
-                      >
-                        <mat-icon>arrow_downward</mat-icon>
-                      </button>
-                      <button mat-icon-button type="button" aria-label="Remove image" (click)="removeGalleryImage(i)">
-                        <mat-icon>close</mat-icon>
-                      </button>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <p class="py-4 text-center text-body text-text-muted">No gallery images</p>
-              }
-            </div>
-          </div>
-        </console-section-card>
-
-        <!-- Details -->
-        <console-section-card
-          id="section-details"
-          bucket="PUBLIC"
-          title="Details"
-          description="External links and skills used on this project."
-          saveMode="atomic"
-        >
-          <div class="form-stack">
-            <div>
-              <div class="flex items-center justify-between">
-                <p class="field-label">Links</p>
-                <button mat-stroked-button type="button" (click)="addLink()">
+                <span class="text-body text-text-secondary">{{ form.controls.highlights.length }}/4 highlights</span>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="form.controls.highlights.length >= 4"
+                  (click)="addHighlight()"
+                >
                   <mat-icon>add</mat-icon>
-                  Add Link
+                  Add Highlight
                 </button>
               </div>
 
-              @for (group of form.controls.links.controls; track $index; let i = $index) {
-                <div class="link-row" [formGroup]="group">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Label</mat-label>
-                    <input matInput formControlName="label" placeholder="Source code" />
-                    <mat-error>{{ group.controls['label'] | formError }}</mat-error>
-                  </mat-form-field>
+              @for (group of form.controls.highlights.controls; track $index; let i = $index) {
+                <div class="highlight-card">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Highlight {{ i + 1 }}</span>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      aria-label="Remove highlight"
+                      matTooltip="Remove"
+                      (click)="removeHighlight(i)"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
 
-                  <mat-form-field appearance="outline" class="flex-[2]">
-                    <mat-label>URL</mat-label>
-                    <input matInput formControlName="url" placeholder="https://" />
-                    <mat-error>{{ group.controls['url'] | formError }}</mat-error>
-                  </mat-form-field>
+                  <ng-container [formGroup]="group">
+                    <console-translatable-rich-text-group [group]="group.controls['challenge']" label="Challenge" />
+                    <console-translatable-rich-text-group [group]="group.controls['approach']" label="Approach" />
+                    <console-translatable-rich-text-group [group]="group.controls['outcome']" label="Outcome" />
 
-                  <mat-form-field appearance="outline" class="w-40">
-                    <mat-label>Type</mat-label>
-                    <mat-select formControlName="type">
-                      @for (opt of linkTypeOptions; track opt.value) {
-                        <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    aria-label="Move up"
-                    [disabled]="i === 0"
-                    (click)="moveLink(i, -1)"
-                  >
-                    <mat-icon>arrow_upward</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    aria-label="Move down"
-                    [disabled]="i === form.controls.links.length - 1"
-                    (click)="moveLink(i, 1)"
-                  >
-                    <mat-icon>arrow_downward</mat-icon>
-                  </button>
-                  <button mat-icon-button type="button" aria-label="Remove link" (click)="removeLink(i)">
-                    <mat-icon>close</mat-icon>
-                  </button>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Code URL (optional)</mat-label>
+                      <input matInput formControlName="codeUrl" placeholder="https://github.com/..." />
+                      <mat-error>{{ group.controls['codeUrl'] | formError }}</mat-error>
+                    </mat-form-field>
+                  </ng-container>
                 </div>
               } @empty {
-                <p class="py-4 text-center text-body text-text-muted">No links added yet</p>
+                <p class="py-4 text-center text-body text-text-muted">No highlights added yet</p>
               }
             </div>
+          </console-section-card>
+        </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Skills</mat-label>
-              <mat-select formControlName="skillIds" multiple>
-                @for (skill of skills(); track skill.id) {
-                  <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+        <!-- Media -->
+        <div [hidden]="!showAll() && activeId() !== 'section-media'">
+          <console-section-card
+            id="section-media"
+            bucket="PUBLIC"
+            title="Media"
+            description="Thumbnail and gallery images. Selections save when you click Save."
+            saveMode="atomic"
+          >
+            <div class="form-stack">
+              <div>
+                <p class="field-label">Thumbnail</p>
+                <div class="flex items-center gap-3">
+                  @if (thumbnailUrl()) {
+                    <img [src]="thumbnailUrl()" alt="Thumbnail" class="h-16 w-16 rounded object-cover" />
+                  } @else if (thumbnailId()) {
+                    <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                  } @else {
+                    <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
+                      <mat-icon class="text-text-muted">image</mat-icon>
+                    </div>
+                  }
+                  <button mat-stroked-button type="button" (click)="pickThumbnail()">
+                    {{ thumbnailId() ? 'Change' : 'Choose' }} Thumbnail
+                  </button>
+                  @if (thumbnailId()) {
+                    <button mat-icon-button type="button" aria-label="Clear thumbnail" (click)="clearThumbnail()">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between">
+                  <p class="field-label">Gallery Images ({{ galleryImages().length }})</p>
+                  <button mat-stroked-button type="button" (click)="pickGalleryImages()">
+                    <mat-icon>add_photo_alternate</mat-icon>
+                    Add Images
+                  </button>
+                </div>
+
+                @if (galleryImages().length > 0) {
+                  <div class="flex flex-col gap-2 mt-3">
+                    @for (img of galleryImages(); track img.mediaId; let i = $index) {
+                      <div class="gallery-row">
+                        @if (img.url) {
+                          <img [src]="img.url" [alt]="img.altText ?? ''" class="h-10 w-10 rounded object-cover" />
+                        } @else {
+                          <div class="flex h-10 w-10 items-center justify-center rounded bg-surface">
+                            <mat-icon class="text-sm">image</mat-icon>
+                          </div>
+                        }
+                        <span class="flex-1 truncate text-sm">{{ img.altText || img.mediaId }}</span>
+                        <button
+                          mat-icon-button
+                          type="button"
+                          aria-label="Move up"
+                          [disabled]="i === 0"
+                          (click)="moveGalleryImage(i, -1)"
+                        >
+                          <mat-icon>arrow_upward</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          type="button"
+                          aria-label="Move down"
+                          [disabled]="i === galleryImages().length - 1"
+                          (click)="moveGalleryImage(i, 1)"
+                        >
+                          <mat-icon>arrow_downward</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" aria-label="Remove image" (click)="removeGalleryImage(i)">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="py-4 text-center text-body text-text-muted">No gallery images</p>
                 }
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </console-section-card>
+              </div>
+            </div>
+          </console-section-card>
+        </div>
+
+        <!-- Details -->
+        <div [hidden]="!showAll() && activeId() !== 'section-details'">
+          <console-section-card
+            id="section-details"
+            bucket="PUBLIC"
+            title="Details"
+            description="External links and skills used on this project."
+            saveMode="atomic"
+          >
+            <div class="form-stack">
+              <div>
+                <div class="flex items-center justify-between">
+                  <p class="field-label">Links</p>
+                  <button mat-stroked-button type="button" (click)="addLink()">
+                    <mat-icon>add</mat-icon>
+                    Add Link
+                  </button>
+                </div>
+
+                @for (group of form.controls.links.controls; track $index; let i = $index) {
+                  <div class="link-row" [formGroup]="group">
+                    <mat-form-field appearance="outline" class="flex-1">
+                      <mat-label>Label</mat-label>
+                      <input matInput formControlName="label" placeholder="Source code" />
+                      <mat-error>{{ group.controls['label'] | formError }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="flex-[2]">
+                      <mat-label>URL</mat-label>
+                      <input matInput formControlName="url" placeholder="https://" />
+                      <mat-error>{{ group.controls['url'] | formError }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-40">
+                      <mat-label>Type</mat-label>
+                      <mat-select formControlName="type">
+                        @for (opt of linkTypeOptions; track opt.value) {
+                          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+
+                    <button
+                      mat-icon-button
+                      type="button"
+                      aria-label="Move up"
+                      [disabled]="i === 0"
+                      (click)="moveLink(i, -1)"
+                    >
+                      <mat-icon>arrow_upward</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      aria-label="Move down"
+                      [disabled]="i === form.controls.links.length - 1"
+                      (click)="moveLink(i, 1)"
+                    >
+                      <mat-icon>arrow_downward</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button" aria-label="Remove link" (click)="removeLink(i)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                } @empty {
+                  <p class="py-4 text-center text-body text-text-muted">No links added yet</p>
+                }
+              </div>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Skills</mat-label>
+                <mat-select formControlName="skillIds" multiple>
+                  @for (skill of skills(); track skill.id) {
+                    <mat-option [value]="skill.id">{{ skill.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </console-section-card>
+        </div>
 
         <!-- Settings -->
-        <console-section-card
-          id="section-settings"
-          bucket="INTERNAL"
-          title="Settings"
-          description="Status, featured flag, and ordering. Admin-only — these don't render on the public site."
-          saveMode="atomic"
-        >
-          <div class="flex flex-col flex-wrap gap-6">
-            <div class="flex items-center gap-2">
-              <span class="text-sm">Featured:</span>
-              <console-chip-boolean formControlName="featured" label="Featured" />
-            </div>
+        <div [hidden]="!showAll() && activeId() !== 'section-settings'">
+          <console-section-card
+            id="section-settings"
+            bucket="INTERNAL"
+            title="Settings"
+            description="Status, featured flag, and ordering. Admin-only — these don't render on the public site."
+            saveMode="atomic"
+          >
+            <div class="flex flex-col flex-wrap gap-6">
+              <div class="flex items-center gap-2">
+                <span class="text-sm">Featured:</span>
+                <console-chip-boolean formControlName="featured" label="Featured" />
+              </div>
 
-            <div class="flex items-center gap-2">
-              <span class="text-sm">Status:</span>
-              <console-chip-select formControlName="status" [options]="statusOptions" />
-            </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">Status:</span>
+                <console-chip-select formControlName="status" [options]="statusOptions" />
+              </div>
 
-            <mat-form-field appearance="outline" class="w-28">
-              <mat-label>Order</mat-label>
-              <input matInput type="number" formControlName="displayOrder" min="0" />
-              <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
-            </mat-form-field>
-          </div>
-        </console-section-card>
+              <mat-form-field appearance="outline" class="w-28">
+                <mat-label>Order</mat-label>
+                <input matInput type="number" formControlName="displayOrder" min="0" />
+                <mat-error>{{ form.controls.displayOrder | formError }}</mat-error>
+              </mat-form-field>
+            </div>
+          </console-section-card>
+        </div>
 
         <button type="submit" class="hidden" aria-hidden="true"></button>
       </form>
     </div>
-  </console-long-form-layout>
+  </console-section-tabs>
 
   <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="submit()" (discard)="discard()" />
 </div>

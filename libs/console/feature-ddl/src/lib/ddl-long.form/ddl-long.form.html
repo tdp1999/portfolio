@@ -1,100 +1,104 @@
-<div class="ddl-long-form">
-  <header class="ddl-long-form__header">
-    <div>
+<div class="ddl-long-form console-page">
+  <div class="console-page-header">
+    <div class="console-page-header__titles">
       <h1 class="text-page-title">Long-Form Chassis Demo</h1>
-      <p class="text-body text-text-secondary">
+      <p class="console-page-header__subtitle">
         Scrollspy rail + 4 section cards (one per status) · mixes per-section and atomic save modes · wired to
         UnsavedChangesGuard.
       </p>
     </div>
     <a mat-stroked-button routerLink="/ddl">Back to DDL</a>
-  </header>
+  </div>
 
-  <console-long-form-layout>
-    <div rail>
-      <console-scrollspy-rail [sections]="sections" />
-    </div>
-
+  <console-section-tabs [sections]="sections" [(activeId)]="activeId" [(showAll)]="showAll">
     <div content>
       <!-- Section 1: Basics — per-section save · status: editing · nested bilingual FormGroup -->
-      <console-section-card
-        id="section-basics"
-        title="Basics"
-        description="Display name and job title. Demonstrates the nested { en, vi } bilingual FormGroup convention."
-        saveMode="per-section"
-        consoleFormSnapshot
-        [formGroup]="basicsForm"
-        [saving]="basicsSaving"
-        [lastSavedAt]="basicsLastSavedAt"
-        [errorMessage]="basicsError"
-        (save)="saveBasics()"
-      >
-        <form [formGroup]="basicsForm" class="form-stack">
-          <console-translatable-group [group]="basicsForm.controls.name" label="Name" />
-          <console-translatable-group [group]="basicsForm.controls.title" label="Title" />
-        </form>
-      </console-section-card>
+      <div [hidden]="!showAll() && activeId() !== 'section-basics'">
+        <console-section-card
+          id="section-basics"
+          title="Basics"
+          description="Display name and job title. Demonstrates the nested { en, vi } bilingual FormGroup convention."
+          saveMode="per-section"
+          consoleFormSnapshot
+          [formGroup]="basicsForm"
+          [saving]="basicsSaving"
+          [lastSavedAt]="basicsLastSavedAt"
+          [errorMessage]="basicsError"
+          (save)="saveBasics()"
+        >
+          <form [formGroup]="basicsForm" class="form-stack">
+            <console-translatable-group [group]="basicsForm.controls.name" label="Name" />
+            <console-translatable-group [group]="basicsForm.controls.title" label="Title" />
+          </form>
+        </console-section-card>
+      </div>
 
       <!-- Section 2: Contact — per-section save · status: saved -->
-      <console-section-card
-        id="section-contact"
-        title="Contact"
-        description="Reachable channels. Saved state — note the timestamp and ✓ icon in the rail."
-        saveMode="per-section"
-        consoleFormSnapshot
-        [formGroup]="contactForm"
-        [saving]="contactSaving"
-        [lastSavedAt]="contactLastSavedAt"
-        [errorMessage]="contactError"
-        (save)="saveContact()"
-      >
-        <form [formGroup]="contactForm" class="form-stack">
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Phone</mat-label>
-            <input matInput type="tel" formControlName="phone" />
-          </mat-form-field>
-        </form>
-      </console-section-card>
+      <div [hidden]="!showAll() && activeId() !== 'section-contact'">
+        <console-section-card
+          id="section-contact"
+          title="Contact"
+          description="Reachable channels. Saved state — note the timestamp and ✓ icon in the rail."
+          saveMode="per-section"
+          consoleFormSnapshot
+          [formGroup]="contactForm"
+          [saving]="contactSaving"
+          [lastSavedAt]="contactLastSavedAt"
+          [errorMessage]="contactError"
+          (save)="saveContact()"
+        >
+          <form [formGroup]="contactForm" class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput type="tel" formControlName="phone" />
+            </mat-form-field>
+          </form>
+        </console-section-card>
+      </div>
 
       <!-- Section 3: Skills — atomic mode · status: untouched -->
-      <console-section-card
-        id="section-skills"
-        title="Skills"
-        description="Atomic mode — no footer. Saves via the sticky save bar together with Achievements."
-        saveMode="atomic"
-      >
-        <form [formGroup]="skillsForm" class="form-stack">
-          <mat-form-field appearance="outline">
-            <mat-label>Primary stack</mat-label>
-            <input matInput formControlName="primaryStack" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Years of experience</mat-label>
-            <input matInput type="number" formControlName="yearsOfExperience" />
-          </mat-form-field>
-        </form>
-      </console-section-card>
+      <div [hidden]="!showAll() && activeId() !== 'section-skills'">
+        <console-section-card
+          id="section-skills"
+          title="Skills"
+          description="Atomic mode — no footer. Saves via the sticky save bar together with Achievements."
+          saveMode="atomic"
+        >
+          <form [formGroup]="skillsForm" class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Primary stack</mat-label>
+              <input matInput formControlName="primaryStack" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Years of experience</mat-label>
+              <input matInput type="number" formControlName="yearsOfExperience" />
+            </mat-form-field>
+          </form>
+        </console-section-card>
+      </div>
 
       <!-- Section 4: Achievements — atomic mode · status: error -->
-      <console-section-card
-        id="section-achievements"
-        title="Achievements"
-        description="Atomic mode with a required field left empty — rail shows ⚠ to indicate a validation error."
-        saveMode="atomic"
-      >
-        <form [formGroup]="achievementsForm" class="form-stack">
-          <mat-form-field appearance="outline">
-            <mat-label>Summary</mat-label>
-            <textarea matInput rows="4" formControlName="summary"></textarea>
-          </mat-form-field>
-        </form>
-      </console-section-card>
+      <div [hidden]="!showAll() && activeId() !== 'section-achievements'">
+        <console-section-card
+          id="section-achievements"
+          title="Achievements"
+          description="Atomic mode with a required field left empty — rail shows ⚠ to indicate a validation error."
+          saveMode="atomic"
+        >
+          <form [formGroup]="achievementsForm" class="form-stack">
+            <mat-form-field appearance="outline">
+              <mat-label>Summary</mat-label>
+              <textarea matInput rows="4" formControlName="summary"></textarea>
+            </mat-form-field>
+          </form>
+        </console-section-card>
+      </div>
     </div>
-  </console-long-form-layout>
+  </console-section-tabs>
 
   <console-sticky-save-bar
     [dirty]="atomicDirty"

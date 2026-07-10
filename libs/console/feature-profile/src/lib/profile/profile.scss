@@ -3,18 +3,16 @@
 }
 
 .profile-page {
-  @apply p-6;
-
   &__header {
     @apply mb-8;
   }
 }
 
-/* `.form-stack`, `.field-row`, `.field-block`, `.field-label`, `.form-subsection`
- * live in shared base/components.scss — see console-cookbook.md.
+/* Tab-shell (rail / strip / stepper) styles live in the shared
+ * `console-section-tabs` component. `.form-stack`, `.field-row`, `.field-block`,
+ * `.field-label`, `.form-subsection` live in shared base/components.scss — see
+ * console-cookbook.md.
  *
  * Section-specific layout rules (`.social-link-row`, `.cert-*`, `.media-*`,
  * `.json-ld-preview`, etc.) live with their owning section components under
- * `../sections/<section-name>/<section-name>.component.scss` — moved out of
- * this file when profile-page was split into per-section components, so
- * Angular's emulated view encapsulation actually scopes them to the right host. */
+ * `../sections/<section-name>/<section-name>.component.scss`. */

@@ -1,143 +1,170 @@
-<console-section-card
-  id="section-landing-content"
-  bucket="PUBLIC"
-  title="Landing Content"
-  description="Translatable copy blocks rendered on the landing page. Markdown supported."
-  saveMode="per-section"
-  consoleFormSnapshot
-  [formGroup]="form"
-  [consoleServerErrorMap]="{}"
-  [saving]="saving"
-  [lastSavedAt]="lastSaved"
-  (save)="save()"
->
-  <div class="form-stack">
-    <console-translatable-markdown-group
-      [group]="form.controls.tagline"
-      label="Tagline"
-      helperText="Hero sub-line on the home page (under the headline)."
-      [minHeight]="80"
-      [placeholder]="{ en: 'Designing reliable systems that scale', vi: 'Thiết kế hệ thống ổn định, dễ mở rộng' }"
-    />
+<!-- Home page copy -->
+<div [hidden]="!showAll() && activeSubTab() !== 'section-landing-home'">
+  <console-section-card
+    id="section-landing-home"
+    bucket="PUBLIC"
+    title="Home page"
+    description="Copy rendered on the home page — hero lines and the section intros. Markdown supported."
+    saveMode="atomic"
+  >
+    <div class="form-stack">
+      <console-translatable-markdown-group
+        [group]="form.controls.tagline"
+        label="Tagline"
+        helperText="Hero sub-line on the home page (under the headline)."
+        [minHeight]="80"
+        [placeholder]="{ en: 'Designing reliable systems that scale', vi: 'Thiết kế hệ thống ổn định, dễ mở rộng' }"
+      />
 
-    <console-translatable-markdown-group
-      [group]="form.controls.stackIntro"
-      label="Stack Intro"
-      helperText="Intro paragraph for the bio + stack grid section."
-      [minHeight]="140"
-      [placeholder]="{ en: 'Tools I reach for first…', vi: 'Bộ công cụ tôi dùng đầu tiên…' }"
-    />
+      <div class="field-block">
+        <label class="field-label" for="profile-core-stack-input">Core stack chips</label>
+        <span class="text-caption">
+          Hero chip strip — 3–4 short tokens, comma- or newline-separated. Rendered uppercase.
+        </span>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <input
+            id="profile-core-stack-input"
+            matInput
+            type="text"
+            [formControl]="form.controls.coreStack"
+            placeholder="Angular, TypeScript, Angular Material"
+          />
+        </mat-form-field>
+      </div>
 
-    <console-translatable-markdown-group
-      [group]="form.controls.selectedWorkIntro"
-      label="Selected Work Intro"
-      helperText="Heading + deck for §4 (lead sentence becomes the heading, the rest becomes the deck)."
-      [minHeight]="100"
-      [placeholder]="{
-        en: 'Three projects. A console, a fintech engine, an editor I had to ship myself.',
-        vi: 'Ba dự án. Một console, một fintech engine, một editor tôi tự ship.',
-      }"
-    />
+      <console-translatable-markdown-group
+        [group]="form.controls.stackIntro"
+        label="Stack Intro"
+        helperText="Intro paragraph for the bio + stack grid section."
+        [minHeight]="140"
+        [placeholder]="{ en: 'Tools I reach for first…', vi: 'Bộ công cụ tôi dùng đầu tiên…' }"
+      />
 
-    <console-translatable-markdown-group
-      [group]="form.controls.contactIntro"
-      label="Contact Intro"
-      helperText="Lead paragraph above the contact form / mailto block."
-      [minHeight]="140"
-      [placeholder]="{ en: 'Want to talk shop or hire?', vi: 'Muốn trao đổi hoặc làm việc cùng?' }"
-    />
+      <console-translatable-markdown-group
+        [group]="form.controls.selectedWorkIntro"
+        label="Selected Work Intro"
+        helperText="Heading + deck for §4 (lead sentence becomes the heading, the rest becomes the deck)."
+        [minHeight]="100"
+        [placeholder]="{
+          en: 'Three projects. A console, a fintech engine, an editor I had to ship myself.',
+          vi: 'Ba dự án. Một console, một fintech engine, một editor tôi tự ship.',
+        }"
+      />
 
-    <console-translatable-markdown-group
-      [group]="form.controls.footerTagline"
-      label="Footer Tagline"
-      helperText="One-line note rendered in the footer banner."
-      [minHeight]="80"
-      [placeholder]="{ en: 'Built with care, in Saigon.', vi: 'Làm tử tế, từ Sài Gòn.' }"
-    />
-
-    <console-translatable-markdown-group
-      [group]="form.controls.aboutHeading"
-      label="/about — page heading"
-      helperText="H1 at the top of the /about page. Plain text; keep ≤ 18 words."
-      [minHeight]="80"
-      [placeholder]="{
-        en: 'Frontend engineer building DDD-grade web platforms for fintech & SaaS teams.',
-        vi: 'Kỹ sư Frontend xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
-      }"
-    />
-
-    <console-translatable-markdown-group
-      [group]="form.controls.aboutLede"
-      label="/about — page lede"
-      helperText="Sub-paragraph under the H1. 2–3 sentences; also used as the meta description + og:description."
-      [minHeight]="120"
-      [placeholder]="{
-        en: 'Six years shipping production systems — payments, dashboards, content tools. I keep teams honest about complexity and trade-offs.',
-        vi: 'Sáu năm xây dựng hệ thống production — payments, dashboard, content tools.',
-      }"
-    />
-
-    <console-translatable-markdown-group
-      [group]="form.controls.ctaHeading"
-      label="/about — §04 Next steps heading"
-      helperText="Closing CTA heading at the bottom of /about (above the contact / LinkedIn / GitHub / CV row)."
-      [minHeight]="80"
-      [placeholder]="{
-        en: 'If any of this resonated, the door is open.',
-        vi: 'Nếu bạn thấy hợp, cứ gõ cửa.',
-      }"
-    />
-
-    <console-translatable-markdown-group
-      [group]="form.controls.ctaLede"
-      label="/about — §04 Next steps lede"
-      helperText="One-line prompt under the CTA heading."
-      [minHeight]="80"
-      [placeholder]="{
-        en: 'Engagement, freelance, or a long-form conversation about a hard system — pick the door that fits.',
-        vi: 'Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.',
-      }"
-    />
-
-    <div class="field-block">
-      <label class="field-label" for="profile-core-stack-input">Core stack chips</label>
-      <span class="text-caption">
-        Hero chip strip — 3–4 short tokens, comma- or newline-separated. Rendered uppercase.
-      </span>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <input
-          id="profile-core-stack-input"
-          matInput
-          type="text"
-          [formControl]="form.controls.coreStack"
-          placeholder="Angular, TypeScript, Angular Material"
-        />
-      </mat-form-field>
+      <console-translatable-markdown-group
+        [group]="form.controls.contactIntro"
+        label="Contact Intro"
+        helperText="Lead paragraph above the contact form / mailto block."
+        [minHeight]="140"
+        [placeholder]="{ en: 'Want to talk shop or hire?', vi: 'Muốn trao đổi hoặc làm việc cùng?' }"
+      />
     </div>
+  </console-section-card>
+</div>
 
-    <!-- ── /about Last-updated action ─────────────────────────────────────
-         Independent of the per-section save flow: stamps Profile.contentUpdatedAt
-         to "now" on click. The /about hero's "Last updated <month>" line reads
-         this value directly. Keep this separate so authors can publish narrative
-         tweaks (typos, casing) without bumping the visible date, then promote a
-         meaningful edit with one click. -->
-    <div class="field-block">
-      <span class="field-label">/about — content updated stamp</span>
-      <span class="text-caption">
-        Click to mark today as the “Last updated” date shown on the /about hero meta strip.
-      </span>
-      <div class="content-updated-row">
-        <button mat-stroked-button type="button" [disabled]="markingUpdated()" (click)="markUpdatedNow()">
-          {{ markingUpdated() ? 'Marking…' : 'Mark content as updated now' }}
-        </button>
-        @if (contentUpdatedAt(); as stamp) {
-          <span class="text-stat-label">
-            Last marked: <time [attr.datetime]="stamp.toISOString()">{{ stamp.toISOString().slice(0, 10) }}</time>
-          </span>
-        } @else {
-          <span class="text-stat-label">Never marked.</span>
-        }
+<!-- Footer copy -->
+<div [hidden]="!showAll() && activeSubTab() !== 'section-landing-footer'">
+  <console-section-card
+    id="section-landing-footer"
+    bucket="PUBLIC"
+    title="Footer"
+    description="One-line note rendered in the footer banner across every page. Markdown supported."
+    saveMode="atomic"
+  >
+    <div class="form-stack">
+      <console-translatable-markdown-group
+        [group]="form.controls.footerTagline"
+        label="Footer Tagline"
+        helperText="One-line note rendered in the footer banner."
+        [minHeight]="80"
+        [placeholder]="{ en: 'Built with care, in Saigon.', vi: 'Làm tử tế, từ Sài Gòn.' }"
+      />
+    </div>
+  </console-section-card>
+</div>
+
+<!-- /about page copy -->
+<div [hidden]="!showAll() && activeSubTab() !== 'section-landing-about'">
+  <console-section-card
+    id="section-landing-about"
+    bucket="PUBLIC"
+    title="About page"
+    description="Heading, lede, and the closing next-steps CTA on the /about page. Markdown supported."
+    saveMode="atomic"
+  >
+    <div class="form-stack">
+      <console-translatable-markdown-group
+        [group]="form.controls.aboutHeading"
+        label="/about — page heading"
+        helperText="H1 at the top of the /about page. Plain text; keep ≤ 18 words."
+        [minHeight]="80"
+        [placeholder]="{
+          en: 'Frontend engineer building DDD-grade web platforms for fintech & SaaS teams.',
+          vi: 'Kỹ sư Frontend xây dựng nền tảng web DDD cho các đội fintech & SaaS.',
+        }"
+      />
+
+      <console-translatable-markdown-group
+        [group]="form.controls.aboutLede"
+        label="/about — page lede"
+        helperText="Sub-paragraph under the H1. 2–3 sentences; also used as the meta description + og:description."
+        [minHeight]="120"
+        [placeholder]="{
+          en: 'Six years shipping production systems — payments, dashboards, content tools. I keep teams honest about complexity and trade-offs.',
+          vi: 'Sáu năm xây dựng hệ thống production — payments, dashboard, content tools.',
+        }"
+      />
+
+      <console-translatable-markdown-group
+        [group]="form.controls.ctaHeading"
+        label="/about — §04 Next steps heading"
+        helperText="Closing CTA heading at the bottom of /about (above the contact / LinkedIn / GitHub / CV row)."
+        [minHeight]="80"
+        [placeholder]="{
+          en: 'If any of this resonated, the door is open.',
+          vi: 'Nếu bạn thấy hợp, cứ gõ cửa.',
+        }"
+      />
+
+      <console-translatable-markdown-group
+        [group]="form.controls.ctaLede"
+        label="/about — §04 Next steps lede"
+        helperText="One-line prompt under the CTA heading."
+        [minHeight]="80"
+        [placeholder]="{
+          en: 'Engagement, freelance, or a long-form conversation about a hard system — pick the door that fits.',
+          vi: 'Hợp tác, freelance, hay một cuộc trò chuyện sâu về hệ thống khó — chọn cánh cửa phù hợp.',
+        }"
+      />
+
+      <!-- ── /about Last-updated action ─────────────────────────────────────
+           Independent of the per-section save flow: stamps Profile.contentUpdatedAt
+           to "now" on click. The /about hero's "Last updated <month>" line reads
+           this value directly. Keep this separate so authors can publish narrative
+           tweaks (typos, casing) without bumping the visible date, then promote a
+           meaningful edit with one click. -->
+      <div class="field-block">
+        <span class="field-label">/about — content updated stamp</span>
+        <span class="text-caption">
+          Click to mark today as the “Last updated” date shown on the /about hero meta strip.
+        </span>
+        <div class="content-updated-row">
+          <button mat-stroked-button type="button" [disabled]="markingUpdated()" (click)="markUpdatedNow()">
+            {{ markingUpdated() ? 'Marking…' : 'Mark content as updated now' }}
+          </button>
+          @if (contentUpdatedAt(); as stamp) {
+            <span class="text-stat-label">
+              Last marked: <time [attr.datetime]="stamp.toISOString()">{{ stamp.toISOString().slice(0, 10) }}</time>
+            </span>
+          } @else {
+            <span class="text-stat-label">Never marked.</span>
+          }
+        </div>
       </div>
     </div>
-  </div>
-</console-section-card>
+  </console-section-card>
+</div>
+
+<!-- Shared save bar: landing copy is one atomic BE block, so a single save commits
+     all three sub-tabs. Appears whenever any landing field is dirty. -->
+<console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="save()" (discard)="discard()" />

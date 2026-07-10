@@ -23,13 +23,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import {
   HasUnsavedChanges,
-  LongFormLayout,
   MediaPickerDialogComponent,
   MediaPickerDataSource,
   MediaPickerDialogData,
   onBeforeUnload,
-  ScrollspyRail,
   SectionCard,
+  SectionTabsLayout,
   SpinnerOverlay,
   StickySaveBar,
   ToastService,
@@ -60,9 +59,8 @@ import { AdminSkill, SKILL_TIER_OPTIONS, type SkillTier } from '../skill.types';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTooltipModule,
-    LongFormLayout,
-    ScrollspyRail,
     SectionCard,
+    SectionTabsLayout,
     SpinnerOverlay,
     StickySaveBar,
     FormErrorPipe,
@@ -106,6 +104,8 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
     { id: 'section-icon', label: 'Icon' },
     { id: 'section-settings', label: 'Settings' },
   ];
+  readonly activeId = signal('section-identity');
+  readonly showAll = signal(true);
 
   readonly tierOptions = SKILL_TIER_OPTIONS;
 

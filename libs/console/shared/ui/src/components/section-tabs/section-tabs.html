@@ -1,0 +1,93 @@
+<div class="section-tabs">
+  <!-- Toolbar: Show-all toggle (spans both columns on desktop) -->
+  <div class="section-tabs__toolbar">
+    <label class="section-tabs__showall">
+      <input type="checkbox" [checked]="showAll()" (change)="toggleShowAll()" />
+      <span>Show all sections</span>
+    </label>
+  </div>
+
+  <!-- Vertical rail (laptop+) -->
+  <nav class="section-tabs__rail" aria-label="Sections">
+    @if (title()) {
+      <div class="section-tabs__rail-title">{{ title() }}</div>
+    }
+    @for (group of effectiveGroups(); track $index) {
+      @if (group.label) {
+        <div class="section-tabs__group-label">{{ group.label }}</div>
+      }
+      @for (tab of group.sections; track tab.id) {
+        <button
+          type="button"
+          class="section-tabs__item"
+          [class.section-tabs__item--active]="!showAll() && activeId() === tab.id"
+          [attr.aria-current]="!showAll() && activeId() === tab.id ? 'true' : null"
+          (click)="select(tab.id)"
+        >
+          @if (resolveStatus(tab); as status) {
+            <span
+              class="section-tabs__icon"
+              [class.section-tabs__icon--saved]="status === 'saved'"
+              [class.section-tabs__icon--editing]="status === 'editing'"
+              [class.section-tabs__icon--error]="status === 'error'"
+            >
+              {{ statusIcon(status) }}
+            </span>
+          }
+          <span class="section-tabs__label">{{ tab.label }}</span>
+        </button>
+      }
+    }
+  </nav>
+
+  <!-- Horizontal scrollable strip (< laptop, tabbed mode only) -->
+  @if (!showAll()) {
+    <div class="section-tabs__strip" role="tablist" aria-label="Sections">
+      @for (group of effectiveGroups(); track $index) {
+        @for (tab of group.sections; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="section-tabs__strip-item"
+            [class.section-tabs__strip-item--active]="activeId() === tab.id"
+            [attr.aria-selected]="activeId() === tab.id"
+            (click)="select(tab.id)"
+          >
+            @if (resolveStatus(tab); as status) {
+              <span
+                class="section-tabs__icon"
+                [class.section-tabs__icon--saved]="status === 'saved'"
+                [class.section-tabs__icon--editing]="status === 'editing'"
+                [class.section-tabs__icon--error]="status === 'error'"
+              >
+                {{ statusIcon(status) }}
+              </span>
+            }
+            {{ tab.label }}
+          </button>
+        }
+      }
+    </div>
+  }
+
+  <!-- Content: consumer projects the section bodies, each gated with
+       [hidden]="!showAll() && activeId() !== '<id>'" so they stay mounted. -->
+  <div class="section-tabs__content">
+    <ng-content />
+
+    @if (stepperVisible()) {
+      <div class="section-tabs__nav">
+        <button type="button" class="section-tabs__nav-btn" [disabled]="isFirst()" (click)="prev()">← Previous</button>
+        <span class="section-tabs__nav-current">{{ activeLabel() }}</span>
+        <button
+          type="button"
+          class="section-tabs__nav-btn section-tabs__nav-btn--primary"
+          [disabled]="isLast()"
+          (click)="next()"
+        >
+          Next →
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,4 +1,4 @@
-<div class="skill-form-page">
+<div class="skill-form-page console-page">
   <console-spinner-overlay [loading]="loading()" />
 
   <div class="skill-form-page__header">
@@ -13,18 +13,10 @@
     </div>
   </div>
 
-  <console-long-form-layout>
-    <div rail>
-      <console-scrollspy-rail
-        [title]="isEditMode() ? 'Edit Skill' : 'New Skill'"
-        [sections]="sections"
-        [activeIndicator]="false"
-      />
-    </div>
-
-    <div content>
-      <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
-        <!-- Identity -->
+  <console-section-tabs [sections]="sections" [(activeId)]="activeId" [(showAll)]="showAll">
+    <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()" class="flex flex-col gap-y-4">
+      <!-- Identity -->
+      <div [hidden]="!showAll() && activeId() !== 'section-identity'">
         <console-section-card
           id="section-identity"
           bucket="PUBLIC"
@@ -46,8 +38,10 @@
             </mat-form-field>
           </div>
         </console-section-card>
+      </div>
 
-        <!-- Classification -->
+      <!-- Classification -->
+      <div [hidden]="!showAll() && activeId() !== 'section-classification'">
         <console-section-card
           id="section-classification"
           bucket="PUBLIC"
@@ -95,8 +89,10 @@
             -->
           </div>
         </console-section-card>
+      </div>
 
-        <!-- Experience -->
+      <!-- Experience -->
+      <div [hidden]="!showAll() && activeId() !== 'section-experience'">
         <console-section-card
           id="section-experience"
           bucket="PUBLIC"
@@ -118,8 +114,10 @@
             </mat-form-field>
           </div>
         </console-section-card>
+      </div>
 
-        <!-- Icon -->
+      <!-- Icon -->
+      <div [hidden]="!showAll() && activeId() !== 'section-icon'">
         <console-section-card
           id="section-icon"
           bucket="PUBLIC"
@@ -145,8 +143,10 @@
             }
           </div>
         </console-section-card>
+      </div>
 
-        <!-- Settings -->
+      <!-- Settings -->
+      <div [hidden]="!showAll() && activeId() !== 'section-settings'">
         <console-section-card
           id="section-settings"
           bucket="INTERNAL"
@@ -164,11 +164,11 @@
             </mat-form-field>
           </div>
         </console-section-card>
+      </div>
 
-        <button type="submit" class="hidden" aria-hidden="true"></button>
-      </form>
-    </div>
-  </console-long-form-layout>
+      <button type="submit" class="hidden" aria-hidden="true"></button>
+    </form>
+  </console-section-tabs>
 
   <console-sticky-save-bar [dirty]="dirty" [saving]="submitting" (save)="submit()" (discard)="discard()" />
 </div>
