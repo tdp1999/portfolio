@@ -4,46 +4,55 @@
       The <em>toolkit</em>.
     </landing-section-header>
 
-    <div class="home-stack__column">
-      @for (paragraph of paragraphs(); track $index) {
-        <p class="home-stack__paragraph">
-          @for (run of paragraph; track $index) {
-            @switch (run.emphasis) {
-              @case ('bold') {
-                <strong class="home-stack__bold">{{ run.text }}</strong>
+    <div class="home-stack__weave">
+      @for (beat of beats(); track $index) {
+        <div class="home-stack__beat">
+          @if (beat.paragraph; as paragraph) {
+            <p class="home-stack__paragraph">
+              @for (run of paragraph; track $index) {
+                @switch (run.emphasis) {
+                  @case ('bold') {
+                    <strong class="home-stack__bold">{{ run.text }}</strong>
+                  }
+                  @case ('italic') {
+                    <em class="home-stack__italic">{{ run.text }}</em>
+                  }
+                  @default {
+                    <span>{{ run.text }}</span>
+                  }
+                }
               }
-              @case ('italic') {
-                <em class="home-stack__italic">{{ run.text }}</em>
-              }
-              @default {
-                <span>{{ run.text }}</span>
-              }
-            }
+            </p>
           }
-        </p>
+          @if (beat.group; as group) {
+            <div class="home-stack__beat-tier">
+              <div class="home-stack__tier-head">
+                <span
+                  class="home-stack__rule"
+                  [class.home-stack__rule--accent]="group.tier === 'DAILY'"
+                  [class.home-stack__rule--muted]="group.tier === 'SHIPPED'"
+                  aria-hidden="true"
+                ></span>
+                <landing-eyebrow [label]="group.label" />
+              </div>
+              <ul class="home-stack__pills" role="list">
+                @for (skill of group.members; track skill.id) {
+                  <li>
+                    <landing-chip
+                      [label]="skill.name"
+                      [iconUrl]="skill.iconUrl"
+                      [prominence]="tierProminence[group.tier]"
+                    />
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
       }
     </div>
 
     @if (populatedGroups().length > 0) {
-      <ul class="home-stack__groups" role="list">
-        @for (group of populatedGroups(); track group.tier) {
-          <li class="home-stack__group">
-            <landing-eyebrow [label]="group.label" />
-            <ul class="home-stack__pills" role="list">
-              @for (skill of group.members; track skill.id) {
-                <li>
-                  <landing-chip
-                    [label]="skill.name"
-                    [iconUrl]="skill.iconUrl"
-                    [prominence]="tierProminence[group.tier]"
-                  />
-                </li>
-              }
-            </ul>
-          </li>
-        }
-      </ul>
-
       <p class="home-stack__credit">
         <span>icons</span>
         <span class="home-stack__credit-sep" aria-hidden="true">·</span>

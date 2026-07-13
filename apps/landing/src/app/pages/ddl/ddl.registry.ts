@@ -351,8 +351,8 @@ export const DDL_REGISTRY: readonly DdlEntry[] = [
     slug: 'stack',
     title: 'Stack',
     group: 'sections',
-    status: 'exploring',
-    summary: 'Tier grouping · brand icons · L3 stagger.',
+    status: 'decided',
+    summary: 'Tier grouping · brand icons · interleave prose+tier (shipped §04).',
     source: 'route:/ddl/stack',
   },
   {

@@ -16,7 +16,7 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
       <landing-ddl-decision-record
         [variants]="variants"
         [summary]="
-          'Decided: tier grouping · action voice, brand-color icons (Iconify CDN here for prototype only — production uses MediaPicker upload), and the L3 effect (stagger only, no background — audit verdict: do not break the quiet middle). Still weighing the center-aligned intro — three takes below.'
+          'Decided: tier grouping · action voice, brand-color icons (Iconify CDN here for prototype only; production uses MediaPicker upload), and the L3 effect (stagger only, no background, per the audit verdict to keep the quiet middle). Intro direction: shipped the interleave below to home §04, each paragraph woven with the tier it produced, keeping the full multi-paragraph prose. The single-tagline proposal and the three centred-intro takes are superseded by that pick, kept below as history.'
         "
       />
 
@@ -198,6 +198,54 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
         </div>
       </landing-ddl-section>
 
+      <!-- ═══ Interleave — prose woven with tiers (exploration) ═══════════ -->
+      <landing-ddl-section anchor="interleave" heading="Interleave — prose woven with tiers">
+        <section class="stk stk--weave" aria-label="Interleave — one condensed paragraph per tier">
+          <landing-eyebrow [label]="['04', 'The Stack']" [accentFirst]="true" [trailingRule]="true" />
+          <h2 class="stk__display stk__display--weave">The <em class="stk__display-em">toolkit</em>.</h2>
+
+          <div class="stk__weave">
+            @for (beat of weave; track beat.tier.label) {
+              <div class="stk__beat">
+                <p class="stk__beat-prose">{{ beat.prose }}</p>
+                <div class="stk__beat-tier">
+                  <div class="stk__tier-head">
+                    <span
+                      class="stk__rule"
+                      [class.stk__rule--accent]="beat.rule === 'accent'"
+                      [class.stk__rule--muted]="beat.rule === 'muted'"
+                      aria-hidden="true"
+                    ></span>
+                    <landing-eyebrow [label]="beat.tier.label" />
+                  </div>
+                  <ul class="stk__chips" role="list">
+                    @for (s of beat.tier.skills; track s.name) {
+                      <li>
+                        <landing-chip [label]="s.name" [iconUrl]="s.icon" size="lg" />
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <div class="stk-notes">
+          <p class="stk-notes__label">interleave · shipped to home §04</p>
+          <p class="stk-notes__text">
+            <strong>Feasible, low cost.</strong> The consumed component pairs paragraph[i] with tier[i] by position — a
+            single <code>computed</code> zips <code>parseInlineParagraphs(stackIntro)</code> against the tier groups. No
+            schema change; the chip rack, eyebrow, and rules are the same primitives as the proposal above.
+            <strong>The one coupling:</strong> paragraph count must track tier count (3 today). If they diverge, the
+            component renders the shorter list paired and drops the leftover onto the end — so it degrades, it doesn't
+            break. Prose here is placeholder; final copy is authored on prod via <code>Profile.stackIntro</code>. Left
+            rule per beat ties each paragraph to the tools it produced (doubles as the "decoration" that breaks the wall
+            of centred text).
+          </p>
+        </div>
+      </landing-ddl-section>
+
       <!-- ═══ Implications punch list ═════════════════════════════════════ -->
       <landing-ddl-section anchor="punch-list" heading="BE / DB / console punch list">
         <div class="stk-summary">
@@ -215,12 +263,12 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
               </dd>
             </div>
             <div class="stk-cost__row">
-              <dt class="stk-cost__key">TAGLINE</dt>
+              <dt class="stk-cost__key">PROSE</dt>
               <dd class="stk-cost__val">
-                <span class="stk-cost__scope">Small · 4 files</span>
-                Reuse <code>Profile.stackIntro</code>; tighten Zod validation to ≤120 chars + single-line. Console swaps
-                the markdown textarea for a plain translatable string input. FE drops the markdown parser path and
-                renders the single line.
+                <span class="stk-cost__scope">Shipped · 3 files</span>
+                Reuse <code>Profile.stackIntro</code> as-is: multi-paragraph, markdown emphasis kept. The home stack
+                component zips each parsed paragraph with its tier by position (<code>beats()</code>). No schema or
+                validation change; the author tightens the copy on prod.
               </dd>
             </div>
             <div class="stk-cost__row">
@@ -641,6 +689,39 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
         color: var(--landing-text-300);
       }
 
+      /* ─── Interleave — prose woven with tiers ────────────────────── */
+      .stk--weave .stk__display--weave {
+        text-align: left;
+        margin-top: 24px;
+      }
+      .stk__weave {
+        display: grid;
+        gap: 56px;
+        max-width: 46rem;
+        margin-top: 48px;
+      }
+      .stk__beat {
+        display: grid;
+        gap: 20px;
+        padding-left: 24px;
+        border-left: 1px solid var(--landing-border);
+      }
+      .stk__beat-prose {
+        margin: 0;
+        font-family: var(--landing-font-body);
+        font-size: var(--landing-body-lg);
+        line-height: var(--landing-body-lg-lh);
+        color: var(--landing-text-300);
+        text-align: left;
+      }
+      .stk__beat-tier {
+        display: grid;
+        gap: 12px;
+      }
+      .stk__beat-tier .stk__tier-head {
+        margin-bottom: 0;
+      }
+
       /* ─── Mobile ─────────────────────────────────────────────────── */
       @include bp.respond-down('tablet') {
         .stk {
@@ -660,6 +741,13 @@ import { SKILLS, STACK_VARIANTS } from './ddl-stack.data';
         .stk__variant-body {
           padding: 32px 16px;
         }
+        .stk__weave {
+          gap: 40px;
+          margin-top: 32px;
+        }
+        .stk__beat {
+          padding-left: 16px;
+        }
         .stk-cost__row {
           grid-template-columns: 1fr;
           gap: 8px;
@@ -672,6 +760,30 @@ export class DdlStack {
   // ── Properties ─────────────────────────────────────────────────────
   readonly skills = SKILLS;
   readonly variants = STACK_VARIANTS;
+
+  /** Interleave exploration — one condensed paragraph paired with its tier.
+   *  Prose is placeholder (final copy is authored on prod via Profile.stackIntro);
+   *  the consumed component would zip paragraph[i] ↔ tier[i] by position. */
+  readonly weave = [
+    {
+      rule: 'accent' as const,
+      prose:
+        'Most of my time writing code has been Angular. I started at the smallest steps and worked up to building the libraries other apps reuse.',
+      tier: { label: 'Daily drivers', skills: SKILLS.daily },
+    },
+    {
+      rule: 'plain' as const,
+      prose:
+        'That stretch shaped how I work: scale first, an architecture that holds under real problems. Wanting to understand the backend properly is how I drifted into NestJS.',
+      tier: { label: 'Frequent', skills: SKILLS.frequent },
+    },
+    {
+      rule: 'muted' as const,
+      prose:
+        'When AI arrived I did not stop at using it. I built my own workflow on top, tuned to how I actually work. This very site was planned, built, and shipped with it.',
+      tier: { label: 'Shipped with', skills: SKILLS.shipped },
+    },
+  ];
 
   // ── Methods ────────────────────────────────────────────────────────
   protected replay(host: HTMLElement): void {

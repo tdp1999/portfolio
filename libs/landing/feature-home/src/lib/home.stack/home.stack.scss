@@ -13,14 +13,56 @@
   margin-bottom: 24px;
 }
 
-.home-stack__column {
+/* Interleave — each paragraph woven with the tier it produced. Block is centred
+   under the centred title, but text reads left-aligned. Left rule ties each
+   paragraph to its chips and breaks the wall of centred prose. */
+.home-stack__weave {
   max-width: 680px;
-  margin-top: 32px;
-  margin-inline: auto;
+  margin: 40px auto 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  text-align: center;
+  gap: 56px;
+}
+
+.home-stack__beat {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 24px;
+  border-left: 1px solid var(--landing-border);
+  text-align: left;
+}
+
+.home-stack__beat-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-stack__tier-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-stack__tier-head landing-eyebrow {
+  margin-bottom: 0;
+}
+
+.home-stack__rule {
+  display: block;
+  height: 1px;
+  width: 32px;
+  flex: 0 0 32px;
+  background: var(--landing-border);
+}
+
+.home-stack__rule--accent {
+  background: var(--landing-accent);
+}
+
+.home-stack__rule--muted {
+  background: color-mix(in srgb, var(--landing-border) 60%, transparent);
 }
 
 .home-stack__paragraph {
@@ -42,27 +84,6 @@
   color: var(--landing-text-300);
 }
 
-.home-stack__groups {
-  list-style: none;
-  max-width: 760px;
-  margin: 32px auto 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.home-stack__group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.home-stack__group landing-eyebrow {
-  margin-bottom: 0;
-}
-
 .home-stack__pills {
   list-style: none;
   margin: 0;
@@ -70,7 +91,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: center;
 }
 
 /* Subtle attribution line for the SVG icons rendered inside each chip.
@@ -112,7 +132,11 @@
     padding-block: 64px;
   }
 
-  .home-stack__groups {
-    margin-top: 48px;
+  .home-stack__weave {
+    gap: 40px;
+  }
+
+  .home-stack__beat {
+    padding-left: 16px;
   }
 }
