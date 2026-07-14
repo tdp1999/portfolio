@@ -53,6 +53,26 @@ document-engine-editor {
   }
 }
 
+// TEMPORARY BRIDGE — active/pressed state for toolbar toggle buttons (bold, italic,
+// lists, link…). The engine sets `.active` via `[class.active]="editor.isActive(...)"`
+// (the class IS applied correctly) but published `document-engine-angular@0.1.2`
+// ships no CSS for it, so the toolbar never highlights the active format — the
+// reported "button bold không tô đậm".
+//
+// The real fix now lives in the library (`document-engine-angular/styles/toolbar`
+// → `document-engine-toolbar .btn.active`, using `--primary`). REMOVE this block
+// once the dependency is bumped to the version that ships it. Same selector +
+// tokens (`--primary` maps to `--color-primary` above), so keeping both is a no-op
+// until then. Note: can't reuse the demo's `--secondary` here — in this mapping it
+// equals `--muted` (the toolbar's own background), so the button would blend in.
+document-engine-toolbar .btn.active {
+  &,
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+  }
+}
+
 // Editable-area sizing. The engine ships no min-height on the content surface, so
 // an empty editor collapses to ~1 line. Give each mode a sensible floor via the
 // host's reflected `data-rte-mode` (set by `console-rich-text-editor`). Min-height,
