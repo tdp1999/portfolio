@@ -65,3 +65,19 @@ None (standalone)
 **Reasoning:** Điều tra nhiều service + quyết định kiến trúc (Umami hosting, App Sleeping), nhưng thay đổi chủ yếu ở config Railway chứ không phải code lớn. Có rủi ro destructive (xóa service) cần xác nhận. 1–3 giờ.
 
 ## Progress Log
+
+### 2026-07-13 — Umami stack tắt tạm thời (⚠️ CẦN BẬT LẠI)
+
+Đã **disable tạm** cả Umami stack để giảm chi phí, chờ quyết định cuối ở Acceptance Criteria #1. Thao tác qua `railway down` (remove deployment đang chạy, **giữ nguyên config + data volume**, reversible).
+
+- **Umami** (`4e10d99d-...`): deployment đang chạy đã remove → app down. `analytics.thunderphong.com/api/heartbeat` = 404.
+- **Postgres Umami** (`6144c467-...`): `latestDeployment: null` → down. Data volume được Railway retain (chỉ còn phí storage nhỏ).
+- **Landing giữ nguyên** — script umami trong `apps/landing/src/index.html:95-101` KHÔNG sửa/redeploy. Xác nhận Landing vẫn 200, không vỡ (script off critical path, `UmamiEventDirective` no-op khi `globalThis.umami` undefined). `script.js` vẫn 200 do Cloudflare edge cache; beacon `/api/send` fail âm thầm, không ảnh hưởng user.
+
+**Hệ quả:** không thu analytics trong thời gian tắt. Privacy policy vẫn khai báo Umami (để nguyên vì chỉ tắt tạm).
+
+**Bật lại** (đúng thứ tự — app cần DB sẵn sàng):
+```bash
+railway redeploy --service "Postgres Umami" -e production -y
+railway redeploy --service "Umami" -e production -y
+```
