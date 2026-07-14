@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { isEditableTarget } from '@portfolio/shared/ui';
 import { comboFromEvent, formatCombo, normalizeCombo, type KeyboardShortcut } from './keyboard-shortcut.types';
-import { isInEditableElement } from './keyboard-shortcut.util';
 
 /**
  * Root-provided registry of global keyboard shortcuts.
@@ -95,7 +95,7 @@ export class KeyboardShortcutService {
    */
   handleKeydown(event: KeyboardEvent): boolean {
     if (this.suspended()) return false;
-    const inEditable = isInEditableElement(event.target);
+    const inEditable = isEditableTarget(event.target);
     const combo = comboFromEvent(event);
     for (const shortcut of this.shortcuts()) {
       if (inEditable && !shortcut.allowInInput) continue;

@@ -5,6 +5,7 @@ import { filter, fromEvent } from 'rxjs';
 
 import { SIDEBAR_CONTEXT } from './sidebar-context.token';
 import { SidebarState } from './sidebar-state.service';
+import { isEditableTarget } from '../../utils/is-editable-target';
 
 @Component({
   selector: 'ui-sidebar-provider',
@@ -33,6 +34,8 @@ export class SidebarProviderComponent implements OnInit {
     fromEvent<KeyboardEvent>(this.document, 'keydown')
       .pipe(
         filter((e) => (e.metaKey || e.ctrlKey) && e.key === 'b'),
+        // Yield the chord to the editor/input that owns the caret (e.g. Cmd+B = bold).
+        filter((e) => !isEditableTarget(e.target)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((e) => {

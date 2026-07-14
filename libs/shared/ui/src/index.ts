@@ -1,5 +1,8 @@
 /* Consolidated shared UI library — pipes + sidebar (compound component). */
 
+/* Utils */
+export { isEditableTarget } from './utils/is-editable-target';
+
 /* Pipes */
 export * from './pipes/readable-size.pipe';
 export * from './pipes/file-icon.pipe';

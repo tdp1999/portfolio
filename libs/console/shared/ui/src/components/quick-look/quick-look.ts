@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatIconModule } from '@angular/material/icon';
+import { isEditableTarget } from '@portfolio/shared/ui';
 import { SpinnerOverlay } from '../spinner/spinner-overlay';
 
 /**
@@ -62,9 +63,7 @@ export class QuickLook {
     if (!this.open()) return;
 
     // Don't hijack typing inside form fields that may live in projected content.
-    const target = event.target as HTMLElement | null;
-    const tag = target?.tagName;
-    const typing = tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable;
+    const typing = isEditableTarget(event.target);
 
     switch (event.key) {
       case 'Escape':
