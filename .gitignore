@@ -73,3 +73,6 @@ dist/apps/landing/bundle-report.html
 /assets/*
 !/assets/projects/
 !/assets/projects/**
+
+# shot-composer working dir (generated cover images)
+.shot-composer/
