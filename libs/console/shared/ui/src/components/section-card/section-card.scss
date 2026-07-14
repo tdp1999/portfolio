@@ -1,3 +1,5 @@
+@use 'base/prefers';
+
 .section-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -52,5 +54,28 @@
     border-radius: 50%;
     background: var(--color-primary);
     display: inline-block;
+  }
+
+  &__btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: section-card-spin 0.7s linear infinite;
+
+    @include prefers.reduce-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes section-card-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

@@ -1,3 +1,55 @@
+@use 'base/prefers';
+
+// Full-viewport scrim shown while a save is in flight. Blocks every click
+// (form fields, sidebar nav, discard) so the user can't misclick mid-save.
+// z-index sits just below the save bar (100) and modals (1000), above content.
+.sticky-save-bar__lock {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  cursor: progress;
+}
+
+.sticky-save-bar__lock-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: sticky-save-bar-spin 0.7s linear infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}
+
+.sticky-save-bar__btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  opacity: 0.9;
+  animation: sticky-save-bar-spin 0.7s linear infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}
+
+@keyframes sticky-save-bar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .sticky-save-bar {
   position: fixed;
   bottom: 0;

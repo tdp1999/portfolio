@@ -29,6 +29,7 @@
         <button mat-button type="button" [disabled]="isCancelDisabled()" (click)="onCancel()">Cancel</button>
         <button mat-flat-button type="button" [disabled]="isSaveDisabled()" (click)="onSave()">
           @if (saving()?.()) {
+            <span class="section-card__btn-spinner" aria-hidden="true"></span>
             Saving…
           } @else {
             Save section

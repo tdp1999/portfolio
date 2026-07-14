@@ -1,3 +1,9 @@
+@if (saving()()) {
+  <div class="sticky-save-bar__lock" aria-hidden="true">
+    <span class="sticky-save-bar__lock-spinner"></span>
+  </div>
+}
+
 <div class="sticky-save-bar">
   <div class="sticky-save-bar__inner">
     @if (dirty()()) {
@@ -15,6 +21,7 @@
       }
       <button mat-flat-button type="button" [disabled]="saving()()" (click)="onSave()">
         @if (saving()()) {
+          <span class="sticky-save-bar__btn-spinner" aria-hidden="true"></span>
           Saving…
         } @else {
           Save changes
