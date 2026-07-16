@@ -46,6 +46,8 @@
           View the full archive at /projects
         </landing-link>
       </p>
+    } @else {
+      <landing-empty-state variant="inline" [message]="emptyMessage()" />
     }
   </landing-container>
 </section>

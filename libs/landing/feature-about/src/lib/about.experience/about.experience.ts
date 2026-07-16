@@ -3,7 +3,17 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
-import { Chip, Container, Eyebrow, Icon, Heading, Link, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
+import {
+  Chip,
+  Container,
+  EmptyState,
+  Eyebrow,
+  Icon,
+  Heading,
+  Link,
+  LandingLocaleService,
+  T,
+} from '@portfolio/landing/shared/ui';
 import { RteRender } from '@portfolio/shared/features/rte-renderer';
 import { ExperienceService } from '@portfolio/landing/shared/data-access';
 import { FRAGMENT_PREFIX } from './about.experience.data';
@@ -14,7 +24,7 @@ import { sortReverseChrono, toVm } from './about.experience.util';
   selector: 'landing-about-experience',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, Chip, Container, Eyebrow, Icon, Heading, Link, T, RteRender],
+  imports: [NgTemplateOutlet, Chip, Container, EmptyState, Eyebrow, Icon, Heading, Link, T, RteRender],
   templateUrl: './about.experience.html',
   styleUrl: './about.experience.scss',
 })
@@ -28,6 +38,11 @@ export class AboutExperience {
 
   /** SSR default: desktop layout. Mobile observer flips post-hydration. */
   protected readonly isMobile = computed(() => this.breakpoint().name === 'mobile');
+
+  /** Empty-state copy — matches the shared inline placeholder used across About sections. */
+  protected readonly emptyMessage = computed(() =>
+    this.locale() === 'vi' ? 'Lịch sử công việc đang được cập nhật.' : 'Career history coming soon.'
+  );
 
   /** Reverse-chronological (latest first). `endDate === null` (current) outranks any past role. */
   private readonly experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });

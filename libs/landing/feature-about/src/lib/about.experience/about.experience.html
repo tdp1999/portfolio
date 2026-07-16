@@ -13,12 +13,7 @@
     </header>
 
     @if (vms().length === 0) {
-      <p class="exp__empty">
-        <landing-t>
-          <ng-container en>Career history coming soon.</ng-container>
-          <ng-container vi>Lịch sử công việc đang được cập nhật.</ng-container>
-        </landing-t>
-      </p>
+      <landing-empty-state variant="inline" [message]="emptyMessage()" />
     } @else if (isMobile()) {
       <!-- Mobile: accordion. Default-open = first (latest role). Clicking the open
          row collapses it. Chevron rotates 180° via aria-expanded driven CSS. -->

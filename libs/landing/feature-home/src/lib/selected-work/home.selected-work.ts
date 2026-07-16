@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import {
   Container,
   EmphasisText,
+  EmptyState,
   Link,
   SectionHeader,
   Segmented,
@@ -21,6 +22,7 @@ import { MAX_TABS } from './home.selected-work.data';
   imports: [
     Container,
     EmphasisText,
+    EmptyState,
     Link,
     SectionHeader,
     Segmented,
@@ -53,6 +55,11 @@ export class HomeSelectedWork {
 
   protected readonly introHeading = computed(() => this.introSplit()[0]);
   protected readonly introDeck = computed(() => this.introSplit()[1]);
+
+  /** Empty-state copy — inline placeholder shown when no featured projects exist yet. */
+  protected readonly emptyMessage = computed(() =>
+    this.locale() === 'vi' ? 'Các dự án chọn lọc sẽ sớm được cập nhật.' : 'Selected work coming soon.'
+  );
 
   protected readonly projects = toSignal(this.projectService.getFeatured(), {
     initialValue: [] as ProjectDetailData[],

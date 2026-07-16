@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Container, Eyebrow, Heading, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
+import { Container, EmptyState, Eyebrow, Heading, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
 import { FailureService, type PublicAboutFailure } from '@portfolio/landing/shared/data-access';
 import type { FailureEssay } from '../about.failures.types';
 
@@ -22,7 +22,7 @@ import type { FailureEssay } from '../about.failures.types';
   selector: 'landing-about-failures',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Heading, T],
+  imports: [Container, EmptyState, Eyebrow, Heading, T],
   templateUrl: './about.failures.html',
   styleUrl: './about.failures.scss',
 })
@@ -58,4 +58,9 @@ export class AboutFailures {
   });
 
   protected readonly isEmpty = computed(() => this.resolvedEssays().length === 0);
+
+  /** Empty-state copy — matches the shared inline placeholder used across About sections. */
+  protected readonly emptyMessage = computed(() =>
+    this.locale() === 'vi' ? 'Các ghi chú sẽ sớm được cập nhật.' : 'Field notes coming soon.'
+  );
 }

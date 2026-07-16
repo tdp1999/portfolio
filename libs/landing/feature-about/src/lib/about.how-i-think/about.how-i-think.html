@@ -13,7 +13,7 @@
     </header>
 
     @if (isEmpty()) {
-      <p class="hit__loading" aria-live="polite">Loading principles…</p>
+      <landing-empty-state variant="inline" [message]="emptyMessage()" />
     } @else {
       <ol class="hit__list">
         @for (p of principles(); track p.id) {

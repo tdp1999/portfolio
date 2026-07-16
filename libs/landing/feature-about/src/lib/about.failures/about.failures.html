@@ -14,45 +14,49 @@
       </div>
     </header>
 
-    <ol class="afa__list">
-      @for (e of resolvedEssays(); track e.id) {
-        <li class="afa__card">
-          <header class="afa__card-head">
-            <span class="afa__year">{{ e.year }}</span>
-            <span class="afa__context">{{ e.context }}</span>
-          </header>
+    @if (isEmpty()) {
+      <landing-empty-state variant="inline" [message]="emptyMessage()" />
+    } @else {
+      <ol class="afa__list">
+        @for (e of resolvedEssays(); track e.id) {
+          <li class="afa__card">
+            <header class="afa__card-head">
+              <span class="afa__year">{{ e.year }}</span>
+              <span class="afa__context">{{ e.context }}</span>
+            </header>
 
-          <div class="afa__sec">
-            <p class="afa__label">
-              <landing-t>
-                <ng-container en>Decision</ng-container>
-                <ng-container vi>Quyết định</ng-container>
-              </landing-t>
-            </p>
-            <p class="afa__prose">{{ e.decision }}</p>
-          </div>
+            <div class="afa__sec">
+              <p class="afa__label">
+                <landing-t>
+                  <ng-container en>Decision</ng-container>
+                  <ng-container vi>Quyết định</ng-container>
+                </landing-t>
+              </p>
+              <p class="afa__prose">{{ e.decision }}</p>
+            </div>
 
-          <div class="afa__sec">
-            <p class="afa__label">
-              <landing-t>
-                <ng-container en>Consequence</ng-container>
-                <ng-container vi>Hậu quả</ng-container>
-              </landing-t>
-            </p>
-            <p class="afa__prose">{{ e.consequence }}</p>
-          </div>
+            <div class="afa__sec">
+              <p class="afa__label">
+                <landing-t>
+                  <ng-container en>Consequence</ng-container>
+                  <ng-container vi>Hậu quả</ng-container>
+                </landing-t>
+              </p>
+              <p class="afa__prose">{{ e.consequence }}</p>
+            </div>
 
-          <div class="afa__sec">
-            <p class="afa__label">
-              <landing-t>
-                <ng-container en>Lesson</ng-container>
-                <ng-container vi>Bài học</ng-container>
-              </landing-t>
-            </p>
-            <p class="afa__prose afa__prose--lesson">{{ e.lesson }}</p>
-          </div>
-        </li>
-      }
-    </ol>
+            <div class="afa__sec">
+              <p class="afa__label">
+                <landing-t>
+                  <ng-container en>Lesson</ng-container>
+                  <ng-container vi>Bài học</ng-container>
+                </landing-t>
+              </p>
+              <p class="afa__prose afa__prose--lesson">{{ e.lesson }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    }
   </landing-container>
 </section>
