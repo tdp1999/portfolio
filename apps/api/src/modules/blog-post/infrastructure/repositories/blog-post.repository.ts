@@ -9,8 +9,10 @@ import {
   BlogPostUpdateInput,
   BlogPostFindAllOptions,
   BlogPostListPublicOptions,
+  BulkPostTarget,
 } from '../../application/ports/blog-post.repository.port';
 import { BlogPost } from '../../domain/entities/blog-post.entity';
+import { PostStatus } from '../../domain/blog-post.types';
 import { BlogPostMapper, PrismaBlogPostWithRelations, BlogPostReadResult } from '../mapper/blog-post.mapper';
 
 const fullInclude = {
@@ -106,6 +108,74 @@ export class BlogPostRepository implements IBlogPostRepository {
         deletedById: null,
         updatedById: entity.updatedById,
       },
+    });
+  }
+
+  async bulkSoftDelete(ids: string[], userId: string): Promise<number> {
+    const { count } = await this.prisma.blogPost.updateMany({
+      where: { id: { in: ids }, deletedAt: null },
+      data: { deletedAt: new Date(), deletedById: userId, updatedById: userId },
+    });
+    return count;
+  }
+
+  async bulkRestore(ids: string[], userId: string): Promise<number> {
+    const { count } = await this.prisma.blogPost.updateMany({
+      where: { id: { in: ids }, deletedAt: { not: null } },
+      data: { deletedAt: null, deletedById: null, updatedById: userId },
+    });
+    return count;
+  }
+
+  async bulkPermanentDelete(ids: string[]): Promise<number> {
+    // Relations (postCategory/postTag) cascade via schema onDelete rules.
+    // `deletedAt: { not: null }` is a hard safety rail, not a UI concern: this is the
+    // only irreversible bulk action, and the endpoint accepts arbitrary ids, so a
+    // malformed/replayed request must never be able to destroy a live post.
+    const { count } = await this.prisma.blogPost.deleteMany({
+      where: { id: { in: ids }, deletedAt: { not: null } },
+    });
+    return count;
+  }
+
+  async findBulkTargets(ids: string[]): Promise<BulkPostTarget[]> {
+    const rows = await this.prisma.blogPost.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, title: true, slug: true, contentJson: true, deletedAt: true },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      slug: r.slug,
+      hasContent: r.contentJson !== null,
+      isDeleted: r.deletedAt !== null,
+    }));
+  }
+
+  async findTakenSlugs(slugs: string[]): Promise<string[]> {
+    if (slugs.length === 0) return [];
+    const rows = await this.prisma.blogPost.findMany({
+      where: { slug: { in: slugs }, deletedAt: null },
+      select: { slug: true },
+    });
+    return rows.map((r) => r.slug);
+  }
+
+  async bulkSetStatus(ids: string[], status: PostStatus, userId: string): Promise<number> {
+    return this.prisma.$transaction(async (tx) => {
+      // Publishing a post that never had a publish date gets one now; already-dated
+      // rows keep their original date. Un-publishing leaves the date untouched.
+      if (status === 'PUBLISHED') {
+        await tx.blogPost.updateMany({
+          where: { id: { in: ids }, deletedAt: null, publishedAt: null },
+          data: { publishedAt: new Date() },
+        });
+      }
+      const { count } = await tx.blogPost.updateMany({
+        where: { id: { in: ids }, deletedAt: null },
+        data: { status, updatedById: userId },
+      });
+      return count;
     });
   }
 

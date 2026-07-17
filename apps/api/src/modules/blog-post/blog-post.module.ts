@@ -11,7 +11,13 @@ import { BlogPostPublicController } from './presentation/blog-post-public.contro
 import { BlogPostAdminController } from './presentation/blog-post-admin.controller';
 import { BlogPostRepository } from './infrastructure/repositories/blog-post.repository';
 import { BLOG_POST_REPOSITORY } from './application/blog-post.token';
-import { CreatePostHandler, UpdatePostHandler, DeletePostHandler, RestorePostHandler } from './application/commands';
+import {
+  CreatePostHandler,
+  UpdatePostHandler,
+  DeletePostHandler,
+  RestorePostHandler,
+  BulkPostHandler,
+} from './application/commands';
 import {
   ListPostsHandler,
   GetPostByIdHandler,
@@ -21,7 +27,7 @@ import {
   ConvertMarkdownHandler,
 } from './application/queries';
 
-const commandHandlers = [CreatePostHandler, UpdatePostHandler, DeletePostHandler, RestorePostHandler];
+const commandHandlers = [CreatePostHandler, UpdatePostHandler, DeletePostHandler, RestorePostHandler, BulkPostHandler];
 
 const queryHandlers = [
   ListPostsHandler,

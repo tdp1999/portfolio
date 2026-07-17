@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import type { BlogPostErrorCode } from '@portfolio/shared/errors';
 import type { MediaRefMap } from '@portfolio/shared/features/rte-core/image-refs';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import type { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
@@ -55,6 +56,34 @@ const UpdateBlogPostBaseSchema = z.object({
 export const UpdateBlogPostSchema = nonEmptyPartial(UpdateBlogPostBaseSchema);
 
 export type UpdateBlogPostDto = z.infer<typeof UpdateBlogPostSchema>;
+
+// --- Bulk actions ---
+
+export const BULK_POST_ACTIONS = ['delete', 'restore', 'permanent-delete', 'publish', 'unpublish'] as const;
+export type BulkPostAction = (typeof BULK_POST_ACTIONS)[number];
+
+export const BulkPostActionSchema = z.object({
+  ids: z.array(z.uuid()).min(1).max(200),
+  action: z.enum(BULK_POST_ACTIONS),
+});
+
+export type BulkPostActionDto = z.infer<typeof BulkPostActionSchema>;
+
+/**
+ * A post the action refused to touch. `errorCode` is the SAME code the single-post
+ * path throws for this reason, so the console's existing error dictionary already
+ * has user-facing copy for it — no bulk-only vocabulary.
+ */
+export interface BulkPostSkip {
+  id: string;
+  errorCode: BlogPostErrorCode;
+}
+
+/** `count` = rows actually written; `skipped` = ids held back, with why. */
+export interface BulkPostResultDto {
+  count: number;
+  skipped: BulkPostSkip[];
+}
 
 // --- Query (admin) ---
 

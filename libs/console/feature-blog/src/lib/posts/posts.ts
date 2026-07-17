@@ -1,10 +1,20 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,6 +22,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
 
 import {
+  BulkActionBar,
   EnumLabelPipe,
   FilterBar,
   FilterSearch,
@@ -25,11 +36,14 @@ import {
   withListLoading,
 } from '@portfolio/console/shared/ui';
 import { BLOG_POST_STATUS_LABELS } from '@portfolio/shared/enum-labels';
-import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS, resolveErrorMessage } from '@portfolio/console/shared/util';
 import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
-import { AdminBlogPostListItem, BlogStatus } from '../blog.types';
+import { AdminBlogPostListItem, BlogStatus, BulkPostAction, BulkPostResult, BulkPostSkip } from '../blog.types';
 import { STATUS_OPTIONS } from './posts.data';
+
+/** Appends a skip reason when there is one, so a mixed batch doesn't trail a bare separator. */
+const withReason = (head: string, reason: string): string => (reason ? `${head} ${reason}` : head);
 
 @Component({
   selector: 'console-posts',
@@ -39,10 +53,12 @@ import { STATUS_OPTIONS } from './posts.data';
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatIconModule,
     MatTooltipModule,
     MatSortModule,
     MatChipsModule,
+    BulkActionBar,
     FilterBar,
     FilterSearch,
     FilterSelect,
@@ -79,8 +95,29 @@ export default class Posts implements OnInit {
   readonly sortBy = signal('updatedAt');
   readonly sortDir = signal<'asc' | 'desc'>('desc');
 
+  // ── Selection (signal-based; cleared on every list reload) ────────
+  readonly selectedIds = signal<ReadonlySet<string>>(new Set());
+  readonly selectedCount = computed(() => this.selectedIds().size);
+  readonly allOnPageSelected = computed(() => {
+    const rows = this.posts();
+    const sel = this.selectedIds();
+    return rows.length > 0 && rows.every((r) => sel.has(r.id));
+  });
+  readonly someOnPageSelected = computed(
+    () => this.posts().some((r) => this.selectedIds().has(r.id)) && !this.allOnPageSelected()
+  );
+
   // ── Plain state ───────────────────────────────────────────────────
-  readonly displayedColumns = ['title', 'status', 'language', 'categories', 'publishedAt', 'updatedAt', 'actions'];
+  readonly displayedColumns = [
+    'select',
+    'title',
+    'status',
+    'language',
+    'categories',
+    'publishedAt',
+    'updatedAt',
+    'actions',
+  ];
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly statusOptions = STATUS_OPTIONS;
   readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
@@ -200,7 +237,129 @@ export default class Posts implements OnInit {
       });
   }
 
+  // ── Selection ─────────────────────────────────────────────────────
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleRow(id: string): void {
+    this.selectedIds.update((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  toggleAllOnPage(): void {
+    const rows = this.posts();
+    this.selectedIds.update((prev) => {
+      const allSelected = rows.length > 0 && rows.every((r) => prev.has(r.id));
+      const next = new Set(prev);
+      for (const r of rows) {
+        if (allSelected) next.delete(r.id);
+        else next.add(r.id);
+      }
+      return next;
+    });
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  // ── Bulk actions ──────────────────────────────────────────────────
+  bulkPublish(): void {
+    this.bulkNoConfirm('publish', (n) => `${this.postLabel(n)} published`);
+  }
+
+  bulkUnpublish(): void {
+    this.bulkNoConfirm('unpublish', (n) => `${this.postLabel(n)} moved to draft`);
+  }
+
+  bulkRestore(): void {
+    this.bulkNoConfirm('restore', (n) => `${this.postLabel(n)} restored`);
+  }
+
+  bulkDelete(): void {
+    const n = this.selectedCount();
+    this.bulkWithConfirm(
+      'delete',
+      { title: 'Delete Posts', message: `Move ${this.postLabel(n)} to trash?`, confirmLabel: 'Delete' },
+      (c) => `${this.postLabel(c)} deleted`
+    );
+  }
+
+  bulkPermanentDelete(): void {
+    const n = this.selectedCount();
+    this.bulkWithConfirm(
+      'permanent-delete',
+      {
+        title: 'Permanently Delete Posts',
+        message: `Permanently delete ${this.postLabel(n)}? This cannot be undone.`,
+        confirmLabel: 'Delete Forever',
+      },
+      (c) => `${this.postLabel(c)} permanently deleted`
+    );
+  }
+
+  private postLabel(n: number): string {
+    return `${n} post${n === 1 ? '' : 's'}`;
+  }
+
+  private bulkNoConfirm(action: BulkPostAction, success: (count: number) => string): void {
+    const ids = [...this.selectedIds()];
+    if (ids.length === 0) return;
+    this.blogService
+      .bulk(ids, action)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: (result) => this.onBulkDone(result, success) });
+  }
+
+  private bulkWithConfirm(action: BulkPostAction, data: ConfirmDialogData, success: (count: number) => string): void {
+    const ids = [...this.selectedIds()];
+    if (ids.length === 0) return;
+    this.dialog
+      .open(ConfirmDialogComponent, { data })
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.blogService.bulk(ids, action))
+      )
+      .subscribe({ next: (result) => this.onBulkDone(result, success) });
+  }
+
+  /**
+   * The BE holds back posts that would break an invariant (empty draft, taken slug)
+   * and reports them in `skipped`, so a bulk call is legitimately partial. Toast
+   * severity follows what actually happened rather than always claiming success.
+   */
+  private onBulkDone({ count, skipped }: BulkPostResult, success: (count: number) => string): void {
+    const reason = this.skipReason(skipped);
+
+    if (count === 0 && skipped.length === 0) this.toast.info('No posts changed.');
+    else if (count === 0)
+      this.toast.error(withReason(`Nothing to do — ${this.postLabel(skipped.length)} skipped.`, reason));
+    else if (skipped.length > 0)
+      this.toast.warning(withReason(`${success(count)}, ${skipped.length} skipped.`, reason));
+    else this.toast.success(success(count));
+
+    this.loadPosts({ silent: true }); // reload clears the selection
+  }
+
+  /**
+   * Skips of one kind get that code's dictionary copy. A mixed batch would need to
+   * name several reasons at once, so it returns '' and the toast stays at the count.
+   */
+  private skipReason(skipped: BulkPostSkip[]): string {
+    const codes = new Set(skipped.map((s) => s.errorCode));
+    if (codes.size !== 1) return '';
+    return resolveErrorMessage([...codes][0]) ?? '';
+  }
+
   private loadPosts(opts: { silent?: boolean } = {}): void {
+    this.clearSelection();
     this.blogService
       .list({
         page: this.pageIndex() + 1,

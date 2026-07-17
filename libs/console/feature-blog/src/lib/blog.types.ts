@@ -4,6 +4,23 @@ import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 export type BlogLanguage = 'EN' | 'VI';
 export type BlogStatus = 'DRAFT' | 'PUBLISHED' | 'PRIVATE' | 'UNLISTED';
 
+export type BulkPostAction = 'delete' | 'restore' | 'permanent-delete' | 'publish' | 'unpublish';
+
+/**
+ * A post the bulk action refused to touch. `errorCode` is the same code the
+ * single-post endpoints throw (e.g. `BLOG_POST_CONTENT_REQUIRED`), so it resolves
+ * through the existing error dictionary.
+ */
+export interface BulkPostSkip {
+  id: string;
+  errorCode: string;
+}
+
+export interface BulkPostResult {
+  count: number;
+  skipped: BulkPostSkip[];
+}
+
 export interface ListBlogPostsParams {
   page: number;
   limit: number;

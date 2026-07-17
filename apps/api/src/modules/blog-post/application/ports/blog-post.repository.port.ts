@@ -21,6 +21,19 @@ export interface BlogPostFindAllOptions extends PaginatedQuery {
   sortBy?: string;
 }
 
+/**
+ * Minimal projection a bulk action needs to decide eligibility, without pulling
+ * whole entities. `hasContent` mirrors the `contentJson != null` half of the
+ * `CONTENT_REQUIRED` invariant enforced in `BlogPost.update()`.
+ */
+export interface BulkPostTarget {
+  id: string;
+  title: string;
+  slug: string;
+  hasContent: boolean;
+  isDeleted: boolean;
+}
+
 export type BlogPostPublicSort = 'newest' | 'oldest';
 
 export interface BlogPostListPublicOptions extends PaginatedQuery {
@@ -46,6 +59,20 @@ export interface IBlogPostRepository {
   update(id: string, input: BlogPostUpdateInput): Promise<void>;
   softDelete(id: string, entity: BlogPost): Promise<void>;
   restore(id: string, entity: BlogPost): Promise<void>;
+
+  // Bulk writes — single transactional statements; return affected row count.
+  // Callers MUST pass an already-vetted id set: these bypass the domain layer, so
+  // every invariant `BlogPost` would enforce has to be checked by the handler first
+  // (see BulkPostHandler.evaluate).
+  bulkSoftDelete(ids: string[], userId: string): Promise<number>;
+  bulkRestore(ids: string[], userId: string): Promise<number>;
+  bulkPermanentDelete(ids: string[]): Promise<number>;
+  bulkSetStatus(ids: string[], status: PostStatus, userId: string): Promise<number>;
+
+  // Bulk preflight reads — feed BulkPostHandler.evaluate.
+  findBulkTargets(ids: string[]): Promise<BulkPostTarget[]>;
+  /** Subset of `slugs` already held by an ACTIVE post. Mirrors `slugExists` semantics. */
+  findTakenSlugs(slugs: string[]): Promise<string[]>;
 
   // Admin reads
   findById(id: string): Promise<BlogPostReadResult | null>;

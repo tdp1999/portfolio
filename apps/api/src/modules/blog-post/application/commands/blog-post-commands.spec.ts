@@ -22,7 +22,9 @@ import { CreatePostCommand, CreatePostHandler } from './create-post.command';
 import { UpdatePostCommand, UpdatePostHandler } from './update-post.command';
 import { DeletePostCommand, DeletePostHandler } from './delete-post.command';
 import { RestorePostCommand, RestorePostHandler } from './restore-post.command';
-import { IBlogPostRepository } from '../ports/blog-post.repository.port';
+import { BulkPostCommand, BulkPostHandler } from './bulk-post.command';
+import { BlogPostErrorCode } from '@portfolio/shared/errors';
+import { IBlogPostRepository, BulkPostTarget } from '../ports/blog-post.repository.port';
 import { BlogPost } from '../../domain/entities/blog-post.entity';
 import { IBlogPostProps } from '../../domain/blog-post.types';
 import { BlogPostReadResult } from '../../infrastructure/mapper/blog-post.mapper';
@@ -83,6 +85,12 @@ function makeRepoMock(): jest.Mocked<IBlogPostRepository> {
     update: jest.fn(),
     softDelete: jest.fn(),
     restore: jest.fn(),
+    bulkSoftDelete: jest.fn().mockResolvedValue(0),
+    bulkRestore: jest.fn().mockResolvedValue(0),
+    bulkPermanentDelete: jest.fn().mockResolvedValue(0),
+    bulkSetStatus: jest.fn().mockResolvedValue(0),
+    findBulkTargets: jest.fn().mockResolvedValue([]),
+    findTakenSlugs: jest.fn().mockResolvedValue([]),
     findById: jest.fn(),
     findByIdIncludeDeleted: jest.fn(),
     list: jest.fn(),
@@ -297,6 +305,160 @@ describe('BlogPost Commands', () => {
     it('throws when not found', async () => {
       repo.findByIdIncludeDeleted.mockResolvedValue(null);
       await expect(handler().execute(new RestorePostCommand(POST_ID, USER_ID))).rejects.toThrow();
+    });
+  });
+
+  // ---------- BulkPostCommand ----------
+  describe('BulkPostHandler', () => {
+    const handler = () => new BulkPostHandler(repo);
+    const ID_A = '550e8400-e29b-41d4-a716-4466554400aa';
+    const ID_B = '550e8400-e29b-41d4-a716-4466554400bb';
+
+    const target = (over: Partial<BulkPostTarget> & { id: string }): BulkPostTarget => ({
+      title: 'Hello World',
+      slug: 'hello-world',
+      hasContent: true,
+      isDeleted: false,
+      ...over,
+    });
+
+    const run = (action: string, ids: string[] = [ID_A]) =>
+      handler().execute(new BulkPostCommand({ ids, action }, USER_ID));
+
+    it('rejects a malformed payload', async () => {
+      await expect(run('publish', [])).rejects.toThrow();
+      await expect(
+        handler().execute(new BulkPostCommand({ ids: ['not-a-uuid'], action: 'publish' }, USER_ID))
+      ).rejects.toThrow();
+      await expect(
+        handler().execute(new BulkPostCommand({ ids: [ID_A], action: 'explode' }, USER_ID))
+      ).rejects.toThrow();
+    });
+
+    it('dispatches delete to repo.bulkSoftDelete', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A })]);
+      repo.bulkSoftDelete.mockResolvedValue(1);
+      await run('delete');
+      expect(repo.bulkSoftDelete).toHaveBeenCalledWith([ID_A], USER_ID);
+    });
+
+    it('dispatches permanent-delete to repo.bulkPermanentDelete', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A, isDeleted: true })]);
+      repo.bulkPermanentDelete.mockResolvedValue(1);
+      await run('permanent-delete');
+      expect(repo.bulkPermanentDelete).toHaveBeenCalledWith([ID_A]);
+    });
+
+    it('maps publish → PUBLISHED and unpublish → DRAFT', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A })]);
+      repo.bulkSetStatus.mockResolvedValue(1);
+
+      await run('publish');
+      expect(repo.bulkSetStatus).toHaveBeenCalledWith([ID_A], 'PUBLISHED', USER_ID);
+
+      await run('unpublish');
+      expect(repo.bulkSetStatus).toHaveBeenLastCalledWith([ID_A], 'DRAFT', USER_ID);
+    });
+
+    // Every repo method has a trash-state rail in its WHERE clause. Without a matching
+    // check here the row is dropped by SQL and lands in neither count nor skipped —
+    // the console would report a clean success for a post it never touched.
+    it.each([
+      ['publish', true],
+      ['unpublish', true],
+      ['delete', true],
+      ['restore', false],
+      ['permanent-delete', false],
+    ] as const)('holds back %s when the post is in the wrong trash state', async (action, isDeleted) => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A, isDeleted })]);
+
+      const result = await run(action);
+
+      expect(result).toEqual({ count: 0, skipped: [{ id: ID_A, errorCode: BlogPostErrorCode.NOT_FOUND }] });
+      expect(repo.bulkSetStatus).not.toHaveBeenCalled();
+      expect(repo.bulkSoftDelete).not.toHaveBeenCalled();
+      expect(repo.bulkRestore).not.toHaveBeenCalled();
+      expect(repo.bulkPermanentDelete).not.toHaveBeenCalled();
+    });
+
+    it('reports an id that no longer exists as NOT_FOUND', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A })]);
+      repo.bulkSetStatus.mockResolvedValue(1);
+
+      const result = await run('publish', [ID_A, ID_B]);
+
+      expect(repo.bulkSetStatus).toHaveBeenCalledWith([ID_A], 'PUBLISHED', USER_ID);
+      expect(result).toEqual({ count: 1, skipped: [{ id: ID_B, errorCode: BlogPostErrorCode.NOT_FOUND }] });
+    });
+
+    it('accounts for every submitted id', async () => {
+      repo.findBulkTargets.mockResolvedValue([
+        target({ id: ID_A }), // publishes
+        target({ id: ID_B, hasContent: false }), // CONTENT_REQUIRED
+      ]);
+      repo.bulkSetStatus.mockResolvedValue(1);
+
+      const ids = [ID_A, ID_B, '550e8400-e29b-41d4-a716-4466554400cc']; // third is gone
+      const { count, skipped } = await run('publish', ids);
+
+      expect(count + skipped.length).toBe(ids.length);
+    });
+
+    // The bulk SQL bypasses BlogPost.update(), so the CONTENT_REQUIRED invariant
+    // has to be re-checked here or an empty draft reaches the public site.
+    it('holds back posts that cannot be published', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A }), target({ id: ID_B, hasContent: false })]);
+      repo.bulkSetStatus.mockResolvedValue(1);
+
+      const result = await run('publish', [ID_A, ID_B]);
+
+      expect(repo.bulkSetStatus).toHaveBeenCalledWith([ID_A], 'PUBLISHED', USER_ID);
+      expect(result).toEqual({ count: 1, skipped: [{ id: ID_B, errorCode: BlogPostErrorCode.CONTENT_REQUIRED }] });
+    });
+
+    it('treats a blank title as unpublishable', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A, title: '   ' })]);
+      const result = await run('publish');
+      expect(repo.bulkSetStatus).not.toHaveBeenCalled();
+      expect(result.skipped).toEqual([{ id: ID_A, errorCode: BlogPostErrorCode.CONTENT_REQUIRED }]);
+    });
+
+    // Slug uniqueness is app-enforced among active rows only (no DB constraint),
+    // so restoring onto a taken slug would silently produce two posts on one URL.
+    it('holds back a restore whose slug is already live', async () => {
+      repo.findBulkTargets.mockResolvedValue([
+        target({ id: ID_A, slug: 'free', isDeleted: true }),
+        target({ id: ID_B, slug: 'taken', isDeleted: true }),
+      ]);
+      repo.findTakenSlugs.mockResolvedValue(['taken']);
+      repo.bulkRestore.mockResolvedValue(1);
+
+      const result = await run('restore', [ID_A, ID_B]);
+
+      expect(repo.bulkRestore).toHaveBeenCalledWith([ID_A], USER_ID);
+      expect(result).toEqual({ count: 1, skipped: [{ id: ID_B, errorCode: BlogPostErrorCode.SLUG_CONFLICT }] });
+    });
+
+    // Two trashed posts can share a slug: neither collides with a live row, but
+    // restoring both would collide with each other.
+    it('holds back a same-batch slug collision', async () => {
+      repo.findBulkTargets.mockResolvedValue([
+        target({ id: ID_A, slug: 'dup', isDeleted: true }),
+        target({ id: ID_B, slug: 'dup', isDeleted: true }),
+      ]);
+      repo.bulkRestore.mockResolvedValue(1);
+
+      const result = await run('restore', [ID_A, ID_B]);
+
+      expect(repo.bulkRestore).toHaveBeenCalledWith([ID_A], USER_ID);
+      expect(result.skipped).toEqual([{ id: ID_B, errorCode: BlogPostErrorCode.SLUG_CONFLICT }]);
+    });
+
+    it('skips the write entirely when nothing is eligible', async () => {
+      repo.findBulkTargets.mockResolvedValue([target({ id: ID_A, hasContent: false })]);
+      const result = await run('publish');
+      expect(repo.bulkSetStatus).not.toHaveBeenCalled();
+      expect(result.count).toBe(0);
     });
   });
 });

@@ -10,6 +10,8 @@ import {
   BlogCategoryRef,
   BlogTagRef,
   ListBlogPostsParams,
+  BulkPostAction,
+  BulkPostResult,
 } from './blog.types';
 
 @Injectable({ providedIn: 'root' })
@@ -48,6 +50,10 @@ export class BlogService {
 
   restore(id: string) {
     return this.api.post<{ success: boolean }>(`/admin/blog/${id}/restore`, {});
+  }
+
+  bulk(ids: string[], action: BulkPostAction) {
+    return this.api.post<BulkPostResult>('/admin/blog/bulk', { ids, action });
   }
 
   convertMarkdown(data: ConvertMarkdownPayload) {

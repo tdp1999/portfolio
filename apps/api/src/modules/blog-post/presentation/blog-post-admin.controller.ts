@@ -16,9 +16,15 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthenticatedRequest } from '../../../shared/types';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
-import { CreatePostCommand, UpdatePostCommand, DeletePostCommand, RestorePostCommand } from '../application/commands';
+import {
+  CreatePostCommand,
+  UpdatePostCommand,
+  DeletePostCommand,
+  RestorePostCommand,
+  BulkPostCommand,
+} from '../application/commands';
 import { ListPostsQuery, GetPostByIdQuery, ConvertMarkdownQuery } from '../application/queries';
-import type { ConvertMarkdownResultDto } from '../application/blog-post.dto';
+import type { ConvertMarkdownResultDto, BulkPostResultDto } from '../application/blog-post.dto';
 
 @Controller('admin/blog')
 @UseGuards(JwtAccessGuard, RoleGuard)
@@ -76,5 +82,11 @@ export class BlogPostAdminController {
   async restore(@Param('id') id: string, @Req() req: AuthenticatedRequest): Promise<{ success: boolean }> {
     await this.commandBus.execute(new RestorePostCommand(id, req.user.id));
     return { success: true };
+  }
+
+  @Post('bulk')
+  @HttpCode(HttpStatus.OK)
+  async bulk(@Body() body: unknown, @Req() req: AuthenticatedRequest): Promise<BulkPostResultDto> {
+    return this.commandBus.execute(new BulkPostCommand(body, req.user.id));
   }
 }
