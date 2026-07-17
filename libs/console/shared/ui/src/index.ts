@@ -1,3 +1,4 @@
+export { BulkActionBar } from './components/bulk-action-bar/bulk-action-bar';
 export { FilterBar } from './components/filter-bar/filter-bar';
 export { FilterSearch } from './components/filter-bar/filter-search';
 export { FilterSelect } from './components/filter-bar/filter-select';

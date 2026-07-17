@@ -80,6 +80,13 @@
   }
 }
 
+/* Selection column — leading checkbox for bulk actions */
+.col-select {
+  width: 48px;
+  padding-left: 8px;
+  padding-right: 0;
+}
+
 /* Actions column — inline icon buttons with tooltips */
 .col-actions {
   width: 96px;

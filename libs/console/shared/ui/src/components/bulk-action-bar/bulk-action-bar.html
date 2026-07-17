@@ -1,0 +1,16 @@
+@if (count() > 0) {
+  <div class="bulk-bar" role="region" aria-label="Bulk actions">
+    <span class="bulk-bar__count">
+      <span class="bulk-bar__count-num">{{ count() }}</span>
+      selected
+    </span>
+
+    <span class="bulk-bar__divider" aria-hidden="true"></span>
+
+    <div class="bulk-bar__actions">
+      <ng-content />
+    </div>
+
+    <button type="button" mat-button class="bulk-bar__clear" (click)="clear.emit()">Clear</button>
+  </div>
+}
