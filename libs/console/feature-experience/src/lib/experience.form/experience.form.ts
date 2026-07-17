@@ -310,7 +310,7 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       domain: v.domain || undefined,
       teamSizeMin: v.teamSizeMin ?? undefined,
       teamSizeMax: v.teamSizeMax ?? undefined,
-      startDate: v.startDate?.toISOString() ?? '',
+      startDate: v.startDate?.toISOString() ?? undefined,
       skillIds: this.selectedSkills().map((s) => s.id),
       displayOrder: v.displayOrder,
     };

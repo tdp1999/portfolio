@@ -402,7 +402,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
         motivation: raw.motivation,
         role: raw.role,
         bodyJson,
-        startDate: raw.startDate?.toISOString() ?? '',
+        startDate: raw.startDate?.toISOString() ?? undefined,
         endDate: raw.endDate?.toISOString() ?? null,
         links,
         thumbnailId: this.thumbnailId(),
