@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { AuthStore, ThemeService, UnreadBadgeService } from '@portfolio/console/shared/data-access';
+import { AuthStore, ThemeService, UnreadBadgeService, VersionService } from '@portfolio/console/shared/data-access';
 import { MainLayout, ToastService } from '@portfolio/console/shared/ui';
 
 @Component({
@@ -12,6 +13,7 @@ import { MainLayout, ToastService } from '@portfolio/console/shared/ui';
       [user]="authStore.user()"
       [resolvedTheme]="themeService.resolvedTheme()"
       [unreadCount]="unreadBadge.count()"
+      [versionLabel]="versionLabel()"
       (logout)="onLogout()"
       (logoutAll)="onLogoutAll()"
       (themeToggle)="themeService.toggle()"
@@ -23,8 +25,15 @@ export class LayoutShell {
   protected readonly authStore = inject(AuthStore);
   protected readonly themeService = inject(ThemeService);
   protected readonly unreadBadge = inject(UnreadBadgeService);
+  private readonly versionService = inject(VersionService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+
+  private readonly version = toSignal(this.versionService.getVersion(), { initialValue: null });
+  protected readonly versionLabel = computed(() => {
+    const v = this.version();
+    return v ? `${v.commitShaShort} · ${v.environment}` : 'local';
+  });
 
   constructor() {
     if (this.authStore.user()?.role === 'ADMIN') {

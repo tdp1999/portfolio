@@ -12,3 +12,5 @@ export { MediaService } from './lib/media/media.service';
 export type { MediaMimeGroup } from '@portfolio/console/shared/util';
 export { DashboardService } from './lib/dashboard/dashboard.service';
 export type { DashboardStats } from './lib/dashboard/dashboard.types';
+export { VersionService } from './lib/version/version.service';
+export type { VersionInfo } from './lib/version/version.types';

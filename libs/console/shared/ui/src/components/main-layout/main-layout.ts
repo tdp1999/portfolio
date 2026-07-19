@@ -33,6 +33,7 @@ export class MainLayout {
   readonly user = input.required<UserProfile | null>();
   readonly resolvedTheme = input.required<'light' | 'dark'>();
   readonly unreadCount = input<number>(0);
+  readonly versionLabel = input<string>('local');
 
   readonly logout = output<void>();
   readonly logoutAll = output<void>();
