@@ -19,3 +19,5 @@ export * from './lib/principle.types';
 export * from './lib/principle.service';
 export * from './lib/failure.types';
 export * from './lib/failure.service';
+export * from './lib/version.types';
+export * from './lib/version.service';

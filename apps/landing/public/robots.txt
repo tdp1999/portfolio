@@ -9,6 +9,7 @@ Allow: /
 Disallow: /api/
 Disallow: /ddl/
 Disallow: /404
+Disallow: /version
 
 # ──────────────────────────────────────────────────────────────────────────────
 # AI assistants — answer / search-time bots.

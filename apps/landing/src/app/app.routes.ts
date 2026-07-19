@@ -44,6 +44,10 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/contact').then((m) => m.Contact),
   },
   {
+    path: 'version',
+    loadComponent: () => import('./pages/version/version').then((m) => m.Version),
+  },
+  {
     path: 'privacy',
     loadComponent: () => import('./pages/legal/privacy').then((m) => m.Privacy),
   },

@@ -1,0 +1,45 @@
+<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+  <span hero-heading><em>Version</em>.</span>
+  <p hero-lede>Build and runtime details for the instance currently serving this page.</p>
+  <p meta-strip>{{ metaLine() }}</p>
+
+  <section class="version-page__body" aria-labelledby="version-build-h">
+    <landing-container size="content">
+      <h2 id="version-build-h" class="sr-only">Build information</h2>
+
+      @if (info(); as v) {
+        <dl class="version-facts">
+          <div class="version-facts__row">
+            <dt class="version-facts__term">Commit</dt>
+            <dd class="version-facts__value">{{ v.commitSha }}</dd>
+          </div>
+          <div class="version-facts__row">
+            <dt class="version-facts__term">Branch</dt>
+            <dd class="version-facts__value">{{ v.branch }}</dd>
+          </div>
+          <div class="version-facts__row">
+            <dt class="version-facts__term">Environment</dt>
+            <dd class="version-facts__value">{{ v.environment }}</dd>
+          </div>
+          <div class="version-facts__row">
+            <dt class="version-facts__term">Deployment ID</dt>
+            <dd class="version-facts__value" [class.version-facts__value--empty]="!v.deploymentId">
+              {{ v.deploymentId ?? 'Not set' }}
+            </dd>
+          </div>
+          <div class="version-facts__row">
+            <dt class="version-facts__term">Server started</dt>
+            <dd class="version-facts__value">{{ startedAt() }}</dd>
+          </div>
+        </dl>
+      } @else if (status() === 'error') {
+        <landing-empty-state
+          title="Version unavailable"
+          message="The API did not answer /api/version. The site is still served, but build metadata could not be read."
+        />
+      } @else {
+        <p class="version-page__loading">Reading build metadata…</p>
+      }
+    </landing-container>
+  </section>
+</landing-page-shell>
