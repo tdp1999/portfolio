@@ -8,6 +8,7 @@ import { AuthModule } from '../modules/auth';
 import { EmailModule } from '../modules/email';
 import { EmailTemplateModule } from '../modules/email-template';
 import { HealthModule } from '../modules/health';
+import { VersionModule } from '../modules/version';
 import { TagModule } from '../modules/tag';
 import { CategoryModule } from '../modules/category';
 import { SkillModule } from '../modules/skill/skill.module';
@@ -39,6 +40,7 @@ const throttleEnabled = process.env['NODE_ENV'] !== 'test' && process.env['NODE_
     UserModule,
     AuthModule,
     HealthModule,
+    VersionModule,
     TagModule,
     CategoryModule,
     SkillModule,
