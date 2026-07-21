@@ -104,7 +104,7 @@ export default class Login implements OnInit {
     this.authStore.login(email, password, rememberMe).subscribe({
       next: () => {
         this.toast.success('Signed in successfully');
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+        const returnUrl = this.validateRedirectUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
         this.router.navigateByUrl(returnUrl);
       },
       error: () => {
@@ -112,6 +112,13 @@ export default class Login implements OnInit {
         // Known errors are handled by global handler + effect above
       },
     });
+  }
+
+  private validateRedirectUrl(url: string | null): string {
+    if (!url) return '/';
+    if (url.includes('://')) return '/';
+    if (!url.startsWith('/')) return '/';
+    return url;
   }
 
   loginWithGoogle(): void {
