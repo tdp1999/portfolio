@@ -1,0 +1,117 @@
+// =============================================================================
+// Vendor patch: document-engine floating panels (link, colour, table).
+//
+// WHAT THIS IS
+// Every rule here works around something the published engine does not do:
+// panels that hardcode light-mode hex colours, and one that is positioned by
+// JavaScript against a strategy it was not computed for. None of it is styling
+// in the design sense — it is the floor those panels need before a consumer
+// theme can reach them at all.
+//
+// WHY IT LIVES IN `libs/shared/ui/src/styles`
+// Console and the landing Document Engine page both mount the engine and both
+// hit the same bugs. This directory is on the SCSS include path of both apps, so
+// each `@use`s it once and neither keeps a private copy that drifts.
+//
+// HOW IT THEMES
+// Only the engine's own shadcn-style custom properties are used — `--border`,
+// `--foreground`, `--muted-foreground`, `--primary`, `--muted`, `--accent`.
+// Each app already remaps those onto its own tokens on `document-engine-editor`,
+// so this file is theme-agnostic: it states which variable a surface should
+// follow, never which colour.
+//
+// WHY EVERYTHING IS NESTED UNDER THE WRAPPERS
+// Not for scoping — these classes are engine-unique and appear nowhere else.
+// For specificity. The views ship their CSS as Angular component styles, which
+// are injected into <head> at RUNTIME and carry an `[_ngcontent-…]` attribute,
+// so a bare `.checkbox-text` ties them on specificity and then loses on source
+// order. Measured: the label stayed #374151 until the wrapper was prefixed.
+//
+// REMOVE WHEN
+// The engine ships these fixes. Tracked as document-engine issues:
+//   1. `link-main-view` / `link-edit-view` / `link-properties-view` hardcode
+//      light-mode hex (#e5e7eb, #374151, #3b82f6, #f3f4f6) instead of the custom
+//      properties the rest of the library uses, so on any dark surface the label
+//      text is near-black and the checkbox tick is Tailwind blue rather than the
+//      product's primary.
+//   2. `.…__color-picker-dropdown` is positioned by `PopoverDirective` with
+//      floating-ui's default (absolute) strategy, but the directive pins the
+//      element with an inline `position: fixed`. The coordinates are then read
+//      against the viewport instead of the offset parent, so on a scrolled page
+//      the picker opens far below the fold — indistinguishable from "the colour
+//      picker won't open".
+// =============================================================================
+
+// --- 2. The colour picker that never opens ----------------------------------
+// Forcing `absolute` back makes the coordinates mean what they were computed to
+// mean. `!important` is the only lever that beats an inline style, and this is
+// what it is for: the containing block is already right — the engine's own
+// `…__field--color` is `position: relative`.
+.table-cell-style-view__color-picker-dropdown,
+.table-style-view__color-picker-dropdown {
+  position: absolute !important;
+}
+
+// --- 1. Panels that hardcode light mode -------------------------------------
+// Each rule names its own view as an ancestor as well as the wrapper. That looks
+// redundant and is not: `[_ngcontent-…]` carries class-level specificity, so
+// `.bubble-menu-wrapper .checkbox-text` only TIES `.checkbox-text[_ngcontent-…]`
+// and then loses on source order (measured — the label stayed #374151). Three
+// class-level parts is the smallest thing that actually wins.
+.bubble-menu-wrapper,
+.toolbar-bubble-menu {
+  .link-properties-view,
+  .link-edit-view,
+  .link-main-view {
+    // Header / footer rules, drawn with a literal #e5e7eb. On a light surface
+    // that is merely wrong; on a dark one it is a bright line across the panel.
+    [class$='__header'],
+    [class$='__actions'],
+    [class$='__shortcuts'] {
+      border-color: var(--border);
+    }
+
+    // These panels use a raw `<input type="checkbox">` rather than the engine's
+    // own `document-engine-checkbox` component (which IS token-driven), so the
+    // tick is Tailwind blue whatever the product's primary is, and the label is
+    // #374151: near-black text on a dark panel.
+    .checkbox-input {
+      accent-color: var(--primary);
+    }
+
+    .checkbox-text {
+      color: var(--foreground);
+    }
+
+    .inline-code {
+      background-color: var(--muted);
+      color: var(--foreground);
+    }
+
+    // The panel's own URL line, hardcoded #3b82f6 for both rest and hover.
+    .link-main-view__url {
+      color: var(--primary);
+
+      &:hover {
+        color: var(--primary);
+      }
+    }
+
+    .link-edit-view__shortcuts-label {
+      color: var(--muted-foreground);
+    }
+
+    // Shortcut chips: #f3f4f6 on #e5e7eb with #374151 text — a light-grey pill
+    // that disappears into itself on a dark panel.
+    .chip {
+      background-color: var(--muted);
+      border-color: var(--border);
+      color: var(--foreground);
+
+      &:hover {
+        background-color: var(--accent);
+        border-color: var(--border);
+      }
+    }
+  }
+}

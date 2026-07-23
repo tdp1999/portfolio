@@ -13,6 +13,9 @@
 // =============================================================================
 
 @use '@phuong-tran-redoc/document-engine-angular/styles';
+// Shared with the landing Document Engine page — see the header of that file for
+// the engine bugs it works around.
+@use 'vendor/document-engine-panels';
 
 // The engine ships light-mode shadcn defaults (--card: #fff, --foreground: #000,
 // …). Without remapping, the editor content is a white box in dark mode. Scoped
@@ -39,6 +42,16 @@ document-engine-editor {
   --document-engine-border: var(--color-border);
   --document-engine-text-muted: var(--color-text-muted);
   --shadow-elevation-1: 0 1px 2px rgb(0 0 0 / 18%);
+
+  // The engine's own panel styles reach for `--popover` and `--shadow-elevation-2`
+  // — the colour-picker dropdowns nested inside the table / cell-properties
+  // panels paint with `background: var(--popover)`. Undefined, that resolves to
+  // nothing and the dropdown is a transparent ghost over whatever is behind it
+  // (reported on the landing demo, same bug here). Same fix as the wrappers
+  // below, one level deeper.
+  --popover: var(--color-surface-elevated);
+  --popover-foreground: var(--color-text);
+  --shadow-elevation-2: 0 8px 24px rgb(0 0 0 / 24%);
 
   // The editing surface shows a blinking caret on focus — that is the focus
   // indicator. Suppress the global a11y focus-visible ring (base/_focus.scss,
@@ -71,6 +84,60 @@ document-engine-toolbar .btn.active {
     background-color: var(--color-primary);
     color: var(--color-text-on-primary);
   }
+}
+
+// Toolbar sizing — track the global --type-scale (tokens/typography.scss) so the
+// editor chrome matches the shrunk console type instead of the engine's stock 14px
+// font / 20px icons. Only glyph + label SIZES are scaled; button padding/height are
+// left to the engine, and the buttons flex-centre their content, so smaller icons
+// keep equal top/bottom gaps (stays aligned — verified). calc() keeps these off the
+// raw-px scale audit.
+document-engine-toolbar {
+  font-size: calc(14px * var(--type-scale));
+
+  .btn svg,
+  button svg {
+    width: calc(20px * var(--type-scale));
+    height: calc(20px * var(--type-scale));
+  }
+
+  .document-engine-select__trigger {
+    font-size: calc(14px * var(--type-scale));
+  }
+}
+
+// Floating-menu surfaces — link editor, toolbar bubbles (image/color), color
+// picker. The engine paints these panels with Tailwind utilities in its template
+// (`bg-card text-card-foreground border-border shadow-elevation-2`), delegating
+// the actual colours to the CONSUMER's Tailwind theme. The console's Tailwind
+// never defines `card`/`border`, so those classes generate no rule → the panel is
+// transparent and border-less. It only looked solid because it floats over the
+// editor's white content area; over any dark surface it's an unreadable ghost
+// (task 383 #1). Give the wrappers an explicit console-token surface. Class names
+// are engine-unique, so this unscoped rule also covers a menu portalled outside
+// document-engine-editor (the editor-scoped --card remap above would miss those).
+.bubble-menu-wrapper,
+.toolbar-bubble-menu {
+  background-color: var(--color-surface-elevated);
+  color: var(--color-text);
+  // `border` / `rounded` / `z-50` are Tailwind utilities from the same template,
+  // and just as ungenerated as `bg-card` — a `border-color` alone paints nothing
+  // without a width, and the panel had no stacking order of its own.
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 24%);
+  z-index: 200;
+  // NO `overflow` here, deliberately. Capping the height and scrolling looks like
+  // the obvious fix for a panel taller than the space under its trigger, and it
+  // breaks the panels outright: each contains a select or colour popover that is
+  // absolutely positioned INSIDE the wrapper, and an overflow ancestor clips them
+  // to its box (measured: the table dropdown lost half its options).
+}
+
+// Ungenerated `hidden` leaves the closed panel holding its box in the flow.
+.bubble-menu-wrapper.hidden,
+.toolbar-bubble-menu.hidden {
+  display: none;
 }
 
 // Editable-area sizing. The engine ships no min-height on the content surface, so
@@ -126,17 +193,21 @@ console-rich-text-editor .tiptap {
     line-height: 1.25;
     color: var(--color-text);
   }
+  // Heading sizes track the global --type-scale knob (tokens/typography.scss) so the
+  // editor prose stays in step with the shrunk console type. calc() keeps them off
+  // the raw-px scale audit. line-height stays unitless (1.25 above) so it scales with
+  // the font and the headings stay vertically balanced.
   h1 {
-    font-size: 2rem;
+    font-size: calc(2rem * var(--type-scale));
   }
   h2 {
-    font-size: 1.5rem;
+    font-size: calc(1.5rem * var(--type-scale));
   }
   h3 {
-    font-size: 1.25rem;
+    font-size: calc(1.25rem * var(--type-scale));
   }
   h4 {
-    font-size: 1.125rem;
+    font-size: calc(1.125rem * var(--type-scale));
   }
   // Extra air above a heading that follows other content.
   * + :is(h1, h2, h3, h4) {
