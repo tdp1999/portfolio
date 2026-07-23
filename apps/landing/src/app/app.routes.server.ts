@@ -11,6 +11,11 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'contact', renderMode: RenderMode.Server },
   { path: '404', renderMode: RenderMode.Server, status: 404 },
   { path: 'ddl', renderMode: RenderMode.Prerender },
+  // The product page holds no server data — the npm/GitHub figures are fetched
+  // in the browser and the editor is deferred — so it prerenders like the other
+  // static pages. Listing it is not optional: an unlisted path falls through to
+  // the `**` rule below and is served with a 404 status even though it renders.
+  { path: 'document-engine', renderMode: RenderMode.Prerender },
 
   // Data-driven — SSR at runtime (Railway)
   { path: '', renderMode: RenderMode.Server },

@@ -1,0 +1,375 @@
+<!-- Landing composition, not a feature-page shell. Sibling full-bleed bands, each
+     owning its own background and rhythm — the Home idiom. Header and footer are
+     mounted globally by `landing-shell`; this page shares nothing else with the
+     rest of the site. -->
+<div class="de">
+  <!-- ═══ 01 · Hero ═══════════════════════════════════════════════════════
+       Left-aligned and committed, the way a product page opens. Not the
+       centred breadcrumb+lede header a documentation subpage gets. -->
+  <section class="de-hero" aria-labelledby="de-hero-h">
+    <landing-background pattern="blueprint" />
+    <landing-container size="wide">
+      <div class="de-hero__inner">
+        <landing-eyebrow [label]="['open source']" tone="accent" />
+
+        <h1 id="de-hero-h" class="de-hero__title">A document editor that <em>owns its own format</em>.</h1>
+
+        <p class="de-hero__lede">
+          Most rich-text editors hand you an HTML string and wish you luck. Document Engine stores a structured,
+          versioned document instead, in a core that knows nothing about your framework.
+        </p>
+
+        <!-- One action only. The npm links live in the fact row below with their
+             live versions attached, which is both more useful and less noisy
+             than a second button that says the same thing without the numbers. -->
+        <div class="de-hero__actions">
+          <a href="#try-it" (click)="scrollToDemo($event)">
+            <landing-button size="md" arrow="right">Try it live</landing-button>
+          </a>
+        </div>
+
+        <!-- Everything measurable sits in one row: the two packages, the
+             source, and the small set of facts that make the claim checkable.
+             Live values (version, downloads, last commit) are fetched and simply
+             absent when a lookup fails — an unrendered column beats a wrong one. -->
+        <dl class="de-hero__facts">
+          <div class="de-fact de-fact--wide">
+            <dt>Packages</dt>
+            <dd>
+              <ul class="de-badges" role="list">
+                @for (pkg of packages; track pkg.name) {
+                  <li>
+                    <a class="de-badge" [href]="pkg.npmUrl" target="_blank" rel="noopener">
+                      <landing-icon name="package" [size]="14" />
+                      <span class="de-badge__key">{{ pkg.label }}</span>
+                      @if (npmStats()[pkg.name]; as stat) {
+                        <span class="de-badge__value">v{{ stat.version }}</span>
+                        @if (stat.downloads !== null) {
+                          <span class="de-badge__sep">·</span>
+                          <span class="de-badge__value">{{ stat.downloads | number }}/week</span>
+                        }
+                      } @else {
+                        <!-- Holds the exact space the fetched figures will take.
+                             Without it the badge rendered at label width and then
+                             jumped wider when the registry answered — a layout
+                             shift under the reader's eyes on first paint. It
+                             mirrors the loaded markup element for element (two
+                             runs either side of the same separator) rather than
+                             guessing one combined width, so the geometry matches
+                             instead of merely being close. -->
+                        <span class="de-badge__skeleton de-badge__skeleton--version" aria-hidden="true"></span>
+                        <span class="de-badge__sep" aria-hidden="true">·</span>
+                        <span class="de-badge__skeleton de-badge__skeleton--downloads" aria-hidden="true"></span>
+                      }
+                    </a>
+                  </li>
+                }
+              </ul>
+            </dd>
+          </div>
+
+          <div class="de-fact">
+            <dt>Source</dt>
+            <dd>
+              <ul class="de-badges" role="list">
+                <li>
+                  <a class="de-badge" [href]="repoUrl" target="_blank" rel="noopener">
+                    <landing-icon name="github" [size]="14" />
+                    <span class="de-badge__key">source</span>
+                    @if (stars(); as count) {
+                      <span class="de-badge__sep">·</span>
+                      <span class="de-badge__value">{{ count | number }} ★</span>
+                    }
+                  </a>
+                </li>
+              </ul>
+            </dd>
+          </div>
+
+          @if (lastCommitLabel(); as commit) {
+            <div class="de-fact">
+              <dt>Last commit</dt>
+              <dd>{{ commit }}</dd>
+            </div>
+          }
+
+          @for (fact of heroFacts; track fact.label) {
+            <div class="de-fact">
+              <dt>{{ fact.label }}</dt>
+              <dd>
+                @if (fact.label === 'Status') {
+                  <span class="de-live"><span class="de-live__dot" aria-hidden="true"></span>{{ fact.value }}</span>
+                } @else {
+                  {{ fact.value }}
+                }
+              </dd>
+            </div>
+          }
+        </dl>
+      </div>
+    </landing-container>
+  </section>
+
+  <!-- ═══ 02 · Proof strip ════════════════════════════════════════════════
+       A logo wall would be a lie: there are no customer logos to show. The
+       honest equivalent is the small set of facts that are actually checkable. -->
+  <section class="de-proof" aria-label="At a glance">
+    <!-- Marquee rather than a static row: four short mono fragments sitting still
+         read as a monotone list. The track is duplicated so the loop is seamless;
+         the copy is aria-hidden so screen readers hear each claim once. Motion is
+         dropped entirely under `prefers-reduced-motion`. -->
+    <div class="de-marquee">
+      <ul class="de-marquee__track" role="list">
+        @for (claim of marqueeClaims; track $index) {
+          <li class="de-marquee__item" [attr.aria-hidden]="$index >= proofClaims.length ? 'true' : null">
+            {{ claim }}
+          </li>
+        }
+      </ul>
+      <ul class="de-marquee__track" role="list" aria-hidden="true">
+        @for (claim of marqueeClaims; track $index) {
+          <li class="de-marquee__item">{{ claim }}</li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ 03 · The demo — the product visual ══════════════════════════════ -->
+  <section id="try-it" class="de-band de-demo" aria-labelledby="de-demo-h">
+    <landing-container size="wide">
+      <div class="de-head">
+        <landing-eyebrow [label]="['01', 'see it']" tone="accent" />
+        <h2 id="de-demo-h" class="de-head__title">Type on the left. That <em>is</em> the document on the right.</h2>
+        <p class="de-head__lede">
+          Everything in the right-hand panel is what actually gets stored. No HTML string, nothing to parse back out
+          later. Change one word and watch it move.
+        </p>
+      </div>
+
+      <div class="de-presets" role="group" aria-label="Demo shortcuts">
+        @for (preset of presets; track preset.id) {
+          <button type="button" class="de-preset" [title]="preset.hint" (click)="applyPreset(preset.id)">
+            {{ preset.label }}
+          </button>
+        }
+      </div>
+
+      <div class="de-split">
+        <!-- No label bar: the toolbar IS this pane's header, sitting exactly where
+             the neighbour's bar sits. Same frame, no fill — one surface you write
+             on, one surface that shows what was written. -->
+        <div class="de-pane de-pane--editor">
+          <div class="de-pane__body">
+            <!-- Browser-only and heavy. `on viewport` keeps it off every other
+                 route's payload; a reader who never scrolls here never loads it. -->
+            @defer (on viewport) {
+              <rte-tiptap-editor
+                mode="full"
+                placeholder="Start typing…"
+                [formControl]="doc"
+                aria-label="Document Engine live demo editor"
+              />
+            } @placeholder {
+              <div class="de-pane__placeholder"><span>Editor loads when it scrolls into view</span></div>
+            } @loading (minimum 300ms) {
+              <div class="de-pane__placeholder"><span>Loading editor…</span></div>
+            }
+          </div>
+        </div>
+
+        <!-- Backdrop for the expanded state. A sibling rather than a wrapper, so
+             the pane's markup is identical in both states — one pane, two sizes. -->
+        @if (expanded()) {
+          <button
+            type="button"
+            class="de-scrim"
+            aria-label="Close the expanded panel"
+            (click)="closeExpanded()"
+          ></button>
+        }
+
+        <div class="de-pane de-pane--json" [class.is-expanded]="expanded()">
+          <div class="de-pane__bar">
+            <!-- Two views of one value. Plain buttons rather than the site's
+                 segmented control: this is 24px of pane chrome, and the shared
+                 control is sized for a page-level choice. -->
+            <div class="de-tabs" role="group" aria-label="Document view">
+              <button
+                type="button"
+                class="de-tab"
+                [class.is-active]="paneView() === 'json'"
+                [attr.aria-pressed]="paneView() === 'json'"
+                (click)="paneView.set('json')"
+              >
+                Stored
+              </button>
+              <button
+                type="button"
+                class="de-tab"
+                [class.is-active]="paneView() === 'rendered'"
+                [attr.aria-pressed]="paneView() === 'rendered'"
+                (click)="paneView.set('rendered')"
+              >
+                Rendered
+              </button>
+            </div>
+            <span class="de-pane__count">{{ nodeCount() }} blocks</span>
+            <div class="de-pane__tools">
+              @if (paneView() === 'json') {
+                <button type="button" class="de-copy" (click)="copyJson()">{{ copied() ? 'Copied' : 'Copy' }}</button>
+              }
+              <!-- Both views need the room, so the control belongs to the pane
+                   rather than to either tab. -->
+              <button
+                type="button"
+                class="de-copy"
+                [attr.aria-pressed]="expanded()"
+                [title]="expanded() ? 'Close (Esc)' : 'Fill the screen'"
+                (click)="toggleExpanded()"
+              >
+                {{ expanded() ? 'Close' : 'Expand' }}
+              </button>
+            </div>
+          </div>
+          <div class="de-pane__body">
+            @if (paneView() === 'json') {
+              <pre class="de-json"><code>{{ documentJson() }}</code></pre>
+            } @else {
+              <rte-render [doc]="portableDoc()" contentClass="landing-prose de-rendered" />
+            }
+          </div>
+        </div>
+      </div>
+    </landing-container>
+  </section>
+
+  <!-- ═══ 04 · Why it exists ══════════════════════════════════════════════ -->
+  <section class="de-reveal de-band de-band--tint" aria-labelledby="de-why-h">
+    <landing-container size="wide">
+      <div class="de-head">
+        <landing-eyebrow [label]="['02', 'the problem']" tone="accent" />
+        <h2 id="de-why-h" class="de-head__title">Why build one at <em>all</em>.</h2>
+        <p class="de-head__lede">
+          Document generation is a solved problem right up until the documents matter. In regulated work the editor
+          stops being a text box and becomes part of the product, and that is where a rented one runs out of room.
+        </p>
+      </div>
+
+      <dl class="de-problems">
+        @for (problem of problems; track problem.title; let i = $index) {
+          <div class="de-problem">
+            <span class="de-problem__num">{{ i + 1 | number: '2.0-0' }}</span>
+            <dt>{{ problem.title }}</dt>
+            <dd>{{ problem.body }}</dd>
+          </div>
+        }
+      </dl>
+    </landing-container>
+  </section>
+
+  <!-- ═══ 05 · Features ═══════════════════════════════════════════════════ -->
+  <section class="de-reveal de-band" aria-labelledby="de-features-h">
+    <landing-container size="wide">
+      <div class="de-head">
+        <landing-eyebrow [label]="['03', 'what it does']" tone="accent" />
+        <h2 id="de-features-h" class="de-head__title">Built for the <em>awkward</em> parts.</h2>
+        <p class="de-head__lede">
+          The generic formatting is table stakes. These are the things that made building one worth it.
+        </p>
+      </div>
+
+      <div class="de-features">
+        @for (feature of features; track feature.name) {
+          <div class="de-feature">
+            <h3 class="de-feature__name">{{ feature.name }}</h3>
+            <p class="de-feature__body">{{ feature.body }}</p>
+          </div>
+        }
+      </div>
+    </landing-container>
+  </section>
+
+  <!-- ═══ 06 · Architecture ═══════════════════════════════════════════════ -->
+  <section class="de-reveal de-band de-band--tint" aria-labelledby="de-arch-h">
+    <landing-container size="wide">
+      <div class="de-head">
+        <landing-eyebrow [label]="['04', 'architecture']" tone="accent" />
+        <h2 id="de-arch-h" class="de-head__title">Two packages, on <em>purpose</em>.</h2>
+        <p class="de-head__lede">
+          The split is the design. A document model that imports nothing can be read on a server, validated in a test,
+          and migrated by a script. Everything framework-shaped is quarantined in the binding.
+        </p>
+      </div>
+
+      <div class="de-arch">
+        <div class="de-arch__diagram" aria-hidden="true">
+          <div class="de-node de-node--host">Your app</div>
+          <div class="de-arrow">↓</div>
+          <div class="de-node de-node--binding">
+            document-engine-<strong>angular</strong>
+            <span>framework binding</span>
+          </div>
+          <div class="de-arrow">↓</div>
+          <div class="de-node de-node--core">
+            document-engine-<strong>core</strong>
+            <span>document model · zero framework imports</span>
+          </div>
+        </div>
+
+        <div class="de-packages">
+          @for (pkg of packages; track pkg.name) {
+            <div class="de-package">
+              <p class="de-package__name">
+                <code>{{ pkg.name }}</code>
+              </p>
+              @if (npmStats()[pkg.name]; as stat) {
+                <p class="de-package__stat">
+                  <span>v{{ stat.version }}</span>
+                  @if (stat.downloads !== null) {
+                    <span class="de-badge__sep">·</span>
+                    <span>{{ stat.downloads | number }} downloads/week</span>
+                  }
+                </p>
+              }
+              <p class="de-package__role">{{ pkg.role }}</p>
+              <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">View on npm</landing-link>
+            </div>
+          }
+        </div>
+      </div>
+
+      <p class="de-note">
+        This site is one of its consumers. The editor behind every word published here runs on these two packages, which
+        is a harder test than a demo page could ever be.
+      </p>
+    </landing-container>
+  </section>
+
+  <!-- ═══ 07 · Closing CTA band ═══════════════════════════════════════════ -->
+  <section class="de-reveal de-cta" aria-labelledby="de-cta-h">
+    <landing-background pattern="topo" />
+    <landing-container size="wide">
+      <div class="de-cta__inner">
+        <h2 id="de-cta-h" class="de-cta__title">Want the story rather than the <em>feature list</em>?</h2>
+        <p class="de-cta__lede">How it started, what it replaced, and the parts that did not go to plan.</p>
+        <div class="de-cta__actions">
+          <a routerLink="/projects/document-engine">
+            <landing-button size="md" arrow="right">Read the case study</landing-button>
+          </a>
+        </div>
+
+        <!-- There are two packages. A single "Browse the packages" button had to
+             pick one and silently drop the other, so list both by name instead. -->
+        <ul class="de-cta__packages" role="list">
+          @for (pkg of packages; track pkg.name) {
+            <li>
+              <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">
+                {{ pkg.shortName }}
+              </landing-link>
+            </li>
+          }
+        </ul>
+      </div>
+    </landing-container>
+  </section>
+</div>

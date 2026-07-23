@@ -45,6 +45,7 @@ export class FooterBanner {
       routes: [
         { label: 'About', href: '/about' },
         { label: 'Projects', href: '/projects' },
+        { label: 'Document Engine', href: '/document-engine' },
         { label: 'DDL', href: '/ddl' },
       ],
     },

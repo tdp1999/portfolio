@@ -112,6 +112,7 @@ Console has no `Mod+K` / `/` search shortcut yet, even though the topbar has a
 | `← / →` | Previous / next image | `lightbox-overlay` · `landing/shared/ui` | lightbox open |
 | `Escape` | Close lightbox | `lightbox-overlay` | lightbox open |
 | `Mod / Ctrl + wheel` | Zoom image | `lightbox-overlay` | lightbox open |
+| `Escape` | Close the expanded evidence pane | `document-engine` · `apps/landing` page | pane expanded |
 
 ### Editor-owned (TipTap, only while the caret is in the rich-text editor)
 

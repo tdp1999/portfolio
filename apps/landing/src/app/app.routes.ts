@@ -32,6 +32,10 @@ export const appRoutes: Route[] = [
     loadChildren: () => import('@portfolio/landing/feature-blog').then((m) => m.BLOG_ROUTES),
   },
   {
+    path: 'document-engine',
+    loadComponent: () => import('./pages/document-engine/document-engine').then((m) => m.DocumentEngine),
+  },
+  {
     path: 'uses',
     loadComponent: () => import('./pages/uses/uses').then((m) => m.Uses),
   },

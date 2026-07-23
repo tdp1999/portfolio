@@ -47,6 +47,7 @@ import {
   FileX,
   LucideIconData,
   Link,
+  Package,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
 
@@ -99,6 +100,7 @@ const ICON_MAP: Record<string, LucideIconData> = {
   history: History,
   'file-x': FileX,
   link: Link,
+  package: Package,
 };
 
 export class LucideIconProvider implements IconProvider {

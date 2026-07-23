@@ -1,0 +1,1537 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
+
+// The engine's own vendor stylesheet is loaded by `document-engine.vendor.scss`,
+// listed before this file in `styleUrls`. See the comment there for why it is a
+// separate file rather than a `@use` here.
+
+/* The element selector, not `:host`. This component runs
+   `ViewEncapsulation.None`, so Angular emits every selector verbatim into a
+   global sheet — and `:host` only ever matches inside a shadow root, so it
+   would have been a dead rule and the host would have stayed `inline`. */
+landing-document-engine {
+  display: block;
+}
+
+/* The engine ships light-mode shadcn defaults. Remap them onto landing tokens so
+   the editor follows the site's theme instead of punching a white box into it.
+   Landing equivalents of the console remap in `styles/vendor/document-engine.scss`. */
+document-engine-editor {
+  --background: var(--landing-surface);
+  --foreground: var(--landing-text-300);
+  --card: var(--landing-surface);
+  --card-foreground: var(--landing-text-300);
+  --border: var(--landing-border);
+  --input: var(--landing-border);
+  --muted: var(--landing-ink-1);
+  --muted-foreground: var(--landing-text-500);
+  --primary: var(--landing-accent);
+  --primary-foreground: var(--landing-bg);
+  --secondary: var(--landing-ink-1);
+  --secondary-foreground: var(--landing-text-300);
+  --accent: var(--landing-ink-1);
+  --accent-foreground: var(--landing-text-300);
+  --ring: var(--landing-accent);
+  --document-engine-background: var(--landing-surface);
+  --document-engine-border: var(--landing-border);
+  --document-engine-text-muted: var(--landing-text-500);
+
+  /* The engine's own panel styles reach for `--popover` and the elevation
+     shadows (see the colour-picker dropdown inside the cell-properties panel).
+     Neither app defined them, so those surfaces painted with `background:
+     var(--popover)` resolving to nothing — an invisible panel floating over the
+     page with only its contents showing. Same bug class as the bubble-menu
+     wrappers below, one level deeper. */
+  --popover: var(--landing-surface);
+  --popover-foreground: var(--landing-text-300);
+  --shadow-elevation-1: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-elevation-2: 0 12px 32px rgb(0 0 0 / 48%);
+
+  /* The engine ships at its own (app-sized) scale, which is too loud for a demo
+     panel sitting inside a marketing page — the sample document ended up larger
+     than the page's own prose. Scale the whole editor down as one block, the
+     same lever the console typography pass uses, so internal proportions hold. */
+  font-size: 87.5%;
+
+  .tiptap {
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
+  }
+
+  .tiptap h1,
+  .tiptap h2,
+  .tiptap h3 {
+    font-size: var(--landing-body-lg);
+    line-height: var(--landing-body-lg-lh);
+  }
+
+  // The caret is the focus indicator; the global focus ring would draw a box
+  // around the whole editing surface.
+  .tiptap:focus,
+  .tiptap:focus-visible,
+  [contenteditable]:focus,
+  [contenteditable]:focus-visible {
+    outline: none;
+  }
+}
+
+/* ─── Band rhythm ─────────────────────────────────────────────────────────
+   Every section is full-bleed and owns its own background. Tinted bands
+   alternate with the page background so the scroll has a beat instead of one
+   uninterrupted column — the difference between a product page and a document. */
+
+.de-band {
+  padding-block: 72px;
+}
+
+.de-band--tint {
+  background: var(--landing-ink-1);
+  border-block: 1px solid var(--landing-border);
+}
+
+/* Section header block. Left-aligned throughout: a product page states things,
+   it does not present them. (Home centres its section headers; this page is a
+   different animal and deliberately does not follow it.)
+
+   NO max-width on the block. A tight measure is right for body prose but wrong
+   for a heading: it forces a short line to wrap early and strand its last word
+   on a second row, which reads as broken rather than considered. Headings run to
+   the container and wrap only when they genuinely run out of width. */
+.de-head {
+  max-width: none;
+}
+
+.de-head landing-eyebrow {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.de-head__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+
+  em {
+    font-family: var(--landing-font-display);
+    font-style: italic;
+    font-weight: 400;
+    /* Newsreader's x-height is far shorter than Inter's, so a serif italic set
+       at the same px reads noticeably smaller than the sans around it. Match
+       optically, not numerically — the ratio is the one already established on
+       Home (`home.selected-work`: body-xl serif inside body-lg sans, 20/17). */
+    font-size: 1.18em;
+    color: var(--landing-accent);
+  }
+}
+
+/* The lede is real prose, so it keeps a measure — but a generous one, wide
+   enough that a two-sentence lede does not fragment into four short rows. */
+.de-head__lede {
+  max-width: 62rem;
+  margin: 16px 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-500);
+}
+
+/* ─── 01 · Hero ───────────────────────────────────────────────────────────
+   Tall, left-aligned, its own patterned background. `isolation` + `position`
+   so `landing-background` can sit behind the content without a z-index war. */
+
+.de-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  /* Tall enough to feel like an opening, short enough that the content is not
+     marooned in the middle of an empty screen. The blueprint pattern is a
+     perspective floor, so it wants ground beneath the text, not a void above. */
+  min-height: calc(var(--vh-full) - 320px);
+  /* Matches the band rhythm below (72 → 96 → 120). A hero padded lighter than
+     the sections under it reads as misaligned, not as a hero. */
+  padding-block: 72px;
+}
+
+/* The hero is a flex row (to vertically centre its content), which makes the
+   container a flex item — and a flex item is shrink-to-fit, so `max-width` never
+   applies and `margin-inline: auto` centres a *narrow* box. The result was a
+   hero gutter that did not line up with any band below it. Make the item fill
+   the row so the container resolves at its real width. */
+.de-hero > landing-container {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Full container width. The 64rem cap was inherited thinking from a prose page:
+   it kept the title and the fact row inside a measure narrower than every band
+   below, so the hero read as indented rather than as the widest thing on the
+   page. The elements that genuinely need a measure (the lede) carry their own. */
+.de-hero__inner {
+  max-width: none;
+}
+
+.de-hero__inner landing-eyebrow {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.de-hero__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-lg);
+  line-height: var(--landing-display-lg-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+
+  em {
+    font-family: var(--landing-font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.18em; /* optical match — see `.de-head__title em` */
+    color: var(--landing-accent);
+  }
+}
+
+.de-hero__lede {
+  max-width: 44rem;
+  margin: 24px 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  color: var(--landing-text-400);
+}
+
+.de-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+/* ─── Registry badges ─────────────────────────────────────────────────────
+   The GitHub idiom (a row of small pills carrying version / downloads / stars)
+   translated into landing chrome: mono, bordered, no colour blocks. It reads as
+   evidence rather than as decoration, which is the job it is doing here. */
+
+.de-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.de-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-500);
+  text-decoration: none;
+  transition:
+    border-color var(--landing-motion-fast) var(--landing-ease),
+    color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    border-color: var(--landing-accent);
+    color: var(--landing-text-300);
+  }
+
+  landing-icon {
+    display: inline-flex;
+    color: var(--landing-text-600);
+  }
+}
+
+/* The label half of the pill is dimmer than the number, the way a GitHub badge
+   greys its left segment — so the eye lands on the value, not the word. */
+.de-badge__key {
+  text-transform: uppercase;
+  color: var(--landing-text-600);
+}
+
+.de-badge__value {
+  color: var(--landing-text-300);
+}
+
+/* Placeholders for the two live figures, each sized to the run it replaces:
+   `v0.1.4` and `185/week`. Widths are counted in characters so they track the
+   mono font rather than a px guess, and each character carries the badge's
+   `--landing-tracking-mono` on top — `ch` measures the glyph advance and knows
+   nothing about letter-spacing, which is the 10px the badge was still jumping
+   by. Same pulse as the status dot: the page should have one idea of "waiting",
+   not two. */
+.de-badge__skeleton {
+  display: inline-block;
+  height: 1em;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--landing-text-600) 28%, transparent);
+  animation: de-skeleton 1.6s ease-in-out infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}
+
+.de-badge__skeleton--version {
+  width: calc(6 * (1ch + var(--landing-tracking-mono))); /* v0.1.4 */
+}
+
+.de-badge__skeleton--downloads {
+  width: calc(8 * (1ch + var(--landing-tracking-mono))); /* 185/week */
+}
+
+@keyframes de-skeleton {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.de-badge__sep {
+  color: var(--landing-text-600);
+}
+
+.de-hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  /* 24px, not 32: five columns at 32 pushed Status onto a second line at laptop
+     width, and a stat row that wraps after four items reads as two rows of
+     unrelated things rather than one row of facts. */
+  gap: 24px;
+  margin: 48px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--landing-border);
+}
+
+/* Even columns. Left to `gap` alone the three facts bunch at whatever width their
+   longest word happens to be, which reads as an accident rather than a stat row. */
+/* The row now mixes short scalars with a two-badge column, so the columns are
+   sized rather than left to `gap`: even a stat row that carries different kinds
+   of value has to read as a row, not as things that happened to land in a line. */
+.de-fact {
+  min-width: 8rem;
+
+  dd .de-badges {
+    margin-top: 4px;
+  }
+
+  dt {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: var(--landing-mono-sm-lh);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-600);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+    color: var(--landing-text-300);
+  }
+}
+
+/* The packages column carries two badges, stacked rather than side by side: laid
+   out in a line they run past half the band and push every other column to the
+   far edge. Stacked, the pair reads as one column like its neighbours, and the
+   two package names sit under each other where the difference between them is
+   easiest to see.
+
+   `fit-content` + `stretch` is what makes the pair line up: the list shrinks to
+   its widest pill, and both pills then take that width, so the badges share an
+   edge instead of ending ragged. */
+.de-fact--wide {
+  min-width: 22rem;
+
+  .de-badges {
+    flex-direction: column;
+    align-items: stretch;
+    width: fit-content;
+    gap: 6px;
+
+    /* The `<li>` is the flex item, but the pill is the `<a>` inside it — so the
+       stretch has to be handed down one level or the two badges end ragged. */
+    > li {
+      display: flex;
+    }
+
+    .de-badge {
+      width: 100%;
+    }
+  }
+}
+
+/* ─── 02 · Proof strip (marquee) ──────────────────────────────────────── */
+
+.de-proof {
+  padding-block: 20px;
+  background: var(--landing-ink-1);
+  border-block: 1px solid var(--landing-border);
+  overflow: hidden;
+}
+
+/* Two identical tracks side by side, the pair translated by exactly half its
+   width — so the moment the first track leaves, the second is where it started
+   and the seam is invisible. */
+.de-marquee {
+  display: flex;
+  width: max-content;
+  animation: de-marquee-scroll 42s linear infinite;
+}
+
+.de-marquee:hover {
+  animation-play-state: paused;
+}
+
+.de-marquee__track {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin: 0;
+  padding: 0 24px 0 0;
+  list-style: none;
+}
+
+.de-marquee__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--landing-accent);
+  }
+}
+
+@keyframes de-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.de-marquee {
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}
+
+/* ─── 03 · Demo ───────────────────────────────────────────────────────── */
+
+.de-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.de-preset {
+  padding: 8px 12px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-surface);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-400);
+  cursor: pointer;
+  transition: border-color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    border-color: var(--landing-accent);
+    color: var(--landing-accent);
+  }
+}
+
+.de-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.de-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--landing-surface);
+}
+
+.de-pane__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--landing-border);
+  background: var(--landing-ink-1);
+}
+
+.de-pane__label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-500);
+}
+
+.de-pane__count {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-accent);
+}
+
+.de-pane__tools {
+  display: flex;
+  margin-left: auto;
+  gap: 8px;
+}
+
+.de-copy {
+  padding: 4px 8px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: none;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-500);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--landing-accent);
+    border-color: var(--landing-accent);
+  }
+}
+
+/* Both panes are the same fixed height so the pair reads as one object rather
+   than two stacked boxes, and so the band cannot grow as the document does.
+   Each scrolls internally instead. */
+.de-pane__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 420px;
+  overflow: auto;
+  padding: 12px;
+}
+
+.de-pane__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+
+/* ─── Expanded evidence pane ──────────────────────────────────────────────
+   Not a modal component, and deliberately not one: the same pane, the same two
+   tabs, the same bound value, given the screen. A separate full-screen viewer
+   would be a second thing to keep in sync with the first, on a page whose whole
+   argument is that one document needs only one representation. */
+/* A button, not a div: it is a real "close" control, so it should be reachable
+   and operable without a mouse rather than a click handler on a decoration. */
+.de-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  border: 0;
+  cursor: default;
+  background: color-mix(in srgb, var(--landing-bg) 88%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+/* Sized like a document, not like a screen. Full-bleed gave a 1400px pane
+   holding a 72ch column, which is a lot of empty surface either side of the
+   thing you came to read. 960px is the width the content actually wants, and a
+   centred panel with the page dimmed around it reads as a dialog rather than as
+   the site having navigated somewhere. */
+.de-pane--json.is-expanded {
+  position: fixed;
+  inset: 24px;
+  width: min(960px, calc(100vw - 48px));
+  margin-inline: auto;
+  z-index: 100;
+  box-shadow: 0 24px 64px rgb(0 0 0 / 48%);
+
+  .de-pane__body {
+    /* Drop the fixed 420px: the point of expanding is that the pane finally gets
+       to be as tall as the screen, not 420px in the middle of one. */
+    height: auto;
+    padding: 24px;
+  }
+
+  .de-json {
+    font-size: var(--landing-mono-sm);
+    line-height: var(--landing-mono-sm-lh);
+  }
+
+  /* At full width the rendered document is a document again, so it goes back to
+     the site's real prose size instead of the shrunk-to-fit demo size. */
+  .de-rendered {
+    max-width: 72ch;
+    margin-inline: auto;
+    font-size: var(--landing-body-md);
+    line-height: var(--landing-body-md-lh);
+  }
+
+  /* The shrunk-to-fit heading size exists only because the pane was narrow.
+     Undo it here, back to the prose scale the rest of the site publishes at. */
+  .de-rendered.landing-prose > h1,
+  .de-rendered.landing-prose > h2,
+  .de-rendered.landing-prose > h3,
+  .de-rendered.landing-prose > h4 {
+    font-size: var(--landing-display-sm);
+    line-height: var(--landing-display-sm-lh);
+  }
+}
+
+/* Set on <body> while the pane is expanded (see the effect in the component).
+   Scrolling the page under an overlay loses the reader's place by the time they
+   close it. */
+body.de-locked {
+  overflow: hidden;
+}
+
+/* Deliberately the smallest type on the page. It is evidence, not reading
+   matter: the reader scans it for movement, they do not consume it line by line.
+   0.75rem sits below the mono scale's floor on purpose, matched to the editor's
+   scaled-down body so neither panel shouts over the other. */
+.de-json {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  /* Deliberately below the mono scale's floor, but derived from it rather than
+     stated as a literal: a raw `0.75rem` opts out of the type-scale knob and
+     drifts the moment the scale moves. `em` keeps the relationship. */
+  font-size: 0.86em;
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-400);
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* Borderless editor.
+   The engine draws its own card — a rounded, bordered toolbar sitting on a
+   bordered content box — which, nested inside the pane, produced three frames
+   around one editor. Strip it back to a single rule between the toolbar and the
+   writing surface and let everything else dissolve into the band.
+
+   This is not only tidier, it is the band's argument made visible: the editor is
+   headless, so its chrome is CSS a consumer owns, not structure the package
+   imposes. The JSON pane deliberately keeps its frame — the contrast between an
+   unframed writing surface and a framed data panel is the whole point. */
+/* Same frame as the stored-document pane, deliberately unfilled. The pair has to
+   read as one object: two windows onto the same value. What differs is what each
+   window is FOR — the left one you write in, so it gets no surface colour and its
+   header is the toolbar itself. */
+.de-pane--editor {
+  background: transparent;
+}
+
+/* The writing surface fills the pane.
+   The engine sizes `.tiptap` to its content and nothing else, so an emptied
+   editor collapsed to a single line — and since only that line is the
+   contenteditable, clicking anywhere in the 400px of empty pane below it did
+   nothing. The reader is looking at what is obviously a text box that refuses
+   to take a caret. Chain `height: 100%` from the pane body down through the
+   engine's own wrappers so the click target is the whole pane, at every
+   document length. */
+.de-pane--editor .de-pane__body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.de-pane--editor {
+  rte-tiptap-editor,
+  document-engine-editor,
+  .document-engine-document-editor,
+  tiptap-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  /* Flex all the way down. `min-height: 100%` on the editable does not work
+     here — a percentage resolves against a parent whose own height is flex
+     derived, so it computed to nothing and the surface stayed one line tall
+     (measured: 28px inside a 482px box). A flex chain has no such ambiguity. */
+  .document-engine-document-editor__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .tiptap {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+/* One row, always.
+   The toolbar is the editor pane's header — it sits exactly where the neighbour
+   pane's bar sits — and a header that reflows onto a second line stops reading as
+   a header. It was wrapping because the demo profile turns on every headline
+   feature at once, so the fix is split between here and the config: restricted
+   editing was dropped from the demo profile (the feature is still described in
+   the features band, and it is the one control that needs an explanation before
+   it means anything), and what is left is packed tighter.
+
+   `flex-wrap: nowrap` is the guarantee rather than the hope — if a future engine
+   version adds a control, it compresses the row instead of silently breaking the
+   header. */
+.document-engine-document-editor__toolbar {
+  border: 0;
+  border-bottom: 1px solid var(--landing-border);
+  border-radius: 0;
+  background: var(--landing-ink-1);
+  padding: 2px 4px;
+  flex-wrap: nowrap;
+  /* `auto`, not `hidden`. If a future engine version adds a control that pushes
+     the row past the pane, the reader can still reach it — silently clipping a
+     button off the end would be a worse failure than a scrollbar. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* `__toolbar-left` is the element that actually wraps — the toolbar root is a
+   block, and the row that overflows is this one, two levels down. Measured, it
+   wanted 736px in a 723px pane: thirteen pixels, which is why the second row held
+   a single lonely button. Denying the wrap and trimming the group padding closes
+   the gap with room to spare. */
+.document-engine-document-editor__toolbar-left,
+.document-engine-document-editor__toolbar-group {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.document-engine-document-editor__toolbar-group {
+  padding-inline: 0;
+  gap: 0;
+}
+
+/* The engine sizes its buttons for an application chrome with room to spare.
+   Inside a demo panel they only have to stay tappable. */
+.document-engine-document-editor__toolbar button {
+  padding: 2px 4px;
+  min-width: 0;
+}
+
+/* The engine emits a separator on every toolbar group, including the ones this
+   config leaves empty — which is where the doubled dividers came from. An empty
+   group has nothing to separate. */
+.document-engine-document-editor__toolbar-group:empty,
+.document-engine-document-editor__toolbar-right:empty {
+  display: none;
+}
+
+.document-engine-document-editor__content {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 12px;
+}
+
+/* Floating engine panels — link editor, colour picker, special characters, the
+   table create/style/cell-properties panels.
+
+   The engine paints these with Tailwind utilities in its own templates
+   (`rounded border bg-card text-card-foreground border-border shadow-elevation-2`),
+   deliberately delegating the actual colours to the CONSUMER's Tailwind theme.
+   Landing's Tailwind defines no `card` / `border` colour, so those classes
+   generate no rule at all and the panel renders with no surface and no border:
+   the "Cell properties" dialog sat over the hero with the h1 reading straight
+   through it. The `--card` remap above cannot save it — there is no rule to
+   consume the variable.
+
+   So the surface is stated here instead. Class names are engine-unique, hence
+   the unscoped selector: the bubble is `position: fixed` and may sit outside
+   `document-engine-editor` in the layer order, and a scoped rule would miss it.
+   Console carries the identical fix in `styles/vendor/document-engine.scss`. */
+.bubble-menu-wrapper,
+.toolbar-bubble-menu {
+  border: 1px solid var(--landing-border);
+  border-radius: 6px;
+  background: var(--landing-surface);
+  color: var(--landing-text-300);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 48%);
+  /* `z-50` / `z-30` are Tailwind classes the consumer never generated either, so
+     the panel had no stacking order of its own. Above the expanded pane (100),
+     because it can be opened from the editor while the pane is expanded. */
+  z-index: 200;
+  /* NO `overflow` here, deliberately. Capping the height and scrolling looks
+     like the obvious fix for a panel taller than the space under its trigger,
+     and it breaks the panels outright: every one of these contains a select or
+     a colour popover that is absolutely positioned INSIDE the wrapper, and an
+     overflow ancestor clips those to the wrapper's box. Tried it, and it cut
+     the table dropdown's options in half. The panel escaping the viewport is
+     the engine's own positioning to fix; clipping a control the reader has to
+     use to finish the action is worse than a panel they have to scroll to. */
+}
+
+/* `hidden` is a Tailwind utility too, and an ungenerated one is a panel that
+   keeps its box in the flow while invisible. Belt and braces — the engine's own
+   sheet already handles the fade via `:not(.hidden)`. */
+.bubble-menu-wrapper.hidden,
+.toolbar-bubble-menu.hidden {
+  display: none;
+}
+
+/* Dynamic-field chips.
+   The engine renders the node as `span.dynamic-field` and ships no opinion about
+   how it should look — correctly, since that is a consumer decision. Unstyled it
+   reads as ordinary prose, which quietly destroys the point the band is making:
+   the reader has to be able to SEE that a placeholder is an object in the
+   document and not a run of characters. So it gets a chip, and the chip is not
+   selectable text — the node is atomic, and it should behave like one. */
+.tiptap .dynamic-field {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid color-mix(in srgb, var(--landing-accent) 40%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--landing-accent) 12%, transparent);
+  font-family: var(--landing-font-mono);
+  font-size: 0.9em;
+  color: var(--landing-accent);
+  white-space: nowrap;
+  user-select: none;
+  cursor: default;
+}
+
+/* ProseMirror's own selection class for atoms. Without this a selected field
+   gets the browser's default highlight, which looks like a text selection. */
+.tiptap .dynamic-field.ProseMirror-selectednode {
+  border-color: var(--landing-accent);
+  background: color-mix(in srgb, var(--landing-accent) 24%, transparent);
+}
+
+/* Tables. Same reasoning as the chip: the engine stores structure and leaves the
+   look to the consumer, so the demo has to supply one or the "tables are stored
+   structurally" claim lands on an invisible table. */
+.tiptap table {
+  width: 100%;
+  margin: 12px 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tiptap th,
+.tiptap td {
+  padding: 6px 8px;
+  border: 1px solid var(--landing-border);
+  text-align: left;
+  vertical-align: top;
+  /* `table-layout: fixed` fixes the COLUMN widths, not the content: a long word
+     — or a `white-space: nowrap` field chip — still paints straight out through
+     the cell's right edge and past the pane. Let cell content break instead. */
+  overflow-wrap: anywhere;
+}
+
+/* A field chip is a single unbreakable token by design (it is one node, not a
+   run of words), which is exactly what overflows a narrow table column. Inside a
+   cell it may therefore wrap like ordinary text; everywhere else it stays on one
+   line. It keeps its chip shape either way. */
+.tiptap :is(th, td) .dynamic-field,
+.de-rendered :is(th, td) .de-field-chip {
+  white-space: normal;
+  max-width: 100%;
+}
+
+.tiptap th {
+  background: var(--landing-ink-1);
+  font-weight: 600;
+}
+
+/* Prose inside the editing surface.
+   The landing stylesheet resets lists, quotes and rules to nothing, because every
+   list on this site is a layout built from `<ul>` rather than a bullet list a
+   reader is meant to see. That reset reaches into the editor too, and there it is
+   actively wrong: a bullet list with no bullet is indistinguishable from three
+   paragraphs, so the editor was quietly misreporting the document it held. These
+   rules give the writing surface back the marks that carry meaning — and nothing
+   more, so it still looks like this site rather than like a word processor. */
+.tiptap {
+  ul,
+  ol {
+    margin: 8px 0;
+    padding-left: 24px;
+    list-style-position: outside;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  li {
+    margin: 2px 0;
+
+    /* TipTap wraps every list item's text in a paragraph. Left at paragraph
+       spacing each bullet becomes its own block and the list falls apart. */
+    > p {
+      margin: 0;
+    }
+
+    /* Nested lists shift marker, the way prose does, so depth is readable. */
+    ul {
+      list-style-type: circle;
+    }
+
+    ol {
+      list-style-type: lower-alpha;
+    }
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 20px 0 8px;
+    font-weight: 600;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  blockquote {
+    margin: 12px 0;
+    padding-left: 12px;
+    border-left: 2px solid var(--landing-accent);
+    color: var(--landing-text-400);
+    font-style: italic;
+  }
+
+  hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--landing-border);
+  }
+
+  a {
+    color: var(--landing-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  code {
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: var(--landing-ink-1);
+    font-family: var(--landing-font-mono);
+    font-size: 0.9em;
+  }
+
+  pre {
+    margin: 12px 0;
+    padding: 12px;
+    border: 1px solid var(--landing-border);
+    border-radius: 6px;
+    background: var(--landing-ink-1);
+    overflow-x: auto;
+
+    code {
+      padding: 0;
+      background: none;
+    }
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ─── 04 · Problems ───────────────────────────────────────────────────── */
+
+.de-problems {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  margin: 48px 0 0;
+}
+
+.de-problem {
+  padding-top: 16px;
+  border-top: 1px solid var(--landing-border-strong);
+
+  dt {
+    margin-top: 12px;
+    font-family: var(--landing-font-body);
+    font-weight: 600;
+    font-size: var(--landing-body-lg);
+    line-height: var(--landing-body-lg-lh);
+    color: var(--landing-text-300);
+  }
+
+  dd {
+    margin: 8px 0 0;
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
+    color: var(--landing-text-500);
+  }
+}
+
+.de-problem__num {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-accent);
+}
+
+/* ─── 05 · Features ───────────────────────────────────────────────────── */
+
+.de-features {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.de-feature {
+  padding: 24px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-surface);
+  transition: border-color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    border-color: var(--landing-border-strong);
+  }
+}
+
+.de-feature__name {
+  margin: 0;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-accent);
+}
+
+.de-feature__body {
+  margin: 12px 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-400);
+}
+
+/* ─── 06 · Architecture ───────────────────────────────────────────────── */
+
+/* `align-items: stretch` (the default) rather than `start`: the diagram on the
+   left and the package stack on the right must bottom out on the same line, or
+   the two borders end at different heights and the row reads as unfinished. */
+.de-arch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.de-arch__diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-surface);
+}
+
+.de-node {
+  width: 100%;
+  max-width: 24rem;
+  padding: 16px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  text-align: center;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  color: var(--landing-text-400);
+
+  strong {
+    color: var(--landing-text-300);
+  }
+
+  span {
+    display: block;
+    margin-top: 8px;
+    font-size: var(--landing-mono-sm);
+    color: var(--landing-text-600);
+    text-transform: none;
+  }
+}
+
+/* The core is the point of the diagram, so it is the only node stated loudly.
+   The binding above it reads as a layer you could replace. */
+.de-node--core {
+  border-color: var(--landing-accent);
+  color: var(--landing-accent);
+
+  strong {
+    color: var(--landing-accent);
+  }
+}
+
+.de-node--host {
+  border-style: dashed;
+  color: var(--landing-text-600);
+}
+
+.de-arrow {
+  font-family: var(--landing-font-mono);
+  color: var(--landing-text-600);
+}
+
+/* `1fr 1fr` (not `auto auto`): the two cards split whatever height the diagram
+   column sets, evenly, instead of one card hugging its text and leaving a gap. */
+.de-packages {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 16px;
+}
+
+.de-package {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--landing-border);
+  border-radius: 4px;
+  background: var(--landing-surface);
+
+  /* Push the npm link to the card's foot so both cards' links line up even when
+     their descriptions differ in length. */
+  landing-link {
+    margin-top: auto;
+  }
+}
+
+.de-package__name {
+  margin: 0;
+  overflow-wrap: anywhere;
+
+  code {
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: var(--landing-mono-sm-lh);
+    color: var(--landing-text-300);
+  }
+}
+
+/* Live npm numbers, sitting directly under the package name as a caption. Mono
+   and dim: it is a fact about the package, not a claim being made. */
+.de-package__stat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0; /* the card is a flex column with its own gap */
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  color: var(--landing-text-600);
+}
+
+.de-package__role {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+.de-note {
+  max-width: 44rem;
+  margin: 40px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--landing-border);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  color: var(--landing-text-500);
+}
+
+/* ─── 07 · Closing CTA ────────────────────────────────────────────────── */
+
+/* The closing band has to out-weigh the global footer that lands right under it,
+   otherwise the page appears to end twice. It follows a tinted band, so reusing
+   `ink-1` would flatten the two together — `ink-2` is the next step up the ramp,
+   which reads as a deliberate final surface rather than a repeat. */
+.de-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding-block: 96px;
+  border-top: 1px solid var(--landing-border-strong);
+  background: var(--landing-ink-2);
+}
+
+.de-cta__inner {
+  max-width: 44rem;
+}
+
+.de-cta__title {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-weight: 600;
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+  letter-spacing: var(--landing-tracking-tight);
+  color: var(--landing-text-300);
+
+  em {
+    font-family: var(--landing-font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.18em; /* optical match — see `.de-head__title em` */
+    color: var(--landing-accent);
+  }
+}
+
+.de-cta__lede {
+  margin: 16px 0 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-500);
+}
+
+.de-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.de-cta__packages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 32px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--landing-border);
+  list-style: none;
+}
+
+/* ─── Scroll reveal ───────────────────────────────────────────────────────
+   One shared entrance: each band lifts a few pixels as it enters.
+
+   CSS-driven, not JavaScript. The IntersectionObserver version was written first
+   and did not survive: Angular's cleanup pass disconnected the observer moments
+   after it was registered (verified by patching `IntersectionObserver.prototype`
+   in the browser — `observe ×4`, then `disconnect` from `processCleanups`), so
+   every band stayed at `opacity: 0` forever. A page whose content depends on a
+   JS timing detail to be visible at all is the wrong trade for an entrance
+   animation.
+
+   `animation-timeline: view()` has no such failure mode. The hidden keyframe
+   only exists inside `@supports`, so a browser without scroll-driven animations
+   — and any reader without JS — gets the finished page rather than an empty one.
+   Where it is supported, the band's own position drives the animation, with no
+   observer to lose. */
+@supports (animation-timeline: view()) {
+  .de-reveal {
+    animation: de-rise linear both;
+    animation-timeline: view();
+    /* Complete well before the band is centred, so reading is never gated on
+       scrolling further. */
+    animation-range: entry 0% entry 45%;
+  }
+
+  .de-reveal {
+    @include prefers.reduce-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes de-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─── Responsive (locked 4-BP system via mixins) ──────────────────────── */
+
+@include bp.respond-to('tablet') {
+  .de-band,
+  .de-hero {
+    padding-block: 96px;
+  }
+  .de-problems,
+  .de-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .de-arch {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+
+@include bp.respond-to('laptop') {
+  .de-problems,
+  .de-features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  /* The section is titled "type on the left, document on the right" — so the
+     split has to happen here, at the first width where a desktop reader lands.
+     Waiting until `wide` left the copy describing a layout that wasn't there.
+     5:3 rather than 3:2 because the engine's toolbar wraps a lone button onto a
+     second row below roughly 740px of editor width. */
+  .de-split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+    gap: 16px;
+  }
+}
+
+@include bp.respond-to('wide') {
+  .de-band,
+  .de-hero {
+    padding-block: 120px;
+  }
+  .de-split {
+    gap: 24px;
+  }
+  .de-pane__body {
+    height: 480px;
+  }
+}
+
+/* ─── Live status dot ─────────────────────────────────────────────────────
+   A word alone ("Live") is a claim; a word with a pulse reads as a state being
+   observed. The pulse stops under reduced-motion — the dot still carries it.
+
+   Green, not the site accent. Purple is this page's *brand* colour — it is on the
+   emphasised headings, the field chips and the primary button — so a purple dot
+   reads as more branding. Green is the one colour that means "healthy" without a
+   caption, and it is the only place on the page it appears, which is exactly what
+   makes it legible. Declared locally rather than promoted to a landing token:
+   nothing else on the site reports a status. */
+.de-live {
+  --de-live: #3ecf8e;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.de-live__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--de-live);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--de-live) 60%, transparent);
+  animation: de-pulse 2.4s ease-out infinite;
+
+  @include prefers.reduce-motion {
+    animation: none;
+  }
+}
+
+@keyframes de-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--de-live) 60%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+/* ─── Pane view tabs ──────────────────────────────────────────────────────
+   Deliberately quiet: they switch what the evidence pane shows, they are not a
+   call to action. Inactive reads as a label, active as the current state. */
+.de-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.de-tab {
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  color: var(--landing-text-600);
+  cursor: pointer;
+  transition: color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    color: var(--landing-text-300);
+  }
+
+  &.is-active {
+    border-color: var(--landing-border);
+    background: var(--landing-surface);
+    color: var(--landing-accent);
+  }
+}
+
+/* The rendered view runs the site's real prose styles, scaled to the pane the
+   same way the editor is — the two halves must not shout over each other. */
+.de-rendered {
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  /* Prose headings are sized for a full article column; inside a 440px evidence
+     pane they dwarf the editor opposite. Bring them down to the same footing the
+     editor was given, so the two halves stay peers. `landing-prose` targets its
+     headings with `> h2`, so the override has to match that shape or it loses on
+     source order alone. */
+  &.landing-prose > h1,
+  &.landing-prose > h2,
+  &.landing-prose > h3,
+  &.landing-prose > h4 {
+    font-size: var(--landing-body-lg);
+    line-height: var(--landing-body-lg-lh);
+  }
+
+  /* The rendered pane has to be able to draw everything the document can hold,
+     or the "one document, two views" claim breaks at the first table. Same marks
+     as the editing surface opposite, deliberately — the pair is meant to be
+     recognisably the same document, differing only in whether you can type in it. */
+  ul,
+  ol {
+    margin: 8px 0;
+    padding-left: 24px;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  li > p {
+    margin: 0;
+  }
+
+  table {
+    width: 100%;
+    margin: 12px 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    padding: 6px 8px;
+    border: 1px solid var(--landing-border);
+    text-align: left;
+    vertical-align: top;
+    /* See the editing surface opposite: fixed columns still let unbreakable
+       content paint out past the pane. */
+    overflow-wrap: anywhere;
+  }
+
+  th {
+    background: var(--landing-ink-1);
+  }
+
+  hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--landing-border);
+  }
+}
+
+/* The read path's placeholder. Matches the editor chip so a reader flipping
+   between the two panes sees the same object, not two designs. */
+.de-field-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid color-mix(in srgb, var(--landing-accent) 40%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--landing-accent) 12%, transparent);
+  font-family: var(--landing-font-mono);
+  font-size: 0.9em;
+  color: var(--landing-accent);
+  white-space: nowrap;
+}

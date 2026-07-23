@@ -352,6 +352,14 @@ export class Header {
       });
     }
     items.push(
+      // Product pages. Today there is one; `claude-code-ctx` is expected to join
+      // it, at which point this list wants its own titled group in the mega menu
+      // rather than sitting flat among the utility links.
+      {
+        label: 'Document Engine',
+        hint: 'product',
+        href: '/document-engine',
+      },
       {
         label: 'Uses',
         hint: 'tools',

@@ -1,0 +1,22 @@
+// The engine's own stylesheet (toolbar, buttons, dropdowns). Without it the
+// toolbar renders as raw unstyled controls. Console loads this globally from
+// `styles/vendor/document-engine.scss`; here it rides the route's lazy chunk
+// instead, so it costs nothing on any other page.
+//
+// Kept in its own file rather than `@use`d from `document-engine.scss` for one
+// concrete reason: the `anyComponentStyle` budget (16 kB warn / 32 kB error)
+// exists to stop a hand-written component stylesheet quietly becoming enormous,
+// and inlining ~28 kB of vendor CSS into the page's own sheet blew through it —
+// hiding this page's real ~4 kB behind a number that says nothing about the code
+// anyone here wrote. Split, each file is measured for what it actually is and the
+// guard stays meaningful for every other component.
+//
+// Listed FIRST in `styleUrls` so the page's own rules, which override several of
+// these, win on source order.
+@use '@phuong-tran-redoc/document-engine-angular/styles';
+
+// Bug-floor for the engine's floating panels (hardcoded light-mode hex, a colour
+// picker positioned by JS but never given `position: absolute`). Shared verbatim
+// with console — read that file's header for what each rule works around and when
+// it can be deleted.
+@use 'vendor/document-engine-panels';
