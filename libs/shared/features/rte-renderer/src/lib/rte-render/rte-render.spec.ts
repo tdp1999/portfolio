@@ -61,6 +61,44 @@ describe('RteRender', () => {
     expect(txt(el.querySelector('ul > li > p'))).toBe('item');
   });
 
+  it('renders a table structurally, spans only when they differ from 1', () => {
+    const el = render(
+      doc({
+        type: 'table',
+        content: [
+          {
+            type: 'tableRow',
+            content: [
+              { type: 'tableHeader', content: [{ type: 'paragraph', content: [text('h')] }] },
+              { type: 'tableCell', attrs: { colspan: 2 }, content: [{ type: 'paragraph', content: [text('c')] }] },
+            ],
+          },
+        ],
+      })
+    );
+    expect(txt(el.querySelector('table > tbody > tr > th'))).toBe('h');
+    const td = el.querySelector('td');
+    expect(txt(td)).toBe('c');
+    expect(td?.getAttribute('colspan')).toBe('2');
+    // colspan 1 is the default — the attribute is noise, so it is omitted.
+    expect(el.querySelector('th')?.hasAttribute('colspan')).toBe(false);
+  });
+
+  it('renders a horizontal rule', () => {
+    const el = render(doc({ type: 'horizontalRule' }));
+    expect(el.querySelector('hr')).not.toBeNull();
+  });
+
+  /**
+   * Regression: an unmarked run used to arrive as "\n  <text>\n", which Angular
+   * collapses to " <text> " — so a run following a mark rendered as `bold , rest`
+   * with a space in front of the comma.
+   */
+  it('does not pad an unmarked run that follows a mark', () => {
+    const el = render(doc({ type: 'paragraph', content: [text('penalty', [{ type: 'bold' }]), text(', on notice.')] }));
+    expect(el.querySelector('p')?.textContent).toBe('penalty, on notice.');
+  });
+
   it('renders inline marks as nested REAL elements (no innerHTML)', () => {
     const el = render(doc({ type: 'paragraph', content: [text('x', [{ type: 'bold' }, { type: 'italic' }])] }));
     // Nested strong > em > text, all real DOM nodes.

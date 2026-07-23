@@ -102,6 +102,19 @@ export class RteRender {
     return level === 3 ? 3 : level === 4 ? 4 : 2;
   }
 
+  /**
+   * A table cell's `colspan`/`rowspan`, or null when it is 1.
+   *
+   * Null rather than "1" so the attribute is omitted entirely in the common case:
+   * an explicit `colspan="1"` on every cell is noise in the DOM, and the
+   * attribute is only meaningful when it departs from the default. Anything that
+   * is not a positive whole number is treated as absent rather than trusted.
+   */
+  protected span(node: PortableNode, attr: 'colspan' | 'rowspan'): number | null {
+    const value = node.attrs?.[attr];
+    return typeof value === 'number' && Number.isInteger(value) && value > 1 ? value : null;
+  }
+
   /** A link mark's href (already scheme-validated at write-time); '#' as a safety net. */
   protected href(mark: Mark): string {
     const value = mark.attrs?.['href'];

@@ -63,6 +63,36 @@
       @case ('codeBlock') {
         <pre><code>{{ codeText(node) }}</code></pre>
       }
+      <!-- Tables and rules are portable vocabulary, not engine vocabulary: they
+           are ordinary document structure any editor would emit, and a read path
+           that cannot render a table cannot claim to render the document. Cells
+           recurse through `kids` like every other container, so their contents
+           (marks, fields, nested lists) need no special handling. -->
+      @case ('table') {
+        <table>
+          <tbody>
+            <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+          </tbody>
+        </table>
+      }
+      @case ('tableRow') {
+        <tr>
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </tr>
+      }
+      @case ('tableHeader') {
+        <th [attr.colspan]="span(node, 'colspan')" [attr.rowspan]="span(node, 'rowspan')">
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </th>
+      }
+      @case ('tableCell') {
+        <td [attr.colspan]="span(node, 'colspan')" [attr.rowspan]="span(node, 'rowspan')">
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        </td>
+      }
+      @case ('horizontalRule') {
+        <hr />
+      }
       @case ('hardBreak') {
         <br />
       }
@@ -80,8 +110,16 @@
      whitespace Angular collapses around {{ text }} is harmless in flow content;
      whitespace-significant <pre> is handled separately via codeText (see #one). -->
 <ng-template #inline let-marks="marks" let-text="text">
+  <!-- The interpolation is wrapped rather than written on its own line, and that
+       is load-bearing. A bare `{{ text }}` indented inside the block becomes a
+       text node of "\n  <text>\n", and Angular collapses that to " <text> " —
+       a leading and trailing space on every unmarked run. Invisible in the middle
+       of a sentence, and glaring where a run follows a mark: `**penalty** , on`.
+       Whitespace-only text nodes around an element ARE dropped by the compiler,
+       so wrapping in `ng-container` (which emits no DOM of its own) leaves the
+       text exactly as authored. -->
   @if (marks.length === 0) {
-    {{ text }}
+    <ng-container>{{ text }}</ng-container>
   } @else {
     @let rest = marks.slice(1);
     @switch (marks[0].type) {
