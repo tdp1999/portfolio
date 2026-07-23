@@ -1,0 +1,270 @@
+<!-- ═══ Prototype chrome — not part of the pattern ═══════════════════════ -->
+<div class="dl-toolbar">
+  <a mat-icon-button routerLink="/ddl" aria-label="Back to DDL"><mat-icon>arrow_back</mat-icon></a>
+  <div class="dl-toolbar__group">
+    <span class="dl-toolbar__label">Layout</span>
+    <console-segmented-control [options]="layoutOptions" [ngModel]="layout()" (ngModelChange)="layout.set($event)" />
+  </div>
+  <div class="dl-toolbar__group">
+    <span class="dl-toolbar__label">Record</span>
+    <console-segmented-control
+      [options]="recordOptions"
+      [ngModel]="recordKind()"
+      (ngModelChange)="recordKind.set($event)"
+    />
+  </div>
+</div>
+
+<div class="detail-page">
+  <ng-container [ngTemplateOutlet]="header" />
+
+  @if (layout() === 'a') {
+    <!-- A · single column. Kept for comparison only: with prose capped to a
+         reading measure and no rail, the right third of the page is dead. -->
+    <div class="dl-glance">
+      <div class="dl-glance__item dl-glance__item--primary">
+        <span class="dl-glance__label">Status</span>
+        <span class="dl-glance__value"><ng-container [ngTemplateOutlet]="statusBadge" /></span>
+      </div>
+      <div class="dl-glance__item">
+        <span class="dl-glance__label">Period</span>
+        <span class="dl-glance__value">{{ record().period }}</span>
+      </div>
+      <div class="dl-glance__item">
+        <span class="dl-glance__label">Slug</span>
+        <span class="dl-glance__value">{{ record().slug }}</span>
+      </div>
+      <div class="dl-glance__item">
+        <span class="dl-glance__label">Order</span>
+        <span class="dl-glance__value">{{ record().displayOrder }}</span>
+      </div>
+      <div class="dl-glance__item dl-glance__item--locale">
+        <span class="dl-glance__label">Language</span>
+        <console-segmented-control
+          [options]="localeOptions"
+          [ngModel]="locale()"
+          (ngModelChange)="locale.set($event)"
+        />
+      </div>
+    </div>
+
+    <p class="rv-lead">{{ oneLiner().text || 'No one-liner yet.' }}</p>
+    <ng-container [ngTemplateOutlet]="sections" />
+
+    <console-record-section title="Metadata">
+      <console-property-list layout="grid"><ng-container [ngTemplateOutlet]="propRows" /></console-property-list>
+    </console-record-section>
+
+    <console-record-empty-sections [sections]="emptySections()" />
+  } @else {
+    <console-record-layout>
+      <p class="rv-lead">{{ oneLiner().text || 'No one-liner yet.' }}</p>
+      <ng-container [ngTemplateOutlet]="sections" />
+      <console-record-empty-sections [sections]="emptySections()" />
+
+      <ng-container aside>
+        <console-record-panel title="Content language">
+          <console-segmented-control
+            [options]="localeOptions"
+            [ngModel]="locale()"
+            (ngModelChange)="locale.set($event)"
+          />
+          <p class="rv-panel__note">
+            {{ progress().written }} of {{ progress().total }} fields written in {{ localeName() }}.
+          </p>
+        </console-record-panel>
+
+        <console-record-panel title="Properties" flush>
+          <console-property-list><ng-container [ngTemplateOutlet]="propRows" /></console-property-list>
+        </console-record-panel>
+      </ng-container>
+    </console-record-layout>
+  }
+</div>
+
+<!-- ═══ Record content ═══════════════════════════════════════════════════ -->
+
+<ng-template #sections>
+  @if (hasStory()) {
+    <console-record-section title="Story" [gaps]="storyGaps()" gapLabel="to write">
+      @if (collapsed()) {
+        <button type="button" action class="rv-linkbtn" (click)="folds.toggleGroup(storyIds())">
+          {{ folds.allOpenIn(storyIds()) ? 'Collapse all' : 'Expand all' }}
+        </button>
+      }
+      @for (block of storyFields(); track block.id) {
+        @if (collapsed() && block.state !== 'unset') {
+          <console-record-fold
+            [title]="block.label"
+            [gist]="foldGist(block)"
+            [open]="folds.isOpen(block.id)"
+            (openChange)="folds.toggle(block.id)"
+          >
+            <ng-container [ngTemplateOutlet]="fieldBody" [ngTemplateOutletContext]="{ $implicit: block }" />
+          </console-record-fold>
+        } @else {
+          <ng-container [ngTemplateOutlet]="fieldBody" [ngTemplateOutletContext]="{ $implicit: block }" />
+        }
+      }
+    </console-record-section>
+  }
+
+  @if (record().highlights.length) {
+    <console-record-section title="Technical highlights" [count]="record().highlights.length" [gaps]="highlightGaps()">
+      @if (collapsed()) {
+        <button type="button" action class="rv-linkbtn" (click)="folds.toggleGroup(highlightIds())">
+          {{ folds.allOpenIn(highlightIds()) ? 'Collapse all' : 'Expand all' }}
+        </button>
+      }
+      @for (h of record().highlights; track $index) {
+        @if (collapsed()) {
+          <console-record-fold
+            [title]="h.title"
+            [gist]="h.outcome || 'No outcome written yet'"
+            [index]="$index + 1"
+            [open]="folds.isOpen('highlight-' + $index)"
+            (openChange)="folds.toggle('highlight-' + $index)"
+          >
+            <ng-container [ngTemplateOutlet]="cao" [ngTemplateOutletContext]="{ $implicit: h }" />
+          </console-record-fold>
+        } @else {
+          <console-record-item [title]="h.title" [index]="$index + 1">
+            <ng-container [ngTemplateOutlet]="cao" [ngTemplateOutletContext]="{ $implicit: h }" />
+          </console-record-item>
+        }
+      }
+    </console-record-section>
+  }
+
+  @if (record().thumbnailUrl || record().images.length) {
+    <console-record-section title="Media" [count]="record().images.length + (record().thumbnailUrl ? 1 : 0)">
+      <div class="dl-media">
+        @if (record().thumbnailUrl) {
+          <figure class="dl-media__item dl-media__item--thumb">
+            <img [src]="record().thumbnailUrl" alt="Thumbnail" />
+            <figcaption>Thumbnail</figcaption>
+          </figure>
+        }
+        @for (img of record().images; track img.url) {
+          <figure class="dl-media__item">
+            <img [src]="img.url" [alt]="img.alt" />
+            <figcaption>{{ img.alt }}</figcaption>
+          </figure>
+        }
+      </div>
+    </console-record-section>
+  }
+</ng-template>
+
+<ng-template #fieldBody let-field>
+  <console-record-field [label]="field.label" [state]="field.state" [otherLocale]="localeName()">
+    <p class="rv-prose">{{ field.text }}</p>
+  </console-record-field>
+</ng-template>
+
+<ng-template #cao let-h>
+  <div class="rv-cao">
+    <div>
+      <span class="rv-cao__label">Challenge</span>
+      @if (h.challenge) {
+        <p class="rv-prose">{{ h.challenge }}</p>
+      } @else {
+        <p class="rv-absent">Not set</p>
+      }
+    </div>
+    <div>
+      <span class="rv-cao__label">Approach</span>
+      @if (h.approach) {
+        <p class="rv-prose">{{ h.approach }}</p>
+      } @else {
+        <p class="rv-absent">Not set</p>
+      }
+    </div>
+    <div>
+      <span class="rv-cao__label">Outcome</span>
+      @if (h.outcome) {
+        <p class="rv-prose">{{ h.outcome }}</p>
+      } @else {
+        <p class="rv-absent">Not set</p>
+      }
+    </div>
+    @if (h.codeUrl) {
+      <div>
+        <span class="rv-cao__label">Code</span>
+        <a class="dl-link" [href]="h.codeUrl" target="_blank" rel="noopener noreferrer">{{ h.codeUrl }}</a>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #propRows>
+  <console-property label="Status"><ng-container [ngTemplateOutlet]="statusBadge" /></console-property>
+  <console-property label="Period">{{ record().period }}</console-property>
+  <console-property label="Slug" mono>{{ record().slug }}</console-property>
+  <console-property label="Featured">{{ record().featured ? 'Yes' : 'No' }}</console-property>
+  <console-property label="Order">{{ record().displayOrder }}</console-property>
+  <console-property label="Skills">
+    <span class="dl-tags">
+      @for (s of record().skills; track s) {
+        <span class="dl-tag">{{ s }}</span>
+      }
+    </span>
+  </console-property>
+  <console-property label="Links">
+    @if (record().links.length) {
+      <span class="dl-linklist">
+        @for (l of record().links; track l.url) {
+          <a class="dl-link" [href]="l.url" target="_blank" rel="noopener noreferrer">
+            {{ l.label }}<span class="dl-linklist__type">{{ l.type }}</span>
+          </a>
+        }
+      </span>
+    } @else {
+      <span class="rv-absent">Not set</span>
+    }
+  </console-property>
+  <console-property label="Created">{{ record().createdAt }}</console-property>
+  <console-property label="Updated">{{ record().updatedAt }} by {{ record().updatedBy }}</console-property>
+</ng-template>
+
+<!-- ═══ Page furniture (already shared) ══════════════════════════════════ -->
+
+<ng-template #statusBadge>
+  <span
+    class="console-badge"
+    [class.console-badge--success]="record().status === 'PUBLISHED'"
+    [class.console-badge--warn]="record().status !== 'PUBLISHED'"
+  >
+    {{ record().status === 'PUBLISHED' ? 'Published' : 'Draft' }}
+  </span>
+</ng-template>
+
+<ng-template #header>
+  <div class="console-page-header">
+    <a mat-icon-button routerLink="/ddl" aria-label="Back"><mat-icon>arrow_back</mat-icon></a>
+    <div class="console-page-header__titles">
+      <div class="flex items-center gap-2">
+        <h1 class="text-page-title">{{ record().title }}</h1>
+        <ng-container [ngTemplateOutlet]="statusBadge" />
+        @if (record().featured) {
+          <mat-icon class="dl-star" aria-label="Featured">star</mat-icon>
+        }
+      </div>
+      <div class="detail-meta">
+        <span>{{ record().slug }}</span>
+        <span>Updated {{ record().updatedAt }} by {{ record().updatedBy }}</span>
+      </div>
+    </div>
+    <div class="console-page-header__actions">
+      <button mat-flat-button color="primary"><mat-icon class="icon-sm">edit</mat-icon> Edit</button>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More actions">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item><mat-icon>content_copy</mat-icon> Duplicate</button>
+        <button mat-menu-item><mat-icon>open_in_new</mat-icon> View on site</button>
+        <button mat-menu-item><mat-icon>delete</mat-icon> Delete</button>
+      </mat-menu>
+    </div>
+  </div>
+</ng-template>

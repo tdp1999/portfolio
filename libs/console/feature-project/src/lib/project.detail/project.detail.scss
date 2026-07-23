@@ -1,0 +1,48 @@
+/* Project-specific value renderers. The chassis itself is shared —
+   `console-record-*` + `styles/patterns/_record-view.scss` (ADR-026). */
+
+.project-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.project-media__item {
+  margin: 0;
+  width: 132px;
+
+  img {
+    width: 132px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+
+  figcaption {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.project-media__item--thumb img {
+  border-color: var(--color-primary);
+}
+
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.project-links__type {
+  margin-left: 6px;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}

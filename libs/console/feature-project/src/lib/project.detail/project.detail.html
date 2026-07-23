@@ -1,6 +1,6 @@
 <div class="detail-page">
   @if (project(); as p) {
-    <!-- Header: back + entity title + status badge, actions (full) on the right. -->
+    <!-- Header: back + title + status + timestamps, actions on the right. -->
     <div class="console-page-header">
       <a mat-icon-button routerLink="/projects" aria-label="Back to projects">
         <mat-icon>arrow_back</mat-icon>
@@ -8,13 +8,7 @@
       <div class="console-page-header__titles">
         <div class="flex items-center gap-2">
           <h1 class="text-page-title">{{ p.title }}</h1>
-          @if (p.deletedAt) {
-            <span class="console-badge console-badge--danger">Deleted</span>
-          } @else if (p.status === 'PUBLISHED') {
-            <span class="console-badge console-badge--success">Published</span>
-          } @else {
-            <span class="console-badge console-badge--warn">Draft</span>
-          }
+          <ng-container [ngTemplateOutlet]="statusBadge" />
           @if (p.featured) {
             <mat-icon class="icon-sm text-yellow-500" aria-hidden="false" aria-label="Featured">star</mat-icon>
           }
@@ -41,163 +35,178 @@
       </div>
     </div>
 
-    <div class="detail-card">
-      <!-- Basic Info -->
-      <div class="detail-section">
-        <h3 class="detail-section__title">Basic Info</h3>
+    <console-record-layout>
+      <p class="rv-lead">{{ oneLiner() || 'No one-liner yet.' }}</p>
 
-        <div class="detail-field">
-          <span class="detail-field__label">Slug</span>
-          <span class="detail-field__value font-mono text-sm">{{ p.slug }}</span>
-        </div>
-        <div class="detail-field">
-          <span class="detail-field__label">One-Liner</span>
-          <span class="detail-field__value">{{ p.oneLiner | translatable }}</span>
-        </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Period</span>
-          <span class="detail-field__value">{{ p | dateRange }}</span>
-        </div>
-      </div>
-
-      <!-- Story -->
-      <div class="detail-section">
-        <h3 class="detail-section__title">Story</h3>
-
-        <div class="detail-field">
-          <span class="detail-field__label">Motivation</span>
-          <span class="detail-field__value" [class.detail-field__value--empty]="(p.motivation | translatable) === '—'">
-            {{ p.motivation | translatable }}
-          </span>
-        </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Description</span>
-          <span class="detail-field__value" [class.detail-field__value--empty]="(p.description | translatable) === '—'">
-            {{ p.description | translatable }}
-          </span>
-        </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Role</span>
-          <span class="detail-field__value" [class.detail-field__value--empty]="(p.role | translatable) === '—'">
-            {{ p.role | translatable }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Technical Highlights -->
-      @if (p.highlights.length > 0) {
-        <div class="detail-section">
-          <h3 class="detail-section__title">Technical Highlights ({{ p.highlights.length }})</h3>
-
-          @for (h of p.highlights; track h.id; let i = $index) {
-            <div class="mb-4 rounded-lg border border-border p-4">
-              <p class="mb-2 text-sm font-medium text-text-muted">Highlight {{ i + 1 }}</p>
-              <div class="detail-field">
-                <span class="detail-field__label">Challenge</span>
-                <rte-render-html class="detail-field__value" [html]="h.challengeHtml | translatable: undefined : ''" />
-              </div>
-              <div class="detail-field">
-                <span class="detail-field__label">Approach</span>
-                <rte-render-html class="detail-field__value" [html]="h.approachHtml | translatable: undefined : ''" />
-              </div>
-              <div class="detail-field">
-                <span class="detail-field__label">Outcome</span>
-                <rte-render-html class="detail-field__value" [html]="h.outcomeHtml | translatable: undefined : ''" />
-              </div>
-              @if (h.codeUrl) {
-                <div class="detail-field">
-                  <span class="detail-field__label">Code URL</span>
-                  <a
-                    class="detail-field__value text-primary hover:underline"
-                    [href]="h.codeUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {{ h.codeUrl }}
-                  </a>
-                </div>
-              }
-            </div>
+      <!-- Story — matches the form's "Story" section 1:1. -->
+      @if (hasStory()) {
+        <console-record-section title="Story" [gaps]="storyGaps()" gapLabel="to write">
+          @for (field of storyFields(); track field.id) {
+            <console-record-field [label]="field.label" [state]="field.state" [otherLocale]="localeName()">
+              <p class="rv-prose">{{ field.text }}</p>
+            </console-record-field>
           }
-        </div>
+        </console-record-section>
+      }
+
+      <!-- Technical highlights — collection items, never siblings of a field.
+           Past two items the section opens collapsed (density rule). -->
+      @if (highlights().length) {
+        <console-record-section title="Technical highlights" [count]="highlights().length" [gaps]="highlightGaps()">
+          @if (collapseHighlights()) {
+            <button type="button" action class="rv-linkbtn" (click)="folds.toggleGroup(highlightIds())">
+              {{ folds.allOpenIn(highlightIds()) ? 'Collapse all' : 'Expand all' }}
+            </button>
+          }
+
+          @for (h of highlights(); track h.id) {
+            @if (collapseHighlights()) {
+              <console-record-fold
+                [title]="h.title"
+                [gist]="highlightGist(h)"
+                [index]="h.index"
+                [open]="folds.isOpen(h.id)"
+                (openChange)="folds.toggle(h.id)"
+              >
+                <ng-container [ngTemplateOutlet]="cao" [ngTemplateOutletContext]="{ $implicit: h }" />
+              </console-record-fold>
+            } @else {
+              <console-record-item [title]="h.title" [index]="h.index">
+                <ng-container [ngTemplateOutlet]="cao" [ngTemplateOutletContext]="{ $implicit: h }" />
+              </console-record-item>
+            }
+          }
+        </console-record-section>
       }
 
       <!-- Media -->
-      <div class="detail-section">
-        <h3 class="detail-section__title">Media</h3>
-
-        <div class="detail-field">
-          <span class="detail-field__label">Thumbnail</span>
-          <span class="detail-field__value">
+      @if (p.thumbnailUrl || p.images.length) {
+        <console-record-section title="Media" [count]="p.images.length + (p.thumbnailUrl ? 1 : 0)">
+          <div class="project-media">
             @if (p.thumbnailUrl) {
-              <img [src]="p.thumbnailUrl" [alt]="p.title" class="h-16 w-16 rounded object-cover" />
-            } @else {
-              <span class="detail-field__value--empty">No thumbnail</span>
+              <figure class="project-media__item project-media__item--thumb">
+                <img [src]="p.thumbnailUrl" [alt]="p.title" />
+                <figcaption>Thumbnail</figcaption>
+              </figure>
             }
-          </span>
-        </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Gallery</span>
-          <span class="detail-field__value">
-            @if (p.images.length > 0) {
-              <div class="flex flex-wrap gap-2">
-                @for (img of p.images; track img.id) {
-                  <img [src]="img.url" [alt]="img.altText ?? ''" class="h-16 w-16 rounded object-cover" />
-                }
-              </div>
-            } @else {
-              <span class="detail-field__value--empty">No gallery images</span>
+            @for (img of p.images; track img.id) {
+              <figure class="project-media__item">
+                <img [src]="img.url" [alt]="img.altText ?? ''" />
+                <figcaption>{{ img.altText || 'Untitled' }}</figcaption>
+              </figure>
             }
-          </span>
-        </div>
-      </div>
+          </div>
+        </console-record-section>
+      }
 
-      <!-- Details -->
-      <div class="detail-section">
-        <h3 class="detail-section__title">Details</h3>
+      <console-record-empty-sections [sections]="emptySections()" />
 
-        <div class="detail-field">
-          <span class="detail-field__label">Links</span>
-          <span class="detail-field__value">
-            @if (p.links.length > 0) {
-              <ul class="flex flex-col gap-1">
-                @for (link of p.links; track link.url) {
-                  <li>
-                    <span class="text-text-muted">[{{ link.type }}]</span>
+      <ng-container aside>
+        <!-- Above properties: this control changes what the column says. -->
+        <console-record-panel title="Content language">
+          <console-segmented-control
+            [options]="localeOptions"
+            [ngModel]="locale()"
+            (ngModelChange)="locale.set($event)"
+          />
+          <p class="rv-panel__note">
+            {{ progress().written }} of {{ progress().total }} fields written in {{ localeName() }}.
+          </p>
+        </console-record-panel>
+
+        <console-record-panel title="Properties" flush>
+          <console-property-list>
+            <console-property label="Status"><ng-container [ngTemplateOutlet]="statusBadge" /></console-property>
+            <console-property label="Period">{{ p | dateRange }}</console-property>
+            <console-property label="Slug" mono>{{ p.slug }}</console-property>
+            <console-property label="Featured">{{ p.featured ? 'Yes' : 'No' }}</console-property>
+            <console-property label="Display order">{{ p.displayOrder }}</console-property>
+            <console-property label="Skills">
+              @if (p.skills.length) {
+                <span class="flex flex-wrap gap-1">
+                  @for (skill of p.skills; track skill.id) {
+                    <mat-chip class="chip-sm">{{ skill.name }}</mat-chip>
+                  }
+                </span>
+              } @else {
+                <span class="rv-absent">Not set</span>
+              }
+            </console-property>
+            <console-property label="Links">
+              @if (p.links.length) {
+                <span class="project-links">
+                  @for (link of p.links; track link.url) {
                     <a class="text-primary hover:underline" [href]="link.url" target="_blank" rel="noopener noreferrer">
-                      {{ link.label }}
+                      {{ link.label }}<span class="project-links__type">{{ link.type }}</span>
                     </a>
-                  </li>
-                }
-              </ul>
-            } @else {
-              <span class="detail-field__value--empty">—</span>
+                  }
+                </span>
+              } @else {
+                <span class="rv-absent">Not set</span>
+              }
+            </console-property>
+            <console-property label="Created">{{ p.createdAt | date: 'medium' }}</console-property>
+            <console-property label="Updated">{{ p.updatedAt | date: 'medium' }}</console-property>
+            @if (p.deletedAt) {
+              <console-property label="Deleted">{{ p.deletedAt | date: 'medium' }}</console-property>
             }
-          </span>
+          </console-property-list>
+        </console-record-panel>
+      </ng-container>
+    </console-record-layout>
+
+    <!-- Challenge / Approach / Outcome are sub-parts of ONE highlight: labels
+         above the prose, so each part keeps the full reading measure. -->
+    <ng-template #cao let-h>
+      <div class="rv-cao">
+        <div>
+          <span class="rv-cao__label">Challenge</span>
+          <ng-container [ngTemplateOutlet]="richPart" [ngTemplateOutletContext]="{ $implicit: h.challenge }" />
         </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Skills</span>
-          <span class="detail-field__value">
-            @if (p.skills.length > 0) {
-              <div class="flex flex-wrap gap-1">
-                @for (skill of p.skills; track skill.id) {
-                  <mat-chip class="chip-sm">{{ skill.name }}</mat-chip>
-                }
-              </div>
-            } @else {
-              <span class="detail-field__value--empty">—</span>
-            }
-          </span>
+        <div>
+          <span class="rv-cao__label">Approach</span>
+          <ng-container [ngTemplateOutlet]="richPart" [ngTemplateOutletContext]="{ $implicit: h.approach }" />
         </div>
-        <div class="detail-field">
-          <span class="detail-field__label">Display Order</span>
-          <span class="detail-field__value">{{ p.displayOrder }}</span>
+        <div>
+          <span class="rv-cao__label">Outcome</span>
+          <ng-container [ngTemplateOutlet]="richPart" [ngTemplateOutletContext]="{ $implicit: h.outcome }" />
         </div>
+        @if (h.codeUrl) {
+          <div>
+            <span class="rv-cao__label">Code</span>
+            <a
+              class="text-primary hover:underline break-all"
+              [href]="h.codeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ h.codeUrl }}
+            </a>
+          </div>
+        }
       </div>
-    </div>
+    </ng-template>
+
+    <ng-template #statusBadge>
+      @if (p.deletedAt) {
+        <span class="console-badge console-badge--danger">Deleted</span>
+      } @else if (p.status === 'PUBLISHED') {
+        <span class="console-badge console-badge--success">Published</span>
+      } @else {
+        <span class="console-badge console-badge--warn">Draft</span>
+      }
+    </ng-template>
   } @else {
     <div class="detail-content relative">
       <console-spinner-overlay [loading]="loading()" />
     </div>
   }
 </div>
+
+<ng-template #richPart let-html>
+  @if (html) {
+    <rte-render-html class="rv-prose" [html]="html" />
+  } @else {
+    <p class="rv-absent">Not set</p>
+  }
+</ng-template>

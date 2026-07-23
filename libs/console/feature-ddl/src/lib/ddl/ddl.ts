@@ -68,6 +68,17 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
       </section>
 
       <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Detail Read-View Study</h2>
+        <p class="text-sm text-gray-500 mb-2">
+          The three chassis ADR-026 weighed for CRUD detail pages (summary+sections / split view / split+collapsed),
+          each switchable between a fully populated and a nearly empty record. Split+collapsed is the accepted one and
+          ships as the <code>console-record-*</code> family; the other two stay here as the comparison it was decided
+          against.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/ddl/detail-layouts">Open detail layout study</a>
+      </section>
+
+      <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Toast Notifications</h2>
         <div class="flex gap-3 flex-wrap">
           <button

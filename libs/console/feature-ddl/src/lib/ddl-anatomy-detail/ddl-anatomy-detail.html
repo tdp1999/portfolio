@@ -1,20 +1,21 @@
-<!-- DETAIL reference — built on the shared .detail-page (boxed reading column, centred)
-     + .detail-card/.detail-section + .console-badge + console-segmented-control. -->
+<!-- DETAIL anatomy — every element of a console read view, built on the real
+     `console-record-*` family (ADR-026) so this page and production cannot
+     drift. The previous version demonstrated a segmented content switch and
+     flat `.detail-field` rows; both are superseded. Full behavioural study,
+     incl. partial/sparse records and the density switch: /ddl/detail-layouts -->
 <div class="detail-page">
-  <!-- Header: back + title + status + timestamps (top) + actions in the title row.
-         Actions are full buttons; a 3rd+ action folds into the overflow menu. -->
+  <!-- Header: back + title + status + meta strip, primary action + overflow. -->
   <div class="console-page-header">
     <a mat-icon-button routerLink="/ddl" aria-label="Back"><mat-icon>arrow_back</mat-icon></a>
     <div class="console-page-header__titles">
-      <div class="anatomy-title-row">
+      <div class="flex items-center gap-2">
         <h1 class="text-page-title">Realestatedoc Console</h1>
         <span class="console-badge console-badge--success">Published</span>
       </div>
-      <div class="anatomy-meta-strip">
+      <div class="detail-meta">
         <span>ID: p1</span>
         <span>Created 3 weeks ago</span>
-        <span>Updated 2 days ago</span>
-        <span>Featured</span>
+        <span>Updated 2 days ago by Phuong Tran</span>
       </div>
     </div>
     <div class="console-page-header__actions">
@@ -27,92 +28,114 @@
     </div>
   </div>
 
-  <!-- Segmented content switch -->
-  <console-segmented-control [options]="segments" [ngModel]="tab()" (ngModelChange)="tab.set($event)" />
+  <console-record-layout>
+    <!-- Lead: the record's one-liner, above the first section. -->
+    <p class="rv-lead">Admin console for a bootstrapped Singapore real-estate startup.</p>
 
-  @switch (tab()) {
-    @case ('overview') {
-      <div class="detail-card">
-        <div class="detail-section">
-          <!-- Section HEADER carrying metadata / a section-level action on the right -->
-          <div class="detail-section__header">
-            <span class="detail-section__title">Basics</span>
-            <span class="detail-section__meta">
-              <span class="console-badge console-badge--success">Published</span>
-              <a routerLink="/ddl">Edit</a>
+    <!-- L1 section holding L2 fields. `gaps` marks a half-written section. -->
+    <console-record-section title="Story" [gaps]="1" gapLabel="to write">
+      <console-record-field label="Motivation">
+        <p class="rv-prose">
+          The team was running a property pipeline out of a spreadsheet and a group chat. I wanted to see whether a
+          small, opinionated console could replace both without a migration weekend.
+        </p>
+      </console-record-field>
+      <console-record-field label="Description" state="other-locale" otherLocale="English" />
+      <console-record-field label="Role">
+        <p class="rv-prose">Sole engineer. Data model, API, console, and the deploy pipeline behind it.</p>
+      </console-record-field>
+    </console-record-section>
+
+    <!-- L1 section holding L2 collection items. Section-scoped action in the
+         `action` slot; the count sits beside the title. -->
+    <console-record-section title="Technical highlights" [count]="2">
+      <button type="button" action class="rv-linkbtn" (click)="expandAll()">
+        {{ allOpen() ? 'Collapse all' : 'Expand all' }}
+      </button>
+
+      <console-record-item [index]="1" title="Offline-tolerant listing edits">
+        <div class="rv-cao">
+          <div>
+            <span class="rv-cao__label">Challenge</span>
+            <p class="rv-prose">Agents edited listings on-site where signal dropped, and lost work.</p>
+          </div>
+          <div>
+            <span class="rv-cao__label">Approach</span>
+            <p class="rv-prose">Queued mutations locally and reconciled on reconnect, last-writer-wins per field.</p>
+          </div>
+          <div>
+            <span class="rv-cao__label">Outcome</span>
+            <p class="rv-prose">Lost-edit reports stopped entirely.</p>
+          </div>
+        </div>
+      </console-record-item>
+
+      <!-- The same item compressed. A fold ALWAYS shows a gist — without one it
+           has become a tab, which is what this chassis rejects. -->
+      <console-record-fold
+        [index]="2"
+        title="Role-aware pricing history"
+        gist="Cut the pricing-dispute thread to a single screen."
+        [(open)]="secondOpen"
+      >
+        <div class="rv-cao">
+          <div>
+            <span class="rv-cao__label">Challenge</span>
+            <p class="rv-prose">Who changed an asking price, and when, was unanswerable after the fact.</p>
+          </div>
+          <div>
+            <span class="rv-cao__label">Outcome</span>
+            <p class="rv-prose">Cut the pricing-dispute thread to a single screen.</p>
+          </div>
+        </div>
+      </console-record-fold>
+    </console-record-section>
+
+    <!-- Sections absent in full — one line, never a ladder of dashes. -->
+    <console-record-empty-sections [sections]="emptySections" />
+
+    <ng-container aside>
+      <!-- Rail order: controls that change what the column SAYS sit above
+           panels that describe the record. -->
+      <console-record-panel title="Content language">
+        <console-segmented-control [options]="locales" [ngModel]="locale()" (ngModelChange)="locale.set($event)" />
+        <p class="rv-panel__note">2 of 3 fields written in English.</p>
+      </console-record-panel>
+
+      <console-record-panel title="Properties" flush>
+        <console-property-list>
+          <console-property label="Status">
+            <span class="console-badge console-badge--success">Published</span>
+          </console-property>
+          <console-property label="Slug" mono>realestatedoc-console</console-property>
+          <console-property label="Period">Jan 2022 — Present</console-property>
+          <console-property label="Order">3</console-property>
+          <console-property label="Skills">
+            <span class="anatomy-tags">
+              <span class="anatomy-tag">Angular</span><span class="anatomy-tag">NestJS</span>
+            </span>
+          </console-property>
+          <console-property label="Created">3 weeks ago</console-property>
+          <console-property label="Updated">2 days ago by Phuong Tran</console-property>
+        </console-property-list>
+      </console-record-panel>
+
+      <!-- Any further rail concern is just another panel. -->
+      <console-record-panel title="Activity">
+        @for (a of activity; track $index) {
+          <div class="anatomy-timeline__item">
+            <span class="anatomy-timeline__dot"></span>
+            <span>
+              <strong>{{ a.who }}</strong> {{ a.what }} ·
+              <span class="anatomy-timeline__time">{{ a.when }}</span>
             </span>
           </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Title</span>
-            <span class="detail-field__value">Realestatedoc Console</span>
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">One-liner</span>
-            <span class="detail-field__value">Admin console for a bootstrapped Singapore real-estate startup.</span>
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">Tags</span>
-            <span class="detail-field__value">
-              <span class="anatomy-tags"
-                ><span class="anatomy-tag">Angular</span><span class="anatomy-tag">NestJS</span></span
-              >
-            </span>
-          </div>
-        </div>
-        <div class="detail-section">
-          <div class="detail-section__title">Dates</div>
-          <div class="detail-field">
-            <span class="detail-field__label">Start</span>
-            <span class="detail-field__value">Jan 2022</span>
-          </div>
-          <div class="detail-field">
-            <span class="detail-field__label">End</span>
-            <span class="detail-field__value detail-field__value--empty">Present</span>
-          </div>
-          <!-- Section FOOTER carrying metadata (e.g. timestamps live here per-section) -->
-          <div class="detail-section__footer">
-            <span>Created 3 weeks ago</span>
-            <span>Updated 2 days ago</span>
-          </div>
-        </div>
-      </div>
-    }
-    @case ('activity') {
-      <div class="detail-card">
-        <div class="detail-section">
-          <div class="detail-section__title">Activity log</div>
-          <div class="anatomy-timeline">
-            @for (a of activity; track $index) {
-              <div class="anatomy-timeline__item">
-                <span class="anatomy-timeline__dot"></span>
-                <span
-                  ><strong>{{ a.who }}</strong> {{ a.what }} ·
-                  <span class="anatomy-timeline__time">{{ a.when }}</span></span
-                >
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    }
-    @case ('related') {
-      <div class="detail-card">
-        <div class="detail-section">
-          <div class="detail-section__title">Related records</div>
-          <div class="anatomy-related">
-            @for (r of related; track r.title) {
-              <div class="anatomy-related__item">
-                <span>{{ r.title }}</span>
-                <span class="console-badge console-badge--muted">{{ r.kind }}</span>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    }
-  }
+        }
+      </console-record-panel>
+    </ng-container>
+  </console-record-layout>
 
-  <!-- Danger zone as its own titled section -->
+  <!-- Danger zone stays a distinct, titled block below the record. -->
   <div class="detail-card anatomy-danger-card">
     <div class="detail-section">
       <div class="detail-section__title anatomy-danger-text">Danger zone</div>

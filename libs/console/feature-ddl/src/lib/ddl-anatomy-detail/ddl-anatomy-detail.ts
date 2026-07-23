@@ -4,30 +4,67 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { SegmentedControl, type SegmentedControlOption } from '@portfolio/console/shared/ui';
+import {
+  Property,
+  PropertyList,
+  RecordEmptySections,
+  RecordField,
+  RecordFold,
+  RecordItem,
+  RecordLayout,
+  RecordPanel,
+  RecordSection,
+  SegmentedControl,
+  type SegmentedControlOption,
+} from '@portfolio/console/shared/ui';
 
 /**
- * DDL ANATOMY — Detail page reference. Shows every detail-page element from the
- * audit: breadcrumbs + back · title + status badge + metadata strip · primary +
- * overflow actions · prev/next record nav · segmented content switch
- * (Overview / Activity / Related) · label-value fields · activity timeline ·
- * related records · timestamps footer · danger zone. Boxed, centered reading column.
+ * DDL ANATOMY — detail page reference, rebuilt on the `console-record-*` family
+ * (ADR-026). Shows one instance of every element a read view can carry: page
+ * header with status + meta strip + overflow actions · L1 section holding L2
+ * fields · L1 section holding L2 collection items · a collection item in both
+ * expanded and collapsed (fold) form · the partial-data gap signal · a field
+ * that exists only in the other locale · empty-sections disclosure · rail
+ * panels (content language, properties, activity) · danger zone.
+ *
+ * For the behavioural study — full / partial / sparse records crossed with the
+ * density switch and both locales — see `/ddl/detail-layouts`.
  */
 @Component({
   selector: 'console-ddl-anatomy-detail',
   standalone: true,
-  imports: [FormsModule, RouterLink, MatButtonModule, MatIconModule, MatMenuModule, SegmentedControl],
+  imports: [
+    FormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    SegmentedControl,
+    RecordLayout,
+    RecordSection,
+    RecordField,
+    RecordItem,
+    RecordFold,
+    RecordPanel,
+    PropertyList,
+    Property,
+    RecordEmptySections,
+  ],
   templateUrl: './ddl-anatomy-detail.html',
   styleUrl: '../ddl-anatomy.shared.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class DdlAnatomyDetail {
-  readonly tab = signal<'overview' | 'activity' | 'related'>('overview');
-  readonly segments: SegmentedControlOption[] = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'activity', label: 'Activity' },
-    { value: 'related', label: 'Related' },
+  readonly locale = signal('en');
+  readonly locales: SegmentedControlOption[] = [
+    { value: 'en', label: 'EN' },
+    { value: 'vi', label: 'VI' },
   ];
+
+  readonly secondOpen = signal(false);
+  readonly allOpen = signal(false);
+
+  readonly emptySections = ['Media', 'Links'];
 
   readonly activity = [
     { who: 'Phuong Tran', what: 'changed status to Published', when: '2 days ago' },
@@ -35,9 +72,9 @@ export default class DdlAnatomyDetail {
     { who: 'System', what: 'created the project', when: '3 weeks ago' },
   ];
 
-  readonly related = [
-    { title: 'Document Engine', kind: 'Project' },
-    { title: 'Angular', kind: 'Skill' },
-    { title: 'Building for scale', kind: 'Blog post' },
-  ];
+  expandAll(): void {
+    const next = !this.allOpen();
+    this.allOpen.set(next);
+    this.secondOpen.set(next);
+  }
 }

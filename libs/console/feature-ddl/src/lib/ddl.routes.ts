@@ -20,6 +20,10 @@ export const ddlRoutes: Route[] = [
     loadComponent: () => import('./ddl-anatomy-detail/ddl-anatomy-detail'),
   },
   {
+    path: 'detail-layouts',
+    loadComponent: () => import('./ddl-detail-layouts/ddl-detail-layouts'),
+  },
+  {
     path: 'anatomy-form',
     loadComponent: () => import('./ddl-anatomy-form/ddl-anatomy-form'),
   },

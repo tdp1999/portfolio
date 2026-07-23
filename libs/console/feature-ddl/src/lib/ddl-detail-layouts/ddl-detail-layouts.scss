@@ -1,0 +1,141 @@
+/* DDL — read-view layout study.
+ *
+ * The chassis itself now lives in the shared library: `console-record-*`
+ * components + `styles/patterns/_record-view.scss` (ADR-026). What remains here
+ * is only what belongs to the *study*: the prototype switcher, layout A's
+ * key-fact band (kept for comparison, not part of the pattern), and the small
+ * value renderers the demo fixtures need.
+ */
+
+:host {
+  display: block;
+}
+
+/* ═══ Prototype chrome ═══════════════════════════════════════════════ */
+.dl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding: 8px 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+}
+.dl-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dl-toolbar__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+/* ═══ Layout A — key-fact band ═══════════════════════════════════════
+   Rejected candidate, kept switchable so the comparison stays honest. */
+.dl-glance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-alt);
+}
+.dl-glance__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 96px;
+}
+.dl-glance__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.dl-glance__value {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+.dl-glance__item--primary .dl-glance__value {
+  font-weight: 600;
+}
+.dl-glance__item--locale {
+  margin-left: auto;
+}
+
+/* ═══ Value renderers used by the fixtures ═══════════════════════════ */
+.dl-star {
+  color: var(--color-warning);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+.dl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.dl-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--color-surface-elevated);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.dl-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.dl-linklist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dl-linklist__type {
+  margin-left: 6px;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.dl-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dl-media__item {
+  margin: 0;
+  width: 132px;
+
+  img {
+    width: 132px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+
+  figcaption {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.dl-media__item--thumb img {
+  border-color: var(--color-primary);
+}
