@@ -84,6 +84,16 @@ export type {
 } from './components/translatable-rich-text-group/translatable-rich-text-group';
 export { EnumLabelPipe } from './pipes/enum-label/enum-label.pipe';
 export { QuickLook } from './components/quick-look/quick-look';
+// Record view — read-only detail chassis (ADR-026).
+export { RecordLayout } from './components/record-view/record-layout';
+export { RecordSection } from './components/record-view/record-section';
+export { RecordField } from './components/record-view/record-field';
+export { RecordItem } from './components/record-view/record-item';
+export { RecordFold } from './components/record-view/record-fold';
+export { RecordPanel } from './components/record-view/record-panel';
+export { PropertyList } from './components/record-view/property-list';
+export { Property } from './components/record-view/property';
+export { RecordEmptySections } from './components/record-view/record-empty-sections';
 export {
   unsavedChangesGuard,
   onBeforeUnload,

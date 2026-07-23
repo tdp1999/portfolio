@@ -16,8 +16,24 @@
 :host ::ng-deep .segmented-control .mat-button-toggle {
   /* Each segment owns its pill radius so the active background is rounded. */
   border-radius: 8px;
-  flex: 1;
-  min-width: 96px;
+
+  /* Segments share the track evenly, but MUST be allowed to shrink. With the
+     previous `flex: 1; min-width: 96px` a long label could not compress: the
+     button stayed at its 1/n share while `.mat-button-toggle-label-content`
+     (nowrap, no min-width) kept its natural width and spilled over the NEXT
+     segment. The neighbour's checked pill then painted on top of the spilled
+     text — which read as "selecting B covers A". */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The label is the element that actually has to give way. Without `min-width: 0`
+   a flex item refuses to shrink below its content width. */
+:host ::ng-deep .segmented-control .mat-button-toggle .mat-button-toggle-label-content {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 :host ::ng-deep .segmented-control .mat-button-toggle:not(.mat-button-toggle-checked) {
