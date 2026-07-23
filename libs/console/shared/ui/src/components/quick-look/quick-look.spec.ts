@@ -15,7 +15,15 @@ describe('QuickLook', () => {
     fixture.detectChanges();
   }
 
-  function press(key: string, target: Partial<HTMLElement> = {}): KeyboardEvent {
+  /**
+   * `target` must be a REAL element. `isEditableTarget` narrows with
+   * `instanceof HTMLElement` before it reads `tagName`, so a `{ tagName: 'INPUT' }`
+   * stand-in is not "typing" — it is not an element at all. The test used one and
+   * so asserted the opposite of what it meant to: the guard returned false, Space
+   * closed the overlay, and the failure looked like a component bug rather than a
+   * fixture that never resembled the DOM.
+   */
+  function press(key: string, target: EventTarget = document.createElement('div')): KeyboardEvent {
     const event = new KeyboardEvent('keydown', { key, cancelable: true });
     Object.defineProperty(event, 'target', { value: target });
     component.onKeydown(event);
@@ -54,7 +62,31 @@ describe('QuickLook', () => {
 
   it('does not hijack keys while typing in a field', () => {
     create({ open: true });
-    press(' ', { tagName: 'INPUT' } as Partial<HTMLElement>);
+    press(' ', document.createElement('input'));
     expect(component.open()).toBe(true);
+  });
+
+  it('does not hijack keys while typing in a rich-text editor', () => {
+    // `isEditableTarget` also matches anything inside a contenteditable root,
+    // which is how the guard covers the engine's editing surface. A child node
+    // is the realistic target — the event fires on the deepest element.
+    // jsdom does not implement `isContentEditable` — it never computes the
+    // inherited value, so setting the attribute on the parent leaves the child
+    // reporting false. Define the property the guard actually reads, which is
+    // what a browser would report for a node inside a contenteditable root.
+    const child = document.createElement('span');
+    Object.defineProperty(child, 'isContentEditable', { value: true });
+    document.body.append(child);
+
+    create({ open: true, hasNext: true });
+    const next = jest.fn();
+    component.next.subscribe(next);
+
+    press(' ', child);
+    press('ArrowRight', child);
+    expect(component.open()).toBe(true);
+    expect(next).not.toHaveBeenCalled();
+
+    child.remove();
   });
 });
