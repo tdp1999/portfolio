@@ -190,6 +190,7 @@ export class ProjectDetail {
   readonly highlightBlocks = computed(() => {
     const loc = this.locale();
     return (this.project()?.highlights ?? []).map((h) => ({
+      title: getLocalized(h.title, loc),
       challenge: getLocalized(h.challengeHtml, loc) || plainToHtml(getLocalized(h.challenge, loc)),
       approach: getLocalized(h.approachHtml, loc) || plainToHtml(getLocalized(h.approach, loc)),
       outcome: getLocalized(h.outcomeHtml, loc) || plainToHtml(getLocalized(h.outcome, loc)),

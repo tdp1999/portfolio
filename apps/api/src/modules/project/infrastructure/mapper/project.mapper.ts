@@ -21,6 +21,8 @@ export type PrismaProjectWithRelations = PrismaProject & {
 
 export interface ProjectHighlightDto {
   id: string;
+  // Optional short bilingual label.
+  title: TranslatableJson | null;
   // Rich-text storage per CAO sub-field.
   challengeJson: TranslatableRichText | null;
   challengeHtml: TranslatableJson | null;
@@ -122,6 +124,7 @@ export class ProjectMapper {
         .sort((a, b) => a.displayOrder - b.displayOrder)
         .map((h) => ({
           id: h.id,
+          title: (h.title as unknown as TranslatableJson | null) ?? null,
           challengeJson: (h.challengeJson as TranslatableRichText | null) ?? null,
           challengeHtml: (h.challengeHtml as unknown as TranslatableJson | null) ?? null,
           challengeSchemaVersion: h.challengeSchemaVersion,

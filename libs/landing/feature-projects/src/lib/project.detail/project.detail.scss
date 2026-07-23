@@ -251,6 +251,11 @@
   text-transform: uppercase;
 }
 
+.project-reading__sub-title {
+  color: var(--landing-text-900);
+  text-transform: none;
+}
+
 .project-reading__label {
   display: block;
   margin-bottom: 4px;

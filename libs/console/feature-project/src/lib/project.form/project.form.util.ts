@@ -12,6 +12,23 @@ export function requiredTranslatableGroup(fb: FormBuilder, value: TranslatableJs
   });
 }
 
+/**
+ * Bilingual plain-text group with no required validator (optional field, e.g. highlight title).
+ * `maxLength` mirrors the API's zod bound so an over-long value fails inline instead of
+ * coming back as a generic save error.
+ */
+export function translatableGroup(
+  fb: FormBuilder,
+  value: TranslatableJson | null = EMPTY_TRANSLATABLE,
+  maxLength = 120
+): FormGroup {
+  const validators = [Validators.maxLength(maxLength)];
+  return fb.group({
+    en: fb.control(value?.['en'] ?? '', { nonNullable: true, validators }),
+    vi: fb.control(value?.['vi'] ?? '', { nonNullable: true, validators }),
+  });
+}
+
 /** Bilingual rich-text group with no required validator (optional field, e.g. body). */
 export function richTextGroup(fb: FormBuilder, value?: BilingualEditorDocument | null): FormGroup {
   return fb.group({

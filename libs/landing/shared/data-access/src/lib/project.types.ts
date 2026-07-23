@@ -24,6 +24,8 @@ export type ProjectListItem = {
 };
 
 export type ProjectHighlight = {
+  /** Optional short bilingual label; null when unset. Renders as `// 01 · <title>`. */
+  title: TranslatableJson | null;
   challenge: TranslatableJson;
   approach: TranslatableJson;
   outcome: TranslatableJson;

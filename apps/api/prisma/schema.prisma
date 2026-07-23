@@ -659,6 +659,10 @@ model TechnicalHighlight {
   id        String @id @db.Uuid
   projectId String @db.Uuid
 
+  // Short bilingual label for the highlight ({ en, vi } plain text). Optional —
+  // renders as `// 01 · <title>` on the landing detail; NULL falls back to `// 01`.
+  title Json? @db.JsonB
+
   // CAO structure (challenge / approach / outcome). The legacy plain columns were
   // dropped in task 363; the rich triple + canonical below are the sole source.
 

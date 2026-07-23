@@ -23,6 +23,7 @@ export async function mapHighlightDtoToInput(
     h.outcomeJson ? richText.toCanonicalFormTranslatable(h.outcomeJson, 'project.highlight.outcome') : null,
   ]);
   return {
+    title: h.title ?? null,
     challengeRich,
     approachRich,
     outcomeRich,
@@ -34,6 +35,7 @@ export async function mapHighlightDtoToInput(
 /** Stored highlight → repo input: rebuild the triples from already-canonical docs. */
 export function mapStoredHighlightToInput(h: ProjectHighlightDto, displayOrder: number): TechnicalHighlightInput {
   return {
+    title: h.title,
     challengeRich: h.challengeJson
       ? {
           json: h.challengeJson,

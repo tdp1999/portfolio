@@ -29,6 +29,7 @@ export class ProjectRepository implements IProjectRepository {
    *  legacy plain `challenge`/`approach`/`outcome` columns were dropped in task 363. */
   private static highlightRichData(h: TechnicalHighlightInput) {
     return {
+      title: (h.title as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       challengeJson: (h.challengeRich?.json as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       challengeHtml: (h.challengeRich?.html as unknown as Prisma.InputJsonValue) ?? Prisma.DbNull,
       challengeSchemaVersion: h.challengeRich?.schemaVersion ?? 1,

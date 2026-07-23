@@ -11,6 +11,8 @@ export interface RichFieldTriple {
 }
 
 export interface TechnicalHighlightInput {
+  // Optional short bilingual label. Null when unset.
+  title?: TranslatableJson | null;
   // RTE triples (source of truth). Null when the field had no authored content.
   challengeRich?: RichFieldTriple | null;
   approachRich?: RichFieldTriple | null;

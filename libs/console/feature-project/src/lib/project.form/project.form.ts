@@ -64,7 +64,12 @@ import {
 } from '../project.types';
 import { EMPTY_TRANSLATABLE } from './project.form.data';
 import type { GalleryImage } from './project.form.types';
-import { requiredRichTextGroup, requiredTranslatableGroup, richTextGroup } from './project.form.util';
+import {
+  requiredRichTextGroup,
+  requiredTranslatableGroup,
+  richTextGroup,
+  translatableGroup,
+} from './project.form.util';
 
 @Component({
   selector: 'console-project-form',
@@ -200,6 +205,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
   createHighlightGroup(data?: AdminHighlight) {
     return this.fb.group({
+      title: translatableGroup(this.fb, data?.title),
       challenge: requiredRichTextGroup(this.fb, data?.challengeJson),
       approach: requiredRichTextGroup(this.fb, data?.approachJson),
       outcome: requiredRichTextGroup(this.fb, data?.outcomeJson),
@@ -342,12 +348,17 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
     const raw = this.form.getRawValue();
 
     type LocalePair = { en: EditorDocument | null; vi: EditorDocument | null };
-    const highlights: HighlightPayload[] = raw.highlights.map((h: Record<string, unknown>) => ({
-      challengeJson: toBilingualRichTextPayload(h['challenge'] as LocalePair),
-      approachJson: toBilingualRichTextPayload(h['approach'] as LocalePair),
-      outcomeJson: toBilingualRichTextPayload(h['outcome'] as LocalePair),
-      codeUrl: (h['codeUrl'] as string) || null,
-    }));
+    const highlights: HighlightPayload[] = raw.highlights.map((h: Record<string, unknown>) => {
+      const t = h['title'] as { en?: string; vi?: string } | undefined;
+      const title = t?.en?.trim() || t?.vi?.trim() ? { en: t?.en?.trim() ?? '', vi: t?.vi?.trim() ?? '' } : null;
+      return {
+        title,
+        challengeJson: toBilingualRichTextPayload(h['challenge'] as LocalePair),
+        approachJson: toBilingualRichTextPayload(h['approach'] as LocalePair),
+        outcomeJson: toBilingualRichTextPayload(h['outcome'] as LocalePair),
+        codeUrl: (h['codeUrl'] as string) || null,
+      };
+    });
 
     const links: ProjectLink[] = raw.links.map((l: Record<string, unknown>) => ({
       label: l['label'] as string,

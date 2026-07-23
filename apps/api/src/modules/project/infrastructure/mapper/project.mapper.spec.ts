@@ -50,6 +50,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
     {
       id: '00000000-0000-0000-0000-000000000011',
       projectId: '00000000-0000-0000-0000-000000000001',
+      title: null,
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
@@ -68,6 +69,7 @@ const RAW_PROJECT: PrismaProjectWithRelations = {
     {
       id: '00000000-0000-0000-0000-000000000010',
       projectId: '00000000-0000-0000-0000-000000000001',
+      title: null,
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
@@ -174,6 +176,16 @@ describe('ProjectMapper', () => {
       expect(relations.highlights).toHaveLength(2);
       expect(relations.highlights[0].codeUrl).toBe('https://github.com/pr/1');
       expect(relations.highlights[1].codeUrl).toBeNull();
+    });
+
+    it('should carry the highlight title through unchanged, and null when absent', () => {
+      const titled = { ...RAW_PROJECT.highlights[0], title: { en: 'Editor foundation', vi: 'Nền tảng editor' } };
+      const raw: PrismaProjectWithRelations = { ...RAW_PROJECT, highlights: [titled] };
+
+      const { highlights } = ProjectMapper.toRelations(raw);
+
+      expect(highlights[0].title).toEqual({ en: 'Editor foundation', vi: 'Nền tảng editor' });
+      expect(ProjectMapper.toRelations(RAW_PROJECT).highlights[0].title).toBeNull();
     });
 
     it('should flatten images with media URL and altText', () => {

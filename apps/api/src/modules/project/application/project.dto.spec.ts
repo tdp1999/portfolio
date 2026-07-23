@@ -92,6 +92,43 @@ describe('TechnicalHighlightSchema', () => {
     });
     expect(bad.success).toBe(false);
   });
+
+  describe('title', () => {
+    it('accepts a bilingual pair and preserves both locales', () => {
+      const result = TechnicalHighlightSchema.safeParse({
+        ...RICH_HIGHLIGHT,
+        title: { en: 'Choosing the editor foundation', vi: 'Lựa chọn nền tảng xây dựng editor' },
+      });
+      expect(result.success).toBe(true);
+      expect(result.data?.title).toEqual({
+        en: 'Choosing the editor foundation',
+        vi: 'Lựa chọn nền tảng xây dựng editor',
+      });
+    });
+
+    it('accepts null and omitted (the field is optional)', () => {
+      expect(TechnicalHighlightSchema.safeParse({ ...RICH_HIGHLIGHT, title: null }).success).toBe(true);
+      expect(TechnicalHighlightSchema.safeParse(RICH_HIGHLIGHT).data?.title).toBeUndefined();
+    });
+
+    it('accepts an empty locale (lenient — one-sided titles are allowed)', () => {
+      const result = TechnicalHighlightSchema.safeParse({ ...RICH_HIGHLIGHT, title: { en: 'Only EN', vi: '' } });
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects a locale over 120 characters', () => {
+      const result = TechnicalHighlightSchema.safeParse({
+        ...RICH_HIGHLIGHT,
+        title: { en: 'x'.repeat(121), vi: 'ok' },
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects a partial pair (both locales are required keys)', () => {
+      const result = TechnicalHighlightSchema.safeParse({ ...RICH_HIGHLIGHT, title: { en: 'Only EN' } });
+      expect(result.success).toBe(false);
+    });
+  });
 });
 
 describe('UpdateProjectSchema', () => {

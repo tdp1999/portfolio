@@ -96,7 +96,12 @@
                 <landing-heading id="highlights" [level]="2">Highlights</landing-heading>
                 @for (h of highlightBlocks(); track $index; let i = $index) {
                   <div class="project-reading__highlight">
-                    <h3 class="project-reading__sub">// {{ i + 1 | number: '2.0-0' }}</h3>
+                    <h3 class="project-reading__sub">
+                      // {{ i + 1 | number: '2.0-0' }}
+                      @if (h.title) {
+                        <span class="project-reading__sub-title"> · {{ h.title }}</span>
+                      }
+                    </h3>
                     <div class="project-reading__cao">
                       <span class="project-reading__label">Challenge</span>
                       <rte-render-html [html]="h.challenge" />

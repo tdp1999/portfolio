@@ -129,6 +129,7 @@
                   </div>
 
                   <ng-container [formGroup]="group">
+                    <console-translatable-group [group]="group.controls['title']" label="Title (optional)" />
                     <console-translatable-rich-text-group [group]="group.controls['challenge']" label="Challenge" />
                     <console-translatable-rich-text-group [group]="group.controls['approach']" label="Approach" />
                     <console-translatable-rich-text-group [group]="group.controls['outcome']" label="Outcome" />

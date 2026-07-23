@@ -16,6 +16,12 @@ import { BilingualEditorDocumentSchema } from '../../rich-text/rich-text.schema'
 // --- TechnicalHighlightSchema ---
 
 export const TechnicalHighlightSchema = z.object({
+  // Optional short bilingual label. Lenient (allows an empty locale) — the field
+  // itself is optional; when omitted/null the landing renders `// 01` with no title.
+  title: z
+    .object({ en: z.string().max(120), vi: z.string().max(120) })
+    .nullable()
+    .optional(),
   // The `*Json` docs are the source of truth (the console editor emits them).
   challengeJson: BilingualEditorDocumentSchema.optional(),
   approachJson: BilingualEditorDocumentSchema.optional(),

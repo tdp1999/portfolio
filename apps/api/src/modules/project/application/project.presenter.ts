@@ -25,6 +25,8 @@ export type ProjectListItemDto = {
 };
 
 export type ProjectHighlightResponseDto = {
+  // Optional short bilingual label.
+  title: TranslatableJson | null;
   // Rich-text storage per CAO sub-field.
   challengeJson: TranslatableRichText | null;
   challengeHtml: TranslatableJson | null;
@@ -135,6 +137,7 @@ export class ProjectPresenter {
       featured: item.entity.featured,
       lifecycleStatus: item.entity.lifecycleStatus,
       highlights: item.relations.highlights.map((h) => ({
+        title: h.title,
         challengeJson: h.challengeJson,
         challengeHtml: h.challengeHtml,
         challengeSchemaVersion: h.challengeSchemaVersion,

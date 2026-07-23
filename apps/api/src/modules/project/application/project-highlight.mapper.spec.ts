@@ -54,6 +54,7 @@ describe('mapHighlightDtoToInput', () => {
 describe('mapStoredHighlightToInput', () => {
   const base: ProjectHighlightDto = {
     id: 'h1',
+    title: null,
     challengeJson: richDoc,
     challengeHtml: { en: '<p>c</p>', vi: '<p>c</p>' },
     challengeSchemaVersion: 3,

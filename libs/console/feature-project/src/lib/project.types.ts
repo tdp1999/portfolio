@@ -46,6 +46,8 @@ export interface AdminProject {
 
 export interface AdminHighlight {
   id: string;
+  /** Short bilingual label ({ en, vi }); null when unset. Renders as `// 01 · <title>`. */
+  title: TranslatableJson | null;
   /** RTE canonical docs (semantic mode). Null until saved via the editor. */
   challengeJson: BilingualEditorDocument | null;
   approachJson: BilingualEditorDocument | null;
@@ -84,6 +86,7 @@ export interface ProjectListResponse {
 // --- Payloads ---
 
 export interface HighlightPayload {
+  title?: TranslatableJson | null;
   // The editor emits the `*Json` docs as the source of truth.
   challengeJson?: BilingualEditorDocument;
   approachJson?: BilingualEditorDocument;

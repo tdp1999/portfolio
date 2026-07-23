@@ -23,6 +23,7 @@ const TEST_RELATIONS: ProjectRelations = {
   highlights: [
     {
       id: '00000000-0000-0000-0000-000000000010',
+      title: null,
       challengeJson: null,
       challengeHtml: null,
       challengeSchemaVersion: 1,
@@ -88,6 +89,22 @@ describe('ProjectPresenter', () => {
       expect(result.images[0]).toEqual({ url: 'https://cdn.example.com/screenshot.png', alt: 'Screenshot' });
       expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' }]);
       expect(result.lifecycleStatus).toBe('LIVE');
+    });
+
+    it('should expose the highlight title (null and non-null)', () => {
+      const entity = createTestProject();
+      const base = { entity, thumbnailUrl: null };
+
+      expect(ProjectPresenter.toDetail({ ...base, relations: TEST_RELATIONS }).highlights[0].title).toBeNull();
+
+      const titled: ProjectRelations = {
+        ...TEST_RELATIONS,
+        highlights: [{ ...TEST_RELATIONS.highlights[0], title: { en: 'Editor foundation', vi: 'Nền tảng editor' } }],
+      };
+      expect(ProjectPresenter.toDetail({ ...base, relations: titled }).highlights[0].title).toEqual({
+        en: 'Editor foundation',
+        vi: 'Nền tảng editor',
+      });
     });
 
     it('should expose body rich fields and links', () => {
