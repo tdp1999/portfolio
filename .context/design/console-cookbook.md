@@ -81,10 +81,30 @@ set their own padding (the shell already applies `p-8`). Two widths only:
 |---|---|
 | CRUD list / dashboard page | Boxed 1440, centred. Baked into `.crud-page` (keeps `height:100%` so the table scrolls naturally). |
 | Detail page | Boxed reading column 1200, centred. Baked into `.detail-page` (`max-width: var(--console-reading-max)`). |
+
 | Multi-section form | `console-section-tabs` (rail + content) inside a `.console-page` root → boxed 1440, centred. |
 | Simple form (single column) | Wrap content in `.console-reading` (1200, centred). |
 | Section card form column | Card column keeps lines ≤ ~70 chars; add `.console-reading` on the slot only if it still feels wide. |
 | Auth / narrow forms | `max-w-md` (448px) — intentional exception. |
+
+**Detail page internals (ADR-026):** the page body is `console-record-layout` —
+content column + `[aside]` rail. Pick the component by **data shape**, not topic:
+
+| What you are rendering | Component |
+|---|---|
+| Short scalar (slug, status, date, order, tags, links) | `console-property` inside `console-property-list`, in the rail |
+| Long-form field (description, motivation, RTE body) | `console-record-field` inside a `console-record-section` |
+| Member of a collection (highlight, responsibility) | `console-record-item` inside a `console-record-section` |
+| Any of the above, compressed | wrap in `console-record-fold` — **must** pass a `gist` |
+| A rail panel (Properties, Content language) | `console-record-panel` |
+| Sections absent in full | `console-record-empty-sections` |
+
+- **Never** use `.detail-field` on a detail page — it is superseded for read views.
+- **Empty field inside a visible section** → leave it in place, `state="unset"` renders one muted line. **Empty whole section** → omit it, pass the name to `console-record-empty-sections`. Never both.
+- **Rail scalars are not sections** — a `console-property` that is empty already reports itself with `Not set`; never also list it in `console-record-empty-sections`.
+- **Partial section** → pass `[gaps]` so the header says so.
+- **Attribute-only record** (tag/category/skill) → project nothing into the content slot; the grid collapses on its own.
+- Section names and order must match the entity's form 1:1.
 
 **Boxing utility:** `.console-page` (max `--console-page-max`, `margin-inline:auto`, `width:100%`)
 adds width + centring only, so it composes with a root's own flex/grid layout. Use it on any

@@ -404,3 +404,21 @@ Atomic save requires the full UX combo from `bank/patterns/atomic-save.md`: stic
 - One documented standard (console-cookbook "Max-Width Rules"); the `/ddl` anatomy pages remain the living reference.
 - Intentional exceptions kept: auth/narrow forms (`max-w-md`), blog post editor (own 720px prose column), media galleries (full-width grids), dashboard.
 - Detail metadata may live in a section **header** (title + right-aligned badge/action) or **footer** (timestamps) — demonstrated in the anatomy detail; both are sanctioned placements.
+
+### ADR-026: Console Record View — Split Chassis with a Density Switch (Read Views)
+
+**Status:** Accepted (2026-07-19)
+**Context:** The nine console detail pages shared one row primitive, `.detail-field` (fixed 140px label + value), applied to every field regardless of shape. Measured on `/projects/<id>` at 1440×900: total scroll 2617px (3.3 screens) and prose rendered at 923px ≈ **130 characters per line**, roughly 1.8× the comfortable ceiling. Because scalars (slug, order, status, skills) sat *between* prose blocks in one serial column, `displayOrder` was three screens below the fold. Sparse records were flat and unreadable in a different way: four sections at identical visual weight, nothing legible at a glance. `message.detail` had already forked the primitive into a private `.message-meta` / `.meta-row` copy — the clearest signal that it did not fit. A prior prototype (`/ddl/anatomy-detail`) added a segmented control, which fragmented small records without fixing large ones, and was never adopted.
+**Decision:**
+1. **Split by data shape, not by topic.** Short scalars go to a sticky properties rail (`console-property-list`); long-form content keeps the reading column (`console-record-field`, capped at 68ch). A record's two halves never share a row template again.
+2. **Chassis = `console-record-layout`**, 2fr content / 1fr aside (the Polaris resource-details ratio; Linear and Jira read the same). One column below 1024px.
+3. **Degradation is declarative, not conditional.** The two-column grid engages only when both slots carry content (CSS `:has`). Attribute-only records (tag, category, skill) render as a single properties panel with no branch at the call site.
+4. **Density is a switch on one chassis, not a second layout.** `console-record-fold` compresses a heavy child to one row that still carries a **gist** of its content. A fold without a gist has become a tab; tabs are rejected for read views precisely because they hide siblings. Measured on the same record: 1949px expanded, 1025px collapsed (~1.2 screens, −61% vs today).
+5. **Three levels that never share a type treatment**: section (a group the record owns) → field / item (a field, or a member of a collection) → sub-part. A highlight is a child of "Technical highlights", not a sibling of "Motivation".
+6. **Absence is reported once, at the level where it is actionable.** Field-level gaps render inline as one muted line inside a section that is already on screen; whole absent sections fold into `console-record-empty-sections`. Locale gaps are their own state — the view never falls back silently to the other language, because that hides the gap the author needs.
+7. **Partial state is signalled in the section header** (`gaps` input), so a half-written record is legible from the top of the page instead of discovered by scrolling.
+**Consequences:**
+- Styles live in `styles/patterns/_record-view.scss`, not in the components: every part is content-projected and scoped styles do not reach projected content. Same reasoning as `.detail-page` / `.crud-page`.
+- Forms keep `console-section-tabs` (ADR-024) — the chassis is not unified. What must converge is the **section vocabulary**: form section names and order match the read view 1:1, so "Story" means the same place in both.
+- `/ddl/anatomy-detail` is rebuilt on this chassis in the same change. Two conflicting reference pages is the failure mode that made the first prototype inert.
+- Superseded for read views: `.detail-field`, `.detail-card`, `.detail-section` in `_detail.scss`, and the private `.message-meta` fork.

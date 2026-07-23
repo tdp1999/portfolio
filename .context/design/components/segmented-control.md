@@ -54,6 +54,7 @@ Portable rules — apply in any framework/stack; in this repo apply on top of `m
 - Accept `options` as an input — array of `{ value, label, icon? }`. Render order is input order.
 - Expose an `iconOnly` mode for cases where labels are obvious from icons. In this mode, `options[].label` becomes the `aria-label`.
 - Do **not** project content (`<ng-content>` / children) for segment rendering — keeps every callsite visually identical.
+- **Segments must be allowed to shrink.** Equal-width means `flex: 1 1 auto; min-width: 0` on the segment *and* `min-width: 0; overflow: hidden; text-overflow: ellipsis` on the label box. A flex item will not shrink below its content width without `min-width: 0`; with a fixed `min-width` and a nowrap label, a long label keeps its natural width, spills over the next segment, and the neighbour's active pill paints on top of it — which reads as "selecting B covered A". The "short labels only" rule above is guidance for callers; this rule is what makes a caller's mistake degrade instead of break.
 
 ### Visual tone (this repo)
 
@@ -75,6 +76,7 @@ If a future call site needs a neutral (non-brand) active pill, change the two `s
 - [ ] Icon-only mode: every segment has a non-empty accessible name.
 - [ ] Visible focus ring on keyboard focus.
 - [ ] Theming flows through the design-token override layer, not component CSS.
+- [ ] With a deliberately over-long label, text truncates inside its own segment: nothing overlaps a neighbour and nothing escapes the track.
 
 ## Edge cases
 

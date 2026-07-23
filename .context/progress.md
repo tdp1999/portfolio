@@ -248,6 +248,9 @@
 
 ## Standalone Tasks
 
+- [~] 361-content-authoring-master - Master checklist cho mọi nội dung do người viết (EN + VI, mọi surface); index trên các brief 340/341/328/323. Đang author project Document Engine (tab Basic/Story/Highlights xong, tới Media) (XL) (standalone, in-progress)
+- [~] 386-e2e-drift-cleanup-post-throttle - Sửa ~72 test `console-e2e` fail (19 spec) lộ ra sau khi fix throttle 429 ở task 384; toàn bộ là test-drift selector cũ (L) (standalone, in-progress)
+- [ ] 383-rte-console-editor-chrome-polish - Fix chrome/styling editor RTE trong console (popover, toolbar) cho menu dễ đọc và control không nhảy layout (M) (standalone)
 - [ ] 388-landing-i18n-consolidation - Gom static UI copy landing (ternary `locale()==='vi'` + slot `<landing-t>`) về 1 nguồn JSON + pipe resolver; audit bản dịch VI (user kiểm chứng); giữ `<landing-t>` cho HTML-rich, giữ `translatable` cho data API (L) (standalone)
 - [ ] 387-railway-memory-cost-debug - Debug & tối ưu chi phí Memory trên Railway; Umami stack (~$3/mo, mới thêm 02/07) là thủ phạm chính, +điều tra spike Dashboard API 569 MB & App Sleeping (M) (standalone)
 - [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
