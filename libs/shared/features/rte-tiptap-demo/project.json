@@ -1,0 +1,13 @@
+{
+  "name": "rte-tiptap-demo",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/features/rte-tiptap-demo/src",
+  "prefix": "rte",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:rte-impl"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

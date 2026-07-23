@@ -11,7 +11,7 @@ import { LATEST_SCHEMA_VERSION, migrateDoc } from '@phuong-tran-redoc/document-e
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
 import { RteEditor } from '@portfolio/shared/features/rte-contract';
 import { documentEngineConfigFor } from '../rte-tiptap.config';
-import { MEDIA_PICKER_HOOK } from '../rte-tiptap.tokens';
+import { MEDIA_PICKER_HOOK, RTE_ENGINE_CONFIG_OVERRIDES } from '../rte-tiptap.tokens';
 
 /**
  * Concrete Tiptap editor satisfying the `RteEditor` contract.
@@ -45,6 +45,7 @@ export class RteTiptapEditor extends RteEditor {
   protected readonly innerControl = new FormControl<Content | null>(null);
 
   readonly #mediaPicker = inject(MEDIA_PICKER_HOOK, { optional: true });
+  readonly #configOverrides = inject(RTE_ENGINE_CONFIG_OVERRIDES, { optional: true });
   readonly #disabled = signal(false);
 
   #onChange: (value: EditorDocument | null) => void = () => undefined;
@@ -54,10 +55,14 @@ export class RteTiptapEditor extends RteEditor {
   // readonly + disabled state; `'full'` mode wires the consumer's media picker
   // into image.onPick when one was provided.
   protected readonly engineConfig = computed<Partial<DocumentEngineConfig>>(() => {
+    // Mode config first, consumer overrides on top, component-owned runtime
+    // state last — so a consumer can widen the feature set but can never
+    // contradict readonly/disabled or steal the placeholder.
     const base = documentEngineConfigFor(this.mode());
     const placeholder = this.placeholder();
     return {
       ...base,
+      ...(this.#configOverrides ?? {}),
       editable: !this.readonly() && !this.#disabled(),
       placeholder: placeholder ? { placeholder } : false,
       ...(this.mode() === 'full' && this.#mediaPicker ? { image: { onPick: this.#mediaPicker } } : {}),

@@ -1,0 +1,16 @@
+{
+  "extends": "../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "isolatedModules": true,
+    "moduleResolution": "bundler",
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "emitDecoratorMetadata": false,
+    "module": "preserve"
+  },
+  "files": [],
+  "include": [],
+  "references": [{ "path": "./tsconfig.lib.json" }]
+}

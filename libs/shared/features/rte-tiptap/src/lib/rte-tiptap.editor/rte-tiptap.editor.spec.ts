@@ -57,6 +57,7 @@ jest.mock('@phuong-tran-redoc/document-engine-core', () => ({
 // Imported after the mocks so these resolve to the mocked module.
 import { migrateDoc } from '@phuong-tran-redoc/document-engine-core';
 import { RteTiptapEditor } from './rte-tiptap.editor';
+import { RTE_ENGINE_CONFIG_OVERRIDES } from '../rte-tiptap.tokens';
 
 describe('RteTiptapEditor — CVA bridge (EditorDocument ↔ engine JSON)', () => {
   function createComponent(): RteTiptapEditor {
@@ -129,5 +130,67 @@ describe('RteTiptapEditor — CVA bridge (EditorDocument ↔ engine JSON)', () =
 
     cmp.setDisabledState(false);
     expect(inner(cmp).disabled).toBe(false);
+  });
+});
+
+/**
+ * The override token exists so one consumer (the Document Engine product page)
+ * can run a wider engine profile than the rest of the site without forking the
+ * component. That is only safe while the precedence holds: mode config first,
+ * consumer overrides on top, component-owned runtime state LAST. Get the order
+ * wrong and a provider can quietly re-enable editing on a readonly field — the
+ * kind of regression a refactor makes silently, hence a test rather than a
+ * comment.
+ */
+describe('RteTiptapEditor — engine config overrides', () => {
+  const config = (cmp: RteTiptapEditor): Record<string, unknown> =>
+    (cmp as unknown as { engineConfig: () => Record<string, unknown> }).engineConfig();
+
+  function createWithOverrides(overrides: Record<string, unknown>): RteTiptapEditor {
+    TestBed.configureTestingModule({
+      imports: [RteTiptapEditor],
+      providers: [{ provide: RTE_ENGINE_CONFIG_OVERRIDES, useValue: overrides }],
+    });
+    return TestBed.createComponent(RteTiptapEditor).componentInstance;
+  }
+
+  it('widens the feature set from the token', () => {
+    const cmp = createWithOverrides({ tables: true });
+    expect(config(cmp)['tables']).toBe(true);
+  });
+
+  it('cannot re-enable editing on a readonly editor', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RteTiptapEditor],
+      providers: [{ provide: RTE_ENGINE_CONFIG_OVERRIDES, useValue: { editable: true, tables: true } }],
+    }).createComponent(RteTiptapEditor);
+    fixture.componentRef.setInput('readonly', true);
+
+    const cmp = fixture.componentInstance;
+    expect(config(cmp)['editable']).toBe(false);
+    // …while the widening part of the same override still applies.
+    expect(config(cmp)['tables']).toBe(true);
+  });
+
+  it('cannot re-enable editing on a disabled editor', () => {
+    const cmp = createWithOverrides({ editable: true });
+    cmp.setDisabledState(true);
+    expect(config(cmp)['editable']).toBe(false);
+  });
+
+  it('cannot steal the placeholder from the input', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RteTiptapEditor],
+      providers: [{ provide: RTE_ENGINE_CONFIG_OVERRIDES, useValue: { placeholder: { placeholder: 'from token' } } }],
+    }).createComponent(RteTiptapEditor);
+    fixture.componentRef.setInput('placeholder', 'from input');
+
+    expect(config(fixture.componentInstance)['placeholder']).toEqual({ placeholder: 'from input' });
+  });
+
+  it('is optional — no provider leaves the mode config untouched', () => {
+    TestBed.configureTestingModule({ imports: [RteTiptapEditor] });
+    const cmp = TestBed.createComponent(RteTiptapEditor).componentInstance;
+    expect(config(cmp)['editable']).toBe(true);
   });
 });
