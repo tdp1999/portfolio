@@ -171,7 +171,9 @@ document-engine-editor {
 /* Full container width. The 64rem cap was inherited thinking from a prose page:
    it kept the title and the fact row inside a measure narrower than every band
    below, so the hero read as indented rather than as the widest thing on the
-   page. The elements that genuinely need a measure (the lede) carry their own. */
+   page. Full width also lets the headline sit on a single line and keeps the
+   fact row a single strip. The elements that genuinely need a measure (the lede)
+   carry their own. */
 .de-hero__inner {
   max-width: none;
 }
