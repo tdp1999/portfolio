@@ -8,6 +8,10 @@ members: [chip-select, chip-toggle-group, chip-boolean]
 
 Chip toggles are inline, label-bearing controls used to express **discrete state** that the user can change with one tap. They sit between radio buttons (verbose) and dropdowns (hidden) — best when ≤7 options and the choices benefit from being visible at-a-glance.
 
+> **Universal kernel:** the three-members-by-value-shape split, the null-safety contract, and
+> the vs-segmented-control decision live in `→ skill patterns/chip-toggles`. This family doc keeps
+> the project's `console-*` members, `mat-chip-listbox` wiring, and family-wide rules.
+
 ## When to reach for a chip toggle
 
 - The set of choices is small and stable.
@@ -57,4 +61,4 @@ If unsure between `chip-select` and `segmented-control` for a single-select view
 ## See also
 
 - `chip-select.md`, `chip-toggle-group.md`, `chip-boolean.md`
-- Cookbook: §Choice
+- Cookbook: `../../cookbook/forms.md` §Choice

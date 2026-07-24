@@ -4,8 +4,13 @@ The `console-record-*` family: the read-only chassis for every CRUD detail page.
 Rules here apply to **every** component in the family and are deliberately not
 repeated in the per-component docs.
 
-Research and measurements: [`bank/patterns/record-detail-layout.md`](../../bank/patterns/record-detail-layout.md).
+Research and measurements: [`patterns/record-detail-layout.md`](../../patterns/record-detail-layout.md).
 Decision record: ADR-026.
+
+> **Universal kernel:** the shared read-view chassis (slot model + the 3-layer logic split) is
+> `→ skill patterns/read-view-chassis`; the split-by-data-shape research is
+> `→ skill patterns/record-detail-layout` (decision D — abstract chassis lifted, `console-record-*`
+> wiring stays here). This overview keeps the project's component list, logic-layer homes, and family rules.
 
 ## The family
 
@@ -99,5 +104,5 @@ records.
 
 ## See also
 
-- [`bank/patterns/long-form-layout.md`](../../bank/patterns/long-form-layout.md) — the write-side pair
+- [`patterns/long-form-layout.md`](../../patterns/long-form-layout.md) — the write-side pair
 - [`segmented-control.md`](../segmented-control.md) — used for the content-language switch

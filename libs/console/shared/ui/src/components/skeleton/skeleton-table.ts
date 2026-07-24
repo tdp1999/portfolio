@@ -7,7 +7,7 @@ import { SkeletonRow } from './skeleton-row';
  * during initial load / filter change / pagination change.
  *
  * For background refresh after a mutation, do NOT render this — use the
- * top progress bar (`ProgressBarService`) instead. See `.context/design/loading.md`.
+ * top progress bar (`ProgressBarService`) instead. See `.context/design/cookbook/loading.md`.
  */
 @Component({
   selector: 'console-skeleton-table',

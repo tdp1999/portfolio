@@ -9,6 +9,11 @@ Read-view counterpart to [`long-form-layout.md`](long-form-layout.md). That file
 governs how a record is **edited**; this one governs how it is **read**. They are
 a pair — see "Keeping the pair aligned" at the bottom.
 
+> **Universal kernel:** `→ skill patterns/record-detail-layout` (split-by-data-shape, split
+> view, absence-reported-once) and `→ skill patterns/read-view-chassis` (the slot model and
+> 3-layer logic split). This file keeps the project's measured results, ADR-026, and the
+> `console-record-*` wiring.
+
 ## The governing rule
 
 **Split by data shape, not by topic.**
@@ -107,8 +112,5 @@ page it produces.
 
 ## Sources
 
-- [Shopify Polaris — Resource details layout](https://polaris-react.shopify.com/patterns/resource-details-layout)
-- [Shopify Polaris — Layout](https://polaris-react.shopify.com/components/layout-and-structure/layout)
-- [Salesforce Ben — The Ultimate Guide to the Dynamic Highlights Panel](https://www.salesforceben.com/the-ultimate-guide-to-the-salesforce-dynamic-highlights-panel/)
-- [NN/g — Progressive Disclosure](https://www.nngroup.com/articles/progressive-disclosure/)
-- [GitHub Primer — Layout foundations](https://primer.style/foundations/layout/)
+External provenance lives in the skill: `→ skill sources.md` (rows for `record-detail-layout`
+and `read-view-chassis`).

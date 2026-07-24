@@ -97,7 +97,7 @@
   - ProseMirror editor (textarea placeholder, swap-ready); Shiki syntax highlighting; TOC + reading progress bar
 - [x] **Console Loading + Time Foundation** (epic-console-loading-time-foundation) - Completed 2026-04-27
   - Implemented directly from epic (no task breakdown); part of console-feature-review Stream A
-  - `.context/design/loading.md` taxonomy + decision flow
+  - `.context/design/cookbook/loading.md` taxonomy + decision flow
   - Primitives: `ProgressBarService` (ref-counted), `<console-skeleton-row>` / `<console-skeleton-table>`, `<console-relative-time>` (relative + tooltip absolute, auto-refresh)
   - RxJS operators: `withMinDuration` (util) + `withListLoading` (ui composite, replaces ad-hoc setTimeout settle pattern)
   - Wired across 7 list pages: experiences, projects, skills, categories, tags, blog posts, users — `console-spinner-overlay` swapped for skeleton + silent reload via top progress bar after mutations
@@ -204,6 +204,11 @@
   - All 4 phases ✅ (inline-tracked, no task breakdown): refactored `/ddl` from a 1654-line scroll page + 25 ad-hoc subroutes into a shadcn-class component-docs site — 3-column app-shell (window-locked at laptop+, internal content scroller, fixed full top-bar), scope-based taxonomy (Foundations/Components/Sections/Pages/Patterns), registry-driven sidebar + auto-derived multi-level TOC, standardized decision convention (`landing-ddl-decision-record` + `landing-ddl-considered`), `landing-ddl-stage` full-width primitive. Phase 4 polish: responsive QA across 4 BPs (TOC drops at laptop, returns at wide; carousel window-lock fix), deprecated hidden from rail + pager, console clean. Scroll-model + mobile-chrome rules captured in the `ddl-docs-scroll-model` memory.
 - [x] **Console Long-Form → Tabbed Section Nav** (epic-console-tab-redesign) - Completed 2026-07-10; archived to `plans-done/` (owner sign-off, sync 2026-07-10)
   - Reframed 2026-07-10 (old "tab component" premise retired). Replaced the `LongFormLayout + ScrollspyRail` chassis with a shared `console-section-tabs` vertical-tab component (`libs/console/shared/ui`): grouped rail desktop / horizontal strip mobile, sections kept mounted via `[hidden]`, two-way `activeId`, fragment deep-link, stepper. All 5 long-rail forms migrated (profile pilot + skill/project/experience/ddl-long); profile ~8,200px → ~1,500px. FE-only Landing Content split into 3 sub-tabs (Home/Footer/About) sharing one atomic save (ADR-024). Prototype `/ddl/profile-tabs` removed; `bank/patterns/long-form-layout.md` reframed. During this session the same boxed-centred layout standard + `.console-badge`/flush-paginator/scroll fixes were rolled across all list + detail pages (ADR-025); the last two detail pages (failure, principle) brought onto the shared `.detail-page` pattern.
+- [x] **Design Skill Consolidation & Two-Home Bank** (epic-design-skill) - Completed 2026-07-24; archived to `plans-done/` (sync 2026-07-24)
+  - Tasks 390–395 → archived in `tasks-done/epic-design-skill/`
+  - Consolidated `design-ingest` / `design-check` / `component-bank` / `ui-research` into ONE universal user-scope `/design` skill — 7 modes (init, adopt, research, ingest, revamp, review, document) over a knowledge-accretion library at `~/.claude/skills/design/shared/` (principles / patterns / taste), plus 3 config knobs and a splittable-to-plugin layout
+  - Split the project `.context/design/` bank into 7 buckets (`system/ contracts/ cookbook/ patterns/ components/ workflow/ ingest/`) that link the global library by concept (source-of-truth, link-don't-copy); deleted the 4 old fragmented skills; added the ambient "Design authority" guardrail row to CLAUDE.md (nudge, not hook)
+  - Security (395): live console credentials removed from `visual-feedback.md` → gitignored `*.local.md`. **⚠️ owner still owes a password rotation** — the credential is in git history, so working-tree removal does not undo exposure
 
 ## In Progress
 
@@ -428,14 +433,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status                    | Count   |
 | ------------------------- | ------- |
-| Done (archived)           | 361     |
-| In Progress               | 1       |
-| Pending                   | 7       |
-| Blocked                   | 1       |
-| **Total Created**         | **370** |
-| Epics completed           | 49      |
+| Done (archived)           | 368     |
+| In Progress               | 4       |
+| Pending                   | 8       |
+| Blocked                   | 0       |
+| **Total Created**         | **380** |
+| Epics completed           | 51      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-07-03. Active (8): in-progress 361 (content-authoring master tracker); pending 323, 328, 340, 341, 381, 382, 383. Archived this sync: 384 (test/lint cleanup sweep + CI e2e throttle fix, done 2026-07-03 → tasks-done/other/). Prior sync archived 363 → tasks-done/epic-portfolio-rich-text-editor/._
+_Counts reconciled to task files via `/ctx:sync` on 2026-07-24. Active (12): in-progress 361 (content-authoring master), 386 (e2e-drift-cleanup); verify-pending 381 (done — awaits console dev-server visual check), 383 (mostly done — item #3 with owner); pending 323, 328, 340, 341, 382, 387, 388, 389. Archived this sync: epic-design-skill tasks 390–395 → tasks-done/epic-design-skill/, and epic-design-skill.md → plans-done/ (marked completed). Prior sync (2026-07-03) archived 384 → tasks-done/other/._
 
 ## Notes
 

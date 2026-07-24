@@ -42,7 +42,7 @@ live in `scripts/contrast.config.json`, which the skill can scaffold for you.
 - **Beautiful / on-brand** (NOT script-judgeable): two honest aids — (a) **the eye**: render the
   page and have the model *look* at the screenshot via `playwright-skill` for a qualitative read;
   (b) **borrowed taste**: compare the scale to a contrast-engineered reference system (Radix Colors,
-  IBM Carbon — they publish accessible text/solid steps) and to the design bank via `design-check`.
+  IBM Carbon — they publish accessible text/solid steps) and to the design bank via `/design review`.
   The script never claims to judge beauty; it judges the measurable, then hands the eye a clean canvas.
 
 ## Modes
@@ -139,7 +139,7 @@ webaim.org/resources/contrastchecker and apcacontrast.com.
 
 ## Related skills
 - **`playwright-skill`** — runs Layer 3 (axe-core on the live DOM). Delegate browser work here.
-- **`design-check`** — after a color fix, review the component against the design bank.
+- **`/design review`** — after a color fix, review the component against the design bank.
 - **`find-tool`** — locate an axe/contrast library or MCP if you need one.
 - **`skill-creator`** — tune this skill's frontmatter / triggers / evals.
 

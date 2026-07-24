@@ -37,7 +37,7 @@ export class SectionCard {
    * Portfolio-domain bucket. PUBLIC is editorial default and renders no eyebrow;
    * only `'INTERNAL'` produces a visible marker above the title. Omit on
    * non-Portfolio forms (auth, settings).
-   * See `.context/design/console-cookbook.md` → "Section Bucketing — Portfolio Domain".
+   * See `.context/design/patterns/section-bucketing.md` → "Section Bucketing — Portfolio Domain".
    */
   bucket = input<'PUBLIC' | 'INTERNAL'>();
 

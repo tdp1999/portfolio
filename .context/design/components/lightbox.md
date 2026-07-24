@@ -8,6 +8,10 @@ related: [landing-figure, landing-gallery, landing-carousel]
 
 > Opt-in, service-driven full-screen image viewer with carousel navigation and zoom/pan. Add `lightbox` to any `<landing-figure>` to make it clickable; figures sharing a `lightboxGroup` browse together.
 
+> **Universal kernel:** the JS-computes / CSS-renders zoom model and the zoom-to-point formula
+> live in `→ skill patterns/image-lightbox`. This doc keeps the `landing-lightbox` contract,
+> FLIP + CDK-overlay wiring, and srcset-always-best rules.
+
 ## Why this exists
 
 Inline figures are capped at content width and lose detail (dense UI screenshots, diagrams). A lightbox gives any figure a full-screen, zoomable view without each page reinventing a modal. It is **opt-in per figure** (a directive) so adding it never changes site-wide behaviour, and **group-aware** so a set of figures becomes a swipeable carousel once opened.

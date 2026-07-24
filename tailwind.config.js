@@ -107,7 +107,7 @@ module.exports = {
         'display-sm': ['var(--landing-display-sm)', { lineHeight: 'var(--landing-display-sm-lh)', letterSpacing: '-0.02em' }],
         'body-xl': ['var(--landing-body-xl)', { lineHeight: 'var(--landing-body-xl-lh)' }],
         'body-lg': ['var(--landing-body-lg)', { lineHeight: 'var(--landing-body-lg-lh)' }],
-        'body-md': ['var(--landing-body-md)', { lineHeight: 'var(--landing-body-md-lh)' }], // base size `X` — see .context/design/landing-typography.md
+        'body-md': ['var(--landing-body-md)', { lineHeight: 'var(--landing-body-md-lh)' }], // base size `X` — see .context/design/system/landing-typography.md
         'body-sm': ['var(--landing-body-sm)', { lineHeight: 'var(--landing-body-sm-lh)' }],
         'mono-md': ['12px', { lineHeight: '16px', letterSpacing: '0.06em' }],
         'mono-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.06em' }],

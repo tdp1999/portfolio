@@ -2,7 +2,7 @@ import { BreakpointConfig } from './breakpoint.type';
 
 /**
  * The four device-bound breakpoints. See
- * `.context/design/responsive-contract.md` §1.
+ * `.context/design/contracts/responsive-contract.md` §1.
  */
 export type Bp = 'mobile' | 'tablet' | 'laptop' | 'wide';
 

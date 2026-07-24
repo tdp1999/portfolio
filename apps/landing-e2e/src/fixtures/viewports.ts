@@ -3,7 +3,7 @@ import { Page, test } from '@playwright/test';
 /**
  * One representative viewport WIDTH per breakpoint. Width drives the BP cascade;
  * heights are cosmetic. Mirrors the 4-BP grid in
- * `.context/design/responsive-contract.md` §1.
+ * `.context/design/contracts/responsive-contract.md` §1.
  */
 export const viewports = {
   mobile: { width: 375, height: 812 },

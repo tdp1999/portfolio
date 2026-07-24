@@ -3,6 +3,10 @@
 > The three-typeface system used across the landing surface, with rules for when each one shows up.
 > Token source: `libs/landing/shared/ui/src/tokens/typography.scss`.
 > For colour and spacing tokens, see `foundations.md`.
+>
+> **Universal kernel:** the two-base signature (one dominant family `Y` + one *perceived* size
+> `X`, optical parity across families) lives in `→ skill taste/typography-two-base`. This file
+> is the project's concrete families (Newsreader / Inter / JetBrains Mono), tokens, and pairing rules.
 
 ## The three typefaces
 

@@ -1,7 +1,7 @@
 # Design System: Portfolio — Landing
 
 > Stitch-compatible AI-readable spec. Feed this into Stitch prompts for consistent generation.
-> Source of truth is `.context/design/foundations.md` + `.context/design/landing.md`.
+> Source of truth is `.context/design/system/foundations.md` + `.context/design/system/landing.md`.
 
 ## Visual Theme & Atmosphere
 

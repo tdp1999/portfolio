@@ -10,6 +10,10 @@ related: [landing-toc-sidebar, landing-figure]
 >
 > Live showcase: `/ddl/show-more` (both modes, no-overflow case, fade off, even-height 2-col rail pattern).
 
+> **Universal kernel:** the clamp-only-on-overflow, SSR-expanded, self-measuring disclosure
+> rules live in `→ skill patterns/overflow-disclosure`. This doc keeps the `landing-show-more`
+> two-mode contract and wiring.
+
 ## Why this exists
 
 Secondary rails (project metadata, a long table of contents) can dominate the page on narrow viewports, pushing the primary reading content far down. A height clamp with an explicit expand gives the reader the gist plus a one-tap path to the full list, without each consumer reinventing measure-and-collapse logic. It is **content-agnostic** (projects whatever you pass) and **self-measuring** (no manual "isLong" flag from the consumer).

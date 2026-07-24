@@ -2,6 +2,11 @@
 
 > Cross-cutting design tokens, spacing, typography, and styling patterns shared by all apps.
 > For app-specific design rules, see `landing.md`, `console.md`, or `shared.md`.
+>
+> **Universal kernel:** the three-layer token model and the tokens-not-literals discipline
+> live in `→ skill principles/token-architecture`; the research behind the values is in
+> `→ skill principles/human-factors-reference`. This file holds the project's concrete token
+> files, palette, and values.
 
 ## Token Architecture
 
@@ -146,7 +151,7 @@ Defined in `libs/landing/shared/ui/src/styles/tokens/typography.scss`, mapped in
 
 ## Spacing System
 
-All fixed px values must be multiples of 4 (4px grid). For layout-level spacing, prefer 8px increments. See `.context/design/scale-contract.md` for the canonical rule and tolerated exceptions.
+All fixed px values must be multiples of 4 (4px grid). For layout-level spacing, prefer 8px increments. See `.context/design/contracts/scale-contract.md` for the canonical rule and tolerated exceptions.
 
 ### Spacing Scale
 
@@ -366,79 +371,32 @@ All components follow accessibility best practices:
 
 ## Design Rationale & References
 
-Values in this system are validated against human factors research, accessibility standards, and cognitive science. This section serves as a reusable reference for any future project.
+> **The research is in the skill.** The standards (WCAG / Apple HIG / Material 3 / ISO 9241),
+> the cognitive-science findings (Fitts, Miller/Cowan, Hick, Gestalt, Weber, reading research),
+> the typography citations, and the modular-scale ratios that justify these values — plus the
+> recommended cross-project defaults and the "adjust type-scale ratio by context" guidance —
+> now live in `→ skill principles/human-factors-reference`. This section keeps only the
+> project's **applied values and their status** (decision B: research → skill, our-value/status → project).
 
-### Standards & Compliance
+### Value Validation Summary (project values + status)
 
-| Standard | Version | Scope | Key Sections Used |
-|----------|---------|-------|-------------------|
-| **WCAG 2.2** | 2023 | Web accessibility | SC 1.4.3 (contrast AA 4.5:1), SC 1.4.6 (contrast AAA 7:1), SC 1.4.11 (non-text contrast 3:1), SC 1.4.12 (text spacing), SC 2.5.5 (target size AAA 44px), SC 2.5.8 (target size AA 24px) |
-| **Apple HIG** | 2025 | iOS/macOS design | Touch targets (44pt min), typography scale, sidebar width |
-| **Material Design 3** | 2024 | Android/cross-platform | 8dp grid, 48dp touch targets, density levels, color roles, type scale |
-| **ISO 9241-411** | 2012 | Ergonomics of human-system interaction | Fitts's Law throughput testing for pointing devices |
+For the research basis behind each row and the recommended default for a new project, see
+`→ skill principles/human-factors-reference`.
 
-### Research & Cognitive Science
-
-| Research | Author(s) | Year | Key Finding | Applied To |
-|----------|-----------|------|-------------|------------|
-| **Fitts's Law** | Paul Fitts | 1954 | Target acquisition time = f(distance/width). Larger targets = faster, fewer errors | Button height 40px+, touch targets 44-48px |
-| **Miller's Law** | George Miller | 1956 | Working memory capacity ~7±2 chunks (revised to 4±1 by Cowan 2001) | Dashboard card count (4-6 hero KPIs), NOT a nav item limit |
-| **Hick's Law** | W.E. Hick / R. Hyman | 1952/53 | Decision time increases logarithmically with choices | Menu items, filter options — grouping mitigates |
-| **Gestalt Laws** | Max Wertheimer | 1923 | Proximity, similarity, common region, closure | Spacing ratios (inner < outer, 1:2+ ratio for grouping) |
-| **Weber's Law** | Ernst Weber | 1834 | Perceived difference is proportional to base magnitude | 8px grid — jumps naturally feel proportional at different scales |
-| **Optimal line length** | Bringhurst, Rayner & Pollatsek, Dyson & Kipping | 1992/1989/1998 | 45-75 chars/line ideal (66 optimal). Too long → return-sweep errors | `max-width: 65ch` for prose text blocks |
-| **Line spacing & reading** | Ling & van Schaik | 2006 | 1.5x line-height optimal reading speed vs 1.0 or 2.0 | `line-height: 1.5` for body text |
-| **Screen font readability** | Boyarski et al. (CMU) | 1998 | Screen fonts need larger sizes than print equivalents | 16px minimum body text |
-| **Display polarity** | Piepenbrock, Mayr, Mund & Buchner | 2013 | Light mode better for visual acuity; dark mode acceptable when contrast equalized | Support both modes; don't assume dark is better |
-| **Halation on dark bg** | Legge & Rubin | 1986 | High contrast white-on-black causes halation (text bleed) in ~30-50% of users (astigmatism) | Use #e2e8f0 (87% white) not pure #fff on dark surfaces |
-| **Information density** | Edward Tufte | 1990 | High density is good when well-designed; "clutter is a failure of design, not of information" | Dense tables/dashboards OK for expert users |
-| **Dashboard design** | Stephen Few | 2006/2013 | All key metrics on single screen; 6-12 metric cards max; top-left gets most attention | 4 stat cards in dashboard, F-pattern scanning |
-| **Proximity Compatibility** | Wickens & Carswell | 1995 | Related info should be proximate; comparable info should use consistent layout | Card grouping, consistent CRUD template |
-| **Cognitive load** | NNGroup (Harley) | 2014 | Less density + clear hierarchy for casual users; more density for expert users | Console (dense, expert) vs Landing (spacious, casual) |
-
-### Typography References
-
-| Source | Key Contribution | Applied To |
-|--------|-----------------|------------|
-| **Robert Bringhurst** — "The Elements of Typographic Style" | Modular scales, 66 chars/line ideal, 1.4-1.6 leading | Type scale ratio, line-height, measure |
-| **Tim Brown** — "More Meaningful Typography" (A List Apart, 2011) | Popularized modular scales for web (modularscale.com) | Minor Third 1.2 ratio for apps |
-| **Material Design 3 type scale** | Hand-tuned Major Second→Minor Third: 11-57px | Reference for our fluid clamp() scale |
-| **British Dyslexia Association** | Min 12pt (16px) for accessible reading | 16px body text floor |
-
-### Modular Scale Ratios
-
-| Ratio | Name | Character | Best For |
-|-------|------|-----------|----------|
-| 1.067 | Minor Second | Almost no contrast | Avoid — steps too subtle |
-| 1.125 | Major Second | Subtle, controlled | Dense apps, dashboards, data tables |
-| **1.200** | **Minor Third** | **Balanced** | **General-purpose apps (our system)** |
-| 1.250 | Major Third | Clear hierarchy | Content-heavy, editorial, blogs |
-| 1.333 | Perfect Fourth | Bold contrast | Landing pages, marketing |
-| 1.618 | Golden Ratio | Very dramatic | Impractical for apps — too few usable sizes |
-
-### Value Validation Summary
-
-| Property | Our Value | Research Basis | Status |
-|----------|-----------|---------------|--------|
-| Body font size | 16px | NNGroup, WCAG, Material, Boyarski 1998 | Aligned |
-| Line height (body) | 1.5 | WCAG SC 1.4.12, Bringhurst, Ling & van Schaik 2006 | Aligned |
-| Grid unit | 8px | Material Design, Weber's Law, sub-pixel rendering | Aligned |
-| Button height | 40px | Fitts's Law, Material 40dp default | Aligned |
-| Input height | 40px | NNGroup forms usability, Material | Aligned |
-| Table row height | 48px | Few 2012, Material 52dp/40dp compact | Aligned |
-| Sidebar width | 240px | Industry mode (VS Code, Notion, Figma, Jira) | Aligned |
-| Type scale ratio | ~1.2 | Minor Third — IBM Carbon, Tailwind, Bootstrap | Aligned |
-| Touch target (mobile) | 44-48px | WCAG 2.5.5 (44px AAA), Apple HIG (44pt), Material (48dp) | Aligned |
-| Contrast (AA) | 4.5:1 text, 3:1 UI | WCAG SC 1.4.3, SC 1.4.11 | Aligned |
-| Primary text on dark | #e2e8f0 (~87% white) | Material dark theme spec, Legge & Rubin halation | Aligned |
-| Dashboard KPI cards | 4 | Few 2006 (3-5 hero), Miller/Cowan (4±1 working memory) | Aligned |
-| Content max-width | 896px (layout) | Fine as container; prose needs `max-width: 65ch` (Bringhurst) | Needs `65ch` for prose |
-| Spacing ratio (grouping) | Inner < Outer | Gestalt proximity, Lidwell 2003 (1:2+ ratio) | Aligned |
-
-### How To Use This Reference
-
-1. **For this project**: values above are already implemented. Use this section to validate future changes.
-2. **For new projects**: start with these values as defaults. Adjust type scale ratio based on context (1.125 for dense tools, 1.25-1.333 for marketing/editorial).
-3. **For audits**: compare implementation against the Value Validation Summary table. Any mismatch = potential UX issue.
-4. **For stakeholder justification**: cite specific research when defending design decisions.
+| Property | Our Value | Status |
+|----------|-----------|--------|
+| Body font size | 16px | Aligned |
+| Line height (body) | 1.5 | Aligned |
+| Grid unit | 8px | Aligned |
+| Button height | 40px | Aligned |
+| Input height | 40px | Aligned |
+| Table row height | 48px | Aligned |
+| Sidebar width | 240px | Aligned |
+| Type scale ratio | ~1.2 | Aligned |
+| Touch target (mobile) | 44-48px | Aligned |
+| Contrast (AA) | 4.5:1 text, 3:1 UI | Aligned |
+| Primary text on dark | #e2e8f0 (~87% white) | Aligned |
+| Dashboard KPI cards | 4 | Aligned |
+| Content max-width | 896px (layout) | Needs `65ch` for prose |
+| Spacing ratio (grouping) | Inner < Outer | Aligned |
 

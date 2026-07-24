@@ -8,6 +8,10 @@ related: [landing-figure]
 
 > Count-aware curated image grid (1–4 images). Picks the right layout per count so a project with 2 screenshots doesn't render as a half-empty 2×2.
 
+> **Universal kernel:** the count-aware "pick the layout per image count, don't pad with
+> filler" rule lives in `→ skill patterns/count-aware-gallery`. This doc keeps the
+> `landing-gallery` per-count layouts and the curated slot contract.
+
 ## Why this exists
 
 Hardcoded 2×2 grids look broken when projects have fewer than 4 production-ready screenshots — the empty cells either need placeholders (clutter) or hidden treatment (text-only fallback, hides real assets). A count-aware gallery promotes whatever images exist into a layout designed for that count.

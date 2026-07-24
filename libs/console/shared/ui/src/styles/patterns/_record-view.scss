@@ -1,6 +1,6 @@
 /* ─── Record view (read-only detail chassis) ────────────────────────────────
  * Styles for the `console-record-*` component family. See ADR-026 and
- * `.context/design/bank/patterns/record-detail-layout.md`.
+ * `.context/design/patterns/record-detail-layout.md`.
  *
  * Styles live here, not in the components, for the same reason `.detail-page`
  * and `.crud-page` do: every part is built on content projection, and scoped

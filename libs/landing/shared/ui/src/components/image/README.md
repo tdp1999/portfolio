@@ -3,7 +3,7 @@
 A low-level responsive `<picture>` primitive: `srcset` + lazy-loading + aspect-ratio
 reservation (no CLS) + **multi-format tiering** (e.g. WebP → JPG fallback).
 
-Part of the responsive system — see `.context/design/responsive-contract.md` §13.
+Part of the responsive system — see `.context/design/contracts/responsive-contract.md` §13.
 
 ---
 

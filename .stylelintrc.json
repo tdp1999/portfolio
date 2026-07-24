@@ -5,7 +5,7 @@
     "media-feature-name-disallowed-list": [
       ["min-width", "max-width", "prefers-reduced-motion", "prefers-color-scheme"],
       {
-        "message": "Raw @media is banned. Use respond-to()/respond-down()/respond-between() for widths, or the reduce-motion()/color-scheme() mixins for prefers-*. See .context/design/responsive-contract.md §2, §8, §15.",
+        "message": "Raw @media is banned. Use respond-to()/respond-down()/respond-between() for widths, or the reduce-motion()/color-scheme() mixins for prefers-*. See .context/design/contracts/responsive-contract.md §2, §8, §15.",
         "severity": "warning"
       }
     ],

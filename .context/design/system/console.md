@@ -2,7 +2,7 @@
 
 > Design rules, components, and patterns for the console/dashboard application.
 > For shared tokens and foundations, see `foundations.md`.
-> **Before writing console HTML/SCSS:** use `console-cookbook.md` for spacing and typography decisions.
+> **Before writing console HTML/SCSS:** use `../cookbook/console.md` for spacing and typography decisions.
 
 ## Styling Approach
 
@@ -63,8 +63,8 @@ Overrides are defined in `libs/console/shared/ui/src/styles/material/_overrides.
 
 Applies to any console page editing many fields (Profile, Experience, Project,
 Article, future entities). Backed by ADR-013 (layout chassis) and ADR-014
-(save semantics). Bank refs: `bank/patterns/long-form-layout.md`,
-`bank/patterns/settings-section.md`, `bank/patterns/atomic-save.md`.
+(save semantics). Pattern refs: `../patterns/long-form-layout.md`,
+`../patterns/settings-section.md`, `../patterns/atomic-save.md`.
 
 ### Page Skeleton
 

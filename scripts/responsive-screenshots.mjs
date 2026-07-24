@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // =============================================================================
 // Responsive screenshot capture — input for validation Layer 2 (Claude-driven
-// review). See .context/design/responsive-contract.md §11. NOT a pixel-diff
+// review). See .context/design/contracts/responsive-contract.md §11. NOT a pixel-diff
 // baseline tool: it just captures one PNG per breakpoint for a given URL so the
 // `responsive-system` skill can inspect layout / type rhythm / hierarchy.
 //

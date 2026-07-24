@@ -12,7 +12,7 @@ import { MONTH_YEAR_FORMATS } from './month-year-picker.constants';
 /**
  * Month-year picker for "duration / period" fields (Experience, Project start/end).
  * Wraps `mat-datepicker` configured for year-first → month selection. Day is fixed
- * to the 1st of the chosen month at midnight. See `.context/design/console-cookbook.md`.
+ * to the 1st of the chosen month at midnight. See `.context/design/cookbook/forms.md`.
  */
 @Component({
   selector: 'console-month-year-picker',

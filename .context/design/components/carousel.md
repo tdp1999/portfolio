@@ -8,6 +8,10 @@ related: [landing-figure, landing-gallery, landing-lightbox]
 
 > One full-feature, breakpoint-agnostic slider. Touch swipe, mouse drag, keyboard, arrows, dots, optional thumbnails / peek / loop. Two slide sources: **image mode** (`[images]` → `<landing-figure>` per slide) or **content mode** (`[items]` + `<ng-template landingCarouselSlide>` → any projected content, e.g. cards).
 
+> **Universal kernel:** the one-reusable-slider rule, one-slide-per-gesture arbitration, and
+> the ~6px click-through threshold live in `→ skill patterns/carousel-and-gestures`. This doc
+> keeps the `landing-carousel` contract, inputs, and Angular/SSR wiring.
+
 ## Why this exists
 
 Galleries on small screens want a swipeable slider, not a grid that collapses to a tall stack. Rather than a bespoke slider per section, `landing-carousel` is the single reusable slider — configured by inputs, consistent in look and a11y. It deliberately does **not** decide its own breakpoints: the consumer swaps it in where a slider is wanted (Selected Work uses the curated `landing-gallery` grid on laptop+ and swaps to this carousel below).

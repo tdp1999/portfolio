@@ -310,7 +310,7 @@ Exit: E READMEs accurate, no `#` placeholders.
 - `.context/plans/epic-portfolio-e5-implementation.md` — implementation phases
 - `.context/patterns-architecture.md` — DI patterns, layering rules
 - `.context/patterns-error-handling.md` — sanitization handoff to ServerErrorDirective (errors are separate from content sanitization)
-- `.context/design/foundations/` — typography classes that landing renderer composes
+- `.context/design/system/foundations.md` — typography classes that landing renderer composes
 - `document-engine` repo (sibling working directory) — external package source; see its `package.json` for current version (`0.0.41` → target `0.1.0`)
 - [Tiptap output guide](https://tiptap.dev/docs/guides/output-json-html)
 - [ProseMirror schema migration discussion](https://discuss.prosemirror.net/t/schema-versioning-and-migrations/321)

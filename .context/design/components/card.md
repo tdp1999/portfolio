@@ -8,6 +8,11 @@ related: [landing-background, landing-container]
 
 > The translucent surface panel for landing sections that sit over a decorative background (`landing-background`). Optional `tilt` adds 3D rotate-on-hover with an accent glow.
 
+> **Universal kernel:** the "rich effects must degrade + stay off the main thread" stance is
+> `→ skill taste/expensive-effects-and-progressive-enhancement`; to diagnose/fix the scroll jank
+> this tiering prevents, use the `diagnose-scroll-jank` skill (decision E — cross-link, don't
+> duplicate). This doc keeps the project's concrete surface tiering and `landing-card` wiring.
+
 ## Why this exists
 
 Landing sections layer content panels over decorative backgrounds (aurora blobs, blueprint grid). `landing-card` is the single reusable panel for that job, so surface treatment (fill, border, radius, glass) stays consistent instead of being re-styled per section.

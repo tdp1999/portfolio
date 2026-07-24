@@ -32,7 +32,7 @@ The architecture is intentionally textbook NestJS DDD on the backend and intenti
 
 > The strongest argument for building the CMS yourself is the one that only shows up six months in: when the data model has to change, you change the schema, the DTO, the repository, the form, and the landing renderer in one commit — and you have nowhere to hide a sloppy decision.
 
-**Design.** Console has its own scale contract — `text-page-title`, `text-section-heading`, `text-stat-label` — separate from the landing scale. Borders only, no box-shadows on cards or tables. Chips are metadata, not buttons. The cookbook lives in `.context/design/console-cookbook.md` and is the document I read before touching any console HTML. Reading it before, instead of fixing things after, is the difference between a console that feels designed and a console that feels generated.
+**Design.** Console has its own scale contract — `text-page-title`, `text-section-heading`, `text-stat-label` — separate from the landing scale. Borders only, no box-shadows on cards or tables. Chips are metadata, not buttons. The cookbook lives in `.context/design/cookbook/console.md` and is the document I read before touching any console HTML. Reading it before, instead of fixing things after, is the difference between a console that feels designed and a console that feels generated.
 
 ![Console — Project edit form (tabs, translatable fields, save-pending state)](/assets/projects/console-mvp/fig-02-project-edit.png "Project edit — typed reactive form, translatable EN/VI tabs, server-error wiring through the submit-flow helper")
 

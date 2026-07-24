@@ -319,7 +319,7 @@ Sized for `/ctx:breakdown`. Roughly 9 tasks across 6 streams; next task numbers 
 
 **Stream F — Hardening & docs**
 - F1. Contract tests: append-only (no update/delete path), redaction (denylisted fields never persisted), fail-open (audit failure does not fail business op), failure-outcome capture. **[M]**
-- F2. Docs: `.context/patterns-architecture.md` audit section + module README + component-bank entries for the new UI primitives; ADR in `decisions.md`. **[S]**
+- F2. Docs: `.context/patterns-architecture.md` audit section + module README + component docs (via `/design document`) for the new UI primitives; ADR in `decisions.md`. **[S]**
 
 Dependency order: A → B → (C, D can parallel) → E → F. E depends on D. C depends on B3. F closes each stream.
 

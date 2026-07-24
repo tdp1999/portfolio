@@ -3,6 +3,10 @@
 > The single source of truth for responsive design across this monorepo. All decisions are locked. **Read this before writing any responsive code.** Scaffolded by the `responsive-system` skill (adapter: `angular-tailwind-ssr`).
 >
 > **Current scope: landing only.** The console is intentionally out of scope for now (see §7). The foundation (mixins, observer, tokens) lives in shared libraries so the console can adopt it later without re-scaffolding.
+>
+> **Universal kernel:** the tool-per-change decision tree, device-bound naming, hybrid
+> direction, and fluid-vs-stepped strategy live in `→ skill patterns/responsive-strategy`.
+> This contract is the project's locked thresholds, artifact map, and enforcement.
 
 ---
 

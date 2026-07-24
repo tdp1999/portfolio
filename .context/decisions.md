@@ -193,7 +193,7 @@
 ### ADR-013: Long-Form Layout Chassis — Sectioned Cards + Sticky Scrollspy Rail
 
 **Status:** Accepted
-**Context:** Console pages with many fields (Profile ~30 fields, Experience ~25, Project ~14 + relations) currently render as flat single-column forms with all space biased to the left half of the viewport. Researched 5 patterns (wizard, progressive single-page + scrollspy, tabs, accordion, one-thing-per-page) against project needs. Cross-page nav (Profile / Account / Notifications / Billing) and in-page nav both needed. See `.context/design/bank/patterns/long-form-layout.md` for full pattern catalog and decision matrix.
+**Context:** Console pages with many fields (Profile ~30 fields, Experience ~25, Project ~14 + relations) currently render as flat single-column forms with all space biased to the left half of the viewport. Researched 5 patterns (wizard, progressive single-page + scrollspy, tabs, accordion, one-thing-per-page) against project needs. Cross-page nav (Profile / Account / Notifications / Billing) and in-page nav both needed. See `.context/design/patterns/long-form-layout.md` for full pattern catalog and decision matrix.
 **Decision:** Adopt a **single universal chassis** for all long-form pages in console: vertically stacked **section cards** (description-left / form-right per `bank/patterns/settings-section.md`) plus a **sticky scrollspy left rail** as the only in-page nav. Cross-page navigation uses **routes**, not tabs. No 3-column layouts; the console sidebar may collapse on detail pages.
 **Consequences:**
 - Universal layout — users learn once, applies to Profile, Experience, Project, future entities

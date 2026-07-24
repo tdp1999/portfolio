@@ -8,6 +8,10 @@ related: [chip-select]
 
 > Single-select connected button group with a sliding active pill on a shared track. Wraps `mat-button-toggle-group` as a `ControlValueAccessor`.
 
+> **Universal kernel:** the never-null single-select-slider contract, the vs-chip-select
+> decision, and the equal-width shrink rule live in `→ skill patterns/segmented-control`. This
+> doc keeps the `console-segmented-control` Material wiring and visual tone.
+
 ## Why this exists
 
 `mat-button-toggle-group` in non-multiple mode lets the user *deselect* the active option by clicking it, emitting `null`. That violates a view-mode toggle's contract: a view-mode is never legitimately empty. `console-segmented-control` owns the rule that **the value never transitions to null** — clicking the active segment is a no-op.

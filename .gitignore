@@ -76,3 +76,7 @@ dist/apps/landing/bundle-report.html
 
 # shot-composer working dir (generated cover images)
 .shot-composer/
+
+# Local, uncommitted credential notes for the visual-feedback workflow
+# (see .context/design/workflow/visual-feedback.md)
+.context/design/workflow/*.local.md

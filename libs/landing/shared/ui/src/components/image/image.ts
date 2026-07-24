@@ -3,7 +3,7 @@ import { MIME } from './image.constants';
 import type { SourceEntry } from './image.types';
 
 /**
- * Responsive `<picture>` primitive. See `.context/design/responsive-contract.md` §13.
+ * Responsive `<picture>` primitive. See `.context/design/contracts/responsive-contract.md` §13.
  *
  * Two srcset modes:
  *  (a) **Manual N-width** — `src` is a base path WITHOUT extension (e.g.

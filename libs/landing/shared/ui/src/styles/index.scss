@@ -14,7 +14,7 @@
      • base/focus       → :focus-visible baseline + --toolbar-height
      • tokens/responsive→ stepped --section-spacing / --container-* per BP
    Mixin-only partials (base/prefers, base/input-modality) are @use'd directly
-   by the components that need them. See .context/design/responsive-contract.md. */
+   by the components that need them. See .context/design/contracts/responsive-contract.md. */
 @use 'base/breakpoints' as breakpoints;
 @use 'base/viewport' as viewport;
 @use 'base/focus' as focus;

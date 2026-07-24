@@ -2,6 +2,11 @@
 
 > Authoritative reference for all spatial, typographic, and sizing values. Code must derive from this contract.
 > Enforced by: Claude hook (`scripts/scale-audit.js`), pre-commit lint-staged, CLAUDE.md guardrails.
+>
+> **Universal kernel:** the *why* behind the 4px grid, the three-layer token model, and the
+> tokens-not-literals rule lives in `→ skill taste/grid-and-token-discipline` and
+> `→ skill principles/token-architecture`. This contract is the project's concrete values,
+> tokens, and enforcement — the part that does not travel.
 
 ## 4px Grid Rule
 

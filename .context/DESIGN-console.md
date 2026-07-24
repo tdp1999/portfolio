@@ -1,7 +1,7 @@
 # Design System: Portfolio — Console
 
 > Stitch-compatible AI-readable spec for the console/dashboard application.
-> Source of truth is `.context/design/foundations.md` + `.context/design/console.md`.
+> Source of truth is `.context/design/system/foundations.md` + `.context/design/system/console.md`.
 
 ## Visual Theme & Atmosphere
 

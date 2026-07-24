@@ -5,6 +5,10 @@ principles: [chunking-progressive-disclosure, reward-early-punish-late]
 tags: [form, save, dirty-state, navigation-guard, transactional]
 ---
 
+> **Universal kernel:** `→ skill patterns/atomic-save` holds the portable 4–5 element combo,
+> its rationale, and anti-patterns. This file keeps the project's application — which entities
+> use it, and the Angular wiring.
+
 ## When to Use
 For domain entities with cross-field invariants where partial save would leave
 the entity in an invalid state. Examples in this project: Experience, Project,
@@ -73,8 +77,5 @@ This lets users see "errors are in 2 of 8 sections" without scrolling the whole 
 - **Draft save**: separate service, debounced; clear on successful submit
 
 ## Sources
-- [GitHub Primer — Saving pattern](https://primer.style/ui-patterns/saving/)
-- [Cloudscape — Communicating unsaved changes](https://cloudscape.design/patterns/general/unsaved-changes/)
-- [GitLab Pajamas — Saving and feedback](https://design.gitlab.com/product-foundations/saving-and-feedback/)
-- [Oracle Alta UI — Save Model](https://www.oracle.com/webfolder/ux/middleware/alta/patterns/SaveModel.html)
-- [Brian Lovin — Design to save people from themselves](https://brianlovin.com/writing/design-to-save-people-from-themselves)
+
+External provenance lives in the skill: `→ skill sources.md` (rows for `atomic-save`).

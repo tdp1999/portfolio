@@ -5,6 +5,11 @@ principles: [chunking-progressive-disclosure]
 tags: [form, settings, layout, navigation, scrollspy, tabs, wizard]
 ---
 
+> **Universal kernel:** `→ skill patterns/long-form-layout` holds the portable pattern-choice
+> and save-strategy decision matrices. This file keeps the project's decision (ADR-024,
+> `console-section-tabs`), its rejected alternatives, and the Angular wiring. The generic
+> matrices are repeated below only as the context the project decision was made against.
+
 ## The 5 Viable Patterns
 
 | Pattern | When to use | Real-world examples |
@@ -104,11 +109,5 @@ Layout:
 - **Legacy**: `LongFormLayout` + `ScrollspyRail` remain in the lib but are superseded — do not use them for new forms.
 
 ## Sources
-- [NN/G — Wizards: Definition and Design Recommendations](https://www.nngroup.com/articles/wizards/)
-- [Smashing — Better Form Design: One Thing Per Page](https://www.smashingmagazine.com/2017/05/better-form-design-one-thing-per-page/)
-- [PatternFly — Progressive form vs. wizard](https://medium.com/patternfly/comparing-web-forms-a-progressive-form-vs-a-wizard-110eefc584e7)
-- [PatternFly — Wizard guidelines](https://www.patternfly.org/components/wizard/design-guidelines/)
-- [Eleken — Wizard UI Pattern](https://www.eleken.co/blog-posts/wizard-ui-pattern-explained)
-- [Bram.us — Sticky ScrollSpy Navigation](https://www.bram.us/2020/01/10/smooth-scrolling-sticky-scrollspy-navigation/)
-- [GitHub Primer — Layout patterns](https://primer.style/foundations/layout/)
-- [Stripe — Design patterns for Stripe Apps](https://docs.stripe.com/stripe-apps/patterns)
+
+External provenance lives in the skill: `→ skill sources.md` (rows for `long-form-layout`).

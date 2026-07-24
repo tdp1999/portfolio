@@ -2,6 +2,10 @@
 
 Single source of truth for "what loading indicator do I use here?". Every console page must follow this taxonomy.
 
+> **Universal kernel:** the one-taxonomy / never-two-at-once / skeleton-≠-refresh rules and the
+> ~300ms flicker-floor rationale live in `→ skill patterns/loading-indicators`. This file is
+> the project's concrete component names, thresholds, and the `withListLoading` wiring.
+
 ## Taxonomy
 
 | Indicator                | When                                                                  | Component                            | Notes                                                         |

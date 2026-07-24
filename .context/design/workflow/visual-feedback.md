@@ -36,15 +36,21 @@ mcp__chrome-devtools__navigate  →  http://localhost:4300/auth/login
 If already logged in, app redirects to dashboard — skip to Step 3.
 
 **Step 2 — Submit credentials**
+
+> **Credentials are NOT stored in this repo.** Read the console login from the gitignored
+> local file `visual-feedback-creds.local.md` (same folder — fill it once from the template
+> there) and substitute the two placeholders below. Never paste real credentials into this
+> committed doc.
+
 ```js
 // mcp__chrome-devtools__evaluate (use IIFE to avoid variable re-declaration errors)
 (function() {
   var e = document.querySelector('input[type="email"]');
   var p = document.querySelector('input[type="password"]');
-  e.value = 'hello@thunderphong.com';
+  e.value = '<CONSOLE_EMAIL>';        // ← from visual-feedback-creds.local.md
   e.dispatchEvent(new Event('input', {bubbles:true}));
   e.dispatchEvent(new Event('change', {bubbles:true}));
-  p.value = '100100100pPp@';
+  p.value = '<CONSOLE_PASSWORD>';     // ← from visual-feedback-creds.local.md
   p.dispatchEvent(new Event('input', {bubbles:true}));
   p.dispatchEvent(new Event('change', {bubbles:true}));
   document.querySelector('button[type="submit"]').click();
@@ -82,7 +88,7 @@ Then `Read` the returned temp file path to view the image.
 
 ## Console Page Checklist (after screenshot)
 
-Check against `console-cookbook.md`:
+Check against `../cookbook/console.md`:
 
 - [ ] Section card titles: `.text-section-heading` (18px semibold) — not too small
 - [ ] Description text visibly lighter than primary (secondary color, not muted)
