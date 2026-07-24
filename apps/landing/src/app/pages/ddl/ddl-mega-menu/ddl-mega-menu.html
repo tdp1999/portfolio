@@ -3,14 +3,15 @@
     The "More" dropdown anchored to the nav. The current panel has 3 visible issues:
     <strong>title is center-aligned while description is left-aligned</strong> (CSS inheritance leak),
     <strong>the icon-frame box adds visual weight</strong> without earning it, and
-    <strong>5 items in a 2-col grid leaves the Resume cell stranded</strong> next to empty space. Below are 6 directions
-    exploring different solutions — all rendered as always-open panels for side-by-side comparison.
+    <strong>5 items in a 2-col grid leaves the Resume cell stranded</strong> next to empty space. V1–V6 solved the flat
+    panel; <strong>V7 (below, the current leading direction)</strong> reframes it into titled sections once the site
+    gained a Product and downloadable Documents. All rendered as always-open panels for side-by-side comparison.
   </p>
 
   <landing-ddl-decision-record
     [variants]="variants"
     [summary]="
-      'Six layout directions for the &quot;More&quot; dropdown are on the board — none has won. The strongest two stay visible: V3 (typography only) if the portfolio voice should stay type-led, and V5 (hero + list) if the dropdown should push visitors toward Resume. The other four (refined row, centered cards, eyebrow, inline-glyph reveal) are collected below as considered alternatives. Open the in-header context check to judge proportions in situ before picking.'
+      'The IA changed: the site now has a Product (Document Engine) and downloadable Documents (CV), so the flat &quot;More&quot; menu (V1–V6) is superseded by the V7 sectioned family (Product / Explore / Documents). Four V7 directions are on the board — V7a (columned, type-led), V7b (featured product rail), V7c (stacked, narrow), V7d (card grid) — none picked yet. V1–V6 stay below as the flat-menu history. Open the in-header context check to judge proportions in situ before picking.'
     "
   />
 
@@ -73,6 +74,131 @@
       slide-down panel (too aggressive for a portfolio), country/locale picker (the language switcher handles this
       separately).
     </p>
+  </landing-ddl-section>
+
+  <!-- ═══ V7 · Sectioned family (new leading direction) ═════════════ -->
+  <landing-ddl-section anchor="v7-sectioned" heading="V7 — Sectioned family (Product / Explore / Documents)">
+    <p class="mm-block__intro">
+      V1–V6 all treated "More" as a <strong>flat list</strong>. That premise broke once the site gained a real
+      <strong>Product</strong> (Document Engine) and downloadable <strong>Documents</strong> (CV) — a flat row can't
+      signal that Document Engine is a destination, not a utility link. V7 grows the panel into
+      <strong>titled sections</strong>. Four directions below, all rendered as always-open panels with the same three
+      groups so you can compare shape, not content.
+    </p>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="v7a-columned" heading="V7a — columned, type-led (Stripe / Linear)">
+    <p class="mm-variant__desc">
+      Three titled columns, a mono eyebrow per section, <strong>no icons</strong>. Rows are type-led; an accent bar
+      slides in on hover (the V3 idiom). Most in step with the hero's display/serif voice.
+    </p>
+    <div class="mm-stage">
+      <div class="v7a-panel">
+        @for (section of sections; track section.title) {
+          <div class="v7a-col">
+            <span class="v7a-col__title">{{ section.title }}</span>
+            <div class="v7a-col__list">
+              @for (item of section.items; track item.label) {
+                <a class="v7a-item" href="#" (click)="$event.preventDefault()">
+                  <span class="v7a-item__accent" aria-hidden="true"></span>
+                  <span class="v7a-item__title">{{ item.label }}</span>
+                  @if (item.featured) {
+                    <span class="v7a-item__desc">{{ item.description }}</span>
+                  } @else {
+                    <span class="v7a-item__hint">{{ item.hint }}</span>
+                  }
+                </a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="v7b-featured-rail" heading="V7b — featured product rail + two columns (Vercel)">
+    <p class="mm-variant__desc">
+      Product is a prominent <strong>flagship card</strong> on the left (icon frame + description + an Open affordance);
+      Explore and Documents sit as two compact titled columns on the right. Gives Document Engine the weight it earns.
+    </p>
+    <div class="mm-stage">
+      <div class="v7b-panel">
+        <a class="v7b-rail" href="#" (click)="$event.preventDefault()">
+          <span class="v7b-rail__eyebrow">Product</span>
+          <span class="v7b-rail__icon-frame">
+            <landing-icon [name]="productItem.iconName" [size]="22" />
+          </span>
+          <span class="v7b-rail__title">{{ productItem.label }}</span>
+          <span class="v7b-rail__desc">{{ productItem.description }}</span>
+          <span class="v7b-rail__cta">
+            Open
+            <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+          </span>
+        </a>
+        <div class="v7b-cols">
+          @for (section of sideSections; track section.title) {
+            <div class="v7b-col">
+              <span class="v7b-col__title">{{ section.title }}</span>
+              @for (item of section.items; track item.label) {
+                <a class="v7b-item" href="#" (click)="$event.preventDefault()">
+                  <span class="v7b-item__title">{{ item.label }}</span>
+                  <span class="v7b-item__hint">{{ item.hint }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="v7c-stacked" heading="V7c — stacked groups, one narrow column (Raycast)">
+    <p class="mm-variant__desc">
+      One narrow column, sections stacked with a mono label + a thin divider between groups. Simplest and safest —
+      scales to any width and reads the same on every device.
+    </p>
+    <div class="mm-stage">
+      <div class="v7c-panel">
+        @for (section of sections; track section.title) {
+          <div class="v7c-group">
+            <span class="v7c-group__title">{{ section.title }}</span>
+            @for (item of section.items; track item.label) {
+              <a class="v7c-item" href="#" (click)="$event.preventDefault()">
+                <span class="v7c-item__title">{{ item.label }}</span>
+                <span class="v7c-item__hint">{{ item.hint }}</span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="v7d-cards" heading="V7d — uniform card grid (Raycast / Vercel cards)">
+    <p class="mm-variant__desc">
+      Every item is a uniform <strong>icon + title + one-liner card</strong>, grouped under section labels. The most
+      visual and premium — also the heaviest, and it needs confident copy in every card.
+    </p>
+    <div class="mm-stage">
+      <div class="v7d-panel">
+        @for (section of sections; track section.title) {
+          <div class="v7d-group">
+            <span class="v7d-group__title">{{ section.title }}</span>
+            <div class="v7d-grid">
+              @for (item of section.items; track item.label) {
+                <a class="v7d-card" href="#" (click)="$event.preventDefault()">
+                  <span class="v7d-card__icon-frame">
+                    <landing-icon [name]="item.iconName" [size]="18" />
+                  </span>
+                  <span class="v7d-card__title">{{ item.label }}</span>
+                  <span class="v7d-card__desc">{{ item.description }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
   </landing-ddl-section>
 
   <!-- ═══ V3 · typography only (strong direction, visible) ═══════════ -->
@@ -376,6 +502,38 @@
           <td>highest</td>
           <td>dense · quiet</td>
           <td>You like Vue/Astro-style dense menus. Description is rescue copy, not first-glance content.</td>
+        </tr>
+        <tr>
+          <th scope="row">v7a · columned</th>
+          <td>none</td>
+          <td>product only</td>
+          <td>medium</td>
+          <td>editorial · type-led</td>
+          <td>Sectioned IA + you want the type-led voice. Most consistent with the hero.</td>
+        </tr>
+        <tr>
+          <th scope="row">v7b · featured rail</th>
+          <td>on flagship</td>
+          <td>on flagship + product</td>
+          <td>low (tall)</td>
+          <td>confident · product-led</td>
+          <td>Document Engine should read as a destination. Strongest hierarchy of the V7 set.</td>
+        </tr>
+        <tr>
+          <th scope="row">v7c · stacked</th>
+          <td>none</td>
+          <td>hints only</td>
+          <td>high</td>
+          <td>quiet · utilitarian</td>
+          <td>You want sections but the narrowest, most portable panel. Safest default.</td>
+        </tr>
+        <tr>
+          <th scope="row">v7d · card grid</th>
+          <td>framed, per-card</td>
+          <td>always visible</td>
+          <td>low (tall)</td>
+          <td>premium · spacious</td>
+          <td>Every item should feel like a destination. Needs confident copy in every card.</td>
         </tr>
       </tbody>
     </table>

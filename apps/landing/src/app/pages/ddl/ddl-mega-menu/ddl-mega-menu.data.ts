@@ -1,5 +1,5 @@
 import type { DdlVariant } from '../ddl.types';
-import type { MoreItem } from './ddl-mega-menu.types';
+import type { MoreItem, MoreSection } from './ddl-mega-menu.types';
 
 // Decision record — this page is EXPLORING: six "More" dropdown layout
 // directions are on the board, none has won. No `selected`; each direction
@@ -36,6 +36,26 @@ export const MEGA_MENU_VARIANTS: readonly DdlVariant[] = [
     id: 'v6',
     label: 'V6 — inline-glyph row, hover-reveal',
     note: 'Inline 12px glyph in the title row; description fades in on hover. Densest layout — the description is rescue copy, not first-glance content. Risk: hides load-bearing info.',
+  },
+  {
+    id: 'v7a',
+    label: 'V7a — columned, type-led (Stripe / Linear)',
+    note: 'Three titled columns, mono eyebrow per section, no icons, accent bar slides in on hover. Most in step with the type-led hero — but the single Product item reads a touch empty next to its heading.',
+  },
+  {
+    id: 'v7b',
+    label: 'V7b — featured product rail + two columns (Vercel)',
+    note: 'Product is a prominent flagship card on the left; Explore + Documents sit as two compact titled columns. Gives Document Engine the weight it earns; asymmetric and confident, but the most markup.',
+  },
+  {
+    id: 'v7c',
+    label: 'V7c — stacked groups, one narrow column (Raycast)',
+    note: 'One narrow column, sections stacked with a mono label + thin divider between groups. Simplest and safest; scales to any width and any device — quietest of the four.',
+  },
+  {
+    id: 'v7d',
+    label: 'V7d — uniform card grid (Raycast / Vercel cards)',
+    note: 'Every item is a uniform icon + title + one-liner card, grouped under section labels. The most visual and premium — also the heaviest, and it needs confident copy in every card.',
   },
 ];
 
@@ -75,5 +95,71 @@ export const ITEMS: readonly MoreItem[] = [
     iconName: 'download',
     meta: 'download',
     featured: true,
+  },
+];
+
+// ── V7 sectioned data ────────────────────────────────────────────────
+// The "More" menu grown into titled groups. Product leads (Document Engine is
+// the flagship and carries a description); Explore holds the utility links;
+// Documents holds downloads. Icons use only names registered in the landing
+// lucide provider — `package` doubles as the product mark on the DE hero.
+export const SECTIONS: readonly MoreSection[] = [
+  {
+    title: 'Product',
+    items: [
+      {
+        label: 'Document Engine',
+        description: 'A framework-agnostic rich-text engine that stores structured, versioned documents.',
+        hint: 'product',
+        iconName: 'package',
+        meta: '/document-engine',
+        featured: true,
+      },
+    ],
+  },
+  {
+    title: 'Explore',
+    items: [
+      {
+        label: 'Blog',
+        description: 'Essays on engineering, design, and the build.',
+        hint: 'writing',
+        iconName: 'list',
+        meta: '/blog',
+      },
+      {
+        label: 'Uses',
+        description: 'Hardware, editor, services I lean on daily.',
+        hint: 'tools',
+        iconName: 'briefcase',
+        meta: '/uses',
+      },
+      {
+        label: 'Colophon',
+        description: 'The stack and tooling behind this site.',
+        hint: 'behind the build',
+        iconName: 'code',
+        meta: '/colophon',
+      },
+      {
+        label: 'DDL',
+        description: 'Design sandbox — primitives, prototypes, picks.',
+        hint: 'sandbox',
+        iconName: 'layout-grid',
+        meta: '/ddl',
+      },
+    ],
+  },
+  {
+    title: 'Documents',
+    items: [
+      {
+        label: 'Resume / CV',
+        description: 'Download my CV (PDF).',
+        hint: 'PDF · 120kb',
+        iconName: 'download',
+        meta: 'download',
+      },
+    ],
   },
 ];
