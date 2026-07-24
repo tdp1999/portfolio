@@ -1,6 +1,6 @@
 # Task: RTE — Console editor chrome/styling polish
 
-## Status: pending
+## Status: mostly done (verify #3 backlog with owner)
 
 ## Goal
 Fix the editor chrome (popovers, toolbar) styling and layout-stability issues in the console rich-text editor, so menus are readable and controls don't shift on interaction.
@@ -34,3 +34,21 @@ The console pulls the engine's chrome stylesheet (`@phuong-tran-redoc/document-e
 
 ## Progress Log
 - 2026-06-30 Created from task 318 manual-test findings. Two concrete issues captured (transparent link popover, toolbar layout jump on focus); owner has more to enumerate before work starts.
+- 2026-07-23 Re-verified live on document-engine **0.1.4** (post DE-015) via Playwright, blog `/admin/blog/new` (full-mode RTE), light + dark:
+  - **#1 transparent link popover — FIXED.** Root cause: the engine paints its floating
+    menus (`.bubble-menu-wrapper` / `.toolbar-bubble-menu`, used by the link editor + image/
+    color bubbles) with Tailwind utilities `bg-card text-card-foreground border-border
+    shadow-elevation-2` in its template, delegating the colours to the CONSUMER's Tailwind.
+    The console's Tailwind never defines `card`/`border`, so those classes emit nothing → the
+    panel is transparent + border-less. It only *looked* solid in light because it floats over
+    the editor's white content; over dark it was an unreadable ghost. Fix is console-side (not
+    an engine defect): explicit token-driven surface for both wrappers in
+    `libs/console/shared/ui/src/styles/vendor/document-engine.scss` (bg `--color-surface-elevated`,
+    `color --color-text`, `border-color --color-border`, elevation shadow). Verified solid +
+    readable in both themes (dark bg rgb(34,38,58) / light rgb(241,245,249)). Unscoped rule
+    (engine-unique class names) so it also covers any portalled menu.
+  - **#2 toolbar layout jump on focus/active — NO LONGER REPRODUCES.** Measured the Italic
+    button box before/after activating Bold: dx=dy=0 (no shift); active state is visual-only.
+    Resolved upstream by the 0.1.3 active-toggle-button work.
+  - **#3 "more issues"** — none surfaced in this sweep beyond #1. Needs owner to enumerate any
+    remaining chrome complaints, else close the task.
