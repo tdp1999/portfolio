@@ -122,20 +122,23 @@
   );
 }
 
-/* Compact form fields — density -2 */
-@include mat.form-field-density(-2);
+/* Form-field density is set to -2 in material/_theme.scss (after mat.theme, so it
+ * wins over the global -1). Kept there, not here, for cascade correctness. */
 
-/* Input/select text size — match system body text on desktop.
- * Mobile (<768px) keeps Material's 16px default to prevent iOS auto-zoom on focus. */
-@media (min-width: 768px) {
+/* Form fields now inherit the globally-scaled Material system type scale
+ * (--mat-sys-*-size, scaled by --type-scale in material/_theme.scss), so the former
+ * desktop `var(--text-sm)` override is gone — form fields size like every other
+ * Material component.
+ *
+ * iOS auto-zoom guard: Safari zooms the viewport when a focused input's font-size
+ * is < 16px. The global --type-scale shrink drops the inherited size below 16px, so
+ * on mobile we floor the INPUT text back to 16px. Desktop keeps the scaled size. */
+@media (max-width: 767px) /* scale-ok: 768−1 breakpoint boundary, not on-grid spacing */ {
   :root {
-    --mdc-filled-text-field-input-text-size: var(--text-sm);
-    --mdc-filled-text-field-label-text-size: var(--text-sm);
-    --mdc-outlined-text-field-input-text-size: var(--text-sm);
-    --mdc-outlined-text-field-label-text-size: var(--text-sm);
-    --mat-form-field-container-text-size: var(--text-sm);
-    --mat-form-field-subscript-text-size: var(--text-xs);
-    --mat-select-trigger-text-size: var(--text-sm);
-    --mat-option-label-text-size: var(--text-sm);
+    --mdc-filled-text-field-input-text-size: 1rem;
+    --mdc-outlined-text-field-input-text-size: 1rem;
+    --mat-form-field-container-text-size: 1rem;
+    --mat-select-trigger-text-size: 1rem;
+    --mat-option-label-text-size: 1rem;
   }
 }

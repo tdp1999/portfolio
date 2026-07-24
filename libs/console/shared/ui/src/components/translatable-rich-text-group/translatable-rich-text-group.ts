@@ -74,7 +74,7 @@ export type { RichTextLanguageConfig, LocaleView } from './translatable-rich-tex
       gap: 12px;
     }
     .trt-group__helper {
-      font-size: 12px;
+      font-size: var(--text-xs);
       color: var(--mat-sys-on-surface-variant, #666);
       margin: 0;
     }
@@ -88,7 +88,7 @@ export type { RichTextLanguageConfig, LocaleView } from './translatable-rich-tex
       display: none;
     }
     .trt-locale__label {
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 600;
       color: var(--mat-sys-on-surface-variant, #666);
       letter-spacing: 0.04em;
@@ -97,7 +97,7 @@ export type { RichTextLanguageConfig, LocaleView } from './translatable-rich-tex
     }
     .trt-locale__error {
       color: var(--mat-sys-error, #b00020);
-      font-size: 12px;
+      font-size: var(--text-xs);
       margin: 0;
     }
   `,

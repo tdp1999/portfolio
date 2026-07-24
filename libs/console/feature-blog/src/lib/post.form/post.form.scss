@@ -75,7 +75,7 @@
     flex: 1;
     margin: 0;
     padding-left: 16px;
-    font-size: 14px;
+    font-size: var(--text-sm);
   }
 }
 
@@ -94,7 +94,7 @@
   outline: none;
   resize: vertical;
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 14px;
+  font-size: var(--text-sm);
   line-height: 1.6;
   background: var(--color-surface, #fff);
   color: inherit;
@@ -118,18 +118,20 @@
   margin: 0 auto;
   line-height: 1.7;
 
+  /* Markdown-preview prose headings mirror the published article's own scale,
+     not the console --text-* scale, so they intentionally use raw rem. */
   :global(h1) {
-    font-size: 2rem;
+    font-size: 2rem; /* scale-ok */
     font-weight: 700;
     margin: 1.5rem 0 1rem;
   }
   :global(h2) {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* scale-ok */
     font-weight: 600;
     margin: 1.25rem 0 0.75rem;
   }
   :global(h3) {
-    font-size: 1.25rem;
+    font-size: 1.25rem; /* scale-ok */
     font-weight: 600;
     margin: 1rem 0 0.5rem;
   }
@@ -204,7 +206,7 @@
   &__error {
     margin: 4px 0 0;
     color: var(--mat-sys-error, #ba1a1a);
-    font-size: 12px;
+    font-size: var(--text-xs);
     line-height: 1.4;
   }
 }
@@ -219,6 +221,6 @@
   > div {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: var(--text-sm);
   }
 }

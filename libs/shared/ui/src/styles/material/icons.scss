@@ -1,34 +1,45 @@
 /* Material icon size overrides — scoped selector, no !important */
-/* All sizes on 4px grid */
+/* Base sizes are on the 4px grid (16/20/24/32/48); each explicit .icon-* class is
+   multiplied by the global --type-scale knob (tokens/typography.scss) so standalone
+   icons shrink/grow in step with the type scale. The calc() keeps them off the
+   raw-px 4px-grid audit (same treatment as --text-* / --mat-sys-*). Console-only —
+   landing does not @use this.
+
+   The bare mat-icon default (24px, .icon-lg) is intentionally NOT scaled here:
+   default-size icons are mostly embedded in Material components (button prefixes,
+   menu items, chips) where Material positions them against a fixed 24px box. Scaling
+   them would misalign the icon within its component — the same failure mode as
+   shrinking a form-field input's line-height. Use an explicit .icon-* class on any
+   standalone icon that should track the type scale. */
 
 mat-icon {
   &.icon-sm {
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
-    line-height: 16px;
+    width: calc(16px * var(--type-scale));
+    height: calc(16px * var(--type-scale));
+    font-size: calc(16px * var(--type-scale));
+    line-height: calc(16px * var(--type-scale));
   }
 
   &.icon-md {
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    line-height: 20px;
+    width: calc(20px * var(--type-scale));
+    height: calc(20px * var(--type-scale));
+    font-size: calc(20px * var(--type-scale));
+    line-height: calc(20px * var(--type-scale));
   }
 
-  // .icon-lg = default 24px (Material default, no override needed)
+  // .icon-lg = default 24px (handled by the base rule above)
 
   &.icon-xl {
-    width: 32px;
-    height: 32px;
-    font-size: 32px;
-    line-height: 32px;
+    width: calc(32px * var(--type-scale));
+    height: calc(32px * var(--type-scale));
+    font-size: calc(32px * var(--type-scale));
+    line-height: calc(32px * var(--type-scale));
   }
 
   &.icon-2xl {
-    width: 48px;
-    height: 48px;
-    font-size: 48px;
-    line-height: 48px;
+    width: calc(48px * var(--type-scale));
+    height: calc(48px * var(--type-scale));
+    font-size: calc(48px * var(--type-scale));
+    line-height: calc(48px * var(--type-scale));
   }
 }

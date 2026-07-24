@@ -1,0 +1,28 @@
+/* Landing global scrollbar styling.
+ * Thin, token-coloured scrollbars applied app-wide. @use'd by index.scss.
+ * Kept in @layer base so app utilities win. Identical intent to the console
+ * scrollbar (libs/console/shared/ui/src/styles/base/_scrollbar.scss). */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-text-muted);
+  }
+}

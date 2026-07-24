@@ -55,6 +55,34 @@ Unified classes in `base/components.scss`, used by ALL apps.
 
 300 (font-light), 400 (font-normal), 500 (font-medium), 600 (font-semibold), 700 (font-bold). No 800.
 
+### Typography Token Rule
+
+Every typographic property MUST reference a token — never a raw literal. Applies to all four:
+
+| Property | Use | Never |
+|----------|-----|-------|
+| `font-size` | `var(--text-*)` or a role class (`.text-*`) | `14px`, `0.875rem` |
+| `line-height` | `var(--leading-*)` | `1.5`, `20px` (unitless/px literal) |
+| `letter-spacing` | `var(--tracking-*)` | `0.06em` |
+| `font-family` | `var(--font-sans)` / `var(--font-mono)` | `'Inter', …` inline |
+
+The whole `--text-*` scale is shrunk/grown by one global multiplier `--type-scale` (in
+`tokens/typography.scss`); the Material M3 system scale (`--mat-sys-*`, in
+`material/_theme.scss`) is re-declared to follow the same knob. Any literal font-size
+silently opts out of that knob and drifts — that is the bug this rule prevents.
+
+**Exceptions (do NOT tokenize):**
+- **Icon sizing** — `font-size` on a `mat-icon` or paired with an equal `width`/`height`
+  is an icon dimension, not text. Use the `.icon-*` classes (see Icon Sizes).
+- **`em` for `font-size`** — contextual, relative-to-parent sizing (e.g. `code` inside
+  prose) is allowed.
+- **RTE prose** (`vendor/document-engine.scss`) and **DDL showcase pages**
+  (`feature-ddl/`) run their own documented scales.
+
+**Enforcement:** `scripts/scale-audit.js` flags `font-size`/`line-height` `rem` literals and
+`letter-spacing` `em` literals not wrapped in `var()`/`calc()` (ERROR). px sizes remain on
+the 4px-grid check. `font-family` is doc-enforced only (fallback stacks defeat a regex).
+
 ## Layout Tokens
 
 CSS custom properties in `tokens/layout.scss`:

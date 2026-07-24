@@ -1,0 +1,111 @@
+@use '@angular/material' as mat;
+
+/* Console Material theme bootstrap.
+ *
+ * Lives here (not in apps/console/src/styles.scss) so ALL Material theming and
+ * token work stays under material/. Consumed by styles.scss via a single @use.
+ *
+ * ORDERING CONTRACT: the scaled --mat-sys-* block MUST stay in this same html{}
+ * block, immediately after mat.theme(). mat.theme() emits the stock --mat-sys-*
+ * type scale with fixed rem sizes; later-in-source wins, so our scaled copy must
+ * follow it. Splitting the scaled block into its own @use'd partial would emit it
+ * BEFORE mat.theme (module CSS precedes the using file's CSS) and lose the cascade. */
+html {
+  color-scheme: light dark;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$azure-palette,
+      ),
+      typography: 'Inter',
+      density: (
+        scale: -1,
+      ),
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-text-on-primary),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+      surface-container: var(--color-surface),
+      surface-container-low: var(--color-surface),
+      surface-container-lowest: var(--color-surface),
+      surface-container-high: var(--color-surface-elevated),
+      surface-container-highest: var(--color-surface-elevated),
+    )
+  );
+
+  /* Scale the Material 3 system type scale by the same global --type-scale knob
+   * used for our own --text-* tokens (tokens/typography.scss). Sizes are the stock
+   * M3 type-scale values — do not hand-tune here; adjust the whole scale via
+   * --type-scale in tokens/typography.scss.
+   *
+   * Angular Material components consume the GRANULAR tokens (--mat-sys-<role>-size
+   * and --mat-sys-<role>-line-height), verified against the compiled component CSS:
+   * --mat-sys-label-large-size is read 46×, the shorthand --mat-sys-label-large 0×.
+   * So the granular groups below are what actually resize buttons, tables, chips,
+   * tabs, menus, etc. The shorthand group is rebuilt from them for any code that
+   * reads it.
+   *
+   * WHY override the raw --mat-sys-* custom properties instead of the sanctioned
+   * mat.theme-overrides() / per-component overrides API: mat.theme-overrides() with
+   * typography size tokens is BROKEN in Angular Material v20.1.7+ (this project is
+   * v21) — see angular/components#31719 (regression, unresolved). Per-component
+   * *-text-size overrides work but must enumerate every component and silently miss
+   * new ones. Overriding the system tokens directly is the only reliable single-knob
+   * global path on v21; the theming guide discourages it in general, hence this note.
+   * Revisit if #31719 is fixed and the mixin path becomes viable. */
+
+  /* Granular sizes — the tokens components actually read. */
+  --mat-sys-display-large-size: calc(3.562rem * var(--type-scale));
+  --mat-sys-display-medium-size: calc(2.812rem * var(--type-scale));
+  --mat-sys-display-small-size: calc(2.25rem * var(--type-scale));
+  --mat-sys-headline-large-size: calc(2rem * var(--type-scale));
+  --mat-sys-headline-medium-size: calc(1.75rem * var(--type-scale));
+  --mat-sys-headline-small-size: calc(1.5rem * var(--type-scale));
+  --mat-sys-title-large-size: calc(1.375rem * var(--type-scale));
+  --mat-sys-title-medium-size: calc(1rem * var(--type-scale));
+  --mat-sys-title-small-size: calc(0.875rem * var(--type-scale));
+  --mat-sys-body-large-size: calc(1rem * var(--type-scale));
+  --mat-sys-body-medium-size: calc(0.875rem * var(--type-scale));
+  --mat-sys-body-small-size: calc(0.75rem * var(--type-scale));
+  --mat-sys-label-large-size: calc(0.875rem * var(--type-scale));
+  --mat-sys-label-medium-size: calc(0.75rem * var(--type-scale));
+  --mat-sys-label-small-size: calc(0.688rem * var(--type-scale));
+
+  /* Line-heights are deliberately NOT scaled. Material centers a component's text
+   * inside a density-driven box via: container-height = line-height + 2*padding.
+   * Density (spacing) stays on the 4px grid and is NOT scaled, so the padding still
+   * assumes the stock line-height. Shrinking line-height too would leave the text
+   * box shorter than the padded content area and push the text off-centre (e.g. the
+   * input in a mat-form-field floats to the top). Scaling --*-size alone shrinks the
+   * glyphs while the stock line-heights keep everything vertically centred. */
+
+  /* Shorthand roles — kept for completeness; components read the granular tokens above.
+   * line-height slot references the stock --mat-sys-*-line-height (unscaled). */
+  --mat-sys-display-large: 400 var(--mat-sys-display-large-size) / var(--mat-sys-display-large-line-height) Inter;
+  --mat-sys-display-medium: 400 var(--mat-sys-display-medium-size) / var(--mat-sys-display-medium-line-height) Inter;
+  --mat-sys-display-small: 400 var(--mat-sys-display-small-size) / var(--mat-sys-display-small-line-height) Inter;
+  --mat-sys-headline-large: 400 var(--mat-sys-headline-large-size) / var(--mat-sys-headline-large-line-height) Inter;
+  --mat-sys-headline-medium: 400 var(--mat-sys-headline-medium-size) / var(--mat-sys-headline-medium-line-height) Inter;
+  --mat-sys-headline-small: 400 var(--mat-sys-headline-small-size) / var(--mat-sys-headline-small-line-height) Inter;
+  --mat-sys-title-large: 400 var(--mat-sys-title-large-size) / var(--mat-sys-title-large-line-height) Inter;
+  --mat-sys-title-medium: 500 var(--mat-sys-title-medium-size) / var(--mat-sys-title-medium-line-height) Inter;
+  --mat-sys-title-small: 500 var(--mat-sys-title-small-size) / var(--mat-sys-title-small-line-height) Inter;
+  --mat-sys-body-large: 400 var(--mat-sys-body-large-size) / var(--mat-sys-body-large-line-height) Inter;
+  --mat-sys-body-medium: 400 var(--mat-sys-body-medium-size) / var(--mat-sys-body-medium-line-height) Inter;
+  --mat-sys-body-small: 400 var(--mat-sys-body-small-size) / var(--mat-sys-body-small-line-height) Inter;
+  --mat-sys-label-large: 500 var(--mat-sys-label-large-size) / var(--mat-sys-label-large-line-height) Inter;
+  --mat-sys-label-medium: 500 var(--mat-sys-label-medium-size) / var(--mat-sys-label-medium-line-height) Inter;
+  --mat-sys-label-small: 500 var(--mat-sys-label-small-size) / var(--mat-sys-label-small-line-height) Inter;
+}
+
+/* Form fields run denser than the -1 global density set in mat.theme() above.
+   Emitted AFTER mat.theme so this -2 wins over the theme's per-component density
+   for form-field (later-in-source). */
+@include mat.form-field-density(-2);

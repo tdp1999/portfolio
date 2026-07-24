@@ -53,7 +53,7 @@ export type { MarkdownLanguageConfig } from './translatable-markdown-group.types
       gap: 4px;
     }
     .md-locale__label {
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 600;
       color: var(--mat-sys-on-surface-variant, #666);
       letter-spacing: 0.04em;
@@ -61,7 +61,7 @@ export type { MarkdownLanguageConfig } from './translatable-markdown-group.types
     }
     .md-locale__error {
       color: var(--mat-sys-error, #b00020);
-      font-size: 12px;
+      font-size: var(--text-xs);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

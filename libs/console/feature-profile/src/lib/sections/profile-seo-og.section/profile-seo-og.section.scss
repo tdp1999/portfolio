@@ -99,7 +99,7 @@
 .json-ld-preview {
   @apply mt-3 p-4 rounded-lg;
   background: var(--color-surface-alt);
-  font-size: 12px;
+  font-size: var(--text-xs);
   overflow: auto;
   max-height: 256px;
 }

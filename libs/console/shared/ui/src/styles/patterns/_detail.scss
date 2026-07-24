@@ -49,7 +49,7 @@
 }
 
 .detail-section__title {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -62,7 +62,7 @@
   display: flex;
   gap: 12px;
   padding: 4px 0;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .detail-field__label {
@@ -87,7 +87,7 @@
   flex-wrap: wrap;
   gap: 16px;
   margin-top: 4px;
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 
@@ -96,7 +96,7 @@
   padding: 12px 24px;
   border-top: 1px solid var(--color-border);
   background: var(--color-surface-alt);
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
   display: flex;
   flex-wrap: wrap;

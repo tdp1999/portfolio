@@ -1,8 +1,5 @@
 /* Global styles for the console app */
 
-/* Angular Material */
-@use '@angular/material' as mat;
-
 /* Shared design tokens */
 @use 'tokens/colors' as colors-tokens;
 @use 'tokens/typography' as typography-tokens;
@@ -16,67 +13,19 @@
    engine stylesheet & theming. See libs/console/shared/ui/src/styles/_index.scss. */
 @use '../../../libs/console/shared/ui/src/styles' as console-ui;
 
-html {
-  color-scheme: light dark;
+/* Material theme bootstrap (mat.theme + overrides + scaled --mat-sys-* type scale).
+   @use'd last so it emits after console-ui's component-token overrides, preserving
+   the prior cascade order. See material/_theme.scss for the ordering contract.
+   Short path resolves via the console styles includePath (see project.json). */
+@use 'material/theme';
 
-  @include mat.theme(
-    (
-      color: (
-        theme-type: dark,
-        primary: mat.$azure-palette,
-      ),
-      typography: 'Inter',
-      density: (
-        scale: 0,
-      ),
-    )
-  );
-
-  @include mat.theme-overrides(
-    (
-      primary: var(--color-primary),
-      on-primary: var(--color-text-on-primary),
-      surface: var(--color-surface),
-      on-surface: var(--color-text),
-      surface-container: var(--color-surface),
-      surface-container-low: var(--color-surface),
-      surface-container-lowest: var(--color-surface),
-      surface-container-high: var(--color-surface-elevated),
-      surface-container-highest: var(--color-surface-elevated),
-    )
-  );
-}
+/* Global scrollbar styling (see base/_scrollbar.scss) */
+@use 'base/scrollbar';
 
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Global scrollbar styling */
-@layer base {
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-border) transparent;
-  }
-
-  *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: var(--color-border);
-    border-radius: 4px;
-  }
-
-  *::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-text-muted);
-  }
-}
 
 /* Font imports */
 @import '@fontsource/inter/400.css';

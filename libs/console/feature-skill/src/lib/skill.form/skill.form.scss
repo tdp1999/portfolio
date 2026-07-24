@@ -13,7 +13,7 @@
 
   &__server-error {
     color: var(--mat-sys-error);
-    font-size: 14px;
+    font-size: var(--text-sm);
     margin-top: 8px;
   }
 }

@@ -47,6 +47,33 @@ const IMPORTANT_REGEX = /(?:^|[\s"'])(![a-z][\w]*-[\w.-]*)/g;
 const CSS_PX_REGEX =
   /(?:font-size|width|height|min-width|min-height|max-width|max-height|padding|margin|gap|top|right|bottom|left|line-height|border-radius):\s*(\d+)px/g;
 
+// Typography that bypasses design tokens, instead of var(--text-*) / var(--leading-*)
+// / var(--tracking-*). px sizes are already covered by the 4px-grid check above (icon
+// sizes are px and stay on that path); `em` font-size is allowed (contextual, e.g. code
+// inside prose) and is intentionally not matched here.
+//
+// font-size rem is an ERROR: a literal font-size silently opts out of the global
+// --type-scale knob and drifts. line-height rem / letter-spacing em are WARN: they are
+// consistency hygiene (those properties don't ride --type-scale) and legitimately carry
+// optical values (e.g. -0.005em) that no coarse token expresses.
+const TYPO_ERROR_REGEX = /font-size:\s*-?\d*\.?\d+rem/g;
+const TYPO_WARN_REGEX =
+  /line-height:\s*-?\d*\.?\d+rem|letter-spacing:\s*-?\d*\.?\d+em/g;
+
+// Explicit per-line opt-out for documented exceptions (prose previews, optical values).
+// A line containing this marker is skipped by every scale check.
+const SCALE_OK_MARKER = 'scale-ok';
+
+// Files where a raw type scale is legitimate and must not be flagged:
+// token definitions, the Material M3 theme bridge, the RTE prose stylesheet,
+// and the DDL design-showcase pages.
+const TYPO_IGNORE_PATTERNS = [
+  /styles[\\/]tokens[\\/]/,
+  /material[\\/]_?theme/,
+  /vendor[\\/]document-engine/,
+  /feature-ddl[\\/]/,
+];
+
 // --- Helpers ---
 
 function isOnGrid(value) {
@@ -126,6 +153,9 @@ function auditFile(filePath) {
     // Skip comment lines (CSS/SCSS/TS)
     if (/^\s*(\/\/|\/?\*|\*)/.test(line)) return;
 
+    // Skip lines explicitly opted out via the /* scale-ok */ marker
+    if (line.includes(SCALE_OK_MARKER)) return;
+
     // Check arbitrary Tailwind px values
     let match;
     ARBITRARY_PX_REGEX.lastIndex = 0;
@@ -168,6 +198,30 @@ function auditFile(filePath) {
             line: lineNum,
             severity,
             message: `${match[0]} — ${value}px is not on 4px grid`,
+            code: line.trim(),
+          });
+        }
+      }
+
+      // Check typography that bypasses tokens (rem/em literals). Skip token/theme/
+      // prose/DDL files, and any line composing a token via var()/calc().
+      const typoIgnored = TYPO_IGNORE_PATTERNS.some((p) => p.test(filePath));
+      if (!typoIgnored && !line.includes('var(') && !line.includes('calc(')) {
+        TYPO_ERROR_REGEX.lastIndex = 0;
+        while ((match = TYPO_ERROR_REGEX.exec(line)) !== null) {
+          violations.push({
+            line: lineNum,
+            severity: 'ERROR',
+            message: `${match[0].trim()} — font-size must use a token: var(--text-*) or a .text-* role class`,
+            code: line.trim(),
+          });
+        }
+        TYPO_WARN_REGEX.lastIndex = 0;
+        while ((match = TYPO_WARN_REGEX.exec(line)) !== null) {
+          violations.push({
+            line: lineNum,
+            severity: 'WARN',
+            message: `${match[0].trim()} — prefer a token (line-height → var(--leading-*), letter-spacing → var(--tracking-*)); add /* scale-ok */ if intentional`,
             code: line.trim(),
           });
         }

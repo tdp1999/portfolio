@@ -6,20 +6,67 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
+  /* Global type-scale multiplier. 1 = original scale.
+   * Applied to every fluid token below to shrink/grow the whole scale
+   * while preserving the ratio between steps. --text-2xs is exempt
+   * (fixed 10px readability floor for badges/nav-labels). */
+  --type-scale: 0.8;
+
   /* Fixed micro size — 10px, even exception for labels/badges only */
   --text-2xs: 0.625rem;
 
   /* Fluid type scale: clamp(min, preferred, max) */
   /* Scales smoothly from 320px to 1280px viewport */
-  --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
-  --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.925rem);
-  --text-base: clamp(0.925rem, 0.875rem + 0.25vw, 1rem);
-  --text-lg: clamp(1rem, 0.95rem + 0.5vw, 1.25rem);
-  --text-xl: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-  --text-2xl: clamp(1.25rem, 1.1rem + 1vw, 1.875rem);
-  --text-3xl: clamp(1.5rem, 1.25rem + 1.25vw, 2.25rem);
-  --text-4xl: clamp(1.875rem, 1.5rem + 1.75vw, 3rem);
-  --text-5xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.75rem);
+  /* Floored at --text-2xs (10px): --type-scale would otherwise push the low end
+   * of xs (~9px) below the fixed 2xs floor, inverting the label/body hierarchy. */
+  --text-xs: max(
+    var(--text-2xs),
+    clamp(
+      calc(0.7rem * var(--type-scale)),
+      calc((0.65rem + 0.25vw) * var(--type-scale)),
+      calc(0.8rem * var(--type-scale))
+    )
+  );
+  --text-sm: clamp(
+    calc(0.8rem * var(--type-scale)),
+    calc((0.75rem + 0.25vw) * var(--type-scale)),
+    calc(0.925rem * var(--type-scale))
+  );
+  --text-base: clamp(
+    calc(0.925rem * var(--type-scale)),
+    calc((0.875rem + 0.25vw) * var(--type-scale)),
+    calc(1rem * var(--type-scale))
+  );
+  --text-lg: clamp(
+    calc(1rem * var(--type-scale)),
+    calc((0.95rem + 0.5vw) * var(--type-scale)),
+    calc(1.25rem * var(--type-scale))
+  );
+  --text-xl: clamp(
+    calc(1.125rem * var(--type-scale)),
+    calc((1rem + 0.75vw) * var(--type-scale)),
+    calc(1.5rem * var(--type-scale))
+  );
+  --text-2xl: clamp(
+    calc(1.25rem * var(--type-scale)),
+    calc((1.1rem + 1vw) * var(--type-scale)),
+    calc(1.875rem * var(--type-scale))
+  );
+  --text-3xl: clamp(
+    calc(1.5rem * var(--type-scale)),
+    calc((1.25rem + 1.25vw) * var(--type-scale)),
+    calc(2.25rem * var(--type-scale))
+  );
+  --text-4xl: clamp(
+    calc(1.875rem * var(--type-scale)),
+    calc((1.5rem + 1.75vw) * var(--type-scale)),
+    calc(3rem * var(--type-scale))
+  );
+  --text-5xl: clamp(
+    calc(2.25rem * var(--type-scale)),
+    calc((1.75rem + 2.5vw) * var(--type-scale)),
+    calc(3.75rem * var(--type-scale))
+  );
 
   /* Line heights */
   --leading-none: 1;

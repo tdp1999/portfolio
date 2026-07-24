@@ -80,7 +80,7 @@
     gap: 8px;
     // Aligns with the rail label text (item padding 12px + ~2.4px from item flex layout)
     padding-left: 14.4px;
-    font-size: 14px;
+    font-size: var(--text-sm);
     color: var(--color-text-secondary);
 
     &--idle {
