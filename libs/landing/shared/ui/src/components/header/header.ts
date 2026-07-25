@@ -78,7 +78,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                     {{ item.label }}
                   </a>
                 }
-                <landing-mega-menu triggerLabel="More" align="center" [items]="moreItems()" />
+                <landing-mega-menu triggerLabel="More" align="screen" [columns]="2" [items]="moreItems()" />
               </nav>
 
               <span class="hidden h-4 w-px bg-landing-border tablet:inline-block" aria-hidden="true"></span>
@@ -155,7 +155,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                   {{ item.label }}
                 </a>
               }
-              <landing-mega-menu triggerLabel="More" align="center" [columns]="2" [items]="moreItems()" />
+              <landing-mega-menu triggerLabel="More" align="screen" [columns]="2" [items]="moreItems()" />
             </nav>
 
             <div class="flex items-center gap-4 justify-self-end">
@@ -209,7 +209,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
     @if (menuOpen()) {
       <div
         id="mobile-menu-sheet"
-        class="fixed inset-0 z-[60] flex flex-col tablet:hidden pointer-events-auto bg-[var(--landing-ink-0)] header-fade-in"
+        class="fixed inset-0 z-[60] flex flex-col overflow-y-auto tablet:hidden pointer-events-auto bg-[var(--landing-ink-0)] header-fade-in"
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
@@ -254,35 +254,29 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
           }
         </nav>
 
-        <div class="flex w-full max-w-[30rem] flex-col px-6 pt-10">
-          <landing-eyebrow label="More" class="mb-3 block" />
-          @for (m of moreItems(); track m.label) {
-            <a
-              [href]="m.href"
-              (click)="closeMenu()"
-              class="flex items-center justify-between py-2 font-sans text-body-md text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
-            >
-              <span>{{ m.label }}</span>
-              @if (m.hint) {
-                <span class="font-mono text-mono-sm uppercase tracking-wider text-landing-text-600">{{ m.hint }}</span>
+        <!-- "More" grown into the same titled categories as the desktop mega-menu
+             (Products / Explore / Documents). Own top+bottom padding — the theme and
+             language controls already live in the top bar, so no footer here. -->
+        <div class="flex w-full max-w-[30rem] flex-col gap-7 px-6 pb-10 pt-10">
+          @for (group of moreSections(); track group.title) {
+            <div class="flex flex-col">
+              <landing-eyebrow [label]="group.title" class="mb-3 block" />
+              @for (m of group.items; track m.label) {
+                <a
+                  [href]="m.href"
+                  (click)="closeMenu()"
+                  class="flex items-center justify-between py-2 font-sans text-body-md text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                >
+                  <span>{{ m.label }}</span>
+                  @if (m.hint) {
+                    <span class="font-mono text-mono-sm uppercase tracking-wider text-landing-text-600">
+                      {{ m.hint }}
+                    </span>
+                  }
+                </a>
               }
-            </a>
+            </div>
           }
-        </div>
-
-        <div class="mt-auto flex items-center gap-4 border-t border-landing-border px-6 py-6">
-          <landing-select
-            [options]="languages"
-            [value]="lang()"
-            (valueChange)="setLang($event)"
-            triggerIconName="globe"
-            triggerValue="code"
-            [showChevron]="false"
-            align="left"
-            placement="up"
-            ariaLabel="Switch language"
-          />
-          <landing-theme-toggle />
         </div>
       </div>
     }
@@ -337,52 +331,67 @@ export class Header {
 
   readonly moreItems = computed<readonly MegaMenuItem[]>(() => {
     const items: MegaMenuItem[] = [];
+
+    // Products lead the menu as the featured first column. Today there is one, so it
+    // renders as the solo flagship card (preview screenshot that cross-fades to the
+    // icon tile on hover). When `claude-code-ctx` ships, add it here with
+    // `product: true` and the column auto-switches to a stacked "Products" list —
+    // no layout or caller change needed.
+    items.push({
+      label: 'Document Engine',
+      description: 'A framework-agnostic rich-text engine for structured, versioned documents.',
+      href: '/document-engine',
+      iconName: 'file-pen',
+      product: true,
+      cta: 'Explore the engine',
+      image: '/menu/document-engine-light.webp',
+      imageDark: '/menu/document-engine-dark.webp',
+    });
+
+    // Explore — utility / content links (framed icon + self-explanatory label).
+    items.push(
+      { label: 'Blog', href: '/blog', section: 'Explore', iconName: 'pen-line' },
+      { label: 'Uses', href: '/uses', section: 'Explore', iconName: 'wrench' },
+      { label: 'Colophon', href: '/colophon', section: 'Explore', iconName: 'layers' },
+      { label: 'DDL', href: '/ddl', section: 'Explore', iconName: 'palette' }
+    );
+
+    // Documents — downloadables.
     const resume = this.resumeUrl();
     if (resume) {
       items.push({
         label: 'Resume',
-        // Keep the visible copy filename-free: the real CV filename is long and
-        // unbreakable (underscores), so interpolating it overflowed the hero card.
-        description: 'A PDF snapshot of my experience, roles, and stack.',
+        hint: 'PDF',
         href: resume,
         kind: 'download',
-        iconName: 'download',
-        featured: true,
-        cta: 'Download',
+        iconName: 'file-down',
+        section: 'Documents',
       });
     }
-    items.push(
-      // Product pages. Today there is one; `claude-code-ctx` is expected to join
-      // it, at which point this list wants its own titled group in the mega menu
-      // rather than sitting flat among the utility links.
-      {
-        label: 'Document Engine',
-        hint: 'product',
-        href: '/document-engine',
-      },
-      {
-        label: 'Uses',
-        hint: 'tools',
-        href: '/uses',
-      },
-      {
-        label: 'Blog',
-        hint: 'writing',
-        href: '/blog',
-      },
-      {
-        label: 'Colophon',
-        hint: 'behind the build',
-        href: '/colophon',
-      },
-      {
-        label: 'DDL',
-        hint: 'sandbox',
-        href: '/ddl',
-      }
-    );
+
     return items;
   });
+
+  /** The same items grouped by section for the mobile sheet — Products first, then
+   *  each titled section in first-seen order. Mirrors the desktop mega-menu shape. */
+  readonly moreSections = computed<readonly { readonly title: string; readonly items: readonly MegaMenuItem[] }[]>(
+    () => {
+      const items = this.moreItems();
+      const groups = new Map<string, MegaMenuItem[]>();
+      for (const item of items) {
+        if (item.product) continue;
+        const key = item.section ?? 'More';
+        const bucket = groups.get(key);
+        if (bucket) bucket.push(item);
+        else groups.set(key, [item]);
+      }
+      const out: { title: string; items: MegaMenuItem[] }[] = [];
+      const products = items.filter((i) => i.product);
+      if (products.length) out.push({ title: 'Products', items: products });
+      for (const [title, groupItems] of groups) out.push({ title, items: groupItems });
+      return out;
+    }
+  );
 
   constructor() {
     // Close the sheet on any successful navigation — covers programmatic nav and

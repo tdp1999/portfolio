@@ -57,6 +57,38 @@ export const MEGA_MENU_VARIANTS: readonly DdlVariant[] = [
     label: 'V7d — uniform card grid (Raycast / Vercel cards)',
     note: 'Every item is a uniform icon + title + one-liner card, grouped under section labels. The most visual and premium — also the heaviest, and it needs confident copy in every card.',
   },
+  {
+    id: 'v8a',
+    label: 'V8a — working disclosure · type-led columns',
+    note: 'V7a shape as a real disclosure: native button + aria-expanded, Esc with focus return, click-outside, grouped links under real headings — deliberately NOT role=menu. Most in step with the type-led hero.',
+  },
+  {
+    id: 'v8b',
+    label: 'V8b — working disclosure · featured product rail',
+    note: 'The first shape tried in production (product rail on the left). Superseded by V9b, which reads richer — icon columns + a What’s-New rail — for the same content.',
+  },
+  {
+    id: 'v8c',
+    label: 'V8c — working disclosure · stacked narrow',
+    note: 'Same disclosure contract, V7c shape: one narrow column, groups stacked with dividers. Simplest and most device-portable — the same panel reads on desktop and mobile.',
+  },
+  {
+    id: 'v9a',
+    label: 'V9a — icon-forward · featured promo panel',
+    note: 'Dribbble SaaS register (BuzzBiz): framed icons on every item, two labelled columns, and a filled accent promo panel for Document Engine — heading, blurb, decorative tile, CTA pill. Same disclosure contract as V8. The most marketing-forward of the set.',
+  },
+  {
+    id: 'v9b',
+    label: 'V9b — icon-forward · Products column + titled columns',
+    selected: true,
+    decision:
+      'Shipped to the production landing-mega-menu. A featured “Products” column leads (preview screenshot of the product that cross-fades to the icon tile on hover + blurb + link), then divided icon columns for Explore and Documents (framed icon + self-explanatory label, no hints or badges). Disclosure contract (not role=menu); opens on hover AND click; the panel is centred on the viewport. Below laptop the titled columns stack (Documents drops under Explore). The Products column scales with count — one → featured card, two+ → a stacked list.',
+  },
+  {
+    id: 'v9c',
+    label: 'V9c — icon-forward · overview tile + two-col grid',
+    note: 'Dribbble Nimbus register: an “All of it” overview link over a CSS-only decorative tile on the left, then every item as a framed-icon row in a two-column grid. Flattest and most scannable — no filled promo, no badges.',
+  },
 ];
 
 export const ITEMS: readonly MoreItem[] = [

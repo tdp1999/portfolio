@@ -12,21 +12,28 @@ import {
 import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
-import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem } from './mega-menu.types';
+import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem, MegaMenuSection } from './mega-menu.types';
 import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './mega-menu.constants';
 import { nextMegaMenuId } from './mega-menu.util';
 
 /**
- * Mega-menu dropdown — "featured hero + compact rows" layout (V5 from DDL).
+ * Mega-menu dropdown — icon-forward "Products column + titled columns" layout
+ * (V9b from DDL).
  *
- * One item may be marked `featured` — it renders as a hero card at the top with
- * a big icon, label, description and an optional CTA. All other items render as
- * single-line compact rows with a label on the left and a mono `hint` on the right.
+ * Products lead in the first column: one product → a featured card (preview tile
+ * that cross-fades to the icon tile on hover + title + description + link); two or
+ * more → a stacked "Products" list. Everything else groups into titled columns (by
+ * `section`) with a framed icon and an optional mono sub-label. With no products the
+ * panel is the columns alone.
+ *
+ * It is a disclosure (button + `aria-expanded`/`aria-controls` toggling a region
+ * of plain links) — deliberately NOT `role="menu"`.
  *
  * Opens on hover (pointer-fine devices, with small open/close delays) and on click.
+ * With `align="screen"` the panel is centred on the viewport (its horizontal offset
+ * is measured from the trigger on open); other aligns anchor it to the trigger.
  * Closes on outside-click, Escape, mouse-leave, or item activation. A transparent
- * `::before` bridge on the panel fills the visual gap between trigger and panel so
- * hover doesn't break when the mouse moves across.
+ * `::before` bridge fills the gap between trigger and panel so hover doesn't break.
  */
 @Component({
   selector: 'landing-mega-menu',
@@ -39,6 +46,7 @@ import { nextMegaMenuId } from './mega-menu.util';
     '(mouseleave)': 'onMouseLeave()',
     '(document:click)': 'onDocumentClick($event)',
     '(document:keydown.escape)': 'close()',
+    '(window:resize)': 'onViewportChange()',
   },
   template: `
     <button
@@ -47,7 +55,6 @@ import { nextMegaMenuId } from './mega-menu.util';
       [class.landing-mega-menu__trigger--open]="open()"
       [attr.aria-expanded]="open()"
       [attr.aria-controls]="panelId()"
-      aria-haspopup="menu"
       (click)="toggle($event)"
     >
       <span class="landing-mega-menu__trigger-label">{{ triggerLabel() }}</span>
@@ -55,55 +62,69 @@ import { nextMegaMenuId } from './mega-menu.util';
     </button>
 
     @if (open()) {
-      <div
+      <nav
         class="landing-mega-menu__panel"
         [class.landing-mega-menu__panel--align-left]="align() === 'left'"
         [class.landing-mega-menu__panel--align-center]="align() === 'center'"
         [class.landing-mega-menu__panel--align-right]="align() === 'right'"
+        [class.landing-mega-menu__panel--align-screen]="align() === 'screen'"
+        [class.landing-mega-menu__panel--rail]="hasRail()"
+        [style.--mm-host-x]="hostLeft() + 'px'"
+        [style.--mm-cols]="columns()"
         [id]="panelId()"
-        role="menu"
         [attr.aria-label]="triggerLabel()"
       >
-        @if (featuredItem(); as f) {
-          <ng-container [ngTemplateOutlet]="featuredTpl" [ngTemplateOutletContext]="{ $implicit: f }" />
-        }
-        @if (compactItems().length > 0) {
-          <ul class="landing-mega-menu__list" role="presentation">
-            @for (item of compactItems(); track item.label) {
-              <li class="landing-mega-menu__item" role="none">
-                <ng-container [ngTemplateOutlet]="compactTpl" [ngTemplateOutletContext]="{ $implicit: item }" />
-              </li>
+        <!-- ─── Products column (first) ───────────────────────────────── -->
+        @if (hasRail()) {
+          <aside class="landing-mega-menu__rail">
+            <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">Products</h3>
+            @if (soloProduct(); as p) {
+              <ng-container [ngTemplateOutlet]="featureTpl" [ngTemplateOutletContext]="{ $implicit: p, solo: true }" />
+            } @else {
+              <ul class="landing-mega-menu__rail-list">
+                @for (p of products(); track p.label) {
+                  <li class="landing-mega-menu__item">
+                    <ng-container
+                      [ngTemplateOutlet]="featureTpl"
+                      [ngTemplateOutletContext]="{ $implicit: p, solo: false }"
+                    />
+                  </li>
+                }
+              </ul>
             }
-          </ul>
+          </aside>
         }
-      </div>
+
+        <!-- ─── Titled icon columns (Explore, Documents, …) ───────────── -->
+        <div class="landing-mega-menu__sections">
+          @for (col of sections(); track col.title ?? $index) {
+            <div class="landing-mega-menu__col">
+              @if (col.title) {
+                <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">{{ col.title }}</h3>
+              }
+              <ul class="landing-mega-menu__list">
+                @for (item of col.items; track item.label) {
+                  <li class="landing-mega-menu__item">
+                    <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: item }" />
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </nav>
     }
 
-    <!-- ─── Featured hero card template ────────────────────────────────── -->
-    <ng-template #featuredTpl let-item>
+    <!-- ─── Icon-row template (columns) ────────────────────────────────── -->
+    <ng-template #rowTpl let-item>
       @if (resolveKind(item) === 'internal') {
         <a
           [routerLink]="item.href"
           [fragment]="item.fragment ?? undefined"
-          class="landing-mega-menu__hero"
-          role="menuitem"
+          class="landing-mega-menu__row"
           (click)="onItemSelect()"
         >
-          @if (item.iconName) {
-            <span class="landing-mega-menu__hero-icon" aria-hidden="true">
-              <landing-icon [name]="item.iconName" [size]="22" />
-            </span>
-          }
-          <span class="landing-mega-menu__hero-text">
-            <span class="landing-mega-menu__hero-title">{{ item.label }}</span>
-            @if (item.description) {
-              <span class="landing-mega-menu__hero-desc">{{ item.description }}</span>
-            }
-          </span>
-          <span class="landing-mega-menu__hero-cta">
-            {{ item.cta ?? 'Open' }}
-            <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
-          </span>
+          <ng-container [ngTemplateOutlet]="rowBody" [ngTemplateOutletContext]="{ $implicit: item }" />
         </a>
       } @else {
         <a
@@ -111,43 +132,44 @@ import { nextMegaMenuId } from './mega-menu.util';
           [attr.target]="resolveKind(item) === 'external' ? '_blank' : null"
           [attr.rel]="resolveKind(item) === 'external' ? 'noopener noreferrer' : null"
           [attr.download]="resolveKind(item) === 'download' ? '' : null"
-          class="landing-mega-menu__hero"
-          role="menuitem"
+          class="landing-mega-menu__row"
           (click)="onItemSelect()"
         >
-          @if (item.iconName) {
-            <span class="landing-mega-menu__hero-icon" aria-hidden="true">
-              <landing-icon [name]="item.iconName" [size]="22" />
-            </span>
-          }
-          <span class="landing-mega-menu__hero-text">
-            <span class="landing-mega-menu__hero-title">{{ item.label }}</span>
-            @if (item.description) {
-              <span class="landing-mega-menu__hero-desc">{{ item.description }}</span>
-            }
-          </span>
-          <span class="landing-mega-menu__hero-cta">
-            {{ item.cta ?? 'Open' }}
-            <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
-          </span>
+          <ng-container [ngTemplateOutlet]="rowBody" [ngTemplateOutletContext]="{ $implicit: item }" />
         </a>
       }
     </ng-template>
 
-    <!-- ─── Compact row template ───────────────────────────────────────── -->
-    <ng-template #compactTpl let-item>
+    <ng-template #rowBody let-item>
+      @if (item.iconName) {
+        <span class="landing-mega-menu__row-icon" aria-hidden="true">
+          <landing-icon [name]="item.iconName" [size]="18" />
+        </span>
+      }
+      <span class="landing-mega-menu__row-text">
+        <span class="landing-mega-menu__row-titlerow">
+          <span class="landing-mega-menu__row-label">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="landing-mega-menu__badge">{{ item.badge }}</span>
+          }
+        </span>
+        @if (item.hint) {
+          <span class="landing-mega-menu__row-hint">{{ item.hint }}</span>
+        }
+      </span>
+    </ng-template>
+
+    <!-- ─── What's New card template (rail) ────────────────────────────── -->
+    <ng-template #featureTpl let-item let-solo="solo">
       @if (resolveKind(item) === 'internal') {
         <a
           [routerLink]="item.href"
           [fragment]="item.fragment ?? undefined"
-          class="landing-mega-menu__row"
-          role="menuitem"
+          class="landing-mega-menu__feature"
+          [class.landing-mega-menu__feature--solo]="solo"
           (click)="onItemSelect()"
         >
-          <span class="landing-mega-menu__row-label">{{ item.label }}</span>
-          @if (item.hint) {
-            <span class="landing-mega-menu__row-hint">{{ item.hint }}</span>
-          }
+          <ng-container [ngTemplateOutlet]="featureBody" [ngTemplateOutletContext]="{ $implicit: item, solo }" />
         </a>
       } @else {
         <a
@@ -155,15 +177,48 @@ import { nextMegaMenuId } from './mega-menu.util';
           [attr.target]="resolveKind(item) === 'external' ? '_blank' : null"
           [attr.rel]="resolveKind(item) === 'external' ? 'noopener noreferrer' : null"
           [attr.download]="resolveKind(item) === 'download' ? '' : null"
-          class="landing-mega-menu__row"
-          role="menuitem"
+          class="landing-mega-menu__feature"
+          [class.landing-mega-menu__feature--solo]="solo"
           (click)="onItemSelect()"
         >
-          <span class="landing-mega-menu__row-label">{{ item.label }}</span>
-          @if (item.hint) {
-            <span class="landing-mega-menu__row-hint">{{ item.hint }}</span>
-          }
+          <ng-container [ngTemplateOutlet]="featureBody" [ngTemplateOutletContext]="{ $implicit: item, solo }" />
         </a>
+      }
+    </ng-template>
+
+    <ng-template #featureBody let-item let-solo="solo">
+      <span class="landing-mega-menu__feature-tile" aria-hidden="true">
+        @if (item.iconName) {
+          <landing-icon [name]="item.iconName" [size]="solo ? 28 : 18" />
+        }
+        @if (solo && item.image) {
+          <img
+            class="landing-mega-menu__feature-shot landing-mega-menu__feature-shot--light"
+            [src]="item.image"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        }
+        @if (solo && item.imageDark) {
+          <img
+            class="landing-mega-menu__feature-shot landing-mega-menu__feature-shot--dark"
+            [src]="item.imageDark"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        }
+      </span>
+      <span class="landing-mega-menu__feature-title">{{ item.label }}</span>
+      @if (item.description) {
+        <span class="landing-mega-menu__feature-desc">{{ item.description }}</span>
+      }
+      @if (solo) {
+        <span class="landing-mega-menu__feature-link">
+          {{ item.cta ?? 'Explore' }}
+          <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+        </span>
       }
     </ng-template>
   `,
@@ -176,15 +231,37 @@ export class MegaMenu {
 
   readonly triggerLabel = input.required<string>();
   readonly items = input.required<readonly MegaMenuItem[]>();
+  /** Column count for the titled-column area (the product rail is separate). */
   readonly columns = input<MegaMenuColumns>(1);
   readonly align = input<MegaMenuAlign>('right');
   /** Stable id used for `aria-controls`. Auto-generated if omitted. */
   readonly panelId = input<string>(`landing-mega-menu-${nextMegaMenuId()}`);
 
   protected readonly open = signal(false);
+  /** Trigger's viewport-left, measured on open — feeds `align="screen"` centring. */
+  protected readonly hostLeft = signal(0);
 
-  protected readonly featuredItem = computed<MegaMenuItem | null>(() => this.items().find((i) => i.featured) ?? null);
-  protected readonly compactItems = computed<readonly MegaMenuItem[]>(() => this.items().filter((i) => !i.featured));
+  /** Products feed the What's New rail; everything else groups into columns. */
+  protected readonly products = computed<readonly MegaMenuItem[]>(() => this.items().filter((i) => i.product));
+  protected readonly hasRail = computed<boolean>(() => this.products().length > 0);
+  /** The sole product, when there is exactly one — rendered as the featured card. */
+  protected readonly soloProduct = computed<MegaMenuItem | null>(() => {
+    const p = this.products();
+    return p.length === 1 ? p[0] : null;
+  });
+
+  /** Non-product items grouped into titled columns, in first-seen order. */
+  protected readonly sections = computed<readonly MegaMenuSection[]>(() => {
+    const groups = new Map<string | null, MegaMenuItem[]>();
+    for (const item of this.items()) {
+      if (item.product) continue;
+      const key = item.section ?? null;
+      const bucket = groups.get(key);
+      if (bucket) bucket.push(item);
+      else groups.set(key, [item]);
+    }
+    return [...groups.entries()].map(([title, items]) => ({ title, items }));
+  });
 
   private openTimer: ReturnType<typeof setTimeout> | null = null;
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -213,6 +290,7 @@ export class MegaMenu {
     this.clearTimers();
     if (!this.open()) {
       // Closed → open as click-controlled.
+      this.measureHost();
       this.openedBy = 'click';
       this.open.set(true);
       return;
@@ -254,6 +332,7 @@ export class MegaMenu {
     if (this.open() || this.openTimer !== null) return;
     this.openTimer = setTimeout(() => {
       this.openTimer = null;
+      this.measureHost();
       this.openedBy = 'hover';
       this.hoverOpenedAt = Date.now();
       this.open.set(true);
@@ -271,6 +350,16 @@ export class MegaMenu {
       this.closeTimer = null;
       this.doClose();
     }, CLOSE_DELAY_MS);
+  }
+
+  /** Keep viewport-centred alignment correct if the window resizes while open. */
+  protected onViewportChange(): void {
+    if (this.open()) this.measureHost();
+  }
+
+  private measureHost(): void {
+    if (!this.isBrowser) return;
+    this.hostLeft.set(Math.round(this.elementRef.nativeElement.getBoundingClientRect().left));
   }
 
   private doClose(): void {

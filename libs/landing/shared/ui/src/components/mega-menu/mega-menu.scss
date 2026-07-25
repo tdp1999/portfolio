@@ -1,4 +1,5 @@
 @use 'base/prefers' as prefers;
+@use 'base/breakpoints' as bp;
 
 :host {
   position: relative;
@@ -94,91 +95,76 @@
       left: auto;
       transform-origin: top right;
     }
+
+    // Viewport-centred: the panel is offset from the trigger so its centre lands
+    // on 50vw (the trigger's viewport-left is measured into --mm-host-x on open).
+    &--align-screen {
+      left: calc(50vw - var(--mm-host-x, 0px));
+      right: auto;
+      transform: translateX(-50%);
+      transform-origin: top center;
+      animation: mega-menu-pop-center 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    // Rail variant (V9b) — a featured "Products" column first, then the titled
+    // icon columns (Explore, Documents). Sizes to content and caps at the viewport.
+    &--rail {
+      width: max-content;
+      max-width: min(96vw, 1040px);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 320px auto;
+      gap: 20px 32px;
+      align-items: start;
+    }
   }
 
-  // ─── Featured hero card ──────────────────────────────────────────
-  &__hero {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px;
-    border-radius: 12px;
-    background-color: color-mix(in srgb, var(--landing-accent) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--landing-accent) 25%, var(--landing-border));
-    text-decoration: none;
-    color: inherit;
-    transition:
-      background-color 180ms ease,
-      border-color 180ms ease;
+  // Divider between the Products column and the titled columns. Scoped to the rail
+  // variant so the plain (product-less) panel keeps its columns undivided.
+  &__panel--rail &__sections {
+    padding-left: 32px;
+    border-left: 1px solid var(--landing-border);
   }
 
-  &__hero:hover,
-  &__hero:focus-visible {
-    background-color: color-mix(in srgb, var(--landing-accent) 16%, transparent);
-    border-color: color-mix(in srgb, var(--landing-accent) 40%, var(--landing-border));
-    outline: none;
+  // Mono-caps section label — shared by column titles and the rail.
+  &__eyebrow {
+    margin: 0;
+    padding: 4px 10px;
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+    color: var(--landing-text-500);
   }
 
-  &__hero-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 10px;
-    background-color: var(--landing-ink-0);
-    border: 1px solid color-mix(in srgb, var(--landing-accent) 35%, var(--landing-border));
+  &__eyebrow--accent {
     color: var(--landing-accent);
   }
 
-  &__hero-text {
+  // ─── Titled icon columns ─────────────────────────────────────────
+  // Content-sized columns (no 1fr stretch) so rows stay tight and there is no
+  // stranded empty space when a column holds a single item.
+  &__sections {
+    display: grid;
+    grid-template-columns: repeat(var(--mm-cols, 1), minmax(208px, auto));
+    gap: 8px 40px;
+    align-content: start;
+    min-width: 0;
+  }
+
+  &__col {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    flex: 1;
     min-width: 0;
-    text-align: left;
   }
 
-  &__hero-title {
-    font-family: var(--landing-font-sans);
-    font-size: var(--landing-body-md);
-    font-weight: 600;
-    color: var(--landing-text-300);
-    text-align: left;
-  }
-
-  &__hero-desc {
-    font-family: var(--landing-font-sans);
-    font-size: var(--landing-body-sm);
-    line-height: 1.35;
-    color: var(--landing-text-500);
-    text-align: left;
-  }
-
-  &__hero-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 9999px;
-    background-color: var(--landing-accent);
-    color: var(--landing-ink-0);
-    font-family: var(--landing-font-sans);
-    font-size: var(--landing-body-sm);
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-
-  // ─── Compact row list ────────────────────────────────────────────
   &__list {
     list-style: none;
     margin: 0;
-    padding: 4px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
   }
 
   &__item {
@@ -187,11 +173,11 @@
 
   &__row {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 10px;
-    border-radius: 8px;
+    align-items: center;
+    gap: 14px;
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 12px;
     text-decoration: none;
     color: inherit;
     transition: background-color 160ms ease;
@@ -208,6 +194,41 @@
     color: var(--landing-accent);
   }
 
+  &__row:hover &__row-icon,
+  &__row:focus-visible &__row-icon {
+    color: var(--landing-accent);
+    border-color: color-mix(in srgb, var(--landing-accent) 35%, var(--landing-border));
+  }
+
+  &__row-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid var(--landing-border);
+    background-color: var(--landing-ink-0);
+    color: var(--landing-text-400);
+    transition:
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  &__row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__row-titlerow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   &__row-label {
     font-family: var(--landing-font-sans);
     font-size: var(--landing-body-md);
@@ -222,7 +243,177 @@
     font-size: var(--landing-mono-sm);
     letter-spacing: var(--landing-tracking-mono);
     color: var(--landing-text-500);
-    text-align: right;
+    text-align: left;
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 9999px; /* scale-ok: fully-rounded pill, not a grid value */
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    letter-spacing: var(--landing-tracking-mono);
+    line-height: 1.4;
+    color: var(--landing-accent);
+    background-color: color-mix(in srgb, var(--landing-accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--landing-accent) 25%, var(--landing-border));
+  }
+
+  // ─── Products column (first) ─────────────────────────────────────
+  &__rail {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  &__rail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__feature {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 160ms ease;
+  }
+
+  &__feature:hover,
+  &__feature:focus-visible {
+    background-color: color-mix(in srgb, var(--landing-text-500) 6%, transparent);
+    outline: none;
+  }
+
+  &__feature:hover &__feature-title,
+  &__feature:focus-visible &__feature-title {
+    color: var(--landing-accent);
+  }
+
+  // Preview tile — an accent-gradient block with the product mark beneath, and (on
+  // the solo card) a screenshot overlay that cross-fades out on hover. Compact
+  // (multi-product) default is a 40px square; the solo card gets a full banner tile.
+  &__feature-tile {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    color: var(--landing-accent);
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--landing-accent) 18%, transparent),
+      color-mix(in srgb, var(--landing-accent) 5%, transparent)
+    );
+    border: 1px solid color-mix(in srgb, var(--landing-accent) 18%, var(--landing-border));
+  }
+
+  &__feature--solo &__feature-tile {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    aspect-ratio: 960 / 426; // matches the source screenshot — no crop
+  }
+
+  // Screenshot overlay on the solo tile. It sits over the gradient icon tile; on
+  // hover it thins to a light mist (opacity ~0.3) so the icon tile reads through at
+  // ~70% — a soft veil, not a hard swap.
+  &__feature-shot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left top;
+    border-radius: inherit;
+    opacity: 1;
+    transition: opacity 220ms ease;
+  }
+
+  &__feature:hover &__feature-shot,
+  &__feature:focus-visible &__feature-shot {
+    opacity: 0.3;
+  }
+
+  // Theme-matched screenshot — the app sets `.dark` on <html>. Light asset shows by
+  // default; the dark asset takes over under `.dark`.
+  &__feature-shot--dark {
+    display: none;
+  }
+
+  :host-context(html.dark) &__feature-shot--light {
+    display: none;
+  }
+
+  :host-context(html.dark) &__feature-shot--dark {
+    display: block;
+  }
+
+  &__feature-title {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-md);
+    font-weight: 600;
+    color: var(--landing-text-300);
+    text-align: left;
+    transition: color 160ms ease;
+  }
+
+  &__feature-desc {
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    line-height: 1.4;
+    color: var(--landing-text-500);
+    text-align: left;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  &__feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-family: var(--landing-font-sans);
+    font-size: var(--landing-body-sm);
+    font-weight: 500;
+    color: var(--landing-accent);
+  }
+
+  // The generous desktop sizing would exceed a tablet viewport (where the inline
+  // nav still shows the menu — it is hidden only below `tablet`), so below LAPTOP
+  // (i.e. across the whole tablet band): pull the tracks/gaps in, narrow the Products
+  // column, and STACK the titled columns (Documents drops under Explore).
+  @include bp.respond-down('laptop') {
+    &__panel--rail {
+      max-width: 96vw;
+      padding: 16px;
+      grid-template-columns: 240px auto;
+      gap: 16px 24px;
+    }
+
+    &__panel--rail &__sections {
+      padding-left: 24px;
+    }
+
+    &__sections {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
   }
 }
 
@@ -260,13 +451,15 @@
     transition: none !important;
   }
 }
-.landing-mega-menu__hero {
+.landing-mega-menu__row,
+.landing-mega-menu__row-icon {
   @include prefers.reduce-motion {
     animation: none !important;
     transition: none !important;
   }
 }
-.landing-mega-menu__row {
+.landing-mega-menu__feature,
+.landing-mega-menu__feature-shot {
   @include prefers.reduce-motion {
     animation: none !important;
     transition: none !important;

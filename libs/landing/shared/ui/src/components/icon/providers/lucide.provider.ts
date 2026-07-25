@@ -48,6 +48,12 @@ import {
   LucideIconData,
   Link,
   Package,
+  FilePen,
+  PenLine,
+  Wrench,
+  Layers,
+  Palette,
+  FileDown,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
 
@@ -101,6 +107,12 @@ const ICON_MAP: Record<string, LucideIconData> = {
   'file-x': FileX,
   link: Link,
   package: Package,
+  'file-pen': FilePen,
+  'pen-line': PenLine,
+  wrench: Wrench,
+  layers: Layers,
+  palette: Palette,
+  'file-down': FileDown,
 };
 
 export class LucideIconProvider implements IconProvider {

@@ -1,2 +1,2 @@
 export { MegaMenu } from './mega-menu';
-export type { MegaMenuItem, MegaMenuAlign, MegaMenuColumns } from './mega-menu.types';
+export type { MegaMenuItem, MegaMenuSection, MegaMenuAlign, MegaMenuColumns } from './mega-menu.types';

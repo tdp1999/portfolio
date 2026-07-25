@@ -4,14 +4,18 @@
     <strong>title is center-aligned while description is left-aligned</strong> (CSS inheritance leak),
     <strong>the icon-frame box adds visual weight</strong> without earning it, and
     <strong>5 items in a 2-col grid leaves the Resume cell stranded</strong> next to empty space. V1–V6 solved the flat
-    panel; <strong>V7 (below, the current leading direction)</strong> reframes it into titled sections once the site
-    gained a Product and downloadable Documents. All rendered as always-open panels for side-by-side comparison.
+    panel; <strong>V7 (below)</strong> reframes it into titled sections once the site gained a Product and downloadable
+    Documents. V1–V7d render as always-open panels for side-by-side comparison;
+    <strong>V8 (a/b/c) renders the three strongest type-led shapes as real working disclosures</strong> — the shape
+    studies stop short of the interaction, V8 doesn't. <strong>V9 (a/b/c) adds an icon-forward Dribbble family</strong>
+    — the same disclosure contract, but framed icons on every row and a featured / promo element per shape, still in the
+    portfolio's own tokens.
   </p>
 
   <landing-ddl-decision-record
     [variants]="variants"
     [summary]="
-      'The IA changed: the site now has a Product (Document Engine) and downloadable Documents (CV), so the flat &quot;More&quot; menu (V1–V6) is superseded by the V7 sectioned family (Product / Explore / Documents). Four V7 directions are on the board — V7a (columned, type-led), V7b (featured product rail), V7c (stacked, narrow), V7d (card grid) — none picked yet. V1–V6 stay below as the flat-menu history. Open the in-header context check to judge proportions in situ before picking.'
+      'The IA changed: the site now has a Product (Document Engine) and downloadable Documents (CV), so the flat &quot;More&quot; menu (V1–V6) is superseded by the V7 sectioned family (Product / Explore / Documents). Four V7 directions are on the board — V7a (columned, type-led), V7b (featured product rail), V7c (stacked, narrow), V7d (card grid). V8 (a/b/c) then renders the three strongest of those shapes as real working disclosures (button + aria-expanded, Esc, click-outside, grouped links — not role=menu) so you can operate each and pick. V9 (a/b/c) offers an icon-forward alternative family from three Dribbble references — framed icons on every row plus a featured promo / What’s-New / overview-tile element — under the same disclosure contract and the portfolio’s own colour, type and spacing tokens. V1–V6 stay below as the flat-menu history. Open the in-header context check to judge proportions in situ before picking.'
     "
   />
 
@@ -85,6 +89,529 @@
       <strong>titled sections</strong>. Four directions below, all rendered as always-open panels with the same three
       groups so you can compare shape, not content.
     </p>
+  </landing-ddl-section>
+
+  <!-- ═══ Interaction & a11y contract ═══════════════════════════════ -->
+  <landing-ddl-section
+    anchor="a11y-contract"
+    heading="Interaction & a11y contract — the disclosure the shape studies skip"
+  >
+    <p class="mm-block__intro">
+      Every panel on this page (V1–V7d) renders <strong>always-open</strong> so shapes compare side by side. The real
+      menu is a <strong>disclosure</strong>: a button that shows/hides a region of links. The survey is unanimous on one
+      point — a nav dropdown is a disclosure, <strong>never <code>role="menu"</code></strong> (that role makes screen
+      readers swallow Tab and expect the arrow-key nav meant for app menus like Word).
+    </p>
+
+    <table class="mm-matrix">
+      <thead>
+        <tr>
+          <th scope="col">Aspect</th>
+          <th scope="col">Contract</th>
+          <th scope="col">Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Pattern</th>
+          <td>Disclosure widget — a button toggles a region of plain links. Not <code>role="menu"</code>.</td>
+          <td>WAI-ARIA APG · Roselli</td>
+        </tr>
+        <tr>
+          <th scope="row">Trigger</th>
+          <td>
+            Native <code>&lt;button&gt;</code> + <code>aria-expanded</code> + <code>aria-controls</code> → panel id.
+          </td>
+          <td>WAI-ARIA APG</td>
+        </tr>
+        <tr>
+          <th scope="row">Panel</th>
+          <td>A <code>&lt;nav&gt;</code> / region with grouped links under real headings.</td>
+          <td>Roselli · NN/g</td>
+        </tr>
+        <tr>
+          <th scope="row">Keyboard</th>
+          <td>
+            Enter/Space toggles; Esc closes + returns focus to the button; Tab moves through the links; click-outside
+            closes.
+          </td>
+          <td>APG + disclosure-nav</td>
+        </tr>
+        <tr>
+          <th scope="row">Open model</th>
+          <td>Click-to-open is primary; hover is optional with a ~0.5s intent delay (pointer-fine only).</td>
+          <td>NN/g</td>
+        </tr>
+        <tr>
+          <th scope="row">Dimensions</th>
+          <td>Panel ≤ 640px; rows ≥ 44px touch target; every fixed value on the 4px grid (prefer 8-steps).</td>
+          <td>WCAG 2.5.8 · project grid</td>
+        </tr>
+        <tr>
+          <th scope="row">Motion</th>
+          <td>Accent / open transitions gated under <code>prefers-reduced-motion</code>.</td>
+          <td>project taste</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="mm-block__intro">
+      <strong>Shipped in production:</strong> the <code>landing-mega-menu</code> implements exactly this contract —
+      button + <code>aria-expanded</code>/<code>aria-controls</code>, outside-click, Esc, SSR-safe, opens on hover
+      <em>and</em> click, panel centred on the viewport — as a plain region of grouped links (the old
+      <code>role="menu"</code> / <code>role="menuitem"</code> anti-pattern is gone). It ships the
+      <strong>V9b icon-forward shape</strong>: a featured <strong>Products</strong> column first (a product-screenshot
+      tile that thins to a mist over the editor icon on hover, in a theme-matched dark/light asset), then the
+      <strong>Explore</strong> and <strong>Documents</strong> titled icon columns — self-explanatory labels, no
+      sub-hints or badges. The V9b showcase below renders <em>the real component</em>, so it can never drift from what
+      ships. The <strong>layout &amp; responsive rules</strong> are spelled out next; the V8 / V9 studies further down
+      stay as the shape comparison that led here.
+    </p>
+  </landing-ddl-section>
+
+  <!-- ═══ Layout & responsive rules (the shipped contract) ══════════ -->
+  <landing-ddl-section anchor="layout-rules" heading="Layout & responsive rules — the shipped V9b contract">
+    <p class="mm-block__intro">
+      The interaction contract above is device-agnostic; these are the <strong>layout</strong> rules the shipped panel
+      follows. The live V9b demo above <em>is</em> the real component, so it obeys every row here — resize the window to
+      watch the stack ↔ 2-col switch.
+    </p>
+
+    <table class="mm-matrix">
+      <thead>
+        <tr>
+          <th scope="col">Rule</th>
+          <th scope="col">Behaviour</th>
+          <th scope="col">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Products column first</th>
+          <td>The featured <strong>Products</strong> column leads (leftmost); the titled columns follow.</td>
+          <td>The product (Document Engine) is the destination the menu exists to surface — it earns first read.</td>
+        </tr>
+        <tr>
+          <th scope="row">One product → featured card</th>
+          <td>Screenshot tile + title + description + CTA link ("Explore the engine →").</td>
+          <td>A single flagship deserves a full preview, not a cramped row.</td>
+        </tr>
+        <tr>
+          <th scope="row">Two+ products → stacked list</th>
+          <td>The column auto-switches to a compact "Products" list (tile + title per row); no caller change.</td>
+          <td>Driven by the <code>product: true</code> count — the layout scales as more products ship.</td>
+        </tr>
+        <tr>
+          <th scope="row">Titled columns = icon rows</th>
+          <td>
+            Explore / Documents are framed-icon + label rows. <strong>No sub-hints, no badges</strong> by default.
+          </td>
+          <td>The labels are self-explanatory; hints and badges are visual noise unless explicitly asked for.</td>
+        </tr>
+        <tr>
+          <th scope="row">2-col at laptop+</th>
+          <td>≥ 1024px the titled columns sit side by side; full sizing (wider tracks, 40px icon frames).</td>
+          <td>Room to breathe where the viewport affords it.</td>
+        </tr>
+        <tr>
+          <th scope="row">Stack at tablet</th>
+          <td>
+            768–1023px: the titled columns stack (<strong>Documents under Explore</strong>); the Products column narrows
+            and gaps pull in.
+          </td>
+          <td>
+            The inline nav still shows the menu down to 768px — stacking keeps it clear of the viewport (no overflow).
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Below tablet → sheet</th>
+          <td>
+            &lt; 768px the menu is hidden; the hamburger sheet takes over with the <em>same</em> Products / Explore /
+            Documents groups.
+          </td>
+          <td>One IA, two presentations — the mobile sheet mirrors the desktop grouping.</td>
+        </tr>
+        <tr>
+          <th scope="row">Screenshot tile + hover mist</th>
+          <td>
+            The product tile is a real screenshot; on hover it thins to a ~70% mist revealing the editor icon.
+            Theme-matched dark/light asset (swapped under <code>.dark</code>).
+          </td>
+          <td>Shows the product working, then hints the mark — no hard swap; each theme gets a shot that blends.</td>
+        </tr>
+        <tr>
+          <th scope="row">Viewport-centred + hover/click</th>
+          <td>
+            <code>align="screen"</code> centres the panel on the viewport (measured from the trigger on open); opens on
+            hover <em>and</em> click.
+          </td>
+          <td>A wide panel reads best centred; hover + click matches the sibling nav items.</td>
+        </tr>
+      </tbody>
+    </table>
+  </landing-ddl-section>
+
+  <!-- ═══ V8 · working disclosures (type-led shapes) ════════════════ -->
+  <landing-ddl-section anchor="v8-disclosure" heading="V8 — working disclosure · type-led shapes (pick a shape)">
+    <p class="mm-block__intro">
+      The interaction + a11y contract above is settled and <strong>identical for all three</strong> — the open question
+      is still <strong>shape</strong>. So here are the three strongest type-led shapes as
+      <strong>real working disclosures</strong>: click <strong>More</strong>, Tab through, press
+      <strong>Esc</strong> (focus returns to the button), or click outside. Only one opens at a time across the whole
+      page. (Prototype links are inert; production uses <code>routerLink</code> / <code>landing-link</code> kinds.)
+    </p>
+
+    <div class="mm-disc-set" #v8Root>
+      <!-- V8a · type-led columns (V7a shape) -->
+      <div class="mm-disc-option">
+        <p class="mm-disc-option__label">
+          V8a · type-led columns — <strong>{{ openMenu() === 'v8a' ? 'open' : 'closed' }}</strong>
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo" (keydown.escape)="onMenuClose('v8a', v8TriggerA)">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <button
+                #v8TriggerA
+                type="button"
+                class="mm-disc-trigger"
+                [class.mm-disc-trigger--open]="openMenu() === 'v8a'"
+                [attr.aria-expanded]="openMenu() === 'v8a'"
+                aria-controls="v8-panel-a"
+                (click)="onMenuToggle('v8a')"
+              >
+                More
+                <landing-icon name="chevron-down" [size]="12" class="mm-disc-trigger__chevron" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="mm-disc-anchor">
+              @if (openMenu() === 'v8a') {
+                <div class="mm-disc-pop">
+                  <nav class="v8-panel-a" id="v8-panel-a" aria-label="More">
+                    <div class="v8-cols">
+                      @for (section of sections; track section.title) {
+                        <div class="v8-col">
+                          <h3 class="v8-col__title">{{ section.title }}</h3>
+                          <ul class="mm-disc-reset-list">
+                            @for (item of section.items; track item.label) {
+                              <li>
+                                <a
+                                  class="v8-item"
+                                  [class.v8-item--product]="item.featured"
+                                  href="#"
+                                  (click)="onMenuItemClick($event, 'v8a', v8TriggerA)"
+                                >
+                                  <span class="v8-item__accent" aria-hidden="true"></span>
+                                  <span class="v8-item__title">{{ item.label }}</span>
+                                  @if (item.featured) {
+                                    <span class="v8-item__desc">{{ item.description }}</span>
+                                  } @else {
+                                    <span class="v8-item__hint">{{ item.hint }}</span>
+                                  }
+                                </a>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    </div>
+                  </nav>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V8b · featured product rail (V7b shape) -->
+      <div class="mm-disc-option">
+        <p class="mm-disc-option__label">
+          V8b · featured product rail — <strong>{{ openMenu() === 'v8b' ? 'open' : 'closed' }}</strong>
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo" (keydown.escape)="onMenuClose('v8b', v8TriggerB)">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <button
+                #v8TriggerB
+                type="button"
+                class="mm-disc-trigger"
+                [class.mm-disc-trigger--open]="openMenu() === 'v8b'"
+                [attr.aria-expanded]="openMenu() === 'v8b'"
+                aria-controls="v8-panel-b"
+                (click)="onMenuToggle('v8b')"
+              >
+                More
+                <landing-icon name="chevron-down" [size]="12" class="mm-disc-trigger__chevron" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="mm-disc-anchor">
+              @if (openMenu() === 'v8b') {
+                <div class="mm-disc-pop">
+                  <nav class="v7b-panel" id="v8-panel-b" aria-label="More">
+                    <a class="v7b-rail" href="#" (click)="onMenuItemClick($event, 'v8b', v8TriggerB)">
+                      <span class="v7b-rail__eyebrow">Product</span>
+                      <span class="v7b-rail__icon-frame">
+                        <landing-icon [name]="productItem.iconName" [size]="22" />
+                      </span>
+                      <span class="v7b-rail__title">{{ productItem.label }}</span>
+                      <span class="v7b-rail__desc">{{ productItem.description }}</span>
+                      <span class="v7b-rail__cta">
+                        Open
+                        <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+                      </span>
+                    </a>
+                    <div class="v7b-cols">
+                      @for (section of sideSections; track section.title) {
+                        <div class="v7b-col">
+                          <h3 class="v7b-col__title">{{ section.title }}</h3>
+                          <ul class="mm-disc-reset-list">
+                            @for (item of section.items; track item.label) {
+                              <li>
+                                <a class="v7b-item" href="#" (click)="onMenuItemClick($event, 'v8b', v8TriggerB)">
+                                  <span class="v7b-item__title">{{ item.label }}</span>
+                                  <span class="v7b-item__hint">{{ item.hint }}</span>
+                                </a>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    </div>
+                  </nav>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V8c · stacked narrow (V7c shape) -->
+      <div class="mm-disc-option">
+        <p class="mm-disc-option__label">
+          V8c · stacked narrow — <strong>{{ openMenu() === 'v8c' ? 'open' : 'closed' }}</strong>
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo" (keydown.escape)="onMenuClose('v8c', v8TriggerC)">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <button
+                #v8TriggerC
+                type="button"
+                class="mm-disc-trigger"
+                [class.mm-disc-trigger--open]="openMenu() === 'v8c'"
+                [attr.aria-expanded]="openMenu() === 'v8c'"
+                aria-controls="v8-panel-c"
+                (click)="onMenuToggle('v8c')"
+              >
+                More
+                <landing-icon name="chevron-down" [size]="12" class="mm-disc-trigger__chevron" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="mm-disc-anchor">
+              @if (openMenu() === 'v8c') {
+                <div class="mm-disc-pop">
+                  <nav class="v7c-panel" id="v8-panel-c" aria-label="More">
+                    @for (section of sections; track section.title) {
+                      <div class="v7c-group">
+                        <h3 class="v7c-group__title">{{ section.title }}</h3>
+                        <ul class="mm-disc-reset-list">
+                          @for (item of section.items; track item.label) {
+                            <li>
+                              <a class="v7c-item" href="#" (click)="onMenuItemClick($event, 'v8c', v8TriggerC)">
+                                <span class="v7c-item__title">{{ item.label }}</span>
+                                <span class="v7c-item__hint">{{ item.hint }}</span>
+                              </a>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                  </nav>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <!-- ═══ V9 · icon-forward Dribbble family (working disclosures) ════ -->
+  <landing-ddl-section anchor="v9-disclosure" heading="V9 — working disclosure · icon-forward family (Dribbble)">
+    <p class="mm-block__intro">
+      The icon-forward family that <strong>won</strong>. Every item carries a <strong>framed icon</strong> and each
+      shape leads with a featured element, from three Dribbble references in the portfolio's own tokens.
+      <strong>V9b shipped</strong> — its showcase below renders the <em>real</em>
+      <code>landing-mega-menu</code> (Products column + Explore / Documents), while <strong>V9a</strong> (promo panel)
+      and <strong>V9c</strong> (overview grid) stay as the rejected siblings. The interaction + a11y contract is the
+      same across all three (button + <code>aria-expanded</code>, Esc returns focus, click-outside, grouped links — not
+      <code>role="menu"</code>). One opens at a time across the page.
+    </p>
+
+    <div class="mm-disc-set" #v9Root>
+      <!-- V9a · featured promo panel (BuzzBiz) -->
+      <div class="mm-disc-option">
+        <p class="mm-disc-option__label">
+          V9a · featured promo panel — <strong>{{ openMenu() === 'v9a' ? 'open' : 'closed' }}</strong>
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo mm-disc-demo--wide" (keydown.escape)="onMenuClose('v9a', v9TriggerA)">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <button
+                #v9TriggerA
+                type="button"
+                class="mm-disc-trigger"
+                [class.mm-disc-trigger--open]="openMenu() === 'v9a'"
+                [attr.aria-expanded]="openMenu() === 'v9a'"
+                aria-controls="v9-panel-a"
+                (click)="onMenuToggle('v9a')"
+              >
+                More
+                <landing-icon name="chevron-down" [size]="12" class="mm-disc-trigger__chevron" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="mm-disc-anchor">
+              @if (openMenu() === 'v9a') {
+                <div class="mm-disc-pop">
+                  <nav class="v9a-panel" id="v9-panel-a" aria-label="More">
+                    @for (section of sideSections; track section.title) {
+                      <div class="v9-col">
+                        <h3 class="v9-col__title">{{ section.title }}</h3>
+                        <ul class="mm-disc-reset-list">
+                          @for (item of section.items; track item.label) {
+                            <li>
+                              <a class="v9-item" href="#" (click)="onMenuItemClick($event, 'v9a', v9TriggerA)">
+                                <span class="v9-item__icon" aria-hidden="true">
+                                  <landing-icon [name]="item.iconName" [size]="18" />
+                                </span>
+                                <span class="v9-item__text">
+                                  <span class="v9-item__title">{{ item.label }}</span>
+                                  <span class="v9-item__desc">{{ item.description }}</span>
+                                </span>
+                              </a>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                    <a class="v9-promo" href="#" (click)="onMenuItemClick($event, 'v9a', v9TriggerA)">
+                      <span class="v9-promo__eyebrow">{{ sections[0].title }}</span>
+                      <span class="v9-promo__tile" aria-hidden="true">
+                        <landing-icon [name]="productItem.iconName" [size]="24" />
+                      </span>
+                      <span class="v9-promo__title">{{ productItem.label }}</span>
+                      <span class="v9-promo__desc">{{ productItem.description }}</span>
+                      <span class="v9-promo__cta">
+                        Explore the engine
+                        <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+                      </span>
+                    </a>
+                  </nav>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V9b · SHIPPED — renders the real landing-mega-menu component, so this
+           demo can never drift from production. Products column first (screenshot
+           tile that thins to a mist over the editor icon on hover, theme-matched),
+           then the Explore / Documents titled icon columns. -->
+      <div class="mm-disc-option mm-disc-option--live">
+        <p class="mm-disc-option__label">
+          V9b · <strong>shipped</strong> — the live <code>landing-mega-menu</code> (hover <em>or</em> click “More”)
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo mm-disc-demo--wide mm-disc-demo--live">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <landing-mega-menu triggerLabel="More" align="center" [columns]="2" [items]="megaMenuItems" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V9c · overview tile + two-column icon grid (Nimbus) -->
+      <div class="mm-disc-option">
+        <p class="mm-disc-option__label">
+          V9c · overview tile + two-col grid — <strong>{{ openMenu() === 'v9c' ? 'open' : 'closed' }}</strong>
+        </p>
+        <div class="mm-stage">
+          <div class="mm-disc-demo mm-disc-demo--wide" (keydown.escape)="onMenuClose('v9c', v9TriggerC)">
+            <div class="mm-disc-bar">
+              <span class="mm-disc-bar__brand">tdp.</span>
+              <span class="mm-disc-bar__link">Home</span>
+              <span class="mm-disc-bar__link">Projects</span>
+              <span class="mm-disc-bar__link">Blog</span>
+              <button
+                #v9TriggerC
+                type="button"
+                class="mm-disc-trigger"
+                [class.mm-disc-trigger--open]="openMenu() === 'v9c'"
+                [attr.aria-expanded]="openMenu() === 'v9c'"
+                aria-controls="v9-panel-c"
+                (click)="onMenuToggle('v9c')"
+              >
+                More
+                <landing-icon name="chevron-down" [size]="12" class="mm-disc-trigger__chevron" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="mm-disc-anchor">
+              @if (openMenu() === 'v9c') {
+                <div class="mm-disc-pop">
+                  <nav class="v9c-panel" id="v9-panel-c" aria-label="More">
+                    <div class="v9c-aside">
+                      <a class="v9c-overview" href="#" (click)="onMenuItemClick($event, 'v9c', v9TriggerC)">
+                        All of it
+                        <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
+                      </a>
+                      <span class="v9c-tile" aria-hidden="true">
+                        <span class="v9c-tile__dot"></span>
+                        <span class="v9c-tile__dot"></span>
+                        <span class="v9c-tile__dot"></span>
+                      </span>
+                    </div>
+                    <ul class="v9c-grid mm-disc-reset-list">
+                      @for (item of allItems; track item.label) {
+                        <li>
+                          <a class="v9-item" href="#" (click)="onMenuItemClick($event, 'v9c', v9TriggerC)">
+                            <span class="v9-item__icon" aria-hidden="true">
+                              <landing-icon [name]="item.iconName" [size]="18" />
+                            </span>
+                            <span class="v9-item__text">
+                              <span class="v9-item__title">{{ item.label }}</span>
+                              <span class="v9-item__desc">{{ item.description }}</span>
+                            </span>
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </nav>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </landing-ddl-section>
 
   <landing-ddl-section anchor="v7a-columned" heading="V7a — columned, type-led (Stripe / Linear)">
@@ -534,6 +1061,59 @@
           <td>low (tall)</td>
           <td>premium · spacious</td>
           <td>Every item should feel like a destination. Needs confident copy in every card.</td>
+        </tr>
+        <tr>
+          <th scope="row">v8a · disclosure · columns</th>
+          <td>none</td>
+          <td>product only</td>
+          <td>medium</td>
+          <td>editorial · type-led</td>
+          <td>Working disclosure, V7a shape. The recommendation if the type-led voice leads.</td>
+        </tr>
+        <tr>
+          <th scope="row">v8b · disclosure · rail</th>
+          <td>on flagship</td>
+          <td>flagship + product</td>
+          <td>low (tall)</td>
+          <td>confident · product-led</td>
+          <td>Working disclosure, V7b shape. Pick when Document Engine must read as a destination.</td>
+        </tr>
+        <tr>
+          <th scope="row">v8c · disclosure · stacked</th>
+          <td>none</td>
+          <td>hints only</td>
+          <td>high</td>
+          <td>quiet · utilitarian</td>
+          <td>Working disclosure, V7c shape. The safe default — one panel reads on desktop and mobile.</td>
+        </tr>
+        <tr>
+          <th scope="row">v9a · icon · promo panel</th>
+          <td>framed, per-row</td>
+          <td>always visible</td>
+          <td>low (tall)</td>
+          <td>marketing-forward</td>
+          <td>Icon-forward disclosure. Pick when the menu should sell Document Engine with a filled promo panel.</td>
+        </tr>
+        <tr>
+          <th scope="row">v9b · icon · Products + columns ✓ shipped</th>
+          <td>framed, per-row</td>
+          <td>product only</td>
+          <td>medium</td>
+          <td>product-led</td>
+          <td>
+            The shipped shape. Products column first (screenshot tile that mists to the editor icon on hover), then
+            Explore / Documents icon columns; 2-col at laptop, stacks at tablet.
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">v9c · icon · overview grid</th>
+          <td>framed, per-row</td>
+          <td>always visible</td>
+          <td>medium</td>
+          <td>scannable · flat</td>
+          <td>
+            Icon-forward disclosure. Pick when everything should be visible at once — overview tile + two-col grid.
+          </td>
         </tr>
       </tbody>
     </table>
