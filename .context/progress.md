@@ -216,6 +216,10 @@
 
 - [ ] **Component Docs & DDL Canonical** (epic-component-docs-and-ddl) — status `open`; research/audit done 2026-06-22 (`_audit.md`), folds task 304. DDL → canonical doc site for all components (landing+console); 6 phases (foundations → DDL primitives → extractions → landing rollout → console parity → lint sweep), not yet broken down (L)
 
+### Outstanding owner actions (non-code)
+
+- [ ] **⚠️ Rotate console admin password** — the old credential is in git history (compromised; epic 395 / gitignored `.context/design/workflow/visual-feedback-creds.local.md`). Rotate on prod, then fill the new value into that creds file. Security hygiene; blocks no code.
+
 ---
 
 #### Future Sprints (to be broken down when ready)
