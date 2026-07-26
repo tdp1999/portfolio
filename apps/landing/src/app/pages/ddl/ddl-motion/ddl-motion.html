@@ -1,0 +1,68 @@
+<landing-ddl-doc-page slug="motion" [width]="'wide'">
+  <p class="mo-lead">
+    A catalogue of the <strong>{{ totalItems }}</strong> signature motions that actually ship on the landing surface,
+    grouped by what triggers them. Each captured effect loops a short clip beside its mechanism, source, and
+    reduce-motion status. This is the shipped counterpart to <a routerLink="/ddl/interactions">Interactions</a> (the
+    wishlist of what to build). Clips captured: <strong>{{ clipCount }}</strong> / {{ totalItems }}.
+  </p>
+
+  @for (group of groups; track group.anchor) {
+    <landing-ddl-section [anchor]="group.anchor" [heading]="group.trigger">
+      <p class="mo-group__desc">{{ group.description }}</p>
+
+      <ul class="mo-grid" role="list">
+        @for (item of group.items; track item.id) {
+          <li class="mo-card" [class.mo-card--pending]="!item.hasClip" [id]="item.id">
+            <div class="mo-card__stage">
+              @if (item.hasClip) {
+                <video
+                  class="mo-card__video"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="metadata"
+                  [poster]="assetBase + '/' + item.id + '.poster.png'"
+                  [attr.aria-label]="item.name + ' — looping preview'"
+                >
+                  <source [src]="assetBase + '/' + item.id + '.webm'" type="video/webm" />
+                  <source [src]="assetBase + '/' + item.id + '.mp4'" type="video/mp4" />
+                </video>
+              } @else {
+                <div class="mo-card__pending" aria-hidden="true">
+                  <span class="mo-card__pending-glyph"></span>
+                  <span class="mo-card__pending-label">clip pending</span>
+                </div>
+              }
+            </div>
+
+            <div class="mo-card__body">
+              <div class="mo-card__titlerow">
+                <h3 class="mo-card__name">{{ item.name }}</h3>
+                <div class="mo-card__badges">
+                  @if (item.reduceMotion) {
+                    <span class="mo-badge mo-badge--rm" title="Gated behind prefers-reduced-motion">reduce-motion</span>
+                  }
+                </div>
+              </div>
+
+              <p class="mo-card__mech">{{ item.mechanism }}</p>
+
+              <div class="mo-card__meta">
+                <code class="mo-card__file">{{ item.file }}</code>
+                @if (item.keyframe) {
+                  <code class="mo-card__kf">&#64;{{ item.keyframe }}</code>
+                }
+                <span class="mo-card__scope">{{ item.scope }}</span>
+              </div>
+
+              @if (item.liveHref) {
+                <a class="mo-card__live" [routerLink]="item.liveHref">See it live &#8594;</a>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    </landing-ddl-section>
+  }
+</landing-ddl-doc-page>

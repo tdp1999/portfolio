@@ -1,0 +1,191 @@
+@use 'base/prefers' as prefers;
+@use 'base/breakpoints' as bp;
+
+.mo-lead {
+  max-width: 64ch;
+  margin: 0 0 8px;
+  color: var(--landing-text-400);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+}
+
+.mo-group__desc {
+  margin: 0 0 20px;
+  color: var(--landing-text-500);
+  font-size: var(--landing-body-sm);
+}
+
+// ─── Card grid ───────────────────────────────────────────────────────────
+.mo-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include bp.respond-to('tablet') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include bp.respond-to('wide') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.mo-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--landing-border);
+  border-radius: 12px;
+  background-color: var(--landing-ink-1);
+}
+
+// ─── Video stage ─────────────────────────────────────────────────────────
+.mo-card__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 148px;
+  padding: 16px;
+  // A subtle checker-neutral surface so any clip crop reads against a stable bg.
+  background:
+    linear-gradient(var(--landing-ink-2), var(--landing-ink-2)) padding-box,
+    var(--landing-ink-2);
+  border-bottom: 1px solid var(--landing-border);
+}
+
+.mo-card__video {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  border-radius: 8px;
+  border: 1px solid var(--landing-border);
+  object-fit: contain;
+}
+
+.mo-card__pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--landing-text-500);
+}
+
+.mo-card__pending-glyph {
+  width: 0;
+  height: 0;
+  // Play-triangle placeholder for an un-captured clip.
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-left: 15px solid var(--landing-text-500);
+  opacity: 0.55;
+}
+
+.mo-card__pending-label {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+.mo-card--pending .mo-card__stage {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 10px,
+      color-mix(in srgb, var(--landing-border) 40%, transparent) 10px 11px
+    ),
+    var(--landing-ink-2);
+}
+
+// ─── Card body ───────────────────────────────────────────────────────────
+.mo-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.mo-card__titlerow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mo-card__name {
+  margin: 0;
+  color: var(--landing-text-300);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  font-weight: 600;
+}
+
+.mo-card__mech {
+  margin: 0;
+  color: var(--landing-text-500);
+  font-size: var(--landing-body-sm);
+  line-height: 1.5;
+}
+
+.mo-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 2px;
+}
+
+.mo-card__file,
+.mo-card__kf {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-400);
+}
+
+.mo-card__kf {
+  color: var(--landing-accent);
+}
+
+.mo-card__scope {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  color: var(--landing-text-500);
+}
+
+.mo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--landing-border);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  white-space: nowrap;
+}
+
+.mo-badge--rm {
+  color: var(--landing-text-500);
+}
+
+.mo-card__live {
+  align-self: flex-start;
+  margin-top: 4px;
+  color: var(--landing-accent);
+  font-size: var(--landing-body-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 160ms ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  @include prefers.reduce-motion {
+    transition: none;
+  }
+}

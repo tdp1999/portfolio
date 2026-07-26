@@ -464,6 +464,14 @@ export const DDL_REGISTRY: readonly DdlEntry[] = [
     source: 'route:/ddl/interactions',
   },
   {
+    slug: 'motion',
+    title: 'Motion catalogue',
+    group: 'patterns',
+    status: 'shipped',
+    summary: 'Shipped landing motion, by trigger.',
+    source: 'route:/ddl/motion',
+  },
+  {
     slug: 'feed-pagination',
     title: 'Pagination strategies',
     group: 'patterns',

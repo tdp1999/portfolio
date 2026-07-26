@@ -114,6 +114,10 @@ export const DDL_ROUTES: Route[] = [
     loadComponent: () => import('./ddl-interactions/ddl-interactions').then((m) => m.DdlInteractions),
   },
   {
+    path: 'motion',
+    loadComponent: () => import('./ddl-motion/ddl-motion').then((m) => m.DdlMotion),
+  },
+  {
     path: 'hero',
     loadComponent: () => import('./ddl-hero/ddl-hero').then((m) => m.DdlHero),
   },
