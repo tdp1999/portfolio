@@ -9,10 +9,7 @@ describe('csrfInterceptor', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(withInterceptors([csrfInterceptor])),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(withInterceptors([csrfInterceptor])), provideHttpClientTesting()],
     });
 
     http = TestBed.inject(HttpClient);
@@ -35,6 +32,20 @@ describe('csrfInterceptor', () => {
 
     const req = httpTesting.expectOne('/api/auth/refresh');
     expect(req.request.headers.get('X-CSRF-Token')).toBe('abc123');
+    req.flush({});
+  });
+
+  it('should extract CSRF token correctly when value contains = characters', () => {
+    Object.defineProperty(document, 'cookie', {
+      value: 'csrf_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9==',
+      writable: true,
+      configurable: true,
+    });
+
+    http.post('/api/auth/refresh', {}).subscribe();
+
+    const req = httpTesting.expectOne('/api/auth/refresh');
+    expect(req.request.headers.get('X-CSRF-Token')).toBe('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9==');
     req.flush({});
   });
 

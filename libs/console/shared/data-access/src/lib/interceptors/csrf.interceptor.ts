@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 function getCsrfToken(): string | null {
   const match = document.cookie.split('; ').find((row) => row.startsWith('csrf_token='));
-  return match ? match.split('=')[1] : null;
+  return match ? decodeURIComponent(match.slice('csrf_token='.length)) : null;
 }
 
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
