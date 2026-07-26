@@ -26,7 +26,7 @@ export class Terms {
     path: '/terms',
     titles: {
       en: 'Terms of Use | Phuong Tran',
-      vi: 'Điều khoản Sử dụng | Trần Đức Phương',
+      vi: 'Điều khoản Sử dụng | Phương Trần',
     },
     descriptions: {
       en: 'Terms governing your access to and use of thunderphong.com. IP rights, acceptable use, no warranty, governing law of Vietnam.',

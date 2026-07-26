@@ -26,7 +26,7 @@ export class Privacy {
     path: '/privacy',
     titles: {
       en: 'Privacy Policy | Phuong Tran',
-      vi: 'Chính sách Bảo mật | Trần Đức Phương',
+      vi: 'Chính sách Bảo mật | Phương Trần',
     },
     descriptions: {
       en: 'How thunderphong.com collects, uses, stores, and protects personal data. Minimal data, no tracking cookies, a transparent processor list.',
