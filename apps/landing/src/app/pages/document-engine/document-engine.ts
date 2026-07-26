@@ -14,7 +14,17 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { DecimalPipe, DOCUMENT } from '@angular/common';
-import { Background, Button, Container, Eyebrow, Icon, Link } from '@portfolio/landing/shared/ui';
+import {
+  Background,
+  Button,
+  Container,
+  Eyebrow,
+  Icon,
+  LandingLocaleService,
+  Link,
+  T,
+} from '@portfolio/landing/shared/ui';
+import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { EditorDocument, PortableDocument, PortableNode } from '@portfolio/shared/features/rte-core';
 import { RteTiptapEditor } from '@portfolio/shared/features/rte-tiptap';
 import { RteRender } from '@portfolio/shared/features/rte-renderer';
@@ -61,6 +71,7 @@ import { EMPTY_DOCUMENT, SEED_DOCUMENT, TEMPLATE_DOCUMENT } from './document-eng
     Eyebrow,
     Icon,
     Link,
+    T,
     DecimalPipe,
     ReactiveFormsModule,
     RouterLink,
@@ -93,10 +104,23 @@ export class DocumentEngine {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
+  /**
+   * Site-wide locale. Copy is resolved off this via `getLocalized`; the whole
+   * page re-renders when the toggle flips. Interim VI wiring — migrates to the
+   * task 388 JSON source. Technical terms (package names, feature names, code)
+   * stay language-neutral in the data and are never run through `getLocalized`.
+   */
+  readonly locale = inject(LandingLocaleService).locale;
 
-  // ──────── Data ────────────────────────────────────────────────────────
-  readonly heroFacts = HERO_FACTS;
-  readonly proofClaims = PROOF_CLAIMS;
+  // ──────── Data (localised) ─────────────────────────────────────────────
+  readonly heroFacts = computed(() =>
+    HERO_FACTS.map((f) => ({
+      id: f.id,
+      label: getLocalized(f.label, this.locale()),
+      value: getLocalized(f.value, this.locale()),
+    }))
+  );
+  readonly proofClaims = computed(() => PROOF_CLAIMS.map((c) => getLocalized(c, this.locale())));
   /**
    * The marquee track, doubled.
    *
@@ -105,11 +129,21 @@ export class DocumentEngine {
    * mid-screen and leaves the gap that was visible at laptop width. Repeating the
    * claims inside each track makes a track comfortably wider than any display.
    */
-  readonly marqueeClaims = [...PROOF_CLAIMS, ...PROOF_CLAIMS];
-  readonly problems = PROBLEMS;
-  readonly features = FEATURES;
-  readonly packages = PACKAGES;
-  readonly presets = DEMO_PRESETS;
+  readonly marqueeClaims = computed(() => [...this.proofClaims(), ...this.proofClaims()]);
+  readonly problems = computed(() =>
+    PROBLEMS.map((p) => ({ title: getLocalized(p.title, this.locale()), body: getLocalized(p.body, this.locale()) }))
+  );
+  readonly features = computed(() =>
+    FEATURES.map((f) => ({ name: f.name, body: getLocalized(f.body, this.locale()) }))
+  );
+  readonly packages = computed(() => PACKAGES.map((p) => ({ ...p, role: getLocalized(p.role, this.locale()) })));
+  readonly presets = computed(() =>
+    DEMO_PRESETS.map((p) => ({
+      id: p.id,
+      label: getLocalized(p.label, this.locale()),
+      hint: getLocalized(p.hint, this.locale()),
+    }))
+  );
   readonly repoUrl = REPO_URL;
 
   // ──────── Live registry data ──────────────────────────────────────────
@@ -120,7 +154,7 @@ export class DocumentEngine {
   readonly lastCommit = signal<string | null>(null);
 
   /** "3 days ago" — recency is the signal here, not the date itself. */
-  readonly lastCommitLabel = computed(() => relativeTime(this.lastCommit()));
+  readonly lastCommitLabel = computed(() => relativeTime(this.lastCommit(), this.locale()));
 
   /** The first package's numbers, for the hero badge row. */
   readonly primaryStat = computed(() => this.npmStats()[PACKAGES[0].name]);

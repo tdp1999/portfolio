@@ -318,13 +318,23 @@ document-engine-editor {
 .de-hero__facts {
   display: flex;
   flex-wrap: wrap;
-  /* 24px, not 32: five columns at 32 pushed Status onto a second line at laptop
-     width, and a stat row that wraps after four items reads as two rows of
-     unrelated things rather than one row of facts. */
-  gap: 24px;
+  /* 20px: the row now carries six facts (a Live-demo link joined the five), and at
+     the 1024px laptop floor even 24px pushed the last two onto a second line. 20px
+     keeps all six on one row there while staying a 4-grid step. */
+  gap: 20px;
   margin: 48px 0 0;
   padding-top: 24px;
   border-top: 1px solid var(--landing-border);
+
+  /* Spread the six facts edge to edge so the strip fills the container width and
+     lines its outer edges up with the headline and the border above it, instead of
+     hugging the left with dead space on the right. Only from laptop up, where the
+     row is guaranteed single-line (see the min-width tuning below); the 20px `gap`
+     stays the floor so a narrower laptop that packs tighter never collides. Below
+     laptop the row wraps and packs left, where space-between would strand items. */
+  @include bp.respond-to('laptop') {
+    justify-content: space-between;
+  }
 }
 
 /* Even columns. Left to `gap` alone the three facts bunch at whatever width their
@@ -333,7 +343,7 @@ document-engine-editor {
    sized rather than left to `gap`: even a stat row that carries different kinds
    of value has to read as a row, not as things that happened to land in a line. */
 .de-fact {
-  min-width: 8rem;
+  min-width: 7rem;
 
   dd .de-badges {
     margin-top: 4px;
@@ -367,7 +377,13 @@ document-engine-editor {
    its widest pill, and both pills then take that width, so the badges share an
    edge instead of ending ragged. */
 .de-fact--wide {
-  min-width: 22rem;
+  /* Was 22rem, which reserved so much width the packages column dwarfed its four
+     neighbours and read as uneven. The stacked pills are `fit-content` anyway, so
+     the column sizes to the widest badge; a 15rem floor keeps the two pills from
+     collapsing to a ragged narrow stack without hogging the row. Trimming it also
+     buys back the horizontal room the new Live-demo fact needs to stay on one line
+     at laptop. */
+  min-width: 13rem;
 
   .de-badges {
     flex-direction: column;

@@ -1,3 +1,4 @@
+import type { Locale } from '@portfolio/shared/types';
 import type { PortableNode } from '@portfolio/shared/features/rte-core';
 
 /**
@@ -54,14 +55,27 @@ const STALE_AFTER_DAYS = 180;
  * "3 days ago" from an ISO timestamp. Null in, null out — a missing value must
  * stay missing rather than becoming a misleading "just now". Also null once the
  * date is older than {@link STALE_AFTER_DAYS}.
+ *
+ * `locale` defaults to `en`, so existing callers (and the unit tests) keep the
+ * English phrasing; the product page passes the live `locale()` so the fact row
+ * reads in one language.
  */
-export function relativeTime(iso: string | null): string | null {
+export function relativeTime(iso: string | null, locale: Locale = 'en'): string | null {
   if (!iso) return null;
   const then = Date.parse(iso);
   if (Number.isNaN(then)) return null;
 
   const days = Math.floor((Date.now() - then) / 86_400_000);
   if (days > STALE_AFTER_DAYS) return null;
+
+  if (locale === 'vi') {
+    if (days <= 0) return 'hôm nay';
+    if (days === 1) return 'hôm qua';
+    if (days < 30) return `${days} ngày trước`;
+    const months = Math.round(days / 30);
+    return months === 1 ? 'một tháng trước' : `${months} tháng trước`;
+  }
+
   if (days <= 0) return 'today';
   if (days === 1) return 'yesterday';
   if (days < 30) return `${days} days ago`;

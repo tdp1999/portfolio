@@ -81,4 +81,22 @@ describe('relativeTime', () => {
   it('treats a future timestamp as today rather than negative days', () => {
     expect(relativeTime(daysAgo(-2))).toBe('today');
   });
+
+  /**
+   * The fact row reads in one language, so the helper localizes rather than
+   * leaving an English "2 days ago" stranded under the VI toggle. Same day/month
+   * boundaries as the English path, Vietnamese phrasing.
+   */
+  it('reads naturally in Vietnamese across the day / month boundaries', () => {
+    expect(relativeTime(daysAgo(0), 'vi')).toBe('hôm nay');
+    expect(relativeTime(daysAgo(1), 'vi')).toBe('hôm qua');
+    expect(relativeTime(daysAgo(5), 'vi')).toBe('5 ngày trước');
+    expect(relativeTime(daysAgo(29), 'vi')).toBe('29 ngày trước');
+    expect(relativeTime(daysAgo(30), 'vi')).toBe('một tháng trước');
+    expect(relativeTime(daysAgo(90), 'vi')).toBe('3 tháng trước');
+  });
+
+  it('withholds a stale timestamp regardless of locale', () => {
+    expect(relativeTime(daysAgo(181), 'vi')).toBeNull();
+  });
 });

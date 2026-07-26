@@ -1,7 +1,12 @@
 <!-- Landing composition, not a feature-page shell. Sibling full-bleed bands, each
      owning its own background and rhythm — the Home idiom. Header and footer are
      mounted globally by `landing-shell`; this page shares nothing else with the
-     rest of the site. -->
+     rest of the site.
+
+     Bilingual copy uses the `<landing-t>` primitive (HTML-rich prose, accents
+     survive) and, for the `@for` lists, the localised computed arrays on the
+     component. Interim wiring off `locale()`; migrates to the task 388 JSON
+     source. Technical terms and package names stay language-neutral. -->
 <div class="de">
   <!-- ═══ 01 · Hero ═══════════════════════════════════════════════════════
        Left-aligned and committed, the way a product page opens. Not the
@@ -10,13 +15,28 @@
     <landing-background pattern="blueprint" />
     <landing-container size="wide">
       <div class="de-hero__inner">
-        <landing-eyebrow [label]="['open source']" tone="accent" />
+        <landing-eyebrow [label]="['open source product']" tone="accent" />
 
-        <h1 id="de-hero-h" class="de-hero__title">A document editor that <em>owns its own format</em>.</h1>
+        <h1 id="de-hero-h" class="de-hero__title">
+          <landing-t>
+            <ng-container en>A document editor that <em>owns its own format</em>.</ng-container>
+            <ng-container vi>Một document editor <em>tự làm chủ format của riêng nó</em>.</ng-container>
+          </landing-t>
+        </h1>
 
         <p class="de-hero__lede">
-          Most rich-text editors hand you an HTML string and wish you luck. Document Engine stores a structured,
-          versioned document instead, in a core that knows nothing about your framework.
+          <landing-t>
+            <ng-container en
+              >Most rich-text editors give you back an HTML string, and the structure is then yours to rebuild. Document
+              Engine stores the structured, versioned document itself, in a core that knows nothing about your
+              framework.</ng-container
+            >
+            <ng-container vi
+              >Phần lớn rich-text editor chỉ trả về cho bạn một HTML string, còn phần cấu trúc thì bạn phải tự dựng lại.
+              Document Engine lưu thẳng chính tài liệu đã được cấu trúc và có version, trong một core không biết gì về
+              framework của bạn.</ng-container
+            >
+          </landing-t>
         </p>
 
         <!-- One action only. The npm links live in the fact row below with their
@@ -24,7 +44,12 @@
              than a second button that says the same thing without the numbers. -->
         <div class="de-hero__actions">
           <a href="#try-it" (click)="scrollToDemo($event)">
-            <landing-button size="md" arrow="right">Try it live</landing-button>
+            <landing-button size="md" arrow="right">
+              <landing-t>
+                <ng-container en>Try it live</ng-container>
+                <ng-container vi>Dùng thử trực tiếp</ng-container>
+              </landing-t>
+            </landing-button>
           </a>
         </div>
 
@@ -37,7 +62,7 @@
             <dt>Packages</dt>
             <dd>
               <ul class="de-badges" role="list">
-                @for (pkg of packages; track pkg.name) {
+                @for (pkg of packages(); track pkg.name) {
                   <li>
                     <a class="de-badge" [href]="pkg.npmUrl" target="_blank" rel="noopener">
                       <landing-icon name="package" [size]="14" />
@@ -46,7 +71,12 @@
                         <span class="de-badge__value">v{{ stat.version }}</span>
                         @if (stat.downloads !== null) {
                           <span class="de-badge__sep">·</span>
-                          <span class="de-badge__value">{{ stat.downloads | number }}/week</span>
+                          <span class="de-badge__value"
+                            >{{ stat.downloads | number
+                            }}<landing-t
+                              ><ng-container en>/week</ng-container><ng-container vi>/tuần</ng-container></landing-t
+                            ></span
+                          >
                         }
                       } @else {
                         <!-- Holds the exact space the fetched figures will take.
@@ -69,13 +99,19 @@
           </div>
 
           <div class="de-fact">
-            <dt>Source</dt>
+            <dt>
+              <landing-t><ng-container en>Source</ng-container><ng-container vi>Mã nguồn</ng-container></landing-t>
+            </dt>
             <dd>
               <ul class="de-badges" role="list">
                 <li>
                   <a class="de-badge" [href]="repoUrl" target="_blank" rel="noopener">
                     <landing-icon name="github" [size]="14" />
-                    <span class="de-badge__key">source</span>
+                    <span class="de-badge__key">
+                      <landing-t
+                        ><ng-container en>source</ng-container><ng-container vi>mã nguồn</ng-container></landing-t
+                      >
+                    </span>
                     @if (stars(); as count) {
                       <span class="de-badge__sep">·</span>
                       <span class="de-badge__value">{{ count | number }} ★</span>
@@ -86,18 +122,51 @@
             </dd>
           </div>
 
+          <div class="de-fact">
+            <dt>
+              <landing-t>
+                <ng-container en>Live demo</ng-container>
+                <ng-container vi>Bản demo trực tiếp</ng-container>
+              </landing-t>
+            </dt>
+            <dd>
+              <ul class="de-badges" role="list">
+                <li>
+                  <a
+                    class="de-badge"
+                    href="https://document-engine.thunderphong.com/editor/basic"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <landing-icon name="external-link" [size]="14" />
+                    <span class="de-badge__key">
+                      <landing-t
+                        ><ng-container en>try the editor</ng-container
+                        ><ng-container vi>mở editor</ng-container></landing-t
+                      >
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </dd>
+          </div>
+
           @if (lastCommitLabel(); as commit) {
             <div class="de-fact">
-              <dt>Last commit</dt>
+              <dt>
+                <landing-t
+                  ><ng-container en>Last commit</ng-container><ng-container vi>Commit gần nhất</ng-container></landing-t
+                >
+              </dt>
               <dd>{{ commit }}</dd>
             </div>
           }
 
-          @for (fact of heroFacts; track fact.label) {
+          @for (fact of heroFacts(); track fact.id) {
             <div class="de-fact">
               <dt>{{ fact.label }}</dt>
               <dd>
-                @if (fact.label === 'Status') {
+                @if (fact.id === 'status') {
                   <span class="de-live"><span class="de-live__dot" aria-hidden="true"></span>{{ fact.value }}</span>
                 } @else {
                   {{ fact.value }}
@@ -120,14 +189,14 @@
          dropped entirely under `prefers-reduced-motion`. -->
     <div class="de-marquee">
       <ul class="de-marquee__track" role="list">
-        @for (claim of marqueeClaims; track $index) {
-          <li class="de-marquee__item" [attr.aria-hidden]="$index >= proofClaims.length ? 'true' : null">
+        @for (claim of marqueeClaims(); track $index) {
+          <li class="de-marquee__item" [attr.aria-hidden]="$index >= proofClaims().length ? 'true' : null">
             {{ claim }}
           </li>
         }
       </ul>
       <ul class="de-marquee__track" role="list" aria-hidden="true">
-        @for (claim of marqueeClaims; track $index) {
+        @for (claim of marqueeClaims(); track $index) {
           <li class="de-marquee__item">{{ claim }}</li>
         }
       </ul>
@@ -138,16 +207,29 @@
   <section id="try-it" class="de-band de-demo" aria-labelledby="de-demo-h">
     <landing-container size="wide">
       <div class="de-head">
-        <landing-eyebrow [label]="['01', 'see it']" tone="accent" />
-        <h2 id="de-demo-h" class="de-head__title">Type on the left. That <em>is</em> the document on the right.</h2>
+        <landing-eyebrow [label]="['01', 'demonstration']" tone="accent" />
+        <h2 id="de-demo-h" class="de-head__title">
+          <landing-t>
+            <ng-container en>Type on the left. That <em>is</em> the document on the right.</ng-container>
+            <ng-container vi>Gõ ở bên trái. Đó <em>chính là</em> tài liệu ở bên phải.</ng-container>
+          </landing-t>
+        </h2>
         <p class="de-head__lede">
-          Everything in the right-hand panel is what actually gets stored. No HTML string, nothing to parse back out
-          later. Change one word and watch it move.
+          <landing-t>
+            <ng-container en
+              >Everything in the right-hand panel is what actually gets stored. No HTML string, nothing to parse back
+              out later. Change one word and watch it move.</ng-container
+            >
+            <ng-container vi
+              >Mọi thứ trong panel bên phải chính là thứ thật sự được lưu. Không có HTML string, không có gì phải parse
+              ngược lại sau này. Đổi một chữ và nhìn nó chuyển ngay.</ng-container
+            >
+          </landing-t>
         </p>
       </div>
 
       <div class="de-presets" role="group" aria-label="Demo shortcuts">
-        @for (preset of presets; track preset.id) {
+        @for (preset of presets(); track preset.id) {
           <button type="button" class="de-preset" [title]="preset.hint" (click)="applyPreset(preset.id)">
             {{ preset.label }}
           </button>
@@ -165,14 +247,28 @@
             @defer (on viewport) {
               <rte-tiptap-editor
                 mode="full"
-                placeholder="Start typing…"
+                [placeholder]="locale() === 'vi' ? 'Bắt đầu gõ…' : 'Start typing…'"
                 [formControl]="doc"
                 aria-label="Document Engine live demo editor"
               />
             } @placeholder {
-              <div class="de-pane__placeholder"><span>Editor loads when it scrolls into view</span></div>
+              <div class="de-pane__placeholder">
+                <span>
+                  <landing-t>
+                    <ng-container en>Editor loads when it scrolls into view</ng-container>
+                    <ng-container vi>Editor sẽ tải khi cuộn tới</ng-container>
+                  </landing-t>
+                </span>
+              </div>
             } @loading (minimum 300ms) {
-              <div class="de-pane__placeholder"><span>Loading editor…</span></div>
+              <div class="de-pane__placeholder">
+                <span>
+                  <landing-t>
+                    <ng-container en>Loading editor…</ng-container>
+                    <ng-container vi>Đang tải editor…</ng-container>
+                  </landing-t>
+                </span>
+              </div>
             }
           </div>
         </div>
@@ -201,7 +297,7 @@
                 [attr.aria-pressed]="paneView() === 'json'"
                 (click)="paneView.set('json')"
               >
-                Stored
+                <landing-t><ng-container en>Stored</ng-container><ng-container vi>Lưu trữ</ng-container></landing-t>
               </button>
               <button
                 type="button"
@@ -210,13 +306,18 @@
                 [attr.aria-pressed]="paneView() === 'rendered'"
                 (click)="paneView.set('rendered')"
               >
-                Rendered
+                <landing-t><ng-container en>Rendered</ng-container><ng-container vi>Hiển thị</ng-container></landing-t>
               </button>
             </div>
-            <span class="de-pane__count">{{ nodeCount() }} blocks</span>
+            <span class="de-pane__count"
+              >{{ nodeCount() }}
+              <landing-t><ng-container en>blocks</ng-container><ng-container vi>block</ng-container></landing-t></span
+            >
             <div class="de-pane__tools">
               @if (paneView() === 'json') {
-                <button type="button" class="de-copy" (click)="copyJson()">{{ copied() ? 'Copied' : 'Copy' }}</button>
+                <button type="button" class="de-copy" (click)="copyJson()">
+                  {{ copied() ? (locale() === 'vi' ? 'Đã copy' : 'Copied') : 'Copy' }}
+                </button>
               }
               <!-- Both views need the room, so the control belongs to the pane
                    rather than to either tab. -->
@@ -224,10 +325,18 @@
                 type="button"
                 class="de-copy"
                 [attr.aria-pressed]="expanded()"
-                [title]="expanded() ? 'Close (Esc)' : 'Fill the screen'"
+                [title]="
+                  expanded()
+                    ? locale() === 'vi'
+                      ? 'Đóng (Esc)'
+                      : 'Close (Esc)'
+                    : locale() === 'vi'
+                      ? 'Lấp đầy màn hình'
+                      : 'Fill the screen'
+                "
                 (click)="toggleExpanded()"
               >
-                {{ expanded() ? 'Close' : 'Expand' }}
+                {{ expanded() ? (locale() === 'vi' ? 'Đóng' : 'Close') : locale() === 'vi' ? 'Mở rộng' : 'Expand' }}
               </button>
             </div>
           </div>
@@ -247,16 +356,31 @@
   <section class="de-reveal de-band de-band--tint" aria-labelledby="de-why-h">
     <landing-container size="wide">
       <div class="de-head">
-        <landing-eyebrow [label]="['02', 'the problem']" tone="accent" />
-        <h2 id="de-why-h" class="de-head__title">Why build one at <em>all</em>.</h2>
+        <landing-eyebrow [label]="['02', 'problems']" tone="accent" />
+        <h2 id="de-why-h" class="de-head__title">
+          <landing-t>
+            <ng-container en>Why build one at <em>all</em>.</ng-container>
+            <ng-container vi>Vì sao phải tự xây <em>hẳn</em> một cái.</ng-container>
+          </landing-t>
+        </h2>
         <p class="de-head__lede">
-          Document generation is a solved problem right up until the documents matter. In regulated work the editor
-          stops being a text box and becomes part of the product, and that is where a rented one runs out of room.
+          <landing-t>
+            <ng-container en
+              >Document generation is a solved problem right up until the documents matter. In regulated work the editor
+              stops being a text box and becomes part of the product, and a third-party one can only bend so
+              far.</ng-container
+            >
+            <ng-container vi
+              >Sinh tài liệu là bài toán đã giải xong, cho tới khi chính tài liệu đó trở nên quan trọng. Trong các lĩnh
+              vực bị kiểm soát chặt, editor thôi không còn là một ô nhập chữ mà trở thành một phần của sản phẩm, và một
+              editor bên thứ ba chỉ uốn được tới một mức nào đó.</ng-container
+            >
+          </landing-t>
         </p>
       </div>
 
       <dl class="de-problems">
-        @for (problem of problems; track problem.title; let i = $index) {
+        @for (problem of problems(); track problem.title; let i = $index) {
           <div class="de-problem">
             <span class="de-problem__num">{{ i + 1 | number: '2.0-0' }}</span>
             <dt>{{ problem.title }}</dt>
@@ -271,15 +395,29 @@
   <section class="de-reveal de-band" aria-labelledby="de-features-h">
     <landing-container size="wide">
       <div class="de-head">
-        <landing-eyebrow [label]="['03', 'what it does']" tone="accent" />
-        <h2 id="de-features-h" class="de-head__title">Built for the <em>awkward</em> parts.</h2>
+        <landing-eyebrow [label]="['03', 'features']" tone="accent" />
+        <h2 id="de-features-h" class="de-head__title">
+          <landing-t>
+            <ng-container en>Built for the <em>awkward</em> parts.</ng-container>
+            <ng-container vi>Xây cho đúng những phần <em>khó nhằn</em>.</ng-container>
+          </landing-t>
+        </h2>
         <p class="de-head__lede">
-          The generic formatting is table stakes. These are the things that made building one worth it.
+          <landing-t>
+            <ng-container en
+              >The generic formatting is table stakes. These are the things that made building one worth
+              it.</ng-container
+            >
+            <ng-container vi
+              >Phần format thông thường chỉ là mức tối thiểu. Đây mới là những thứ khiến việc tự xây trở nên đáng
+              công.</ng-container
+            >
+          </landing-t>
         </p>
       </div>
 
       <div class="de-features">
-        @for (feature of features; track feature.name) {
+        @for (feature of features(); track feature.name) {
           <div class="de-feature">
             <h3 class="de-feature__name">{{ feature.name }}</h3>
             <p class="de-feature__body">{{ feature.body }}</p>
@@ -294,16 +432,35 @@
     <landing-container size="wide">
       <div class="de-head">
         <landing-eyebrow [label]="['04', 'architecture']" tone="accent" />
-        <h2 id="de-arch-h" class="de-head__title">Two packages, on <em>purpose</em>.</h2>
+        <h2 id="de-arch-h" class="de-head__title">
+          <landing-t>
+            <ng-container en>Two packages, on <em>purpose</em>.</ng-container>
+            <ng-container vi>Hai package, <em>có chủ đích</em>.</ng-container>
+          </landing-t>
+        </h2>
         <p class="de-head__lede">
-          The split is the design. A document model that imports nothing can be read on a server, validated in a test,
-          and migrated by a script. Everything framework-shaped is quarantined in the binding.
+          <landing-t>
+            <ng-container en
+              >The split is a requirement, not a preference. The same document model has to serve stacks that are not
+              Angular, so the core imports nothing framework-shaped: it can be read on a server, validated in a test,
+              and migrated by a script. Everything Angular lives in the binding, and swapping that layer is how another
+              framework gets supported.</ng-container
+            >
+            <ng-container vi
+              >Việc tách đôi là một yêu cầu bắt buộc, không phải một sở thích. Cùng một document model phải phục vụ cả
+              những stack không phải Angular, nên phần core không import bất cứ thứ gì dính tới framework: nó có thể đọc
+              trên server, kiểm trong test, và migrate bằng một script. Mọi thứ thuộc về Angular sống trong binding, và
+              đổi lớp đó chính là cách một framework khác được hỗ trợ.</ng-container
+            >
+          </landing-t>
         </p>
       </div>
 
       <div class="de-arch">
         <div class="de-arch__diagram" aria-hidden="true">
-          <div class="de-node de-node--host">Your app</div>
+          <div class="de-node de-node--host">
+            <landing-t><ng-container en>Your app</ng-container><ng-container vi>App của bạn</ng-container></landing-t>
+          </div>
           <div class="de-arrow">↓</div>
           <div class="de-node de-node--binding">
             document-engine-<strong>angular</strong>
@@ -312,12 +469,17 @@
           <div class="de-arrow">↓</div>
           <div class="de-node de-node--core">
             document-engine-<strong>core</strong>
-            <span>document model · zero framework imports</span>
+            <span>
+              <landing-t>
+                <ng-container en>document model · zero framework imports</ng-container>
+                <ng-container vi>document model · không import framework nào</ng-container>
+              </landing-t>
+            </span>
           </div>
         </div>
 
         <div class="de-packages">
-          @for (pkg of packages; track pkg.name) {
+          @for (pkg of packages(); track pkg.name) {
             <div class="de-package">
               <p class="de-package__name">
                 <code>{{ pkg.name }}</code>
@@ -327,20 +489,38 @@
                   <span>v{{ stat.version }}</span>
                   @if (stat.downloads !== null) {
                     <span class="de-badge__sep">·</span>
-                    <span>{{ stat.downloads | number }} downloads/week</span>
+                    <span
+                      >{{ stat.downloads | number }}
+                      <landing-t
+                        ><ng-container en>downloads/week</ng-container
+                        ><ng-container vi>lượt tải/tuần</ng-container></landing-t
+                      ></span
+                    >
                   }
                 </p>
               }
               <p class="de-package__role">{{ pkg.role }}</p>
-              <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">View on npm</landing-link>
+              <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">
+                <landing-t
+                  ><ng-container en>View on npm</ng-container><ng-container vi>Xem trên npm</ng-container></landing-t
+                >
+              </landing-link>
             </div>
           }
         </div>
       </div>
 
       <p class="de-note">
-        This site is one of its consumers. The editor behind every word published here runs on these two packages, which
-        is a harder test than a demo page could ever be.
+        <landing-t>
+          <ng-container en
+            >This site is one of its consumers. The editor behind every word published here runs on these two packages,
+            which is a harder test than a demo page could ever be.</ng-container
+          >
+          <ng-container vi
+            >Chính trang này là một trong những consumer của nó. Cái editor đứng sau mọi con chữ được publish ở đây chạy
+            trên đúng hai package này, và đó là một phép thử khắt khe hơn bất kỳ trang demo nào.</ng-container
+          >
+        </landing-t>
       </p>
     </landing-container>
   </section>
@@ -350,18 +530,35 @@
     <landing-background pattern="topo" />
     <landing-container size="wide">
       <div class="de-cta__inner">
-        <h2 id="de-cta-h" class="de-cta__title">Want the story rather than the <em>feature list</em>?</h2>
-        <p class="de-cta__lede">How it started, what it replaced, and the parts that did not go to plan.</p>
+        <h2 id="de-cta-h" class="de-cta__title">
+          <landing-t>
+            <ng-container en>Want the story rather than the <em>feature list</em>?</ng-container>
+            <ng-container vi>Muốn nghe câu chuyện thay vì một <em>danh sách tính năng</em>?</ng-container>
+          </landing-t>
+        </h2>
+        <p class="de-cta__lede">
+          <landing-t>
+            <ng-container en>How it started, what it replaced, and the parts that did not go to plan.</ng-container>
+            <ng-container vi
+              >Nó bắt đầu thế nào, nó thay thế cái gì, và những phần đã không diễn ra như dự tính.</ng-container
+            >
+          </landing-t>
+        </p>
         <div class="de-cta__actions">
           <a routerLink="/projects/document-engine">
-            <landing-button size="md" arrow="right">Read the case study</landing-button>
+            <landing-button size="md" arrow="right">
+              <landing-t>
+                <ng-container en>Read the case study</ng-container>
+                <ng-container vi>Đọc case study</ng-container>
+              </landing-t>
+            </landing-button>
           </a>
         </div>
 
         <!-- There are two packages. A single "Browse the packages" button had to
              pick one and silently drop the other, so list both by name instead. -->
         <ul class="de-cta__packages" role="list">
-          @for (pkg of packages; track pkg.name) {
+          @for (pkg of packages(); track pkg.name) {
             <li>
               <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">
                 {{ pkg.shortName }}
