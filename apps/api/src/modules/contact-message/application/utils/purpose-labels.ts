@@ -12,7 +12,7 @@ const LABELS_EN: Record<ContactPurpose, string> = {
   FREELANCE: 'Freelance project',
   COLLABORATION: 'Collaboration',
   BUG_REPORT: 'Bug report',
-  PRESS: 'Press / podcast',
+  PRESS: 'Press',
   OTHER: 'Other',
 };
 
