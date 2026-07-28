@@ -1,4 +1,6 @@
 import { InjectionToken } from '@angular/core';
+import type { Locale } from '@portfolio/shared/types';
+import { resolveCopy, type LandingCopyKey } from '../../services/copy';
 
 export interface FlatRow {
   readonly result: CommandResult;
@@ -24,13 +26,14 @@ export interface CommandResult {
   readonly handler?: () => void;
 }
 
-export const KIND_LABEL: Record<CommandKind, string> = {
-  page: 'Pages',
-  section: 'Sections',
-  doc: 'DDL',
-  action: 'Actions',
-  project: 'Projects',
-  blog: 'Blog',
+/** Group headers, as copy keys — the palette resolves them per locale. */
+export const KIND_LABEL_KEYS: Record<CommandKind, LandingCopyKey> = {
+  page: 'palette.group.pages',
+  section: 'palette.group.sections',
+  doc: 'common.page.ddl',
+  action: 'palette.group.actions',
+  project: 'common.page.projects',
+  blog: 'common.page.blog',
 };
 
 export const KIND_ORDER: readonly CommandKind[] = ['page', 'section', 'doc', 'project', 'blog', 'action'];
@@ -45,102 +48,134 @@ export const COMMAND_PALETTE_SEARCH_SOURCES = new InjectionToken<readonly Comman
   { factory: () => [] }
 );
 
-/** Static manifest of top-level pages — ships with the bundle. */
-export const PAGE_MANIFEST: readonly CommandResult[] = [
-  {
-    id: 'p-home',
-    kind: 'page',
-    title: 'Home',
-    description: 'Landing — hero, stack, story',
-    href: '/',
-    iconName: 'home',
-  },
-  { id: 'p-about', kind: 'page', title: 'About', description: 'Coming soon', href: '/about', iconName: 'user' },
-  {
-    id: 'p-projects',
-    kind: 'page',
-    title: 'Projects',
-    description: 'Selected work index',
-    href: '/projects',
-    iconName: 'folder-open',
-  },
-  { id: 'p-blog', kind: 'page', title: 'Blog', description: 'Coming soon', href: '/blog', iconName: 'briefcase' },
-  {
-    id: 'p-uses',
-    kind: 'page',
-    title: 'Uses',
-    description: 'Hardware, editor, services',
-    href: '/uses',
-    iconName: 'briefcase',
-  },
-  {
-    id: 'p-colophon',
-    kind: 'page',
-    title: 'Colophon',
-    description: 'Stack and tooling behind this site',
-    href: '/colophon',
-    iconName: 'code',
-  },
-  { id: 'p-ddl', kind: 'page', title: 'DDL', description: 'Design sandbox', href: '/ddl', iconName: 'layout-grid' },
-];
+/** Top-level pages, resolved per locale. Titles reuse the shared `common.page.*`
+ *  entries so a page rename never has to be repeated here. */
+export function pageManifest(locale: Locale): readonly CommandResult[] {
+  const t = (key: LandingCopyKey) => resolveCopy(key, locale);
+  return [
+    {
+      id: 'p-home',
+      kind: 'page',
+      title: t('common.page.home'),
+      description: t('palette.page.home.desc'),
+      href: '/',
+      iconName: 'home',
+    },
+    {
+      id: 'p-about',
+      kind: 'page',
+      title: t('common.page.about'),
+      description: t('palette.page.about.desc'),
+      href: '/about',
+      iconName: 'user',
+    },
+    {
+      id: 'p-projects',
+      kind: 'page',
+      title: t('common.page.projects'),
+      description: t('palette.page.projects.desc'),
+      href: '/projects',
+      iconName: 'folder-open',
+    },
+    {
+      id: 'p-blog',
+      kind: 'page',
+      title: t('common.page.blog'),
+      description: t('palette.page.blog.desc'),
+      href: '/blog',
+      iconName: 'briefcase',
+    },
+    {
+      id: 'p-uses',
+      kind: 'page',
+      title: t('common.page.uses'),
+      description: t('palette.page.uses.desc'),
+      href: '/uses',
+      iconName: 'briefcase',
+    },
+    {
+      id: 'p-colophon',
+      kind: 'page',
+      title: t('common.page.colophon'),
+      description: t('palette.page.colophon.desc'),
+      href: '/colophon',
+      iconName: 'code',
+    },
+    {
+      id: 'p-ddl',
+      kind: 'page',
+      title: t('common.page.ddl'),
+      description: t('palette.page.ddl.desc'),
+      href: '/ddl',
+      iconName: 'layout-grid',
+    },
+  ];
+}
 
-/** Static manifest of in-page section anchors. */
-export const SECTION_MANIFEST: readonly CommandResult[] = [
-  {
-    id: 's-hero',
-    kind: 'section',
-    title: 'Hero',
-    description: 'Home › Hero',
-    href: '/',
-    fragment: 'hero',
-    iconName: 'chevron-right',
-  },
-  {
-    id: 's-who',
-    kind: 'section',
-    title: 'Who I Am',
-    description: 'Home › §02',
-    href: '/',
-    fragment: 'who',
-    iconName: 'chevron-right',
-  },
-  {
-    id: 's-work',
-    kind: 'section',
-    title: 'Selected Work',
-    description: 'Home › §03',
-    href: '/',
-    fragment: 'work',
-    iconName: 'chevron-right',
-  },
-  {
-    id: 's-stack',
-    kind: 'section',
-    title: 'The Stack',
-    description: 'Home › §04',
-    href: '/',
-    fragment: 'stack',
-    iconName: 'chevron-right',
-  },
-  {
-    id: 's-story',
-    kind: 'section',
-    title: 'The Story',
-    description: 'Home › §05',
-    href: '/',
-    fragment: 'story',
-    iconName: 'chevron-right',
-  },
-  {
-    id: 's-contact',
-    kind: 'section',
-    title: 'Get in Touch',
-    description: 'Home › §07',
-    href: '/',
-    fragment: 'get-in-touch',
-    iconName: 'mail',
-  },
-];
+/** In-page section anchors, resolved per locale. Titles come from `home.section.*`,
+ *  the same entries the Home floating-pill nav reads. */
+export function sectionManifest(locale: Locale): readonly CommandResult[] {
+  const home = resolveCopy('common.page.home', locale);
+  const crumb = (n: string) => `${home} › ${n}`;
+  const t = (key: LandingCopyKey) => resolveCopy(key, locale);
+  return [
+    {
+      id: 's-hero',
+      kind: 'section',
+      title: t('home.section.hero'),
+      description: crumb(t('home.section.hero')),
+      href: '/',
+      fragment: 'hero',
+      iconName: 'chevron-right',
+    },
+    {
+      id: 's-who',
+      kind: 'section',
+      title: t('home.section.who'),
+      description: crumb('§02'),
+      href: '/',
+      fragment: 'who',
+      iconName: 'chevron-right',
+    },
+    {
+      id: 's-work',
+      kind: 'section',
+      title: t('home.section.work'),
+      description: crumb('§03'),
+      href: '/',
+      fragment: 'work',
+      iconName: 'chevron-right',
+    },
+    {
+      id: 's-stack',
+      kind: 'section',
+      title: t('home.section.stack'),
+      description: crumb('§04'),
+      href: '/',
+      fragment: 'stack',
+      iconName: 'chevron-right',
+    },
+    {
+      id: 's-story',
+      kind: 'section',
+      title: t('home.section.story'),
+      description: crumb('§05'),
+      href: '/',
+      fragment: 'story',
+      iconName: 'chevron-right',
+    },
+    {
+      id: 's-contact',
+      kind: 'section',
+      title: t('home.section.getInTouch'),
+      // Was §07 — the Home page only goes to §06.
+      description: crumb('§06'),
+      href: '/',
+      fragment: 'get-in-touch',
+      iconName: 'mail',
+    },
+  ];
+}
 
 export function filterCommands(query: string, all: readonly CommandResult[]): readonly CommandResult[] {
   const q = query.trim().toLowerCase();

@@ -25,18 +25,7 @@
         </h1>
 
         <p class="de-hero__lede">
-          <landing-t>
-            <ng-container en
-              >Most rich-text editors give you back an HTML string, and the structure is then yours to rebuild. Document
-              Engine stores the structured, versioned document itself, in a core that knows nothing about your
-              framework.</ng-container
-            >
-            <ng-container vi
-              >Phần lớn rich-text editor chỉ trả về cho bạn một HTML string, còn phần cấu trúc thì bạn phải tự dựng lại.
-              Document Engine lưu thẳng chính tài liệu đã được cấu trúc và có version, trong một core không biết gì về
-              framework của bạn.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.hero.lede' | landingCopy: locale() }}
         </p>
 
         <!-- One action only. The npm links live in the fact row below with their
@@ -45,10 +34,7 @@
         <div class="de-hero__actions">
           <a href="#try-it" (click)="scrollToDemo($event)">
             <landing-button size="md" arrow="right">
-              <landing-t>
-                <ng-container en>Try it live</ng-container>
-                <ng-container vi>Dùng thử trực tiếp</ng-container>
-              </landing-t>
+              {{ 'documentEngine.hero.tryLive' | landingCopy: locale() }}
             </landing-button>
           </a>
         </div>
@@ -59,7 +45,7 @@
              absent when a lookup fails — an unrendered column beats a wrong one. -->
         <dl class="de-hero__facts">
           <div class="de-fact de-fact--wide">
-            <dt>Packages</dt>
+            <dt>{{ 'documentEngine.packagesLabel' | landingCopy: locale() }}</dt>
             <dd>
               <ul class="de-badges" role="list">
                 @for (pkg of packages(); track pkg.name) {
@@ -73,9 +59,7 @@
                           <span class="de-badge__sep">·</span>
                           <span class="de-badge__value"
                             >{{ stat.downloads | number
-                            }}<landing-t
-                              ><ng-container en>/week</ng-container><ng-container vi>/tuần</ng-container></landing-t
-                            ></span
+                            }}{{ 'documentEngine.stat.perWeek' | landingCopy: locale() }}</span
                           >
                         }
                       } @else {
@@ -100,7 +84,7 @@
 
           <div class="de-fact">
             <dt>
-              <landing-t><ng-container en>Source</ng-container><ng-container vi>Mã nguồn</ng-container></landing-t>
+              {{ 'documentEngine.badge.source' | landingCopy: locale() }}
             </dt>
             <dd>
               <ul class="de-badges" role="list">
@@ -108,9 +92,7 @@
                   <a class="de-badge" [href]="repoUrl" target="_blank" rel="noopener">
                     <landing-icon name="github" [size]="14" />
                     <span class="de-badge__key">
-                      <landing-t
-                        ><ng-container en>source</ng-container><ng-container vi>mã nguồn</ng-container></landing-t
-                      >
+                      {{ 'documentEngine.badge.sourceInline' | landingCopy: locale() }}
                     </span>
                     @if (stars(); as count) {
                       <span class="de-badge__sep">·</span>
@@ -124,10 +106,7 @@
 
           <div class="de-fact">
             <dt>
-              <landing-t>
-                <ng-container en>Live demo</ng-container>
-                <ng-container vi>Bản demo trực tiếp</ng-container>
-              </landing-t>
+              {{ 'documentEngine.badge.liveDemo' | landingCopy: locale() }}
             </dt>
             <dd>
               <ul class="de-badges" role="list">
@@ -140,10 +119,7 @@
                   >
                     <landing-icon name="external-link" [size]="14" />
                     <span class="de-badge__key">
-                      <landing-t
-                        ><ng-container en>try the editor</ng-container
-                        ><ng-container vi>mở editor</ng-container></landing-t
-                      >
+                      {{ 'documentEngine.badge.tryEditor' | landingCopy: locale() }}
                     </span>
                   </a>
                 </li>
@@ -154,9 +130,7 @@
           @if (lastCommitLabel(); as commit) {
             <div class="de-fact">
               <dt>
-                <landing-t
-                  ><ng-container en>Last commit</ng-container><ng-container vi>Commit gần nhất</ng-container></landing-t
-                >
+                {{ 'documentEngine.badge.lastCommit' | landingCopy: locale() }}
               </dt>
               <dd>{{ commit }}</dd>
             </div>
@@ -182,7 +156,7 @@
   <!-- ═══ 02 · Proof strip ════════════════════════════════════════════════
        A logo wall would be a lie: there are no customer logos to show. The
        honest equivalent is the small set of facts that are actually checkable. -->
-  <section class="de-proof" aria-label="At a glance">
+  <section class="de-proof" [attr.aria-label]="'documentEngine.a11y.atAGlance' | landingCopy: locale()">
     <!-- Marquee rather than a static row: four short mono fragments sitting still
          read as a monotone list. The track is duplicated so the loop is seamless;
          the copy is aria-hidden so screen readers hear each claim once. Motion is
@@ -215,20 +189,15 @@
           </landing-t>
         </h2>
         <p class="de-head__lede">
-          <landing-t>
-            <ng-container en
-              >Everything in the right-hand panel is what actually gets stored. No HTML string, nothing to parse back
-              out later. Change one word and watch it move.</ng-container
-            >
-            <ng-container vi
-              >Mọi thứ trong panel bên phải chính là thứ thật sự được lưu. Không có HTML string, không có gì phải parse
-              ngược lại sau này. Đổi một chữ và nhìn nó chuyển ngay.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.demo.lede' | landingCopy: locale() }}
         </p>
       </div>
 
-      <div class="de-presets" role="group" aria-label="Demo shortcuts">
+      <div
+        class="de-presets"
+        role="group"
+        [attr.aria-label]="'documentEngine.a11y.demoShortcuts' | landingCopy: locale()"
+      >
         @for (preset of presets(); track preset.id) {
           <button type="button" class="de-preset" [title]="preset.hint" (click)="applyPreset(preset.id)">
             {{ preset.label }}
@@ -247,26 +216,20 @@
             @defer (on viewport) {
               <rte-tiptap-editor
                 mode="full"
-                [placeholder]="locale() === 'vi' ? 'Bắt đầu gõ…' : 'Start typing…'"
+                [placeholder]="'documentEngine.editor.placeholder' | landingCopy: locale()"
                 [formControl]="doc"
-                aria-label="Document Engine live demo editor"
+                [attr.aria-label]="'documentEngine.a11y.demoEditor' | landingCopy: locale()"
               />
             } @placeholder {
               <div class="de-pane__placeholder">
                 <span>
-                  <landing-t>
-                    <ng-container en>Editor loads when it scrolls into view</ng-container>
-                    <ng-container vi>Editor sẽ tải khi cuộn tới</ng-container>
-                  </landing-t>
+                  {{ 'documentEngine.editor.lazyHint' | landingCopy: locale() }}
                 </span>
               </div>
             } @loading (minimum 300ms) {
               <div class="de-pane__placeholder">
                 <span>
-                  <landing-t>
-                    <ng-container en>Loading editor…</ng-container>
-                    <ng-container vi>Đang tải editor…</ng-container>
-                  </landing-t>
+                  {{ 'documentEngine.editor.loading' | landingCopy: locale() }}
                 </span>
               </div>
             }
@@ -279,7 +242,7 @@
           <button
             type="button"
             class="de-scrim"
-            aria-label="Close the expanded panel"
+            [attr.aria-label]="'documentEngine.a11y.closePanel' | landingCopy: locale()"
             (click)="closeExpanded()"
           ></button>
         }
@@ -289,7 +252,11 @@
             <!-- Two views of one value. Plain buttons rather than the site's
                  segmented control: this is 24px of pane chrome, and the shared
                  control is sized for a page-level choice. -->
-            <div class="de-tabs" role="group" aria-label="Document view">
+            <div
+              class="de-tabs"
+              role="group"
+              [attr.aria-label]="'documentEngine.a11y.documentView' | landingCopy: locale()"
+            >
               <button
                 type="button"
                 class="de-tab"
@@ -297,7 +264,7 @@
                 [attr.aria-pressed]="paneView() === 'json'"
                 (click)="paneView.set('json')"
               >
-                <landing-t><ng-container en>Stored</ng-container><ng-container vi>Lưu trữ</ng-container></landing-t>
+                {{ 'documentEngine.pane.stored' | landingCopy: locale() }}
               </button>
               <button
                 type="button"
@@ -306,17 +273,16 @@
                 [attr.aria-pressed]="paneView() === 'rendered'"
                 (click)="paneView.set('rendered')"
               >
-                <landing-t><ng-container en>Rendered</ng-container><ng-container vi>Hiển thị</ng-container></landing-t>
+                {{ 'documentEngine.pane.rendered' | landingCopy: locale() }}
               </button>
             </div>
             <span class="de-pane__count"
-              >{{ nodeCount() }}
-              <landing-t><ng-container en>blocks</ng-container><ng-container vi>block</ng-container></landing-t></span
+              >{{ nodeCount() }} {{ 'documentEngine.pane.blocks' | landingCopy: locale() }}</span
             >
             <div class="de-pane__tools">
               @if (paneView() === 'json') {
                 <button type="button" class="de-copy" (click)="copyJson()">
-                  {{ copied() ? (locale() === 'vi' ? 'Đã copy' : 'Copied') : 'Copy' }}
+                  {{ (copied() ? 'common.copied' : 'common.copy') | landingCopy: locale() }}
                 </button>
               }
               <!-- Both views need the room, so the control belongs to the pane
@@ -326,17 +292,14 @@
                 class="de-copy"
                 [attr.aria-pressed]="expanded()"
                 [title]="
-                  expanded()
-                    ? locale() === 'vi'
-                      ? 'Đóng (Esc)'
-                      : 'Close (Esc)'
-                    : locale() === 'vi'
-                      ? 'Lấp đầy màn hình'
-                      : 'Fill the screen'
+                  (expanded() ? 'documentEngine.pane.collapseTitle' : 'documentEngine.pane.expandTitle')
+                    | landingCopy: locale()
                 "
                 (click)="toggleExpanded()"
               >
-                {{ expanded() ? (locale() === 'vi' ? 'Đóng' : 'Close') : locale() === 'vi' ? 'Mở rộng' : 'Expand' }}
+                {{
+                  (expanded() ? 'documentEngine.pane.collapse' : 'documentEngine.pane.expand') | landingCopy: locale()
+                }}
               </button>
             </div>
           </div>
@@ -364,18 +327,7 @@
           </landing-t>
         </h2>
         <p class="de-head__lede">
-          <landing-t>
-            <ng-container en
-              >Document generation is a solved problem right up until the documents matter. In regulated work the editor
-              stops being a text box and becomes part of the product, and a third-party one can only bend so
-              far.</ng-container
-            >
-            <ng-container vi
-              >Sinh tài liệu là bài toán đã giải xong, cho tới khi chính tài liệu đó trở nên quan trọng. Trong các lĩnh
-              vực bị kiểm soát chặt, editor thôi không còn là một ô nhập chữ mà trở thành một phần của sản phẩm, và một
-              editor bên thứ ba chỉ uốn được tới một mức nào đó.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.problems.lede' | landingCopy: locale() }}
         </p>
       </div>
 
@@ -403,16 +355,7 @@
           </landing-t>
         </h2>
         <p class="de-head__lede">
-          <landing-t>
-            <ng-container en
-              >The generic formatting is table stakes. These are the things that made building one worth
-              it.</ng-container
-            >
-            <ng-container vi
-              >Phần format thông thường chỉ là mức tối thiểu. Đây mới là những thứ khiến việc tự xây trở nên đáng
-              công.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.features.lede' | landingCopy: locale() }}
         </p>
       </div>
 
@@ -439,41 +382,25 @@
           </landing-t>
         </h2>
         <p class="de-head__lede">
-          <landing-t>
-            <ng-container en
-              >The split is a requirement, not a preference. The same document model has to serve stacks that are not
-              Angular, so the core imports nothing framework-shaped: it can be read on a server, validated in a test,
-              and migrated by a script. Everything Angular lives in the binding, and swapping that layer is how another
-              framework gets supported.</ng-container
-            >
-            <ng-container vi
-              >Việc tách đôi là một yêu cầu bắt buộc, không phải một sở thích. Cùng một document model phải phục vụ cả
-              những stack không phải Angular, nên phần core không import bất cứ thứ gì dính tới framework: nó có thể đọc
-              trên server, kiểm trong test, và migrate bằng một script. Mọi thứ thuộc về Angular sống trong binding, và
-              đổi lớp đó chính là cách một framework khác được hỗ trợ.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.architecture.lede' | landingCopy: locale() }}
         </p>
       </div>
 
       <div class="de-arch">
         <div class="de-arch__diagram" aria-hidden="true">
           <div class="de-node de-node--host">
-            <landing-t><ng-container en>Your app</ng-container><ng-container vi>App của bạn</ng-container></landing-t>
+            {{ 'documentEngine.architecture.yourApp' | landingCopy: locale() }}
           </div>
           <div class="de-arrow">↓</div>
           <div class="de-node de-node--binding">
             document-engine-<strong>angular</strong>
-            <span>framework binding</span>
+            <span>{{ 'documentEngine.architecture.bindingCaption' | landingCopy: locale() }}</span>
           </div>
           <div class="de-arrow">↓</div>
           <div class="de-node de-node--core">
             document-engine-<strong>core</strong>
             <span>
-              <landing-t>
-                <ng-container en>document model · zero framework imports</ng-container>
-                <ng-container vi>document model · không import framework nào</ng-container>
-              </landing-t>
+              {{ 'documentEngine.architecture.coreCaption' | landingCopy: locale() }}
             </span>
           </div>
         </div>
@@ -491,19 +418,14 @@
                     <span class="de-badge__sep">·</span>
                     <span
                       >{{ stat.downloads | number }}
-                      <landing-t
-                        ><ng-container en>downloads/week</ng-container
-                        ><ng-container vi>lượt tải/tuần</ng-container></landing-t
-                      ></span
+                      {{ 'documentEngine.stat.downloadsPerWeek' | landingCopy: locale() }}</span
                     >
                   }
                 </p>
               }
               <p class="de-package__role">{{ pkg.role }}</p>
               <landing-link [href]="pkg.npmUrl" [external]="true" [arrow]="true">
-                <landing-t
-                  ><ng-container en>View on npm</ng-container><ng-container vi>Xem trên npm</ng-container></landing-t
-                >
+                {{ 'documentEngine.architecture.viewOnNpm' | landingCopy: locale() }}
               </landing-link>
             </div>
           }
@@ -511,16 +433,7 @@
       </div>
 
       <p class="de-note">
-        <landing-t>
-          <ng-container en
-            >This site is one of its consumers. The editor behind every word published here runs on these two packages,
-            which is a harder test than a demo page could ever be.</ng-container
-          >
-          <ng-container vi
-            >Chính trang này là một trong những consumer của nó. Cái editor đứng sau mọi con chữ được publish ở đây chạy
-            trên đúng hai package này, và đó là một phép thử khắt khe hơn bất kỳ trang demo nào.</ng-container
-          >
-        </landing-t>
+        {{ 'documentEngine.architecture.note' | landingCopy: locale() }}
       </p>
     </landing-container>
   </section>
@@ -537,20 +450,12 @@
           </landing-t>
         </h2>
         <p class="de-cta__lede">
-          <landing-t>
-            <ng-container en>How it started, what it replaced, and the parts that did not go to plan.</ng-container>
-            <ng-container vi
-              >Nó bắt đầu thế nào, nó thay thế cái gì, và những phần đã không diễn ra như dự tính.</ng-container
-            >
-          </landing-t>
+          {{ 'documentEngine.cta.lede' | landingCopy: locale() }}
         </p>
         <div class="de-cta__actions">
           <a routerLink="/projects/document-engine">
             <landing-button size="md" arrow="right">
-              <landing-t>
-                <ng-container en>Read the case study</ng-container>
-                <ng-container vi>Đọc case study</ng-container>
-              </landing-t>
+              {{ 'documentEngine.cta.action' | landingCopy: locale() }}
             </landing-button>
           </a>
         </div>

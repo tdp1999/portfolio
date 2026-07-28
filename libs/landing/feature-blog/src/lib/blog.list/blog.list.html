@@ -1,12 +1,12 @@
-<landing-page-shell [breadcrumb]="breadcrumb" align="center">
-  <span hero-heading>Writing.</span>
-  <p hero-lede>Long-form deep-dives, short notes, and the occasional retro from building this portfolio.</p>
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>{{ 'common.page.writing' | landingCopy: locale() }}.</span>
+  <p hero-lede>{{ 'blog.lede' | landingCopy: locale() }}</p>
 
   <!-- ─── Featured strip (V1+V3 hybrid per ADR-018) ──────────────── -->
   @if (stripVariant() === 'v1') {
     <section class="blog-featured" aria-labelledby="blog-featured-h">
       <landing-container size="wide">
-        <h2 id="blog-featured-h" class="sr-only">Featured posts</h2>
+        <h2 id="blog-featured-h" class="sr-only">{{ 'blog.a11y.featured' | landingCopy: locale() }}</h2>
 
         <!-- Lead hero — shared by the desktop grid and the compact (< tablet) layout. -->
         <ng-template #v1HeroCard let-hero>
@@ -123,7 +123,7 @@
   } @else if (stripVariant() === 'v3') {
     <section class="blog-featured" aria-labelledby="blog-featured-h">
       <landing-container size="wide">
-        <h2 id="blog-featured-h" class="sr-only">Featured posts</h2>
+        <h2 id="blog-featured-h" class="sr-only">{{ 'blog.a11y.featured' | landingCopy: locale() }}</h2>
 
         <!-- Lead hero — shared by the desktop grid and the compact (< tablet) layout. -->
         <ng-template #v3HeroCard let-hero>
@@ -248,16 +248,21 @@
   <!-- ─── Archive list ─────────────────────────────────────────────── -->
   <section class="blog-archive" aria-labelledby="blog-archive-h">
     <landing-container size="wide">
-      <h2 id="blog-archive-h" class="sr-only">All posts</h2>
+      <h2 id="blog-archive-h" class="sr-only">{{ 'blog.allPosts' | landingCopy: locale() }}</h2>
 
       <div class="list-toolbar">
-        <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="post" />
+        <landing-results-count
+          [visible]="visibleCount()"
+          [total]="totalCount()"
+          [unit]="'blog.unit.one' | landingCopy: locale()"
+          [unitPlural]="'blog.unit.other' | landingCopy: locale()"
+        />
         <div class="list-toolbar__view">
-          <landing-view-toggle [options]="viewOptions" [value]="viewMode()" (valueChange)="setView($event)" />
+          <landing-view-toggle [options]="viewOptions()" [value]="viewMode()" (valueChange)="setView($event)" />
         </div>
         <div class="list-toolbar__sort">
           <landing-segmented
-            [segments]="sortOptions"
+            [segments]="sortOptions()"
             [active]="sortKey()"
             (activeChange)="setSort($event)"
             variant="hairline"
@@ -270,15 +275,19 @@
         <div class="list-controls__search">
           <landing-input
             [formControl]="searchControl"
-            placeholder="Search posts by title or excerpt…"
+            [placeholder]="'blog.search.placeholder' | landingCopy: locale()"
             inputmode="search"
             autocomplete="off"
             [clearable]="true"
           />
         </div>
-        <div class="list-controls__chips" role="group" aria-label="Category filter">
+        <div
+          class="list-controls__chips"
+          role="group"
+          [attr.aria-label]="'a11y.group.categoryFilter' | landingCopy: locale()"
+        >
           <landing-filter-chip
-            label="All"
+            [label]="'blog.category.all' | landingCopy: locale()"
             [selected]="selectedCategory() === null"
             (selectionChange)="setCategory(null)"
           />
@@ -293,11 +302,13 @@
       </div>
 
       @if (archiveLoading()) {
-        <landing-loading-spinner message="Loading posts…" />
+        <landing-loading-spinner [message]="'blog.loading' | landingCopy: locale()" />
       } @else if (archiveEmpty()) {
         <div class="list-empty">
-          <landing-empty-state icon="folder-open" message="No posts match the current filters." />
-          <button type="button" class="list-empty__clear" (click)="clearFilters()">Clear filters</button>
+          <landing-empty-state icon="folder-open" [message]="'blog.empty.filtered' | landingCopy: locale()" />
+          <button type="button" class="list-empty__clear" (click)="clearFilters()">
+            {{ 'blog.clearFilters' | landingCopy: locale() }}
+          </button>
         </div>
       } @else {
         @switch (viewMode()) {

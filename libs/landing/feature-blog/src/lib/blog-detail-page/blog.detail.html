@@ -1,6 +1,6 @@
 <article class="blog-detail-shell">
   <landing-container size="wide" class="text-center">
-    <nav class="blog-detail__breadcrumb" aria-label="Breadcrumb">
+    <nav class="blog-detail__breadcrumb" [attr.aria-label]="'a11y.nav.breadcrumb' | landingCopy: locale()">
       <landing-breadcrumb [items]="breadcrumb()" align="center" />
     </nav>
   </landing-container>
@@ -10,8 +10,8 @@
        collapses to inline block inside the article below that breakpoint. -->
   @if (post(); as p) {
     @if (!hideToc() && toc().length > 0) {
-      <aside class="blog-floating-toc" aria-label="On this page (floating)">
-        <landing-toc-sidebar [sections]="toc()" label="On this page" />
+      <aside class="blog-floating-toc" [attr.aria-label]="'blog.a11y.floatingToc' | landingCopy: locale()">
+        <landing-toc-sidebar [sections]="toc()" />
       </aside>
     }
 
@@ -27,9 +27,9 @@
             }
             <div class="blog-hero__meta">
               <span>{{ publishedDate() }}</span>
-              @if (p.readTimeMinutes) {
+              @if (readTimeLabel(); as readTime) {
                 <span aria-hidden="true">·</span>
-                <span>{{ p.readTimeMinutes }} min read</span>
+                <span>{{ readTime }}</span>
               }
               @if (p.author?.name; as authorName) {
                 <span aria-hidden="true">·</span>
@@ -47,7 +47,7 @@
               </div>
 
               <div class="blog-hero__share">
-                <landing-blog-share-row [slug]="p.slug" [title]="p.title" [compact]="true" />
+                <landing-blog-share-row [slug]="p.slug" [title]="p.title" [locale]="locale()" [compact]="true" />
               </div>
             </div>
 
@@ -98,7 +98,9 @@
         <footer class="blog-footer">
           @if (p.relatedPosts.length > 0) {
             <section class="related-block" aria-labelledby="related-h">
-              <h2 id="related-h" class="related-block__title">Related posts</h2>
+              <h2 id="related-h" class="related-block__title">
+                {{ 'blog.relatedPosts' | landingCopy: locale() }}
+              </h2>
               <div class="related-grid">
                 @for (r of p.relatedPosts; track r.slug) {
                   <a
@@ -122,21 +124,17 @@
             </section>
           }
 
-          <aside class="blog-signature" aria-label="About the author">
+          <aside class="blog-signature" [attr.aria-label]="'blog.a11y.authorBio' | landingCopy: locale()">
             <brand-monogram class="blog-signature__avatar" />
             <div class="blog-signature__body">
               <brand-wordmark class="blog-signature__name" />
-              <p class="blog-signature__bio">
-                I build long-lived web systems — currently focused on Angular SSR, Nx monorepos, and the small rituals
-                that keep design and engineering honest. This site is my notebook in public: retrospectives, deep dives,
-                and the occasional opinion I'm willing to defend.
-              </p>
+              <p class="blog-signature__bio">{{ 'blog.authorBio' | landingCopy: locale() }}</p>
               <p class="blog-signature__links">
-                <a routerLink="/about">About</a>
+                <a routerLink="/about">{{ 'common.page.about' | landingCopy: locale() }}</a>
                 <span aria-hidden="true">·</span>
-                <a routerLink="/blog">All posts</a>
+                <a routerLink="/blog">{{ 'blog.allPosts' | landingCopy: locale() }}</a>
                 <span aria-hidden="true">·</span>
-                <a routerLink="/projects">Projects</a>
+                <a routerLink="/projects">{{ 'common.page.projects' | landingCopy: locale() }}</a>
               </p>
             </div>
           </aside>
@@ -146,7 +144,7 @@
   } @else if (loading()) {
     <section class="blog-loading" aria-busy="true" aria-live="polite">
       <landing-container>
-        <landing-loading-spinner message="Loading post…" />
+        <landing-loading-spinner [message]="'blog.detail.loading' | landingCopy: locale()" />
       </landing-container>
     </section>
   } @else if (notFound()) {
@@ -154,10 +152,12 @@
       <landing-container>
         <landing-empty-state
           icon="file-x"
-          title="Post not found"
-          message="This article may have been moved, unpublished, or never existed."
+          [title]="'blog.detail.notFound.title' | landingCopy: locale()"
+          [message]="'blog.detail.notFound.message' | landingCopy: locale()"
         >
-          <a routerLink="/blog" class="blog-not-found__link">← Browse all articles</a>
+          <a routerLink="/blog" class="blog-not-found__link">
+            ← {{ 'blog.detail.browseAll' | landingCopy: locale() }}
+          </a>
         </landing-empty-state>
       </landing-container>
     </section>

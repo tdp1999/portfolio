@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { LandingScrollspyService } from './landing-scrollspy.service';
 import { InPageSection } from './section.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Vertical section-position dots fixed to the right edge of the viewport.
@@ -13,7 +15,7 @@ import { InPageSection } from './section.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   template: `
-    <nav class="fixed right-6 top-1/2 z-30 -translate-y-1/2" [attr.aria-label]="label()">
+    <nav class="fixed right-6 top-1/2 z-30 -translate-y-1/2" [attr.aria-label]="labelText()">
       <ul class="flex flex-col gap-3">
         @for (s of sections(); track s.id) {
           <li>
@@ -46,7 +48,10 @@ export class SectionDots {
   private readonly scrollspy = inject(LandingScrollspyService);
 
   readonly sections = input.required<readonly InPageSection[]>();
-  readonly label = input('Sections');
+  readonly label = input('');
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly labelText = computed(() => this.label() || resolveCopy('a11y.group.sections', this.locale()));
 
   readonly active = computed(() => this.scrollspy.active());
 }

@@ -19,6 +19,9 @@ import {
   Link,
   SocialRow,
   TypeOutDirective,
+  LandingCopyPipe,
+  LandingLocaleService,
+  resolveCopy,
 } from '@portfolio/landing/shared/ui';
 import { type SocialLink } from '@portfolio/shared/types';
 import { type WorkingHours } from '@portfolio/landing/shared/data-access';
@@ -40,7 +43,18 @@ import { formatOffset, shortTimezoneLabel, formatHoursInTimezone } from './home.
 @Component({
   selector: 'landing-home-bio-card-grid',
   standalone: true,
-  imports: [Card, Container, CopyToClipboardDirective, Eyebrow, Icon, Background, Link, SocialRow, TypeOutDirective],
+  imports: [
+    Card,
+    Container,
+    CopyToClipboardDirective,
+    Eyebrow,
+    Icon,
+    Background,
+    Link,
+    SocialRow,
+    TypeOutDirective,
+    LandingCopyPipe,
+  ],
   templateUrl: './home.bio-card-grid.html',
   styleUrl: './home.bio-card-grid.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +62,8 @@ import { formatOffset, shortTimezoneLabel, formatHoursInTimezone } from './home.
 export class HomeBioCardGrid {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
+  /** Own locale, not a caller input: every label in this grid is this component's copy. */
+  protected readonly locale = inject(LandingLocaleService).locale;
 
   readonly fullName = input<string>('');
   readonly title = input<string>('');
@@ -76,7 +92,7 @@ export class HomeBioCardGrid {
 
   /**
    * Owner's working hours — sourced from `Profile.workingHours` (task 322).
-   * Falls back to `09:00–18:00` when the API hasn't been populated yet so
+   * Falls back to `09:00-18:00` when the API hasn't been populated yet so
    * SSR/initial paint stays stable in fresh environments.
    */
   private readonly ownerHoursDefault = { start: '09:00', end: '18:00' } as const;
@@ -84,7 +100,8 @@ export class HomeBioCardGrid {
   private readonly ownerHoursLabel = computed(() => {
     const tzShort = shortTimezoneLabel(this.primaryTimezone());
     const { start, end } = this.ownerHours();
-    return `${start}–${end} ${tzShort}`;
+    // ASCII hyphen — see the note on `formatHoursInTimezone`.
+    return `${start}-${end} ${tzShort}`;
   });
 
   private readonly visitorTimezone = computed(() => {
@@ -119,6 +136,16 @@ export class HomeBioCardGrid {
   /** Hide the toggle when visitor's timezone matches the owner's primary. */
   protected readonly showHoursToggle = computed(
     () => this.visitorTimezone() !== this.primaryTimezone() && this.localHoursLabel() !== this.ownerHoursLabel()
+  );
+
+  protected readonly hoursToggleLabel = computed(() =>
+    resolveCopy(
+      this.hoursMode() === 'owner' ? 'home.bio.a11y.hoursToLocal' : 'home.bio.a11y.hoursToOwner',
+      this.locale()
+    )
+  );
+  protected readonly copyEmailLabel = computed(() =>
+    resolveCopy('a11y.button.copyValue', this.locale(), { v: this.email() })
   );
 
   protected readonly hoursMode = signal<'owner' | 'local'>('owner');

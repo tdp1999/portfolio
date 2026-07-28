@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Tooltip } from '../tooltip';
 import type { ViewToggleOption } from './view-toggle.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Icon segmented control for switching between feed layouts (row / grid / timeline).
@@ -26,7 +28,7 @@ import type { ViewToggleOption } from './view-toggle.types';
   standalone: true,
   imports: [Icon, Tooltip],
   template: `
-    <div class="lvt" role="radiogroup" [attr.aria-label]="ariaLabel()">
+    <div class="lvt" role="radiogroup" [attr.aria-label]="ariaLabelText()">
       @for (option of options(); track option.id) {
         <!--
           align="end" → bubbles open leftward (right edge pinned to the trigger).
@@ -100,7 +102,13 @@ import type { ViewToggleOption } from './view-toggle.types';
 export class ViewToggle {
   readonly options = input.required<readonly ViewToggleOption[]>();
   readonly value = input.required<string>();
-  readonly ariaLabel = input<string>('View layout');
+  /** Empty default so the component can resolve a localized one; a caller's value still wins. */
+  readonly ariaLabel = input<string>('');
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly ariaLabelText = computed(
+    () => this.ariaLabel() || resolveCopy('a11y.group.viewLayout', this.locale())
+  );
 
   readonly valueChange = output<string>();
 

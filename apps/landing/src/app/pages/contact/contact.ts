@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { merge, startWith } from 'rxjs';
 import {
@@ -20,7 +19,6 @@ import {
   ContactFormService,
   type ContactPurpose,
   isContactPurpose,
-  mapContactSubmitError,
   ProfileService,
 } from '@portfolio/landing/shared/data-access';
 import {
@@ -29,14 +27,20 @@ import {
   FormField,
   Globe,
   Input,
+  LandingCopyPipe,
+  LandingCopyService,
   LandingLocaleService,
   Link,
   PageShell,
   Segmented,
   T,
   Textarea,
+  resolveCopy,
   type BreadcrumbItem,
+  type LandingCopyKey,
   type SegmentOption,
+  mapContactSubmitError,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
 import type { SocialPlatform } from '@portfolio/shared/types';
 import { LIMITS } from '@portfolio/shared/validation';
@@ -67,7 +71,20 @@ declare global {
   selector: 'landing-contact',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, Container, Globe, Link, PageShell, T, Segmented, Input, Textarea, Checkbox, FormField],
+  imports: [
+    ReactiveFormsModule,
+    Container,
+    Globe,
+    Link,
+    PageShell,
+    T,
+    Segmented,
+    Input,
+    Textarea,
+    Checkbox,
+    FormField,
+    LandingCopyPipe,
+  ],
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
 })
@@ -80,10 +97,10 @@ export class Contact {
   private readonly route = inject(ActivatedRoute);
   private readonly contactService = inject(ContactFormService);
   protected readonly locale = inject(LandingLocaleService).locale;
+  private readonly copy = inject(LandingCopyService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly injector = inject(Injector);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly state = signal<FormState>('idle');
@@ -137,89 +154,84 @@ export class Contact {
     { initialValue: null }
   );
 
+  /**
+   * Validation messages, one per control.
+   *
+   * These call `resolveCopy` rather than `copy.t()`: `t()` *creates* a computed,
+   * so calling it inside a computed allocates a fresh reactive node on every
+   * recomputation and throws it away. Inside a computed that already tracks
+   * `locale()`, the pure function is the whole job.
+   */
   protected readonly nameError = computed(() => {
     void this.formEvents();
     const c = this.form.controls.name;
     if (c.valid || !c.touched) return null;
-    return this.locale() === 'vi' ? 'Vui lòng nhập tên.' : 'Please enter your name.';
+    return resolveCopy('contact.form.name.error', this.locale());
   });
 
   protected readonly emailError = computed(() => {
     void this.formEvents();
     const c = this.form.controls.email;
     if (c.valid || !c.touched) return null;
-    return this.locale() === 'vi' ? 'Vui lòng nhập email hợp lệ.' : 'Please enter a valid email address.';
+    return resolveCopy('contact.form.email.error', this.locale());
   });
 
   protected readonly messageError = computed(() => {
     void this.formEvents();
     const c = this.form.controls.message;
     if (c.valid || !c.touched) return null;
-    return this.locale() === 'vi'
-      ? 'Vui lòng viết tin nhắn (10–5000 ký tự).'
-      : 'Please write a message (10–5000 characters).';
+    return resolveCopy('contact.form.message.error', this.locale());
   });
 
   protected readonly consentError = computed(() => {
     void this.formEvents();
     const c = this.form.controls.consent;
     if (c.valid || !c.touched) return null;
-    return this.locale() === 'vi' ? 'Bạn cần đồng ý trước khi gửi.' : 'You must agree before sending.';
+    return resolveCopy('contact.form.consent.error', this.locale());
   });
 
-  protected readonly messageHint = computed(() =>
-    this.locale() === 'vi' ? 'Tối thiểu 10 ký tự, tối đa 5000.' : '10–5000 characters.'
-  );
+  protected readonly messageHint = this.copy.t('contact.form.message.hint');
 
   /**
-   * Attribute-bound strings — `<landing-t>` is for content projection; attributes
-   * (label, aria-label) can't host a component, so a TS computed is the lightest
-   * pattern. Pulled together so future translation extraction has one home.
+   * Attribute-bound strings. `<landing-t>` is content projection, and an
+   * attribute (label, aria-label) cannot host a component — so these resolve
+   * through the copy dictionary instead.
    */
-  protected readonly purposeAriaLabel = computed(() =>
-    this.locale() === 'vi' ? 'Lý do liên hệ' : 'Reason for contact'
-  );
-  protected readonly nameLabel = computed(() => (this.locale() === 'vi' ? 'Tên' : 'Name'));
-  protected readonly messageLabel = computed(() => (this.locale() === 'vi' ? 'Tin nhắn' : 'Message'));
-  protected readonly copyAriaLabel = computed(() => (this.locale() === 'vi' ? 'Sao chép email' : 'Copy email'));
+  protected readonly purposeAriaLabel = this.copy.t('contact.form.purposeAria');
+  protected readonly nameLabel = this.copy.t('contact.form.name.label');
+  protected readonly messageLabel = this.copy.t('contact.form.message.label');
+  protected readonly copyAriaLabel = this.copy.t('contact.channels.copyAria');
 
   protected readonly purposeSegments = computed<readonly SegmentOption[]>(() => {
-    const isVi = this.locale() === 'vi';
-    const labels: Record<ContactPurpose, [string, string]> = {
-      hire: ['Hire me', 'Tuyển dụng'],
-      freelance: ['Freelance', 'Freelance'],
-      collab: ['Collab', 'Hợp tác'],
-      press: ['Press / podcast', 'Báo chí'],
-      hi: ['Just say hi', 'Chào hỏi'],
+    const locale = this.locale();
+    const labels: Record<ContactPurpose, LandingCopyKey> = {
+      hire: 'contact.purpose.hire',
+      freelance: 'contact.purpose.freelance',
+      collab: 'contact.purpose.collab',
+      press: 'contact.purpose.press',
+      hi: 'contact.purpose.hi',
     };
     // 'hi' (the default-active purpose) leads so the chip strip opens at its
     // start on mobile — otherwise the horizontal-scroll strip auto-scrolls to
     // the active chip at the far end, hiding the other purposes behind a
     // back-chevron and half-cutting the last visible one.
     const order: readonly ContactPurpose[] = ['hi', ...CONTACT_PURPOSES.filter((id) => id !== 'hi')];
-    return order.map((id) => ({ id, label: isVi ? labels[id][1] : labels[id][0] }));
+    return order.map((id) => ({ id, label: resolveCopy(labels[id], locale) }));
   });
 
-  protected readonly heroCopy = computed(() =>
-    this.locale() === 'vi'
-      ? 'Nếu bạn muốn trò chuyện sâu, hay chỉ tán gẫu nhanh về bất cứ chuyện gì, bạn có thể tìm mình trên mạng xã hội, hoặc gửi tin nhắn ngay tại đây. Mình thường phản hồi trong vòng một ngày.'
-      : "If you want to have a deep conversation, or just a quick chat about anything, you can find me on social media, or send me a message here. I'll usually reply within a day."
-  );
+  protected readonly heroCopy = this.copy.t('contact.hero.lede');
 
   /** Consent label text — the "Privacy Policy" link is rendered separately in
    *  the template (so it routes via Angular). The signal copy intentionally
    *  ends before that phrase to avoid "...per the Privacy Policy. Privacy
    *  Policy" double-text alongside the link. */
-  protected readonly consentLabel = computed(() =>
-    this.locale() === 'vi'
-      ? 'Tôi đồng ý cho phép xử lý dữ liệu để nhận phản hồi, theo'
-      : 'I agree to the processing of my data to receive a reply, per the'
-  );
+  protected readonly consentLabel = this.copy.t('contact.form.consent.label');
 
-  protected readonly submitLabel = computed(() => {
-    if (this.state() === 'submitting') return this.locale() === 'vi' ? 'Đang gửi…' : 'Sending…';
-    return this.locale() === 'vi' ? 'Gửi tin nhắn' : 'Send message';
-  });
+  private readonly submitIdle = this.copy.t('contact.form.submit.idle');
+  private readonly submitBusy = this.copy.t('contact.form.submit.busy');
+  protected readonly submitLabel = computed(() =>
+    this.state() === 'submitting' ? this.submitBusy() : this.submitIdle()
+  );
 
   /**
    * Channels surfaced beside the form. Profile-driven — `Profile.email` is the
@@ -231,7 +243,7 @@ export class Contact {
     const profile = this.profile();
     if (!profile) return [];
 
-    const isVi = this.locale() === 'vi';
+    const isVi = this.locale() === 'vi'; // Zalo is gated to the VN audience — logic, not copy
     const linksByPlatform = new Map<SocialPlatform, string>(
       profile.socialLinks.map((s) => [s.platform, s.url] as const)
     );
@@ -282,34 +294,39 @@ export class Contact {
     return rows;
   });
 
+  private readonly turnstileError = this.copy.t('contact.turnstile.error');
+  private readonly turnstileExpired = this.copy.t('contact.turnstile.expired');
   protected readonly turnstileMessage = computed(() => {
-    const vi = this.locale() === 'vi';
     switch (this.turnstileStatus()) {
       case 'error':
-        return vi
-          ? 'Không tải được bước xác minh chống bot. Thử lại nhé.'
-          : "Couldn't load the bot challenge. Try again.";
+        return this.turnstileError();
       case 'expired':
-        return vi ? 'Bước xác minh đã hết hạn. Bấm để làm lại.' : 'The challenge expired. Tap to refresh it.';
+        return this.turnstileExpired();
       default:
         return '';
     }
   });
 
-  protected readonly turnstileRetryLabel = computed(() => (this.locale() === 'vi' ? 'Tải lại' : 'Refresh'));
+  protected readonly turnstileRetryLabel = this.copy.t('contact.turnstile.retry');
 
   // ── Plain state ───────────────────────────────────────────────────
   private turnstileWidgetId: string | null = null;
-  protected readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Contact' }];
+  protected readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.contact', locale) },
+    ];
+  });
 
   constructor() {
-    const title = 'Get in touch | Phuong Tran';
-    const description =
-      'Reach out about a full-time role, a freelance project, collaboration, press, or just to say hi. Usually reply within a few days.';
-    this.title.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: description });
+    // In an effect so the tags follow a locale change, matching /about and /404.
+    effect(() => {
+      const locale = this.locale();
+      const title = resolveCopy('contact.meta.title', locale);
+      const description = resolveCopy('contact.meta.description', locale);
+      this.seo.apply({ title, description });
+    });
 
     effect(() => {
       const map = this.queryPurpose();
@@ -416,9 +433,7 @@ export class Contact {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       this.state.set('error');
-      this.errorMessage.set(
-        this.locale() === 'vi' ? 'Vui lòng điền đầy đủ các trường bắt buộc.' : 'Please fill out the required fields.'
-      );
+      this.errorMessage.set(resolveCopy('contact.form.error.required', this.locale()));
       return;
     }
 
@@ -433,11 +448,7 @@ export class Contact {
     const token = this.turnstileToken();
     if (!TURNSTILE_SITE_KEY.startsWith('placeholder') && !token) {
       this.state.set('error');
-      this.errorMessage.set(
-        this.locale() === 'vi'
-          ? 'Vui lòng hoàn tất bước xác minh chống bot.'
-          : 'Please complete the bot challenge before submitting.'
-      );
+      this.errorMessage.set(resolveCopy('contact.form.error.challenge', this.locale()));
       return;
     }
 

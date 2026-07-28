@@ -24,7 +24,7 @@
 
     <!-- Toolbar: results-count (left) · clear · filter-toggle (right) -->
     <div class="afb-toolbar">
-      <landing-results-count [visible]="filteredCount()" [total]="total" unit="project" />
+      <landing-results-count [visible]="filteredCount()" [total]="total" unit="project" unitPlural="projects" />
 
       @if (activeFilterCount() > 0) {
         <button type="button" class="afb-toolbar__clear" (click)="clearAll()">Clear all</button>

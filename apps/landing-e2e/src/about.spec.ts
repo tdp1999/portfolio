@@ -292,7 +292,7 @@ test.describe('Landing - /about - locale switch', () => {
 
     await expect(aboutVi.heroHeading).not.toHaveText(heroEn);
     await expect(aboutVi.principles.first().locator('.hit__claim')).not.toHaveText(principleEn);
-    await expect(aboutVi.failuresSection.getByRole('heading')).toContainText(/Ba ghi chú|lâm sàng/);
+    await expect(aboutVi.failuresSection.getByRole('heading')).toContainText(/Ba ghi chú|thẳng thắn/);
     await expect(viPage).toHaveTitle('Về tôi — Phương Trần');
 
     await viPage.close();

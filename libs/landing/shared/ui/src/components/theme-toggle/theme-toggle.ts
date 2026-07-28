@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { LandingThemeService } from '../../services/theme/theme.service';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 
 @Component({
@@ -58,7 +60,12 @@ export class ThemeToggle {
   private readonly themeService = inject(LandingThemeService);
 
   readonly isDark = computed(() => this.themeService.theme() === 'dark');
-  readonly ariaLabel = computed(() => (this.isDark() ? 'Switch to light theme' : 'Switch to dark theme'));
+  private readonly locale = inject(LandingLocaleService).locale;
+  /** Names the *destination* theme, not the current one — a toggle's label has to
+   *  say what pressing it does. */
+  readonly ariaLabel = computed(() =>
+    resolveCopy(this.isDark() ? 'a11y.button.themeToLight' : 'a11y.button.themeToDark', this.locale())
+  );
 
   toggle(): void {
     this.themeService.toggle();

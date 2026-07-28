@@ -1,6 +1,5 @@
 import { Directive, input } from '@angular/core';
-
-type UmamiTracker = { track: (event: string, data?: Record<string, unknown>) => void };
+import type { UmamiTracker } from './umami-event.types';
 
 /**
  * Fires a Umami custom event on click, WITHOUT using the native `data-umami-event`

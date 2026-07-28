@@ -16,7 +16,8 @@ import { HydrationSafeActiveDirective } from '../../directives/hydration-safe-ac
 import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
-import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
+import { resolveCopy } from '../../services/copy';
+import { LANGUAGES, navItems, SCROLL_THRESHOLD } from './header.data';
 
 @Component({
   selector: 'landing-header',
@@ -65,8 +66,8 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
             <div
               class="header-pill pointer-events-auto flex items-center gap-4 rounded-full border border-landing-border bg-[var(--landing-header-bg)] px-5 py-2 backdrop-blur-md shadow-sm"
             >
-              <nav class="hidden items-center gap-6 tablet:flex" aria-label="Primary">
-                @for (item of navItems; track item.path) {
+              <nav class="hidden items-center gap-6 tablet:flex" [attr.aria-label]="primaryNavLabel()">
+                @for (item of navItems(); track item.path) {
                   <a
                     [routerLink]="item.path"
                     [hydrationSafeActive]="item.path"
@@ -78,7 +79,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                     {{ item.label }}
                   </a>
                 }
-                <landing-mega-menu triggerLabel="More" align="screen" [columns]="2" [items]="moreItems()" />
+                <landing-mega-menu [triggerLabel]="moreLabel()" align="screen" [columns]="2" [items]="moreItems()" />
               </nav>
 
               <span class="hidden h-4 w-px bg-landing-border tablet:inline-block" aria-hidden="true"></span>
@@ -91,7 +92,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 triggerValue="code"
                 [showChevron]="false"
                 align="right"
-                ariaLabel="Switch language"
+                [ariaLabel]="switchLanguageLabel()"
               />
 
               <button
@@ -111,7 +112,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 type="button"
                 class="inline-flex tablet:hidden h-9 w-9 items-center justify-center rounded-md text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
                 (click)="openMenu()"
-                aria-label="Open menu"
+                [attr.aria-label]="openMenuLabel()"
                 umamiEvent="menu-open"
                 aria-haspopup="dialog"
                 aria-controls="mobile-menu-sheet"
@@ -142,8 +143,11 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
               <brand-monogram class="header-logo" />
             </a>
 
-            <nav class="hidden items-center gap-8 tablet:flex justify-self-center" aria-label="Primary">
-              @for (item of navItems; track item.path) {
+            <nav
+              class="hidden items-center gap-8 tablet:flex justify-self-center"
+              [attr.aria-label]="primaryNavLabel()"
+            >
+              @for (item of navItems(); track item.path) {
                 <a
                   [routerLink]="item.path"
                   [hydrationSafeActive]="item.path"
@@ -155,7 +159,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                   {{ item.label }}
                 </a>
               }
-              <landing-mega-menu triggerLabel="More" align="screen" [columns]="2" [items]="moreItems()" />
+              <landing-mega-menu [triggerLabel]="moreLabel()" align="screen" [columns]="2" [items]="moreItems()" />
             </nav>
 
             <div class="flex items-center gap-4 justify-self-end">
@@ -167,7 +171,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 triggerValue="code"
                 [showChevron]="false"
                 align="right"
-                ariaLabel="Switch language"
+                [ariaLabel]="switchLanguageLabel()"
               />
 
               <button
@@ -187,7 +191,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
                 type="button"
                 class="inline-flex tablet:hidden h-9 w-9 items-center justify-center rounded-md text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
                 (click)="openMenu()"
-                aria-label="Open menu"
+                [attr.aria-label]="openMenuLabel()"
                 umamiEvent="menu-open"
                 aria-haspopup="dialog"
                 aria-controls="mobile-menu-sheet"
@@ -212,7 +216,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
         class="fixed inset-0 z-[60] flex flex-col overflow-y-auto tablet:hidden pointer-events-auto bg-[var(--landing-ink-0)] header-fade-in"
         role="dialog"
         aria-modal="true"
-        aria-label="Site menu"
+        [attr.aria-label]="siteMenuLabel()"
         cdkTrapFocus
         [cdkTrapFocusAutoCapture]="true"
       >
@@ -228,7 +232,7 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
             type="button"
             class="inline-flex h-9 w-9 items-center justify-center rounded-md text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
             (click)="closeMenu()"
-            aria-label="Close menu"
+            [attr.aria-label]="closeMenuLabel()"
           >
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
               <path d="M5 5l12 12M17 5L5 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -239,8 +243,8 @@ import { LANGUAGES, NAV_ITEMS, SCROLL_THRESHOLD } from './header.data';
         <!-- Direction C · arrow-list, airy — primary links with a trailing arrow, generous rhythm.
              max-w cap keeps the label↔arrow pairing tight across the sheet's full <tablet range
              (the sheet can be up to ~767px wide; without the cap the arrow strands far right). -->
-        <nav class="flex w-full max-w-[30rem] flex-col px-6 pt-8" aria-label="Primary">
-          @for (item of navItems; track item.path) {
+        <nav class="flex w-full max-w-[30rem] flex-col px-6 pt-8" [attr.aria-label]="primaryNavLabel()">
+          @for (item of navItems(); track item.path) {
             <a
               [routerLink]="item.path"
               [hydrationSafeActive]="item.path"
@@ -286,7 +290,6 @@ export class Header {
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV');
 
-  readonly navItems = NAV_ITEMS;
   readonly languages = LANGUAGES;
   readonly scrolled = signal(false);
   /** Mobile full-screen nav sheet (< tablet). Closed on route change, Esc, or link tap;
@@ -296,6 +299,9 @@ export class Header {
   private readonly localeService = inject(LandingLocaleService);
   /** Current locale — bound to {@link LandingLocaleService}. */
   readonly lang = this.localeService.locale;
+
+  readonly navItems = computed(() => navItems(this.lang()));
+  protected readonly moreLabel = computed(() => resolveCopy('nav.more', this.lang()));
 
   protected readonly palette = inject(CommandPaletteService);
   private readonly shortcuts = inject(KeyboardShortcutService);
@@ -327,9 +333,18 @@ export class Header {
   protected readonly docsBarSolid = computed(() => this.isDocs() && this.scrolled());
 
   protected readonly kbdMod = computed(() => (this.shortcuts.isMac() ? '⌘' : 'Ctrl'));
-  protected readonly paletteAriaLabel = computed(() => `Open command palette (${this.kbdMod()}+K)`);
+  protected readonly paletteAriaLabel = computed(() =>
+    resolveCopy('a11y.palette.open', this.lang(), { v: `${this.kbdMod()}+K` })
+  );
+  protected readonly primaryNavLabel = computed(() => resolveCopy('a11y.nav.primary', this.lang()));
+  protected readonly openMenuLabel = computed(() => resolveCopy('a11y.button.openMenu', this.lang()));
+  protected readonly closeMenuLabel = computed(() => resolveCopy('a11y.button.closeMenu', this.lang()));
+  protected readonly siteMenuLabel = computed(() => resolveCopy('a11y.nav.siteMenu', this.lang()));
+  protected readonly switchLanguageLabel = computed(() => resolveCopy('a11y.button.switchLanguage', this.lang()));
 
   readonly moreItems = computed<readonly MegaMenuItem[]>(() => {
+    const locale = this.lang();
+    const explore = resolveCopy('nav.explore', locale);
     const items: MegaMenuItem[] = [];
 
     // Products lead the menu as the featured first column. Today there is one, so it
@@ -338,34 +353,34 @@ export class Header {
     // `product: true` and the column auto-switches to a stacked "Products" list —
     // no layout or caller change needed.
     items.push({
-      label: 'Document Engine',
-      description: 'A framework-agnostic rich-text engine for structured, versioned documents.',
+      label: resolveCopy('common.page.documentEngine', locale),
+      description: resolveCopy('nav.product.documentEngine.desc', locale),
       href: '/document-engine',
       iconName: 'file-pen',
       product: true,
-      cta: 'Explore the engine',
+      cta: resolveCopy('nav.product.documentEngine.cta', locale),
       image: '/menu/document-engine-light.webp',
       imageDark: '/menu/document-engine-dark.webp',
     });
 
     // Explore — utility / content links (framed icon + self-explanatory label).
     items.push(
-      { label: 'Blog', href: '/blog', section: 'Explore', iconName: 'pen-line' },
-      { label: 'Uses', href: '/uses', section: 'Explore', iconName: 'wrench' },
-      { label: 'Colophon', href: '/colophon', section: 'Explore', iconName: 'layers' },
-      { label: 'DDL', href: '/ddl', section: 'Explore', iconName: 'palette' }
+      { label: resolveCopy('common.page.blog', locale), href: '/blog', section: explore, iconName: 'pen-line' },
+      { label: resolveCopy('common.page.uses', locale), href: '/uses', section: explore, iconName: 'wrench' },
+      { label: resolveCopy('common.page.colophon', locale), href: '/colophon', section: explore, iconName: 'layers' },
+      { label: resolveCopy('common.page.ddl', locale), href: '/ddl', section: explore, iconName: 'palette' }
     );
 
     // Documents — downloadables.
     const resume = this.resumeUrl();
     if (resume) {
       items.push({
-        label: 'Resume',
+        label: resolveCopy('nav.resume', locale),
         hint: 'PDF',
         href: resume,
         kind: 'download',
         iconName: 'file-down',
-        section: 'Documents',
+        section: resolveCopy('nav.documents', locale),
       });
     }
 
@@ -373,21 +388,24 @@ export class Header {
   });
 
   /** The same items grouped by section for the mobile sheet — Products first, then
-   *  each titled section in first-seen order. Mirrors the desktop mega-menu shape. */
+   *  each titled section in first-seen order. Mirrors the desktop mega-menu shape.
+   *  Section titles arrive already localized on the items, so grouping by title
+   *  regroups correctly on a locale change without any extra bookkeeping. */
   readonly moreSections = computed<readonly { readonly title: string; readonly items: readonly MegaMenuItem[] }[]>(
     () => {
+      const locale = this.lang();
       const items = this.moreItems();
       const groups = new Map<string, MegaMenuItem[]>();
       for (const item of items) {
         if (item.product) continue;
-        const key = item.section ?? 'More';
+        const key = item.section ?? resolveCopy('nav.more', locale);
         const bucket = groups.get(key);
         if (bucket) bucket.push(item);
         else groups.set(key, [item]);
       }
       const out: { title: string; items: MegaMenuItem[] }[] = [];
       const products = items.filter((i) => i.product);
-      if (products.length) out.push({ title: 'Products', items: products });
+      if (products.length) out.push({ title: resolveCopy('nav.products', locale), items: products });
       for (const [title, groupItems] of groups) out.push({ title, items: groupItems });
       return out;
     }

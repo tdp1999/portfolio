@@ -8,22 +8,22 @@ import type { DdlDocWidth } from './ddl.types';
 // content column. Provided by DdlShell so every child injects the same instance.
 @Injectable()
 export class DdlDocsService {
-  private readonly _sections = signal<readonly InPageSection[]>([]);
-  readonly sections = this._sections.asReadonly();
+  private readonly sectionsSig = signal<readonly InPageSection[]>([]);
+  readonly sections = this.sectionsSig.asReadonly();
 
-  private readonly _width = signal<DdlDocWidth>('prose');
-  readonly width = this._width.asReadonly();
+  private readonly widthSig = signal<DdlDocWidth>('prose');
+  readonly width = this.widthSig.asReadonly();
 
   publish(sections: readonly InPageSection[]): void {
-    this._sections.set(sections);
+    this.sectionsSig.set(sections);
   }
 
   setWidth(width: DdlDocWidth): void {
-    this._width.set(width);
+    this.widthSig.set(width);
   }
 
   clear(): void {
-    this._sections.set([]);
-    this._width.set('prose');
+    this.sectionsSig.set([]);
+    this.widthSig.set('prose');
   }
 }

@@ -1,3 +1,5 @@
+import type { LandingCopyKey } from '@portfolio/landing/shared/ui';
+
 /**
  * Maps `ProfileAvailability` to the green/amber/grey status-dot states the
  * landing system already uses (`available` = pill green, `busy` = amber,
@@ -11,39 +13,14 @@ export const AVAILABILITY_TO_DOT: Record<string, 'available' | 'busy' | 'away'> 
   NOT_AVAILABLE: 'away',
 };
 
-export const EN_MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-] as const;
-
-export const VI_MONTHS = [
-  'Tháng 1',
-  'Tháng 2',
-  'Tháng 3',
-  'Tháng 4',
-  'Tháng 5',
-  'Tháng 6',
-  'Tháng 7',
-  'Tháng 8',
-  'Tháng 9',
-  'Tháng 10',
-  'Tháng 11',
-  'Tháng 12',
-] as const;
-
-export const AVAILABILITY_LABELS_VI: Record<string, string> = {
-  OPEN_TO_WORK: 'Sẵn sàng nhận việc',
-  FREELANCING: 'Đang nhận freelance',
-  EMPLOYED: 'Đang làm full-time',
-  NOT_AVAILABLE: 'Không nhận thêm',
+/**
+ * `ProfileAvailability` → copy key. The strings themselves live in
+ * `LANDING_COPY` (task 388); this map only says which key each enum member
+ * points at, so the label stays one lookup away from every other landing string.
+ */
+export const AVAILABILITY_COPY_KEYS: Record<string, LandingCopyKey> = {
+  OPEN_TO_WORK: 'profile.availability.openToWork',
+  FREELANCING: 'profile.availability.freelancing',
+  EMPLOYED: 'profile.availability.employed',
+  NOT_AVAILABLE: 'profile.availability.notAvailable',
 };

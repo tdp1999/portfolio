@@ -2,14 +2,17 @@
   <landing-container size="wide">
     <div class="home-get-in-touch__inner">
       <landing-section-header
-        [eyebrowLabel]="['06', 'Get in Touch']"
+        [eyebrowLabel]="['06', 'home.section.getInTouch' | landingCopy: locale()]"
         id="home-get-in-touch-heading"
         class="home-get-in-touch__header"
       >
-        Let's <em>talk</em>.
+        <landing-t [locale]="locale()">
+          <ng-container en>Let's <em>talk</em>.</ng-container>
+          <ng-container vi><em>Liên hệ</em>.</ng-container>
+        </landing-t>
       </landing-section-header>
 
-      <p class="home-get-in-touch__copy">{{ copy() }}</p>
+      <p class="home-get-in-touch__copy">{{ lede() }}</p>
 
       <div class="home-get-in-touch__ctas">
         @for (cta of ctas(); track cta.purpose) {

@@ -18,8 +18,12 @@
         } @else {
           <landing-browser-window class="project-hero__frame project-hero__frame--placeholder" [url]="project.slug">
             <div class="project-hero__placeholder">
-              <span class="project-hero__placeholder-label">image pending</span>
-              <span class="project-hero__placeholder-sub">cover screenshot not yet captured</span>
+              <span class="project-hero__placeholder-label">
+                {{ 'project.detail.imagePending' | landingCopy: locale() }}
+              </span>
+              <span class="project-hero__placeholder-sub">
+                {{ 'project.detail.imagePendingSub' | landingCopy: locale() }}
+              </span>
             </div>
           </landing-browser-window>
         }
@@ -35,7 +39,11 @@
         <!-- Below wide: Details + TOC as collapsible rails (2-col row on tablet/laptop, stacked on mobile) -->
         <div class="project-rails">
           <div class="project-rails__item">
-            <landing-show-more [maxHeight]="280" moreLabel="More details" lessLabel="Less details">
+            <landing-show-more
+              [maxHeight]="280"
+              [moreLabel]="'project.detail.moreDetails' | landingCopy: locale()"
+              [lessLabel]="'project.detail.lessDetails' | landingCopy: locale()"
+            >
               <ng-container [ngTemplateOutlet]="metaTpl" />
             </landing-show-more>
           </div>
@@ -51,7 +59,10 @@
         <!-- MIDDLE: reading column -->
         <article class="project-reading">
           <header class="project-reading__head">
-            <landing-eyebrow [label]="['case study', project.title]" tone="accent" />
+            <landing-eyebrow
+              [label]="['project.detail.caseStudy' | landingCopy: locale(), project.title]"
+              tone="accent"
+            />
             <h1 class="project-reading__title">{{ project.title }}</h1>
             @if (oneLiner()) {
               <p class="project-reading__deck">{{ oneLiner() }}</p>
@@ -78,22 +89,30 @@
             <!-- No rich-text body — synthesize sections from existing fields -->
             <div class="landing-prose">
               @if (description(); as text) {
-                <landing-heading id="overview" [level]="2">Overview</landing-heading>
+                <landing-heading id="overview" [level]="2">
+                  {{ 'project.detail.section.overview' | landingCopy: locale() }}
+                </landing-heading>
                 <p>{{ text }}</p>
               }
 
               @if (motivation(); as text) {
-                <landing-heading id="motivation" [level]="2">Motivation</landing-heading>
+                <landing-heading id="motivation" [level]="2">
+                  {{ 'project.detail.section.motivation' | landingCopy: locale() }}
+                </landing-heading>
                 <blockquote>{{ text }}</blockquote>
               }
 
               @if (role(); as text) {
-                <landing-heading id="role" [level]="2">My role</landing-heading>
+                <landing-heading id="role" [level]="2">
+                  {{ 'project.detail.section.role' | landingCopy: locale() }}
+                </landing-heading>
                 <p>{{ text }}</p>
               }
 
               @if (highlightBlocks().length > 0) {
-                <landing-heading id="highlights" [level]="2">Highlights</landing-heading>
+                <landing-heading id="highlights" [level]="2">
+                  {{ 'project.detail.section.highlights' | landingCopy: locale() }}
+                </landing-heading>
                 @for (h of highlightBlocks(); track $index; let i = $index) {
                   <div class="project-reading__highlight">
                     <h3 class="project-reading__sub">
@@ -103,15 +122,21 @@
                       }
                     </h3>
                     <div class="project-reading__cao">
-                      <span class="project-reading__label">Challenge</span>
+                      <span class="project-reading__label">
+                        {{ 'project.detail.cao.challenge' | landingCopy: locale() }}
+                      </span>
                       <rte-render-html [html]="h.challenge" />
                     </div>
                     <div class="project-reading__cao">
-                      <span class="project-reading__label">Approach</span>
+                      <span class="project-reading__label">
+                        {{ 'project.detail.cao.approach' | landingCopy: locale() }}
+                      </span>
                       <rte-render-html [html]="h.approach" />
                     </div>
                     <div class="project-reading__cao">
-                      <span class="project-reading__label">Outcome</span>
+                      <span class="project-reading__label">
+                        {{ 'project.detail.cao.outcome' | landingCopy: locale() }}
+                      </span>
                       <rte-render-html [html]="h.outcome" />
                     </div>
                   </div>
@@ -192,15 +217,21 @@
       </ng-template>
 
       <ng-template #tocTpl>
-        <landing-toc-sidebar [sections]="tocSections()" label="On this page" />
+        <landing-toc-sidebar [sections]="tocSections()" />
       </ng-template>
     </landing-container>
   </landing-section>
 } @else {
   <landing-section>
     <landing-container>
-      <landing-empty-state icon="folder-open" title="Project not found" message="That slug does not match any project.">
-        <landing-link href="/projects" [arrow]="true" class="mt-4">Back to projects</landing-link>
+      <landing-empty-state
+        icon="folder-open"
+        [title]="'project.detail.notFound.title' | landingCopy: locale()"
+        [message]="'project.detail.notFound.message' | landingCopy: locale()"
+      >
+        <landing-link href="/projects" [arrow]="true" class="mt-4">
+          {{ 'project.detail.backToProjects' | landingCopy: locale() }}
+        </landing-link>
       </landing-empty-state>
     </landing-container>
   </landing-section>

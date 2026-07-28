@@ -29,7 +29,7 @@
           }
         }
         <landing-link [href]="caseStudyHref()" [arrow]="true" [inline]="true" class="selected-work-fallback__read-more">
-          Read more
+          {{ 'home.selectedWork.readMore' | landingCopy: locale() }}
         </landing-link>
       </p>
     }

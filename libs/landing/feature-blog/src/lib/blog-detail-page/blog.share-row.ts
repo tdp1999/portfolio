@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID, viewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CopyToClipboardDirective, Icon, UmamiEventDirective } from '@portfolio/landing/shared/ui';
+import { CopyToClipboardDirective, Icon, UmamiEventDirective, resolveCopy } from '@portfolio/landing/shared/ui';
+import type { Locale } from '@portfolio/shared/types';
 
 /**
  * Share row for the blog detail page. Three actions:
@@ -17,13 +18,13 @@ import { CopyToClipboardDirective, Icon, UmamiEventDirective } from '@portfolio/
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CopyToClipboardDirective, Icon, UmamiEventDirective],
   template: `
-    <div class="share-row" [class.share-row--compact]="compact()" role="group" aria-label="Share">
+    <div class="share-row" [class.share-row--compact]="compact()" role="group" [attr.aria-label]="shareLabel()">
       <a
         class="share-row__btn"
         [href]="xUrl()"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Share on X"
+        [attr.aria-label]="shareXLabel()"
         umamiEvent="blog-share"
         [umamiData]="{ channel: 'x' }"
       >
@@ -37,7 +38,7 @@ import { CopyToClipboardDirective, Icon, UmamiEventDirective } from '@portfolio/
         [href]="linkedInUrl()"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Share on LinkedIn"
+        [attr.aria-label]="shareLinkedInLabel()"
         umamiEvent="blog-share"
         [umamiData]="{ channel: 'linkedin' }"
       >
@@ -50,15 +51,14 @@ import { CopyToClipboardDirective, Icon, UmamiEventDirective } from '@portfolio/
         type="button"
         class="share-row__btn"
         [landingCopyToClipboard]="absoluteUrl()"
-        #copy="landingCopyToClipboard"
-        [attr.aria-label]="copy.state() === 'copied' ? 'Link copied' : 'Copy link'"
-        [title]="copy.state() === 'copied' ? 'Copied' : 'Copy link'"
+        [attr.aria-label]="announcedCopyLabel()"
+        [title]="visibleCopyLabel()"
         umamiEvent="blog-share"
         [umamiData]="{ channel: 'copy' }"
       >
-        <landing-icon [name]="copy.state() === 'copied' ? 'check' : 'link'" [size]="iconSize()" />
+        <landing-icon [name]="copied() ? 'check' : 'link'" [size]="iconSize()" />
         @if (!compact()) {
-          <span>{{ copy.state() === 'copied' ? 'Copied' : 'Copy link' }}</span>
+          <span>{{ visibleCopyLabel() }}</span>
         }
       </button>
     </div>
@@ -109,8 +109,38 @@ export class BlogShareRow {
   readonly title = input.required<string>();
   /** Icon-only compact mode — drops the X / LinkedIn / Copy text labels. */
   readonly compact = input<boolean>(false);
+  /** The post's own language, passed down so the whole page reads in one language. */
+  readonly locale = input<Locale>('en');
 
   protected readonly iconSize = computed(() => (this.compact() ? 14 : 16));
+  protected readonly shareLabel = computed(() => resolveCopy('blog.share.group', this.locale()));
+  protected readonly shareXLabel = computed(() => resolveCopy('blog.share.x', this.locale()));
+  protected readonly shareLinkedInLabel = computed(() => resolveCopy('blog.share.linkedin', this.locale()));
+
+  /**
+   * The clipboard state, lifted out of the template.
+   *
+   * It used to be read through a `#copy="landingCopyToClipboard"` template
+   * reference, which forced the two labels below to be *methods* — and a method
+   * in a binding re-runs on every change-detection pass, not just when the
+   * language or the copy state changes. Querying the directive turns both into
+   * memoized computeds instead. Optional rather than `required` because a signal
+   * query is still empty during the first pass.
+   */
+  private readonly clipboard = viewChild(CopyToClipboardDirective);
+  protected readonly copied = computed(() => this.clipboard()?.state() === 'copied');
+
+  /**
+   * Visible label: `Copy link` → `Copied`. Announced label: `Copy link` →
+   * `Link copied`. Deliberately different in the copied state, because a screen
+   * reader hears it without the check icon that makes the short form obvious.
+   */
+  protected readonly visibleCopyLabel = computed(() =>
+    resolveCopy(this.copied() ? 'common.copied' : 'common.copyLink', this.locale())
+  );
+  protected readonly announcedCopyLabel = computed(() =>
+    resolveCopy(this.copied() ? 'blog.share.copied' : 'common.copyLink', this.locale())
+  );
 
   readonly absoluteUrl = computed(() => {
     if (isPlatformBrowser(this.platformId)) {

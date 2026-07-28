@@ -1,4 +1,4 @@
-<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
   <span hero-heading>{{ aboutHeading() || defaultAboutHeading() }}</span>
   <p hero-lede>{{ aboutLede() || defaultAboutLede() }}</p>
 
@@ -9,4 +9,4 @@
   <landing-about-cta />
 </landing-page-shell>
 
-<landing-floating-pill-nav [sections]="navSections" hideOnSelector="#shell-footer-banner" />
+<landing-floating-pill-nav [sections]="navSections()" hideOnSelector="#shell-footer-banner" />

@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, forwardRef, inject, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Icon } from '../icon';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * `landing-input` — single-line text input primitive (Variant B "sunken card").
@@ -45,7 +47,7 @@ import { Icon } from '../icon';
         (blur)="onTouched()"
       />
       @if (showClearButton()) {
-        <button type="button" class="input-clear" aria-label="Clear input" (click)="onClear()">
+        <button type="button" class="input-clear" [attr.aria-label]="clearLabel()" (click)="onClear()">
           <landing-icon name="close" [size]="14" />
         </button>
       }
@@ -69,6 +71,9 @@ export class Input implements ControlValueAccessor {
   readonly ariaDescribedBy = input<string>('');
   /** Show an "X" button on the right when the input has a value. */
   readonly clearable = input<boolean>(false);
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly clearLabel = computed(() => resolveCopy('a11y.button.clearInput', this.locale()));
 
   protected readonly value = signal<string>('');
   protected readonly showClearButton = computed(() => this.clearable() && !this.disabled() && this.value().length > 0);

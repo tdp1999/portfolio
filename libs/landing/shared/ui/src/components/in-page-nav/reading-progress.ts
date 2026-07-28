@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Thin reading-progress bar fixed to the top edge of the viewport.
@@ -16,13 +18,20 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from '@an
     '(window:scroll)': 'onScroll()',
   },
   template: `
-    <div class="fixed inset-x-0 top-0 z-40 h-1 bg-landing-border/40" role="progressbar" aria-label="Reading progress">
+    <div
+      class="fixed inset-x-0 top-0 z-40 h-1 bg-landing-border/40"
+      role="progressbar"
+      [attr.aria-label]="progressLabel()"
+    >
       <div class="h-full bg-landing-accent transition-[width] duration-150 ease-out" [style.width.%]="progress()"></div>
     </div>
   `,
 })
 export class ReadingProgress {
   readonly target = input<HTMLElement | null>(null);
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly progressLabel = computed(() => resolveCopy('a11y.progress.reading', this.locale()));
 
   private readonly scrollY = signal(0);
 

@@ -1,7 +1,11 @@
 <section id="cta" aria-labelledby="cta-heading" class="cta">
   <landing-container>
     <header class="about-section__head">
-      <landing-eyebrow [label]="['04', 'Next steps']" [accentFirst]="true" [trailingRule]="true" />
+      <landing-eyebrow
+        [label]="['04', 'about.section.nextSteps' | landingCopy: locale()]"
+        [accentFirst]="true"
+        [trailingRule]="true"
+      />
       <div class="about-section__title-block">
         <landing-heading id="cta-heading" [level]="2" class="about-section__title">
           {{ heading() }}
@@ -20,7 +24,7 @@
             umamiEvent="about-cta"
             [umamiData]="{ target: item.id }"
           >
-            {{ locale() === 'vi' ? item.labelVi : item.labelEn }}
+            {{ item.labelKey | landingCopy: locale() }}
           </landing-link>
         </li>
       }

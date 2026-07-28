@@ -1,5 +1,6 @@
 import type { ProjectDetailData, ProjectLinkType } from '@portfolio/landing/shared/data-access';
-import type { InPageSection } from '@portfolio/landing/shared/ui';
+import type { Locale } from '@portfolio/shared/types';
+import { resolveCopy, type InPageSection, type LandingCopyKey } from '@portfolio/landing/shared/ui';
 
 export type ProjectIndexEntry = { readonly slug: string; readonly title: string };
 
@@ -13,27 +14,31 @@ export type DetailState = {
 
 export const LINK_ORDER: readonly ProjectLinkType[] = ['repo', 'demo', 'case-study', 'doc', 'post'];
 
-export const LINK_TYPE_LABEL: Record<ProjectLinkType, string> = {
-  repo: 'Repository',
-  demo: 'Live demo',
-  'case-study': 'Case study',
-  doc: 'Documentation',
-  post: 'Write-up',
+/**
+ * Fallback label per link type when the author left `ProjectLink.label` blank.
+ * Same keys the Home selected-work strip reads — this page used to carry its own
+ * wording (`Repository` / `Documentation`) for the identical five types.
+ */
+const LINK_LABEL_KEYS: Record<ProjectLinkType, LandingCopyKey> = {
+  repo: 'project.link.repo',
+  demo: 'project.link.demo',
+  'case-study': 'project.link.caseStudy',
+  doc: 'project.link.doc',
+  post: 'project.link.post',
 };
 
-export const LIFECYCLE_STATUS_LABEL: Record<'LIVE' | 'SHIPPED' | 'ARCHIVED' | 'BETA' | 'ONGOING', string> = {
-  LIVE: 'Live',
-  SHIPPED: 'Shipped',
-  ARCHIVED: 'Archived',
-  BETA: 'Beta',
-  ONGOING: 'Ongoing',
-};
+export function projectLinkLabel(type: ProjectLinkType, locale: Locale): string {
+  return resolveCopy(LINK_LABEL_KEYS[type], locale);
+}
 
-export const FALLBACK_TOC: readonly InPageSection[] = [
-  { id: 'overview', title: 'Overview' },
-  { id: 'motivation', title: 'Motivation' },
-  { id: 'role', title: 'My role' },
-  { id: 'highlights', title: 'Highlights' },
-];
+/** Anchors for the synthesized sections, sharing their titles with the headings. */
+export function fallbackToc(locale: Locale): readonly InPageSection[] {
+  return [
+    { id: 'overview', title: resolveCopy('project.detail.section.overview', locale) },
+    { id: 'motivation', title: resolveCopy('project.detail.section.motivation', locale) },
+    { id: 'role', title: resolveCopy('project.detail.section.role', locale) },
+    { id: 'highlights', title: resolveCopy('project.detail.section.highlights', locale) },
+  ];
+}
 
 export const HERO_WIDTH = 960;

@@ -3,6 +3,7 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
 import type { Locale, TranslatableJson } from '@portfolio/shared/types';
 import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import { getLocalized } from '@portfolio/shared/utils/lite';
+import { formatMonthRange, resolveCopy } from '@portfolio/landing/shared/ui';
 import { FRAGMENT_PREFIX } from './about.experience.data';
 import type { ExperienceVm } from './about.experience.types';
 
@@ -34,9 +35,9 @@ export function toVm(exp: PublicExperience, lang: Locale): ExperienceVm {
     companyInitial: initialOf(exp.companyName),
     position,
     domain: exp.domain,
-    dateRangeLabel: formatDateRange(exp.startDate, exp.endDate),
+    dateRangeLabel: formatDateRange(exp.startDate, exp.endDate, lang),
     isCurrent: !exp.endDate,
-    metaItems: buildMetaItems(exp, teamRole),
+    metaItems: buildMetaItems(exp, teamRole, lang),
     highlightsDoc: canonicalDoc(exp.highlightsCanonical, lang),
     responsibilitiesDoc: canonicalDoc(exp.responsibilitiesCanonical, lang),
     skillChips: exp.skills.map((s) => ({ id: s.id, name: getLocalized(s.name, lang) })),
@@ -52,26 +53,20 @@ function initialOf(name: string): string {
   return trimmed ? trimmed[0].toUpperCase() : '';
 }
 
-/** "May 2024 – Present" / "Jan 2021 – Apr 2024". Locale-agnostic English month abbrevs;
- *  the surrounding meta strip is the only English-locked label and it reads consistently
- *  in both EN and VI shells (mirrors prior career-history component). */
-function formatDateRange(startStr: string, endStr: string | null): string {
-  const start = formatMonth(startStr);
-  const end = endStr ? formatMonth(endStr) : 'Present';
-  return `${start} – ${end}`;
-}
-
-function formatMonth(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+/** "Jan 2021 - Apr 2024" / "Tháng 1 2021 tới Hiện tại". Month names and the
+ *  open-ended end label both follow the active locale (task 388); the separator
+ *  is a plain hyphen so no en-dash reaches the source. */
+function formatDateRange(startStr: string, endStr: string | null, lang: Locale): string {
+  const start = new Date(startStr);
+  const end = endStr ? new Date(endStr) : null;
+  return formatMonthRange(start, end, lang, resolveCopy('about.experience.present', lang));
 }
 
 /** "Team of 6 · Tech Lead · Full Time · Remote, Ho Chi Minh City, Vietnam".
  *  Collapses any missing field cleanly — never produces stray separators. */
-function buildMetaItems(exp: PublicExperience, teamRole: string): readonly string[] {
+function buildMetaItems(exp: PublicExperience, teamRole: string, lang: Locale): readonly string[] {
   const items: string[] = [];
-  const team = teamSizeLabel(exp.teamSizeMin, exp.teamSizeMax);
+  const team = teamSizeLabel(exp.teamSizeMin, exp.teamSizeMax, lang);
   if (team) items.push(team);
   if (teamRole) items.push(teamRole);
   const employment = EMPLOYMENT_TYPE_LABELS[exp.employmentType];
@@ -81,10 +76,12 @@ function buildMetaItems(exp: PublicExperience, teamRole: string): readonly strin
   return items;
 }
 
-function teamSizeLabel(min: number | null, max: number | null): string {
-  if (min && max && min !== max) return `Team of ${min}–${max}`;
+function teamSizeLabel(min: number | null, max: number | null, lang: Locale): string {
+  if (min && max && min !== max) {
+    return resolveCopy('about.experience.teamOfRange', lang, { min, max });
+  }
   const n = min ?? max;
-  return n ? `Team of ${n}` : '';
+  return n ? resolveCopy('about.experience.teamOf', lang, { n }) : '';
 }
 
 function locationLabel(exp: PublicExperience): string {

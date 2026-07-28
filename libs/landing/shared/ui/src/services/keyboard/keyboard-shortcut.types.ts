@@ -1,3 +1,5 @@
+import type { LandingCopyKey } from '../copy';
+
 /**
  * A keyboard shortcut registration.
  *
@@ -15,14 +17,19 @@
 export interface KeyboardShortcut {
   /** Stable id (also used as the registration key — re-registering replaces). */
   readonly id: string;
-  /** Short description shown in the command palette and tooltips. */
-  readonly description: string;
+  /**
+   * Copy **key** for the label shown in the command palette and tooltips — not a
+   * literal string. Registration happens once in a constructor, so a literal
+   * would freeze in whichever language was active at startup; the palette
+   * resolves this key at render time instead. See ADR-028.
+   */
+  readonly description: LandingCopyKey;
   /** One or more combos that trigger the shortcut. First combo is the "primary" displayed. */
   readonly keys: readonly string[];
   /** Lucide icon name for palette display. */
   readonly iconName?: string;
-  /** Category bucket — e.g. 'Theme', 'Navigation', 'Language'. Used by palette grouping. */
-  readonly category?: string;
+  /** Copy key for the category bucket used by palette grouping. Same reasoning as `description`. */
+  readonly category?: LandingCopyKey;
   /** When true, the shortcut fires even when focus is in an `<input>` / `<textarea>` / contenteditable. Default false. */
   readonly allowInInput?: boolean;
   /** Handler invoked when matched. */

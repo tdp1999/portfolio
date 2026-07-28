@@ -12,7 +12,8 @@ import {
   Heading,
   Link,
   LandingLocaleService,
-  T,
+  LandingCopyPipe,
+  LandingCopyService,
 } from '@portfolio/landing/shared/ui';
 import { RteRender } from '@portfolio/shared/features/rte-renderer';
 import { ExperienceService } from '@portfolio/landing/shared/data-access';
@@ -24,13 +25,14 @@ import { sortReverseChrono, toVm } from './about.experience.util';
   selector: 'landing-about-experience',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, Chip, Container, EmptyState, Eyebrow, Icon, Heading, Link, T, RteRender],
+  imports: [NgTemplateOutlet, Chip, Container, EmptyState, Eyebrow, Icon, Heading, Link, RteRender, LandingCopyPipe],
   templateUrl: './about.experience.html',
   styleUrl: './about.experience.scss',
 })
 export class AboutExperience {
   private readonly experienceService = inject(ExperienceService);
-  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly locale = inject(LandingLocaleService).locale;
+  private readonly copy = inject(LandingCopyService);
   private readonly breakpoint = inject(BreakpointObserverService).observe();
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -40,9 +42,7 @@ export class AboutExperience {
   protected readonly isMobile = computed(() => this.breakpoint().name === 'mobile');
 
   /** Empty-state copy — matches the shared inline placeholder used across About sections. */
-  protected readonly emptyMessage = computed(() =>
-    this.locale() === 'vi' ? 'Lịch sử công việc đang được cập nhật.' : 'Career history coming soon.'
-  );
+  protected readonly emptyMessage = this.copy.t('about.experience.empty');
 
   /** Reverse-chronological (latest first). `endDate === null` (current) outranks any past role. */
   private readonly experiences = toSignal(this.experienceService.getPublicExperiences(), { initialValue: [] });

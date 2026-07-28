@@ -6,7 +6,7 @@
     (keydown.escape)="close()"
     role="dialog"
     aria-modal="true"
-    aria-label="Search"
+    [attr.aria-label]="searchLabel()"
   >
     <div class="cp-modal" role="document">
       <!-- ─── Input bar ───────────────────────────────────────────── -->
@@ -16,19 +16,20 @@
           #searchInput
           type="text"
           class="cp-modal__input"
-          placeholder="Search pages, projects, actions…"
+          [attr.placeholder]="placeholderText()"
           spellcheck="false"
           autocomplete="off"
           [value]="query()"
           (input)="onQueryInput($event)"
-          aria-label="Search query"
+          [attr.aria-label]="queryLabel()"
         />
         @if (query().length > 0) {
-          <button type="button" class="cp-modal__clear" (click)="clearQuery()" aria-label="Clear search">
+          <button type="button" class="cp-modal__clear" (click)="clearQuery()" [attr.aria-label]="clearLabel()">
             <landing-icon name="close" [size]="14" />
           </button>
         }
-        <button type="button" class="cp-modal__esc" (click)="close()" aria-label="Close">esc</button>
+        <!-- "esc" is the key's own name — the same in both languages. -->
+        <button type="button" class="cp-modal__esc" (click)="close()" [attr.aria-label]="closeLabel()">esc</button>
       </div>
 
       <!-- ─── Results ─────────────────────────────────────────────── -->
@@ -36,10 +37,18 @@
         @if (flatRows().length === 0) {
           <div class="cp-modal__empty">
             <p>
-              No matches for "<strong>{{ query() }}</strong
-              >"
+              <landing-t>
+                <ng-container en
+                  >No matches for "<strong>{{ query() }}</strong
+                  >"</ng-container
+                >
+                <ng-container vi
+                  >Không có kết quả cho "<strong>{{ query() }}</strong
+                  >"</ng-container
+                >
+              </landing-t>
             </p>
-            <p class="cp-modal__empty-hint">Try a page name, a section, or an action.</p>
+            <p class="cp-modal__empty-hint">{{ emptyHint() }}</p>
           </div>
         } @else {
           <ul class="cp-list" role="listbox">
@@ -76,9 +85,9 @@
 
       <!-- ─── Footer hints ────────────────────────────────────────── -->
       <div class="cp-modal__footer">
-        <span class="cp-modal__hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
-        <span class="cp-modal__hint"><kbd>↵</kbd> open</span>
-        <span class="cp-modal__hint"><kbd>esc</kbd> close</span>
+        <span class="cp-modal__hint"><kbd>↑</kbd><kbd>↓</kbd> {{ hintNavigate() }}</span>
+        <span class="cp-modal__hint"><kbd>↵</kbd> {{ hintOpen() }}</span>
+        <span class="cp-modal__hint"><kbd>esc</kbd> {{ escLabel() }}</span>
       </div>
     </div>
   </div>

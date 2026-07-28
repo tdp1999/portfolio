@@ -10,7 +10,7 @@ import type { CopyState } from './copy-to-clipboard.types';
  *   <button
  *     [landingCopyToClipboard]="email()"
  *     #copy="landingCopyToClipboard"
- *     [attr.aria-label]="'Copy ' + email()"
+ *     [attr.aria-label]="copyEmailLabel()"   // resolveCopy('a11y.button.copyValue', locale, { v: email() })
  *   >
  *     {{ email() }}
  *     @if (copy.state() === 'copied') {

@@ -15,9 +15,12 @@ import { isPlatformBrowser } from '@angular/common';
 import { A11yModule } from '@angular/cdk/a11y';
 import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 import { LightboxService } from '../lightbox/lightbox.service';
+import { T } from '../t';
 import type { LightboxItem } from '../lightbox/lightbox.types';
 import { CLOSE_MS, DOUBLE_TAP_SCALE, FULL_WIDTH, MAX_SCALE, MIN_SCALE } from './lightbox-overlay.data';
 import type { ResolvedSource } from './lightbox-overlay.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { clamp } from './lightbox-overlay.util';
 
 /**
@@ -32,7 +35,7 @@ import { clamp } from './lightbox-overlay.util';
 @Component({
   selector: 'landing-lightbox-overlay',
   standalone: true,
-  imports: [A11yModule],
+  imports: [A11yModule, T],
   templateUrl: './lightbox-overlay.html',
   styleUrl: './lightbox-overlay.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,11 +58,31 @@ export class LightboxOverlay {
   protected readonly index = this.lightbox.index;
   protected readonly count = computed(() => this.items().length);
   protected readonly current = computed(() => this.items()[this.index()] ?? null);
+  private readonly locale = inject(LandingLocaleService).locale;
+  /**
+   * `Image 2 of 7`, with the image's own `alt` appended as a second sentence when
+   * it has one — the dialog's name is the only thing announced on open, so it has
+   * to carry both position and subject.
+   */
   protected readonly dialogLabel = computed(() => {
     const cur = this.current();
-    return `Image ${this.index() + 1} of ${this.count()}${cur?.alt ? ` — ${cur.alt}` : ''}`;
+    return `${this.liveLabel()}${cur?.alt ? `. ${cur.alt}` : ''}`;
   });
-  protected readonly liveLabel = computed(() => `Image ${this.index() + 1} of ${this.count()}`);
+  protected readonly liveLabel = computed(() =>
+    resolveCopy('a11y.image.position', this.locale(), { n: this.index() + 1, total: this.count() })
+  );
+  protected readonly zoomInLabel = computed(() => resolveCopy('a11y.image.zoomIn', this.locale()));
+  protected readonly zoomOutLabel = computed(() => resolveCopy('a11y.image.zoomOut', this.locale()));
+  protected readonly downloadLabel = computed(() => resolveCopy('a11y.image.download', this.locale()));
+  protected readonly closeLabel = computed(() => resolveCopy('a11y.button.close', this.locale()));
+  protected readonly prevImageLabel = computed(() => resolveCopy('a11y.image.prev', this.locale()));
+  protected readonly nextImageLabel = computed(() => resolveCopy('a11y.image.next', this.locale()));
+  protected readonly chooseImageLabel = computed(() => resolveCopy('a11y.image.choose', this.locale()));
+  /** Per-thumbnail labels, resolved once per (locale, count) — see the carousel for the same reasoning. */
+  protected readonly thumbLabels = computed<readonly string[]>(() => {
+    const locale = this.locale();
+    return Array.from({ length: this.count() }, (_, i) => resolveCopy('a11y.image.show', locale, { n: i + 1 }));
+  });
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly zoomed = signal(false);

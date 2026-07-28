@@ -94,8 +94,16 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
+ *
+ * `Vary` is not decoration: `LandingLocaleService.readInitial()` picks the
+ * first-paint language from the `landing_locale` cookie, falling back to
+ * `Accept-Language`. Two visitors asking for the same URL can legitimately get
+ * different HTML, so any cache in front of this must key on those two headers.
+ * Cloudflare only caches hashed assets today, which is exactly the kind of
+ * assumption that stops being true one dashboard change later.
  */
 app.use('/**', (req, res, next) => {
+  res.setHeader('Vary', 'Cookie, Accept-Language');
   angularApp
     .handle(req)
     .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))

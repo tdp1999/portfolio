@@ -2,14 +2,14 @@
   #section
   class="home-intro"
   [class.is-lamp-on]="isLampOn()"
-  aria-label="The Story"
+  [attr.aria-label]="'home.section.story' | landingCopy: locale()"
   (click)="onSectionClick()"
   tabindex="0"
   (keydown.enter)="onSectionClick()"
 >
   <landing-container size="wide">
     <landing-eyebrow
-      [label]="['05', 'The Story']"
+      [label]="['05', 'home.section.story' | landingCopy: locale()]"
       [accentFirst]="true"
       [trailingRule]="true"
       class="home-intro__eyebrow"
@@ -186,11 +186,11 @@
         <figcaption class="home-intro__credit" (click)="$event.stopPropagation()">
           <p class="home-intro__credit-line">
             @if (isLightTheme()) {
-              <span>sketch</span>
+              <span>{{ 'home.story.credit.sketch' | landingCopy: locale() }}</span>
               <span class="home-intro__credit-sep" aria-hidden="true">·</span>
-              <span>pen on paper</span>
+              <span>{{ 'home.story.credit.penOnPaper' | landingCopy: locale() }}</span>
             } @else {
-              <span>illustration</span>
+              <span>{{ 'home.story.credit.illustration' | landingCopy: locale() }}</span>
               <span class="home-intro__credit-sep" aria-hidden="true">·</span>
               <a
                 class="home-intro__credit-link"

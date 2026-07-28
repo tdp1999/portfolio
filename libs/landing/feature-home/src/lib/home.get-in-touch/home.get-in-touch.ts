@@ -5,6 +5,10 @@ import {
   Link,
   LandingLocaleService,
   UmamiEventDirective,
+  T,
+  LandingCopyPipe,
+  LandingCopyService,
+  resolveCopy,
 } from '@portfolio/landing/shared/ui';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,43 +16,30 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'landing-home-get-in-touch',
   standalone: true,
-  imports: [Container, SectionHeader, Link, UmamiEventDirective],
+  imports: [Container, SectionHeader, Link, UmamiEventDirective, T, LandingCopyPipe],
   templateUrl: './home.get-in-touch.html',
   styleUrl: './home.get-in-touch.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeGetInTouch {
-  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly locale = inject(LandingLocaleService).locale;
+  private readonly copyService = inject(LandingCopyService);
   private readonly profile = toSignal(inject(ProfileService).getPublicProfile(), { initialValue: null });
 
   private readonly fallbackEmail = computed(() => this.profile()?.email ?? '');
 
-  protected readonly copy = computed(() =>
-    this.locale() === 'vi'
-      ? 'Nhắn tin cho mình nha, mình đọc hết và thường phản hồi trong vài ngày.'
-      : "Whatever the reason, the door's open.\nI read every message and usually reply within a few days."
-  );
+  protected readonly lede = this.copyService.t('home.getInTouch.copy');
 
   protected readonly ctas = computed(() => {
-    const vi = this.locale() === 'vi';
+    const locale = this.locale();
     return [
-      {
-        purpose: 'hire',
-        label: vi ? 'Bàn bạc về một vị trí full-time' : "Let's talk about a full-time role",
-        quiet: false,
-      },
-      {
-        purpose: 'freelance',
-        label: vi ? 'Nói về một dự án freelance' : 'Tell me about a freelance or contract project',
-        quiet: false,
-      },
-      { purpose: 'hi', label: vi ? 'Hoặc chỉ muốn chào mình một tiếng' : 'Or just say hi', quiet: true },
+      { purpose: 'hire', label: resolveCopy('home.getInTouch.cta.hire', locale), quiet: false },
+      { purpose: 'freelance', label: resolveCopy('home.getInTouch.cta.freelance', locale), quiet: false },
+      { purpose: 'hi', label: resolveCopy('home.getInTouch.cta.hi', locale), quiet: true },
     ] as const;
   });
 
-  protected readonly fallbackPrompt = computed(() =>
-    this.locale() === 'vi' ? 'Dùng email client của bạn:' : 'Prefer your own mail client?'
-  );
+  protected readonly fallbackPrompt = this.copyService.t('home.getInTouch.fallbackPrompt');
 
   protected readonly mailtoHref = computed(() => {
     const email = this.fallbackEmail();

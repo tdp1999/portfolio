@@ -7,16 +7,18 @@ import {
   TocInline,
   TocSidebar,
   Container,
+  LandingCopyPipe,
+  resolveCopy,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 import { useLegalPage } from './use-legal-page';
-import { SECTIONS_EN, SECTIONS_VI } from './privacy.data';
+import { privacySections } from './privacy.data';
 
 @Component({
   selector: 'landing-privacy',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Link, PageShell, T, TocInline, TocSidebar],
+  imports: [Container, Link, PageShell, T, TocInline, TocSidebar, LandingCopyPipe],
   providers: [LandingScrollspyService],
   templateUrl: './privacy.html',
   styleUrls: ['./privacy.scss'],
@@ -24,23 +26,20 @@ import { SECTIONS_EN, SECTIONS_VI } from './privacy.data';
 export class Privacy {
   private readonly state = useLegalPage({
     path: '/privacy',
-    titles: {
-      en: 'Privacy Policy | Phuong Tran',
-      vi: 'Chính sách Bảo mật | Phương Trần',
-    },
-    descriptions: {
-      en: 'How thunderphong.com collects, uses, stores, and protects personal data. Minimal data, no tracking cookies, a transparent processor list.',
-      vi: 'Cách thunderphong.com thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân. Nguyên tắc dữ liệu tối thiểu, không cookie tracking, danh sách bên xử lý minh bạch.',
-    },
-    sections: { en: SECTIONS_EN, vi: SECTIONS_VI },
+    titleKey: 'legal.privacy.meta.title',
+    descriptionKey: 'legal.privacy.meta.description',
+    sections: { en: privacySections('en'), vi: privacySections('vi') },
   });
 
   protected readonly locale = this.state.locale;
   protected readonly sections = this.state.sections;
   protected readonly tocLabel = this.state.tocLabel;
 
-  private readonly breadcrumbEn: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Privacy' }];
-  private readonly breadcrumbVi: readonly BreadcrumbItem[] = [{ label: 'Trang chủ', href: '/' }, { label: 'Bảo mật' }];
-
-  protected readonly breadcrumb = computed(() => (this.locale() === 'vi' ? this.breadcrumbVi : this.breadcrumbEn));
+  protected readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.privacy', locale) },
+    ];
+  });
 }

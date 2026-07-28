@@ -15,14 +15,21 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { Container, Eyebrow, LandingThemeService } from '@portfolio/landing/shared/ui';
+import {
+  Container,
+  Eyebrow,
+  LandingThemeService,
+  LandingCopyPipe,
+  LandingLocaleService,
+  resolveCopy,
+} from '@portfolio/landing/shared/ui';
 import { paragraphsFromDoc, type PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import type { PenAnchor } from './home.intro.types';
 
 @Component({
   selector: 'landing-home-intro',
   standalone: true,
-  imports: [Container, Eyebrow],
+  imports: [Container, Eyebrow, LandingCopyPipe],
   templateUrl: './home.intro.html',
   styleUrl: './home.intro.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,12 +55,20 @@ export class HomeIntro {
 
   // Theme drives which visual ("lamp" cone vs flying pen) and the hint copy.
   private readonly themeService = inject(LandingThemeService);
+  /** Own locale, not a caller input: the eyebrow, credit and hint are this component's copy. */
+  protected readonly locale = inject(LandingLocaleService).locale;
   protected readonly isLightTheme = computed(() => this.themeService.theme() === 'light');
   protected readonly hintText = computed(() => {
-    if (this.isLightTheme()) {
-      return this.isLampOn() ? 'click to rest' : 'click to mark';
-    }
-    return this.isLampOn() ? 'click to dim' : 'click to turn on';
+    const on = this.isLampOn();
+    // Light theme = fountain pen (mark / rest), dark theme = desk lamp (on / dim).
+    const key = this.isLightTheme()
+      ? on
+        ? 'home.story.hint.rest'
+        : 'home.story.hint.mark'
+      : on
+        ? 'home.story.hint.dim'
+        : 'home.story.hint.turnOn';
+    return resolveCopy(key, this.locale());
   });
 
   // ─── Lamp rotation ───────────────────────────────────────────────────

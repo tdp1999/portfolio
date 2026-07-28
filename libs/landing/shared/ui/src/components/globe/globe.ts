@@ -26,6 +26,8 @@ import {
   PALETTES,
   PROJECTED_RADIUS_PCT,
 } from './globe.constants';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { loadCreateGlobe } from './globe.util';
 import type { CreateGlobeFn } from './globe.util';
 
@@ -42,6 +44,13 @@ export class Globe implements OnDestroy {
   private readonly zone = inject(NgZone);
 
   readonly interactive = input<boolean>(false);
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  /** `role="img"` on a canvas has no implicit name — the two modes read differently
+   *  because only one of them is draggable. */
+  protected readonly canvasLabel = computed(() =>
+    resolveCopy(this.interactive() ? 'a11y.globe.interactive' : 'a11y.globe.static', this.locale())
+  );
   /** Spin the globe automatically when the user isn't dragging it. Idle-pauses
    *  for `AUTO_ROTATE_RESUME_MS` after a drag so the user can land where they
    *  meant to. */

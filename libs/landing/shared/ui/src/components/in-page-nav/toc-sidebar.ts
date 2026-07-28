@@ -12,6 +12,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LandingScrollspyService } from './landing-scrollspy.service';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import type { InPageSection } from './section.types';
 import { Eyebrow } from '../eyebrow';
 import { indentForLevel } from './toc-sidebar.util';
@@ -46,8 +48,8 @@ import { indentForLevel } from './toc-sidebar.util';
     style: 'display: block;',
   },
   template: `
-    <nav class="toc" [attr.aria-label]="label()">
-      <landing-eyebrow class="toc__label" [label]="label()" tone="accent" />
+    <nav class="toc" [attr.aria-label]="labelText()">
+      <landing-eyebrow class="toc__label" [label]="labelText()" tone="accent" />
       <ul #list class="toc__list">
         @for (s of items(); track s.id) {
           <li
@@ -224,7 +226,10 @@ export class TocSidebar {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly sections = input.required<readonly InPageSection[]>();
-  readonly label = input('On this page');
+  /** Falls back to the localized default when the caller passes nothing. */
+  readonly label = input('');
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly labelText = computed(() => this.label() || resolveCopy('common.onThisPage', this.locale()));
 
   readonly active = computed(() => this.scrollspy.active());
 

@@ -18,7 +18,7 @@
       <button
         type="button"
         class="landing-lightbox__btn"
-        aria-label="Zoom out"
+        [attr.aria-label]="zoomOutLabel()"
         [disabled]="scaleSig() <= minScale"
         (click)="zoomOut()"
       >
@@ -38,7 +38,7 @@
       <button
         type="button"
         class="landing-lightbox__btn"
-        aria-label="Zoom in"
+        [attr.aria-label]="zoomInLabel()"
         [disabled]="scaleSig() >= maxScale"
         (click)="zoomIn()"
       >
@@ -63,7 +63,7 @@
             target="_blank"
             rel="noopener"
             download
-            aria-label="Download image"
+            [attr.aria-label]="downloadLabel()"
             (click)="$event.stopPropagation()"
           >
             <svg
@@ -80,7 +80,7 @@
           </a>
         }
       }
-      <button type="button" class="landing-lightbox__btn" aria-label="Close" (click)="requestClose()">
+      <button type="button" class="landing-lightbox__btn" [attr.aria-label]="closeLabel()" (click)="requestClose()">
         <svg
           width="22"
           height="22"
@@ -122,7 +122,7 @@
       type="button"
       class="landing-lightbox__nav landing-lightbox__nav--prev"
       [disabled]="index() <= 0"
-      aria-label="Previous image"
+      [attr.aria-label]="prevImageLabel()"
       (click)="go(-1)"
     >
       <svg
@@ -141,7 +141,7 @@
       type="button"
       class="landing-lightbox__nav landing-lightbox__nav--next"
       [disabled]="index() >= count() - 1"
-      aria-label="Next image"
+      [attr.aria-label]="nextImageLabel()"
       (click)="go(1)"
     >
       <svg
@@ -174,13 +174,13 @@
 
   <!-- Filmstrip -->
   @if (count() > 1) {
-    <div class="landing-lightbox__strip" role="tablist" aria-label="Choose image">
+    <div class="landing-lightbox__strip" role="tablist" [attr.aria-label]="chooseImageLabel()">
       @for (item of items(); track item.url; let i = $index) {
         <button
           type="button"
           class="landing-lightbox__thumb"
           [class.is-active]="index() === i"
-          [attr.aria-label]="'Show image ' + (i + 1)"
+          [attr.aria-label]="thumbLabels()[i]"
           [attr.aria-selected]="index() === i"
           (click)="goTo(i)"
         >
@@ -192,7 +192,14 @@
 
   <!-- Desktop-only hint (hidden on touch + once zoomed). -->
   <div class="landing-lightbox__hint" [class.is-hidden]="zoomed()" aria-hidden="true">
-    <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + scroll · or <kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>−</kbd> to zoom
+    <landing-t>
+      <ng-container en>
+        <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + scroll · or <kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>−</kbd> to zoom
+      </ng-container>
+      <ng-container vi>
+        <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + scroll · hoặc <kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>−</kbd> để phóng to
+      </ng-container>
+    </landing-t>
   </div>
 
   <span class="landing-lightbox__live" aria-live="polite">{{ liveLabel() }}</span>

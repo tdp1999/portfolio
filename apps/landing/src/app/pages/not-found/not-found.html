@@ -1,13 +1,20 @@
-<landing-page-shell [breadcrumb]="breadcrumb" align="center">
-  <span hero-heading>Nothing lives <em>here</em>&nbsp;(yet).</span>
-  <p hero-lede>Either you mistyped the URL, or I haven't built this page yet. Both fixable.</p>
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>
+    <landing-t [locale]="locale()">
+      <ng-container en>Nothing lives <em>here</em>&nbsp;(yet).</ng-container>
+      <ng-container vi>Chỗ này còn <em>trống</em>&nbsp;(tạm thời thôi).</ng-container>
+    </landing-t>
+  </span>
+  <p hero-lede>{{ 'notFound.lede' | landingCopy: locale() }}</p>
 
   <section class="not-found-page__body" aria-labelledby="not-found-h">
     <landing-container>
-      <h2 id="not-found-h" class="sr-only">Recovery</h2>
-      <nav class="not-found-page__actions" aria-label="Recovery links">
-        <landing-link href="/" [arrow]="true">Back to home</landing-link>
-        <landing-link href="/projects" [arrow]="true">Browse projects</landing-link>
+      <h2 id="not-found-h" class="sr-only">{{ 'notFound.a11y.recovery' | landingCopy: locale() }}</h2>
+      <nav class="not-found-page__actions" [attr.aria-label]="'notFound.a11y.recoveryLinks' | landingCopy: locale()">
+        <landing-link href="/" [arrow]="true">{{ 'notFound.backHome' | landingCopy: locale() }}</landing-link>
+        <landing-link href="/projects" [arrow]="true">
+          {{ 'notFound.browseProjects' | landingCopy: locale() }}
+        </landing-link>
       </nav>
     </landing-container>
   </section>

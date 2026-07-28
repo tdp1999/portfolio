@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * A11y-friendly status text for a filtered feed: "Showing 4 of 12 projects".
@@ -34,16 +36,27 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultsCount {
+  private readonly locale = inject(LandingLocaleService).locale;
+
   readonly visible = input.required<number>();
   readonly total = input.required<number>();
-  /** Singular unit name — pluralized as `${unit}s` automatically when count ≠ 1. */
-  readonly unit = input<string>('item');
+  /**
+   * Unit noun, **already localized** by the caller. Two forms because English
+   * inflects for number and Vietnamese does not — a Vietnamese caller passes the
+   * same word twice. Previously this was one input pluralized as `${unit}s`,
+   * which was English morphology hardcoded into a shared component.
+   */
+  readonly unit = input<string>('');
+  readonly unitPlural = input<string>('');
 
   protected readonly message = computed(() => {
+    const locale = this.locale();
     const v = this.visible();
     const t = this.total();
-    const unit = v === 1 ? this.unit() : `${this.unit()}s`;
+    const one = this.unit() || resolveCopy('common.results.unit.one', locale);
+    const many = this.unitPlural() || this.unit() || resolveCopy('common.results.unit.other', locale);
+    const unit = v === 1 ? one : many;
     if (v === t) return `${t} ${unit}`;
-    return `Showing ${v} of ${t} ${unit}`;
+    return resolveCopy('common.results.filtered', locale, { v, t, unit });
   });
 }

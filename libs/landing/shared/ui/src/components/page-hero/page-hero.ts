@@ -10,7 +10,7 @@ import type { EyebrowInput } from '../eyebrow';
  * ```html
  * <landing-page-hero [eyebrowLabel]="['00', 'Contact']" align="left">
  *   Let's <em>talk</em>.
- *   <p hero-lede>Full-time, freelance, collab, podcast — or just saying hi.</p>
+ *   <p hero-lede>Full-time, freelance, collab, or just saying hi.</p>
  * </landing-page-hero>
  * ```
  *

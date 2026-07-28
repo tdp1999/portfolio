@@ -3,7 +3,7 @@
     <header class="home-selected-work__header">
       @if (introHeading()) {
         <landing-section-header
-          [eyebrowLabel]="['03', 'Selected Work']"
+          [eyebrowLabel]="['03', 'home.section.work' | landingCopy: locale()]"
           align="left"
           id="home-selected-work-heading"
           class="home-selected-work__heading"
@@ -43,7 +43,7 @@
 
       <p class="home-selected-work__footer">
         <landing-link href="/projects" [arrow]="true" umamiEvent="work-view-archive">
-          View the full archive at /projects
+          {{ 'home.selectedWork.viewArchive' | landingCopy: locale() }}
         </landing-link>
       </p>
     } @else {

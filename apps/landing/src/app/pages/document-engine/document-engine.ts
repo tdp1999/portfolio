@@ -12,7 +12,6 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { DecimalPipe, DOCUMENT } from '@angular/common';
 import {
   Background,
@@ -23,8 +22,10 @@ import {
   LandingLocaleService,
   Link,
   T,
+  LandingCopyPipe,
+  resolveCopy,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
-import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { EditorDocument, PortableDocument, PortableNode } from '@portfolio/shared/features/rte-core';
 import { RteTiptapEditor } from '@portfolio/shared/features/rte-tiptap';
 import { RteRender } from '@portfolio/shared/features/rte-renderer';
@@ -32,14 +33,16 @@ import { documentEngineProviders } from './document-engine.tokens';
 import type { NpmStat } from './document-engine.types';
 import { fetchJson, relativeTime, toPortable } from './document-engine.util';
 import {
-  DEMO_PRESETS,
-  FEATURES,
-  HERO_FACTS,
-  PACKAGES,
-  PROBLEMS,
-  PROOF_CLAIMS,
+  demoPresets,
+  features,
+  heroFacts,
+  PACKAGE_NAMES,
+  packages,
+  problems,
+  proofClaims,
   REPO_SLUG,
   REPO_URL,
+  type DemoPreset,
 } from './document-engine.data';
 import { EMPTY_DOCUMENT, SEED_DOCUMENT, TEMPLATE_DOCUMENT } from './document-engine.seed';
 
@@ -73,6 +76,7 @@ import { EMPTY_DOCUMENT, SEED_DOCUMENT, TEMPLATE_DOCUMENT } from './document-eng
     Link,
     T,
     DecimalPipe,
+    LandingCopyPipe,
     ReactiveFormsModule,
     RouterLink,
     RteTiptapEditor,
@@ -101,26 +105,19 @@ import { EMPTY_DOCUMENT, SEED_DOCUMENT, TEMPLATE_DOCUMENT } from './document-eng
 })
 export class DocumentEngine {
   // ──────── Injections ─────────────────────────────────────────────────
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
   private readonly document = inject(DOCUMENT);
   /**
-   * Site-wide locale. Copy is resolved off this via `getLocalized`; the whole
-   * page re-renders when the toggle flips. Interim VI wiring — migrates to the
-   * task 388 JSON source. Technical terms (package names, feature names, code)
-   * stay language-neutral in the data and are never run through `getLocalized`.
+   * Site-wide locale. Every reader-facing string on this page resolves out of
+   * `LANDING_COPY` off this signal, so the whole page re-renders when the toggle
+   * flips. Package names, badge keys and npm URLs are technical identifiers and
+   * never go through the dictionary.
    */
   readonly locale = inject(LandingLocaleService).locale;
 
   // ──────── Data (localised) ─────────────────────────────────────────────
-  readonly heroFacts = computed(() =>
-    HERO_FACTS.map((f) => ({
-      id: f.id,
-      label: getLocalized(f.label, this.locale()),
-      value: getLocalized(f.value, this.locale()),
-    }))
-  );
-  readonly proofClaims = computed(() => PROOF_CLAIMS.map((c) => getLocalized(c, this.locale())));
+  readonly heroFacts = computed(() => heroFacts(this.locale()));
+  readonly proofClaims = computed(() => proofClaims(this.locale()));
   /**
    * The marquee track, doubled.
    *
@@ -130,20 +127,10 @@ export class DocumentEngine {
    * claims inside each track makes a track comfortably wider than any display.
    */
   readonly marqueeClaims = computed(() => [...this.proofClaims(), ...this.proofClaims()]);
-  readonly problems = computed(() =>
-    PROBLEMS.map((p) => ({ title: getLocalized(p.title, this.locale()), body: getLocalized(p.body, this.locale()) }))
-  );
-  readonly features = computed(() =>
-    FEATURES.map((f) => ({ name: f.name, body: getLocalized(f.body, this.locale()) }))
-  );
-  readonly packages = computed(() => PACKAGES.map((p) => ({ ...p, role: getLocalized(p.role, this.locale()) })));
-  readonly presets = computed(() =>
-    DEMO_PRESETS.map((p) => ({
-      id: p.id,
-      label: getLocalized(p.label, this.locale()),
-      hint: getLocalized(p.hint, this.locale()),
-    }))
-  );
+  readonly problems = computed(() => problems(this.locale()));
+  readonly features = computed(() => features(this.locale()));
+  readonly packages = computed(() => packages(this.locale()));
+  readonly presets = computed(() => demoPresets(this.locale()));
   readonly repoUrl = REPO_URL;
 
   // ──────── Live registry data ──────────────────────────────────────────
@@ -157,7 +144,7 @@ export class DocumentEngine {
   readonly lastCommitLabel = computed(() => relativeTime(this.lastCommit(), this.locale()));
 
   /** The first package's numbers, for the hero badge row. */
-  readonly primaryStat = computed(() => this.npmStats()[PACKAGES[0].name]);
+  readonly primaryStat = computed(() => this.npmStats()[PACKAGE_NAMES[0]]);
 
   // ──────── Demo state ──────────────────────────────────────────────────
   /** The editor is a ControlValueAccessor, so a bare FormControl drives it. */
@@ -215,13 +202,13 @@ export class DocumentEngine {
 
   // ──────── Constructor ─────────────────────────────────────────────────
   constructor() {
-    const title = 'Document Engine | Phuong Tran';
-    const description =
-      'A headless document editor built as two packages: a framework-free core that owns the document model, and an Angular binding. Try it live.';
-    this.title.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: description });
+    // In an effect so the tags follow a locale change, matching /about and /404.
+    effect(() => {
+      const locale = this.locale();
+      const title = resolveCopy('documentEngine.meta.title', locale);
+      const description = resolveCopy('documentEngine.meta.description', locale);
+      this.seo.apply({ title, description });
+    });
 
     // Lock the page behind the expanded pane. An overlay you can scroll the page
     // under is an overlay that loses the reader's place the moment they close it.
@@ -244,14 +231,14 @@ export class DocumentEngine {
    * than showing a zero, because a wrong number here is worse than no number.
    */
   private async loadRegistryStats(): Promise<void> {
-    const npm = PACKAGES.map(async (pkg) => {
+    const npm = PACKAGE_NAMES.map(async (name) => {
       const [meta, downloads] = await Promise.all([
-        fetchJson<{ 'dist-tags'?: { latest?: string } }>(`https://registry.npmjs.org/${encodeURIComponent(pkg.name)}`),
-        fetchJson<{ downloads?: number }>(`https://api.npmjs.org/downloads/point/last-week/${pkg.name}`),
+        fetchJson<{ 'dist-tags'?: { latest?: string } }>(`https://registry.npmjs.org/${encodeURIComponent(name)}`),
+        fetchJson<{ downloads?: number }>(`https://api.npmjs.org/downloads/point/last-week/${name}`),
       ]);
       const version = meta?.['dist-tags']?.latest;
       if (!version) return;
-      this.npmStats.update((all) => ({ ...all, [pkg.name]: { version, downloads: downloads?.downloads ?? null } }));
+      this.npmStats.update((all) => ({ ...all, [name]: { version, downloads: downloads?.downloads ?? null } }));
     });
 
     const gh = fetchJson<{ stargazers_count?: number; pushed_at?: string }>(
@@ -273,7 +260,7 @@ export class DocumentEngine {
     this.expanded.set(false);
   }
 
-  applyPreset(id: (typeof DEMO_PRESETS)[number]['id']): void {
+  applyPreset(id: DemoPreset['id']): void {
     if (id === 'reset') {
       this.doc.setValue(SEED_DOCUMENT);
       return;

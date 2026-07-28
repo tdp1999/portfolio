@@ -7,16 +7,18 @@ import {
   TocInline,
   TocSidebar,
   Container,
+  LandingCopyPipe,
+  resolveCopy,
   type BreadcrumbItem,
 } from '@portfolio/landing/shared/ui';
 import { useLegalPage } from './use-legal-page';
-import { SECTIONS_EN, SECTIONS_VI } from './terms.data';
+import { termsSections } from './terms.data';
 
 @Component({
   selector: 'landing-terms',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Link, PageShell, T, TocInline, TocSidebar],
+  imports: [Container, Link, PageShell, T, TocInline, TocSidebar, LandingCopyPipe],
   providers: [LandingScrollspyService],
   templateUrl: './terms.html',
   styleUrls: ['./terms.scss'],
@@ -24,26 +26,20 @@ import { SECTIONS_EN, SECTIONS_VI } from './terms.data';
 export class Terms {
   private readonly state = useLegalPage({
     path: '/terms',
-    titles: {
-      en: 'Terms of Use | Phuong Tran',
-      vi: 'Điều khoản Sử dụng | Phương Trần',
-    },
-    descriptions: {
-      en: 'Terms governing your access to and use of thunderphong.com. IP rights, acceptable use, no warranty, governing law of Vietnam.',
-      vi: 'Điều khoản chi phối việc truy cập và sử dụng thunderphong.com. Quyền sở hữu trí tuệ, sử dụng được chấp nhận, không bảo đảm, luật áp dụng Việt Nam.',
-    },
-    sections: { en: SECTIONS_EN, vi: SECTIONS_VI },
+    titleKey: 'legal.terms.meta.title',
+    descriptionKey: 'legal.terms.meta.description',
+    sections: { en: termsSections('en'), vi: termsSections('vi') },
   });
 
   protected readonly locale = this.state.locale;
   protected readonly sections = this.state.sections;
   protected readonly tocLabel = this.state.tocLabel;
 
-  private readonly breadcrumbEn: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Terms' }];
-  private readonly breadcrumbVi: readonly BreadcrumbItem[] = [
-    { label: 'Trang chủ', href: '/' },
-    { label: 'Điều khoản' },
-  ];
-
-  protected readonly breadcrumb = computed(() => (this.locale() === 'vi' ? this.breadcrumbVi : this.breadcrumbEn));
+  protected readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.terms', locale) },
+    ];
+  });
 }

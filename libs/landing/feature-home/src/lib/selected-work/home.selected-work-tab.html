@@ -39,7 +39,7 @@
           umamiEvent="work-read-more"
           [umamiData]="{ title: title() }"
         >
-          Read more
+          {{ 'home.selectedWork.readMore' | landingCopy: locale() }}
         </landing-link>
       </p>
     }

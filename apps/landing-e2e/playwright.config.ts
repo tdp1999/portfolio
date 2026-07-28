@@ -28,6 +28,8 @@ export default defineConfig({
 
   use: {
     // Base URL to use in actions like `await page.goto('/')`
+    // Keep in sync with `src/fixtures/base-url.ts`, which page objects need for
+    // `addCookies` (no public API exposes this value off a `Page`).
     baseURL: 'http://localhost:4200',
 
     // Collect trace when retrying the failed test

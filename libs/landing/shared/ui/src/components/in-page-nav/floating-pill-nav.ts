@@ -13,6 +13,8 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { LandingScrollspyService } from './landing-scrollspy.service';
 import { InPageSection } from './section.types';
 
@@ -41,7 +43,7 @@ import { InPageSection } from './section.types';
         @if (open()) {
           <ul
             class="absolute bottom-full left-1/2 mb-2 w-64 -translate-x-1/2 overflow-hidden rounded-lg border border-landing-border bg-ink-1 shadow-xl"
-            aria-label="Section navigation"
+            [attr.aria-label]="sectionsLabel()"
           >
             @for (s of sections(); track s.id) {
               <li>
@@ -91,7 +93,7 @@ import { InPageSection } from './section.types';
 
       <!-- Mini-map: right edge with hover labels -->
       @if (showMinimap()) {
-        <nav class="fixed right-3 top-1/2 z-30 -translate-y-1/2 hidden laptop:block" aria-label="Mini-map">
+        <nav class="fixed right-3 top-1/2 z-30 -translate-y-1/2 hidden laptop:block" [attr.aria-label]="minimapLabel()">
           <ul class="flex flex-col gap-1">
             @for (s of sections(); track s.id) {
               <li>
@@ -128,6 +130,9 @@ export class FloatingPillNav {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pillContainer = viewChild<ElementRef<HTMLElement>>('pillContainer');
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly sectionsLabel = computed(() => resolveCopy('a11y.nav.sections', this.locale()));
+  protected readonly minimapLabel = computed(() => resolveCopy('a11y.nav.minimap', this.locale()));
 
   readonly sections = input.required<readonly InPageSection[]>();
   readonly showMinimap = input(true);

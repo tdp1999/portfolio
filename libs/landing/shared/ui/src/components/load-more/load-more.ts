@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * "Load more" CTA + progress indicator. Use at the bottom of paginated feeds when render-all is
@@ -17,13 +19,9 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
     @if (hasMore()) {
       <div class="llm">
         <button type="button" class="llm__btn" [disabled]="busy()" (click)="onClick()">
-          @if (busy()) {
-            <span class="llm__label">Loading…</span>
-          } @else {
-            <span class="llm__label">Load more</span>
-          }
+          <span class="llm__label">{{ busy() ? loadingLabel() : moreLabel() }}</span>
         </button>
-        <span class="llm__count" aria-live="polite">Showing {{ loaded() }} of {{ total() }}</span>
+        <span class="llm__count" aria-live="polite">{{ countLabel() }}</span>
       </div>
     }
   `,
@@ -83,6 +81,8 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadMore {
+  private readonly locale = inject(LandingLocaleService).locale;
+
   readonly loaded = input.required<number>();
   readonly total = input.required<number>();
   readonly busy = input<boolean>(false);
@@ -90,6 +90,12 @@ export class LoadMore {
   readonly loadMore = output<void>();
 
   protected readonly hasMore = computed(() => this.loaded() < this.total());
+
+  protected readonly moreLabel = computed(() => resolveCopy('common.loadMore', this.locale()));
+  protected readonly loadingLabel = computed(() => resolveCopy('common.loading', this.locale()));
+  protected readonly countLabel = computed(() =>
+    resolveCopy('common.showing', this.locale(), { loaded: this.loaded(), total: this.total() })
+  );
 
   protected onClick(): void {
     if (!this.busy()) this.loadMore.emit();

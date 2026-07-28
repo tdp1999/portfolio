@@ -6,11 +6,12 @@ import {
   Eyebrow,
   Heading,
   Link,
+  LandingCopyPipe,
   LandingLocaleService,
+  resolveCopy,
   UmamiEventDirective,
 } from '@portfolio/landing/shared/ui';
 import { getLocalized } from '@portfolio/shared/utils/lite';
-import { DEFAULT_HEADING_BY_LOCALE, DEFAULT_LEDE_BY_LOCALE } from './about.cta.data';
 import type { CtaItem } from './about.cta.types';
 
 /**
@@ -30,7 +31,7 @@ import type { CtaItem } from './about.cta.types';
   selector: 'landing-about-cta',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, Eyebrow, Heading, Link, UmamiEventDirective],
+  imports: [Container, Eyebrow, Heading, Link, UmamiEventDirective, LandingCopyPipe],
   templateUrl: './about.cta.html',
   styleUrl: './about.cta.scss',
 })
@@ -39,31 +40,31 @@ export class AboutCta {
   protected readonly locale = inject(LandingLocaleService).locale;
 
   protected readonly heading = computed(
-    () => getLocalized(this.profile()?.ctaHeading, this.locale()) || DEFAULT_HEADING_BY_LOCALE[this.locale()]
+    () => getLocalized(this.profile()?.ctaHeading, this.locale()) || resolveCopy('about.cta.heading', this.locale())
   );
   protected readonly lede = computed(
-    () => getLocalized(this.profile()?.ctaLede, this.locale()) || DEFAULT_LEDE_BY_LOCALE[this.locale()]
+    () => getLocalized(this.profile()?.ctaLede, this.locale()) || resolveCopy('about.cta.lede', this.locale())
   );
 
   protected readonly ctas = computed<readonly CtaItem[]>(() => {
     const p = this.profile();
     const items: CtaItem[] = [
-      { id: 'contact', labelEn: 'Get in touch', labelVi: 'Liên hệ', href: '/contact', kind: 'internal' },
+      { id: 'contact', labelKey: 'about.cta.item.contact', href: '/contact', kind: 'internal' },
     ];
 
     const linkedin = p?.socialLinks?.find((s) => s.platform === 'LINKEDIN')?.url;
     if (linkedin) {
-      items.push({ id: 'linkedin', labelEn: 'LinkedIn', labelVi: 'LinkedIn', href: linkedin, kind: 'external' });
+      items.push({ id: 'linkedin', labelKey: 'about.cta.item.linkedin', href: linkedin, kind: 'external' });
     }
 
     const github = p?.socialLinks?.find((s) => s.platform === 'GITHUB')?.url;
     if (github) {
-      items.push({ id: 'github', labelEn: 'GitHub', labelVi: 'GitHub', href: github, kind: 'external' });
+      items.push({ id: 'github', labelKey: 'about.cta.item.github', href: github, kind: 'external' });
     }
 
     const cv = p?.resumeUrls?.en?.url ?? p?.resumeUrls?.vi?.url ?? null;
     if (cv) {
-      items.push({ id: 'cv', labelEn: 'Download CV', labelVi: 'Tải CV', href: cv, kind: 'download' });
+      items.push({ id: 'cv', labelKey: 'about.cta.item.cv', href: cv, kind: 'download' });
     }
 
     return items;

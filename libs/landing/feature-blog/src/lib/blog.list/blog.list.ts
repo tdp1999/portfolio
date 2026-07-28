@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet, UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
@@ -32,6 +31,9 @@ import {
   CloudinarySrcsetPipe,
   UmamiEventDirective,
   type BreadcrumbItem,
+  resolveCopy,
+  LandingCopyPipe,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import { LandingUrlStateService } from '@portfolio/landing/shared/util';
@@ -45,8 +47,8 @@ import {
   V1_THRESHOLD,
   STRIP_MIN,
   SEARCH_DEBOUNCE_MS,
-  VIEW_OPTIONS,
-  SORT_OPTIONS,
+  viewOptions,
+  sortOptions,
   EMPTY_RESPONSE,
 } from './blog.list.data';
 import { timeAgo, parsePageParam } from './blog.list.util';
@@ -68,6 +70,7 @@ import { timeAgo, parsePageParam } from './blog.list.util';
     Pagination,
     ResultsCount,
     ViewToggle,
+    LandingCopyPipe,
     Segmented,
     SectionRule,
     Carousel,
@@ -82,8 +85,7 @@ export class BlogList {
   private readonly blogService = inject(BlogDataService);
   private readonly route = inject(ActivatedRoute);
   private readonly urlState = inject(LandingUrlStateService);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
   private readonly localeService = inject(LandingLocaleService);
   private readonly breakpoint = inject(BreakpointObserverService);
 
@@ -102,9 +104,15 @@ export class BlogList {
    * So show dots only at mobile (1-up); tablet (2-up) navigates by arrows + peek.
    */
   readonly stripDots = computed(() => !this.breakpoint.isAtLeast('tablet'));
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Writing' }];
-  readonly viewOptions = VIEW_OPTIONS;
-  readonly sortOptions = SORT_OPTIONS;
+  readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.writing', locale) },
+    ];
+  });
+  readonly viewOptions = computed(() => viewOptions(this.locale()));
+  readonly sortOptions = computed(() => sortOptions(this.locale()));
   readonly pageSize = PAGE_SIZE;
 
   // ─── Local state (URL is a mirror, not the source) ────────────────
@@ -178,12 +186,13 @@ export class BlogList {
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
   constructor() {
-    const title = 'Writing | Phuong Tran';
-    const description = 'Long-form deep-dives, short notes, and the occasional retro from building this portfolio.';
-    this.title.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: description });
+    // In an effect so the tags follow a locale change, matching /about and /404.
+    effect(() => {
+      const locale = this.locale();
+      const title = resolveCopy('blog.meta.title', locale);
+      const description = resolveCopy('blog.meta.description', locale);
+      this.seo.apply({ title, description });
+    });
 
     const destroyRef = inject(DestroyRef);
     this.searchControl.valueChanges

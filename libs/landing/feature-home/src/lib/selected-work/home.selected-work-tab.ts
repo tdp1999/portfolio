@@ -1,5 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { Chip, Carousel, Gallery, Link, UmamiEventDirective, type GalleryImage } from '@portfolio/landing/shared/ui';
+import {
+  Chip,
+  Carousel,
+  Gallery,
+  Link,
+  UmamiEventDirective,
+  LandingCopyPipe,
+  type GalleryImage,
+} from '@portfolio/landing/shared/ui';
 import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import type { ProjectDetailData } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
@@ -10,7 +18,7 @@ import { buildLinkGroups, projectYear, type LinkGroup } from './selected-work-sh
 @Component({
   selector: 'landing-home-selected-work-tab',
   standalone: true,
-  imports: [Chip, Gallery, Carousel, Link, UmamiEventDirective],
+  imports: [Chip, Gallery, Carousel, Link, UmamiEventDirective, LandingCopyPipe],
   templateUrl: './home.selected-work-tab.html',
   styleUrl: './home.selected-work-tab.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,7 +52,9 @@ export class HomeSelectedWorkTab {
   /** Per-project lightbox group so each project's screenshots navigate together. */
   protected readonly lightboxGroup = computed(() => `selected-work-${this.project().slug}`);
 
-  protected readonly linkGroups = computed<readonly LinkGroup[]>(() => buildLinkGroups(this.project().links));
+  protected readonly linkGroups = computed<readonly LinkGroup[]>(() =>
+    buildLinkGroups(this.project().links, this.locale())
+  );
 
   protected readonly skills = computed(() => this.project().skills);
 

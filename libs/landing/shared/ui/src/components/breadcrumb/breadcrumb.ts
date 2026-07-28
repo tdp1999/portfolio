@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { BreadcrumbItem } from './breadcrumb.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Mono-caps breadcrumb trail. Last item is rendered as plain text (current page);
@@ -13,7 +15,7 @@ import type { BreadcrumbItem } from './breadcrumb.types';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <nav class="landing-breadcrumb" aria-label="Breadcrumb">
+    <nav class="landing-breadcrumb" [attr.aria-label]="navLabel()">
       <ol class="landing-breadcrumb__list" role="list" [class.landing-breadcrumb__list--center]="align() === 'center'">
         @for (item of items(); track item.label; let last = $last) {
           <li class="landing-breadcrumb__item">
@@ -34,6 +36,9 @@ import type { BreadcrumbItem } from './breadcrumb.types';
 })
 export class Breadcrumb {
   readonly items = input.required<readonly BreadcrumbItem[]>();
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly navLabel = computed(() => resolveCopy('a11y.nav.breadcrumb', this.locale()));
 
   /**
    * Horizontal alignment of the trail. `start` (default) keeps the existing

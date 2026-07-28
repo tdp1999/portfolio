@@ -11,7 +11,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, of, map, combineLatest } from 'rxjs';
 import {
@@ -31,6 +30,9 @@ import {
   ShowMore,
   type BreadcrumbItem,
   type InPageSection,
+  resolveCopy,
+  LandingCopyPipe,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
 import { ProjectDataService } from '@portfolio/landing/shared/data-access';
 import { RteRender, RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
@@ -43,15 +45,9 @@ import {
   hydrateImageRefs,
   type TocEntry,
 } from '@portfolio/landing/shared/util';
-import {
-  FALLBACK_TOC,
-  HERO_WIDTH,
-  LIFECYCLE_STATUS_LABEL,
-  LINK_ORDER,
-  LINK_TYPE_LABEL,
-  type DetailState,
-} from './project.detail.types';
+import { fallbackToc, HERO_WIDTH, LINK_ORDER, projectLinkLabel, type DetailState } from './project.detail.types';
 import { plainToHtml, sortedIndex, yearRange, zero } from './project.detail.util';
+import { projectStatusLabel } from '../project.status';
 
 @Component({
   selector: 'landing-project-detail',
@@ -74,6 +70,7 @@ import { plainToHtml, sortedIndex, yearRange, zero } from './project.detail.util
     CloudinarySrcsetPipe,
     RteRender,
     RteRenderHtml,
+    LandingCopyPipe,
   ],
   templateUrl: './project.detail.html',
   styleUrl: './project.detail.scss',
@@ -81,8 +78,7 @@ import { plainToHtml, sortedIndex, yearRange, zero } from './project.detail.util
 export class ProjectDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly projectService = inject(ProjectDataService);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly transferState = inject(TransferState);
   private readonly scrollspy = inject(LandingScrollspyService);
@@ -200,20 +196,22 @@ export class ProjectDetail {
   readonly metadataRows = computed(() => {
     const p = this.project();
     if (!p) return [];
+    const locale = this.locale();
     return [
-      { label: 'Role', value: this.role() || '—' },
-      { label: 'Stack', value: p.skills.map((s) => s.name).join(', ') || '—' },
-      { label: 'Year', value: yearRange(p.startDate, p.endDate) },
-      { label: 'Status', value: LIFECYCLE_STATUS_LABEL[p.lifecycleStatus] },
+      { label: resolveCopy('project.field.role', locale), value: this.role() || '—' },
+      { label: resolveCopy('project.field.stack', locale), value: p.skills.map((s) => s.name).join(', ') || '—' },
+      { label: resolveCopy('project.field.year', locale), value: yearRange(p.startDate, p.endDate) },
+      { label: resolveCopy('project.field.status', locale), value: projectStatusLabel(p.lifecycleStatus, locale) },
     ];
   });
 
   readonly sortedLinks = computed(() => {
     const p = this.project();
     if (!p) return [];
+    const locale = this.locale();
     return [...p.links]
       .sort((a, b) => LINK_ORDER.indexOf(a.type) - LINK_ORDER.indexOf(b.type))
-      .map((link) => ({ ...link, displayLabel: link.label || LINK_TYPE_LABEL[link.type] }));
+      .map((link) => ({ ...link, displayLabel: link.label || projectLinkLabel(link.type, locale) }));
   });
 
   /** Sidebar ToC anchors. Uses the rich-text body's slugged headings when a body is
@@ -222,12 +220,17 @@ export class ProjectDetail {
     if (this.hasBody()) {
       return this.toc().map((e) => ({ id: e.id, title: e.text }));
     }
-    return FALLBACK_TOC.filter((s) => this.hasFallbackSection(s.id));
+    return fallbackToc(this.locale()).filter((s) => this.hasFallbackSection(s.id));
   });
 
   readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
     const p = this.project();
-    return [{ label: 'Home', href: '/' }, { label: 'Projects', href: '/projects' }, { label: p?.title ?? '…' }];
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.projects', locale), href: '/projects' },
+      { label: p?.title ?? '…' },
+    ];
   });
 
   readonly footerNav = computed(() => {
@@ -248,12 +251,13 @@ export class ProjectDetail {
     effect(() => {
       const p = this.project();
       if (!p) return;
-      this.title.setTitle(`${p.title} | Phuong Tran`);
-      this.meta.updateTag({ name: 'description', content: this.oneLiner() });
-      if (p.thumbnailUrl) {
-        this.meta.updateTag({ property: 'og:image', content: p.thumbnailUrl });
-        this.injectHeroPreload(p.thumbnailUrl);
-      }
+      this.seo.apply({
+        title: `${p.title} | Phuong Tran`,
+        description: this.oneLiner(),
+        path: `/projects/${p.slug}`,
+        image: p.thumbnailUrl || undefined,
+      });
+      if (p.thumbnailUrl) this.injectHeroPreload(p.thumbnailUrl);
     });
 
     // Register TOC sections with the shared scrollspy service.

@@ -1,5 +1,10 @@
 @if (count() > 0) {
-  <div class="landing-carousel__viewport" role="group" aria-roledescription="carousel" [attr.aria-label]="ariaLabel()">
+  <div
+    class="landing-carousel__viewport"
+    role="group"
+    aria-roledescription="carousel"
+    [attr.aria-label]="ariaLabelText()"
+  >
     <!-- Scroll/snap track. Focusable so ←/→ work; touch swipe is native, mouse drag is wired in the component. -->
     <div
       #track
@@ -14,7 +19,7 @@
             class="landing-carousel__slide landing-carousel__slide--content"
             role="group"
             aria-roledescription="slide"
-            [attr.aria-label]="i + 1 + ' of ' + count()"
+            [attr.aria-label]="slideLabels()[i].position"
           >
             <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{ $implicit: item, index: i }" />
           </div>
@@ -25,7 +30,7 @@
             class="landing-carousel__slide"
             role="group"
             aria-roledescription="slide"
-            [attr.aria-label]="i + 1 + ' of ' + count()"
+            [attr.aria-label]="slideLabels()[i].position"
           >
             <landing-figure
               [src]="img.url"
@@ -50,7 +55,7 @@
         type="button"
         class="landing-carousel__arrow landing-carousel__arrow--prev"
         [disabled]="!loop() && atStart()"
-        aria-label="Previous slide"
+        [attr.aria-label]="prevSlideLabel()"
         (click)="go(-1)"
       >
         <svg
@@ -69,7 +74,7 @@
         type="button"
         class="landing-carousel__arrow landing-carousel__arrow--next"
         [disabled]="!loop() && atEnd()"
-        aria-label="Next slide"
+        [attr.aria-label]="nextSlideLabel()"
         (click)="go(1)"
       >
         <svg
@@ -95,7 +100,7 @@
           type="button"
           class="landing-carousel__arrow landing-carousel__arrow--inline"
           [disabled]="!loop() && atStart()"
-          aria-label="Previous slide"
+          [attr.aria-label]="prevSlideLabel()"
           (click)="go(-1)"
         >
           <svg
@@ -113,13 +118,13 @@
       }
 
       @if (showDots()) {
-        <div class="landing-carousel__dots" role="tablist" aria-label="Choose slide">
+        <div class="landing-carousel__dots" role="tablist" [attr.aria-label]="chooseSlideLabel()">
           @for (s of slideList(); track $index; let i = $index) {
             <button
               type="button"
               class="landing-carousel__dot"
               [class.is-active]="index() === i"
-              [attr.aria-label]="'Go to slide ' + (i + 1)"
+              [attr.aria-label]="slideLabels()[i].goTo"
               [attr.aria-selected]="index() === i"
               (click)="goTo(i)"
             ></button>
@@ -132,7 +137,7 @@
           type="button"
           class="landing-carousel__arrow landing-carousel__arrow--inline"
           [disabled]="!loop() && atEnd()"
-          aria-label="Next slide"
+          [attr.aria-label]="nextSlideLabel()"
           (click)="go(1)"
         >
           <svg
@@ -152,13 +157,13 @@
   }
 
   @if (showThumbnails() && count() > 1) {
-    <div class="landing-carousel__strip" role="tablist" aria-label="Choose slide">
+    <div class="landing-carousel__strip" role="tablist" [attr.aria-label]="chooseSlideLabel()">
       @for (img of images(); track img.url; let i = $index) {
         <button
           type="button"
           class="landing-carousel__thumb"
           [class.is-active]="index() === i"
-          [attr.aria-label]="'Show slide ' + (i + 1)"
+          [attr.aria-label]="slideLabels()[i].show"
           [attr.aria-selected]="index() === i"
           (click)="goTo(i)"
         >

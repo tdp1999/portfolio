@@ -9,6 +9,8 @@ import {
   Segmented,
   UmamiEventDirective,
   type SegmentOption,
+  LandingCopyPipe,
+  LandingCopyService,
 } from '@portfolio/landing/shared/ui';
 import { ProjectDataService, type ProjectDetailData } from '@portfolio/landing/shared/data-access';
 import type { Locale } from '@portfolio/shared/types';
@@ -29,6 +31,7 @@ import { MAX_TABS } from './home.selected-work.data';
     HomeSelectedWorkTab,
     HomeSelectedWorkFallback,
     UmamiEventDirective,
+    LandingCopyPipe,
   ],
   templateUrl: './home.selected-work.html',
   styleUrl: './home.selected-work.scss',
@@ -36,6 +39,7 @@ import { MAX_TABS } from './home.selected-work.data';
 })
 export class HomeSelectedWork {
   readonly locale = input<Locale>('en');
+  private readonly copy = inject(LandingCopyService);
   /**
    * Owner-authored §4 intro (TranslatableJson markdown). Split at the first
    * sentence boundary: lead sentence → heading, remainder → deck. Empty string
@@ -57,9 +61,7 @@ export class HomeSelectedWork {
   protected readonly introDeck = computed(() => this.introSplit()[1]);
 
   /** Empty-state copy — inline placeholder shown when no featured projects exist yet. */
-  protected readonly emptyMessage = computed(() =>
-    this.locale() === 'vi' ? 'Các dự án chọn lọc sẽ sớm được cập nhật.' : 'Selected work coming soon.'
-  );
+  protected readonly emptyMessage = this.copy.t('home.selectedWork.empty', this.locale);
 
   protected readonly projects = toSignal(this.projectService.getFeatured(), {
     initialValue: [] as ProjectDetailData[],

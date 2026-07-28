@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { InPageSection } from './section.types';
 
 /**
@@ -29,8 +31,8 @@ import { InPageSection } from './section.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   template: `
-    <nav class="toc-inline" [attr.aria-label]="label()">
-      <p class="toc-inline__label">{{ label() }}</p>
+    <nav class="toc-inline" [attr.aria-label]="labelText()">
+      <p class="toc-inline__label">{{ labelText() }}</p>
       <ol class="toc-inline__list">
         @for (s of sections(); track s.id) {
           <li [attr.data-level]="s.level ?? 2">
@@ -96,5 +98,8 @@ import { InPageSection } from './section.types';
 })
 export class TocInline {
   readonly sections = input.required<readonly InPageSection[]>();
-  readonly label = input('On this page');
+  /** Falls back to the localized default when the caller passes nothing. */
+  readonly label = input('');
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly labelText = computed(() => this.label() || resolveCopy('common.onThisPage', this.locale()));
 }

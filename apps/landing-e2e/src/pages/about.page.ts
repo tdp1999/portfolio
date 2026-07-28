@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { BASE_URL } from '../fixtures/base-url';
 
 /**
  * Page Object for the `/about` page.
@@ -103,11 +104,24 @@ export class AboutPage {
 
   // ── Locale switcher (lives in the global header) ────────────────────
 
-  /** Pre-seed the locale in `localStorage` so the next `goto()` boots in that
-   *  language. The dropdown UX (which lives in the global header `<landing-
-   *  select>`) is exercised on `/ddl/language-switcher`; here we just want the
-   *  page to render in `locale` so we can assert on its content. */
+  /** Pre-seed the locale so the next `goto()` boots in that language. The
+   *  dropdown UX (which lives in the global header `<landing-select>`) is
+   *  exercised on `/ddl/language-switcher`; here we just want the page to render
+   *  in `locale` so we can assert on its content.
+   *
+   *  **Both transports, on purpose.** The cookie is what the *server* reads
+   *  (ADR-029), so it decides the SSR language; `localStorage` is what the
+   *  browser reads after hydration. Seeding only `localStorage` — which is what
+   *  this helper used to do — would server-render English and then flip, which
+   *  is not what a returning visitor experiences and turns every assertion here
+   *  into a race against hydration.
+   *
+   *  `addCookies` rather than `addInitScript` for the same reason: an init
+   *  script runs after the server has already answered. */
   async presetLocale(locale: 'en' | 'vi'): Promise<void> {
+    // `url` rather than `domain`/`path`: it lets Playwright derive both, and the
+    // origin is the config's `baseURL`, which `goto('/about')` resolves against.
+    await this.page.context().addCookies([{ name: 'landing_locale', value: locale, url: BASE_URL }]);
     await this.page.addInitScript((loc) => {
       try {
         localStorage.setItem('landing_locale', loc);

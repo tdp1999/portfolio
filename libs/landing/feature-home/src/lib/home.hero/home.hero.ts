@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { Container, StatusDot, Background, StaggerText } from '@portfolio/landing/shared/ui';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import {
+  Container,
+  StatusDot,
+  Background,
+  StaggerText,
+  LandingLocaleService,
+  resolveCopy,
+} from '@portfolio/landing/shared/ui';
 
 @Component({
   selector: 'landing-home-hero',
@@ -21,7 +28,16 @@ export class HomeHero {
   /** True once the public profile HTTP call has resolved (success or fail). Drives the STATUS row visibility. */
   readonly profileLoaded = input<boolean>(false);
 
-  protected readonly statusLabel = computed(() => (this.available() ? 'AVAILABLE FOR HIRE' : 'BUSY'));
+  /** Own locale, not a caller input: the hire-status label is this component's copy. */
+  private readonly locale = inject(LandingLocaleService).locale;
+
+  protected readonly statusLabel = computed(() =>
+    resolveCopy(this.available() ? 'home.hero.status.available' : 'home.hero.status.busy', this.locale())
+  );
+
+  /** The `<section>` landmark reuses the pill-nav's own name for this region. */
+  protected readonly sectionLabel = computed(() => resolveCopy('home.section.hero', this.locale()));
+  protected readonly hireStatusLabel = computed(() => resolveCopy('home.hero.a11y.hireStatus', this.locale()));
 
   /**
    * Splits the tagline at the first sentence boundary into two display blocks.

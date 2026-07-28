@@ -1,6 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Container, EmptyState, Eyebrow, Heading, LandingLocaleService, T } from '@portfolio/landing/shared/ui';
+import {
+  Container,
+  EmptyState,
+  Eyebrow,
+  Heading,
+  LandingLocaleService,
+  LandingCopyPipe,
+  LandingCopyService,
+} from '@portfolio/landing/shared/ui';
 import { PrincipleService, type PublicAboutPrinciple } from '@portfolio/landing/shared/data-access';
 import type { RenderedPrinciple } from './about.how-i-think.types';
 
@@ -8,12 +16,13 @@ import type { RenderedPrinciple } from './about.how-i-think.types';
   selector: 'landing-about-how-i-think',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Container, EmptyState, Eyebrow, Heading, T],
+  imports: [Container, EmptyState, Eyebrow, Heading, LandingCopyPipe],
   templateUrl: './about.how-i-think.html',
   styleUrl: './about.how-i-think.scss',
 })
 export class AboutHowIThink {
-  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly locale = inject(LandingLocaleService).locale;
+  private readonly copy = inject(LandingCopyService);
   private readonly principleService = inject(PrincipleService);
 
   private readonly raw = toSignal(this.principleService.getPublicPrinciples(), {
@@ -43,7 +52,5 @@ export class AboutHowIThink {
   protected readonly isEmpty = computed(() => this.principles().length === 0);
 
   /** Empty-state copy — matches the shared inline placeholder used across About sections. */
-  protected readonly emptyMessage = computed(() =>
-    this.locale() === 'vi' ? 'Các nguyên tắc sẽ sớm được cập nhật.' : 'Principles coming soon.'
-  );
+  protected readonly emptyMessage = this.copy.t('about.howIThink.empty');
 }

@@ -1,4 +1,4 @@
-<section class="home-hero" aria-label="Hero">
+<section class="home-hero" [attr.aria-label]="sectionLabel()">
   <landing-background pattern="blueprint" />
 
   <landing-container size="wide" class="home-hero__top">
@@ -20,7 +20,7 @@
   </landing-container>
 
   <landing-container size="wide" class="home-hero__bottom">
-    <dl class="home-hero__meta" aria-label="Hire status">
+    <dl class="home-hero__meta" [attr.aria-label]="hireStatusLabel()">
       @if (profileLoaded()) {
         <div class="home-hero__meta-row">
           <dt class="home-hero__meta-key">STATUS</dt>

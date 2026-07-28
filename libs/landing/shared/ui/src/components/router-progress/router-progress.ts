@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MIN_DISPLAY_MS } from './router-progress.data';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Top-of-viewport 2px progress bar that shows during router navigations. Fixes the
@@ -27,7 +29,7 @@ import { MIN_DISPLAY_MS } from './router-progress.data';
       [class.router-progress--visible]="visible()"
       [attr.aria-hidden]="!visible()"
       role="progressbar"
-      aria-label="Loading next page"
+      [attr.aria-label]="progressLabel()"
     >
       <div class="router-progress__bar"></div>
     </div>
@@ -74,6 +76,8 @@ import { MIN_DISPLAY_MS } from './router-progress.data';
 export class RouterProgress {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly progressLabel = computed(() => resolveCopy('a11y.progress.loadingPage', this.locale()));
 
   readonly visible = signal(false);
 

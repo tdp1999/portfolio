@@ -69,15 +69,6 @@ export class DdlDocPage {
   protected readonly prev = computed<DdlEntry | undefined>(() => this.adjacent(-1));
   protected readonly next = computed<DdlEntry | undefined>(() => this.adjacent(1));
 
-  private adjacent(step: 1 | -1): DdlEntry | undefined {
-    const start = this.index();
-    if (start < 0) return undefined;
-    for (let i = start + step; i >= 0 && i < DDL_REGISTRY.length; i += step) {
-      if (DDL_REGISTRY[i].status !== 'deprecated') return DDL_REGISTRY[i];
-    }
-    return undefined;
-  }
-
   constructor() {
     // SSR / pre-hydration: publish whatever the page declared (may be empty).
     effect(() => this.docs.publish(this.sections()));
@@ -85,6 +76,15 @@ export class DdlDocPage {
     effect(() => this.docs.setWidth(this.width()));
     // Browser: upgrade to the real heading tree from the rendered DOM.
     afterNextRender(() => this.publishFromDom());
+  }
+
+  private adjacent(step: 1 | -1): DdlEntry | undefined {
+    const start = this.index();
+    if (start < 0) return undefined;
+    for (let i = start + step; i >= 0 && i < DDL_REGISTRY.length; i += step) {
+      if (DDL_REGISTRY[i].status !== 'deprecated') return DDL_REGISTRY[i];
+    }
+    return undefined;
   }
 
   protected linkFor(entry: DdlEntry): string {

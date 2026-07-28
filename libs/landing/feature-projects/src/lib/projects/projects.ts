@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import {
@@ -18,6 +17,10 @@ import {
   CloudinarySrcsetPipe,
   UmamiEventDirective,
   type BreadcrumbItem,
+  resolveCopy,
+  T,
+  LandingCopyPipe,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
 import {
   PROJECTS_QUERY_PORT,
@@ -32,8 +35,9 @@ import {
 import { LandingUrlStateService } from '@portfolio/landing/shared/util';
 import { asyncResource } from '@portfolio/shared/async-state';
 import { TranslatablePipe } from '@portfolio/shared/ui';
-import { QUERY, VIEW_OPTIONS, type ProjectRow, type ViewMode } from './projects.types';
+import { QUERY, viewOptions, type ProjectRow, type ViewMode } from './projects.types';
 import { initialViewMode, isViewMode, parseCsvSet, yearOf } from './projects.util';
+import { projectStatusLabel } from '../project.status';
 
 @Component({
   selector: 'landing-projects',
@@ -50,6 +54,8 @@ import { initialViewMode, isViewMode, parseCsvSet, yearOf } from './projects.uti
     PageShell,
     ResultsCount,
     ViewToggle,
+    T,
+    LandingCopyPipe,
     TranslatablePipe,
     CloudinarySrcsetPipe,
     UmamiEventDirective,
@@ -61,14 +67,23 @@ export class Projects {
   private readonly queryPort = inject(PROJECTS_QUERY_PORT);
   private readonly route = inject(ActivatedRoute);
   private readonly urlState = inject(LandingUrlStateService);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
   private readonly localeService = inject(LandingLocaleService);
 
   readonly locale = this.localeService.locale;
-  readonly breadcrumb: readonly BreadcrumbItem[] = [{ label: 'Home', href: '/' }, { label: 'Projects' }];
-  readonly viewOptions = VIEW_OPTIONS;
-  readonly statuses: readonly ProjectLifecycleStatus[] = PROJECT_LIFECYCLE_STATUSES;
+  readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
+    const locale = this.locale();
+    return [
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.projects', locale) },
+    ];
+  });
+  readonly viewOptions = computed(() => viewOptions(this.locale()));
+  /** Filter chips: the enum value stays the query-param token, the label is copy. */
+  readonly statusChips = computed<readonly { readonly value: ProjectLifecycleStatus; readonly label: string }[]>(() => {
+    const locale = this.locale();
+    return PROJECT_LIFECYCLE_STATUSES.map((value) => ({ value, label: projectStatusLabel(value, locale) }));
+  });
 
   private readonly initialQp = this.route.snapshot.queryParamMap;
 
@@ -135,12 +150,13 @@ export class Projects {
   readonly filtersOpen = signal(false);
 
   constructor() {
-    const title = 'Projects | Phuong Tran';
-    const description = 'Full archive of projects by Phuong Tran: what I have shipped, built, and learned from.';
-    this.title.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: description });
+    // In an effect so the tags follow a locale change, matching /about and /404.
+    effect(() => {
+      const locale = this.locale();
+      const title = resolveCopy('projects.meta.title', locale);
+      const description = resolveCopy('projects.meta.description', locale);
+      this.seo.apply({ title, description });
+    });
   }
 
   toggleFilters(): void {

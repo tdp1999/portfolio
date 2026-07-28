@@ -18,12 +18,15 @@ import { Icon } from '../icon/icon';
 import { UmamiEventDirective } from '../../directives/umami-event/umami-event.directive';
 import { KeyboardShortcutService } from '../../services/keyboard/keyboard-shortcut.service';
 import { CommandPaletteService } from './command-palette.service';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
+import { T } from '../t';
 import {
   COMMAND_PALETTE_SEARCH_SOURCES,
-  KIND_LABEL,
+  KIND_LABEL_KEYS,
   KIND_ORDER,
-  PAGE_MANIFEST,
-  SECTION_MANIFEST,
+  pageManifest,
+  sectionManifest,
   type CommandKind,
   type CommandResult,
   type FlatRow,
@@ -38,8 +41,8 @@ import {
  * {@link CommandPaletteService.visible} and renders itself when true.
  *
  * The palette automatically lists:
- * - {@link PAGE_MANIFEST} — static top-level pages
- * - {@link SECTION_MANIFEST} — static section anchors
+ * - {@link pageManifest} — top-level pages, resolved for the active locale
+ * - {@link sectionManifest} — section anchors, resolved for the active locale
  * - every shortcut registered with {@link KeyboardShortcutService} (as Actions)
  *
  * Adding more actions is just registering a shortcut anywhere in the app — the
@@ -53,7 +56,7 @@ import {
   selector: 'landing-command-palette',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, UmamiEventDirective],
+  imports: [Icon, UmamiEventDirective, T],
   templateUrl: './command-palette.html',
   styleUrl: './command-palette.scss',
 })
@@ -75,15 +78,26 @@ export class CommandPalette {
   protected readonly searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   protected readonly rowEls = viewChildren<ElementRef<HTMLElement>>('rowEl');
 
-  protected readonly kindLabels = KIND_LABEL;
+  private readonly locale = inject(LandingLocaleService).locale;
 
-  /** Actions surface every registered keyboard shortcut as a palette item. */
+  /** Group headers, resolved from `KIND_LABEL_KEYS` for the active locale. */
+  protected readonly kindLabels = computed<Record<CommandKind, string>>(() => {
+    const l = this.locale();
+    return Object.fromEntries(
+      Object.entries(KIND_LABEL_KEYS).map(([kind, key]) => [kind, resolveCopy(key, l)])
+    ) as Record<CommandKind, string>;
+  });
+
+  /** Actions surface every registered keyboard shortcut as a palette item.
+   *  `description` / `category` on a shortcut are copy **keys**, resolved here —
+   *  registration runs once at startup and could not carry a live string. */
   protected readonly actionResults = computed<readonly CommandResult[]>(() => {
+    const l = this.locale();
     return this.shortcuts.all().map((s) => ({
       id: `a-${s.id}`,
       kind: 'action' as const,
-      title: s.description,
-      description: s.category,
+      title: resolveCopy(s.description, l),
+      description: s.category ? resolveCopy(s.category, l) : undefined,
       hint: s.keys[0] ? this.shortcuts.format(s.keys[0]) : undefined,
       iconName: s.iconName ?? 'sliders-horizontal',
       handler: s.handler,
@@ -91,8 +105,19 @@ export class CommandPalette {
   });
 
   protected readonly allResults = computed<readonly CommandResult[]>(() => {
-    return [...PAGE_MANIFEST, ...SECTION_MANIFEST, ...this.actionResults()];
+    const l = this.locale();
+    return [...pageManifest(l), ...sectionManifest(l), ...this.actionResults()];
   });
+
+  protected readonly emptyHint = computed(() => resolveCopy('palette.emptyHint', this.locale()));
+  protected readonly placeholderText = computed(() => resolveCopy('palette.placeholder', this.locale()));
+  protected readonly searchLabel = computed(() => resolveCopy('a11y.search', this.locale()));
+  protected readonly queryLabel = computed(() => resolveCopy('a11y.search.query', this.locale()));
+  protected readonly clearLabel = computed(() => resolveCopy('a11y.search.clear', this.locale()));
+  protected readonly closeLabel = computed(() => resolveCopy('a11y.button.close', this.locale()));
+  protected readonly escLabel = computed(() => resolveCopy('palette.hint.close', this.locale()));
+  protected readonly hintNavigate = computed(() => resolveCopy('palette.hint.navigate', this.locale()));
+  protected readonly hintOpen = computed(() => resolveCopy('palette.hint.open', this.locale()));
 
   protected readonly filtered = computed(() => {
     const q = this.query();
@@ -108,7 +133,7 @@ export class CommandPalette {
     for (const group of this.grouped()) {
       let first = true;
       for (const r of group.items) {
-        out.push({ result: r, groupHeader: first ? this.kindLabels[group.kind] : undefined });
+        out.push({ result: r, groupHeader: first ? this.kindLabels()[group.kind] : undefined });
         first = false;
       }
     }
@@ -124,9 +149,9 @@ export class CommandPalette {
     // typing in form fields (a la Linear / Stripe).
     const disposeShortcut = this.shortcuts.register({
       id: 'command-palette',
-      description: 'Open command palette',
+      description: 'shortcut.palette.open',
       keys: ['mod+k'],
-      category: 'Navigation',
+      category: 'shortcut.category.navigation',
       iconName: 'search',
       allowInInput: true,
       handler: () => this.state.toggle(),

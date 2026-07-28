@@ -1,9 +1,6 @@
 <landing-page-shell [breadcrumb]="breadcrumb()" align="center">
   <span hero-heading>
-    <landing-t [locale]="locale()">
-      <ng-container en>Privacy Policy.</ng-container>
-      <ng-container vi>Chính sách Bảo mật.</ng-container>
-    </landing-t>
+    {{ 'legal.privacy.title' | landingCopy: locale() }}
   </span>
   <p meta-strip>
     <landing-t [locale]="locale()">
@@ -14,7 +11,7 @@
 
   <section class="legal-page__body" aria-labelledby="legal-content-h">
     <landing-container size="content">
-      <h2 id="legal-content-h" class="sr-only">Privacy Policy</h2>
+      <h2 id="legal-content-h" class="sr-only">{{ 'legal.privacy.a11y.content' | landingCopy: locale() }}</h2>
       <div class="legal-layout">
         <article class="legal-reading" [attr.lang]="locale()">
           <div class="legal-toc-inline">
@@ -39,7 +36,7 @@
                 ngưng sử dụng.
               </p>
 
-              <h2 id="who-i-am">1. Người tôi là (Bên kiểm soát dữ liệu)</h2>
+              <h2 id="who-i-am">1. Tôi là ai (Bên kiểm soát dữ liệu)</h2>
               <ul>
                 <li><strong>Họ tên:</strong> Trần Đức Phương</li>
                 <li><strong>Quốc gia:</strong> Việt Nam</li>
@@ -64,7 +61,7 @@
               <ul>
                 <li>
                   Các subdomain như <code>console.thunderphong.com</code> hoặc bất kỳ sản phẩm/dịch vụ nào khác tôi vận
-                  hành dưới subdomain — mỗi nơi có chính sách bảo mật riêng vì dữ liệu thu thập và căn cứ pháp lý khác
+                  hành dưới subdomain. Mỗi nơi có chính sách bảo mật riêng vì dữ liệu thu thập và căn cứ pháp lý khác
                   nhau (vd. tài khoản đăng nhập, dữ liệu giao dịch).
                 </li>
                 <li>Các website bên thứ ba được liên kết từ Website.</li>
@@ -77,7 +74,7 @@
               <h2 id="data-collected">3. Dữ liệu tôi thu thập</h2>
 
               <h3 id="data-logs">3.1 Nhật ký máy chủ và hạ tầng (tự động thu thập)</h3>
-              <p>Khi bạn truy cập, các nhà cung cấp hosting và CDN tự động ghi lại:</p>
+              <p>Khi bạn truy cập Website, các nhà cung cấp hosting và CDN tự động ghi lại:</p>
               <ul>
                 <li>Địa chỉ IP</li>
                 <li>Loại và phiên bản trình duyệt (User-Agent)</li>
@@ -108,7 +105,7 @@
                 <strong>không</strong> chia sẻ dữ liệu với bên thứ ba nào. Địa chỉ IP được băm (hash) và loại bỏ trước
                 khi lưu trữ, nên cá nhân không bị theo dõi xuyên phiên.
               </p>
-              <p><strong>Mục đích:</strong> hiểu nội dung nào hữu ích để cải thiện Website.</p>
+              <p><strong>Mục đích:</strong> hiểu nội dung nào hữu ích và cải thiện Website.</p>
               <p>
                 <strong>Căn cứ pháp lý:</strong> lợi ích hợp pháp (GDPR Đ.6(1)(f)) / mục đích chính đáng (PDPL 2025). Vì
                 analytics không dùng cookie và không nhận dạng cá nhân, không cần banner đồng ý cookie.
@@ -133,7 +130,7 @@
                 xóa, trừ khi có cuộc trao đổi đang diễn ra cần thời gian dài hơn.
               </p>
               <p>
-                Nếu bạn muốn, có thể sử dụng các liên kết <code>mailto:</code> trên Website thay vì biểu mẫu — các liên
+                Nếu bạn muốn, có thể sử dụng các liên kết <code>mailto:</code> trên Website thay vì biểu mẫu. Các liên
                 kết này mở ứng dụng email của bạn và gửi tin nhắn trực tiếp tới tôi mà không có dữ liệu nào được xử lý
                 qua Website.
               </p>
@@ -198,16 +195,16 @@
                 </table>
               </div>
               <p>
-                Tất cả bên xử lý đều ràng buộc bởi điều khoản bảo mật và xử lý dữ liệu của riêng họ. Khi họ đặt ngoài
-                Việt Nam hoặc EEA, tôi dựa vào các hợp đồng xử lý dữ liệu chuẩn (DPA) và điều khoản hợp đồng chuẩn (SCC)
-                khi áp dụng.
+                Tất cả bên xử lý đều bị ràng buộc bởi điều khoản bảo mật và xử lý dữ liệu của riêng họ. Với những bên
+                đặt ngoài Việt Nam hoặc EEA, tôi dựa vào các hợp đồng xử lý dữ liệu chuẩn (DPA) và điều khoản hợp đồng
+                chuẩn (SCC) khi áp dụng.
               </p>
               <p>
                 Tôi <strong>không</strong> bán dữ liệu cá nhân, không chia sẻ cho mục đích quảng cáo hành vi đa ngữ
                 cảnh, và không dùng cho ra quyết định tự động có hiệu lực pháp lý.
               </p>
 
-              <h2 id="transfers">5. Truyền dữ liệu xuyên biên giới</h2>
+              <h2 id="transfers">5. Chuyển dữ liệu ra nước ngoài</h2>
               <p>
                 Vì Website được hosting trên Railway khu vực Singapore và sử dụng mạng edge toàn cầu Cloudflare, dữ liệu
                 của bạn có thể được xử lý ngoài Việt Nam, EEA hoặc Vương quốc Anh.
@@ -215,11 +212,11 @@
               <p>Đối với truyền dữ liệu từ EEA/UK, tôi dựa vào:</p>
               <ul>
                 <li>Điều khoản hợp đồng chuẩn (SCC) do bên xử lý liên quan cung cấp</li>
-                <li>Các biện pháp bảo đảm hoặc đầy đủ (adequacy) riêng của bên xử lý</li>
+                <li>Cơ chế adequacy hoặc các biện pháp bảo đảm khi truyền dữ liệu của riêng bên xử lý</li>
               </ul>
               <p>
-                Đối với truyền dữ liệu từ Việt Nam (PDPL 2025), việc truyền được tài liệu hoá phù hợp yêu cầu của luật
-                về xử lý dữ liệu xuyên biên giới.
+                Đối với truyền dữ liệu từ Việt Nam (PDPL 2025), việc truyền dữ liệu được lập hồ sơ theo đúng yêu cầu của
+                luật về xử lý dữ liệu xuyên biên giới.
               </p>
 
               <h2 id="rights">6. Quyền của bạn</h2>
@@ -232,12 +229,10 @@
                 <li><strong>Rút lại sự đồng ý</strong> bất cứ lúc nào (không ảnh hưởng tới xử lý hợp pháp trước đó)</li>
                 <li><strong>Khả chuyển dữ liệu</strong> (nhận dữ liệu ở định dạng có cấu trúc, có thể đọc bằng máy)</li>
                 <li>
-                  <strong>Khiếu nại</strong> với cơ quan có thẩm quyền tại địa phương:
+                  <strong>Khiếu nại</strong> với cơ quan giám sát dữ liệu tại nơi bạn cư trú:
                   <ul>
-                    <li>
-                      Việt Nam: Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao (A05) — Bộ Công an
-                    </li>
-                    <li>EU/EEA: cơ quan bảo vệ dữ liệu quốc gia bạn cư trú</li>
+                    <li>Việt Nam: Bộ Công an, Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao (A05)</li>
+                    <li>EU/EEA: cơ quan bảo vệ dữ liệu quốc gia nơi bạn cư trú</li>
                     <li>Vương quốc Anh: Information Commissioner's Office (ICO)</li>
                   </ul>
                 </li>
@@ -247,7 +242,7 @@
                 <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
                   >hello&#64;thunderphong.com</landing-link
                 >. Tôi sẽ phản hồi trong <strong>72 giờ</strong> đối với yêu cầu theo luật Việt Nam và trong
-                <strong>một tháng</strong> đối với yêu cầu theo GDPR/UK GDPR.
+                <strong>một tháng</strong> đối với yêu cầu theo GDPR/UK GDPR, phù hợp với luật áp dụng.
               </p>
               <p>
                 Vì Website không có tài khoản người dùng, tôi có thể cần xác minh danh tính qua địa chỉ email bạn dùng
@@ -271,13 +266,13 @@
               <h2 id="children">8. Trẻ em</h2>
               <p>
                 Website không nhắm tới trẻ em dưới 16 tuổi. Tôi không cố ý thu thập dữ liệu cá nhân của trẻ em. Nếu bạn
-                cho rằng một trẻ em đã cung cấp dữ liệu, hãy liên hệ tôi để xoá.
+                cho rằng một trẻ em đã cung cấp dữ liệu, hãy liên hệ tôi và tôi sẽ xoá dữ liệu đó.
               </p>
 
               <h2 id="external-links">9. Liên kết tới website khác</h2>
               <p>
                 Website có chứa các liên kết tới website bên thứ ba (vd. GitHub, LinkedIn, blog tham chiếu). Tôi không
-                chịu trách nhiệm về thực hành bảo mật của họ. Vui lòng xem xét chính sách của họ riêng.
+                chịu trách nhiệm về thực hành bảo mật của họ. Vui lòng xem chính sách riêng của từng bên.
               </p>
 
               <h2 id="changes">10. Thay đổi chính sách</h2>
@@ -323,7 +318,7 @@
               <h2 id="who-i-am">1. Who I am (Data Controller)</h2>
               <ul>
                 <li><strong>Name:</strong> Phuong Tran</li>
-                <li><strong>Location:</strong> Vietnam</li>
+                <li><strong>Country:</strong> Vietnam</li>
                 <li>
                   <strong class="mr-1">Contact:</strong>
                   <landing-link href="mailto:hello@thunderphong.com" [inline]="true"
@@ -345,7 +340,7 @@
               <ul>
                 <li>
                   Subdomains such as <code>console.thunderphong.com</code> or any other product/service I may operate
-                  under a subdomain — each has its own privacy policy because the data collected and the legal basis
+                  under a subdomain. Each has its own privacy policy because the data collected and the legal basis
                   differ (e.g. authenticated accounts, transactional data).
                 </li>
                 <li>Third-party websites linked from the Site.</li>
@@ -511,8 +506,8 @@
                   <strong>Lodge a complaint</strong> with your local supervisory authority:
                   <ul>
                     <li>
-                      Vietnam: Ministry of Public Security (Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ
-                      cao — A05)
+                      Vietnam: Ministry of Public Security, Department of Cybersecurity and High-Tech Crime Prevention
+                      (A05)
                     </li>
                     <li>EU/EEA: your national data protection authority</li>
                     <li>UK: the Information Commissioner's Office (ICO)</li>

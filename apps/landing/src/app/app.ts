@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LandingLocaleService, RouterProgress, Shell } from '@portfolio/landing/shared/ui';
-import { LandingMetaService, ProfileService } from '@portfolio/landing/shared/data-access';
+import { LandingLocaleService, RouterProgress, Shell, LandingMetaService } from '@portfolio/landing/shared/ui';
+import { ProfileService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 
 @Component({

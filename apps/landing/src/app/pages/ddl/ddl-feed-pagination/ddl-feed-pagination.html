@@ -22,7 +22,7 @@
       </span>
     </div>
 
-    <landing-results-count [visible]="total" [total]="total" unit="project" />
+    <landing-results-count [visible]="total" [total]="total" unit="project" unitPlural="projects" />
 
     <ul class="ap-list" role="list">
       @for (project of all; track project.slug) {
@@ -44,7 +44,7 @@
       </span>
     </div>
 
-    <landing-results-count [visible]="loadMoreVisible().length" [total]="total" unit="project" />
+    <landing-results-count [visible]="loadMoreVisible().length" [total]="total" unit="project" unitPlural="projects" />
 
     <ul class="ap-list" role="list">
       @for (project of loadMoreVisible(); track project.slug) {
@@ -69,7 +69,7 @@
       </span>
     </div>
 
-    <landing-results-count [visible]="pagedVisible().length" [total]="total" unit="project" />
+    <landing-results-count [visible]="pagedVisible().length" [total]="total" unit="project" unitPlural="projects" />
 
     <ul class="ap-list" role="list">
       @for (project of pagedVisible(); track project.slug) {

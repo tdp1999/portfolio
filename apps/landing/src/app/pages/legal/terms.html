@@ -1,9 +1,6 @@
 <landing-page-shell [breadcrumb]="breadcrumb()" align="center">
   <span hero-heading>
-    <landing-t [locale]="locale()">
-      <ng-container en>Terms of Use.</ng-container>
-      <ng-container vi>Điều khoản Sử dụng.</ng-container>
-    </landing-t>
+    {{ 'legal.terms.title' | landingCopy: locale() }}
   </span>
   <p meta-strip>
     <landing-t [locale]="locale()">
@@ -14,7 +11,7 @@
 
   <section class="legal-page__body" aria-labelledby="legal-content-h">
     <landing-container size="content">
-      <h2 id="legal-content-h" class="sr-only">Terms of Use</h2>
+      <h2 id="legal-content-h" class="sr-only">{{ 'legal.terms.a11y.content' | landingCopy: locale() }}</h2>
       <div class="legal-layout">
         <article class="legal-reading" [attr.lang]="locale()">
           <div class="legal-toc-inline">
@@ -50,9 +47,9 @@
 
               <h3 id="ip-my-content">2.1 Nội dung của tôi</h3>
               <p>
-                Toàn bộ nội dung trên Website — bao gồm văn bản, bài viết, bài blog, đoạn mã, thiết kế, bố cục, hình
-                minh hoạ, ảnh chụp, và mã nguồn tạo ra các trang công khai — thuộc sở hữu của tôi trừ khi có ghi chú
-                khác, và được bảo hộ bởi luật bản quyền của Việt Nam và quốc tế.
+                Toàn bộ nội dung trên Website (bao gồm văn bản, bài viết, bài blog, đoạn mã, thiết kế, bố cục, hình minh
+                hoạ, ảnh chụp, và mã nguồn tạo ra các trang công khai) thuộc sở hữu của tôi trừ khi có ghi chú khác, và
+                được bảo hộ bởi luật bản quyền của Việt Nam và quốc tế.
               </p>
 
               <h3 id="ip-allowed">2.2 Bạn được làm gì mà không cần xin phép</h3>
@@ -88,7 +85,7 @@
                 dụng hợp lý (fair use/fair dealing) hoặc có sự cho phép khi áp dụng.
               </p>
 
-              <h2 id="acceptable-use">3. Sử dụng được chấp nhận</h2>
+              <h2 id="acceptable-use">3. Nguyên tắc sử dụng</h2>
               <p>Khi sử dụng Website hoặc biểu mẫu liên hệ, bạn cam kết <strong>không</strong>:</p>
               <ul>
                 <li>Gửi nội dung trái pháp luật, gây hại, đe doạ, phỉ báng, quấy rối, hoặc phân biệt đối xử.</li>
@@ -115,19 +112,19 @@
               <h2 id="links">5. Liên kết tới website khác</h2>
               <p>
                 Website có thể liên kết tới các website bên thứ ba. Tôi không xác nhận, kiểm soát, hay chịu trách nhiệm
-                về nội dung, điều khoản, hoặc thực hành bảo mật của họ. Truy cập là rủi ro của bạn.
+                về nội dung, điều khoản, hoặc thực hành bảo mật của họ. Bạn tự chịu rủi ro khi truy cập các website đó.
               </p>
 
               <h2 id="no-warranty">6. Không bảo đảm</h2>
               <p>
                 Website được cung cấp <strong>"như hiện trạng" và "khi sẵn có"</strong>. Trong phạm vi tối đa pháp luật
-                cho phép, tôi không đưa ra bất kỳ bảo đảm nào — minh thị hay ngụ ý — bao gồm bảo đảm về tính thương mại,
+                cho phép, tôi không đưa ra bất kỳ bảo đảm nào, minh thị hay ngụ ý, bao gồm bảo đảm về tính thương mại,
                 phù hợp cho mục đích cụ thể, độ chính xác, đầy đủ, sẵn có, hoặc không vi phạm.
               </p>
               <p>
                 Thông tin trên Website, kể cả bài blog và đoạn mã, phản ánh quan điểm của tôi tại thời điểm viết và có
-                thể đã lỗi thời. Không phải tư vấn chuyên môn. Bạn tự chịu trách nhiệm kiểm chứng bất cứ điều gì bạn dựa
-                vào.
+                thể đã lỗi thời. Đây không phải là tư vấn chuyên môn. Bạn tự chịu trách nhiệm kiểm chứng bất cứ điều gì
+                bạn dựa vào.
               </p>
 
               <h2 id="liability">7. Giới hạn trách nhiệm</h2>
@@ -139,7 +136,7 @@
               </p>
               <p>
                 Không gì trong Điều khoản này giới hạn trách nhiệm không thể bị giới hạn theo luật (ví dụ trách nhiệm do
-                gian lận hoặc cố ý nghiêm trọng).
+                gian lận hoặc lỗi cẩu thả nghiêm trọng).
               </p>
 
               <h2 id="privacy">8. Bảo mật</h2>
@@ -168,7 +165,7 @@
                 trao cho bạn quyền khởi kiện ở toà án khác.
               </p>
 
-              <h2 id="indemnification">11. Bồi hoàn</h2>
+              <h2 id="indemnification">11. Bồi thường</h2>
               <p>
                 Bạn đồng ý bảo vệ và giữ cho tôi không phải chịu thiệt hại từ bất kỳ khiếu nại, thiệt hại, hoặc chi phí
                 nào của bên thứ ba (bao gồm phí pháp lý hợp lý) phát sinh từ:
@@ -179,15 +176,15 @@
                 <li>nội dung bạn gửi qua biểu mẫu liên hệ (kể cả vi phạm quyền của bên thứ ba).</li>
               </ul>
               <p>
-                Tôi sẽ thông báo cho bạn kịp thời về mọi khiếu nại như vậy và bạn có thể tham gia bảo vệ với chi phí của
-                mình.
+                Tôi sẽ thông báo cho bạn kịp thời về mọi khiếu nại như vậy, và bạn có thể tham gia vào việc bảo vệ khiếu
+                nại đó bằng chi phí của mình.
               </p>
 
               <h2 id="severability">12. Hiệu lực từng phần</h2>
               <p>
                 Nếu bất kỳ điều khoản nào trong Điều khoản này bị toà án có thẩm quyền tuyên vô hiệu hoặc không thể thi
                 hành, các điều khoản còn lại vẫn giữ nguyên hiệu lực. Điều khoản vô hiệu sẽ được sửa đổi ở mức tối thiểu
-                cần thiết để có hiệu lực và thi hành được, đồng thời giữ được ý nghĩa ban đầu.
+                cần thiết để có hiệu lực và thi hành được, đồng thời giữ được mục đích ban đầu.
               </p>
 
               <h2 id="contact">13. Liên hệ</h2>
@@ -231,8 +228,8 @@
 
               <h3 id="ip-my-content">2.1 My content</h3>
               <p>
-                All content on the Site — including text, articles, blog posts, code samples, design, layout,
-                illustrations, photographs, and the underlying source code that produces the public-facing pages — is
+                All content on the Site (including text, articles, blog posts, code samples, design, layout,
+                illustrations, photographs, and the underlying source code that produces the public-facing pages) is
                 owned by me unless otherwise credited, and is protected by Vietnamese and international copyright law.
               </p>
 
@@ -302,7 +299,7 @@
               <h2 id="no-warranty">6. No warranty</h2>
               <p>
                 The Site is provided <strong>"as is" and "as available"</strong>. To the maximum extent permitted by
-                law, I make no warranties — express or implied — including warranties of merchantability, fitness for a
+                law, I make no warranties, express or implied, including warranties of merchantability, fitness for a
                 particular purpose, accuracy, completeness, availability, or non-infringement.
               </p>
               <p>

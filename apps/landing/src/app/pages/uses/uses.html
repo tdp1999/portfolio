@@ -1,15 +1,16 @@
-<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
   <span hero-heading><em>Uses</em>.</span>
-  <p hero-lede>What I reach for daily — the specific kit, not generic categories.</p>
+  <p hero-lede>{{ 'uses.lede' | landingCopy: locale() }}</p>
   <p meta-strip>
-    Last updated <time [attr.datetime]="lastUpdated">{{ lastUpdated }}</time
+    {{ 'common.lastUpdated' | landingCopy: locale() }}
+    <time [attr.datetime]="lastUpdated">{{ lastUpdatedLabel() }}</time
     >.
   </p>
 
   <section aria-labelledby="uses-inventory-h">
     <landing-container>
-      <h2 id="uses-inventory-h" class="sr-only">Uses inventory</h2>
-      @for (section of sections; track section.id) {
+      <h2 id="uses-inventory-h" class="sr-only">{{ 'uses.a11y.inventory' | landingCopy: locale() }}</h2>
+      @for (section of sections(); track section.id) {
         <landing-content-section [section]="section" class="mb-12" />
       }
     </landing-container>

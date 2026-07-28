@@ -14,6 +14,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Icon } from '../icon/icon';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import type { SelectAlign, SelectOption, SelectTriggerValue } from './select.types';
 import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './select.data';
 import { nextSelectId } from './select.util';
@@ -72,7 +74,7 @@ import { nextSelectId } from './select.util';
       [attr.aria-haspopup]="'listbox'"
       [attr.aria-expanded]="open()"
       [attr.aria-controls]="panelId()"
-      [attr.aria-label]="ariaLabel() || (selectedOption()?.label ?? placeholder())"
+      [attr.aria-label]="ariaLabel() || (selectedOption()?.label ?? placeholderText())"
       (click)="toggle($event)"
       (keydown)="onTriggerKeydown($event)"
     >
@@ -95,7 +97,7 @@ import { nextSelectId } from './select.util';
         [class.landing-select__panel--up]="placement() === 'up'"
         [id]="panelId()"
         role="listbox"
-        [attr.aria-label]="ariaLabel() || placeholder()"
+        [attr.aria-label]="ariaLabel() || placeholderText()"
       >
         @for (option of options(); track option.value; let i = $index) {
           <button
@@ -142,7 +144,8 @@ export class Select<T = string> implements ControlValueAccessor {
   // ── Inputs ────────────────────────────────────────────────────────
   readonly options = input.required<readonly SelectOption<T>[]>();
   readonly value = input<T | null>(null);
-  readonly placeholder = input<string>('Select…');
+  /** Falls back to the localized default rather than a hardcoded English literal. */
+  readonly placeholder = input<string>('');
   readonly disabled = input(false);
   readonly ariaLabel = input<string>('');
 
@@ -184,9 +187,15 @@ export class Select<T = string> implements ControlValueAccessor {
     return this.options().find((o) => o.value === v) ?? null;
   });
 
+  private readonly locale = inject(LandingLocaleService).locale;
+  /** Caller's placeholder, or the localized default when none was given. */
+  protected readonly placeholderText = computed(
+    () => this.placeholder() || resolveCopy('common.select.placeholder', this.locale())
+  );
+
   protected readonly triggerDisplay = computed<string>(() => {
     const opt = this.selectedOption();
-    if (!opt) return this.placeholder();
+    if (!opt) return this.placeholderText();
     switch (this.triggerValue()) {
       case 'code':
         return String(opt.value).toUpperCase();

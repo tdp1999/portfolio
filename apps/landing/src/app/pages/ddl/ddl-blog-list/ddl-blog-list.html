@@ -383,7 +383,7 @@
           <div class="ai-variant">
             <!-- Toolbar -->
             <div class="list-toolbar">
-              <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="post" />
+              <landing-results-count [visible]="visibleCount()" [total]="totalCount()" unit="post" unitPlural="posts" />
               <div class="list-toolbar__view">
                 <landing-view-toggle [options]="viewOptions" [value]="viewMode()" (valueChange)="setView($event)" />
               </div>

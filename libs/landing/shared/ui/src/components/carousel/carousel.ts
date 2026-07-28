@@ -20,6 +20,8 @@ import { LightboxDirective } from '../lightbox';
 import { CarouselSlide } from './carousel-slide.directive';
 import { nextCarouselGroupId } from './carousel.util';
 import type { GalleryImage } from '../gallery/gallery.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * `landing-carousel` — a full-feature, breakpoint-agnostic image slider.
@@ -75,7 +77,8 @@ export class Carousel {
   readonly images = input<readonly GalleryImage[]>([]);
   /** Content-mode slide data — rendered through a `landingCarouselSlide` template. */
   readonly items = input<readonly unknown[]>([]);
-  readonly ariaLabel = input<string>('Image carousel');
+  /** Empty default so the component can resolve a localized one; a caller's value still wins. */
+  readonly ariaLabel = input<string>('');
   /** Show FIG numbering on captions. */
   readonly numbered = input<boolean>(true);
   /** Wrap from last → first (and back) on prev/next. */
@@ -124,9 +127,37 @@ export class Carousel {
     this.slideTemplate() ? this.items() : this.images()
   );
   protected readonly count = computed(() => this.slideList().length);
+
+  // ── Accessibility labels ──────────────────────────────────────────
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly ariaLabelText = computed(
+    () => this.ariaLabel() || resolveCopy('a11y.carousel.default', this.locale())
+  );
+  protected readonly prevSlideLabel = computed(() => resolveCopy('a11y.slide.prev', this.locale()));
+  protected readonly nextSlideLabel = computed(() => resolveCopy('a11y.slide.next', this.locale()));
+  protected readonly chooseSlideLabel = computed(() => resolveCopy('a11y.slide.choose', this.locale()));
+  /**
+   * Per-slide labels, resolved once per (locale, count) rather than per change
+   * detection: the template needs three interpolated strings per slide, and
+   * calling a method for each in a `@for` would rebuild them on every CD pass.
+   */
+  protected readonly slideLabels = computed<readonly { position: string; goTo: string; show: string }[]>(() => {
+    const locale = this.locale();
+    const total = this.count();
+    return Array.from({ length: total }, (_, i) => {
+      const n = i + 1;
+      return {
+        position: resolveCopy('a11y.slide.position', locale, { n, total }),
+        goTo: resolveCopy('a11y.slide.goTo', locale, { n }),
+        show: resolveCopy('a11y.slide.show', locale, { n }),
+      };
+    });
+  });
   protected readonly atStart = computed(() => this.index() <= 0);
   protected readonly atEnd = computed(() => this.index() >= this.count() - 1);
-  protected readonly liveLabel = computed(() => `Slide ${this.index() + 1} of ${this.count()}`);
+  protected readonly liveLabel = computed(() =>
+    resolveCopy('a11y.slide.live', this.locale(), { n: this.index() + 1, total: this.count() })
+  );
 
   // ── Plain state ───────────────────────────────────────────────────
   /** Set once the track is live (client only); lets the count effect re-measure. */

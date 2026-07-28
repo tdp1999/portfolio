@@ -11,7 +11,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { of, map, startWith, switchMap } from 'rxjs';
 import {
@@ -28,12 +27,17 @@ import {
   UmamiEventDirective,
   type BreadcrumbItem,
   type InPageSection,
+  resolveCopy,
+  formatLongDate,
+  LandingCopyPipe,
+  LandingMetaService,
 } from '@portfolio/landing/shared/ui';
 import { BlogDataService } from '@portfolio/landing/shared/data-access';
 import { RteRender, RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import type { RenderContext } from '@portfolio/shared/features/rte-contract';
 import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import { getLocalized } from '@portfolio/shared/utils/lite';
+import type { Locale } from '@portfolio/shared/types';
 import { addHeadingAnchors, hydrateImageRefs, type TocEntry } from '@portfolio/landing/shared/util';
 import { BlogShareRow } from './blog.share-row';
 import { Monogram, Wordmark } from '@portfolio/shared/features/brand';
@@ -61,6 +65,7 @@ import { shouldHideToc } from './blog.detail.util';
     RteRender,
     RteRenderHtml,
     UmamiEventDirective,
+    LandingCopyPipe,
   ],
   providers: [LandingScrollspyService],
   templateUrl: './blog.detail.html',
@@ -69,8 +74,7 @@ import { shouldHideToc } from './blog.detail.util';
 export class BlogDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly blogService = inject(BlogDataService);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(LandingMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly transferState = inject(TransferState);
   private readonly document = inject(DOCUMENT);
@@ -114,9 +118,10 @@ export class BlogDetail {
   readonly loading = computed(() => this.state().status === 'loading');
   readonly notFound = computed(() => this.state().status === 'not-found');
 
-  /** Blog posts are single-language — the content envelope is resolved by the post's
-   *  own `language`, not the site locale. */
-  private readonly locale = computed(() => (this.post()?.language === 'VI' ? 'vi' : 'en'));
+  /** Blog posts are single-language — the content envelope AND the chrome around it
+   *  (breadcrumb, read-time, related-posts heading, author bio) are resolved by the
+   *  post's own `language`, not the site locale. A post reads in one language. */
+  protected readonly locale = computed<Locale>(() => (this.post()?.language === 'VI' ? 'vi' : 'en'));
 
   /** Canonical AST body (prose-block renderer epic). Present → `<rte-render [doc]>`
    *  (declarative marks + lightbox-enabled blocks). Null/empty → fall back to the
@@ -154,9 +159,10 @@ export class BlogDetail {
 
   readonly breadcrumb = computed<readonly BreadcrumbItem[]>(() => {
     const p = this.post();
+    const locale = this.locale();
     const items: BreadcrumbItem[] = [
-      { label: 'Home', href: '/' },
-      { label: 'Writing', href: '/blog' },
+      { label: resolveCopy('common.page.home', locale), href: '/' },
+      { label: resolveCopy('common.page.writing', locale), href: '/blog' },
     ];
     if (p) items.push({ label: p.title });
     return items;
@@ -165,40 +171,42 @@ export class BlogDetail {
   readonly postType = computed<string>(() => {
     const p = this.post();
     if (!p) return '—';
-    if (p.categories[0]?.slug === 'notes') return 'Note';
+    const locale = this.locale();
+    if (p.categories[0]?.slug === 'notes') return resolveCopy('blog.postType.note', locale);
     // Deep dive ≈ 1500+ words; read-time is ceil(words / 200), so 1500 words ≈ 8 min.
-    if ((p.readTimeMinutes ?? 0) >= 8) return 'Deep dive';
-    return 'Essay';
+    if ((p.readTimeMinutes ?? 0) >= 8) return resolveCopy('blog.postType.deepDive', locale);
+    return resolveCopy('blog.postType.essay', locale);
   });
 
+  /** `formatLongDate`, not `toLocaleDateString`: reads UTC parts so the server and
+   *  the browser agree, and localizes the month name instead of hardcoding en-US. */
   readonly publishedDate = computed<string>(() => {
     const iso = this.post()?.publishedAt;
     if (!iso) return '';
-    const d = new Date(iso);
-    if (!Number.isFinite(d.getTime())) return '';
-    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    return formatLongDate(new Date(iso), this.locale());
+  });
+
+  readonly readTimeLabel = computed<string>(() => {
+    const minutes = this.post()?.readTimeMinutes;
+    if (!minutes) return '';
+    return resolveCopy('blog.readTime', this.locale(), { n: minutes });
   });
 
   constructor() {
     effect(() => {
       const p = this.post();
       if (!p) return;
-      const docTitle = (p.metaTitle ?? p.title) + ' | Phuong Tran';
-      this.title.setTitle(docTitle);
-      const description = p.metaDescription ?? p.excerpt ?? '';
-      this.meta.updateTag({ name: 'description', content: description });
-      this.meta.updateTag({ property: 'og:title', content: docTitle });
-      this.meta.updateTag({ property: 'og:description', content: description });
-      this.meta.updateTag({ property: 'og:type', content: 'article' });
-      if (p.featuredImageUrl) {
-        this.meta.updateTag({ property: 'og:image', content: p.featuredImageUrl });
-      }
-      if (p.publishedAt) {
-        this.meta.updateTag({ property: 'article:published_time', content: p.publishedAt });
-      }
-      if (p.author?.name) {
-        this.meta.updateTag({ property: 'article:author', content: p.author.name });
-      }
+      this.seo.apply({
+        title: (p.metaTitle ?? p.title) + ' | Phuong Tran',
+        description: p.metaDescription ?? p.excerpt ?? '',
+        path: `/blog/${p.slug}`,
+        type: 'article',
+        image: p.featuredImageUrl || undefined,
+        extra: {
+          ...(p.publishedAt ? { 'article:published_time': p.publishedAt } : {}),
+          ...(p.author?.name ? { 'article:author': p.author.name } : {}),
+        },
+      });
     });
 
     effect(() => {

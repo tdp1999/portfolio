@@ -49,7 +49,7 @@
        Hides once the global footer banner enters the viewport so it doesn't
        compete with the signature row. -->
   <landing-floating-pill-nav
-    [sections]="navSections"
+    [sections]="navSections()"
     [hideWhileActiveIn]="['hero']"
     hideOnSelector="#shell-footer-banner"
   />

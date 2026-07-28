@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 @Component({
   selector: 'landing-scroll-to-top',
@@ -19,7 +21,7 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
         [class.w-10]="compact()"
         [class.bottom-24]="compact()"
         class="fixed right-6 z-40 flex items-center justify-center rounded-full border border-landing-border bg-[var(--landing-header-bg)] text-landing-text-300 backdrop-blur-md shadow-lg transition-all duration-motion-base ease-landing-ease hover:border-landing-accent hover:text-landing-accent"
-        aria-label="Scroll to top"
+        [attr.aria-label]="scrollLabel()"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 19V5M5 12l7-7 7 7" />
@@ -29,6 +31,9 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
   `,
 })
 export class ScrollToTop {
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly scrollLabel = computed(() => resolveCopy('a11y.button.scrollToTop', this.locale()));
+
   readonly threshold = input(400);
   /**
    * Distance (px) from the bottom of the document at which the button enters its

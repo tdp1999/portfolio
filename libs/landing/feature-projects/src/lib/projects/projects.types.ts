@@ -1,4 +1,6 @@
 import type { ProjectListItem } from '@portfolio/landing/shared/data-access';
+import type { Locale } from '@portfolio/shared/types';
+import { resolveCopy } from '@portfolio/landing/shared/ui';
 
 export const QUERY = { YEAR: 'year', STATUS: 'status', STACK: 'stack', VIEW: 'view' } as const;
 
@@ -7,23 +9,29 @@ export type ViewMode = (typeof VIEW_MODES)[number];
 
 export type ProjectRow = ProjectListItem & { readonly year: string };
 
-export const VIEW_OPTIONS = [
-  {
-    id: 'row',
-    label: 'Row',
-    icon: 'list',
-    description: 'List View.',
-  },
-  {
-    id: 'grid',
-    label: 'Grid',
-    icon: 'layout-grid',
-    description: 'Grid View.',
-  },
-  {
-    id: 'timeline',
-    label: 'Timeline',
-    icon: 'history',
-    description: 'Timeline View, grouped by year.',
-  },
-] as const;
+/**
+ * View-toggle options. `label` becomes the button's aria-label, `description`
+ * the visible tooltip — both are copy, so this is a function of locale.
+ */
+export function viewOptions(locale: Locale) {
+  return [
+    {
+      id: 'row',
+      label: resolveCopy('common.view.row', locale),
+      icon: 'list',
+      description: resolveCopy('common.view.row.desc', locale),
+    },
+    {
+      id: 'grid',
+      label: resolveCopy('common.view.grid', locale),
+      icon: 'layout-grid',
+      description: resolveCopy('common.view.grid.desc', locale),
+    },
+    {
+      id: 'timeline',
+      label: resolveCopy('common.view.timeline', locale),
+      icon: 'history',
+      description: resolveCopy('common.view.timeline.desc', locale),
+    },
+  ] as const;
+}

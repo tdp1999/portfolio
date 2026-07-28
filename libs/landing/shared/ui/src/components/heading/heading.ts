@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import type { HeadingLevel } from './heading.types';
 
 export type { HeadingLevel } from './heading.types';
@@ -94,8 +96,10 @@ export class Heading {
   readonly anchor = input(true);
   readonly clickable = input(true);
 
-  readonly ariaLabel = computed(() => `Anchor link to ${this.id()}`);
-  readonly titleText = computed(() => 'Copy link to this section');
+  private readonly locale = inject(LandingLocaleService).locale;
+
+  readonly ariaLabel = computed(() => resolveCopy('a11y.heading.anchor', this.locale(), { v: this.id() }));
+  readonly titleText = computed(() => resolveCopy('common.heading.copyLink', this.locale()));
 
   // `routerLink=null` produces an <a> without href — treated as plain text, not a link.
   // `fragment` rejects `null`, so use `undefined` there. Keeps a single `<ng-content>` slot

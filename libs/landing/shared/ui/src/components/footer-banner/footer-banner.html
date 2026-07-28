@@ -1,4 +1,4 @@
-<section class="landing-footer-banner" aria-label="Site map">
+<section class="landing-footer-banner" [attr.aria-label]="siteMapLabel()">
   <landing-background pattern="hatch" />
   <landing-container size="wide">
     <div class="landing-footer-banner__inner">
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Nav columns -->
-        @for (column of columns; track column.title) {
+        @for (column of columns(); track column.title) {
           <nav class="landing-footer-banner__column" [attr.aria-label]="column.title">
             <landing-eyebrow [label]="column.title" class="landing-footer-banner__column-title" />
             <ul class="landing-footer-banner__list" role="list">

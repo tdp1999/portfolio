@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { IconArrow } from '../icon/icon-arrow';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 /**
  * Pagination control — Prev / page-numbers / Next. Parent owns the source of truth and emits
@@ -18,10 +20,16 @@ import { IconArrow } from '../icon/icon-arrow';
   standalone: true,
   imports: [IconArrow],
   template: `
-    <nav class="lpg" aria-label="Pagination">
-      <button type="button" class="lpg__btn" [disabled]="page() <= 1" (click)="goPrev()" aria-label="Previous page">
+    <nav class="lpg" [attr.aria-label]="navLabel()">
+      <button
+        type="button"
+        class="lpg__btn"
+        [disabled]="page() <= 1"
+        (click)="goPrev()"
+        [attr.aria-label]="prevPageLabel()"
+      >
         <landing-icon-arrow direction="left" [size]="14" />
-        <span>Prev</span>
+        <span>{{ prevLabel() }}</span>
       </button>
 
       <ul class="lpg__pages" role="list">
@@ -44,8 +52,14 @@ import { IconArrow } from '../icon/icon-arrow';
         }
       </ul>
 
-      <button type="button" class="lpg__btn" [disabled]="page() >= total()" (click)="goNext()" aria-label="Next page">
-        <span>Next</span>
+      <button
+        type="button"
+        class="lpg__btn"
+        [disabled]="page() >= total()"
+        (click)="goNext()"
+        [attr.aria-label]="nextPageLabel()"
+      >
+        <span>{{ nextLabel() }}</span>
         <landing-icon-arrow direction="right" [size]="14" />
       </button>
     </nav>
@@ -137,6 +151,19 @@ import { IconArrow } from '../icon/icon-arrow';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Pagination {
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly prevLabel = computed(() => resolveCopy('common.pagination.prev', this.locale()));
+  protected readonly nextLabel = computed(() => resolveCopy('common.pagination.next', this.locale()));
+  /**
+   * The visible labels above read `Prev` / `Next`; these read `Previous page` /
+   * `Next page`. Deliberately different strings — the abbreviation is a space
+   * concession in a tight row, and an abbreviation is exactly what a screen
+   * reader should not be handed.
+   */
+  protected readonly navLabel = computed(() => resolveCopy('a11y.nav.pagination', this.locale()));
+  protected readonly prevPageLabel = computed(() => resolveCopy('a11y.button.prevPage', this.locale()));
+  protected readonly nextPageLabel = computed(() => resolveCopy('a11y.button.nextPage', this.locale()));
+
   readonly page = input.required<number>();
   readonly total = input.required<number>();
   /** Max page-number buttons shown at once. Default `7`; uses ellipses to skip gaps. */

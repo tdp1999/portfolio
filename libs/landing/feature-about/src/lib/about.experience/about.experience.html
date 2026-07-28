@@ -1,13 +1,14 @@
 <section id="experience" aria-labelledby="experience-heading" class="exp">
   <landing-container>
     <header class="about-section__head">
-      <landing-eyebrow [label]="['01', 'Experience']" [accentFirst]="true" [trailingRule]="true" />
+      <landing-eyebrow
+        [label]="['01', 'about.section.experience' | landingCopy: locale()]"
+        [accentFirst]="true"
+        [trailingRule]="true"
+      />
       <div class="about-section__title-block">
         <landing-heading id="experience-heading" [level]="2" class="about-section__title">
-          <landing-t>
-            <ng-container en>Experience</ng-container>
-            <ng-container vi>Kinh nghiệm</ng-container>
-          </landing-t>
+          {{ 'about.section.experience' | landingCopy: locale() }}
         </landing-heading>
       </div>
     </header>
@@ -70,7 +71,12 @@
     } @else {
       <!-- Desktop: tablist (vertical, sticky to top of section) + panel. -->
       <div class="exp-tabs">
-        <div class="exp-tabs__rail" role="tablist" aria-orientation="vertical" aria-label="Companies">
+        <div
+          class="exp-tabs__rail"
+          role="tablist"
+          aria-orientation="vertical"
+          [attr.aria-label]="'about.experience.a11y.companies' | landingCopy: locale()"
+        >
           @for (vm of vms(); track vm.id; let i = $index) {
             <button
               type="button"
@@ -139,11 +145,11 @@
           <span class="exp-detail__company">{{ vm.companyName }}</span>
         }
         @if (vm.isCurrent) {
-          <span class="exp-detail__current" aria-label="Current role">
-            <landing-t>
-              <ng-container en>· Current</ng-container>
-              <ng-container vi>· Hiện tại</ng-container>
-            </landing-t>
+          <span
+            class="exp-detail__current"
+            [attr.aria-label]="'about.experience.a11y.currentRole' | landingCopy: locale()"
+          >
+            {{ 'about.experience.current' | landingCopy: locale() }}
           </span>
         }
       </h3>
@@ -161,12 +167,7 @@
 
     @if (vm.domain) {
       <p class="exp-detail__domain">
-        <span class="exp-detail__domain-label">
-          <landing-t>
-            <ng-container en>Domain</ng-container>
-            <ng-container vi>Lĩnh vực</ng-container> </landing-t
-          >:
-        </span>
+        <span class="exp-detail__domain-label"> {{ 'about.experience.domain' | landingCopy: locale() }}: </span>
         <span class="exp-detail__domain-value">{{ vm.domain }}</span>
       </p>
     }
@@ -179,10 +180,7 @@
   @if (vm.responsibilitiesDoc) {
     <details class="exp-detail__day-to-day" open>
       <summary class="exp-detail__day-to-day-summary">
-        <landing-t>
-          <ng-container en>Day-to-day</ng-container>
-          <ng-container vi>Công việc hàng ngày</ng-container>
-        </landing-t>
+        {{ 'about.experience.dayToDay' | landingCopy: locale() }}
         <landing-icon name="chevron-down" [size]="14" class="exp-detail__day-to-day-chevron" />
       </summary>
       <rte-render contentClass="exp-detail__responsibilities" [doc]="vm.responsibilitiesDoc" />
@@ -190,7 +188,11 @@
   }
 
   @if (vm.skillChips.length) {
-    <div class="exp-detail__skills" role="list" aria-label="Skills">
+    <div
+      class="exp-detail__skills"
+      role="list"
+      [attr.aria-label]="'about.experience.a11y.skills' | landingCopy: locale()"
+    >
       @for (s of vm.skillChips; track s.id) {
         <span role="listitem">
           <landing-chip [label]="s.name" size="sm" />

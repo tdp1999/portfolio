@@ -12,6 +12,8 @@ import {
 import { ScrollEdgeFadeDirective } from '../../directives/scroll-edge-fade';
 import { SCRIM_CLEARANCE } from './segmented.data';
 import type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 
 export type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
 
@@ -30,7 +32,7 @@ export type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
       [hidden]="rail.atStart()"
       (click)="rail.scrollStep(-1)"
       tabindex="-1"
-      aria-label="Scroll tabs left"
+      [attr.aria-label]="scrollLeftLabel()"
     >
       <svg
         width="16"
@@ -77,7 +79,7 @@ export type { LandingSegmentedVariant, SegmentOption } from './segmented.types';
       [hidden]="rail.atEnd()"
       (click)="rail.scrollStep(1)"
       tabindex="-1"
-      aria-label="Scroll tabs right"
+      [attr.aria-label]="scrollRightLabel()"
     >
       <svg
         width="16"
@@ -103,6 +105,9 @@ export class Segmented {
   readonly idPrefix = input<string>('seg');
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly scrollLeftLabel = computed(() => resolveCopy('a11y.button.scrollTabsLeft', this.locale()));
+  protected readonly scrollRightLabel = computed(() => resolveCopy('a11y.button.scrollTabsRight', this.locale()));
   private readonly edgeFade = viewChild(ScrollEdgeFadeDirective);
 
   protected readonly rootClasses = computed(() => `landing-segmented landing-segmented--${this.variant()}`);

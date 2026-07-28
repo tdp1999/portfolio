@@ -11,6 +11,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { Icon } from '../icon';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import { nextUid } from './show-more.util';
 
 /**
@@ -65,7 +67,7 @@ import { nextUid } from './show-more.util';
           [attr.aria-controls]="contentId"
           (click)="toggle($event)"
         >
-          <span>{{ expanded() ? lessLabel() : moreLabel() }}</span>
+          <span>{{ expanded() ? lessText() : moreText() }}</span>
           <landing-icon name="chevron-down" [size]="14" class="show-more__chevron" />
         </button>
       }
@@ -76,8 +78,13 @@ import { nextUid } from './show-more.util';
 export class ShowMore {
   /** Collapsed height cap in px. Content taller than this clamps behind the toggle. */
   readonly maxHeight = input(300);
-  readonly moreLabel = input('See more');
-  readonly lessLabel = input('See less');
+  /** Both fall back to the localized default when the caller passes nothing. */
+  readonly moreLabel = input('');
+  readonly lessLabel = input('');
+
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly moreText = computed(() => this.moreLabel() || resolveCopy('common.showMore', this.locale()));
+  protected readonly lessText = computed(() => this.lessLabel() || resolveCopy('common.showLess', this.locale()));
   /** Bottom gradient fade on the clamped content (toggle mode only). */
   readonly fade = input(true);
   /** `'toggle'` clamps behind a button; `'scroll'` caps and scrolls inside the box. */

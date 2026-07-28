@@ -1,13 +1,14 @@
 <section id="how-i-think" aria-labelledby="how-i-think-heading" class="hit">
   <landing-container>
     <header class="about-section__head">
-      <landing-eyebrow [label]="['02', 'How I think']" [accentFirst]="true" [trailingRule]="true" />
+      <landing-eyebrow
+        [label]="['02', 'about.section.howIThink' | landingCopy: locale()]"
+        [accentFirst]="true"
+        [trailingRule]="true"
+      />
       <div class="about-section__title-block">
         <landing-heading id="how-i-think-heading" [level]="2" class="about-section__title">
-          <landing-t>
-            <ng-container en>A working set of stances I will defend in PRs.</ng-container>
-            <ng-container vi>Bộ quan điểm mình sẵn sàng bảo vệ trong PR.</ng-container>
-          </landing-t>
+          {{ 'about.howIThink.lede' | landingCopy: locale() }}
         </landing-heading>
       </div>
     </header>

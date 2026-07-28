@@ -6,7 +6,7 @@
     width="800"
     height="800"
     role="img"
-    [attr.aria-label]="interactive() ? 'Globe — drag to rotate' : 'Globe showing locations'"
+    [attr.aria-label]="canvasLabel()"
     (pointerdown)="onPointerDown($event)"
     (pointermove)="onPointerMove($event)"
     (pointerup)="onPointerUp($event)"

@@ -12,6 +12,8 @@ import {
 import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
+import { resolveCopy } from '../../services/copy';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem, MegaMenuSection } from './mega-menu.types';
 import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './mega-menu.constants';
 import { nextMegaMenuId } from './mega-menu.util';
@@ -77,7 +79,7 @@ import { nextMegaMenuId } from './mega-menu.util';
         <!-- ─── Products column (first) ───────────────────────────────── -->
         @if (hasRail()) {
           <aside class="landing-mega-menu__rail">
-            <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">Products</h3>
+            <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">{{ productsLabel() }}</h3>
             @if (soloProduct(); as p) {
               <ng-container [ngTemplateOutlet]="featureTpl" [ngTemplateOutletContext]="{ $implicit: p, solo: true }" />
             } @else {
@@ -216,7 +218,7 @@ import { nextMegaMenuId } from './mega-menu.util';
       }
       @if (solo) {
         <span class="landing-mega-menu__feature-link">
-          {{ item.cta ?? 'Explore' }}
+          {{ item.cta ?? ctaFallback() }}
           <landing-icon name="arrow-right" [size]="12" aria-hidden="true" />
         </span>
       }
@@ -236,6 +238,12 @@ export class MegaMenu {
   readonly align = input<MegaMenuAlign>('right');
   /** Stable id used for `aria-controls`. Auto-generated if omitted. */
   readonly panelId = input<string>(`landing-mega-menu-${nextMegaMenuId()}`);
+
+  /** Own labels, not caller-supplied: the rail heading and the CTA a product card
+   *  falls back to. Resolved here so a new caller gets both languages for free. */
+  private readonly locale = inject(LandingLocaleService).locale;
+  protected readonly productsLabel = computed(() => resolveCopy('nav.products', this.locale()));
+  protected readonly ctaFallback = computed(() => resolveCopy('nav.product.ctaFallback', this.locale()));
 
   protected readonly open = signal(false);
   /** Trigger's viewport-left, measured on open — feeds `align="screen"` centring. */

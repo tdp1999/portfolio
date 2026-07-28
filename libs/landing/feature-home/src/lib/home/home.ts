@@ -9,21 +9,19 @@ import { HomeIntro } from '../home.intro/home.intro';
 import { HomePhilosophyStrip } from '../home.philosophy-strip/home.philosophy-strip';
 import { HomeSelectedWork } from '../selected-work/home.selected-work';
 import { HomeStack } from '../home.stack/home.stack';
-import {
-  DEFAULT_DESCRIPTION,
-  DEFAULT_TITLE,
-  ProfileService,
-  SkillService,
-} from '@portfolio/landing/shared/data-access';
+import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import {
   FloatingPillNav,
   LandingLocaleService,
   LandingScrollspyService,
+  resolveCopy,
   type InPageSection,
+  LandingMetaService,
+  defaultDescription,
+  defaultTitle,
 } from '@portfolio/landing/shared/ui';
-import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'landing-home',
@@ -49,27 +47,33 @@ export class Home {
   private scrollspy = inject(LandingScrollspyService);
   private localeService = inject(LandingLocaleService);
 
-  private readonly browserTitle = inject(Title);
-  private readonly browserMeta = inject(Meta);
-
-  /** Sections fed to the floating pill + minimap. Skipping philosophy strip
-   *  (transition) and footer banner (terminus) keeps the trail to 6 stops. */
-  readonly navSections: readonly InPageSection[] = [
-    { id: 'hero', title: 'Hero' },
-    { id: 'who', title: 'Who' },
-    { id: 'work', title: 'Selected Work' },
-    { id: 'stack', title: 'The Stack' },
-    { id: 'story', title: 'The Story' },
-    { id: 'get-in-touch', title: 'Get in Touch' },
-  ];
+  private readonly seo = inject(LandingMetaService);
 
   locale = this.localeService.locale;
+
+  /** Sections fed to the floating pill + minimap. Skipping philosophy strip
+   *  (transition) and footer banner (terminus) keeps the trail to 6 stops.
+   *  Titles come from `home.section.*`, shared with the section eyebrows and
+   *  the command palette so a rename cannot leave the three disagreeing. */
+  readonly navSections = computed<readonly InPageSection[]>(() => {
+    const locale = this.locale();
+    return [
+      { id: 'hero', title: resolveCopy('home.section.hero', locale) },
+      { id: 'who', title: resolveCopy('home.section.who', locale) },
+      { id: 'work', title: resolveCopy('home.section.work', locale) },
+      { id: 'stack', title: resolveCopy('home.section.stack', locale) },
+      { id: 'story', title: resolveCopy('home.section.story', locale) },
+      { id: 'get-in-touch', title: resolveCopy('home.section.getInTouch', locale) },
+    ];
+  });
   profile = toSignal(this.profileService.getPublicProfile(), { initialValue: null });
   skillTierGroups = toSignal(this.skillService.getSkillsByTier(), { initialValue: [] });
 
   profileLoaded = computed(() => this.profile() !== null);
 
-  fullName = computed(() => getLocalized(this.profile()?.fullName, this.locale()) || 'Portfolio in progress');
+  fullName = computed(
+    () => getLocalized(this.profile()?.fullName, this.locale()) || resolveCopy('home.fullName.fallback', this.locale())
+  );
   title = computed(() => getLocalized(this.profile()?.title, this.locale()));
   tagline = computed(() => getLocalized(this.profile()?.tagline, this.locale()));
   stackIntro = computed(() => getLocalized(this.profile()?.stackIntro, this.locale()));
@@ -91,7 +95,7 @@ export class Home {
   workingHours = computed(() => this.profile()?.workingHours ?? null);
   contactNote = computed(() => {
     const intro = getLocalized(this.profile()?.contactIntro, this.locale());
-    return intro || 'Open to talks · engagements from June';
+    return intro || resolveCopy('home.bio.contactNote.fallback', this.locale());
   });
   // Card C brand row — data-driven: renders whatever the author sets in the
   // Console Links dropdown (LinkedIn / GitHub / Zalo / …), in order, capped by
@@ -99,21 +103,20 @@ export class Home {
   socialLinks = computed(() => this.profile()?.socialLinks ?? []);
 
   constructor() {
-    this.scrollspy.setSections(this.navSections);
+    // Re-registered on locale change: the scrollspy holds the titles it renders.
+    effect(() => this.scrollspy.setSections(this.navSections()));
 
     // Homepage <title> + description + OG come from the SEO/OG profile fields
     // (Console → /profile → SEO / OG), falling back to the site defaults when
     // unset. In an effect because `profile` resolves async.
     effect(() => {
+      const locale = this.locale();
       const p = this.profile();
-      const title = p?.metaTitle || DEFAULT_TITLE;
-      const description = p?.metaDescription || DEFAULT_DESCRIPTION;
-      this.browserTitle.setTitle(title);
-      this.browserMeta.updateTag({ name: 'description', content: description });
-      this.browserMeta.updateTag({ property: 'og:title', content: title });
-      this.browserMeta.updateTag({ property: 'og:description', content: description });
-      this.browserMeta.updateTag({ name: 'twitter:title', content: title });
-      this.browserMeta.updateTag({ name: 'twitter:description', content: description });
+      this.seo.apply({
+        title: p?.metaTitle || defaultTitle(locale),
+        description: p?.metaDescription || defaultDescription(locale),
+        path: '/',
+      });
     });
 
     if (isPlatformServer(this.platformId)) {

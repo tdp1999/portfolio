@@ -1,16 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProfileService } from '@portfolio/landing/shared/data-access';
-import { PROFILE_AVAILABILITY_LABELS } from '@portfolio/shared/enum-labels';
-import { LandingLocaleService, T, StatusDot, type LandingStatusDotState } from '@portfolio/landing/shared/ui';
-import { AVAILABILITY_TO_DOT, EN_MONTHS, VI_MONTHS, AVAILABILITY_LABELS_VI } from './about.hero.data';
+import {
+  formatMonthYear,
+  LandingCopyPipe,
+  LandingLocaleService,
+  resolveCopy,
+  StatusDot,
+  type LandingStatusDotState,
+} from '@portfolio/landing/shared/ui';
+import { AVAILABILITY_COPY_KEYS, AVAILABILITY_TO_DOT } from './about.hero.data';
 import { formatOffset } from './about.hero.util';
 
 @Component({
   selector: 'landing-about-hero',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [T, StatusDot],
+  imports: [StatusDot, LandingCopyPipe],
   templateUrl: './about.hero.html',
   styleUrl: './about.hero.scss',
 })
@@ -27,7 +33,8 @@ export class AboutHero {
   protected readonly availabilityLabel = computed(() => {
     const a = this.availability();
     if (!a) return '';
-    return this.locale() === 'vi' ? (AVAILABILITY_LABELS_VI[a] ?? '') : (PROFILE_AVAILABILITY_LABELS[a] ?? '');
+    const key = AVAILABILITY_COPY_KEYS[a];
+    return key ? resolveCopy(key, this.locale()) : '';
   });
   protected readonly availabilityDotState = computed<LandingStatusDotState>(() => {
     const a = this.availability();
@@ -48,9 +55,6 @@ export class AboutHero {
   });
   protected readonly lastUpdatedLabel = computed(() => {
     const d = this.contentUpdatedAt();
-    if (!d) return '';
-    const months = this.locale() === 'vi' ? VI_MONTHS : EN_MONTHS;
-    const monthLabel = months[d.getUTCMonth()];
-    return `${monthLabel} ${d.getUTCFullYear()}`;
+    return d ? formatMonthYear(d, this.locale()) : '';
   });
 }

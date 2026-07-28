@@ -27,14 +27,19 @@ export function shortTimezoneLabel(timezone: string): string {
 
 /**
  * Converts a "HH:mm" range from sourceTz → targetTz using today's date as the
- * reference (handles DST as of "now"). Returns `"HH:mm–HH:mm TZS"`.
+ * reference (handles DST as of "now"). Returns `"HH:mm-HH:mm TZS"`.
+ *
+ * Plain ASCII hyphen, not an en-dash: `–` is visually confusable with `-` in
+ * source and trips the editor's ambiguous-character warning. Same rule as
+ * `formatMonthRange` in the copy folder. The range stays a hyphen in Vietnamese
+ * too — it is a numeric value in a narrow mono rail, not prose.
  */
 export function formatHoursInTimezone(start: string, end: string, sourceTz: string, targetTz: string): string {
   const ref = new Date();
   const startInTarget = convertWallClock(start, sourceTz, targetTz, ref);
   const endInTarget = convertWallClock(end, sourceTz, targetTz, ref);
   const tzShort = shortTimezoneLabel(targetTz);
-  return `${startInTarget}–${endInTarget} ${tzShort}`;
+  return `${startInTarget}-${endInTarget} ${tzShort}`;
 }
 
 /**

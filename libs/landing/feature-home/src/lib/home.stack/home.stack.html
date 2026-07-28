@@ -1,7 +1,13 @@
-<section class="home-stack" aria-label="The Stack">
+<section class="home-stack" [attr.aria-label]="'home.section.stack' | landingCopy: locale()">
   <landing-container size="wide">
-    <landing-section-header [eyebrowLabel]="['04', 'The Stack']" class="home-stack__header">
-      The <em>toolkit</em>.
+    <landing-section-header
+      [eyebrowLabel]="['04', 'home.section.stack' | landingCopy: locale()]"
+      class="home-stack__header"
+    >
+      <landing-t [locale]="locale()">
+        <ng-container en>The <em>toolkit</em>.</ng-container>
+        <ng-container vi>Bộ <em>công cụ</em>.</ng-container>
+      </landing-t>
     </landing-section-header>
 
     <div class="home-stack__weave">
@@ -54,7 +60,7 @@
 
     @if (populatedGroups().length > 0) {
       <p class="home-stack__credit">
-        <span>icons</span>
+        <span>{{ 'home.stack.creditLabel' | landingCopy: locale() }}</span>
         <span class="home-stack__credit-sep" aria-hidden="true">·</span>
         <a class="home-stack__credit-link" href="https://devicons.io" target="_blank" rel="noopener noreferrer">
           devicons.io

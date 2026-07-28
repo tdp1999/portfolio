@@ -1,8 +1,8 @@
-<landing-page-shell [breadcrumb]="breadcrumb" align="center">
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
   <span hero-heading>
     <landing-t>
       <ng-container en>Let's <em>talk</em>.</ng-container>
-      <ng-container vi>Hãy nói <em>chuyện</em>.</ng-container>
+      <ng-container vi>Cùng <em>trò chuyện</em> nha.</ng-container>
     </landing-t>
   </span>
   <p hero-lede>{{ heroCopy() }}</p>
@@ -11,10 +11,7 @@
   <section class="contact-page__main" aria-labelledby="contact-form-h">
     <landing-container size="wide">
       <h2 id="contact-form-h" class="sr-only">
-        <landing-t>
-          <ng-container en>Send a message</ng-container>
-          <ng-container vi>Gửi tin nhắn</ng-container>
-        </landing-t>
+        {{ 'contact.form.srHeading' | landingCopy: locale() }}
       </h2>
       <div class="contact-page__grid">
         <!-- ═══ Form column ═══ -->
@@ -22,26 +19,13 @@
           @if (state() === 'success') {
             <div class="contact-success" role="status" aria-live="polite">
               <h3 class="contact-success__heading">
-                <landing-t>
-                  <ng-container en>Sent — talk soon.</ng-container>
-                  <ng-container vi>Đã gửi — sẽ phản hồi sớm.</ng-container>
-                </landing-t>
+                {{ 'contact.success.heading' | landingCopy: locale() }}
               </h3>
               <p class="contact-success__copy">
-                <landing-t>
-                  <ng-container en
-                    >I'll reply within a few days. Check your inbox (and spam folder, just in case).</ng-container
-                  >
-                  <ng-container vi
-                    >Mình sẽ phản hồi trong vài ngày. Kiểm tra hộp thư (và thư mục spam, để chắc chắn).</ng-container
-                  >
-                </landing-t>
+                {{ 'contact.success.body' | landingCopy: locale() }}
               </p>
               <button type="button" class="contact-success__again" (click)="dismissSuccess()">
-                <landing-t>
-                  <ng-container en>Send another message</ng-container>
-                  <ng-container vi>Gửi tin nhắn khác</ng-container>
-                </landing-t>
+                {{ 'contact.success.again' | landingCopy: locale() }}
               </button>
             </div>
           } @else {
@@ -49,10 +33,7 @@
               <!-- Purpose chips -->
               <div class="contact-form__field contact-form__field--purpose">
                 <span class="contact-form__label" id="contact-purpose-label">
-                  <landing-t>
-                    <ng-container en>What's this about?</ng-container>
-                    <ng-container vi>Lý do liên hệ</ng-container>
-                  </landing-t>
+                  {{ 'contact.form.purposeLabel' | landingCopy: locale() }}
                 </span>
                 <landing-segmented
                   [segments]="purposeSegments()"
@@ -126,10 +107,7 @@
                 <landing-checkbox formControlName="consent" inputId="contact-consent" [hasError]="!!consentError()">
                   {{ consentLabel() }}
                   <landing-link href="/privacy" [inline]="true">
-                    <landing-t>
-                      <ng-container en>Privacy Policy</ng-container>
-                      <ng-container vi>Chính sách bảo mật</ng-container>
-                    </landing-t></landing-link
+                    {{ 'contact.form.consent.privacyLink' | landingCopy: locale() }}</landing-link
                   >.
                 </landing-checkbox>
               </landing-form-field>
@@ -178,10 +156,7 @@
         <!-- ═══ Channels column ═══ -->
         <aside class="contact-page__channels-col" aria-labelledby="contact-channels-heading">
           <h3 class="contact-channels__heading" id="contact-channels-heading">
-            <landing-t>
-              <ng-container en>Other ways</ng-container>
-              <ng-container vi>Các kênh khác</ng-container>
-            </landing-t>
+            {{ 'contact.channels.heading' | landingCopy: locale() }}
           </h3>
           <ul class="contact-channels" role="list">
             @for (channel of channels(); track channel.id) {
@@ -202,17 +177,7 @@
                     (click)="copyChannel(channel.id, channel.value)"
                     [attr.aria-label]="copyAriaLabel()"
                   >
-                    @if (copiedChannel() === channel.id) {
-                      <landing-t>
-                        <ng-container en>Copied</ng-container>
-                        <ng-container vi>Đã chép</ng-container>
-                      </landing-t>
-                    } @else {
-                      <landing-t>
-                        <ng-container en>Copy</ng-container>
-                        <ng-container vi>Sao chép</ng-container>
-                      </landing-t>
-                    }
+                    {{ (copiedChannel() === channel.id ? 'common.copied' : 'common.copy') | landingCopy: locale() }}
                   </button>
                 }
               </li>
@@ -230,16 +195,7 @@
         <landing-globe [interactive]="true" [autoRotate]="true" />
       </div>
       <p class="contact-page__globe-caption" id="contact-globe-caption">
-        <landing-t>
-          <ng-container en
-            >Based in Ho Chi Minh City, working comfortably with teams across APAC and beyond. Drag to spin the
-            globe.</ng-container
-          >
-          <ng-container vi
-            >Mình ở TP.HCM, làm việc thoải mái với các đội ngũ trên khắp APAC và xa hơn. Kéo để xoay địa
-            cầu.</ng-container
-          >
-        </landing-t>
+        {{ 'contact.globe.caption' | landingCopy: locale() }}
       </p>
     </landing-container>
   </section>

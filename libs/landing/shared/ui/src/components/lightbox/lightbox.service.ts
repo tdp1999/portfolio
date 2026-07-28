@@ -23,16 +23,6 @@ export class LightboxService {
   /** Optional so the lib stays usable in tests / non-routed hosts. */
   private readonly router = inject(Router, { optional: true });
 
-  constructor() {
-    // An open lightbox is a CDK overlay, not a routed view — so a browser
-    // back/forward (or the history-back keyboard shortcut), which the router
-    // handles via popstate, would leave it stranded over the new page. Close it
-    // on any in-app navigation.
-    this.router?.events.pipe(takeUntilDestroyed()).subscribe((e) => {
-      if (e instanceof NavigationStart && this.overlayRef) this.close();
-    });
-  }
-
   private readonly groups = new Map<string, Set<LightboxEntry>>();
   private overlayRef: OverlayRef | null = null;
   /** DOM-ordered entries for the currently open group (for FLIP-close rects). */
@@ -46,6 +36,16 @@ export class LightboxService {
   readonly triggerRect = signal<DOMRect | null>(null);
   private readonly open$ = signal(false);
   readonly isOpen = computed(() => this.open$());
+
+  constructor() {
+    // An open lightbox is a CDK overlay, not a routed view — so a browser
+    // back/forward (or the history-back keyboard shortcut), which the router
+    // handles via popstate, would leave it stranded over the new page. Close it
+    // on any in-app navigation.
+    this.router?.events.pipe(takeUntilDestroyed()).subscribe((e) => {
+      if (e instanceof NavigationStart && this.overlayRef) this.close();
+    });
+  }
 
   /** Register a trigger. Returns an unregister fn (call on directive destroy). */
   register(entry: LightboxEntry): () => void {
