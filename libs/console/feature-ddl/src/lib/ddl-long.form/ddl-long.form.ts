@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
 import {
   FormSnapshotDirective,
   HasUnsavedChanges,
-  SectionTabsLayout,
+  SectionTabs,
   SectionCard,
   SectionDescriptor,
   SectionStatus,
@@ -38,7 +38,7 @@ import {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    SectionTabsLayout,
+    SectionTabs,
     SectionCard,
     FormSnapshotDirective,
     StickySaveBar,

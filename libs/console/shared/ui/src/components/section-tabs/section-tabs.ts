@@ -31,7 +31,7 @@ import type { SectionTabGroup } from './section-tabs.types';
   styleUrl: './section-tabs.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SectionTabsLayout implements OnInit {
+export class SectionTabs implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);

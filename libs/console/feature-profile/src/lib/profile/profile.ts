@@ -15,7 +15,7 @@ import {
   HasUnsavedChanges,
   MediaPickerDataSource,
   SectionTabGroup,
-  SectionTabsLayout,
+  SectionTabs,
   SpinnerOverlay,
 } from '@portfolio/console/shared/ui';
 import { extractApiError } from '@portfolio/console/shared/util';
@@ -36,7 +36,7 @@ import { ProfileAdminResponse } from '../profile.types';
   standalone: true,
   imports: [
     SpinnerOverlay,
-    SectionTabsLayout,
+    SectionTabs,
     ProfileIdentitySection,
     ProfileWorkAvailabilitySection,
     ProfileContactSection,

@@ -41,9 +41,7 @@ import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
 import { AdminBlogPostListItem, BlogStatus, BulkPostAction, BulkPostResult, BulkPostSkip } from '../blog.types';
 import { STATUS_OPTIONS } from './posts.data';
-
-/** Appends a skip reason when there is one, so a mixed batch doesn't trail a bare separator. */
-const withReason = (head: string, reason: string): string => (reason ? `${head} ${reason}` : head);
+import { withReason } from './posts.util';
 
 @Component({
   selector: 'console-posts',

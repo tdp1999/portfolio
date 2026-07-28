@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { SectionCard, SectionStatus, SectionTabsLayout, StickySaveBar } from '@portfolio/console/shared/ui';
+import { SectionCard, SectionStatus, SectionTabs, StickySaveBar } from '@portfolio/console/shared/ui';
 
 /**
  * DDL ANATOMY — Form page reference. Shows every form-page element from the audit:
@@ -27,7 +27,7 @@ import { SectionCard, SectionStatus, SectionTabsLayout, StickySaveBar } from '@p
     MatInputModule,
     MatCheckboxModule,
     SectionCard,
-    SectionTabsLayout,
+    SectionTabs,
     StickySaveBar,
   ],
   templateUrl: './ddl-anatomy-form.html',
