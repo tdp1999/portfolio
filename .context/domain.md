@@ -18,6 +18,10 @@
 | ExperienceSkill | Junction linking an Experience to the Skills/technologies used in that role | Relation |
 | Skill | A technical or professional competency with proficiency level. May include an icon image stored as a Media reference. Grouping for landing display uses the parent-skill relationship: top-level skills (skills with no parent) act as group umbrellas (e.g., Frontend, Backend, Tooling, Library work, Languages, Workflow & AI), and each member skill belongs to one umbrella. | Entity |
 | Testimonial | A recommendation or quote from a colleague or client | Entity |
+| AboutPrinciple | An author-managed working-principle entry on the About page. Each entry is a short Claim plus an Expansion that argues it. Both fields are translatable; entries carry an author-chosen order and a published flag. | Entity |
+| PrincipleClaim | The one-sentence assertion of an AboutPrinciple — the part a reader remembers. Translatable. | Value Object |
+| PrincipleExpansion | The paragraph that justifies a PrincipleClaim. Translatable. | Value Object |
+| AboutFailure | An author-managed "failures and lessons" entry on the About page. Each entry is anchored to a Year and an anonymized Context, then tells three beats: the Decision taken, its Consequence, and the Lesson drawn. All four narrative fields are translatable; entries carry an author-chosen order and a published flag. | Entity |
 | Project | A portfolio project showcasing personal or open-source work. Contains translatable short-form fields (oneLiner, description, motivation, role) for cards and intros, an optional translatable long-form body for the case-study page, a list of external links, technical highlights (Challenge-Approach-Outcome), gallery images, and skill associations. Supports soft delete, featured flag, and manual ordering. | Aggregate |
 | TechnicalHighlight | A structured technical narrative (Challenge → Approach → Outcome) attached to a Project. 2-4 per project max. All fields translatable. Optional codeUrl links to specific file/PR. | Entity |
 | ProjectImage | Junction linking a Project to Media, with displayOrder. Layout decides contextual placement — no placement hints stored. | Relation |
@@ -31,7 +35,7 @@
 | Language | A supported locale for the site (e.g., en, vi) | Value Object |
 | PostStatus | The publication state of a Post: Draft, Published, Private, Unlisted | Value Object |
 | ContactMessage | A visitor inquiry submitted via the landing page contact form, with lifecycle status tracking | Entity |
-| ContactPurpose | The intent behind a contact message: General, Job Opportunity, Freelance, Collaboration, Bug Report, Other | Value Object |
+| ContactPurpose | The intent behind a contact message: General, Job Opportunity, Freelance, Collaboration, Bug Report, Press, Other | Value Object |
 | ContactMessageStatus | The lifecycle state of a message: Unread, Read, Replied, Archived | Value Object |
 | EmailTemplate | A reusable email template with locale support and variable interpolation | Entity |
 | Certification | A professional certification stored as JSON on Profile (name, issuer, year, URL) | Value Object |
@@ -104,16 +108,20 @@
 - **Trigger:** Visitor submits the contact form on Landing Page
 - **Actors:** Visitor (anonymous), System
 - **Happy path:**
-  1. Visitor fills in contact form (name, email, purpose, subject, message, GDPR consent)
-  2. System validates input and runs spam checks (honeypot, rate limit, disposable email)
-  3. System stores ContactMessage with status UNREAD and expiresAt = createdAt + 12 months
-  4. System sends auto-reply email to visitor in their locale (en/vi)
-  5. System sends notification email to admin's configured personal email
+  1. Visitor fills in contact form (name, email, purpose, message, GDPR consent) — there is no subject field to fill in
+  2. System silently discards submissions that filled the hidden honeypot field, answering as if they succeeded
+  3. System verifies the visitor cleared the bot challenge
+  4. System enforces the per-email and per-address submission limits, then rejects disposable email addresses
+  5. System derives the message subject from the purpose and the visitor's name, in the visitor's own language
+  6. System stores ContactMessage with status UNREAD and expiresAt = createdAt + 12 months
+  7. System sends auto-reply email to visitor in their locale (en/vi)
+  8. System sends notification email to admin's configured personal email
 - **Variations:**
   - Spam detected (honeypot filled): System returns 201 but does not store message or send emails
   - Rate limit exceeded: System returns 429
   - Disposable email: System rejects with validation error
 - **Error paths:**
+  - Bot challenge not cleared: System rejects before storing anything or sending anything, and invites the visitor to retry
   - Validation failure: System rejects (missing required fields, invalid email format)
   - Email service failure: Message is still stored; email sending failure is logged but does not block submission
 - **End states:** ContactMessage stored, auto-reply sent, admin notified
@@ -134,6 +142,24 @@
 - **Error paths:**
   - Message not found or already hard-deleted: System returns 404
 - **End states:** Messages triaged — read, replied, archived, or deleted
+
+### Author About-page Essays
+- **Trigger:** Owner wants to add, edit, reorder, or retire a working principle or a failure entry on the About page
+- **Actors:** Owner (via Console)
+- **Happy path:**
+  1. Owner opens the Principles or Failures section in Console
+  2. Owner writes the entry in English — the Claim and its Expansion for a principle, or the Year, Context, Decision, Consequence and Lesson for a failure
+  3. Owner optionally writes the Vietnamese version of the same entry
+  4. Owner places the entry in the editorial sequence they want
+  5. Owner publishes the entry
+  6. About page shows the entry, in the author's order, on the next visit
+- **Variations:**
+  - Translation left empty: the page shows the English version of that one entry while the rest of the page stays in the reader's language
+  - Unpublished: the entry is retained but never shown to visitors — used to park a draft or retire an entry without losing it
+  - Reorder: Owner rewrites the sequence; entries carry no unique position, so several may be moved at once
+- **Error paths:**
+  - Validation failure: the English version is required — an entry missing it is rejected
+- **End states:** Entry saved, About page reflects the author's chosen order
 
 ### Manage Projects
 - **Trigger:** Owner wants to add, edit, or remove portfolio projects
@@ -179,6 +205,18 @@
   - Media not found: companyLogoId references non-existent Media — rejected
 - **End states:** Experience saved, skills linked, landing page reflects changes
 
+### Upload Media
+- **Trigger:** Owner wants to upload an asset (image, document, video)
+- **Actors:** Owner (via Console)
+- **Happy path:**
+  1. Owner selects a file and chooses a MediaFolder
+  2. System validates file type and size
+  3. System stores asset externally and records the Folder assignment
+  4. Media becomes available in pickers filtered by that Folder
+- **Error paths:**
+  - Invalid file type or size: System rejects upload
+- **End states:** Media stored with Folder, available in listings and pickers
+
 ## Rules
 
 ### Post
@@ -200,6 +238,23 @@
 - CTM-003: ContactMessage expires 12 months after creation (hard-deleted by cron)
 - CTM-004: Soft-deleted messages are hard-deleted 30 days after deletion
 - CTM-005: Auto-reply email is sent in the same locale as the form submission
+- CTM-006: The visitor never types a subject. The system derives it from the purpose label and the visitor's name, in the visitor's own language, so the auto-reply and the admin notification always agree
+- CTM-007: A submission must clear a bot challenge before anything is stored. Failing it stores nothing and sends nothing
+
+### About Content
+- ABP-001: An AboutPrinciple requires a Claim and an Expansion in English; the Vietnamese version is optional
+- ABP-002: Display order is the author's chosen sequence, not alphabetical and not by creation date. Order values are not unique — reordering rewrites them
+- ABP-003: An unpublished entry is retained but never shown to visitors
+- ABF-001: An AboutFailure requires a Year and all four narrative beats (Context, Decision, Consequence, Lesson) in English
+- ABF-002: A missing translation falls back per entry, not per page — one untranslated entry never forces the whole page back to English
+- ABF-003: Ordering and publishing follow the same rules as ABP-002 and ABP-003
+
+### Locale
+- LOC-001: A returning visitor sees the language they last chose, on the very first frame — before any script runs
+- LOC-002: A first-time visitor sees their client's preferred language when it is one the site serves; otherwise English
+- LOC-003: Fixed interface wording exists in both languages at all times. There is no such thing as an untranslated label
+- LOC-004: Authored content may be English-only; it falls back to English per field and per entry (see ABF-002, EXP-005, PRF-004)
+- LOC-005: The legal pages are the only pages whose language is part of their address, because search engines index the two versions separately. Everywhere else, language is a site-wide preference and one page has one address
 
 ### Experience
 - EXP-001: Slug auto-generated from companyName + position.en, immutable after creation. Collision handled with numeric suffix
@@ -231,20 +286,6 @@
 - PRF-007: LandingContentBlocks copy fields (tagline, stackIntro, contactIntro, footerTagline) are optional. When a block is empty, the landing page falls back to its layout default — typically hiding that surface entirely or showing only fixed chrome. `coreStack` (string array) is also optional; when empty, the hero CORE_STACK strip falls back to extracting bold runs from `stackIntro` paragraph 1, then to a slash-split fallback.
 - PRF-008: Skill grouping for landing follows the parent-skill umbrella convention: top-level skills (skills with no parent) define the groups; the group label is the umbrella skill's name; group order follows the umbrella's display order; member skills are the umbrella's direct children.
 
-### Upload Media
-- **Trigger:** Owner wants to upload an asset (image, document, video)
-- **Actors:** Owner (via Console)
-- **Happy path:**
-  1. Owner selects a file and chooses a MediaFolder
-  2. System validates file type and size
-  3. System stores asset externally and records the Folder assignment
-  4. Media becomes available in pickers filtered by that Folder
-- **Error paths:**
-  - Invalid file type or size: System rejects upload
-- **End states:** Media stored with Folder, available in listings and pickers
-
-## Rules
-
 ### Media
 - MED-001: A Media asset belongs to exactly one MediaFolder, assigned at upload time and not changeable after
 - MED-002: Filtering Media by Folder uses exact Folder match — a Media without a Folder only appears in unfiltered (show-all) listings
@@ -252,7 +293,8 @@
 
 ## Invariants
 - The Landing Page only displays content that has been saved and is in a public-visible state
-- All content changes go through Console — Landing Page is read-only for visitors
+- Visitor-facing content is read-only for visitors; the Owner is the only author
+- Most content is authored in Console. Two exceptions are authored in the codebase and ship with a release: the fixed interface wording, and the /uses and /colophon pages. Moving those into Console is open work, not a property of the system today
 - Contact form submission is the only public write operation (no auth required)
 - All message management (read, archive, delete) requires admin authentication
 
@@ -264,3 +306,6 @@
 - **Markdown import with unsupported syntax:** Obsidian plugins (dataview, mermaid) produce syntax the editor can't render — stripped silently, user informed of what was removed
 - **Post with inline images deleted from Media:** Content references Cloudinary URLs that may be deleted — broken images display placeholder. No cascading delete from Media to post content.
 
+
+## Changelog
+- [2026-07-28] First reconciliation against the code since 2026-05-28, after six epics closed. Added AboutPrinciple + AboutFailure (with PrincipleClaim / PrincipleExpansion) and the Author About-page Essays flow, from `epic-portfolio-about`. Added the Press contact purpose, the bot-challenge step, and the derived-subject step to Receive Contact Message (CTM-006, CTM-007) — the flow had claimed the visitor types a subject, which the form has never asked for. Added the Locale rules (LOC-001..005) from the landing i18n work. Corrected the invariant that said all content goes through Console: the fixed interface wording and the /uses + /colophon pages are authored in the codebase today. Also structural — the Upload Media flow had been sitting under a second `## Rules` heading; it is now a flow, and there is one Rules section.
