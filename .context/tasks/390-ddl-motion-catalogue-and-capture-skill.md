@@ -2,6 +2,8 @@
 
 > Hai deliverable buộc dính nhau: trang catalogue là **consumer** thật của skill, và skill là **pipeline** sinh clip cho trang. Làm trang mà không sửa skill thì clip vẫn mờ; sửa skill mà không có trang thì không có nơi kiểm chất lượng thật. Vì vậy gộp một task.
 
+## Status: in-progress
+
 ## Bối cảnh
 
 Session 2026-07-26 đã dựng **scaffold** trang `/ddl/motion` (catalogue hoạt ảnh landing, nhóm theo trigger) và **pilot** một pipeline Playwright video-recording → ffmpeg. Scaffold chạy được, build production xanh, nhưng **clip đang rất tệ — mờ, và vài clip lỗi/không đọc được**. Đây là task để đưa cả hai lên mức ship được.

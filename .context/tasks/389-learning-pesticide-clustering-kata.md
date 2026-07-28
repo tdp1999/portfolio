@@ -2,6 +2,8 @@
 
 > **[learning]** — Đây là bài tập của Learning Loop (domain: Testing, buổi 4), không phải yêu cầu sản phẩm. Giá trị nằm ở việc NGƯỜI HỌC tự quyết oracle, không delegate AI. Nối buổi học: `~/Code/personal/learning/domains/testing/`.
 
+## Status: pending
+
 ## Mục tiêu học
 
 Luyện hai nguyên tắc testing trên code thật:

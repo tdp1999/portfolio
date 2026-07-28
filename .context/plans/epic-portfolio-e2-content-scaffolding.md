@@ -2,7 +2,26 @@
 
 > Parent: [Initiative: Portfolio](./initiative-portfolio.md)
 > Reads from: [E0 — Author Databank](./epic-portfolio-e0-author-databank.md), [E1 — Audience & Narrative](./epic-portfolio-e1-audience-narrative.md)
-> Status: In progress.
+> Status: **CLOSED 2026-05-01, historical record (§2 re-open resolved 2026-07-09).**
+
+## ⚠️ This file is no longer the copy of record
+
+Read this before quoting any "LOCKED" block below.
+
+| What you want | Where it lives |
+| ------------- | -------------- |
+| The **canonical text** of any shipped surface | **E0 §16** ("Finalized copy — databank chính chủ") |
+| The **live** text | **Production** (Console / `GET /api/profile`) — prod is the source of truth |
+| **Who is writing what next**, EN + VI, per field | **`tasks/361-content-authoring-master.md`** |
+| **Why** a 2026-05-01 wording call was made | This file (that is all it is for now) |
+
+Most copy locked here on 2026-05-01 was **re-authored during June–July 2026** as each field went
+through the per-field analysis protocol in task 361 — the hero sub-line, the story, bio Card B,
+Get in Touch, and the footer banner all changed, and their canonical versions moved to E0 §16. Treat
+the "Locked" blocks below as the **reasoning trail**, not as text to paste anywhere.
+
+Still authoritative here, because they were one-shot structural decisions never re-opened:
+**§9 Page Layout Master**, **§10 Multi-Page Site Map**, **§11 System Gaps**.
 
 ## Purpose
 
@@ -101,11 +120,18 @@ When choosing, ask:
 
 ## 2. 90s Story Arc
 
-### Status: **LOCKED 2026-05-01 — voice re-questioned 2026-05-04 (rewrite pending).**
+### Status: **REWRITTEN — superseded 2026-07-09. The copy below is not what the site says.**
 
-> **Voice re-review note (2026-05-04):** Owner re-read the locked copy during E5 implementation and flagged it as too literary / "văn vẻ" — doesn't match natural register. Specific phrases under suspicion: opener "the same instinct shows up", closing hedge "if there is one... share a way of working", and the "earned the breath" framing. Copy still renders unchanged from `Profile.bioLong` until rewrite lands. New variants needed before re-lock.
+> **Resolved 2026-07-09 (recorded here 2026-07-27).** The 2026-05-04 voice flag below was acted on:
+> `Profile.bioLong` was rewritten from scratch, locked EN+VI, and published — the literary register
+> flagged in this section is gone. Canonical text is in **E0 §16** (recovered from prod into the
+> databank on 2026-07-26); tracking is task 361 Tier 2. The new arc is: belief (an engineer must
+> understand users as deeply as a BA/PO/UX designer) → proof through the banking domain in a humble
+> register → current role as frontend owner of an LOS, end to end. Nothing below is quotable.
 
-### Locked
+> **Original voice re-review note (2026-05-04):** Owner re-read the locked copy during E5 implementation and flagged it as too literary / "văn vẻ" — doesn't match natural register. Specific phrases under suspicion: opener "the same instinct shows up", closing hedge "if there is one... share a way of working", and the "earned the breath" framing. Copy still renders unchanged from `Profile.bioLong` until rewrite lands. New variants needed before re-lock.
+
+### Locked (2026-05-01 — superseded, kept as the reasoning trail)
 
 > *"Frontend engineer, five years in, four of them at Redoc shipping for Singapore-market banking — loan management, SME lending, finance ERP. Daily work is the long tail of features the bank actually runs on; the highlights are larger pieces like a Document Engine replacing CKEditor across loan products, or the permission framework over a hundred sub-modules. Real problems, real users, good people.*
 >
@@ -436,3 +462,5 @@ The api/console schema mostly supports v1 content. Three small additive migratio
 - 2026-05-01 — Section 8 (Footer Banner) LOCKED. V2 — "There's more, if you're still here." + 5 page links.
 - 2026-05-01 — **E2 closed.** All home-page sections drafted and locked. Colophon section content deferred to E5/E6 (depends on E4 visual outcome). Other v1 pages (Experience, Projects detail, Blog, Uses, Contact form) get their own minor copy passes during implementation; bulk of content lift is done.
 - 2026-05-04 — **§2 voice re-opened (E2 partially un-closed).** Owner flagged 90s Story Arc as too literary during E5 task 282. Code renders from `Profile.bioLong` unchanged; rewrite pending. Italic emphasis convention adopted: `*phrase*` in markdown source → Newsreader serif italic at render. Note also: factual prose readout (plain CV-flavor "name, role, years, location") was discussed and **deferred** — Hero + Bio Card Grid Card A judged sufficient for v1; revisit after home complete.
+- 2026-07-09 — **§2 re-closed.** `bioLong` rewritten and published EN+VI; the literary register is gone. Canonical in E0 §16, tracked in task 361 Tier 2. E2 has no open threads left.
+- 2026-07-27 — **Demoted to historical record.** Overlap audit (with tasks 340/341 and 361) found E2 and E0 §16 both presenting themselves as holders of LOCKED copy, while most 2026-05-01 locks had in fact been re-authored in June–July. Added the "no longer the copy of record" header: canonical text = E0 §16, live text = prod, live tracking = task 361, and this file = the reasoning trail. §9/§10/§11 remain authoritative (one-shot structural decisions, never re-opened). Also back-filled the 2026-07-09 resolution into §2, which was still advertising a pending rewrite. Docs-only, nothing deleted.

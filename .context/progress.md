@@ -223,6 +223,7 @@
 ---
 
 #### Future Sprints (to be broken down when ready)
+
 - Sprint 13: GitHubRepo Module
 - Sprint 14: Analytics Module
 - Sprint 15: Landing Integration (wire all APIs to landing page)
@@ -257,11 +258,12 @@
 
 ## Standalone Tasks
 
-- [~] 361-content-authoring-master - Master checklist cho mọi nội dung do người viết (EN + VI, mọi surface); index trên các brief 340/341/328/323. Đang author project Document Engine (tab Basic/Story/Highlights xong, tới Media) (XL) (standalone, in-progress)
+- [~] 361-content-authoring-master - **Tracker duy nhất cho content** (EN + VI, mọi surface). Brief còn mở bên dưới: 328 (`/now`), 323 (`llms.txt`); 340/341 đã đóng vì trùng (2026-07-27), static-UI VI thuộc 388 (**đóng 2026-07-28**, cả 4 batch dịch xong). Đang author project Document Engine (tab Basic/Story/Highlights xong, tới Media) (XL) (standalone, in-progress)
 - [~] 386-e2e-drift-cleanup-post-throttle - Sửa ~72 test `console-e2e` fail (19 spec) lộ ra sau khi fix throttle 429 ở task 384; toàn bộ là test-drift selector cũ (L) (standalone, in-progress)
 - [~] 390-ddl-motion-catalogue-and-capture-skill - Hoàn thiện trang `/ddl/motion` (catalogue motion landing) + đóng gói/validate skill "video-from-capture"; scaffold + 4 clip pilot đã có, clip đang mờ/lỗi, còn 8 clip. Là B2 trong ledger document-engine (L) (standalone, in-progress)
-- [ ] 383-rte-console-editor-chrome-polish - Fix chrome/styling editor RTE trong console (popover, toolbar) cho menu dễ đọc và control không nhảy layout (M) (standalone)
-- [ ] 388-landing-i18n-consolidation - Gom static UI copy landing (ternary `locale()==='vi'` + slot `<landing-t>`) về 1 nguồn JSON + pipe resolver; audit bản dịch VI (user kiểm chứng); giữ `<landing-t>` cho HTML-rich, giữ `translatable` cho data API (L) (standalone)
+- [~] 383-rte-console-editor-chrome-polish - Fix chrome/styling editor RTE (popover, toolbar) cho menu dễ đọc và control không nhảy layout. **Scope mở rộng 2026-07-28:** không chỉ console mà cả landing `/document-engine` (chung engine 0.1.4 + chung shim panel, nhưng remap biến tách riêng). #1 popover trong suốt + #2 toolbar nhảy layout đã đóng; đang chờ owner manual-test cả 2 app rồi report vào task (M) (standalone, in-progress)
+- [x] 388-landing-i18n-consolidation - Gom static UI copy landing về 1 dictionary `LANDING_COPY` (TS `as const`, không phải JSON — xem ADR-028) + pipe `landingCopy` / `LandingCopyService`; giữ `<landing-t>` cho HTML-rich, giữ `translatable` cho data API. **Xong cả 5 phase + cả 4 batch dịch:** 476 key, 4 ternary còn lại đều là logic, 4 test guardrail trong `landing-copy-contract.spec.ts` (ternary / cặp hằng EN-VI / object `{en,vi}` inline / em-dash trong prose template). Batch 4 (legal) là audit chứ không phải dịch mới — bắt được `gross negligence` bị dịch thành `cố ý nghiêm trọng` (nghĩa đối lập, ảnh hưởng pháp lý). **Chưa mở task, chỉ ghi nhận:** per-locale URL + hreflang + `index.html` locale-aware (SSR render meta EN vì `readInitial()` trả `'en'` trên server) (L) (standalone) - Completed 2026-07-28
+- [x] 391-landing-i18n-post-review-hardening - Follow-up của 388 sau vòng review 7 ý. **Bug người dùng báo:** toggle ngôn ngữ chết trên `/privacy` + `/terms` (2 nguồn locale rời nhau; `useLegalPage.setLocale` chưa từng được gọi ở commit nào) → URL giờ là *phản chiếu* của locale site, `?lang=` deep link vẫn chạy, canonical/hreflang vẫn đúng. **SSR:** `readInitial()` đọc cookie + `Accept-Language` (ADR-029), `Vary` header, 3 route localized đổi Prerender→Server vì prerender không có request. **Head:** `LandingMetaService.apply()` sinh 11 tag từ 1 khai báo (ADR-030) — trước đó `twitter:*` đóng băng ở default EN, `og:url` luôn trỏ homepage. **Perf:** 4 computed lồng trong `contact.ts`, 2 method gọi từ template trong `blog.share-row.ts`. **Type:** `CopyValues<K>` bắt sai/thiếu `{slot}` lúc compile, thay 21 chỗ `.replace()`; guardrail thứ 5 + test trần kích thước dictionary. **Lint:** lần đầu chạy sau 388 — 3 lỗi module-boundary do chính 388 gây ra (data-access import dictionary từ shared/ui) sửa bằng cách dời file, không sửa rule; workspace giờ **0 error** trên 43 project (còn 20 warning, toàn bộ ở 3 lib console không liên quan). Lượt review trước commit bắt thêm **5 bug thật, 2 trong đó do chính task này tạo ra** (reset head khi bấm TOC, mất số nhiều ở /ddl) — đã sửa hết. **Đã validate trên browser (user, 2026-07-28)** — chính là bước 388 bỏ qua. Kéo theo 1 fix: `AboutPage.presetLocale` chỉ seed `localStorage` (browser đọc) trong khi server giờ đọc cookie → test VI sẽ SSR ra EN rồi mới nhảy; nay seed cả hai qua `addCookies`. **Chưa chạy:** e2e suite (cần dev server) (L) (standalone) - Completed 2026-07-28
 - [ ] 387-railway-memory-cost-debug - Debug & tối ưu chi phí Memory trên Railway; Umami stack (~$3/mo, mới thêm 02/07) là thủ phạm chính, +điều tra spike Dashboard API 569 MB & App Sleeping (M) (standalone)
 - [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
 - [x] 194-dashboard-backend-apis - **Descoped 2026-06-22** → shipped real `GET /api/dashboard/stats` (CQRS read-model + `DashboardService` + console-home wired); cut Search + Notifications, deferred Activity. Repo spec ✅ → `tasks-done/other/` (S)
@@ -345,30 +347,36 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [ ] 323-landing-llms-txt (S)
 - [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
 
-## Pending — Portfolio About (broken down 2026-05-22)
+## Done — Portfolio About (epic COMPLETED 2026-07-27 → `plans-done/epic-portfolio-about.md`)
 
 From: `epic-portfolio-about`. `/about` becomes single source of truth for work history + persona surfaces (hero, manifesto, failures). `/experience` route retired via 301 redirect. (DDL review pass 2026-05-22 dropped depth-map [duplicated home §04 Stack] and currently-shipping [duplicated /now page]; sandboxes kept as historical record. Effective signature graduation set = 1: failures.)
 
+**Closed 2026-07-27.** All 17 tasks done and archived. The page, schema, Console forms, and empty states ship; what is missing is **words** — prod still returns 0 records for Experience / principles / failures, so those three sections render "coming soon". That content is tracked per surface in task **361** (Tier 2 + audit table B), not here.
+
 ### Foundation
+
 - [x] 329-about-feature-lib-and-route (S) — archived
 - [x] 330-about-hero (S) — archived
 - [x] 331-about-sticky-tab-experience (M) — archived
 - [x] 332-about-how-i-think-manifesto (S) — archived
 
 ### DDL signature staging
+
 - [x] 333-ddl-about-signatures-scaffold (S) — archived
 - [x] 334-ddl-depth-map-variants (M) — archived (DROPPED — duplicated home §04 Stack; sandbox kept as historical record)
 - [x] 335-ddl-failures-variants (M) — archived (V1 three-column cards picked 2026-05-22)
 - [x] 336-ddl-currently-shipping-variants (M) — archived (DROPPED — duplicated /now page; sandbox kept as historical record)
 
 ### Composition + polish
+
 - [x] 337-about-graduate-signatures (S) — archived
 - [x] 338-about-cta-and-page-composition (S) — archived
 - [x] 339-about-seo-meta-and-jsonld (S) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 
 ### Content + locale + verify
-- [ ] 340-about-content-authoring (M) — author task, parallel to build — **partly superseded by 343/344/345 (console-managed): heading/lede/CTA copy → 343 (done); principle essays → 344; failure essays → 345. What remains: SEO copy + any final pre-launch wording polish.**
-- [ ] 341-about-bilingual-vi-translation (S) — deps: 340 — **superseded by 343/344/345: bilingual editing is now part of the console form for every console-managed surface. Close once all three land.**
+
+- [x] 340-about-content-authoring (M) — **superseded by task 361, closed 2026-07-27** → `tasks-done/epic-portfolio-about/`. All 7 ACs duplicated 361's per-field checklist: 3 done (`aboutHeading`, `aboutLede`, About CTA — canonical E0 §16), 1 dropped with the depth-map section (2026-05-22 IA call), 3 unwritten and tracked in 361 Tier 2. Its Technical Notes / Files to Touch were stale after 343/344/345 moved these surfaces to console-managed DB records — marked as such. Kept as the writing brief (formulas + anti-patterns).
+- [x] 341-about-bilingual-vi-translation (S) — **superseded, closed 2026-07-27** → `tasks-done/epic-portfolio-about/`. Its EN-then-VI premise never held: 361 locks EN+VI per field in one session. Split three ways — per-field content VI → **361** (dual checkboxes); EN-only static UI copy → **388** Phase 2 (landing-wide, incl. the untranslated-string sweep); locale switcher on `/about` → **342** (done, asserted in `about.spec.ts`).
 - [x] 342-about-e2e-test-pass (M) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 - [x] 343-about-profile-fields-to-console (L) — done 2026-05-23 → `tasks-done/epic-portfolio-about/`
 - [x] 344-about-principles-to-console (L) — deps: 338, soft-343 — Completed 2026-05-24. AboutPrinciple BE module + console CRUD + landing service swap shipped; PRINCIPLES const deleted; 5 EN+VI principles seeded. Archived to `tasks-done/epic-portfolio-about/`.
@@ -379,38 +387,47 @@ From: `epic-portfolio-about`. `/about` becomes single source of truth for work h
 From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v0.1.0) blocks tasks 305–319 below.
 
 ### Phase 2 — Schema migrations
+
 - [x] 305-rte-prisma-migrations (L) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 3 — `rte-*` shared libs (rte-core / rte-contract / rte-tiptap / rte-renderer)
+
 - [x] 306-rte-contract-lib (S) — done 2026-06-22 (archived → tasks-done/epic-portfolio-rich-text-editor/); lib later renamed `redoc-rte`→`rte-contract` in 308
 - [x] 307-rte-tiptap-concrete (M) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); `rte-tiptap`
 - [x] 308-rte-renderer-lib (S) — done 2026-06-23 (archived → tasks-done/epic-portfolio-rich-text-editor/); added Angular-free `rte-core` + `rte-renderer`; renamed the RTE libs
 - [x] 309-rte-textarea-fallback (S) — done 2026-06-28 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 4 — BE pipeline
+
 - [x] 310-rte-be-service (M) — done 2026-06-28 (archived → tasks-done/epic-portfolio-rich-text-editor/)
 
 ### Phase 5 — Console swap
+
 - [x] 311-rte-console-editor-swap (L) — done 2026-06-28 (S1 profile.bioLong, S2 project body/highlights, S3 blog content, S4 experience desc/resp/highlights; archived → tasks-done/epic-portfolio-rich-text-editor/). Follow-ups spun out: 318 (restore blog md-import), 363 (drop legacy cols), 382 (landing-accurate preview)
 
 ### Phase 6 — Landing renderer
+
 - [x] 312-rte-landing-home-intro-render (S) — done 2026-07-02. `home-intro` drops `parseBioLong`, reads `profile.bioLongCanonical` (canonical PortableDocument) via shared `paragraphsFromDoc` (rte-core/portable), lamp/pen interaction preserved. Verified end-to-end: authored demo bioLong → `PATCH /api/admin/profile/identity` (real console write path) populated all 3 cols; Playwright on `/` confirmed 3 paragraphs from canonical + serif italics + active/dim/lamp-on toggles; Lighthouse TBT 40ms/CLS 0 (change removes client parsing → no perf regression). deps: 305, 308, 310, 311, 385
 - [x] 385-rte-canonical-column-parity (M) — done 2026-07-02. Canonical column + persist + generalized backfill for all 7 RTE fields lacking one (profile.bioLong, experience ×3, technicalHighlight ×3); self-enforced by `rte-canonical-contract.spec.ts`. ADR-023 + guardrails. Migration `add_rte_canonical_columns`. Split from 312. API sweep 303 ✓.
 - [x] 313-rte-landing-project-detail-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `<rte-render-html>` for body + highlight CAO; FE read-time slugger for ToC; browser-only sanitize (plain `dompurify`) to keep `isomorphic-dompurify`/jsdom out of the SSR bundle (ADR-019)
 - [x] 314-rte-landing-blog-post-render (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); blog body via `<rte-render-html>` + slugger; cover-image CLS/eager/aspect-ratio fix; **removed `marked` + `shiki`** entirely (incl. `/ddl/blog-detail` + 5 `markdown.*` files) + dropped `jest-extended`/`jest-util` devDeps
 
 ### Phase 7 — Image-ref + MediaPicker
+
 - [x] 315-rte-image-ref-mediapicker (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); console insert wiring pre-landed in 311; closed the two real gaps — `data-caption-position` in base whitelist + a `MediaRefResolverService` (node-safe `rte-core/image-refs` entry, `collectImageIds`) that ships a resolved `mediaRefs` map in the project/blog public detail DTOs. Verified live: console edit re-opens with the `image-ref` placeholder intact.
 - [x] 316-rte-landing-image-ref-hydrate (M) — done 2026-06-29 (archived → tasks-done/epic-portfolio-rich-text-editor/); `hydrateImageRefs` rebuilds URL-free figures into the `landing-figure` primitive (responsive Cloudinary srcset + mono-caps `FIG. 0X` caption + deleted-media fallback), `[allowMedia]` widens the read-time sanitize whitelist. Interim string-transform path (prose-block-renderer epic supersedes later). Verified live: landing SSR first-paint contains the hydrated figure.
 
 ### Phase 8 — Markdown short fields + Obsidian importer
+
 - [x] 317-rte-markdown-pipe-and-parser-cleanup (S) — done 2026-06-29 (shipped `8de4355`; archived → tasks-done/epic-portfolio-rich-text-editor/). Re-scoped from the `marked` pipe to a shared **declarative** inline-markdown parser (`parseInlineRuns`/`parseInlineParagraphs` in landing/shared/util) — no `marked`, no `[innerHTML]`. Consolidated home.stack + selected-work; deleted `parseStackIntro`/`parseItalicRuns`. `parseBioLong` kept (312 blocked). deps: 313, 314, 285b (decoupled from blocked 312)
 - [x] 318-rte-obsidian-importer-migration (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). deps: 307, 310, 317
 
 ### Cross-cutting — Migration script
+
 - [x] 319-rte-migrate-editor-script (S) — done 2026-06-30 (archived → tasks-done/epic-portfolio-rich-text-editor/). `pnpm migrate:editor` escape hatch: metadata-driven scan of all rich-text rows, re-canonicalizes below-latest fields via `RichTextService` (migrate→HTML→sanitize), idempotent, `--dry-run`/`--module=` flags, direct Prisma (no server). deps: 305, 307, 310
 
 ### Contract — drop legacy prose columns
+
 - [x] 363-rte-drop-legacy-prose-columns (M) — done 2026-07-03 (archived → tasks-done/epic-portfolio-rich-text-editor/). Dropped all 9 legacy prose columns (profile.bioLong, experience desc/resp/highlights, project.body, technicalHighlight CAO ×3, blog.content) across 5 field groups; migration `drop_legacy_prose_columns` applied. Read cutover: blog read-time from canonical, experience/project/blog console detail → `<rte-render-html>`, landing renders from canonical. Verified: unit 408/408 + rte-canonical-contract 22/22, tsc EXIT 0, builds console/landing/api, live e2e (blog 29 / exp 21 / project 27 / profile 20), `/about` renders from canonical. Also fixed 2 pre-existing broken e2e specs (project invalid-link-url, profile rewritten to granular PATCH). deps: 305, 311, 312, 313, 314, 317, 318, 319.
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [ ] 381-rte-heading-levels-toolbar-mismatch (S) — from 311 RTE verification
@@ -433,19 +450,22 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 **SSR/hydration hardening (2026-05-08, alongside 285/285b):** Fixed post-hydration data flash on home re-mount (back-nav from /ddl) — root cause was cold observables in landing data services. Added `shareReplay({ refCount: false })` to `Profile/Skill/Experience/Project` services + a tiny native-fetch reverse proxy on `/api/*` in `apps/landing/src/server.ts` so browser same-origin `/api/...` reaches the API service (was 302→/404 in prod where landing & API are separate Railway services). Bumped landing `anyComponentStyle` budget 8/16kB→16/32kB and refactored `bio-card-grid` orbit SCSS (3-prototype selector list → shared `.proto-grid--orbit` / `.proto-card--orbit`). New rules captured in `landing-ssr.md` + `guides/deploy-railway-ssr.md` (§4b browser proxy).
 
-
 ## Statistics
 
-| Status                    | Count   |
-| ------------------------- | ------- |
-| Done (archived)           | 368     |
-| In Progress               | 4       |
-| Pending                   | 8       |
-| Blocked                   | 0       |
-| **Total Created**         | **380** |
-| Epics completed           | 51      |
+| Status            | Count   |
+| ----------------- | ------- |
+| Done (archived)   | 372     |
+| In Progress       | 5       |
+| Pending           | 5       |
+| Blocked           | 0       |
+| **Total Created** | **382** |
+| Epics completed   | 52      |
 
-_Counts reconciled to task files via `/ctx:sync` on 2026-07-24. Active (12): in-progress 361 (content-authoring master), 386 (e2e-drift-cleanup); verify-pending 381 (done — awaits console dev-server visual check), 383 (mostly done — item #3 with owner); pending 323, 328, 340, 341, 382, 387, 388, 389. Archived this sync: epic-design-skill tasks 390–395 → tasks-done/epic-design-skill/, and epic-design-skill.md → plans-done/ (marked completed). Prior sync (2026-07-03) archived 384 → tasks-done/other/._
+_**Counts reconciled to task files via `/ctx:sync` on 2026-07-28**, replacing the running adjustment note that had accumulated since 2026-07-24. Table now matches the filesystem exactly: 372 files in `tasks-done/`, 10 in `tasks/`. Active breakdown — **pending (5):** 323, 328, 382, 387, 389; **in-progress (5):** 361 (content-authoring master), 383 (owner manual-testing), 386 (e2e-drift-cleanup), 390 (ddl-motion), 381 (self-declared done but its 3 ACs are unticked and it awaits a console visual check — counted active until someone looks). The 4-vs-5 in-progress drift called out on 2026-07-27 was exactly this: 381 and 390 were uncounted, and 389/390 carried no `## Status` heading at all until this sync added one._
+
+_2026-07-27 — **content-track overlap cleanup.** 340 + 341 closed as superseded by 361 → `tasks-done/epic-portfolio-about/` (done 368→370, pending 8→6). `epic-portfolio-about` marked COMPLETED → `plans-done/` (epics 51→52) — all 17 tasks shipped; its unwritten content is task 361 Tier 2. `epic-portfolio-e2-content-scaffolding` demoted to historical record in place (stays in `plans/` because §9 layout / §10 site map / §11 migrations are still live reference for 361) with a header naming the real owners: canonical copy = E0 §16, live text = prod, tracking = 361._
+
+_Archived in the 2026-07-24 sync: epic-design-skill tasks 390–395 → tasks-done/epic-design-skill/, and epic-design-skill.md → plans-done/ (marked completed). Prior sync (2026-07-03) archived 384 → tasks-done/other/._
 
 ## Notes
 

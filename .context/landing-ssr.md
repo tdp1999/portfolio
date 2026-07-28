@@ -151,3 +151,39 @@ Inputs:
 - A block component mounted by the registry must render **synchronously on first change-detection** (no `@defer`, no `afterRender`-gated content, no `isPlatformBrowser` guard around the visible output) or it will be missing from the SSR HTML and silently drop out of the crawler's view. Browser-only behavior (e.g. the lightbox's `getBoundingClientRect` on *activation*) is fine — it runs on interaction, not on render.
 - Media for blocks is resolved **before** render into the synchronous `RenderContext.media` map (batched per page); never fetch inside a block component.
 - If you add a block, extend `prose-blocks.ssr.spec.ts` to assert its server-rendered output — the SSR-completeness guarantee is per-block.
+
+---
+
+## 6. First-paint locale — read the request, and mind what that costs
+
+`LandingLocaleService.readInitial()` picks the language before anything renders.
+On the server it reads the incoming request; in the browser it reads storage.
+
+| | already chose | client preference |
+| --- | --- | --- |
+| browser | `localStorage` | `navigator.languages` |
+| server | `Cookie: landing_locale` | `Accept-Language` (q-weighted) |
+
+```ts
+private readonly request = inject(REQUEST, { optional: true }); // null in browser AND in prerender
+```
+
+Three consequences that bite if you forget them:
+
+**A prerendered route can only ship English.** Prerender runs at build time, where
+there is no request, so `REQUEST` is `null` and the fallback chain lands on the
+`lang` attribute in `index.html`. Any page a visitor reads in Vietnamese must be
+`RenderMode.Server` — see `app.routes.server.ts`, which says so at the top. `/ddl`
+is the only prerendered exception because it is English by nature.
+
+**SSR HTML now varies by header.** `server.ts` sets `Vary: Cookie, Accept-Language`
+on the Angular catch-all. Cloudflare caches only hashed assets today; the header is
+what keeps that from turning into a wrong-language page the day a cache rule
+changes.
+
+**The cookie is load-bearing, not a cache.** It is the first-paint input, so
+anything that stops writing it (a consent gate, a cookie sweep) silently demotes
+every returning visitor to `Accept-Language`.
+
+Parsing lives in `landing-locale.util.ts` as pure functions with their own spec,
+so the q-weight and cookie-prefix edge cases are testable without a server.

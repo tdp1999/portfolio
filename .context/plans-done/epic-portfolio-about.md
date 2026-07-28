@@ -1,5 +1,20 @@
 # Epic: About page — `/about` as the deep "who & proof" surface
 
+> Status: **COMPLETED 2026-07-27 — implementation closed; remaining work is content, owned by task 361.**
+>
+> All 17 tasks are done and archived under `tasks-done/epic-portfolio-about/`: the build set (329–339,
+> 342), the console-managed migration that replaced the v1 hardcoded plan (343 Profile fields, 344
+> principles, 345 failures), and the two authoring briefs (340, 341) closed as superseded by task 361.
+>
+> **What is still empty and why that does not block the epic:** on prod, `/about` §01 Experience, §02
+> How I think, and §03 Failures all return 0 records, so they render their "coming soon" empty states.
+> The page, the schema, the Console forms, and the empty states are all shipped and verified — what is
+> missing is **words**, and words are tracked per surface in `tasks/361-content-authoring-master.md`
+> (Tier 2 + audit table B). Epic-level ACs that depend on records existing are marked accordingly below.
+>
+> Also spun out of this epic and still open: **task 328** (`/now`) — the C2 pivot to console-managed
+> was decided here but the re-spec was never in this epic's scope, and it no longer blocks anything.
+
 > Status: broken-down (drafted 2026-05-21; broken down into tasks 329-342 on 2026-05-22)
 > Depends on: `epic-experience` (done — provides `PublicExperience` schema + landing service), `epic-profile` (done — bilingual content fields), `epic-portfolio-e5-implementation` (done — landing platform).
 > Feeds: launch readiness. `/about` is the **dedicated hiring-funnel surface** — home is the front door, `/about` is the credibility room.
@@ -182,6 +197,11 @@ Sandboxes for both stay live as historical record; tasks 333 / 334 / 336 remain 
 
 To be written by author in parallel with build. Tasks reference this section.
 
+> **Status 2026-07-27:** the brief is still the standard to write *against* (formulas, word counts,
+> anti-patterns), but **status lives in task 361**, not here. Two items below are dead: **§5 depth-map
+> rationale** (the depth-map section was cut from the IA on 2026-05-22 — see Q5) and **§7 /now**
+> (belongs to task 328). §1/§2/§8 are done and canonical in E0 §16; §3/§4/§6 are unwritten.
+
 ### 1. Hero positioning H1 — 1 sentence (≤ 18 words)
 Answer "who – does what – for whom". Don't open with "Hi I'm…".
 Pattern: *"Senior software engineer building DDD-grade web platforms for fintech & SaaS teams."*
@@ -235,16 +255,18 @@ To be cut as individual task files in `.context/tasks/` via `/ctx:breakdown` whe
 
 ## Acceptance criteria (epic-level)
 
-- [ ] `/about` route loads with all 5 IA sections (hero, experience, how-i-think, failures, CTA). Depth-map + currently-shipping dropped 2026-05-22 (see C above).
-- [ ] `/experience` returns 301 to `/about#experience` (verified in prod)
-- [ ] Sticky-tab works on desktop (≥ 768px), accordion on mobile
-- [ ] All sections render in EN + VI
-- [ ] Failures section renders 3 essays, anonymized + clinical-toned
-- [ ] Manifesto renders 5-7 principles with claim + expansion
-- [ ] SEO meta + JSON-LD + sitemap updated
-- [ ] Lighthouse smoke: A11y ≥ 95, BP ≥ 95, SEO ≥ 95, Performance ≥ 80 (desktop)
-- [ ] Type-check + landing prod build clean
-- [ ] E2E `about.spec.ts` passes — covers tab interaction, redirect, signatures render, locale switch
+Verified at close, 2026-07-27.
+
+- [x] `/about` route loads with all 5 IA sections (hero, experience, how-i-think, failures, CTA). Depth-map + currently-shipping dropped 2026-05-22 (see C above).
+- [x] `/experience` returns 301 to `/about#experience` (verified in prod)
+- [x] Sticky-tab works on desktop (≥ 768px), accordion on mobile
+- [x] All sections render in EN + VI — *render path bilingual and asserted in `about.spec.ts`; the VI **content** of `aboutLede` has an open prod defect, tracked as A1 in task 361*
+- [~] Failures section renders 3 essays, anonymized + clinical-toned — *section + Console form + empty state shipped (task 345); prod has 0 records, essays unwritten → task 361 Tier 2*
+- [~] Manifesto renders 5-7 principles with claim + expansion — *section + Console form + empty state shipped (task 344); prod has 0 records, principles unwritten → task 361 Tier 2*
+- [x] SEO meta + JSON-LD + sitemap updated (task 339; `/about` title corrected to `About | Phuong Tran` on 2026-07-26 per the 361 prod audit)
+- [x] Lighthouse smoke: A11y ≥ 95, BP ≥ 95, SEO ≥ 95, Performance ≥ 80 (desktop)
+- [x] Type-check + landing prod build clean
+- [x] E2E `about.spec.ts` passes — covers tab interaction, redirect, signatures render, locale switch
 
 ## References
 
