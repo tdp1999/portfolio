@@ -1,4 +1,9 @@
-# 390 — Hoàn thiện trang `/ddl/motion` + validate skill "video-from-capture"
+# 396 — Hoàn thiện trang `/ddl/motion` + validate skill "video-from-capture"
+
+<!-- Đánh số lại 390 → 396 vào 2026-07-28: số 390 đã thuộc về
+     tasks-done/epic-design-skill/390-design-skill-scaffold.md. Nguyên nhân là
+     lệnh dò số kế tiếp trong /ctx dùng `ls tasks-done/` phẳng, trong khi thư mục
+     đó lồng theo epic nên không thấy task đã archive. Đã sửa ở plugin ctx 2.2.0. -->
 
 > Hai deliverable buộc dính nhau: trang catalogue là **consumer** thật của skill, và skill là **pipeline** sinh clip cho trang. Làm trang mà không sửa skill thì clip vẫn mờ; sửa skill mà không có trang thì không có nơi kiểm chất lượng thật. Vì vậy gộp một task.
 

@@ -1,6 +1,6 @@
 # Task: RTE — Editor chrome/styling polish (console + landing)
 
-## Status: in progress — owner manual-testing both consumers
+## Status: in-progress
 
 ## Goal
 Fix the editor chrome (popovers, toolbar) styling and layout-stability issues in the document-engine rich-text editor across **both** consumers — console (`console-rich-text-editor`) and the landing `/document-engine` product page — so menus are readable and controls don't shift on interaction.
@@ -96,3 +96,7 @@ Chrome surfaces worth walking, so nothing gets missed: toolbar (buttons, active 
   versa). Owner runs the manual sweep and reports into the "Manual Test Findings" tables; the
   triage rule above decides what is fixed here vs routed to de-016 / de-017. The two already-
   verified items (#1, #2) stay closed — the widened scope adds surfaces, it does not reopen them.
+- 2026-07-28 Dòng status sửa `in progress — owner manual-testing both consumers` → `in-progress`.
+  Hai lỗi trong một dòng: `in progress` viết rời (token đúng là `in-progress`) và phần chú thích
+  đuôi. Cả hai đều làm `/ctx:sync` không khớp được token nào. **Đang chờ:** owner chạy sweep thủ
+  công trên cả console lẫn landing `/document-engine`, điền vào bảng "Manual Test Findings".

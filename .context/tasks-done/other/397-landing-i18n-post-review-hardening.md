@@ -1,6 +1,14 @@
-# Task 391 — Landing i18n Post-Review Hardening
+# Task 397 — Landing i18n Post-Review Hardening
 
-## Status: done (2026-07-28)
+<!-- Đánh số lại 391 → 397 vào 2026-07-28: số 391 đã thuộc về
+     tasks-done/epic-design-skill/391-design-skill-distill-universal.md. Nguyên nhân
+     là lệnh dò số kế tiếp trong /ctx dùng `ls tasks-done/` phẳng, trong khi thư mục
+     đó lồng theo epic nên không thấy task đã archive. Đã sửa ở plugin ctx 2.2.0.
+     Commit 35feacd6 vẫn nhắc "388+391" — đó là số cũ, không sửa lại được lịch sử. -->
+
+## Status: done
+
+**Completed:** 2026-07-28
 
 **Epic:** none (follow-up to task 388)
 **Type:** hardening + bug fix

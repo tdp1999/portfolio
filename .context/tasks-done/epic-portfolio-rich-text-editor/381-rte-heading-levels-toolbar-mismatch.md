@@ -1,6 +1,6 @@
 # Task: RTE — Toolbar heading options don't match configured levels
 
-## Status: done (pending visual verify after console dev-server restart)
+## Status: done
 
 ## Goal
 Make the editor's block-type dropdown offer exactly the configured heading levels (semantic = H2/H3/H4), instead of a hardcoded H1/H2/H3 set.
@@ -16,9 +16,9 @@ Verified emitted tags (Playwright, console Profile bioLong editor, 2026-06-28):
 So: the level-1 option is dead/confusing, and **H4 (allowed by config) is unreachable** from the toolbar. The toolbar derives its options independently of `heading.levels`.
 
 ## Acceptance Criteria
-- [ ] Toolbar block-type dropdown lists exactly the configured levels (semantic: H2/H3/H4), no dead level-1 entry, H4 reachable.
-- [ ] Labels are unambiguous (either real level numbers or "Heading 2/3/4").
-- [ ] No `<h1>` can be produced by content editors (preserve current safe behavior).
+- [x] Toolbar block-type dropdown lists exactly the configured levels (semantic: H2/H3/H4), no dead level-1 entry, H4 reachable.
+- [x] Labels are unambiguous (either real level numbers or "Heading 2/3/4").
+- [x] No `<h1>` can be produced by content editors (preserve current safe behavior).
 
 ## Technical Notes
 - Investigate whether `@phuong-tran-redoc/document-engine-angular` exposes a toolbar/block-type config to drive heading options from `heading.levels`. If not, this is an upstream engine limitation — file/patch there, or wrap the toolbar config in `libs/shared/features/rte-tiptap`.
@@ -49,3 +49,15 @@ So: the level-1 option is dead/confusing, and **H4 (allowed by config) is unreac
   security-gate green. Portfolio deps bumped `0.1.2 → 0.1.4` (`pnpm install`), `rte-tiptap`
   consumer type-checks clean. REMAINING: console dev-server restart to drop the stale 0.1.2
   bundle, then confirm the semantic editor dropdown lists exactly Normal/Heading 2/3/4.
+- [2026-07-28] Status sửa `done (pending visual verify…)` → `in-progress`. Câu chữ đó không
+  phải một status hợp lệ: `/ctx:sync` so khớp đúng token nên không archive mà cũng không báo
+  lỗi, task rơi khỏi mọi con số thống kê cho tới khi có người mở file ra đọc. Cả 3 AC vẫn
+  chưa tick, và chúng chỉ tick được sau khi restart console dev server để bỏ bundle 0.1.2 cũ.
+  Việc code thì xong rồi, nhưng chưa ai nhìn thấy dropdown thật — nên task vẫn đang chạy.
+  Guard cho lỗi này đã thêm vào plugin ctx 2.2.0 (`/ctx:task` chặn ghi `done` khi còn AC
+  trống; `/ctx:sync` báo mâu thuẫn thay vì im lặng).
+- [2026-07-28] **Done — cả 3 AC đã tick, status `done`.** Owner xác nhận đã nhìn dropdown thật
+  sau khi restart console dev server, đúng Normal/Heading 2/3/4. Ghi rõ nguồn kiểm chứng: đây là
+  báo cáo của owner, không phải một lượt chạy tự động trong session này. Ngoài ra bản thân
+  document-engine 0.1.4 đã có `text-style.constant.spec.ts` (7 case) khoá `buildHeadingOptions`,
+  nên AC #1 và #3 còn được test đơn vị ở phía engine bảo vệ.
