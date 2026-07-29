@@ -128,7 +128,12 @@
               </button>
             </div>
             <div class="cert-url-row">
-              <console-chip-select class="cert-mode-toggle" formControlName="mode" [options]="certModeOptions" />
+              <console-chip-select
+                class="cert-mode-toggle"
+                aria-label="Certificate source"
+                formControlName="mode"
+                [options]="certModeOptions"
+              />
               @if (certGroup.controls['mode'].value === 'file') {
                 <div class="cert-file-area">
                   @if (certGroup.controls['url'].value; as url) {

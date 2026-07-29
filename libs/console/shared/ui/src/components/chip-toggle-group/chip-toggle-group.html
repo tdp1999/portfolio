@@ -1,12 +1,30 @@
-<div class="chip-row" role="group">
+<!--
+  `mat-chip-listbox [multiple]`, not a hand-rolled `<div role="group">`.
+
+  Material's answer for a multi-select chip group is this exact primitive: "if the user may select
+  more than one option, add the `multiple` attribute". The previous container claimed `role="group"`
+  over children whose inner `<button role="option">` is what the a11y tree exposes, and wrote
+  `[attr.aria-pressed]` onto chip hosts that Material marks `role="presentation"` — a structure that
+  never existed, and attributes nothing ever read. Roles, `aria-multiselectable`, `aria-disabled`, the
+  roving tabindex and arrow-key navigation all come from the listbox now.
+
+  `aria-label` goes on as an **attribute** here, which is the opposite of `mat-chip-option`: the
+  listbox host is itself the node carrying `role="listbox"`, so the attribute lands where it is read.
+  Neither `MatChipSet` nor `MatChipListbox` declares an `aria-label` input, so there is no input form
+  to reach for. Material's chip accessibility guidance asks for the name on the container, and the
+  input is required so that a nameless group cannot ship.
+-->
+<mat-chip-listbox
+  class="chip-toggle-group"
+  multiple
+  [value]="selected()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  (change)="onListboxChange($event)"
+>
   @for (opt of options(); track opt.value) {
-    <mat-chip-option
-      [selected]="selected().has(opt.value)"
-      [disabled]="disabled()"
-      [attr.aria-pressed]="selected().has(opt.value)"
-      (click)="toggle(opt.value)"
-    >
+    <mat-chip-option class="chip-toggle-group__chip" [value]="opt.value">
       {{ opt.label }}
     </mat-chip-option>
   }
-</div>
+</mat-chip-listbox>

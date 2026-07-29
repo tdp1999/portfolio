@@ -2,11 +2,10 @@
   display: block;
 }
 
-.chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  @apply gap-2;
-}
+// No flex/gap rule for the row: `mat-chip-listbox` renders `.mdc-evolution-chip-set__chips` as its
+// own wrapping flex container, and spaces chips with `margin: 4px 0 4px 8px` against a compensating
+// `margin-left: -8px`. That lands on the same 8px horizontal rhythm the old `gap-2` gave, with the
+// first chip still flush to the host's left edge, so overriding it would only fight Material.
 
 .chip-select__chip {
   cursor: pointer;

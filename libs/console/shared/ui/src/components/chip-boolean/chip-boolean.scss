@@ -1,3 +1,31 @@
 :host {
   display: inline-block;
 }
+
+.chip-boolean__chip {
+  cursor: pointer;
+
+  // `mat-chip` never receives `.mdc-evolution-chip--selected`, which is the class Material keys the
+  // filled background on, and `[highlighted]` only recolours the hover/focus overlay and trailing
+  // icon. So the pressed fill is set here, from Material's own chip tokens, which keeps it identical
+  // to a selected chip in `chip-select` and follows the theme.
+  //
+  // Keyed off `[aria-pressed]` rather than a class of our own: the visual state and the announced
+  // state then cannot drift apart. Overriding the tokens instead of targeting MDC's inner elements
+  // keeps it clear of Material's internal class names.
+  // `:not(.mat-mdc-chip-disabled)` is load-bearing. Material's disabled fill is
+  // `.mat-mdc-standard-chip.mdc-evolution-chip--disabled` — two classes — while emulated
+  // encapsulation turns the rule below into class + attribute + attribute, which outranks it. Without
+  // the guard a disabled-and-pressed chip keeps the full selected fill and becomes indistinguishable
+  // from an enabled one, which is the opposite of what the component doc's checklist asks for.
+  &[aria-pressed='true']:not(.mat-mdc-chip-disabled) {
+    --mat-chip-label-text-color: var(--mat-sys-on-secondary-container);
+    --mat-chip-with-icon-icon-color: var(--mat-sys-on-secondary-container);
+
+    background-color: var(--mat-chip-elevated-selected-container-color, var(--mat-sys-secondary-container));
+  }
+
+  &.mat-mdc-chip-disabled {
+    cursor: default;
+  }
+}

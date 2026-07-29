@@ -1,15 +1,38 @@
-<div class="chip-row" role="radiogroup">
+<!--
+  `mat-chip-listbox`, not a hand-rolled `<div role="radiogroup">`.
+
+  `MatChipOption` hard-codes `role="option"` on the inner button that owns the accessible name, and
+  that button is the node the a11y tree exposes — so a wrapper claiming `radiogroup`, plus
+  `role="radio"` / `aria-checked` written onto each chip host, described a structure that never
+  existed. The listbox owns `role`, `aria-multiselectable` and `aria-disabled` here, and brings the
+  roving tabindex plus arrow-key navigation (`FocusKeyManager`, with Home/End) that a bare div
+  could not.
+
+  No `hideSingleSelectionIndicator`. It is an input on `MatChipListbox`, not on `mat-chip-option`, so
+  the copy that used to sit on the chip was inert and every selected chip has in fact been rendering
+  a checkmark all along. Material's own docs warn that hiding it "makes the component less accessible
+  by making it harder or impossible for users to visually identify selected items", and the family
+  doc names the check affordance as the very thing that distinguishes `chip-select` from
+  `console-segmented-control`. So the checkmark stays.
+
+  `aria-label` goes on as an **attribute**, the opposite of the chips below: the listbox host is the
+  node carrying `role="listbox"`, and neither `MatChipSet` nor `MatChipListbox` declares an
+  `aria-label` input. Material's chip accessibility guidance asks for the name on the container, and
+  the input is required so a nameless group cannot ship.
+-->
+<mat-chip-listbox
+  class="chip-select"
+  [value]="value()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  (change)="onListboxChange($event)"
+>
   @for (opt of options(); track opt.value) {
     <mat-chip-option
       class="chip-select__chip"
       [class.chip-select__chip--icon-only]="iconOnly()"
-      [selected]="value() === opt.value"
-      [disabled]="disabled()"
-      [attr.role]="'radio'"
-      [attr.aria-checked]="value() === opt.value"
-      [attr.aria-label]="iconOnly() ? opt.label : null"
-      (click)="select(opt.value)"
-      hideSingleSelectionIndicator
+      [value]="opt.value"
+      [aria-label]="iconOnly() ? opt.label : null"
     >
       @if (opt.icon) {
         <mat-icon class="icon-md">{{ opt.icon }}</mat-icon>
@@ -19,4 +42,4 @@
       }
     </mat-chip-option>
   }
-</div>
+</mat-chip-listbox>

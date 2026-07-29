@@ -1,6 +1,43 @@
-<mat-chip-option [selected]="value()" [disabled]="disabled()" [attr.aria-pressed]="value()" (click)="toggle()">
+<!--
+  `mat-chip`, not `mat-chip-option`.
+
+  A boolean is the WAI-ARIA toggle-button pattern: `role="button"` plus `aria-pressed`. That is
+  unreachable through `mat-chip-option`, which hard-codes `role="option"` on an inner `<button>` and
+  marks its own host `role="presentation"` — so the previous version rendered a lone orphan `option`
+  with no `listbox` parent, and its `[attr.aria-pressed]` sat on a host the a11y tree skips.
+
+  `mat-chip` is the escape hatch Material documents for exactly this: it "does not implement any
+  specific accessibility pattern", so you "add the appropriate accessibility depending on the
+  context". Its structure is the inverse of `mat-chip-option` — no inner button at all, and the host
+  reflects `attr.role` and `attr.aria-label` from inputs. Here the host **is** the exposed node, so
+  `role` (an input) and `aria-pressed` (an attribute) both land where they are read.
+
+  `label` needs no `aria-label`: `role="button"` takes its name from contents, and `mat-icon` sets its
+  own `aria-hidden="true"`, so the ligature text never leaks into the name.
+
+  `aria-disabled` is written by hand because `MatChip`'s host bindings are only `attr.role`,
+  `attr.aria-label`, `id` and classes. It puts `aria-disabled` on the inner `<span matChipContent>`,
+  which is not the node exposed here — so without this the chip would leave the tab order while still
+  announcing as an actionable toggle button. The two listbox siblings get this from the primitive.
+
+  Space and Enter are handled here because `mat-chip` renders a `<span>`, not a `<button>`. This is
+  the one place the family allows hand-written key handling: a single toggle has nothing to navigate
+  between, so there is no roving focus or arrow behaviour to get wrong. The focus ring comes from the
+  global `:where(*:focus-visible)` baseline; chips do not suppress it.
+-->
+<mat-chip
+  class="chip-boolean__chip"
+  role="button"
+  [highlighted]="value()"
+  [disabled]="disabled()"
+  [attr.aria-pressed]="value()"
+  [attr.aria-disabled]="disabled()"
+  [attr.tabindex]="disabled() ? -1 : 0"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)"
+>
   @if (icon()) {
     <mat-icon class="icon-md">{{ icon() }}</mat-icon>
   }
   <span>{{ label() }}</span>
-</mat-chip-option>
+</mat-chip>

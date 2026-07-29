@@ -55,4 +55,17 @@ export class ChipBoolean implements ControlValueAccessor {
     this.onChange(next);
     this.onTouched();
   }
+
+  /**
+   * `mat-chip` renders a `<span>`, so the activation keys a native `<button>` would give for free
+   * have to be handled. `preventDefault` sits past the disabled and key checks so Space is only
+   * swallowed when it actually toggles something, and never steals page scroll otherwise.
+   */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (this.disabled()) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    this.toggle();
+  }
 }

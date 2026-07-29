@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipsModule, type MatChipListboxChange } from '@angular/material/chips';
 import type { ChipOption } from './chip-toggle-group.types';
 
 @Component({
@@ -21,7 +21,14 @@ import type { ChipOption } from './chip-toggle-group.types';
 export class ChipToggleGroup implements ControlValueAccessor {
   options = input.required<ReadonlyArray<ChipOption>>();
 
-  protected readonly selected = signal<Set<string>>(new Set());
+  /**
+   * The group's accessible name. Required rather than optional: Material's chip guidance puts the
+   * name on the container, and every call site of this family had shipped without one, so a screen
+   * reader announced a bare "listbox" with no hint of what the chips were for.
+   */
+  ariaLabel = input.required<string>({ alias: 'aria-label' });
+
+  protected readonly selected = signal<readonly string[]>([]);
   protected readonly disabled = signal(false);
 
   private onChange: (value: string[]) => void = () => {
@@ -31,8 +38,10 @@ export class ChipToggleGroup implements ControlValueAccessor {
     // noop
   };
 
-  writeValue(value: string[]): void {
-    this.selected.set(new Set(value ?? []));
+  writeValue(value: string[] | null | undefined): void {
+    // No reordering here: `options` may not be bound yet on the first write, and order does not
+    // affect which chips the listbox selects. Order is normalised on the way out instead.
+    this.selected.set(value ?? []);
   }
 
   registerOnChange(fn: (value: string[]) => void): void {
@@ -47,19 +56,26 @@ export class ChipToggleGroup implements ControlValueAccessor {
     this.disabled.set(isDisabled);
   }
 
-  toggle(value: string): void {
-    if (this.disabled()) return;
-    const next = new Set(this.selected());
-    if (next.has(value)) {
-      next.delete(value);
-    } else {
-      next.add(value);
-    }
-    this.selected.set(next);
-    const ordered = this.options()
-      .filter((o) => next.has(o.value))
+  /**
+   * The listbox drives selection; this maps its change back onto the form control.
+   *
+   * Unlike `chip-select` there is no null-guard to write: an empty selection is a legitimate value
+   * for a multi-select, so `[]` is emitted rather than refused.
+   *
+   * Re-deriving the array from `options()` rather than trusting the event's order is what keeps the
+   * emitted value stable. `MatChipListbox` happens to report its selected chips in DOM order today,
+   * but the contract this component publishes is option order, and a value that reshuffles as the
+   * user toggles makes the parent form's dirty-checking meaningless.
+   */
+  protected onListboxChange(event: MatChipListboxChange): void {
+    const chosen = new Set((event.value as string[] | undefined) ?? []);
+    const next = this.options()
+      .filter((o) => chosen.has(o.value))
       .map((o) => o.value);
-    this.onChange(ordered);
+
+    this.selected.set(next);
+    // A copy, so a parent that mutates the array it was handed cannot silently rewrite our state.
+    this.onChange([...next]);
     this.onTouched();
   }
 }
