@@ -844,11 +844,22 @@ Not fixable inside this changeset — it is a CI configuration or storage-adapte
 
 ### Remaining
 
-- **Make media uploads work without Cloudinary credentials.** Either add `CLOUDINARY_*` as repository secrets to the
-  e2e job, or add a filesystem/in-memory `IStorageService` adapter selected when the Cloudinary env is absent. The
-  adapter is the better answer: it keeps the picker specs runnable on any machine and on any fork without secrets, and
-  stops every CI run from writing into a real Cloudinary account. Until one of the two lands, ~41 e2e tests cannot pass
-  on CI regardless of product correctness.
+- ~~**Make media uploads work without Cloudinary credentials.**~~ Done — `LocalStorageService` + `MediaFileController`,
+  selected by `MediaModule` when the `CLOUDINARY_*` vars are absent. See ADR-034. All 41 failures traced to one cause:
+  `Cloudinary upload failed: Must supply api_key`, surfacing as three unrelated-looking symptoms (`500` from
+  `uploadCoverImage`, a 30s `beforeEach` timeout, `element(s) not found` on an empty grid). Two things had to change
+  beyond the adapter: `inferCertMode` recognised File-mode certificates by the Cloudinary hostname, so a locally stored
+  one reloaded as a Link (a product defect, not a test one), and helmet's default
+  `Cross-Origin-Resource-Policy: same-origin` blocks a `:3000` image inside a `:4300` page.
+  **Verified:** 165 media unit tests, 1094 api tests with coverage above every threshold (81.44 / 65.64 / 71.19 /
+  80.47), `nx build api`, `nx build console`, `feature-profile` 24/24, tsc + lint clean. The local backend is exercised
+  by `MediaFileController`'s supertest suite rather than a local e2e run, because Playwright's `reuseExistingServer`
+  reuses an API that already loaded credentials from `.env` — CI is the first place the adapter runs end to end.
+  A review pass then caught three things the first cut got wrong, all fixed: the stored extension came from the uploaded
+  filename (so `poc.html` declared `text/plain` would have been served as `text/html` from our own origin, since
+  `detectMimeType` waves text types through unverified), the fallback was gated on "Cloudinary is unconfigured" rather
+  than on the environment (so a rotated production secret would have silently switched a deployed instance to ephemeral
+  disk and written `localhost` URLs into the production database), and the selection factory itself had no test.
 - **Give the four profile specs their own profile rows.** Seed one user per spec file in `global-setup.ts` instead of
   four files sharing the admin's row. Until then, a local run touching more than one of them needs `--workers=1`.
 - **Assert 403 on the controllers that were actually open.** `auth-guards.spec.ts` only exercises `/api/users`, which
@@ -859,6 +870,10 @@ Not fixable inside this changeset — it is a CI configuration or storage-adapte
 - **Single-option `mat-chip-listbox` on six list pages.** `projects.html`, `posts`, `experiences`, `tags`, `skills` and
   `categories` each ship a raw one-option listbox with no `aria-label`, which the family rules added above now forbid
   (minimum two options, named container). Not a regression — the new rule turned existing markup into stated debt.
+- **`api` has no `lint` target**, only `eslint:lint`, so `npx nx affected -t lint` in `ci.yml` has never linted the
+  backend. Found while linting the storage work: `apps/api/src/modules/media/application/queries/get-storage-stats.query.ts:8`
+  has carried a `@typescript-eslint/no-inferrable-types` error unnoticed. Adding the target will surface however much
+  else has accumulated, so it is its own task rather than a drive-by fix.
 
 - **Promote the "primitive owns the role" rule to the global kernel** (`patterns/chip-toggles`) via `/design document`.
   It is not Angular-specific — any wrapped chip/listbox primitive in any stack has the same trap. Worth carrying the
