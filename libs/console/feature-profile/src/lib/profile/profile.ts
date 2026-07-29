@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  HostListener,
   OnDestroy,
   OnInit,
+  type Signal,
   computed,
   inject,
   signal,
@@ -17,6 +19,7 @@ import {
   SectionTabGroup,
   SectionTabs,
   SpinnerOverlay,
+  onBeforeUnload,
 } from '@portfolio/console/shared/ui';
 import { extractApiError } from '@portfolio/console/shared/util';
 import { SidebarState } from '@portfolio/shared/ui';
@@ -139,6 +142,28 @@ export default class Profile implements OnInit, OnDestroy, HasUnsavedChanges {
   readonly isLandingActive = computed(() => this.activeId().startsWith('section-landing-'));
   readonly activeLandingSubTab = computed(() => (this.isLandingActive() ? this.activeId() : 'section-landing-home'));
 
+  // ── UnsavedChangesGuard contract ──────────────────────────────────────────
+  //
+  // Each section owns one form and its own `dirty` signal; the page is dirty when any of them is.
+  // Reading the `viewChild.required` refs here is safe for the whole lifetime of the page because
+  // the tab rail hides inactive sections with `[hidden]` rather than destroying them — all eight
+  // are in the DOM from first render, which is also what makes the rail's per-section status work.
+  //
+  // No `onSaveAndContinue`: with eight independent endpoints, "save everything" would have to
+  // decide what to do when one section is invalid and another already committed, so the dialog
+  // offers Stay or Discard only.
+  readonly isDirty = computed(
+    () =>
+      this.identitySection().dirty() ||
+      this.workSection().dirty() ||
+      this.contactSection().dirty() ||
+      this.locationSection().dirty() ||
+      this.socialLinksSection().dirty() ||
+      this.landingContentSection().dirty() ||
+      this.seoOgSection().dirty() ||
+      this.adminSection().dirty()
+  );
+
   ngOnInit(): void {
     this.loadProfile();
   }
@@ -160,13 +185,15 @@ export default class Profile implements OnInit, OnDestroy, HasUnsavedChanges {
     this.profile.set({ ...current, ...patch });
   }
 
-  // ── UnsavedChangesGuard contract — sections own their own dirty state, so the
-  // parent can't easily compute a global dirty signal without leaking each section's
-  // form internals. The route guard is informational; sections persist on Save click.
-  // Returning a constant `false` accepts navigation; if guards want to be stricter,
-  // each section can expose a `dirty` signal we aggregate here later.
-  hasUnsavedChanges() {
-    return signal(false);
+  /** See `isDirty` for why the aggregation is safe and why there is no `onSaveAndContinue`. */
+  hasUnsavedChanges(): Signal<boolean> {
+    return this.isDirty;
+  }
+
+  /** Covers a browser reload or tab close, which the router guard never sees. */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    onBeforeUnload(event, this.isDirty());
   }
 
   private loadProfile(): void {

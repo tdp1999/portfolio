@@ -79,7 +79,8 @@ export class ProfileLandingContentSection {
    *  updated" line and the muted timestamp next to the Mark-updated button. */
   readonly contentUpdatedAt = signal<Date | null>(null);
   readonly markingUpdated = signal(false);
-  // Public so the shared sticky save bar can bind to it.
+  // Public so the shared sticky save bar can bind to it, and so `Profile` can aggregate it
+  // for `unsavedChangesGuard`.
   readonly dirty = signal(false);
   private readonly invalid = signal(false);
 

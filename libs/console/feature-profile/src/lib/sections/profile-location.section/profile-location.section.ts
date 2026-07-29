@@ -57,7 +57,8 @@ export class ProfileLocationSection {
 
   readonly saving = signal(false);
   readonly lastSaved = signal<Date | null>(null);
-  private readonly dirty = signal(false);
+  /** Public so `Profile` can aggregate it for `unsavedChangesGuard`. */
+  readonly dirty = signal(false);
   private readonly invalid = signal(false);
 
   readonly status = computed<SectionStatus>(() => {
