@@ -4,6 +4,7 @@ import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
 import { seedProfile, deleteProfile } from './helpers/db-profile';
 import { TEST_USERS } from './data/test-users';
+import { MEDIA_ASSET_URL } from './data/test-media';
 
 const ADMIN = TEST_USERS.admin;
 
@@ -111,7 +112,7 @@ test.describe('Profile Resume Picker', () => {
       await pickFirstAsset(profilePage, 'EN');
 
       const href = await profilePage.resumeUrl('EN');
-      expect(href).toContain('cloudinary.com');
+      expect(href).toMatch(MEDIA_ASSET_URL);
     });
 
     test('Cancel leaves the row untouched', async ({ adminPage: page }) => {
@@ -153,7 +154,7 @@ test.describe('Profile Resume Picker', () => {
       const viBefore = await profilePage.resumeUrl('VI');
       await pickFirstAsset(profilePage, 'EN');
 
-      expect(await profilePage.resumeUrl('EN')).toContain('cloudinary.com');
+      expect(await profilePage.resumeUrl('EN')).toMatch(MEDIA_ASSET_URL);
       expect(await profilePage.resumeUrl('VI')).toBe(viBefore);
     });
 
@@ -165,8 +166,8 @@ test.describe('Profile Resume Picker', () => {
       await pickFirstAsset(profilePage, 'EN');
       await pickFirstAsset(profilePage, 'VI');
 
-      expect(await profilePage.resumeUrl('EN')).toContain('cloudinary.com');
-      expect(await profilePage.resumeUrl('VI')).toContain('cloudinary.com');
+      expect(await profilePage.resumeUrl('EN')).toMatch(MEDIA_ASSET_URL);
+      expect(await profilePage.resumeUrl('VI')).toMatch(MEDIA_ASSET_URL);
     });
   });
 

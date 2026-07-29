@@ -8,6 +8,17 @@ config({ path: resolve(process.cwd(), '.env') });
 
 let cloudinaryConfigured = false;
 
+/**
+ * Mirrors the API's own adapter choice: no credentials means uploads went to local disk, so
+ * there is nothing in Cloudinary to destroy. Calling `destroy` anyway just rejects with
+ * `Must supply api_key` once per test asset and buries the real output in warnings.
+ */
+function hasCloudinaryCredentials(): boolean {
+  return Boolean(
+    process.env['CLOUDINARY_CLOUD_NAME'] && process.env['CLOUDINARY_API_KEY'] && process.env['CLOUDINARY_API_SECRET']
+  );
+}
+
 function ensureCloudinary(): void {
   if (cloudinaryConfigured) return;
   cloudinary.config({
@@ -26,8 +37,9 @@ export async function deleteTestMedia(): Promise<void> {
     select: { publicId: true },
   });
 
-  // 2. Delete from Cloudinary
-  if (records.length > 0) {
+  // 2. Delete from Cloudinary. Local-disk assets need no remote cleanup — the storage dir is
+  //    disposable and gitignored.
+  if (records.length > 0 && hasCloudinaryCredentials()) {
     ensureCloudinary();
     const destroyResults = await Promise.allSettled(records.map((r) => cloudinary.uploader.destroy(r.publicId)));
     const failed = destroyResults.filter((r) => r.status === 'rejected');

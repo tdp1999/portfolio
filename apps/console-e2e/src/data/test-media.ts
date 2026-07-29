@@ -1,5 +1,16 @@
 export const TEST_MEDIA_PREFIX = 'e2e-media-';
 
+/**
+ * Matches a URL produced by the media library under either storage backend: Cloudinary's
+ * delivery host when credentials are configured, the API's own `/api/media-files/` route when
+ * they are not (CI, a fresh clone, a fork without secrets).
+ *
+ * Assert on this, never on `cloudinary.com`. Pinning the provider made these specs unrunnable
+ * without secrets while proving nothing extra — the claim being tested is "a picked asset URL
+ * landed in this field", not "we happen to use Cloudinary".
+ */
+export const MEDIA_ASSET_URL = /res\.cloudinary\.com|\/api\/media-files\//;
+
 /** Small 1x1 PNG as base64 for test uploads */
 export const TEST_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';

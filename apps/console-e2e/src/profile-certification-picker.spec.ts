@@ -5,6 +5,7 @@ import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
 import { seedProfile, deleteProfile } from './helpers/db-profile';
 import { TEST_USERS } from './data/test-users';
+import { MEDIA_ASSET_URL } from './data/test-media';
 
 const ADMIN = TEST_USERS.admin;
 
@@ -15,7 +16,7 @@ const ADMIN = TEST_USERS.admin;
  *
  * The behaviour worth pinning down is that `mode` is a pure UI concept. `save()` strips it
  * from the payload (`({ mode: _mode, ...c })`) and the section re-derives it on load with
- * `inferCertMode(url)` — a `res.cloudinary.com` URL comes back as File, anything else as
+ * `inferCertMode(url)` — a URL from our own media library comes back as File, anything else as
  * Link. So "the mode persisted" really means "the URL shape still implies the same mode".
  */
 test.describe('Profile Certification Picker', () => {
@@ -150,7 +151,7 @@ test.describe('Profile Certification Picker', () => {
     await picker.clickInsert();
 
     await expect(profilePage.certificationFileLink(row)).toHaveCount(1);
-    await expect(profilePage.certificationFileLink(row)).toHaveAttribute('href', /res\.cloudinary\.com/);
+    await expect(profilePage.certificationFileLink(row)).toHaveAttribute('href', MEDIA_ASSET_URL);
   });
 
   test('switching back to Link mode exposes the picked URL as text', async ({ adminPage: page }) => {
@@ -214,7 +215,7 @@ test.describe('Profile Certification Picker', () => {
     await profilePage.activate('section-social-links');
 
     const reloaded = profilePage.certRows().first();
-    // The saved payload carries no `mode`; File is re-derived purely from the Cloudinary URL.
+    // The saved payload carries no `mode`; File is re-derived purely from the asset URL shape.
     await profilePage.expectCertificationMode(reloaded, 'File');
     await expect(profilePage.certificationFileLink(reloaded)).toHaveAttribute('href', pickedHref as string);
   });
