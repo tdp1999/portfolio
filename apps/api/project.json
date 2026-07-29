@@ -22,10 +22,7 @@
       "dependsOn": ["build"],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/api/package.json",
-        "{workspaceRoot}/dist/apps/api/pnpm-lock.yaml"
-      ],
+      "outputs": ["{workspaceRoot}/dist/apps/api/package.json", "{workspaceRoot}/dist/apps/api/pnpm-lock.yaml"],
       "options": {
         "buildTarget": "build"
       }
@@ -52,7 +49,10 @@
           "node --watch-path=../../dist/apps/api ../../dist/apps/api/main.js"
         ],
         "cwd": "apps/api",
-        "parallel": true
+        "parallel": true,
+        "env": {
+          "NODE_ENV": "development"
+        }
       }
     },
     "test": {

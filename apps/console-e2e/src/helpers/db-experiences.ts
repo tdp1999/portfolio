@@ -29,10 +29,11 @@ export async function createTestExperience(
   const id = randomUUID();
   const baseSlug = slugify(`${companyName} ${positionEn}`);
 
-  // Ensure unique slug by checking DB
+  // Ensure a free slug. `Experience.slug` is indexed but not unique, so this is
+  // `findFirst`, not `findUnique`.
   let slug = opts?.slug ?? baseSlug;
   let counter = 2;
-  while (await prisma.experience.findUnique({ where: { slug } })) {
+  while (await prisma.experience.findFirst({ where: { slug } })) {
     slug = `${baseSlug}-${counter++}`;
   }
 
@@ -42,7 +43,8 @@ export async function createTestExperience(
       slug,
       companyName,
       position: { en: positionEn, vi: opts?.positionVi ?? positionEn },
-      achievements: { en: [], vi: [] },
+      // `achievements` was dropped in task 363: the plain prose columns were replaced by
+      // the `responsibilities*` / `highlights*` four-column RTE sets, all optional.
       employmentType: (opts?.employmentType as never) ?? 'FULL_TIME',
       locationType: (opts?.locationType as never) ?? 'ONSITE',
       locationCountry: opts?.locationCountry ?? 'Vietnam',

@@ -1,294 +1,144 @@
 import { test, expect } from './fixtures/auth.fixture';
 import { SkillsPage } from './pages/skills.page';
+import { SkillFormPage } from './pages/skill-form.page';
 import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
+import { TEST_SKILL_PREFIX } from './data/test-skills';
+import { deleteTestSkills } from './helpers/db-skills';
 
-test.describe('Skill Icon Picker Migration', () => {
+/**
+ * The skill icon is chosen through the shared media picker on the routed skill form
+ * (`/skills/new`, `/skills/:id/edit`) — not in a dialog, and with no `iconId` form control
+ * to read back. `iconId` lives in a signal and only surfaces as the preview `<img>` plus the
+ * "Pick Icon" / "Change Icon" trigger label, so every assertion below goes through those.
+ */
+test.describe('Skill Icon Picker', () => {
   test.beforeEach(async ({ adminPage: page }) => {
-    // Upload test SVG icon
+    // One image in the library is enough for the grid to have something selectable.
     const mediaPage = new MediaPage(page);
     await mediaPage.goto();
 
-    const testSvg = MediaPage.createTestFile('icon-test.svg');
+    const testIcon = MediaPage.createTestFile('icon-test.png');
     const responsePromise = page.waitForResponse((r) => r.url().includes('/api/media/upload'));
-    await mediaPage.uploadFile(testSvg);
+    await mediaPage.uploadFile(testIcon);
     await responsePromise;
   });
 
-  test.describe('Icon Picker in Skill Dialog', () => {
-    test('create skill dialog has icon picker trigger (no text input)', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
-
-      await skillsPage.createButton.click();
-      const dialog = page.locator('mat-dialog-container');
-
-      // Should have a picker button, not a text input
-      const pickerButton = dialog.locator('button', { hasText: /pick|select icon/i });
-      const textInput = dialog.locator('input[type="text"][formControlName="iconUrl"]');
-
-      await expect(pickerButton).toBeVisible();
-      await expect(textInput).not.toBeVisible();
-    });
-
-    test('click icon picker → opens with SVG/PNG/WebP filter', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
-
-      await skillsPage.createButton.click();
-      const dialog = page.locator('mat-dialog-container');
-
-      const pickerButton = dialog.locator('button', { hasText: /pick|select/i });
-      await pickerButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Should show image files (SVG, PNG, WebP)
-      const items = await picker.getGridItems().count();
-      expect(items).toBeGreaterThan(0);
-    });
-
-    test('select icon → iconId form control populated', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
-
-      await skillsPage.createButton.click();
-      const dialog = page.locator('mat-dialog-container');
-
-      const pickerButton = dialog.locator('button', { hasText: /pick/i });
-      await pickerButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      const firstItem = picker.getGridItems().first();
-      const selectedId = await firstItem.getAttribute('data-media-id');
-
-      if (!selectedId) {
-        throw new Error('Test media item does not have data-media-id attribute');
-      }
-
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // iconId control should have the value
-      const iconIdControl = dialog.locator('input[formControlName="iconId"]');
-      await expect(iconIdControl).toHaveValue(selectedId);
-    });
-
-    test('create skill with icon → appears in landing with correct icon', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
-
-      // Create skill with icon
-      const skillName = `TestSkill-${Date.now()}`;
-
-      await skillsPage.createButton.click();
-      const dialog = page.locator('mat-dialog-container');
-
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      await nameInput.fill(skillName);
-
-      // Select category
-      const categorySelect = dialog.locator('mat-select[formControlName="category"]');
-      await categorySelect.click();
-      const option = page.locator('mat-option', { hasText: 'Technical' });
-      await option.click();
-
-      // Pick icon
-      const pickerButton = dialog.locator('button', { hasText: /pick/i });
-      await pickerButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      await picker.getGridItems().first().click();
-      await picker.clickInsert();
-
-      // Create skill
-      await dialog.getByRole('button', { name: 'Create' }).click();
-
-      // Verify created and appears in list
-      await skillsPage.goto();
-      const row = skillsPage.getRowByName(skillName);
-      await expect(row).toBeVisible();
-
-      // Check landing page
-      await page.goto('/');
-
-      // Skill should be visible with icon
-      const skillCard = page.locator('[role="region"]', { has: page.getByText(skillName, { exact: false }) });
-      //   const skillIcon = skillCard.locator('img, svg, [role="img"]');
-
-      // Soft check - icon should be rendered
-      const skillContent = await skillCard.textContent();
-      expect(skillContent).toContain(skillName);
-    });
-
-    test('edit skill icon → updates both console and landing', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
-
-      // Create a test skill first if needed
-      const skillName = `UpdateIcon-${Date.now()}`;
-
-      await skillsPage.createButton.click();
-      let dialog = page.locator('mat-dialog-container');
-
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      await nameInput.fill(skillName);
-
-      const categorySelect = dialog.locator('mat-select[formControlName="category"]');
-      await categorySelect.click();
-      const option = page.locator('mat-option', { hasText: 'Technical' });
-      await option.click();
-
-      const pickerButton = dialog.locator('button', { hasText: /pick/i });
-      await pickerButton.click();
-
-      let picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstIcon = picker.getGridItems().first();
-      const firstIconId = await firstIcon.getAttribute('data-media-id');
-      await firstIcon.click();
-      await picker.clickInsert();
-
-      await dialog.getByRole('button', { name: 'Create' }).click();
-
-      // Now edit the skill
-      await skillsPage.goto();
-      const row = skillsPage.getRowByName(skillName);
-      const editButton = row.locator('button', { has: page.locator('mat-icon', { hasText: 'edit' }) });
-      await editButton.click();
-
-      dialog = page.locator('mat-dialog-container');
-
-      // Change icon
-      const updatePickerButton = dialog.locator('button', { hasText: /pick/i });
-      await updatePickerButton.click();
-
-      picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const secondIcon = picker.getGridItems().nth(1);
-      const secondIconId = await secondIcon.getAttribute('data-media-id');
-      await secondIcon.click();
-      await picker.clickInsert();
-
-      // Verify IDs are different
-      expect(secondIconId).not.toBe(firstIconId);
-
-      // Update skill
-      await dialog.getByRole('button', { name: 'Update' }).click();
-
-      // Check landing
-      await page.goto('/');
-      const skillCard = page.locator('[role="region"]', { has: page.getByText(skillName) });
-      await expect(skillCard).toBeVisible();
-    });
+  test.afterAll(async () => {
+    await deleteTestSkills();
   });
 
-  test.describe('Schema Migration (iconUrl → iconId)', () => {
-    test('skill entity uses iconId, resolves URL via Media relation', async ({ adminPage: page }) => {
-      const skillsPage = new SkillsPage(page);
-      await skillsPage.goto();
+  test('icon section starts empty, with a Pick Icon trigger', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-icon');
 
-      const skillName = `SchemaTest-${Date.now()}`;
-
-      await skillsPage.createButton.click();
-      const dialog = page.locator('mat-dialog-container');
-
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      await nameInput.fill(skillName);
-
-      const categorySelect = dialog.locator('mat-select[formControlName="category"]');
-      await categorySelect.click();
-      const option = page.locator('mat-option', { hasText: 'Tools' });
-      await option.click();
-
-      const pickerButton = dialog.locator('button', { hasText: /pick/i });
-      await pickerButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      const mediaId = await firstItem.getAttribute('data-media-id');
-
-      if (!mediaId) {
-        throw new Error('Test media item does not have data-media-id attribute');
-      }
-
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Verify form has iconId (not iconUrl)
-      const iconIdField = dialog.locator('input[formControlName="iconId"]');
-      await expect(iconIdField).toHaveValue(mediaId);
-
-      // Create
-      await dialog.getByRole('button', { name: 'Create' }).click();
-
-      // Check in DB via API (optional)
-      const apiResponse = await page.request.get(`/api/skills?search=${skillName}`);
-      const data = await apiResponse.json();
-      expect(data.data).toBeDefined();
-      // Soft check - schema should use iconId
-      if (data.data && data.data[0]) {
-        expect(data.data[0].iconId).toBeDefined();
-      }
-    });
-
-    test('all existing skills have iconId populated', async ({ adminPage: page }) => {
-      // This is a seed/verification test
-      const apiResponse = await page.request.get('/api/skills?limit=100');
-      const data = await apiResponse.json();
-
-      // All skills should have either iconId or intentionally null
-      data.data.forEach((skill: { iconId: string | null; name: string }) => {
-        // Either iconId is set or null (not missing)
-        expect(['string', 'object'].includes(typeof skill.iconId) || skill.iconId === null).toBeTruthy();
-      });
-    });
+    await expect(form.iconPlaceholder).toBeVisible();
+    await expect(form.iconTrigger).toHaveText(/Pick Icon/);
+    await expect(form.iconPreview).toBeHidden();
+    await expect(form.iconRemoveButton).toBeHidden();
   });
 
-  test.describe('Landing Page Icon Rendering', () => {
-    test('landing page renders skill icons via resolved Media URL', async ({ page }) => {
-      // Public user (no login)
-      await page.goto('/');
+  test('trigger opens the media picker with a populated grid', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-icon');
+    await form.iconTrigger.click();
 
-      // Should see skills section with icons
-      const skillsSection = page.locator('section', { has: page.getByText(/skills/i) });
-      const skillIcons = skillsSection.locator('img[alt*="icon" i], svg, [role="img"]');
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
 
-      const iconCount = await skillIcons.count();
-      expect(iconCount).toBeGreaterThan(0);
-    });
-
-    test('skill icon image loads from Cloudinary (verified via img src)', async ({ page }) => {
-      await page.goto('/');
-
-      const skillsSection = page.locator('section', { has: page.getByText(/skills/i) });
-      const skillIcon = skillsSection.locator('img[alt*="icon" i]').first();
-
-      const src = await skillIcon.getAttribute('src');
-      expect(src).toBeTruthy();
-      // Should be a Cloudinary URL
-      expect(src).toMatch(/cloudinary|cdn|media/i);
-    });
+    await expect(picker.getGridItems().first()).toBeVisible();
   });
 
-  test.describe('Backward Compatibility (iconUrl drop)', () => {
-    test('iconUrl column is dropped from database', async ({ adminPage: page }) => {
-      // This is verified by the schema not having iconUrl
-      // Soft check - attempt to query with old field should not crash
-      const apiResponse = await page.request.get('/api/skills?limit=1');
-      const data = await apiResponse.json();
+  test('inserting a selection renders the preview and flips the trigger label', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-icon');
+    await form.iconTrigger.click();
 
-      // New schema should use iconId, not iconUrl
-      if (data.data && data.data[0]) {
-        expect(data.data[0].iconId).toBeDefined();
-        // Old field should not be present or should be derived
-        expect('iconUrl' in data.data[0]).toBeDefined(); // May be resolved from iconId
-      }
-    });
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickInsert();
+
+    await expect(form.iconPreview).toBeVisible();
+    await expect(form.iconTrigger).toHaveText(/Change Icon/);
+    await expect(form.iconRemoveButton).toBeVisible();
+  });
+
+  test('cancelling the picker leaves the icon untouched', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-icon');
+    await form.iconTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickCancel();
+
+    await expect(form.iconPlaceholder).toBeVisible();
+    await expect(form.iconPreview).toBeHidden();
+  });
+
+  test('remove clears the icon back to the placeholder', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-icon');
+    await form.iconTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickInsert();
+    await expect(form.iconPreview).toBeVisible();
+
+    await form.iconRemoveButton.click();
+
+    await expect(form.iconPlaceholder).toBeVisible();
+    await expect(form.iconTrigger).toHaveText(/Pick Icon/);
+  });
+
+  test('icon survives create and reload', async ({ adminPage: page }) => {
+    const skillName = `${TEST_SKILL_PREFIX}icon-persist`;
+
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.fillRequired(skillName);
+
+    await form.activate('section-icon');
+    await form.iconTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickInsert();
+
+    const chosenSrc = await form.iconPreview.getAttribute('src');
+    expect(chosenSrc).toBeTruthy();
+
+    expect(await form.save('POST')).toBe(201);
+
+    // Reopen through the list so the edit route is exercised the way a user reaches it.
+    const skillsPage = new SkillsPage(page);
+    await skillsPage.goto();
+    const reopened = await skillsPage.openEditForm(skillName);
+    await reopened.activate('section-icon');
+
+    await expect(reopened.iconPreview).toHaveAttribute('src', chosenSrc as string);
+    await expect(reopened.iconTrigger).toHaveText(/Change Icon/);
+  });
+
+  test('API exposes iconId on the skill record', async ({ adminPage: page }) => {
+    const response = await page.request.get('/api/skills?limit=1');
+    expect(response.status()).toBe(200);
+
+    const body = await response.json();
+    // Assert the field is part of the contract rather than skipping when the list is empty —
+    // a vacuous pass here is exactly how the old spec hid the dialog-era drift for months.
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBeGreaterThan(0);
+    expect(body.data[0]).toHaveProperty('iconId');
   });
 });

@@ -1,10 +1,20 @@
 import { test, expect } from './fixtures/auth.fixture';
 import { SkillsPage } from './pages/skills.page';
+import { SkillFormPage } from './pages/skill-form.page';
 import { TEST_SKILLS } from './data/test-skills';
 import { createTestSkill, deleteTestSkills } from './helpers/db-skills';
 import { expectToast } from './helpers/toast';
 import { clickConfirm, clickCancel } from './helpers/dialog';
 
+/**
+ * Create and edit are routed pages (`/skills/new`, `/skills/:id/edit`) with a sticky save
+ * bar, not `mat-dialog-container`s, so "cancel the dialog" is now "navigate away" and
+ * "server error in the dialog" is now an error toast from the HTTP interceptor.
+ *
+ * Validation copy is deliberately matched loosely: `validation-messages.ts` is field-agnostic
+ * ("This field is required."), so pinning an exact per-field sentence couples the suite to
+ * wording it does not own — the failure mode that made these specs stale in the first place.
+ */
 test.describe('Skill Management', () => {
   test.describe.configure({ mode: 'serial' });
 
@@ -42,57 +52,55 @@ test.describe('Skill Management', () => {
       displayOrder: TEST_SKILLS.create.displayOrder,
     });
 
-    await expectToast(page, 'Skill created successfully');
+    await expectToast(page, 'Skill created');
+    await skillsPage.goto();
     await expect(skillsPage.getRowByName(TEST_SKILLS.create.name)).toBeVisible();
   });
 
-  test('dialog cancel → no skill created', async ({ adminPage: page }) => {
+  test('leaving the form without saving → no skill created', async ({ adminPage: page }) => {
     const skillsPage = new SkillsPage(page);
     await skillsPage.goto();
 
-    await skillsPage.createButton.click();
-    await skillsPage.dialog.nameInput.fill(TEST_SKILLS.createCancel.name);
-    await skillsPage.dialog.cancelButton.click();
+    const form = await skillsPage.openCreateForm();
+    await form.activate('section-identity');
+    await form.nameInput.fill(TEST_SKILLS.createCancel.name);
 
-    await expect(skillsPage.dialog.container).not.toBeVisible();
+    await skillsPage.goto();
+
     await expect(skillsPage.getRowByName(TEST_SKILLS.createCancel.name)).not.toBeVisible();
   });
 
-  test('create validation: empty name', async ({ adminPage: page }) => {
-    const skillsPage = new SkillsPage(page);
-    await skillsPage.goto();
+  test('create validation: empty name blocks the save', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.saveButton.click();
 
-    await skillsPage.createButton.click();
-    const createBtn = skillsPage.dialog.container.getByRole('button', { name: 'Create' });
-    await createBtn.click();
-
-    await expect(skillsPage.dialog.container.getByText('Name is required')).toBeVisible();
-    await skillsPage.dialog.cancelButton.click();
+    const nameField = page.locator('mat-form-field').filter({ has: form.nameInput });
+    await expect(nameField.locator('mat-error')).toHaveText(/required/i);
+    // Still on the form: an invalid submit must not navigate.
+    await expect(page).toHaveURL(/\/skills\/new$/);
   });
 
-  test('create validation: name > 100 chars', async ({ adminPage: page }) => {
-    const skillsPage = new SkillsPage(page);
-    await skillsPage.goto();
+  test('create validation: name over the limit', async ({ adminPage: page }) => {
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-identity');
+    await form.nameInput.fill('a'.repeat(101));
+    await form.saveButton.click();
 
-    await skillsPage.createButton.click();
-    await skillsPage.dialog.nameInput.fill('a'.repeat(101));
-    const createBtn = skillsPage.dialog.container.getByRole('button', { name: 'Create' });
-    await createBtn.click();
-
-    await expect(skillsPage.dialog.container.getByText('Name must be 100 characters or less')).toBeVisible();
-    await skillsPage.dialog.cancelButton.click();
+    const nameField = page.locator('mat-form-field').filter({ has: form.nameInput });
+    await expect(nameField.locator('mat-error')).toHaveText(/characters or less/i);
   });
 
-  test('create server error: duplicate name', async ({ adminPage: page }) => {
-    const skillsPage = new SkillsPage(page);
-    await skillsPage.goto();
-
+  test('create server error: duplicate name → error toast', async ({ adminPage: page }) => {
     await createTestSkill(TEST_SKILLS.duplicate.name, { category: TEST_SKILLS.duplicate.category });
 
-    await skillsPage.createSkill(TEST_SKILLS.duplicate.name, TEST_SKILLS.duplicate.category);
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.fillRequired(TEST_SKILLS.duplicate.name);
+    await form.saveButton.click();
 
-    await expect(skillsPage.dialog.serverError).toBeVisible();
-    await skillsPage.dialog.cancelButton.click();
+    await expectToast(page, 'A skill with this name already exists.');
   });
 
   // ─── Create with Parent ─────────────────────────────────────────
@@ -108,7 +116,8 @@ test.describe('Skill Management', () => {
       parentSkillName: TEST_SKILLS.parent.name,
     });
 
-    await expectToast(page, 'Skill created successfully');
+    await expectToast(page, 'Skill created');
+    await skillsPage.goto();
     // Child row has "└" prefix in name cell, so use non-exact match
     const childRow = page.locator('tr', { hasText: TEST_SKILLS.child.name });
     await expect(childRow).toBeVisible();
@@ -117,7 +126,7 @@ test.describe('Skill Management', () => {
 
   // ─── Edit ────────────────────────────────────────────────────────
 
-  test('edit dialog pre-filled with current values', async ({ adminPage: page }) => {
+  test('edit form pre-filled with current values', async ({ adminPage: page }) => {
     await deleteTestSkills();
     await createTestSkill(TEST_SKILLS.edit.name, {
       category: TEST_SKILLS.edit.category,
@@ -128,14 +137,16 @@ test.describe('Skill Management', () => {
 
     const skillsPage = new SkillsPage(page);
     await skillsPage.goto();
+    const form = await skillsPage.openEditForm(TEST_SKILLS.edit.name);
 
-    const row = skillsPage.getRowByName(TEST_SKILLS.edit.name);
-    await row.locator('button', { has: page.locator('mat-icon', { hasText: 'edit' }) }).click();
+    await form.activate('section-identity');
+    await expect(form.nameInput).toHaveValue(TEST_SKILLS.edit.name);
+    await expect(form.descriptionInput).toHaveValue(TEST_SKILLS.edit.description);
 
-    await expect(skillsPage.dialog.nameInput).toHaveValue(TEST_SKILLS.edit.name);
-    await expect(skillsPage.dialog.descriptionInput).toHaveValue(TEST_SKILLS.edit.description);
-    await expect(skillsPage.dialog.displayOrderInput).toHaveValue(String(TEST_SKILLS.edit.displayOrder));
-    await skillsPage.dialog.cancelButton.click();
+    await form.activate('section-settings');
+    await expect(form.section('section-settings').getByLabel('Display Order')).toHaveValue(
+      String(TEST_SKILLS.edit.displayOrder)
+    );
   });
 
   test('edits skill → updated in table + shows toast', async ({ adminPage: page }) => {
@@ -149,20 +160,21 @@ test.describe('Skill Management', () => {
       displayOrder: TEST_SKILLS.edit.updatedDisplayOrder,
     });
 
-    await expectToast(page, 'Skill updated successfully');
+    await expectToast(page, 'Skill updated');
+    await skillsPage.goto();
     await expect(skillsPage.getRowByName(TEST_SKILLS.edit.updated)).toBeVisible();
   });
 
-  test('edit server error: duplicate name', async ({ adminPage: page }) => {
+  test('edit server error: duplicate name → error toast', async ({ adminPage: page }) => {
     const skillsPage = new SkillsPage(page);
     await skillsPage.goto();
 
-    await skillsPage.editSkill(TEST_SKILLS.edit.updated, {
-      name: TEST_SKILLS.duplicate.name,
-    });
+    const form = await skillsPage.openEditForm(TEST_SKILLS.edit.updated);
+    await form.activate('section-identity');
+    await form.nameInput.fill(TEST_SKILLS.duplicate.name);
+    await form.saveButton.click();
 
-    await expect(skillsPage.dialog.serverError).toBeVisible();
-    await skillsPage.dialog.cancelButton.click();
+    await expectToast(page, 'A skill with this name already exists.');
   });
 
   // ─── Delete ──────────────────────────────────────────────────────
@@ -215,14 +227,16 @@ test.describe('Skill Management', () => {
       .filter({
         hasNot: page.locator('td:first-child', { hasText: TEST_SKILLS.child.name }),
       });
-    await parentRow.locator('button', { has: page.locator('mat-icon', { hasText: 'delete' }) }).click();
+    await parentRow.getByRole('button', { name: 'Delete' }).click();
     await clickConfirm(page);
 
     // Server rejects — interceptor shows dictionary error toast
     await expectToast(page, 'Cannot delete a skill that has child skills');
 
-    // Parent should still exist in table
-    await expect(page.getByRole('row', { name: /e2e-skill-parent TECHNICAL/ })).toBeVisible();
+    // Parent should still exist in table. Re-uses the locator built above rather than matching
+    // the row's accessible name: the category cell renders `skill.category | enumLabel`, so it
+    // reads "Technical", never the raw `TECHNICAL` the old regex looked for.
+    await expect(parentRow).toBeVisible();
   });
 
   // ─── Search ──────────────────────────────────────────────────────
@@ -282,7 +296,7 @@ test.describe('Skill Management', () => {
 
   // ─── Hierarchy Validation ───────────────────────────────────────
 
-  test('cannot set child as parent of another skill → server error', async ({ adminPage: page }) => {
+  test('a skill that already has a parent is not offered as a parent', async ({ adminPage: page }) => {
     await deleteTestSkills();
     const parent = await createTestSkill(TEST_SKILLS.parent.name, { category: TEST_SKILLS.parent.category });
     await createTestSkill(TEST_SKILLS.child.name, {
@@ -290,26 +304,16 @@ test.describe('Skill Management', () => {
       parentSkillId: parent.id,
     });
 
-    const skillsPage = new SkillsPage(page);
-    await skillsPage.goto();
+    // `parentSkillsForSelect` filters to top-level skills only, so the child must be absent.
+    const form = new SkillFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-classification');
+    await form.parentSkillSelect.click();
 
-    // Try to create a new skill with the child as parent — child shouldn't appear in parent dropdown
-    // since it already has a parent (only top-level skills shown)
-    await skillsPage.createButton.click();
-    const dialog = skillsPage.dialog.container;
-    await dialog.locator('mat-select[formControlName="parentSkillId"]').click();
+    await expect(page.getByRole('option', { name: TEST_SKILLS.parent.name, exact: true })).toBeVisible();
+    await expect(page.getByRole('option', { name: TEST_SKILLS.child.name, exact: true })).toHaveCount(0);
 
-    // Verify child skill is NOT in the parent dropdown options
-    const childOption = page.locator('mat-option', { hasText: TEST_SKILLS.child.name });
-    await expect(childOption).not.toBeVisible();
-
-    // Parent skill should be available
-    const parentOption = page.locator('mat-option', { hasText: TEST_SKILLS.parent.name });
-    await expect(parentOption).toBeVisible();
-
-    // Close dropdown and dialog
     await page.keyboard.press('Escape');
-    await skillsPage.dialog.cancelButton.click();
   });
 
   // ─── Access Control ──────────────────────────────────────────────

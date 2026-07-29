@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures/auth.fixture';
+import { ConsoleShell } from './pages/console-shell.page';
 import { ProfilePage } from './pages/profile.page';
 import { expectToast } from './helpers/toast';
 import { seedProfile, deleteProfile } from './helpers/db-profile';
@@ -19,9 +20,9 @@ test.describe('Profile — Per-Section Save', () => {
 
   // ─── Form Load ────────────────────────────────────────────────────
 
-  test('page loads with 6 section cards and scrollspy rail', async ({ adminPage: page }) => {
+  test('show-all mode renders every section card alongside the tab rail', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
-    await profile.goto();
+    await profile.gotoAllSections();
 
     await expect(profile.heading).toBeVisible();
 
@@ -33,7 +34,7 @@ test.describe('Profile — Per-Section Save', () => {
     await expect(profile.socialLinks.root).toBeVisible();
     await expect(profile.seoOg.root).toBeVisible();
 
-    // Rail with 6 items
+    // Tab rail stays visible in show-all mode and keeps one item per section
     await expect(profile.rail.nav).toBeVisible();
     await expect(profile.rail.item('Identity')).toBeVisible();
     await expect(profile.rail.item('Contact')).toBeVisible();
@@ -42,7 +43,7 @@ test.describe('Profile — Per-Section Save', () => {
 
   test('form prefills with seeded profile data', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
-    await profile.goto();
+    await profile.gotoAllSections();
 
     await expect(profile.identity.field('Full Name (EN)')).toHaveValue('E2E Admin');
     await expect(profile.identity.field('Full Name (VI)')).toHaveValue('Quản trị E2E');
@@ -58,7 +59,9 @@ test.describe('Profile — Per-Section Save', () => {
     apiRequests,
   }) => {
     const profile = new ProfilePage(page);
-    await profile.goto();
+    // Show-all so the untouched sections are genuinely on screen while we assert
+    // that editing one of them left the others alone.
+    await profile.gotoAllSections();
 
     // Edit only Identity
     await profile.identity.field('Full Name (EN)').fill('Updated Name');
@@ -69,7 +72,7 @@ test.describe('Profile — Per-Section Save', () => {
     await expect(profile.seoOg.saveButton).toBeDisabled();
 
     // Save identity
-    await profile.identity.save('/api/admin/profile/identity');
+    await profile.identity.saveSection('/api/admin/profile/identity');
     await expectToast(page, 'Identity saved');
 
     // Verify only identity PATCH was fired
@@ -80,7 +83,7 @@ test.describe('Profile — Per-Section Save', () => {
 
   test('saved data persists after refresh', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
-    await profile.goto();
+    await profile.gotoAllSections();
 
     await expect(profile.identity.field('Full Name (EN)')).toHaveValue('Updated Name');
   });
@@ -90,6 +93,7 @@ test.describe('Profile — Per-Section Save', () => {
   test('invalid email → save disabled, inline error in Contact card, rail shows ⚠', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
+    await profile.activate('section-contact');
 
     // Type an invalid email to trigger validation
     const emailField = profile.contact.field('Email');
@@ -116,77 +120,96 @@ test.describe('Profile — Per-Section Save', () => {
   });
 
   // ─── Unsaved Changes Guard ────────────────────────────────────────
+  //
+  // `/profile` declares `canDeactivate: [unsavedChangesGuard]`, and the guard returns early unless
+  // `component.hasUnsavedChanges()` reports true. `Profile.isDirty` aggregates the eight sections'
+  // own `dirty` signals, so a dirty *section* makes the *page* dirty. There is no
+  // `onSaveAndContinue`, so the dialog offers Stay and Discard only.
+  //
+  // The dialog is `disableClose: true` and resolves to `false` on dismissal, so Stay is also what
+  // an Escape press or a backdrop click amounts to.
 
   test('dirty section + nav away → guard dialog: Stay keeps on page', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
+    await profile.activate('section-location');
 
-    // Make Location dirty
     await profile.location.field('City').fill('Da Nang');
 
-    // Trigger client-side navigation (sidebar is collapsed behind content, use JS click)
-    await page.evaluate(() => (document.querySelector('a[routerlink="/skills"]') as HTMLElement)?.click());
+    // A real in-app navigation, which is what triggers `canDeactivate`. By route, not by label —
+    // every sidebar entry's accessible name starts with its `mat-icon` ligature text.
+    await new ConsoleShell(page).navLinkByRoute('/skills').click();
 
-    // Guard dialog should appear
     const dialog = page.locator('mat-dialog-container');
     await expect(dialog).toBeVisible({ timeout: 5000 });
     await expect(dialog.getByRole('heading', { name: 'Unsaved Changes' })).toBeVisible();
 
-    // Click Stay
     await dialog.getByRole('button', { name: 'Stay' }).click();
 
-    // Should still be on /profile
     await expect(page).toHaveURL(/\/profile/);
-    // Location field should still have the dirty value
+    // The edit survives, which is the whole point of Stay.
     await expect(profile.location.field('City')).toHaveValue('Da Nang');
+
+    // No cleanup needed even though this describe is serial: `adminPage` builds on Playwright's
+    // `page` fixture, which is test-scoped, so the dirty form dies with this test's page.
   });
 
   test('dirty section + nav away → guard dialog: Discard navigates away', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
+    await profile.activate('section-location');
 
-    // Make Location dirty
     await profile.location.field('City').fill('Da Nang');
 
-    // Trigger client-side navigation (sidebar is collapsed behind content, use JS click)
-    await page.evaluate(() => (document.querySelector('a[routerlink="/skills"]') as HTMLElement)?.click());
+    await new ConsoleShell(page).navLinkByRoute('/skills').click();
 
-    // Guard dialog
     const dialog = page.locator('mat-dialog-container');
     await expect(dialog).toBeVisible({ timeout: 5000 });
 
-    // Click Discard
     await dialog.getByRole('button', { name: 'Discard' }).click();
 
-    // Should navigate away from profile
-    await expect(page).not.toHaveURL(/\/profile/);
+    await expect(page).toHaveURL(/\/skills/);
   });
 
-  // ─── Scrollspy — Rail Active State ────────────────────────────────
+  test('clean page navigates away with no dialog at all', async ({ adminPage: page }) => {
+    const profile = new ProfilePage(page);
+    await profile.goto();
+    await profile.activate('section-location');
 
-  test('clicking rail item scrolls into view and updates URL fragment', async ({ adminPage: page }) => {
+    // Nothing typed, so the guard must not interrupt. Without this the two tests above would
+    // still pass against a guard that prompts unconditionally.
+    await new ConsoleShell(page).navLinkByRoute('/skills').click();
+
+    await expect(page).toHaveURL(/\/skills/);
+    await expect(page.locator('mat-dialog-container')).toHaveCount(0);
+  });
+
+  // ─── Tab rail — active state and fragment sync ────────────────────
+  //
+  // The rail is a tab switcher, not a scrollspy: selecting an item swaps which section
+  // body is un-hidden rather than scrolling a long page. `section-tabs.ts` still mirrors
+  // the active id into the URL fragment, so deep-linking keeps working.
+
+  test('clicking a rail item reveals its section and updates the URL fragment', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
 
-    // Click "SEO / OG" in the rail
     await profile.rail.item('SEO / OG').click();
 
-    // URL should have #section-seo-og fragment
     await expect(page).toHaveURL(/#section-seo-og/);
+    await expect(profile.seoOg.root).toBeVisible();
+    await profile.rail.expectActive('SEO / OG');
 
-    // The SEO/OG section should be visible in viewport
-    await expect(profile.seoOg.root).toBeInViewport();
+    // Switching tabs hides the previously active section.
+    await expect(profile.identity.root).toBeHidden();
   });
 
   test('deep-link with fragment loads at correct section', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.gotoWithFragment('section-location');
 
-    // Wait for scroll to settle
-    await page.waitForTimeout(500);
-
-    // Location section should be visible
-    await expect(profile.location.root).toBeInViewport();
+    await expect(profile.location.root).toBeVisible();
+    await profile.rail.expectActive('Location');
   });
 
   // ─── Social Links & Certifications (via per-section save) ─────────
@@ -194,13 +217,15 @@ test.describe('Profile — Per-Section Save', () => {
   test('add social link → save Social Links section → verify via admin API', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
+    await profile.activate('section-social-links');
 
     await profile.addSocialLink('GitHub', 'https://github.com/e2e-per-section');
-    await profile.socialLinks.save('/api/admin/profile/social-links');
+    await profile.socialLinks.saveSection('/api/admin/profile/social-links');
     await expectToast(page, 'Social Links saved');
 
     // Verify persisted data by refreshing the page and checking the form
     await profile.goto();
+    await profile.activate('section-social-links');
     // The new link should appear in the Social Links section
     const lastLinkUrl = profile.socialLinks.root.locator('.social-link-row').last().getByLabel('URL');
     await expect(lastLinkUrl).toHaveValue('https://github.com/e2e-per-section');
@@ -209,13 +234,15 @@ test.describe('Profile — Per-Section Save', () => {
   test('add certification → save Social Links section → verify persists', async ({ adminPage: page }) => {
     const profile = new ProfilePage(page);
     await profile.goto();
+    await profile.activate('section-social-links');
 
     await profile.addCertification('PW Expert', 'E2E Corp', 2026);
-    await profile.socialLinks.save('/api/admin/profile/social-links');
+    await profile.socialLinks.saveSection('/api/admin/profile/social-links');
     await expectToast(page, 'Social Links saved');
 
     // Verify by refreshing
     await profile.goto();
+    await profile.activate('section-social-links');
     const lastCertName = profile.socialLinks.root.locator('.cert-row').last().getByLabel('Name');
     await expect(lastCertName).toHaveValue('PW Expert');
   });

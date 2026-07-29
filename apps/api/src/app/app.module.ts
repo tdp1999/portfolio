@@ -28,6 +28,12 @@ import { AppService } from './app.service';
 // Skip it in dev and e2e (which log in many times from a single IP and would
 // otherwise trip the throttler with 429s). Fail-safe: unknown / unset NODE_ENV
 // keeps throttling ON, so a misconfigured prod host never silently loses it.
+//
+// The fail-safe direction means the *caller* has to opt out explicitly, and both
+// callers now do: the CI e2e job declares `NODE_ENV: development`, and `nx serve api`
+// sets it via the serve target's `env` in `apps/api/project.json`. Webpack's
+// `--node-env=development` is not enough on its own — it configures the build
+// process, not the node runtime that actually reads this line.
 const throttleEnabled = process.env['NODE_ENV'] !== 'test' && process.env['NODE_ENV'] !== 'development';
 
 @Module({

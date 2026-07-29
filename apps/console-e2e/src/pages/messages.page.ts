@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 
+/** `/messages` — the contact-message inbox. */
 export class MessagesPage {
   readonly page: Page;
   readonly heading: Locator;
@@ -13,30 +14,31 @@ export class MessagesPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.heading = page.getByRole('heading', { name: 'Messages' });
-    this.searchInput = page.getByRole('textbox', { name: 'Search', exact: true });
-    this.statusSelect = page.locator('console-filter-select').first();
+    this.heading = page.getByRole('heading', { name: 'Messages', level: 1 });
+    // `console-filter-search` leaves `label` at its default, so the accessible name is
+    // "Search", not the placeholder "Search messages...". Target the input structurally.
+    this.searchInput = page.locator('console-filter-search input');
+    this.statusSelect = page.locator('console-filter-select mat-select').first();
     this.table = page.locator('table');
     this.paginator = page.locator('mat-paginator');
     this.selectAllCheckbox = page.locator('th.col-select mat-checkbox');
     this.bulkToolbar = page.locator('.bulk-toolbar');
-    this.noDataRow = page.locator('text=No messages yet');
+    this.noDataRow = page.getByText('No messages yet');
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/');
-    await this.page.waitForURL('/', { timeout: 10000 });
     await this.page.goto('/messages');
-    await this.heading.waitFor({ state: 'visible', timeout: 10000 });
+    await this.heading.waitFor({ state: 'visible', timeout: 10_000 });
   }
 
+  /** Matched on the sender-name cell. Exact, so `inbox-1` cannot also match `inbox-10`. */
   getRowByName(name: string): Locator {
-    return this.page.locator('tr', { has: this.page.locator('td', { hasText: name }) });
+    return this.page.getByRole('row').filter({ has: this.page.getByText(name, { exact: true }) });
   }
 
+  /** Only the sender and subject cells navigate — the checkbox cell deliberately does not. */
   async clickMessage(name: string): Promise<void> {
-    const row = this.getRowByName(name);
-    await row.locator('td.cursor-pointer').first().click();
+    await this.getRowByName(name).locator('td.cursor-pointer').first().click();
   }
 
   async search(query: string): Promise<void> {
@@ -56,8 +58,7 @@ export class MessagesPage {
   }
 
   async toggleSelectMessage(name: string): Promise<void> {
-    const row = this.getRowByName(name);
-    await row.locator('mat-checkbox').click();
+    await this.getRowByName(name).locator('td.col-select mat-checkbox').click();
   }
 
   async bulkMarkAsRead(): Promise<void> {
@@ -73,35 +74,61 @@ export class MessagesPage {
   }
 }
 
+/**
+ * `/messages/:id` — the message detail view.
+ *
+ * Two shape changes from the version older specs assumed:
+ *
+ * - the `<h1>` is the **sender's name**, not a fixed "Message Detail" title, so there is no
+ *   constant string to wait on — `waitForLoad(name)` takes the name it should show;
+ * - Mark Unread / Archive / Delete live inside a `mat-menu` behind an icon button labelled
+ *   "More actions". Only Reply is a top-level control, so clicking Archive means opening the
+ *   overflow first. `Restore` is in the same menu and only renders for a deleted message.
+ *
+ * The meta rows are Email / Subject / Purpose / Locale — there is no "From" row; that
+ * information is the heading.
+ */
 export class MessageDetailPage {
   readonly page: Page;
   readonly heading: Locator;
-  readonly backButton: Locator;
-  readonly markUnreadButton: Locator;
+  readonly backLink: Locator;
   readonly replyButton: Locator;
-  readonly archiveButton: Locator;
-  readonly deleteButton: Locator;
-  readonly restoreButton: Locator;
+  readonly moreActionsButton: Locator;
+  readonly menu: Locator;
+  readonly markUnreadItem: Locator;
+  readonly archiveItem: Locator;
+  readonly deleteItem: Locator;
+  readonly restoreItem: Locator;
   readonly messageBody: Locator;
-  readonly metaFrom: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.heading = page.getByRole('heading', { name: 'Message Detail' });
-    this.backButton = page.locator('button', { has: page.locator('mat-icon', { hasText: 'arrow_back' }) });
-    this.markUnreadButton = page.getByRole('button', { name: 'Mark Unread' });
+    this.heading = page.locator('h1.text-page-title');
+    this.backLink = page.getByRole('link', { name: 'Back to messages' });
     this.replyButton = page.getByRole('button', { name: 'Reply' });
-    this.archiveButton = page.getByRole('button', { name: 'Archive' });
-    this.deleteButton = page.getByRole('button', { name: 'Delete' });
-    this.restoreButton = page.getByRole('button', { name: 'Restore' });
+    this.moreActionsButton = page.getByRole('button', { name: 'More actions' });
+    this.menu = page.locator('.mat-mdc-menu-panel');
+    this.markUnreadItem = this.menu.getByRole('menuitem', { name: 'Mark Unread' });
+    this.archiveItem = this.menu.getByRole('menuitem', { name: 'Archive' });
+    this.deleteItem = this.menu.getByRole('menuitem', { name: 'Delete' });
+    this.restoreItem = this.menu.getByRole('menuitem', { name: 'Restore' });
     this.messageBody = page.locator('.message-body');
-    this.metaFrom = page
+  }
+
+  /** Wait for the detail of a specific message — the heading is that message's sender name. */
+  async waitForLoad(senderName: string): Promise<void> {
+    await this.heading.filter({ hasText: senderName }).waitFor({ state: 'visible', timeout: 10_000 });
+  }
+
+  metaValue(label: string): Locator {
+    return this.page
       .locator('.meta-row')
-      .filter({ has: page.locator('.meta-label', { hasText: /^From$/ }) })
+      .filter({ has: this.page.locator('.meta-label', { hasText: new RegExp(`^${label}$`) }) })
       .locator('.meta-value');
   }
 
-  async waitForLoad(): Promise<void> {
-    await this.heading.waitFor({ state: 'visible', timeout: 10000 });
+  async openMoreActions(): Promise<void> {
+    await this.moreActionsButton.click();
+    await this.menu.waitFor({ state: 'visible', timeout: 5_000 });
   }
 }

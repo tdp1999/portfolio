@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures/auth.fixture';
 import { ExperiencesPage } from './pages/experiences.page';
+import { ExperienceFormPage } from './pages/experience-form.page';
 import { TEST_EXPERIENCES } from './data/test-experiences';
 import { TEST_USERS } from './data/test-users';
 import { createTestExperience, deleteTestExperiences, softDeleteTestExperience } from './helpers/db-experiences';
@@ -16,6 +17,21 @@ async function getAdminToken(page: import('@playwright/test').Page): Promise<str
   return body.accessToken;
 }
 
+/**
+ * The experience create/edit dialog became a routed, tab-sectioned page. Four things the old
+ * spec assumed are gone, and each one is worth stating because they are not interchangeable:
+ *
+ * - **No dialog.** `openCreateDialog()` on the list still carries the name but navigates to
+ *   `/experiences/new`. Submit is the sticky bar's "Save changes", not a Create/Update button.
+ * - **`position` is a nested group.** It renders through `console-translatable-group`, so the
+ *   inputs are `formControlName="en"` / `"vi"` under `position`, never `position_en`.
+ * - **Description is rich text.** `description`, `responsibilities` and `highlights` are
+ *   `richTextGroup`s driven by the document-engine editor, not `<textarea>`s. All three are
+ *   optional, so this file leaves them alone rather than driving the editor.
+ * - **`achievements` no longer exists.** It was dropped in task 363.
+ *
+ * Update is **PUT** (`ExperienceService.update` → `api.put`); PATCH on this resource is restore.
+ */
 test.describe('Experience Management', () => {
   test.describe.configure({ mode: 'serial' });
 
@@ -34,61 +50,67 @@ test.describe('Experience Management', () => {
     await expect(expPage.paginator).toBeVisible();
   });
 
-  // ─── Create — Required Fields Only ──────────────────────────────
-
-  test('creates experience with required fields → appears in table + shows toast', async ({ adminPage: page }) => {
+  test('Add Experience navigates instead of opening a dialog', async ({ adminPage: page }) => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
     await expPage.addButton.click();
-    await expPage.fillRequiredFields({
-      companyName: TEST_EXPERIENCES.create.companyName,
-      positionEn: TEST_EXPERIENCES.create.positionEn,
-      positionVi: TEST_EXPERIENCES.create.positionVi,
-      startDate: TEST_EXPERIENCES.create.startDate,
-    });
 
-    await expect(expPage.dialog.submitButton).toBeEnabled({ timeout: 3000 });
-    await expPage.dialog.submitButton.click();
+    await expect(page).toHaveURL(/\/experiences\/new$/);
+    await expect(page.locator('mat-dialog-container')).toHaveCount(0);
+  });
+
+  // ─── Create ──────────────────────────────────────────────────────
+
+  test('creates experience with required fields → appears in table + shows toast', async ({ adminPage: page }) => {
+    await deleteTestExperiences();
+
+    const expPage = new ExperiencesPage(page);
+    await expPage.goto();
+
+    const form = await expPage.openCreateForm();
+    await form.fillRequired(TEST_EXPERIENCES.create);
+    expect(await form.save('POST')).toBe(201);
 
     await expectToast(page, 'Experience created successfully');
+    await expPage.goto();
     await expect(expPage.getRowByCompany(TEST_EXPERIENCES.create.companyName)).toBeVisible();
   });
 
-  // ─── Create — Optional Fields ────────────────────────────────────
-
-  test('creates experience with optional fields → appears in table', async ({ adminPage: page }) => {
+  test('creates experience with optional team role → appears in table', async ({ adminPage: page }) => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    await expPage.addButton.click();
-    await expPage.fillRequiredFields({
-      companyName: TEST_EXPERIENCES.createOptional.companyName,
-      positionEn: TEST_EXPERIENCES.createOptional.positionEn,
-      positionVi: TEST_EXPERIENCES.createOptional.positionVi,
-      startDate: TEST_EXPERIENCES.createOptional.startDate,
-    });
+    const form = await expPage.openCreateForm();
+    await form.fillRequired(TEST_EXPERIENCES.createOptional);
+    // Team Role is the one optional bilingual field that is still a plain text input; the
+    // description fields next to it are rich-text editors and are skipped deliberately.
+    await form.activate('section-role');
+    await form.teamRoleInput('EN').fill(TEST_EXPERIENCES.createOptional.teamRoleEn);
+    await form.teamRoleInput('VI').fill(TEST_EXPERIENCES.createOptional.teamRoleVi);
 
-    // Fill description
-    await expPage.dialog.descriptionEnTextarea.fill(TEST_EXPERIENCES.createOptional.descriptionEn);
-    await expPage.dialog.descriptionViTextarea.fill(TEST_EXPERIENCES.createOptional.descriptionVi);
-
-    // Fill team role
-    await expPage.dialog.teamRoleEnInput.fill(TEST_EXPERIENCES.createOptional.teamRoleEn);
-    await expPage.dialog.teamRoleViInput.fill(TEST_EXPERIENCES.createOptional.teamRoleVi);
-
-    // Add achievement
-    await expPage.addEnglishAchievement(TEST_EXPERIENCES.createOptional.achievementEn);
-
-    await expPage.dialog.submitButton.click();
+    expect(await form.save('POST')).toBe(201);
 
     await expectToast(page, 'Experience created successfully');
+    await expPage.goto();
     await expect(expPage.getRowByCompany(TEST_EXPERIENCES.createOptional.companyName)).toBeVisible();
+  });
+
+  test('create validation: missing company blocks the save', async ({ adminPage: page }) => {
+    const form = new ExperienceFormPage(page);
+    await form.gotoNew();
+
+    await form.saveButton.click();
+
+    await expect(form.errorFor('companyName')).toHaveText(/required/i);
+    await expect(page).toHaveURL(/\/experiences\/new$/);
+    // The form also announces the block, rather than failing silently.
+    await expectToast(page, 'Please fix validation errors before saving');
   });
 
   // ─── Edit ────────────────────────────────────────────────────────
 
-  test('edit dialog pre-filled with current position', async ({ adminPage: page }) => {
+  test('edit form pre-filled with current values', async ({ adminPage: page }) => {
     await deleteTestExperiences();
     await createTestExperience(TEST_EXPERIENCES.edit.companyName, TEST_EXPERIENCES.edit.positionEn, {
       positionVi: TEST_EXPERIENCES.edit.positionVi,
@@ -97,31 +119,29 @@ test.describe('Experience Management', () => {
 
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
+    const form = await expPage.openEditForm(TEST_EXPERIENCES.edit.companyName);
 
-    await expPage.clickEdit(TEST_EXPERIENCES.edit.companyName);
-
-    await expect(expPage.dialog.companyNameInput).toHaveValue(TEST_EXPERIENCES.edit.companyName);
-    await expect(expPage.dialog.positionEnInput).toHaveValue(TEST_EXPERIENCES.edit.positionEn);
-    await expPage.dialog.cancelButton.click();
+    await expect(form.companyNameInput).toHaveValue(TEST_EXPERIENCES.edit.companyName);
+    await form.activate('section-role');
+    await expect(form.positionInput('EN')).toHaveValue(TEST_EXPERIENCES.edit.positionEn);
+    await expect(form.positionInput('VI')).toHaveValue(TEST_EXPERIENCES.edit.positionVi);
   });
 
   test('edits experience position → updated in table + shows toast', async ({ adminPage: page }) => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    await expPage.clickEdit(TEST_EXPERIENCES.edit.companyName);
-
-    await expPage.dialog.positionEnInput.selectText();
-    await expPage.dialog.positionEnInput.fill(TEST_EXPERIENCES.edit.updatedPositionEn);
-    await expPage.dialog.positionViInput.selectText();
-    await expPage.dialog.positionViInput.fill(TEST_EXPERIENCES.edit.updatedPositionVi);
-
-    await expPage.dialog.submitButton.click();
+    const form = await expPage.openEditForm(TEST_EXPERIENCES.edit.companyName);
+    await form.activate('section-role');
+    await form.positionInput('EN').fill(TEST_EXPERIENCES.edit.updatedPositionEn);
+    await form.positionInput('VI').fill(TEST_EXPERIENCES.edit.updatedPositionVi);
+    expect(await form.save('PUT')).toBe(200);
 
     await expectToast(page, 'Experience updated successfully');
+    await expPage.goto();
     await expect(
-      expPage.getRowByCompany(TEST_EXPERIENCES.edit.companyName).locator('td', {
-        hasText: TEST_EXPERIENCES.edit.updatedPositionEn,
+      expPage.getRowByCompany(TEST_EXPERIENCES.edit.companyName).getByRole('cell', {
+        name: TEST_EXPERIENCES.edit.updatedPositionEn,
       })
     ).toBeVisible();
   });
@@ -130,7 +150,6 @@ test.describe('Experience Management', () => {
     const token = await getAdminToken(page);
     const authHeaders = { Authorization: `Bearer ${token}` };
 
-    // Get the current slug before editing
     const listRes = await page.request.get(`/api/experiences/admin/list`, {
       headers: authHeaders,
       params: { search: TEST_EXPERIENCES.edit.companyName },
@@ -142,53 +161,40 @@ test.describe('Experience Management', () => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    // Edit position again (different value)
-    await expPage.clickEdit(TEST_EXPERIENCES.edit.companyName);
-    const newPosition = 'Principal Engineer';
-    await expPage.dialog.positionEnInput.selectText();
-    await expPage.dialog.positionEnInput.fill(newPosition);
-    await expPage.dialog.submitButton.click();
+    const form = await expPage.openEditForm(TEST_EXPERIENCES.edit.companyName);
+    await form.activate('section-role');
+    await form.positionInput('EN').fill('Principal Engineer');
+    expect(await form.save('PUT')).toBe(200);
     await expectToast(page, 'Experience updated successfully');
 
-    // Verify slug is unchanged
     const afterRes = await page.request.get(`/api/experiences/admin/list`, {
       headers: authHeaders,
       params: { search: TEST_EXPERIENCES.edit.companyName },
     });
     const afterBody = await afterRes.json();
-    const afterSlug = afterBody.data[0]?.slug;
-    expect(afterSlug).toBe(beforeSlug);
+    expect(afterBody.data[0]?.slug).toBe(beforeSlug);
   });
 
   // ─── Current Position Toggle ────────────────────────────────────
 
-  test('"Current position" toggle: check → endDate disabled; uncheck → endDate enabled', async ({
-    adminPage: page,
-  }) => {
-    const expPage = new ExperiencesPage(page);
-    await expPage.goto();
+  test('"Current position" toggle drives whether End Date is editable', async ({ adminPage: page }) => {
+    const form = new ExperienceFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-dates');
 
-    await expPage.addButton.click();
-    const d = expPage.dialog;
+    // `isCurrent` defaults to true, and `setupCurrentPositionToggle` disables endDate for it.
+    await expect(form.endDateInput).toBeDisabled();
 
-    // By default isCurrent is checked (no end date → current)
-    // Check that endDate is disabled
-    await expect(d.endDateInput).toBeDisabled();
+    await form.isCurrentCheckbox.click();
+    await expect(form.endDateInput).toBeEnabled();
 
-    // Uncheck isCurrent → endDate should enable
-    await d.isCurrentCheckbox.click();
-    await expect(d.endDateInput).toBeEnabled();
-
-    // Re-check isCurrent → endDate disabled again
-    await d.isCurrentCheckbox.click();
-    await expect(d.endDateInput).toBeDisabled();
-
-    await d.cancelButton.click();
+    await form.isCurrentCheckbox.click();
+    await expect(form.endDateInput).toBeDisabled();
   });
 
   // ─── Soft Delete ─────────────────────────────────────────────────
 
-  test('soft delete: experience shows "Deleted" indicator after delete', async ({ adminPage: page }) => {
+  test('soft delete: row leaves the list, and comes back dimmed under Show deleted', async ({ adminPage: page }) => {
     await deleteTestExperiences();
     await createTestExperience(TEST_EXPERIENCES.delete.companyName, TEST_EXPERIENCES.delete.positionEn, {
       startDate: new Date('2021-01-01'),
@@ -202,10 +208,15 @@ test.describe('Experience Management', () => {
 
     await expectToast(page, 'Experience deleted');
 
-    // Row should still appear but with deleted indicator
-    const row = expPage.getRowByCompany(TEST_EXPERIENCES.delete.companyName);
-    await expect(row).toBeVisible();
-    await expect(row.locator('span', { hasText: 'Deleted' })).toBeVisible();
+    // The row does not merely dim — it leaves the table. `showDeleted` starts `false`, so the list
+    // query omits `includeDeleted` and the server never returns the deleted experience. (There is
+    // no "Deleted" badge anywhere either; that lives on the detail page.)
+    await expect(expPage.getRowByCompany(TEST_EXPERIENCES.delete.companyName)).toHaveCount(0);
+
+    // With deleted rows included it reappears, dimmed, with Restore in place of Edit/Delete.
+    await expPage.showDeleted();
+    await expect(expPage.restoreButton(TEST_EXPERIENCES.delete.companyName)).toBeVisible();
+    expect(await expPage.isRowDeleted(TEST_EXPERIENCES.delete.companyName)).toBe(true);
   });
 
   // ─── Restore ─────────────────────────────────────────────────────
@@ -222,119 +233,90 @@ test.describe('Experience Management', () => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    // Confirm deleted indicator is shown
-    const row = expPage.getRowByCompany(TEST_EXPERIENCES.restore.companyName);
-    await expect(row.locator('span', { hasText: 'Deleted' })).toBeVisible();
+    // Deleted rows are excluded by default, so it is not on screen yet.
+    await expect(expPage.getRowByCompany(TEST_EXPERIENCES.restore.companyName)).toHaveCount(0);
+    await expPage.showDeleted();
+    await expect(expPage.restoreButton(TEST_EXPERIENCES.restore.companyName)).toBeVisible();
 
     await expPage.clickRestore(TEST_EXPERIENCES.restore.companyName);
     await clickConfirm(page);
 
     await expectToast(page, 'Experience restored');
 
-    // Deleted indicator should be gone
-    await expect(row.locator('span', { hasText: 'Deleted' })).not.toBeVisible();
+    await expect(expPage.restoreButton(TEST_EXPERIENCES.restore.companyName)).toHaveCount(0);
+    expect(await expPage.isRowDeleted(TEST_EXPERIENCES.restore.companyName)).toBe(false);
   });
 
   // ─── Skills Relation ─────────────────────────────────────────────
 
-  test('create experience with skill selected → skill shown in edit view', async ({ adminPage: page }) => {
+  test('create experience with skill selected → skill still selected on re-open', async ({ adminPage: page }) => {
     await deleteTestExperiences();
-
-    // Create a test skill to use
     const skill = await createTestSkill('e2e-skill-for-exp', { category: 'TECHNICAL' });
 
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    await expPage.addButton.click();
-    await expPage.fillRequiredFields({
-      companyName: TEST_EXPERIENCES.skills.companyName,
-      positionEn: TEST_EXPERIENCES.skills.positionEn,
-      positionVi: TEST_EXPERIENCES.skills.positionVi,
-      startDate: TEST_EXPERIENCES.skills.startDate,
-    });
+    const form = await expPage.openCreateForm();
+    await form.fillRequired(TEST_EXPERIENCES.skills);
+    await form.selectSkill(skill.name);
+    await expect(form.selectedSkillChips.filter({ hasText: skill.name })).toBeVisible();
 
-    // Select the skill via autocomplete
-    await expPage.selectSkill(skill.name);
-
-    // Skill chip should appear
-    await expect(expPage.dialog.selectedSkillChips.filter({ hasText: skill.name })).toBeVisible();
-
-    await expPage.dialog.submitButton.click();
+    expect(await form.save('POST')).toBe(201);
     await expectToast(page, 'Experience created successfully');
 
-    // Open edit dialog — skill should still be pre-selected
-    await expPage.clickEdit(TEST_EXPERIENCES.skills.companyName);
-    await expect(expPage.dialog.selectedSkillChips.filter({ hasText: skill.name })).toBeVisible();
-    await expPage.dialog.cancelButton.click();
+    await expPage.goto();
+    const editForm = await expPage.openEditForm(TEST_EXPERIENCES.skills.companyName);
+    await editForm.activate('section-skills');
+    await expect(editForm.selectedSkillChips.filter({ hasText: skill.name })).toBeVisible();
   });
 
-  test('update experience: remove skill → skill no longer in edit view', async ({ adminPage: page }) => {
+  test('update experience: remove skill → skill no longer selected', async ({ adminPage: page }) => {
     const expPage = new ExperiencesPage(page);
     await expPage.goto();
 
-    await expPage.clickEdit(TEST_EXPERIENCES.skills.companyName);
+    const form = await expPage.openEditForm(TEST_EXPERIENCES.skills.companyName);
+    await form.activate('section-skills');
+    await form.selectedSkillChips.first().locator('button[matChipRemove]').click();
+    await expect(form.selectedSkillChips).toHaveCount(0);
 
-    // The skill chip should be present; click remove (matChipRemove button inside chip)
-    const chip = expPage.dialog.selectedSkillChips.first();
-    await chip.locator('button[matChipRemove]').click();
-
-    await expect(expPage.dialog.selectedSkillChips).toHaveCount(0);
-
-    await expPage.dialog.submitButton.click();
+    expect(await form.save('PUT')).toBe(200);
     await expectToast(page, 'Experience updated successfully');
 
-    // Verify skill removed on re-open
-    await expPage.clickEdit(TEST_EXPERIENCES.skills.companyName);
-    await expect(expPage.dialog.selectedSkillChips).toHaveCount(0);
-    await expPage.dialog.cancelButton.click();
+    await expPage.goto();
+    const reopened = await expPage.openEditForm(TEST_EXPERIENCES.skills.companyName);
+    await reopened.activate('section-skills');
+    await expect(reopened.selectedSkillChips).toHaveCount(0);
 
-    // Cleanup test skill after both skill tests are done
     await deleteTestSkills();
   });
 
   // ─── Slug Collision ──────────────────────────────────────────────
 
   test('two experiences with same company + position get different slugs', async ({ adminPage: page }) => {
+    await deleteTestExperiences();
     const token = await getAdminToken(page);
     const authHeaders = { Authorization: `Bearer ${token}` };
 
     const expPage = new ExperiencesPage(page);
-    await expPage.goto();
 
-    // Create first experience
-    await expPage.addButton.click();
-    await expPage.fillRequiredFields({
-      companyName: TEST_EXPERIENCES.slug1.companyName,
-      positionEn: TEST_EXPERIENCES.slug1.positionEn,
-      positionVi: TEST_EXPERIENCES.slug1.positionVi,
-      startDate: TEST_EXPERIENCES.slug1.startDate,
-    });
-    await expPage.dialog.submitButton.click();
-    await expectToast(page, 'Experience created successfully');
+    for (const fixture of [TEST_EXPERIENCES.slug1, TEST_EXPERIENCES.slug2]) {
+      await expPage.goto();
+      const form = await expPage.openCreateForm();
+      await form.fillRequired(fixture);
+      expect(await form.save('POST')).toBe(201);
+      await expectToast(page, 'Experience created successfully');
+    }
 
-    // Create second experience with same company + position
-    await expPage.addButton.click();
-    await expPage.fillRequiredFields({
-      companyName: TEST_EXPERIENCES.slug2.companyName,
-      positionEn: TEST_EXPERIENCES.slug2.positionEn,
-      positionVi: TEST_EXPERIENCES.slug2.positionVi,
-      startDate: TEST_EXPERIENCES.slug2.startDate,
-    });
-    await expPage.dialog.submitButton.click();
-    await expectToast(page, 'Experience created successfully');
-
-    // Both should exist and have different slugs
     const res = await page.request.get(`/api/experiences/admin/list`, {
       headers: authHeaders,
       params: { search: TEST_EXPERIENCES.slug1.companyName, limit: '50' },
     });
     const resData = await res.json();
-    const slugEntries = resData.data.filter(
-      (e: { companyName: string }) => e.companyName === TEST_EXPERIENCES.slug1.companyName
-    );
-    const slugs: string[] = slugEntries.map((e: { slug: string }) => e.slug);
-    const uniqueSlugs = new Set(slugs);
-    expect(uniqueSlugs.size).toBe(slugs.length);
+    const slugs: string[] = resData.data
+      .filter((e: { companyName: string }) => e.companyName === TEST_EXPERIENCES.slug1.companyName)
+      .map((e: { slug: string }) => e.slug);
+
+    expect(slugs).toHaveLength(2);
+    expect(new Set(slugs).size).toBe(slugs.length);
   });
 });

@@ -1,9 +1,20 @@
 import { type Locator, type Page } from '@playwright/test';
+import { SkillFormPage } from './skill-form.page';
 
+/**
+ * `/skills` — the list page only.
+ *
+ * Create and edit are routed pages (`/skills/new`, `/skills/:id/edit`), so everything that
+ * used to fill a `mat-dialog-container` here now lives in `SkillFormPage`; this object only
+ * navigates and hands one back. The list's triggers are `<a mat-flat-button routerLink>`,
+ * which Material leaves as plain anchors — `MatButton`'s host binding adds a class and no
+ * `role`, so `getByRole('button', …)` never matches them.
+ */
 export class SkillsPage {
   readonly page: Page;
   readonly heading: Locator;
-  readonly createButton: Locator;
+  readonly createLink: Locator;
+  readonly reorderLink: Locator;
   readonly searchInput: Locator;
   readonly categoryFilter: Locator;
   readonly table: Locator;
@@ -12,8 +23,11 @@ export class SkillsPage {
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading', { name: 'Skill Management' });
-    this.createButton = page.getByRole('button', { name: 'Create Skill' });
-    this.searchInput = page.getByRole('textbox', { name: 'Search skills' });
+    this.createLink = page.getByRole('link', { name: 'Create Skill' });
+    this.reorderLink = page.getByRole('link', { name: 'Reorder' });
+    // `console-filter-search` labels its input "Search" (the component default); the
+    // "Search skills..." string is only a placeholder and never the accessible name.
+    this.searchInput = page.locator('console-filter-search input');
     this.categoryFilter = page.locator('console-filter-select');
     this.table = page.locator('table');
     this.paginator = page.locator('mat-paginator');
@@ -28,6 +42,22 @@ export class SkillsPage {
     return this.page.locator('tr', { has: this.page.getByRole('cell', { name, exact: true }) });
   }
 
+  /** Navigate to the create form and return its page object. */
+  async openCreateForm(): Promise<SkillFormPage> {
+    await this.createLink.click();
+    const form = new SkillFormPage(this.page);
+    await form.heading.waitFor({ state: 'visible', timeout: 10_000 });
+    return form;
+  }
+
+  /** Navigate to a row's edit form and return its page object. */
+  async openEditForm(name: string): Promise<SkillFormPage> {
+    await this.getRowByName(name).getByRole('link', { name: 'Edit', exact: true }).click();
+    const form = new SkillFormPage(this.page);
+    await form.heading.waitFor({ state: 'visible', timeout: 10_000 });
+    return form;
+  }
+
   async createSkill(
     name: string,
     category: string,
@@ -39,33 +69,35 @@ export class SkillsPage {
       isFeatured?: boolean;
     }
   ): Promise<void> {
-    await this.createButton.click();
-    const dialog = this.page.locator('mat-dialog-container');
-    await dialog.locator('input[formControlName="name"]').fill(name);
+    const form = await this.openCreateForm();
 
-    // Select category
-    await dialog.locator('mat-select[formControlName="category"]').click();
-    await this.page.locator('mat-option', { hasText: this.categoryLabel(category) }).click();
+    await form.activate('section-identity');
+    await form.nameInput.fill(name);
+    if (opts?.description) await form.descriptionInput.fill(opts.description);
 
-    if (opts?.description) {
-      await dialog.locator('textarea[formControlName="description"]').fill(opts.description);
-    }
+    await form.activate('section-classification');
+    await form.categorySelect.click();
+    await this.page.getByRole('option', { name: this.categoryLabel(category), exact: true }).click();
+
     if (opts?.parentSkillName) {
-      await dialog.locator('mat-select[formControlName="parentSkillId"]').click();
-      await this.page.locator('mat-option', { hasText: opts.parentSkillName }).click();
+      await form.parentSkillSelect.click();
+      await this.page.getByRole('option', { name: opts.parentSkillName, exact: true }).click();
     }
     if (opts?.isLibrary) {
-      await dialog.locator('mat-checkbox[formControlName="isLibrary"]').click();
+      await form.section('section-classification').getByRole('checkbox', { name: 'Library / Framework' }).check();
     }
-    if (opts?.isFeatured) {
-      await dialog.locator('mat-checkbox[formControlName="isFeatured"]').click();
+
+    if (opts?.isFeatured || opts?.displayOrder !== undefined) {
+      await form.activate('section-settings');
+      if (opts.isFeatured) {
+        await form.section('section-settings').getByRole('checkbox', { name: 'Featured' }).check();
+      }
+      if (opts.displayOrder !== undefined) {
+        await form.section('section-settings').getByLabel('Display Order').fill(String(opts.displayOrder));
+      }
     }
-    if (opts?.displayOrder !== undefined) {
-      const orderInput = dialog.locator('input[formControlName="displayOrder"]');
-      await orderInput.clear();
-      await orderInput.fill(String(opts.displayOrder));
-    }
-    await dialog.getByRole('button', { name: 'Create' }).click();
+
+    await form.save('POST');
   }
 
   async editSkill(
@@ -78,43 +110,37 @@ export class SkillsPage {
       parentSkillName?: string | null;
     }
   ): Promise<void> {
-    const row = this.getRowByName(currentName);
-    await row.locator('button', { has: this.page.locator('mat-icon', { hasText: 'edit' }) }).click();
-    const dialog = this.page.locator('mat-dialog-container');
+    const form = await this.openEditForm(currentName);
 
-    if (updates.name !== undefined) {
-      const input = dialog.locator('input[formControlName="name"]');
-      await input.clear();
-      await input.fill(updates.name);
+    if (updates.name !== undefined || updates.description !== undefined) {
+      await form.activate('section-identity');
+      if (updates.name !== undefined) await form.nameInput.fill(updates.name);
+      if (updates.description !== undefined) await form.descriptionInput.fill(updates.description);
     }
-    if (updates.category !== undefined) {
-      await dialog.locator('mat-select[formControlName="category"]').click();
-      await this.page.locator('mat-option', { hasText: this.categoryLabel(updates.category) }).click();
-    }
-    if (updates.description !== undefined) {
-      const textarea = dialog.locator('textarea[formControlName="description"]');
-      await textarea.clear();
-      await textarea.fill(updates.description);
-    }
-    if (updates.parentSkillName !== undefined) {
-      await dialog.locator('mat-select[formControlName="parentSkillId"]').click();
-      if (updates.parentSkillName === null) {
-        await this.page.locator('mat-option', { hasText: 'None' }).click();
-      } else {
-        await this.page.locator('mat-option', { hasText: updates.parentSkillName }).click();
+
+    if (updates.category !== undefined || updates.parentSkillName !== undefined) {
+      await form.activate('section-classification');
+      if (updates.category !== undefined) {
+        await form.categorySelect.click();
+        await this.page.getByRole('option', { name: this.categoryLabel(updates.category), exact: true }).click();
+      }
+      if (updates.parentSkillName !== undefined) {
+        await form.parentSkillSelect.click();
+        const label = updates.parentSkillName === null ? 'None' : updates.parentSkillName;
+        await this.page.getByRole('option', { name: label, exact: true }).click();
       }
     }
+
     if (updates.displayOrder !== undefined) {
-      const orderInput = dialog.locator('input[formControlName="displayOrder"]');
-      await orderInput.clear();
-      await orderInput.fill(String(updates.displayOrder));
+      await form.activate('section-settings');
+      await form.section('section-settings').getByLabel('Display Order').fill(String(updates.displayOrder));
     }
-    await dialog.getByRole('button', { name: 'Update' }).click();
+
+    await form.save('PATCH');
   }
 
   async clickDeleteOnRow(name: string): Promise<void> {
-    const row = this.getRowByName(name);
-    await row.locator('button', { has: this.page.locator('mat-icon', { hasText: 'delete' }) }).click();
+    await this.getRowByName(name).getByRole('button', { name: 'Delete', exact: true }).click();
   }
 
   async search(query: string): Promise<void> {
@@ -132,21 +158,9 @@ export class SkillsPage {
   async filterByCategory(category: string): Promise<void> {
     const responsePromise = this.page.waitForResponse((r) => r.url().includes('/api/skills') && r.status() === 200);
     await this.categoryFilter.locator('mat-select').click();
-    await this.page.locator('mat-option', { hasText: category === '' ? 'All' : this.categoryLabel(category) }).click();
+    const label = category === '' ? 'All' : this.categoryLabel(category);
+    await this.page.getByRole('option', { name: label, exact: true }).click();
     await responsePromise;
-  }
-
-  get dialog() {
-    return {
-      container: this.page.locator('mat-dialog-container'),
-      nameInput: this.page.locator('mat-dialog-container input[formControlName="name"]'),
-      categorySelect: this.page.locator('mat-dialog-container mat-select[formControlName="category"]'),
-      descriptionInput: this.page.locator('mat-dialog-container textarea[formControlName="description"]'),
-      parentSkillSelect: this.page.locator('mat-dialog-container mat-select[formControlName="parentSkillId"]'),
-      displayOrderInput: this.page.locator('mat-dialog-container input[formControlName="displayOrder"]'),
-      cancelButton: this.page.locator('mat-dialog-container button', { hasText: 'Cancel' }),
-      serverError: this.page.locator('mat-dialog-container .text-red-500'),
-    };
   }
 
   private categoryLabel(category: string): string {

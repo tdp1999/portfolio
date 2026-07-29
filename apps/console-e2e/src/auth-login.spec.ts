@@ -188,17 +188,23 @@ test.describe('Login Page', () => {
 
   // --- Validation ---
 
+  // The exact wording lives in `DEFAULT_VALIDATION_MESSAGES` and is unit-tested by
+  // `form-error.pipe.spec.ts`. These assert the shape — right field, right kind of
+  // error — so copy tweaks do not turn the e2e suite red.
   test('empty fields show form validation errors', async () => {
     await loginPage.submitButton.click();
 
-    await expect(loginPage.page.getByText('Email is required.')).toBeVisible();
-    await expect(loginPage.page.getByText('Password is required.')).toBeVisible();
+    await expect(loginPage.emailError).toBeVisible();
+    await expect(loginPage.emailError).toHaveText(/required/i);
+    await expect(loginPage.passwordError).toBeVisible();
+    await expect(loginPage.passwordError).toHaveText(/required/i);
   });
 
   test('invalid email format shows validation error', async () => {
     await loginPage.emailInput.fill('not-an-email');
     await loginPage.submitButton.click();
 
-    await expect(loginPage.page.getByText('Enter a valid email address.')).toBeVisible();
+    await expect(loginPage.emailError).toBeVisible();
+    await expect(loginPage.emailError).toHaveText(/valid email address/i);
   });
 });

@@ -8,6 +8,8 @@ export class ResetPasswordPage {
   readonly togglePasswordButton: Locator;
   readonly errorHeading: Locator;
   readonly backToLoginLink: Locator;
+  readonly passwordError: Locator;
+  readonly confirmPasswordError: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +19,14 @@ export class ResetPasswordPage {
     this.togglePasswordButton = page.locator('button[mat-icon-button]');
     this.errorHeading = page.locator('h2', { hasText: 'Invalid reset link' });
     this.backToLoginLink = page.locator('a[href="/auth/login"]');
+    // Scoped to each field's own `mat-form-field`: `<mat-error>` is only in the DOM while that
+    // field is in an error state, so an unscoped `mat-error` would match whichever one is live.
+    this.passwordError = this.errorFor(this.passwordInput);
+    this.confirmPasswordError = this.errorFor(this.confirmPasswordInput);
+  }
+
+  private errorFor(input: Locator): Locator {
+    return this.page.locator('mat-form-field').filter({ has: input }).locator('mat-error');
   }
 
   async goto(token: string, userId: string): Promise<void> {

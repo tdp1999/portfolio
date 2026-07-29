@@ -1,244 +1,175 @@
 import { test, expect } from './fixtures/auth.fixture';
+import { ProjectFormPage } from './pages/project-form.page';
 import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
 
-test.describe('Project Gallery Picker (Regression)', () => {
+/**
+ * Thumbnail and gallery both open the shared media picker from the Media section of the
+ * routed project form (`/projects/new`), which starts `[hidden]` because the page ships
+ * `showAll = signal(false)` — hence the `activate('section-media')` in every test.
+ *
+ * Scope note: these tests stop at the picker → form hand-off and never save. A project needs
+ * title, one-liner, start date, motivation, description and role filled in both languages
+ * before the API will accept it, so "gallery survives a round trip" belongs with the
+ * project-crud spec that owns a `fillRequired` helper, not here.
+ */
+test.describe('Project Gallery Picker', () => {
   test.beforeEach(async ({ adminPage: page }) => {
-    // Ensure test media exists
+    // Two images, so the multi-select assertions have something to select twice.
     const mediaPage = new MediaPage(page);
     await mediaPage.goto();
 
-    const testImage = MediaPage.createTestFile('project-gallery-test.jpg');
-    const responsePromise = page.waitForResponse((r) => r.url().includes('/api/media/upload'));
-    await mediaPage.uploadFile(testImage);
-    await responsePromise;
+    for (const name of ['project-gallery-a.png', 'project-gallery-b.png']) {
+      const file = MediaPage.createTestFile(name);
+      const responsePromise = page.waitForResponse((r) => r.url().includes('/api/media/upload'));
+      await mediaPage.uploadFile(file);
+      await responsePromise;
+    }
   });
 
-  test.describe('Multi-select Gallery Picker', () => {
-    test('project dialog has gallery field with picker trigger', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
+  // ─── Thumbnail (single-select) ───────────────────────────────────
 
-      const dialog = page.locator('mat-dialog-container').first();
+  test('thumbnail trigger opens the picker in single-select mode', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.thumbnailTrigger.click();
 
-      // Gallery field should be visible
-      const galleryField = dialog.locator('button', { hasText: /gallery|media|images/i });
-      await expect(galleryField).toBeVisible();
-    });
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
 
-    test('click gallery picker → multi-select mode (can select multiple items)', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
-
-      const dialog = page.locator('mat-dialog-container').first();
-      const galleryButton = dialog.locator('button', { hasText: /gallery/i });
-      await galleryButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Title should indicate multi-select
-      const title = picker.dialog.locator('h3');
-      await expect(title).toContainText(/select.*files|multi/i);
-
-      // Should be able to select multiple items
-      const items = picker.getGridItems();
-      const firstItem = items.first();
-      const secondItem = items.nth(1);
-
-      if (await firstItem.isVisible()) {
-        await firstItem.click();
-      }
-      if (await secondItem.isVisible()) {
-        await secondItem.click();
-      }
-
-      const count = await picker.getSelectedCount();
-      expect(count).toBeGreaterThanOrEqual(1);
-    });
-
-    test('select N items → "Insert N items" button label', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
-
-      const dialog = page.locator('mat-dialog-container').first();
-      const galleryButton = dialog.locator('button', { hasText: /gallery/i });
-      await galleryButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select 2 items
-      const items = picker.getGridItems();
-      await items.nth(0).click();
-      await items.nth(1).click();
-
-      // Button label should show count
-      const buttonText = await picker.insertButton.textContent();
-      expect(buttonText).toMatch(/\d+|insert/i);
-    });
-
-    test('insert multi-selected items → form receives media IDs', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
-
-      const dialog = page.locator('mat-dialog-container').first();
-      const galleryButton = dialog.locator('button', { hasText: /gallery/i });
-      await galleryButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select items
-      const items = picker.getGridItems();
-      const ids: (string | null)[] = [];
-
-      const firstItem = items.first();
-      if (await firstItem.isVisible()) {
-        ids.push(await firstItem.getAttribute('data-media-id'));
-        await firstItem.click();
-      }
-
-      const secondItem = items.nth(1);
-      if (await secondItem.isVisible()) {
-        ids.push(await secondItem.getAttribute('data-media-id'));
-        await secondItem.click();
-      }
-
-      await picker.clickInsert();
-
-      // Form should have galleryIds array with selected IDs
-      const galleryControl = dialog.locator('[formControlName="galleryIds"], [formControlName="gallery"]');
-      if (await galleryControl.isVisible()) {
-        const value = await galleryControl.inputValue();
-        // Should contain IDs (exact format depends on form control type)
-        expect(value).toBeTruthy();
-      }
-    });
-
-    test('create project with gallery → saves successfully', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
-
-      const dialog = page.locator('mat-dialog-container').first();
-
-      // Fill required fields
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      await nameInput.fill(`TestProject-${Date.now()}`);
-
-      const descriptionInput = dialog.locator('textarea[formControlName="description"]');
-      await descriptionInput.fill('Test description');
-
-      // Add gallery items
-      const galleryButton = dialog.locator('button', { hasText: /gallery/i });
-      await galleryButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Create project
-      const createBtn = dialog.getByRole('button', { name: 'Create' });
-      const createResponse = page.waitForResponse((r) => r.url().includes('/api/projects') && r.status() === 201);
-
-      await createBtn.click();
-
-      const response = await createResponse;
-      expect(response.status()).toBe(201);
-
-      // Verify project appears in list
-      await page.goto('/projects');
-      const projectName = await nameInput.inputValue();
-      const projectRow = page.locator('[role="row"], [role="group"]', { has: page.getByText(projectName) });
-      await expect(projectRow).toBeVisible();
-    });
+    await expect(picker.dialog.locator('h3')).toHaveText('Select Media');
   });
 
-  test.describe('Gallery Persistence', () => {
-    test('save project with gallery → reload → gallery items persist', async ({ adminPage: page }) => {
-      const projectName = `GalleryTest-${Date.now()}`;
+  test('inserting a thumbnail renders the preview and a clear button', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.thumbnailTrigger.click();
 
-      // Create project with gallery
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickInsert();
 
-      const dialog = page.locator('mat-dialog-container').first();
+    await expect(form.thumbnailPreview).toBeVisible();
+    await expect(form.thumbnailTrigger).toHaveText(/Change Thumbnail/);
+    await expect(form.thumbnailClearButton).toBeVisible();
 
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      await nameInput.fill(projectName);
-
-      const descriptionInput = dialog.locator('textarea[formControlName="description"]');
-      await descriptionInput.fill('Test project');
-
-      const galleryButton = dialog.locator('button', { hasText: /gallery/i });
-      await galleryButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select 2 items
-      const items = picker.getGridItems();
-      await items.nth(0).click();
-      await items.nth(1).click();
-
-      await picker.clickInsert();
-
-      // Create
-      const createResponse = page.waitForResponse((r) => r.url().includes('/api/projects') && r.status() === 201);
-      await dialog.getByRole('button', { name: 'Create' }).click();
-      await createResponse;
-
-      // Navigate to project detail/edit
-      await page.goto('/projects');
-      const projectRow = page.locator('button, [role="button"]', { has: page.getByText(projectName) });
-      await projectRow.first().click();
-
-      // Verify gallery items are still there
-      const galleryItems = page.locator('[role="group"], .gallery-item');
-      const galleryCount = await galleryItems.count();
-
-      // Should have at least the 2 items we selected
-      expect(galleryCount).toBeGreaterThanOrEqual(2);
-    });
+    await form.thumbnailClearButton.click();
+    await expect(form.thumbnailPreview).toBeHidden();
+    await expect(form.thumbnailTrigger).toHaveText(/Choose Thumbnail/);
   });
 
-  test.describe('Regression: Unchanged API', () => {
-    test('project gallery endpoint still uses same structure', async ({ adminPage: page }) => {
-      // Verify API contract unchanged
-      const response = await page.request.get('/api/projects?limit=1');
-      const data = await response.json();
+  // ─── Gallery (multi-select) ──────────────────────────────────────
 
-      if (data.data && data.data[0]) {
-        const project = data.data[0];
-        // Should have galleryIds or similar array field
-        expect(['galleryIds', 'gallery', 'mediaIds'].some((k) => k in project)).toBeTruthy();
-      }
-    });
+  test('gallery trigger opens the picker in multi-select mode', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
 
-    test('picker call site in project dialog unchanged', async ({ adminPage: page }) => {
-      await page.goto('/projects');
-      const createButton = page.getByRole('button', { name: 'Create Project' });
-      await createButton.click();
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
 
-      const dialog = page.locator('mat-dialog-container').first();
+    await expect(picker.dialog.locator('h3')).toHaveText('Select Media Files');
+  });
 
-      // All original form fields should still be present
-      const nameInput = dialog.locator('input[formControlName="name"]');
-      const descriptionInput = dialog.locator('textarea[formControlName="description"]');
-      const galleryButton = dialog.locator('button', { hasText: /gallery|media/i });
+  test('selecting two items updates the count and the Insert label', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
 
-      await expect(nameInput).toBeVisible();
-      await expect(descriptionInput).toBeVisible();
-      await expect(galleryButton).toBeVisible();
-    });
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+
+    const items = picker.getGridItems();
+    await items.nth(0).click();
+    await expect(picker.selectedCount).toHaveText(/1 selected/);
+    // Strings, not regexes. `toHaveText` normalizes whitespace only for a string match, and the
+    // rendered label is " Insert 1 item " — so the anchored `/Insert 1 item$/` could never match
+    // while still reporting a value that looks identical in the diff.
+    await expect(picker.insertButton).toHaveText('Insert 1 item');
+
+    await items.nth(1).click();
+    await expect(picker.selectedCount).toHaveText(/2 selected/);
+    await expect(picker.insertButton).toHaveText('Insert 2 items');
+  });
+
+  test('inserted items become gallery rows in order', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+
+    const items = picker.getGridItems();
+    await items.nth(0).click();
+    await items.nth(1).click();
+    await picker.clickInsert();
+
+    await expect(form.galleryRows).toHaveCount(2);
+    expect(await form.galleryCount()).toBe(2);
+  });
+
+  test('removing a gallery row drops it from the list and the count', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().nth(0).click();
+    await picker.getGridItems().nth(1).click();
+    await picker.clickInsert();
+    await expect(form.galleryRows).toHaveCount(2);
+
+    await form.galleryRowRemoveButton(0).click();
+
+    await expect(form.galleryRows).toHaveCount(1);
+    expect(await form.galleryCount()).toBe(1);
+  });
+
+  test('reopening the gallery picker pre-selects the current images', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().nth(0).click();
+    await picker.clickInsert();
+    await expect(form.galleryRows).toHaveCount(1);
+
+    // `pickGalleryImages()` passes the current mediaIds as `selectedIds`, so the picker must
+    // reopen with that item already counted rather than starting from an empty selection.
+    await form.galleryTrigger.click();
+    await picker.waitForOpen();
+    await expect(picker.selectedCount).toHaveText(/1 selected/);
+  });
+
+  test('cancelling the gallery picker leaves the existing rows untouched', async ({ adminPage: page }) => {
+    const form = new ProjectFormPage(page);
+    await form.gotoNew();
+    await form.activate('section-media');
+    await form.galleryTrigger.click();
+
+    const picker = new MediaPickerPage(page);
+    await picker.waitForOpen();
+    await picker.getGridItems().nth(0).click();
+    await picker.clickInsert();
+    await expect(form.galleryRows).toHaveCount(1);
+
+    await form.galleryTrigger.click();
+    await picker.waitForOpen();
+    await picker.getGridItems().nth(1).click();
+    await picker.clickCancel();
+
+    await expect(form.galleryRows).toHaveCount(1);
   });
 });

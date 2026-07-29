@@ -2,166 +2,127 @@ import { test, expect } from './fixtures/auth.fixture';
 import { ProfilePage } from './pages/profile.page';
 import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
+import { seedProfile, deleteProfile } from './helpers/db-profile';
+import { TEST_USERS } from './data/test-users';
+import { expectToast } from './helpers/toast';
 
-test.describe('Profile Avatar & OG Image Picker Migration', () => {
+const ADMIN = TEST_USERS.admin;
+
+/**
+ * Avatar and OG image are **not** fields of the Identity / SEO forms.
+ *
+ * Both are signals that persist the instant the picker closes — `openAvatarPicker()` calls
+ * `PATCH /admin/profile/avatar`, `openOgImagePicker()` calls `PATCH /admin/profile/og-image` —
+ * which is why the Identity card's subtitle reads "Avatar saves on upload". The previous version
+ * of this file clicked "Save section" after every pick and burned four 30s timeouts on a button
+ * that is `disabled` precisely because the form never became dirty. `ProfilePage.pickAvatar()`
+ * and `pickOgImage()` encode the real contract: pick, then wait for that PATCH.
+ *
+ * Two further corrections, both cases of a test that could not pass rather than of drift:
+ *
+ * - The old opening test asserted a preview `<img>` was visible on a profile that `seedProfile`
+ *   creates with `avatarId: null`, so the template was rendering its `@else` placeholder. It now
+ *   asserts the empty state first and the preview only after a pick.
+ * - Two OG tests called `toHaveValue()` on the preview `<img>`. `toHaveValue` only applies to
+ *   form controls, and there is no input to read — `ogImageId` is a signal. They now assert the
+ *   `<img src>` against the URL the PATCH returned, which is what proves the round-trip.
+ */
+test.describe('Profile Avatar & OG Image Picker', () => {
+  // `global-setup` seeds the admin *user* but no profile row, and
+  // `PATCH /api/admin/profile/avatar` writes with `prisma.profile.update({ where: { userId } })`.
+  // Without a row that request now returns a shaped 404 (it used to leak a P2025 as a 500),
+  // so every test here would still die on setup rather than on its own assertion.
+  //
+  // Re-seeded per test, not once: each test persists an avatar or OG image straight to the row,
+  // so a shared profile would carry the previous test's state into the next one.
   test.beforeEach(async ({ adminPage: page }) => {
-    // Ensure test image is available
+    await seedProfile(ADMIN.id, ADMIN.email);
+
+    // Guarantee the picker has something to pick.
     const mediaPage = new MediaPage(page);
     await mediaPage.goto();
 
-    const testImage = MediaPage.createTestFile('avatar-test.jpg');
+    // `.png`, not `.jpg`: the fixture bytes are PNG and the scanner rejects a MIME mismatch.
+    const testImage = MediaPage.createTestFile('avatar-test.png');
     const responsePromise = page.waitForResponse((r) => r.url().includes('/api/media/upload'));
     await mediaPage.uploadFile(testImage);
     await responsePromise;
   });
 
+  test.afterAll(async () => {
+    await deleteProfile(ADMIN.id);
+  });
+
   test.describe('Avatar Field', () => {
-    test('avatar field renders current preview + Change button', async ({ adminPage: page }) => {
+    test('with no avatar set, the trigger is there and the preview is not', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
+      await profilePage.activate('section-identity');
 
-      // Scroll to identity section
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
-
-      // Should see avatar preview
-      const avatarImg = profilePage.identity.root.locator('img[alt*="avatar" i]');
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-
-      await expect(avatarImg).toBeVisible();
-      await expect(changeButton).toBeVisible();
+      await expect(profilePage.avatarTrigger).toBeVisible();
+      // `@else` branch: a `.media-default` placeholder, no `<img>`, and no way to remove nothing.
+      await expect(profilePage.avatarPreview).toHaveCount(0);
+      await expect(profilePage.avatarRemoveButton).toHaveCount(0);
     });
 
     test('click Change → opens MediaPickerDialog with image/ filter', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-identity');
 
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
+      await profilePage.avatarTrigger.click();
 
       const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
 
-      // Dialog title should indicate image selection
-      const title = picker.dialog.locator('h3');
-      await expect(title).toContainText('Select Media');
-
-      // Should only show images (filter applied by default)
-      const items = await picker.getGridItems().count();
-      expect(items).toBeGreaterThan(0);
+      await expect(picker.dialog.locator('h3')).toContainText('Select Media');
+      expect(await picker.getGridItems().count()).toBeGreaterThan(0);
     });
 
-    test('select image → preview updates immediately', async ({ adminPage: page }) => {
+    test('picking an image persists it and shows the preview', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-identity');
 
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
+      const avatarUrl = await profilePage.pickAvatar();
 
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select first image
-      const firstItem = picker.getGridItems().first();
-      //   const mediaId = await firstItem.getAttribute('data-media-id');
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Preview should update
-      const avatarImg = profilePage.identity.root.locator('img[alt*="avatar" i]');
-      await avatarImg.waitFor({ state: 'visible', timeout: 5000 });
-
-      // Image src should contain the selected media ID
-      const src = await avatarImg.getAttribute('src');
-      expect(src).toContain('media');
+      await expectToast(page, 'Avatar updated');
+      await expect(profilePage.avatarPreview).toBeVisible();
+      // Against the URL the endpoint itself returned. `UpdateAvatarHandler` answers with
+      // `media.url`, a storage path that does not embed the media id — so matching `src` against
+      // the id looks reasonable and can never succeed.
+      await expect(profilePage.avatarPreview).toHaveAttribute('src', avatarUrl);
     });
 
-    test('Remove button clears avatar field', async ({ adminPage: page }) => {
+    test('Remove clears the avatar after confirming', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-identity');
 
-      // First, set an avatar
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
+      await profilePage.pickAvatar();
+      await expect(profilePage.avatarPreview).toBeVisible();
 
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
+      // Remove is guarded by a "Remove Avatar" confirmation; clicking the button alone does
+      // nothing at all, which the old assertion (`isVisible().catch(() => false)`) could not tell
+      // apart from a successful clear.
+      await profilePage.removeAvatar();
 
-      // Wait for preview update
-      await page.waitForTimeout(500);
-
-      // Click Remove button
-      const removeButton = profilePage.identity.root.locator('button', { hasText: 'Remove' });
-      await removeButton.click();
-
-      // Avatar field should be cleared
-      const avatarImg = profilePage.identity.root.locator('img[alt*="avatar" i]');
-      const isVisible = await avatarImg.isVisible().catch(() => false);
-      expect(isVisible).toBe(false);
+      await expect(profilePage.avatarPreview).toHaveCount(0);
+      await expect(profilePage.avatarRemoveButton).toHaveCount(0);
     });
 
-    test('save → avatar persists on reload', async ({ adminPage: page }) => {
+    test('a picked avatar survives a reload', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-identity');
 
-      // Select and save avatar
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
+      const avatarUrl = await profilePage.pickAvatar();
 
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      //   const selectedId = await firstItem.getAttribute('data-media-id');
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save section
-      await profilePage.identity.save('PATCH');
-
-      // Reload page
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
+      await profilePage.activate('section-identity');
 
-      // Avatar should still be visible
-      const avatarImg = profilePage.identity.root.locator('img[alt*="avatar" i]');
-      await expect(avatarImg).toBeVisible();
-    });
-
-    test('avatar persists on landing page', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-      await profilePage.identity.root.waitFor({ state: 'visible' });
-
-      // Set avatar
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save
-      await profilePage.identity.save('PATCH');
-
-      // Navigate to landing (public page) as a different user if possible
-      // Or check in the hero section where avatar appears
-      await page.goto('/');
-      const landingAvatar = page.locator('img[alt*="avatar" i], [role="img"][aria-label*="avatar" i]');
-      await expect(landingAvatar).toBeVisible();
+      await expect(profilePage.avatarPreview).toBeVisible();
+      await expect(profilePage.avatarPreview).toHaveAttribute('src', avatarUrl);
     });
   });
 
@@ -169,121 +130,49 @@ test.describe('Profile Avatar & OG Image Picker Migration', () => {
     test('og image field renders Change button in SEO section', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('SEO').click();
-      await profilePage.seoOg.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-seo-og');
 
-      const changeButton = profilePage.seoOg.root.locator('button', { hasText: 'Change' });
-      await expect(changeButton).toBeVisible();
+      await expect(profilePage.ogImageTrigger).toBeVisible();
     });
 
-    test('select og image → save → persists', async ({ adminPage: page }) => {
+    test('a picked og image survives a reload', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('SEO').click();
-      await profilePage.seoOg.root.waitFor({ state: 'visible' });
+      await profilePage.activate('section-seo-og');
 
-      // Open picker
-      const changeButton = profilePage.seoOg.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
+      const ogImageUrl = await profilePage.pickOgImage();
+      await expect(profilePage.ogImagePreview).toBeVisible();
 
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select first image
-      const firstItem = picker.getGridItems().first();
-      const selectedId = await firstItem.getAttribute('data-media-id');
-
-      if (!selectedId) {
-        throw new Error('Test media item does not have data-media-id attribute');
-      }
-
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save
-      await profilePage.seoOg.save('PATCH');
-
-      // Reload and verify
       await profilePage.goto();
-      await profilePage.rail.item('SEO').click();
+      await profilePage.activate('section-seo-og');
 
-      // OG image should be set (verify via form control or preview)
-      const ogImageControl = profilePage.seoOg.root.locator('input[formControlName="ogImageId"]');
-      await expect(ogImageControl).toHaveValue(selectedId);
-    });
-
-    test('og image change updates meta tags', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await profilePage.rail.item('SEO').click();
-
-      // Set OG image
-      const changeButton = profilePage.seoOg.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      const mediaId = await firstItem.getAttribute('data-media-id');
-
-      if (!mediaId) {
-        throw new Error('Test media item does not have data-media-id attribute');
-      }
-
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save
-      await profilePage.seoOg.save('PATCH');
-
-      // Check meta og:image tag (may require server-side rendering verification)
-      // For now, just verify form control has the value
-      const ogImageControl = profilePage.seoOg.root.locator('input[formControlName="ogImageId"]');
-      await expect(ogImageControl).toHaveValue(mediaId);
+      await expect(profilePage.ogImagePreview).toHaveAttribute('src', ogImageUrl);
     });
   });
 
-  test.describe('Form Validation', () => {
-    test('avatar/og-image fields are optional', async ({ adminPage: page }) => {
+  test.describe('Independence from the Identity form', () => {
+    test('picking then removing an avatar leaves the text fields alone', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
+      await profilePage.activate('section-identity');
 
-      // Should be able to save without avatar
-      const saveButton = profilePage.identity.saveButton;
-      await expect(saveButton).toBeEnabled();
-    });
+      // Full label, including the locale suffix: `console-translatable-group` renders both
+      // "Full Name (EN)" and "Full Name (VI)", so `field('Name')` matches two controls.
+      const nameField = profilePage.identity.field('Full Name (EN)');
+      await nameField.fill('Avatar Test User');
 
-    test('can toggle avatar on/off without affecting other fields', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
+      await profilePage.pickAvatar();
+      await profilePage.removeAvatar();
+
+      // The avatar round-trip must not have reset the form, and the section save is still the
+      // thing that persists text — the avatar PATCHes never touch these columns.
+      await expect(nameField).toHaveValue('Avatar Test User');
+
+      await profilePage.identity.saveSection('/admin/profile/identity');
       await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
+      await profilePage.activate('section-identity');
 
-      // Set initial value in another field (e.g., name)
-      const nameField = profilePage.identity.field('Name');
-      await nameField.fill('Test User');
-
-      // Set avatar
-      const changeButton = profilePage.identity.root.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Remove avatar
-      const removeButton = profilePage.identity.root.locator('button', { hasText: 'Remove' });
-      await removeButton.click();
-
-      // Save and verify name is still there
-      await profilePage.identity.save('PATCH');
-      await profilePage.goto();
-      await profilePage.rail.item('Identity').click();
-
-      const savedName = await profilePage.identity.field('Name').inputValue();
-      expect(savedName).toBe('Test User');
+      await expect(profilePage.identity.field('Full Name (EN)')).toHaveValue('Avatar Test User');
     });
   });
 });

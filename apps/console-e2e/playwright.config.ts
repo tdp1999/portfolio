@@ -15,13 +15,13 @@ export default defineConfig({
   fullyParallel: true,
 
   // Fail the build on CI if you accidentally left test.only in the source code
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!process.env['CI'],
 
   // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env['CI'] ? 2 : 0,
 
   // Opt out of parallel tests on CI
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env['CI'] ? 1 : undefined,
 
   // Reporter to use
   reporter: 'html',
@@ -44,7 +44,14 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Escape hatch for a machine where `npx playwright install` has not completed:
+        // `PW_CHANNEL=msedge` drives an already-installed Edge (or Chrome) instead of the
+        // bundled Chromium, so the runner works with zero download. CI always uses the bundled
+        // build, so this stays a local convenience.
+        ...(process.env['PW_CHANNEL'] ? { channel: process.env['PW_CHANNEL'] } : {}),
+      },
     },
   ],
 
@@ -53,13 +60,13 @@ export default defineConfig({
     {
       command: 'pnpm nx serve api',
       url: 'http://localhost:3000/api',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env['CI'],
       timeout: 120000,
     },
     {
       command: 'pnpm nx serve console',
       url: 'http://localhost:4300',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env['CI'],
       timeout: 120000,
     },
   ],

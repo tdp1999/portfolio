@@ -104,13 +104,38 @@ monitorTest.describe('Reset Password', () => {
     await monitorExpect(page.getByText('Reset link is invalid or expired')).toBeVisible();
   });
 
-  monitorTest('mismatched passwords shows validation error', async ({ page }) => {
+  /**
+   * The message has to land in the confirm field's own `<mat-form-field>`, not just anywhere
+   * on the page. `passwordsMatchValidator` sets `passwordsMismatch` on the group *and* mirrors
+   * it onto the confirm control, because Material renders a projected `<mat-error>` only when
+   * the **control** is in an error state — a group-only error blocks submit while showing
+   * nothing, which is exactly the silent dead end this test guards against.
+   */
+  monitorTest('mismatched passwords shows an inline error on the confirm field', async ({ page }) => {
+    const resetPage = new ResetPasswordPage(page);
+    await resetPage.goto(rawToken, TEST_USERS.standard.id);
+
+    let postFired = false;
+    page.on('request', (req) => {
+      if (req.method() === 'POST' && req.url().includes('/api/auth/reset-password')) postFired = true;
+    });
+
+    await resetPage.resetPassword('NewSecure1!', 'Different1!');
+
+    await monitorExpect(resetPage.confirmPasswordError).toHaveText('Passwords do not match.');
+    monitorExpect(postFired).toBe(false);
+  });
+
+  monitorTest('the mismatch error clears once the passwords agree', async ({ page }) => {
     const resetPage = new ResetPasswordPage(page);
     await resetPage.goto(rawToken, TEST_USERS.standard.id);
 
     await resetPage.resetPassword('NewSecure1!', 'Different1!');
+    await monitorExpect(resetPage.confirmPasswordError).toBeVisible();
 
-    await monitorExpect(page.getByText('Passwords do not match')).toBeVisible();
+    await resetPage.confirmPasswordInput.fill('NewSecure1!');
+
+    await monitorExpect(resetPage.confirmPasswordError).toHaveCount(0);
   });
 });
 

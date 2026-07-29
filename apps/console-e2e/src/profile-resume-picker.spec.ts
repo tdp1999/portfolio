@@ -2,346 +2,203 @@ import { test, expect } from './fixtures/auth.fixture';
 import { ProfilePage } from './pages/profile.page';
 import { MediaPage } from './pages/media.page';
 import { MediaPickerPage } from './pages/media-picker.page';
+import { seedProfile, deleteProfile } from './helpers/db-profile';
+import { TEST_USERS } from './data/test-users';
 
-test.describe('Profile Resume Picker Migration', () => {
-  test.beforeEach(async ({ adminPage: page }) => {
-    // Upload a test PDF
+const ADMIN = TEST_USERS.admin;
+
+/**
+ * Resume is a *subsection* of Social Links, not a section of its own. There is no
+ * `section#section-resume` and no `[data-locale]` attribute — a row is `.resume-row`,
+ * identified by its `.locale-badge`. Every locator lives in `ProfilePage`.
+ *
+ * Section bodies are gated with `[hidden]` until their tab is selected, so each test
+ * calls `profilePage.activate('section-social-links')` before touching anything.
+ */
+test.describe('Profile Resume Picker', () => {
+  /**
+   * Guarantee the picker library has at least one *PDF*, without re-uploading per test.
+   *
+   * Both halves matter. The resume picker opens with `mimeFilter: 'application/pdf'`, so a
+   * library full of images still yields an empty grid — hence `mimeTypePrefix`. And the file
+   * has to be a real PDF: `FileSecurityScanner` compares magic bytes against the MIME type
+   * Playwright infers from the extension, so PNG bytes named `.pdf` are rejected as a
+   * security threat and the upload never lands.
+   */
+  test.beforeEach(async ({ adminPage: page, request }) => {
+    // Own the profile row rather than inheriting one.
+    //
+    // This was the only profile spec that seeded nothing, so whether a row existed depended on
+    // which sibling had run last: `profile-avatar-picker` deletes the profile in its `afterAll`,
+    // and alphabetical order puts it before this file. The saving test then PATCHed
+    // `/admin/profile/social-links` into a `404 PROFILE_NOT_FOUND` and reported it as "the value
+    // did not survive a reload" — a persistence bug that was never there.
+    await seedProfile(ADMIN.id, ADMIN.email);
+
+    const list = await request.get(
+      'http://localhost:3000/api/media/list?page=1&limit=1&mimeTypePrefix=application/pdf'
+    );
+    const body = list.ok() ? await list.json() : null;
+    const hasPdf = (body?.data?.items?.length ?? 0) > 0;
+    if (hasPdf) return;
+
     const mediaPage = new MediaPage(page);
     await mediaPage.goto();
-
-    const testPdf = MediaPage.createTestFile('resume-test.pdf');
     const responsePromise = page.waitForResponse((r) => r.url().includes('/api/media/upload'));
-    await mediaPage.uploadFile(testPdf);
+    await mediaPage.uploadFile(MediaPage.createTestPdf('resume-test.pdf'));
     await responsePromise;
   });
 
-  test.describe('Resume Section Structure', () => {
-    test('Resume section shows EN and VI rows with Change buttons', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-
-      // Navigate to Resume section (likely under a section, or scroll down)
-      // The section may be collapsed initially
-      const resumeSection = page.locator('section#section-resume');
-      if (!(await resumeSection.isVisible())) {
-        // Try scrolling to it
-        await page.goto('/profile#resume');
-      }
-
-      await resumeSection.waitFor({ state: 'visible' });
-
-      // Should have two rows: EN and VI
-      const enRow = resumeSection.locator('[data-locale="en"]');
-      const viRow = resumeSection.locator('[data-locale="vi"]');
-
-      await expect(enRow).toBeVisible();
-      await expect(viRow).toBeVisible();
-
-      // Each row should have a Change button
-      const enChangeButton = enRow.locator('button', { hasText: 'Change' });
-      const viChangeButton = viRow.locator('button', { hasText: 'Change' });
-
-      await expect(enChangeButton).toBeVisible();
-      await expect(viChangeButton).toBeVisible();
-    });
-
-    test('each row shows current filename/URL preview', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await page.goto('/profile#resume');
-
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-
-      // Preview should show either filename or URL (depending on implementation)
-      //   const preview = enRow.locator('.preview, [role="img"], img');
-      // Soft check - preview may be a text field or image
-      const previewContent = await enRow.textContent();
-      expect(previewContent).toBeTruthy();
-    });
+  test.afterAll(async () => {
+    await deleteProfile(ADMIN.id);
   });
 
-  test.describe('EN Resume Upload & Selection', () => {
-    test('EN Change button → opens picker with PDF filter', async ({ adminPage: page }) => {
+  /** Open the picker from one resume row and pick the first asset. */
+  async function pickFirstAsset(profilePage: ProfilePage, locale: 'EN' | 'VI'): Promise<void> {
+    await profilePage.resumeChangeButton(locale).click();
+    const picker = new MediaPickerPage(profilePage.page);
+    await picker.waitForOpen();
+    await picker.getGridItems().first().click();
+    await picker.clickInsert();
+    await expect(profilePage.resumeLink(locale)).toHaveCount(1);
+  }
+
+  test.describe('Structure', () => {
+    test('shows an EN and a VI row, each with a Change button', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-      const changeButton = enRow.locator('button', { hasText: 'Change' });
-
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Should show only PDFs (filter applied by default)
-      const items = await picker.getGridItems().count();
-      expect(items).toBeGreaterThan(0);
+      for (const locale of ['EN', 'VI'] as const) {
+        await expect(profilePage.resumeRow(locale)).toHaveCount(1);
+        await expect(profilePage.resumeChangeButton(locale)).toBeVisible();
+      }
     });
 
-    test('select PDF → URL written to EN field', async ({ adminPage: page }) => {
+    test('an unset row reads "No file selected" and offers no Remove', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-      const changeButton = enRow.locator('button', { hasText: 'Change' });
-
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-
-      // Select first PDF
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // EN field should be populated with the picked URL
-      const enField = enRow.locator('input, [role="textbox"]');
-      await enField.waitFor({ state: 'visible', timeout: 3000 });
-
-      const value = await enField.textContent();
-      expect(value).toBeTruthy();
-      expect(value).toContain('cloudinary.com'); // Cloudinary URL
-    });
-
-    test('Remove button clears EN field', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await page.goto('/profile#resume');
-
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-
-      // First set a resume
-      const changeButton = enRow.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      await page.waitForTimeout(500);
-
-      // Click Remove
-      const removeButton = enRow.locator('button', { hasText: 'Remove' });
-      await removeButton.click();
-
-      // Field should be cleared
-      const enField = enRow.locator('input, [role="textbox"]');
-      const value = await enField.textContent();
-      expect(value).toBeFalsy();
-    });
-
-    test('save EN resume → reload → persists', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await page.goto('/profile#resume');
-
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-
-      // Set resume
-      const changeButton = enRow.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save section
-      const saveButton = page.locator('section#section-resume button', { hasText: 'Save' });
-      await saveButton.click();
-
-      // Wait for save response
-      await page.waitForResponse((r) => r.url().includes('PATCH') && r.status() === 200);
-
-      // Reload
-      await profilePage.goto();
-      await page.goto('/profile#resume');
-
-      // Resume should still be there
-      const enField = enRow.locator('input, [role="textbox"]');
-      const value = await enField.textContent();
-      expect(value).toContain('cloudinary.com');
-    });
-
-    test('download link on landing works', async ({ adminPage: page }) => {
-      const profilePage = new ProfilePage(page);
-      await profilePage.goto();
-      await page.goto('/profile#resume');
-
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-
-      // Set resume
-      const changeButton = enRow.locator('button', { hasText: 'Change' });
-      await changeButton.click();
-
-      const picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      // Save
-      const saveButton = page.locator('section#section-resume button', { hasText: 'Save' });
-      await saveButton.click();
-      await page.waitForResponse((r) => r.url().includes('PATCH'));
-
-      // Go to landing page
-      await page.goto('/');
-
-      // Look for resume download link
-      const resumeLink = page.locator('a', { hasText: /resume|download/i });
-      await expect(resumeLink).toBeVisible();
-
-      // Verify link is valid (HEAD request should return 200)
-      const href = await resumeLink.getAttribute('href');
-      if (href && href.startsWith('http')) {
-        const response = await page.request.head(href);
-        expect([200, 301, 302]).toContain(response.status());
+      const row = profilePage.resumeRow('VI');
+      // Fresh e2e profile has no resume; the remove control is bound to `@if (ctrl.value)`.
+      if ((await profilePage.resumeLink('VI').count()) === 0) {
+        await expect(row).toContainText('No file selected');
+        await expect(profilePage.resumeRemoveButton('VI')).toHaveCount(0);
       }
     });
   });
 
-  test.describe('VI Resume Upload & Selection', () => {
-    test('VI Change button → opens picker with PDF filter', async ({ adminPage: page }) => {
+  test.describe('Selecting a file', () => {
+    test('Change opens the picker with a settled, non-empty grid', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const viRow = resumeSection.locator('[data-locale="vi"]');
-      const changeButton = viRow.locator('button', { hasText: 'Change' });
-
-      await changeButton.click();
+      await profilePage.resumeChangeButton('EN').click();
 
       const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
-
-      // Should show only PDFs
-      const items = await picker.getGridItems().count();
-      expect(items).toBeGreaterThan(0);
+      await expect(picker.getGridItems().first()).toBeVisible();
+      expect(await picker.getGridItems().count()).toBeGreaterThan(0);
     });
 
-    test('select PDF for VI → URL written to VI field separately from EN', async ({ adminPage: page }) => {
+    test('inserting writes the asset URL into the EN row', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const viRow = resumeSection.locator('[data-locale="vi"]');
+      await pickFirstAsset(profilePage, 'EN');
 
-      // First, set EN to something
-      const enRow = resumeSection.locator('[data-locale="en"]');
-      const enChangeButton = enRow.locator('button', { hasText: 'Change' });
-      await enChangeButton.click();
-
-      let picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const firstItem = picker.getGridItems().first();
-      await firstItem.click();
-      await picker.clickInsert();
-
-      await page.waitForTimeout(500);
-
-      // Now set VI
-      const viChangeButton = viRow.locator('button', { hasText: 'Change' });
-      await viChangeButton.click();
-
-      picker = new MediaPickerPage(page);
-      await picker.waitForOpen();
-      const secondItem = picker.getGridItems().nth(0); // May be same or different
-      await secondItem.click();
-      await picker.clickInsert();
-
-      // Both fields should have values, possibly different
-      const enField = enRow.locator('input, [role="textbox"]');
-      const viField = viRow.locator('input, [role="textbox"]');
-
-      const enValue = await enField.textContent();
-      const viValue = await viField.textContent();
-
-      expect(enValue).toContain('cloudinary.com');
-      expect(viValue).toContain('cloudinary.com');
+      const href = await profilePage.resumeUrl('EN');
+      expect(href).toContain('cloudinary.com');
     });
 
-    test('EN and VI can be set/cleared independently', async ({ adminPage: page }) => {
+    test('Cancel leaves the row untouched', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const enRow = resumeSection.locator('[data-locale="en"]');
-      const viRow = resumeSection.locator('[data-locale="vi"]');
+      const before = await profilePage.resumeUrl('EN');
 
-      // Set EN
-      const enChangeButton = enRow.locator('button', { hasText: 'Change' });
-      await enChangeButton.click();
-
+      await profilePage.resumeChangeButton('EN').click();
       const picker = new MediaPickerPage(page);
       await picker.waitForOpen();
-      await picker.getGridItems().first().click();
-      await picker.clickInsert();
+      await picker.clickCancel();
 
-      await page.waitForTimeout(500);
+      expect(await profilePage.resumeUrl('EN')).toBe(before);
+    });
 
-      // Clear VI (if it had a value)
-      const viRemoveButton = viRow.locator('button', { hasText: 'Remove' });
-      await viRemoveButton.click();
+    test('Remove clears a set row', async ({ adminPage: page }) => {
+      const profilePage = new ProfilePage(page);
+      await profilePage.goto();
+      await profilePage.activate('section-social-links');
 
-      // Save
-      const saveButton = page.locator('section#section-resume button', { hasText: 'Save' });
-      await saveButton.click();
-      await page.waitForResponse((r) => r.url().includes('PATCH'));
+      await pickFirstAsset(profilePage, 'EN');
+      await expect(profilePage.resumeRemoveButton('EN')).toBeVisible();
 
-      // Verify en is set, vi is not
-      const enField = enRow.locator('input, [role="textbox"]');
-      const viField = viRow.locator('input, [role="textbox"]');
+      await profilePage.resumeRemoveButton('EN').click();
 
-      const enValue = await enField.textContent();
-      const viValue = await viField.textContent();
-
-      expect(enValue).toContain('cloudinary.com');
-      expect(viValue).toBeFalsy();
+      await expect(profilePage.resumeLink('EN')).toHaveCount(0);
+      await expect(profilePage.resumeRow('EN')).toContainText('No file selected');
     });
   });
 
-  test.describe('Form Validation', () => {
-    test('both EN and VI resumes are optional', async ({ adminPage: page }) => {
+  test.describe('EN and VI are independent', () => {
+    test('setting EN leaves VI alone', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
-      await page.goto('/profile#resume');
+      await profilePage.activate('section-social-links');
 
-      const resumeSection = page.locator('section#section-resume');
-      const saveButton = resumeSection.locator('button', { hasText: 'Save' });
+      const viBefore = await profilePage.resumeUrl('VI');
+      await pickFirstAsset(profilePage, 'EN');
 
-      // Should be able to save without either resume set
-      await expect(saveButton).toBeEnabled();
+      expect(await profilePage.resumeUrl('EN')).toContain('cloudinary.com');
+      expect(await profilePage.resumeUrl('VI')).toBe(viBefore);
     });
 
-    test('can save form without touching resumes', async ({ adminPage: page }) => {
+    test('both rows can hold a URL at once', async ({ adminPage: page }) => {
       const profilePage = new ProfilePage(page);
       await profilePage.goto();
+      await profilePage.activate('section-social-links');
 
-      // Just save the section as-is
-      const resumeSection = page.locator('section#section-resume');
-      const saveButton = resumeSection.locator('button', { hasText: 'Save' });
+      await pickFirstAsset(profilePage, 'EN');
+      await pickFirstAsset(profilePage, 'VI');
 
-      const responsePromise = page.waitForResponse((r) => r.url().includes('PATCH'));
-      await saveButton.click();
+      expect(await profilePage.resumeUrl('EN')).toContain('cloudinary.com');
+      expect(await profilePage.resumeUrl('VI')).toContain('cloudinary.com');
+    });
+  });
 
-      const response = await responsePromise;
-      expect(response.status()).toBe(200);
+  test.describe('Saving', () => {
+    test('Save section is disabled until something changes', async ({ adminPage: page }) => {
+      const profilePage = new ProfilePage(page);
+      await profilePage.goto();
+      await profilePage.activate('section-social-links');
+
+      // Both resumes are optional, so an untouched section has nothing to save.
+      await expect(profilePage.socialLinks.saveButton).toBeDisabled();
+
+      await pickFirstAsset(profilePage, 'EN');
+      await expect(profilePage.socialLinks.saveButton).toBeEnabled();
+    });
+
+    test('a picked resume survives a reload', async ({ adminPage: page }) => {
+      const profilePage = new ProfilePage(page);
+      await profilePage.goto();
+      await profilePage.activate('section-social-links');
+
+      await pickFirstAsset(profilePage, 'EN');
+      const picked = await profilePage.resumeUrl('EN');
+      // The real endpoint. `/api/profile` never matched anything, so this waited out its
+      // full 30s timeout: resume URLs are persisted by the Social Links section, whose save
+      // PATCHes `/admin/profile/social-links`.
+      await profilePage.socialLinks.saveSection('/admin/profile/social-links');
+
+      await profilePage.goto();
+      await profilePage.activate('section-social-links');
+
+      expect(await profilePage.resumeUrl('EN')).toBe(picked);
     });
   });
 });

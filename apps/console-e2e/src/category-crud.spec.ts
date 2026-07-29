@@ -1,10 +1,20 @@
 import { test, expect } from './fixtures/auth.fixture';
 import { CategoriesPage } from './pages/categories.page';
+import { CategoryFormPage } from './pages/category-form.page';
 import { TEST_CATEGORIES } from './data/test-categories';
 import { createTestCategory, deleteTestCategories } from './helpers/db-categories';
 import { expectToast } from './helpers/toast';
 import { clickConfirm, clickCancel } from './helpers/dialog';
 
+/**
+ * Same routed-form story as `tag-crud`: `/categories/new` and `/categories/:id/edit` replaced the
+ * create/edit dialogs, so a duplicate name is an interceptor toast rather than an error inside a
+ * dialog, and the success toasts are "Category created" / "Category updated" without
+ * "successfully". Only the list page's delete toast says "Category deleted successfully".
+ *
+ * Unlike the skill and experience forms, this one has two `console-section-card`s but **no**
+ * `console-section-tabs` — nothing is `[hidden]`, so Display Order needs no activation.
+ */
 test.describe('Category Management', () => {
   test.describe.configure({ mode: 'serial' });
 
@@ -31,6 +41,16 @@ test.describe('Category Management', () => {
     await expect(categoriesLink).toBeVisible();
   });
 
+  test('Create Category is a link to /categories/new, not a dialog trigger', async ({ adminPage: page }) => {
+    const categoriesPage = new CategoriesPage(page);
+    await categoriesPage.goto();
+
+    await categoriesPage.createLink.click();
+
+    await expect(page).toHaveURL(/\/categories\/new$/);
+    await expect(page.locator('mat-dialog-container')).toHaveCount(0);
+  });
+
   // ─── Create ──────────────────────────────────────────────────────
 
   test('creates category with all fields → appears in table + shows toast', async ({ adminPage: page }) => {
@@ -42,62 +62,71 @@ test.describe('Category Management', () => {
       displayOrder: TEST_CATEGORIES.create.displayOrder,
     });
 
-    await expectToast(page, 'Category created successfully');
+    await expectToast(page, 'Category created');
+    await categoriesPage.goto();
     await expect(categoriesPage.getRowByName(TEST_CATEGORIES.create.name)).toBeVisible();
   });
 
-  test('dialog cancel → no category created', async ({ adminPage: page }) => {
+  test('leaving the form without saving → no category created', async ({ adminPage: page }) => {
     const categoriesPage = new CategoriesPage(page);
     await categoriesPage.goto();
 
-    await categoriesPage.createButton.click();
-    await categoriesPage.dialog.nameInput.fill(TEST_CATEGORIES.createCancel.name);
-    await categoriesPage.dialog.cancelButton.click();
+    const form = await categoriesPage.openCreateForm();
+    await form.fill({ name: TEST_CATEGORIES.createCancel.name });
+    await form.discardButton.click();
 
-    await expect(categoriesPage.dialog.container).not.toBeVisible();
-    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.createCancel.name)).not.toBeVisible();
+    await categoriesPage.goto();
+    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.createCancel.name)).toHaveCount(0);
   });
 
-  test('create validation: empty name', async ({ adminPage: page }) => {
-    const categoriesPage = new CategoriesPage(page);
-    await categoriesPage.goto();
+  test('create validation: empty name blocks the save', async ({ adminPage: page }) => {
+    const form = new CategoryFormPage(page);
+    await form.gotoNew();
 
-    await categoriesPage.createButton.click();
-    const createBtn = categoriesPage.dialog.container.getByRole('button', { name: 'Create' });
-    await createBtn.click();
+    await form.saveButton.click();
 
-    await expect(categoriesPage.dialog.container.getByText('Name is required')).toBeVisible();
-    await categoriesPage.dialog.cancelButton.click();
+    await expect(form.nameError).toHaveText(/required/i);
+    await expect(page).toHaveURL(/\/categories\/new$/);
   });
 
-  test('create validation: name > 100 chars', async ({ adminPage: page }) => {
-    const categoriesPage = new CategoriesPage(page);
-    await categoriesPage.goto();
+  test('create validation: name over the 100-char limit', async ({ adminPage: page }) => {
+    const form = new CategoryFormPage(page);
+    await form.gotoNew();
 
-    await categoriesPage.createButton.click();
-    await categoriesPage.dialog.nameInput.fill('a'.repeat(101));
-    const createBtn = categoriesPage.dialog.container.getByRole('button', { name: 'Create' });
-    await createBtn.click();
+    await form.fill({ name: 'a'.repeat(101) });
+    await form.saveButton.click();
 
-    await expect(categoriesPage.dialog.container.getByText('Name must be 100 characters or less')).toBeVisible();
-    await categoriesPage.dialog.cancelButton.click();
+    await expect(form.nameError).toHaveText(/100 characters or less/i);
+    await expect(page).toHaveURL(/\/categories\/new$/);
   });
 
-  test('create server error: duplicate name', async ({ adminPage: page }) => {
-    const categoriesPage = new CategoriesPage(page);
-    await categoriesPage.goto();
+  test('create validation: negative display order blocks the save', async ({ adminPage: page }) => {
+    const form = new CategoryFormPage(page);
+    await form.gotoNew();
 
+    await form.fill({ name: `${TEST_CATEGORIES.create.name}-order`, displayOrder: -1 });
+    await form.saveButton.click();
+
+    // `baselineFor.displayOrder()` is `integerValidator + Validators.min(LIMITS.DISPLAY_ORDER_MIN)`.
+    await expect(form.errorFor('displayOrder')).toHaveText(/at least 0/i);
+    await expect(page).toHaveURL(/\/categories\/new$/);
+  });
+
+  test('create server error: duplicate name → error toast', async ({ adminPage: page }) => {
     await createTestCategory(TEST_CATEGORIES.duplicate.name);
 
-    await categoriesPage.createCategory(TEST_CATEGORIES.duplicate.name);
+    const form = new CategoryFormPage(page);
+    await form.gotoNew();
+    await form.fill({ name: TEST_CATEGORIES.duplicate.name });
+    await form.saveButton.click();
 
-    await expect(categoriesPage.dialog.serverError).toBeVisible();
-    await categoriesPage.dialog.cancelButton.click();
+    await expectToast(page, 'A category with this name already exists.');
+    await expect(page).toHaveURL(/\/categories\/new$/);
   });
 
   // ─── Edit ────────────────────────────────────────────────────────
 
-  test('edit dialog pre-filled with current values', async ({ adminPage: page }) => {
+  test('edit form pre-filled with current values', async ({ adminPage: page }) => {
     await deleteTestCategories();
     await createTestCategory(TEST_CATEGORIES.edit.name, {
       description: TEST_CATEGORIES.edit.description,
@@ -107,14 +136,11 @@ test.describe('Category Management', () => {
 
     const categoriesPage = new CategoriesPage(page);
     await categoriesPage.goto();
+    const form = await categoriesPage.openEditForm(TEST_CATEGORIES.edit.name);
 
-    const row = categoriesPage.getRowByName(TEST_CATEGORIES.edit.name);
-    await row.locator('button', { has: page.locator('mat-icon', { hasText: 'edit' }) }).click();
-
-    await expect(categoriesPage.dialog.nameInput).toHaveValue(TEST_CATEGORIES.edit.name);
-    await expect(categoriesPage.dialog.descriptionInput).toHaveValue(TEST_CATEGORIES.edit.description);
-    await expect(categoriesPage.dialog.displayOrderInput).toHaveValue(String(TEST_CATEGORIES.edit.displayOrder));
-    await categoriesPage.dialog.cancelButton.click();
+    await expect(form.nameInput).toHaveValue(TEST_CATEGORIES.edit.name);
+    await expect(form.descriptionInput).toHaveValue(TEST_CATEGORIES.edit.description);
+    await expect(form.displayOrderInput).toHaveValue(String(TEST_CATEGORIES.edit.displayOrder));
   });
 
   test('edits category → updated in table + shows toast', async ({ adminPage: page }) => {
@@ -127,20 +153,20 @@ test.describe('Category Management', () => {
       displayOrder: TEST_CATEGORIES.edit.updatedDisplayOrder,
     });
 
-    await expectToast(page, 'Category updated successfully');
+    await expectToast(page, 'Category updated');
+    await categoriesPage.goto();
     await expect(categoriesPage.getRowByName(TEST_CATEGORIES.edit.updated)).toBeVisible();
   });
 
-  test('edit server error: duplicate name', async ({ adminPage: page }) => {
+  test('edit server error: duplicate name → error toast', async ({ adminPage: page }) => {
     const categoriesPage = new CategoriesPage(page);
     await categoriesPage.goto();
 
-    await categoriesPage.editCategory(TEST_CATEGORIES.edit.updated, {
-      name: TEST_CATEGORIES.duplicate.name,
-    });
+    const form = await categoriesPage.openEditForm(TEST_CATEGORIES.edit.updated);
+    await form.fill({ name: TEST_CATEGORIES.duplicate.name });
+    await form.saveButton.click();
 
-    await expect(categoriesPage.dialog.serverError).toBeVisible();
-    await categoriesPage.dialog.cancelButton.click();
+    await expectToast(page, 'A category with this name already exists.');
   });
 
   // ─── Delete ──────────────────────────────────────────────────────
@@ -167,7 +193,7 @@ test.describe('Category Management', () => {
     await clickConfirm(page);
 
     await expectToast(page, 'Category deleted successfully');
-    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.delete.name)).not.toBeVisible();
+    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.delete.name)).toHaveCount(0);
   });
 
   // ─── Search ──────────────────────────────────────────────────────
@@ -183,7 +209,7 @@ test.describe('Category Management', () => {
     await categoriesPage.search('cat-search');
 
     await expect(categoriesPage.getRowByName(TEST_CATEGORIES.search.name)).toBeVisible();
-    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.searchOther.name)).not.toBeVisible();
+    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.searchOther.name)).toHaveCount(0);
   });
 
   test('clear search shows all categories', async ({ adminPage: page }) => {
@@ -191,7 +217,7 @@ test.describe('Category Management', () => {
     await categoriesPage.goto();
 
     await categoriesPage.search('cat-search');
-    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.searchOther.name)).not.toBeVisible();
+    await expect(categoriesPage.getRowByName(TEST_CATEGORIES.searchOther.name)).toHaveCount(0);
 
     await categoriesPage.clearSearch();
 

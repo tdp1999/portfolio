@@ -19,14 +19,44 @@ export class MediaPickerPage {
     this.closeButton = this.dialog.locator('button[aria-label="Close dialog"]');
     this.filterBar = this.dialog.locator('console-asset-filter-bar');
     this.grid = this.dialog.locator('console-asset-grid');
-    this.insertButton = this.dialog.getByRole('button', { name: /insert|select/i });
+    // Scoped to the footer, and matched on "Insert" only.
+    //
+    // The dialog-wide `{ name: /insert|select/i }` this replaces was ambiguous in two ways.
+    // Accessible-name matching is substring-and-case-insensitive by default, and the
+    // recently-used strip renders one `button[aria-label="Select <filename>"]` per item — so
+    // the moment a recent item existed, the locator resolved to two elements and every
+    // `clickInsert()` died on a strict-mode violation instead of clicking anything. The
+    // `select` branch was never needed either: `ctaLabel()` in `media-picker-dialog.ts` only
+    // ever returns "Insert" or "Insert N items".
+    this.insertButton = this.dialog.locator('.picker__footer-right').getByRole('button', { name: /^Insert/ });
     this.cancelButton = this.dialog.getByRole('button', { name: 'Cancel' });
     this.selectedCount = this.dialog.locator('.picker__count');
   }
 
-  /** Wait for the picker to open (dialog visible) */
+  /**
+   * Wait for the picker to be usable, not merely present.
+   *
+   * `console-media-picker-dialog` becomes visible as soon as Material mounts the host,
+   * which is well before the segmented control, filter bar and asset grid render. A
+   * spec that queries a child right after host visibility reads an empty subtree and
+   * then fails 30s later on a click that never had a target — the "element(s) not
+   * found" / timeout signature all over this suite. Waiting on the grid closes that gap.
+   */
   async waitForOpen(): Promise<void> {
     await this.dialog.waitFor({ state: 'visible', timeout: 10000 });
+    await this.libraryTab.waitFor({ state: 'visible', timeout: 10000 });
+    await this.waitForGridSettled();
+  }
+
+  /**
+   * Wait until the asset grid has finished its `/api/media/list` round trip.
+   *
+   * `asset-grid.html` sets `aria-busy="true"` while `loading()`, and only then renders
+   * either the item buttons or the "No media found" empty state. Waiting on the grid
+   * host alone is not enough — the skeleton is visible too, so items read as 0.
+   */
+  async waitForGridSettled(): Promise<void> {
+    await this.dialog.locator('.asset-grid:not([aria-busy="true"])').waitFor({ state: 'visible', timeout: 15000 });
   }
 
   /** Wait for the picker to close (dialog detached) */

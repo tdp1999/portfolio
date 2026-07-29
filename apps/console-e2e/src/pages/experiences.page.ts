@@ -1,5 +1,18 @@
-import { type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import { ExperienceFormPage } from './experience-form.page';
 
+/**
+ * `/experiences` — the list page.
+ *
+ * The create/edit flow is routed, not modal. The handlers on the list component are still
+ * named `openCreateDialog()` / `openEditDialog()`, but both call `router.navigate`. The only
+ * `mat-dialog-container` left here is the delete/restore confirmation.
+ *
+ * Row actions are icon buttons with `aria-label`s ("Edit", "Delete", "Restore"), not entries in
+ * a `mat-menu` — there is no overflow menu to open first. A soft-deleted row is marked by
+ * `opacity-50` plus its Edit/Delete pair being replaced by Restore; the "Deleted" badge that
+ * older specs looked for lives on the *detail* page, never in this table.
+ */
 export class ExperiencesPage {
   readonly page: Page;
   readonly heading: Locator;
@@ -7,139 +20,92 @@ export class ExperiencesPage {
   readonly searchInput: Locator;
   readonly table: Locator;
   readonly paginator: Locator;
+  readonly showDeletedChip: Locator;
+  readonly emptyState: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading', { name: 'Experience Management' });
+    // A real `<button>` here, unlike the tag/category pages where it is an `<a routerLink>`.
     this.addButton = page.getByRole('button', { name: 'Add Experience' });
-    this.searchInput = page.getByRole('textbox', { name: /search/i });
+    this.searchInput = page.locator('console-filter-search input');
     this.table = page.locator('table');
     this.paginator = page.locator('mat-paginator');
+    this.showDeletedChip = page.getByRole('option', { name: 'Show deleted' });
+    this.emptyState = page.getByText('No experiences found');
   }
 
   async goto(): Promise<void> {
     await this.page.goto('/experiences');
-    await this.heading.waitFor({ state: 'visible', timeout: 10000 });
+    await this.heading.waitFor({ state: 'visible', timeout: 10_000 });
   }
 
+  /** Matched on the company link in the identity cell, exactly. */
   getRowByCompany(companyName: string): Locator {
-    return this.page.locator('tr').filter({ hasText: companyName });
+    return this.page.getByRole('row').filter({ has: this.page.getByText(companyName, { exact: true }) });
   }
 
-  async openMenuForRow(companyName: string): Promise<void> {
-    const row = this.getRowByCompany(companyName);
-    await row.locator('button[mat-icon-button]').click();
-  }
-
-  async clickEdit(companyName: string): Promise<void> {
-    await this.openMenuForRow(companyName);
-    await this.page.locator('button[mat-menu-item]', { hasText: 'Edit' }).click();
-  }
-
-  async clickDelete(companyName: string): Promise<void> {
-    await this.openMenuForRow(companyName);
-    await this.page.locator('button[mat-menu-item]', { hasText: 'Delete' }).click();
-  }
-
-  async clickRestore(companyName: string): Promise<void> {
-    await this.openMenuForRow(companyName);
-    await this.page.locator('button[mat-menu-item]', { hasText: 'Restore' }).click();
-  }
-
-  // ── Dialog helpers ────────────────────────────────────────────────
-
-  get dialog() {
-    const container = this.page.locator('mat-dialog-container');
-    return {
-      container,
-      companyNameInput: container.locator('input[formControlName="companyName"]'),
-      positionEnInput: container.locator('input[formControlName="position_en"]'),
-      positionViInput: container.locator('input[formControlName="position_vi"]'),
-      descriptionEnTextarea: container.locator('textarea[formControlName="description_en"]'),
-      descriptionViTextarea: container.locator('textarea[formControlName="description_vi"]'),
-      teamRoleEnInput: container.locator('input[formControlName="teamRole_en"]'),
-      teamRoleViInput: container.locator('input[formControlName="teamRole_vi"]'),
-      employmentTypeSelect: container.locator('mat-select[formControlName="employmentType"]'),
-      locationTypeSelect: container.locator('mat-select[formControlName="locationType"]'),
-      startDateInput: container.locator('input[formControlName="startDate"]'),
-      endDateInput: container.locator('input[formControlName="endDate"]'),
-      isCurrentCheckbox: container.getByRole('checkbox', { name: 'Current position' }),
-      locationCountryInput: container.locator('input[formControlName="locationCountry"]'),
-      skillSearchInput: container.locator('input[formControlName="skillSearchControl"]'),
-      skillAutocompleteInput: container.locator('mat-dialog-container input').filter({ hasText: '' }).nth(2),
-      selectedSkillChips: container.locator('mat-chip-set mat-chip'),
-      achievementsEnTab: container.locator('div[role="tab"]', { hasText: 'English' }),
-      addAchievementEnButton: container.locator('button', { hasText: 'Add Achievement' }).first(),
-      serverError: container.locator('.text-red-500'),
-      cancelButton: container.locator('button[mat-dialog-close]'),
-      submitButton: container.locator('button[mat-flat-button]', { hasText: /Create|Update/ }),
-    };
-  }
-
-  async fillRequiredFields(opts: {
-    companyName: string;
-    positionEn: string;
-    positionVi: string;
-    startDate: string | Date;
-    locationCountry?: string;
-  }): Promise<void> {
-    const d = this.dialog;
-    await d.companyNameInput.fill(opts.companyName);
-    await d.positionEnInput.fill(opts.positionEn);
-    await d.positionViInput.fill(opts.positionVi);
-
-    // The start-date input is now wrapped in `console-month-year-picker` and
-    // marked `readonly`; typing into it has no effect. Drive the calendar instead:
-    // toggle → multi-year → year → month-year view → month.
-    const date = typeof opts.startDate === 'string' ? new Date(opts.startDate) : opts.startDate;
-    await this.pickMonthYear('startDate', date);
-
-    // locationCountry is required by the backend — fill it (defaults to 'Vietnam')
-    const locationCountry = opts.locationCountry ?? 'Vietnam';
-    await d.locationCountryInput.fill(locationCountry);
+  /** True while the row is soft-deleted — the list marks that state with `opacity-50` only. */
+  isRowDeleted(companyName: string): Promise<boolean> {
+    return this.getRowByCompany(companyName).evaluate((el) => el.classList.contains('opacity-50'));
   }
 
   /**
-   * Selects a month + year on a `console-month-year-picker` via its calendar
-   * popup. `controlName` is the `formControlName` mirrored onto the underlying
-   * `<input>` (e.g. `startDate`, `endDate`).
+   * Toggle the "Show deleted" chip and wait for the refetched list.
+   *
+   * Needed to see a soft-deleted experience at all. `showDeleted` starts `false` and the query then
+   * omits `includeDeleted`, so a deleted row is **absent** from the table rather than dimmed — the
+   * `opacity-50` + Restore rendering only exists once deleted rows are included. Same shape as the
+   * projects and blog lists.
    */
-  async pickMonthYear(controlName: string, date: Date): Promise<void> {
-    // The toggle button sits as a sibling of the input inside the same mat-form-field.
-    const field = this.page
-      .locator(`input[formControlName="${controlName}"]`)
-      .locator('xpath=ancestor::mat-form-field[1]');
-    await field.locator('mat-datepicker-toggle button').click();
+  async showDeleted(enabled = true): Promise<void> {
+    const isOn = (await this.showDeletedChip.getAttribute('aria-selected')) === 'true';
+    if (isOn === enabled) return;
 
-    // Material calendar opens in `multi-year` view (a grid of years). Click the year first.
-    const calendar = this.page.locator('.mat-datepicker-content');
-    await calendar
-      .locator('.mat-calendar-body-cell', { hasText: String(date.getFullYear()) })
-      .first()
-      .click();
-
-    // Calendar transitions to the year view (a grid of months). monthSelected fires on click.
-    const monthShort = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][
-      date.getMonth()
-    ];
-    await calendar.locator('.mat-calendar-body-cell', { hasText: monthShort }).first().click();
+    const responsePromise = this.page.waitForResponse(
+      (r) => r.url().includes('/api/experiences') && r.status() === 200
+    );
+    await this.showDeletedChip.click();
+    await responsePromise;
   }
 
-  async selectSkill(skillName: string): Promise<void> {
-    const skillInput = this.page.locator('mat-dialog-container input[placeholder="Type to search..."]');
-    await skillInput.fill(skillName);
-    await this.page.locator('mat-option', { hasText: skillName }).click();
+  restoreButton(companyName: string): Locator {
+    return this.getRowByCompany(companyName).getByRole('button', { name: 'Restore', exact: true });
   }
 
-  async addEnglishAchievement(text: string): Promise<void> {
-    await this.dialog.achievementsEnTab.click();
-    await this.dialog.addAchievementEnButton.click();
-    const lastInput = this.page
-      .locator('mat-dialog-container')
-      .locator('mat-tab-body')
-      .first()
-      .locator('input[formControlName="text"]')
-      .last();
-    await lastInput.fill(text);
+  // ── Navigation into the routed form ─────────────────────────────────
+
+  async openCreateForm(): Promise<ExperienceFormPage> {
+    await this.addButton.click();
+    const form = new ExperienceFormPage(this.page);
+    await form.heading.waitFor({ state: 'visible', timeout: 10_000 });
+    return form;
+  }
+
+  async openEditForm(companyName: string): Promise<ExperienceFormPage> {
+    await this.getRowByCompany(companyName).getByRole('button', { name: 'Edit', exact: true }).click();
+    const form = new ExperienceFormPage(this.page);
+    await form.heading.waitFor({ state: 'visible', timeout: 10_000 });
+    // Edit forks a `forkJoin(skills, experience)` before patching the form; filling before
+    // that resolves would be silently overwritten.
+    await form.activate('section-company');
+    await expect(form.companyNameInput).not.toHaveValue('');
+    return form;
+  }
+
+  async clickDelete(companyName: string): Promise<void> {
+    await this.getRowByCompany(companyName).getByRole('button', { name: 'Delete', exact: true }).click();
+  }
+
+  async clickRestore(companyName: string): Promise<void> {
+    await this.restoreButton(companyName).click();
+  }
+
+  async search(query: string): Promise<void> {
+    const responsePromise = this.page.waitForResponse(
+      (r) => r.url().includes('/api/experiences') && r.status() === 200
+    );
+    await this.searchInput.fill(query);
+    await responsePromise;
   }
 }

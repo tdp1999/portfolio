@@ -4,6 +4,23 @@ import { prisma } from './db';
 /**
  * Ensure a profile exists for the given user. If one already exists, reset it to seed defaults.
  * Returns the profile id.
+ *
+ * **This resets shared state, so the specs that call it cannot run in parallel with each other.**
+ * `profile-per-section`, `profile-avatar-picker`, `profile-certification-picker` and
+ * `profile-resume-picker` all seed the *same* row (the admin user's single profile), wiping
+ * `avatarId` / `ogImageId` / `certifications` / `resumeUrls` in their `beforeEach`. One file's reset
+ * lands in the middle of another file's assertions, and the symptom is a picker that reads empty
+ * when the test just filled it.
+ *
+ * CI is immune: each shard is its own runner with its own Postgres, and `workers: 1` inside a shard
+ * makes everything serial (see `.github/workflows/ci.yml`). Locally, `fullyParallel: true` and an
+ * unset `workers` mean these four files land in four workers at once, so run them with
+ * `--workers=1` when you run more than one of them. `test.describe.configure({ mode: 'serial' })`
+ * does **not** help — it orders tests inside one file and says nothing about files racing each
+ * other, and it suppresses the rest of the file after the first failure, which hides evidence.
+ *
+ * The durable fix is a profile row per spec file rather than four files sharing one; that needs
+ * extra seeded users and is tracked in task 386.
  */
 export async function seedProfile(userId: string, email: string): Promise<string> {
   const existing = await prisma.profile.findUnique({ where: { userId } });
@@ -29,7 +46,8 @@ export async function seedProfile(userId: string, email: string): Promise<string
         socialLinks: [],
         resumeUrls: {},
         certifications: [],
-        timezone: null,
+        // `timezone` became `timezones`, a JSON array of IANA zones.
+        timezones: [],
         metaTitle: null,
         metaDescription: null,
         canonicalUrl: null,
