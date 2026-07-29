@@ -823,8 +823,32 @@ with it, against 45/45 passing under `--workers=1` without it.
 What landed instead is the constraint written on `seedProfile` itself, where a caller will see it. The durable fix is
 a profile row per spec file, which needs extra seeded users in `global-setup`, and is left below.
 
+### The CI result, and the one cause behind everything still red there
+
+First CI run with the repaired suite (`1d00b427`): the `ci` job — lint, ~1,940 unit tests, build — went **green**, and
+the three e2e shards came back **202 passed / 41 failed / 4 skipped**. Against the 94 passed / 72 failed this task
+started from, and with every remaining failure tracing to a single cause.
+
+**`CLOUDINARY_*` is not in the e2e job's env.** `CloudinaryStorageService.onModuleInit()` deliberately boots without
+it — "Boot without Cloudinary when env vars are missing (CI, local-no-upload). Upload/delete calls will surface a clear
+runtime error via the SDK" — so the API starts fine and then every `POST /api/media/upload` fails. The CI log's break
+point is `axios.post(\`${API}/api/media/upload\`)` inside the media seed helper.
+
+That is the whole residue, and the failing set matches it exactly: `blog-featured-picker`, `project-gallery-picker`,
+`profile-resume-picker`, `profile-avatar-picker`, `skill-icon-picker`, `profile-certification-picker` (all of which
+upload a fixture so there is something to pick), plus `blog-crud`'s featured image and `media-crud`'s own uploads.
+Nothing outside the media path failed. Locally these pass because a real `.env` supplies the credentials, which is why
+259/259 was reachable on this machine and is not reachable on CI.
+
+Not fixable inside this changeset — it is a CI configuration or storage-adapter decision, left below.
+
 ### Remaining
 
+- **Make media uploads work without Cloudinary credentials.** Either add `CLOUDINARY_*` as repository secrets to the
+  e2e job, or add a filesystem/in-memory `IStorageService` adapter selected when the Cloudinary env is absent. The
+  adapter is the better answer: it keeps the picker specs runnable on any machine and on any fork without secrets, and
+  stops every CI run from writing into a real Cloudinary account. Until one of the two lands, ~41 e2e tests cannot pass
+  on CI regardless of product correctness.
 - **Give the four profile specs their own profile rows.** Seed one user per spec file in `global-setup.ts` instead of
   four files sharing the admin's row. Until then, a local run touching more than one of them needs `--workers=1`.
 - **Assert 403 on the controllers that were actually open.** `auth-guards.spec.ts` only exercises `/api/users`, which
