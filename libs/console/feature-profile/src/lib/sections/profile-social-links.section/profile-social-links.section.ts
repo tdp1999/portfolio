@@ -32,7 +32,7 @@ import {
 } from '@portfolio/console/shared/ui';
 import { baselineFor, FormErrorPipe, ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
-import { SOCIAL_PLATFORM_OPTIONS } from '../../profile.data';
+import { MEDIA_ASSET_URL_MARKERS, SOCIAL_PLATFORM_OPTIONS } from '../../profile.data';
 import { ProfileService } from '../../profile.service';
 import { ProfileAdminResponse, UpdateSocialLinksPayload } from '../../profile.types';
 
@@ -303,7 +303,14 @@ export class ProfileSocialLinksSection {
     });
   }
 
+  /**
+   * `mode` is a pure UI concept: `save()` strips it from the payload, so on load it has to be
+   * re-derived from the URL alone. "File" means the URL points at an asset from our own media
+   * library, which is Cloudinary when configured and the API's own `/api/media-files/` route
+   * when it is not — keying on the Cloudinary host alone made every locally stored certificate
+   * reload as a Link.
+   */
   private inferCertMode(url: string): 'file' | 'link' {
-    return url.includes('res.cloudinary.com') ? 'file' : 'link';
+    return MEDIA_ASSET_URL_MARKERS.some((marker) => url.includes(marker)) ? 'file' : 'link';
   }
 }

@@ -38,3 +38,11 @@ export const SOCIAL_PLATFORM_OPTIONS = [
   { value: 'WEBSITE', label: 'Website' },
   { value: 'OTHER', label: 'Other' },
 ] as const;
+
+/**
+ * URL fragments that mark an asset as coming from our own media library, whichever storage
+ * backend produced it: Cloudinary's delivery host, or the API's own file route when Cloudinary
+ * is unconfigured (see `LocalStorageService`). Used only to re-derive a certificate's Link/File
+ * mode, which is never persisted.
+ */
+export const MEDIA_ASSET_URL_MARKERS = ['res.cloudinary.com', '/api/media-files/'] as const;

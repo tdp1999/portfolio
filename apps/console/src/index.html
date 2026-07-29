@@ -10,6 +10,11 @@
       - 'unsafe-inline' in script-src required for Angular inline scripts and CF analytics
       - 'unsafe-inline' in style-src required by Tailwind and boot spinner
       - frame-ancestors is set via helmet on the API (meta tags don't support it)
+      - http://localhost:3000 in img-src: when Cloudinary is unconfigured the API stores media
+        on disk and serves it from its own origin, so uploaded images render off :3000 rather
+        than an https CDN. Mirrors the connect-src entry below. Production media is https.
+        See LocalStorageService.
+
     -->
     <meta
       http-equiv="Content-Security-Policy"
@@ -19,7 +24,7 @@
         worker-src 'self' blob:;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         connect-src 'self' http://localhost:3000 https://dashboard-api.thunderphong.com https://accounts.google.com https://cloudflareinsights.com;
-        img-src 'self' data: blob: https:;
+        img-src 'self' data: blob: https: http://localhost:3000;
         font-src 'self' https://fonts.gstatic.com;
         frame-src https://accounts.google.com;
         object-src 'none';
