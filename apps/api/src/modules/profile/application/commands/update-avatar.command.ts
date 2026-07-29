@@ -33,6 +33,16 @@ export class UpdateAvatarHandler implements ICommandHandler<UpdateAvatarCommand>
         remarks: 'Update avatar validation failed',
       });
 
+    // `updateAvatar` writes through `prisma.profile.update({ where: { userId } })`, which
+    // raises P2025 when the user has no profile row — an unhandled 500 rather than a shaped
+    // 404. Every sibling command guards this; avatar and OG image were the two that did not.
+    const profile = await this.repo.findByUserId(command.userId);
+    if (!profile)
+      throw NotFoundError('Profile not found', {
+        errorCode: ProfileErrorCode.NOT_FOUND,
+        layer: ErrorLayer.APPLICATION,
+      });
+
     let avatarUrl: string | null = null;
     if (data.avatarId) {
       const media = await this.mediaRepo.findById(data.avatarId);

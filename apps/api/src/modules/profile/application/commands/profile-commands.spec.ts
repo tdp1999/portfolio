@@ -123,7 +123,10 @@ describe('Profile Commands', () => {
 
   describe('UpdateAvatarHandler', () => {
     let handler: UpdateAvatarHandler;
-    beforeEach(() => (handler = new UpdateAvatarHandler(profileRepo, mediaRepo as unknown as IMediaRepository)));
+    beforeEach(() => {
+      handler = new UpdateAvatarHandler(profileRepo, mediaRepo as unknown as IMediaRepository);
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+    });
 
     it('should update avatar with valid media', async () => {
       mediaRepo.findById.mockResolvedValue({} as any);
@@ -147,13 +150,34 @@ describe('Profile Commands', () => {
         errorCode: 'PROFILE_MEDIA_NOT_FOUND',
       });
     });
+
+    // Without this guard the repository reaches `prisma.profile.update({ where: { userId } })`,
+    // Prisma raises P2025 and the caller gets an unshaped 500 instead of a domain 404.
+    it('should throw NOT_FOUND when the user has no profile row', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new UpdateAvatarCommand({ avatarId: mediaId }, userId))).rejects.toMatchObject({
+        statusCode: 404,
+        errorCode: 'PROFILE_NOT_FOUND',
+      });
+    });
+
+    it('should not write when the user has no profile row', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new UpdateAvatarCommand({ avatarId: null }, userId))).rejects.toBeDefined();
+      expect(profileRepo.updateAvatar).not.toHaveBeenCalled();
+    });
   });
 
   // --- Update OG Image ---
 
   describe('UpdateOgImageHandler', () => {
     let handler: UpdateOgImageHandler;
-    beforeEach(() => (handler = new UpdateOgImageHandler(profileRepo, mediaRepo as unknown as IMediaRepository)));
+    beforeEach(() => {
+      handler = new UpdateOgImageHandler(profileRepo, mediaRepo as unknown as IMediaRepository);
+      profileRepo.findByUserId.mockResolvedValue(loadProfile());
+    });
 
     it('should update ogImage with valid media', async () => {
       mediaRepo.findById.mockResolvedValue({} as any);
@@ -176,6 +200,22 @@ describe('Profile Commands', () => {
         statusCode: 404,
         errorCode: 'PROFILE_MEDIA_NOT_FOUND',
       });
+    });
+
+    it('should throw NOT_FOUND when the user has no profile row', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new UpdateOgImageCommand({ ogImageId: mediaId }, userId))).rejects.toMatchObject({
+        statusCode: 404,
+        errorCode: 'PROFILE_NOT_FOUND',
+      });
+    });
+
+    it('should not write when the user has no profile row', async () => {
+      profileRepo.findByUserId.mockResolvedValue(null);
+
+      await expect(handler.execute(new UpdateOgImageCommand({ ogImageId: null }, userId))).rejects.toBeDefined();
+      expect(profileRepo.updateOgImage).not.toHaveBeenCalled();
     });
   });
 

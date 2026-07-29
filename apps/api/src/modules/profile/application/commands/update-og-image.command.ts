@@ -33,6 +33,15 @@ export class UpdateOgImageHandler implements ICommandHandler<UpdateOgImageComman
         remarks: 'Update OG image validation failed',
       });
 
+    // Same guard as `update-avatar.command.ts`: without a profile row the repository's
+    // `prisma.profile.update({ where: { userId } })` raises P2025 and leaks a 500.
+    const profile = await this.repo.findByUserId(command.userId);
+    if (!profile)
+      throw NotFoundError('Profile not found', {
+        errorCode: ProfileErrorCode.NOT_FOUND,
+        layer: ErrorLayer.APPLICATION,
+      });
+
     let ogImageUrl: string | null = null;
     if (data.ogImageId) {
       const media = await this.mediaRepo.findById(data.ogImageId);
