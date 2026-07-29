@@ -7,7 +7,13 @@ module.exports = {
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$|.*uuid/)'],
   // Coverage output format - CLI text only
   coverageReporters: ['text'],
-  // Files to exclude from coverage
+  // Files to exclude from coverage.
+  //
+  // Only exclude what is provably not product code. Do NOT exclude by role suffix
+  // (`*.data.ts`, `*.types.ts`, `*.constants.ts`): the filename grammar names the
+  // file's role, not its contents, and several of those files hold real functions
+  // (`validateFile`, `filterCommands`, `isContactPurpose`). Excluding them by
+  // pattern would silently hide testable logic.
   collectCoverageFrom: [
     '**/*.{js,ts}',
     '!**/*.spec.{js,ts}',
@@ -16,6 +22,10 @@ module.exports = {
     '!**/main.ts',
     '!**/index.ts',
     '!**/jest.*.{js,ts}',
+    // Ambient declaration files emit no JavaScript, so there is nothing to cover.
+    '!**/*.d.ts',
+    // Seed scripts are run by hand against a real DB, never unit-tested.
+    '!**/*.seed.ts',
     '!**/node_modules/**',
     '!**/dist/**',
     '!**/coverage/**',
