@@ -3,8 +3,10 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user';
 import { MediaController } from './presentation/media.controller';
+import { MediaFileController } from './presentation/media-file.controller';
 import { MediaRepository } from './infrastructure/repositories/media.repository';
-import { CloudinaryStorageService } from './infrastructure/adapters/cloudinary-storage.service';
+import { LocalStorageService } from './infrastructure/adapters/local-storage.service';
+import { createStorageService } from './infrastructure/adapters/storage.factory';
 import { FileSecurityScanner } from './infrastructure/adapters/file-security-scanner.service';
 import { MEDIA_REPOSITORY, STORAGE_SERVICE, SECURITY_SCANNER } from './application/media.token';
 import {
@@ -37,11 +39,15 @@ const queryHandlers = [ListMediaHandler, GetMediaByIdHandler, GetStorageStatsHan
 
 @Module({
   imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule)],
-  controllers: [MediaController],
+  controllers: [MediaController, MediaFileController],
   providers: [
+    LocalStorageService,
     {
+      // Cloudinary when configured, local disk in development and CI, a boot failure in
+      // production. See `createStorageService`.
       provide: STORAGE_SERVICE,
-      useClass: CloudinaryStorageService,
+      useFactory: createStorageService,
+      inject: [LocalStorageService],
     },
     {
       provide: SECURITY_SCANNER,

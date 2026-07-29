@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { DomainError } from '@portfolio/shared/errors';
-import { CloudinaryStorageService } from './cloudinary-storage.service';
+import { CloudinaryStorageService, isCloudinaryConfigured } from './cloudinary-storage.service';
 
 jest.mock('cloudinary', () => ({
   v2: {
@@ -292,6 +292,30 @@ describe('CloudinaryStorageService', () => {
         secure: true,
         transformation: [{ width: '200', crop: 'fill' }],
       });
+    });
+  });
+
+  // `MediaModule` uses this to choose between this adapter and `LocalStorageService`, so a
+  // partially configured environment must read as *not* configured — a half-set Cloudinary is
+  // the case that used to fail every upload with `Must supply api_key` instead of falling back.
+  describe('isCloudinaryConfigured()', () => {
+    it('is true when all three credentials are present', () => {
+      expect(isCloudinaryConfigured()).toBe(true);
+    });
+
+    it.each(['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'])(
+      'is false when %s is missing',
+      (missing) => {
+        delete process.env[missing];
+
+        expect(isCloudinaryConfigured()).toBe(false);
+      }
+    );
+
+    it('is false when a credential is set but empty', () => {
+      process.env['CLOUDINARY_API_KEY'] = '';
+
+      expect(isCloudinaryConfigured()).toBe(false);
     });
   });
 });

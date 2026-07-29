@@ -14,6 +14,17 @@ import {
 const MAX_BULK_FILES = 10;
 const MAX_DISPLAY_NAME_LEN = 255;
 
+/**
+ * Whether Cloudinary can actually be used. `MediaModule` calls this to pick a storage
+ * adapter, so a machine with no credentials falls back to local disk instead of failing
+ * every upload with `Must supply api_key`.
+ */
+export function isCloudinaryConfigured(): boolean {
+  return Boolean(
+    process.env['CLOUDINARY_CLOUD_NAME'] && process.env['CLOUDINARY_API_KEY'] && process.env['CLOUDINARY_API_SECRET']
+  );
+}
+
 @Injectable()
 export class CloudinaryStorageService implements IStorageService, OnModuleInit {
   private readonly logger = new Logger(CloudinaryStorageService.name);
@@ -25,8 +36,8 @@ export class CloudinaryStorageService implements IStorageService, OnModuleInit {
     const apiSecret = process.env['CLOUDINARY_API_SECRET'];
 
     if (!cloudName || !apiKey || !apiSecret) {
-      // Boot without Cloudinary when env vars are missing (CI, local-no-upload).
-      // Upload/delete calls will surface a clear runtime error via the SDK.
+      // Reachable only if this adapter is constructed directly (e.g. in its own spec);
+      // MediaModule picks LocalStorageService when the credentials are missing.
       this.logger.warn('Cloudinary env vars missing; storage will be unavailable until configured.');
       return;
     }

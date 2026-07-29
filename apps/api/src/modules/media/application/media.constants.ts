@@ -69,6 +69,33 @@ export const MIME_GROUP_SETS: Record<MediaMimeGroup, readonly string[]> = {
   ],
 } as const;
 
+/**
+ * The one extension each allowed MIME type may be stored under.
+ *
+ * Storage adapters must name files from the **scanner-validated** MIME type, never from the
+ * uploaded filename. `detectMimeType` returns `text/plain` and `text/markdown` unverified because
+ * neither has magic bytes, so a file called `x.html` declared as `text/plain` passes the scanner
+ * with its extension intact — and an adapter that trusts the filename would then serve it as
+ * `text/html` from the API's own origin. Mapping through this table makes that impossible.
+ */
+export const MIME_TYPE_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg',
+  'image/avif': 'avif',
+  'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'text/markdown': 'md',
+  'text/plain': 'txt',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
+  'application/zip': 'zip',
+};
+
 /** Defense-in-depth limit at multer/interceptor level (50MB). Per-type limits enforced in handlers. */
 export const MULTER_LIMITS = { fileSize: 50 * 1024 * 1024 } as const;
 

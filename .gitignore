@@ -80,3 +80,6 @@ dist/apps/landing/bundle-report.html
 # Local, uncommitted credential notes for the visual-feedback workflow
 # (see .context/design/workflow/visual-feedback.md)
 .context/design/workflow/*.local.md
+
+# Local media storage — used by LocalStorageService when Cloudinary is unconfigured
+.local-media/
