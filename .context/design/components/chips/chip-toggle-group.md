@@ -32,15 +32,18 @@ It is split from `chip-select` because the FormControl shape differs (`string[]`
 
 - **Value type:** `string[]` — array of selected option values, in selection order **or** option order (pick one and document; this implementation uses **option order** for stability).
 - **Selection rule:** clicking a chip toggles its presence in the array. Empty array is a valid value.
-- **Change semantics:** emits whenever the array reference changes. Every emission is a *new* array (immutable update); never mutate in place.
+- **Change semantics:** emits whenever the array reference changes. Every emission is a _new_ array (immutable update); never mutate in place.
 - **Disabled propagation:** disabled control disables all chips. A `[disabledOptions]` input MAY disable individual options; disabled options remain visible and announce their disabled state.
-- **Keyboard:** Tab moves focus to each chip; Space/Enter toggles focused chip. Arrow-key roving focus is an optional enhancement — adopt when the group exceeds ~5 chips and tab-traversal becomes noisy.
-- **A11y:** group `role="group"`; each chip is a toggle button (`role="button"` + `aria-pressed`).
+- **Keyboard:** roving tabindex — Tab enters the group **once** (landing on the container), arrow keys move between options, Home/End jump to the ends, Space/Enter toggles. Not an optional enhancement at any group size: it comes with the listbox primitive, and a group where Tab stops at every chip is the smell of a hand-rolled container.
+- **A11y:** the group is a **`listbox`** and each chip an **`option`** carrying `aria-selected`; the container declares `aria-multiselectable="true"` and **must** carry an accessible name (`aria-label`, required input — a nameless group announces as a bare "listbox").
+
+  Not `group` + `aria-pressed`, even though "several independent on/off chips" reads that way. **The primitive owns the role.** Material hard-codes `role="option"` on the inner `<button>` of `mat-chip-option`, so a container claiming `group` produces a `group` whose declared children do not exist, and `aria-pressed` written onto the chip host lands on an element the accessibility tree skips. `aria-selected` is also the better fit on its own merits: a multi-select listbox announces the set context that a bag of unrelated toggle buttons cannot. See `_overview.md` → "The primitive owns the role".
 
 ## Implementation guide
 
-- Wrap a listbox primitive in multi-select mode, or a sequence of toggle buttons grouped under one container with shared keyboard navigation.
-- Form-control adapter: store internal selection as a `Set<string>` for O(1) toggle; emit a sorted array (in option order) on change. Do not emit the Set.
+- Wrap the listbox primitive in multi-select mode; in this repo, `mat-chip-listbox [multiple]`. Do not hand-roll a container of toggle buttons: that is what produced the invalid `group` → `option` structure, and it silently gives up the roving focus the primitive provides.
+- Require an `aria-label` input for the group and bind it as an **attribute** on the listbox host, which is itself the node carrying `role="listbox"`. This is the opposite of the chips inside it, where the name must go through the primitive's `aria-label` _input_.
+- Form-control adapter: re-derive the emitted array from the `options` order on every change rather than trusting the primitive's event order. Do not emit an internal `Set`, and hand out a copy so a parent that mutates the array cannot rewrite internal state.
 - Accept `options: ChipOption[]` where `ChipOption = { value, label }`. Sort/filter happens upstream; the component renders input order.
 - Optional inputs:
   - `disabledOptions: string[]` — values to disable individually
@@ -56,7 +59,7 @@ It is split from `chip-select` because the FormControl shape differs (`string[]`
 - [ ] Keyboard: arrow navigation + Space toggle + Tab exit.
 - [ ] When `max` is reached, unselected chips visibly indicate they are disabled.
 - [ ] No internal mutation: the same array reference is never re-emitted.
-- [ ] A11y: each chip exposes its label and pressed state.
+- [ ] A11y: the container is a named `listbox` with `aria-multiselectable="true"`; each chip is an `option` exposing its label and `aria-selected`.
 
 ## Edge cases
 

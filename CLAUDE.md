@@ -9,18 +9,9 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ## Tech Stack
 
-- **Angular:** 21.1.0 (Signals, SSR, standalone) | **NestJS:** 11.0.0 | **Nx:** 22.4.4
-- **Package Manager:** pnpm | **Node:** 20+ LTS
 - **Zod:** v4 — Use latest Zod v4 syntax (e.g., `z.email()` not `z.string().email()`)
 
 ## Quick Start
-
-```bash
-pnpm dev:landing          # Angular landing + SSR (port 4200)
-pnpm dev:api              # NestJS API (port 3000)
-pnpm dev:console          # Console app (port 4300)
-npx tsc --noEmit          # Type-check after edits
-```
 
 Full command list in `.context/commands.md`.
 
@@ -46,7 +37,6 @@ Use these skills for specific workflows. More will be added over time.
 
 ## Context Files (`.context/`)
 
-- `vision.md` - Project goals and philosophy
 - `patterns-architecture.md` - Architecture, module boundaries, code patterns
 - `patterns-file-structure.md` - **Read before naming or moving any FE file/folder, or creating a component/service/lib.** Filename grammar (`<entity>.[variant].<role|kind>.[spec].<ext>`, dot=structural / dash=word-joiner), role vocabulary, folder-per-component rule, file↔class↔selector mapping, lint/generator enforcement
 - `patterns-lib-structure.md` - **Read before touching any `shared/ui` library layout.** Bucket taxonomy (`components/ directives/ pipes/ services/ styles/`), primary-artifact placement rule, compound-component rule, single public-API barrel, style organization (`styles/_index.scss` + includePaths), one shared-ui lib per scope
@@ -63,13 +53,7 @@ Use these skills for specific workflows. More will be added over time.
 - `landing-ssr.md` - **Read before touching landing data services, fonts, or nav links.** SSR hydration rules: HTTP transfer cache, FOUT preload recipe, `HydrationSafeActiveDirective` usage
 - `landing-i18n.md` - **Read before writing any user-visible string in `apps/landing/` or `libs/landing/`.** The EN/VI split: plain strings → `LANDING_COPY` dictionary via the `landingCopy` pipe / `LandingCopyService`, HTML-rich copy → `<landing-t>`. Locale overrides (`?lang=` on legal pages), what counts as API content instead, and the anti-pattern table
 - `guides/deploy-railway-ssr.md` - **Read before deploying any new Angular SSR app.** Reusable runbook: Railway service config, Cloudflare DNS/SSL/cache rules, SSR fetch-rewrite patch, common failures
-- `testing-guide.md` - TDD workflow and patterns
-- `commands.md` - All dev/build/test commands
-- `getting-started.md` - Prerequisites, setup, and common tasks
-- `decisions.md` - Architecture decision records
-- `progress.md` - Task completion tracking
-- `tasks/*.md` - Individual task definitions
-- `plans/*.md` - Epic and feature plans
+- Self-describing files, no gating rule attached: `vision.md`, `testing-guide.md`, `commands.md`, `getting-started.md`, `decisions.md`, `progress.md`, `tasks/*.md`, `plans/*.md`
 
 ## Formatting Rules
 
@@ -107,11 +91,8 @@ Use these skills for specific workflows. More will be added over time.
 | Rule                       | Action                                                                | Example                                                            |
 | -------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Verify Nx names**        | Run `pnpm nx show projects \| grep -i "<term>"` before nx commands    | `libs/landing/shared/ui` → project is `ui` not `landing-shared-ui` |
-| **Read don't assume**      | Read actual files (project.json, index.ts) instead of guessing        | Check exports before adding, verify project.json for config        |
-| **Forward slashes**        | Use `/tmp/file.js` in cross-platform tools (Playwright, Node scripts) | ✅ `/tmp/` ❌ `C:\tmp\`                                            |
 | **Type check after edits** | If a `watch-servers` Monitor is active, skip manual `tsc` — the build output is the type check. Otherwise run `npx tsc --noEmit` after modifying `.ts` or `.html` files. | Also enforced in CI pipeline |
 | **Never read .env files**  | Do not Read, Grep, or cat any `.env*` file — they hold secrets        | Ask the user for any value you need from `.env` instead of opening it |
-| **No errors in controllers** | Controllers never throw errors — all error logic in command/query handlers | `if (!user) throw NotFoundError(...)` belongs in handler, not controller |
 | **RTE field = 4 columns** | Every rich-text field MUST have `<field>Json` + `<field>Canonical` + `<field>Html` + `<field>SchemaVersion`, and the entity MUST persist `rich.canonical`. Enforced by `rte-canonical-contract.spec.ts`. See ADR-023 / patterns-architecture "Rich-Text Field Storage Contract". | Adding an RTE field → add all 4 cols + backfill entry, never Json/Html-only |
 | **4px grid**                 | All fixed px values must be multiples of 4. Even non-multiples (6, 10, 18) sparingly. Odd px banned. | ❌ `text-[13px]` ✅ `text-xs`; see `.context/design/contracts/scale-contract.md` |
 | **Typography classes (console)** | Use unified `.text-page-title`, `.text-section-heading`, `.text-stat-label`, etc. **Console only** — landing has its own scale (next row). | See `base/components.scss` |
@@ -129,8 +110,3 @@ Use these skills for specific workflows. More will be added over time.
 | **Landing copy = dictionary** | Every new user-visible **plain string** in `apps/landing/`+`libs/landing/` goes in `LANDING_COPY` (`services/copy/landing-copy.data.ts`), read via the `landingCopy` pipe or `LandingCopyService.t()`. Never a new `locale() === 'vi'` ternary for copy, never a parallel `*_EN`/`*_VI` constant pair, never English-only. HTML-rich copy stays in `<landing-t>`. `locale() === 'vi'` remains fine for **logic** (picking a URL, gating a channel). Both locales required by the type; no em-dash/en-dash (enforced by `landing-copy.spec.ts`). See ADR-028 + `.context/landing-i18n.md`. | ❌ `locale() === 'vi' ? 'Gửi' : 'Send'` ✅ `{{ 'x.y' \| landingCopy: locale() }}` |
 | **Guidance docs are timeless** | Reference docs in `.context/design/`, `.context/patterns-*`, `*-guide.md`, `vision.md`, `domain.md` describe the system as it is — no migration trackers, dated changelogs, or per-epic status. Status goes in the originating epic file or `progress.md`; one-shot decisions go in `decisions.md`. Sweep epic additions for ephemeral wording before closing. | ❌ "Migration status (applied YYYY-MM-DD)" inside cookbook ✅ same content in epic file |
 | **Responsive: mixins, never raw @media** | Use the SCSS mixins (`respond-to`/`respond-down`/`respond-between` from `@use 'base/breakpoints'`) and the 4 device-bound names (`mobile/tablet/laptop/wide`). Never write raw `@media (min/max-width: …)`, raw `100vh` (use `var(--vh-full)`), or raw `@media (prefers-*)` (use `reduce-motion`/`color-scheme` mixins). For JS-driven layout swaps read `BreakpointObserverService.currentBp()`/`isAtLeast(bp)`. Banned: `sm/md/lg/xl/2xl`. Stylelint flags violations (warning). See `.context/design/contracts/responsive-contract.md`. | ❌ `@media (min-width: 768px)` ✅ `@include respond-to('tablet')` |
-| **Agent spawn = ask only for multi-spawn** | Spawning a **single** agent (Agent/Task tool, incl. `fork`) needs no approval, whatever its model — e.g. the `/cap` review agent may run Opus and is fine to spawn directly. Only ask the user first when spawning **more than one** agent in a batch or in parallel (cost gate). | ✅ spawn one Opus review agent directly; ❌ launch 3 parallel agents without asking first |
-
-## Angular Code Style
-
-**All code must follow Angular v21+ modern syntax.** See `.context/angular-style-guide.md` for complete standards (signals, control flow, forms, guardrails).

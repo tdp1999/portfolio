@@ -11,7 +11,7 @@ related: [chip-toggle-group, chip-boolean]
 
 ## Why this exists
 
-Native single-select chip listboxes (e.g. Material's `mat-chip-listbox`) allow the user to deselect by clicking the active chip, emitting `null`. That violates the contract of a *required enum* control: an enum field is never legitimately empty, only mid-edit. `chip-select` owns the rule that **the value never transitions to null** — clicking the active chip is a no-op.
+Native single-select chip listboxes (e.g. Material's `mat-chip-listbox`) allow the user to deselect by clicking the active chip, emitting `null`. That violates the contract of a _required enum_ control: an enum field is never legitimately empty, only mid-edit. `chip-select` owns the rule that **the value never transitions to null** — clicking the active chip is a no-op.
 
 ## Use when
 
@@ -25,8 +25,8 @@ Native single-select chip listboxes (e.g. Material's `mat-chip-listbox`) allow t
 - Multiple values → `chip-toggle-group`.
 - "No selection" is a real state → use a dropdown or add an explicit "Any/All" option to `chip-select`.
 - ≥ 8 options or long labels that wrap → use a dropdown.
-- The options are *navigation* between different content (deep-linkable, route-aware, page-level) → use `mat-tab-group`.
-- The toggle must read unambiguously as a *switch* (single pill on a shared track, no check affordance) → use `console-segmented-control`. See `../segmented-control.md`.
+- The options are _navigation_ between different content (deep-linkable, route-aware, page-level) → use `mat-tab-group`.
+- The toggle must read unambiguously as a _switch_ (single pill on a shared track, no check affordance) → use `console-segmented-control`. See `../segmented-control.md`.
 
 ## Behavior contract
 
@@ -35,8 +35,11 @@ Native single-select chip listboxes (e.g. Material's `mat-chip-listbox`) allow t
 - **Initial value:** if the bound FormControl is `null`/`undefined` on mount, the component does **not** auto-select the first option. The form is in an invalid initial state and the parent must seed a value (or treat it as a validation error). Auto-selecting hides bugs.
 - **Change semantics:** emits a change event only when the value actually transitions between two distinct option values.
 - **Disabled propagation:** when the form control is disabled, every chip is disabled; click is no-op; focus still works.
-- **Keyboard:** Tab moves focus to each chip; Space/Enter selects focused chip. Arrow-key roving focus is an optional enhancement — adopt when the group has ≥4 options.
-- **A11y:** the group has `role="radiogroup"` (semantically: exclusive choice). Each chip exposes its label; icon-only chips require an explicit `aria-label`.
+- **Keyboard:** roving tabindex — Tab enters the group **once** (landing on the container, which forwards focus to the selected chip), arrow keys move between options, Home/End jump to the ends, Space/Enter selects. Not an optional enhancement: it comes with the listbox primitive, and a group where Tab stops at every chip is the smell of a hand-rolled container.
+- **Selection affordance:** keep the primitive's check mark on the selected chip. Do not reach for a "hide single-selection indicator" flag: the library's own guidance is that it makes the component harder or impossible to read visually, and the check affordance is what `_overview.md` uses to tell this component apart from `console-segmented-control`. If the checkmark is unwanted, the design wanted a segmented control, not a de-checked chip.
+- **A11y:** the group is a **`listbox`** and each chip an **`option`** carrying `aria-selected`; the container declares `aria-multiselectable="false"` and **must** carry an accessible name (`aria-label`, required input — a nameless group announces as a bare "listbox"). Bind that name as an **attribute** on the listbox host, which is itself the node carrying `role="listbox"`. Each chip exposes its label; icon-only chips require an explicit `aria-label`, set as the primitive's `aria-label` **input** so it reaches the inner element that owns the accessible name. The two forms are opposites, and mixing them up is the whole bug this component was rebuilt to fix.
+
+  Not `radiogroup`/`radio`, even though "exclusive choice" reads like a radio group. **The primitive owns the role.** Material hard-codes `role="option"` on the inner `<button>` of `mat-chip-option` and it cannot be overridden from outside, so a container claiming `radiogroup` produces a `radiogroup` full of `option`s — invalid ARIA, and unannounceable. Reaching `radiogroup` honestly would mean dropping `mat-chip-listbox` and hand-rolling the keyboard behaviour, which the family forbids. See `_overview.md` → "The primitive owns the role".
 
 ## Implementation guide
 
@@ -57,6 +60,8 @@ Portable rules — apply in any framework/stack; in this repo apply on top of `m
 - [ ] Disabled FormControl disables all chips; click does nothing; focus order intact.
 - [ ] Keyboard: arrow keys move focus, Space/Enter selects, Tab exits.
 - [ ] Icon-only mode: every chip has a non-empty accessible name.
+- [ ] The container has a non-empty accessible name, not just the chips inside it.
+- [ ] The selected chip still shows the check affordance.
 - [ ] Visible focus ring on keyboard focus (not just hover style).
 - [ ] Wrapping behavior is acceptable at the smallest supported viewport, or component is hidden behind a dropdown there.
 

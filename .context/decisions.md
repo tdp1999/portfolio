@@ -508,14 +508,14 @@ Accessibility copy (`aria-label`, `sr-only` headings, `aria-live`) is in scope a
 ### ADR-029: Landing First-Paint Locale — Read the Request, Not the Bundle
 
 **Status:** Accepted (2026-07-28)
-**Context:** `LandingLocaleService.readInitial()` returned `'en'` on the server unconditionally. The service already *wrote* a `landing_locale` cookie for exactly this purpose, with a comment calling it "future first-paint language matching" — the server just never read it back. A returning Vietnamese visitor therefore got an English first paint that flipped after hydration, and a crawler saw only English. The one exception was `/privacy` and `/terms`, which read `?lang=` from the router and so were the only two pages that server-rendered Vietnamese correctly.
+**Context:** `LandingLocaleService.readInitial()` returned `'en'` on the server unconditionally. The service already _wrote_ a `landing_locale` cookie for exactly this purpose, with a comment calling it "future first-paint language matching" — the server just never read it back. A returning Vietnamese visitor therefore got an English first paint that flipped after hydration, and a crawler saw only English. The one exception was `/privacy` and `/terms`, which read `?lang=` from the router and so were the only two pages that server-rendered Vietnamese correctly.
 
 **Decision:** The server answers the same two questions the browser does, in the same order, over whatever transport it has.
 
-| | already chose | client preference |
-| --- | --- | --- |
-| browser | `localStorage` | `navigator.languages` |
-| server | `Cookie` header | `Accept-Language` header |
+|         | already chose   | client preference        |
+| ------- | --------------- | ------------------------ |
+| browser | `localStorage`  | `navigator.languages`    |
+| server  | `Cookie` header | `Accept-Language` header |
 
 1. **`REQUEST` (Angular 19+) is the transport.** Injected optional, so the browser and prerender both get `null` and fall through.
 2. **`Accept-Language` is parsed with q-weights.** `en;q=0.7,vi;q=0.9` means Vietnamese; scanning in header order would answer English. Ties keep header order.
@@ -548,3 +548,88 @@ Accessibility copy (`aria-label`, `sr-only` headings, `aria-live`) is in scope a
 - `defaultTitle` / `defaultDescription` take a locale and there is no locale-free shortcut. The old module-load `DEFAULT_TITLE` pair was justified by "SSR renders English anyway", which ADR-029 made false, and the home page had been serving English metadata to Vietnamese visitors because of it.
 - Pages got shorter: four `updateTag` calls became one `apply`, and `Title` / `Meta` are no longer injected outside the service.
 - The service lives in `shared/ui/src/services/meta/`, with the other landing app services. It talks to no API, so it was never data-access.
+
+---
+
+### ADR-031: Jest Coverage Thresholds Are Measured Floors, Not Aspirations
+
+**Status:** Accepted (2026-07-28)
+**Context:** Every CI run on `master` had been red for weeks, and the red was not a broken test. The `ci` job ran ~1,940 unit tests with **zero failures** and still exited 1, because four projects missed a `coverageThreshold` written when the project was young: `landing` asked for 50% and measured 4.17%, `ui` asked for 80% and measured 38.47%, `api` asked for 80% and measured 74.89%, `shared-utils` asked for 90% functions and measured 83.33%. A gate that is always red reports nothing. It had also trained the habit of scrolling past a failed CI badge, which is exactly the habit that lets a real failure through — the ~76 genuinely failing e2e tests (task 386) sat behind the same red badge.
+
+**Decision:** A threshold states what the suite reaches today. Two rules keep it honest.
+
+1. **Narrow the denominator before touching the number.** A file is excluded only when it provably contains no product logic: ambient `.d.ts` (emits no JavaScript), `*.seed.ts` (run by hand against a real DB), `apps/api/scripts/` and `apps/api/prisma/` (one-off backfills and the seed entry), `apps/landing/src/app/pages/ddl/**` (the design-system showcase — ~140 of that app's ~170 files, demo pages documenting the landing UI), and `libs/shared/utils/core/src/lite.ts` (a one-line re-export barrel named something other than `index.ts`). For `api` this alone moved statements from 74.89% to 81.06% and lines to 80.06%, clearing two of its four gates without a single new test.
+
+2. **Never exclude by role suffix.** `*.data.ts`, `*.types.ts` and `*.constants.ts` look like declaration files and are not: `media.constants.ts` holds `validateFile` and `formatFileSize`, `command-palette.types.ts` holds `filterCommands`, `contact-form.types.ts` holds `isContactPurpose`. The filename grammar in `patterns-file-structure.md` names a file's _role_, and role does not imply absence of logic. A suffix-based exclusion list would have silently dropped security-adjacent code out of measurement.
+
+What remained after narrowing was set to the measured value, and it may only move up:
+
+| Project        | statements        | branches   | functions  | lines      |
+| -------------- | ----------------- | ---------- | ---------- | ---------- |
+| `shared-utils` | 90 (measures 100) | 90 (100)   | 90 (100)   | 90 (100)   |
+| `api`          | 80 (81.06)        | 63 (65.15) | 68 (70.73) | 80 (80.06) |
+| `ui`           | 36 (38.47)        | 18 (19.91) | 34 (36.12) | 38 (40.2)  |
+| `landing`      | 5 (5.58)          | 11 (12.4)  | 2 (2.34)   | 4 (4.91)   |
+
+**Consequences:**
+
+- `shared-utils` needed no lowering at all. Its only real gap was `stripHtmlTags`, untested despite being an XSS-adjacent helper; it now has a spec that also pins the documented limits of a structural-only strip (bare `<`, undecoded entities, malformed nesting). The lib sits at 100% on all four metrics.
+- The two low rows are a debt statement, written down where it can be read. `ui` has 28 specs against 158 sources: the services, directives and interactive components are tested, the presentational primitives are not, and they are covered only through `/ddl` and e2e. `landing` outside `/ddl` is ~30 SSR page shells verified by e2e and the landing-copy contract spec.
+- A threshold at 11% branches gates almost nothing, and that is the accurate reading. It stops slippage and nothing more. The number is a target to raise, and raising it is the work — not editing it downward when a build goes red.
+
+---
+
+### ADR-032: No Pixel-Diff Screenshot Baselines
+
+**Status:** Accepted (2026-07-29)
+**Context:** `console-e2e` carried two `toHaveScreenshot` tests, on `/` and `/categories`. They had never once gated anything. Playwright names a baseline `<name>-<project>-<platform>.png`, and the only two committed were `-win32`, so CI on `ubuntu-latest` looked for `-linux` and found nothing — and a developer on macOS produces `-darwin`, meaning **usable baselines could only ever be generated on CI, downloaded as an artifact, and committed by hand.** Task 386 rebuilt the spec (viewport before navigation, font/paint settling instead of a 1500ms sleep, a committed real admin password removed) and added a `workflow_dispatch` job to mint Linux baselines, so the mechanism was finished and ready to switch on. The question was whether to switch it on.
+
+**Decision:** No pixel-diff baselines in this repo. The spec, its helper, the win32 PNGs, the `@visual` tag, the `--grep-invert @visual` gate and the baseline-regeneration workflow are all deleted.
+
+The cost is asymmetric in the wrong direction:
+
+1. **Coverage was two pages of roughly twenty**, so it protected two screenshots rather than the design system.
+2. **Both pages had to be hollowed out to be diffable at all.** `/` masks its live DB counters and `/categories` is filtered to a no-match empty state, because row count changes page height and no mask fixes that. What is left to compare after masking and emptying is close to nothing.
+3. **Maintenance lands exactly where the project is most active.** Console and landing are being redesigned continuously. Every intentional visual change turns the pair red, and clearing it means a CI round-trip — dispatch, download, review, commit — because the baseline cannot be regenerated on the machine doing the work.
+4. **The same ground is already covered better.** `/ddl` is the declared source of truth for landing UI (see the DDL guardrail in `CLAUDE.md`), and design review runs on real screenshots read at the 4 breakpoints. `.context/design/contracts/responsive-contract.md` had already written down "no pixel-diff baselines"; the spec was the outlier, not this decision.
+
+**Consequences:**
+
+- `console-e2e` runs unfiltered again: `npx nx e2e console-e2e -- --shard=N/3`, with no tag to remember and no permanently-skipped tests pretending to assert something.
+- `PW_CHANNEL=msedge` loses its one caveat. It existed for running the suite with no browser download, and the warning attached to it was only ever about baselines, so driving a system Edge is now unconditionally fine locally.
+- **If visual regression is wanted later, point it at `/ddl`, not at data pages.** Its content is not DB-driven, so it needs no masking, and it is the surface whose drift actually matters. That was the reason the two data-page screenshots needed hollowing out in the first place.
+
+---
+
+### ADR-033: Chip Family ARIA — The Primitive Picks the Role, and the Doc Cites the Primitive
+
+**Status:** Accepted (2026-07-29)
+**Context:** All three members of the chip family shipped ARIA that described a structure the DOM never had. `chip-select` declared `role="radiogroup"`, `chip-toggle-group` declared `role="group"`, and `chip-boolean` rendered a lone `mat-chip-option` with no listbox parent; all three wrote `role` / `aria-checked` / `aria-pressed` onto `<mat-chip-option>` hosts. None of it took effect: `MatChipOption` hard-codes `role="option"` on the inner `<button>` that owns the accessible name and sets its own host to `role="presentation"`, so those were dead attributes rather than overrides. A Playwright ARIA snapshot of `/media` showed the result as `radiogroup` → two unnamed `option`s.
+
+The cause is traceable. The component commit (`4312f03f`) and the design-bank commit (`c565819b`) are **39 seconds apart** on 2026-04-29, so the doc was retro-written in the same sitting rather than consulted first. Its A11y line came from the WAI-ARIA APG "Radio Group" pattern, which is the correct answer for a widget built from scratch, while its Implementation guide said to build on `mat-chip-listbox`. Those two lines cannot both be satisfied, and the code ended up taking the role from one and the child from the other. Material's own Chips page never mentions `radiogroup` at all: it prescribes `<mat-chip-listbox>` + `<mat-chip-option>` for "a set of user selectable options", and `multiple` when more than one may be chosen.
+
+Two further gaps surfaced while checking the library docs. Material's Accessibility section says to label the **container** with `aria-label` / `aria-labelledby`, and not one of the four call sites did. And it says nothing at all about naming an individual chip, which is the half only source reading reveals: the name must be bound as `MatChipOption`'s `@Input('aria-label')`, because `[attr.aria-label]` stops at the skipped host.
+
+**Decision:** Three rules for the family.
+
+1. **When a component wraps a primitive, its A11y section cites the primitive's documentation, not the APG.** APG describes widgets built from nothing. Once you wrap, the roles are already decided, and the doc's job is to record them. Had this rule existed in April, `radiogroup` would never have been written down, because the first step is to open the Chips page and read it.
+
+2. **Pick the primitive from the semantic, and accept that the family spans two of them.** The role you need is not negotiable by attribute; it is chosen when you choose what to wrap.
+
+   | Member              | Semantic                 | Primitive                     | Container role / state                              |
+   | ------------------- | ------------------------ | ----------------------------- | --------------------------------------------------- |
+   | `chip-select`       | One-of-N, always set     | `mat-chip-listbox`            | `listbox` → `option`, `aria-selected`               |
+   | `chip-toggle-group` | Many-of-N, empty allowed | `mat-chip-listbox [multiple]` | `listbox` → `option`, `aria-multiselectable="true"` |
+   | `chip-boolean`      | Toggle button            | `mat-chip`                    | `role="button"` + `aria-pressed`, on the host       |
+
+   `chip-boolean` is deliberately **not** a listbox member. A listbox of one option is invalid-feeling ARIA and the family already forbade it ("a 1-option multi is a checkbox"). `mat-chip` is the escape hatch Material documents for this: it implements no accessibility pattern, has no inner button, and reflects `attr.role` and `attr.aria-label` from inputs — the exact inverse of `mat-chip-option`, so here ARIA written on the host is correct rather than dead. `mat-button-toggle-group multiple` would also have produced `group` → `button` + `aria-pressed`, but it renders a connected segmented control, which is `console-segmented-control`'s job.
+
+3. **The group's accessible name is a required input, not an optional one.** `aria-label` on `chip-select` and `chip-toggle-group` is `input.required`, so a nameless group cannot ship. It binds as `[attr.aria-label]` because the listbox host is itself the node carrying `role="listbox"` and neither `MatChipSet` nor `MatChipListbox` declares an input for it. That is the opposite of the chips inside it, and the asymmetry is written into both templates.
+
+**Consequences:**
+
+- `chip-toggle-group`'s doc changed from `aria-pressed` to `aria-selected` rather than the code bending to the doc. A multi-select listbox announces the set context that a bag of independent toggle buttons cannot, and the port also delivered the roving tabindex and arrow keys that the doc's own checklist had been asking for since April while the hand-rolled `<div>` provided neither.
+- **`hideSingleSelectionIndicator` is gone from `chip-select`.** It had sat on `mat-chip-option`, where it is not an input, so it was inert and the checkmark had been rendering all along; carrying it up to the listbox during the rewrite would have silently removed it. Material warns the flag "makes the component less accessible", and `_overview.md` uses the check affordance as the very thing separating `chip-select` from `console-segmented-control`.
+- `mat-chip` never receives `.mdc-evolution-chip--selected`, which is where Material keys the filled background, and `[highlighted]` only recolours the hover/focus overlay and trailing icon. `chip-boolean`'s pressed fill is therefore set in SCSS from Material's own chip tokens, keyed off `[aria-pressed='true']` so the visual state cannot drift from the announced one.
+- Both siblings had **no spec file at all**; they now have 25 tests between them, written red first. The load-bearing one asserts that exactly one node in `chip-boolean` carries a `role` and that it is the host, because sliding back to a chip-option is the single most likely future regression and it would turn nothing else red.
+- Four call sites gained an `aria-label`, and no call site needed any other change: both components kept their public API.
