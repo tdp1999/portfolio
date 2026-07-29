@@ -117,8 +117,23 @@ export default class Home {
   // ── Derived ───────────────────────────────────────────────────────
   readonly userName = computed(() => this.authStore.user()?.name?.split(' ')[0] ?? 'User');
 
+  /**
+   * The stat row is admin-only, and so is the request behind it.
+   *
+   * `/api/dashboard/stats` is `@Roles(['ADMIN'])`, and every tile links into an admin-guarded area
+   * (`/admin/blog`, `/media`). Calling it as a non-admin returns 403, which
+   * `error-handler.provider.ts` treats as blocking: it closes all dialogs and routes to
+   * `/error/403`. So a signed-in non-admin was bounced off the dashboard onto a full-page "Access
+   * Denied" — the component's own `error` callback never gets a say, because the global handler
+   * runs first. `authGuard` resolves auth bootstrap before this component is constructed, so the
+   * role is known by the time the check below runs.
+   */
+  readonly isAdmin = computed(() => this.authStore.user()?.role === 'ADMIN');
+
   // Labels + icons are presentation; values come from the API (0 until loaded).
   readonly stats = computed<DashboardStat[]>(() => {
+    if (!this.isAdmin()) return [];
+
     const s = this.statValues();
     return [
       { label: 'Total Posts', value: s?.totalPosts ?? 0, icon: 'article', link: '/admin/blog' },
@@ -145,6 +160,8 @@ export default class Home {
   readonly activities: ActivityItem[] = ACTIVITIES;
 
   constructor() {
+    if (!this.isAdmin()) return;
+
     this.dashboardService
       .getStats()
       .pipe(takeUntilDestroyed(this.destroyRef))
