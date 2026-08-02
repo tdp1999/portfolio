@@ -14,6 +14,20 @@
 .mat-mdc-form-field {
   --mat-form-field-error-text-color: var(--color-error);
   width: 100%;
+
+  /* A form field is 40px tall (density -4, see material/_theme.scss), but the global
+     icon-button state layer is 40px too — so a prefix/suffix button would fill the
+     field edge to edge and its ripple would spill over the outline. Shrink the state
+     layer inside a form field only; standalone icon buttons keep their 40px target. */
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix {
+    .mdc-icon-button.mat-mdc-icon-button {
+      --mat-icon-button-state-layer-size: 32px;
+      width: 32px;
+      height: 32px;
+      padding: 4px;
+    }
+  }
 }
 
 .mat-mdc-unelevated-button {

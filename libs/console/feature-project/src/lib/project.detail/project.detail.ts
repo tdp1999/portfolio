@@ -19,6 +19,8 @@ import {
   RecordLayout,
   RecordPanel,
   RecordSection,
+  MediaPreview,
+  type MediaPreviewItem,
   SegmentedControl,
   SpinnerOverlay,
   ToastService,
@@ -95,6 +97,7 @@ interface HighlightView {
     PropertyList,
     Property,
     RecordEmptySections,
+    MediaPreview,
   ],
   templateUrl: './project.detail.html',
   styleUrl: './project.detail.scss',
@@ -155,6 +158,37 @@ export default class ProjectDetail implements OnInit {
   readonly collapseHighlights = computed(() => this.highlights().length > 2);
 
   readonly progress = computed(() => translationProgress(this.project(), TRANSLATABLE_FIELDS, this.locale()));
+
+  /**
+   * Thumbnail first, then the gallery in display order — one group, so Quick Look
+   * walks the whole set with ←/→. The thumbnail keeps the explicit "Thumbnail"
+   * caption because its role, not its filename, is what a reader needs here.
+   */
+  readonly mediaItems = computed<MediaPreviewItem[]>(() => {
+    const p = this.project();
+    if (!p) return [];
+    const thumb: MediaPreviewItem[] = p.thumbnailUrl
+      ? [
+          {
+            id: p.thumbnailId ?? 'thumbnail',
+            url: p.thumbnailUrl,
+            caption: 'Thumbnail',
+            filename: p.thumbnailFilename,
+            altText: p.thumbnailAltText,
+          },
+        ]
+      : [];
+    return [
+      ...thumb,
+      ...p.images.map((img) => ({
+        id: img.id,
+        url: img.url,
+        caption: img.caption,
+        filename: img.filename,
+        altText: img.altText,
+      })),
+    ];
+  });
 
   readonly emptySections = computed(() => {
     const p = this.project();

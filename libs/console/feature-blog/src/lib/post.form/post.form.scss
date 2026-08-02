@@ -164,6 +164,17 @@
   }
 }
 
+/* The preview alone cannot tell two similar covers apart — name the picked file. */
+.featured-image-name {
+  margin: 4px 0 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .featured-image-preview {
   position: relative;
   border-radius: 8px;

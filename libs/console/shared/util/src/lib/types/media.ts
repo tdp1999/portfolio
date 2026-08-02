@@ -30,6 +30,16 @@ export interface StorageStats {
   breakdown: { mimeTypePrefix: string; count: number; bytes: number }[];
 }
 
+/**
+ * One tick of an in-flight upload. `id` appears only on the final tick, so
+ * `progress === 100 && !id` is impossible and `progress < 100` always means the
+ * browser is still sending. See `MediaService.upload`.
+ */
+export interface MediaUploadEvent {
+  progress: number;
+  id?: string;
+}
+
 export interface UploadResult {
   id: string;
   originalFilename: string;

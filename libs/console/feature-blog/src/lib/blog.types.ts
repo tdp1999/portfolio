@@ -76,6 +76,7 @@ export interface AdminBlogPostDetail extends AdminBlogPostListItem {
   metaDescription: string | null;
   authorId: string;
   featuredImageId: string | null;
+  featuredImageFilename: string | null;
   createdById: string;
   updatedById: string;
   deletedById: string | null;

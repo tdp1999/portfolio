@@ -23,7 +23,7 @@
           (click)="openAvatarPicker()"
         >
           @if (avatarPreview(); as src) {
-            <img [src]="src" alt="Avatar preview" />
+            <img [src]="src | mediaThumb: 96" alt="Avatar preview" />
           } @else {
             <div class="media-default"><mat-icon>person</mat-icon></div>
           }
@@ -31,6 +31,9 @@
             <mat-icon>photo_camera</mat-icon>
           </div>
         </button>
+        @if (avatarId()) {
+          <p class="media-filename" [title]="avatarFilename() ?? ''">{{ avatarFilename() ?? 'Unnamed file' }}</p>
+        }
         @if (avatarPreview()) {
           <button mat-button type="button" class="media-remove" (click)="confirmClearAvatar()">Remove photo</button>
         }

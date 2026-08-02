@@ -33,6 +33,9 @@ export interface AdminProject {
   links: ProjectLink[];
   thumbnailId: string | null;
   thumbnailUrl: string | null;
+  thumbnailFilename: string | null;
+  thumbnailCaption: string | null;
+  thumbnailAltText: string | null;
   createdAt: string;
   updatedAt: string;
   createdById: string;
@@ -64,6 +67,8 @@ export interface AdminImage {
   id: string;
   mediaId: string;
   url: string;
+  filename: string | null;
+  caption: string | null;
   altText: string | null;
   displayOrder: number;
 }

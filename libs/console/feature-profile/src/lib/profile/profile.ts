@@ -65,6 +65,7 @@ export default class Profile implements OnInit, OnDestroy, HasUnsavedChanges {
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
     getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
+    update: (id, payload) => this.mediaService.update(id, payload),
   };
 
   readonly loading = signal(false);

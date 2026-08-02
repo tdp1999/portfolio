@@ -100,7 +100,7 @@
             <p class="field-label">Featured image</p>
             @if (featuredImageUrl()) {
               <div class="featured-image-preview">
-                <img [src]="featuredImageUrl()" alt="Featured" />
+                <img [src]="featuredImageUrl() | mediaThumb: 320" alt="Featured" />
                 <div class="featured-image-actions">
                   <button mat-icon-button type="button" (click)="openFeaturedImagePicker()" matTooltip="Replace">
                     <mat-icon>swap_horiz</mat-icon>
@@ -110,6 +110,9 @@
                   </button>
                 </div>
               </div>
+              <p class="featured-image-name" [matTooltip]="featuredImageName() ?? ''">
+                {{ featuredImageName() ?? 'Unnamed file' }}
+              </p>
             } @else {
               <button mat-stroked-button type="button" (click)="openFeaturedImagePicker()">
                 <mat-icon>add_photo_alternate</mat-icon>

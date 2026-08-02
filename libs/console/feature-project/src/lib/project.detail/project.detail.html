@@ -82,20 +82,7 @@
       <!-- Media -->
       @if (p.thumbnailUrl || p.images.length) {
         <console-record-section title="Media" [count]="p.images.length + (p.thumbnailUrl ? 1 : 0)">
-          <div class="project-media">
-            @if (p.thumbnailUrl) {
-              <figure class="project-media__item project-media__item--thumb">
-                <img [src]="p.thumbnailUrl" [alt]="p.title" />
-                <figcaption>Thumbnail</figcaption>
-              </figure>
-            }
-            @for (img of p.images; track img.id) {
-              <figure class="project-media__item">
-                <img [src]="img.url" [alt]="img.altText ?? ''" />
-                <figcaption>{{ img.altText || 'Untitled' }}</figcaption>
-              </figure>
-            }
-          </div>
+          <console-media-preview [items]="mediaItems()" [tileSize]="132" ratio="3 / 2" />
         </console-record-section>
       }
 

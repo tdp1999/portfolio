@@ -106,6 +106,17 @@ html {
 }
 
 /* Form fields run denser than the -1 global density set in mat.theme() above.
-   Emitted AFTER mat.theme so this -2 wins over the theme's per-component density
-   for form-field (later-in-source). */
-@include mat.form-field-density(-2);
+   Emitted AFTER mat.theme so this wins over the theme's per-component density for
+   form-field (later-in-source).
+
+   The scale is a lookup, not a ratio — Angular Material v21 maps it to a fixed
+   container height in `form-field/_m3-form-field.scss`:
+
+     0 → 56px · -1 → 52px · -2 → 48px · -3 → 44px · -4 → 40px · -5 → 36px (clamped)
+
+   -4 is the console's 40px row. Safe with the `appearance: 'outline'` default set in
+   `provider.config.ts`: the density map only turns the FILLED label off past -1, and
+   the outline notch keeps its floating label at every step. Vertical padding drops to
+   8px, which is why suffix icon buttons shrink to 32px in `_overrides.scss` — a 40px
+   button in a 40px field leaves no field left. */
+@include mat.form-field-density(-4);

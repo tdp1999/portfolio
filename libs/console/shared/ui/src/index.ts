@@ -101,3 +101,12 @@ export {
   type HasUnsavedChanges,
   type UnsavedChangesResult,
 } from './components/unsaved-changes.dialog/unsaved-changes.dialog';
+export { MediaPreview } from './components/media-preview/media-preview';
+export type { MediaPreviewItem } from './components/media-preview/media-preview.types';
+export {
+  UNTITLED_MEDIA_LABEL,
+  mediaThumbTransform,
+  resolveMediaAlt,
+  resolveMediaLabel,
+} from './components/media-preview/media-preview.util';
+export { MediaThumbPipe } from './pipes/media-thumb/media-thumb.pipe';

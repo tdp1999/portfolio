@@ -14,6 +14,7 @@ import {
   EnumLabelPipe,
   SpinnerOverlay,
   ToastService,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { BLOG_POST_STATUS_LABELS } from '@portfolio/shared/enum-labels';
 import { filter, switchMap } from 'rxjs';
@@ -35,6 +36,7 @@ import { AdminBlogPostDetail, BlogStatus } from '../blog.types';
     EnumLabelPipe,
     RouterLink,
     RteRenderHtml,
+    MediaThumbPipe,
   ],
   templateUrl: './blog-post.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

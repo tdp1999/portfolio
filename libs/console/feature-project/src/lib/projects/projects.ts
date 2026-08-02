@@ -22,6 +22,7 @@ import {
   type ConfirmDialogData,
   ToastService,
   withListLoading,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ProjectService } from '../project.service';
@@ -45,6 +46,7 @@ import { STATUS_OPTIONS } from './projects.data';
     FilterSelect,
     SkeletonTable,
     RelativeTime,
+    MediaThumbPipe,
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',

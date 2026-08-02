@@ -42,7 +42,9 @@ export interface ProfileAdminResponse {
   avatarId: string | null;
   ogImageId: string | null;
   avatarUrl: string | null;
+  avatarFilename: string | null;
   ogImageUrl: string | null;
+  ogImageFilename: string | null;
   // Landing content blocks
   tagline: TranslatableJson | null;
   stackIntro: TranslatableJson | null;

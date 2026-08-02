@@ -3,6 +3,7 @@ export type { UserProfile } from './user-profile';
 export type {
   MediaItem,
   MediaListResponse,
+  MediaUploadEvent,
   StorageStats,
   UploadResult,
   BulkUploadResult,

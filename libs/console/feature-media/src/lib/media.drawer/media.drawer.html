@@ -27,7 +27,7 @@
         <!-- Preview -->
         <div class="media-drawer__preview">
           @if (isImage()) {
-            <img [src]="it.url" [alt]="it.altText || it.originalFilename" />
+            <img [src]="it.url | mediaThumb: 360" [alt]="it.altText || it.originalFilename" />
           } @else {
             <div class="media-drawer__file-icon">
               <mat-icon>insert_drive_file</mat-icon>

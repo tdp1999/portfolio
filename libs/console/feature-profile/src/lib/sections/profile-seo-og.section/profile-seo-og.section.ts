@@ -28,6 +28,7 @@ import {
   SectionCard,
   SectionStatus,
   ToastService,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { baselineFor, FormErrorPipe, ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
@@ -48,6 +49,7 @@ import { ProfileAdminResponse } from '../../profile.types';
     FormSnapshotDirective,
     ServerErrorDirective,
     FormErrorPipe,
+    MediaThumbPipe,
   ],
   templateUrl: './profile-seo-og.section.html',
   styleUrl: './profile-seo-og.section.scss',
@@ -78,6 +80,7 @@ export class ProfileSeoOgSection {
   readonly ogImageSaving = signal(false);
   readonly ogImageId = signal<string | null>(null);
   readonly ogImagePreview = signal<string | null>(null);
+  readonly ogImageFilename = signal<string | null>(null);
   readonly jsonLd = signal<unknown>(null);
   readonly showJsonLd = signal(false);
 
@@ -105,6 +108,7 @@ export class ProfileSeoOgSection {
       });
       this.ogImageId.set(data.ogImageId);
       this.ogImagePreview.set(data.ogImageUrl);
+      this.ogImageFilename.set(data.ogImageFilename);
       this.hydrated = true;
     });
     this.form.events.pipe(startWith(null), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -160,15 +164,18 @@ export class ProfileSeoOgSection {
         switchMap((picked) => {
           if (!picked) return EMPTY;
           this.ogImageSaving.set(true);
-          return this.profileService.updateOgImage(picked.id).pipe(map((res) => ({ id: picked.id, ...res })));
+          return this.profileService
+            .updateOgImage(picked.id)
+            .pipe(map((res) => ({ id: picked.id, filename: picked.originalFilename, ...res })));
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: ({ id, ogImageUrl }) => {
+        next: ({ id, filename, ogImageUrl }) => {
           this.ogImageSaving.set(false);
           this.ogImageId.set(id);
           this.ogImagePreview.set(ogImageUrl);
+          this.ogImageFilename.set(filename);
           this.toast.success('OG image updated');
           this.saved.emit({ ogImageId: id, ogImageUrl });
         },
@@ -198,6 +205,7 @@ export class ProfileSeoOgSection {
           this.ogImageSaving.set(false);
           this.ogImageId.set(null);
           this.ogImagePreview.set(null);
+          this.ogImageFilename.set(null);
           this.saved.emit({ ogImageId: null, ogImageUrl: null });
         },
         error: () => this.ogImageSaving.set(false),

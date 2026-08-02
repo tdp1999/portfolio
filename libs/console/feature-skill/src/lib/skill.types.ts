@@ -17,6 +17,7 @@ export interface AdminSkill {
   yearsOfExperience: number | null;
   iconId: string | null;
   iconUrl: string | null;
+  iconFilename: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;

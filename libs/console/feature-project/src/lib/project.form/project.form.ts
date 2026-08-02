@@ -42,6 +42,7 @@ import {
   TranslatableRichTextGroup,
   type MediaPickerDataSource,
   type MediaPickerDialogData,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
@@ -97,6 +98,7 @@ import {
     StickySaveBar,
     SpinnerOverlay,
     ServerErrorDirective,
+    MediaThumbPipe,
   ],
   templateUrl: './project.form.html',
   styleUrl: './project.form.scss',
@@ -117,6 +119,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
     getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
+    update: (id, payload) => this.mediaService.update(id, payload),
   };
 
   private readonly projectId = signal<string | null>(null);
@@ -128,6 +131,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
   readonly thumbnailUrl = signal<string | null>(null);
   readonly thumbnailId = signal<string | null>(null);
+  readonly thumbnailFilename = signal<string | null>(null);
   readonly galleryImages = signal<GalleryImage[]>([]);
 
   readonly form = this.fb.nonNullable.group({
@@ -275,6 +279,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
         if (result) {
           this.thumbnailId.set(result.id);
           this.thumbnailUrl.set(result.url);
+          this.thumbnailFilename.set(result.originalFilename);
           this.form.markAsDirty();
           this.dirty.set(true);
         }
@@ -284,6 +289,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
   clearThumbnail(): void {
     this.thumbnailId.set(null);
     this.thumbnailUrl.set(null);
+    this.thumbnailFilename.set(null);
     this.form.markAsDirty();
     this.dirty.set(true);
   }
@@ -307,7 +313,13 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
           const existing = this.galleryImages();
           const existingMap = new Map(existing.map((img) => [img.mediaId, img]));
           const updated = result.map(
-            (item) => existingMap.get(item.id) ?? { mediaId: item.id, url: item.url, altText: item.altText ?? null }
+            (item) =>
+              existingMap.get(item.id) ?? {
+                mediaId: item.id,
+                url: item.url,
+                filename: item.originalFilename,
+                altText: item.altText ?? null,
+              }
           );
           this.galleryImages.set(updated);
           this.form.markAsDirty();
@@ -448,6 +460,7 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
       this.galleryImages.set([]);
       this.thumbnailId.set(null);
       this.thumbnailUrl.set(null);
+      this.thumbnailFilename.set(null);
       this.form.reset();
     }
     this.form.markAsPristine();
@@ -522,10 +535,12 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
     this.thumbnailId.set(p.thumbnailId ?? null);
     this.thumbnailUrl.set(p.thumbnailUrl ?? null);
+    this.thumbnailFilename.set(p.thumbnailFilename ?? null);
     this.galleryImages.set(
       (p.images ?? []).map((img) => ({
         mediaId: img.mediaId,
         url: img.url,
+        filename: img.filename,
         altText: img.altText,
       }))
     );

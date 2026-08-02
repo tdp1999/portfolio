@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { EnumLabelPipe } from '@portfolio/console/shared/ui';
+import { EnumLabelPipe, MediaThumbPipe } from '@portfolio/console/shared/ui';
 import { SKILL_CATEGORY_LABELS, SKILL_TIER_LABELS } from '@portfolio/shared/enum-labels';
 import { AdminSkill } from '../skill.types';
 
@@ -15,7 +15,7 @@ import { AdminSkill } from '../skill.types';
 @Component({
   selector: 'console-skill-detail-card',
   standalone: true,
-  imports: [MatChipsModule, MatIconModule, MatTooltipModule, EnumLabelPipe],
+  imports: [MatChipsModule, MatIconModule, MatTooltipModule, EnumLabelPipe, MediaThumbPipe],
   templateUrl: './skill.detail-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

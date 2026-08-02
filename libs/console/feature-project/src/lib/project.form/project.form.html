@@ -162,7 +162,11 @@
                 <p class="field-label">Thumbnail</p>
                 <div class="flex items-center gap-3">
                   @if (thumbnailUrl()) {
-                    <img [src]="thumbnailUrl()" alt="Thumbnail" class="h-16 w-16 rounded object-cover" />
+                    <img
+                      [src]="thumbnailUrl() | mediaThumb: 64"
+                      alt="Thumbnail"
+                      class="h-16 w-16 rounded object-cover"
+                    />
                   } @else if (thumbnailId()) {
                     <div class="flex h-16 w-16 items-center justify-center rounded bg-surface">
                       <mat-icon>check_circle</mat-icon>
@@ -172,6 +176,15 @@
                       <mat-icon class="text-text-muted">image</mat-icon>
                     </div>
                   }
+                  <div class="min-w-0 flex-1">
+                    @if (thumbnailId()) {
+                      <p class="truncate text-sm" [matTooltip]="thumbnailFilename() ?? ''">
+                        {{ thumbnailFilename() ?? 'Unnamed file' }}
+                      </p>
+                    } @else {
+                      <p class="text-sm text-text-muted">No thumbnail selected</p>
+                    }
+                  </div>
                   <button mat-stroked-button type="button" (click)="pickThumbnail()">
                     {{ thumbnailId() ? 'Change' : 'Choose' }} Thumbnail
                   </button>
@@ -197,13 +210,22 @@
                     @for (img of galleryImages(); track img.mediaId; let i = $index) {
                       <div class="gallery-row">
                         @if (img.url) {
-                          <img [src]="img.url" [alt]="img.altText ?? ''" class="h-10 w-10 rounded object-cover" />
+                          <img
+                            [src]="img.url | mediaThumb: 40"
+                            [alt]="img.altText ?? ''"
+                            class="h-10 w-10 rounded object-cover"
+                          />
                         } @else {
                           <div class="flex h-10 w-10 items-center justify-center rounded bg-surface">
                             <mat-icon class="text-sm">image</mat-icon>
                           </div>
                         }
-                        <span class="flex-1 truncate text-sm">{{ img.altText || img.mediaId }}</span>
+                        <span class="flex-1 truncate text-sm" [matTooltip]="img.filename ?? ''">
+                          {{ img.filename ?? 'Unnamed file' }}
+                        </span>
+                        @if (img.altText) {
+                          <span class="truncate text-xs text-text-muted">{{ img.altText }}</span>
+                        }
                         <button
                           mat-icon-button
                           type="button"

@@ -1,0 +1,97 @@
+:host {
+  display: block;
+}
+
+.media-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.media-preview__item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  /* The tile width is the same number the Cloudinary transform was built from, so
+     the box on screen and the bytes on the wire cannot drift apart. */
+  width: var(--media-preview-tile, 160px);
+  min-width: 0;
+}
+
+.media-preview__frame {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+}
+
+.media-preview__frame--interactive {
+  cursor: zoom-in;
+  transition: border-color 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-primary);
+  }
+}
+
+.media-preview__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-preview__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text-muted);
+}
+
+.media-preview__label {
+  overflow: hidden;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-preview__full {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+
+  img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+}
+
+.media-preview__full-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.media-preview__full-label {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.media-preview__full-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}

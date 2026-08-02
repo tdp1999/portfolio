@@ -95,3 +95,16 @@
     color: var(--color-error);
   }
 }
+
+/* The circular/OG preview shows the picture but not which asset it is — name it,
+   so a wrong pick is obvious without reopening the picker. */
+.media-filename {
+  margin: 4px 0 0;
+  max-width: 220px;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

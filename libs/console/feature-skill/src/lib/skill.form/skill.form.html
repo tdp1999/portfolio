@@ -127,12 +127,25 @@
         >
           <div class="flex items-center gap-3">
             @if (iconPreviewUrl()) {
-              <img [src]="iconPreviewUrl()!" alt="Icon preview" class="w-12 h-12 object-contain rounded" />
+              <img
+                [src]="iconPreviewUrl()! | mediaThumb: 48"
+                alt="Icon preview"
+                class="w-12 h-12 object-contain rounded"
+              />
             } @else {
               <div class="w-12 h-12 rounded border border-dashed border-text-muted flex items-center justify-center">
                 <mat-icon class="icon-md text-text-muted">image</mat-icon>
               </div>
             }
+            <div class="min-w-0 flex-1">
+              @if (iconId()) {
+                <p class="truncate text-sm" [matTooltip]="iconFilename() ?? ''">
+                  {{ iconFilename() ?? 'Unnamed file' }}
+                </p>
+              } @else {
+                <p class="text-sm text-text-muted">No icon selected</p>
+              }
+            </div>
             <button mat-stroked-button type="button" (click)="openIconPicker()">
               {{ iconPreviewUrl() ? 'Change Icon' : 'Pick Icon' }}
             </button>

@@ -23,7 +23,7 @@
           (click)="openOgImagePicker()"
         >
           @if (ogImagePreview(); as src) {
-            <img [src]="src" alt="OG image preview" />
+            <img [src]="src | mediaThumb: 240" alt="OG image preview" />
           } @else {
             <div class="media-default"><mat-icon>image</mat-icon></div>
           }
@@ -31,6 +31,9 @@
             <mat-icon>photo_camera</mat-icon>
           </div>
         </button>
+        @if (ogImageId()) {
+          <p class="media-filename" [title]="ogImageFilename() ?? ''">{{ ogImageFilename() ?? 'Unnamed file' }}</p>
+        }
         @if (ogImagePreview()) {
           <button mat-button type="button" class="media-remove" (click)="confirmClearOgImage()">Remove image</button>
         }

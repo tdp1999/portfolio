@@ -28,6 +28,7 @@ import {
   ToastService,
   TranslatableGroup,
   TranslatableRichTextGroup,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
 import type { EditorDocument } from '@portfolio/shared/features/rte-core';
@@ -50,6 +51,7 @@ import { ProfileAdminResponse, UpdateIdentityPayload, type TranslatableRichText 
     ServerErrorDirective,
     TranslatableGroup,
     TranslatableRichTextGroup,
+    MediaThumbPipe,
   ],
   templateUrl: './profile-identity.section.html',
   styleUrl: './profile-identity.section.scss',
@@ -84,6 +86,7 @@ export class ProfileIdentitySection {
   readonly avatarSaving = signal(false);
   readonly avatarId = signal<string | null>(null);
   readonly avatarPreview = signal<string | null>(null);
+  readonly avatarFilename = signal<string | null>(null);
 
   /** Public so `Profile` can aggregate it for `unsavedChangesGuard`. */
   readonly dirty = signal(false);
@@ -110,6 +113,7 @@ export class ProfileIdentitySection {
       });
       this.avatarId.set(data.avatarId);
       this.avatarPreview.set(data.avatarUrl);
+      this.avatarFilename.set(data.avatarFilename);
       this.hydrated = true;
     });
 
@@ -186,15 +190,18 @@ export class ProfileIdentitySection {
         switchMap((picked) => {
           if (!picked) return EMPTY;
           this.avatarSaving.set(true);
-          return this.profileService.updateAvatar(picked.id).pipe(map((res) => ({ id: picked.id, ...res })));
+          return this.profileService
+            .updateAvatar(picked.id)
+            .pipe(map((res) => ({ id: picked.id, filename: picked.originalFilename, ...res })));
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: ({ id, avatarUrl }) => {
+        next: ({ id, filename, avatarUrl }) => {
           this.avatarSaving.set(false);
           this.avatarId.set(id);
           this.avatarPreview.set(avatarUrl);
+          this.avatarFilename.set(filename);
           this.toast.success('Avatar updated');
           this.saved.emit({ avatarId: id, avatarUrl });
         },
@@ -224,6 +231,7 @@ export class ProfileIdentitySection {
           this.avatarSaving.set(false);
           this.avatarId.set(null);
           this.avatarPreview.set(null);
+          this.avatarFilename.set(null);
           this.saved.emit({ avatarId: null, avatarUrl: null });
         },
         error: () => this.avatarSaving.set(false),

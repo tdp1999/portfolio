@@ -4,7 +4,7 @@
     <div class="detail-section">
       <div class="flex flex-wrap items-center gap-2 mb-3">
         @if (s.iconUrl) {
-          <img [src]="s.iconUrl" [alt]="s.name" class="w-8 h-8 object-contain rounded" />
+          <img [src]="s.iconUrl | mediaThumb: 32" [alt]="s.name" class="w-8 h-8 object-contain rounded" />
         }
         <mat-chip class="chip-sm">{{ s.category | enumLabel: skillCategoryLabels }}</mat-chip>
         <mat-chip class="chip-sm">{{ s.tier | enumLabel: skillTierLabels }}</mat-chip>

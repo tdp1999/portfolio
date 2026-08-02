@@ -32,6 +32,7 @@ import {
   SpinnerOverlay,
   StickySaveBar,
   ToastService,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
@@ -65,6 +66,7 @@ import { AdminSkill, SKILL_TIER_OPTIONS, type SkillTier } from '../skill.types';
     StickySaveBar,
     FormErrorPipe,
     ServerErrorDirective,
+    MediaThumbPipe,
   ],
   templateUrl: './skill.form.html',
   styleUrl: './skill.form.scss',
@@ -88,6 +90,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
 
   readonly iconId = signal<string | null>(null);
   readonly iconPreviewUrl = signal<string | null>(null);
+  readonly iconFilename = signal<string | null>(null);
 
   readonly parentSkills = signal<AdminSkill[]>([]);
   readonly parentSkillsForSelect = computed(() => {
@@ -127,6 +130,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
     getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
+    update: (id, payload) => this.mediaService.update(id, payload),
   };
 
   ngOnInit(): void {
@@ -182,6 +186,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
         if (!item) return;
         this.iconId.set(item.id);
         this.iconPreviewUrl.set(item.url);
+        this.iconFilename.set(item.originalFilename);
         this.dirty.set(true);
       });
   }
@@ -189,6 +194,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
   clearIcon(): void {
     this.iconId.set(null);
     this.iconPreviewUrl.set(null);
+    this.iconFilename.set(null);
     this.dirty.set(true);
   }
 
@@ -278,6 +284,7 @@ export default class SkillForm implements OnInit, HasUnsavedChanges {
     });
     this.iconId.set(skill.iconId);
     this.iconPreviewUrl.set(skill.iconUrl);
+    this.iconFilename.set(skill.iconFilename);
     this.dirty.set(false);
   }
 }

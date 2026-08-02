@@ -29,6 +29,7 @@ import {
   ToastService,
   type MediaPickerDataSource,
   type MediaPickerDialogData,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { MediaService } from '@portfolio/console/shared/data-access';
 import type { MediaItem } from '@portfolio/console/shared/util';
@@ -72,6 +73,7 @@ import {
     SectionCard,
     StickySaveBar,
     RichTextEditor,
+    MediaThumbPipe,
   ],
   templateUrl: './post.form.html',
   styleUrl: './post.form.scss',
@@ -89,6 +91,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     upload: (f, folder) => this.mediaService.upload(f, { folder }),
     getById: (id) => this.mediaService.getById(id),
     getByIdSilent: (id) => this.mediaService.getByIdSilent(id),
+    update: (id, payload) => this.mediaService.update(id, payload),
   };
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -115,6 +118,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
 
   readonly slugManuallyEdited = signal(false);
   readonly featuredImageUrl = signal<string | null>(null);
+  readonly featuredImageName = signal<string | null>(null);
   readonly readTimeMinutes = signal<number | null>(null);
   readonly publishedAt = signal<string | null>(null);
 
@@ -235,6 +239,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
         this.form.controls.featuredImageId.setValue(item.id);
         this.form.controls.featuredImageId.markAsTouched();
         this.featuredImageUrl.set(item.url);
+        this.featuredImageName.set(item.originalFilename);
         this.dirty.set(true);
       });
   }
@@ -243,6 +248,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
     this.form.controls.featuredImageId.setValue('');
     this.form.controls.featuredImageId.markAsTouched();
     this.featuredImageUrl.set(null);
+    this.featuredImageName.set(null);
     this.dirty.set(true);
   }
 
@@ -333,6 +339,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
         featuredImageId: '',
       });
       this.featuredImageUrl.set(null);
+      this.featuredImageName.set(null);
       this.slugManuallyEdited.set(false);
       this.dirty.set(false);
     }
@@ -361,6 +368,7 @@ export default class PostForm implements OnInit, HasUnsavedChanges {
         });
         this.slugManuallyEdited.set(true);
         this.featuredImageUrl.set(post.featuredImageUrl);
+        this.featuredImageName.set(post.featuredImageFilename);
         this.readTimeMinutes.set(post.readTimeMinutes);
         this.publishedAt.set(post.publishedAt);
         this.loading.set(false);

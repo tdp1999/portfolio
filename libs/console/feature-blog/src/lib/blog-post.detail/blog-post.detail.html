@@ -61,7 +61,11 @@
       <!-- Identity -->
       <div class="detail-section">
         @if (p.featuredImageUrl) {
-          <img [src]="p.featuredImageUrl" [alt]="p.title" class="mb-4 w-full max-h-72 rounded object-cover" />
+          <img
+            [src]="p.featuredImageUrl | mediaThumb: 720"
+            [alt]="p.title"
+            class="mb-4 w-full max-h-72 rounded object-cover"
+          />
         }
 
         <div class="mb-3">

@@ -21,7 +21,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ConfirmDialogComponent, type ConfirmDialogData, ToastService } from '@portfolio/console/shared/ui';
+import {
+  ConfirmDialogComponent,
+  type ConfirmDialogData,
+  ToastService,
+  MediaThumbPipe,
+} from '@portfolio/console/shared/ui';
 import { ServerErrorDirective } from '@portfolio/console/shared/util';
 import { filter, switchMap } from 'rxjs';
 import { MediaService } from '../media.service';
@@ -42,6 +47,7 @@ import { formatFileSize, getMimeTypeCategory } from '../media.constants';
     MatProgressSpinnerModule,
     MatTooltipModule,
     ServerErrorDirective,
+    MediaThumbPipe,
   ],
   templateUrl: './media.drawer.html',
   styleUrl: './media.drawer.scss',

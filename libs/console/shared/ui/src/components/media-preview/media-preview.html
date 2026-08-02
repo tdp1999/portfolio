@@ -1,0 +1,67 @@
+<div class="media-preview" [style.--media-preview-tile.px]="tileSize()">
+  @for (tile of tiles(); track tile.item.id; let i = $index) {
+    <figure class="media-preview__item">
+      @if (lightbox()) {
+        <button
+          type="button"
+          class="media-preview__frame media-preview__frame--interactive"
+          [style.aspect-ratio]="ratio() || null"
+          [attr.aria-label]="'Preview ' + tile.label"
+          (click)="open(i)"
+        >
+          <ng-container [ngTemplateOutlet]="thumb" [ngTemplateOutletContext]="{ $implicit: tile }" />
+        </button>
+      } @else {
+        <span class="media-preview__frame" [style.aspect-ratio]="ratio() || null">
+          <ng-container [ngTemplateOutlet]="thumb" [ngTemplateOutletContext]="{ $implicit: tile }" />
+        </span>
+      }
+
+      @if (showLabel()) {
+        <figcaption class="media-preview__label" [matTooltip]="tile.label" matTooltipShowDelay="400">
+          {{ tile.label }}
+        </figcaption>
+      }
+    </figure>
+  }
+</div>
+
+<ng-template #thumb let-tile>
+  @if (tile.item.url && (tile.item.mimeType ?? 'image/*' | isImage)) {
+    <img
+      class="media-preview__img"
+      [src]="tile.item.url | cloudinaryThumb: thumbTransform()"
+      [alt]="tile.alt"
+      loading="lazy"
+      decoding="async"
+    />
+  } @else {
+    <span class="media-preview__fallback">
+      <mat-icon>{{ tile.item.mimeType ?? '' | fileIcon }}</mat-icon>
+    </span>
+  }
+</ng-template>
+
+@if (lightbox()) {
+  <console-quick-look
+    [open]="isOpen()"
+    (openChange)="onOpenChange($event)"
+    [title]="active()?.label ?? overlayTitle()"
+    [hasPrev]="hasPrev()"
+    [hasNext]="hasNext()"
+    (prev)="prev()"
+    (next)="next()"
+  >
+    @if (active(); as tile) {
+      <figure class="media-preview__full">
+        <img [src]="tile.item.url | cloudinaryThumb: fullTransform" [alt]="tile.alt" />
+        <figcaption class="media-preview__full-meta">
+          <span class="media-preview__full-label">{{ tile.label }}</span>
+          @if (tile.item.filename && tile.item.filename !== tile.label) {
+            <span class="media-preview__full-sub">{{ tile.item.filename }}</span>
+          }
+        </figcaption>
+      </figure>
+    }
+  </console-quick-look>
+}
