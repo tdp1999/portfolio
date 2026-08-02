@@ -1,4 +1,14 @@
 /* landing-figure — image with hairline border + mono caps caption (E5 task 280) */
+
+/* A flex/grid item's default `min-width: auto` refuses to shrink below its content's
+ * minimum width. Paired with the nowrap caption further down, that would push a whole
+ * grid track wider instead of truncating: a 4:3 cell measured 1320px against its 265px
+ * sibling before this was added. `landing-gallery__cell` already sets this, but the
+ * clamp must not depend on every consumer remembering to. */
+:host {
+  min-width: 0;
+}
+
 .landing-figure {
   margin: 0;
   display: flex;
@@ -60,9 +70,24 @@
   min-height: 0;
 }
 
+/* ── Caption, and the optional one-line clamp ─────────────────────────
+ * A caption that wraps to four lines makes its cell taller than the one beside it and
+ * knocks a whole gallery row out of alignment. Holding it to one line fixes that, but
+ * only where a neighbour exists: a figure standing alone has nothing to misalign, so
+ * truncating it would cost information and buy nothing.
+ *
+ * Only the composing component knows whether there is a neighbour, so it decides, by
+ * setting the two custom properties below on (or above) the figure. Default is off.
+ * Same styling-hook pattern as `--figure-inline-max-h` here and
+ * `--landing-carousel-peek-basis` on the carousel. Turned on today by `gallery.scss`
+ * (multi-cell layouts only) and `carousel.scss` (every slide, since one flex track
+ * takes the height of its tallest slide).
+ *
+ * Nothing is lost when it fires: the full description lives in `alt`, which is what a
+ * screen reader announces, and the lightbox prints the caption unclamped. */
 .landing-figure__caption {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: var(--landing-figure-caption-flex-wrap, wrap);
   align-items: baseline;
   gap: 8px;
   font-family: var(--landing-font-mono);
@@ -73,15 +98,28 @@
   color: var(--landing-text-500);
 }
 
+/* Not conditional: all the shrinking must land on the text. Left to itself the FIG
+ * number is a shrinkable flex item whose min-content width is just `FIG.` (it may break
+ * at the space), so a long caption squeezed it to 34px and wrapped it onto two lines,
+ * making the caption taller than the very thing the clamp exists to prevent. */
 .landing-figure__number {
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--landing-text-400);
 }
 
 .landing-figure__sep {
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--landing-text-600);
 }
 
 .landing-figure__text {
   flex: 1 1 auto;
   min-width: 0;
+  white-space: var(--landing-figure-caption-white-space, normal);
+  /* Both are inert while the text wraps, and only bite once the custom property above
+   * switches it to `nowrap` — so they need no condition of their own. */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

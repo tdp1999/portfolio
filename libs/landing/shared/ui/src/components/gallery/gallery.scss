@@ -44,6 +44,14 @@
   min-width: 0;
 }
 
+/* Turn on `landing-figure`'s one-line caption clamp, but only once there is a second
+ * cell for a tall caption to misalign. A one-image gallery has no neighbour, so it
+ * keeps its caption whole. See the clamp block in `figure.scss`. */
+.landing-gallery:not([data-count='1']) .landing-gallery__cell {
+  --landing-figure-caption-flex-wrap: nowrap;
+  --landing-figure-caption-white-space: nowrap;
+}
+
 /* Fill-container mode — gallery stretches to parent height. Grid tracks become
  * equal 1fr rows so 1, 2, 3, or 4 images all distribute through the same area. */
 .landing-gallery--fill {

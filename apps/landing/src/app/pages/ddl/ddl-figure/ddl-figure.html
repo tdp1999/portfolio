@@ -117,6 +117,41 @@
         </div>
       </div>
 
+      <!-- Figure · caption clamp, and where it does NOT apply -->
+      <div>
+        <h3 id="caption-clamp" data-toc="Caption clamp" class="font-mono text-mono-md text-landing-text-500 mb-3">
+          caption clamp · a figure sharing a row holds its caption to one line and ellipses the overflow, so a long
+          caption can't make its cell taller than the one beside it and knock the row out of alignment
+        </h3>
+        <div class="max-w-3xl">
+          <landing-gallery [images]="clampDemoPair" />
+        </div>
+        <p class="font-sans text-body-sm text-landing-text-400 mt-4 max-w-2xl">
+          A figure standing on its own has no neighbour to misalign, so it is left alone and its caption wraps in full.
+          The same over-long caption, in a one-image gallery:
+        </p>
+        <div class="max-w-md mt-4">
+          <landing-gallery [images]="clampDemoSolo" />
+        </div>
+        <p class="font-sans text-body-sm text-landing-text-400 mt-4 max-w-2xl">
+          The composing component decides, by setting
+          <code class="font-mono text-mono-sm text-landing-text-300">--landing-figure-caption-flex-wrap</code> and
+          <code class="font-mono text-mono-sm text-landing-text-300">--landing-figure-caption-white-space</code> above
+          the figure. Default is off.
+          <code class="font-mono text-mono-sm text-landing-text-300">gallery.scss</code> turns it on for multi-cell
+          layouts only; <code class="font-mono text-mono-sm text-landing-text-300">carousel.scss</code> turns it on for
+          every slide, because one flex track takes the height of its tallest slide.
+        </p>
+        <p class="font-sans text-body-sm text-landing-text-400 mt-3 max-w-2xl">
+          Nothing is lost when it does fire: the full description stays in
+          <code class="font-mono text-mono-sm text-landing-text-300">alt</code>, which is what a screen reader
+          announces, and the lightbox prints the caption in full. Write
+          <code class="font-mono text-mono-sm text-landing-text-300">caption</code> as a short label and
+          <code class="font-mono text-mono-sm text-landing-text-300">alt</code> as a full sentence; they are two
+          different jobs.
+        </p>
+      </div>
+
       <!-- Figure · no caption -->
       <div>
         <h3 id="no-caption" data-toc="No caption" class="font-mono text-mono-md text-landing-text-500 mb-3">
@@ -172,6 +207,15 @@
         can refer back. Default to <code class="font-mono text-mono-sm text-landing-text-300">loading="lazy"</code>;
         only set <code class="font-mono text-mono-sm text-landing-text-300">[preload]="true"</code> for the single hero
         shot above the fold.
+      </p>
+      <p>
+        <strong class="text-landing-text-300">Caption and alt are not interchangeable.</strong>
+        <code class="font-mono text-mono-sm text-landing-text-300">caption</code> is a short label a sighted reader
+        sees; <code class="font-mono text-mono-sm text-landing-text-300">alt</code> is a full description a screen
+        reader announces. A figure that shares a row or a track (a multi-cell gallery, a carousel slide) clamps the
+        caption to one line, so a description pasted into
+        <code class="font-mono text-mono-sm text-landing-text-300">caption</code> will simply get cut off. A figure
+        standing on its own wraps in full, because there is nothing beside it to misalign.
       </p>
       <p>
         For images rendered inside prose (the

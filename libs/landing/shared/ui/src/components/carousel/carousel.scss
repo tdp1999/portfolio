@@ -43,6 +43,12 @@
   flex: 0 0 100%;
   min-width: 0;
   scroll-snap-align: start;
+
+  /* Turn on `landing-figure`'s one-line caption clamp. Unconditional here, unlike the
+   * gallery: every slide shares one flex track, so the track takes the height of the
+   * tallest slide and a single long caption pads every other slide. See `figure.scss`. */
+  --landing-figure-caption-flex-wrap: nowrap;
+  --landing-figure-caption-white-space: nowrap;
 }
 
 /* Content mode — projected card fills the slide so neighbours match height. */

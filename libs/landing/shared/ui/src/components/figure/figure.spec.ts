@@ -86,4 +86,24 @@ describe('FigureComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).toContain('landing-figure--inline');
   });
+
+  // The cropped modifier is what switches the image to object-fit: cover inside a
+  // ratio-locked frame, which is how every gallery cell and carousel slide keeps a
+  // uniform shape. It had no test until now.
+  it('should not carry the cropped modifier by default', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).not.toContain('landing-figure--cropped');
+  });
+
+  it('should add the cropped modifier when [aspectRatio] is set', () => {
+    fixture.componentRef.setInput('aspectRatio', '4 / 3');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).toContain('landing-figure--cropped');
+  });
+
+  it('should add the cropped modifier when [fill] is set', () => {
+    fixture.componentRef.setInput('fill', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.landing-figure')?.classList).toContain('landing-figure--cropped');
+  });
 });
