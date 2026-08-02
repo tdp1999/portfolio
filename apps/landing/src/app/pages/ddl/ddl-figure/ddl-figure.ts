@@ -5,9 +5,6 @@ import { Figure, Gallery, type GalleryImage, type InPageSection } from '@portfol
 import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { DdlSection } from '../ddl-section/ddl-section';
 
-const LONG_CAPTION =
-  'This caption runs far longer than the cell is wide, so it truncates instead of wrapping onto four lines';
-
 @Component({
   selector: 'landing-ddl-figure',
   standalone: true,
@@ -26,7 +23,8 @@ export class DdlFigure {
     {
       url: 'https://placehold.co/640x480/1a2030/cbd5e1.png?text=Long+caption',
       alt: 'A gallery cell whose caption runs longer than the cell is wide',
-      caption: LONG_CAPTION,
+      caption:
+        'This caption runs far longer than the cell is wide, so it truncates instead of wrapping onto four lines',
     },
     {
       url: 'https://placehold.co/640x480/11151c/cbd5e1.png?text=Short+caption',
