@@ -265,6 +265,7 @@
 - [x] 388-landing-i18n-consolidation - Gom static UI copy landing về 1 dictionary `LANDING_COPY` (TS `as const`, không phải JSON — xem ADR-028) + pipe `landingCopy` / `LandingCopyService`; giữ `<landing-t>` cho HTML-rich, giữ `translatable` cho data API. **Xong cả 5 phase + cả 4 batch dịch:** 476 key, 4 ternary còn lại đều là logic, 4 test guardrail trong `landing-copy-contract.spec.ts` (ternary / cặp hằng EN-VI / object `{en,vi}` inline / em-dash trong prose template). Batch 4 (legal) là audit chứ không phải dịch mới — bắt được `gross negligence` bị dịch thành `cố ý nghiêm trọng` (nghĩa đối lập, ảnh hưởng pháp lý). **Chưa mở task, chỉ ghi nhận:** per-locale URL + hreflang + `index.html` locale-aware (SSR render meta EN vì `readInitial()` trả `'en'` trên server) (L) (standalone) - Completed 2026-07-28
 - [x] 397-landing-i18n-post-review-hardening - Follow-up của 388 sau vòng review 7 ý. **Bug người dùng báo:** toggle ngôn ngữ chết trên `/privacy` + `/terms` (2 nguồn locale rời nhau; `useLegalPage.setLocale` chưa từng được gọi ở commit nào) → URL giờ là *phản chiếu* của locale site, `?lang=` deep link vẫn chạy, canonical/hreflang vẫn đúng. **SSR:** `readInitial()` đọc cookie + `Accept-Language` (ADR-029), `Vary` header, 3 route localized đổi Prerender→Server vì prerender không có request. **Head:** `LandingMetaService.apply()` sinh 11 tag từ 1 khai báo (ADR-030) — trước đó `twitter:*` đóng băng ở default EN, `og:url` luôn trỏ homepage. **Perf:** 4 computed lồng trong `contact.ts`, 2 method gọi từ template trong `blog.share-row.ts`. **Type:** `CopyValues<K>` bắt sai/thiếu `{slot}` lúc compile, thay 21 chỗ `.replace()`; guardrail thứ 5 + test trần kích thước dictionary. **Lint:** lần đầu chạy sau 388 — 3 lỗi module-boundary do chính 388 gây ra (data-access import dictionary từ shared/ui) sửa bằng cách dời file, không sửa rule; workspace giờ **0 error** trên 43 project (còn 20 warning, toàn bộ ở 3 lib console không liên quan). Lượt review trước commit bắt thêm **5 bug thật, 2 trong đó do chính task này tạo ra** (reset head khi bấm TOC, mất số nhiều ở /ddl) — đã sửa hết. **Đã validate trên browser (user, 2026-07-28)** — chính là bước 388 bỏ qua. Kéo theo 1 fix: `AboutPage.presetLocale` chỉ seed `localStorage` (browser đọc) trong khi server giờ đọc cookie → test VI sẽ SSR ra EN rồi mới nhảy; nay seed cả hai qua `addCookies`. **Chưa chạy:** e2e suite (cần dev server) (L) (standalone) - Completed 2026-07-28
 - [ ] 387-railway-memory-cost-debug - Debug & tối ưu chi phí Memory trên Railway; Umami stack (~$3/mo, mới thêm 02/07) là thủ phạm chính, +điều tra spike Dashboard API 569 MB & App Sleeping (M) (standalone)
+- [ ] 389-learning-pesticide-clustering-kata - **[learning]** Bài tập Learning Loop (domain Testing, buổi 4), không phải yêu cầu sản phẩm: làm mới 1 spec đã cùn trong `portfolio` để luyện defect clustering (#4) + pesticide paradox (#5). Oracle do người học quyết, AI chỉ nháp ứng viên (S) (standalone)
 - [x] 065-optimize-landing-serve-performance - Dev-loop perf scan; 113s symptom was Windows-env-specific (gone on macOS), baseline recorded, lint cache restored (M) (standalone) - Completed 2026-06-22
 - [x] 194-dashboard-backend-apis - **Descoped 2026-06-22** → shipped real `GET /api/dashboard/stats` (CQRS read-model + `DashboardService` + console-home wired); cut Search + Notifications, deferred Activity. Repo spec ✅ → `tasks-done/other/` (S)
 - [x] 303-migrate-landing-badge - Replace `landing-badge` with chips + delete the component (S) (standalone) ✓
@@ -346,6 +347,7 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 - [ ] 323-landing-llms-txt (S)
 - [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
+- [ ] 398-localized-gallery-caption (L) (standalone — **blocked**: gallery captions reuse `ProjectImage.alt` and are English-only; waiting on the in-flight console/API project mapper+presenter+DTO work. Interim CSS clamp already shipped.)
 
 ## Done — Portfolio About (epic COMPLETED 2026-07-27 → `plans-done/epic-portfolio-about.md`)
 
@@ -457,11 +459,13 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 | Done (archived)   | 373     |
 | In Progress       | 4       |
 | Pending           | 5       |
-| Blocked           | 0       |
-| **Total Created** | **382** |
+| Blocked           | 1       |
+| **Total Created** | **383** |
 | Epics completed   | 52      |
 
 _**Counts reconciled to task files via `/ctx:sync` on 2026-07-28**, replacing the running adjustment note that had accumulated since 2026-07-24. Table now matches the filesystem exactly: 373 files in `tasks-done/`, 9 in `tasks/` (sau khi 381 đóng cùng ngày). Active breakdown — **pending (5):** 323, 328, 382, 387, 389; **in-progress (4 sau khi 381 đóng cùng ngày):** 361 (content-authoring master), 383 (owner manual-testing), 386 (e2e-drift-cleanup), 396 (ddl-motion). The 4-vs-5 in-progress drift called out on 2026-07-27 was exactly this: 381 and 396 were uncounted, and 389/396 carried no `## Status` heading at all until this sync added one._
+
+_**2026-08-02 — `/ctx:sync`.** Thêm task **398-localized-gallery-caption** (blocked, L): caption gallery đang mượn `ProjectImage.alt` nên chỉ có tiếng Anh, chờ đợt sửa console/API `project.mapper`+`presenter`+DTO đang dở ở session khác. Bổ sung **389** vào mục Standalone Tasks — nó có file task và đã được đếm trong bảng thống kê từ 2026-07-28 nhưng chưa từng có dòng nào trong `progress.md`. Không có task nào đủ điều kiện archive lượt này; không có dòng status nào dị dạng. **Chưa xử lý, cần bạn quyết:** `epic-portfolio-rich-text-editor` vẫn `broken-down` — toàn bộ 15 task 305–319 đã archive, nhưng 15 tiêu chí thành công cấp epic chưa tick ô nào và hai task RTE 382/383 vẫn đang mở, nên sync không tự archive epic này._
 
 _**2026-07-28 — hai lỗi dữ liệu do plugin `ctx`, đã sửa cả dữ liệu lẫn nguyên nhân.**_
 
