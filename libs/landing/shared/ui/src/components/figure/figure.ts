@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
-import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
+import { buildCloudinarySrcset, buildCloudinaryWidthSet } from '@portfolio/landing/shared/util';
 
 @Component({
   selector: 'landing-figure',
@@ -15,6 +15,7 @@ import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
         <img
           [attr.src]="resolvedSrc()"
           [attr.srcset]="resolvedSrcset() || null"
+          [attr.sizes]="resolvedSrcset() && sizes() ? sizes() : null"
           [attr.alt]="alt()"
           [attr.loading]="preload() ? null : 'lazy'"
           [attr.fetchpriority]="preload() ? 'high' : null"
@@ -64,6 +65,14 @@ export class Figure {
    */
   readonly cloudinaryWidth = input<number>(0);
   /**
+   * `sizes` for the `<img>`, e.g. `'(min-width: 64rem) 340px, 100vw'`. When set
+   * alongside `cloudinaryWidth`, the srcset switches from fixed 1×/2× variants to a
+   * `w`-descriptor ladder and `cloudinaryWidth` is read as the WIDEST the image is
+   * ever laid out at. That is the only form that tracks a container which is a
+   * different width at different breakpoints; the 1×/2× form bakes in one guess.
+   */
+  readonly sizes = input<string>('');
+  /**
    * In-prose reading variant. The image is capped at its real pixel size (never
    * upscaled) AND at `--figure-inline-max-h` (default 72vh) so a tall portrait
    * can't force endless scrolling; the framed image is centred in the column.
@@ -80,7 +89,7 @@ export class Figure {
     if (!w) return null;
     const s = this.src();
     if (!s) return null;
-    return buildCloudinarySrcset(s, w);
+    return this.sizes() ? buildCloudinaryWidthSet(s, w) : buildCloudinarySrcset(s, w);
   });
 
   protected readonly resolvedSrc = computed(() => this.autoSet()?.src || this.src());

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { Figure } from '../figure/figure';
 import { LightboxDirective } from '../lightbox';
 import { nextGalleryGroup, ratioFor } from './gallery.util';
+import { cellSizing } from './gallery.sizing';
 
 /**
  * `landing-gallery` — composes `landing-figure` cells into a curated layout
@@ -43,7 +44,8 @@ import { nextGalleryGroup, ratioFor } from './gallery.util';
             [figureNumber]="numbered() ? i + 1 : null"
             [aspectRatio]="fillContainer() ? '' : cell.ratio"
             [fill]="fillContainer()"
-            [cloudinaryWidth]="cellWidth()"
+            [cloudinaryWidth]="cell.sizing.maxCss"
+            [sizes]="cell.sizing.sizes"
             [lightbox]="lightbox()"
             [lightboxGroup]="effectiveGroup()"
             [lightboxFullSrc]="cell.img.fullSrc ?? ''"
@@ -108,12 +110,7 @@ export class Gallery {
       img,
       area: `cell-${i + 1}`,
       ratio: ratioFor(count, i),
+      sizing: cellSizing(count, i),
     }));
   });
-
-  /** Approximate rendered cell width. The gallery sits in a wide container (max
-   * ~960px); for layout-1 a cell fills the row, for layout-2/3/4 a cell takes
-   * roughly half. 720 is a safe upper bound that still gives a useful 2× variant
-   * without serving full-resolution screenshots to every visitor. */
-  protected readonly cellWidth = computed<number>(() => (this.layoutCount() === 1 ? 960 : 720));
 }

@@ -38,6 +38,8 @@
               [caption]="img.caption ?? ''"
               [figureNumber]="numbered() ? i + 1 : null"
               [aspectRatio]="aspectRatio()"
+              [cloudinaryWidth]="slideMaxWidth()"
+              [sizes]="slideSizes()"
               [lightbox]="lightbox()"
               [lightboxGroup]="effectiveGroup()"
               [lightboxFullSrc]="img.fullSrc ?? ''"

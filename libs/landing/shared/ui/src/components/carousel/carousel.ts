@@ -97,6 +97,15 @@ export class Carousel {
   readonly lightbox = input<boolean>(false);
   /** Lightbox group key. Defaults to a per-instance id so carousels don't merge. */
   readonly lightboxGroup = input<string>('');
+  /**
+   * Widest a slide is ever laid out at, in CSS px. Measured on landing home: a slide
+   * is the viewport minus the page gutter, so 342 at 390, 704 at 768, 959 at 1023 —
+   * hence a 960 cap. Before this existed the carousel passed no width at all, so a
+   * phone downloaded the full-resolution original of every slide.
+   */
+  readonly slideMaxWidth = input<number>(960);
+  /** `sizes` for a slide. Default mirrors "viewport minus the page gutter". */
+  readonly slideSizes = input<string>('(min-width: 64rem) 960px, calc(100vw - 48px)');
 
   // ── Model ─────────────────────────────────────────────────────────
   /** Active slide index. Two-way so a consumer can drive/observe it. */
