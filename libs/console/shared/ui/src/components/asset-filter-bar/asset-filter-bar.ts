@@ -50,6 +50,12 @@ export class AssetFilterBar implements OnInit {
   readonly sort = input<SortOption>(DEFAULT_SORT);
   readonly foldersAvailable = input<readonly UploadFolder[]>(UPLOAD_FOLDERS);
   readonly showMimeChips = input(true);
+  /**
+   * Narrows the search/folder/sort controls so the bar can share a row with a
+   * sibling (the picker puts the recently-used strip beside it). Purely a width
+   * change — no control is hidden.
+   */
+  readonly compact = input(false);
   readonly debounce = input(FILTER_DEBOUNCE_MS);
 
   readonly searchChange = output<string>();

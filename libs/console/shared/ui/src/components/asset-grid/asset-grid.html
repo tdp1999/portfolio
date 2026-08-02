@@ -50,6 +50,8 @@
           [attr.aria-selected]="selected"
           [attr.aria-label]="item.originalFilename"
           [attr.data-media-id]="item.id"
+          [matTooltip]="item.originalFilename"
+          matTooltipShowDelay="400"
           [tabindex]="focusedIndex() === idx ? 0 : -1"
           (click)="onItemClick(item, idx)"
           (dblclick)="onItemDblClick(item)"

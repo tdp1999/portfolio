@@ -3,61 +3,97 @@
     <h3 id="media-picker-title" class="picker__title">
       {{ data.mode === 'single' ? 'Select Media' : 'Select Media Files' }}
     </h3>
+    <console-segmented-control
+      class="picker__mode"
+      [options]="tabOptions"
+      [ngModel]="activeTab()"
+      (ngModelChange)="activeTab.set($event)"
+    />
     <button type="button" mat-icon-button class="picker__close" aria-label="Close dialog" (click)="handleClose()">
       <mat-icon>close</mat-icon>
     </button>
   </header>
 
-  <div class="picker__mode">
-    <console-segmented-control [options]="tabOptions" [ngModel]="activeTab()" (ngModelChange)="activeTab.set($event)" />
-  </div>
-
   @if (activeTab() === 'library') {
     <mat-dialog-content class="picker__content">
-      <console-recently-used-strip
-        [items]="recentItems()"
-        [selectedIds]="selectedIdsArray()"
-        (pick)="onRecentPick($event)"
-      />
+      <div class="picker__body" [class.picker__body--with-rail]="showSelectionRail()">
+        <div class="picker__main">
+          <div class="picker__toolbar">
+            <console-recently-used-strip
+              [items]="recentItems()"
+              [selectedIds]="selectedIdsArray()"
+              (pick)="onRecentPick($event)"
+            />
+            <console-asset-filter-bar
+              [search]="search()"
+              [mimeGroup]="mimeGroup()"
+              [folder]="folder()"
+              [sort]="sort()"
+              [showMimeChips]="!data.mimeFilter && !data.mimeGroup"
+              [compact]="true"
+              (searchChange)="onSearchChange($event)"
+              (mimeGroupChange)="onMimeGroupChange($event)"
+              (folderChange)="onFolderChange($event)"
+              (sortChange)="onSortChange($event)"
+              (clearAll)="onClearFilters()"
+            />
+            <button
+              type="button"
+              mat-icon-button
+              class="picker__view-toggle"
+              [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+              (click)="onViewModeToggle()"
+            >
+              <mat-icon>{{ viewMode() === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
+            </button>
+          </div>
 
-      <div class="picker__toolbar">
-        <console-asset-filter-bar
-          [search]="search()"
-          [mimeGroup]="mimeGroup()"
-          [folder]="folder()"
-          [sort]="sort()"
-          [showMimeChips]="!data.mimeFilter && !data.mimeGroup"
-          (searchChange)="onSearchChange($event)"
-          (mimeGroupChange)="onMimeGroupChange($event)"
-          (folderChange)="onFolderChange($event)"
-          (sortChange)="onSortChange($event)"
-          (clearAll)="onClearFilters()"
-        />
-        <button
-          type="button"
-          mat-icon-button
-          class="picker__view-toggle"
-          [attr.aria-label]="viewMode() === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
-          (click)="onViewModeToggle()"
-        >
-          <mat-icon>{{ viewMode() === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
-        </button>
+          <console-asset-grid
+            class="picker__grid"
+            [class.picker__grid--highlight]="highlightActive()"
+            [items]="items()"
+            [selectedIds]="selectedIdsArray()"
+            [mode]="data.mode"
+            [viewMode]="viewMode()"
+            [loading]="loading()"
+            [currentPage]="page()"
+            [totalPages]="totalPages()"
+            (selectionChange)="onSelectionChange($event)"
+            (itemActivated)="onItemActivated($event)"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+
+        @if (showSelectionRail()) {
+          <aside class="picker__rail" aria-labelledby="media-picker-rail-title">
+            <h4 id="media-picker-rail-title" class="picker__rail-title text-stat-label">
+              Selected ({{ selected().size }})
+            </h4>
+            @if (selectedDetails().length) {
+              <ul class="picker__rail-list">
+                @for (detail of selectedDetails(); track detail.id) {
+                  <li class="picker__rail-item">
+                    <span class="picker__rail-name" [matTooltip]="detail.name + ' · ' + detail.meta">
+                      {{ detail.name }}
+                    </span>
+                    <button
+                      type="button"
+                      mat-icon-button
+                      class="picker__rail-remove"
+                      [attr.aria-label]="'Deselect ' + detail.name"
+                      (click)="deselect(detail.id)"
+                    >
+                      <mat-icon class="icon-sm">close</mat-icon>
+                    </button>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="picker__rail-empty text-caption">Nothing selected yet.</p>
+            }
+          </aside>
+        }
       </div>
-
-      <console-asset-grid
-        class="picker__grid"
-        [class.picker__grid--highlight]="highlightActive()"
-        [items]="items()"
-        [selectedIds]="selectedIdsArray()"
-        [mode]="data.mode"
-        [viewMode]="viewMode()"
-        [loading]="loading()"
-        [currentPage]="page()"
-        [totalPages]="totalPages()"
-        (selectionChange)="onSelectionChange($event)"
-        (itemActivated)="onItemActivated($event)"
-        (pageChange)="onPageChange($event)"
-      />
     </mat-dialog-content>
   } @else {
     <mat-dialog-content class="picker__content picker__content--upload">
@@ -77,23 +113,81 @@
         [multiple]="data.mode === 'multi'"
         (uploadsComplete)="onUploadsComplete($event)"
       />
+
+      @if (justUploaded().length) {
+        <section class="picker__review" aria-labelledby="media-picker-review-title">
+          <h4 id="media-picker-review-title" class="picker__review-title text-stat-label">
+            Just uploaded ({{ justUploaded().length }})
+          </h4>
+          @for (item of justUploaded(); track item.id) {
+            <article class="picker__review-card">
+              <img class="picker__review-thumb" [src]="item.url | mediaThumb: 64" [alt]="item.originalFilename" />
+
+              <div class="picker__review-body">
+                <p class="picker__review-name" [matTooltip]="item.originalFilename">
+                  {{ item.originalFilename }}
+                </p>
+                <p class="picker__review-meta text-caption">{{ metaFor(item) }}</p>
+
+                <div class="picker__review-fields">
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Caption</mat-label>
+                    <input
+                      matInput
+                      [value]="item.caption ?? ''"
+                      (blur)="onReviewFieldBlur(item.id, 'caption', $any($event.target).value)"
+                    />
+                  </mat-form-field>
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Alt text</mat-label>
+                    <input
+                      matInput
+                      [value]="item.altText ?? ''"
+                      (blur)="onReviewFieldBlur(item.id, 'altText', $any($event.target).value)"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                mat-icon-button
+                class="picker__review-dismiss"
+                [attr.aria-label]="'Dismiss ' + item.originalFilename"
+                matTooltip="Remove from this list (the file stays in the library)"
+                (click)="dismissUploaded(item.id)"
+              >
+                <mat-icon class="icon-sm">close</mat-icon>
+              </button>
+            </article>
+          }
+        </section>
+      }
     </mat-dialog-content>
   }
 
   <mat-dialog-actions class="picker__footer">
     <div class="picker__footer-left">
       <span class="picker__hint text-caption"> ↑↓←→ navigate · Space select · Enter insert · Esc close </span>
-      <span class="picker__count text-stat-label" aria-live="polite">
-        @if (selected().size > 0) {
-          {{ selected().size }} selected
-        }
-      </span>
+      @if (!showSelectionRail()) {
+        <span class="picker__summary text-stat-label" aria-live="polite">
+          @if (selectionSummary(); as summary) {
+            {{ summary }}
+          }
+        </span>
+      }
     </div>
     <div class="picker__footer-right">
       <button type="button" mat-stroked-button (click)="handleClose()">Cancel</button>
-      <button type="button" mat-flat-button color="primary" [disabled]="selected().size === 0" (click)="confirm()">
-        {{ ctaLabel() }}
-      </button>
+      @if (activeTab() === 'upload' && justUploaded().length) {
+        <button type="button" mat-flat-button color="primary" (click)="useUploadedFiles()">
+          Use {{ justUploaded().length === 1 ? 'this file' : justUploaded().length + ' files' }}
+        </button>
+      } @else {
+        <button type="button" mat-flat-button color="primary" [disabled]="selected().size === 0" (click)="confirm()">
+          {{ ctaLabel() }}
+        </button>
+      }
     </div>
   </mat-dialog-actions>
 </div>

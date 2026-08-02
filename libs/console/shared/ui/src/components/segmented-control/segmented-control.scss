@@ -27,9 +27,40 @@
   min-width: 0;
 }
 
-/* The label is the element that actually has to give way. Without `min-width: 0`
-   a flex item refuses to shrink below its content width. */
+/* The label is the element that actually has to give way, AND the element that
+   sizes the segment vertically. Both jobs are done here with an explicit box.
+
+   WHY NOT the stock inline-block: Material gives the label no height — it sizes
+   the segment purely through `line-height: var(--mat-button-toggle-height)`. That
+   only holds while the label's baseline behaves normally. Two things break it:
+
+   1. `overflow: hidden` (needed for the ellipsis above) moves an inline-block's
+      baseline to its BOTTOM MARGIN EDGE, so the whole 40px box sits above the
+      button's baseline and the parent strut's descender (~5px) is added below it.
+   2. Material's own `.mat-button-toggle-label-content > * { vertical-align: middle }`
+      pushes the inner span off the baseline, inflating the inner line box ~2px.
+
+   Net effect: a 40px token rendered a 46.7px segment (56.7px track). No height,
+   min-height, or line-height anywhere declared the extra 6.7px — it was emergent
+   inline layout, which is exactly why grepping for it finds nothing. A flex box
+   with an explicit height takes the baseline out of the sizing path entirely, so
+   the segment measures exactly `--mat-button-toggle-height`. */
 :host ::ng-deep .segmented-control .mat-button-toggle .mat-button-toggle-label-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--mat-button-toggle-height, 40px);
+  /* The 40px line-height is no longer the sizing mechanism; leaving it would make
+     the text box taller than the flex line and reintroduce the overflow. */
+  line-height: normal;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Ellipsis moves to the text node — `text-overflow` has no effect on a flex
+   container, only on the block/inline box that actually holds the text. */
+:host ::ng-deep .segmented-control .mat-button-toggle .mat-button-toggle-label-content > span {
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;

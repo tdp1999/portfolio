@@ -15,6 +15,7 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   CloudinaryPdfThumbPipe,
   CloudinaryThumbPipe,
@@ -33,6 +34,7 @@ import { AssetGridMode, AssetGridViewMode, MediaItem } from './asset-grid.types'
     MatIconModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatTooltipModule,
     Skeleton,
     CloudinaryThumbPipe,
     CloudinaryPdfThumbPipe,

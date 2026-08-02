@@ -42,8 +42,10 @@ import type { MediaItem } from '@portfolio/console/shared/util';
     .recent-strip {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 8px 0;
+      gap: 8px;
+      /* No vertical padding: the strip shares the toolbar row, which already owns
+         the rhythm. Its old standalone block cost 113px of dialog height. */
+      padding: 0;
     }
     .recent-strip__label {
       flex-shrink: 0;
@@ -56,8 +58,8 @@ import type { MediaItem } from '@portfolio/console/shared/util';
       gap: 8px;
     }
     .recent-strip__item {
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       padding: 0;
       border: 2px solid var(--color-border);
       border-radius: 8px;

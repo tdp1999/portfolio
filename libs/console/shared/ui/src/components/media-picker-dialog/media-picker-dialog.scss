@@ -10,11 +10,18 @@
   height: min(80vh, 720px);
 }
 
+/* Title, mode switch, and close share one row. The mode switch used to own a
+   64px row of its own that was empty across its whole right half, while this
+   header row was equally empty to the right of a short title. */
 .picker__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
   padding: var(--mat-dialog-headline-padding);
+}
+
+.picker__mode {
+  margin-left: auto;
 }
 
 .picker__title {
@@ -29,18 +36,38 @@
   flex-shrink: 0;
 }
 
-.picker__mode {
-  padding: 0 20px 8px;
-}
-
 .picker__content {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow: auto;
+  /* The grid owns its own scrolling; letting the dialog body scroll too produced
+     two nested scrollbars for one list. */
+  overflow: hidden;
   /* padding inherited from --mat-dialog-content-padding */
+}
+
+.picker__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 16px;
+}
+
+.picker__main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* The upload tab has no inner scroll region of its own, so it keeps the scroll
+   the library tab delegates to its grid. */
+.picker__content--upload {
+  gap: 12px;
+  overflow-y: auto;
 }
 
 .picker__upload-folder {
@@ -54,26 +81,35 @@
   width: 200px;
 }
 
+/* Recently-used + filters + view toggle on one row. The recent strip used to be
+   a standalone 113px block whose right half was empty. It wraps to its own line
+   only when the dialog is genuinely too narrow. */
 .picker__toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
 
+  console-recently-used-strip {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
   console-asset-filter-bar {
-    flex: 1;
+    flex: 1 1 320px;
     min-width: 0;
   }
 }
 
 .picker__view-toggle {
   flex-shrink: 0;
-  margin-top: 4px;
 }
 
 .picker__grid {
   flex: 1;
   min-height: 0;
   display: block;
+  overflow-y: auto;
 }
 
 .picker__grid--highlight {
@@ -124,4 +160,145 @@
 
 .picker__count {
   min-height: 16px;
+}
+
+/* Single mode: one line is enough, because one asset is the maximum. Kept to a
+   single line on purpose — a growing footer eats the result area, which is the
+   scarcest space in this dialog. */
+.picker__summary {
+  min-height: 16px;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Multi mode: the selection gets a column instead of a footer list, so picking 20
+   files neither scrolls the footer nor pushes the actions off-screen. */
+.picker__rail {
+  flex: 0 0 240px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 16px;
+  border-left: 1px solid var(--color-border);
+}
+
+.picker__rail-title {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.picker__rail-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.picker__rail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.picker__rail-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker__rail-remove {
+  flex-shrink: 0;
+}
+
+.picker__rail-empty {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* Post-upload review. The dialog used to jump to the Library tab the instant an
+   upload finished, so the author never saw what landed and had nowhere to write the
+   caption/alt text. These cards keep the new assets in front of them until they
+   explicitly cross over. */
+.picker__review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.picker__review-title {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.picker__review-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-elevated);
+}
+
+.picker__review-thumb {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--color-surface-alt);
+}
+
+.picker__review-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.picker__review-name {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker__review-meta {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.picker__review-fields {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+
+  mat-form-field {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.picker__review-dismiss {
+  flex-shrink: 0;
 }

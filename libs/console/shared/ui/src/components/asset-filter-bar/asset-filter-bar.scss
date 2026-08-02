@@ -25,6 +25,22 @@
     margin-left: auto;
   }
 
+  /* Compact: the bar shares its row with a sibling, so the controls give up the
+     width they do not strictly need. Same controls, smaller footprint. */
+  &--compact {
+    @apply py-0;
+
+    .asset-filter-bar__search {
+      flex: 1 1 160px;
+      min-width: 160px;
+    }
+
+    .asset-filter-bar__folder,
+    .asset-filter-bar__sort {
+      width: 148px;
+    }
+  }
+
   &__chips {
     @apply flex flex-wrap gap-2;
   }
