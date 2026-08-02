@@ -24,6 +24,7 @@ when its contract changes. (The dated coverage audit lives in the epic, not here
 | `chips/chip-select.md`       | One-of-N, always set (`FormControl<Enum>`).                                                                                                                                      | `patterns/chip-toggles`                                       |
 | `chips/chip-toggle-group.md` | Many-of-N (`FormControl<string[]>`).                                                                                                                                             | `patterns/chip-toggles`                                       |
 | `chips/chip-boolean.md`      | On/off single concept (`FormControl<boolean>`).                                                                                                                                  | `patterns/chip-toggles`                                       |
+| `media-preview.md`           | One way to show a stored asset; label ladder `caption → filename → altText`; tile-sized fetch; one Quick Look group per list.                                                    | `patterns/image-lightbox`                                     |
 | `record-view/_overview.md`   | `console-record-*` read chassis; slot model + 3-layer logic split.                                                                                                               | `patterns/read-view-chassis`, `patterns/record-detail-layout` |
 
 ## Feature composites (not shared-barrel exports)

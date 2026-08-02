@@ -15,29 +15,29 @@
 
 Use this table at every point of decision. Ask: "What is the relationship between these two elements?"
 
-| Relationship | Tailwind class | px | Example |
-|---|---|---|---|
-| Icon → its label | `gap-2` | 8 | Scrollspy icon + text, button icon + text |
-| Bilingual field pair (EN / VI) | `gap-3` | 12 | Two mat-form-fields for the same field |
-| **Fields within a form group** | `gap-4` | 16 | Name EN + Name VI, or unrelated adjacent fields |
-| **Between form groups / subsections** | `gap-6` | 24 | "Basic info" group → "Display name" group |
-| **Between major sections / cards** | `gap-8` | 32 | Section card → section card (baked into `long-form-layout`) |
-| Between independent page regions | `gap-12` | 48 | Page header → scrollspy+content area |
+| Relationship                          | Tailwind class | px  | Example                                                     |
+| ------------------------------------- | -------------- | --- | ----------------------------------------------------------- |
+| Icon → its label                      | `gap-2`        | 8   | Scrollspy icon + text, button icon + text                   |
+| Bilingual field pair (EN / VI)        | `gap-3`        | 12  | Two mat-form-fields for the same field                      |
+| **Fields within a form group**        | `gap-4`        | 16  | Name EN + Name VI, or unrelated adjacent fields             |
+| **Between form groups / subsections** | `gap-6`        | 24  | "Basic info" group → "Display name" group                   |
+| **Between major sections / cards**    | `gap-8`        | 32  | Section card → section card (baked into `long-form-layout`) |
+| Between independent page regions      | `gap-12`       | 48  | Page header → scrollspy+content area                        |
 
 **Rule of thumb:** each level up doubles the gap. Violating this collapses hierarchy.
 
 ### What's already baked in — do NOT re-add
 
-| Primitive | What it already applies |
-|---|---|
-| `console-section-card` | `p-6` (24px) header + form + footer padding |
-| `console-section-card` | header zone (`--color-surface-elevated`) + form zone (`--color-surface`) + footer zone (`--color-surface-elevated`) — three distinct visual bands |
-| `console-section-card` | `border: 1px solid var(--color-border)` + `border-radius: 12px` — do NOT add extra borders inside |
-| `console-section-card` | form content capped at `max-width: 672px` (max-w-2xl) |
-| `console-long-form-layout` | `gap-8` (32px) between section cards — requires `<div content class="flex flex-col gap-8">` wrapper in the page |
-| Angular Material density `-2` | Label-to-input padding inside `mat-form-field` |
+| Primitive                     | What it already applies                                                                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `console-section-card`        | `p-6` (24px) header + form + footer padding                                                                                                       |
+| `console-section-card`        | header zone (`--color-surface-elevated`) + form zone (`--color-surface`) + footer zone (`--color-surface-elevated`) — three distinct visual bands |
+| `console-section-card`        | `border: 1px solid var(--color-border)` + `border-radius: 12px` — do NOT add extra borders inside                                                 |
+| `console-section-card`        | form content capped at `max-width: 672px` (max-w-2xl)                                                                                             |
+| `console-long-form-layout`    | `gap-8` (32px) between section cards — requires `<div content class="flex flex-col gap-8">` wrapper in the page                                   |
+| Angular Material density `-4` | Label-to-input padding inside `mat-form-field`                                                                                                    |
 
-Do not add padding/gap **inside** `mat-form-field` — Material already handles it at density `-2`.
+Do not add padding/gap **inside** `mat-form-field` — Material already handles it at density `-4`.
 
 ---
 
@@ -45,16 +45,16 @@ Do not add padding/gap **inside** `mat-form-field` — Material already handles 
 
 All classes live in `base/components.scss`. Use exactly these; do not compose ad-hoc.
 
-| Slot | Class | Looks like |
-|---|---|---|
-| Page H1 | `.text-page-title` | 30px bold, tight tracking |
-| Section card title | `.text-section-heading` | 18px semibold |
-| Card/dialog header | `.text-card-title` | 16px semibold |
-| Description / helper text | `.text-body` + `text-text-secondary` | 14px, gray |
-| Form field label (custom) | `.text-body` | 14px, primary text |
-| Timestamp, hint, caption | `.text-caption` | 12px, muted |
-| Scrollspy label | `.text-body` (14px) | Already set in `.scrollspy-rail__item` |
-| Status badge | `.text-badge` | 10px bold uppercase |
+| Slot                      | Class                                | Looks like                             |
+| ------------------------- | ------------------------------------ | -------------------------------------- |
+| Page H1                   | `.text-page-title`                   | 30px bold, tight tracking              |
+| Section card title        | `.text-section-heading`              | 18px semibold                          |
+| Card/dialog header        | `.text-card-title`                   | 16px semibold                          |
+| Description / helper text | `.text-body` + `text-text-secondary` | 14px, gray                             |
+| Form field label (custom) | `.text-body`                         | 14px, primary text                     |
+| Timestamp, hint, caption  | `.text-caption`                      | 12px, muted                            |
+| Scrollspy label           | `.text-body` (14px)                  | Already set in `.scrollspy-rail__item` |
+| Status badge              | `.text-badge`                        | 10px bold uppercase                    |
 
 **Decision rule:** if it labels a section card → `.text-section-heading`. If it describes/helps → `.text-body text-text-secondary`. If it's fine print → `.text-caption`.
 
@@ -62,12 +62,12 @@ All classes live in `base/components.scss`. Use exactly these; do not compose ad
 
 ## Surface + Text Pairings
 
-| Surface token | Tailwind bg | Text to use | Do NOT use |
-|---|---|---|---|
-| `--color-background` | `bg-background` | `text-text`, `text-text-secondary` | `text-text-muted` for body copy |
-| `--color-surface-elevated` | — (section card bg) | `text-text`, `text-text-secondary` | hardcoded hex |
-| Inside error banner | `bg-error-container` | `text-error` (via token) | `text-text-muted` |
-| Inside success label | — | `text-success` (via token) | — |
+| Surface token              | Tailwind bg          | Text to use                        | Do NOT use                      |
+| -------------------------- | -------------------- | ---------------------------------- | ------------------------------- |
+| `--color-background`       | `bg-background`      | `text-text`, `text-text-secondary` | `text-text-muted` for body copy |
+| `--color-surface-elevated` | — (section card bg)  | `text-text`, `text-text-secondary` | hardcoded hex                   |
+| Inside error banner        | `bg-error-container` | `text-error` (via token)           | `text-text-muted`               |
+| Inside success label       | —                    | `text-success` (via token)         | —                               |
 
 **WCAG AA floor:** `text-text-secondary` (`#4b5563` light / `#94a3b8` dark) on `--color-surface-elevated` passes 4.5:1.  
 `text-text-muted` is for captions only — never use it for body copy or field descriptions.
@@ -83,10 +83,10 @@ set their own padding (the shell already applies `p-8`). Two widths only:
 - `--console-page-max` = **1440px** — lists + forms (content that needs the full width, incl. a section rail).
 - `--console-reading-max` = **1200px** — detail pages (narrower reading column).
 
-| Context | Rule |
-|---|---|
-| CRUD list / dashboard page | Boxed 1440, centred. Baked into `.crud-page` (keeps `height:100%` so the table scrolls naturally). |
-| Detail page | Boxed reading column 1200, centred. Baked into `.detail-page` (`max-width: var(--console-reading-max)`). |
+| Context                    | Rule                                                                                                     |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| CRUD list / dashboard page | Boxed 1440, centred. Baked into `.crud-page` (keeps `height:100%` so the table scrolls naturally).       |
+| Detail page                | Boxed reading column 1200, centred. Baked into `.detail-page` (`max-width: var(--console-reading-max)`). |
 
 | Multi-section form | `console-section-tabs` (rail + content) inside a `.console-page` root → boxed 1440, centred. |
 | Simple form (single column) | Wrap content in `.console-reading` (1200, centred). |
@@ -96,14 +96,14 @@ set their own padding (the shell already applies `p-8`). Two widths only:
 **Detail page internals (ADR-026):** the page body is `console-record-layout` —
 content column + `[aside]` rail. Pick the component by **data shape**, not topic:
 
-| What you are rendering | Component |
-|---|---|
+| What you are rendering                                | Component                                                      |
+| ----------------------------------------------------- | -------------------------------------------------------------- |
 | Short scalar (slug, status, date, order, tags, links) | `console-property` inside `console-property-list`, in the rail |
-| Long-form field (description, motivation, RTE body) | `console-record-field` inside a `console-record-section` |
-| Member of a collection (highlight, responsibility) | `console-record-item` inside a `console-record-section` |
-| Any of the above, compressed | wrap in `console-record-fold` — **must** pass a `gist` |
-| A rail panel (Properties, Content language) | `console-record-panel` |
-| Sections absent in full | `console-record-empty-sections` |
+| Long-form field (description, motivation, RTE body)   | `console-record-field` inside a `console-record-section`       |
+| Member of a collection (highlight, responsibility)    | `console-record-item` inside a `console-record-section`        |
+| Any of the above, compressed                          | wrap in `console-record-fold` — **must** pass a `gist`         |
+| A rail panel (Properties, Content language)           | `console-record-panel`                                         |
+| Sections absent in full                               | `console-record-empty-sections`                                |
 
 - **Never** use `.detail-field` on a detail page — it is superseded for read views.
 - **Empty field inside a visible section** → leave it in place, `state="unset"` renders one muted line. **Empty whole section** → omit it, pass the name to `console-record-empty-sections`. Never both.
@@ -139,12 +139,18 @@ keep `.crud-header`; detail pages `.detail-header`.
 
 ---
 
-## Material Density `-2` Interaction
+## Material Density `-4` Interaction
 
-The console global theme sets `$density: -2` on all form fields. This means:
+The console global theme sets `mat.form-field-density(-4)` on all form fields
+(`libs/console/shared/ui/src/styles/material/_theme.scss`). This means:
 
-- Form-field height: **48px** (not 56px default)
-- Internal padding already applied — **do not** add `pt-*` / `pb-*` to inputs
+- Form-field height: **40px** (56px is the Material default; the scale is a lookup, not a ratio —
+  `0→56 · -1→52 · -2→48 · -3→44 · -4→40 · -5→36`)
+- Internal vertical padding is 8px and already applied — **do not** add `pt-*` / `pb-*` to inputs
+- Prefix/suffix `mat-icon-button` inside a form field shrinks to **32px**; standalone icon buttons
+  stay at the global 40px target. A 40px button in a 40px field leaves no field left.
+- The floating label survives because the console default appearance is `outline`
+  (`provider.config.ts`). The density map only hides the _filled_ label, from `-2` down.
 - Use `gap-4` (16px) **between** `mat-form-field` elements, not tighter
 
 If a section feels cramped: the problem is almost never field density. Check gap between **groups** first (`gap-4` → `gap-6`).

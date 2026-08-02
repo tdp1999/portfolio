@@ -29,12 +29,12 @@ Hardcoded 2×2 grids look broken when projects have fewer than 4 production-read
 
 ## Layouts (per image count)
 
-| Count | Layout | Aspect ratios | Rationale |
-|---|---|---|---|
-| 1 | Single full-width | 16:10 | One frame deserves the room — no cropping into a square. |
-| 2 | 1×2 split | 4:3 each | Equal weight; pacing matters more than primacy. |
-| 3 | Hero left + 2 stacked right | 4:3 (hero, 2 rows) · 16:9 (each stacked) | Promotes image-1 to a 2-row hero; secondaries are landscape strips. |
-| 4 | 2×2 | 4:3 each | Even cadence; each frame holds equal weight. |
+| Count | Layout                      | Aspect ratios                            | Rationale                                                           |
+| ----- | --------------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| 1     | Single full-width           | 16:10                                    | One frame deserves the room — no cropping into a square.            |
+| 2     | 1×2 split                   | 4:3 each                                 | Equal weight; pacing matters more than primacy.                     |
+| 3     | Hero left + 2 stacked right | 4:3 (hero, 2 rows) · 16:9 (each stacked) | Promotes image-1 to a 2-row hero; secondaries are landscape strips. |
+| 4     | 2×2                         | 4:3 each                                 | Even cadence; each frame holds equal weight.                        |
 
 Mobile (< 640px): all layouts collapse to a single column, each cell at 16:10.
 
@@ -42,12 +42,12 @@ Mobile (< 640px): all layouts collapse to a single column, each cell at 16:10.
 
 Authors compose the `images[]` array in this order so the curated layouts read well — **the gallery does not enforce this; the contract lives in this doc and the component header**:
 
-| Slot | Content guidance | Why |
-|---|---|---|
-| 1 | Primary "money shot" — wide landscape, the strongest single frame | In Layout-3 it spans 2 rows; in Layout-1 it owns the whole frame. |
-| 2 | Secondary detail — UI close-up, supporting landscape, or detail crop | Always equal-or-smaller weight than 1; pairs with 1 in Layout-2. |
-| 3 | Tertiary — different angle (mobile UI, terminal, before/after) | In Layout-3 it sits below image-2; in Layout-4 it anchors row 2. |
-| 4 | Supporting / atmosphere — team photo, sketch, system diagram | Optional; only Layout-4 uses it. |
+| Slot | Content guidance                                                     | Why                                                               |
+| ---- | -------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 1    | Primary "money shot" — wide landscape, the strongest single frame    | In Layout-3 it spans 2 rows; in Layout-1 it owns the whole frame. |
+| 2    | Secondary detail — UI close-up, supporting landscape, or detail crop | Always equal-or-smaller weight than 1; pairs with 1 in Layout-2.  |
+| 3    | Tertiary — different angle (mobile UI, terminal, before/after)       | In Layout-3 it sits below image-2; in Layout-4 it anchors row 2.  |
+| 4    | Supporting / atmosphere — team photo, sketch, system diagram         | Optional; only Layout-4 uses it.                                  |
 
 When a project only has 2 strong screenshots, **upload only 2** — don't pad with weak filler to reach 4. The layout will adapt.
 
@@ -57,6 +57,16 @@ When a project only has 2 strong screenshots, **upload only 2** — don't pad wi
 - Pass `[aspectRatio]` to `<landing-figure>` (the cropped variant — image fills frame via `object-fit: cover`).
 - `[numbered]` defaults to true — captions get `FIG. 0X` numbering.
 - Caption falls back to `slug.toUpperCase()` if `image.alt` is empty (consumer-side responsibility, not gallery).
+- **Cell width is a measured constant, not a guess.** `gallery.sizing.ts` maps count+index to
+  `{ maxCss, sizes }`, and the figure emits a `w`-descriptor srcset from it. The numbers come
+  from the browser, not from intuition: the gallery caps at 682 CSS px, so a layout-4 cell is
+  256px at 1024, 309px at 1200 and 333px from 1366 up. A flat guess is exactly the bug this
+  replaced — `cellWidth` used to be a hardcoded 720, so a retina browser fetched `w_1440` for
+  a 333px box, roughly 4.7× the bytes. Re-measure and update the table in `gallery.sizing.ts`
+  if the container's max-width changes.
+- **`w` descriptors need `sizes`; `1x/2x` does not.** Use `buildCloudinaryWidthSet` + `[sizes]`
+  when the element's width changes across breakpoints (grid cells, carousel slides). Use plain
+  `buildCloudinarySrcset` only when the element has one fixed width everywhere.
 - `[lightbox]` (opt-in, default off) wires each cell to the shared `landing-lightbox`; pass `[lightboxGroup]` so a gallery's cells navigate together. Note: the grid caps at 4 cells, so the lightbox group is the rendered ≤4 — a `landing-carousel` of the same images (e.g. the mobile half of a BP-swap) will show all of them.
 
 ## Quality checklist

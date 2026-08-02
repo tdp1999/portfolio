@@ -135,8 +135,8 @@ CSS custom properties in `tokens/layout.scss`:
 | Avatar sm/md | 32/40px (`h-8 w-8` / `h-10 w-10`) |
 | Stat card icon container | 40px (`h-10 w-10 rounded-lg`) |
 | Activity icon container | 32px (`h-8 w-8 rounded-full`) |
-| Form-field (density -2) | 48px |
-| Icon-button touch target | 40px |
+| Form-field (density -4) | 40px |
+| Icon-button touch target | 40px (32px for a prefix/suffix inside a form field) |
 
 ## Border Radius
 

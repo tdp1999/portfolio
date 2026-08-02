@@ -9,16 +9,16 @@ Two homes (see the skill's `SKILL.md`): global = reusable kernel; here = project
 
 ## Buckets — what belongs where
 
-| Bucket | What belongs here |
-|---|---|
-| `system/` | The project's design-system definition — tokens, palette, spacing, and the landing/console/shared type & style rules (`foundations`, `landing`, `landing-typography`, `console`, `shared`). |
-| `contracts/` | Locked invariants code must honor — the 4px/type-scale contract and the responsive contract. Enforced by lint/hooks. |
-| `cookbook/` | Actionable "pick the right value/widget" how-to — `console` (spacing/typography/layout), `forms` (input types + checklist), `loading`. |
-| `patterns/` | Project pattern residue linking a global parent, plus project-only patterns (`section-bucketing`, `field-labeling-hierarchy`, `bilingual-formgroup`). |
-| `components/` | Per-component thin decision records + the living `_index.md` registry. Keeps behavior contracts; API→JSDoc, visuals→DDL, how-to→cookbook are links. |
-| `workflow/` | Process docs specific to this project — the `visual-feedback` screenshot/login recipe. |
-| `ingest/` | Landing zone for raw `/design ingest` output before it's curated into the right bucket. |
-| `index.md` · `sources.md` | This map + the project-ingest provenance registry (universal provenance is in the skill). |
+| Bucket                    | What belongs here                                                                                                                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `system/`                 | The project's design-system definition — tokens, palette, spacing, and the landing/console/shared type & style rules (`foundations`, `landing`, `landing-typography`, `console`, `shared`).         |
+| `contracts/`              | Locked invariants code must honor — the 4px/type-scale contract and the responsive contract. Enforced by lint/hooks.                                                                                |
+| `cookbook/`               | Actionable "pick the right value/widget" how-to — `console` (spacing/typography/layout), `forms` (input types + checklist), `loading`.                                                              |
+| `patterns/`               | Project pattern residue linking a global parent (incl. `app-favicon` → `theme-adaptive-icon`), plus project-only patterns (`section-bucketing`, `field-labeling-hierarchy`, `bilingual-formgroup`). |
+| `components/`             | Per-component thin decision records + the living `_index.md` registry. Keeps behavior contracts; API→JSDoc, visuals→DDL, how-to→cookbook are links.                                                 |
+| `workflow/`               | Process docs specific to this project — the `visual-feedback` screenshot/login recipe.                                                                                                              |
+| `ingest/`                 | Landing zone for raw `/design ingest` output before it's curated into the right bucket.                                                                                                             |
+| `index.md` · `sources.md` | This map + the project-ingest provenance registry (universal provenance is in the skill).                                                                                                           |
 
 ## The rule that keeps this lean
 

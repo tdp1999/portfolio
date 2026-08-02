@@ -14,12 +14,12 @@ related: [chip-select]
 
 ## Why this exists
 
-`mat-button-toggle-group` in non-multiple mode lets the user *deselect* the active option by clicking it, emitting `null`. That violates a view-mode toggle's contract: a view-mode is never legitimately empty. `console-segmented-control` owns the rule that **the value never transitions to null** — clicking the active segment is a no-op.
+`mat-button-toggle-group` in non-multiple mode lets the user _deselect_ the active option by clicking it, emitting `null`. That violates a view-mode toggle's contract: a view-mode is never legitimately empty. `console-segmented-control` owns the rule that **the value never transitions to null** — clicking the active segment is a no-op.
 
 It is split from `chip-select` because the **visual semantics differ**, not because the contract differs:
 
-- `chip-select` reads as *filter chips* — rounded, separated, each chip carries a check affordance. Communicates "tick the one you want" — many readers interpret it as multi-select even when it is single.
-- `segmented-control` reads as *one toggle on a shared track* — a single pill slides between segments. Unambiguous "switch view-mode."
+- `chip-select` reads as _filter chips_ — rounded, separated, each chip carries a check affordance. Communicates "tick the one you want" — many readers interpret it as multi-select even when it is single.
+- `segmented-control` reads as _one toggle on a shared track_ — a single pill slides between segments. Unambiguous "switch view-mode."
 
 Use the one whose visual matches the user's mental model.
 
@@ -34,7 +34,7 @@ Use the one whose visual matches the user's mental model.
 - Multi-select → `chip-toggle-group`.
 - Boolean → `chip-boolean`.
 - Filter affordance where "tick to apply" is the right vibe → `chip-select`.
-- Options are *navigation* between different content (deep-linkable, route-aware, page-level) → `mat-tab-group`.
+- Options are _navigation_ between different content (deep-linkable, route-aware, page-level) → `mat-tab-group`.
 - ≥ 6 options or labels that wrap — the equal-width track collapses; use a dropdown.
 
 ## Behavior contract
@@ -58,11 +58,12 @@ Portable rules — apply in any framework/stack; in this repo apply on top of `m
 - Accept `options` as an input — array of `{ value, label, icon? }`. Render order is input order.
 - Expose an `iconOnly` mode for cases where labels are obvious from icons. In this mode, `options[].label` becomes the `aria-label`.
 - Do **not** project content (`<ng-content>` / children) for segment rendering — keeps every callsite visually identical.
-- **Segments must be allowed to shrink.** Equal-width means `flex: 1 1 auto; min-width: 0` on the segment *and* `min-width: 0; overflow: hidden; text-overflow: ellipsis` on the label box. A flex item will not shrink below its content width without `min-width: 0`; with a fixed `min-width` and a nowrap label, a long label keeps its natural width, spills over the next segment, and the neighbour's active pill paints on top of it — which reads as "selecting B covered A". The "short labels only" rule above is guidance for callers; this rule is what makes a caller's mistake degrade instead of break.
+- **Segments must be allowed to shrink.** Equal-width means `flex: 1 1 auto; min-width: 0` on the segment _and_ `min-width: 0; overflow: hidden` on the label box. A flex item will not shrink below its content width without `min-width: 0`; with a fixed `min-width` and a nowrap label, a long label keeps its natural width, spills over the next segment, and the neighbour's active pill paints on top of it — which reads as "selecting B covered A". The "short labels only" rule above is guidance for callers; this rule is what makes a caller's mistake degrade instead of break.
+- **The label box owns the segment height, as an explicit box — never as a line-height.** Make it `display: flex; align-items: center; height: <the height token>; line-height: normal`, and put `overflow: hidden; text-overflow: ellipsis; white-space: nowrap` on the inner text span (a flex container ignores `text-overflow`). The tempting shortcut — let the host primitive's `line-height: <height token>` on an inline-block label do the sizing — is fragile in two ways that compound: `overflow: hidden` moves an inline-block's baseline to its **bottom margin edge**, so the whole box sits above the button's baseline and the parent strut's descender is added underneath it; and a `vertical-align: middle` on the inner content (Material sets this) pushes that content off the baseline and inflates the inner line box. In this repo the pair rendered a 40 px height token as a 46.7 px segment on a 56.7 px track. Nothing declares the extra pixels, so grepping for `height` / `min-height` / `line-height` finds nothing — the only way to catch it is to measure the rendered box against the token.
 
 ### Visual tone (this repo)
 
-The segmented control reads as a *raised pill on a recessed track*:
+The segmented control reads as a _raised pill on a recessed track_:
 
 - Track sits one step above the card surface (`surface-hover`) with a 1 px `--color-border` outline so the capsule shape is unambiguous against any parent surface.
 - Active pill uses `primary-container` background and `primary` label text — communicates "this is the active view" without being a heavy filled button.
@@ -81,6 +82,7 @@ If a future call site needs a neutral (non-brand) active pill, change the two `s
 - [ ] Visible focus ring on keyboard focus.
 - [ ] Theming flows through the design-token override layer, not component CSS.
 - [ ] With a deliberately over-long label, text truncates inside its own segment: nothing overlaps a neighbour and nothing escapes the track.
+- [ ] A rendered segment measures **exactly** the height token, in every variant (label-only, icon-only, icon + label). Measure the box; do not trust the token being set.
 
 ## Edge cases
 
