@@ -39,6 +39,7 @@ const makeReadResult = (overrides: Partial<IBlogPostProps> = {}): BlogPostReadRe
     tags: [{ id: 't1', name: 'Angular', slug: 'angular' }],
   },
   featuredImageUrl: 'https://cdn.example.com/img.png',
+  featuredImageFilename: 'cover.png',
 });
 
 describe('BlogPostPresenter', () => {

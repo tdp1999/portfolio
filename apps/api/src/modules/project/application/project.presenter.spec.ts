@@ -45,6 +45,8 @@ const TEST_RELATIONS: ProjectRelations = {
       id: '00000000-0000-0000-0000-000000000020',
       mediaId: '00000000-0000-0000-0000-000000000030',
       url: 'https://cdn.example.com/screenshot.png',
+      filename: 'screenshot.png',
+      caption: 'The permissions matrix',
       altText: 'Screenshot',
       displayOrder: 0,
     },
@@ -86,6 +88,8 @@ describe('ProjectPresenter', () => {
       expect(result.highlights[0].challengeJson).toBeNull();
       expect(result.highlights[0].challengeCanonical).toBeNull();
       expect(result.highlights[0].codeUrl).toBe('https://github.com/pr/1');
+      // The PUBLIC detail DTO deliberately exposes url + alt only — the filename is
+      // console-only metadata and must not reach the landing payload.
       expect(result.images[0]).toEqual({ url: 'https://cdn.example.com/screenshot.png', alt: 'Screenshot' });
       expect(result.skills).toEqual([{ name: 'TypeScript', slug: 'typescript', category: 'TECHNICAL' }]);
       expect(result.lifecycleStatus).toBe('LIVE');
@@ -150,6 +154,41 @@ describe('ProjectPresenter', () => {
       expect(result.highlights[0].id).toBeDefined();
       expect(result.images[0].mediaId).toBeDefined();
       expect(result.skills[0].id).toBeDefined();
+    });
+
+    // The console renders the picked assets by name; without these it can only show
+    // the raw media uuid. The media rows are already joined for the url, so carrying
+    // the filename through costs no extra query.
+    it('names the gallery images and the thumbnail', () => {
+      const result = ProjectPresenter.toAdminResponse({
+        entity: createTestProject(),
+        relations: TEST_RELATIONS,
+        thumbnailUrl: 'https://cdn.example.com/thumb.png',
+        thumbnailFilename: 'thumb.png',
+        thumbnailCaption: 'Cover frame',
+        thumbnailAltText: 'Permissions console cover',
+      });
+
+      expect(result.thumbnailFilename).toBe('thumb.png');
+      expect(result.images[0].filename).toBe('screenshot.png');
+    });
+
+    // The console labels a picture with its caption first, so the caption has to
+    // survive the admin mapping. It must NOT reach the public DTO — `toDetail`
+    // above pins that shape to `{ url, alt }`.
+    it('carries the caption and alt text for the console label', () => {
+      const result = ProjectPresenter.toAdminResponse({
+        entity: createTestProject(),
+        relations: TEST_RELATIONS,
+        thumbnailUrl: 'https://cdn.example.com/thumb.png',
+        thumbnailFilename: 'thumb.png',
+        thumbnailCaption: 'Cover frame',
+        thumbnailAltText: 'Permissions console cover',
+      });
+
+      expect(result.thumbnailCaption).toBe('Cover frame');
+      expect(result.thumbnailAltText).toBe('Permissions console cover');
+      expect(result.images[0].caption).toBe('The permissions matrix');
     });
   });
 });

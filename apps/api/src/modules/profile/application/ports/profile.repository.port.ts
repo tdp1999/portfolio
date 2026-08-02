@@ -13,7 +13,10 @@ import {
 export interface ProfileWithMedia {
   profile: Profile;
   avatarUrl: string | null;
+  /** Console-only: names the picked asset. The media row is already joined. */
+  avatarFilename: string | null;
   ogImageUrl: string | null;
+  ogImageFilename: string | null;
 }
 
 /** Canonical rich-text triple for the `bioLong` group — the versioned JSON source,

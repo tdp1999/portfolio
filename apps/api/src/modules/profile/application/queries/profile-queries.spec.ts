@@ -65,6 +65,8 @@ describe('Profile Queries', () => {
     profile: Profile.load(baseProps),
     avatarUrl: 'https://cdn.example.com/avatar.jpg',
     ogImageUrl: null,
+    avatarFilename: null,
+    ogImageFilename: null,
   };
 
   beforeEach(() => {

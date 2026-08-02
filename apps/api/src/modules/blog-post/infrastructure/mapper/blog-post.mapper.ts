@@ -30,6 +30,7 @@ export interface BlogPostReadResult {
   entity: BlogPost;
   relations: BlogPostRelations;
   featuredImageUrl: string | null;
+  featuredImageFilename: string | null;
 }
 
 export class BlogPostMapper {
@@ -83,6 +84,7 @@ export class BlogPostMapper {
       entity: BlogPostMapper.toDomain(raw),
       relations: BlogPostMapper.toRelations(raw),
       featuredImageUrl: raw.featuredImage?.url ?? null,
+      featuredImageFilename: raw.featuredImage?.originalFilename ?? null,
     };
   }
 

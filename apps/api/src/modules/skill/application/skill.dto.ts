@@ -81,6 +81,8 @@ export type SkillResponseDto = {
   yearsOfExperience: number | null;
   iconId: string | null;
   iconUrl: string | null;
+  /** Console-only: names the picked icon so the form is not left with a bare uuid. */
+  iconFilename: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;
   displayOrder: number;

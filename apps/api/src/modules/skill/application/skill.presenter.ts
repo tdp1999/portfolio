@@ -14,6 +14,7 @@ export class SkillPresenter {
       yearsOfExperience: skill.yearsOfExperience,
       iconId: skill.iconId,
       iconUrl: skill.iconUrl,
+      iconFilename: skill.iconFilename,
       proficiencyNote: skill.proficiencyNote,
       isFeatured: skill.isFeatured,
       displayOrder: skill.displayOrder,

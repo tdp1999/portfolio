@@ -44,6 +44,12 @@ export interface ProjectImageDto {
   id: string;
   mediaId: string;
   url: string;
+  /** Original upload filename. The console names each picked asset with it; the
+   *  media row is already joined, so this costs no extra query. */
+  filename: string | null;
+  /** Author-written caption. First choice for the console's media label — it is the
+   *  only one of the three the author writes *about the picture*. Same free join. */
+  caption: string | null;
   altText: string | null;
   displayOrder: number;
 }
@@ -65,6 +71,9 @@ export interface ProjectReadResult {
   entity: Project;
   relations: ProjectRelations;
   thumbnailUrl: string | null;
+  thumbnailFilename: string | null;
+  thumbnailCaption: string | null;
+  thumbnailAltText: string | null;
 }
 
 const isLinkType = (v: unknown): v is ProjectLinkType =>
@@ -146,6 +155,8 @@ export class ProjectMapper {
           id: i.id,
           mediaId: i.mediaId,
           url: i.media.url,
+          filename: i.media.originalFilename,
+          caption: i.media.caption,
           altText: i.media.altText,
           displayOrder: i.displayOrder,
         })),
@@ -163,6 +174,9 @@ export class ProjectMapper {
       entity: ProjectMapper.toDomain(raw),
       relations: ProjectMapper.toRelations(raw),
       thumbnailUrl: raw.thumbnail?.url ?? null,
+      thumbnailFilename: raw.thumbnail?.originalFilename ?? null,
+      thumbnailCaption: raw.thumbnail?.caption ?? null,
+      thumbnailAltText: raw.thumbnail?.altText ?? null,
     };
   }
 

@@ -12,6 +12,8 @@ export interface ISkillProps extends IBaseAuditProps {
   parentSkillId: string | null;
   yearsOfExperience: number | null;
   iconUrl: string | null;
+  /** Console-only: names the picked icon. Read-through from the joined media row. */
+  iconFilename: string | null;
   iconId: string | null;
   proficiencyNote: string | null;
   isFeatured: boolean;

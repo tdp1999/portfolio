@@ -166,7 +166,10 @@ describe('ProfilePresenter', () => {
   });
 
   describe('toAdminResponse', () => {
-    const result = ProfilePresenter.toAdminResponse(profile, avatarUrl, ogImageUrl);
+    const result = ProfilePresenter.toAdminResponse(profile, avatarUrl, ogImageUrl, {
+      avatarFilename: 'me.png',
+      ogImageFilename: 'og.png',
+    });
 
     it('should include all fields including private ones', () => {
       expect(result.phone).toBe(props.phone);
@@ -175,6 +178,11 @@ describe('ProfilePresenter', () => {
       expect(result.locationAddress2).toBe(props.locationAddress2);
       expect(result.id).toBe(props.id);
       expect(result.userId).toBe(props.userId);
+    });
+
+    it('names the picked avatar and OG image so the console never shows a bare uuid', () => {
+      expect(result.avatarFilename).toBe('me.png');
+      expect(result.ogImageFilename).toBe('og.png');
     });
 
     it('should include audit fields', () => {

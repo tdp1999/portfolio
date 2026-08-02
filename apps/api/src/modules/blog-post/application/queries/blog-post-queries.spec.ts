@@ -51,6 +51,7 @@ const makeReadResult = (overrides: Partial<IBlogPostProps> = {}): BlogPostReadRe
     tags: [{ id: 't1', name: 'Angular', slug: 'angular' }],
   },
   featuredImageUrl: null,
+  featuredImageFilename: 'cover.png',
 });
 
 function makeBlogRepoMock(): jest.Mocked<IBlogPostRepository> {
@@ -233,6 +234,8 @@ describe('BlogPost Queries', () => {
         profile: { fullName: { en: 'Phong', vi: 'Phong' }, bioShort: { en: 'Dev', vi: 'Dev' } } as any,
         avatarUrl: 'https://cdn/a.png',
         ogImageUrl: null,
+        avatarFilename: null,
+        ogImageFilename: null,
       });
       repo.findRelatedByPrimaryCategory.mockResolvedValue([makeReadResult({ id: 'rel-1', slug: 'rel-1' })]);
 

@@ -22,6 +22,9 @@ export class GetProfileHandler implements IQueryHandler<GetProfileQuery> {
         layer: ErrorLayer.APPLICATION,
       });
 
-    return ProfilePresenter.toAdminResponse(result.profile, result.avatarUrl, result.ogImageUrl);
+    return ProfilePresenter.toAdminResponse(result.profile, result.avatarUrl, result.ogImageUrl, {
+      avatarFilename: result.avatarFilename,
+      ogImageFilename: result.ogImageFilename,
+    });
   }
 }

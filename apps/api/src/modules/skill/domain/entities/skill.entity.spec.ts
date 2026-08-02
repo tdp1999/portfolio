@@ -16,6 +16,7 @@ describe('Skill Entity', () => {
     yearsOfExperience: 5,
     iconId: '550e8400-e29b-41d4-a716-446655440099',
     iconUrl: 'https://cdn.example.com/ts.svg',
+    iconFilename: null,
     proficiencyNote: 'Advanced',
     isFeatured: true,
     displayOrder: 1,

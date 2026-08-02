@@ -151,7 +151,9 @@ export class ProfileMapper {
     return {
       profile: ProfileMapper.toDomain(raw),
       avatarUrl: raw.avatar?.url ?? null,
+      avatarFilename: raw.avatar?.originalFilename ?? null,
       ogImageUrl: raw.ogImage?.url ?? null,
+      ogImageFilename: raw.ogImage?.originalFilename ?? null,
     };
   }
 }

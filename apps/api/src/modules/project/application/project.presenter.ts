@@ -83,6 +83,10 @@ export type ProjectAdminResponseDto = Omit<ProjectDetailDto, 'highlights' | 'ima
   status: string;
   displayOrder: number;
   thumbnailId: string | null;
+  /** Console-only. The public detail DTO deliberately exposes the url alone. */
+  thumbnailFilename: string | null;
+  thumbnailCaption: string | null;
+  thumbnailAltText: string | null;
   createdAt: Date;
   updatedAt: Date;
   createdById: string;
@@ -100,6 +104,9 @@ type ProjectWithRelations = {
   entity: Project;
   relations: ProjectRelations;
   thumbnailUrl: string | null;
+  thumbnailFilename?: string | null;
+  thumbnailCaption?: string | null;
+  thumbnailAltText?: string | null;
 };
 
 export class ProjectPresenter {
@@ -167,6 +174,9 @@ export class ProjectPresenter {
       status: item.entity.status,
       displayOrder: item.entity.displayOrder,
       thumbnailId: item.entity.thumbnailId,
+      thumbnailFilename: item.thumbnailFilename ?? null,
+      thumbnailCaption: item.thumbnailCaption ?? null,
+      thumbnailAltText: item.thumbnailAltText ?? null,
       createdAt: item.entity.createdAt,
       updatedAt: item.entity.updatedAt,
       createdById: item.entity.createdById,

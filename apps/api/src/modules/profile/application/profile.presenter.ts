@@ -53,10 +53,13 @@ export class ProfilePresenter {
   static toAdminResponse(
     profile: Profile,
     avatarUrl: string | null,
-    ogImageUrl: string | null
+    ogImageUrl: string | null,
+    media: { avatarFilename: string | null; ogImageFilename: string | null }
   ): ProfileAdminResponseDto {
     return {
       ...ProfilePresenter.toPublicResponse(profile, avatarUrl, ogImageUrl),
+      avatarFilename: media.avatarFilename,
+      ogImageFilename: media.ogImageFilename,
       id: profile.id,
       userId: profile.userId,
       phone: profile.phone,

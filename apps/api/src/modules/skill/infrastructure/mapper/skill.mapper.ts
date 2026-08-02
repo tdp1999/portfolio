@@ -2,7 +2,7 @@ import { Skill as PrismaSkill } from '@prisma/client';
 import { Skill } from '../../domain/entities/skill.entity';
 import { ISkillProps, SkillCategory, SkillTier } from '../../domain/skill.types';
 
-type PrismaSkillWithIcon = PrismaSkill & { icon?: { url: string } | null };
+type PrismaSkillWithIcon = PrismaSkill & { icon?: { url: string; originalFilename: string } | null };
 
 export class SkillMapper {
   static toDomain(raw: PrismaSkillWithIcon): Skill {
@@ -16,6 +16,7 @@ export class SkillMapper {
       parentSkillId: raw.parentSkillId,
       yearsOfExperience: raw.yearsOfExperience,
       iconUrl: raw.icon?.url ?? null,
+      iconFilename: raw.icon?.originalFilename ?? null,
       iconId: raw.iconId,
       proficiencyNote: raw.proficiencyNote,
       isFeatured: raw.isFeatured,

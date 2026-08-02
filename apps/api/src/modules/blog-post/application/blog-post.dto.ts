@@ -245,6 +245,8 @@ export type BlogPostAdminDetailDto = BlogPostAdminListItemDto & {
   metaDescription: string | null;
   authorId: string;
   featuredImageId: string;
+  /** Console-only: names the picked cover so the editor is not left with a bare uuid. */
+  featuredImageFilename: string | null;
   createdById: string;
   updatedById: string;
   deletedById: string | null;

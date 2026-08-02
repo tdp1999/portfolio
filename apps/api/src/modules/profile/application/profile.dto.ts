@@ -82,7 +82,10 @@ export type ProfileAdminResponseDto = ProfilePublicResponseDto & {
   locationAddress1: string | null;
   locationAddress2: string | null;
   avatarId: string | null;
+  /** Console-only: names the picked assets. Read-through from the joined media rows. */
+  avatarFilename: string | null;
   ogImageId: string | null;
+  ogImageFilename: string | null;
   createdAt: Date;
   updatedAt: Date;
   createdById: string;

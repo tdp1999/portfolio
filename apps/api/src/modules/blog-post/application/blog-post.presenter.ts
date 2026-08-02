@@ -105,6 +105,7 @@ export class BlogPostPresenter {
     const { entity } = item;
     return {
       ...BlogPostPresenter.toAdminList(item),
+      featuredImageFilename: item.featuredImageFilename,
       excerpt: entity.excerpt,
       contentJson: entity.contentJson,
       contentHtml: entity.contentHtml,

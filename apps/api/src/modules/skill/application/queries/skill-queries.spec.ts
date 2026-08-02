@@ -23,6 +23,7 @@ describe('Skill Queries', () => {
     yearsOfExperience: null,
     iconId: null,
     iconUrl: null,
+    iconFilename: null,
     proficiencyNote: null,
     isFeatured: false,
     displayOrder: 0,

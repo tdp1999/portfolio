@@ -77,6 +77,7 @@ const makeReadResult = (overrides: Partial<IBlogPostProps> = {}): BlogPostReadRe
     tags: [{ id: TAG_ID, name: 'Angular', slug: 'angular' }],
   },
   featuredImageUrl: null,
+  featuredImageFilename: 'cover.png',
 });
 
 function makeRepoMock(): jest.Mocked<IBlogPostRepository> {

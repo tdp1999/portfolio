@@ -169,6 +169,21 @@ describe('ProjectMapper', () => {
     });
   });
 
+  describe('toReadResult', () => {
+    it('carries the thumbnail filename through from the joined media row', () => {
+      const result = ProjectMapper.toReadResult(RAW_PROJECT);
+
+      expect(result.thumbnailUrl).toBe('https://cdn.example.com/thumb.png');
+      expect(result.thumbnailFilename).toBe('thumb.png');
+    });
+
+    it('leaves the thumbnail filename null when no thumbnail is set', () => {
+      const result = ProjectMapper.toReadResult({ ...RAW_PROJECT, thumbnail: null });
+
+      expect(result.thumbnailFilename).toBeNull();
+    });
+  });
+
   describe('toRelations', () => {
     it('should sort highlights by displayOrder', () => {
       const relations = ProjectMapper.toRelations(RAW_PROJECT);
@@ -188,11 +203,14 @@ describe('ProjectMapper', () => {
       expect(ProjectMapper.toRelations(RAW_PROJECT).highlights[0].title).toBeNull();
     });
 
-    it('should flatten images with media URL and altText', () => {
+    it('should flatten images with media URL, filename, and altText', () => {
       const relations = ProjectMapper.toRelations(RAW_PROJECT);
 
       expect(relations.images).toHaveLength(1);
       expect(relations.images[0].url).toBe('https://cdn.example.com/screenshot.png');
+      // The console names each picked asset with this; the media row is joined for
+      // the url anyway, so dropping the filename here forced an N+1 on the client.
+      expect(relations.images[0].filename).toBe('screenshot.png');
       expect(relations.images[0].altText).toBe('Screenshot');
     });
 

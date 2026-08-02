@@ -40,6 +40,10 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
     return this.props.iconUrl;
   }
 
+  get iconFilename(): string | null {
+    return this.props.iconFilename;
+  }
+
   get iconId(): string | null {
     return this.props.iconId;
   }
@@ -71,6 +75,7 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
       parentSkillId: null,
       yearsOfExperience: data.yearsOfExperience ?? null,
       iconUrl: null,
+      iconFilename: null,
       iconId: data.iconId ?? null,
       proficiencyNote: data.proficiencyNote ?? null,
       isFeatured: data.isFeatured ?? false,
@@ -97,6 +102,7 @@ export class Skill extends BaseCrudEntity<ISkillProps> {
       yearsOfExperience:
         data.yearsOfExperience !== undefined ? (data.yearsOfExperience ?? null) : this.props.yearsOfExperience,
       iconUrl: this.props.iconUrl,
+      iconFilename: this.props.iconFilename,
       iconId: data.iconId !== undefined ? (data.iconId ?? null) : this.props.iconId,
       proficiencyNote: data.proficiencyNote !== undefined ? (data.proficiencyNote ?? null) : this.props.proficiencyNote,
       isFeatured: data.isFeatured ?? this.props.isFeatured,
