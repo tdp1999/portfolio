@@ -1,0 +1,149 @@
+/* DDL — console favicon record.
+ * The whole page hangs on one rule: `color-scheme` on the wrapper is what makes
+ * the SVG inside `<img>` resolve its own prefers-color-scheme query, so the two
+ * state panels MUST keep their color-scheme declarations. */
+
+:host {
+  display: block;
+}
+
+.fav-page {
+  padding: 32px;
+}
+
+.fav-page__head {
+  margin-bottom: 32px;
+}
+
+.fav-page__lede,
+.fav-section__note {
+  max-width: 72ch;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+}
+
+.fav-page__lede {
+  margin-top: 8px;
+}
+
+.fav-section {
+  margin-bottom: 48px;
+}
+
+.fav-section__note {
+  margin: 8px 0 20px;
+}
+
+/* ═══ The two states ═════════════════════════════════════════════════ */
+.fav-states {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  max-width: 720px;
+}
+
+.fav-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  padding: 24px 16px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+/* Load-bearing: these drive the state the SVG resolves to. */
+.fav-state--light {
+  color-scheme: light;
+}
+
+.fav-state--dark {
+  color-scheme: dark;
+}
+
+.fav-state img {
+  display: block;
+}
+
+/* True-size shots — never scaled, so the browser shows exactly what it would
+   put on the tab. */
+.fav-state__sizes {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.fav-state figcaption {
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.fav-state--dark figcaption {
+  color: #9aa0a6;
+}
+
+/* ═══ Contrast table ═════════════════════════════════════════════════ */
+.fav-table {
+  width: 100%;
+  max-width: 860px;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+}
+
+.fav-table th,
+.fav-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.fav-table th {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.fav-table td {
+  font-variant-numeric: tabular-nums;
+}
+
+.fav-table .is-bad {
+  color: #c2410c;
+  font-weight: 600;
+}
+
+.fav-table__swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.fav-table__verdict {
+  color: var(--color-text-muted);
+}
+
+/* ═══ Decision notes ═════════════════════════════════════════════════ */
+.fav-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 72ch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+}
+
+.fav-notes strong {
+  color: var(--color-text);
+}

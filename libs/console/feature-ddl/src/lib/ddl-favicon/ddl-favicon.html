@@ -1,0 +1,102 @@
+<div class="fav-page">
+  <header class="fav-page__head">
+    <h1 class="text-page-title">Console favicon</h1>
+    <p class="fav-page__lede">
+      Console dùng đúng mark <code>tdp.</code> của landing, nhưng bỏ hẳn nền. Mọi ảnh trên trang này nạp thẳng
+      <code>{{ shipped.svg }}</code
+      >, tức là chính file đang chạy thật, nên trang không thể lệch với thứ trình duyệt đang vẽ.
+    </p>
+  </header>
+
+  <!-- ── The shipped icon, both states ────────────────────────────────── -->
+  <section class="fav-section">
+    <h2 class="text-section-heading">Hai trạng thái của cùng một file</h2>
+    <p class="fav-section__note">
+      Nền trong suốt nghĩa là thứ lộ ra phía sau chính là thanh tab của trình duyệt, mà thanh tab đổi màu theo theme.
+      File SVG mang sẵn câu lệnh <code>prefers-color-scheme</code> nên chính trình duyệt quyết định màu chữ: chữ đen khi
+      thanh tab sáng, chữ sáng khi thanh tab tối. Dot giữ màu tím ở cả hai. Hai khối dưới đây là cùng một file, chỉ khác
+      nhau ở thuộc tính <code>color-scheme</code> của khung bao ngoài.
+    </p>
+
+    <div class="fav-states">
+      <figure class="fav-state fav-state--light" [style.background]="tabStrip.light">
+        <img [src]="shipped.svg" width="96" height="96" alt="favicon trên thanh tab sáng" />
+        <span class="fav-state__sizes">
+          @for (size of sizes; track size) {
+            <img [src]="shipped.svg" [width]="size" [height]="size" [alt]="size + 'px'" />
+          }
+        </span>
+        <figcaption>Thanh tab sáng {{ tabStrip.light }}</figcaption>
+      </figure>
+
+      <figure class="fav-state fav-state--dark" [style.background]="tabStrip.dark">
+        <img [src]="shipped.svg" width="96" height="96" alt="favicon trên thanh tab tối" />
+        <span class="fav-state__sizes">
+          @for (size of sizes; track size) {
+            <img [src]="shipped.svg" [width]="size" [height]="size" [alt]="size + 'px'" />
+          }
+        </span>
+        <figcaption>Thanh tab tối {{ tabStrip.dark }}</figcaption>
+      </figure>
+    </div>
+    <p class="fav-section__note">
+      Dãy nhỏ trong mỗi khối là 16 / 32 / 64px, đúng cỡ trình duyệt vẽ trên tab. Muốn kiểm chứng ngoài đời thì đổi theme
+      hệ điều hành giữa sáng và tối, biểu tượng trên tab sẽ tự lật màu mà không cần tải lại trang.
+    </p>
+  </section>
+
+  <!-- ── Why adaptive, not a fixed ink ────────────────────────────────── -->
+  <section class="fav-section">
+    <h2 class="text-section-heading">Vì sao phải tự đổi màu, không chọn đại một màu</h2>
+    <p class="fav-section__note">
+      Bốn màu chữ cố định đều đã được cân nhắc và đo tương phản WCAG trên cả hai thanh tab. Chỉ có màu tím accent là
+      sống được cả hai, mà cũng chỉ vừa đủ. Đó là lý do file chính phải tự đổi màu, còn màu tím được để dành làm bản
+      <code>.ico</code> dự phòng cho trình duyệt không đọc được SVG.
+    </p>
+    <table class="fav-table">
+      <thead>
+        <tr>
+          <th>Màu chữ</th>
+          <th>Trên nền sáng</th>
+          <th>Trên nền tối</th>
+          <th>Kết luận</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ink of inks; track ink.swatch) {
+          <tr>
+            <td>
+              <span class="fav-table__swatch" [style.background]="ink.swatch"></span>
+              {{ ink.label }}
+            </td>
+            <td [class.is-bad]="ink.onLight < 3">{{ ink.onLight }}</td>
+            <td [class.is-bad]="ink.onDark < 3">{{ ink.onDark }}</td>
+            <td class="fav-table__verdict">{{ ink.verdict }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Geometry + the two deliberate omissions ──────────────────────── -->
+  <section class="fav-section">
+    <h2 class="text-section-heading">Hai quyết định còn lại</h2>
+    <ul class="fav-notes">
+      <li>
+        <strong>Mark to hơn bản landing.</strong> Landing phải chừa lề an toàn quanh mark vì có cạnh hộp, chỉ dùng
+        {{ fit.boxed * 100 }}% khung. Không còn hộp thì không còn cạnh nào để né, nên mark chạy tới
+        {{ fit.ghost * 100 }}% và phần lề mà Stage 1 nướng sẵn vào viewBox cũng được cắt bớt. Nó vẫn không thể to hơn
+        nữa vì <code>tdp.</code> nằm ngang tỉ lệ {{ fit.aspect }} : 1, trong ô vuông chỉ cao được hơn nửa khung.
+      </li>
+      <li>
+        <strong>Cố tình không làm apple-touch-icon.</strong> iOS ép nền trong suốt thành đen khi đưa lên màn hình chính,
+        làm vậy là phá sạch ý đồ. Console không phải thứ được ghim lên màn hình điện thoại. Nếu sau này cần, nó buộc
+        phải có một nền đặc.
+      </li>
+      <li>
+        <strong>Thứ tự thẻ trong index.html có chủ đích.</strong> <code>{{ shipped.ico }}</code> đứng trước,
+        <code>{{ shipped.svg }}</code> đứng sau, để trình duyệt nào đọc được SVG thì tự ghi đè lên bản raster.
+      </li>
+    </ul>
+  </section>
+</div>

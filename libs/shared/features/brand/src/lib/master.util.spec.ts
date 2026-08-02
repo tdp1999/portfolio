@@ -1,6 +1,6 @@
 import { TDP_BRAND } from './brand.config';
 import { DOT, MONOGRAM_VIEWBOX, WORDMARK_DOT, WORDMARK_VIEWBOX } from './glyph-outlines.data';
-import { masterSvg, monogramSvg, motifSvg, MOTIF, signatureSvg, wordmarkSvg } from './master.util';
+import { adaptiveMonogramSvg, masterSvg, monogramSvg, motifSvg, MOTIF, signatureSvg, wordmarkSvg } from './master.util';
 
 const DEFAULT_INK = '#0a0d12';
 const ACCENT = TDP_BRAND.theme.accent;
@@ -57,6 +57,37 @@ describe('master.util — Monogram', () => {
     expect(monogramSvg()).not.toContain('<rect');
     expect(monogramSvg({ background: '#101418' })).toContain('<rect');
     expect(monogramSvg({ background: '#101418' })).toContain('fill="#101418"');
+  });
+});
+
+describe('master.util — adaptive Monogram', () => {
+  const LIGHT_INK = '#e7e9ee';
+
+  it('carries both inks, switched by a prefers-color-scheme query', () => {
+    const svg = adaptiveMonogramSvg({ lightInk: DEFAULT_INK, darkInk: LIGHT_INK });
+    expect(svg).toContain(`.ink{fill:${DEFAULT_INK}}`);
+    expect(svg).toContain(`@media (prefers-color-scheme:dark){.ink{fill:${LIGHT_INK}}}`);
+  });
+
+  it('keeps the Dot on the accent in both states', () => {
+    const svg = adaptiveMonogramSvg({ accent: ACCENT });
+    expect(dotFill(svg)).toBe(ACCENT);
+    // the Dot must not be swept into the theme-switched class
+    expect(svg).not.toMatch(/<circle[^>]*class="ink"/);
+  });
+
+  it('stays transparent — a favicon must not paint its own surface', () => {
+    expect(adaptiveMonogramSvg()).not.toContain('<rect');
+  });
+
+  it('padding grows the viewBox outward on every side', () => {
+    const [x, y, w, h] = MONOGRAM_VIEWBOX.split(/\s+/).map(Number);
+    const pad = 12;
+    const vb = outerViewBox(adaptiveMonogramSvg({ padding: pad }));
+    expect(vb.x).toBe(x - pad);
+    expect(vb.y).toBe(y - pad);
+    expect(vb.w).toBe(w + pad * 2);
+    expect(vb.h).toBe(h + pad * 2);
   });
 });
 

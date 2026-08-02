@@ -27,4 +27,8 @@ export const ddlRoutes: Route[] = [
     path: 'anatomy-form',
     loadComponent: () => import('./ddl-anatomy-form/ddl-anatomy-form'),
   },
+  {
+    path: 'favicon',
+    loadComponent: () => import('./ddl-favicon/ddl-favicon'),
+  },
 ];

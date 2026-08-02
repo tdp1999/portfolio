@@ -64,6 +64,7 @@ export const appConfig: ApplicationConfig = {
           upload: (file, folder) => media.upload(file, { folder }),
           getById: (id) => media.getById(id),
           getByIdSilent: (id) => media.getByIdSilent(id),
+          update: (id, payload) => media.update(id, payload),
         };
         return async () => {
           const picked = await firstValueFrom(

@@ -17,13 +17,20 @@ import sharp from 'sharp';
 import pngToIco from 'png-to-ico';
 
 // ── PROJECT WIRING (the only project-specific lines) ────────────────────────
-import { monogramSvg, motifSvg, signatureSvg } from '../../../libs/shared/features/brand/src/lib/master.util';
+import {
+  adaptiveMonogramSvg,
+  monogramSvg,
+  motifSvg,
+  signatureSvg,
+} from '../../../libs/shared/features/brand/src/lib/master.util';
 import { TDP_BRAND } from '../../../libs/shared/features/brand/src/lib/brand.config';
 
 // Run from the repo root (see SKILL.md) — cwd is the stable anchor whether this runs
 // as source or as the esbuild bundle, so we don't depend on the file's own location.
 const REPO_ROOT = process.cwd();
 const OUT_DIR = resolve(REPO_ROOT, 'apps/landing/public/brand');
+/** Second surface for the same Brand: the admin console, on a transparent mark. */
+const CONSOLE_OUT_DIR = resolve(REPO_ROOT, 'apps/console/public/brand');
 const brand = TDP_BRAND;
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -54,14 +61,26 @@ async function rasterizeSvg(svg: string, width: number, height?: number): Promis
 
 const FAVICON_SIZES = [16, 32, 48, 180, 192, 512] as const;
 
-/** Favicon set — Monogram centred on a solid square, every required size + .ico. */
+/**
+ * Favicon set — Monogram centred on a solid square, every required size + .ico.
+ *
+ * Two numbers decide how big the mark reads, and they compound: the viewBox
+ * padding and the share of the square the mark is scaled into. Stage 1 already
+ * bakes 10 units of clearspace into MONOGRAM_VIEWBOX, so *adding* more on top
+ * shrank the ink to ~41% of the icon's height. -6 trims that back to a hair of
+ * margin; 0.90 keeps a visible gutter inside the box edge. Together they put
+ * the ink at ~47%, about 15% more than before, with the mark unchanged.
+ *
+ * These stay solid: the manifest icons (192/512) and the apple-touch icon (180)
+ * come out of this set, and both get composited onto a launcher surface where
+ * transparency would flatten to a colour we do not control.
+ */
 async function buildFavicons(): Promise<void> {
-  // wide mark, modest internal clearspace
-  const markSvg = monogramSvg({ variant: 'full', ink, accent, padding: 8 });
+  const markSvg = monogramSvg({ variant: 'full', ink, accent, padding: -6 });
   const pngPaths: Record<number, string> = {};
 
   for (const size of FAVICON_SIZES) {
-    const markWidth = Math.round(size * 0.88); // fill ~88% of the square width
+    const markWidth = Math.round(size * 0.9);
     const markPng = await rasterizeSvg(markSvg, markWidth);
     const out = resolve(OUT_DIR, `favicon-${size}.png`);
     await canvas(size, size, surface)
@@ -77,6 +96,67 @@ async function buildFavicons(): Promise<void> {
   const icoOut = resolve(OUT_DIR, 'favicon.ico');
   writeFileSync(icoOut, ico);
   console.log('favicon.ico ←', '16/32/48', '→', icoOut, `(${ico.length} bytes)`);
+}
+
+/**
+ * Console favicon set — the same Monogram, TRANSPARENT.
+ *
+ * The console reads as a sibling of landing rather than a second brand, so the
+ * mark does not change; only the surface goes away. Two consequences drive this
+ * whole function:
+ *
+ * 1. A transparent icon sits directly on the browser's tab strip, which is
+ *    light or dark by the user's theme. A single fixed ink is invisible on one
+ *    of the two (measured: light ink scores 1.08 contrast on a light strip).
+ *    So the primary asset is an SVG carrying both inks behind a
+ *    `prefers-color-scheme` query, resolved by the browser painting the tab.
+ * 2. The `.ico` fallback cannot run that query, so it uses the accent monotone
+ *    — the only fixed ink that clears both strips (3.5 either way).
+ *
+ * No surface also means no box edge to keep clear of, so the mark runs to ~98%
+ * of the icon instead of landing's 88% — worth ~16% more ink at 16px.
+ *
+ * Deliberately no apple-touch-icon: iOS composites it onto the home screen with
+ * transparency flattened to black, which would undo the whole point. The console
+ * is not a home-screen app.
+ */
+async function buildConsoleFavicons(): Promise<void> {
+  mkdirSync(CONSOLE_OUT_DIR, { recursive: true });
+
+  // Stage 1 bakes 10 units of clearspace into MONOGRAM_VIEWBOX for the boxed
+  // marks. A transparent favicon wants that back: -6 leaves a hair of margin
+  // and nothing more, which is what makes the mark read bigger than landing's.
+  const TIGHTEN = -6;
+
+  const svg = adaptiveMonogramSvg({
+    lightInk: PALETTE.light.ink,
+    darkInk: PALETTE.dark.ink,
+    accent,
+    padding: TIGHTEN,
+  });
+  const svgOut = resolve(CONSOLE_OUT_DIR, 'favicon.svg');
+  writeFileSync(svgOut, svg);
+  console.log('console favicon.svg (theme-adaptive) →', svgOut);
+
+  // Fallback raster: accent monotone, the only fixed ink that reads on both strips.
+  const fallbackSvg = monogramSvg({ ink: accent, accent, padding: TIGHTEN });
+  const pngPaths: Record<number, string> = {};
+  for (const size of [16, 32, 48] as const) {
+    const markWidth = Math.round(size * 0.98);
+    const markPng = await rasterizeSvg(fallbackSvg, markWidth);
+    const out = resolve(CONSOLE_OUT_DIR, `favicon-${size}.png`);
+    await sharp({ create: { width: size, height: size, channels: 4, background: '#00000000' } })
+      .composite([{ input: markPng, gravity: 'centre' }])
+      .png()
+      .toFile(out);
+    pngPaths[size] = out;
+    console.log('console favicon', `${size}×${size}`, '→', out);
+  }
+
+  const ico = await pngToIco([pngPaths[16], pngPaths[32], pngPaths[48]]);
+  const icoOut = resolve(CONSOLE_OUT_DIR, 'favicon.ico');
+  writeFileSync(icoOut, ico);
+  console.log('console favicon.ico ←', '16/32/48', '→', icoOut, `(${ico.length} bytes)`);
 }
 
 const OG = { w: 1200, h: 630 } as const;
@@ -133,6 +213,7 @@ async function buildEmailSig(): Promise<void> {
 
 const TARGETS: Record<string, () => Promise<void>> = {
   favicons: buildFavicons,
+  'console-favicons': buildConsoleFavicons,
   og: buildOg,
   email: buildEmailSig,
 };

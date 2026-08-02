@@ -31,7 +31,7 @@ everything else is deterministic code.
 | File | Role |
 | --- | --- |
 | `gen-glyphs.mjs` | **Stage 1 (origination).** Font → `glyph-outlines.data.ts` (per-glyph outlines + Dot placement + viewBoxes). |
-| `gen-assets.mts` | **Stage 2 (assets).** Master builders → favicon/og/email into the app's `public/`. |
+| `gen-assets.mts` | **Stage 2 (assets).** Master builders → favicon/og/email into the app's `public/`. Two output dirs: landing's boxed set and console's transparent one. |
 | `fonts/newsreader-500.ttf` | The instanced font input (OFL — bundling allowed). |
 | `references/pipeline.md` | Full end-to-end recipe + the locked design decisions behind it. |
 | `references/asset-spec.md` | Per-asset sizes / layout rationale. |
@@ -59,9 +59,49 @@ node .claude/skills/brand-identity/gen-glyphs.mjs
 node_modules/.pnpm/node_modules/.bin/esbuild .claude/skills/brand-identity/gen-assets.mts \
   --bundle --platform=node --format=esm --external:sharp --external:png-to-ico \
   --outfile=.brand-gen.run.mjs
-node .brand-gen.run.mjs            # all, or filter: favicons | og | email
+node .brand-gen.run.mjs            # all, or filter: favicons | console-favicons | og | email
 rm -f .brand-gen.run.mjs
 ```
+
+## Targets
+
+| Target | Out | Notes |
+| --- | --- | --- |
+| `favicons` | `apps/landing/public/brand/` | Boxed set on the theme surface: 16/32/48/180/192/512 + `.ico`. The 180 feeds `apple-touch-icon` and 192/512 feed the PWA manifest, which is why this set stays **solid** — both slots get composited by the OS and alpha flattens. |
+| `console-favicons` | `apps/console/public/brand/` | **Transparent** set: `favicon.svg` (theme-adaptive) + 16/32/48 PNG + `.ico`. No apple-touch icon on purpose. |
+| `og` | `apps/landing/public/brand/` | 1200×630 Signature over the Motif. |
+| `email` | `apps/landing/public/brand/` | Signature PNG @2× + an email-safe HTML snippet. |
+
+## How big the mark reads (the two knobs)
+
+Icon size is set by **two multipliers**, and getting either wrong is the usual cause of a
+mark that "looks small":
+
+1. **viewBox padding.** Stage 1 already bakes 10 units of clearspace into
+   `MONOGRAM_VIEWBOX`. Passing a positive `padding` on top of that compounds — it does not
+   replace it. Pass a **negative** padding to claw it back (`-6` leaves a hair of margin).
+2. **Fit fraction.** The share of the square the mark is scaled into. A boxed icon wants a
+   visible gutter inside its edge (0.90); a transparent one has no edge to keep clear of,
+   so it can run to 0.98.
+
+Beyond those, the ceiling is the mark's own aspect: `tdp.` is 1.84 : 1, so inside a square
+it can never exceed roughly half the height. Shortening the mark is the only large win, and
+that makes it a different mark.
+
+## The console set is theme-adaptive, and it has to be
+
+A transparent favicon sits directly on the browser's tab strip, whose colour follows the
+user's theme. Measured on Chrome's two strips (`#dee1e6` / `#202124`), near-white ink scores
+1.08 on light and near-black scores 1.21 on dark — invisible, not faint. So:
+
+- `favicon.svg` comes from `adaptiveMonogramSvg()`, which embeds a `prefers-color-scheme`
+  query in the SVG's own `<style>`. The browser painting the tab resolves it.
+- `favicon.ico` is the accent monotone — the only fixed ink clearing both strips (3.5 either
+  way) — for browsers without SVG-icon support.
+- In `index.html` the `.ico` link goes **first** so SVG-capable browsers override it.
+
+Full rationale and the portable version of this: `patterns/theme-adaptive-icon` in the
+global design library, plus ADR-035.
 
 ## Bootstrapping a new identity (the "minimal redo")
 
@@ -78,6 +118,6 @@ sizes/layouts, the raster pipeline — is shared and needs no rework.
 
 ## Notes
 
-- The **Dot** is the brand atom: theme-coloured, deliberately larger than a true period, placed a fixed `dotGap` (14u) past the last glyph's true ink edge so the spacing reads natural at any radius. Both the Monogram (`tdp.`) and Wordmark (`Phuong Tran.`) close with it.
+- The **Dot** is the brand atom: theme-coloured, deliberately larger than a true period, placed a fixed `dotGap` (14u) past the last glyph's true ink edge so the spacing reads natural at any radius. Both the Monogram (`tdp.`) and Wordmark (`Phuong Tran.`) close with it. In the adaptive mark it keeps the accent in **both** theme states — only the glyph ink switches.
 - Stage 1 output is **theme-independent** (just geometry); colour is applied at render time (`currentColor` ink + `--brand-accent` Dot), so one glyph file serves every theme/variant.
 - The locked design rationale (why this font, why outlines, the ubiquitous language) lives in the epic: `.context/plans/epic-portfolio-brand-identity.md`. `references/pipeline.md` digests the parts needed to operate the pipeline.

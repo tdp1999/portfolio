@@ -32,7 +32,7 @@ export interface DemoRecord {
   role: Bilingual;
   highlights: DemoHighlight[];
   thumbnailUrl: string | null;
-  images: { url: string; alt: string }[];
+  images: { url: string; alt: string; caption?: string | null; filename?: string | null }[];
   links: { type: string; label: string; url: string }[];
   skills: string[];
 }
@@ -91,11 +91,18 @@ export const RICH_RECORD: DemoRecord = {
     },
   ],
   thumbnailUrl: 'https://picsum.photos/seed/thumb-loan-document-engine/1200/800',
+  // Deliberately uneven: each row exercises one rung of the media label ladder
+  // (caption -> filename -> altText -> Untitled) that `console-media-preview` owns.
   images: [
-    { url: 'https://picsum.photos/seed/doc-1/400/300', alt: 'Template editor' },
-    { url: 'https://picsum.photos/seed/doc-2/400/300', alt: 'Generated PDF preview' },
+    {
+      url: 'https://picsum.photos/seed/doc-1/400/300',
+      alt: 'Template editor',
+      caption: 'The template editor, mid-edit',
+      filename: 'doc-1.editor.png',
+    },
+    { url: 'https://picsum.photos/seed/doc-2/400/300', alt: 'Generated PDF preview', filename: 'doc-2.pdf-out.png' },
     { url: 'https://picsum.photos/seed/doc-3/400/300', alt: 'Audit trail panel' },
-    { url: 'https://picsum.photos/seed/doc-4/400/300', alt: 'Revision history' },
+    { url: 'https://picsum.photos/seed/doc-4/400/300', alt: '' },
   ],
   links: [
     { type: 'repo', label: 'Source on GitHub', url: 'https://github.com/example/doc-engine' },

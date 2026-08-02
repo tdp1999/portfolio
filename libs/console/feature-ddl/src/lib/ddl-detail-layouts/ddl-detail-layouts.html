@@ -138,20 +138,7 @@
 
   @if (record().thumbnailUrl || record().images.length) {
     <console-record-section title="Media" [count]="record().images.length + (record().thumbnailUrl ? 1 : 0)">
-      <div class="dl-media">
-        @if (record().thumbnailUrl) {
-          <figure class="dl-media__item dl-media__item--thumb">
-            <img [src]="record().thumbnailUrl" alt="Thumbnail" />
-            <figcaption>Thumbnail</figcaption>
-          </figure>
-        }
-        @for (img of record().images; track img.url) {
-          <figure class="dl-media__item">
-            <img [src]="img.url" [alt]="img.alt" />
-            <figcaption>{{ img.alt }}</figcaption>
-          </figure>
-        }
-      </div>
+      <console-media-preview [items]="mediaItems()" [tileSize]="132" ratio="3 / 2" />
     </console-record-section>
   }
 </ng-template>

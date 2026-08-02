@@ -79,6 +79,16 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
       </section>
 
       <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Console Favicon</h2>
+        <p class="text-sm text-gray-500 mb-2">
+          The shipped transparent <code>tdp.</code> Monogram, rendered from <code>/brand/favicon.svg</code> itself on
+          both of Chrome's tab strips at true favicon sizes, plus the contrast measurements behind why it has to be
+          theme-adaptive rather than a fixed ink.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/ddl/favicon">Open favicon record</a>
+      </section>
+
+      <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Toast Notifications</h2>
         <div class="flex gap-3 flex-wrap">
           <button

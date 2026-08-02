@@ -40,7 +40,20 @@ export interface SignatureRenderOptions extends MarkRenderOptions {
   layout?: 'horizontal' | 'stacked';
 }
 
+/** A mark that carries both inks and lets the renderer pick between them. */
+export interface AdaptiveMarkRenderOptions {
+  /** Glyph fill when the surrounding UI is light. */
+  lightInk?: string;
+  /** Glyph fill when the surrounding UI is dark. */
+  darkInk?: string;
+  /** Dot colour — the accent holds in both states. */
+  accent?: string;
+  /** Clearspace around the mark, in viewBox user units. */
+  padding?: number;
+}
+
 const DEFAULT_INK = '#0a0d12';
+const DEFAULT_LIGHT_INK = '#e7e9ee';
 
 /** Parse a `'minX minY w h'` viewBox into numbers. */
 function parseViewBox(vb: string): { x: number; y: number; w: number; h: number } {
@@ -83,6 +96,32 @@ export function monogramSvg(options: MarkRenderOptions = {}): string {
     backgroundRect(vb, background),
     glyphPaths(MONOGRAM_GLYPHS, ink),
     `<circle cx="${DOT.cx}" cy="${DOT.cy}" r="${DOT.r}" fill="${dotFill}" />`,
+    `</svg>`,
+  ].join('');
+}
+
+/**
+ * The Monogram as a **theme-adaptive** standalone SVG — one transparent file
+ * whose ink flips with `prefers-color-scheme`, resolved by whichever browser
+ * renders it. Built for the favicon slot: a transparent icon sits directly on
+ * the browser's tab strip, which is light or dark depending on the user's
+ * theme, so a single fixed ink is invisible in one of the two. The Dot keeps
+ * the accent in both states.
+ *
+ * Only meaningful where the consumer evaluates CSS (an `<img>`, a `<link
+ * rel="icon">`, inline in a document). Raster pipelines cannot resolve the
+ * query, so they must render `lightInk` / `darkInk` separately.
+ */
+export function adaptiveMonogramSvg(options: AdaptiveMarkRenderOptions = {}): string {
+  const { lightInk = DEFAULT_INK, darkInk = DEFAULT_LIGHT_INK, accent = TDP_BRAND.theme.accent, padding = 0 } = options;
+  const vb = padViewBox(MONOGRAM_VIEWBOX, padding);
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" fill="none">`,
+    `<style>.ink{fill:${lightInk}}@media (prefers-color-scheme:dark){.ink{fill:${darkInk}}}</style>`,
+    `<g class="ink">${MONOGRAM_GLYPHS.filter(Boolean)
+      .map((d) => `<path d="${d}" />`)
+      .join('')}</g>`,
+    `<circle cx="${DOT.cx}" cy="${DOT.cy}" r="${DOT.r}" fill="${accent}" />`,
     `</svg>`,
   ].join('');
 }

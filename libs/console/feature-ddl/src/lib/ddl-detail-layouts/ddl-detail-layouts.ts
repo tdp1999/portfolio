@@ -15,6 +15,8 @@ import {
   RecordLayout,
   RecordPanel,
   RecordSection,
+  MediaPreview,
+  type MediaPreviewItem,
   SegmentedControl,
   type SegmentedControlOption,
 } from '@portfolio/console/shared/ui';
@@ -85,6 +87,7 @@ const TRANSLATABLE_FIELDS: RecordFieldDescriptor<DemoRecord>[] = [
     PropertyList,
     Property,
     RecordEmptySections,
+    MediaPreview,
   ],
   templateUrl: './ddl-detail-layouts.html',
   styleUrl: './ddl-detail-layouts.scss',
@@ -132,6 +135,24 @@ export default class DdlDetailLayouts {
     countIncomplete(this.record().highlights, [(h) => h.challenge, (h) => h.approach, (h) => h.outcome])
   );
   readonly highlightIds = computed(() => this.record().highlights.map((_, i) => `highlight-${i}`));
+
+  /** Thumbnail first, then the gallery, as one Quick Look group. */
+  readonly mediaItems = computed<MediaPreviewItem[]>(() => {
+    const r = this.record();
+    const thumb: MediaPreviewItem[] = r.thumbnailUrl
+      ? [{ id: 'thumbnail', url: r.thumbnailUrl, caption: 'Thumbnail' }]
+      : [];
+    return [
+      ...thumb,
+      ...r.images.map((img, i) => ({
+        id: `image-${i}`,
+        url: img.url,
+        caption: img.caption ?? null,
+        filename: img.filename ?? null,
+        altText: img.alt,
+      })),
+    ];
+  });
 
   readonly emptySections = computed(() => {
     const r = this.record();
