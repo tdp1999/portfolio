@@ -22,6 +22,7 @@ import {
   SkeletonTable,
   ToastService,
   withListLoading,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ExperienceService } from '../experience.service';
@@ -49,6 +50,7 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
     DateRangePipe,
     EnumLabelPipe,
     RouterLink,
+    MediaThumbPipe,
   ],
   templateUrl: './experiences.html',
   styleUrl: './experiences.scss',

@@ -53,7 +53,11 @@
           <span class="detail-field__value font-medium">
             <div class="flex items-center gap-2">
               @if (exp.companyLogoUrl) {
-                <img [src]="exp.companyLogoUrl" [alt]="exp.companyName" class="h-6 w-6 rounded object-contain" />
+                <img
+                  [src]="exp.companyLogoUrl | mediaThumb: 24"
+                  [alt]="exp.companyName"
+                  class="h-6 w-6 rounded object-contain"
+                />
               }
               {{ exp.companyName }}
             </div>

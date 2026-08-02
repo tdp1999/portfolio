@@ -11,6 +11,7 @@ import {
   type ConfirmDialogData,
   SpinnerOverlay,
   ToastService,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { filter, switchMap } from 'rxjs';
 import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
@@ -33,6 +34,7 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
     DateRangePipe,
     EnumLabelPipe,
     RteRenderHtml,
+    MediaThumbPipe,
   ],
   templateUrl: './experience.detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

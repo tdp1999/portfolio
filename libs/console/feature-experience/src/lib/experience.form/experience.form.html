@@ -47,7 +47,7 @@
                 <div class="flex items-center gap-4">
                   @if (logoPreview()) {
                     <img
-                      [src]="logoPreview()"
+                      [src]="logoPreview() | mediaThumb: 48"
                       alt="Company logo"
                       class="h-12 w-12 rounded object-contain border border-border"
                     />

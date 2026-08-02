@@ -33,6 +33,7 @@ import {
   ToastService,
   TranslatableGroup,
   TranslatableRichTextGroup,
+  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import {
   baselineFor,
@@ -73,6 +74,7 @@ import { richTextGroup } from './experience.form.util';
     SpinnerOverlay,
     TranslatableGroup,
     TranslatableRichTextGroup,
+    MediaThumbPipe,
   ],
   templateUrl: './experience.form.html',
   styleUrl: './experience.form.scss',
