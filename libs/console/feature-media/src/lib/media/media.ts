@@ -30,10 +30,11 @@ import {
   type MimeGroup,
   type SortOption,
   type UploadFn,
+  type UploadProgress,
   type UploadFolder,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, MEDIA_PICKER_MIN_LOADING_MS, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
-import { filter, forkJoin, map, of, switchMap } from 'rxjs';
+import { type Observable, filter, forkJoin, map, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MediaDrawer } from '../media.drawer/media.drawer';
 import { formatFileSize, getMimeTypeCategory } from '../media.constants';
@@ -113,10 +114,18 @@ export default class Media implements OnInit {
     { value: 'list', label: 'List view', icon: 'view_list' },
   ];
 
+  /**
+   * Forwards the service's real progress ticks and resolves the full record only on
+   * the tick that carries an id. The previous version mapped the single completion
+   * emission straight to `progress: 100`, so the Media page's bar jumped from empty
+   * to full with nothing in between.
+   */
   readonly uploadFn: UploadFn = (file: File) =>
     this.mediaService.upload(file).pipe(
-      switchMap(({ id }) => this.mediaService.getById(id)),
-      map((result) => ({ progress: 100, result }))
+      switchMap((event): Observable<UploadProgress> => {
+        if (!event.id) return of({ progress: event.progress });
+        return this.mediaService.getById(event.id).pipe(map((result) => ({ progress: 100, result })));
+      })
     );
 
   ngOnInit(): void {

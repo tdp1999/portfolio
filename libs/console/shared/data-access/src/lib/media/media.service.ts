@@ -1,11 +1,18 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext,
+  HttpEventType,
+  type HttpProgressEvent,
+  type HttpResponse,
+} from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, timeout } from 'rxjs';
+import { filter, map, timeout } from 'rxjs';
 import { API_CONFIG, ApiService } from '../api';
 import { SKIP_ERROR_HANDLING } from '../interceptors/error.interceptor';
 import {
   MediaItem,
   MediaListParams,
+  MediaUploadEvent,
   MediaListResponse,
   StorageStats,
   UpdateMediaPayload,
@@ -13,6 +20,20 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class MediaService {
+  /**
+   * Idle allowance for an upload, replacing the shared `apiConfig.timeout` on this
+   * one call.
+   *
+   * With `observe: 'events'` the rxjs `timeout` measures SILENCE BETWEEN EVENTS, not
+   * total duration — a different instrument from the one the shared 30s budget was
+   * chosen for. This request has one deliberately silent stretch: once the last byte
+   * is sent, the API is handing the file to the storage backend and emits nothing
+   * until the response. For a large image that stretch alone can outlast 30s, and
+   * aborting it is the worst outcome available: the asset is created server-side
+   * while the author is told the upload failed.
+   */
+  private static readonly UPLOAD_IDLE_TIMEOUT_MS = 120_000;
+
   private readonly api = inject(ApiService);
   private readonly http = inject(HttpClient);
   private readonly apiConfig = inject(API_CONFIG);
@@ -52,6 +73,19 @@ export class MediaService {
     return this.api.get<MediaListResponse>('/media/trash', { params: queryParams });
   }
 
+  /**
+   * Emits real upload progress, then the new media id.
+   *
+   * `reportProgress` + `observe: 'events'` is what makes the percentage real. Without
+   * them `HttpClient` emits exactly once, at the end — which is why the upload rows
+   * used to show 0% and then 100% with nothing in between; the two values were
+   * synthesised by the caller, not measured.
+   *
+   * What the number means: bytes handed from the browser to the API. The API then
+   * uploads to Cloudinary, and that leg is invisible from here — so the stream stays
+   * at `progress: 100` with no `id` until the response lands. Callers render that gap
+   * as "Processing", never as a stalled bar (see `UploadRowState.state`).
+   */
   upload(file: File, options?: { folder?: string; altText?: string; caption?: string }) {
     const formData = new FormData();
     formData.append('file', file);
@@ -62,10 +96,33 @@ export class MediaService {
       .post(this.buildUrl('/media/upload'), formData, {
         withCredentials: true,
         responseType: 'text',
+        observe: 'events',
+        reportProgress: true,
       })
       .pipe(
-        timeout(this.apiConfig.timeout),
-        map((id) => ({ id }))
+        timeout({ each: MediaService.UPLOAD_IDLE_TIMEOUT_MS }),
+        // Sent / ResponseHeader / DownloadProgress carry nothing a progress bar wants.
+        filter(
+          (event): event is HttpProgressEvent | HttpResponse<string> =>
+            event.type === HttpEventType.UploadProgress || event.type === HttpEventType.Response
+        ),
+        map((event): MediaUploadEvent => {
+          if (event.type === HttpEventType.Response) {
+            const id = (event.body ?? '').trim();
+            // A 2xx with no id is a failed upload wearing a success costume. Failing
+            // loudly here sends the row to `error`; returning it as a plain progress
+            // tick would leave the row on "Processing" forever, because a row in that
+            // state is never counted as settled and the batch never completes.
+            if (!id) throw new Error('The upload finished but the server returned no media id.');
+            return { progress: 100, id };
+          }
+          // `total` is absent when the body length is unknown; hold at 0 rather than
+          // dividing by undefined and rendering NaN%.
+          const percent = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
+          // 100 is reserved for "the server answered". A finished send with no
+          // response yet caps at 99, so the bar never sits full while work remains.
+          return { progress: Math.min(percent, 99) };
+        })
       );
   }
 

@@ -35,13 +35,19 @@ import type { UploadState } from './asset-upload-zone.types';
           </div>
           <span class="text-caption text-text-muted upload-row__percent">{{ progress() }}%</span>
         }
+        @if (state() === 'processing') {
+          <div class="upload-row__track">
+            <div class="upload-row__fill upload-row__fill--indeterminate"></div>
+          </div>
+          <span class="text-caption text-text-muted upload-row__percent">Processing</span>
+        }
         @if (state() === 'error') {
           <span class="text-caption text-red-500">{{ error()?.message ?? 'Upload failed' }}</span>
         }
       </div>
 
       <div class="upload-row__actions">
-        @if (state() === 'uploading') {
+        @if (state() === 'uploading' || state() === 'processing') {
           <button mat-icon-button (click)="cancelled.emit()" aria-label="Cancel upload">
             <mat-icon class="icon-md">close</mat-icon>
           </button>
@@ -94,12 +100,36 @@ import type { UploadState } from './asset-upload-zone.types';
         transition: width 0.2s ease;
       }
 
+      /* Server-side work has no measurable percentage, so the bar sweeps instead
+         of filling. Static under reduced-motion — a frozen full bar would be a lie,
+         a frozen partial bar is honest. */
+      &__fill--indeterminate {
+        width: 40%;
+        animation: upload-row-sweep 1.1s ease-in-out infinite;
+      }
+
       &__percent {
-        @apply flex-shrink-0 w-8 text-right;
+        @apply flex-shrink-0 text-right;
+        min-width: 32px;
       }
 
       &__actions {
         @apply flex-shrink-0;
+      }
+    }
+
+    @keyframes upload-row-sweep {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(250%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .upload-row__fill--indeterminate {
+        animation: none;
       }
     }
   `,

@@ -17,7 +17,7 @@ import { readableSize } from '@portfolio/shared/ui';
 import { UploadRow } from './upload-row';
 import type { UploadFn, UploadRowState } from './asset-upload-zone.types';
 import { HttpErrorResponse } from '@angular/common/http';
-import { getNextUploadId } from './asset-upload-zone.util';
+import { getNextUploadId, matchesAccept, toAcceptAttr } from './asset-upload-zone.util';
 
 @Component({
   selector: 'console-asset-upload-zone',
@@ -43,6 +43,8 @@ export class AssetUploadZone implements OnDestroy {
   protected readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   protected readonly hasRows = computed(() => this.rows().length > 0);
+  /** `accept()` rewritten into the HTML dialect — see `toAcceptAttr`. */
+  protected readonly acceptAttr = computed(() => toAcceptAttr(this.accept()));
 
   private readonly subs = new Map<string, Subscription>();
 
@@ -136,17 +138,7 @@ export class AssetUploadZone implements OnDestroy {
     if (file.size > this.maxFileSize()) {
       return `exceeds ${readableSize(this.maxFileSize())} limit`;
     }
-    const accept = this.accept();
-    if (!accept || accept === '*' || accept === '*/*') return null;
-
-    const patterns = accept.split(',').map((p) => p.trim());
-    const ok = patterns.some((pattern) => {
-      if (pattern.endsWith('/*')) {
-        return file.type.startsWith(pattern.slice(0, -2));
-      }
-      return file.type === pattern;
-    });
-    return ok ? null : 'file type not accepted';
+    return matchesAccept(file, this.accept()) ? null : 'file type not accepted';
   }
 
   private startUpload(id: string, file: File): void {
@@ -155,15 +147,24 @@ export class AssetUploadZone implements OnDestroy {
       next: ({ progress, result }) => {
         if (result) {
           this.updateRow(id, { state: 'done', progress: 100, result });
+        } else if (progress >= 100) {
+          // Every byte is sent but the server has not answered. Switch to the
+          // indeterminate state instead of leaving a full bar sitting still.
+          this.updateRow(id, { state: 'processing', progress: 100 });
         } else {
-          this.updateRow(id, { progress });
+          this.updateRow(id, { state: 'uploading', progress });
         }
       },
-      error: (err: HttpErrorResponse) => {
-        const parsedError = extractApiError(err);
+      error: (err: unknown) => {
+        // Not every failure here is an HTTP response. A timeout, or the stream
+        // rejecting a 2xx that carried no media id, arrives as a plain `Error` whose
+        // own message is the useful one — `extractApiError` only reads
+        // `HttpErrorResponse` and would flatten those to "An unexpected error occurred".
+        const message =
+          err instanceof HttpErrorResponse ? extractApiError(err).message : err instanceof Error ? err.message : '';
         this.updateRow(id, {
           state: 'error',
-          error: parsedError.message ? new Error(parsedError.message) : new Error('Upload failed'),
+          error: new Error(message || 'Upload failed'),
         });
         this.subs.delete(id);
         this.checkAllSettled();
@@ -182,7 +183,7 @@ export class AssetUploadZone implements OnDestroy {
 
   private checkAllSettled(): void {
     const rows = this.rows();
-    if (rows.some((r) => r.state === 'uploading')) return;
+    if (rows.some((r) => r.state === 'uploading' || r.state === 'processing')) return;
 
     const completed = rows.filter((r) => r.state === 'done' && r.result).map((r) => r.result) as MediaItem[];
     const failed = rows
