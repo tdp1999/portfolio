@@ -218,8 +218,13 @@ export class BlogList {
             clearTimeout(this.spinnerHideTimer);
             this.spinnerHideTimer = null;
           }
+          // Stamped on every fetch START and deliberately OUTSIDE the guard below.
+          // The guard only decides whether the spinner still needs showing; the
+          // window itself must be measured from the newest request. Inside it, a
+          // first load (archiveLoading starts true) or a back-to-back request keeps
+          // a stale mark and collapses the window to zero.
+          this.spinnerShownAt = Date.now();
           if (!this.archiveLoading()) {
-            this.spinnerShownAt = Date.now();
             this.archiveLoading.set(true);
           }
         } else {
