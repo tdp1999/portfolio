@@ -4,8 +4,13 @@
 // overrides win without `!important`.
 // =============================================================================
 
+// `--landing-accent` is probed FIRST, not second. Landing defines it on `:root`, so the
+// old order resolved every unstyled landing control to `--color-primary` — the console
+// azure — and the whole landing header nav focused in a blue that belongs to no part of
+// the landing palette. Console never defines `--landing-accent`, so it still lands on
+// `--color-primary` exactly as before.
 :where(*:focus-visible) {
-  outline: 2px solid var(--color-primary, var(--landing-accent, currentColor));
+  outline: 2px solid var(--landing-accent, var(--color-primary, currentColor));
   outline-offset: 2px;
 }
 

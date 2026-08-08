@@ -32,6 +32,11 @@ import { filter, map } from 'rxjs/operators';
   standalone: true,
   host: {
     '[class]': 'hostClass()',
+    // The active state was carried by colour and a 1px underline only, which is invisible
+    // to a screen reader. Emitting it here rather than at each call site means every
+    // consumer of the directive (desktop nav, mobile sheet) gets it, and it stays
+    // hydration-safe for free.
+    '[attr.aria-current]': 'isActive() ? "page" : null',
   },
 })
 export class HydrationSafeActiveDirective {
@@ -51,12 +56,11 @@ export class HydrationSafeActiveDirective {
     { initialValue: this.router.url }
   );
 
-  protected readonly hostClass = computed(() => {
+  protected readonly isActive = computed(() => {
     const current = this.url().split('?')[0].split('#')[0];
     const path = this.hydrationSafeActive();
-    const matches = this.hydrationSafeActiveExact()
-      ? current === path
-      : current === path || current.startsWith(`${path}/`);
-    return matches ? this.hydrationSafeActiveClass() : '';
+    return this.hydrationSafeActiveExact() ? current === path : current === path || current.startsWith(`${path}/`);
   });
+
+  protected readonly hostClass = computed(() => (this.isActive() ? this.hydrationSafeActiveClass() : ''));
 }

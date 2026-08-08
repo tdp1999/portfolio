@@ -12,6 +12,8 @@ import { CommandPalette } from '../command-palette/command-palette';
 import { KeyboardShortcutService } from '../../services/keyboard/keyboard-shortcut.service';
 import { KeyboardShortcutsDirective } from '../../directives/keyboard-shortcuts/keyboard-shortcuts.directive';
 import { LandingThemeService } from '../../services/theme/theme.service';
+import { LandingLocaleService } from '../../services/locale/landing-locale.service';
+import { resolveCopy } from '../../services/copy/landing-copy.util';
 
 @Component({
   selector: 'landing-shell',
@@ -33,8 +35,12 @@ import { LandingThemeService } from '../../services/theme/theme.service';
       fxSpotlightScope="viewport"
       fxKeyboardShortcuts
     >
+      <!-- First tab stop on every landing page. A keyboard reader otherwise walks the
+           whole header (nav, mega-menu, language switch, palette, theme toggle) on every
+           navigation before reaching any content. Visually hidden until focused. -->
+      <a class="landing-skip-link" href="#main-content">{{ skipToContentLabel() }}</a>
       <landing-header [resumeUrl]="resumeUrl()" [resumeName]="resumeName()" />
-      <main class="flex-1">
+      <main id="main-content" class="flex-1" tabindex="-1">
         <ng-content />
       </main>
       @if (!isDocs()) {
@@ -62,6 +68,9 @@ export class Shell {
 
   private readonly shortcuts = inject(KeyboardShortcutService);
   private readonly theme = inject(LandingThemeService);
+  private readonly locale = inject(LandingLocaleService).locale;
+
+  protected readonly skipToContentLabel = computed(() => resolveCopy('common.skipToContent', this.locale()));
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 

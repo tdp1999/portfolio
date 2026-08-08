@@ -43,6 +43,9 @@
 /* Font-face declarations (self-hosted + @fontsource) — see _fonts.scss */
 @use 'fonts' as landing-fonts;
 
+/* Skip-to-content chrome — see _skip-link.scss */
+@use 'skip-link' as landing-skip-link;
+
 /* Tailwind CSS v3 directives */
 @tailwind base;
 @tailwind components;

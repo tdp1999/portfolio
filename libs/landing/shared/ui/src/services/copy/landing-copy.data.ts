@@ -53,6 +53,11 @@ export const LANDING_COPY = {
   'common.copyLink': { en: 'Copy link', vi: 'Sao chép liên kết' },
   /** in-page nav label — legal pages, blog detail, project detail */
   'common.onThisPage': { en: 'On this page', vi: 'Trong trang này' },
+  /**
+   * shell.ts — the first tab stop on every landing page. Without it a keyboard
+   * reader walks the entire header on every navigation before reaching content.
+   */
+  'common.skipToContent': { en: 'Skip to content', vi: 'Chuyển tới nội dung chính' },
   /** busy state, shared by load-more, spinners and the /version meta strip */
   'common.loading': { en: 'Loading…', vi: 'Đang tải…' },
   /**
@@ -827,6 +832,27 @@ export const LANDING_COPY = {
    * "Who I Am" drifted apart in the first place.
    */
   'home.hero.a11y.hireStatus': { en: 'Hire status', vi: 'Trạng thái nhận việc' },
+  /**
+   * home.hero.html — the two hero CTAs. Home is the surface that serves the fast
+   * skim (PRODUCT.md), and before these existed the hero held 820px with zero
+   * interactive elements: a reader sold by the hero had nothing to act on, and
+   * the resume was reachable only through the header's `More` mega-menu.
+   *
+   * Both are `landing-link`, not `landing-button`, per the "links for navigation,
+   * buttons for actions" convention — these are a route change and a file
+   * download, not actions.
+   */
+  'home.hero.cta.contact': { en: 'Get in touch', vi: 'Liên hệ với tôi' },
+  'home.hero.cta.resume': { en: 'Download CV', vi: 'Tải CV' },
+  /**
+   * Shown instead of `home.hero.cta.resume` when the only resume on file is in the
+   * other language. Naming the language on the label is the honest option: the
+   * alternatives were a silent cross-language download, or hiding a named success
+   * action from half the audience. Both directions are covered — a `vi` reader can
+   * meet an `en`-only profile and an `en` reader a `vi`-only one.
+   */
+  'home.hero.cta.resumeEnOnly': { en: 'Download CV (English)', vi: 'Tải CV (bản tiếng Anh)' },
+  'home.hero.cta.resumeViOnly': { en: 'Download CV (Vietnamese)', vi: 'Tải CV (bản tiếng Việt)' },
 
   /**
    * §3 Bio card grid. `LOCAL`, `HOURS`, `BASE` and the `§2.x IDENTITY / BIO /

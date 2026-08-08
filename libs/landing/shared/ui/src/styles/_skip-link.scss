@@ -1,0 +1,34 @@
+/* Skip-to-content link (shell.ts). Global rather than component-scoped because the shell
+   has no stylesheet of its own and this is page chrome, not a component.
+
+   Off-screen until focused rather than `display: none` — a hidden element is not
+   focusable, so it would never be reachable by the keyboard reader it exists for. */
+.landing-skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-200%);
+  padding: 8px 16px;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 6px;
+  background-color: var(--landing-ink-1);
+  color: var(--landing-text-300);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  text-decoration: none;
+  transition: transform var(--landing-motion-fast) var(--landing-ease);
+}
+
+.landing-skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--landing-accent);
+  outline-offset: 2px;
+}
+
+/* `main` takes tabindex="-1" so the skip target actually receives focus in every browser;
+   that must not paint a ring when it is reached by the mouse or by the skip link itself. */
+main:focus {
+  outline: none;
+}
