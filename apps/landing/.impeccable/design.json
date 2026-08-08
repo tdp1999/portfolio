@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-08T00:00:00.000Z",
+  "title": "Design System: Portfolio Landing",
+  "extensions": {
+    "colorMeta": {
+      "ink-0": {
+        "role": "neutral",
+        "displayName": "Ink Black",
+        "canonical": "#0a0d12",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "ink-1": {
+        "role": "neutral",
+        "displayName": "Ink Surface",
+        "canonical": "#11151c",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Elevated",
+        "canonical": "#1a2030",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "text-300": {
+        "role": "neutral",
+        "displayName": "Bright Slate",
+        "canonical": "#e2e8f0",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "text-400": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#cbd5e1",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "text-500": {
+        "role": "neutral",
+        "displayName": "Muted Slate",
+        "canonical": "#a3b0c4",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "text-600": {
+        "role": "neutral",
+        "displayName": "Dim Slate",
+        "canonical": "#96a1b4",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "text-700": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "#475569",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Drafting Indigo",
+        "canonical": "oklch(65% 0.13 290)",
+        "tonalRamp": [
+          "oklch(15% 0.13 290)",
+          "oklch(26% 0.13 290)",
+          "oklch(37% 0.13 290)",
+          "oklch(48% 0.13 290)",
+          "oklch(60% 0.13 290)",
+          "oklch(71% 0.13 290)",
+          "oklch(83% 0.13 290)",
+          "oklch(95% 0.13 290)"
+        ]
+      },
+      "accent-strong": {
+        "role": "primary",
+        "displayName": "Drafting Indigo Solid",
+        "canonical": "oklch(57% 0.16 290)",
+        "tonalRamp": [
+          "oklch(15% 0.16 290)",
+          "oklch(26% 0.16 290)",
+          "oklch(37% 0.16 290)",
+          "oklch(48% 0.16 290)",
+          "oklch(60% 0.16 290)",
+          "oklch(71% 0.16 290)",
+          "oklch(83% 0.16 290)",
+          "oklch(95% 0.16 290)"
+        ]
+      },
+      "accent-active": {
+        "role": "primary",
+        "displayName": "Drafting Indigo Pressed",
+        "canonical": "#5b53c2",
+        "tonalRamp": [
+          "oklch(15% 0.16 288)",
+          "oklch(26% 0.16 288)",
+          "oklch(37% 0.16 288)",
+          "oklch(48% 0.16 288)",
+          "oklch(60% 0.16 288)",
+          "oklch(71% 0.16 288)",
+          "oklch(83% 0.16 288)",
+          "oklch(95% 0.16 288)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#232a3a",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "#2f3854",
+        "tonalRamp": ["#0a0d12", "#11151c", "#1a2030", "#232a3a", "#2f3854", "#475569", "#96a1b4", "#e2e8f0"]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Signal Red",
+        "canonical": "#f87171",
+        "tonalRamp": [
+          "oklch(15% 0.17 22)",
+          "oklch(26% 0.17 22)",
+          "oklch(37% 0.17 22)",
+          "oklch(48% 0.17 22)",
+          "oklch(60% 0.17 22)",
+          "oklch(70% 0.17 22)",
+          "oklch(83% 0.17 22)",
+          "oklch(95% 0.17 22)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline in Newsreader. One per site view; never in a repeating context. One documented exception: the home hero title and role run on a bespoke larger Inter scale (96px / 64px desktop, stepped per breakpoint in home.hero.scss), deliberately above the display clamp as the loudest moment on the site. No other type may sit above 56px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page h1 and section openers. What a bare <h1> renders as."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sub-hero and section h2. Newsreader in editorial flow, Inter inside long-form prose."
+      },
+      "body": {
+        "displayName": "Body (base size X)",
+        "purpose": "The anchor size for all major content. Fluid 14px on mobile to 16px at wide, with a loose 1.75 reading rhythm."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "JetBrains Mono uppercase at 0.06em tracking. Eyebrows, chips, figure captions, cite lines, dates, IDs. The voice that points at content rather than being content."
+      }
+    },
+    "shadows": [
+      {
+        "name": "tilt-glow",
+        "value": "0 0 0 1px color-mix(in srgb, var(--landing-accent) 30%, transparent), 0 12px 40px color-mix(in srgb, var(--landing-accent) 22%, transparent)",
+        "purpose": "The only shadow in the system. Hover response on a tilt card, built from the accent rather than black so it adapts across themes. Never used at rest."
+      }
+    ],
+    "motion": [
+      { "name": "motion-fast", "value": "150ms", "purpose": "Color and border transitions on buttons and links." },
+      { "name": "motion-base", "value": "200ms", "purpose": "Default state transition, including the header fade-in." },
+      { "name": "motion-slow", "value": "250ms", "purpose": "The system ceiling. Nothing animates longer except the arrow lift-off." },
+      { "name": "ease-landing", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Default easing for all state transitions." },
+      { "name": "ease-liftoff", "value": "cubic-bezier(0.34, 1.3, 0.64, 1)", "purpose": "Springy overshoot for the 280ms button arrow lift-off. The one place the system allows a bounce." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "0" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "laptop", "value": "1024px" },
+      { "name": "wide", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Solid Button",
+      "kind": "button",
+      "refersTo": "button-solid",
+      "description": "The single primary action per view, and the only place indigo becomes a fill. Carries the lift-off arrow.",
+      "html": "<button class=\"ds-btn ds-btn-solid\"><span class=\"ds-btn-text\">View projects</span><span class=\"ds-btn-arrow-stack\"><span class=\"ds-btn-arrow ds-btn-arrow-ghost\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></span><span class=\"ds-btn-arrow ds-btn-arrow-lead\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></span></span></button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 6px; font-family: var(--landing-font-body, Inter, sans-serif); font-size: var(--landing-body-md, 16px); font-weight: 500; letter-spacing: 0.01em; padding: 8px 16px; min-height: 40px; cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, filter 150ms ease; } .ds-btn:focus-visible { outline: 2px solid var(--landing-accent, #857ee2); outline-offset: 2px; } .ds-btn-solid { background-color: var(--landing-accent-strong, #6e66d9); color: #ffffff; } .ds-btn-solid:hover { background-color: var(--landing-accent-hover, #8a83e3); filter: brightness(1.1); } .ds-btn-solid:active { background-color: var(--landing-accent-active, #5b53c2); filter: none; } .ds-btn-text { display: inline-flex; align-items: center; } .ds-btn-arrow-stack { position: relative; display: inline-flex; width: 12px; height: 12px; flex-shrink: 0; } .ds-btn-arrow { position: absolute; inset: 0; display: inline-flex; line-height: 0; transition: transform 280ms cubic-bezier(0.34, 1.3, 0.64, 1), opacity 280ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-arrow-ghost { color: #ffffff; opacity: 0; } .ds-btn-arrow-lead { color: currentColor; opacity: 1; } .ds-btn:hover .ds-btn-arrow-ghost { opacity: 0.45; } .ds-btn:hover .ds-btn-arrow-lead { transform: translateX(6px) scale(1.05); } @media (prefers-reduced-motion: reduce) { .ds-btn-arrow { transition: none; } .ds-btn:hover .ds-btn-arrow-lead { transform: none; } .ds-btn:hover .ds-btn-arrow-ghost { opacity: 0; } }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The default for anything that is not the single primary action. Hairline border, label turns indigo on hover.",
+      "html": "<button class=\"ds-btn ds-btn-ghost\">Read the case study</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: transparent; border: 1px solid var(--landing-border, #232a3a); border-radius: 6px; color: var(--landing-text-300, #e2e8f0); font-family: var(--landing-font-body, Inter, sans-serif); font-size: var(--landing-body-md, 16px); font-weight: 500; letter-spacing: 0.01em; padding: 8px 16px; min-height: 40px; cursor: pointer; transition: border-color 150ms ease, color 150ms ease; } .ds-btn-ghost:hover { border-color: var(--landing-border-strong, #2f3854); color: var(--landing-accent-hover, #8a83e3); } .ds-btn-ghost:active { color: var(--landing-accent, #857ee2); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--landing-accent, #857ee2); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip-default",
+      "description": "Metadata tag in mono caps inside a hairline rectangle. Not a control: cursor stays default and there is no active state. The prominence ladder encodes tier, not state.",
+      "html": "<span class=\"ds-chip\">Angular</span> <span class=\"ds-chip ds-chip-strong\">TypeScript</span> <span class=\"ds-chip ds-chip-strongest\">Design systems</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; border: 1px solid var(--landing-border, #232a3a); background-color: transparent; color: var(--landing-text-500, #a3b0c4); font-family: var(--landing-font-mono, 'JetBrains Mono', monospace); font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 4px; padding: 4px 8px; white-space: nowrap; cursor: default; transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; } .ds-chip:hover { background-color: var(--landing-ink-2, #1a2030); color: var(--landing-text-300, #e2e8f0); } .ds-chip-strong { background-color: color-mix(in srgb, var(--landing-ink-2, #1a2030) 60%, transparent); border-color: var(--landing-text-500, #a3b0c4); color: var(--landing-text-300, #e2e8f0); } .ds-chip-strong:hover { background-color: var(--landing-ink-2, #1a2030); border-color: var(--landing-text-400, #cbd5e1); } .ds-chip-strongest { background-color: var(--landing-ink-2, #1a2030); border-color: var(--landing-text-300, #e2e8f0); color: var(--landing-text-300, #e2e8f0); } .ds-chip-strongest:hover { background-color: color-mix(in srgb, var(--landing-ink-2, #1a2030) 72%, var(--landing-accent, #857ee2)); border-color: color-mix(in srgb, var(--landing-text-400, #cbd5e1) 50%, var(--landing-accent, #857ee2)); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A sunken well. On focus the border turns accent and the background deepens rather than lighting up. No glow, no layout shift.",
+      "html": "<div class=\"ds-input-wrap\"><input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\" /></div>",
+      "css": ".ds-input-wrap { position: relative; display: block; width: 100%; max-width: 360px; } .ds-input { width: 100%; padding: 12px 16px; min-height: 44px; border: 1px solid var(--landing-border, #232a3a); border-radius: 6px; background: color-mix(in srgb, var(--landing-ink-1, #11151c) 50%, transparent); color: var(--landing-text-300, #e2e8f0); font-family: var(--landing-font-body, Inter, sans-serif); font-size: var(--landing-body-md, 16px); line-height: 1.75; outline: none; transition: border-color 160ms ease, background-color 160ms ease; } .ds-input::placeholder { color: var(--landing-text-600, #96a1b4); } .ds-input:focus { border-color: var(--landing-accent, #857ee2); background: color-mix(in srgb, var(--landing-ink-1, #11151c) 70%, transparent); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; background: color-mix(in srgb, var(--landing-ink-1, #11151c) 30%, transparent); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The only genuinely rounded surface in the system. Flat fill on mobile and tablet; translucent glass only at laptop and above, for scroll performance. The tilt variant adds the system's single shadow on hover.",
+      "html": "<article class=\"ds-card ds-card-tilt\"><span class=\"ds-card-eyebrow\">FIG. 03 &middot; Case study</span><h3 class=\"ds-card-title\">Document Engine</h3><p class=\"ds-card-body\">A published editor core and its Angular binding, extracted from this site and shipped to npm.</p></article>",
+      "css": ".ds-card { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 28px; max-width: 380px; background-color: color-mix(in srgb, var(--landing-ink-2, #1a2030) 90%, transparent); border: 1px solid color-mix(in srgb, var(--landing-text-300, #e2e8f0) 8%, transparent); border-radius: 16px; } @media (min-width: 1024px) { .ds-card { background-color: color-mix(in srgb, var(--landing-text-300, #e2e8f0) 3%, transparent); backdrop-filter: blur(24px) saturate(120%); -webkit-backdrop-filter: blur(24px) saturate(120%); } } .ds-card-eyebrow { font-family: var(--landing-font-mono, 'JetBrains Mono', monospace); font-size: 12px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--landing-text-500, #a3b0c4); } .ds-card-title { margin: 0; font-family: var(--landing-font-display, Newsreader, serif); font-size: 24px; line-height: 1.25; letter-spacing: -0.02em; font-weight: 500; color: var(--landing-text-300, #e2e8f0); } .ds-card-body { margin: 0; font-family: var(--landing-font-body, Inter, sans-serif); font-size: var(--landing-body-md, 16px); line-height: 1.75; color: var(--landing-text-500, #a3b0c4); } .ds-card-tilt { transform-style: preserve-3d; transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease; } .ds-card-tilt:hover { transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-2px); border-color: color-mix(in srgb, var(--landing-accent, #857ee2) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--landing-accent, #857ee2) 30%, transparent), 0 12px 40px color-mix(in srgb, var(--landing-accent, #857ee2) 22%, transparent); } @media (prefers-reduced-motion: reduce) { .ds-card-tilt { transition: box-shadow 300ms ease, border-color 300ms ease; } .ds-card-tilt:hover { transform: none; } }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Header navigation. The active item turns indigo and takes a 1px indigo underline drawn 4px below the label. This is the canonical active marker in the system.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"#\">Projects</a><a class=\"ds-nav-link ds-nav-link-active\" href=\"#\">Writing</a><a class=\"ds-nav-link\" href=\"#\">About</a></nav>",
+      "css": ".ds-nav { display: inline-flex; align-items: center; gap: 24px; padding: 12px 20px; background: color-mix(in srgb, var(--landing-ink-0, #0a0d12) 72%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--landing-border, #232a3a); border-radius: 999px; } .ds-nav-link { position: relative; font-family: var(--landing-font-body, Inter, sans-serif); font-size: var(--landing-body-md, 16px); font-weight: 500; color: var(--landing-text-400, #cbd5e1); text-decoration: none; transition: color 150ms ease; } .ds-nav-link:hover { color: var(--landing-text-300, #e2e8f0); } .ds-nav-link-active { color: var(--landing-accent, #857ee2); } .ds-nav-link-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background-color: var(--landing-accent, #857ee2); } .ds-nav-link:focus-visible { outline: 2px solid var(--landing-accent, #857ee2); outline-offset: 4px; border-radius: 2px; }"
+    },
+    {
+      "name": "Eyebrow",
+      "kind": "custom",
+      "refersTo": "eyebrow",
+      "description": "Mono caps label above a heading, with a trailing hairline that flexes to fill the row. Eyebrow plus serif headline is the canonical section opener.",
+      "html": "<div class=\"ds-eyebrow\"><span class=\"ds-eyebrow-part\">Selected work</span><span class=\"ds-eyebrow-rule\"></span></div>",
+      "css": ".ds-eyebrow { display: flex; align-items: center; width: 100%; gap: 8px; font-family: var(--landing-font-mono, 'JetBrains Mono', monospace); font-size: 12px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--landing-text-500, #a3b0c4); } .ds-eyebrow-rule { flex: 1 1 auto; height: 1px; background-color: var(--landing-border, #232a3a); margin-left: 8px; }"
+    },
+    {
+      "name": "Pull Quote",
+      "kind": "custom",
+      "refersTo": "eyebrow",
+      "description": "Newsreader italic behind a 2px indigo left rule, with a mono caps cite line. The indigo rule is the 'this is a moment' cue inside reading copy.",
+      "html": "<figure class=\"ds-quote\"><p class=\"ds-quote-body\">The fast path exists so the deep path gets read.</p><figcaption class=\"ds-quote-cite\">Product principle 4</figcaption></figure>",
+      "css": ".ds-quote { margin: 0; border-left: 2px solid var(--landing-accent, #857ee2); padding: 4px 0 4px 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46ch; } .ds-quote-body { margin: 0; font-family: var(--landing-font-display, Newsreader, serif); font-style: italic; font-size: 17px; line-height: 1.6; color: var(--landing-text-300, #e2e8f0); } .ds-quote-cite { font-family: var(--landing-font-mono, 'JetBrains Mono', monospace); font-size: 12px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--landing-text-500, #a3b0c4); }"
+    },
+    {
+      "name": "Blueprint Background",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The signature component. A perspective grid floor at 18% opacity, radially masked into a horizon. One of six technical-drawing patterns that sit behind sections at z-index -1 with pointer events disabled.",
+      "html": "<div class=\"ds-bp\"><div class=\"ds-bp-grid\"></div><span class=\"ds-bp-label\">FIG. 01 &middot; Blueprint</span></div>",
+      "css": ".ds-bp { position: relative; height: 220px; background-color: var(--landing-ink-0, #0a0d12); border: 1px solid var(--landing-border, #232a3a); overflow: hidden; perspective: 1200px; perspective-origin: 50% 50%; } .ds-bp-grid { content: ''; position: absolute; left: -25%; right: -25%; bottom: -10%; height: 140%; background-image: linear-gradient(to right, rgba(155, 195, 235, 1) 1px, transparent 1px), linear-gradient(to bottom, rgba(155, 195, 235, 1) 1px, transparent 1px); background-size: 56px 56px; transform: rotateX(68deg); transform-origin: 50% 100%; mask-image: radial-gradient(ellipse 70% 80% at 50% 100%, black 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 100%, black 20%, transparent 75%); opacity: 0.18; } .ds-bp-label { position: absolute; left: 16px; bottom: 16px; font-family: var(--landing-font-mono, 'JetBrains Mono', monospace); font-size: 11px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--landing-text-500, #a3b0c4); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Drafting Table",
+    "overview": "This is a technical drawing sheet that someone made beautiful. The page is the paper: a cool blue-black field with the faint apparatus of engineering drawing printed into it. Perspective grid floors, concentric contour rings, diagonal pencil hatching, a radar crosshair, a dot matrix. None of it is content, all of it is context, and it sits underneath everything at low opacity like a drafting sheet showing through. On top of that surface, information is laid out the way a good technical document lays it out: hairline rules instead of boxes, numbered figures with mono captions, uppercase mono labels pointing at things, and a single indigo mark used the way a pencil marks a sheet.\n\nThe mood is calm, restrained, and unhurried. Sections are separated by large empty bands rather than by containers. Motion is capped at 250ms. There is one accent color and it appears rarely. Nothing on the page is competing for attention, because the system assumes the reader arrived on purpose and will stay if left alone. The precision is real but it is never announced: the 4px grid, the fluid type scale, and the tokenized everything are load-bearing craft that the visitor should feel as calm rather than notice as engineering.\n\nThree typefaces carry three separate jobs and never trade places. Newsreader is the warm serif reserved for the moments that matter. Inter is the dominant voice and does all the reading and all the interface. JetBrains Mono, almost always uppercase, is the labelling voice for anything that points at content rather than being content.\n\nThis world is defined against four things it refuses to be: the terminal-hacker developer portfolio, the gradient-mesh SaaS startup, the corporate agency template, and the maximalist brutalist portfolio. It also explicitly refuses the current wave of AI-generated portfolio sameness, big scrolly pages, and effect-intense homepages. Scroll position is not a narrative device here.",
+    "keyCharacteristics": [
+      "Technical-drawing backgrounds as the signature decoration, never as content.",
+      "Hairline 1px borders in place of boxes, shadows, and containers.",
+      "One indigo accent, used rarely, against a cool blue-black ink scale.",
+      "Three typefaces with three non-overlapping jobs; Inter dominant.",
+      "Fluid type that shrinks on phones instead of eating the viewport.",
+      "Depth by tonal layering, never by drop shadow.",
+      "Motion restrained to 150 to 250ms, always reduce-motion aware."
+    ],
+    "rules": [
+      {
+        "name": "The One Mark Rule",
+        "body": "Indigo is the only chromatic color the system owns. It appears as a mark, not as a field: a 1px underline, a 2px quote rule, an icon, a focus ring, one button. If more than a small fraction of a viewport is indigo, the page is wrong. There is no secondary or tertiary accent, and inventing one breaks the world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Blue-Black Rule",
+        "body": "Every neutral is blue-shifted. Never introduce a warm grey, a true #000, or a true #fff as a surface. The field is ink, and ink has a hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Graphite Floor Rule",
+        "body": "text-700 is not a text color. It exists for decorative dimming only (SVG fills, inactive markers). Body copy stops at text-600, and every tier from text-600 up is contrast-checked in both themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Bases Rule",
+        "body": "The whole surface is anchored by one dominant family (currently Inter) and one perceived base size (currently body-md, fluid 14px to 16px). Any view should read as an Inter page at a glance. Both are single-token swaps by design.",
+        "section": "typography"
+      },
+      {
+        "name": "The Optical Parity Rule",
+        "body": "The base size is a perceived size, not a nominal pixel value. Families render at different x-heights, so Newsreader at 17px looks visibly smaller than Inter at 17px. When a secondary family is meant to read at the base size, nudge its pixel value until it looks like the base. A font swap re-tunes this correction; it is a property of the pairing, not a constant.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Display Moment Rule",
+        "body": "A page gets one Newsreader headline. Sub-headings drop to Inter unless they are inside an editorial reading column. Using the serif repeatedly, especially in a grid of cards, dissolves the only warmth the system has.",
+        "section": "typography"
+      },
+      {
+        "name": "The Inflected Heading motif",
+        "body": "A sanctioned exception to the One Display Moment Rule: one authored device may repeat. A section heading is set in Inter with its final word in Newsreader italic accent (\"Passion projects.\", \"The toolkit.\", \"Let's talk.\"). The sans states the subject and the serif inflects it, the same two-voice move the hero makes with the name and the role. Everything else holds: the serif never carries a whole heading outside the hero, and never appears inside a repeating component such as a card grid or a list.",
+        "section": "typography"
+      },
+      {
+        "name": "The Pointing Voice Rule",
+        "body": "If text labels, tags, dates, or points at other content rather than being content, it is mono uppercase at 0.06em tracking. If a reader must scan it as a sentence, it is never mono; mono caps slows reading on purpose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Shrink-Not-Overflow Rule",
+        "body": "Display and the entire body scale are fluid, clamped between a 375px and a 1440px viewport. Line heights for fluid sizes are unitless ratios, never fixed pixels, because a fixed line height over-spaces a shrunken heading. Only mono stays stepped.",
+        "section": "typography"
+      },
+      {
+        "name": "The Empty Band Rule",
+        "body": "Separation comes from vertical space first, a hairline second, and a surface change third. A container is the last resort, not the first.",
+        "section": "layout"
+      },
+      {
+        "name": "The Device Names Rule",
+        "body": "Never write a raw media query, a raw 100vh, or a raw prefers-* query. Use the four device-bound mixins and the viewport-height token. The names carry the intent; the numbers do not.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Surfaces are flat when nothing is happening. Depth appears only as a response to state. Never add a resting drop shadow to give something presence; move it up the ink ladder instead.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glass-Is-Earned Rule",
+        "body": "A backdrop filter is a laptop-and-up enhancement gated behind a breakpoint, never a base style. If a component needs glass on a phone, it needs a different design.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Accent Shadow Rule",
+        "body": "When a shadow is unavoidable, build it from the accent with color-mix, not from black. Black shadows are invisible on ink and overpowering on light.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Hairline-Not-Box Rule",
+        "body": "Reach for a 1px rule before reaching for a bordered container. The system separates with lines and space; boxes are for things that are genuinely objects.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Square Plate Rule",
+        "body": "Images and figures never get a radius. If an image looks like a card, the frame is wrong.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do separate with vertical space first (64 / 96 / 128px section rhythm), a 1px hairline second, and a surface change third.",
+      "Do keep indigo as a mark: a 1px underline, a 2px rule, an icon, a focus ring, one solid button per view.",
+      "Do give every text node exactly one typeface owner. Serif for the one display moment, Inter for everything read or operated, mono caps for anything that labels or points.",
+      "Do use unitless line-height ratios for any fluid size, and keep clamp endpoints on the 4px grid.",
+      "Do use the four device-bound breakpoint names (mobile, tablet, laptop, wide) and their mixins.",
+      "Do build any unavoidable shadow from the accent with color-mix, so it survives both themes.",
+      "Do pair a reduced-motion fallback with every transform, and keep transitions inside 150 to 250ms.",
+      "Do frame images square. Zero radius, 1px hairline, ink-1 behind."
+    ],
+    "donts": [
+      "Don't introduce a second accent hue. There is no secondary or tertiary color in this system, and adding one destroys the One Mark Rule.",
+      "Don't use a warm grey, a pure #000, or a pure #fff as a surface. Every neutral is blue-shifted ink.",
+      "Don't use text-700 for body copy. It is decorative dimming only.",
+      "Don't add a resting drop shadow. Move the surface up the ink ladder instead.",
+      "Don't apply backdrop-filter below the laptop breakpoint. It is the dominant cause of mobile scroll jank against these decorative backgrounds.",
+      "Don't set a Newsreader headline in a repeating context such as a card grid or a list. One display moment per page.",
+      "Don't set anything readers must scan as a sentence in mono caps.",
+      "Don't write a raw @media query, a raw 100vh, or a generic sm/md/lg breakpoint prefix.",
+      "Don't normalize the chip's 2/6/14px spacing to the 4px grid. It is a deliberate optical correction for uppercase mono.",
+      "Don't let scroll position become a narrative device. No scroll-driven storytelling, no pinned sections, no effect-heavy homepage."
+    ]
+  }
+}
