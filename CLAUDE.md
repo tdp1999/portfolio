@@ -34,6 +34,7 @@ Use these skills for specific workflows. More will be added over time.
 | `aqa-expert`     | Writing or updating E2E tests (Playwright, POM pattern, flakiness checks)  |
 | `design`         | All design / UI-UX work — research, ingest, review, revamp, document (`/design [mode]`). Owns what design-ingest / design-check / component-bank / ui-research used to do |
 | `ng-lib`         | Creating new Nx Angular libraries (correct tags, directory, import paths)  |
+| `ng-docs`        | Looking up Angular framework behavior from the official v21 docs (unfamiliar API, stable vs experimental). Not a pre-edit checklist |
 
 ## Context Files (`.context/`)
 
