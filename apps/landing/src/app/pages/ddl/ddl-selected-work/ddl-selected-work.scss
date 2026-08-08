@@ -67,10 +67,16 @@
   line-height: var(--landing-mono-sm-lh);
   color: var(--landing-text-600);
 }
-.swt__meta-role {
-  font-size: var(--landing-mono-md);
-  line-height: var(--landing-mono-md-lh);
-  color: var(--landing-accent);
+/* The contribution line. Mirrors `.selected-work-tab__role` in the real component: a
+   sentence a reader has to parse belongs in Inter, not in the mono-caps stamp it used to
+   share with the year. See DESIGN.md → The Pointing Voice Rule. */
+.swt__role {
+  margin: 8px 0 0 0;
+  max-width: 60ch;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
 }
 
 .swt__name {

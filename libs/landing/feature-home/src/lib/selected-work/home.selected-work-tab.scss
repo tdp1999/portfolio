@@ -21,8 +21,9 @@
   min-width: 0;
 }
 
-/* Single-line meta: "YEAR · ROLE" in one mono size — one treatment instead of two
-   stacked sizes/colors, so the tab opens with less type noise. */
+/* Year stamp only. The role used to share this mono-caps row; it is a full sentence,
+   so it moved to `.selected-work-tab__role` in Inter. Mono stays for what genuinely
+   points at content — the date. */
 .selected-work-tab__meta {
   display: flex;
   flex-direction: row;
@@ -38,11 +39,16 @@
 .selected-work-tab__meta-year {
   color: var(--landing-text-500);
 }
-.selected-work-tab__meta-sep {
-  color: var(--landing-text-600);
-}
-.selected-work-tab__meta-role {
-  color: var(--landing-accent);
+/* The contribution line: the sentence a hiring manager reads to decide whether to keep
+   going. Inter at the base size, secondary tint — readable, and it leaves the accent
+   free to stay a mark rather than becoming a six-line field. */
+.selected-work-tab__role {
+  margin: 8px 0 0 0;
+  max-width: 60ch;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+  color: var(--landing-text-400);
 }
 
 .selected-work-tab__title {

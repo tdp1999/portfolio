@@ -1,17 +1,15 @@
 <div class="selected-work-tab">
   <div class="selected-work-tab__left">
-    @if (year() || role()) {
+    @if (year()) {
       <div class="selected-work-tab__meta">
-        @if (year()) {
-          <span class="selected-work-tab__meta-year">{{ year() }}</span>
-        }
-        @if (year() && role()) {
-          <span class="selected-work-tab__meta-sep" aria-hidden="true">·</span>
-        }
-        @if (role()) {
-          <span class="selected-work-tab__meta-role">{{ role() }}</span>
-        }
+        <span class="selected-work-tab__meta-year">{{ year() }}</span>
       </div>
+    }
+    <!-- The role is a sentence the reader has to parse, so it is Inter, not the mono-caps
+         stamp it used to share with the year. Mono caps slows reading on purpose, which is
+         wrong for the most evaluative line in the section. -->
+    @if (role()) {
+      <p class="selected-work-tab__role">{{ role() }}</p>
     }
 
     <h3 class="selected-work-tab__title">{{ title() }}</h3>

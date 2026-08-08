@@ -1,17 +1,19 @@
 <div class="selected-work-fallback">
   <div class="selected-work-fallback__left">
-    @if (year() || role()) {
+    @if (year()) {
       <div class="selected-work-fallback__meta">
-        @if (year()) {
-          <span class="selected-work-fallback__meta-year">{{ year() }}</span>
-        }
-        @if (role()) {
-          <span class="selected-work-fallback__meta-role">{{ role() }}</span>
-        }
+        <span class="selected-work-fallback__meta-year">{{ year() }}</span>
       </div>
     }
 
     <h3 class="selected-work-fallback__title">{{ title() }}</h3>
+
+    <!-- Mirrors the tab component: the role is a sentence, so it reads in Inter rather
+         than the mono-caps stamp. This branch renders whenever a project has no images,
+         so the same field must not change typeface depending on that. -->
+    @if (role()) {
+      <p class="selected-work-fallback__role">{{ role() }}</p>
+    }
 
     @if (descriptionRuns().length > 0) {
       <p class="selected-work-fallback__desc">
