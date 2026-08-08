@@ -18,3 +18,4 @@ export * from './lib/failure.types';
 export * from './lib/failure.service';
 export * from './lib/version.types';
 export * from './lib/version.service';
+export * from './lib/resume.util';

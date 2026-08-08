@@ -9,7 +9,7 @@ import { HomeIntro } from '../home.intro/home.intro';
 import { HomePhilosophyStrip } from '../home.philosophy-strip/home.philosophy-strip';
 import { HomeSelectedWork } from '../selected-work/home.selected-work';
 import { HomeStack } from '../home.stack/home.stack';
-import { ProfileService, SkillService } from '@portfolio/landing/shared/data-access';
+import { ProfileService, SkillService, resolveResume } from '@portfolio/landing/shared/data-access';
 import { getLocalized } from '@portfolio/shared/utils/lite';
 import type { PortableDocument } from '@portfolio/shared/features/rte-core/portable';
 import {
@@ -101,6 +101,15 @@ export class Home {
   // Console Links dropdown (LinkedIn / GitHub / Zalo / …), in order, capped by
   // the row's `max`. Zalo just needs a ZALO link entry (brand icon wired).
   socialLinks = computed(() => this.profile()?.socialLinks ?? []);
+
+  /**
+   * Hero (§2) resume CTA. Resolution lives in `resolveResume` so the hero and the
+   * header cannot drift into picking different files; see that util for why the
+   * fallback is preferred over hiding the link.
+   */
+  private readonly resumeEntry = computed(() => resolveResume(this.profile()?.resumeUrls, this.locale()));
+  resumeUrl = computed(() => this.resumeEntry().url);
+  resumeFallbackLocale = computed(() => this.resumeEntry().fallbackLocale);
 
   constructor() {
     // Re-registered on locale change: the scrollspy holds the titles it renders.

@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Background, StaggerText, StatusDot } from '@portfolio/landing/shared/ui';
+import { Background, Link, StaggerText, StatusDot } from '@portfolio/landing/shared/ui';
 
 import { DdlConsidered } from '../ddl-considered/ddl-considered';
 import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
@@ -18,6 +18,7 @@ import { DEMO, HERO_VARIANTS } from './ddl-hero.data';
     Background,
     StaggerText,
     StatusDot,
+    Link,
     DdlDocPage,
     DdlSection,
     DdlDecisionRecord,
@@ -240,8 +241,19 @@ import { DEMO, HERO_VARIANTS } from './ddl-hero.data';
         </div>
       </landing-ddl-section>
 
-      <!-- Shared meta block — used by V1, V2, α, β, γ -->
+      <!-- Shared bottom band — used by V1, V2, α, β, γ.
+           Actions sit beside the title block rather than under the headline: availability
+           and the thing to do about it belong in one glance. The hero shipped without any
+           interactive element at all, which left a reader sold by it with nothing to act
+           on and the CV reachable only through the header More menu.
+           Both are landing-link, not landing-button — a route change and a download are
+           navigation, not actions. Hrefs here are inert; this is a composition showcase. -->
       <ng-template #meta>
+        <div class="hv__actions">
+          <landing-link href="/contact" [arrow]="true">{{ demo.ctaPrimary }}</landing-link>
+          <landing-link href="/contact" kind="download">{{ demo.ctaSecondary }}</landing-link>
+        </div>
+
         <dl class="hv__meta" aria-label="Hire status">
           <div class="hv__meta-row">
             <dt class="hv__meta-key">STATUS</dt>
@@ -344,6 +356,20 @@ import { DEMO, HERO_VARIANTS } from './ddl-hero.data';
         font-family: var(--landing-font-display);
         font-style: italic;
         color: var(--landing-accent);
+      }
+
+      /* Action row, paired with the meta title block. align-items stays at the default
+         stretch so the inner anchor fills the 44px host — centring it would leave the tap
+         target at text height and turn the extra space into dead pixels. */
+      .hv__actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+      .hv__actions landing-link {
+        display: inline-flex;
+        min-height: 44px;
       }
 
       .hv__meta {

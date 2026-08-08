@@ -20,6 +20,15 @@
   </landing-container>
 
   <landing-container size="wide" class="home-hero__bottom">
+    <!-- Actions sit beside the meta block on purpose: availability and the thing to do
+         about it belong in one glance, instead of at opposite corners of the viewport. -->
+    <div class="home-hero__actions">
+      <landing-link href="/contact" [arrow]="true">{{ contactLabel() }}</landing-link>
+      @if (resumeUrl()) {
+        <landing-link [href]="resumeUrl()" kind="download">{{ resumeLabel() }}</landing-link>
+      }
+    </div>
+
     <dl class="home-hero__meta" [attr.aria-label]="hireStatusLabel()">
       @if (profileLoaded()) {
         <div class="home-hero__meta-row">

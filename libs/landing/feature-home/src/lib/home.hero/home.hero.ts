@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import type { Locale } from '@portfolio/shared/types';
 import {
   Container,
   StatusDot,
   Background,
   StaggerText,
+  Link,
   LandingLocaleService,
   resolveCopy,
 } from '@portfolio/landing/shared/ui';
@@ -11,7 +13,7 @@ import {
 @Component({
   selector: 'landing-home-hero',
   standalone: true,
-  imports: [Container, StatusDot, Background, StaggerText],
+  imports: [Container, StatusDot, Background, StaggerText, Link],
   templateUrl: './home.hero.html',
   styleUrl: './home.hero.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +29,14 @@ export class HomeHero {
   readonly coreStackChips = input<readonly string[]>([]);
   /** True once the public profile HTTP call has resolved (success or fail). Drives the STATUS row visibility. */
   readonly profileLoaded = input<boolean>(false);
+  /** Resolved resume URL for the reader's locale, or '' when the profile carries none. */
+  readonly resumeUrl = input<string>('');
+  /**
+   * Set when the resolved resume is NOT in the reader's own language — it holds the
+   * language actually being downloaded. The CTA then names that language instead of
+   * handing over the other locale's PDF unannounced. `null` when the file matches.
+   */
+  readonly resumeFallbackLocale = input<Locale | null>(null);
 
   /** Own locale, not a caller input: the hire-status label is this component's copy. */
   private readonly locale = inject(LandingLocaleService).locale;
@@ -38,6 +48,13 @@ export class HomeHero {
   /** The `<section>` landmark reuses the pill-nav's own name for this region. */
   protected readonly sectionLabel = computed(() => resolveCopy('home.section.hero', this.locale()));
   protected readonly hireStatusLabel = computed(() => resolveCopy('home.hero.a11y.hireStatus', this.locale()));
+
+  protected readonly contactLabel = computed(() => resolveCopy('home.hero.cta.contact', this.locale()));
+  protected readonly resumeLabel = computed(() => {
+    const fallback = this.resumeFallbackLocale();
+    if (!fallback) return resolveCopy('home.hero.cta.resume', this.locale());
+    return resolveCopy(fallback === 'en' ? 'home.hero.cta.resumeEnOnly' : 'home.hero.cta.resumeViOnly', this.locale());
+  });
 
   /**
    * Splits the tagline at the first sentence boundary into two display blocks.

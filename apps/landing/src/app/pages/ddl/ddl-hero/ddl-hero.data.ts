@@ -8,6 +8,8 @@ export const DEMO = {
   status: 'AVAILABLE FOR HIRE',
   stack: 'ANGULAR / TYPESCRIPT / ANGULAR MATERIAL',
   city: 'HO CHI MINH CITY',
+  ctaPrimary: 'Get in touch',
+  ctaSecondary: 'Download CV',
 } as const;
 
 // Decision record — five entrance compositions over the same hero content.

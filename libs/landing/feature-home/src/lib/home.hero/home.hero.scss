@@ -22,8 +22,34 @@
   justify-content: center;
 }
 
+/* Actions left, meta title-block right, sharing one baseline. Before this row existed
+   the hero held 820px with nothing to click, and the availability line sat diagonally
+   opposite the headline that earned it. */
 .home-hero__bottom {
-  display: block;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.home-hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  opacity: 0;
+  /* Joins the hero's existing entrance cadence: role 540ms → lead 900ms →
+     emphasis 1020ms → actions → meta 1300ms. */
+  animation: home-hero-fade-up 600ms cubic-bezier(0.2, 0, 0.1, 1) 1160ms both;
+}
+
+/* The link primitive is 12px mono; on touch that is under the comfortable target size,
+   so the host is grown to 44px. `align-items` stays at the default `stretch` on purpose:
+   centring here would leave the inner `<a>` at its natural text height and turn the extra
+   26px into dead space rather than hit area. `.landing-link` centres its own text. */
+.home-hero__actions landing-link {
+  display: inline-flex;
+  min-height: 44px;
 }
 
 .home-hero__headline {
@@ -205,6 +231,17 @@
     margin-inline: auto;
   }
 
+  /* Stack the bottom band on a phone: actions first (they are the point), meta beneath. */
+  .home-hero__bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .home-hero__actions {
+    justify-content: center;
+  }
+
   /* Meta: center + stack each row (key above value) so a long value like the core stack
      wraps cleanly instead of breaking the "CORE STACK" key mid-word. */
   .home-hero__meta {
@@ -228,6 +265,7 @@
 .home-hero__role,
 .home-hero__sub-lead,
 .home-hero__sub-emphasis,
+.home-hero__actions,
 .home-hero__meta-row {
   @include prefers.reduce-motion {
     animation: none;
