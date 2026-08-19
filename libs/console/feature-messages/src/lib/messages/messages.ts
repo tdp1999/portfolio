@@ -218,6 +218,8 @@ export default class Messages implements OnInit {
         return 'badge-collab';
       case 'BUG_REPORT':
         return 'badge-bug';
+      case 'PRESS':
+        return 'badge-press';
       default:
         return 'badge-default';
     }
