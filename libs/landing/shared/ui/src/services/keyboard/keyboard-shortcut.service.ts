@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal, isDevMode } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { isEditableTarget } from '@portfolio/shared/ui';
 import { comboFromEvent, formatCombo, normalizeCombo, type KeyboardShortcut } from './keyboard-shortcut.types';
@@ -110,7 +110,9 @@ export class KeyboardShortcutService {
           shortcut.handler();
         } catch (err) {
           // Don't let a handler error tear down the listener — log + move on.
-          console.error('[keyboard-shortcut] handler failed for', shortcut.id, err);
+          if (isDevMode()) {
+            console.error('[keyboard-shortcut] handler failed for', shortcut.id, err);
+          }
         }
         return true;
       }

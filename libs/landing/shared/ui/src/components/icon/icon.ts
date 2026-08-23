@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, isDevMode } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ICON_PROVIDER } from './icon-provider.token';
 
@@ -34,7 +34,9 @@ export class Icon {
     // Validate icon name to prevent XSS injection attacks
     // Only allow lowercase alphanumeric characters and hyphens
     if (!/^[a-z0-9-]+$/.test(iconName)) {
-      console.warn(`[IconComponent] Invalid icon name rejected: "${iconName}"`);
+      if (isDevMode()) {
+        console.warn(`[IconComponent] Invalid icon name rejected: "${iconName}"`);
+      }
       return '';
     }
 
