@@ -20,9 +20,9 @@ export const SubmitContactMessageSchema = z.object({
     .optional(),
   message: z
     .string()
+    .transform((v) => v.trim())
     .min(LIMITS.CONTACT_MESSAGE_MIN)
-    .max(LIMITS.CONTACT_MESSAGE_MAX)
-    .transform((v) => v.trim()),
+    .max(LIMITS.CONTACT_MESSAGE_MAX),
   locale: z.enum(['en', 'vi']).default('en'),
   consentGivenAt: z.iso.datetime(),
   website: z.string().optional(),
