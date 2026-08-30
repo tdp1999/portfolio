@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { createHash } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 import { ValidationError, BadRequestError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { hashPassword } from '@portfolio/shared/utils';
 import { IUserRepository } from '../../../user/application/ports/user.repository.port';
@@ -31,8 +31,11 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
         layer: ErrorLayer.APPLICATION,
       });
 
+    // Timing-safe comparison of hashed tokens
     const hashedToken = createHash('sha256').update(data.token).digest('hex');
-    if (hashedToken !== user.passwordResetToken)
+    const storedBuffer = Buffer.from(user.passwordResetToken, 'hex');
+    const providedBuffer = Buffer.from(hashedToken, 'hex');
+    if (storedBuffer.length !== providedBuffer.length || !timingSafeEqual(storedBuffer, providedBuffer))
       throw BadRequestError('Invalid or expired reset token', {
         errorCode: AuthErrorCode.INVALID_RESET_TOKEN,
         layer: ErrorLayer.APPLICATION,
