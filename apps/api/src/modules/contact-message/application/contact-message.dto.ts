@@ -24,7 +24,7 @@ export const SubmitContactMessageSchema = z.object({
     .max(LIMITS.CONTACT_MESSAGE_MAX)
     .transform((v) => v.trim()),
   locale: z.enum(['en', 'vi']).default('en'),
-  consentGivenAt: z.iso.datetime(),
+  consentGivenAt: z.string().datetime(),
   website: z.string().optional(),
   /**
    * Cloudflare Turnstile token captured by the FE widget. Server-side verified
