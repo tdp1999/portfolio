@@ -382,7 +382,10 @@ export default class ProjectForm implements OnInit, HasUnsavedChanges {
 
     const imageIds = this.galleryImages().map((img) => img.mediaId);
 
-    const onError = () => this.saving.set(false);
+    const onError = () => {
+      this.saving.set(false);
+      this.toast.error('Failed to save project. Please try again.');
+    };
 
     const editId = this.projectId();
     if (this.isEdit() && editId) {

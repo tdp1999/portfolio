@@ -283,7 +283,7 @@ export class DocumentEngine {
    */
   private insertField(): void {
     const current = this.doc.value ?? SEED_DOCUMENT;
-    const blocks = Array.isArray(current.content['content']) ? current.content['content'] : [];
+    const blocks = Array.isArray(current.content?.['content']) ? current.content['content'] : [];
     this.doc.setValue({
       ...current,
       content: {
