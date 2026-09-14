@@ -116,12 +116,12 @@ export class AuthController {
       const result: GoogleLoginResult = await this.commandBus.execute(new GoogleLoginCommand(profile));
       this.cookieService.setRefreshToken(res, result.refreshToken, true);
       this.cookieService.setCsrfToken(res);
-      res.redirect(`${frontendUrl}/auth/callback#token=${result.accessToken}`);
+      res.redirect(`${frontendUrl}/auth/callback#token=${encodeURIComponent(result.accessToken)}`);
     } catch (error) {
       Logger.warn(`Google OAuth failed: ${error instanceof Error ? error.message : error}`, 'AuthController');
       const errorCode =
         error != null && typeof error === 'object' && 'errorCode' in error ? error.errorCode : 'unknown';
-      res.redirect(`${frontendUrl}/auth/login?error=${errorCode}`);
+      res.redirect(`${frontendUrl}/auth/login?error=${encodeURIComponent(errorCode)}`);
     }
   }
 
