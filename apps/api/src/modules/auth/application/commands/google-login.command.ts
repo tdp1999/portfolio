@@ -70,7 +70,9 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
     await this.repo.update(user.id, updated.toUpdateData());
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
-    this.commandBus.execute(new UpdateLastLoginCommand(user.id));
+    this.commandBus.execute(new UpdateLastLoginCommand(user.id)).catch((err) => {
+      console.error('Failed to update last login for user:', user.id, err);
+    });
 
     return { accessToken, refreshToken };
   }

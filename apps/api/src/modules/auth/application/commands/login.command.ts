@@ -112,8 +112,10 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
 
-    // Fire-and-forget: update last login
-    this.commandBus.execute(new UpdateLastLoginCommand(user.id));
+    // Fire-and-forget: update last login — catch errors to prevent unhandled promise rejection
+    this.commandBus.execute(new UpdateLastLoginCommand(user.id)).catch((err) => {
+      console.error('Failed to update last login for user:', user.id, err);
+    });
 
     return { accessToken, refreshToken, rememberMe: data.rememberMe };
   }
