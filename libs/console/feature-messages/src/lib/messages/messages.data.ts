@@ -13,5 +13,6 @@ export const PURPOSE_OPTIONS: FilterOption[] = [
   { value: 'FREELANCE', label: 'Freelance' },
   { value: 'COLLABORATION', label: 'Collaboration' },
   { value: 'BUG_REPORT', label: 'Bug Report' },
+  { value: 'PRESS', label: 'Press' },
   { value: 'OTHER', label: 'Other' },
 ];
