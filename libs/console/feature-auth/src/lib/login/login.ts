@@ -104,8 +104,12 @@ export default class Login implements OnInit {
     this.authStore.login(email, password, rememberMe).subscribe({
       next: () => {
         this.toast.success('Signed in successfully');
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
-        this.router.navigateByUrl(returnUrl);
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (returnUrl && returnUrl.startsWith('/')) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       error: () => {
         this.submitting.set(false);
