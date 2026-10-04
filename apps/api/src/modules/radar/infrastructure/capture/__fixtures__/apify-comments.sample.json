@@ -1,0 +1,1919 @@
+[
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1564505171807812",
+    "commentId": "1564505171807812",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xNTY0NTA1MTcxODA3ODEy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTU2NDUwNTE3MTgwNzgxMg==",
+    "date": "2026-08-07T08:13:16.000Z",
+    "text": "🤌 link đăng ký: https://luma.com/09nj7hiv",
+    "attachments": [
+      {
+        "__typename": "GenericAttachmentMedia",
+        "fallback_image": {
+          "height": 98,
+          "uri": "https://external-lga3-1.xx.fbcdn.net/emg1/v/t13/93166317779775216?url=https%3A%2F%2Fimages.lumacdn.com%2Fcdn-cgi%2Fimage%2Fformat%3Dauto%2Cfit%3Dcover%2Cdpr%3D1%2Canim%3Dfalse%2Cbackground%3Dwhite%2Cquality%3D75%2Cwidth%3D800%2Cheight%3D420%2Fevent-social%2Fs4%2F6cc6dec7-f81c-4d9b-a648-e3a6f663f532.png&fb_obo=1&utld=lumacdn.com&_nc_sid=c97757&_nc_ht=external-lga3-1.xx.fbcdn.net&stp=c0.5000x0.5000f_dst-emg0_p98x98_q75_tt6&ccb=18-1&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_zt=3&oh=06_Q3_DAcFsYwFUMUlBr6Jtdf6aKpz9NCDeJ11Miy2NIHL1Eu_V&oe=6AC452F6",
+          "width": 98
+        },
+        "is_playable": false,
+        "id": "10239063190210743"
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "id": "1010276030",
+      "name": "Duy Nguyen",
+      "__isActor": "User",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEGg5LY&_nc_oc=Adqz-0hwbNIL7FxSaVQCEvpR_rFnNiCFRi4qR0CxSkN5sh2YIsvv3oBm_G8j-FTCg5w&_nc_zt=24&_nc_ht=scontent-lga3-3.xx&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_ss=70289&oh=00_AQNwo_K0S0xU14JnWDcDQFP_8_Mzbk0qQhHCg6yHo2exkw&oe=6AC82732"
+      },
+      "profile_picture_depth_0_increased": {
+        "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s40x40&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEGg5LY&_nc_oc=Adqz-0hwbNIL7FxSaVQCEvpR_rFnNiCFRi4qR0CxSkN5sh2YIsvv3oBm_G8j-FTCg5w&_nc_zt=24&_nc_ht=scontent-lga3-3.xx&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_ss=70289&oh=00_AQNwo_K0S0xU14JnWDcDQFP_8_Mzbk0qQhHCg6yHo2exkw&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEGg5LY&_nc_oc=Adqz-0hwbNIL7FxSaVQCEvpR_rFnNiCFRi4qR0CxSkN5sh2YIsvv3oBm_G8j-FTCg5w&_nc_zt=24&_nc_ht=scontent-lga3-3.xx&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_ss=70289&oh=00_AQNwo_K0S0xU14JnWDcDQFP_8_Mzbk0qQhHCg6yHo2exkw&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "2",
+    "commentsCount": 1,
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=4528645760712831",
+    "commentId": "4528645760712831",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M180NTI4NjQ1NzYwNzEyODMx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfNDUyODY0NTc2MDcxMjgzMQ==",
+    "date": "2026-08-07T09:00:33.000Z",
+    "text": "Ảnh của Gehihi sửa cho anh à :)))",
+    "profileId": "anon-1",
+    "profileName": "Commenter 1",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1050071250743775",
+    "commentId": "1050071250743775",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xMDUwMDcxMjUwNzQzNzc1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTA1MDA3MTI1MDc0Mzc3NQ==",
+    "date": "2026-08-08T02:34:36.000Z",
+    "text": "Quá hoành tráng.",
+    "profileId": "anon-2",
+    "profileName": "Commenter 2",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1379947190727655",
+    "commentId": "1379947190727655",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xMzc5OTQ3MTkwNzI3NjU1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTM3OTk0NzE5MDcyNzY1NQ==",
+    "date": "2026-08-07T09:13:23.000Z",
+    "text": "Có Dương Trọng Nghĩa thì là điều trần thiệt nha :))))",
+    "profileId": "anon-3",
+    "profileName": "Commenter 3",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=991327680628783",
+    "commentId": "991327680628783",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M185OTEzMjc2ODA2Mjg3ODM=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfOTkxMzI3NjgwNjI4Nzgz",
+    "date": "2026-08-07T08:16:52.000Z",
+    "text": "Quá xịnnn, hóng idolll 😁",
+    "profileId": "anon-4",
+    "profileName": "Commenter 4",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=27337265539289483",
+    "commentId": "27337265539289483",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18yNzMzNzI2NTUzOTI4OTQ4Mw==",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMjczMzcyNjU1MzkyODk0ODM=",
+    "date": "2026-08-07T08:43:56.000Z",
+    "text": "Mặt phê pha dữ vậy sếp.",
+    "profileId": "anon-5",
+    "profileName": "Commenter 5",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1024750133765799",
+    "commentId": "1024750133765799",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xMDI0NzUwMTMzNzY1Nzk5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTAyNDc1MDEzMzc2NTc5OQ==",
+    "date": "2026-08-07T16:48:25.000Z",
+    "text": "chốt :3",
+    "profileId": "anon-6",
+    "profileName": "Commenter 6",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1546612759745851",
+    "commentId": "1546612759745851",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xNTQ2NjEyNzU5NzQ1ODUx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTU0NjYxMjc1OTc0NTg1MQ==",
+    "date": "2026-08-07T17:44:15.000Z",
+    "text": "Em cũng đc anh Nguyễn Chí mời nè, với vai trò Listener 🤫",
+    "attachments": [
+      {
+        "__typename": "Photo",
+        "blurred_image": {
+          "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t39.99422-6/765035628_1680654563014889_338631352051985899_n.png?stp=dst-jpg_fb30_s960x960_tt6&_nc_cat=110&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=3AIhrvBwsXsQ7kNvwG6fIAa&_nc_oc=Adre6lFezfEpSdDXyHHrvPqukgAJYGvjsFcL1UpcOHLY2EwDH6SJt9KdGtJEpNw_mIQ&_nc_zt=14&_nc_ht=scontent-lga3-1.xx&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_ss=70289&oh=00_AQPVS7pXqxG5Exygufrzw5jkqRS1uu0v3oDUNrJ1JO4OGw&oe=6AC81400"
+        },
+        "id": "1605983307791034",
+        "cix_screen": null,
+        "massive_image": {
+          "width": 960,
+          "height": 960
+        },
+        "image": {
+          "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t39.99422-6/765035628_1680654563014889_338631352051985899_n.png?stp=dst-jpg_tt6&cstp=mx1254x1254&ctp=p75x225&_nc_cat=110&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=3AIhrvBwsXsQ7kNvwG6fIAa&_nc_oc=Adre6lFezfEpSdDXyHHrvPqukgAJYGvjsFcL1UpcOHLY2EwDH6SJt9KdGtJEpNw_mIQ&_nc_zt=14&_nc_ht=scontent-lga3-1.xx&_nc_gid=dXvM435LcrHFyfWlrjukRA&_nc_ss=70289&oh=00_AQOhDgt52-TwUHXeOvWASIgdY0WFH6ZC5x1yV4AlejpCFg&oe=6AC81400",
+          "width": 225,
+          "height": 225
+        },
+        "ocrText": "May be an image of text that says 'Founder Unikorn Hải Nguyễn Nghiên Stage The Special AI Forum 0000000000 0000000000008 00 O O Nghiên/l Nghi LISTENER u CONVICTION 14-15AUG,2026 14-15 AUG, 2026 CONVICTION.VN'"
+      }
+    ],
+    "profileId": "anon-7",
+    "profileName": "Commenter 7",
+    "likesCount": "5",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=2145258759363786",
+    "commentId": "2145258759363786",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18yMTQ1MjU4NzU5MzYzNzg2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMjE0NTI1ODc1OTM2Mzc4Ng==",
+    "date": "2026-08-07T09:31:49.000Z",
+    "text": "Tôi",
+    "profileId": "anon-8",
+    "profileName": "Commenter 8",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1700576337839298",
+    "commentId": "1700576337839298",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xNzAwNTc2MzM3ODM5Mjk4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTcwMDU3NjMzNzgzOTI5OA==",
+    "date": "2026-08-12T10:12:48.000Z",
+    "text": "Oh wow!!🤩",
+    "profileId": "anon-9",
+    "profileName": "Commenter 9",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=886524414185232",
+    "commentId": "886524414185232",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M184ODY1MjQ0MTQxODUyMzI=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfODg2NTI0NDE0MTg1MjMy",
+    "date": "2026-08-07T08:15:09.000Z",
+    "text": "idol",
+    "profileId": "anon-10",
+    "profileName": "Commenter 10",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl?comment_id=1564505171807812&reply_comment_id=1038508985552884",
+    "commentId": "1564505171807812",
+    "id": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xMDM4NTA4OTg1NTUyODg0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkwNjMxODM0MTA1NzNfMTAzODUwODk4NTU1Mjg4NA==",
+    "date": "2026-08-08T01:51:31.000Z",
+    "text": "Duy Nguyen đã đăng ký, hẹn gặp sếp tại sự kiện",
+    "profileId": "anon-11",
+    "profileName": "Commenter 11",
+    "likesCount": "1",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTA2MzE4MzQxMDU3M18xNTY0NTA1MTcxODA3ODEy",
+    "facebookId": "10239063183410573",
+    "postTitle": "Sắp tới đây mình có tham gia 1 phiên điều trần, à nhầm, thảo luận về chủ đề trao quyền cho AI Agents trong doanh nghiệp cùng các sếp khác tại sự kiện Conviction vào ngày 14-15/08 \n\nAnh em nào quỡn ghé chơi nghen, link đăng ký ở dưới còm 👇",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid032ee71yi5m6gxbQWJB8uGa9fcxroPV3bBkeTHUYJv97SDvEtREyn6axn2djh7b8MLl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1757447242098821",
+    "commentId": "1757447242098821",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNzU3NDQ3MjQyMDk4ODIx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTc1NzQ0NzI0MjA5ODgyMQ==",
+    "date": "2026-08-10T06:51:14.000Z",
+    "text": "✍️ \"Tôi FOMO để bạn không cần làm thế\" - Mời mọi người đăng ký để nhận exclusive content của mình nhé!  https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+    "attachments": [
+      {
+        "url": "https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+        "source": null,
+        "title_with_entities": {
+          "text": "This content isn't available at the moment"
+        },
+        "target": {
+          "__typename": "ExternalUrl",
+          "url": "https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+          "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL3d3dy5mYWNlYm9vay5jb20vbXJnb29uaWUvc3Vic2NyaWJlbm93P3N1cmZhY2U9cGlubmVkXGJjb21tZW50czo6Ojo6Og=="
+        },
+        "action_links": [],
+        "media": null,
+        "tracking": null
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "id": "1010276030",
+      "name": "Duy Nguyen",
+      "__isActor": "User",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEHK75V&_nc_oc=AdqjZed8nIO3ZHTlm_e4Rc03VDu-ThCSkJuF4Cgmk-asxrw0tvAmvMpDl_k8xjk8zTI&_nc_zt=24&_nc_ht=scontent-atl3-2.xx&_nc_gid=uJ3pmmg97f3JX79BICHkFw&_nc_ss=70289&oh=00_AQOW42tX6vAn3NPfTKeBEG0Gt_xgHcdGwWZ4FV5P3Uw1MA&oe=6AC82732"
+      },
+      "profile_picture_depth_0_increased": {
+        "uri": "https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s40x40&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEHK75V&_nc_oc=AdqjZed8nIO3ZHTlm_e4Rc03VDu-ThCSkJuF4Cgmk-asxrw0tvAmvMpDl_k8xjk8zTI&_nc_zt=24&_nc_ht=scontent-atl3-2.xx&_nc_gid=uJ3pmmg97f3JX79BICHkFw&_nc_ss=70289&oh=00_AQOW42tX6vAn3NPfTKeBEG0Gt_xgHcdGwWZ4FV5P3Uw1MA&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEHK75V&_nc_oc=AdqjZed8nIO3ZHTlm_e4Rc03VDu-ThCSkJuF4Cgmk-asxrw0tvAmvMpDl_k8xjk8zTI&_nc_zt=24&_nc_ht=scontent-atl3-2.xx&_nc_gid=uJ3pmmg97f3JX79BICHkFw&_nc_ss=70289&oh=00_AQOW42tX6vAn3NPfTKeBEG0Gt_xgHcdGwWZ4FV5P3Uw1MA&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2144790329758324",
+    "commentId": "2144790329758324",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTQ0NzkwMzI5NzU4MzI0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjE0NDc5MDMyOTc1ODMyNA==",
+    "date": "2026-08-10T09:15:47.000Z",
+    "text": "Sao phải qua đó làm gì? Dùng thẳng cho tiện :D",
+    "profileId": "anon-12",
+    "profileName": "Commenter 12",
+    "likesCount": "3",
+    "commentsCount": 3,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1406763044601523",
+    "commentId": "1406763044601523",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDA2NzYzMDQ0NjAxNTIz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTQwNjc2MzA0NDYwMTUyMw==",
+    "date": "2026-08-10T07:29:34.000Z",
+    "text": "con Hy3 lúc mới ra em có vào fomo thử. Thấy gớm luôn??? \nKhông biết mấy pháp sư dùng làm gì chứ đến cả role chatbot cũng lom dom",
+    "profileId": "anon-13",
+    "profileName": "Commenter 13",
+    "likesCount": "2",
+    "commentsCount": 3,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1730829884515486",
+    "commentId": "1730829884515486",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNzMwODI5ODg0NTE1NDg2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTczMDgyOTg4NDUxNTQ4Ng==",
+    "date": "2026-08-10T08:38:59.000Z",
+    "text": "model tàu giờ quá ngon mà",
+    "profileId": "anon-14",
+    "profileName": "Commenter 14",
+    "likesCount": "3",
+    "commentsCount": 1,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2188827862056702",
+    "commentId": "2188827862056702",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTg4ODI3ODYyMDU2NzAy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjE4ODgyNzg2MjA1NjcwMg==",
+    "date": "2026-08-12T01:59:55.000Z",
+    "text": "Deepseek v4 flash dùng chữa cháy thôi chứ dùng chán vl",
+    "profileId": "anon-15",
+    "profileName": "Commenter 15",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2463259637502225",
+    "commentId": "2463259637502225",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNDYzMjU5NjM3NTAyMjI1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjQ2MzI1OTYzNzUwMjIyNQ==",
+    "date": "2026-08-10T11:47:02.000Z",
+    "text": "Kimi K3 của tôi đâu :)",
+    "profileId": "anon-16",
+    "profileName": "Commenter 16",
+    "likesCount": "0",
+    "commentsCount": 3,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2985452458468373",
+    "commentId": "2985452458468373",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yOTg1NDUyNDU4NDY4Mzcz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjk4NTQ1MjQ1ODQ2ODM3Mw==",
+    "date": "2026-08-10T23:08:10.000Z",
+    "text": "Nó rẻ nên thế. Claude chất lượng nhưng đắt. Bảng này kiểu so sánh việc dùng xe Tàu với xe Đức",
+    "profileId": "anon-17",
+    "profileName": "Commenter 17",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTU5ODY4OTgwODU4NjI3Ng==",
+    "date": "2026-08-10T12:49:07.000Z",
+    "text": "cái deepseek kia e chạy mấy cái toàn lỗi trong khi gemini claude openai chạy phát ăn luôn.",
+    "profileId": "anon-18",
+    "profileName": "Commenter 18",
+    "likesCount": "1",
+    "commentsCount": 5,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598608555156825",
+    "commentId": "1598608555156825",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4NjA4NTU1MTU2ODI1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTU5ODYwODU1NTE1NjgyNQ==",
+    "date": "2026-08-11T05:00:37.000Z",
+    "text": "Mấy model này mua key hả anh",
+    "profileId": "anon-19",
+    "profileName": "Commenter 19",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1252753130242148",
+    "commentId": "1252753130242148",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMjUyNzUzMTMwMjQyMTQ4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTI1Mjc1MzEzMDI0MjE0OA==",
+    "date": "2026-08-10T07:19:26.000Z",
+    "text": "Deepshit 0731 ngon quá sếp",
+    "profileId": "anon-20",
+    "profileName": "Commenter 20",
+    "likesCount": "2",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2463259637502225&reply_comment_id=907692072402650",
+    "commentId": "2463259637502225",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF85MDc2OTIwNzI0MDI2NTA=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfOTA3NjkyMDcyNDAyNjUw",
+    "date": "2026-08-10T11:51:59.000Z",
+    "text": "Edward Nguyen giá cao nên ít người dùng 😁",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGu9sqV&_nc_oc=Adr9qCvpa1knEfw9i8hdwKKymeNA7SqgEQGP0GrpbA7YWm_4ryA89iKwT5EmwOdaNzEQeUzkg1cCmW36j8ClLwR3&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=c4fKTxo77vUH5O26rwiWuQ&_nc_ss=70289&oh=00_AQPb7O0-iDTKB0hamJYN6GQwDFuFiIRPITz9qh-zyYTzTQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGu9sqV&_nc_oc=Adr9qCvpa1knEfw9i8hdwKKymeNA7SqgEQGP0GrpbA7YWm_4ryA89iKwT5EmwOdaNzEQeUzkg1cCmW36j8ClLwR3&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=c4fKTxo77vUH5O26rwiWuQ&_nc_ss=70289&oh=00_AQPb7O0-iDTKB0hamJYN6GQwDFuFiIRPITz9qh-zyYTzTQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "3",
+    "commentsCount": 2,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNDYzMjU5NjM3NTAyMjI1",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2463259637502225&reply_comment_id=3557861131048073",
+    "commentId": "2463259637502225",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8zNTU3ODYxMTMxMDQ4MDcz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMzU1Nzg2MTEzMTA0ODA3Mw==",
+    "date": "2026-08-10T12:03:14.000Z",
+    "text": "Duy Nguyen ước gì giá nó bằng deepseek :(",
+    "profileId": "anon-16",
+    "profileName": "Commenter 16",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNDYzMjU5NjM3NTAyMjI1",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2463259637502225&reply_comment_id=1317655103505709",
+    "commentId": "2463259637502225",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMzE3NjU1MTAzNTA1NzA5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTMxNzY1NTEwMzUwNTcwOQ==",
+    "date": "2026-08-10T12:15:23.000Z",
+    "text": "Edward Nguyen thế thì không đủ GPU mà chạy mất, OpenAI/Claude cooked hết luôn :)))",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGu9sqV&_nc_oc=Adr9qCvpa1knEfw9i8hdwKKymeNA7SqgEQGP0GrpbA7YWm_4ryA89iKwT5EmwOdaNzEQeUzkg1cCmW36j8ClLwR3&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=c4fKTxo77vUH5O26rwiWuQ&_nc_ss=70289&oh=00_AQPb7O0-iDTKB0hamJYN6GQwDFuFiIRPITz9qh-zyYTzTQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGu9sqV&_nc_oc=Adr9qCvpa1knEfw9i8hdwKKymeNA7SqgEQGP0GrpbA7YWm_4ryA89iKwT5EmwOdaNzEQeUzkg1cCmW36j8ClLwR3&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=c4fKTxo77vUH5O26rwiWuQ&_nc_ss=70289&oh=00_AQPb7O0-iDTKB0hamJYN6GQwDFuFiIRPITz9qh-zyYTzTQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNDYzMjU5NjM3NTAyMjI1",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2144790329758324&reply_comment_id=2521456961650883",
+    "commentId": "2144790329758324",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNTIxNDU2OTYxNjUwODgz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjUyMTQ1Njk2MTY1MDg4Mw==",
+    "date": "2026-08-10T11:05:24.000Z",
+    "text": "Vũ Văn Hải dùng thẳng API + Reasonix thì nó cache tới 98% thì rẻ hơn bùn",
+    "profileId": "anon-21",
+    "profileName": "Commenter 21",
+    "likesCount": "2",
+    "commentsCount": 1,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTQ0NzkwMzI5NzU4MzI0",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2144790329758324&reply_comment_id=2117351535874561",
+    "commentId": "2144790329758324",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTE3MzUxNTM1ODc0NTYx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjExNzM1MTUzNTg3NDU2MQ==",
+    "date": "2026-08-11T00:35:58.000Z",
+    "text": "Oai Chu Dùng Claude Code nó cũng tự cache.",
+    "profileId": "anon-12",
+    "profileName": "Commenter 12",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTQ0NzkwMzI5NzU4MzI0",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1060310146886118",
+    "commentId": "1060310146886118",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMDYwMzEwMTQ2ODg2MTE4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTA2MDMxMDE0Njg4NjExOA==",
+    "date": "2026-08-14T01:51:48.000Z",
+    "text": "✍️ \"Tôi FOMO để bạn không cần làm thế\" - Mời mọi người đăng ký để nhận exclusive content của mình nhé!  https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+    "attachments": [
+      {
+        "url": "https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+        "source": null,
+        "title_with_entities": {
+          "text": "This content isn't available right now"
+        },
+        "target": {
+          "__typename": "ExternalUrl",
+          "url": "https://www.facebook.com/mrgoonie/subscribenow?surface=pinned_comments",
+          "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL3d3dy5mYWNlYm9vay5jb20vbXJnb29uaWUvc3Vic2NyaWJlbm93P3N1cmZhY2U9cGlubmVkXGJjb21tZW50czo6Ojo6Og=="
+        },
+        "action_links": [],
+        "media": null,
+        "tracking": null
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "id": "1010276030",
+      "name": "Duy Nguyen",
+      "__isActor": "User",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_0_increased": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s40x40&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2343768122828984",
+    "commentId": "2343768122828984",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMzQzNzY4MTIyODI4OTg0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMjM0Mzc2ODEyMjgyODk4NA==",
+    "date": "2026-08-14T01:52:06.000Z",
+    "text": "Giá đã cache 😁",
+    "attachments": [
+      {
+        "__typename": "Photo",
+        "blurred_image": {
+          "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.99422-6/772686011_889404233918874_3192915168894878775_n.png?stp=dst-jpg_fb30_tt6&_nc_cat=106&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=2cY3gGH5XCoQ7kNvwGb-Wsn&_nc_oc=Adr0DnQzqgvKJlis_F3Ay5eA0Z016G5LPaIL8w4VrbbjJUtX7lwZArcYALM2JYhrVzYc0DvjPS6AIR7wfHk7GkSu&_nc_zt=14&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQNK-dqpCYRXSQL67DrV_60sDizV9eYvJb9nAzoa7A37Qw&oe=6AC831A5"
+        },
+        "id": "10239149794575798",
+        "cix_screen": null,
+        "massive_image": {
+          "width": 660,
+          "height": 960
+        },
+        "image": {
+          "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.99422-6/772686011_889404233918874_3192915168894878775_n.png?stp=dst-jpg_tt6&cstp=mx660x960&ctp=p75x225&_nc_cat=106&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=2cY3gGH5XCoQ7kNvwGb-Wsn&_nc_oc=Adr0DnQzqgvKJlis_F3Ay5eA0Z016G5LPaIL8w4VrbbjJUtX7lwZArcYALM2JYhrVzYc0DvjPS6AIR7wfHk7GkSu&_nc_zt=14&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMVWWHXS4SeV9ABkbAVtso2bqfyAoGpJNQ0S_j5H3F_6Q&oe=6AC831A5",
+          "width": 155,
+          "height": 225
+        },
+        "ocrText": "May be an image of money and text that says 'deepseek Platform Cost API requests $59.52 USD 113,583 Tokens 10, 10,237,602,781 Cost(USD) $59.52 24 Model API Key 12 2026-08-13 $1.66 deepseek- deepseek-v4-pro -4 4-pro deepseek-v4-flash v4-flash A...la deepseek- 8(1° 0 7/15 7/25 8/3 8/13'"
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "id": "1010276030",
+      "name": "Duy Nguyen",
+      "__isActor": "User",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_0_increased": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s40x40&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "6",
+    "commentsCount": 3,
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2928480630845789",
+    "commentId": "2928480630845789",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yOTI4NDgwNjMwODQ1Nzg5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMjkyODQ4MDYzMDg0NTc4OQ==",
+    "date": "2026-08-14T01:52:41.000Z",
+    "text": "Giá mới thì x3 lên là vừa =))))",
+    "attachments": [
+      {
+        "__typename": "Photo",
+        "blurred_image": {
+          "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.99422-6/771997993_3658203394344303_3996306276093942579_n.png?stp=dst-jpg_fb30_tt6&_nc_cat=102&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=m5q0ONv7MNIQ7kNvwE71vQK&_nc_oc=AdoKLuKl1bO-9FUzY4zVdBBV8XRdgTEz3lxR84ik3wKUtSbm5hxzypkvTpTpZNWgFECXxhiM-MtpmgmpGLmCDswb&_nc_zt=14&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQP9ucG9z9jrcgAHXnh3wtJ3ThS8xp46b0VIH_xihymcrg&oe=6AC821D5"
+        },
+        "id": "10239149800655950",
+        "cix_screen": null,
+        "massive_image": {
+          "width": 960,
+          "height": 530
+        },
+        "image": {
+          "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.99422-6/771997993_3658203394344303_3996306276093942579_n.png?stp=dst-jpg_tt6&cstp=mx960x530&ctp=s261x260&_nc_cat=102&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=m5q0ONv7MNIQ7kNvwE71vQK&_nc_oc=AdoKLuKl1bO-9FUzY4zVdBBV8XRdgTEz3lxR84ik3wKUtSbm5hxzypkvTpTpZNWgFECXxhiM-MtpmgmpGLmCDswb&_nc_zt=14&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQPIZWVwIOOgtxsCOnh-7AgdswSetK1UF9DZKPUCwojaXQ&oe=6AC821D5",
+          "width": 261,
+          "height": 144
+        },
+        "ocrText": "May be an image of text that says 'Model DeepSeek-V4 -V4 API New Pricing (Compared to Legacy) Input (cache hit) DeepSeek-V4- (0731) Off-Peak Input (cache miss) $0.007 (2.5x) Output Peak hours $0.22 (1.6x) $0.014 (2.0x) 0.66 DeepSeek-V4-Pro (0813) (2.4x) Off-Peak $0.44 (2.0x) $0.022 (6.1x) $ 1.32 Peak hours (2.0x) $0.66 (1.5x) $ $0.044 (2.0x) 1.98 Peak Hours: 01:00-04:00 01:00- and 06:00-10:00 UTC (all other hours are off-peak) Effective from: 16:00, August 16, 2026 (UTC) (2.3x) 1.32 (2.0x) 3.96 (2.0x) deepseek'"
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "id": "1010276030",
+      "name": "Duy Nguyen",
+      "__isActor": "User",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_0_increased": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s40x40&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-msp1-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFdGFm1&_nc_oc=Adrs9d1H_fS515FXVJdbUCel5gocIs4oDyMfFqKEPslKBH2AG1E4nwCpDlpkwAuVKk4vp4eaCMpAdEHXczmihhso&_nc_zt=24&_nc_ht=scontent-msp1-1.xx&_nc_gid=wUgzkGIQu-wnk0h0ygOB8Q&_nc_ss=70289&oh=00_AQMYVEYZ2EnRTLmp2cZmgimZ-Vik8UtO4TexdWWvOaxSzQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "5",
+    "commentsCount": 1,
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTM3NTgxOTc1MDU4NTUwNQ==",
+    "date": "2026-08-14T02:23:58.000Z",
+    "text": "Cho mình hỏi tại sao giá api cao rất nhiều so với dùng acc mà nhiều người vẫn dùng nhỉ. Nếu xoay acc thấy vẫn rẻ hơn. Api có lợi thế gì hơn không mn",
+    "profileId": "anon-22",
+    "profileName": "Commenter 22",
+    "likesCount": "7",
+    "commentsCount": 14,
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=892568316959013",
+    "commentId": "892568316959013",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF84OTI1NjgzMTY5NTkwMTM=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfODkyNTY4MzE2OTU5MDEz",
+    "date": "2026-08-14T10:58:47.000Z",
+    "text": "tăng giá lên, dùng ko có gói là thốn ác, mấy gói chatgpt với claude đã giá trị x bao nhiêu lần so với số tiền gói rồi😳",
+    "profileId": "anon-20",
+    "profileName": "Commenter 20",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2067180827251181",
+    "commentId": "2067180827251181",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMDY3MTgwODI3MjUxMTgx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMjA2NzE4MDgyNzI1MTE4MQ==",
+    "date": "2026-08-14T12:10:59.000Z",
+    "text": "Không tính cache hả?",
+    "profileId": "anon-23",
+    "profileName": "Commenter 23",
+    "likesCount": "0",
+    "commentsCount": 1,
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=879321555013877",
+    "commentId": "879321555013877",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF84NzkzMjE1NTUwMTM4Nzc=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfODc5MzIxNTU1MDEzODc3",
+    "date": "2026-08-14T02:08:51.000Z",
+    "text": "Giá này thì rẻ vô địch rồi",
+    "profileId": "anon-24",
+    "profileName": "Commenter 24",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=989372137486947",
+    "commentId": "989372137486947",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF85ODkzNzIxMzc0ODY5NDc=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfOTg5MzcyMTM3NDg2OTQ3",
+    "date": "2026-08-14T14:11:54.000Z",
+    "text": "Vừa đốt hết 11 tỉ token để xây dựng nguyên profiles digital của 1 tr dân VN :(",
+    "profileId": "anon-25",
+    "profileName": "Commenter 25",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1730829884515486&reply_comment_id=1441781757820873",
+    "commentId": "1730829884515486",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDQxNzgxNzU3ODIwODcz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTQ0MTc4MTc1NzgyMDg3Mw==",
+    "date": "2026-08-10T23:08:44.000Z",
+    "text": "Dân Bách Phong rẻ chứ ngon cái giề",
+    "profileId": "anon-17",
+    "profileName": "Commenter 17",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNzMwODI5ODg0NTE1NDg2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTQ1OTA1NDYzMjY1MTg0OQ==",
+    "date": "2026-08-10T10:46:54.000Z",
+    "text": "May quá e tìm ra con free lắm goclaw chơi sướng phết",
+    "profileId": "anon-26",
+    "profileName": "Commenter 26",
+    "likesCount": "1",
+    "commentsCount": 5,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1051846087222412",
+    "commentId": "1051846087222412",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMDUxODQ2MDg3MjIyNDEy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTA1MTg0NjA4NzIyMjQxMg==",
+    "date": "2026-08-10T18:50:02.000Z",
+    "text": "mấy con của tàu nó đáp ứng ngay tiêu chí của mấy ông hay code là chỉ cần giỏi tương đối còn lại rẻ là được. những cái khác về hệ thống IT họ nắm hết rồi chỉ cần hỗ trợ thêm thôi",
+    "profileId": "anon-27",
+    "profileName": "Commenter 27",
+    "likesCount": "1",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=926236259846922",
+    "commentId": "926236259846922",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF85MjYyMzYyNTk4NDY5MjI=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfOTI2MjM2MjU5ODQ2OTIy",
+    "date": "2026-08-10T07:40:08.000Z",
+    "text": "Ngon vậy mà mới được ít ngày nó đã đòi tăng giá rồi bác",
+    "attachments": [
+      {
+        "__typename": "Photo",
+        "blurred_image": {
+          "uri": "https://scontent-mia5-1.xx.fbcdn.net/v/t39.30808-6/768432923_28422351884024376_4302511721052029133_n.jpg?stp=dst-jpg_fb30_s960x960_tt6&_nc_cat=101&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=kmrRYRVpuksQ7kNvwHEla8C&_nc_oc=Adrg1rv4bO3PdO4wwFaJn8iliIICZs6O6O1-6GnQUpgu9I5aFsgJlwuwZQBwtOJhuTs&_nc_zt=23&_nc_ht=scontent-mia5-1.xx&_nc_gid=JP0wE5969X_0ituzycj8iw&_nc_ss=70289&oh=00_AQOrDYWkXcbrn6ZwCS6e4y1njVJmJ03ySjaWkd4XSRnbEw&oe=6AC83546"
+        },
+        "id": "28422351874024377",
+        "cix_screen": null,
+        "massive_image": {
+          "width": 960,
+          "height": 335
+        },
+        "image": {
+          "uri": "https://scontent-mia5-1.xx.fbcdn.net/v/t39.30808-6/768432923_28422351884024376_4302511721052029133_n.jpg?stp=dst-jpg_tt6&cstp=mx963x336&ctp=s261x260&_nc_cat=101&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=kmrRYRVpuksQ7kNvwHEla8C&_nc_oc=Adrg1rv4bO3PdO4wwFaJn8iliIICZs6O6O1-6GnQUpgu9I5aFsgJlwuwZQBwtOJhuTs&_nc_zt=23&_nc_ht=scontent-mia5-1.xx&_nc_gid=JP0wE5969X_0ituzycj8iw&_nc_ss=70289&oh=00_AQPyEKrI9P5RZa7NexM0sb75GfNPkzzTiAZOEeREe_kTYQ&oe=6AC83546",
+          "width": 261,
+          "height": 91
+        },
+        "ocrText": "May be an image of text that says 'Dear DeepSeek API user, deepseek We plan to raise the overall pricing for DeepSeekAP services in the near future, with significant increase expected. Please plan your usage accordingly. The specific pricing plan will be subject to official notice. Please keep an eye on the Open Platform announcements and check your email for further details.'"
+      }
+    ],
+    "profileId": "anon-28",
+    "profileName": "Commenter 28",
+    "likesCount": "2",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1382272659931159",
+    "commentId": "1382272659931159",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMzgyMjcyNjU5OTMxMTU5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTM4MjI3MjY1OTkzMTE1OQ==",
+    "date": "2026-08-10T06:58:49.000Z",
+    "text": "con V4 Flash 0731 này là hàng Free phải ko anh ơi ?",
+    "profileId": "anon-29",
+    "profileName": "Commenter 29",
+    "likesCount": "0",
+    "commentsCount": 3,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=4386482395001274",
+    "commentId": "4386482395001274",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF80Mzg2NDgyMzk1MDAxMjc0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfNDM4NjQ4MjM5NTAwMTI3NA==",
+    "date": "2026-08-10T06:55:56.000Z",
+    "text": "Nguyễn Nghĩa",
+    "profileId": "anon-30",
+    "profileName": "Commenter 30",
+    "likesCount": "0",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=2279806645892591",
+    "commentId": "2279806645892591",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMjc5ODA2NjQ1ODkyNTkx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjI3OTgwNjY0NTg5MjU5MQ==",
+    "date": "2026-08-10T09:20:37.000Z",
+    "text": "Deepseek thực sự quá khủng khiếp so với chi phí.",
+    "profileId": "anon-31",
+    "profileName": "Commenter 31",
+    "likesCount": "2",
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1968376553871003",
+    "commentId": "1968376553871003",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xOTY4Mzc2NTUzODcxMDAz",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTk2ODM3NjU1Mzg3MTAwMw==",
+    "date": "2026-08-10T14:26:04.000Z",
+    "text": "deepseek h gia bn thế bác",
+    "profileId": "anon-32",
+    "profileName": "Commenter 32",
+    "likesCount": "0",
+    "commentsCount": 1,
+    "threadingDepth": 0,
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1406763044601523&reply_comment_id=1752431319109996",
+    "commentId": "1406763044601523",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNzUyNDMxMzE5MTA5OTk2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTc1MjQzMTMxOTEwOTk5Ng==",
+    "date": "2026-08-10T10:31:07.000Z",
+    "text": "Trường Giang mình cũng thấy con Hy3 này cũng chưa thật sự tốt, sao lượng token đốt ghê thế",
+    "profileId": "anon-33",
+    "profileName": "Commenter 33",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDA2NzYzMDQ0NjAxNTIz",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1406763044601523&reply_comment_id=1538532364024504",
+    "commentId": "1406763044601523",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTM4NTMyMzY0MDI0NTA0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTUzODUzMjM2NDAyNDUwNA==",
+    "date": "2026-08-10T14:37:17.000Z",
+    "text": "Trường Giang con hy3 ngon top đấy",
+    "profileId": "anon-34",
+    "profileName": "Commenter 34",
+    "likesCount": "2",
+    "commentsCount": 1,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDA2NzYzMDQ0NjAxNTIz",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1406763044601523&reply_comment_id=926780797138956",
+    "commentId": "1406763044601523",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF85MjY3ODA3OTcxMzg5NTY=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfOTI2NzgwNzk3MTM4OTU2",
+    "date": "2026-08-10T14:40:39.000Z",
+    "text": "Duc Pham vậy là trong tay kẻ khờ, bảo kiếm cũng chỉ là cục sắt vụn 🙏",
+    "profileId": "anon-13",
+    "profileName": "Commenter 13",
+    "likesCount": "1",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDA2NzYzMDQ0NjAxNTIz",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276&reply_comment_id=28332717793001242",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yODMzMjcxNzc5MzAwMTI0Mg==",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjgzMzI3MTc3OTMwMDEyNDI=",
+    "date": "2026-08-10T12:59:52.000Z",
+    "text": "Giáp Đức Thắng lỗi gì zậy? Nếu rate limit chắc do nó quá tải, a dùng bữa giờ từ API chính chủ mướt rượt chưa thấy lỗi gì luôn",
+    "attachments": [
+      {
+        "__typename": "Photo",
+        "blurred_image": {
+          "uri": "https://scontent-iad6-1.xx.fbcdn.net/v/t39.99422-6/771677594_1635015958047897_4046875348095599163_n.png?stp=dst-jpg_fb30_tt6&_nc_cat=100&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=AXKsf-94DosQ7kNvwHPiho7&_nc_oc=AdqGUtL4h8-gYYF3UtnXTG6CilHUVux2v94DhpPiHDtpkMdD0lK4u_JY2c3pIiyc1k_bIhg5JYV0Q3S8rMDkSDDd&_nc_zt=14&_nc_ht=scontent-iad6-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQNtocMigU8sG2ou-s-cmwGm4SKV4xywWGjekbVZHHtUyQ&oe=6AC815BE"
+        },
+        "id": "10239103974790332",
+        "cix_screen": null,
+        "massive_image": {
+          "width": 960,
+          "height": 898
+        },
+        "image": {
+          "uri": "https://scontent-iad6-1.xx.fbcdn.net/v/t39.99422-6/771677594_1635015958047897_4046875348095599163_n.png?stp=dst-jpg_tt6&cstp=mx960x898&ctp=p228x119&_nc_cat=100&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=AXKsf-94DosQ7kNvwHPiho7&_nc_oc=AdqGUtL4h8-gYYF3UtnXTG6CilHUVux2v94DhpPiHDtpkMdD0lK4u_JY2c3pIiyc1k_bIhg5JYV0Q3S8rMDkSDDd&_nc_zt=14&_nc_ht=scontent-iad6-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPwNZ6_YeSZChfi1cQYpAmI5MrknBijyDOs4V6jAhXgyw&oe=6AC815BE",
+          "width": 228,
+          "height": 213
+        },
+        "ocrText": "May be an image of text that says 'Cost $53.23 API Plrequests 103, 103,284 284 Cost(USD) Cost(USD)53.23 53 23 $53.23 Tokens 9,611,624,818 9,611, 624,818 Model AP API deepseek- deepseek-v4-fiash V4 4 flash APlrequests103,284 API APlrequests L03 284 . Tokens 9,611 624,818 Tokens9,611,624,818 624,'"
+      }
+    ],
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "5",
+    "commentsCount": 4,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276&reply_comment_id=1736929657352287",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNzM2OTI5NjU3MzUyMjg3",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTczNjkyOTY1NzM1MjI4Nw==",
+    "date": "2026-08-10T13:04:17.000Z",
+    "text": "Duy Nguyen các tác vụ phân tích a. Cơ bản là e cấu hình hết các thứ vẫn thế. Deepseek đứt kể cả cái pro còn gemini claude chatgpt vẫn chạy ngon",
+    "profileId": "anon-18",
+    "profileName": "Commenter 18",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276&reply_comment_id=1546623343864665",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTQ2NjIzMzQzODY0NjY1",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTU0NjYyMzM0Mzg2NDY2NQ==",
+    "date": "2026-08-10T13:11:25.000Z",
+    "text": "Giáp Đức Thắng à sao so với claude hay chatgpt nổi, con này yếu hơn nhiều mà\n\nCho nó làm việc tay chân thôi, mấy việc \"don't make me think\" á :)))",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "3",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276&reply_comment_id=2110829469862708",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yMTEwODI5NDY5ODYyNzA4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjExMDgyOTQ2OTg2MjcwOA==",
+    "date": "2026-08-10T13:15:44.000Z",
+    "text": "Duy Nguyen bác có cho nó kèm model nào để có tool vision ko, con này oke ghê nó mà có vision để phân tích nữa thì đúng best p/p",
+    "profileId": "anon-35",
+    "profileName": "Commenter 35",
+    "likesCount": "1",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1598689808586276&reply_comment_id=1579674673712069",
+    "commentId": "1598689808586276",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTc5Njc0NjczNzEyMDY5",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTU3OTY3NDY3MzcxMjA2OQ==",
+    "date": "2026-08-10T13:20:18.000Z",
+    "text": "Hoàng Trung Hiếu có, mình dùng qua skill riêng cũng gọi Gemini 2.5 Flash thôi à",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-iad3-1.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwGFPQNJ&_nc_oc=AdoBRKReLa0Wnq3ZZHNQpeWS5aAxYGlIL-15x4sD28HNsLo2zAC2gtzMoLHf3YzTu2GWzUN2x3-gj5IF_ryHnuo_&_nc_zt=24&_nc_ht=scontent-iad3-1.xx&_nc_gid=BD4-pfMk3FRzHTyu9ft7sQ&_nc_ss=70289&oh=00_AQPVw2UdMYD92BQKH2_-3NCianbOMlqVOKZI_LG9Zf3L_g&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "2",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTk4Njg5ODA4NTg2Mjc2",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2928480630845789&reply_comment_id=1004858579276136",
+    "commentId": "2928480630845789",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMDA0ODU4NTc5Mjc2MTM2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTAwNDg1ODU3OTI3NjEzNg==",
+    "date": "2026-08-14T07:51:30.000Z",
+    "text": "Duy Nguyen v4-pro input cache hit tăng 1113% lận (từ 0.003625 to 0.044)",
+    "profileId": "anon-36",
+    "profileName": "Commenter 36",
+    "likesCount": "1",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yOTI4NDgwNjMwODQ1Nzg5",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2067180827251181&reply_comment_id=1987940951922132",
+    "commentId": "2067180827251181",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xOTg3OTQwOTUxOTIyMTMy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTk4Nzk0MDk1MTkyMjEzMg==",
+    "date": "2026-08-14T12:12:42.000Z",
+    "text": "Sang Pham không đọc comment hả?",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEEVA-z&_nc_oc=AdoStT818edwekk2Waq_XQ8YcyBFt_lrv8OJZO59BKi9h6qEAz_qOGvScTRKwTGYvXCrQSgic47luYgY944lv24o&_nc_zt=24&_nc_ht=scontent-atl3-2.xx&_nc_gid=hXyHi3J6RkJR4rAjh6I8GQ&_nc_ss=70289&oh=00_AQPKx5uTi0doBeVH07NVwTKN7-rwI35TV5-WignWiPAhRg&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwEEVA-z&_nc_oc=AdoStT818edwekk2Waq_XQ8YcyBFt_lrv8OJZO59BKi9h6qEAz_qOGvScTRKwTGYvXCrQSgic47luYgY944lv24o&_nc_zt=24&_nc_ht=scontent-atl3-2.xx&_nc_gid=hXyHi3J6RkJR4rAjh6I8GQ&_nc_ss=70289&oh=00_AQPKx5uTi0doBeVH07NVwTKN7-rwI35TV5-WignWiPAhRg&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "1",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMDY3MTgwODI3MjUxMTgx",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849&reply_comment_id=1033948486096738",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMDMzOTQ4NDg2MDk2NzM4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTAzMzk0ODQ4NjA5NjczOA==",
+    "date": "2026-08-10T13:01:04.000Z",
+    "text": "Khương Trịnh ổn phết hen, mai mốt ra Pro mà ngon hơn nữa chắc mấy anh tây khóc thét :)))",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwE-vNW4&_nc_oc=AdqlsQqimvviZOmbZV3y38ih8wM_XaoWNiLZM1R0_eOuO86P5eZiVoG4-o_kxT4U5ACOjHUIhK78qvBbWNwOboqn&_nc_zt=24&_nc_ht=scontent-ord5-2.xx&_nc_gid=r7IBwk4N4Pi43TJlobOxog&_nc_ss=70289&oh=00_AQMoyyO0p2ujUZr38KOhut2u9NKH9kIU4IYmilu1nLrXGg&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwE-vNW4&_nc_oc=AdqlsQqimvviZOmbZV3y38ih8wM_XaoWNiLZM1R0_eOuO86P5eZiVoG4-o_kxT4U5ACOjHUIhK78qvBbWNwOboqn&_nc_zt=24&_nc_ht=scontent-ord5-2.xx&_nc_gid=r7IBwk4N4Pi43TJlobOxog&_nc_ss=70289&oh=00_AQMoyyO0p2ujUZr38KOhut2u9NKH9kIU4IYmilu1nLrXGg&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849&reply_comment_id=875842662041429",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF84NzU4NDI2NjIwNDE0Mjk=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfODc1ODQyNjYyMDQxNDI5",
+    "date": "2026-08-10T16:26:03.000Z",
+    "text": "Khương Trịnh e cũng đang chơi goclaw, bác gắn con model nào v ạ",
+    "profileId": "anon-37",
+    "profileName": "Commenter 37",
+    "likesCount": "0",
+    "commentsCount": 3,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849&reply_comment_id=4612910658942171",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF80NjEyOTEwNjU4OTQyMTcx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfNDYxMjkxMDY1ODk0MjE3MQ==",
+    "date": "2026-08-10T16:37:01.000Z",
+    "text": "Quyet Hoang gem 3.6 feng ơi",
+    "profileId": "anon-26",
+    "profileName": "Commenter 26",
+    "likesCount": "1",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849&reply_comment_id=2532067590626244",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNTMyMDY3NTkwNjI2MjQ0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjUzMjA2NzU5MDYyNjI0NA==",
+    "date": "2026-08-10T16:42:53.000Z",
+    "text": "Khương Trịnh nó chỉ làm đc việc tay chân hay là think được v bác :))",
+    "profileId": "anon-37",
+    "profileName": "Commenter 37",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1459054632651849&reply_comment_id=27977079595289318",
+    "commentId": "1459054632651849",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8yNzk3NzA3OTU5NTI4OTMxOA==",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMjc5NzcwNzk1OTUyODkzMTg=",
+    "date": "2026-08-10T17:12:27.000Z",
+    "text": "Quyet Hoang cũng thấy khôn phết",
+    "profileId": "anon-26",
+    "profileName": "Commenter 26",
+    "likesCount": "1",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNDU5MDU0NjMyNjUxODQ5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1669722310770586",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xNjY5NzIyMzEwNzcwNTg2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTY2OTcyMjMxMDc3MDU4Ng==",
+    "date": "2026-08-14T03:11:39.000Z",
+    "text": "Hải  api ít bị chặn, ko giới hạn, và vô số khác, cái acc của bạn theo cơ chế thường là bán cho cá nhân và cấm xoay, bạn phạm luật còn hỏi khoe à",
+    "profileId": "anon-38",
+    "profileName": "Commenter 38",
+    "likesCount": "0",
+    "commentsCount": 2,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=910832221572131",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF85MTA4MzIyMjE1NzIxMzE=",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfOTEwODMyMjIxNTcyMTMx",
+    "date": "2026-08-14T03:39:40.000Z",
+    "text": "Hải api sài bao nhiêu chả được sài acc là free mà bào thì thg nào chịu được",
+    "profileId": "anon-39",
+    "profileName": "Commenter 39",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1105993708765757",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMTA1OTkzNzA4NzY1NzU3",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTEwNTk5MzcwODc2NTc1Nw==",
+    "date": "2026-08-14T06:16:44.000Z",
+    "text": "Sáng Trần mua nhiều acc vẫn rẻ hơn api mà. Phạm gì.",
+    "profileId": "anon-22",
+    "profileName": "Commenter 22",
+    "likesCount": "0",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1027142740213992",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMDI3MTQyNzQwMjEzOTky",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTAyNzE0Mjc0MDIxMzk5Mg==",
+    "date": "2026-08-14T08:28:38.000Z",
+    "text": "Hải deepseek k bán theo acc đó bạn, nó bán theo API, và hiện tại mấy model Trung đang chạy theo token plan hết r",
+    "profileId": "anon-40",
+    "profileName": "Commenter 40",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1861151235268642",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xODYxMTUxMjM1MjY4NjQy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTg2MTE1MTIzNTI2ODY0Mg==",
+    "date": "2026-08-14T08:36:53.000Z",
+    "text": "Hải với điều kiện là bạn login acc đó trên đúng tool của họ thì bạn mua 100 acc cũng ko sai. Nhưng nếu bạn gắn vào proxy rồi xoay tua thì vi phạm chính sách. Có đợt quét là bay acc",
+    "profileId": "anon-41",
+    "profileName": "Commenter 41",
+    "likesCount": "1",
+    "threadingDepth": 2,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1065430796459532",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMDY1NDMwNzk2NDU5NTMy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTA2NTQzMDc5NjQ1OTUzMg==",
+    "date": "2026-08-14T09:38:01.000Z",
+    "text": "Hải nó sẽ OK nếu bác làm 1 việc của bác. Nhưng em có thể dùng Api key này, để làm 1 con agent riêng cho em, có thể gọi tool, tìm kiếm, search database, gen ảnh,… thì bác xoay acc thế nào. Và làm thế nào để deploy sản phẩm đó lên cho nhiều người dùng ạ",
+    "profileId": "anon-42",
+    "profileName": "Commenter 42",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1374576467415866",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc0NTc2NDY3NDE1ODY2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTM3NDU3NjQ2NzQxNTg2Ng==",
+    "date": "2026-08-14T11:18:28.000Z",
+    "text": "Hải có những thứ CLI không làm được ví dụ tích hợp vào app trong cái app đó phải dùng API chứ CLI không dùng được nó giao tiếp người dùng vs AI còn API là app giao tiếp AI",
+    "profileId": "anon-27",
+    "profileName": "Commenter 27",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1524549868985798",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xNTI0NTQ5ODY4OTg1Nzk4",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTUyNDU0OTg2ODk4NTc5OA==",
+    "date": "2026-08-14T13:02:09.000Z",
+    "text": "Hải những doanh nghiệp vừa và lớn không bao giờ dùng xoay acc b ạ, dùng API để đảm bảo tính ổn định và nhất quán dễ dàng thay đổi/đồng bộ theo nhu cầu",
+    "profileId": "anon-43",
+    "profileName": "Commenter 43",
+    "likesCount": "1",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=1495077089058322",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xNDk1MDc3MDg5MDU4MzIy",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTQ5NTA3NzA4OTA1ODMyMg==",
+    "date": "2026-08-14T13:25:18.000Z",
+    "text": "Hải API như android, cho phép bạn cài app, chỉnh sửa nó, xử lý ở đâu cũng được, hacker các kiểu cũng dc. Còn Web thì ios, bạn dc dùng",
+    "profileId": "anon-44",
+    "profileName": "Commenter 44",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=1375819750585505&reply_comment_id=2580990082317300",
+    "commentId": "1375819750585505",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yNTgwOTkwMDgyMzE3MzAw",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMjU4MDk5MDA4MjMxNzMwMA==",
+    "date": "2026-08-17T01:47:02.000Z",
+    "text": "Hải Thủ thuật chỉ dùng cho trick lỏ và no money thôi. Biz người ta cần ổn định support và luôn duy trì như vậy. chứ xoay xoay , đang cung cấp dịch vụ cho khách hàng thì bị quét cái móm à.",
+    "profileId": "anon-45",
+    "profileName": "Commenter 45",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzc1ODE5NzUwNTg1NTA1",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l?comment_id=1382272659931159&reply_comment_id=1570284074541624",
+    "commentId": "1382272659931159",
+    "id": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xNTcwMjg0MDc0NTQxNjI0",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxMDA4MDE1OTEwMDRfMTU3MDI4NDA3NDU0MTYyNA==",
+    "date": "2026-08-10T07:06:33.000Z",
+    "text": "Vũ Trọng hình như free ở 1 vài provider với số lượng limited hay sao đó, nhưng giá cũng khá rẻ",
+    "author": {
+      "__typename": "User",
+      "__isActor": "User",
+      "name": "Duy Nguyen",
+      "id": "1010276030",
+      "profile_picture_depth_0": {
+        "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s32x32&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFQNJWO&_nc_oc=AdrMbtcrk5Qv5hIpb2JAajPvsRq3afvIsjaGejbuIXX8kO41VrY74JwEAEEzJju2qMCq60TCceLvTJgavOW1se6l&_nc_zt=24&_nc_ht=scontent-lga3-3.xx&_nc_gid=uelqJ1_r6msOzgsiEGvWmA&_nc_ss=70289&oh=00_AQNILb-6yEUCRigRVsmnPhK-DN2UWug0-Ewlvwb6NSjClQ&oe=6AC82732"
+      },
+      "profile_picture_depth_1": {
+        "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-1/580486269_10235647686665289_7163350810636661341_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx992x992&ctp=s24x24&_nc_cat=104&ccb=1-7&_nc_sid=1d2534&_nc_ohc=SpHSdWkONBAQ7kNvwFQNJWO&_nc_oc=AdrMbtcrk5Qv5hIpb2JAajPvsRq3afvIsjaGejbuIXX8kO41VrY74JwEAEEzJju2qMCq60TCceLvTJgavOW1se6l&_nc_zt=24&_nc_ht=scontent-lga3-3.xx&_nc_gid=uelqJ1_r6msOzgsiEGvWmA&_nc_ss=70289&oh=00_AQNILb-6yEUCRigRVsmnPhK-DN2UWug0-Ewlvwb6NSjClQ&oe=6AC82732"
+      },
+      "gender": "MALE",
+      "__isEntity": "User",
+      "url": "https://www.facebook.com/mrgoonie",
+      "work_info": null,
+      "is_verified": false,
+      "short_name": "Duy",
+      "subscribe_status": "CANNOT_SUBSCRIBE"
+    },
+    "profileUrl": "https://www.facebook.com/mrgoonie",
+    "profileId": "1010276030",
+    "profileName": "Duy Nguyen",
+    "likesCount": "0",
+    "commentsCount": 1,
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTEwMDgwMTU5MTAwNF8xMzgyMjcyNjU5OTMxMTU5",
+    "facebookId": "10239100801591004",
+    "postTitle": "Models của các pháp sư Trung Hoa thống trị bảng xếp hạng lượng tokens sử dụng trên OpenRouter cmnr :))))\n\nModels của Cái-lẩu-dê mất húttttt\n\nOpenAI ít ra còn lọt được Luna (do mới giảm giá 80% gần đây)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0aX8dsYWeNSb3NmpUnKSR6jrgUMYBFmeqgbLcDLSEqsfdHPaUXbaxKvWp2oRoHH64l"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2343768122828984&reply_comment_id=1328459902692721",
+    "commentId": "2343768122828984",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMzI4NDU5OTAyNjkyNzIx",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTMyODQ1OTkwMjY5MjcyMQ==",
+    "date": "2026-08-14T05:59:12.000Z",
+    "text": "Duy Nguyen rẻ quá",
+    "profileId": "anon-46",
+    "profileName": "Commenter 46",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMzQzNzY4MTIyODI4OTg0",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2343768122828984&reply_comment_id=1783973913017516",
+    "commentId": "2343768122828984",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xNzgzOTczOTEzMDE3NTE2",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTc4Mzk3MzkxMzAxNzUxNg==",
+    "date": "2026-08-14T07:44:23.000Z",
+    "text": "Duy Nguyen kỹ thuật cache quá đỉnh, hóng a Viet Tran chia sẻ insight 😘",
+    "profileId": "anon-47",
+    "profileName": "Commenter 47",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMzQzNzY4MTIyODI4OTg0",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  },
+  {
+    "facebookUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl",
+    "commentUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl?comment_id=2343768122828984&reply_comment_id=1005078879186267",
+    "commentId": "2343768122828984",
+    "id": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8xMDA1MDc4ODc5MTg2MjY3",
+    "feedbackId": "ZmVlZGJhY2s6MTAyMzkxNDk3OTAxNzU2ODhfMTAwNTA3ODg3OTE4NjI2Nw==",
+    "date": "2026-08-14T07:47:59.000Z",
+    "text": "Duy Nguyen 1%? Quá dữ dội",
+    "profileId": "anon-48",
+    "profileName": "Commenter 48",
+    "likesCount": "0",
+    "threadingDepth": 1,
+    "replyToCommentId": "Y29tbWVudDoxMDIzOTE0OTc5MDE3NTY4OF8yMzQzNzY4MTIyODI4OTg0",
+    "facebookId": "10239149790175688",
+    "postTitle": "Với giá cũ thì 10 tỷ tokens của DeepSeek sẽ tốn bao nhiêu? Đây là giá không cache:\n\n(Giá cache trong còm 👇)",
+    "pageAdLibrary": {
+      "is_business_page_active": false,
+      "id": "218322898024376"
+    },
+    "inputUrl": "https://www.facebook.com/mrgoonie/posts/pfbid0G1GakiCjiCoLjBc6odwpBUVHmRRPaxCZvbgDw1voxnnYf8Yhftj55GmKLEXRiD8Fl"
+  }
+]
