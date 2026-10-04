@@ -57,7 +57,7 @@ See `.context/patterns-architecture.md` for full monorepo structure and module b
 
 | Task                    | Command                                    |
 | ----------------------- | ------------------------------------------ |
-| Type-check after edits  | `npx tsc --noEmit`                         |
+| Type-check a project    | `npx tsc --noEmit -p <project>/tsconfig.app.json` (templates: `npx nx build <app>`) |
 | Format a file           | `npx prettier --write <file>`              |
 | Test affected projects  | `npx nx affected -t test`                  |
 | Find an Nx project name | `npx nx show projects \| grep -i "<term>"` |

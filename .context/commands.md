@@ -54,8 +54,12 @@ pnpm format:check         # Check formatting without fixing
 ## Type Checking
 
 ```bash
-npx tsc --noEmit          # Type-check entire project (run after edits)
+npx tsc --noEmit -p <project>/tsconfig.app.json         # Quick .ts-only check for one project (also tsconfig.lib/spec.json)
+memory_pressure | tail -1                               # Check free RAM first; below 25% free, do not build
+npx nx build <app>                                      # Full type check incl. Angular templates (AOT); app only (landing/console/api), libs have no build target
 ```
+
+Per-edit diagnostics come from two Claude Code plugins: `typescript-lsp` for `.ts` (needs `typescript-language-server` on `PATH`) and `angular-lsp` for `.html` templates (needs `ngserver` from `@angular/language-server`, whose minor version must match the repo's `@angular/language-service`; reinstall it after an Angular upgrade). Do not run `npx tsc --noEmit` at the repo root: there is no root `tsconfig.json`, so it only prints help.
 
 ## Nx Utilities
 
@@ -80,6 +84,5 @@ Runs on push/PR to `master` (`.github/workflows/ci.yml`):
 
 1. Format check (`prettier --check`)
 2. Lint affected projects
-3. Type check (`tsc --noEmit`)
-4. Test affected projects (with coverage)
-5. Build affected projects
+3. Test affected projects (with coverage)
+4. Build affected projects (this is the type check, including Angular templates)
