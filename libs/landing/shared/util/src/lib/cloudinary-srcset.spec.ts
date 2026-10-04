@@ -1,4 +1,4 @@
-import { buildCloudinarySrcset } from './cloudinary-srcset';
+import { buildCloudinarySrcset, buildCloudinaryWidthSet } from './cloudinary-srcset';
 
 describe('buildCloudinarySrcset', () => {
   it('returns empty src/srcset for null/empty input', () => {
@@ -34,5 +34,37 @@ describe('buildCloudinarySrcset', () => {
     const url = 'https://res.cloudinary.com/demo/image/upload/v1/abc.png';
     const result = buildCloudinarySrcset(url, 720.6);
     expect(result.src).toContain('w_721,c_limit');
+  });
+});
+
+describe('buildCloudinaryWidthSet — ladder boundaries', () => {
+  const URL = 'https://res.cloudinary.com/demo/image/upload/v1/abc.png';
+
+  /** Pull the `w` descriptors out of a srcset. Anchored on the space before the
+   *  descriptor, since the Cloudinary transform segment itself contains commas. */
+  const rungs = (srcset: string): number[] => [...srcset.matchAll(/ (\d+)w/g)].map((m) => Number(m[1]));
+
+  // 2-value BVA over the eight partition cuts (rung / 2.5), step 0.1.
+  const CASES: readonly (readonly [number, readonly number[]])[] = [
+    [127.9, [320]],
+    [128, [320]],
+    [191.9, [320]],
+    [192, [320, 480]],
+    [255.9, [320, 480]],
+    [256, [320, 480, 640]],
+    [307.1, [320, 480, 640]],
+    [307.2, [320, 480, 640, 768]],
+    [383.9, [320, 480, 640, 768]],
+    [384, [320, 480, 640, 768, 960]],
+    [511.9, [320, 480, 640, 768, 960]],
+    [512, [320, 480, 640, 768, 960, 1280]],
+    [639.9, [320, 480, 640, 768, 960, 1280]],
+    [640, [320, 480, 640, 768, 960, 1280, 1600]],
+    [767.9, [320, 480, 640, 768, 960, 1280, 1600]],
+    [768, [320, 480, 640, 768, 960, 1280, 1600, 1920]],
+  ];
+
+  it.each(CASES)('maxCssWidth %p keeps rungs %p', (maxCssWidth, expected) => {
+    expect(rungs(buildCloudinaryWidthSet(URL, maxCssWidth).srcset)).toEqual(expected);
   });
 });

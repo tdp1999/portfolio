@@ -57,8 +57,7 @@ export function buildCloudinaryWidthSet(url: string | null | undefined, maxCssWi
   if (!url) return { src: '', srcset: '' };
   if (!isCloudinary(url)) return { src: url, srcset: '' };
 
-  const cap = Math.round(maxCssWidth * 2.5);
-  const widths = RESPONSIVE_WIDTH_LADDER.filter((w) => w <= cap);
+  const widths = RESPONSIVE_WIDTH_LADDER.filter((w) => w <= maxCssWidth * 2.5);
   if (!widths.length) widths.push(RESPONSIVE_WIDTH_LADDER[0]);
 
   const entries = widths.map((w) => `${withWidth(url, w)} ${w}w`);
