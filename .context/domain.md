@@ -41,6 +41,14 @@
 | Certification | A professional certification stored as JSON on Profile (name, issuer, year, URL) | Value Object |
 | SocialLink | A social media profile link with platform enum, URL, and optional handle | Value Object |
 | TranslatableJson | A JSON object with locale keys (en, vi) for multilingual content display | Value Object |
+| RadarSource | A followed public social profile (platform, URL, display name). The first platform is Facebook. | Entity |
+| RadarRun | One Owner-triggered execution of the Radar pipeline for one source and one time window, with a chosen RunFlow and item cap. | Aggregate |
+| RadarStepRun | The state of one pipeline step (capture, normalize, enrich, analyze, synthesize) inside a RadarRun, including which provider adapter ran it. | Entity |
+| RadarItem | One captured post, unique per source by its external id. Keeps the provider's raw payload, the persisted images, links and comments. | Aggregate |
+| RadarEnrichment | The LLM output for a RadarItem: TL;DR, provider tags, content-type tag, signal score, promo flag, relevant flag, image notes, link summaries, comment digest, fact-check notes and the apply note. Records which adapter and model produced it. | Entity |
+| RadarBrief | A catch-up summary of the RadarItems in a time window, grouped by provider and topic, listing new terms with their first-seen date. | Entity |
+| WorkflowProfile | The Owner's current AI setup as editable markdown. Single record. The analyze step compares each item against it to write the apply note. | Entity |
+| RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker) or Hybrid (server-side capture + external worker). Auto (server-side LLM) is planned. | Value Object |
 | Media | An uploaded asset (image, document, video) stored externally. Belongs to a named Folder for organization. Supports soft delete and metadata (alt text, caption). | Entity |
 | MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
 | Home (root page) | The landing app's entry route `/` — the only page that owns the full marketing hero (portrait, large display heading, hero CTAs, marquee sections). Composition rules differ from feature pages: home does NOT use the canonical sub-page header (breadcrumb + page-hero); it has its own hero composition. | UI Concept |
@@ -217,6 +225,43 @@
   - Invalid file type or size: System rejects upload
 - **End states:** Media stored with Folder, available in listings and pickers
 
+### Capture Radar Source
+- **Trigger:** Owner uploads a scraper export for a RadarSource (Manual), or starts a Hybrid RadarRun
+- **Actors:** Owner (via Console), capture provider
+- **Happy path:**
+  1. Owner picks the source and the time window
+  2. System obtains the posts (from the uploaded file, or by starting and polling a provider job)
+  3. System normalizes each post into a RadarItem, keeping the raw payload
+  4. System copies each image to its own storage
+  5. Items become pending for analysis
+- **Error paths:**
+  - Uploaded file fails validation: nothing is stored, Owner sees field-level errors
+  - Provider job fails or exceeds the item cap: capture step is marked failed with the provider's message
+  - An image fails to download: the item is kept, that image is marked failed
+- **End states:** New posts stored once each, existing posts refreshed, items pending analysis
+
+### Process Radar Work
+- **Trigger:** Owner runs the external worker (Claude Code `/radar work`)
+- **Actors:** External worker (machine client)
+- **Happy path:**
+  1. Worker claims a batch of pending items for a step; System leases them
+  2. Worker analyzes each item against the WorkflowProfile
+  3. Worker submits one result per item; System validates and stores the RadarEnrichment
+- **Error paths:**
+  - Invalid or missing machine token: rejected, nothing changes
+  - Result fails validation: that item stays pending
+  - Worker stops mid-batch: leased items return to pending when the lease expires
+- **End states:** Items enriched and visible in the Feed
+
+### Generate Radar Brief
+- **Trigger:** Owner requests a brief for a time window
+- **Actors:** Owner (via Console), LLM provider
+- **Happy path:**
+  1. System gathers the enriched items in the window
+  2. LLM provider synthesizes the brief
+  3. System stores the RadarBrief
+- **End states:** Brief readable in Console
+
 ## Rules
 
 ### Post
@@ -256,6 +301,14 @@
 - LOC-004: Authored content may be English-only; it falls back to English per field and per entry (see ABF-002, EXP-005, PRF-004)
 - LOC-005: The legal pages are the only pages whose language is part of their address, because search engines index the two versions separately. Everywhere else, language is a site-wide preference and one page has one address
 
+### Content Freshness
+
+Facts about the Owner decay at different rates. These rules govern where a fact is allowed to live, so that a change in the Owner's circumstances touches one record instead of a scattered set of prose fields.
+
+- CNF-001: A count of years of experience is structured data, never prose. Copy either derives it from the Profile field or omits the count. The duration of a role that has already ended is exempt, because a closed period never changes
+- CNF-002: A statement about what the Owner is doing at present lives in exactly two places: the most recent Experience record, and the /now page. No evergreen prose field asserts a current role
+- CNF-003: An employer's name appears in Experience records. Evergreen prose describes the kind of work and the domain instead of naming the company
+
 ### Experience
 - EXP-001: Slug auto-generated from companyName + position.en, immutable after creation. Collision handled with numeric suffix
 - EXP-002: Public endpoint excludes private fields (address lines, postal code, client metadata, audit fields)
@@ -291,6 +344,14 @@
 - MED-002: Filtering Media by Folder uses exact Folder match — a Media without a Folder only appears in unfiltered (show-all) listings
 - MED-003: Soft-deleted Media is excluded from all listings and pickers unless explicitly requested
 
+### Radar
+- RAD-001: A RadarItem is unique per (source, external id). Capturing the same post again refreshes it and never creates a duplicate
+- RAD-002: Radar content is stored in its source language. No translation; technical terms stay verbatim
+- RAD-003: The Owner's own social accounts and sessions are never used for capture
+- RAD-004: A machine token may call the Radar worker endpoints only
+- RAD-005: A claimed item returns to pending when its lease expires without a result
+- RAD-006: Radar runs start only when the Owner triggers them. There are no recurring runs
+
 ## Invariants
 - The Landing Page only displays content that has been saved and is in a public-visible state
 - Visitor-facing content is read-only for visitors; the Owner is the only author
@@ -308,4 +369,6 @@
 
 
 ## Changelog
+- [2026-10-04] Added the Radar domain (RadarSource, RadarRun, RadarStepRun, RadarItem, RadarEnrichment, RadarBrief, WorkflowProfile, RunFlow), three flows and RAD-001..006, from `epic-radar-ai-news`. Radar is an Owner-only console tool for catching up on AI news from followed social profiles.
+- [2026-09-26] Added the Content Freshness rules (CNF-001..003). They came out of a job change that invalidated eight Profile prose fields at once, because a year count, an employer name and a present-tense claim about the current role had each been written into evergreen copy in several places. The rules name the one place each kind of fact belongs.
 - [2026-07-28] First reconciliation against the code since 2026-05-28, after six epics closed. Added AboutPrinciple + AboutFailure (with PrincipleClaim / PrincipleExpansion) and the Author About-page Essays flow, from `epic-portfolio-about`. Added the Press contact purpose, the bot-challenge step, and the derived-subject step to Receive Contact Message (CTM-006, CTM-007) — the flow had claimed the visitor types a subject, which the form has never asked for. Added the Locale rules (LOC-001..005) from the landing i18n work. Corrected the invariant that said all content goes through Console: the fixed interface wording and the /uses + /colophon pages are authored in the codebase today. Also structural — the Upload Media flow had been sitting under a second `## Rules` heading; it is now a flow, and there is one Rules section.

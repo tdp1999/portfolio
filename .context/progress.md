@@ -347,7 +347,8 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 
 - [ ] 323-landing-llms-txt (S)
 - [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
-- [ ] 398-localized-gallery-caption (L) (standalone — **blocked**: gallery captions reuse `ProjectImage.alt` and are English-only; waiting on the in-flight console/API project mapper+presenter+DTO work. Interim CSS clamp already shipped.)
+- [ ] 398-localized-gallery-caption (XL) (standalone — unblocked 2026-08-09, the console/API changeset landed in `5e28b750..06fcc740`. Gallery captions reuse `ProjectImage.alt` and are English-only; interim CSS clamp already shipped. Raised L → XL: the `imageIds: string[]` write path through DTO/port/repository was missing from the original plan.)
+- [~] 399-job-change-content-sweep (M) (standalone, **in-progress** — author đổi việc: Redoc kết thúc 2026-10-16, onboard WorkBuddy 2026-11-02. 8 field `Profile` + 3 record Experience. Chia hai wave vì hai mốc còn ở tương lai: Wave 1 làm ngay (nhóm availability đang sai + gỡ số năm + record Redoc/AppCore), Wave 2 publish đúng 2026-11-02. Định vị chốt **hướng C**: giữ danh tính Frontend Engineer, bỏ neo ngành khỏi `aboutHeading`, thêm ý sở hữu đầu cuối. Đóng luôn món "§01 Experience" của task 361.)
 
 ## Done — Portfolio About (epic COMPLETED 2026-07-27 → `plans-done/epic-portfolio-about.md`)
 
@@ -434,6 +435,27 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [x] 381-rte-heading-levels-toolbar-mismatch (S) — done 2026-07-28 (archived → tasks-done/epic-portfolio-rich-text-editor/). Toolbar block-type dropdown giờ dẫn xuất từ `config.heading.levels` thay vì hằng số cứng: bỏ mục H1 chết, mở được H4. Sửa ở upstream **document-engine 0.1.4** (`buildHeadingOptions` + spec 7 case), portfolio chỉ bump dep `0.1.2 → 0.1.4`, không đổi code. Owner xác nhận bằng mắt sau khi restart console dev server.
 
+## Pending — Radar, AI news catch-up (broken down 2026-10-04)
+
+From: `epic-radar-ai-news`. Owner-only console tool: capture public FB posts of AI influencers (first: mrgoonie) via Apify, enrich via Claude Code external worker, skim Feed + Detail. Urgent (before laptop return + onboarding 2026-11-02); light testing, must run end to end.
+
+Phase A (usable first):
+- [ ] 400-radar-apify-probe (S) — Owner runs Apify on ~50 posts, confirm profile coverage, commit fixture, pick actor
+- [ ] 401-radar-prisma-schema (M) — 7 Radar models + migration
+- [ ] 402-radar-upload-capture-normalize (L) — radar module, capture port, JSON upload, Apify normalizer + dedupe (deps 400, 401)
+- [ ] 403-radar-image-persistence (M) — copy post images to Cloudinary `radar/` (deps 402)
+- [ ] 404-radar-worker-api (L) — machine token guard, LLM port, claim/lease/submit, workflow profile API (deps 401, 402)
+- [ ] 405-radar-work-skill (M) — `/radar work` project skill + first workflow profile (deps 404)
+- [ ] 406-radar-console-feed (L) — feature-radar lib, sources, upload, Feed (deps 402, 404)
+- [ ] 407-radar-console-detail (M) — Detail page + profile editor (deps 406, 404)
+- [ ] 408-radar-phase-a-acceptance (S) — 6-month real run on production (deps 403, 405, 406, 407)
+
+Phase B (Hybrid flow):
+- [ ] 409-radar-run-state-machine-apify (L) — runs, cron tick, Apify API adapter (deps 402, 403, 404)
+- [ ] 410-radar-console-runs (M) — trigger run + step progress (deps 409, 406)
+- [ ] 411-radar-comments (M) — comments capture + digest (deps 409, 405)
+- [ ] 412-radar-brief (M) — synthesize step + Brief page (deps 404, 405, 407)
+
 ## Done — Prose Block Renderer (implemented directly from epic)
 
 From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-07-01** — all 6 phases shipped inline (no task breakdown). AST renderer + DI block registry live on `project-detail` + `blog-detail` canonical path; HTML cache demoted to graceful fallback. See Completed Epics entry above + ADR-022. Follow-ups (data backfill to activate AST + fallback-branch retirement) tracked in the epic file; coordinate with 363/323/312.
@@ -457,11 +479,13 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 | Status            | Count   |
 | ----------------- | ------- |
 | Done (archived)   | 373     |
-| In Progress       | 4       |
-| Pending           | 5       |
-| Blocked           | 1       |
-| **Total Created** | **383** |
+| In Progress       | 5       |
+| Pending           | 6       |
+| Blocked           | 0       |
+| **Total Created** | **384** |
 | Epics completed   | 52      |
+
+_**2026-09-26.** Thêm task **399-job-change-content-sweep** (in-progress, M) → in-progress 4→5, total 383→384. Author đổi việc; đây là đợt cập nhật content mà việc đổi việc làm lệch, cộng 3 record Experience lấp `/about` §01._
 
 _**Counts reconciled to task files via `/ctx:sync` on 2026-07-28**, replacing the running adjustment note that had accumulated since 2026-07-24. Table now matches the filesystem exactly: 373 files in `tasks-done/`, 9 in `tasks/` (sau khi 381 đóng cùng ngày). Active breakdown — **pending (5):** 323, 328, 382, 387, 389; **in-progress (4 sau khi 381 đóng cùng ngày):** 361 (content-authoring master), 383 (owner manual-testing), 386 (e2e-drift-cleanup), 396 (ddl-motion). The 4-vs-5 in-progress drift called out on 2026-07-27 was exactly this: 381 and 396 were uncounted, and 389/396 carried no `## Status` heading at all until this sync added one._
 
