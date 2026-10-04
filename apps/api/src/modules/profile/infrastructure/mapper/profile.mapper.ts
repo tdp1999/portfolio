@@ -15,6 +15,8 @@ import {
   CertificationsArraySchema,
   ResumeUrlsSchema,
   OpenToSchema,
+  isPlainObject,
+  stringArray,
 } from '@portfolio/shared/utils';
 
 type PrismaProfileWithMedia = PrismaProfile & {
@@ -25,22 +27,10 @@ type PrismaProfileWithMedia = PrismaProfile & {
 const parseTranslatableNullable = (raw: unknown): TranslatableJson | null =>
   raw == null ? null : (PersistenceTranslatableSchema.parse(raw) as TranslatableJson);
 
-const parseTimezones = (raw: unknown): string[] => {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((v): v is string => typeof v === 'string');
-};
-
-const parseStringArray = (raw: unknown): string[] => {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((v): v is string => typeof v === 'string');
-};
-
 const HHMM = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const parseWorkingHours = (raw: unknown): WorkingHoursValue | null => {
-  if (!raw || typeof raw !== 'object') return null;
-  const obj = raw as Record<string, unknown>;
-  const start = obj['start'];
-  const end = obj['end'];
+  if (!isPlainObject(raw)) return null;
+  const { start, end } = raw;
   if (typeof start !== 'string' || typeof end !== 'string') return null;
   if (!HHMM.test(start) || !HHMM.test(end)) return null;
   return { start, end };
@@ -88,8 +78,8 @@ export class ProfileMapper {
       aboutLede: parseTranslatableNullable(raw.aboutLede),
       ctaHeading: parseTranslatableNullable(raw.ctaHeading),
       ctaLede: parseTranslatableNullable(raw.ctaLede),
-      coreStack: parseStringArray(raw.coreStack),
-      timezones: parseTimezones(raw.timezones),
+      coreStack: stringArray(raw.coreStack),
+      timezones: stringArray(raw.timezones),
       canonicalUrl: raw.canonicalUrl,
       contentUpdatedAt: raw.contentUpdatedAt,
       avatarId: raw.avatarId,

@@ -9,3 +9,4 @@
  * at module load time MUST stay in the main barrel.
  */
 export { getLocalized } from './lib/localize.util';
+export { isPlainObject, nonEmptyString, finiteNumber, stringArray } from './lib/guards.util';

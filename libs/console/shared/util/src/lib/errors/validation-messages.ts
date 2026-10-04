@@ -1,3 +1,5 @@
+import { isPlainObject } from '@portfolio/shared/utils/lite';
+
 export type ErrorMessageFn = (params: Record<string, unknown>) => string;
 export type ErrorMessage = string | ErrorMessageFn;
 
@@ -28,7 +30,7 @@ export function resolveValidationMessage(
   if (!message) return 'Invalid value.';
   if (typeof message === 'string') return message;
 
-  const params = typeof errorValue === 'object' && errorValue !== null ? (errorValue as Record<string, unknown>) : {};
+  const params = isPlainObject(errorValue) ? errorValue : {};
   // For `server` errors, the value is often a plain string
   if (typeof errorValue === 'string') {
     return message({ message: errorValue, value: errorValue });

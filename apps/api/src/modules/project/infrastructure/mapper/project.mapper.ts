@@ -8,6 +8,7 @@ import {
   Skill,
 } from '@prisma/client';
 import { TranslatableJson, TranslatableRichText } from '@portfolio/shared/types';
+import { isPlainObject } from '@portfolio/shared/utils';
 import { Project } from '../../domain/entities/project.entity';
 import { IProjectProps, ContentStatus, ProjectLifecycleStatus } from '../../domain/project.types';
 import { ProjectLinkProps, PROJECT_LINK_TYPES, ProjectLinkType } from '../../domain/value-objects';
@@ -81,17 +82,11 @@ const isLinkType = (v: unknown): v is ProjectLinkType =>
 
 const parseLinks = (raw: unknown): ProjectLinkProps[] => {
   if (!Array.isArray(raw)) return [];
-  return raw
-    .filter(
-      (l): l is { label: string; url: string; type: string } =>
-        l != null &&
-        typeof l === 'object' &&
-        typeof (l as { label?: unknown }).label === 'string' &&
-        typeof (l as { url?: unknown }).url === 'string' &&
-        typeof (l as { type?: unknown }).type === 'string'
-    )
-    .filter((l) => isLinkType(l.type))
-    .map((l) => ({ label: l.label, url: l.url, type: l.type as ProjectLinkType }));
+  return raw.flatMap((l): ProjectLinkProps[] =>
+    isPlainObject(l) && typeof l['label'] === 'string' && typeof l['url'] === 'string' && isLinkType(l['type'])
+      ? [{ label: l['label'], url: l['url'], type: l['type'] }]
+      : []
+  );
 };
 
 export class ProjectMapper {

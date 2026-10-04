@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { isPlainObject } from '@portfolio/shared/utils/lite';
+
 export interface ApiError {
   statusCode: number;
   errorCode: string | null;
@@ -19,8 +21,6 @@ export function extractApiError(err: HttpErrorResponse): ApiError {
     }
   }
 
-  const isObject = body !== null && typeof body === 'object';
-
   // 3. XỬ LÝ LỖI MẠNG (Client-side / Network)
   if (err.status === 0) {
     return {
@@ -31,11 +31,12 @@ export function extractApiError(err: HttpErrorResponse): ApiError {
     };
   }
 
+  const fields = isPlainObject(body) ? body : {};
   return {
     statusCode: err.status,
-    errorCode: isObject && typeof body.errorCode === 'string' ? body.errorCode : null,
-    message: isObject && typeof body.message === 'string' ? body.message : 'An unexpected error occurred',
-    data: isObject ? body.data : undefined,
+    errorCode: typeof fields['errorCode'] === 'string' ? fields['errorCode'] : null,
+    message: typeof fields['message'] === 'string' ? fields['message'] : 'An unexpected error occurred',
+    data: fields['data'],
   };
 }
 
