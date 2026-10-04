@@ -224,9 +224,7 @@
         "is_ncsr": false,
         "permalink_url": "https://www.facebook.com/reel/1029591883298606/",
         "seo_web_crawler_lookaside_url": null,
-        "dash_prefetch_experimental": [
-          "1853358042714365v"
-        ],
+        "dash_prefetch_experimental": ["1853358042714365v"],
         "video_status_type": "OK",
         "can_use_oz": true,
         "min_quality_preference": null,
@@ -292,9 +290,7 @@
         "comet_video_player_audio_overlay_renderer": null,
         "clip_fallback_cover": null,
         "is_clip": false,
-        "matcha_related_keywords_links": [
-          ""
-        ],
+        "matcha_related_keywords_links": [""],
         "is_music_clip": false,
         "can_open_tahoe_for_lva": false,
         "video_collaborator_page_or_delegate_page": null,

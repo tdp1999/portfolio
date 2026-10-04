@@ -62,6 +62,6 @@ const queryHandlers = [ListMediaHandler, GetMediaByIdHandler, GetStorageStatsHan
     MediaCleanupJob,
     MediaRefResolverService,
   ],
-  exports: [MEDIA_REPOSITORY, MediaRefResolverService],
+  exports: [MEDIA_REPOSITORY, MediaRefResolverService, STORAGE_SERVICE],
 })
 export class MediaModule {}

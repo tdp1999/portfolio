@@ -29,6 +29,8 @@ Epic `epic-radar-ai-news` (Phase B). No queue: state lives in `RadarRun` / `Rada
 **Specialized Skill:** be-test — tests the state transitions and failure paths only
 **Key sections to read:** logic vs non-logic triage
 
+- **Carried over from 402 (decided 2026-10-04):** 402 shipped only the format normalizer (`ICaptureNormalizer`, token `CAPTURE_NORMALIZERS`, `ApifyFacebookNormalizer`) and `IRadarCaptureRepository.saveCapture` (MANUAL runs only). This task defines the `CAPTURE_PROVIDER` start/poll/fetch port, reuses the normalizer on the fetched dataset, and generalises `saveCapture` for runs that already exist (HYBRID).
+
 ## Files to Touch
 - apps/api/src/modules/radar/infrastructure/capture/apify-capture.adapter.ts
 - apps/api/src/modules/radar/application/jobs/radar-tick.job.ts

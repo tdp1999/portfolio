@@ -9,6 +9,7 @@ import {
   MediaErrorCode,
   ProfileErrorCode,
   ProjectErrorCode,
+  RadarErrorCode,
   SkillErrorCode,
   TagErrorCode,
   UserErrorCode,
@@ -31,6 +32,7 @@ type AllErrorCodes =
   | `${MediaErrorCode}`
   | `${ProfileErrorCode}`
   | `${ProjectErrorCode}`
+  | `${RadarErrorCode}`
   | `${SkillErrorCode}`
   | `${TagErrorCode}`
   | `${UserErrorCode}`;
@@ -131,6 +133,15 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [SkillErrorCode.MAX_DEPTH_EXCEEDED]: 'Skills can only be nested one level deep.',
   [SkillErrorCode.PARENT_DELETED]: 'The parent skill has been deleted.',
   [SkillErrorCode.HAS_CHILDREN]: 'Cannot delete a skill that has child skills. Remove or reassign them first.',
+
+  // --- Radar ---
+  [RadarErrorCode.SOURCE_NOT_FOUND]: 'Radar source not found.',
+  [RadarErrorCode.SOURCE_URL_TAKEN]: 'A radar source with this URL already exists.',
+  [RadarErrorCode.SOURCE_INACTIVE]: 'This radar source is inactive. Reactivate it before capturing.',
+  [RadarErrorCode.INVALID_INPUT]: VALIDATION_FALLBACK,
+  [RadarErrorCode.INVALID_UPLOAD]: 'The uploaded file is not a valid capture export.',
+  [RadarErrorCode.IMAGE_DELETE_FAILED]:
+    'Some stored images could not be deleted. Nothing else was removed; please try again.',
 
   // --- Tag ---
   [TagErrorCode.NOT_FOUND]: 'Tag not found.',

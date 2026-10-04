@@ -440,10 +440,10 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 From: `epic-radar-ai-news`. Owner-only console tool: capture public FB posts of AI influencers (first: mrgoonie) via Apify, enrich via Claude Code external worker, skim Feed + Detail. Urgent (before laptop return + onboarding 2026-11-02); light testing, must run end to end.
 
 Phase A (usable first):
-- [ ] 400-radar-apify-probe (S) — Owner runs Apify on ~50 posts, confirm profile coverage, commit fixture, pick actor
-- [ ] 401-radar-prisma-schema (M) — 7 Radar models + migration
-- [ ] 402-radar-upload-capture-normalize (L) — radar module, capture port, JSON upload, Apify normalizer + dedupe (deps 400, 401)
-- [ ] 403-radar-image-persistence (M) — copy post images to Cloudinary `radar/` (deps 402)
+- [x] 400-radar-apify-probe (S) — Owner runs Apify on ~50 posts, confirm profile coverage, commit fixture, pick actor
+- [x] 401-radar-prisma-schema (M) — 7 Radar models + migration
+- [x] 402-radar-upload-capture-normalize (L) — radar module, capture port, JSON upload, Apify normalizer + dedupe (deps 400, 401)
+- [x] 403-radar-image-persistence (M) — copy post images to Cloudinary `radar/` (deps 402)
 - [ ] 404-radar-worker-api (L) — machine token guard, LLM port, claim/lease/submit, workflow profile API (deps 401, 402)
 - [ ] 405-radar-work-skill (M) — `/radar work` project skill + first workflow profile (deps 404)
 - [ ] 406-radar-console-feed (L) — feature-radar lib, sources, upload, Feed (deps 402, 404)

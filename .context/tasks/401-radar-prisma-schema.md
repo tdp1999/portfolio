@@ -1,6 +1,6 @@
 # Task: Radar — Prisma models and migration
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Add the seven Radar models and their enums to the schema and apply the migration locally and on Railway.
@@ -15,7 +15,7 @@ Epic `epic-radar-ai-news` (Phase A). Every later task stores data in these table
 - [x] `RadarEnrichment` has a 1:1 relation to `RadarItem` and records producer (adapter, model) and schema version.
 - [x] Enums cover run flow (`MANUAL`, `HYBRID`), run/step status (`PENDING`, `RUNNING`, `AWAITING_EXTERNAL`, `DONE`, `FAILED`) and step kind (`CAPTURE`, `NORMALIZE`, `ENRICH`, `ANALYZE`, `SYNTHESIZE`).
 - [x] Indexes exist for the Feed query: `(sourceId, publishedAt desc)` and work status plus lease expiry.
-- [ ] The migration applies cleanly on a fresh local database and on Railway through `migrate deploy` at boot.
+- [x] The migration applies cleanly on a fresh local database and on Railway through `migrate deploy` at boot.
 - [x] If the migration is applied to a database that already has data in other tables, then no existing table is altered.
 
 ## Technical Notes
@@ -41,3 +41,5 @@ Epic `epic-radar-ai-news` (Phase A). Every later task stores data in these table
 - 2026-10-04 Migration `20261004135808_add_radar_models` generated and reviewed: 6 CREATE TYPE, 7 CREATE TABLE, 16 indexes (incl. GIN on providerTags), 6 FKs between radar_* tables only, 0 DROP. Applied locally; `prisma generate` ok; api `tsc --noEmit` clean.
 - 2026-10-04 Verified RAD-001 at DB level: a second insert with the same (sourceId, externalId) fails with 23505 on `radar_items_sourceId_externalId_key`. Test rows removed.
 - 2026-10-04 Outstanding: AC "applies on Railway via migrate deploy at boot" is verified only after the next deploy of the API (push to master). Status stays in-progress until then.
+- 2026-10-04 Railway deploy of 25c910aa (Dashboard API) logged "Applying migration `20261004135808_add_radar_models`" and "All migrations have been successfully applied."
+- 2026-10-04 Done — all ACs satisfied
