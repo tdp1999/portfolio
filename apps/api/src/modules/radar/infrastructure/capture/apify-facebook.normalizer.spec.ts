@@ -76,6 +76,64 @@ describe('ApifyFacebookNormalizer', () => {
     expect(item.links).toEqual([{ url: raw.sharedPost?.url, origin: 'shared-post' }]);
   });
 
+  it('should read shared-post media from `attachments` when the actor puts it there', () => {
+    const photo = { __typename: 'Photo', id: 'p1', image: { uri: 'https://scontent.xx.fbcdn.net/p1.jpg' } };
+    const video = { __typename: 'Video', id: 'v1', image: { uri: 'https://scontent.xx.fbcdn.net/v1.jpg' } };
+    const share = {
+      ...byId(PLAIN_POST),
+      postId: 'share-att',
+      sharedPost: {
+        url: 'https://www.facebook.com/groups/x/posts/1/',
+        // The same photo in both lists is kept once.
+        media: [photo],
+        attachments: [{ mediaset_token: 'pcb.1' }, photo, video],
+      },
+    };
+
+    const [item] = normalizer.normalize([share]).items;
+
+    expect(item.media).toEqual([]);
+    expect(item.sharedPost?.media.map((m) => [m.type, m.externalId])).toEqual([
+      ['photo', 'p1'],
+      ['video', 'v1'],
+    ]);
+  });
+
+  it('should rewrite ISP-embedded CDN hosts to the public Facebook CDN host', () => {
+    const edge = 'https://scontent.fosu2-2.fna.fbcdn.net/v/t39.99422-6/a.jpg?oh=1&oe=2';
+    const post = {
+      ...byId(PLAIN_POST),
+      postId: 'edge-host',
+      media: [{ __typename: 'Photo', id: 'e1', thumbnail: edge, image: { uri: edge } }],
+    };
+
+    const [item] = normalizer.normalize([post]).items;
+
+    expect(item.media[0].url).toBe('https://scontent.xx.fbcdn.net/v/t39.99422-6/a.jpg?oh=1&oe=2');
+    expect(item.media[0].thumbnailUrl).toBe(item.media[0].url);
+  });
+
+  it('should drop hashtag links and attribute a link copied from the shared post to it', () => {
+    const external = 'https://example.com/article';
+    const hashtag = 'https://www.facebook.com/hashtag/buildinpublic?__cft__=x';
+    const sharedUrl = 'https://www.facebook.com/groups/x/posts/1/';
+    const copied = {
+      ...byId(PLAIN_POST),
+      postId: 'copied',
+      link: external,
+      sharedPost: { url: sharedUrl, link: external },
+    };
+    const tagged = { ...byId(PLAIN_POST), postId: 'tagged', link: hashtag };
+
+    const [a, b] = normalizer.normalize([copied, tagged]).items;
+
+    expect(a.links).toEqual([
+      { url: external, origin: 'shared-post' },
+      { url: sharedUrl, origin: 'shared-post' },
+    ]);
+    expect(b.links).toEqual([]);
+  });
+
   it('should report a malformed post as a failure and still normalize the rest', () => {
     const { postId: _omit, ...malformed } = byId(PLAIN_POST);
 

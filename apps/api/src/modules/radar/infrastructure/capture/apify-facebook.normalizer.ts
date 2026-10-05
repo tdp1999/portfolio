@@ -83,7 +83,8 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
 
   private toItem(post: Json & z.infer<typeof ApifyPostSchema>, entry: unknown): NormalizedRadarItem {
     const user = isPlainObject(post['user']) ? post['user'] : {};
-    const sharedPost = isPlainObject(post['sharedPost']) ? toSharedPost(post['sharedPost']) : null;
+    const shared = isPlainObject(post['sharedPost']) ? post['sharedPost'] : null;
+    const sharedPost = shared ? toSharedPost(shared) : null;
 
     return {
       externalId: post.postId,
@@ -95,7 +96,7 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
       publishedAt: new Date(post.time),
       text: (nonEmptyString(post['text']) ?? '').trim(),
       media: toMedia(post['media']),
-      links: toLinks(post, sharedPost),
+      links: toLinks(post, sharedPost, httpUrl(shared?.['link'])),
       sharedPost,
       engagement: {
         likes: finiteNumber(post['likes']) ?? 0,
@@ -116,47 +117,68 @@ function toKind(post: Json & { url: string }, isShare: boolean): RadarItemKind {
 }
 
 /**
- * Keeps photos and videos only. Album posts lead with a `mediaset_token` wrapper that has no
+ * Keeps photos and videos only, deduplicated by Facebook id across the given lists (shared posts
+ * carry media in `media` or `attachments`, depending on the post). Album posts lead with a `mediaset_token` wrapper that has no
  * `__typename` and no image; it is dropped along with any `null` slot.
  */
-function toMedia(value: unknown): RadarMedia[] {
-  if (!Array.isArray(value)) return [];
+function toMedia(...lists: unknown[]): RadarMedia[] {
+  const seen = new Set<string>();
 
-  return value.flatMap((m): RadarMedia[] => {
-    if (!isPlainObject(m)) return [];
-    const typename = m['__typename'];
-    if (typename !== 'Photo' && typename !== 'Video') return [];
+  return lists
+    .flatMap((list) => (Array.isArray(list) ? list : []))
+    .flatMap((m): RadarMedia[] => {
+      if (!isPlainObject(m)) return [];
+      const typename = m['__typename'];
+      if (typename !== 'Photo' && typename !== 'Video') return [];
 
-    const image = [m['image'], m['photo_image'], m['thumbnailImage']].find(isPlainObject) ?? {};
-    const url = nonEmptyString(image['uri']) ?? nonEmptyString(m['thumbnail']);
-    if (!url) return [];
+      const image = [m['image'], m['photo_image'], m['thumbnailImage']].find(isPlainObject) ?? {};
+      const url = publicCdnUrl(nonEmptyString(image['uri']) ?? nonEmptyString(m['thumbnail']));
+      const id = nonEmptyString(m['id']);
+      if (!url || (id && seen.has(id))) return [];
+      if (id) seen.add(id);
 
-    return [
-      {
-        type: typename === 'Photo' ? 'photo' : 'video',
-        url,
-        thumbnailUrl: nonEmptyString(m['thumbnail']),
-        width: finiteNumber(image['width']),
-        height: finiteNumber(image['height']),
-        ocrText: nonEmptyString(m['ocrText']),
-        externalId: nonEmptyString(m['id']),
-        storedUrl: null,
-        storedExternalId: null,
-        storageStatus: 'pending',
-        storageError: null,
-      },
-    ];
-  });
+      return [
+        {
+          type: typename === 'Photo' ? 'photo' : 'video',
+          url,
+          thumbnailUrl: publicCdnUrl(nonEmptyString(m['thumbnail'])),
+          width: finiteNumber(image['width']),
+          height: finiteNumber(image['height']),
+          ocrText: nonEmptyString(m['ocrText']),
+          externalId: id,
+          storedUrl: null,
+          storedExternalId: null,
+          storageStatus: 'pending',
+          storageError: null,
+        },
+      ];
+    });
+}
+
+/**
+ * The actor sometimes returns URLs on ISP-embedded edge hosts (`scontent.fosu2-2.fna.fbcdn.net`)
+ * that only resolve inside that ISP, so our server and the worker cannot download them. The
+ * signed path is host-independent, so the public host serves the same file.
+ */
+function publicCdnUrl(url: string | null): string | null {
+  return url?.replace(/^https:\/\/scontent\.[a-z0-9-]+\.fna\.fbcdn\.net\//, 'https://scontent.xx.fbcdn.net/') ?? null;
 }
 
 /** The page's pinned "subscribe now" promo shows up as `link` on most posts; it is not content. */
 const isPromoLink = (url: string) => /facebook\.com\/[^/]+\/subscribenow/.test(url);
+/** A hashtag in the text surfaces as `link` when the post has no real link; it is not content. */
+const isHashtagLink = (url: string) => /facebook\.com\/hashtag\//.test(url);
 
-function toLinks(post: Json & { url: string }, sharedPost: RadarSharedPost | null): RadarLink[] {
+/** On a share the actor copies the shared post's `link` to the top level; it belongs to the shared post. */
+function toLinks(
+  post: Json & { url: string },
+  sharedPost: RadarSharedPost | null,
+  sharedLink: string | null
+): RadarLink[] {
   const links: RadarLink[] = [];
   const link = httpUrl(post['link']);
-  if (link && link !== post.url && !isPromoLink(link)) {
-    links.push({ url: link, origin: 'post' });
+  if (link && link !== post.url && !isPromoLink(link) && !isHashtagLink(link)) {
+    links.push({ url: link, origin: link === sharedLink ? 'shared-post' : 'post' });
   }
   if (sharedPost?.permalink) {
     links.push({ url: sharedPost.permalink, origin: 'shared-post' });
@@ -174,7 +196,7 @@ function toSharedPost(shared: Json): RadarSharedPost {
     permalink: httpUrl(shared['url']),
     publishedAt: nonEmptyString(shared['time']),
     text: (nonEmptyString(shared['text']) ?? '').trim(),
-    media: toMedia(shared['media']),
+    media: toMedia(shared['media'], shared['attachments']),
   };
 }
 
