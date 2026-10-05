@@ -95,6 +95,9 @@
       content-padding: 16px 20px,
       actions-padding: 12px 20px,
       with-actions-content-padding: 16px 20px,
+      /* The base theme is `theme-type: dark` with only `on-surface` remapped, so the stock
+         supporting-text color (on-surface-variant) stays dark-palette light grey on a light surface. */
+      supporting-text-color: var(--color-text-secondary),
     )
   );
 
