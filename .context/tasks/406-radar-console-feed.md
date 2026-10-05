@@ -17,8 +17,10 @@ Epic `epic-radar-ai-news` (Phase A). This is the main reading surface. Speed ove
 - [ ] If the upload is rejected, then the field-level errors from the API are shown and the Feed is unchanged.
 - [ ] Unenriched items are visibly marked as pending analysis.
 - [ ] Clicking an item opens the Detail route.
+- [ ] The Feed shows how many items are stuck (claimed 3 times without a stored result) and the Owner can re-queue them, which resets `claimCount` to 0 and `workStatus` to `PENDING` (new admin endpoint, e.g. `POST /radar/items/requeue-stuck`). Agreed with the Owner 2026-10-05 after the 404 review.
 
 ## Technical Notes
+- **From 405 review (2026-10-05):** claim skips items of inactive sources, so a deactivated source's PENDING items never get claimed and never reach `claimCount` 3. The stuck count (based on `claimCount`) will not include them; the Feed should show them under their source as "paused" (or the source list shows a pending count), not as stuck.
 - Create the lib with the ng-lib skill. Mount with `loadChildren` in `apps/console/src/app/app.routes.ts` inside the `adminGuard` group.
 - Follow `libs/console/feature-messages` structure: `radar.routes.ts`, `radar.service.ts` (wraps `ApiService`), `radar.types.ts`, `radar.feed/`, `radar.detail/` (folder names per `.context/patterns-file-structure.md`).
 - Reuse `FilterBar`, `FilterSearch`, `FilterSelect`, `MatPaginator`, `SpinnerOverlay`, `ToastService`, `asset-upload-zone`, `relative-time`, `skeleton` from `@portfolio/console/shared/ui`.

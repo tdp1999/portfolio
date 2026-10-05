@@ -445,7 +445,7 @@ Phase A (usable first):
 - [x] 402-radar-upload-capture-normalize (L) — radar module, capture port, JSON upload, Apify normalizer + dedupe (deps 400, 401)
 - [x] 403-radar-image-persistence (M) — copy post images to Cloudinary `radar/` (deps 402)
 - [x] 404-radar-worker-api (L) — machine token guard, LLM port, claim/lease/submit, workflow profile API (deps 401, 402)
-- [ ] 405-radar-work-skill (M) — `/radar work` project skill + first workflow profile (deps 404)
+- [x] 405-radar-work-skill (M) — `/radar work` project skill + first workflow profile (deps 404)
 - [ ] 406-radar-console-feed (L) — feature-radar lib, sources, upload, Feed (deps 402, 404)
 - [ ] 407-radar-console-detail (M) — Detail page + profile editor (deps 406, 404)
 - [ ] 408-radar-phase-a-acceptance (S) — 6-month real run on production (deps 403, 405, 406, 407)
