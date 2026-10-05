@@ -18,11 +18,7 @@ export const SubmitContactMessageSchema = z.object({
     .max(LIMITS.CONTACT_SUBJECT_MAX)
     .transform((v) => stripHtmlTags(v.trim()))
     .optional(),
-  message: z
-    .string()
-    .min(LIMITS.CONTACT_MESSAGE_MIN)
-    .max(LIMITS.CONTACT_MESSAGE_MAX)
-    .transform((v) => v.trim()),
+  message: z.string().trim().min(LIMITS.CONTACT_MESSAGE_MIN).max(LIMITS.CONTACT_MESSAGE_MAX),
   locale: z.enum(['en', 'vi']).default('en'),
   consentGivenAt: z.iso.datetime(),
   website: z.string().optional(),

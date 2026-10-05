@@ -55,7 +55,7 @@ describe('LoginHandler', () => {
       verifyAccessToken: jest.fn(),
       verifyRefreshToken: jest.fn(),
     } as unknown as jest.Mocked<TokenService>;
-    commandBus = { execute: jest.fn() } as unknown as jest.Mocked<CommandBus>;
+    commandBus = { execute: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<CommandBus>;
 
     handler = new LoginHandler(repo, tokenService, commandBus);
   });
@@ -151,6 +151,15 @@ describe('LoginHandler', () => {
     await handler.execute(new LoginCommand(validDto));
 
     expect(commandBus.execute).toHaveBeenCalled();
+  });
+
+  it('should still log in when the last-login update rejects', async () => {
+    const user = createUser();
+    repo.findByEmailIncludingDeleted.mockResolvedValue(user);
+    jest.spyOn(hashUtil, 'comparePassword').mockResolvedValue(true);
+    commandBus.execute.mockRejectedValue(new Error('db down'));
+
+    await expect(handler.execute(new LoginCommand(validDto))).resolves.toHaveProperty('accessToken');
   });
 
   it('should pass rememberMe flag through', async () => {

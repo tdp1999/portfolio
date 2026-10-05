@@ -57,7 +57,7 @@ describe('GoogleLoginHandler', () => {
       verifyAccessToken: jest.fn(),
       verifyRefreshToken: jest.fn(),
     } as unknown as jest.Mocked<TokenService>;
-    commandBus = { execute: jest.fn() } as unknown as jest.Mocked<CommandBus>;
+    commandBus = { execute: jest.fn().mockResolvedValue(undefined) } as unknown as jest.Mocked<CommandBus>;
 
     handler = new GoogleLoginHandler(repo, tokenService, commandBus);
   });
@@ -125,6 +125,14 @@ describe('GoogleLoginHandler', () => {
       await handler.execute(new GoogleLoginCommand(validProfile));
 
       expect(commandBus.execute).toHaveBeenCalled();
+    });
+
+    it('should still log in when the last-login update rejects', async () => {
+      const user = createUser();
+      repo.findByEmail.mockResolvedValue(user);
+      commandBus.execute.mockRejectedValue(new Error('db down'));
+
+      await expect(handler.execute(new GoogleLoginCommand(validProfile))).resolves.toHaveProperty('accessToken');
     });
   });
 

@@ -11,6 +11,8 @@ jest.mock('crypto', () => ({
   createHash: jest.fn(),
 }));
 
+const STORED_HASH = 'ab'.repeat(32);
+
 describe('ResetPasswordHandler', () => {
   let handler: ResetPasswordHandler;
   let repo: jest.Mocked<IUserRepository>;
@@ -28,7 +30,7 @@ describe('ResetPasswordHandler', () => {
       lastLoginAt: null,
       refreshToken: null,
       refreshTokenExpiresAt: null,
-      passwordResetToken: 'hashed-token',
+      passwordResetToken: STORED_HASH,
       passwordResetExpiresAt: new Date(Date.now() + 3600000),
       googleId: null,
       failedLoginAttempts: 0,
@@ -54,7 +56,7 @@ describe('ResetPasswordHandler', () => {
 
     (crypto.createHash as jest.Mock).mockReturnValue({
       update: jest.fn().mockReturnThis(),
-      digest: jest.fn().mockReturnValue('hashed-token'),
+      digest: jest.fn().mockReturnValue(STORED_HASH),
     });
 
     handler = new ResetPasswordHandler(repo);
@@ -86,7 +88,7 @@ describe('ResetPasswordHandler', () => {
   it('should reject if token hash does not match', async () => {
     (crypto.createHash as jest.Mock).mockReturnValue({
       update: jest.fn().mockReturnThis(),
-      digest: jest.fn().mockReturnValue('different-hash'),
+      digest: jest.fn().mockReturnValue('cd'.repeat(32)),
     });
     const user = createUser();
     repo.findById.mockResolvedValue(user);

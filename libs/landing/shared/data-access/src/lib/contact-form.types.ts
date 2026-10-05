@@ -10,8 +10,7 @@ export function isContactPurpose(value: string | null | undefined): value is Con
 /**
  * Backend `ContactPurpose` enum (Prisma) — kept in lockstep with the API. The
  * FE-friendly chip ids in {@link CONTACT_PURPOSES} are mapped to these via
- * {@link FE_TO_BE_PURPOSE} before submitting. `PRESS` is pending a BE enum
- * extension; `press` currently maps to `OTHER` until that migration lands.
+ * {@link FE_TO_BE_PURPOSE} before submitting.
  */
 export type BackendContactPurpose =
   | 'GENERAL'

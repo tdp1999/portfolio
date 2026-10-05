@@ -55,6 +55,11 @@ describe('SubmitContactMessageSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('should fail when message is only padded with whitespace to reach the minimum', () => {
+    const result = SubmitContactMessageSchema.safeParse({ ...validInput, message: `   short${' '.repeat(20)}` });
+    expect(result.success).toBe(false);
+  });
+
   it('should fail when message exceeds 5000 characters', () => {
     const result = SubmitContactMessageSchema.safeParse({ ...validInput, message: 'x'.repeat(5001) });
     expect(result.success).toBe(false);

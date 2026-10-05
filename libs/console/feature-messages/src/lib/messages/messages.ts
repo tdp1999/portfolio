@@ -97,7 +97,8 @@ export default class Messages implements OnInit {
     if (params['search']) this.search.set(params['search']);
     if (params['status']) this.statusFilter.set(params['status']);
     if (params['purpose']) this.purposeFilter.set(params['purpose']);
-    if (params['page']) this.pageIndex.set(Math.max(0, Number(params['page']) - 1));
+    const page = Number(params['page']);
+    if (Number.isInteger(page) && page > 0) this.pageIndex.set(page - 1);
     this.loadMessages();
   }
 
@@ -218,6 +219,8 @@ export default class Messages implements OnInit {
         return 'badge-collab';
       case 'BUG_REPORT':
         return 'badge-bug';
+      case 'PRESS':
+        return 'badge-press';
       default:
         return 'badge-default';
     }

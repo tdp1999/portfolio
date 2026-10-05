@@ -1,5 +1,5 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { ValidationError, UnauthorizedError, ErrorLayer, AuthErrorCode } from '@portfolio/shared/errors';
 import { comparePassword } from '@portfolio/shared/utils';
 import { hashRefreshToken } from '../utils/token-hash.util';
@@ -113,7 +113,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand, LoginResult> 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
 
     // Fire-and-forget: update last login
-    this.commandBus.execute(new UpdateLastLoginCommand(user.id));
+    this.commandBus.execute(new UpdateLastLoginCommand(user.id)).catch((error: unknown) => {
+      Logger.warn(
+        `Failed to update last login for ${user.id}: ${error instanceof Error ? error.message : error}`,
+        'LoginHandler'
+      );
+    });
 
     return { accessToken, refreshToken, rememberMe: data.rememberMe };
   }

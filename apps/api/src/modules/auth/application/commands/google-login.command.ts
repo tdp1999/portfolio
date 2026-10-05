@@ -1,5 +1,5 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   ValidationError,
   ForbiddenError,
@@ -70,7 +70,12 @@ export class GoogleLoginHandler implements ICommandHandler<GoogleLoginCommand, G
     await this.repo.update(user.id, updated.toUpdateData());
 
     const accessToken = this.tokenService.signAccessToken(user.id, user.tokenVersion, user.role);
-    this.commandBus.execute(new UpdateLastLoginCommand(user.id));
+    this.commandBus.execute(new UpdateLastLoginCommand(user.id)).catch((error: unknown) => {
+      Logger.warn(
+        `Failed to update last login for ${user.id}: ${error instanceof Error ? error.message : error}`,
+        'GoogleLoginHandler'
+      );
+    });
 
     return { accessToken, refreshToken };
   }
