@@ -7,8 +7,8 @@ news before a new job.
 
 ## Language
 
-Write `tldr`, `imageNotes`, `linkSummaries[].summary`, `commentDigest`, `factCheck` and
-`applyNote` in the post's own language (RAD-002). Most sources post in Vietnamese, so most
+Write `tldr`, `context`, `scoreReason`, `imageNotes`, `linkSummaries[].summary`,
+`commentDigest`, `factCheck` and `applyNote` in the post's own language (RAD-002). Most sources post in Vietnamese, so most
 enrichments are in Vietnamese. Keep technical terms and product names verbatim in English
 (Claude Code, MCP, context window, fine-tune), never translate them into a calque. Do not use
 em-dashes or en-dashes; use commas, colons or a new sentence.
@@ -27,9 +27,39 @@ em-dashes or en-dashes; use commas, colons or a new sentence.
 | `linkSummaries` | One entry per link you actually read: `{ "url", "summary" }`, summary at most 1000 characters, focused on what the link adds to the post. Leave out links you could not open. |
 | `commentDigest` | Null for now (comments arrive in a later phase). |
 | `factCheck` | Claims that look wrong, outdated, unverifiable or exaggerated, and what you checked. "Bài nói X miễn phí, trang pricing hiện ghi $20/tháng." Null when nothing needs flagging. |
-| `applyNote` | Markdown, see below. Null only for promos and irrelevant posts. |
+| `context` | Required, markdown, at most 4000 characters. The background the post assumes the reader knows, from your research (see below): for each tool, model or company the post names, what it is, who makes it, when it came out, price if relevant, and how it compares with the obvious alternatives. Two to five bullets. This is what lets the Owner understand a one-line post cold. |
+| `scoreReason` | Required, at most 1000 characters. One to three sentences on why this `signalScore`, `contentType` and `isRelevant`: what the post offers (a fact, a number, a workflow) and what it lacks. The Owner reads it to decide whether to disagree with the score. |
+| `applyNote` | Required, markdown, see below. For promos and off-topic posts it is one line saying why there is nothing to do. |
 | `producer` | `{ "adapter": "claude-code", "model": "<your exact model id from the system prompt>" }` |
-| `schemaVersion` | `1` |
+| `schemaVersion` | `2` |
+
+## Research
+
+Posts are often one or two lines that assume the reader follows the news. Before writing,
+look up what the post names, so `context` and `factCheck` rest on sources, not memory:
+
+- Run WebSearch (and WebFetch on the best result) for each product, model or company the post
+  names that you cannot describe with certainty, and for every price, benchmark or date it
+  claims. Products released after your knowledge cutoff always need a search.
+- One or two searches per post is usually enough; skip research only for off-topic posts.
+- Never open facebook.com or fb.watch (RAD-003).
+- Put what you learned in `context`, and any mismatch with the post's claim in `factCheck`
+  ("Bài nói 2 video 15s tốn $16.2; bảng giá Seedance hiện là $x/giây, tức khoảng $y, khớp.").
+
+## Example
+
+Post: "Tính làm cái video test Seedance 2.5 & ElevenLabs v4, mới tạo 2 videos (15s mỗi video)
+là bay $16.2! ... công nhận AI Voice giờ đỉnh thiệt!"
+
+```json
+{
+  "tldr": "Tác giả thử ghép Seedance 2.5 (video) với ElevenLabs v4 (giọng nói): 2 video 15 giây tốn $16.2, chất lượng giọng AI rất tốt.",
+  "context": "- **Seedance 2.5**: model text-to-video của ByteDance, ...\n- **ElevenLabs v4**: model text-to-speech, ...\n- So với Veo và Sora: ...",
+  "scoreReason": "Trải nghiệm cá nhân có một con số chi phí thật, hữu ích để ước lượng giá, nhưng không có prompt hay workflow để làm theo. Liên quan vừa phải vì không phải công cụ frontend.",
+  "applyNote": "Không cần làm gì lúc này. Nếu sau này cần video demo cho portfolio, chi phí khoảng $0.5 mỗi giây là mốc để so sánh.",
+  "signalScore": 3, "contentType": "opinion", "isRelevant": true
+}
+```
 
 ## Signal score
 
@@ -70,3 +100,20 @@ Example (Vietnamese post about a Claude Code hooks feature, profile already list
 When `sharedPost` is present, the shared content is usually the actual news and the item's
 own text is the sharer's comment. Analyse both: the TL;DR covers the news, and mention the
 sharer's take only if it adds something.
+
+## Gaps in the captured data
+
+The capture has text, image stills and links, nothing more. Judge only what is there, and say
+what is missing instead of guessing.
+
+- **Reels and videos** (`kind` REEL or VIDEO, or a `video` image): the image is one frame of
+  the video, not the video. Score on the text and the frame. If the text alone does not say
+  what the video shows, write in `imageNotes` that the video could not be watched, and keep
+  `signalScore` at most 4 unless the text itself carries the news.
+- **"Link in the comments"**: comments are not captured yet. Score on the visible text, and say
+  in `factCheck` that the linked resource was not available, naming what the post promised.
+- **`ocrText`** is often only a generic caption ("May be an image of text"). Ignore it then and
+  read the image itself.
+- **Off-topic posts** (memes, jokes, personal life): `isRelevant` false, `signalScore` 0 to 1,
+  `applyNote` one line saying there is nothing to do, `imageNotes` null unless an image carries
+  information. `context` can be one short bullet.

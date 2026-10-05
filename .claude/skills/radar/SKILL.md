@@ -48,18 +48,24 @@ Repeat until a claim returns zero items or `--limit` is reached:
    The lease is 30 minutes, so finish and submit a batch well within that.
 2. **Images:** `radar-api.sh images <workdir>/claim-<n>.json <workdir>/img-<n>` and Read
    every file it lists. Images in these posts are usually slides, screenshots of tools or
-   benchmark charts, and they often carry the actual news. Lines starting with `skip` are
-   images that could not be fetched; mention that in `imageNotes` instead of guessing.
-3. **Links:** open each link in `links` (and in the shared post) with WebFetch to write
+   benchmark charts, and they often carry the actual news. Files are named
+   `<itemId>-<own|shared>-<n>.<ext>`: `own` images belong to the post, `shared` ones to its
+   shared post. Lines starting with `skip` are images that could not be fetched; mention that
+   in `imageNotes` instead of guessing. The last line counts saved and skipped images, use it
+   for the final report.
+3. **Research:** for each item, look up the tools, models and claims it names, following
+   the Research section of `references/enrichment-guide.md`. This feeds `context`,
+   `scoreReason` and `factCheck`.
+4. **Links:** open each link in `links` (and in the shared post) with WebFetch to write
    `linkSummaries`. Skip facebook.com / fb.watch links: they need a login and Radar never
    uses the Owner's social accounts (RAD-003). A link that fails to load gets no summary
    entry; note the failure in `factCheck` if the post's claim depends on it.
-4. **Write** one enrichment per item, following `references/enrichment-guide.md` (read it
+5. **Write** one enrichment per item, following `references/enrichment-guide.md` (read it
    once per session before the first batch). Write the batch as
    `{"results":[{"itemId": "...", "enrichment": {...}}]}` to `<workdir>/results-<n>.json`.
-5. **Submit:** `radar-api.sh submit <workdir>/results-<n>.json`. The answer is
+6. **Submit:** `radar-api.sh submit <workdir>/results-<n>.json`. The answer is
    `{ "stored": k, "rejected": [{ "itemId", "reason" }] }`.
-6. **Fix once:** for each rejected item, read the reason (it names the field), fix that
+7. **Fix once:** for each rejected item, read the reason (it names the field), fix that
    enrichment, and submit the fixed ones again in a new results file. A rejected item keeps
    its lease, so this works inside the same session. If an item is rejected a second time,
    stop retrying it and list it in the final report; its lease expires and it returns to the

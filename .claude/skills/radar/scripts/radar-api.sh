@@ -6,6 +6,7 @@
 #   radar-api.sh profile                   print the workflow profile JSON
 #   radar-api.sh claim <limit> <out.json>  claim items, save the response, print a one-line summary
 #   radar-api.sh images <claim.json> <dir> download every image of the claimed items into <dir>
+#                                          as <itemId>-<own|shared>-<n>.<ext>, then print a count
 #   radar-api.sh submit <results.json>     submit {"results":[...]}; falls back to one-by-one on 413
 set -euo pipefail
 
@@ -68,24 +69,32 @@ case "$cmd" in
   images)
     claim=${2:?usage: images <claim.json> <dir>}; dir=${3:?usage: images <claim.json> <dir>}
     mkdir -p "$dir"
-    # One line per image: <itemId> <index> <url>. Shared-post images follow the item's own.
+    # One line per image: <itemId> <own|shared> <index> <url>. The file name carries the same
+    # three parts, so each file maps back to its item and to the post or the shared post.
     # URLs come from scraped data, so only http(s) is allowed, redirects included, and size is capped.
-    jq -r '.items[] | .id as $id
-      | [(.images // [])[], ((.sharedPost.images) // [])[]]
-      | to_entries[] | "\($id) \(.key) \(.value.url)"' "$claim" |
-    while read -r id n url; do
-      file="$dir/$id-$n"
-      ctype=$(curl -sSL --proto '=http,https' --proto-redir '=http,https' --max-redirs 3 \
-        --max-filesize 15728640 --max-time 20 -o "$file" -w '%{content_type}' "$url" 2>/dev/null) ||
-        { rm -f "$file"; echo "skip $id-$n (download failed)"; continue; }
+    # jq runs first so a malformed claim file stops the script instead of reading as "no images".
+    list=$(jq -r '.items[] | .id as $id
+      | ((.images // []) | to_entries[] | "\($id) own \(.key) \(.value.url)"),
+        ((.sharedPost.images // []) | to_entries[] | "\($id) shared \(.key) \(.value.url)")' "$claim") ||
+      die "images: cannot read $claim"
+    saved=0; skipped=0
+    while read -r id part n url; do
+      [ -n "$id" ] || continue
+      file="$dir/$id-$part-$n"
+      if ! ctype=$(curl -sSL --proto '=http,https' --proto-redir '=http,https' --max-redirs 3 \
+        --max-filesize 15728640 --max-time 20 -o "$file" -w '%{content_type}' "$url" 2>/dev/null); then
+        rm -f "$file"; echo "skip $id-$part-$n (download failed)"; skipped=$((skipped + 1)); continue
+      fi
       case "$ctype" in
-        image/jpeg*) mv "$file" "$file.jpg"; echo "$file.jpg" ;;
-        image/png*)  mv "$file" "$file.png"; echo "$file.png" ;;
-        image/webp*) mv "$file" "$file.webp"; echo "$file.webp" ;;
-        image/gif*)  mv "$file" "$file.gif"; echo "$file.gif" ;;
-        *) rm -f "$file"; echo "skip $id-$n (not an image: ${ctype:-unknown})" ;;
+        image/jpeg*) ext=jpg ;;
+        image/png*)  ext=png ;;
+        image/webp*) ext=webp ;;
+        image/gif*)  ext=gif ;;
+        *) rm -f "$file"; echo "skip $id-$part-$n (not an image: ${ctype:-unknown})"; skipped=$((skipped + 1)); continue ;;
       esac
-    done
+      mv "$file" "$file.$ext"; echo "$file.$ext"; saved=$((saved + 1))
+    done <<< "$list"
+    echo "images: $saved saved, $skipped skipped"
     ;;
 
   submit)
