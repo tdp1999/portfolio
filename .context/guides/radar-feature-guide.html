@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Feature Guide</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --ink: #1d1d1b; --muted: #62625d; --line: #deded8; --code: #ececE6;
+    --accent: #2f5fd0;
+    --admin: #2f5fd0; --admin-bg: #e9effc;
+    --worker: #b25b00; --worker-bg: #fdf0e1;
+    --db: #2d7d4f; --db-bg: #e6f4ec;
+    --bad: #b3261e; --bad-bg: #fbe9e7;
+    --ext: #6b4fbb; --ext-bg: #efeafb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161615; --surface: #1f1f1d; --ink: #ecece8; --muted: #a3a39c; --line: #3a3a36; --code: #2c2c29;
+      --accent: #8fb0ff;
+      --admin: #8fb0ff; --admin-bg: #1d2a47;
+      --worker: #ffb866; --worker-bg: #3a2814;
+      --db: #7fd3a1; --db-bg: #173326;
+      --bad: #ff9a90; --bad-bg: #3d1c19;
+      --ext: #c3b2ff; --ext-bg: #2a2342;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1240px; margin: 0 auto; }
+  nav.toc { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 16px 32px 24px; border-right: 1px solid var(--line); }
+  nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; }
+  nav.toc li { margin: 0; }
+  nav.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.4; border-left: 2px solid transparent; }
+  nav.toc a:hover { color: var(--ink); background: var(--surface); }
+  nav.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
+  nav.toc .group { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+
+  main { padding: 40px 48px 120px; max-width: 900px; }
+  header.doc { margin-bottom: 32px; }
+  header.doc h1 { font-size: 32px; line-height: 1.2; margin: 0 0 8px; }
+  header.doc p { color: var(--muted); margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+
+  h2 { font-size: 24px; margin: 56px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h3 { font-size: 18px; margin: 28px 0 8px; }
+  p { margin: 8px 0; }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 6px; border-radius: 4px; }
+  pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; overflow-x: auto; font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 14.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .scroll { overflow-x: auto; margin: 12px 0; }
+  ol li, ul li { margin: 4px 0; }
+
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 14px 0; }
+  .node { flex: 1 1 140px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .node b { display: block; font-size: 14.5px; margin-bottom: 2px; }
+  .node small { color: var(--muted); display: block; font-size: 13px; line-height: 1.5; }
+  .arrow { flex: 0 0 auto; align-self: center; color: var(--muted); font-size: 20px; }
+  .admin { border-color: var(--admin); background: var(--admin-bg); }
+  .worker { border-color: var(--worker); background: var(--worker-bg); }
+  .db { border-color: var(--db); background: var(--db-bg); }
+  .bad { border-color: var(--bad); background: var(--bad-bg); }
+  .ext { border-color: var(--ext); background: var(--ext-bg); }
+
+  .phase { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+  .phase-title { font-weight: 700; margin-bottom: 2px; }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 99px; margin-right: 6px; border: 1px solid currentColor; background: none; }
+  .tag.admin { color: var(--admin); } .tag.worker { color: var(--worker); } .tag.db { color: var(--db); } .tag.ext { color: var(--ext); } .tag.bad { color: var(--bad); }
+
+  .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .door { border: 2px solid; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
+  .door h3 { margin-top: 0; }
+
+  .callout { border-left: 4px solid var(--worker); background: var(--worker-bg); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .callout.blue { border-color: var(--admin); background: var(--admin-bg); }
+  .callout.green { border-color: var(--db); background: var(--db-bg); }
+
+  .svgbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin: 14px 0; overflow-x: auto; }
+  .svgbox svg { display: block; width: 100%; min-width: 640px; height: auto; }
+  .svgbox text { fill: var(--ink); font: 13px -apple-system, "Segoe UI", sans-serif; }
+  .svgbox .muted { fill: var(--muted); }
+  .svgbox .okt { fill: var(--db); } .svgbox .not { fill: var(--bad); }
+  .svgbox .lifeline { stroke: var(--line); stroke-dasharray: 4 4; }
+  .svgbox .head { fill: var(--bg); stroke: var(--line); }
+  .svgbox .note { fill: var(--worker-bg); stroke: var(--worker); }
+
+  .status { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
+  .status.done { background: var(--db-bg); color: var(--db); }
+  .status.next { background: var(--worker-bg); color: var(--worker); }
+  .status.todo { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+  .mobile-toc { display: none; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { display: none; }
+    main { padding: 24px 16px 80px; }
+    .mobile-toc { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 24px; }
+    .mobile-toc summary { font-weight: 600; cursor: pointer; }
+    .mobile-toc a { color: var(--accent); text-decoration: none; }
+    .doors { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) { .arrow { transform: rotate(90deg); width: 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" aria-label="Mục lục">
+    <div class="brand">Radar</div>
+    <div class="sub">Feature guide, cập nhật 2026-10-05</div>
+    <ol>
+      <li class="group">Bắt đầu</li>
+      <li><a href="#overview">1. Tổng quan</a></li>
+      <li><a href="#glossary">2. Thuật ngữ</a></li>
+      <li><a href="#architecture">3. Flow toàn cục</a></li>
+      <li class="group">Thu thập</li>
+      <li><a href="#sources">4. Sources</a></li>
+      <li><a href="#capture">5. Upload và normalize</a></li>
+      <li><a href="#images">6. Ảnh và Cloudinary</a></li>
+      <li class="group">Phân tích</li>
+      <li><a href="#token">7. Machine token</a></li>
+      <li><a href="#doors">8. Hai cửa và endpoint</a></li>
+      <li><a href="#worker">9. Vòng làm việc của worker</a></li>
+      <li><a href="#lease">10. Lease và trạng thái bài</a></li>
+      <li><a href="#enrichment">11. Enrichment</a></li>
+      <li><a href="#reading">12. Đọc Feed: Score, Type, Provider, Status</a></li>
+      <li><a href="#profile">13. Workflow profile</a></li>
+      <li class="group">Tham chiếu</li>
+      <li><a href="#data">14. Data model</a></li>
+      <li><a href="#errors">15. Mã lỗi</a></li>
+      <li><a href="#rules">16. Business rules</a></li>
+      <li><a href="#decisions">17. Các quyết định</a></li>
+      <li class="group">Tiếp theo</li>
+      <li><a href="#gaps">18. Chỗ hở đã biết</a></li>
+      <li><a href="#roadmap">19. Lộ trình task</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="doc">
+      <h1>Radar: AI news catch-up</h1>
+      <p>Tài liệu tổng hợp cho feature Radar trong portfolio console và API: nó làm gì, dữ liệu chạy qua đâu, machine token hoạt động ra sao, và những gì còn đang làm.</p>
+      <div class="meta">
+        <span class="chip">Epic: epic-radar-ai-news</span>
+        <span class="chip">Phase A đang làm</span>
+        <span class="chip">Task 400 tới 407 xong</span>
+        <span class="chip">Một người dùng: bạn</span>
+      </div>
+    </header>
+
+    <details class="mobile-toc"><summary>Mục lục</summary><div id="mobile-toc-body"></div></details>
+
+    <section id="overview">
+      <h2>1. Tổng quan</h2>
+      <p><b>Radar làm gì.</b> Radar gom các bài Facebook công khai của vài người có ảnh hưởng trong giới AI vào database của portfolio, cho Claude Code đọc và phân tích từng bài, rồi hiển thị kết quả thành một Feed để lướt nhanh và một trang Detail cho từng bài. Mỗi bài có một câu TL;DR, tag provider, loại nội dung, điểm tín hiệu từ 0 tới 10, cờ quảng cáo, và ghi chú "áp dụng vào workflow của tôi".</p>
+      <p><b>Vì sao cần.</b> Bạn đã gần một năm không theo dõi tin AI và sẽ vào công việc mới khoảng tháng 11/2026. Nguồn tin chọn lọc tốt nhất cho bối cảnh AI Việt Nam nằm trên vài trang Facebook cá nhân, nhưng bài nhiều, dài, và Facebook không cho đào lại lịch sử. Radar biến việc đọc bù hàng tháng trời thành một lần chạy cộng một buổi đọc.</p>
+      <p><b>Nguồn đầu tiên:</b> <code>facebook.com/mrgoonie</code>, lấy lùi 6 tháng (khoảng 1.100 bài).</p>
+      <div class="scroll"><table>
+        <tr><th>Phase</th><th>Nội dung</th><th>Trạng thái</th></tr>
+        <tr><td>A</td><td>Upload file JSON thủ công, lưu ảnh, machine token, worker API, skill <code>/radar work</code>, trang Feed và Detail</td><td><span class="status next">Đang làm</span></td></tr>
+        <tr><td>B</td><td>API tự gọi Apify, state machine chạy theo cron tick, trang Runs, comments, bản tóm tắt (Brief)</td><td><span class="status todo">Chưa làm</span></td></tr>
+        <tr><td>C</td><td>API tự gọi LLM (Gemini, Anthropic API), transcript video. Epic riêng</td><td><span class="status todo">Ngoài epic này</span></td></tr>
+      </table></div>
+    </section>
+
+    <section id="glossary">
+      <h2>2. Thuật ngữ</h2>
+      <div class="scroll"><table>
+        <tr><th>Term</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / hình dung thực tế</th></tr>
+        <tr><td><b>Source</b></td><td>Một trang Facebook mà Radar theo dõi. Mỗi bài thuộc đúng một source.</td><td><code>facebook.com/mrgoonie</code>, tên hiển thị "Goon Nguyen"</td></tr>
+        <tr><td><b>Apify</b></td><td>Dịch vụ scrape web có sẵn "actor" lấy bài Facebook công khai. Radar không dùng tài khoản Facebook của bạn.</td><td>Chạy actor <code>facebook-posts-scraper</code>, tải kết quả về dạng JSON</td></tr>
+        <tr><td><b>Capture</b></td><td>Một lần đưa dữ liệu vào Radar. Ở Phase A là một lần upload file JSON.</td><td>Upload file 14 MB chứa 1.100 bài</td></tr>
+        <tr><td><b>Normalize</b></td><td>Chuyển dữ liệu thô của Apify thành dạng chuẩn của Radar, bỏ trùng, giữ nguyên bản gốc trong <code>rawPayload</code>.</td><td>Bài album: bỏ phần wrapper, giữ 3 ảnh</td></tr>
+        <tr><td><b>Re-capture</b></td><td>Upload lại dữ liệu có chứa bài đã có. Bài được cập nhật, không tạo bản thứ hai.</td><td>Upload lại file tuần sau để lấy số like mới</td></tr>
+        <tr><td><b>Persist images</b></td><td>Chép ảnh từ CDN Facebook sang Cloudinary, vì URL Facebook hết hạn sau vài ngày.</td><td>Mỗi bài trung bình 1,8 ảnh, mỗi ảnh khoảng 45 KB</td></tr>
+        <tr><td><b>Orphan image</b></td><td>Ảnh đã lưu trên Cloudinary nhưng không còn bài nào trỏ tới. Radar tự xóa.</td><td>Tác giả gỡ một ảnh khỏi album, upload lại thì ảnh đó bị xóa khỏi Cloudinary</td></tr>
+        <tr><td><b>Machine token</b></td><td>Chuỗi bí mật dài, ngẫu nhiên, để một chương trình (Claude Code) chứng minh nó được phép gọi API. Không có bước login, không hết hạn trừ khi bạn đổi.</td><td>Giống chìa khóa cửa sau giao cho người giao hàng quen</td></tr>
+        <tr><td><b>Key A / Key B</b></td><td>A là token gốc (Claude Code giữ). B là <code>sha256(A)</code> (server giữ). Từ B không tính ngược ra A được.</td><td>A nằm trong <code>~/.zshrc</code>. B là 64 ký tự hex trên Railway</td></tr>
+        <tr><td><b>Guard</b></td><td>Lớp kiểm tra chạy trước mỗi request trong NestJS, quyết định cho đi tiếp hay chặn lại.</td><td>Bảo vệ đứng ở cửa xem thẻ</td></tr>
+        <tr><td><b>JWT</b></td><td>JSON Web Token: token đăng nhập của con người, do API ký sau khi bạn login console.</td><td>Trình duyệt gửi JWT khi bạn bấm Upload</td></tr>
+        <tr><td><b>External worker</b></td><td>Chương trình bên ngoài API làm phần phân tích bằng LLM (Large Language Model). Ở Phase A là Claude Code chạy skill <code>/radar work</code>.</td><td>API chỉ phát việc và nhận kết quả, Claude Code mới đọc hiểu bài</td></tr>
+        <tr><td><b>Claim</b></td><td>Worker xin một lô bài cần phân tích. API đánh dấu các bài đó là đang có người làm.</td><td>Xin 5 bài, nhận về 5 bài mới nhất chưa phân tích</td></tr>
+        <tr><td><b>Lease</b></td><td>Thời hạn giữ chỗ của bài đã claim: 30 phút.</td><td>Giữ bàn nhà hàng 30 phút, không tới thì bàn được nhường</td></tr>
+        <tr><td><b>Release</b></td><td>Trả bài về hàng chờ trước khi hết lease. Radar <b>không release</b>: bài chỉ rời CLAIMED khi có kết quả hợp lệ hoặc hết lease.</td><td>Không ai được trả bàn giùm người đang giữ bàn</td></tr>
+        <tr><td><b>Attempt cap</b></td><td>Một bài bị claim 3 lần mà vẫn chưa có kết quả hợp lệ thì claim bỏ qua nó.</td><td>Chặn một bài khó làm Claude Code tốn token mãi</td></tr>
+        <tr><td><b>Enrichment</b></td><td>Kết quả phân tích của một bài: TL;DR, tags, điểm, ghi chú.</td><td>Mỗi bài có tối đa một enrichment</td></tr>
+        <tr><td><b>Workflow profile</b></td><td>Văn bản markdown mô tả cách bạn làm việc với AI. Claude Code đọc nó để viết ghi chú áp dụng.</td><td>"Tôi dùng Claude Code, Angular, NestJS..."</td></tr>
+        <tr><td><b>Zod schema</b></td><td>Bộ luật kiểm tra hình dạng dữ liệu, dùng thư viện Zod v4.</td><td><code>signalScore: 11</code> bị từ chối vì chỉ cho 0 tới 10</td></tr>
+        <tr><td><b>Throttle</b></td><td>Giới hạn số request trong một khoảng thời gian.</td><td>Cửa worker: 120 request mỗi phút</td></tr>
+      </table></div>
+    </section>
+
+    <section id="architecture">
+      <h2>3. Flow toàn cục</h2>
+      <p>Radar có hai người dùng: <b>bạn</b> (qua console, dùng JWT) và <b>Claude Code</b> (qua terminal, dùng machine token). Cả hai nói chuyện với cùng một API và cùng một database Postgres trên Railway, nhưng đi qua hai cửa khác nhau.</p>
+
+      <div class="phase">
+        <div class="phase-title"><span class="tag ext">Giai đoạn 1</span>Thu thập bài viết</div>
+        <div class="flow">
+          <div class="node ext"><b>Apify</b><small>Scrape trang Facebook, xuất file JSON</small></div>
+          <div class="arrow">→</div>
+          <div class="node admin"><b>Bạn, trong console</b><small>Upload file JSON qua cửa admin</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><b>API: normalize</b><small>Chuẩn hóa, bỏ trùng theo externalId</small></div>
+          <div class="arrow">→</div>
+          <div class="node db"><b>radar_items</b><small>Mỗi bài một dòng, <code>PENDING</code></small></div>
+        </div>
+        <div class="flow">
+          <div class="node"><b>API: persist images</b><small>Chạy nền ngay sau upload</small></div>
+          <div class="arrow">→</div>
+          <div class="node ext"><b>Cloudinary</b><small>Bản sao ảnh, folder <code>radar/</code></small></div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-title"><span class="tag worker">Giai đoạn 2</span>Phân tích bằng Claude Code</div>
+        <div class="flow">
+          <div class="node worker"><b>Claude Code</b><small>Bạn gõ <code>/radar work</code></small></div>
+          <div class="arrow">→</div>
+          <div class="node bad"><b>MachineTokenGuard</b><small>Kiểm tra machine token</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><b>API: claim / results / profile</b><small>Phát bài, nhận kết quả</small></div>
+          <div class="arrow">→</div>
+          <div class="node db"><b>radar_enrichments</b><small>Bài chuyển sang <code>DONE</code></small></div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-title"><span class="tag admin">Giai đoạn 3</span>Đọc tin</div>
+        <div class="flow">
+          <div class="node db"><b>items + enrichments</b></div>
+          <div class="arrow">→</div>
+          <div class="node admin"><b>Console: Feed</b><small>Lướt nhanh, lọc tag, sắp theo điểm</small></div>
+          <div class="arrow">→</div>
+          <div class="node admin"><b>Console: Detail</b><small>Toàn văn, ảnh, link, ghi chú áp dụng</small></div>
+        </div>
+      </div>
+
+      <div class="callout blue"><b>Vì sao Claude Code làm worker mà API không tự gọi LLM?</b> Claude Code trên máy bạn không tốn thêm tiền API và đã biết bối cảnh làm việc của bạn. Phase C mới thêm adapter để API tự gọi Gemini hoặc Anthropic API.</div>
+    </section>
+
+    <section id="sources">
+      <h2>4. Sources</h2>
+      <p>Source là trang Facebook mà Radar theo dõi. Có CRUD cho source, nhưng chưa đầy đủ: chỉ có tạo, xem danh sách, bật/tắt và xóa. Chưa có sửa tên hay sửa URL. Các endpoint đã có ở API (task 402); giao diện quản lý source sẽ làm ở task 406.</p>
+      <div class="scroll"><table>
+        <tr><th>Thao tác</th><th>Endpoint</th><th>Hành vi</th></tr>
+        <tr><td>Xem danh sách</td><td><code>GET /api/radar/sources</code></td><td>Trả mọi source kèm số bài (<code>itemCount</code>). Không phân trang vì chỉ có vài source</td></tr>
+        <tr><td>Tạo</td><td><code>POST /api/radar/sources</code></td><td>Nhận <code>url</code>, <code>displayName</code>, <code>platform</code> (mặc định FACEBOOK). Dấu <code>/</code> cuối URL bị bỏ. URL trùng thì 409</td></tr>
+        <tr><td>Tắt (deactivate)</td><td><code>PATCH /api/radar/sources/:id/deactivate</code></td><td>Đặt <code>isActive = false</code>. Upload mới cho source này bị từ chối (400 <code>RADAR_SOURCE_INACTIVE</code>). Bài cũ và enrichment vẫn giữ nguyên</td></tr>
+        <tr><td>Bật lại</td><td><code>PATCH /api/radar/sources/:id/activate</code></td><td>Đặt <code>isActive = true</code></td></tr>
+        <tr><td>Xóa</td><td><code>DELETE /api/radar/sources/:id</code></td><td>Xóa ảnh trên Cloudinary trước, rồi xóa source cùng runs, items, enrichments. Xem <a href="#images">mục 6</a></td></tr>
+      </table></div>
+      <h3>Deactivate dùng để làm gì</h3>
+      <p>Deactivate là "tạm ngưng theo dõi" mà không mất dữ liệu. Ví dụ bạn thấy một người dạo này đăng toàn quảng cáo: bạn tắt source của họ để không upload nhầm nữa, nhưng các bài hay từ trước vẫn còn trong Feed. Xóa thì mất hết, kể cả ảnh và phân tích.</p>
+      <p>Phase B dùng thêm cờ này: API chỉ tự chạy Apify cho source đang bật. Claim cũng <b>bỏ qua bài của source đang tắt</b>, nên tạm dừng một source là dừng luôn việc phân tích các bài còn lại của nó.</p>
+    </section>
+
+    <section id="capture">
+      <h2>5. Upload và normalize</h2>
+      <p>Bạn upload file JSON do Apify xuất ra qua <code>POST /api/radar/sources/:id/captures/upload</code> (multipart, field <code>file</code>). Dùng multipart thay vì JSON body vì file 6 tháng nặng khoảng 14 MB, còn giới hạn body JSON của API là 100 KB.</p>
+      <div class="scroll"><table>
+        <tr><th>Giới hạn / quy tắc</th><th>Giá trị</th></tr>
+        <tr><td>Kích thước file tối đa</td><td>30 MB</td></tr>
+        <tr><td>Số bài tối đa mỗi file</td><td>5.000</td></tr>
+        <tr><td>Định dạng</td><td><code>apify-facebook-posts</code> (mặc định). Mỗi định dạng có một normalizer riêng</td></tr>
+        <tr><td>Bỏ trùng</td><td>Theo (source, <code>externalId</code>), rule RAD-001. Bài lặp trong cùng file chỉ lấy bản đầu</td></tr>
+        <tr><td>Bài hỏng</td><td>Bài thiếu trường bắt buộc bị báo lỗi riêng, các bài khác vẫn được lưu. Phản hồi liệt kê tối đa 50 lỗi, số đếm luôn chính xác</td></tr>
+        <tr><td>Dữ liệu gốc</td><td>Giữ nguyên trong <code>rawPayload</code> để chuẩn hóa lại sau mà không phải scrape lại</td></tr>
+        <tr><td>Ngôn ngữ</td><td>Giữ nguyên ngôn ngữ gốc, không dịch, thuật ngữ giữ nguyên (RAD-002)</td></tr>
+      </table></div>
+      <p>Normalizer phân loại bài thành <code>REEL</code>, <code>VIDEO</code>, <code>SHARE</code> hoặc <code>POST</code>; chỉ giữ ảnh và video; bỏ link quảng cáo "subscribe now"; chỉ nhận link <code>http(s)</code>. Mỗi lần upload tạo một <code>RadarRun</code> loại MANUAL để lưu số đếm.</p>
+      <p>Phản hồi mẫu:</p>
+      <pre><code>{ "runId": "...", "created": 10, "updated": 0, "skipped": 0, "failed": 0, "failures": [] }</code></pre>
+      <h3>Upload lại (re-capture)</h3>
+      <ul>
+        <li>Bài đã có: cập nhật text, engagement, media, link. Không tạo bản thứ hai.</li>
+        <li>Ảnh đã lưu Cloudinary: giữ nguyên, không upload lại.</li>
+        <li>Ảnh mà bài không còn chứa: bị xóa khỏi Cloudinary.</li>
+        <li><code>workStatus</code> giữ nguyên: bài đã DONE không được phân tích lại.</li>
+      </ul>
+    </section>
+
+    <section id="images">
+      <h2>6. Ảnh và Cloudinary</h2>
+      <p>Ngay sau khi upload có bài mới hoặc bài cập nhật, API chạy nền việc chép ảnh: tải từng ảnh từ CDN Facebook rồi upload lên Cloudinary folder <code>radar/</code>. Mỗi lần chỉ giữ một ảnh trong bộ nhớ để không tốn RAM trên Railway.</p>
+      <div class="flow">
+        <div class="node"><b>pending</b><small>Mới normalize, chưa có bản sao</small></div>
+        <div class="arrow">→</div>
+        <div class="node db"><b>stored</b><small>Có <code>storedUrl</code> trên Cloudinary</small></div>
+        <div class="node bad"><b>failed</b><small>Tải lỗi, có lý do. Upload lại sẽ thử lại vì có URL mới</small></div>
+      </div>
+      <div class="scroll"><table>
+        <tr><th>Chi tiết</th><th>Giá trị</th></tr>
+        <tr><td>Loại ảnh nhận</td><td>jpeg, png, webp, gif. SVG và loại khác bị từ chối</td></tr>
+        <tr><td>Giới hạn</td><td>15 MB mỗi ảnh, timeout 15 giây, tối đa 3 lần redirect</td></tr>
+        <tr><td>Khóa của ảnh</td><td>Photo id của Facebook (URL thay đổi mỗi lần scrape nên không dùng làm khóa)</td></tr>
+        <tr><td>Chạy lại bằng tay</td><td><code>POST /api/radar/images/persist</code>, ví dụ sau khi redeploy làm gián đoạn</td></tr>
+        <tr><td>Chạy trùng</td><td>Lời gọi đến giữa lúc đang chạy được ghi nhận, lượt đang chạy quét thêm một vòng</td></tr>
+        <tr><td>Chi phí</td><td>Khoảng 80 MB cho 1.000 bài, dưới 0,1 trong 25 credit miễn phí mỗi tháng</td></tr>
+      </table></div>
+      <div class="callout"><b>Mạng không có IPv6:</b> CDN Facebook có cả địa chỉ IPv6, mạng của bạn thì không. <code>fetch</code> mặc định treo tới hết timeout, nên downloader dùng <code>node:https</code> với happy eyeballs và cửa sổ 1 giây cho mỗi họ địa chỉ.</div>
+      <h3>Xóa source thì ảnh đi đâu</h3>
+      <ol>
+        <li>API gom mọi ảnh đã lưu của các bài thuộc source.</li>
+        <li>Xóa trên Cloudinary theo từng đợt 5 ảnh.</li>
+        <li>Có ảnh xóa lỗi: trả 502 <code>RADAR_IMAGE_DELETE_FAILED</code>, không xóa gì trong DB. Gọi lại an toàn.</li>
+        <li>Xóa ảnh xong: xóa source, kéo theo runs, items, enrichments.</li>
+      </ol>
+    </section>
+
+    <section id="token">
+      <h2>7. Machine token</h2>
+      <h3>Cài đặt một lần</h3>
+      <pre><code>TOKEN=$(openssl rand -hex 24)                          # key A, không in ra màn hình
+printf %s "$TOKEN" | shasum -a 256 | cut -d' ' -f1     # in ra key B
+echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar work</code></pre>
+      <div class="flow">
+        <div class="node worker"><b>Key A → máy bạn</b><small><code>RADAR_WORKER_TOKEN</code> trong <code>~/.zshrc</code>. Đây là chìa khóa thật</small></div>
+        <div class="node db"><b>Key B → Railway + .env local</b><small><code>RADAR_WORKER_TOKEN_HASH</code> cho service API</small></div>
+      </div>
+      <p>Chưa đặt biến hash (hoặc đặt sai định dạng) thì cửa worker luôn trả 401 và API log một cảnh báo lúc khởi động. API không bị crash.</p>
+
+      <h3>Mỗi request được kiểm tra thế nào</h3>
+      <div class="svgbox">
+      <svg viewBox="0 0 900 430" role="img" aria-label="Sequence diagram of the machine token check">
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <rect class="head" x="40" y="16" width="180" height="40" rx="8"/><text x="130" y="41" text-anchor="middle">Claude Code</text>
+        <rect class="head" x="360" y="16" width="180" height="40" rx="8"/><text x="450" y="41" text-anchor="middle">MachineTokenGuard</text>
+        <rect class="head" x="680" y="16" width="180" height="40" rx="8"/><text x="770" y="41" text-anchor="middle">Controller + DB</text>
+        <line class="lifeline" x1="130" y1="56" x2="130" y2="420"/><line class="lifeline" x1="450" y1="56" x2="450" y2="420"/><line class="lifeline" x1="770" y1="56" x2="770" y2="420"/>
+        <line x1="130" y1="96" x2="446" y2="96" style="stroke:var(--ink);stroke-width:1.5;color:var(--ink)" marker-end="url(#arr)"/>
+        <text x="140" y="86">POST /api/radar/work/claim</text>
+        <text x="140" y="116" class="muted">Authorization: Bearer &lt;key A&gt;</text>
+        <rect class="note" x="470" y="130" width="400" height="118" rx="8"/>
+        <text x="484" y="154">1. Biến hash chưa đặt? → 401</text>
+        <text x="484" y="178">2. Không có "Bearer ..."? → 401</text>
+        <text x="484" y="202">3. Tính sha256(key A vừa nhận)</text>
+        <text x="484" y="226">4. timingSafeEqual với key B → khớp?</text>
+        <line x1="450" y1="280" x2="766" y2="280" style="stroke:var(--db);stroke-width:1.5;color:var(--db)" marker-end="url(#arr)"/>
+        <text x="460" y="270" class="okt">Khớp → cho đi tiếp</text>
+        <line x1="770" y1="320" x2="134" y2="320" style="stroke:var(--db);stroke-width:1.5;color:var(--db)" marker-end="url(#arr)"/>
+        <text x="480" y="312" class="okt">200 + danh sách bài</text>
+        <line x1="450" y1="370" x2="134" y2="370" style="stroke:var(--bad);stroke-width:1.5;color:var(--bad)" marker-end="url(#arr)"/>
+        <text x="150" y="362" class="not">Không khớp → 401, controller không chạy, DB không đổi</text>
+        <text x="150" y="400" class="muted">Nhánh xanh và nhánh đỏ là hai khả năng loại trừ nhau.</text>
+      </svg>
+      </div>
+      <div class="callout"><b>Client gửi key A, không gửi key B.</b> Server không bao giờ có A, nó tự băm A vừa nhận rồi so với B. Nếu client gửi B thì B thành mật khẩu và việc băm trở nên vô nghĩa.</div>
+
+      <h3>Hash bảo vệ được gì, không bảo vệ được gì</h3>
+      <div class="scroll"><table>
+        <tr><th>Lộ ở đâu</th><th>Nếu cả hai bên giữ nguyên văn một token</th><th>Thiết kế hiện tại (server chỉ giữ B)</th></tr>
+        <tr><td>Máy bạn (key A)</td><td>Mất</td><td>Mất. Đổi token: tạo A mới, thay B trên Railway</td></tr>
+        <tr><td>Server: biến Railway, log, backup (key B)</td><td>Mất</td><td><b>Không sao</b>: gửi B lên thì server băm B ra chuỗi khác, vẫn 401</td></tr>
+      </table></div>
+      <p>Khi A bị lộ, các lớp còn lại giới hạn thiệt hại: A chỉ mở cửa worker, có throttle 120 request mỗi phút, và đổi token xong thì A cũ hết tác dụng ngay.</p>
+
+      <h3>So với accessToken / refreshToken</h3>
+      <div class="scroll"><table>
+        <tr><th></th><th>accessToken (JWT)</th><th>refreshToken</th><th>Machine token</th></tr>
+        <tr><td>Dành cho</td><td>Con người sau khi login</td><td>Con người, để xin accessToken mới</td><td>Chương trình, không có bước login</td></tr>
+        <tr><td>Thời hạn</td><td>Ngắn (vài phút)</td><td>Dài (vài tuần)</td><td>Tới khi bạn đổi</td></tr>
+        <tr><td>Server kiểm tra bằng</td><td>Chữ ký</td><td>Đối chiếu trong DB</td><td>Băm rồi so với hash</td></tr>
+        <tr><td>Lộ thì sao</td><td>Tự hết hạn</td><td>Thu hồi phía server</td><td>Đổi B trên Railway</td></tr>
+      </table></div>
+    </section>
+
+    <section id="doors">
+      <h2>8. Hai cửa và endpoint</h2>
+      <div class="doors">
+        <div class="door admin">
+          <h3>Cửa admin: <code>/api/radar/*</code></h3>
+          <p><b>Ai đi:</b> bạn, qua console.</p>
+          <p><b>Chìa:</b> JWT + quyền ADMIN (<code>JwtAccessGuard</code>, <code>RoleGuard</code>).</p>
+          <p><b>Machine token ở đây:</b> 401, vì nó không phải JWT do API ký (RAD-004).</p>
+        </div>
+        <div class="door worker">
+          <h3>Cửa worker: <code>/api/radar/work/*</code></h3>
+          <p><b>Ai đi:</b> Claude Code.</p>
+          <p><b>Chìa:</b> machine token (<code>MachineTokenGuard</code>), throttle 120 request mỗi phút.</p>
+          <p><b>JWT ở đây:</b> 401, vì JWT không khớp hash.</p>
+        </div>
+      </div>
+      <div class="scroll"><table>
+        <tr><th>Cửa</th><th>Method</th><th>Path (sau <code>/api</code>)</th><th>Việc</th></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/sources</code></td><td>Danh sách source</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/sources</code></td><td>Tạo source</td></tr>
+        <tr><td>Admin</td><td>PATCH</td><td><code>/radar/sources/:id/deactivate</code>, <code>/activate</code></td><td>Tắt, bật source</td></tr>
+        <tr><td>Admin</td><td>DELETE</td><td><code>/radar/sources/:id</code></td><td>Xóa source và ảnh</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/captures/upload</code></td><td>Upload file JSON</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/images/persist</code></td><td>Chạy lại việc chép ảnh</td></tr>
+        <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
+        <tr><td>Worker</td><td>GET</td><td><code>/radar/work/profile</code></td><td>Đọc profile (chỉ đọc)</td></tr>
+        <tr><td>Worker</td><td>POST</td><td><code>/radar/work/claim</code></td><td>Xin bài</td></tr>
+        <tr><td>Worker</td><td>POST</td><td><code>/radar/work/results</code></td><td>Nộp kết quả</td></tr>
+      </table></div>
+    </section>
+
+    <section id="worker">
+      <h2>9. Vòng làm việc của worker</h2>
+      <div class="flow">
+        <div class="node worker"><b>① Đọc profile</b><small>Chưa có thì nhận chuỗi rỗng</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>② Claim</b><small>Tối đa N bài (mặc định 5, tối đa 20), mới nhất trước</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>③ Phân tích</b><small>Text, ảnh, link, bài được share</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>④ Nộp kết quả</b><small>Tối đa 10 bài mỗi lần</small></div>
+        <div class="arrow">↺</div>
+        <div class="node"><b>Lặp lại</b><small>tới khi claim trả danh sách rỗng</small></div>
+      </div>
+      <h3>Claim</h3>
+      <pre><code>POST /api/radar/work/claim
+{ "step": "ANALYZE", "limit": 5 }
+
+→ { "step": "ANALYZE", "leaseExpiresAt": "2026-10-05T03:11:40Z",
+    "items": [ { "id", "kind", "permalink", "authorName", "publishedAt", "text",
+                 "images": [ { "type", "url", "ocrText" } ], "links",
+                 "sharedPost": { "authorName", "permalink", "text", "images" } | null,
+                 "engagement" } ] }</code></pre>
+      <p><code>step</code> hiện chỉ nhận <code>ANALYZE</code>; bước chép ảnh chạy phía server, còn bước tóm tắt làm trên bảng <code>radar_briefs</code> ở task sau. Ảnh dùng URL Cloudinary nếu đã lưu xong, ngược lại dùng URL Facebook gốc (còn hiệu lực vài ngày).</p>
+      <h3>Nộp kết quả</h3>
+      <pre><code>POST /api/radar/work/results
+{ "results": [ { "itemId": "...", "enrichment": { ... } } ] }
+
+→ { "stored": 1, "rejected": [ { "itemId": "...", "reason": "signalScore: Too big: expected number to be &lt;=10" } ] }</code></pre>
+      <ul>
+        <li>Mỗi kết quả được kiểm tra riêng: một kết quả sai không làm hỏng cả lô.</li>
+        <li>Nộp lại cùng một bài: ghi đè, vẫn chỉ một enrichment.</li>
+        <li>Gặp lỗi 413 (body quá 100 KB): nộp từng bài một. Một bài lớn nhất khoảng 30 KB nên luôn lọt.</li>
+      </ul>
+    </section>
+
+    <section id="lease">
+      <h2>10. Lease và trạng thái bài</h2>
+      <p>Khi claim, API ghi lên bài ba thứ: <code>workStatus = CLAIMED</code>, <code>leaseExpiresAt = bây giờ + 30 phút</code>, và tăng <code>claimCount</code>. Tới khi hết lease, không lần claim nào khác nhận được bài đó. Bài chỉ rời CLAIMED theo hai đường:</p>
+      <ol>
+        <li><b>Có kết quả hợp lệ</b> → DONE, lease bị xóa.</li>
+        <li><b>Hết 30 phút</b> → lần claim kế tiếp được lấy lại (RAD-005). Không cần job dọn dẹp: điều kiện "lease đã hết" nằm ngay trong câu SQL của claim.</li>
+      </ol>
+      <p><b>Kết quả sai schema:</b> API trả lý do, bài <b>vẫn giữ lease</b>. Claude Code sửa và nộp lại ngay trong phiên. Không nộp lại thì bài tự quay về khi hết lease.</p>
+
+      <div class="svgbox">
+      <svg viewBox="0 0 900 330" role="img" aria-label="State machine of a radar item">
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <rect x="40" y="120" width="170" height="60" rx="30" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="125" y="155" text-anchor="middle" font-weight="700">PENDING</text>
+        <rect x="365" y="120" width="170" height="60" rx="30" style="fill:var(--worker-bg);stroke:var(--worker);stroke-width:2"/><text x="450" y="150" text-anchor="middle" font-weight="700">CLAIMED</text><text x="450" y="168" text-anchor="middle" class="muted">lease 30 phút</text>
+        <rect x="690" y="120" width="170" height="60" rx="30" style="fill:var(--db-bg);stroke:var(--db);stroke-width:2"/><text x="775" y="155" text-anchor="middle" font-weight="700">DONE</text>
+        <path d="M210 150 L361 150" style="stroke:var(--ink);stroke-width:1.5;fill:none;color:var(--ink)" marker-end="url(#arr2)"/>
+        <text x="285" y="140" text-anchor="middle">claim</text>
+        <path d="M535 150 L686 150" style="stroke:var(--db);stroke-width:1.5;fill:none;color:var(--db)" marker-end="url(#arr2)"/>
+        <text x="610" y="140" text-anchor="middle" class="okt">kết quả hợp lệ</text>
+        <path d="M400 120 C380 70 520 70 500 116" style="stroke:var(--bad);stroke-width:1.5;fill:none;color:var(--bad)" marker-end="url(#arr2)"/>
+        <text x="450" y="58" text-anchor="middle" class="not">kết quả sai → vẫn CLAIMED, sửa rồi nộp lại</text>
+        <path d="M450 180 C450 270 125 270 125 184" style="stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:5 4;color:var(--muted)" marker-end="url(#arr2)"/>
+        <text x="290" y="290" text-anchor="middle" class="muted">hết 30 phút chưa có kết quả → claim kế tiếp lấy lại (RAD-005)</text>
+        <text x="290" y="312" text-anchor="middle" class="muted">claimCount đã đủ 3 → claim bỏ qua, bài đứng yên chờ bạn xếp hàng lại</text>
+        <text x="775" y="210" text-anchor="middle" class="muted">nộp lại lần nữa:</text>
+        <text x="775" y="230" text-anchor="middle" class="muted">ghi đè, vẫn chỉ 1 enrichment</text>
+      </svg>
+      </div>
+
+      <h3>Vì sao không release</h3>
+      <div class="scroll"><table>
+        <tr><th>Cách xử lý kết quả sai</th><th>Hậu quả</th></tr>
+        <tr><td>Release ngay (thiết kế ban đầu)</td><td>(1) Lặp vô hạn trong một phiên: claim, sai, release, claim lại đúng bài đó. (2) Worker nộp trễ có thể giật bài khỏi tay worker khác vừa claim lại.</td></tr>
+        <tr><td>Giữ lease + attempt cap 3 (hiện tại)</td><td>Trong một phiên, bài sai không quay lại ngay. Qua nhiều phiên, mỗi bài bị claim tối đa 3 lần. Không ai giật được bài của ai.</td></tr>
+      </table></div>
+
+      <h3>Ví dụ bằng số: 3 bài, một buổi sáng</h3>
+      <div class="scroll"><table>
+        <tr><th>Giờ</th><th>Sự kiện</th><th>Bài A</th><th>Bài B</th><th>Bài C</th></tr>
+        <tr><td>09:00</td><td>Bạn upload, 3 bài vào DB</td><td>PENDING</td><td>PENDING</td><td>PENDING</td></tr>
+        <tr><td>09:05</td><td>Claude Code claim với limit 2</td><td>CLAIMED tới 09:35 (lần 1)</td><td>CLAIMED tới 09:35 (lần 1)</td><td>PENDING</td></tr>
+        <tr><td>09:06</td><td>Phiên khác claim với limit 2</td><td>bỏ qua</td><td>bỏ qua</td><td>CLAIMED tới 09:36 (lần 1)</td></tr>
+        <tr><td>09:10</td><td>Nộp A hợp lệ, B có <code>signalScore: 11</code></td><td>DONE ✓</td><td>vẫn CLAIMED, nhận lý do</td><td>CLAIMED</td></tr>
+        <tr><td>09:11</td><td>Claude Code sửa B thành 9, nộp lại</td><td>DONE</td><td>DONE ✓</td><td>CLAIMED</td></tr>
+        <tr><td>09:20</td><td>Phiên giữ C bị tắt giữa chừng</td><td>DONE</td><td>DONE</td><td>CLAIMED (giữ tới 09:36)</td></tr>
+        <tr><td>09:40</td><td>Claude Code claim lại</td><td>DONE</td><td>DONE</td><td>CLAIMED tới 10:10 (lần 2)</td></tr>
+        <tr><td>Giả sử</td><td>C hỏng thêm một lần (lần 3), lại hết lease</td><td>DONE</td><td>DONE</td><td>claim bỏ qua C</td></tr>
+      </table></div>
+      <p>Claim không trùng, lease hết hạn được lấy lại và attempt cap đều có test chạy trên Postgres thật, cả trong CI.</p>
+    </section>
+
+    <section id="enrichment">
+      <h2>11. Enrichment</h2>
+      <p>Mỗi kết quả Claude Code nộp phải khớp schema dưới đây (Zod v4). Danh sách provider tag và content type nằm trong <code>@portfolio/shared/types</code> để console dùng lại cho bộ lọc.</p>
+      <div class="scroll"><table>
+        <tr><th>Field</th><th>Kiểu / giới hạn</th><th>Ý nghĩa</th></tr>
+        <tr><td><code>tldr</code></td><td>chuỗi, 1 tới 280 ký tự</td><td>Một câu tóm tắt, ngôn ngữ gốc</td></tr>
+        <tr><td><code>providerTags</code></td><td>mảng giá trị trong <code>RADAR_PROVIDER_TAGS</code></td><td>Bài nói về hãng nào. Tag trùng tự gộp</td></tr>
+        <tr><td><code>contentType</code></td><td>một giá trị trong <code>RADAR_CONTENT_TYPES</code></td><td>Loại bài</td></tr>
+        <tr><td><code>signalScore</code></td><td>số nguyên 0 tới 10</td><td>Mức đáng đọc</td></tr>
+        <tr><td><code>isPromo</code>, <code>isRelevant</code></td><td>boolean</td><td>Bài quảng cáo? Có liên quan tới bạn?</td></tr>
+        <tr><td><code>imageNotes</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Ảnh nói gì (slide, screenshot)</td></tr>
+        <tr><td><code>linkSummaries</code></td><td>tối đa 20 mục <code>{url, summary}</code></td><td>Tóm tắt từng link</td></tr>
+        <tr><td><code>commentDigest</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Tóm tắt comment (task 411)</td></tr>
+        <tr><td><code>factCheck</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Điểm nào cần kiểm chứng</td></tr>
+        <tr><td><code>applyNote</code></td><td>markdown, tối đa 8.000 ký tự</td><td>Áp dụng vào workflow của bạn thế nào</td></tr>
+        <tr><td><code>producer</code></td><td><code>{adapter, model}</code></td><td>Ai tạo ra kết quả này</td></tr>
+        <tr><td><code>schemaVersion</code></td><td>đúng bằng 1</td><td>Phiên bản schema</td></tr>
+      </table></div>
+      <p>Chuỗi rỗng hoặc toàn khoảng trắng ở các field có thể trống được lưu thành <code>null</code>.</p>
+    </section>
+
+    <section id="reading">
+      <h2>12. Đọc Feed: Score, Type, Provider, Status</h2>
+      <p>Mỗi dòng trên Feed là một bài. Bốn cột Score, Type, Providers và Status đều lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Bài chưa phân tích thì chưa có giá trị nào trong bốn cột này.</p>
+
+      <h3>Score (signal score)</h3>
+      <p><b>Định nghĩa:</b> số nguyên từ 0 tới 10, trả lời câu hỏi "bài này đáng để bạn bỏ bao nhiêu thời gian đọc". Điểm chấm theo thời điểm bài được đăng chứ không theo hôm nay: một bản release lớn từ 6 tháng trước vẫn được điểm cao, vì bạn đang đọc bù.</p>
+      <div class="scroll"><table>
+        <tr><th>Điểm</th><th>Ý nghĩa</th><th>Ví dụ</th><th>Màu ô trên Feed</th></tr>
+        <tr><td><b>9 tới 10</b></td><td>Thay đổi cách bạn làm việc ngay trong tháng này</td><td>Claude Code có khả năng mới, một model lớn bạn sẽ dùng</td><td>Xanh lá</td></tr>
+        <tr><td><b>7 tới 8</b></td><td>Đáng đọc hết bài</td><td>Một workflow có bước cụ thể, một tool quan trọng vừa ra</td><td>Xanh lá</td></tr>
+        <tr><td><b>4 tới 6</b></td><td>Nên biết, đọc TL;DR là đủ</td><td>Bản cập nhật nhỏ, một ý kiến có chút nội dung</td><td>Xanh dương</td></tr>
+        <tr><td><b>1 tới 3</b></td><td>Ít giá trị</td><td>Tin cũ nhắc lại, hype mơ hồ, phần lớn là quảng cáo</td><td>Xám</td></tr>
+        <tr><td><b>0</b></td><td>Không có gì dùng được</td><td>Quảng cáo thuần, meme, lạc đề</td><td>Xám</td></tr>
+        <tr><td><b>Ô viền đứt, icon đồng hồ cát</b></td><td>Bài chưa được phân tích nên chưa có điểm</td><td>Bài vừa upload, chưa chạy <code>/radar work</code></td><td>Viền đứt</td></tr>
+      </table></div>
+      <p>Bộ lọc <b>Min score</b> dùng đúng các mốc này: <code>9+</code>, <code>7+</code>, <code>4+</code>. Khi sort theo Score, bài chưa phân tích luôn nằm cuối ở cả hai chiều.</p>
+
+      <h3>Type (content type)</h3>
+      <p><b>Định nghĩa:</b> bài thuộc loại nội dung nào. Mỗi bài có đúng một type.</p>
+      <div class="scroll"><table>
+        <tr><th>Type</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
+        <tr><td><b>News</b></td><td>Tin tức: một bản release, thay đổi giá, một sự kiện</td><td>"Google ra Gemini 3.7 Flash, rẻ hơn 50%"</td></tr>
+        <tr><td><b>Tool</b></td><td>Giới thiệu một tool hoặc thư viện cụ thể, đáng thử</td><td>"Claude Code có tùy chọn tự chờ khi chạm usage limit"</td></tr>
+        <tr><td><b>Workflow</b></td><td>Cách một người làm việc với AI: prompt, cách setup, quy trình</td><td>"So sánh ba kiểu advisor trong agentic workflow"</td></tr>
+        <tr><td><b>Opinion</b></td><td>Quan điểm hoặc dự đoán, không có dữ kiện mới</td><td>"AI sẽ thay junior dev trong 2 năm"</td></tr>
+        <tr><td><b>Tutorial</b></td><td>Hướng dẫn từng bước</td><td>"Cài MCP server cho Figma trong 5 bước"</td></tr>
+        <tr><td><b>Promo</b></td><td>Bài bán hàng: khóa học, dịch vụ, group trả phí</td><td>"Mở đăng ký Build Sprint khóa 3"</td></tr>
+      </table></div>
+
+      <h3>Providers (provider tags)</h3>
+      <p><b>Định nghĩa:</b> bài nói về sản phẩm của hãng nào. Một bài có thể có nhiều tag. Bài không nhắc tới hãng nào (ví dụ bàn chung về "AI") thì để trống và Feed hiện dấu <code>-</code>.</p>
+      <div class="scroll"><table>
+        <tr><th>Tag</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
+        <tr><td><b>Anthropic</b></td><td>Claude, Claude Code, API của Anthropic</td><td>Bài về hooks của Claude Code</td></tr>
+        <tr><td><b>OpenAI</b></td><td>ChatGPT, GPT, Codex, API của OpenAI</td><td>Bài về GPT bản mới</td></tr>
+        <tr><td><b>Google</b></td><td>Gemini, AI Studio, các sản phẩm AI của Google</td><td>Bài về Gemini Flash</td></tr>
+        <tr><td><b>Meta</b></td><td>Llama và các sản phẩm AI của Meta</td><td>Bài về Llama bản mới</td></tr>
+        <tr><td><b>xAI</b></td><td>Grok</td><td>Bài về Grok</td></tr>
+        <tr><td><b>DeepSeek</b></td><td>Các model của DeepSeek</td><td>Bài ước tính chi phí token DeepSeek</td></tr>
+        <tr><td><b>Open source</b></td><td>Model open-weight và tool mã nguồn mở không thuộc các hãng trên</td><td>Qwen, các model chạy local qua HuggingFace</td></tr>
+        <tr><td><b>Other</b></td><td>Bất kỳ công ty nào khác</td><td>Cursor, Perplexity, một startup nhỏ</td></tr>
+      </table></div>
+
+      <h3>Status</h3>
+      <p><b>Định nghĩa:</b> cột Status trên Feed gộp hai cờ của enrichment và trạng thái phân tích. Một bài có thể có hai badge cùng lúc, ví dụ <b>Relevant</b> và <b>Promo</b>.</p>
+      <div class="scroll"><table>
+        <tr><th>Badge</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
+        <tr><td><b>Relevant</b> (xanh lá)</td><td>Bài có ích cho người làm frontend và dùng Claude Code hằng ngày (<code>isRelevant = true</code>)</td><td>Bài về workflow với Claude Code</td></tr>
+        <tr><td><b>Not relevant</b> (xám)</td><td>Bài đã phân tích nhưng không liên quan tới công việc của bạn</td><td>Tạo ảnh nghệ thuật, crypto, chuyện kinh doanh thuần</td></tr>
+        <tr><td><b>Promo</b> (vàng)</td><td>Mục đích chính của bài là bán hàng (<code>isPromo = true</code>). Feed ẩn các bài này mặc định, bật <b>Show promo</b> để xem</td><td>Bài mở bán khóa học, vẫn có thể được 3 tới 5 điểm nếu phần thông tin có thật</td></tr>
+        <tr><td><b>Pending</b> (xám)</td><td>Bài chưa được phân tích</td><td>Bài vừa upload</td></tr>
+      </table></div>
+
+      <h3>Trạng thái hàng chờ trên đầu Feed</h3>
+      <div class="scroll"><table>
+        <tr><th>Badge</th><th>Định nghĩa tiếng Việt</th><th>Việc cần làm</th></tr>
+        <tr><td><b>N pending</b></td><td>Số bài của các source đang bật mà chưa có kết quả và còn có thể claim</td><td>Chạy <code>/radar work</code></td></tr>
+        <tr><td><b>N paused</b></td><td>Số bài chưa phân tích thuộc source đang tạm dừng. Worker bỏ qua các bài này</td><td>Bấm Resume trong hộp thoại Sources nếu muốn phân tích</td></tr>
+        <tr><td><b>N stuck</b> (đỏ)</td><td>Số bài đã bị claim đủ 3 lần mà vẫn chưa có kết quả hợp lệ (xem mục 10)</td><td>Bấm <b>Re-queue stuck</b> để đưa về hàng chờ</td></tr>
+      </table></div>
+      <p>Trang Detail còn hiện <code>workStatus</code> thô của bài: <b>PENDING</b> (đang chờ), <b>CLAIMED</b> (Claude Code đang giữ, lease 30 phút), <b>DONE</b> (đã có enrichment).</p>
+    </section>
+
+    <section id="profile">
+      <h2>13. Workflow profile</h2>
+      <p>Một văn bản markdown duy nhất (tối đa 20.000 ký tự) mô tả bạn đang làm việc với AI thế nào. Claude Code đọc nó trước mỗi vòng để viết <code>applyNote</code> sát với bạn.</p>
+      <ul>
+        <li>Bạn đọc và sửa qua cửa admin: <code>GET/PUT /api/radar/profile</code>. Trang sửa nằm ở console: <code>/radar/profile</code> (nút "Workflow profile" trên Feed).</li>
+        <li>Claude Code chỉ đọc qua cửa worker: <code>GET /api/radar/work/profile</code>.</li>
+        <li>Chưa lưu lần nào thì nhận <code>{ "body": "", "updatedAt": null }</code>.</li>
+        <li>Bản profile đầu tiên do Claude soạn từ cấu hình của bạn ở task 405, bạn duyệt rồi mới lưu.</li>
+      </ul>
+    </section>
+
+    <section id="data">
+      <h2>14. Data model</h2>
+      <div class="scroll"><table>
+        <tr><th>Bảng</th><th>Chứa gì</th><th>Ghi chú</th></tr>
+        <tr><td><code>radar_sources</code></td><td>Trang được theo dõi</td><td><code>url</code> duy nhất, <code>isActive</code></td></tr>
+        <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Phase A: chỉ MANUAL, DONE ngay. Phase B: có state machine</td></tr>
+        <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Dùng từ Phase B (task 409)</td></tr>
+        <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code></td></tr>
+        <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài</td></tr>
+        <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Task 412</td></tr>
+        <tr><td><code>radar_workflow_profiles</code></td><td>Workflow profile</td><td>Một dòng với id cố định</td></tr>
+      </table></div>
+      <p>Xóa source kéo theo (cascade) runs, items, enrichments.</p>
+    </section>
+
+    <section id="errors">
+      <h2>15. Mã lỗi</h2>
+      <div class="scroll"><table>
+        <tr><th>Mã</th><th>HTTP</th><th>Khi nào</th></tr>
+        <tr><td><code>RADAR_SOURCE_NOT_FOUND</code></td><td>404</td><td>Source id không tồn tại</td></tr>
+        <tr><td><code>RADAR_SOURCE_URL_TAKEN</code></td><td>409</td><td>Tạo source với URL đã có</td></tr>
+        <tr><td><code>RADAR_SOURCE_INACTIVE</code></td><td>400</td><td>Upload cho source đang tắt</td></tr>
+        <tr><td><code>RADAR_INVALID_INPUT</code></td><td>400</td><td>Body sai: tạo source, claim, results, profile</td></tr>
+        <tr><td><code>RADAR_INVALID_UPLOAD</code></td><td>400</td><td>File không phải JSON, không phải mảng, quá nhiều bài, sai định dạng</td></tr>
+        <tr><td><code>RADAR_IMAGE_DELETE_FAILED</code></td><td>502</td><td>Xóa source nhưng xóa ảnh Cloudinary lỗi</td></tr>
+        <tr><td>(guard)</td><td>401</td><td>Thiếu hoặc sai JWT / machine token</td></tr>
+      </table></div>
+    </section>
+
+    <section id="rules">
+      <h2>16. Business rules</h2>
+      <div class="scroll"><table>
+        <tr><th>Mã</th><th>Quy tắc</th></tr>
+        <tr><td>RAD-001</td><td>Mỗi bài là duy nhất theo (source, external id). Capture lại chỉ làm mới, không bao giờ tạo bản trùng</td></tr>
+        <tr><td>RAD-002</td><td>Nội dung giữ ngôn ngữ gốc. Không dịch, thuật ngữ giữ nguyên</td></tr>
+        <tr><td>RAD-003</td><td>Không bao giờ dùng tài khoản hay session mạng xã hội của bạn để capture</td></tr>
+        <tr><td>RAD-004</td><td>Machine token chỉ gọi được các endpoint worker</td></tr>
+        <tr><td>RAD-005</td><td>Bài đã claim quay lại hàng chờ khi hết lease mà chưa có kết quả</td></tr>
+        <tr><td>RAD-006</td><td>Run chỉ bắt đầu khi bạn bấm. Không có lịch chạy định kỳ</td></tr>
+      </table></div>
+    </section>
+
+    <section id="decisions">
+      <h2>17. Các quyết định</h2>
+      <div class="scroll"><table>
+        <tr><th>Task</th><th>Quyết định</th><th>Lý do</th></tr>
+        <tr><td>Epic</td><td>Làm thẳng trong console + API, lưu hết vào Postgres trên Railway</td><td>Laptop công ty sắp trả, không giữ gì ở local</td></tr>
+        <tr><td>Epic</td><td>Capture qua Apify, không dùng Facebook của bạn</td><td>An toàn tài khoản (RAD-003)</td></tr>
+        <tr><td>402</td><td>Upload bằng multipart, tách normalizer theo định dạng</td><td>File lớn hơn giới hạn body JSON. Dễ thêm định dạng khác sau này</td></tr>
+        <tr><td>403</td><td>Xóa source thì xóa ảnh Cloudinary trước</td><td>Không để lại file mồ côi. Ngân sách miễn phí đủ cho hàng chục nghìn bài</td></tr>
+        <tr><td>403</td><td>Downloader dùng <code>node:https</code> + happy eyeballs 1 giây</td><td>Mạng không có IPv6 làm <code>fetch</code> treo</td></tr>
+        <tr><td>404</td><td><code>LLM_PROVIDER</code> port dời sang task 409</td><td>Phase A chưa có ai gọi port này</td></tr>
+        <tr><td>404</td><td>Thiếu biến hash thì tắt worker, không crash</td><td>Deploy không phụ thuộc biến này</td></tr>
+        <tr><td>404</td><td>Kết quả sai không release, có attempt cap 3</td><td>Tránh lặp vô hạn và tránh giật bài của worker khác</td></tr>
+        <tr><td>404</td><td>Job CI chạy unit test có Postgres</td><td>Logic lease nằm trong SQL, chỉ test được trên DB thật</td></tr>
+        <tr><td>406</td><td>Hiện số bài bị kẹt + nút xếp hàng lại</td><td>Bài đủ 3 lần claim cần một lối ra (bạn đồng ý 2026-10-05)</td></tr>
+      </table></div>
+    </section>
+
+    <section id="gaps">
+      <h2>18. Chỗ hở đã biết</h2>
+      <div class="scroll"><table>
+        <tr><th>Chỗ hở</th><th>Hậu quả hiện tại</th><th>Hướng xử lý</th></tr>
+        <tr><td>Upload lại không phân tích lại bài DONE</td><td>Tác giả sửa bài thì enrichment vẫn là bản cũ</td><td>Hiếm với tin AI. Có thể thêm nút "phân tích lại" ở Detail</td></tr>
+        <tr><td>Ảnh chưa lưu xong lúc claim</td><td>Claude Code nhận URL Facebook gốc</td><td>Không cần làm gì: Detail đọc media từ DB sau khi đã lưu</td></tr>
+        <tr><td>Chưa có comments</td><td><code>commentDigest</code> luôn trống</td><td>Task 411</td></tr>
+        <tr><td>Chưa sửa được tên, URL của source</td><td>Muốn đổi thì phải xóa rồi tạo lại (mất dữ liệu)</td><td>Thêm <code>PATCH /radar/sources/:id</code> khi cần</td></tr>
+      </table></div>
+    </section>
+
+    <section id="roadmap">
+      <h2>19. Lộ trình task</h2>
+      <div class="scroll"><table>
+        <tr><th>Task</th><th>Nội dung</th><th>Trạng thái</th></tr>
+        <tr><td>400</td><td>Chọn công cụ capture (Apify), lấy dữ liệu mẫu</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>401</td><td>Prisma schema 7 bảng Radar</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>402</td><td>Module Radar, sources, upload JSON, Apify normalizer</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>403</td><td>Chép ảnh sang Cloudinary, xóa ảnh khi xóa source</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>404</td><td>Machine token, worker API, lease, attempt cap, profile</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>405</td><td>Skill <code>/radar work</code> + workflow profile đầu tiên</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>406</td><td>Console: feature lib, sources, upload, Feed, bài bị kẹt</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>407</td><td>Console: Detail + trang sửa profile</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>408</td><td>Chạy thật 6 tháng trên production, nghiệm thu Phase A</td><td><span class="status next">Kế tiếp</span></td></tr>
+        <tr><td>409</td><td>Run state machine, cron tick, Apify API, <code>LLM_PROVIDER</code> port</td><td><span class="status todo">Phase B</span></td></tr>
+        <tr><td>410</td><td>Console: trang Runs</td><td><span class="status todo">Phase B</span></td></tr>
+        <tr><td>411</td><td>Comments + tóm tắt comment</td><td><span class="status todo">Phase B</span></td></tr>
+        <tr><td>412</td><td>Bước tóm tắt + trang Brief</td><td><span class="status todo">Phase B</span></td></tr>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var mobile = document.getElementById('mobile-toc-body');
+    if (mobile) mobile.innerHTML = links.map(function (a) { return '<div><a href="' + a.getAttribute('href') + '">' + a.textContent + '</a></div>'; }).join('');
+    var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    function update() {
+      var current = 0;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i] && sections[i].getBoundingClientRect().top < 120) current = i;
+      }
+      links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+</script>
+</body>
+</html>

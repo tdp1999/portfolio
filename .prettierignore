@@ -7,3 +7,5 @@
 node_modules
 *.lock
 pnpm-lock.yaml
+# Standalone HTML docs, not Angular templates: the *.html → angular parser override rejects them
+.context/**/*.html
