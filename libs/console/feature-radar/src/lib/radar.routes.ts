@@ -7,6 +7,10 @@ export const radarRoutes: Route[] = [
     loadComponent: () => import('./radar-item.list/radar-item.list'),
   },
   {
+    path: 'runs',
+    loadComponent: () => import('./radar-run.list/radar-run.list'),
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./radar-profile.form/radar-profile.form'),
     canDeactivate: [unsavedChangesGuard],

@@ -2,4 +2,14 @@ export {
   RADAR_FEED_PAGE_SIZE as FEED_PAGE_SIZE,
   RADAR_MAX_CLAIM_ATTEMPTS as MAX_CLAIM_ATTEMPTS,
   RADAR_MAX_PROFILE_CHARS as PROFILE_MAX_CHARS,
+  RADAR_MAX_RUN_ITEM_CAP as MAX_RUN_ITEM_CAP,
 } from '@portfolio/shared/types';
+
+/** How often the Runs page refreshes while a run is active. */
+export const RUN_POLL_MS = 10_000;
+
+/** Item cap the New run form starts with: enough for a few weeks of one source. */
+export const DEFAULT_RUN_ITEM_CAP = 200;
+
+/** Window start when a source has no successful run yet. */
+export const DEFAULT_RUN_WINDOW_MONTHS = 6;

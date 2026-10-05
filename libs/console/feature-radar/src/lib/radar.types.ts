@@ -147,3 +147,74 @@ export interface RadarUploadResult {
   failed: number;
   failures: { index: number; reason: string }[];
 }
+
+export type RadarRunFlow = 'MANUAL' | 'HYBRID';
+export type RadarRunStatus = 'PENDING' | 'RUNNING' | 'AWAITING_EXTERNAL' | 'DONE' | 'FAILED';
+/** A run status as the Runs page shows it: a FAILED run the Owner cancelled reads as `CANCELLED`. */
+export type RadarRunDisplayStatus = RadarRunStatus | 'CANCELLED';
+export type RadarRunStep = 'CAPTURE' | 'NORMALIZE' | 'ENRICH' | 'ANALYZE';
+
+export interface RadarStepRun {
+  step: RadarRunStep;
+  status: RadarRunStatus;
+  adapter: string;
+  error: string | null;
+  startedAt: string | null;
+  finishedAt: string | null;
+}
+
+export interface RadarRun {
+  id: string;
+  source: { id: string; displayName: string };
+  flow: RadarRunFlow;
+  status: RadarRunStatus;
+  /** Null on both ends means a backfill with no date filter. */
+  windowFrom: string | null;
+  windowTo: string | null;
+  itemCap: number;
+  captureAdapter: string;
+  llmAdapter: string;
+  itemsCaptured: number;
+  itemsCreated: number;
+  itemsUpdated: number;
+  itemsFailed: number;
+  error: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  /** Always in pipeline order: CAPTURE, NORMALIZE, ENRICH, ANALYZE. */
+  steps: RadarStepRun[];
+}
+
+export interface CreateRadarRunInput {
+  sourceId: string;
+  flow: RadarRunFlow;
+  itemCap: number;
+  windowFrom?: string;
+  windowTo?: string;
+}
+
+export interface RadarRunCreateDialogData {
+  /** Active sources only: the API refuses a run on a paused one. */
+  sources: RadarSource[];
+  /** The Runs page's list, newest first, used to chain the default window. */
+  runs: RadarRun[];
+}
+
+export type RunNotice =
+  | { kind: 'failed'; title: string; message: string }
+  | { kind: 'cancelled'; title: string }
+  | { kind: 'awaiting-upload' }
+  | { kind: 'awaiting-work' };
+
+/** A run as one Runs page row shows it: flags, notice and step tooltips computed once per poll. */
+export interface RadarRunRow extends Omit<RadarRun, 'steps'> {
+  /** The run's status, with a cancelled FAILED run shown as `CANCELLED`. */
+  displayStatus: RadarRunDisplayStatus;
+  active: boolean;
+  awaitingUpload: boolean;
+  notice: RunNotice | null;
+  stepSummary: string;
+  itemsDetail: string;
+  steps: (RadarStepRun & { tooltip: string })[];
+}

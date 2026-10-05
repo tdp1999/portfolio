@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>New run</h2>
+<form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="flex flex-col gap-4">
+      <mat-form-field>
+        <mat-label>Source</mat-label>
+        <mat-select formControlName="sourceId">
+          @for (s of data.sources; track s.id) {
+            <mat-option [value]="s.id">{{ s.displayName }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{ form.controls.sourceId | formError }}</mat-error>
+      </mat-form-field>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-body">Flow</span>
+        <console-segmented-control formControlName="flow" [options]="flowOptions" />
+        <p class="text-caption">
+          @if (form.controls.flow.value === 'HYBRID') {
+            The server captures the posts with Apify, then the rest runs on its own.
+          } @else {
+            You export the posts yourself, then upload the file into this run.
+          }
+        </p>
+      </div>
+
+      <mat-form-field>
+        <mat-label>Window</mat-label>
+        <mat-date-range-input [rangePicker]="windowPicker" [max]="today">
+          <input matStartDate formControlName="windowFrom" placeholder="From" readonly />
+          <input matEndDate formControlName="windowTo" placeholder="To" readonly />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="windowPicker" />
+        <mat-date-range-picker #windowPicker />
+        <mat-hint>Starts where the last successful run ended. An empty end means up to now.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Item cap</mat-label>
+        <input matInput type="number" formControlName="itemCap" min="1" [max]="maxItemCap" />
+        <mat-hint>Most posts this run captures, 1 to {{ maxItemCap }}. Apify bills per post.</mat-hint>
+        <mat-error>{{ form.controls.itemCap | formError }}</mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Start run</button>
+  </mat-dialog-actions>
+</form>

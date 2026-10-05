@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
+  EnumLabelPipe,
   Property,
   PropertyList,
   QuickLook,
@@ -17,9 +18,11 @@ import {
   RecordSection,
   SpinnerOverlay,
 } from '@portfolio/console/shared/ui';
-import type { RadarContentType, RadarProviderTag } from '@portfolio/shared/types';
 import { forkJoin, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { MarkdownPipe } from '../markdown.pipe';
+import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
+import { isViewableImage } from '../radar-item.util';
+import { UrlHostPipe } from '../url-host.pipe';
 import { FEED_PAGE_SIZE } from '../radar.constants';
 import { CONTENT_TYPE_LABELS, PROVIDER_LABELS, WORK_STATUS_LABELS } from '../radar.data';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
@@ -47,7 +50,10 @@ import {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    EnumLabelPipe,
     MarkdownPipe,
+    RadarImageViewablePipe,
+    UrlHostPipe,
     Property,
     PropertyList,
     QuickLook,
@@ -92,8 +98,19 @@ export default class RadarItemDetail implements OnInit {
   /** The shared post's permalink already sits next to its text as "Open shared post"; every other link stays. */
   protected readonly links = computed(() => {
     const it = this.item();
-    return it?.links.filter((l) => l.url !== it.sharedPost?.permalink) ?? [];
+    const summaries = it?.enrichment?.linkSummaries ?? [];
+    return (it?.links ?? [])
+      .filter((l) => l.url !== it?.sharedPost?.permalink)
+      .map((l) => ({ ...l, summary: summaries.find((s) => s.url === l.url)?.summary ?? null }));
   });
+
+  /** Query params of the prev/next links: same view, with the page the neighbour sits on. */
+  protected readonly prevQuery = computed(() => this.neighbourQuery(this.prev()));
+  protected readonly nextQuery = computed(() => this.neighbourQuery(this.next()));
+
+  protected readonly providerNames = computed(() =>
+    (this.item()?.enrichment?.providerTags ?? []).map((t) => PROVIDER_LABELS[t] ?? t).join(', ')
+  );
 
   protected readonly lightboxPhoto = computed(() => {
     const lb = this.lightbox();
@@ -114,6 +131,7 @@ export default class RadarItemDetail implements OnInit {
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly workStatusLabels = WORK_STATUS_LABELS;
+  protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   private itemSub?: Subscription;
   private neighbourSub?: Subscription;
 
@@ -138,7 +156,7 @@ export default class RadarItemDetail implements OnInit {
   }
 
   onOpenImage(gallery: RadarItemImage[], image: RadarItemImage): void {
-    const photos = gallery.filter((img) => this.isViewable(img));
+    const photos = gallery.filter((img) => isViewableImage(img, this.brokenImages()));
     this.lightbox.set({ photos, index: Math.max(0, photos.indexOf(image)) });
   }
 
@@ -152,38 +170,11 @@ export default class RadarItemDetail implements OnInit {
     );
   }
 
-  // ── Template helpers ──────────────────────────────────────────────
-  /** A photo we can show full size: saved (or not yet attempted) and not failing to load. */
-  protected isViewable(img: RadarItemImage): boolean {
-    return img.type === 'photo' && img.storageStatus !== 'failed' && !this.brokenImages().has(img.url);
-  }
-
-  protected providerList(tags: RadarProviderTag[]): string {
-    return tags.map((t) => PROVIDER_LABELS[t] ?? t).join(', ');
-  }
-
-  protected contentTypeLabel(type: string): string {
-    return CONTENT_TYPE_LABELS[type as RadarContentType] ?? type;
-  }
-
-  /** Query params for a neighbour link: same view, with the page the neighbour sits on. */
-  protected neighbourQuery(n: RadarNeighbour): Record<string, string> {
-    return toFeedQuery({ ...this.feedState(), pageIndex: n.pageIndex });
-  }
-
-  protected summaryFor(url: string): string | null {
-    return this.item()?.enrichment?.linkSummaries.find((s) => s.url === url)?.summary ?? null;
-  }
-
-  protected hostOf(url: string): string {
-    try {
-      return new URL(url).hostname.replace(/^www\./, '');
-    } catch {
-      return url;
-    }
-  }
-
   // ── shared helpers ────────────────────────────────────────────────
+  private neighbourQuery(n: RadarNeighbour | null): Record<string, string> {
+    return n ? toFeedQuery({ ...this.feedState(), pageIndex: n.pageIndex }) : {};
+  }
+
   private load(id: string): void {
     this.loading.set(true);
     this.loadError.set(null);

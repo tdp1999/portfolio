@@ -3,8 +3,8 @@
     <div>
       <div class="radar-title">
         <h1 class="text-page-title">Radar</h1>
-        @if (stats(); as s) {
-          <div class="radar-queue" role="status">
+        <div class="radar-queue" role="status">
+          @if (stats(); as s) {
             <span class="console-badge console-badge--muted">{{ s.pending }} pending</span>
             @if (s.paused) {
               <span class="console-badge console-badge--muted" title="Their source is paused, so the worker skips them">
@@ -22,12 +22,22 @@
                 Re-queue stuck
               </button>
             }
-          </div>
-        }
+          }
+          <!-- Outside the stats block: a failed stats call must not hide the runs in progress. -->
+          @if (activeRuns(); as n) {
+            <a class="console-badge console-badge--warn radar-runs-badge" routerLink="/radar/runs">
+              {{ n }} {{ n === 1 ? 'run' : 'runs' }} in progress
+            </a>
+          }
+        </div>
       </div>
       <p class="crud-header__subtitle">AI news from followed sources, analyzed by the radar worker.</p>
     </div>
     <div class="crud-header__actions">
+      <a mat-stroked-button routerLink="/radar/runs">
+        <mat-icon class="icon-sm">play_circle</mat-icon>
+        Runs
+      </a>
       <a mat-stroked-button routerLink="/radar/profile">
         <mat-icon class="icon-sm">edit_note</mat-icon>
         Workflow profile
@@ -103,7 +113,7 @@
             @if (item.enrichment; as e) {
               <span
                 class="radar-score"
-                [class]="scoreTone(e.signalScore)"
+                [class]="e.signalScore | radarScoreTone"
                 [attr.aria-label]="'Signal score ' + e.signalScore"
               >
                 {{ e.signalScore }}
@@ -140,7 +150,7 @@
           <th mat-header-cell *matHeaderCellDef class="col-type">Type</th>
           <td mat-cell *matCellDef="let item" class="col-type">
             @if (item.enrichment; as e) {
-              <span class="radar-tag radar-tag--type">{{ contentTypeLabel(e.contentType) }}</span>
+              <span class="radar-tag radar-tag--type">{{ e.contentType | enumLabel: contentTypeLabels }}</span>
             } @else {
               <span class="rv-absent">-</span>
             }
@@ -153,7 +163,7 @@
             @if (item.enrichment?.providerTags.length) {
               <div class="radar-tags">
                 @for (tag of item.enrichment.providerTags; track tag) {
-                  <span class="radar-tag">{{ providerLabel(tag) }}</span>
+                  <span class="radar-tag">{{ tag | enumLabel: providerLabels }}</span>
                 }
               </div>
             } @else {

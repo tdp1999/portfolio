@@ -40,6 +40,19 @@ console-filter-bar ::ng-deep {
   gap: 8px;
 }
 
+.radar-runs-badge {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
 /* Every cell centres on the row's middle line: the summary may wrap to two lines while the tag
    and badge cells hold one, so top-aligned cells would read as a ragged row. */
 .radar-table {

@@ -1,7 +1,10 @@
+import { HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { ApiService } from '@portfolio/console/shared/data-access';
+import { ApiService, SKIP_ERROR_HANDLING } from '@portfolio/console/shared/data-access';
 import {
+  CreateRadarRunInput,
   CreateRadarSourceInput,
+  RadarRun,
   RadarFeedPage,
   RadarFeedParams,
   RadarItemDetail,
@@ -63,9 +66,25 @@ export class RadarService {
     return this.api.patch<void>(`/radar/sources/${id}/${isActive ? 'activate' : 'deactivate'}`, {});
   }
 
-  uploadCapture(sourceId: string, file: File) {
+  /** With a `runId` the file fills that Manual run instead of opening a new one. */
+  uploadCapture(sourceId: string, file: File, runId?: string) {
     const body = new FormData();
     body.append('file', file, file.name);
+    if (runId) body.append('runId', runId);
     return this.api.post<RadarUploadResult>(`/radar/sources/${sourceId}/captures/upload`, body);
+  }
+
+  /** `silent` skips the error toast: a background poll or a header badge must not raise one every few seconds. */
+  listRuns(silent = false) {
+    const context = silent ? new HttpContext().set(SKIP_ERROR_HANDLING, true) : undefined;
+    return this.api.get<RadarRun[]>('/radar/runs', { context });
+  }
+
+  createRun(input: CreateRadarRunInput) {
+    return this.api.post<RadarRun>('/radar/runs', input);
+  }
+
+  cancelRun(id: string) {
+    return this.api.post<RadarRun>(`/radar/runs/${id}/cancel`, {});
   }
 }

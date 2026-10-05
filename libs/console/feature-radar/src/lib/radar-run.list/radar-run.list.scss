@@ -1,0 +1,143 @@
+@use 'base/prefers';
+@use '../radar-state';
+
+:host {
+  display: block;
+}
+
+.run-table {
+  .mat-mdc-cell {
+    vertical-align: middle;
+    padding-block: 12px;
+  }
+}
+
+.col-window {
+  width: 200px;
+}
+
+.col-status {
+  width: 112px;
+}
+
+.col-items {
+  width: 176px;
+}
+
+.col-created {
+  width: 128px;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.col-actions {
+  width: 232px;
+}
+
+.run-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* A run and its notice read as one record: the line between them goes, the notice's own line stays. */
+.run-row--has-notice .mat-mdc-cell {
+  border-bottom-color: transparent;
+}
+
+/* Four icons joined by a line, read left to right; the caption under them names the current step. */
+.run-steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.run-step + .run-step::before {
+  content: '';
+  width: 12px;
+  height: 2px;
+  margin-right: 4px;
+  border-radius: 1px;
+  background: var(--color-border);
+}
+
+.run-step {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+
+  &--done {
+    color: var(--color-success, #16a34a);
+  }
+
+  &--running {
+    color: var(--color-primary);
+
+    mat-icon {
+      animation: run-spin 1.6s linear infinite;
+
+      @include prefers.reduce-motion {
+        animation: none;
+      }
+    }
+  }
+
+  &--awaiting_external {
+    color: var(--color-warning);
+  }
+
+  &--failed {
+    color: var(--color-error);
+  }
+}
+
+@keyframes run-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.run-notice-cell {
+  padding-top: 0;
+}
+
+.run-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+
+  p {
+    margin: 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &--error {
+    background: var(--color-error-container);
+    color: var(--color-error);
+  }
+}
+
+.run-notice__message {
+  overflow-wrap: anywhere;
+}
+
+.run-table .run-state-row:hover {
+  background: transparent;
+}

@@ -16,14 +16,17 @@ import {
   type FilterOption,
   FilterSearch,
   FilterSelect,
+  EnumLabelPipe,
   RelativeTime,
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
 import { FEED_PAGE_SIZE, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
 import { parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
+import { isRunActive } from '../radar-run.util';
 import {
   CONTENT_TYPE_LABELS,
   CONTENT_TYPE_OPTIONS,
@@ -52,6 +55,8 @@ import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from
     FilterBar,
     FilterSearch,
     FilterSelect,
+    EnumLabelPipe,
+    RadarScoreTonePipe,
     RelativeTime,
     SkeletonTable,
   ],
@@ -86,6 +91,7 @@ export default class RadarItemList implements OnInit {
   protected readonly sortDir = signal<'asc' | 'desc'>('desc');
   protected readonly stats = signal<RadarQueueStats | null>(null);
   protected readonly requeueing = signal(false);
+  protected readonly activeRuns = signal(0);
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly activeFilters = computed(() => {
@@ -133,6 +139,8 @@ export default class RadarItemList implements OnInit {
   protected readonly maxClaimAttempts = MAX_CLAIM_ATTEMPTS;
   private itemsSub?: Subscription;
   protected readonly providerOptions = PROVIDER_OPTIONS;
+  protected readonly providerLabels = PROVIDER_LABELS;
+  protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   protected readonly contentTypeOptions = CONTENT_TYPE_OPTIONS;
   protected readonly minScoreOptions = MIN_SCORE_OPTIONS;
   protected readonly displayedColumns = ['score', 'summary', 'type', 'providers', 'status', 'source', 'publishedAt'];
@@ -150,6 +158,7 @@ export default class RadarItemList implements OnInit {
     this.pageIndex.set(state.pageIndex);
     this.loadItems();
     this.loadStats();
+    this.loadActiveRuns();
   }
 
   // ── Filters ───────────────────────────────────────────────────────
@@ -237,19 +246,13 @@ export default class RadarItemList implements OnInit {
     this.loadItems();
   }
 
-  // ── Row helpers ───────────────────────────────────────────────────
-  protected providerLabel(tag: string): string {
+  // ── Label helpers (filter chips) ──────────────────────────────────
+  private providerLabel(tag: string): string {
     return PROVIDER_LABELS[tag as RadarProviderTag] ?? tag;
   }
 
-  protected contentTypeLabel(type: string): string {
+  private contentTypeLabel(type: string): string {
     return CONTENT_TYPE_LABELS[type as RadarContentType] ?? type;
-  }
-
-  protected scoreTone(score: number): string {
-    if (score >= 7) return 'radar-score--high';
-    if (score >= 4) return 'radar-score--mid';
-    return 'radar-score--low';
   }
 
   // ── Queue ─────────────────────────────────────────────────────────
@@ -274,6 +277,7 @@ export default class RadarItemList implements OnInit {
       .subscribe(() => {
         this.loadItems();
         this.loadStats();
+        this.loadActiveRuns();
       });
   }
 
@@ -306,6 +310,14 @@ export default class RadarItemList implements OnInit {
 
   private loadStats(): void {
     this.radarService.getQueueStats().subscribe((stats) => this.stats.set(stats));
+  }
+
+  /** Header badge only: a failed read hides it rather than raising a toast. */
+  private loadActiveRuns(): void {
+    this.radarService.listRuns(true).subscribe({
+      next: (runs) => this.activeRuns.set(runs.filter(isRunActive).length),
+      error: () => this.activeRuns.set(0),
+    });
   }
 
   private syncQueryParams(): void {

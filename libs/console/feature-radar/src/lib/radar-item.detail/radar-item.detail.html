@@ -25,7 +25,7 @@
               <a
                 mat-icon-button
                 [routerLink]="['/radar/items', p.id]"
-                [queryParams]="neighbourQuery(p)"
+                [queryParams]="prevQuery()"
                 aria-label="Previous item"
                 matTooltip="Previous in Feed"
               >
@@ -41,7 +41,7 @@
               <a
                 mat-icon-button
                 [routerLink]="['/radar/items', n.id]"
-                [queryParams]="neighbourQuery(n)"
+                [queryParams]="nextQuery()"
                 aria-label="Next item"
                 matTooltip="Next in Feed"
               >
@@ -145,13 +145,13 @@
             @for (link of links(); track link.url) {
               <li class="radar-links__item">
                 <a class="radar-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
-                  {{ hostOf(link.url) }}
+                  {{ link.url | urlHost }}
                   <mat-icon class="icon-sm">open_in_new</mat-icon>
                 </a>
                 @if (link.origin === 'shared-post') {
                   <span class="console-badge console-badge--muted">From shared post</span>
                 }
-                @if (summaryFor(link.url); as summary) {
+                @if (link.summary; as summary) {
                   <div class="rv-prose radar-md" [innerHTML]="summary | markdown"></div>
                 } @else if (it.enrichment) {
                   <p class="rv-absent">No summary: the worker skips Facebook links and links it could not open.</p>
@@ -186,10 +186,10 @@
           <console-property-list>
             @if (it.enrichment; as e) {
               <console-property label="Signal score">{{ e.signalScore }} / 10</console-property>
-              <console-property label="Type">{{ contentTypeLabel(e.contentType) }}</console-property>
+              <console-property label="Type">{{ e.contentType | enumLabel: contentTypeLabels }}</console-property>
               <console-property label="Providers">
                 @if (e.providerTags.length) {
-                  {{ providerList(e.providerTags) }}
+                  {{ providerNames() }}
                 } @else {
                   <span class="rv-absent">Not set</span>
                 }
@@ -246,7 +246,7 @@
 <ng-template #gallery let-images let-href="href">
   <div class="radar-images">
     @for (img of images; track $index) {
-      @if (isViewable(img)) {
+      @if (img | radarImageViewable: brokenImages()) {
         <button type="button" class="radar-image" aria-label="View image full size" (click)="onOpenImage(images, img)">
           <img [src]="img.url" alt="Image from the post" loading="lazy" (error)="onImageError(img.url)" />
         </button>
@@ -272,7 +272,7 @@
           <span class="radar-image__label">
             {{ img.storageStatus === 'failed' ? 'Image not saved' : 'Image did not load' }}
           </span>
-          <span class="radar-image__url">{{ hostOf(img.url) }}</span>
+          <span class="radar-image__url">{{ img.url | urlHost }}</span>
         </div>
       }
     }

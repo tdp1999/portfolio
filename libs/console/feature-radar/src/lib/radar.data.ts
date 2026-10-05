@@ -1,11 +1,18 @@
-import type { FilterOption } from '@portfolio/console/shared/ui';
+import type { FilterOption, SegmentedControlOption } from '@portfolio/console/shared/ui';
 import {
   RADAR_FEED_SORT_KEYS,
   type RadarContentType,
   type RadarFeedStatus,
   type RadarProviderTag,
 } from '@portfolio/shared/types';
-import type { RadarFeedSortKey, RadarWorkStatus } from './radar.types';
+import type {
+  RadarFeedSortKey,
+  RadarRunDisplayStatus,
+  RadarRunFlow,
+  RadarRunStatus,
+  RadarRunStep,
+  RadarWorkStatus,
+} from './radar.types';
 
 export const PROVIDER_LABELS: Record<RadarProviderTag, string> = {
   anthropic: 'Anthropic',
@@ -55,4 +62,49 @@ export const WORK_STATUS_LABELS: Record<RadarWorkStatus, string> = {
   PENDING: 'Waiting in queue',
   CLAIMED: 'Being analyzed',
   DONE: 'Analyzed',
+};
+
+export const RUN_STEP_LABELS: Record<RadarRunStep, string> = {
+  CAPTURE: 'Capture',
+  NORMALIZE: 'Normalize',
+  ENRICH: 'Images',
+  ANALYZE: 'Analyze',
+};
+
+export const RUN_STATUS_LABELS: Record<RadarRunDisplayStatus, string> = {
+  PENDING: 'Queued',
+  RUNNING: 'Running',
+  AWAITING_EXTERNAL: 'Waiting',
+  DONE: 'Done',
+  FAILED: 'Failed',
+  CANCELLED: 'Cancelled',
+};
+
+export const RUN_FLOW_LABELS: Record<RadarRunFlow, string> = {
+  HYBRID: 'Hybrid',
+  MANUAL: 'Manual',
+};
+
+export const RUN_FLOW_OPTIONS: SegmentedControlOption[] = (['HYBRID', 'MANUAL'] as const).map((value) => ({
+  value,
+  label: RUN_FLOW_LABELS[value],
+}));
+
+/** Badge tone of a run's overall status on the Runs page. */
+export const RUN_STATUS_BADGES: Record<RadarRunDisplayStatus, string> = {
+  PENDING: 'console-badge--muted',
+  RUNNING: 'console-badge--muted',
+  AWAITING_EXTERNAL: 'console-badge--warn',
+  DONE: 'console-badge--success',
+  FAILED: 'console-badge--danger',
+  CANCELLED: 'console-badge--muted',
+};
+
+/** Icon of each step's status in the Runs page's step track. */
+export const RUN_STEP_ICONS: Record<RadarRunStatus, string> = {
+  PENDING: 'radio_button_unchecked',
+  RUNNING: 'autorenew',
+  AWAITING_EXTERNAL: 'hourglass_top',
+  DONE: 'check_circle',
+  FAILED: 'error',
 };
