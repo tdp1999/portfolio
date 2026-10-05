@@ -2,7 +2,8 @@ import { z } from 'zod/v4';
 
 import { RADAR_CONTENT_TYPES, RADAR_PROVIDER_TAGS } from '@portfolio/shared/types';
 
-export const RADAR_ENRICHMENT_SCHEMA_VERSION = 1;
+/** v2 added `context` and `scoreReason` and made `applyNote` required. */
+export const RADAR_ENRICHMENT_SCHEMA_VERSION = 2;
 
 const optionalText = (max: number) =>
   z
@@ -11,6 +12,8 @@ const optionalText = (max: number) =>
     .max(max)
     .nullish()
     .transform((v) => v || null);
+
+const requiredText = (max: number) => z.string().trim().min(1).max(max);
 
 /** What the external worker submits for one item. Text stays in the source language (RAD-002). */
 export const RadarEnrichmentSchema = z.object({
@@ -31,7 +34,12 @@ export const RadarEnrichmentSchema = z.object({
     .default([]),
   commentDigest: optionalText(4000),
   factCheck: optionalText(4000),
-  applyNote: optionalText(8000),
+  /** Background the post assumes: what a named tool or model is, its price, the alternatives. */
+  context: requiredText(4000),
+  /** Why the item got its score, type and relevance, so the Owner can disagree with it. */
+  scoreReason: requiredText(1000),
+  /** Required even for promo and off-topic posts: then it says why there is nothing to do. */
+  applyNote: requiredText(8000),
   producer: z.object({ adapter: z.string().trim().min(1).max(64), model: z.string().trim().min(1).max(100) }),
   schemaVersion: z.literal(RADAR_ENRICHMENT_SCHEMA_VERSION),
 });

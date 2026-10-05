@@ -25,6 +25,7 @@ export class RadarService {
     if (params.contentType) queryParams['contentType'] = params.contentType;
     if (params.minScore !== undefined) queryParams['minScore'] = String(params.minScore);
     if (params.includePromo) queryParams['includePromo'] = 'true';
+    if (params.status) queryParams['status'] = params.status;
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     return this.api.get<RadarFeedPage>('/radar/items', { params: queryParams });

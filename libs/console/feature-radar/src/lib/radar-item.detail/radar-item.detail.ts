@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -9,6 +9,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   Property,
   PropertyList,
+  QuickLook,
   RecordEmptySections,
   RecordField,
   RecordLayout,
@@ -23,7 +24,13 @@ import { FEED_PAGE_SIZE } from '../radar.constants';
 import { CONTENT_TYPE_LABELS, PROVIDER_LABELS, WORK_STATUS_LABELS } from '../radar.data';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { RadarService } from '../radar.service';
-import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeighbour } from '../radar.types';
+import {
+  RadarFeedItem,
+  RadarFeedState,
+  RadarItemDetail as RadarItem,
+  RadarItemImage,
+  RadarNeighbour,
+} from '../radar.types';
 
 /**
  * One post and everything the worker wrote about it. Prev/next walk the Feed in the order it was
@@ -35,6 +42,7 @@ import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeigh
   standalone: true,
   imports: [
     DatePipe,
+    NgTemplateOutlet,
     RouterLink,
     MatButtonModule,
     MatIconModule,
@@ -42,6 +50,7 @@ import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeigh
     MarkdownPipe,
     Property,
     PropertyList,
+    QuickLook,
     RecordEmptySections,
     RecordField,
     RecordLayout,
@@ -71,14 +80,24 @@ export default class RadarItemDetail implements OnInit {
   protected readonly position = signal<{ index: number; total: number } | null>(null);
   /** Image URLs the browser could not load (an expired provider link, a pending copy). */
   protected readonly brokenImages = signal<ReadonlySet<string>>(new Set());
+  /** The photos of one gallery (the post's or the shared post's) and the one open in Quick Look. */
+  protected readonly lightbox = signal<{ photos: RadarItemImage[]; index: number } | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly feedQuery = computed(() => toFeedQuery(this.feedState()));
 
-  /** The post's images, then the shared post's, in one gallery. */
-  protected readonly images = computed(() => {
+  /** The post's own media. A shared post's media renders inside the shared post, not here. */
+  protected readonly images = computed(() => this.item()?.images ?? []);
+
+  /** The shared post's permalink already sits next to its text as "Open shared post"; every other link stays. */
+  protected readonly links = computed(() => {
     const it = this.item();
-    return it ? [...it.images, ...(it.sharedPost?.images ?? [])] : [];
+    return it?.links.filter((l) => l.url !== it.sharedPost?.permalink) ?? [];
+  });
+
+  protected readonly lightboxPhoto = computed(() => {
+    const lb = this.lightbox();
+    return lb ? lb.photos[lb.index] : null;
   });
 
   /** Sections with nothing in them, folded into one line at the end instead of empty headers. */
@@ -88,7 +107,7 @@ export default class RadarItemDetail implements OnInit {
     if (!it || !e) return [];
     const empty: string[] = [];
     if (!this.images().length && !e.imageNotes) empty.push('Images');
-    if (!it.links.length) empty.push('Links');
+    if (!this.links().length) empty.push('Links');
     if (!e.factCheck && !e.commentDigest) empty.push('Fact check');
     return empty;
   });
@@ -118,7 +137,27 @@ export default class RadarItemDetail implements OnInit {
     this.brokenImages.update((set) => new Set(set).add(url));
   }
 
+  onOpenImage(gallery: RadarItemImage[], image: RadarItemImage): void {
+    const photos = gallery.filter((img) => this.isViewable(img));
+    this.lightbox.set({ photos, index: Math.max(0, photos.indexOf(image)) });
+  }
+
+  onLightboxOpenChange(open: boolean): void {
+    if (!open) this.lightbox.set(null);
+  }
+
+  onLightboxStep(delta: -1 | 1): void {
+    this.lightbox.update((lb) =>
+      lb ? { ...lb, index: Math.min(lb.photos.length - 1, Math.max(0, lb.index + delta)) } : null
+    );
+  }
+
   // ── Template helpers ──────────────────────────────────────────────
+  /** A photo we can show full size: saved (or not yet attempted) and not failing to load. */
+  protected isViewable(img: RadarItemImage): boolean {
+    return img.type === 'photo' && img.storageStatus !== 'failed' && !this.brokenImages().has(img.url);
+  }
+
   protected providerList(tags: RadarProviderTag[]): string {
     return tags.map((t) => PROVIDER_LABELS[t] ?? t).join(', ');
   }

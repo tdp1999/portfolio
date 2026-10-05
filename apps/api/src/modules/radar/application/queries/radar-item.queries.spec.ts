@@ -28,7 +28,7 @@ describe('Radar item queries', () => {
     repo = {
       list: jest.fn().mockResolvedValue({ data: [row], total: 1 }),
       findById: jest.fn(),
-      stats: jest.fn().mockResolvedValue({ pending: 4, stuck: 1, paused: 2 }),
+      stats: jest.fn().mockResolvedValue({ pending: 4, stuck: 1, paused: 2, analyzed: 7 }),
       requeueStuck: jest.fn().mockResolvedValue(1),
     };
   });
@@ -40,23 +40,45 @@ describe('Radar item queries', () => {
       const result = await run({});
 
       expect(repo.list).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 1, limit: 50, includePromo: false, sortBy: 'publishedAt', sortDir: 'desc' })
+        expect.objectContaining({ page: 1, limit: 50, includePromo: false, sortBy: 'publishedAt', sortDir: 'desc' }),
+        expect.any(Date),
+        MAX_CLAIM_ATTEMPTS
       );
       expect(result).toMatchObject({ total: 1, page: 1, limit: 50 });
     });
 
     it('should parse query-string values', async () => {
-      await run({ page: '2', minScore: '6', includePromo: 'true', providerTag: 'openai', search: '  claude ' });
+      await run({
+        page: '2',
+        minScore: '6',
+        includePromo: 'true',
+        providerTag: 'openai',
+        search: '  claude ',
+        status: 'stuck',
+      });
 
       expect(repo.list).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 2, minScore: 6, includePromo: true, providerTag: 'openai', search: 'claude' })
+        expect.objectContaining({
+          page: 2,
+          minScore: 6,
+          includePromo: true,
+          providerTag: 'openai',
+          search: 'claude',
+          status: 'stuck',
+        }),
+        expect.any(Date),
+        MAX_CLAIM_ATTEMPTS
       );
     });
 
     it('should treat includePromo=false as false and a blank search as none', async () => {
       await run({ includePromo: 'false', search: '   ' });
 
-      expect(repo.list).toHaveBeenCalledWith(expect.objectContaining({ includePromo: false, search: undefined }));
+      expect(repo.list).toHaveBeenCalledWith(
+        expect.objectContaining({ includePromo: false, search: undefined }),
+        expect.any(Date),
+        MAX_CLAIM_ATTEMPTS
+      );
     });
 
     it('should send a 200-character preview instead of the full text', async () => {
@@ -73,6 +95,7 @@ describe('Radar item queries', () => {
       { sourceId: 'nope' },
       { sortBy: 'text' },
       { sortDir: 'up' },
+      { status: 'claimed' },
     ])('should reject %p as invalid input', async (params) => {
       await expect(run(params)).rejects.toMatchObject({ errorCode: RadarErrorCode.INVALID_INPUT });
       expect(repo.list).not.toHaveBeenCalled();
@@ -126,7 +149,7 @@ describe('Radar item queries', () => {
     it('should count against the claim attempt cap', async () => {
       const result = await new GetRadarQueueStatsHandler(repo).execute();
 
-      expect(result).toEqual({ pending: 4, stuck: 1, paused: 2 });
+      expect(result).toEqual({ pending: 4, stuck: 1, paused: 2, analyzed: 7 });
       expect(repo.stats).toHaveBeenCalledWith(expect.any(Date), MAX_CLAIM_ATTEMPTS);
     });
 

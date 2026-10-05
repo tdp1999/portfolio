@@ -954,6 +954,10 @@ model RadarEnrichment {
   commentDigest   String?
   factCheck       String?
   applyNote       String?
+  /// v2: background the post assumes (what a named tool or model is, price, alternatives).
+  context         String?
+  /// v2: why the item got its score, type and relevance.
+  scoreReason     String?
   producerAdapter String   @db.VarChar(64)
   producerModel   String   @db.VarChar(100)
   schemaVersion   Int      @default(1)

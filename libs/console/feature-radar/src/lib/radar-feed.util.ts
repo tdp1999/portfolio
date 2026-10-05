@@ -1,5 +1,11 @@
 import type { Params } from '@angular/router';
-import { CONTENT_TYPE_LABELS, FEED_SORT_KEYS, MIN_SCORE_OPTIONS, PROVIDER_LABELS } from './radar.data';
+import {
+  CONTENT_TYPE_LABELS,
+  FEED_SORT_KEYS,
+  FEED_STATUS_LABELS,
+  MIN_SCORE_OPTIONS,
+  PROVIDER_LABELS,
+} from './radar.data';
 import type { RadarFeedItem, RadarFeedParams, RadarFeedSortKey, RadarFeedState } from './radar.types';
 
 export const DEFAULT_FEED_STATE: RadarFeedState = {
@@ -8,6 +14,7 @@ export const DEFAULT_FEED_STATE: RadarFeedState = {
   contentType: '',
   minScore: '',
   includePromo: false,
+  status: '',
   sortBy: 'publishedAt',
   sortDir: 'desc',
   pageIndex: 0,
@@ -29,6 +36,7 @@ export function parseFeedQuery(params: Params): RadarFeedState {
       MIN_SCORE_OPTIONS.map((o) => o.value)
     ),
     includePromo: params['promo'] === '1',
+    status: known(params['status'], Object.keys(FEED_STATUS_LABELS)),
     sortBy: FEED_SORT_KEYS.includes(params['sort']) ? (params['sort'] as RadarFeedSortKey) : 'publishedAt',
     sortDir: params['dir'] === 'asc' ? 'asc' : 'desc',
     pageIndex: Number.isInteger(page) && page > 1 ? page - 1 : 0,
@@ -43,6 +51,7 @@ export function toFeedQuery(state: RadarFeedState): Record<string, string> {
   if (state.contentType) params['type'] = state.contentType;
   if (state.minScore) params['score'] = state.minScore;
   if (state.includePromo) params['promo'] = '1';
+  if (state.status) params['status'] = state.status;
   if (state.sortBy !== 'publishedAt') params['sort'] = state.sortBy;
   if (state.sortDir === 'asc') params['dir'] = 'asc';
   if (state.pageIndex > 0) params['page'] = String(state.pageIndex + 1);
@@ -58,6 +67,7 @@ export function toFeedRequest(state: RadarFeedState, limit: number): RadarFeedPa
     contentType: state.contentType || undefined,
     minScore: state.minScore ? Number(state.minScore) : undefined,
     includePromo: state.includePromo,
+    status: state.status || undefined,
     sortBy: state.sortBy,
     sortDir: state.sortDir,
   };

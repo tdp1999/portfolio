@@ -13,19 +13,21 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FilterBar,
+  type FilterOption,
   FilterSearch,
   FilterSelect,
   RelativeTime,
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import type { RadarContentType, RadarProviderTag } from '@portfolio/shared/types';
+import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
 import { FEED_PAGE_SIZE, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
 import { parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import {
   CONTENT_TYPE_LABELS,
   CONTENT_TYPE_OPTIONS,
+  FEED_STATUS_LABELS,
   MIN_SCORE_OPTIONS,
   PROVIDER_LABELS,
   PROVIDER_OPTIONS,
@@ -79,6 +81,7 @@ export default class RadarItemList implements OnInit {
   protected readonly contentType = signal('');
   protected readonly minScore = signal('');
   protected readonly includePromo = signal(false);
+  protected readonly status = signal('');
   protected readonly sortBy = signal<RadarFeedSortKey>('publishedAt');
   protected readonly sortDir = signal<'asc' | 'desc'>('desc');
   protected readonly stats = signal<RadarQueueStats | null>(null);
@@ -95,8 +98,19 @@ export default class RadarItemList implements OnInit {
     if (c) filters.push({ key: 'type', label: `Type: ${this.contentTypeLabel(c)}` });
     const m = this.minScore();
     if (m) filters.push({ key: 'score', label: `Score ${m}+` });
+    const st = this.status();
+    if (st) filters.push({ key: 'status', label: `Status: ${FEED_STATUS_LABELS[st as RadarFeedStatus]}` });
     if (this.includePromo()) filters.push({ key: 'promo', label: 'Promo shown' });
     return filters;
+  });
+
+  /** Every queue bucket with its count from the stats call; counts are queue-wide, not narrowed by the other filters. */
+  protected readonly statusOptions = computed<FilterOption[]>(() => {
+    const s = this.stats();
+    return (Object.entries(FEED_STATUS_LABELS) as [RadarFeedStatus, string][]).map(([value, label]) => ({
+      value,
+      label: s ? `${label} (${s[value]})` : label,
+    }));
   });
 
   /** Rides along to Detail so its prev/next and Back follow this exact view. */
@@ -108,6 +122,7 @@ export default class RadarItemList implements OnInit {
     contentType: this.contentType(),
     minScore: this.minScore(),
     includePromo: this.includePromo(),
+    status: this.status(),
     sortBy: this.sortBy(),
     sortDir: this.sortDir(),
     pageIndex: this.pageIndex(),
@@ -129,6 +144,7 @@ export default class RadarItemList implements OnInit {
     this.contentType.set(state.contentType);
     this.minScore.set(state.minScore);
     this.includePromo.set(state.includePromo);
+    this.status.set(state.status);
     this.sortBy.set(state.sortBy);
     this.sortDir.set(state.sortDir);
     this.pageIndex.set(state.pageIndex);
@@ -157,6 +173,11 @@ export default class RadarItemList implements OnInit {
     this.resetAndLoad();
   }
 
+  onStatusChange(value: string): void {
+    this.status.set(value);
+    this.resetAndLoad();
+  }
+
   onPromoChange(checked: boolean): void {
     this.includePromo.set(checked);
     this.resetAndLoad();
@@ -176,6 +197,9 @@ export default class RadarItemList implements OnInit {
       case 'score':
         this.minScore.set('');
         break;
+      case 'status':
+        this.status.set('');
+        break;
       case 'promo':
         this.includePromo.set(false);
         break;
@@ -189,6 +213,7 @@ export default class RadarItemList implements OnInit {
     this.contentType.set('');
     this.minScore.set('');
     this.includePromo.set(false);
+    this.status.set('');
     this.resetAndLoad();
   }
 

@@ -1,5 +1,10 @@
 import type { FilterOption } from '@portfolio/console/shared/ui';
-import { RADAR_FEED_SORT_KEYS, type RadarContentType, type RadarProviderTag } from '@portfolio/shared/types';
+import {
+  RADAR_FEED_SORT_KEYS,
+  type RadarContentType,
+  type RadarFeedStatus,
+  type RadarProviderTag,
+} from '@portfolio/shared/types';
 import type { RadarFeedSortKey, RadarWorkStatus } from './radar.types';
 
 export const PROVIDER_LABELS: Record<RadarProviderTag, string> = {
@@ -24,6 +29,14 @@ export const CONTENT_TYPE_LABELS: Record<RadarContentType, string> = {
 
 const toOptions = (labels: Record<string, string>): FilterOption[] =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
+
+/** Queue buckets of the Status filter, in the order the dropdown lists them. */
+export const FEED_STATUS_LABELS: Record<RadarFeedStatus, string> = {
+  pending: 'Pending',
+  analyzed: 'Analyzed',
+  stuck: 'Stuck',
+  paused: 'Paused',
+};
 
 export const PROVIDER_OPTIONS = toOptions(PROVIDER_LABELS);
 export const CONTENT_TYPE_OPTIONS = toOptions(CONTENT_TYPE_LABELS);

@@ -1,6 +1,6 @@
 import { RadarItemKind, RadarWorkStatus } from '@prisma/client';
 
-import { PaginatedResult, RadarContentType, RadarProviderTag } from '@portfolio/shared/types';
+import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 
@@ -15,6 +15,8 @@ export interface RadarItemListFilter {
   /** False hides items whose enrichment is flagged promo; unenriched items always stay. */
   includePromo: boolean;
   sourceId?: string;
+  /** One queue bucket, counted the same way as `RadarQueueStats`. */
+  status?: RadarFeedStatus;
   /** Unanalyzed items have no score; they sort after every scored item in both directions. */
   sortBy: 'publishedAt' | 'signalScore' | 'source';
   sortDir: 'asc' | 'desc';
@@ -35,6 +37,9 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   commentDigest: string | null;
   factCheck: string | null;
   applyNote: string | null;
+  /** Null on v1 enrichments, written before the field existed. */
+  context: string | null;
+  scoreReason: string | null;
   producerAdapter: string;
   producerModel: string;
   updatedAt: Date;
@@ -70,11 +75,13 @@ export interface RadarQueueStats {
   stuck: number;
   /** Not analyzed and their source is inactive, so claim skips them until it is reactivated. */
   paused: number;
+  /** Done (`workStatus` DONE). Re-queued items keep their old enrichment but count as pending. */
+  analyzed: number;
 }
 
 export interface IRadarItemRepository {
-  /** Newest first. */
-  list(filter: RadarItemListFilter): Promise<PaginatedResult<RadarFeedRow>>;
+  /** Newest first. `now` and `maxAttempts` decide the `pending` / `stuck` split of `filter.status`. */
+  list(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<PaginatedResult<RadarFeedRow>>;
   findById(id: string): Promise<RadarItemDetail | null>;
   stats(now: Date, maxAttempts: number): Promise<RadarQueueStats>;
   /** Resets every stuck item (see `RadarQueueStats.stuck`) to pending with no claims. Returns how many. */

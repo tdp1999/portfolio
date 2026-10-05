@@ -5,6 +5,7 @@ import {
   RADAR_CONTENT_TYPES,
   RADAR_FEED_PAGE_SIZE,
   RADAR_FEED_SORT_KEYS,
+  RADAR_FEED_STATUSES,
   RADAR_MAX_CLAIM_ATTEMPTS,
   RADAR_MAX_PROFILE_CHARS,
   RADAR_PROVIDER_TAGS,
@@ -138,6 +139,7 @@ export const ListRadarItemsSchema = z.object({
   // stringbool, not coerce.boolean: coerce turns the string "false" into true.
   includePromo: z.stringbool().default(false),
   sourceId: z.uuid().optional(),
+  status: z.enum(RADAR_FEED_STATUSES).optional(),
   sortBy: z.enum(RADAR_FEED_SORT_KEYS).default('publishedAt'),
   sortDir: z.enum(['asc', 'desc']).default('desc'),
 });

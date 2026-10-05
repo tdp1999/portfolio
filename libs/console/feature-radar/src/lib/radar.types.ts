@@ -25,6 +25,9 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   commentDigest: string | null;
   factCheck: string | null;
   applyNote: string | null;
+  /** Null on v1 enrichments, written before the field existed. */
+  context: string | null;
+  scoreReason: string | null;
   producerAdapter: string;
   producerModel: string;
   updatedAt: string;
@@ -60,6 +63,7 @@ export interface RadarFeedParams {
   includePromo?: boolean;
   sortBy?: RadarFeedSortKey;
   sortDir?: 'asc' | 'desc';
+  status?: string;
 }
 
 /** The Feed's filters, sort and page as the URL carries them, shared by the Feed and Detail (prev/next). */
@@ -70,6 +74,8 @@ export interface RadarFeedState {
   /** Kept as the select's string value; '' means no minimum. */
   minScore: string;
   includePromo: boolean;
+  /** A `RADAR_FEED_STATUSES` value; '' means every status. */
+  status: string;
   sortBy: RadarFeedSortKey;
   sortDir: 'asc' | 'desc';
   pageIndex: number;
@@ -114,6 +120,7 @@ export interface RadarQueueStats {
   pending: number;
   stuck: number;
   paused: number;
+  analyzed: number;
 }
 
 export interface RadarSource {

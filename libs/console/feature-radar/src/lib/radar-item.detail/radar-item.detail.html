@@ -69,11 +69,26 @@
           <console-record-field
             label="Apply note"
             [state]="e.applyNote ? 'filled' : 'unset'"
-            unsetLabel="No apply note: the worker marked this post as promo or not relevant."
+            unsetLabel="No apply note: analyzed before apply notes became required. It is re-analyzed on the next worker run."
           >
             <div class="rv-prose radar-md" [innerHTML]="e.applyNote | markdown"></div>
           </console-record-field>
         </console-record-section>
+
+        @if (e.context || e.scoreReason) {
+          <console-record-section title="Context">
+            @if (e.context) {
+              <console-record-field label="Background">
+                <div class="rv-prose radar-md" [innerHTML]="e.context | markdown"></div>
+              </console-record-field>
+            }
+            @if (e.scoreReason) {
+              <console-record-field label="Why this score">
+                <div class="rv-prose radar-md" [innerHTML]="e.scoreReason | markdown"></div>
+              </console-record-field>
+            }
+          </console-record-section>
+        }
       } @else {
         <div class="radar-pending" role="status">
           <mat-icon class="icon-sm">hourglass_empty</mat-icon>
@@ -91,6 +106,12 @@
         @if (it.sharedPost; as sp) {
           <console-record-field [label]="sp.authorName ? 'Shared from ' + sp.authorName : 'Shared post'">
             <p class="rv-prose radar-text">{{ sp.text }}</p>
+            @if (sp.images.length) {
+              <ng-container
+                [ngTemplateOutlet]="gallery"
+                [ngTemplateOutletContext]="{ $implicit: sp.images, href: sp.permalink ?? it.permalink }"
+              />
+            }
             @if (sp.permalink) {
               <a class="radar-link" [href]="sp.permalink" target="_blank" rel="noopener noreferrer">Open shared post</a>
             }
@@ -101,39 +122,10 @@
       @if (images().length || it.enrichment?.imageNotes) {
         <console-record-section title="Images" [count]="images().length">
           @if (images().length) {
-            <div class="radar-images">
-              @for (img of images(); track $index) {
-                @if (img.type === 'photo' && img.storageStatus !== 'failed' && !brokenImages().has(img.url)) {
-                  <a class="radar-image" [href]="img.url" target="_blank" rel="noopener noreferrer">
-                    <img [src]="img.url" alt="Image from the post" loading="lazy" (error)="onImageError(img.url)" />
-                  </a>
-                } @else {
-                  <a
-                    class="radar-image radar-image--placeholder"
-                    [href]="img.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    [title]="img.url"
-                  >
-                    <mat-icon>{{ img.type === 'video' ? 'smart_display' : 'broken_image' }}</mat-icon>
-                    <span class="radar-image__label">
-                      @switch (true) {
-                        @case (img.type === 'video') {
-                          Video
-                        }
-                        @case (img.storageStatus === 'failed') {
-                          Image not saved
-                        }
-                        @default {
-                          Image did not load
-                        }
-                      }
-                    </span>
-                    <span class="radar-image__url">{{ hostOf(img.url) }}</span>
-                  </a>
-                }
-              }
-            </div>
+            <ng-container
+              [ngTemplateOutlet]="gallery"
+              [ngTemplateOutletContext]="{ $implicit: images(), href: it.permalink }"
+            />
           }
           @if (it.enrichment; as e) {
             <console-record-field
@@ -147,10 +139,10 @@
         </console-record-section>
       }
 
-      @if (it.links.length) {
-        <console-record-section title="Links" [count]="it.links.length">
+      @if (links().length) {
+        <console-record-section title="Links" [count]="links().length">
           <ul class="radar-links">
-            @for (link of it.links; track link.url) {
+            @for (link of links(); track link.url) {
               <li class="radar-links__item">
                 <a class="radar-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
                   {{ hostOf(link.url) }}
@@ -214,9 +206,6 @@
             </console-property>
             <console-property label="Kind">{{ it.kind }}</console-property>
             <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
-            <console-property label="Original post">
-              <a class="radar-link" [href]="it.permalink" target="_blank" rel="noopener noreferrer">Open on Facebook</a>
-            </console-property>
           </console-property-list>
         </console-record-panel>
 
@@ -252,3 +241,54 @@
     </div>
   }
 </div>
+
+<!-- One gallery: photos open in Quick Look, videos go to Facebook (only the thumbnail is stored). -->
+<ng-template #gallery let-images let-href="href">
+  <div class="radar-images">
+    @for (img of images; track $index) {
+      @if (isViewable(img)) {
+        <button type="button" class="radar-image" aria-label="View image full size" (click)="onOpenImage(images, img)">
+          <img [src]="img.url" alt="Image from the post" loading="lazy" (error)="onImageError(img.url)" />
+        </button>
+      } @else if (img.type === 'video') {
+        <a
+          class="radar-image radar-image--video"
+          [href]="href"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Watch the video on Facebook"
+        >
+          @if (!brokenImages().has(img.url)) {
+            <img [src]="img.url" alt="" loading="lazy" (error)="onImageError(img.url)" />
+          }
+          <span class="radar-image__play">
+            <mat-icon>play_arrow</mat-icon>
+            Watch on Facebook
+          </span>
+        </a>
+      } @else {
+        <div class="radar-image radar-image--placeholder" [title]="img.url">
+          <mat-icon>broken_image</mat-icon>
+          <span class="radar-image__label">
+            {{ img.storageStatus === 'failed' ? 'Image not saved' : 'Image did not load' }}
+          </span>
+          <span class="radar-image__url">{{ hostOf(img.url) }}</span>
+        </div>
+      }
+    }
+  </div>
+</ng-template>
+
+<console-quick-look
+  [open]="lightbox() !== null"
+  (openChange)="onLightboxOpenChange($event)"
+  [title]="'Image ' + ((lightbox()?.index ?? 0) + 1) + ' of ' + (lightbox()?.photos?.length ?? 0)"
+  [hasPrev]="(lightbox()?.index ?? 0) > 0"
+  [hasNext]="(lightbox()?.index ?? 0) < (lightbox()?.photos?.length ?? 0) - 1"
+  (prev)="onLightboxStep(-1)"
+  (next)="onLightboxStep(1)"
+>
+  @if (lightboxPhoto(); as photo) {
+    <img class="radar-lightbox__img" [src]="photo.url" alt="Image from the post" />
+  }
+</console-quick-look>

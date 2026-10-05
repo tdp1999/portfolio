@@ -13,8 +13,11 @@ const valid = {
   isPromo: false,
   isRelevant: true,
   factCheck: '   ',
+  context: "Claude is Anthropic's model family.",
+  scoreReason: 'A real release the Owner will use.',
+  applyNote: 'Try it in the next session.',
   producer: { adapter: 'external-worker', model: 'claude' },
-  schemaVersion: 1,
+  schemaVersion: 2,
 };
 
 describe('SubmitResultsHandler', () => {
@@ -52,6 +55,26 @@ describe('SubmitResultsHandler', () => {
     const saved = repo.saveEnrichment.mock.calls[0][1] as RadarEnrichmentInput;
     expect(saved.providerTags).toEqual(['anthropic']);
     expect(saved.factCheck).toBeNull();
+  });
+
+  it('should require context, score reason and apply note, and reject the v1 shape', async () => {
+    const { context: _c, ...noContext } = valid;
+    const result = await handler.execute(
+      new SubmitResultsCommand({
+        results: [
+          { itemId: ITEM_A, enrichment: noContext },
+          { itemId: ITEM_B, enrichment: { ...valid, applyNote: null, scoreReason: ' ' } },
+          { itemId: ITEM_A, enrichment: { ...valid, schemaVersion: 1 } },
+        ],
+      })
+    );
+
+    expect(result.stored).toBe(0);
+    expect(result.rejected.map((r) => r.reason)).toEqual([
+      expect.stringContaining('context'),
+      expect.stringMatching(/applyNote[\s\S]*scoreReason|scoreReason[\s\S]*applyNote/),
+      expect.stringContaining('schemaVersion'),
+    ]);
   });
 
   it('should reject a result for an item that no longer exists', async () => {

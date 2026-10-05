@@ -61,16 +61,20 @@ describe('RadarItemRepository (integration)', () => {
     });
   };
 
-  const list = (f: Partial<RadarItemListFilter> = {}) =>
-    repo.list({
-      page: 1,
-      limit: 50,
-      includePromo: false,
-      sourceId: activeId,
-      sortBy: 'publishedAt',
-      sortDir: 'desc',
-      ...f,
-    });
+  const list = (f: Partial<RadarItemListFilter> = {}, now = new Date()) =>
+    repo.list(
+      {
+        page: 1,
+        limit: 50,
+        includePromo: false,
+        sourceId: activeId,
+        sortBy: 'publishedAt',
+        sortDir: 'desc',
+        ...f,
+      },
+      now,
+      MAX_ATTEMPTS
+    );
 
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [PrismaModule], providers: [RadarItemRepository] }).compile();
@@ -202,6 +206,14 @@ describe('RadarItemRepository (integration)', () => {
       expect(after.paused - before.paused).toBe(2);
       // `raw` was seeded before `before`; only `leased` is new pending work.
       expect(after.pending - before.pending).toBe(1);
+
+      // The status filter returns exactly the buckets the counts describe.
+      const byStatus = async (status: RadarItemListFilter['status'], sourceId = activeId) =>
+        (await list({ status, sourceId, includePromo: true }, now)).data.map((r) => r.id);
+      expect(await byStatus('stuck')).toEqual([ids['stuck']]);
+      expect(await byStatus('pending')).toEqual([ids['raw'], ids['leased']]);
+      expect(await byStatus('analyzed')).toEqual([ids['claude'], ids['gpt'], ids['course']]);
+      expect(await byStatus('paused', inactiveId)).toEqual([ids['paused'], ids['pausedStuck']]);
 
       const requeued = await repo.requeueStuck(now, MAX_ATTEMPTS);
 

@@ -12,6 +12,7 @@ describe('feed query', () => {
       contentType: 'tool',
       minScore: '7',
       includePromo: true,
+      status: 'stuck',
       sortBy: 'signalScore' as const,
       sortDir: 'asc' as const,
       pageIndex: 2,
@@ -29,7 +30,7 @@ describe('feed query', () => {
   });
 
   it('drops filter values the API would reject', () => {
-    expect(parseFeedQuery({ provider: 'foo', type: 'bar', score: 'x' })).toEqual(DEFAULT_FEED_STATE);
+    expect(parseFeedQuery({ provider: 'foo', type: 'bar', score: 'x', status: 'claimed' })).toEqual(DEFAULT_FEED_STATE);
     expect(parseFeedQuery({ score: '5' }).minScore).toBe('');
   });
 
@@ -37,6 +38,7 @@ describe('feed query', () => {
     const req = toFeedRequest({ ...DEFAULT_FEED_STATE, minScore: '4', pageIndex: 1 }, 50);
     expect(req).toMatchObject({ page: 2, limit: 50, minScore: 4, sortBy: 'publishedAt', sortDir: 'desc' });
     expect(req.search).toBeUndefined();
+    expect(req.status).toBeUndefined();
   });
 });
 

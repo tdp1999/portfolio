@@ -19,6 +19,15 @@ export type RadarContentType = (typeof RADAR_CONTENT_TYPES)[number];
 export const RADAR_FEED_SORT_KEYS = ['publishedAt', 'signalScore', 'source'] as const;
 export type RadarFeedSortKey = (typeof RADAR_FEED_SORT_KEYS)[number];
 
+/**
+ * Queue status filter of `GET /radar/items`, the same buckets `GET /radar/items/stats` counts:
+ * `pending` still claimable (queued or under a live lease), `analyzed` is done (`workStatus` DONE),
+ * `stuck` hit the claim cap with no result, `paused` not done and its source is inactive. An item
+ * re-queued for a newer enrichment schema keeps its old enrichment but counts as `pending`.
+ */
+export const RADAR_FEED_STATUSES = ['pending', 'analyzed', 'stuck', 'paused'] as const;
+export type RadarFeedStatus = (typeof RADAR_FEED_STATUSES)[number];
+
 /** Default page size of `GET /radar/items`; the console asks for exactly this many. */
 export const RADAR_FEED_PAGE_SIZE = 50;
 

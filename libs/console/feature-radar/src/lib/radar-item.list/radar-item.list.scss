@@ -4,12 +4,40 @@
   display: block;
 }
 
+.radar-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Five filters plus "Show promo" hold one row from laptop width (1440 with the full sidebar):
+   Material's 180px infix default would push Status onto a second row. Radar-only on purpose. */
+console-filter-bar ::ng-deep {
+  console-filter-search {
+    min-width: 240px;
+  }
+
+  console-filter-select .mat-mdc-form-field {
+    width: 148px;
+    min-width: 0;
+  }
+
+  // "7+ worth reading" is the longest label.
+  console-filter-select.radar-filter--wide .mat-mdc-form-field {
+    width: 176px;
+  }
+
+  console-filter-select .mat-mdc-form-field-infix {
+    width: auto;
+  }
+}
+
 .radar-queue {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
 }
 
 /* Every cell centres on the row's middle line: the summary may wrap to two lines while the tag

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, RadarWorkStatus } from '@prisma/client';
 
-import { PaginatedResult } from '@portfolio/shared/types';
+import { PaginatedResult, RadarFeedStatus } from '@portfolio/shared/types';
 
 import {
   IRadarItemRepository,
@@ -43,6 +43,8 @@ const detailSelect = {
       commentDigest: true,
       factCheck: true,
       applyNote: true,
+      context: true,
+      scoreReason: true,
       producerAdapter: true,
       producerModel: true,
       updatedAt: true,
@@ -60,8 +62,23 @@ const stuckWhere = (now: Date, maxAttempts: number): Prisma.RadarItemWhereInput 
   source: { isActive: true },
 });
 
-const toFilterWhere = (f: RadarItemListFilter): Prisma.RadarItemWhereInput => {
+/** The buckets `stats` counts, as filters. `pending` is everything open on an active source that is not stuck. */
+const statusWhere = (status: RadarFeedStatus, now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => {
+  switch (status) {
+    case 'analyzed':
+      return { workStatus: RadarWorkStatus.DONE };
+    case 'stuck':
+      return stuckWhere(now, maxAttempts);
+    case 'paused':
+      return { ...notDone, source: { isActive: false } };
+    case 'pending':
+      return { ...notDone, source: { isActive: true }, NOT: stuckWhere(now, maxAttempts) };
+  }
+};
+
+const toFilterWhere = (f: RadarItemListFilter, now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => {
   const and: Prisma.RadarItemWhereInput[] = [];
+  if (f.status) and.push(statusWhere(f.status, now, maxAttempts));
   if (f.sourceId) and.push({ sourceId: f.sourceId });
   if (f.search) {
     const contains = { contains: f.search, mode: 'insensitive' } as const;
@@ -94,8 +111,8 @@ const toOrderBy = ({ sortBy, sortDir }: RadarItemListFilter): Prisma.RadarItemOr
 export class RadarItemRepository implements IRadarItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(filter: RadarItemListFilter): Promise<PaginatedResult<RadarFeedRow>> {
-    const where = toFilterWhere(filter);
+  async list(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<PaginatedResult<RadarFeedRow>> {
+    const where = toFilterWhere(filter, now, maxAttempts);
     const [data, total] = await this.prisma.$transaction([
       this.prisma.radarItem.findMany({
         where,
@@ -126,12 +143,15 @@ export class RadarItemRepository implements IRadarItemRepository {
   }
 
   async stats(now: Date, maxAttempts: number): Promise<RadarQueueStats> {
-    const [open, stuck, paused] = await this.prisma.$transaction([
-      this.prisma.radarItem.count({ where: { ...notDone, source: { isActive: true } } }),
-      this.prisma.radarItem.count({ where: stuckWhere(now, maxAttempts) }),
-      this.prisma.radarItem.count({ where: { ...notDone, source: { isActive: false } } }),
+    const count = (status: RadarFeedStatus) =>
+      this.prisma.radarItem.count({ where: statusWhere(status, now, maxAttempts) });
+    const [pending, stuck, paused, analyzed] = await this.prisma.$transaction([
+      count('pending'),
+      count('stuck'),
+      count('paused'),
+      count('analyzed'),
     ]);
-    return { pending: open - stuck, stuck, paused };
+    return { pending, stuck, paused, analyzed };
   }
 
   async requeueStuck(now: Date, maxAttempts: number): Promise<number> {
