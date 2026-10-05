@@ -1,0 +1,162 @@
+@use '../radar-state';
+
+/* Radar-specific value renderers. The chassis is shared: `console-record-*` (ADR-026). */
+
+/* Facebook posts rely on line breaks for structure. */
+.radar-text {
+  white-space: pre-line;
+}
+
+.radar-state {
+  padding-block: 96px;
+}
+
+/* Prev / next in Feed order, with the position between the arrows. */
+.radar-walk {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &__count {
+    min-width: 64px;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.radar-pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 68ch;
+  padding: 12px 16px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+/* Worker-written markdown: keep lists and paragraphs compact inside a record field. */
+.radar-md {
+  :is(p, ul, ol) {
+    margin: 0 0 8px;
+  }
+
+  :is(ul, ol) {
+    padding-left: 20px;
+  }
+
+  :is(h1, h2, h3, h4) {
+    margin: 16px 0 8px;
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+
+  code {
+    padding: 0 4px;
+    border-radius: 4px;
+    background: var(--color-surface-alt);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+}
+
+.radar-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  max-width: 68ch;
+}
+
+.radar-image {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &--placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    text-align: center;
+  }
+
+  &__label {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__url {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--text-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.radar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+
+    > .rv-prose,
+    > .rv-absent {
+      flex-basis: 100%;
+    }
+  }
+}
+
+.radar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -64,7 +64,8 @@
       "@portfolio/shared/features/rte-tiptap-demo": ["libs/shared/features/rte-tiptap-demo/src/index.ts"],
       "@portfolio/shared/features/rte-renderer": ["libs/shared/features/rte-renderer/src/index.ts"],
       "@portfolio/shared/features/rte-textarea": ["libs/shared/features/rte-textarea/src/index.ts"],
-      "@portfolio/shared/ui": ["libs/shared/ui/src/index.ts"]
+      "@portfolio/shared/ui": ["libs/shared/ui/src/index.ts"],
+      "@portfolio/console/feature-radar": ["libs/console/feature-radar/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

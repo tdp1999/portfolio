@@ -53,6 +53,12 @@
   }
 }
 
+/* Material resizes a button's leading icon (18px box) but leaves line-height alone, so an
+   `.icon-*` class keeps its own, smaller line-height and the glyph rides up in the box. */
+.mat-mdc-button-base > .mat-icon {
+  line-height: var(--leading-none);
+}
+
 .mdc-button .mdc-button__label {
   display: inline-flex;
   align-items: center;

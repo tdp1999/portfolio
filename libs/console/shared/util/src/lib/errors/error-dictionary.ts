@@ -138,6 +138,7 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.SOURCE_NOT_FOUND]: 'Radar source not found.',
   [RadarErrorCode.SOURCE_URL_TAKEN]: 'A radar source with this URL already exists.',
   [RadarErrorCode.SOURCE_INACTIVE]: 'This radar source is inactive. Reactivate it before capturing.',
+  [RadarErrorCode.ITEM_NOT_FOUND]: 'This radar item no longer exists.',
   [RadarErrorCode.INVALID_INPUT]: VALIDATION_FALLBACK,
   [RadarErrorCode.INVALID_UPLOAD]: 'The uploaded file is not a valid capture export.',
   [RadarErrorCode.IMAGE_DELETE_FAILED]:

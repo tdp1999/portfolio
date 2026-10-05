@@ -1,0 +1,105 @@
+<h2 mat-dialog-title>Sources and upload</h2>
+<mat-dialog-content>
+  <div class="flex flex-col gap-6">
+    <section class="flex flex-col gap-3">
+      <h3 class="text-card-title">Sources</h3>
+      @if (loading()) {
+        <div class="radar-sources radar-sources__state">
+          <mat-spinner diameter="24" />
+        </div>
+      } @else if (loadError()) {
+        <div class="radar-sources radar-sources__state" role="alert">
+          <span class="text-body">Could not load the sources.</span>
+          <button mat-button type="button" (click)="onRetryLoad()">Retry</button>
+        </div>
+      } @else {
+        <ul class="radar-sources">
+          @for (s of sources(); track s.id) {
+            <li class="radar-source">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-body font-semibold truncate">{{ s.displayName }}</span>
+                  @if (!s.isActive) {
+                    <span class="console-badge console-badge--muted">Paused</span>
+                  }
+                </div>
+                <a class="text-caption truncate block" [href]="s.url" target="_blank" rel="noopener noreferrer">
+                  {{ s.url }}
+                </a>
+                <span class="text-caption">{{ s.itemCount }} item(s)</span>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                @if (busySourceId() === s.id) {
+                  <mat-spinner diameter="20" />
+                }
+                <input
+                  #fileInput
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  (change)="onFileSelected(s, $event)"
+                />
+                <button
+                  mat-stroked-button
+                  [disabled]="!s.isActive || busySourceId() !== null"
+                  (click)="fileInput.click()"
+                >
+                  <mat-icon class="icon-sm">upload_file</mat-icon>
+                  Upload JSON
+                </button>
+                <button mat-button [disabled]="busySourceId() !== null" (click)="onToggleActive(s)">
+                  {{ s.isActive ? 'Pause' : 'Resume' }}
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li class="radar-sources__state text-body text-text-secondary">No sources yet. Add the first one below.</li>
+          }
+        </ul>
+      }
+
+      @if (uploadError(); as e) {
+        <div class="radar-upload-error" role="alert">
+          <p class="text-body font-semibold">{{ e.title }}</p>
+          <p class="text-body">{{ e.message }}</p>
+          @if (e.lines.length) {
+            <ul class="radar-upload-error__lines text-caption">
+              @for (line of e.lines; track $index) {
+                <li>{{ line }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h3 class="text-card-title">Add source</h3>
+      <form
+        #addForm="ngForm"
+        [formGroup]="form"
+        [consoleServerErrorMap]="{}"
+        class="radar-add-form"
+        (ngSubmit)="onAddSource(addForm)"
+      >
+        <mat-form-field class="radar-add-form__url">
+          <mat-label>Profile URL</mat-label>
+          <input matInput type="url" formControlName="url" placeholder="https://www.facebook.com/..." />
+          <mat-error>{{ form.controls.url | formError }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="radar-add-form__name">
+          <mat-label>Display name</mat-label>
+          <input matInput formControlName="displayName" />
+          <mat-error>{{ form.controls.displayName | formError }}</mat-error>
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="submit" class="radar-add-form__submit" [disabled]="adding()">
+          Add
+        </button>
+      </form>
+    </section>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

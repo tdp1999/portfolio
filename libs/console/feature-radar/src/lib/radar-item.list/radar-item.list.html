@@ -1,0 +1,242 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Radar</h1>
+      <p class="crud-header__subtitle">AI news from followed sources, analyzed by the radar worker.</p>
+      @if (stats(); as s) {
+        <div class="radar-queue" role="status">
+          <span class="console-badge console-badge--muted">{{ s.pending }} pending</span>
+          @if (s.paused) {
+            <span class="console-badge console-badge--muted" title="Their source is paused, so the worker skips them">
+              {{ s.paused }} paused
+            </span>
+          }
+          @if (s.stuck) {
+            <span
+              class="console-badge console-badge--danger"
+              [title]="'Claimed ' + maxClaimAttempts + ' times without a stored result'"
+            >
+              {{ s.stuck }} stuck
+            </span>
+            <button type="button" class="rv-linkbtn" [disabled]="requeueing()" (click)="onRequeueStuck()">
+              Re-queue stuck
+            </button>
+          }
+        </div>
+      }
+    </div>
+    <div class="crud-header__actions">
+      <a mat-stroked-button routerLink="/radar/profile">
+        <mat-icon class="icon-sm">edit_note</mat-icon>
+        Workflow profile
+      </a>
+      <button mat-stroked-button (click)="onOpenSources()">
+        <mat-icon class="icon-sm">rss_feed</mat-icon>
+        Sources and upload
+      </button>
+    </div>
+  </div>
+
+  <console-filter-bar>
+    <console-filter-search
+      placeholder="Search post text and TL;DR..."
+      [value]="search()"
+      (searchChange)="onSearchChange($event)"
+    />
+    <console-filter-select
+      label="Provider"
+      [options]="providerOptions"
+      [value]="providerTag()"
+      (selectionChange)="onProviderChange($event)"
+    />
+    <console-filter-select
+      label="Type"
+      [options]="contentTypeOptions"
+      [value]="contentType()"
+      (selectionChange)="onContentTypeChange($event)"
+    />
+    <console-filter-select
+      label="Min score"
+      [options]="minScoreOptions"
+      [value]="minScore()"
+      (selectionChange)="onMinScoreChange($event)"
+    />
+    <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
+  </console-filter-bar>
+
+  @if (activeFilters().length > 0) {
+    <mat-chip-set>
+      @for (filter of activeFilters(); track filter.key) {
+        <mat-chip (removed)="onRemoveFilter(filter.key)" highlighted>
+          {{ filter.label }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      }
+    </mat-chip-set>
+  }
+
+  <div class="crud-table-container">
+    @if (loading()) {
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+    } @else {
+      <table
+        mat-table
+        matSort
+        [dataSource]="items()"
+        [matSortActive]="sortBy()"
+        [matSortDirection]="sortDir()"
+        (matSortChange)="onSortChange($event)"
+        class="radar-table w-full"
+      >
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="signalScore" start="desc" class="col-score">Score</th>
+          <td mat-cell *matCellDef="let item" class="col-score">
+            @if (item.enrichment; as e) {
+              <span
+                class="radar-score"
+                [class]="scoreTone(e.signalScore)"
+                [attr.aria-label]="'Signal score ' + e.signalScore"
+              >
+                {{ e.signalScore }}
+              </span>
+            } @else {
+              <span
+                class="radar-score radar-score--pending"
+                matTooltip="Not analyzed yet"
+                aria-label="Not analyzed yet"
+              >
+                <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+              </span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="summary">
+          <th mat-header-cell *matHeaderCellDef>Summary</th>
+          <td mat-cell *matCellDef="let item" class="col-summary">
+            <!-- The row is clickable; the link keeps it reachable by keyboard and middle-click. -->
+            <a
+              class="radar-summary"
+              [class.radar-summary--raw]="!item.enrichment"
+              [routerLink]="['/radar/items', item.id]"
+              [queryParams]="feedQuery()"
+              (click)="$event.stopPropagation()"
+            >
+              {{ item.enrichment?.tldr ?? item.preview }}
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef class="col-type">Type</th>
+          <td mat-cell *matCellDef="let item" class="col-type">
+            @if (item.enrichment; as e) {
+              <span class="radar-tag radar-tag--type">{{ contentTypeLabel(e.contentType) }}</span>
+            } @else {
+              <span class="rv-absent">-</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="providers">
+          <th mat-header-cell *matHeaderCellDef class="col-providers">Providers</th>
+          <td mat-cell *matCellDef="let item" class="col-providers">
+            @if (item.enrichment?.providerTags.length) {
+              <div class="radar-tags">
+                @for (tag of item.enrichment.providerTags; track tag) {
+                  <span class="radar-tag">{{ providerLabel(tag) }}</span>
+                }
+              </div>
+            } @else {
+              <span class="rv-absent">-</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef class="col-status">Status</th>
+          <td mat-cell *matCellDef="let item" class="col-status">
+            <div class="radar-tags">
+              @if (item.enrichment; as e) {
+                @if (e.isRelevant) {
+                  <span class="console-badge console-badge--success">Relevant</span>
+                } @else {
+                  <span class="console-badge console-badge--muted">Not relevant</span>
+                }
+                @if (e.isPromo) {
+                  <span class="console-badge console-badge--warn">Promo</span>
+                }
+              } @else {
+                <span class="console-badge console-badge--muted">Pending</span>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="source" class="col-source">Source</th>
+          <td mat-cell *matCellDef="let item" class="col-source">
+            <span class="radar-source" [class.radar-source--paused]="!item.source.isActive">
+              {{ item.source.displayName }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="publishedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="publishedAt" start="desc" class="col-published">
+            Published
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let item"
+            class="col-published"
+            [matTooltip]="(item.publishedAt | date: 'medium') ?? ''"
+          >
+            <console-relative-time [value]="item.publishedAt" />
+          </td>
+        </ng-container>
+
+        <tr class="mat-mdc-row radar-state-row" *matNoDataRow>
+          <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
+            <div class="radar-state" [attr.role]="loadError() ? 'alert' : null">
+              @if (loadError()) {
+                <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">error_outline</mat-icon>
+                <p class="radar-state__title">Could not load the Feed</p>
+                <p class="radar-state__body">Check that the API is running, then try again.</p>
+                <div class="flex gap-2">
+                  @if (activeFilters().length) {
+                    <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
+                  }
+                  <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
+                </div>
+              } @else if (activeFilters().length) {
+                <mat-icon class="radar-state__icon icon-2xl">filter_alt_off</mat-icon>
+                <p class="radar-state__title">No items match these filters</p>
+                <p class="radar-state__body">Loosen a filter or clear them all.</p>
+                <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
+              } @else {
+                <mat-icon class="radar-state__icon icon-2xl">radar</mat-icon>
+                <p class="radar-state__title">No items yet</p>
+                <p class="radar-state__body">Add a source and upload a capture to fill the Feed.</p>
+                <button mat-stroked-button type="button" (click)="onOpenSources()">Sources and upload</button>
+              }
+            </div>
+          </td>
+        </tr>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="radar-row" (click)="onOpenItem(row)"></tr>
+      </table>
+    }
+  </div>
+
+  <mat-paginator
+    class="crud-pagination"
+    [length]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize"
+    [hidePageSize]="true"
+    (page)="onPage($event)"
+    showFirstLastButtons
+  />
+</div>

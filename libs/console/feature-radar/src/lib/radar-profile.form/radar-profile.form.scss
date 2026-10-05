@@ -1,0 +1,31 @@
+@use '../radar-state';
+
+.radar-profile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 96px;
+
+  > console-section-card {
+    max-width: var(--console-reading-max);
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__over {
+    color: var(--color-error);
+    font-weight: 600;
+  }
+}
+
+.radar-state {
+  padding-block: 96px;
+}

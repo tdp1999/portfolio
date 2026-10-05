@@ -1,0 +1,52 @@
+<div class="radar-profile">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="console-page-header">
+    <a mat-icon-button routerLink="/radar" aria-label="Back to Radar">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <div class="console-page-header__titles">
+      <h1 class="text-page-title">Workflow profile</h1>
+      <p class="console-page-header__subtitle">
+        How you work: tools, skills and habits. The radar worker reads it before writing each apply note.
+      </p>
+    </div>
+  </div>
+
+  @if (loadError()) {
+    <div class="radar-state" role="alert">
+      <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">error_outline</mat-icon>
+      <p class="radar-state__title">Could not load the workflow profile</p>
+      <p class="radar-state__body">Check that the API is running, then try again.</p>
+      <button mat-flat-button type="button" (click)="onRetry()">Retry</button>
+    </div>
+  } @else {
+    <console-section-card
+      id="section-profile"
+      bucket="INTERNAL"
+      title="Profile"
+      description="Markdown. Applies to posts analyzed after you save; existing apply notes are not rewritten."
+    >
+      <console-markdown-editor
+        [formControl]="body"
+        ariaLabel="Workflow profile"
+        placeholder="e.g. Frontend engineer. Daily tools: Claude Code, Angular, Nx..."
+        [minHeight]="480"
+      />
+      <div class="radar-profile__meta">
+        <span>
+          @if (updatedAt(); as at) {
+            Last saved {{ at | date: 'medium' }}
+          } @else {
+            Not saved yet. The worker falls back to a generic frontend engineer profile.
+          }
+        </span>
+        <span [class.radar-profile__over]="length() > maxChars">
+          {{ length() | number }} / {{ maxChars | number }}
+        </span>
+      </div>
+    </console-section-card>
+  }
+
+  <console-sticky-save-bar [dirty]="dirty" [saving]="saving" (save)="onSave()" (discard)="onDiscard()" />
+</div>

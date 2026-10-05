@@ -1,0 +1,254 @@
+<div class="detail-page relative">
+  <console-spinner-overlay [loading]="loading()" />
+
+  @if (item(); as it) {
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/radar" [queryParams]="feedQuery()" aria-label="Back to Radar">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">{{ it.authorName }}</h1>
+          @if (!it.enrichment) {
+            <span class="console-badge console-badge--muted">Pending analysis</span>
+          }
+        </div>
+        <div class="detail-meta">
+          <span>Published {{ it.publishedAt | date: 'medium' }}</span>
+          <span>{{ it.source.displayName }}</span>
+        </div>
+      </div>
+      <div class="console-page-header__actions">
+        @if (position(); as pos) {
+          <div class="radar-walk" role="navigation" aria-label="Feed order">
+            @if (prev(); as p) {
+              <a
+                mat-icon-button
+                [routerLink]="['/radar/items', p.id]"
+                [queryParams]="neighbourQuery(p)"
+                aria-label="Previous item"
+                matTooltip="Previous in Feed"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </a>
+            } @else {
+              <button mat-icon-button disabled aria-label="Previous item">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+            }
+            <span class="radar-walk__count">{{ pos.index }} of {{ pos.total }}</span>
+            @if (next(); as n) {
+              <a
+                mat-icon-button
+                [routerLink]="['/radar/items', n.id]"
+                [queryParams]="neighbourQuery(n)"
+                aria-label="Next item"
+                matTooltip="Next in Feed"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </a>
+            } @else {
+              <button mat-icon-button disabled aria-label="Next item">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            }
+          </div>
+        }
+        <a mat-stroked-button [href]="it.permalink" target="_blank" rel="noopener noreferrer">
+          <mat-icon class="icon-sm">open_in_new</mat-icon>
+          Original post
+        </a>
+      </div>
+    </div>
+
+    <console-record-layout>
+      @if (it.enrichment; as e) {
+        <p class="rv-lead">{{ e.tldr }}</p>
+
+        <console-record-section title="Apply to my workflow">
+          <console-record-field
+            label="Apply note"
+            [state]="e.applyNote ? 'filled' : 'unset'"
+            unsetLabel="No apply note: the worker marked this post as promo or not relevant."
+          >
+            <div class="rv-prose radar-md" [innerHTML]="e.applyNote | markdown"></div>
+          </console-record-field>
+        </console-record-section>
+      } @else {
+        <div class="radar-pending" role="status">
+          <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+          <p>
+            Pending analysis. The radar worker has not read this post yet, so only the original text, images and links
+            are shown.
+          </p>
+        </div>
+      }
+
+      <console-record-section title="Post">
+        <console-record-field label="Original text" [state]="it.text ? 'filled' : 'unset'">
+          <p class="rv-prose radar-text">{{ it.text }}</p>
+        </console-record-field>
+        @if (it.sharedPost; as sp) {
+          <console-record-field [label]="sp.authorName ? 'Shared from ' + sp.authorName : 'Shared post'">
+            <p class="rv-prose radar-text">{{ sp.text }}</p>
+            @if (sp.permalink) {
+              <a class="radar-link" [href]="sp.permalink" target="_blank" rel="noopener noreferrer">Open shared post</a>
+            }
+          </console-record-field>
+        }
+      </console-record-section>
+
+      @if (images().length || it.enrichment?.imageNotes) {
+        <console-record-section title="Images" [count]="images().length">
+          @if (images().length) {
+            <div class="radar-images">
+              @for (img of images(); track $index) {
+                @if (img.type === 'photo' && img.storageStatus !== 'failed' && !brokenImages().has(img.url)) {
+                  <a class="radar-image" [href]="img.url" target="_blank" rel="noopener noreferrer">
+                    <img [src]="img.url" alt="Image from the post" loading="lazy" (error)="onImageError(img.url)" />
+                  </a>
+                } @else {
+                  <a
+                    class="radar-image radar-image--placeholder"
+                    [href]="img.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [title]="img.url"
+                  >
+                    <mat-icon>{{ img.type === 'video' ? 'smart_display' : 'broken_image' }}</mat-icon>
+                    <span class="radar-image__label">
+                      @switch (true) {
+                        @case (img.type === 'video') {
+                          Video
+                        }
+                        @case (img.storageStatus === 'failed') {
+                          Image not saved
+                        }
+                        @default {
+                          Image did not load
+                        }
+                      }
+                    </span>
+                    <span class="radar-image__url">{{ hostOf(img.url) }}</span>
+                  </a>
+                }
+              }
+            </div>
+          }
+          @if (it.enrichment; as e) {
+            <console-record-field
+              label="Image notes"
+              [state]="e.imageNotes ? 'filled' : 'unset'"
+              unsetLabel="The images add nothing beyond the text."
+            >
+              <div class="rv-prose radar-md" [innerHTML]="e.imageNotes | markdown"></div>
+            </console-record-field>
+          }
+        </console-record-section>
+      }
+
+      @if (it.links.length) {
+        <console-record-section title="Links" [count]="it.links.length">
+          <ul class="radar-links">
+            @for (link of it.links; track link.url) {
+              <li class="radar-links__item">
+                <a class="radar-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+                  {{ hostOf(link.url) }}
+                  <mat-icon class="icon-sm">open_in_new</mat-icon>
+                </a>
+                @if (link.origin === 'shared-post') {
+                  <span class="console-badge console-badge--muted">From shared post</span>
+                }
+                @if (summaryFor(link.url); as summary) {
+                  <div class="rv-prose radar-md" [innerHTML]="summary | markdown"></div>
+                } @else if (it.enrichment) {
+                  <p class="rv-absent">No summary: the worker skips Facebook links and links it could not open.</p>
+                }
+              </li>
+            }
+          </ul>
+        </console-record-section>
+      }
+
+      @if (it.enrichment; as e) {
+        @if (e.factCheck || e.commentDigest) {
+          <console-record-section title="Fact check">
+            @if (e.factCheck) {
+              <console-record-field label="Fact-check notes">
+                <div class="rv-prose radar-md" [innerHTML]="e.factCheck | markdown"></div>
+              </console-record-field>
+            }
+            @if (e.commentDigest) {
+              <console-record-field label="Comment digest">
+                <div class="rv-prose radar-md" [innerHTML]="e.commentDigest | markdown"></div>
+              </console-record-field>
+            }
+          </console-record-section>
+        }
+      }
+
+      <console-record-empty-sections [sections]="emptySections()" />
+
+      <ng-container aside>
+        <console-record-panel title="Properties" flush>
+          <console-property-list>
+            @if (it.enrichment; as e) {
+              <console-property label="Signal score">{{ e.signalScore }} / 10</console-property>
+              <console-property label="Type">{{ contentTypeLabel(e.contentType) }}</console-property>
+              <console-property label="Providers">
+                @if (e.providerTags.length) {
+                  {{ providerList(e.providerTags) }}
+                } @else {
+                  <span class="rv-absent">Not set</span>
+                }
+              </console-property>
+              <console-property label="Relevant">{{ e.isRelevant ? 'Yes' : 'No' }}</console-property>
+              <console-property label="Promo">{{ e.isPromo ? 'Yes' : 'No' }}</console-property>
+            }
+            <console-property label="Published">{{ it.publishedAt | date: 'mediumDate' }}</console-property>
+            <console-property label="Source">
+              {{ it.source.displayName }}
+              @if (!it.source.isActive) {
+                <span class="rv-absent">(paused)</span>
+              }
+            </console-property>
+            <console-property label="Kind">{{ it.kind }}</console-property>
+            <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
+            <console-property label="Original post">
+              <a class="radar-link" [href]="it.permalink" target="_blank" rel="noopener noreferrer">Open on Facebook</a>
+            </console-property>
+          </console-property-list>
+        </console-record-panel>
+
+        @if (it.enrichment; as e) {
+          <console-record-panel title="Analysis" flush>
+            <console-property-list>
+              <console-property label="Producer">{{ e.producerAdapter }}</console-property>
+              <console-property label="Model">{{ e.producerModel }}</console-property>
+              <console-property label="Analyzed">{{ e.updatedAt | date: 'medium' }}</console-property>
+            </console-property-list>
+          </console-record-panel>
+        }
+      </ng-container>
+    </console-record-layout>
+  } @else if (loadError(); as err) {
+    <div class="radar-state" role="alert">
+      <mat-icon class="radar-state__icon icon-2xl" [class.radar-state__icon--error]="err === 'failed'">
+        {{ err === 'not-found' ? 'search_off' : 'error_outline' }}
+      </mat-icon>
+      @if (err === 'not-found') {
+        <p class="radar-state__title">This radar item no longer exists</p>
+        <p class="radar-state__body">It may have been removed with its source.</p>
+      } @else {
+        <p class="radar-state__title">Could not load this item</p>
+        <p class="radar-state__body">Check that the API is running, then try again.</p>
+      }
+      <div class="flex gap-2">
+        <a mat-stroked-button routerLink="/radar" [queryParams]="feedQuery()">Back to Radar</a>
+        @if (err === 'failed') {
+          <button mat-flat-button type="button" (click)="onRetry()">Retry</button>
+        }
+      </div>
+    </div>
+  }
+</div>

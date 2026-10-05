@@ -71,6 +71,10 @@ export const appRoutes: Route[] = [
             loadChildren: () => import('@portfolio/console/feature-messages').then((m) => m.messageRoutes),
           },
           {
+            path: 'radar',
+            loadChildren: () => import('@portfolio/console/feature-radar').then((m) => m.radarRoutes),
+          },
+          {
             path: 'projects',
             loadChildren: () => import('@portfolio/console/feature-project').then((m) => m.projectRoutes),
           },

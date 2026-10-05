@@ -1,0 +1,66 @@
+.radar-sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.radar-source {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+/* Loading, load-error and empty: one centred line in the same bordered box, so the dialog
+   does not jump when the list arrives. */
+.radar-sources__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 72px;
+  padding: 12px 16px;
+}
+
+.radar-upload-error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.radar-upload-error__lines {
+  margin: 0;
+  padding-left: 16px;
+  list-style: disc;
+  color: inherit;
+}
+
+/* One row: URL takes the room, name is shorter, the button lines up with the 40px fields. */
+.radar-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.radar-add-form__url {
+  flex: 2 1 280px;
+}
+
+.radar-add-form__name {
+  flex: 1 1 180px;
+}
+
+.radar-add-form__submit {
+  height: 40px;
+}
