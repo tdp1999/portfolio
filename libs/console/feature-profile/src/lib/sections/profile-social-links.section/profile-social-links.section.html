@@ -139,7 +139,7 @@
                   @if (certGroup.controls['url'].value; as url) {
                     <a [href]="url" target="_blank" rel="noopener" class="cert-file-link">
                       <mat-icon>picture_as_pdf</mat-icon>
-                      <span>{{ certFileLabel(url) }}</span>
+                      <span>{{ url | urlFileName }}</span>
                     </a>
                   } @else {
                     <span class="text-body text-text-secondary">No file selected</span>

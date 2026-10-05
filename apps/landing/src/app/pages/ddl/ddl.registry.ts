@@ -14,6 +14,11 @@ export function entryIsRoute(entry: DdlEntry): boolean {
   return entry.source?.startsWith('route:') ?? false;
 }
 
+/** An entry with its router target resolved once, so nav templates only read fields. */
+export function entryNav(entry: DdlEntry): DdlEntry & { link: string; fragment: string | undefined; isRoute: boolean } {
+  return { ...entry, link: entryLink(entry), fragment: entryFragment(entry), isRoute: entryIsRoute(entry) };
+}
+
 // ──────── Groups (sidebar order) ─────────────────────────────────────────
 // Scope ladder Foundations → Components → Sections → Pages, plus Patterns as
 // the orthogonal guidance axis. See .context/plans/epic-ddl-component-docs.md.

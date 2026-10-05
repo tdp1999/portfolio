@@ -1,5 +1,9 @@
+/* Fill host for `.crud-page--fill`: see _crud.scss. */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% + 2rem);
+  margin-bottom: -2rem;
 }
 
 .bulk-toolbar {
@@ -7,7 +11,6 @@
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
   border-radius: 0.5rem;
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);

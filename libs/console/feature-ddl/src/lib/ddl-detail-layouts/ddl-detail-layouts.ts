@@ -32,7 +32,6 @@ import {
   translationProgress,
   type RecordFieldDescriptor,
   type RecordLocale,
-  type ResolvedRecordField,
 } from '@portfolio/console/shared/util';
 import { PARTIAL_RECORD, RICH_RECORD, SPARSE_RECORD, type DemoRecord } from './ddl-detail-layouts.data';
 
@@ -166,15 +165,17 @@ export default class DdlDetailLayouts {
 
   readonly progress = computed(() => translationProgress(this.record(), TRANSLATABLE_FIELDS, this.locale()));
   readonly localeName = computed(() => (this.locale() === 'en' ? 'English' : 'Vietnamese'));
+  /** Story fields with their collapsed fold summary. A fold without a gist is a tab. */
+  readonly storyBlocks = computed(() =>
+    this.storyFields().map((field) => ({
+      ...field,
+      gist: field.state === 'filled' ? gist(field.text) : `Not written in ${this.localeName()} yet`,
+    }))
+  );
   readonly oneLiner = computed(() => describeFields(this.record(), [TRANSLATABLE_FIELDS[0]], this.locale())[0]);
 
   /** B and C are one chassis; C is B with the density switch thrown. */
   readonly collapsed = computed(() => this.layout() === 'c');
 
   readonly folds = new RecordExpansion();
-
-  /** Collapsed summary for a story fold. A fold without a gist is a tab. */
-  foldGist(field: ResolvedRecordField): string {
-    return field.state === 'filled' ? gist(field.text) : `Not written in ${this.localeName()} yet`;
-  }
 }

@@ -30,7 +30,7 @@ export class PostsPage {
     this.statusFilter = page.locator('console-filter-select mat-select');
     this.showDeletedChip = page.getByRole('option', { name: 'Show deleted' });
     this.table = page.getByRole('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
   }
 
   async goto(): Promise<void> {

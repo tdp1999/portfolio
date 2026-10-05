@@ -119,7 +119,7 @@
           <h4 id="media-picker-review-title" class="picker__review-title text-stat-label">
             Just uploaded ({{ justUploaded().length }})
           </h4>
-          @for (item of justUploaded(); track item.id) {
+          @for (item of reviewRows(); track item.id) {
             <article class="picker__review-card">
               <img class="picker__review-thumb" [src]="item.url | mediaThumb: 64" [alt]="item.originalFilename" />
 
@@ -127,7 +127,7 @@
                 <p class="picker__review-name" [matTooltip]="item.originalFilename">
                   {{ item.originalFilename }}
                 </p>
-                <p class="picker__review-meta text-caption">{{ metaFor(item) }}</p>
+                <p class="picker__review-meta text-caption">{{ item.meta }}</p>
 
                 <div class="picker__review-fields">
                   <mat-form-field subscriptSizing="dynamic">

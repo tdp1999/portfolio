@@ -29,7 +29,8 @@ import {
   TRIAGE_ITEMS,
   TYPE_FILTER,
 } from './ddl-radar-triage.data';
-import type { TriageDensity, TriageItem, TriageSort, TriageStatus } from './ddl-radar-triage.types';
+import type { TriageDensity, TriageItem, TriageRow, TriageSort, TriageStatus } from './ddl-radar-triage.types';
+import { toTriageRow } from './ddl-radar-triage.util';
 
 /**
  * Radar triage study, layout A: Feed controls on top, list and the full record view side by side.
@@ -68,7 +69,7 @@ export default class DdlRadarTriage {
   protected readonly sidebar = signal('240');
   protected readonly density = signal<TriageDensity>('comfortable');
   protected readonly view = signal<TriageStatus>('inbox');
-  protected readonly items = signal<TriageItem[]>(TRIAGE_ITEMS.map((it) => ({ ...it })));
+  protected readonly items = signal<TriageRow[]>(TRIAGE_ITEMS.map(toTriageRow));
   protected readonly selectedId = signal<string | null>(TRIAGE_ITEMS[0].id);
   protected readonly search = signal('');
   protected readonly provider = signal('');
@@ -115,7 +116,7 @@ export default class DdlRadarTriage {
     for (const it of this.filtered()) c[it.status]++;
     return c;
   });
-  protected readonly selected = computed<TriageItem | null>(
+  protected readonly selected = computed<TriageRow | null>(
     () => this.visible().find((it) => it.id === this.selectedId()) ?? this.visible().at(0) ?? null
   );
   protected readonly position = computed(() => {
@@ -191,17 +192,5 @@ export default class DdlRadarTriage {
     this.selectedId.set(after[Math.min(index, after.length - 1)]?.id ?? null);
     const label = status === 'done' ? 'Marked done' : status === 'saved' ? 'Saved to To try' : 'Moved to Inbox';
     this.lastAction.set({ ids, from, label });
-  }
-
-  protected scoreTone(score: number | null): string {
-    if (score === null) return 'tr-score--pending';
-    if (score >= 7) return 'tr-score--high';
-    if (score >= 4) return 'tr-score--mid';
-    return 'tr-score--low';
-  }
-
-  /** The seed's apply notes carry `**bold**`; the study shows them as plain text. */
-  protected plain(md: string | null): string {
-    return (md ?? '').replace(/\*\*/g, '');
   }
 }

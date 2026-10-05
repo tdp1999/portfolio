@@ -15,7 +15,7 @@ import { TEST_PNG_BASE64, TEST_PDF_BASE64 } from '../data/test-media';
  *   `aria-label`=filename and `data-media-id` — there is no `.media-card`, and **list view is
  *   still the same component**, rendering the same items with an `--list` modifier rather than a
  *   `<table>`; there is no `.asset-grid__row` container at all;
- * - grid paging is internal to `console-asset-grid`; there is no `mat-paginator`;
+ * - grid paging is internal to `console-asset-grid`; there is no `console-paginator`;
  * - the view toggle is a `console-chip-select`, which is a `listbox` of **`option`**s, never
  *   `radio`. `MatChipOption`'s inner `<button role="option">` owns the accessible name and is what
  *   the a11y tree exposes; because the toggle runs `iconOnly`, that name comes from the `aria-label`
@@ -219,7 +219,7 @@ export class MediaTrashPage {
     this.page = page;
     this.heading = page.getByRole('heading', { name: 'Trash' });
     this.table = page.locator('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
     this.backLink = page.getByRole('link', { name: 'Back to Media' });
     this.emptyState = page.locator('text=Trash is empty');
     this.restoreButton = page.getByRole('button', { name: 'Restore' });

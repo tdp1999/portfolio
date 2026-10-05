@@ -15,7 +15,7 @@ import { ConsoleShell } from './pages/console-shell.page';
  *   lives in the same drawer instead of on each card.
  * - **List view is the same component as grid view.** `console-asset-grid` switches its own
  *   markup between `.asset-grid__item` cards and `.asset-grid__row` rows — there is no
- *   `<table>` to assert on, and no `mat-paginator` either (paging is internal to the grid).
+ *   `<table>` to assert on, and no `console-paginator` either (paging is internal to the grid).
  * - The upload toast counts files: "N file(s) uploaded successfully".
  */
 test.describe('Media Management', () => {

@@ -88,6 +88,10 @@ export default class MediaPickerDialog implements OnInit {
    * author crosses over to the library with "Use these files".
    */
   readonly justUploaded = signal<MediaItem[]>([]);
+  /** Review cards, each with its type, size and pixel dimensions line. */
+  protected readonly reviewRows = computed(() =>
+    this.justUploaded().map((item) => ({ ...item, meta: formatMediaMeta(item) }))
+  );
   readonly uploadFolder = signal<UploadFolder>(this.data.defaultFolder ?? 'general');
 
   readonly uploadFolders = UPLOAD_FOLDERS;
@@ -344,11 +348,6 @@ export default class MediaPickerDialog implements OnInit {
           );
         }
       });
-  }
-
-  /** Type, size and pixel dimensions for a review card. */
-  protected metaFor(item: MediaItem): string {
-    return formatMediaMeta(item);
   }
 
   /** Drop a row from the review list. The asset stays in the library. */

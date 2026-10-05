@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
 
 import type { InPageSection } from '@portfolio/landing/shared/ui';
 
-import { DDL_GROUPS, DDL_REGISTRY, entryFragment, entryLink } from '../ddl.registry';
+import { DDL_GROUPS, DDL_REGISTRY, entryNav } from '../ddl.registry';
 import { DdlDocsService } from '../ddl-docs.service';
 import { DdlStatusChip } from '../ddl-status-chip';
 import type { DdlDocWidth, DdlEntry } from '../ddl.types';
@@ -66,8 +66,8 @@ export class DdlDocPage {
   // never lands on a hidden doc (it's only reachable by direct URL). A deprecated
   // page itself still pages out to its nearest living neighbours.
   private readonly index = computed(() => DDL_REGISTRY.findIndex((e) => e.slug === this.slug()));
-  protected readonly prev = computed<DdlEntry | undefined>(() => this.adjacent(-1));
-  protected readonly next = computed<DdlEntry | undefined>(() => this.adjacent(1));
+  protected readonly prev = computed(() => this.adjacentNav(-1));
+  protected readonly next = computed(() => this.adjacentNav(1));
 
   constructor() {
     // SSR / pre-hydration: publish whatever the page declared (may be empty).
@@ -78,6 +78,11 @@ export class DdlDocPage {
     afterNextRender(() => this.publishFromDom());
   }
 
+  private adjacentNav(step: 1 | -1) {
+    const entry = this.adjacent(step);
+    return entry ? entryNav(entry) : undefined;
+  }
+
   private adjacent(step: 1 | -1): DdlEntry | undefined {
     const start = this.index();
     if (start < 0) return undefined;
@@ -85,14 +90,6 @@ export class DdlDocPage {
       if (DDL_REGISTRY[i].status !== 'deprecated') return DDL_REGISTRY[i];
     }
     return undefined;
-  }
-
-  protected linkFor(entry: DdlEntry): string {
-    return entryLink(entry);
-  }
-
-  protected fragmentFor(entry: DdlEntry): string | undefined {
-    return entryFragment(entry);
   }
 
   /** Walk the rendered body and build the TOC from headings carrying an `id`.

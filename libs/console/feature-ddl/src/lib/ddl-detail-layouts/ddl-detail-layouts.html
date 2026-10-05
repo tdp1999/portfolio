@@ -92,11 +92,11 @@
           {{ folds.allOpenIn(storyIds()) ? 'Collapse all' : 'Expand all' }}
         </button>
       }
-      @for (block of storyFields(); track block.id) {
+      @for (block of storyBlocks(); track block.id) {
         @if (collapsed() && block.state !== 'unset') {
           <console-record-fold
             [title]="block.label"
-            [gist]="foldGist(block)"
+            [gist]="block.gist"
             [open]="folds.isOpen(block.id)"
             (openChange)="folds.toggle(block.id)"
           >

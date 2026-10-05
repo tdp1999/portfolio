@@ -37,3 +37,6 @@ export interface TriageScreen {
   label: string;
   width: number;
 }
+
+/** A triage item with the classes and text its row and pane show precomputed. */
+export type TriageRow = TriageItem & { scoreTone: string; applyNoteText: string };

@@ -12,7 +12,7 @@
     @if (title()) {
       <div class="section-tabs__rail-title">{{ title() }}</div>
     }
-    @for (group of effectiveGroups(); track $index) {
+    @for (group of viewGroups(); track $index) {
       @if (group.label) {
         <div class="section-tabs__group-label">{{ group.label }}</div>
       }
@@ -24,14 +24,14 @@
           [attr.aria-current]="!showAll() && activeId() === tab.id ? 'true' : null"
           (click)="select(tab.id)"
         >
-          @if (resolveStatus(tab); as status) {
+          @if (tab.state; as status) {
             <span
               class="section-tabs__icon"
               [class.section-tabs__icon--saved]="status === 'saved'"
               [class.section-tabs__icon--editing]="status === 'editing'"
               [class.section-tabs__icon--error]="status === 'error'"
             >
-              {{ statusIcon(status) }}
+              {{ tab.icon }}
             </span>
           }
           <span class="section-tabs__label">{{ tab.label }}</span>
@@ -43,7 +43,7 @@
   <!-- Horizontal scrollable strip (< laptop, tabbed mode only) -->
   @if (!showAll()) {
     <div class="section-tabs__strip" role="tablist" aria-label="Sections">
-      @for (group of effectiveGroups(); track $index) {
+      @for (group of viewGroups(); track $index) {
         @for (tab of group.sections; track tab.id) {
           <button
             type="button"
@@ -53,14 +53,14 @@
             [attr.aria-selected]="activeId() === tab.id"
             (click)="select(tab.id)"
           >
-            @if (resolveStatus(tab); as status) {
+            @if (tab.state; as status) {
               <span
                 class="section-tabs__icon"
                 [class.section-tabs__icon--saved]="status === 'saved'"
                 [class.section-tabs__icon--editing]="status === 'editing'"
                 [class.section-tabs__icon--error]="status === 'error'"
               >
-                {{ statusIcon(status) }}
+                {{ tab.icon }}
               </span>
             }
             {{ tab.label }}

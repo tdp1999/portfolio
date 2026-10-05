@@ -1,18 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,15 +13,18 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import {
   BulkActionBar,
+  ConfirmDialogComponent,
+  type ConfirmDialogData,
   EnumLabelPipe,
   FilterBar,
   FilterSearch,
   FilterSelect,
+  Paginator,
+  type PaginatorChange,
   ProgressBarService,
   RelativeTime,
+  SetHasPipe,
   SkeletonTable,
-  ConfirmDialogComponent,
-  type ConfirmDialogData,
   ToastService,
   withListLoading,
 } from '@portfolio/console/shared/ui';
@@ -40,16 +33,16 @@ import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS, resolveErrorMessage } from '@port
 import { filter, switchMap } from 'rxjs';
 import { BlogService } from '../blog.service';
 import { AdminBlogPostListItem, BlogStatus, BulkPostAction, BulkPostResult, BulkPostSkip } from '../blog.types';
-import { STATUS_OPTIONS } from './posts.data';
+import { STATUS_BADGE_CLASSES, STATUS_OPTIONS } from './posts.data';
 import { withReason } from './posts.util';
 
 @Component({
   selector: 'console-posts',
   standalone: true,
   imports: [
+    Paginator,
     DatePipe,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
@@ -63,6 +56,7 @@ import { withReason } from './posts.util';
     SkeletonTable,
     RelativeTime,
     EnumLabelPipe,
+    SetHasPipe,
     RouterLink,
   ],
   templateUrl: './posts.html',
@@ -79,7 +73,6 @@ export default class Posts implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   // ── Queries ───────────────────────────────────────────────────────
-  readonly paginator = viewChild.required(MatPaginator);
 
   // ── Writable signals ──────────────────────────────────────────────
   readonly posts = signal<AdminBlogPostListItem[]>([]);
@@ -92,6 +85,11 @@ export default class Posts implements OnInit {
   readonly showDeleted = signal(false);
   readonly sortBy = signal('updatedAt');
   readonly sortDir = signal<'asc' | 'desc'>('desc');
+
+  /** Each post with its category list joined once, so the table reads plain fields. */
+  readonly rows = computed(() =>
+    this.posts().map((post) => ({ ...post, categoryNames: post.categories.map((c) => c.name).join(', ') }))
+  );
 
   // ── Selection (signal-based; cleared on every list reload) ────────
   readonly selectedIds = signal<ReadonlySet<string>>(new Set());
@@ -119,6 +117,7 @@ export default class Posts implements OnInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly statusOptions = STATUS_OPTIONS;
   readonly blogPostStatusLabels = BLOG_POST_STATUS_LABELS;
+  readonly statusBadges = STATUS_BADGE_CLASSES;
 
   ngOnInit(): void {
     // Deep-link from the dashboard stat cards: ?status=PUBLISHED|DRAFT pre-applies the filter.
@@ -151,33 +150,13 @@ export default class Posts implements OnInit {
     this.sortBy.set(sort.active || 'updatedAt');
     this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadPosts();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadPosts();
-  }
-
-  categoryNames(post: AdminBlogPostListItem): string {
-    return post.categories.map((c) => c.name).join(', ');
-  }
-
-  statusBadgeClass(status: BlogStatus): string {
-    switch (status) {
-      case 'PUBLISHED':
-        return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'DRAFT':
-        return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
-      case 'PRIVATE':
-        return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
-      case 'UNLISTED':
-        return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
-      default:
-        return 'bg-gray-100 text-gray-600';
-    }
   }
 
   confirmDelete(post: AdminBlogPostListItem): void {
@@ -236,9 +215,6 @@ export default class Posts implements OnInit {
   }
 
   // ── Selection ─────────────────────────────────────────────────────
-  isSelected(id: string): boolean {
-    return this.selectedIds().has(id);
-  }
 
   toggleRow(id: string): void {
     this.selectedIds.update((prev) => {

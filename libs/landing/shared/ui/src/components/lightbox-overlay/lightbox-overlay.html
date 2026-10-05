@@ -59,7 +59,7 @@
         @if (item.showDownload) {
           <a
             class="landing-lightbox__btn"
-            [href]="resolveBest(item).download"
+            [href]="currentDownload()"
             target="_blank"
             rel="noopener"
             download
@@ -99,9 +99,9 @@
   <!-- Stage: the gesture surface. Track translates by index; active image zooms. -->
   <div class="landing-lightbox__stage" #stage [class.is-zoomed]="zoomed()">
     <div class="landing-lightbox__track" #track>
-      @for (item of items(); track item.url; let i = $index) {
+      @for (item of slides(); track item.url; let i = $index) {
         <div class="landing-lightbox__slide">
-          @if (resolveBest(item); as r) {
+          @if (item.source; as r) {
             <img
               class="landing-lightbox__img"
               [attr.src]="r.src"

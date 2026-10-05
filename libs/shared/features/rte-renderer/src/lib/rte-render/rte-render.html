@@ -1,5 +1,5 @@
 <!-- Top level: walk the document's block array. -->
-<ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: nodes() }" />
+<ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: tree() }" />
 
 <!-- Render a list of nodes (comment-only container → children stay direct DOM children). -->
 <ng-template #kids let-nodes="nodes">
@@ -10,58 +10,54 @@
 
 <!-- Render a single node: registered block → text → structural → fallback. -->
 <ng-template #one let-node="node">
-  @let renderer = rendererFor(node.type);
-  @if (renderer) {
-    <ng-container *ngComponentOutlet="renderer.component; inputs: inputsFor(renderer, node)" />
+  @if (node.renderer; as renderer) {
+    <ng-container *ngComponentOutlet="renderer.component; inputs: node.inputs" />
   } @else if (node.type === 'text') {
-    <ng-container
-      [ngTemplateOutlet]="inline"
-      [ngTemplateOutletContext]="{ marks: node.marks ?? [], text: node.text ?? '' }"
-    />
+    <ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: node.marks, text: node.text }" />
   } @else {
     @switch (node.type) {
       @case ('paragraph') {
-        <p><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" /></p>
+        <p><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" /></p>
       }
       @case ('heading') {
-        @switch (headingLevel(node)) {
+        @switch (node.level) {
           @case (3) {
-            <h3 [id]="headingIdFor(node)">
-              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            <h3 [id]="node.headingId">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
             </h3>
           }
           @case (4) {
-            <h4 [id]="headingIdFor(node)">
-              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            <h4 [id]="node.headingId">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
             </h4>
           }
           @default {
-            <h2 [id]="headingIdFor(node)">
-              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            <h2 [id]="node.headingId">
+              <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
             </h2>
           }
         }
       }
       @case ('blockquote') {
         <blockquote>
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </blockquote>
       }
       @case ('bulletList') {
         <ul>
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </ul>
       }
       @case ('orderedList') {
         <ol>
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </ol>
       }
       @case ('listItem') {
-        <li><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" /></li>
+        <li><ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" /></li>
       }
       @case ('codeBlock') {
-        <pre><code>{{ codeText(node) }}</code></pre>
+        <pre><code>{{ node.code }}</code></pre>
       }
       <!-- Tables and rules are portable vocabulary, not engine vocabulary: they
            are ordinary document structure any editor would emit, and a read path
@@ -71,23 +67,23 @@
       @case ('table') {
         <table>
           <tbody>
-            <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+            <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
           </tbody>
         </table>
       }
       @case ('tableRow') {
         <tr>
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </tr>
       }
       @case ('tableHeader') {
-        <th [attr.colspan]="span(node, 'colspan')" [attr.rowspan]="span(node, 'rowspan')">
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        <th [attr.colspan]="node.colspan" [attr.rowspan]="node.rowspan">
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </th>
       }
       @case ('tableCell') {
-        <td [attr.colspan]="span(node, 'colspan')" [attr.rowspan]="span(node, 'rowspan')">
-          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.content ?? [] }" />
+        <td [attr.colspan]="node.colspan" [attr.rowspan]="node.rowspan">
+          <ng-container [ngTemplateOutlet]="kids" [ngTemplateOutletContext]="{ nodes: node.children }" />
         </td>
       }
       @case ('horizontalRule') {
@@ -108,7 +104,7 @@
 <!-- Render a text node's marks as nested real elements — peel one mark per level.
      Base case = the raw text. Link marks are forced target/rel here (D5b). Boundary
      whitespace Angular collapses around {{ text }} is harmless in flow content;
-     whitespace-significant <pre> is handled separately via codeText (see #one). -->
+     whitespace-significant <pre> is handled separately via `code` (see #one). -->
 <ng-template #inline let-marks="marks" let-text="text">
   <!-- The interpolation is wrapped rather than written on its own line, and that
        is load-bearing. A bare `{{ text }}` indented inside the block becomes a
@@ -143,7 +139,7 @@
         /></code>
       }
       @case ('link') {
-        <a [href]="href(marks[0])" target="_blank" rel="noopener nofollow"
+        <a [href]="marks[0].href" target="_blank" rel="noopener nofollow"
           ><ng-container [ngTemplateOutlet]="inline" [ngTemplateOutletContext]="{ marks: rest, text: text }"
         /></a>
       }

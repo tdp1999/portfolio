@@ -22,8 +22,8 @@
                 <p class="mag-excerpt mag-excerpt--hero">{{ ex }}</p>
               }
               <div class="mag-meta mag-meta--hero">
-                <span class="mag-meta__time">{{ timeAgo(hero) | uppercase }}</span>
-                @if (primaryCategory(hero); as cat) {
+                <span class="mag-meta__time">{{ hero.publishedAt | timeAgo: locale() | uppercase }}</span>
+                @if (hero.categories[0]?.name; as cat) {
                   <span class="mag-meta__sep" aria-hidden="true">·</span>
                   <span class="mag-meta__cat">{{ cat | uppercase }}</span>
                 }
@@ -71,8 +71,8 @@
                   <p class="mag-excerpt mag-excerpt--side">{{ ex }}</p>
                 }
                 <div class="mag-meta">
-                  <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
-                  @if (primaryCategory(post); as cat) {
+                  <span class="mag-meta__time">{{ post.publishedAt | timeAgo: locale() | uppercase }}</span>
+                  @if (post.categories[0]?.name; as cat) {
                     <span class="mag-meta__sep" aria-hidden="true">·</span>
                     <span class="mag-meta__cat">{{ cat }}</span>
                   }
@@ -152,8 +152,8 @@
                   <p class="mag-excerpt mag-excerpt--hero">{{ ex }}</p>
                 }
                 <div class="mag-meta mag-meta--hero">
-                  <span class="mag-meta__time">{{ timeAgo(hero) | uppercase }}</span>
-                  @if (primaryCategory(hero); as cat) {
+                  <span class="mag-meta__time">{{ hero.publishedAt | timeAgo: locale() | uppercase }}</span>
+                  @if (hero.categories[0]?.name; as cat) {
                     <span class="mag-meta__sep" aria-hidden="true">·</span>
                     <span class="mag-meta__cat">{{ cat | uppercase }}</span>
                   }
@@ -187,8 +187,8 @@
               <div class="mag-archive__body">
                 <h4 class="mag-title mag-title--archive">{{ post.title }}</h4>
                 <div class="mag-meta">
-                  <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
-                  @if (primaryCategory(post); as cat) {
+                  <span class="mag-meta__time">{{ post.publishedAt | timeAgo: locale() | uppercase }}</span>
+                  @if (post.categories[0]?.name; as cat) {
                     <span class="mag-meta__sep" aria-hidden="true">·</span>
                     <span class="mag-meta__cat">{{ cat }}</span>
                   }
@@ -336,8 +336,8 @@
                     </div>
                     <div class="list-row__body">
                       <div class="mag-meta">
-                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
-                        @if (primaryCategory(post); as cat) {
+                        <span class="mag-meta__time">{{ post.publishedAt | timeAgo: locale() | uppercase }}</span>
+                        @if (post.categories[0]?.name; as cat) {
                           <span class="mag-meta__sep" aria-hidden="true">·</span>
                           <span class="mag-meta__cat">{{ cat }}</span>
                         }
@@ -376,8 +376,8 @@
                     </div>
                     <div class="list-card__body">
                       <div class="mag-meta">
-                        <span class="mag-meta__time">{{ timeAgo(post) | uppercase }}</span>
-                        @if (primaryCategory(post); as cat) {
+                        <span class="mag-meta__time">{{ post.publishedAt | timeAgo: locale() | uppercase }}</span>
+                        @if (post.categories[0]?.name; as cat) {
                           <span class="mag-meta__sep" aria-hidden="true">·</span>
                           <span class="mag-meta__cat">{{ cat }}</span>
                         }

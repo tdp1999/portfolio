@@ -2,7 +2,7 @@
   @if (title()) {
     <div class="scrollspy-rail__title">{{ title() }}</div>
   }
-  @for (section of sections(); track section.id) {
+  @for (section of items(); track section.id) {
     <button
       class="scrollspy-rail__item"
       [class.scrollspy-rail__item--active]="activeIndicator() && activeId() === section.id"
@@ -10,14 +10,14 @@
       (click)="scrollTo(section.id)"
       type="button"
     >
-      @if (resolveStatus(section); as status) {
+      @if (section.state; as status) {
         <span
           class="scrollspy-rail__icon"
           [class.scrollspy-rail__icon--saved]="status === 'saved'"
           [class.scrollspy-rail__icon--editing]="status === 'editing'"
           [class.scrollspy-rail__icon--error]="status === 'error'"
         >
-          {{ statusIcon(status) }}
+          {{ section.icon }}
         </span>
       }
       <span class="scrollspy-rail__label">{{ section.label }}</span>

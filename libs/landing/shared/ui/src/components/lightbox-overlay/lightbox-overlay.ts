@@ -13,15 +13,12 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { A11yModule } from '@angular/cdk/a11y';
-import { buildCloudinarySrcset } from '@portfolio/landing/shared/util';
 import { LightboxService } from '../lightbox/lightbox.service';
 import { T } from '../t';
-import type { LightboxItem } from '../lightbox/lightbox.types';
-import { CLOSE_MS, DOUBLE_TAP_SCALE, FULL_WIDTH, MAX_SCALE, MIN_SCALE } from './lightbox-overlay.data';
-import type { ResolvedSource } from './lightbox-overlay.types';
+import { CLOSE_MS, DOUBLE_TAP_SCALE, MAX_SCALE, MIN_SCALE } from './lightbox-overlay.data';
 import { resolveCopy } from '../../services/copy';
 import { LandingLocaleService } from '../../services/locale/landing-locale.service';
-import { clamp } from './lightbox-overlay.util';
+import { clamp, resolveBestSource } from './lightbox-overlay.util';
 
 /**
  * Full-screen lightbox UI. Mounted by {@link LightboxService} in a CDK Overlay.
@@ -58,6 +55,14 @@ export class LightboxOverlay {
   protected readonly index = this.lightbox.index;
   protected readonly count = computed(() => this.items().length);
   protected readonly current = computed(() => this.items()[this.index()] ?? null);
+  /** Each slide with its best display source resolved once. */
+  protected readonly slides = computed(() =>
+    this.items().map((item) => ({ ...item, source: resolveBestSource(item) }))
+  );
+  protected readonly currentDownload = computed(() => {
+    const cur = this.current();
+    return cur ? resolveBestSource(cur).download : null;
+  });
   private readonly locale = inject(LandingLocaleService).locale;
   /**
    * `Image 2 of 7`, with the image's own `alt` appended as a second sentence when
@@ -133,21 +138,6 @@ export class LightboxOverlay {
       track.classList.remove('is-grabbing');
       this.flipOpen();
     });
-  }
-
-  /** Resolve the best display source: explicit full > Cloudinary upscale > inline. */
-  protected resolveBest(item: LightboxItem): ResolvedSource {
-    if (item.fullSrc) {
-      return { src: item.fullSrc, srcset: item.srcset ?? null, download: item.downloadUrl || item.fullSrc };
-    }
-    if (item.srcset) {
-      return { src: item.url, srcset: item.srcset, download: item.downloadUrl || item.url };
-    }
-    const cl = buildCloudinarySrcset(item.url, FULL_WIDTH);
-    if (cl.srcset) {
-      return { src: cl.src, srcset: cl.srcset, download: item.downloadUrl || cl.src };
-    }
-    return { src: item.url, srcset: null, download: item.downloadUrl || item.url };
   }
 
   // ── Navigation ──

@@ -46,7 +46,7 @@
           @if (v4Active().post; as p) {
             <header class="v4-hero">
               <div class="v4-hero__eyebrow">
-                <landing-chip [label]="postType(p)" size="sm" />
+                <landing-chip [label]="v4PostType()" size="sm" />
                 <landing-chip [label]="p.language" size="sm" />
                 @if (p.categories[0]; as cat) {
                   <landing-chip [label]="cat.name" size="sm" />
@@ -57,7 +57,7 @@
                 <p class="v4-hero__dek">{{ ex }}</p>
               }
               <div class="v4-hero__meta">
-                <span>{{ formatDate(p.publishedAt) }}</span>
+                <span>{{ p.publishedAt | date: 'MMMM d, y' : undefined : 'en-US' }}</span>
                 @if (p.readTimeMinutes) {
                   <span aria-hidden="true">·</span>
                   <span>{{ p.readTimeMinutes }} min read</span>
@@ -172,7 +172,7 @@
           @if (deepPost(); as p) {
             <header class="v1-hero">
               <div class="v1-hero__eyebrow">
-                <landing-chip [label]="postType(p)" size="sm" />
+                <landing-chip [label]="deepPostType()" size="sm" />
                 <landing-chip [label]="p.language" size="sm" />
                 @if (p.categories[0]; as cat) {
                   <landing-chip [label]="cat.name" size="sm" />
@@ -183,7 +183,7 @@
                 <p class="v1-hero__dek">{{ ex }}</p>
               }
               <div class="v1-hero__meta">
-                <span>{{ formatDate(p.publishedAt) }}</span>
+                <span>{{ p.publishedAt | date: 'MMMM d, y' : undefined : 'en-US' }}</span>
                 @if (p.readTimeMinutes) {
                   <span aria-hidden="true">·</span>
                   <span>{{ p.readTimeMinutes }} min read</span>
@@ -249,7 +249,7 @@
           @if (notePost(); as p) {
             <header class="v1-hero">
               <div class="v1-hero__eyebrow">
-                <landing-chip [label]="postType(p)" size="sm" />
+                <landing-chip [label]="notePostType()" size="sm" />
                 <landing-chip [label]="p.language" size="sm" />
                 @if (p.categories[0]; as cat) {
                   <landing-chip [label]="cat.name" size="sm" />
@@ -257,7 +257,7 @@
               </div>
               <h2 class="v1-hero__title">{{ p.title }}</h2>
               <div class="v1-hero__meta">
-                <span>{{ formatDate(p.publishedAt) }}</span>
+                <span>{{ p.publishedAt | date: 'MMMM d, y' : undefined : 'en-US' }}</span>
                 @if (p.readTimeMinutes) {
                   <span aria-hidden="true">·</span>
                   <span>{{ p.readTimeMinutes }} min read</span>
@@ -297,7 +297,7 @@
           @if (deepPost(); as p) {
             <header class="v2-hero">
               <h2 class="v2-hero__title">{{ p.title }}</h2>
-              <p class="v2-hero__date">{{ formatDate(p.publishedAt) }}</p>
+              <p class="v2-hero__date">{{ p.publishedAt | date: 'MMMM d, y' : undefined : 'en-US' }}</p>
             </header>
 
             <div class="v2-prose">
@@ -325,7 +325,9 @@
                         <a [routerLink]="['/blog', r.slug]" class="related-list__link">
                           <span class="related-list__title">{{ r.title }}</span>
                           @if (r.publishedAt) {
-                            <span class="related-list__date">{{ formatDate(r.publishedAt) }}</span>
+                            <span class="related-list__date">{{
+                              r.publishedAt | date: 'MMMM d, y' : undefined : 'en-US'
+                            }}</span>
                           }
                         </a>
                       </li>
@@ -358,7 +360,7 @@
           @if (deepPost(); as p) {
             <header class="v3-hero">
               <div class="v3-hero__eyebrow">
-                <landing-chip [label]="postType(p)" size="sm" />
+                <landing-chip [label]="deepPostType()" size="sm" />
                 @if (p.categories[0]; as cat) {
                   <landing-chip [label]="cat.name" size="sm" />
                 }
@@ -377,7 +379,7 @@
 
                   <dl class="v3-meta">
                     <dt>Published</dt>
-                    <dd>{{ formatDate(p.publishedAt) }}</dd>
+                    <dd>{{ p.publishedAt | date: 'MMMM d, y' : undefined : 'en-US' }}</dd>
                     @if (p.readTimeMinutes) {
                       <dt>Read time</dt>
                       <dd>{{ p.readTimeMinutes }} min</dd>

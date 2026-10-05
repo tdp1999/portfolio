@@ -60,7 +60,7 @@
                 <div class="reorder-item__body">
                   <span class="reorder-item__name">{{ skill.name }}</span>
                   @if (skill.parentSkillId) {
-                    <span class="reorder-item__parent text-text-muted">{{ parentName(skill.parentSkillId) }}</span>
+                    <span class="reorder-item__parent text-text-muted">{{ parentNames()[skill.parentSkillId] }}</span>
                   }
                 </div>
                 <button

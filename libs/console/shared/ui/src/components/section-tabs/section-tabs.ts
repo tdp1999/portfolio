@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { DOCUMENT } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { STATUS_ICONS } from '../scrollspy-rail/scrollspy-rail.constants';
-import type { SectionDescriptor, SectionStatus } from '../scrollspy-rail/scrollspy-rail.types';
+import type { SectionDescriptor } from '../scrollspy-rail/scrollspy-rail.types';
+import { toSectionView } from '../scrollspy-rail/scrollspy-rail.util';
 import type { SectionTabGroup } from './section-tabs.types';
 
 /**
@@ -55,6 +55,10 @@ export class SectionTabs implements OnInit {
     () => this.groups() ?? [{ sections: this.sections() }]
   );
 
+  /** Groups with each tab's status read, so the template only reads fields. */
+  protected readonly viewGroups = computed(() =>
+    this.effectiveGroups().map((g) => ({ ...g, sections: g.sections.map(toSectionView) }))
+  );
   protected readonly allTabs = computed<SectionDescriptor[]>(() => this.effectiveGroups().flatMap((g) => g.sections));
 
   protected readonly activeLabel = computed(() => this.allTabs().find((t) => t.id === this.activeId())?.label ?? '');
@@ -107,14 +111,6 @@ export class SectionTabs implements OnInit {
     const tabs = this.allTabs();
     const i = this.activeIndex();
     if (i > 0) this.select(tabs[i - 1].id);
-  }
-
-  protected resolveStatus(section: SectionDescriptor): SectionStatus | null {
-    return section.status ? section.status() : null;
-  }
-
-  protected statusIcon(status: SectionStatus): string {
-    return STATUS_ICONS[status] ?? '○';
   }
 
   private readSavedShowAll(): boolean | null {

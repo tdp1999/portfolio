@@ -33,7 +33,7 @@
           <div class="email-card__preview">
             <iframe
               class="email-card__iframe"
-              [srcdoc]="srcdoc(variant, 'autoReply')"
+              [srcdoc]="variant.html"
               title="{{ variant.title }} preview"
               sandbox=""
               loading="lazy"
@@ -62,7 +62,7 @@
           <div class="email-card__preview">
             <iframe
               class="email-card__iframe"
-              [srcdoc]="srcdoc(variant, 'admin')"
+              [srcdoc]="variant.html"
               title="{{ variant.title }} preview"
               sandbox=""
               loading="lazy"

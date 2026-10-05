@@ -12,8 +12,8 @@ import {
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { STATUS_ICONS } from './scrollspy-rail.constants';
-import type { SectionDescriptor, SectionStatus } from './scrollspy-rail.types';
+import type { SectionDescriptor } from './scrollspy-rail.types';
+import { toSectionView } from './scrollspy-rail.util';
 
 @Component({
   selector: 'console-scrollspy-rail',
@@ -37,6 +37,9 @@ export class ScrollspyRail implements OnInit {
   /** When false, no active-section indicator is shown (use for atomic save forms) */
   activeIndicator = input<boolean>(true);
 
+  /** Sections with their status read, so the template only reads fields. */
+  protected readonly items = computed(() => this.sections().map(toSectionView));
+
   private readonly fragment = signal<string | null>(null);
   private readonly ioActiveId = signal<string>('');
 
@@ -52,16 +55,6 @@ export class ScrollspyRail implements OnInit {
 
   private observer: IntersectionObserver | null = null;
   private readonly intersecting = new Map<string, IntersectionObserverEntry>();
-
-  /** Resolves the section status value, or null if no status signal is provided */
-  resolveStatus(section: SectionDescriptor): SectionStatus | null {
-    return section.status ? section.status() : null;
-  }
-
-  /** Map section status to display icon */
-  statusIcon(status: string): string {
-    return STATUS_ICONS[status] ?? '○';
-  }
 
   ngOnInit(): void {
     this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((frag) => {

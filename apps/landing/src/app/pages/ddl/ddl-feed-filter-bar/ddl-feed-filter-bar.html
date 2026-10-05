@@ -96,7 +96,7 @@
     <ul class="afb-feed" role="list">
       @for (project of filteredProjects(); track project.slug) {
         <li class="afb-feed__row">
-          <span class="afb-feed__year">{{ yearOf(project.startDate) }}</span>
+          <span class="afb-feed__year">{{ project.year }}</span>
           <div class="afb-feed__thumb">
             @if (project.thumbnailUrl) {
               <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
@@ -246,9 +246,9 @@
         <div class="sidebar-section">
           <button type="button" class="sidebar-section__header" (click)="toggleV3Section('year')">
             <span>YEAR</span>
-            <landing-icon [name]="v3SectionExpanded('year') ? 'chevron-down' : 'chevron-right'" [size]="14" />
+            <landing-icon [name]="v3Expanded()['year'] ? 'chevron-down' : 'chevron-right'" [size]="14" />
           </button>
-          @if (v3SectionExpanded('year')) {
+          @if (v3Expanded()['year']) {
             <div class="sidebar-section__body">
               @for (year of years; track year) {
                 <label class="sidebar-option"> <input type="checkbox" /> {{ year }} </label>
@@ -260,9 +260,9 @@
         <div class="sidebar-section">
           <button type="button" class="sidebar-section__header" (click)="toggleV3Section('status')">
             <span>STATUS</span>
-            <landing-icon [name]="v3SectionExpanded('status') ? 'chevron-down' : 'chevron-right'" [size]="14" />
+            <landing-icon [name]="v3Expanded()['status'] ? 'chevron-down' : 'chevron-right'" [size]="14" />
           </button>
-          @if (v3SectionExpanded('status')) {
+          @if (v3Expanded()['status']) {
             <div class="sidebar-section__body">
               @for (status of statuses; track status) {
                 <label class="sidebar-option"> <input type="checkbox" /> {{ status }} </label>
@@ -275,9 +275,9 @@
           <div class="sidebar-section">
             <button type="button" class="sidebar-section__header" (click)="toggleV3Section(group.category)">
               <span>{{ group.category }}</span>
-              <landing-icon [name]="v3SectionExpanded(group.category) ? 'chevron-down' : 'chevron-right'" [size]="14" />
+              <landing-icon [name]="v3Expanded()[group.category] ? 'chevron-down' : 'chevron-right'" [size]="14" />
             </button>
-            @if (v3SectionExpanded(group.category)) {
+            @if (v3Expanded()[group.category]) {
               <div class="sidebar-section__body">
                 @for (skill of group.skills; track skill.skill.slug) {
                   <label class="sidebar-option">

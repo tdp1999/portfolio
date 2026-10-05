@@ -69,6 +69,8 @@ interface HighlightView {
   challenge: string;
   approach: string;
   outcome: string;
+  /** Collapsed fold summary: the outcome is the part a reader scans for. */
+  gist: string;
   codeUrl: string | null;
   incomplete: boolean;
 }
@@ -134,6 +136,7 @@ export default class ProjectDetail implements OnInit {
       const challenge = this.resolve(h.challengeHtml);
       const approach = this.resolve(h.approachHtml);
       const outcome = this.resolve(h.outcomeHtml);
+      const outcomeText = stripTags(outcome);
       return {
         id: `highlight-${h.id}`,
         index: i + 1,
@@ -141,6 +144,7 @@ export default class ProjectDetail implements OnInit {
         challenge,
         approach,
         outcome,
+        gist: outcomeText ? gist(outcomeText) : 'No outcome written yet',
         codeUrl: h.codeUrl,
         incomplete: !isRich(challenge) || !isRich(approach) || !isRich(outcome),
       };
@@ -201,12 +205,6 @@ export default class ProjectDetail implements OnInit {
       { name: 'Media', empty: !p.thumbnailUrl && p.images.length === 0 },
     ]);
   });
-
-  /** Gist for a highlight: its outcome is the part a reader scans for. */
-  highlightGist(h: HighlightView): string {
-    const text = stripTags(h.outcome);
-    return text ? gist(text) : 'No outcome written yet';
-  }
 
   private resolve(value: TranslatableJson | null | undefined): string {
     return resolveTranslatable(value, this.locale()).text;

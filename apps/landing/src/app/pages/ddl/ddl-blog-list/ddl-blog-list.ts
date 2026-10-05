@@ -17,6 +17,7 @@ import {
   Segmented,
   SectionRule,
   CloudinarySrcsetPipe,
+  TimeAgoPipe,
 } from '@portfolio/landing/shared/ui';
 import { BlogDataService, type BlogPostListItem } from '@portfolio/landing/shared/data-access';
 
@@ -35,7 +36,7 @@ import {
   MOCK_FEATURED_BASE,
   BLOG_LIST_VARIANTS,
 } from './ddl-blog-list.data';
-import { timeAgo, dateMs } from './ddl-blog-list.util';
+import { dateMs } from './ddl-blog-list.util';
 
 @Component({
   selector: 'landing-ddl-blog-list',
@@ -43,6 +44,7 @@ import { timeAgo, dateMs } from './ddl-blog-list.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
+    TimeAgoPipe,
     ReactiveFormsModule,
     UpperCasePipe,
     Container,
@@ -217,15 +219,6 @@ export class DdlBlogList {
           queryParamsHandling: 'merge',
         });
       });
-  }
-
-  // ─── Template helpers ─────────────────────────────────────────────
-  timeAgo(post: BlogPostListItem): string {
-    return timeAgo(post.publishedAt, this.locale());
-  }
-
-  primaryCategory(post: BlogPostListItem): string | null {
-    return post.categories[0]?.name ?? null;
   }
 
   // ─── Mutators → URL ──────────────────────────────────────────────

@@ -29,6 +29,7 @@ import {
   SectionCard,
   SectionStatus,
   ToastService,
+  UrlFileNamePipe,
 } from '@portfolio/console/shared/ui';
 import { baselineFor, FormErrorPipe, ServerErrorDirective, type MediaItem } from '@portfolio/console/shared/util';
 import { LIMITS } from '@portfolio/shared/validation';
@@ -52,6 +53,7 @@ import { ProfileAdminResponse, UpdateSocialLinksPayload } from '../../profile.ty
     ServerErrorDirective,
     FormErrorPipe,
     ChipSelect,
+    UrlFileNamePipe,
   ],
   templateUrl: './profile-social-links.section.html',
   styleUrl: './profile-social-links.section.scss',
@@ -250,11 +252,6 @@ export class ProfileSocialLinksSection {
         certGroup.controls['url'].setValue(item.url);
         certsArray.markAsDirty();
       });
-  }
-
-  certFileLabel(url: string): string {
-    const segments = url.split('/');
-    return segments[segments.length - 1].split('?')[0] || url;
   }
 
   /**

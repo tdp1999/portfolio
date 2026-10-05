@@ -60,7 +60,14 @@ export class DdlFeedFilterBar {
       if (statuses.size > 0 && !statuses.has(p.lifecycleStatus)) return false;
       if (skills.size > 0 && !p.skills.some((s) => skills.has(s.slug))) return false;
       return true;
-    });
+    }).map((p) => ({ ...p, year: String(new Date(p.startDate).getFullYear()) }));
+  });
+
+  /** Expanded state per V3 sidebar section, keyed by section name. */
+  readonly v3Expanded = computed(() => {
+    const collapsed = this.v3CollapsedSections();
+    const names = ['year', 'status', ...this.skillGroups.map((g) => g.category)];
+    return Object.fromEntries(names.map((n) => [n, !collapsed.has(n)])) as Record<string, boolean>;
   });
 
   readonly filteredCount = computed(() => this.filteredProjects().length);
@@ -75,10 +82,6 @@ export class DdlFeedFilterBar {
 
   toggleV1Filters(): void {
     this.v1FiltersOpen.update((v) => !v);
-  }
-
-  yearOf(iso: string): string {
-    return String(new Date(iso).getFullYear());
   }
 
   toggleYear(year: number, on: boolean): void {
@@ -117,9 +120,5 @@ export class DdlFeedFilterBar {
     if (next.has(name)) next.delete(name);
     else next.add(name);
     this.v3CollapsedSections.set(next);
-  }
-
-  v3SectionExpanded(name: string): boolean {
-    return !this.v3CollapsedSections().has(name);
   }
 }

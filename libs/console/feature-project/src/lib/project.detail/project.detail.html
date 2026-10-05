@@ -63,7 +63,7 @@
             @if (collapseHighlights()) {
               <console-record-fold
                 [title]="h.title"
-                [gist]="highlightGist(h)"
+                [gist]="h.gist"
                 [index]="h.index"
                 [open]="folds.isOpen(h.id)"
                 (openChange)="folds.toggle(h.id)"

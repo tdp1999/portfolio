@@ -14,7 +14,7 @@
         <button
           type="button"
           class="ddl-sidebar__group-toggle"
-          [attr.aria-expanded]="!isCollapsed(group.id)"
+          [attr.aria-expanded]="!group.collapsed"
           (click)="toggleGroup(group.id)"
         >
           <span class="ddl-sidebar__group-label">{{ group.label }}</span>
@@ -22,15 +22,15 @@
           <span class="ddl-sidebar__group-chevron" aria-hidden="true"></span>
         </button>
 
-        @if (!isCollapsed(group.id)) {
+        @if (!group.collapsed) {
           <ul class="ddl-sidebar__list">
             @for (entry of group.entries; track entry.slug) {
               <li>
                 <a
                   class="ddl-sidebar__link"
-                  [routerLink]="linkFor(entry)"
-                  [fragment]="fragmentFor(entry)"
-                  [routerLinkActive]="isRoute(entry) ? 'is-active' : ''"
+                  [routerLink]="entry.link"
+                  [fragment]="entry.fragment"
+                  [routerLinkActive]="entry.isRoute ? 'is-active' : ''"
                   [title]="entry.summary"
                 >
                   <span class="ddl-sidebar__link-title">{{ entry.title }}</span>

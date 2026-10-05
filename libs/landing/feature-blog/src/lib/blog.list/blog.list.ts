@@ -29,6 +29,7 @@ import {
   Carousel,
   CarouselSlide,
   CloudinarySrcsetPipe,
+  TimeAgoPipe,
   UmamiEventDirective,
   type BreadcrumbItem,
   resolveCopy,
@@ -51,13 +52,14 @@ import {
   sortOptions,
   EMPTY_RESPONSE,
 } from './blog.list.data';
-import { timeAgo, parsePageParam } from './blog.list.util';
+import { parsePageParam } from './blog.list.util';
 
 @Component({
   selector: 'landing-blog-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
+    TimeAgoPipe,
     ReactiveFormsModule,
     NgTemplateOutlet,
     UpperCasePipe,
@@ -245,14 +247,6 @@ export class BlogList {
     destroyRef.onDestroy(() => {
       if (this.spinnerHideTimer) clearTimeout(this.spinnerHideTimer);
     });
-  }
-
-  // ─── Template helpers ────────────────────────────────────────────
-  timeAgo(post: BlogPostListItem): string {
-    return timeAgo(post.publishedAt, this.locale());
-  }
-  primaryCategory(post: BlogPostListItem): string | null {
-    return post.categories[0]?.name ?? null;
   }
 
   // ─── Mutators → local signal + URL mirror ─────────────────────────

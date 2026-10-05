@@ -1,13 +1,12 @@
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, isDevMode } from '@angular/core';
-import { BLOCK_RENDERERS, type BlockRenderer, type RenderContext } from '@portfolio/shared/features/rte-contract';
+import { BLOCK_RENDERERS, type RenderContext } from '@portfolio/shared/features/rte-contract';
 import {
   collectHeadings,
   type HeadingAnchor,
-  type Mark,
   type PortableDocument,
-  type PortableNode,
 } from '@portfolio/shared/features/rte-core/portable';
+import { buildRenderTree, type RenderNode } from './rte-render.util';
 
 /** Fallback context for standalone use (no media resolution, EN locale). Real
  *  consumers pass a `[context]` carrying the pre-resolved media map + active locale. */
@@ -67,7 +66,6 @@ export class RteRender {
   private readonly byType = new Map(this.registry.map((r) => [r.type, r]));
 
   protected readonly hostClass = computed(() => ('rte-content ' + this.contentClass()).trim());
-  protected readonly nodes = computed<readonly PortableNode[]>(() => this.doc()?.content ?? []);
 
   // Headings walked once from the doc → stable slug ids (h2–h4) + a node→id map.
   // The template stamps the id onto each heading so a sticky ToC / scrollspy have
@@ -81,54 +79,12 @@ export class RteRender {
     this.headingRefs().map(({ id, text, level }) => ({ id, text, level }))
   );
 
-  /** The stamped anchor id for a heading node (null for non-heading / unknown). */
-  protected headingIdFor(node: PortableNode): string | null {
-    return this.headingIdByNode().get(node) ?? null;
-  }
-
-  /** Registered renderer for a node type, or undefined → structural/text/fallback. */
-  protected rendererFor(type: string): BlockRenderer | undefined {
-    return this.byType.get(type);
-  }
-
-  /** Map a node's validated attrs → the block component's inputs (D5). */
-  protected inputsFor(renderer: BlockRenderer, node: PortableNode): Record<string, unknown> {
-    return renderer.inputs ? (renderer.inputs(node, this.context()) as Record<string, unknown>) : {};
-  }
-
-  /** Clamp heading level to the h2–h4 range the prose whitelist permits. */
-  protected headingLevel(node: PortableNode): 2 | 3 | 4 {
-    const level = node.attrs?.['level'];
-    return level === 3 ? 3 : level === 4 ? 4 : 2;
-  }
-
-  /**
-   * A table cell's `colspan`/`rowspan`, or null when it is 1.
-   *
-   * Null rather than "1" so the attribute is omitted entirely in the common case:
-   * an explicit `colspan="1"` on every cell is noise in the DOM, and the
-   * attribute is only meaningful when it departs from the default. Anything that
-   * is not a positive whole number is treated as absent rather than trusted.
-   */
-  protected span(node: PortableNode, attr: 'colspan' | 'rowspan'): number | null {
-    const value = node.attrs?.[attr];
-    return typeof value === 'number' && Number.isInteger(value) && value > 1 ? value : null;
-  }
-
-  /** A link mark's href (already scheme-validated at write-time); '#' as a safety net. */
-  protected href(mark: Mark): string {
-    const value = mark.attrs?.['href'];
-    return typeof value === 'string' ? value : '#';
-  }
-
-  /**
-   * Concatenated text of a code block's descendants. `<pre>` is whitespace-
-   * significant, so code text is bound as a single interpolation (no marks, no
-   * per-node template) — this keeps stray formatting whitespace out of the output,
-   * which the recursive inline path can introduce around `{{ text }}`.
-   */
-  protected codeText(node: PortableNode): string {
-    const collect = (n: PortableNode): string => (n.text ?? '') + (n.content ?? []).map(collect).join('');
-    return collect(node);
-  }
+  /** The document resolved once into the render tree the recursive template reads. */
+  protected readonly tree = computed<readonly RenderNode[]>(() =>
+    buildRenderTree(this.doc()?.content ?? [], {
+      byType: this.byType,
+      context: this.context(),
+      headingIdByNode: this.headingIdByNode(),
+    })
+  );
 }

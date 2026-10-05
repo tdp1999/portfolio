@@ -85,6 +85,8 @@ export type {
   LocaleView,
 } from './components/translatable-rich-text-group/translatable-rich-text-group';
 export { EnumLabelPipe } from './pipes/enum-label/enum-label.pipe';
+export { SetHasPipe } from './pipes/set-has/set-has.pipe';
+export { UrlFileNamePipe } from './pipes/url-file-name/url-file-name.pipe';
 export { QuickLook } from './components/quick-look/quick-look';
 // Record view — read-only detail chassis (ADR-026).
 export { RecordLayout } from './components/record-view/record-layout';

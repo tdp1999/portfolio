@@ -20,7 +20,7 @@ export class MessagesPage {
     this.searchInput = page.locator('console-filter-search input');
     this.statusSelect = page.locator('console-filter-select mat-select').first();
     this.table = page.locator('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
     this.selectAllCheckbox = page.locator('th.col-select mat-checkbox');
     this.bulkToolbar = page.locator('.bulk-toolbar');
     this.noDataRow = page.getByText('No messages yet');

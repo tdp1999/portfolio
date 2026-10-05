@@ -6,7 +6,7 @@ import { DdlDecisionRecord } from '../ddl-decision-record/ddl-decision-record';
 import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { DdlSection } from '../ddl-section/ddl-section';
 import { FEED_ITEM_VARIANTS } from './ddl-feed-item.data';
-import { groupByYear, yearOf, yearRange } from './ddl-feed-item.util';
+import { groupByYear, toFeedRow } from './ddl-feed-item.util';
 
 @Component({
   selector: 'landing-ddl-feed-item',
@@ -19,14 +19,7 @@ import { groupByYear, yearOf, yearRange } from './ddl-feed-item.util';
 export class DdlFeedItem {
   protected readonly variants = FEED_ITEM_VARIANTS;
 
-  readonly projects = FAKE_PROJECTS;
+  readonly projects = FAKE_PROJECTS.map(toFeedRow);
   readonly previewProjects = computed(() => this.projects.slice(0, 4));
   readonly grouped = computed(() => groupByYear(this.projects));
-
-  yearOf = yearOf;
-  yearRange = yearRange;
-
-  statusToneClass(s: string): string {
-    return `status-pill status-pill--${s.toLowerCase()}`;
-  }
 }

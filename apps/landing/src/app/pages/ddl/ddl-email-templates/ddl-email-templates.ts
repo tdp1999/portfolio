@@ -9,7 +9,6 @@ import {
   EMAIL_TEMPLATES_VARIANTS,
   SAMPLE_ADMIN,
   SAMPLE_AUTO_REPLY,
-  type EmailVariant,
 } from '../email-templates/email-templates.data';
 
 /**
@@ -35,13 +34,7 @@ import {
 export class DdlEmailTemplates {
   protected readonly variants = EMAIL_TEMPLATES_VARIANTS;
 
-  protected readonly autoReplyVariants = AUTO_REPLY_VARIANTS;
-  protected readonly adminVariants = ADMIN_NOTIFICATION_VARIANTS;
-  protected readonly autoReplySample = SAMPLE_AUTO_REPLY;
-  protected readonly adminSample = SAMPLE_ADMIN;
-
-  protected srcdoc(variant: EmailVariant, sampleKey: 'autoReply' | 'admin'): string {
-    const data = sampleKey === 'autoReply' ? this.autoReplySample : this.adminSample;
-    return variant.render(data);
-  }
+  /** Each variant rendered once with its sample data, for the `<iframe srcdoc>` previews. */
+  protected readonly autoReplyVariants = AUTO_REPLY_VARIANTS.map((v) => ({ ...v, html: v.render(SAMPLE_AUTO_REPLY) }));
+  protected readonly adminVariants = ADMIN_NOTIFICATION_VARIANTS.map((v) => ({ ...v, html: v.render(SAMPLE_ADMIN) }));
 }

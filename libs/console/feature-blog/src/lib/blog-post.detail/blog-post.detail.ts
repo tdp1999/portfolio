@@ -20,6 +20,7 @@ import { BLOG_POST_STATUS_LABELS } from '@portfolio/shared/enum-labels';
 import { filter, switchMap } from 'rxjs';
 import { RteRenderHtml } from '@portfolio/shared/features/rte-renderer';
 import { BlogService } from '../blog.service';
+import { STATUS_BADGE_MODIFIERS } from './blog-post.detail.data';
 import { AdminBlogPostDetail, BlogStatus } from '../blog.types';
 
 @Component({
@@ -53,6 +54,7 @@ export default class BlogPostDetail implements OnInit {
   readonly loading = signal(false);
 
   readonly statusLabels = BLOG_POST_STATUS_LABELS;
+  readonly statusBadges = STATUS_BADGE_MODIFIERS;
 
   /** Sanitized HTML body for the post's own language (blog posts are single-language). */
   readonly renderedBody = computed(() => {
@@ -68,19 +70,6 @@ export default class BlogPostDetail implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/admin/blog']);
-  }
-
-  statusBadgeClass(status: BlogStatus): string {
-    switch (status) {
-      case 'PUBLISHED':
-        return 'console-badge--success';
-      case 'DRAFT':
-        return 'console-badge--warn';
-      case 'PRIVATE':
-      case 'UNLISTED':
-      default:
-        return 'console-badge--muted';
-    }
   }
 
   togglePublish(): void {

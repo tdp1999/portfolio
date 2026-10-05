@@ -166,7 +166,7 @@
                   [state]="it.applyNote ? 'filled' : 'unset'"
                   unsetLabel="No apply note: the worker marked this post as promo or not relevant."
                 >
-                  <p class="rv-prose">{{ plain(it.applyNote) }}</p>
+                  <p class="rv-prose">{{ it.applyNoteText }}</p>
                 </console-record-field>
               </console-record-section>
             } @else {
@@ -251,7 +251,7 @@
 </div>
 
 <ng-template #score let-it>
-  <span class="tr-score" [class]="scoreTone(it.score)">
+  <span class="tr-score" [class]="it.scoreTone">
     @if (it.score !== null) {
       {{ it.score }}
     } @else {

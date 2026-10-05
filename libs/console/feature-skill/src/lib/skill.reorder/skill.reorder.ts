@@ -57,7 +57,8 @@ export default class SkillReorder implements OnInit, HasUnsavedChanges {
 
   readonly dirty = computed(() => this.signature(this.groups()) !== this.signature(this.baseline()));
 
-  private readonly parentNames = signal<Map<string, string>>(new Map());
+  /** Skill id to name, for the parent label under a child skill. */
+  readonly parentNames = signal<Readonly<Record<string, string>>>({});
 
   // Card elements in template order (tier 0 items, then tier 1, …) for roving
   // arrow-key focus across the grid.
@@ -99,10 +100,6 @@ export default class SkillReorder implements OnInit, HasUnsavedChanges {
         return true;
       })
       .catch(() => false);
-  }
-
-  parentName(id: string | null): string {
-    return id ? (this.parentNames().get(id) ?? '') : '';
   }
 
   drop(event: CdkDragDrop<AdminSkill[]>): void {
@@ -282,7 +279,7 @@ export default class SkillReorder implements OnInit, HasUnsavedChanges {
       .pipe(withListLoading({ loading: this.loading, progress: this.progress }))
       .subscribe({
         next: (skills) => {
-          this.parentNames.set(new Map(skills.map((s) => [s.id, s.name])));
+          this.parentNames.set(Object.fromEntries(skills.map((s) => [s.id, s.name])));
           const groups = this.buildGroups(skills);
           this.groups.set(groups);
           this.baseline.set(this.cloneGroups(groups));

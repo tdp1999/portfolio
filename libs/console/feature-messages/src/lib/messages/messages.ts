@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -13,6 +12,9 @@ import {
   FilterBar,
   FilterSearch,
   FilterSelect,
+  Paginator,
+  type PaginatorChange,
+  SetHasPipe,
   SpinnerOverlay,
   ToastService,
 } from '@portfolio/console/shared/ui';
@@ -22,13 +24,14 @@ import { MessageService } from '../message.service';
 import { ContactMessageListItem } from '../message.types';
 import { RelativeTimePipe } from '../pipes/relative-time.pipe';
 import { PURPOSE_OPTIONS, STATUS_OPTIONS } from './messages.data';
+import { toMessageRow } from './messages.util';
 
 @Component({
   selector: 'console-messages',
   standalone: true,
   imports: [
+    Paginator,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatCheckboxModule,
     MatChipsModule,
@@ -38,6 +41,7 @@ import { PURPOSE_OPTIONS, STATUS_OPTIONS } from './messages.data';
     FilterSearch,
     FilterSelect,
     RelativeTimePipe,
+    SetHasPipe,
   ],
   templateUrl: './messages.html',
   styleUrl: './messages.scss',
@@ -52,7 +56,6 @@ export default class Messages implements OnInit {
   private readonly toast = inject(ToastService);
 
   // ── Queries ───────────────────────────────────────────────────────
-  readonly paginator = viewChild.required(MatPaginator);
 
   // ── Writable signals ──────────────────────────────────────────────
   readonly messages = signal<ContactMessageListItem[]>([]);
@@ -79,6 +82,7 @@ export default class Messages implements OnInit {
     return filters;
   });
 
+  readonly rows = computed(() => this.messages().map(toMessageRow));
   readonly hasSelection = computed(() => this.selected().size > 0);
   readonly selectedCount = computed(() => this.selected().size);
   readonly allSelected = computed(() => {
@@ -132,7 +136,7 @@ export default class Messages implements OnInit {
     this.resetAndLoad();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.selected.set(new Set());
@@ -160,10 +164,6 @@ export default class Messages implements OnInit {
     }
   }
 
-  isSelected(id: string): boolean {
-    return this.selected().has(id);
-  }
-
   bulkMarkAsRead(): void {
     const ids = [...this.selected()];
     this.executeBulkAction(ids, (id) => this.messageService.markAsRead(id), `Marked ${ids.length} messages as read`);
@@ -189,47 +189,6 @@ export default class Messages implements OnInit {
     });
   }
 
-  getStatusDotClass(message: ContactMessageListItem): string {
-    if (message.isSpam) return 'dot-spam';
-    switch (message.status) {
-      case 'UNREAD':
-        return 'dot-unread';
-      case 'READ':
-        return 'dot-read';
-      case 'REPLIED':
-        return 'dot-replied';
-      case 'ARCHIVED':
-        return 'dot-archived';
-      default:
-        return 'dot-read';
-    }
-  }
-
-  getPurposeLabel(purpose: string): string {
-    return PURPOSE_OPTIONS.find((o) => o.value === purpose)?.label ?? purpose;
-  }
-
-  getPurposeClass(purpose: string): string {
-    switch (purpose) {
-      case 'JOB_OPPORTUNITY':
-        return 'badge-job';
-      case 'FREELANCE':
-        return 'badge-freelance';
-      case 'COLLABORATION':
-        return 'badge-collab';
-      case 'BUG_REPORT':
-        return 'badge-bug';
-      case 'PRESS':
-        return 'badge-press';
-      default:
-        return 'badge-default';
-    }
-  }
-
-  isUnread(message: ContactMessageListItem): boolean {
-    return message.status === 'UNREAD' && !message.isSpam;
-  }
-
   // ── Private helpers ───────────────────────────────────────────────
   private executeBulkAction(ids: string[], action: (id: string) => Observable<unknown>, successMessage: string): void {
     forkJoin(ids.map((id) => action(id))).subscribe({
@@ -248,7 +207,6 @@ export default class Messages implements OnInit {
 
   private resetAndLoad(): void {
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.selected.set(new Set());
     this.loadMessages();
   }

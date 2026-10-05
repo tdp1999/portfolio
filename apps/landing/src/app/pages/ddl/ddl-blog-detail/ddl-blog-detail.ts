@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser, JsonPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, map } from 'rxjs';
@@ -26,13 +26,14 @@ import type { DdlVariant } from '../ddl.types';
 import { DdlBlogShareRow } from './ddl-blog-share-row';
 import type { LoadedPost } from './ddl-blog-detail.types';
 import { EMPTY, DEEP_DIVE_SLUG, NOTE_SLUG, ESSAY_SLUG, RETRO_SLUG, BLOG_DETAIL_VARIANTS } from './ddl-blog-detail.data';
-import { shouldHideToc, tocFromEntries } from './ddl-blog-detail.util';
+import { postTypeLabel, shouldHideToc, tocFromEntries } from './ddl-blog-detail.util';
 
 @Component({
   selector: 'landing-ddl-blog-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    DatePipe,
     JsonPipe,
     RouterLink,
     Figure,
@@ -120,6 +121,10 @@ export class DdlBlogDetail {
     }
   });
 
+  readonly v4PostType = computed(() => postTypeLabel(this.v4Active().post));
+  readonly deepPostType = computed(() => postTypeLabel(this.deepPost()));
+  readonly notePostType = computed(() => postTypeLabel(this.notePost()));
+
   readonly v4HideToc = computed(() => shouldHideToc(this.v4Active().post, this.v4Active().toc.length));
 
   // ─── V1 auto-hide TOC branch ─────────────────────────────────────
@@ -147,22 +152,6 @@ export class DdlBlogDetail {
 
   setV4Type(value: string): void {
     this.v4Type.set((value as 'deep' | 'essay' | 'retro' | 'note') ?? 'deep');
-  }
-
-  // ─── Template helpers ────────────────────────────────────────────
-  formatDate(iso: string | null): string {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (!Number.isFinite(d.getTime())) return '';
-    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-
-  postType(post: BlogPostDetail | null): string {
-    if (!post) return '—';
-    if (post.categories[0]?.slug === 'notes') return 'Note';
-    // Deep dive ≈ 1500+ words; read-time is ceil(words / 200), so 1500 words ≈ 8 min.
-    if ((post.readTimeMinutes ?? 0) >= 8) return 'Deep dive';
-    return 'Essay';
   }
 
   // SSR-safe absolute URL (production wires WINDOW token; DDL uses fallback)

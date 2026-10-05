@@ -1,13 +1,18 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { SpinnerOverlay, ToastService } from '@portfolio/console/shared/ui';
+import {
+  Paginator,
+  type PaginatorChange,
+  SetHasPipe,
+  SpinnerOverlay,
+  ToastService,
+} from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { MediaService } from '../media.service';
 import { MediaItem } from '../media.types';
@@ -17,13 +22,14 @@ import { MimeCategoryPipe, ReadableSizePipe } from '@portfolio/shared/ui';
   selector: 'console-media-trash',
   standalone: true,
   imports: [
+    Paginator,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
-    MatPaginatorModule,
     MatTableModule,
     MatTooltipModule,
     SpinnerOverlay,
+    SetHasPipe,
     DatePipe,
     RouterLink,
     MimeCategoryPipe,
@@ -36,8 +42,6 @@ import { MimeCategoryPipe, ReadableSizePipe } from '@portfolio/shared/ui';
 export default class MediaTrash implements OnInit {
   private readonly mediaService = inject(MediaService);
   private readonly toast = inject(ToastService);
-
-  readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['select', 'name', 'type', 'size', 'deletedAt', 'actions'];
 
   readonly items = signal<MediaItem[]>([]);
@@ -64,7 +68,7 @@ export default class MediaTrash implements OnInit {
     this.loadTrash();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadTrash();
@@ -85,10 +89,6 @@ export default class MediaTrash implements OnInit {
       else next.add(id);
       return next;
     });
-  }
-
-  isSelected(id: string): boolean {
-    return this.selected().has(id);
   }
 
   restoreItem(item: MediaItem): void {

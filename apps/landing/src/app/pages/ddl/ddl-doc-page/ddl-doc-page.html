@@ -17,7 +17,7 @@
   @if (entry()) {
     <nav class="ddl-doc__pager" aria-label="Page navigation">
       @if (prev(); as p) {
-        <a class="ddl-doc__pager-link ddl-doc__pager-link--prev" [routerLink]="linkFor(p)" [fragment]="fragmentFor(p)">
+        <a class="ddl-doc__pager-link ddl-doc__pager-link--prev" [routerLink]="p.link" [fragment]="p.fragment">
           <span class="ddl-doc__pager-dir">← Previous</span>
           <span class="ddl-doc__pager-title">{{ p.title }}</span>
         </a>
@@ -26,7 +26,7 @@
       }
 
       @if (next(); as n) {
-        <a class="ddl-doc__pager-link ddl-doc__pager-link--next" [routerLink]="linkFor(n)" [fragment]="fragmentFor(n)">
+        <a class="ddl-doc__pager-link ddl-doc__pager-link--next" [routerLink]="n.link" [fragment]="n.fragment">
           <span class="ddl-doc__pager-dir">Next →</span>
           <span class="ddl-doc__pager-title">{{ n.title }}</span>
         </a>

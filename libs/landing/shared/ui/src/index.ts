@@ -58,6 +58,7 @@ export * from './components/scroll-to-top';
 export * from './directives';
 export * from './pipes/cloudinary-srcset.pipe';
 export * from './pipes/landing-copy.pipe';
+export * from './pipes/time-ago.pipe';
 
 // Prose-block renderers (redoc-blocks epic) — `components/blocks/`. Each maps a
 // canonical AST node onto a landing primitive + is registered via

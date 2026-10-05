@@ -16,7 +16,7 @@
           @if (p.deletedAt) {
             <span class="console-badge console-badge--danger">Deleted</span>
           } @else {
-            <span class="console-badge" [class]="statusBadgeClass(p.status)">
+            <span class="console-badge" [class]="p.status | enumLabel: statusBadges">
               {{ p.status | enumLabel: statusLabels }}
             </span>
           }

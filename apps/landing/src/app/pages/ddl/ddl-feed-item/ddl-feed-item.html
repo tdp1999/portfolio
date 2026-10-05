@@ -22,7 +22,7 @@
       <ul class="row-list" role="list">
         @for (project of previewProjects(); track project.slug) {
           <li class="row-a">
-            <span class="row-a__year">{{ yearOf(project.startDate) }}</span>
+            <span class="row-a__year">{{ project.year }}</span>
             <div class="row-a__body">
               <span class="row-a__title">{{ project.title }}</span>
               <span class="row-a__sum">{{ project.oneLiner.en }}</span>
@@ -42,7 +42,7 @@
       <ul class="row-list" role="list">
         @for (project of previewProjects(); track project.slug) {
           <li class="row-b">
-            <span class="row-b__year">{{ yearOf(project.startDate) }}</span>
+            <span class="row-b__year">{{ project.year }}</span>
             <div class="row-b__thumb">
               @if (project.thumbnailUrl) {
                 <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
@@ -71,7 +71,7 @@
       <ul class="row-list" role="list">
         @for (project of previewProjects(); track project.slug) {
           <li class="row-c">
-            <span class="row-c__year">{{ yearOf(project.startDate) }}</span>
+            <span class="row-c__year">{{ project.year }}</span>
             <div class="row-c__thumb">
               @if (project.thumbnailUrl) {
                 <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
@@ -82,7 +82,7 @@
             <div class="row-c__body">
               <div class="row-c__top">
                 <span class="row-c__title">{{ project.title }}</span>
-                <span [class]="statusToneClass(project.lifecycleStatus)">{{ project.lifecycleStatus }}</span>
+                <span [class]="project.statusClass">{{ project.lifecycleStatus }}</span>
               </div>
               <span class="row-c__sum">{{ project.oneLiner.en }}</span>
               <div class="row-c__chips">
@@ -112,7 +112,7 @@
       <ul class="row-list" role="list">
         @for (project of previewProjects(); track project.slug) {
           <li class="row-c2">
-            <span class="row-c2__year">{{ yearOf(project.startDate) }}</span>
+            <span class="row-c2__year">{{ project.year }}</span>
             <div class="row-c2__thumb">
               @if (project.thumbnailUrl) {
                 <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
@@ -157,7 +157,7 @@
       <ul class="row-list" role="list">
         @for (project of previewProjects(); track project.slug) {
           <li class="row-c3">
-            <span class="row-c3__year">{{ yearOf(project.startDate) }}</span>
+            <span class="row-c3__year">{{ project.year }}</span>
             <div class="row-c3__thumb">
               @if (project.thumbnailUrl) {
                 <img [src]="project.thumbnailUrl" [alt]="project.title" loading="lazy" />
@@ -202,13 +202,13 @@
               } @else {
                 <span class="card__media-empty">{{ project.title }}</span>
               }
-              <span [class]="statusToneClass(project.lifecycleStatus) + ' card__status'">
+              <span [class]="project.statusClass + ' card__status'">
                 {{ project.lifecycleStatus }}
               </span>
             </div>
             <div class="card__body">
               <div class="card__head">
-                <span class="card__year">{{ yearRange(project.startDate, project.endDate) }}</span>
+                <span class="card__year">{{ project.yearRange }}</span>
                 <span class="card__title">{{ project.title }}</span>
               </div>
               <p class="card__sum">{{ project.oneLiner.en }}</p>
@@ -251,7 +251,7 @@
                   <div class="timeline-entry__body">
                     <div class="timeline-entry__head">
                       <span class="timeline-entry__title">{{ project.title }}</span>
-                      <span [class]="statusToneClass(project.lifecycleStatus)">{{ project.lifecycleStatus }}</span>
+                      <span [class]="project.statusClass">{{ project.lifecycleStatus }}</span>
                     </div>
                     <p class="timeline-entry__sum">{{ project.oneLiner.en }}</p>
                     <div class="timeline-entry__chips">
