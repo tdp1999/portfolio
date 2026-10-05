@@ -1,4 +1,4 @@
-import { RadarItemKind, RadarPlatform, RadarStep, RadarWorkStatus } from '@prisma/client';
+import { RadarItemKind, RadarPlatform, RadarRunFlow, RadarStatus, RadarStep, RadarWorkStatus } from '@prisma/client';
 import { z } from 'zod/v4';
 
 import {
@@ -8,6 +8,7 @@ import {
   RADAR_FEED_STATUSES,
   RADAR_MAX_CLAIM_ATTEMPTS,
   RADAR_MAX_PROFILE_CHARS,
+  RADAR_MAX_RUN_ITEM_CAP,
   RADAR_PROVIDER_TAGS,
 } from '@portfolio/shared/types';
 
@@ -31,6 +32,8 @@ export const CreateRadarSourceSchema = z.object({
 
 export const UploadCaptureBodySchema = z.object({
   format: z.string().min(1).max(64).default('apify-facebook-posts'),
+  /** A Manual run created through the runs API that waits for this file. Omit for a one-off upload. */
+  runId: z.uuid().optional(),
 });
 
 export const UploadCaptureFileSchema = z.array(z.unknown()).min(1).max(MAX_UPLOAD_POSTS);
@@ -206,4 +209,50 @@ export type RadarQueueStatsDto = RadarQueueStats;
 
 export interface RequeueStuckResponseDto {
   requeued: number;
+}
+
+export const MAX_RUN_ITEM_CAP = RADAR_MAX_RUN_ITEM_CAP;
+export const RUN_LIST_LIMIT = 50;
+
+export const CreateRunSchema = z
+  .object({
+    sourceId: z.uuid(),
+    flow: z.enum(RadarRunFlow).default(RadarRunFlow.HYBRID),
+    windowFrom: z.coerce.date().optional(),
+    windowTo: z.coerce.date().optional(),
+    itemCap: z.int().min(1).max(MAX_RUN_ITEM_CAP),
+  })
+  .refine((v) => !v.windowFrom || !v.windowTo || v.windowFrom < v.windowTo, {
+    message: 'windowFrom must be before windowTo',
+    path: ['windowTo'],
+  });
+
+export interface RadarStepRunDto {
+  step: RadarStep;
+  status: RadarStatus;
+  adapter: string;
+  error: string | null;
+  startedAt: Date | null;
+  finishedAt: Date | null;
+}
+
+export interface RadarRunDto {
+  id: string;
+  source: { id: string; displayName: string };
+  flow: RadarRunFlow;
+  status: RadarStatus;
+  windowFrom: Date | null;
+  windowTo: Date | null;
+  itemCap: number;
+  captureAdapter: string;
+  llmAdapter: string;
+  itemsCaptured: number;
+  itemsCreated: number;
+  itemsUpdated: number;
+  itemsFailed: number;
+  error: string | null;
+  createdAt: Date;
+  startedAt: Date | null;
+  finishedAt: Date | null;
+  steps: RadarStepRunDto[];
 }

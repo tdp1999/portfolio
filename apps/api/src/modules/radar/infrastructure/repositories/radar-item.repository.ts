@@ -55,7 +55,7 @@ const detailSelect = {
 const notDone = { workStatus: { not: RadarWorkStatus.DONE } } as const;
 
 /** Mirrors the claim query's skip rule: capped, and no live lease the worker could still submit under. */
-const stuckWhere = (now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => ({
+export const stuckWhere = (now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => ({
   ...notDone,
   claimCount: { gte: maxAttempts },
   OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }],

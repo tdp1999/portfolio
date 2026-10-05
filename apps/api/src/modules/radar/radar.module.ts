@@ -6,7 +6,10 @@ import { UserModule } from '../user';
 import { MediaModule } from '../media/media.module';
 
 import {
+  AdvanceRunHandler,
+  CancelRunHandler,
   ClaimWorkHandler,
+  CreateRunHandler,
   CreateSourceHandler,
   DeleteSourceHandler,
   PersistItemImagesHandler,
@@ -17,30 +20,40 @@ import {
   UpsertWorkflowProfileHandler,
 } from './application/commands';
 import { MachineTokenGuard } from './application/guards/machine-token.guard';
+import { RadarTickJob } from './application/jobs/radar-tick.job';
+import { RADAR_CAPTURE_CONFIG, loadRadarCaptureConfig, RadarCaptureConfig } from './application/radar-capture.config';
 import { RADAR_WORKER_CONFIG, loadRadarWorkerConfig } from './application/radar-worker.config';
 import {
   GetRadarItemHandler,
   GetRadarQueueStatsHandler,
+  GetRunHandler,
   GetWorkflowProfileHandler,
+  ListRunsHandler,
   ListRadarItemsHandler,
   ListSourcesHandler,
 } from './application/queries';
 import {
   CAPTURE_NORMALIZERS,
+  CAPTURE_PROVIDERS,
+  LLM_PROVIDERS,
   IMAGE_DOWNLOADER,
   RADAR_CAPTURE_REPOSITORY,
   RADAR_IMAGE_REPOSITORY,
   RADAR_ITEM_REPOSITORY,
   RADAR_PROFILE_REPOSITORY,
+  RADAR_RUN_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
   RADAR_WORK_REPOSITORY,
 } from './application/radar.token';
+import { ApifyCaptureAdapter } from './infrastructure/capture/apify-capture.adapter';
 import { ApifyFacebookNormalizer } from './infrastructure/capture/apify-facebook.normalizer';
 import { FetchImageDownloader } from './infrastructure/capture/fetch-image.downloader';
 import { RadarCaptureRepository } from './infrastructure/repositories/radar-capture.repository';
 import { RadarImageRepository } from './infrastructure/repositories/radar-image.repository';
 import { RadarItemRepository } from './infrastructure/repositories/radar-item.repository';
+import { ExternalWorkerAdapter } from './infrastructure/llm/external-worker.adapter';
 import { RadarProfileRepository } from './infrastructure/repositories/radar-profile.repository';
+import { RadarRunRepository } from './infrastructure/repositories/radar-run.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
 import { RadarWorkRepository } from './infrastructure/repositories/radar-work.repository';
 import { RadarAdminController } from './presentation/radar-admin.controller';
@@ -56,6 +69,9 @@ const CommandHandlers = [
   SubmitResultsHandler,
   UpsertWorkflowProfileHandler,
   RequeueStuckHandler,
+  CreateRunHandler,
+  AdvanceRunHandler,
+  CancelRunHandler,
 ];
 const QueryHandlers = [
   ListSourcesHandler,
@@ -63,6 +79,8 @@ const QueryHandlers = [
   ListRadarItemsHandler,
   GetRadarItemHandler,
   GetRadarQueueStatsHandler,
+  ListRunsHandler,
+  GetRunHandler,
 ];
 
 @Module({
@@ -75,6 +93,7 @@ const QueryHandlers = [
     { provide: RADAR_ITEM_REPOSITORY, useClass: RadarItemRepository },
     { provide: RADAR_WORK_REPOSITORY, useClass: RadarWorkRepository },
     { provide: RADAR_PROFILE_REPOSITORY, useClass: RadarProfileRepository },
+    { provide: RADAR_RUN_REPOSITORY, useClass: RadarRunRepository },
     { provide: IMAGE_DOWNLOADER, useClass: FetchImageDownloader },
     {
       provide: RADAR_WORKER_CONFIG,
@@ -94,6 +113,28 @@ const QueryHandlers = [
       provide: CAPTURE_NORMALIZERS,
       useFactory: () => [new ApifyFacebookNormalizer()],
     },
+    {
+      provide: RADAR_CAPTURE_CONFIG,
+      useFactory: () => {
+        const config = loadRadarCaptureConfig();
+        if (!config.apifyToken) {
+          new Logger('RadarModule').warn('APIFY_TOKEN is unset; Hybrid runs are refused, Manual runs still work');
+        }
+        return config;
+      },
+    },
+    {
+      // Resolved per run by the run's captureAdapter name, not once per process.
+      provide: CAPTURE_PROVIDERS,
+      inject: [RADAR_CAPTURE_CONFIG],
+      useFactory: (config: RadarCaptureConfig) => [new ApifyCaptureAdapter(config)],
+    },
+    {
+      // Resolved per run by the run's llmAdapter name.
+      provide: LLM_PROVIDERS,
+      useFactory: () => [new ExternalWorkerAdapter()],
+    },
+    RadarTickJob,
     ...CommandHandlers,
     ...QueryHandlers,
   ],

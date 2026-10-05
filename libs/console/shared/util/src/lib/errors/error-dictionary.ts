@@ -143,6 +143,13 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.INVALID_UPLOAD]: 'The uploaded file is not a valid capture export.',
   [RadarErrorCode.IMAGE_DELETE_FAILED]:
     'Some stored images could not be deleted. Nothing else was removed; please try again.',
+  [RadarErrorCode.RUN_NOT_FOUND]: 'This radar run no longer exists.',
+  [RadarErrorCode.RUN_ALREADY_ACTIVE]:
+    'This source already has a run in progress. Wait for it to finish, or cancel it.',
+  [RadarErrorCode.RUN_NOT_AWAITING_UPLOAD]: 'This run is not waiting for an upload.',
+  [RadarErrorCode.RUN_FINISHED]: 'This run has already finished.',
+  [RadarErrorCode.CAPTURE_NOT_CONFIGURED]:
+    'Hybrid capture is not configured on the server. Set the Apify token, or start a Manual run.',
 
   // --- Tag ---
   [TagErrorCode.NOT_FOUND]: 'Tag not found.',

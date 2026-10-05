@@ -36,3 +36,9 @@ export const RADAR_MAX_PROFILE_CHARS = 20_000;
 
 /** An item claimed this many times without a stored result is skipped from then on, so a post the worker keeps failing on cannot cost tokens forever. */
 export const RADAR_MAX_CLAIM_ATTEMPTS = 3;
+
+/** Most posts one run may capture: a 6-month backfill is ~1,100 posts, and the cap also bounds what Apify bills per run. */
+export const RADAR_MAX_RUN_ITEM_CAP = 1500;
+
+/** Error a run and its current step get when the Owner cancels it; the console reads it to show "Cancelled" rather than "Failed". */
+export const RADAR_RUN_CANCELLED_MESSAGE = 'Cancelled by the Owner';

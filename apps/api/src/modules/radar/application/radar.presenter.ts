@@ -1,6 +1,7 @@
 import { servedUrl } from '../domain/radar-media.util';
 import { RadarMedia } from '../domain/radar.types';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
+import { RadarRunSnapshot } from './ports/radar-run.repository.port';
 import { ClaimedRadarItem } from './ports/radar-work.repository.port';
 import { RadarSourceWithCount } from './ports/radar-source.repository.port';
 import {
@@ -8,6 +9,7 @@ import {
   RadarFeedItemDto,
   RadarItemDetailDto,
   RadarItemImageDto,
+  RadarRunDto,
   RadarSourceResponseDto,
   RadarWorkImageDto,
   RadarWorkItemDto,
@@ -27,6 +29,37 @@ const toItemImages = (media: RadarMedia[]): RadarItemImageDto[] =>
   }));
 
 export class RadarPresenter {
+  /** Leaves out provider job refs and step meta: internal bookkeeping, not for the console. */
+  static toRun(run: RadarRunSnapshot): RadarRunDto {
+    return {
+      id: run.id,
+      source: { id: run.sourceId, displayName: run.sourceName },
+      flow: run.flow,
+      status: run.status,
+      windowFrom: run.windowFrom,
+      windowTo: run.windowTo,
+      itemCap: run.itemCap,
+      captureAdapter: run.captureAdapter,
+      llmAdapter: run.llmAdapter,
+      itemsCaptured: run.itemsCaptured,
+      itemsCreated: run.itemsCreated,
+      itemsUpdated: run.itemsUpdated,
+      itemsFailed: run.itemsFailed,
+      error: run.error,
+      createdAt: run.createdAt,
+      startedAt: run.startedAt,
+      finishedAt: run.finishedAt,
+      steps: run.steps.map((s) => ({
+        step: s.step,
+        status: s.status,
+        adapter: s.adapter,
+        error: s.error,
+        startedAt: s.startedAt,
+        finishedAt: s.finishedAt,
+      })),
+    };
+  }
+
   static toSource(source: RadarSourceWithCount): RadarSourceResponseDto {
     return {
       id: source.id,

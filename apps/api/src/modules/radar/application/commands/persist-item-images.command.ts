@@ -31,16 +31,22 @@ export interface PersistItemImagesResult {
  * Copies every `pending` image of every Radar item to our storage, one image at a time so a
  * large backfill never holds more than one buffer. Triggered without awaiting after an upload;
  * safe to call again at any time (a redeploy mid-run leaves the rest `pending` for next time).
+ * The run tick passes `maxItems` so one tick never spends minutes on a large backfill.
  */
-export class PersistItemImagesCommand {}
+export class PersistItemImagesCommand {
+  constructor(readonly maxItems?: number) {}
+}
 
 @CommandHandler(PersistItemImagesCommand)
 export class PersistItemImagesHandler implements ICommandHandler<PersistItemImagesCommand> {
   private readonly logger = new Logger(PersistItemImagesHandler.name);
   /** Single API instance on Railway, so in-process flags are enough to avoid double uploads. */
   private running = false;
-  /** Set when a call arrives mid-run, so the run drains once more before it stops. */
-  private rerunRequested = false;
+  /**
+   * Set when a call arrives mid-run, with the widest limit any such caller asked for (undefined
+   * means everything), so its work is not lost.
+   */
+  private rerun: { maxItems?: number } | null = null;
 
   constructor(
     @Inject(RADAR_IMAGE_REPOSITORY) private readonly repo: IRadarImageRepository,
@@ -48,36 +54,55 @@ export class PersistItemImagesHandler implements ICommandHandler<PersistItemImag
     @Inject(IMAGE_DOWNLOADER) private readonly downloader: IImageDownloader
   ) {}
 
-  async execute(): Promise<PersistItemImagesResult> {
+  async execute(command: PersistItemImagesCommand = new PersistItemImagesCommand()): Promise<PersistItemImagesResult> {
     if (this.running) {
-      this.rerunRequested = true;
+      const prev = this.rerun;
+      const unbounded = command.maxItems === undefined || (prev !== null && prev.maxItems === undefined);
+      this.rerun = { maxItems: unbounded ? undefined : Math.max(prev?.maxItems ?? 0, command.maxItems ?? 0) };
       return { stored: 0, failed: 0, alreadyRunning: true };
     }
     this.running = true;
     const totals = { stored: 0, failed: 0 };
 
     try {
-      do {
-        this.rerunRequested = false;
+      await this.drain(totals, command.maxItems);
+      // An unbounded caller already waits for everything, so it serves the turned-away calls inline.
+      while (this.rerun && command.maxItems === undefined) {
+        this.rerun = null;
         await this.drain(totals);
-      } while (this.rerunRequested);
+      }
     } finally {
       this.running = false;
     }
+    // A bounded caller (the run tick) must not wait on someone else's backlog: that work goes on
+    // in the background, and the tick returns to the other active runs.
+    const rerun = this.rerun;
+    this.rerun = null;
+    if (rerun) {
+      this.execute(new PersistItemImagesCommand(rerun.maxItems)).catch((err) =>
+        this.logger.error(`Radar image persistence crashed: ${err instanceof Error ? err.message : err}`)
+      );
+    }
 
-    this.logger.log(`Radar images: ${totals.stored} stored, ${totals.failed} failed`);
+    // The run tick calls this every minute while a run copies images; stay quiet when idle.
+    if (totals.stored + totals.failed > 0) {
+      this.logger.log(`Radar images: ${totals.stored} stored, ${totals.failed} failed`);
+    }
     return { ...totals, alreadyRunning: false };
   }
 
   /** Each pass turns every pending image it saw into stored or failed, so the loop ends. */
-  private async drain(totals: { stored: number; failed: number }): Promise<void> {
-    for (let batch = await this.repo.findWithPendingImages(ITEMS_PER_BATCH); batch.length > 0; ) {
+  private async drain(totals: { stored: number; failed: number }, maxItems?: number): Promise<void> {
+    let processed = 0;
+    const batchSize = () => Math.min(ITEMS_PER_BATCH, (maxItems ?? Infinity) - processed);
+    for (let batch = await this.repo.findWithPendingImages(batchSize()); batch.length > 0; ) {
       for (const item of batch) {
+        processed++;
         const results = await this.persistItem(item, totals);
         const { orphaned } = await this.repo.applyResults(item.id, results);
         await deleteStoredImages(this.storage, orphaned, this.logger);
       }
-      batch = await this.repo.findWithPendingImages(ITEMS_PER_BATCH);
+      batch = batchSize() > 0 ? await this.repo.findWithPendingImages(batchSize()) : [];
     }
   }
 

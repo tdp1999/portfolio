@@ -5,7 +5,7 @@ import { IImageDownloader } from '../ports/image-downloader.port';
 import { IRadarImageRepository, RadarItemImages } from '../ports/radar-image.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { DeleteSourceCommand, DeleteSourceHandler } from './delete-source.command';
-import { PersistItemImagesHandler } from './persist-item-images.command';
+import { PersistItemImagesCommand, PersistItemImagesHandler } from './persist-item-images.command';
 
 const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
 
@@ -27,7 +27,7 @@ const item = (id: string, ...ids: string[]): RadarItemImages => ({ id, media: id
 
 const setup = (batches: RadarItemImages[][], orphaned: string[] = []) => {
   const repo = {
-    findWithPendingImages: jest.fn(async () => batches.shift() ?? []),
+    findWithPendingImages: jest.fn(async (_limit: number) => batches.shift() ?? []),
     applyResults: jest.fn(async (_id: string, _results: ImageResult[]) => ({ orphaned })),
     findStoredExternalIds: jest.fn(),
   } satisfies IRadarImageRepository;
@@ -60,6 +60,19 @@ describe('PersistItemImagesHandler', () => {
     expect(result).toEqual({ stored: 1, failed: 2, alreadyRunning: false });
   });
 
+  it('should stop after maxItems items even when more images are pending', async () => {
+    const { repo, handler } = setup([]);
+    let n = 0;
+    // An endless pending pool: without the limit the drain would never end.
+    repo.findWithPendingImages.mockImplementation(async (limit: number) =>
+      Array.from({ length: limit }, () => item(`i${n++}`, 'ok'))
+    );
+
+    await handler.execute(new PersistItemImagesCommand(3));
+
+    expect(repo.applyResults).toHaveBeenCalledTimes(3);
+  });
+
   it('should delete the uploads the repository reports as orphaned', async () => {
     const { storage, handler } = setup([[item('gone', 'a')]], ['radar/a.jpg']);
 
@@ -81,6 +94,25 @@ describe('PersistItemImagesHandler', () => {
     await expect(second).resolves.toMatchObject({ alreadyRunning: true });
     // first drain: batch + empty check; rerun drain: one more empty check
     expect(repo.findWithPendingImages).toHaveBeenCalledTimes(3);
+  });
+
+  it('should not let a bounded call drain the backlog of a call that arrived mid-run', async () => {
+    let n = 0;
+    const { repo, handler } = setup([]);
+    // Five items in the pool, served up to the limit asked for.
+    repo.findWithPendingImages.mockImplementation(async (limit: number) =>
+      Array.from({ length: Math.min(limit, 5 - n) }, () => item(`i${n++}`, `p${n}`))
+    );
+    repo.applyResults.mockImplementationOnce(async () => {
+      void handler.execute(); // an upload asks for everything while the tick is copying
+      return { orphaned: [] };
+    });
+
+    const tick = await handler.execute(new PersistItemImagesCommand(1));
+
+    expect(tick.stored).toBe(1);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(repo.applyResults).toHaveBeenCalledTimes(5);
   });
 });
 

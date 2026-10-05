@@ -21,6 +21,8 @@ import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { Roles, RoleGuard } from '../../auth/application/guards/role.guard';
 import { MulterFile } from '../../../shared/types';
 import {
+  CancelRunCommand,
+  CreateRunCommand,
   CreateSourceCommand,
   DeleteSourceCommand,
   PersistItemImagesCommand,
@@ -30,10 +32,12 @@ import {
   UpsertWorkflowProfileCommand,
 } from '../application/commands';
 import {
+  GetRunQuery,
   GetRadarItemQuery,
   GetRadarQueueStatsQuery,
   GetWorkflowProfileQuery,
   ListRadarItemsQuery,
+  ListRunsQuery,
   ListSourcesQuery,
 } from '../application/queries';
 import { MAX_UPLOAD_BYTES } from '../application/radar.dto';
@@ -89,6 +93,30 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async persistImages() {
     return await this.commandBus.execute(new PersistItemImagesCommand());
+  }
+
+  /** Starts a run on the Owner's request (RAD-006); the cron tick drives it from there. */
+  @Post('runs')
+  @HttpCode(HttpStatus.CREATED)
+  async createRun(@Body() body: unknown) {
+    return await this.commandBus.execute(new CreateRunCommand(body));
+  }
+
+  @Get('runs')
+  async listRuns() {
+    return await this.queryBus.execute(new ListRunsQuery());
+  }
+
+  @Get('runs/:id')
+  async getRun(@Param('id') id: string) {
+    return await this.queryBus.execute(new GetRunQuery(id));
+  }
+
+  /** Abandons an active run so its source can start a new one. */
+  @Post('runs/:id/cancel')
+  @HttpCode(HttpStatus.OK)
+  async cancelRun(@Param('id') id: string) {
+    return await this.commandBus.execute(new CancelRunCommand(id));
   }
 
   @Get('items')
