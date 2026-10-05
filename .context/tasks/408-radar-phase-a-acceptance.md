@@ -1,6 +1,6 @@
 # Task: Radar — Phase A acceptance run on production
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 Run the Manual flow end to end on Railway with 6 months of real posts, so the Owner can start reading.
@@ -13,9 +13,9 @@ Epic `epic-radar-ai-news` (Phase A checkpoint). Testing on this epic is delibera
 - [x] The Owner exports 6 months of `facebook.com/mrgoonie` posts from Apify and uploads it through the console.
 - [x] The Feed shows every post in the export exactly once (count in Feed equals unique ids in the file).
 - [x] Uploading the same file a second time creates zero new items.
-- [ ] After the capture and worker fixes are deployed and the export is re-uploaded, one more `/radar work` round (4 parallel workers x 30 items) stores every claimed item with no rejection. The rest of the queue is not required for this task: it drains in later sessions.
+- [x] After the capture and worker fixes are deployed and the export is re-uploaded, one more `/radar work` round (4 parallel workers x 30 items) stores every claimed item with no rejection. The rest of the queue is not required for this task: it drains in later sessions.
 - [x] Images on 5 randomly picked items load from Cloudinary.
-- [ ] If any step fails during the run, then the failure and its fix are recorded in this task's Progress Log before closing.
+- [x] If any step fails during the run, then the failure and its fix are recorded in this task's Progress Log before closing.
 - [x] Console and API builds pass (`nx build console`, `nx build api`), one at a time after a RAM check.
 
 ## Technical Notes
@@ -48,3 +48,7 @@ Epic `epic-radar-ai-news` (Phase A checkpoint). Testing on this epic is delibera
 - 2026-10-05 Worker kit: `radar-api.sh images` names files `<itemId>-<own|shared>-<n>.<ext>` and prints an `images: N saved, M skipped` count. The enrichment guide gains a "Gaps in the captured data" section covering reels and videos (score at most 4 unless the text carries the news), "link in the comments", generic `ocrText`, and off-topic posts.
 - 2026-10-05 The Owner's re-upload ran on the old prod build (the fixes above were not committed or deployed yet), so it changed nothing. It must be repeated after the deploy, before 2026-10-09.
 - 2026-10-05 Owner review: enrichments are too thin (item `01a10b5b-9d90-753e-a6a3-c8cd2e8aae77`: no background, no reason for the score, `applyNote` null). Owner chose "add fields + research". Enrichment schema v2: new required `context` (background from WebSearch: what each named tool or model is, price, alternatives) and `scoreReason` (why this score, type and relevance); `applyNote` is now required (one line for promo and off-topic posts). DB: nullable `context` and `scoreReason` columns (v1 rows stay readable), plus a data step that re-queues every item with a v1 enrichment so the next round re-analyzes it. Detail shows a "Context" section (Background, Why this score). The worker loop gains a Research step, and the guide gains Research and Example sections.
+- 2026-10-05 Deploy `5d38722a` on Railway: migration `radar_enrichment_v2` applied. The Owner re-uploaded the export on the new build, and the API logged "Radar images: 84 stored, 0 failed" (the 14 edge-host images and the newly read shared-post attachments).
+- 2026-10-05 v2 round: 4 Sonnet workers (`--batch 5 --limit 30`), 120 items stored in 24 batches, 0 rejected, 120 unique claims. About 70 WebSearch and 4 WebFetch calls, about 523k subagent tokens, 6-11 min per worker. All 151 claimed image URLs are on Cloudinary, none on fbcdn. Share item `…e7a996f818f2` now has its shared photo and video, and only the shared permalink as its link. All 10 items that lost images earlier now have them. Item `…c8cd2e8aae77` (Seedance) has v2 `context` (Seedance 2.5 and Eleven v4 with prices), `scoreReason`, a non-null `applyNote`, and a `factCheck` that checks the $16.2 claim against provider prices.
+- 2026-10-05 Notes, not blockers: (a) workers logged 10 image download failures, and on my retry 7 of the 151 Cloudinary URLs gave transient TLS errors from this machine (`curl: (35)`), with a different set on each run, so this is local network flakiness, not missing files; (b) worker 2 saw about 6 transient connection resets on claim or submit (a plain retry worked), so `radar-api.sh` could use retry with backoff; (c) one worker skipped research on a few low-value posts. About 780 items stay pending for later sessions.
+- 2026-10-05 Done: all ACs satisfied.

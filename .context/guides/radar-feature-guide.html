@@ -83,6 +83,7 @@
   .callout { border-left: 4px solid var(--worker); background: var(--worker-bg); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
   .callout.blue { border-color: var(--admin); background: var(--admin-bg); }
   .callout.green { border-color: var(--db); background: var(--db-bg); }
+  .text-small { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
 
   .svgbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin: 14px 0; overflow-x: auto; }
   .svgbox svg { display: block; width: 100%; min-width: 640px; height: auto; }
@@ -125,22 +126,23 @@
       <li><a href="#sources">4. Sources</a></li>
       <li><a href="#capture">5. Upload và normalize</a></li>
       <li><a href="#images">6. Ảnh và Cloudinary</a></li>
+      <li><a href="#runs">7. Runs: Manual và Hybrid</a></li>
       <li class="group">Phân tích</li>
-      <li><a href="#token">7. Machine token</a></li>
-      <li><a href="#doors">8. Hai cửa và endpoint</a></li>
-      <li><a href="#worker">9. Vòng làm việc của worker</a></li>
-      <li><a href="#lease">10. Lease và trạng thái bài</a></li>
-      <li><a href="#enrichment">11. Enrichment</a></li>
-      <li><a href="#reading">12. Đọc Feed: Score, Type, Provider, Status</a></li>
-      <li><a href="#profile">13. Workflow profile</a></li>
+      <li><a href="#token">8. Machine token</a></li>
+      <li><a href="#doors">9. Hai cửa và endpoint</a></li>
+      <li><a href="#worker">10. Vòng làm việc của worker</a></li>
+      <li><a href="#lease">11. Lease và trạng thái bài</a></li>
+      <li><a href="#enrichment">12. Enrichment</a></li>
+      <li><a href="#reading">13. Đọc Feed: Score, Type, Provider, Status</a></li>
+      <li><a href="#profile">14. Workflow profile</a></li>
       <li class="group">Tham chiếu</li>
-      <li><a href="#data">14. Data model</a></li>
-      <li><a href="#errors">15. Mã lỗi</a></li>
-      <li><a href="#rules">16. Business rules</a></li>
-      <li><a href="#decisions">17. Các quyết định</a></li>
+      <li><a href="#data">15. Data model</a></li>
+      <li><a href="#errors">16. Mã lỗi</a></li>
+      <li><a href="#rules">17. Business rules</a></li>
+      <li><a href="#decisions">18. Các quyết định</a></li>
       <li class="group">Tiếp theo</li>
-      <li><a href="#gaps">18. Chỗ hở đã biết</a></li>
-      <li><a href="#roadmap">19. Lộ trình task</a></li>
+      <li><a href="#gaps">19. Chỗ hở đã biết</a></li>
+      <li><a href="#roadmap">20. Lộ trình task</a></li>
     </ol>
   </nav>
 
@@ -150,8 +152,8 @@
       <p>Tài liệu tổng hợp cho feature Radar trong portfolio console và API: nó làm gì, dữ liệu chạy qua đâu, machine token hoạt động ra sao, và những gì còn đang làm.</p>
       <div class="meta">
         <span class="chip">Epic: epic-radar-ai-news</span>
-        <span class="chip">Phase A đang làm</span>
-        <span class="chip">Task 400 tới 407 xong</span>
+        <span class="chip">Phase A xong, Phase B đang làm</span>
+        <span class="chip">Task 400 tới 410 xong</span>
         <span class="chip">Một người dùng: bạn</span>
       </div>
     </header>
@@ -165,8 +167,8 @@
       <p><b>Nguồn đầu tiên:</b> <code>facebook.com/mrgoonie</code>, lấy lùi 6 tháng (khoảng 1.100 bài).</p>
       <div class="scroll"><table>
         <tr><th>Phase</th><th>Nội dung</th><th>Trạng thái</th></tr>
-        <tr><td>A</td><td>Upload file JSON thủ công, lưu ảnh, machine token, worker API, skill <code>/radar work</code>, trang Feed và Detail</td><td><span class="status next">Đang làm</span></td></tr>
-        <tr><td>B</td><td>API tự gọi Apify, state machine chạy theo cron tick, trang Runs, comments, bản tóm tắt (Brief)</td><td><span class="status todo">Chưa làm</span></td></tr>
+        <tr><td>A</td><td>Upload file JSON thủ công, lưu ảnh, machine token, worker API, skill <code>/radar work</code>, trang Feed và Detail</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>B</td><td>API tự gọi Apify, state machine chạy theo cron tick, trang Runs, comments, bản tóm tắt (Brief)</td><td><span class="status next">Đang làm</span></td></tr>
         <tr><td>C</td><td>API tự gọi LLM (Gemini, Anthropic API), transcript video. Epic riêng</td><td><span class="status todo">Ngoài epic này</span></td></tr>
       </table></div>
     </section>
@@ -177,8 +179,14 @@
         <tr><th>Term</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / hình dung thực tế</th></tr>
         <tr><td><b>Source</b></td><td>Một trang Facebook mà Radar theo dõi. Mỗi bài thuộc đúng một source.</td><td><code>facebook.com/mrgoonie</code>, tên hiển thị "Goon Nguyen"</td></tr>
         <tr><td><b>Apify</b></td><td>Dịch vụ scrape web có sẵn "actor" lấy bài Facebook công khai. Radar không dùng tài khoản Facebook của bạn.</td><td>Chạy actor <code>facebook-posts-scraper</code>, tải kết quả về dạng JSON</td></tr>
-        <tr><td><b>Capture</b></td><td>Một lần đưa dữ liệu vào Radar. Ở Phase A là một lần upload file JSON.</td><td>Upload file 14 MB chứa 1.100 bài</td></tr>
+        <tr><td><b>Capture</b></td><td>Bước đầu tiên của một run: lấy bài thô từ Facebook qua Apify. HYBRID thì API tự gọi Apify; MANUAL thì bạn upload file JSON vào run.</td><td>Apify trả 180 bài, hoặc bạn upload file 14 MB chứa 1.100 bài</td></tr>
         <tr><td><b>Normalize</b></td><td>Chuyển dữ liệu thô của Apify thành dạng chuẩn của Radar, bỏ trùng, giữ nguyên bản gốc trong <code>rawPayload</code>.</td><td>Bài album: bỏ phần wrapper, giữ 3 ảnh</td></tr>
+        <tr><td><b>Run</b></td><td>Một lần thu thập bài cho một source, có trạng thái tổng và một dòng trạng thái cho từng bước. Chỉ bắt đầu khi bạn yêu cầu (RAD-006).</td><td>"Lấy tối đa 200 bài của mrgoonie từ 01/09"</td></tr>
+        <tr><td><b>Flow MANUAL</b></td><td>Run mà bạn tự chạy Apify trên web rồi upload file JSON vào run đó.</td><td>Tạo run MANUAL, upload file kèm <code>runId</code></td></tr>
+        <tr><td><b>Flow HYBRID</b></td><td>Run mà API tự gọi Apify, tự lấy kết quả, rồi chờ Claude Code phân tích. "Hybrid" vì nửa tự động (capture), nửa do worker bên ngoài (phân tích).</td><td>Tạo run HYBRID, vài phút sau run dừng ở bước chờ <code>/radar work</code></td></tr>
+        <tr><td><b>Step</b></td><td>Một bước trong run: CAPTURE, NORMALIZE, ENRICH (chép ảnh), ANALYZE. Mỗi bước có trạng thái riêng.</td><td>CAPTURE: DONE, ANALYZE: AWAITING_EXTERNAL</td></tr>
+        <tr><td><b>Cron tick</b></td><td>Hàm API tự gọi mỗi phút để đẩy các run đang chạy đi tiếp một đoạn nhỏ.</td><td>Giống người trực ca, mỗi phút đi kiểm tra một vòng</td></tr>
+        <tr><td><b>AWAITING_EXTERNAL</b></td><td>Trạng thái "đang chờ bên ngoài API làm tiếp": chờ bạn upload (MANUAL) hoặc chờ <code>/radar work</code> (ANALYZE).</td><td>Run dừng ở đây cho tới khi mọi bài được phân tích</td></tr>
         <tr><td><b>Re-capture</b></td><td>Upload lại dữ liệu có chứa bài đã có. Bài được cập nhật, không tạo bản thứ hai.</td><td>Upload lại file tuần sau để lấy số like mới</td></tr>
         <tr><td><b>Persist images</b></td><td>Chép ảnh từ CDN Facebook sang Cloudinary, vì URL Facebook hết hạn sau vài ngày.</td><td>Mỗi bài trung bình 1,8 ảnh, mỗi ảnh khoảng 45 KB</td></tr>
         <tr><td><b>Orphan image</b></td><td>Ảnh đã lưu trên Cloudinary nhưng không còn bài nào trỏ tới. Radar tự xóa.</td><td>Tác giả gỡ một ảnh khỏi album, upload lại thì ảnh đó bị xóa khỏi Cloudinary</td></tr>
@@ -202,26 +210,31 @@
       <h2>3. Flow toàn cục</h2>
       <p>Radar có hai người dùng: <b>bạn</b> (qua console, dùng JWT) và <b>Claude Code</b> (qua terminal, dùng machine token). Cả hai nói chuyện với cùng một API và cùng một database Postgres trên Railway, nhưng đi qua hai cửa khác nhau.</p>
 
+      <div class="callout blue"><b>Dùng hằng ngày, 4 bước:</b> (1) Feed, bấm "Runs", bấm "New run", chọn source, giữ flow HYBRID. (2) Chờ vài phút, trang Runs tự làm mới và hiện từng bước. (3) Khi trang nhắc, chạy <code>/radar work</code> trong Claude Code. (4) Run thành DONE, đọc tin trên Feed. Chi tiết ở <a href="#runs">mục 7</a>.</div>
+
       <div class="phase">
-        <div class="phase-title"><span class="tag ext">Giai đoạn 1</span>Thu thập bài viết</div>
+        <div class="phase-title"><span class="tag ext">Giai đoạn 1</span>Thu thập bài viết: một run</div>
         <div class="flow">
-          <div class="node ext"><b>Apify</b><small>Scrape trang Facebook, xuất file JSON</small></div>
+          <div class="node admin"><b>Bạn, trang Runs</b><small>Bấm "New run": source, window, flow, cap</small></div>
           <div class="arrow">→</div>
-          <div class="node admin"><b>Bạn, trong console</b><small>Upload file JSON qua cửa admin</small></div>
+          <div class="node db"><b>radar_runs</b><small>Run mới + 4 dòng step</small></div>
           <div class="arrow">→</div>
-          <div class="node"><b>API: normalize</b><small>Chuẩn hóa, bỏ trùng theo externalId</small></div>
+          <div class="node"><b>API: cron tick mỗi phút</b><small>Đẩy run đi từng bước</small></div>
+        </div>
+        <div class="flow">
+          <div class="node ext"><b>CAPTURE</b><small>HYBRID: API gọi Apify. MANUAL: bạn upload file vào run</small></div>
+          <div class="arrow">→</div>
+          <div class="node"><b>NORMALIZE</b><small>Chuẩn hóa, bỏ trùng theo externalId</small></div>
           <div class="arrow">→</div>
           <div class="node db"><b>radar_items</b><small>Mỗi bài một dòng, <code>PENDING</code></small></div>
-        </div>
-        <div class="flow">
-          <div class="node"><b>API: persist images</b><small>Chạy nền ngay sau upload</small></div>
           <div class="arrow">→</div>
-          <div class="node ext"><b>Cloudinary</b><small>Bản sao ảnh, folder <code>radar/</code></small></div>
+          <div class="node ext"><b>ENRICH: Cloudinary</b><small>Chép ảnh, folder <code>radar/</code></small></div>
         </div>
+        <p class="text-small">Upload thẳng trong hộp "Sources and upload" (không qua run) vẫn dùng được như Phase A, nhưng không có trạng thái để theo dõi. Khi source đang có run chưa xong thì upload thẳng bị từ chối (409): file phải đi vào run đó.</p>
       </div>
 
       <div class="phase">
-        <div class="phase-title"><span class="tag worker">Giai đoạn 2</span>Phân tích bằng Claude Code</div>
+        <div class="phase-title"><span class="tag worker">Giai đoạn 2</span>Phân tích bằng Claude Code (bước ANALYZE của run)</div>
         <div class="flow">
           <div class="node worker"><b>Claude Code</b><small>Bạn gõ <code>/radar work</code></small></div>
           <div class="arrow">→</div>
@@ -231,6 +244,7 @@
           <div class="arrow">→</div>
           <div class="node db"><b>radar_enrichments</b><small>Bài chuyển sang <code>DONE</code></small></div>
         </div>
+        <p class="text-small">Trong lúc chờ, run đứng ở <code>AWAITING_EXTERNAL</code> và trang Runs nhắc bạn chạy <code>/radar work</code>. Bài cuối cùng của run có enrichment thì tick kế tiếp đưa run sang DONE.</p>
       </div>
 
       <div class="phase">
@@ -242,6 +256,7 @@
           <div class="arrow">→</div>
           <div class="node admin"><b>Console: Detail</b><small>Toàn văn, ảnh, link, ghi chú áp dụng</small></div>
         </div>
+        <p class="text-small">Feed hiện badge "1 run in progress" khi còn run đang chạy; bấm vào để mở trang Runs.</p>
       </div>
 
       <div class="callout blue"><b>Vì sao Claude Code làm worker mà API không tự gọi LLM?</b> Claude Code trên máy bạn không tốn thêm tiền API và đã biết bối cảnh làm việc của bạn. Phase C mới thêm adapter để API tự gọi Gemini hoặc Anthropic API.</div>
@@ -249,7 +264,7 @@
 
     <section id="sources">
       <h2>4. Sources</h2>
-      <p>Source là trang Facebook mà Radar theo dõi. Có CRUD cho source, nhưng chưa đầy đủ: chỉ có tạo, xem danh sách, bật/tắt và xóa. Chưa có sửa tên hay sửa URL. Các endpoint đã có ở API (task 402); giao diện quản lý source sẽ làm ở task 406.</p>
+      <p>Source là trang Facebook mà Radar theo dõi. Có CRUD cho source, nhưng chưa đầy đủ: chỉ có tạo, xem danh sách, bật/tắt và xóa. Chưa có sửa tên hay sửa URL. Quản lý source trong console ở hộp "Sources and upload" trên Feed. Mỗi run gắn với đúng một source.</p>
       <div class="scroll"><table>
         <tr><th>Thao tác</th><th>Endpoint</th><th>Hành vi</th></tr>
         <tr><td>Xem danh sách</td><td><code>GET /api/radar/sources</code></td><td>Trả mọi source kèm số bài (<code>itemCount</code>). Không phân trang vì chỉ có vài source</td></tr>
@@ -260,7 +275,7 @@
       </table></div>
       <h3>Deactivate dùng để làm gì</h3>
       <p>Deactivate là "tạm ngưng theo dõi" mà không mất dữ liệu. Ví dụ bạn thấy một người dạo này đăng toàn quảng cáo: bạn tắt source của họ để không upload nhầm nữa, nhưng các bài hay từ trước vẫn còn trong Feed. Xóa thì mất hết, kể cả ảnh và phân tích.</p>
-      <p>Phase B dùng thêm cờ này: API chỉ tự chạy Apify cho source đang bật. Claim cũng <b>bỏ qua bài của source đang tắt</b>, nên tạm dừng một source là dừng luôn việc phân tích các bài còn lại của nó.</p>
+      <p>Run cũng dùng cờ này: không tạo được run cho source đang tắt. Claim cũng <b>bỏ qua bài của source đang tắt</b>, nên tạm dừng một source là dừng luôn việc phân tích các bài còn lại của nó.</p>
     </section>
 
     <section id="capture">
@@ -276,7 +291,7 @@
         <tr><td>Dữ liệu gốc</td><td>Giữ nguyên trong <code>rawPayload</code> để chuẩn hóa lại sau mà không phải scrape lại</td></tr>
         <tr><td>Ngôn ngữ</td><td>Giữ nguyên ngôn ngữ gốc, không dịch, thuật ngữ giữ nguyên (RAD-002)</td></tr>
       </table></div>
-      <p>Normalizer phân loại bài thành <code>REEL</code>, <code>VIDEO</code>, <code>SHARE</code> hoặc <code>POST</code>; chỉ giữ ảnh và video; bỏ link quảng cáo "subscribe now"; chỉ nhận link <code>http(s)</code>. Mỗi lần upload tạo một <code>RadarRun</code> loại MANUAL để lưu số đếm.</p>
+      <p>Normalizer phân loại bài thành <code>REEL</code>, <code>VIDEO</code>, <code>SHARE</code> hoặc <code>POST</code>; chỉ giữ ảnh và video; bỏ link quảng cáo "subscribe now"; chỉ nhận link <code>http(s)</code>. Upload <b>không có</b> <code>runId</code> tự tạo một <code>RadarRun</code> loại MANUAL đã DONE để lưu số đếm (cách dùng ở Phase A), trừ khi source đang có run chưa xong (409 <code>RADAR_RUN_ALREADY_ACTIVE</code>). Upload <b>có</b> <code>runId</code> thì đổ dữ liệu vào một run MANUAL đang chờ, xem <a href="#runs">mục 7</a>.</p>
       <p>Phản hồi mẫu:</p>
       <pre><code>{ "runId": "...", "created": 10, "updated": 0, "skipped": 0, "failed": 0, "failures": [] }</code></pre>
       <h3>Upload lại (re-capture)</h3>
@@ -316,8 +331,109 @@
       </ol>
     </section>
 
+    <section id="runs">
+      <h2>7. Runs: Manual và Hybrid</h2>
+      <p>Một run là một lần thu thập bài cho một source. Bạn tạo run bằng nút "New run" ở trang Runs của console (<code>/radar/runs</code>), nút này gọi <code>POST /api/radar/runs</code>. Từ lúc đó, <b>cron tick</b> của API chạy mỗi phút và đẩy run đi qua từng bước cho tới khi xong hoặc lỗi. Không có lịch chạy tự động: run chỉ tồn tại vì bạn tạo nó (RAD-006).</p>
+
+      <h3>Hai flow</h3>
+      <div class="scroll"><table>
+        <tr><th></th><th>MANUAL</th><th>HYBRID</th></tr>
+        <tr><td>Ai lấy bài từ Facebook</td><td>Bạn chạy actor trên web Apify, tải file JSON</td><td>API tự gọi Apify API (start, poll, đọc dataset)</td></tr>
+        <tr><td>Bước CAPTURE</td><td>Đứng ở <code>AWAITING_EXTERNAL</code> cho tới khi bạn upload file kèm <code>runId</code></td><td>Tick đầu tiên start job Apify, các tick sau poll trạng thái job</td></tr>
+        <tr><td>Bước NORMALIZE</td><td>Làm ngay trong request upload (xong cùng CAPTURE)</td><td>Đọc dataset từng trang 100 bài, tối đa 5 trang mỗi tick, nhớ vị trí đã đọc. Vị trí luôn tăng 100 mỗi trang, kể cả khi Apify trả ít hơn (trang đã lọc dòng rỗng), nên không bài nào bị đọc hai lần</td></tr>
+        <tr><td>ENRICH, ANALYZE</td><td colspan="2">Giống nhau: chép ảnh theo lô, rồi chờ <code>/radar work</code></td></tr>
+        <tr><td>Cần cấu hình</td><td>Không</td><td><code>APIFY_TOKEN</code> trên server. Thiếu thì tạo run HYBRID bị từ chối (400), MANUAL vẫn chạy</td></tr>
+        <tr><td>Chi phí Apify</td><td>Tính trên tài khoản Apify khi bạn chạy trên web</td><td>Giống vậy, nhưng do API khởi chạy. Cap tối đa 1.500 bài mỗi run</td></tr>
+      </table></div>
+      <p>Upload không kèm <code>runId</code> vẫn dùng được như Phase A: nó tự tạo một run MANUAL đã DONE, ảnh được chép ngay, bài vào hàng chờ phân tích. Cách này không có trạng thái để theo dõi trên trang Runs. Khi source đang có run chưa xong, API từ chối cách upload này (409), vì nó sẽ chuyển <code>lastRunId</code> của các bài sang run mới và run đang chạy không còn đếm được các bài đó.</p>
+
+      <h3>Các bước của một run</h3>
+      <div class="flow">
+        <div class="node ext"><b>CAPTURE</b><small>HYBRID: start + poll job Apify. MANUAL: chờ upload</small></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>NORMALIZE</b><small>Đọc dataset từng trang, chuẩn hóa, upsert</small></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>ENRICH</b><small>Chép ảnh sang Cloudinary, 10 bài mỗi tick</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>ANALYZE</b><small><code>AWAITING_EXTERNAL</code> tới khi worker hết bài để nhận</small></div>
+      </div>
+      <p>Một bước xong thì bước kế tiếp bắt đầu ngay trong cùng tick. Bài thuộc run là các bài có <code>lastRunId</code> bằng id của run (lần capture gần nhất của bài là run này). Bước SYNTHESIZE không gắn với run: bản Brief (task 412) tóm tắt theo khoảng thời gian, không theo run.</p>
+
+      <h3>Trạng thái</h3>
+      <div class="scroll"><table>
+        <tr><th>Trạng thái</th><th>Nghĩa ở run</th><th>Nghĩa ở step</th></tr>
+        <tr><td><code>PENDING</code></td><td>HYBRID vừa tạo, tick chưa chạm tới</td><td>Chưa tới lượt</td></tr>
+        <tr><td><code>RUNNING</code></td><td>Đang capture, normalize hoặc chép ảnh</td><td>Đang làm, có thể kéo dài qua nhiều tick</td></tr>
+        <tr><td><code>AWAITING_EXTERNAL</code></td><td>Đang chờ bạn: upload (MANUAL) hoặc <code>/radar work</code></td><td>CAPTURE của MANUAL chờ upload; ANALYZE chờ worker</td></tr>
+        <tr><td><code>DONE</code></td><td>Không còn bài nào của run chờ worker. Bài bị kẹt (claim đủ 3 lần) và bài của source đang tạm dừng không giữ run lại; chúng vẫn hiện ở "N stuck" và "N paused" trên Feed</td><td>Xong</td></tr>
+        <tr><td><code>FAILED</code></td><td>Một bước lỗi; <code>error</code> giữ thông điệp của provider</td><td>Bước gây lỗi, có <code>error</code></td></tr>
+      </table></div>
+
+      <h3>Khi nào run FAILED</h3>
+      <ul>
+        <li>Job Apify trả về FAILED, TIMED-OUT hoặc ABORTED. Thông điệp của Apify được giữ nguyên, ví dụ <code>Apify run TIMED-OUT: Actor exceeded timeout</code>.</li>
+        <li>Job chạy quá 60 phút tính từ lúc start (Apify tự dừng ở 50 phút, mốc 60 phút là lưới an toàn).</li>
+        <li>Dataset có nhiều bài hơn cap của run. Run dừng trước khi đọc bất kỳ bài nào.</li>
+        <li>Một lỗi bất ngờ (mất mạng, Apify 5xx) lặp lại 5 lần ở cùng một bước. Bốn lần đầu chỉ ghi lại và thử lại ở tick sau.</li>
+        <li>Bạn hủy run (<code>POST /api/radar/runs/:id/cancel</code>). Lỗi ghi là "Cancelled by the Owner".</li>
+      </ul>
+
+      <h3>Hủy run</h3>
+      <p>Vì mỗi source chỉ có một run đang chạy, một run bị bỏ dở sẽ chặn source đó. Ví dụ: bạn tạo run MANUAL rồi quyết định không upload, hoặc run đang chờ ở ANALYZE mà bạn không muốn chạy <code>/radar work</code> cho nó nữa. Lúc đó bạn hủy run để tạo run mới.</p>
+      <ul>
+        <li>Bài đã capture vẫn giữ nguyên, vẫn nằm trong hàng chờ phân tích và vẫn hiện trên Feed.</li>
+        <li>Job Apify đã start <b>không</b> bị dừng: nó chạy hết bên Apify (vẫn tính tiền), chỉ là API không đọc dataset của nó nữa.</li>
+        <li>Run đã DONE hoặc FAILED thì không hủy được (400 <code>RADAR_RUN_FINISHED</code>). Nếu tick vừa kết thúc run ngay trước khi lệnh hủy tới, bạn cũng nhận lỗi này.</li>
+        <li>Hủy giữa lúc tick đang xử lý run vẫn an toàn: mọi lệnh ghi vào run và step chỉ có hiệu lực khi run còn đang chạy, nên tick không thể đưa một run đã hủy chạy lại. Trang dataset tick đang ghi dở vẫn được lưu, các trang sau thì không đọc nữa.</li>
+      </ul>
+
+      <h3>Các giới hạn an toàn</h3>
+      <div class="scroll"><table>
+        <tr><th>Quy tắc</th><th>Giá trị</th><th>Lý do</th></tr>
+        <tr><td>Một run đang chạy mỗi source</td><td>Run thứ hai bị từ chối (409 <code>RADAR_RUN_ALREADY_ACTIVE</code>), kể cả hai yêu cầu tạo gửi cùng lúc (khóa dòng source trong cùng transaction). Upload thẳng không kèm <code>runId</code> cũng bị từ chối</td><td>Hai run cùng ghi đè <code>lastRunId</code> của cùng bài và nhân đôi tiền Apify</td></tr>
+        <tr><td>Cap mỗi run</td><td>1 tới 1.500 bài</td><td>6 tháng khoảng 1.100 bài; cap cũng là giới hạn tiền</td></tr>
+        <tr><td>Source đang tắt</td><td>Không tạo được run</td><td>Giống luật upload</td></tr>
+        <tr><td>Tick chồng nhau</td><td>Tick mới thoát ngay nếu tick trước chưa xong</td><td>Một instance API trên Railway, dùng cờ trong bộ nhớ</td></tr>
+        <tr><td>Khi không có run nào chạy</td><td>Tick chỉ chạy một query nhỏ rồi nghỉ</td><td>Không tốn tài nguyên khi rảnh</td></tr>
+        <tr><td>Bộ nhớ</td><td>Mỗi lúc chỉ giữ một trang 100 bài</td><td>RAM trên Railway tốn tiền (task 387)</td></tr>
+        <tr><td>Token Apify</td><td>Chỉ nằm trong env và header <code>Authorization</code></td><td>Không lọt vào URL, log hay response (yêu cầu 19 của epic)</td></tr>
+      </table></div>
+
+      <h3>Trang Runs trong console</h3>
+      <p>Trang <code>/radar/runs</code> mở từ nút "Runs" trên Feed. Trang chỉ đọc <code>GET /api/radar/runs</code> (50 run mới nhất), không có endpoint riêng.</p>
+      <div class="scroll"><table>
+        <tr><th>Phần</th><th>Hiển thị gì</th><th>Quy tắc</th></tr>
+        <tr><td>Bảng run</td><td>Source, flow và cap, window, trạng thái, 4 bước, số bài, thời điểm tạo</td><td>Mới nhất ở trên. Window trống hai đầu ghi "All posts"</td></tr>
+        <tr><td>Cột Steps</td><td>Capture, Normalize, Images, Analyze, mỗi bước có biểu tượng theo trạng thái</td><td>Rê chuột vào bước để thấy adapter và lỗi (nếu có)</td></tr>
+        <tr><td>Tự làm mới</td><td>Trang gọi lại API mỗi 10 giây</td><td>Chỉ khi còn run đang chạy (<code>PENDING</code>, <code>RUNNING</code>, <code>AWAITING_EXTERNAL</code>). Hết run đang chạy hoặc rời trang thì dừng. Lỗi khi tự làm mới không hiện toast, lần sau gọi lại</td></tr>
+        <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export</td><td>Run đang chạy bình thường hoặc đã DONE thì không có dòng này</td></tr>
+        <tr><td>Run đã hủy</td><td>Badge "Cancelled" màu xám và dòng "Cancelled at &lt;bước&gt;", không phải "Failed" màu đỏ</td><td>API vẫn lưu run hủy là FAILED với lỗi "Cancelled by the Owner"; console đọc đúng thông điệp này (hằng số dùng chung <code>RADAR_RUN_CANCELLED_MESSAGE</code>) để hiển thị khác đi</td></tr>
+        <tr><td>Nút "Cancel"</td><td>Có ở mọi run đang chạy</td><td>Hỏi xác nhận trước khi gọi <code>POST /api/radar/runs/:id/cancel</code>. Hộp xác nhận nhắc rằng job Apify đã start vẫn tính tiền</td></tr>
+        <tr><td>Nút "Upload export"</td><td>Chỉ có ở run MANUAL đang chờ upload</td><td>Gửi file kèm <code>runId</code> của run đó</td></tr>
+        <tr><td>Form "New run"</td><td>Source, flow, window, item cap</td><td>Chỉ liệt kê source đang bật. Flow mặc định HYBRID. Cap mặc định 200, tối đa 1.500. Ngày đầu window mặc định là ngày ngay sau ngày cuối của run DONE gần nhất của source đó (hoặc ngày tạo run nếu run đó không có <code>windowTo</code>), không muộn hơn hôm nay; source chưa có run DONE thì lùi 6 tháng. Ngày cuối để trống nghĩa là tới hiện tại; chọn ngày cuối thì tính tới hết ngày đó. Window tính theo nguyên ngày UTC, đúng ngày <code>YYYY-MM-DD</code> mà Apify lọc, nên hai run nối nhau không trùng ngày và ngày đầu không bao giờ bằng ngày cuối</td></tr>
+        <tr><td>Badge trên Feed</td><td>"1 run in progress" (hoặc "N runs in progress") cạnh số bài pending</td><td>Chỉ hiện khi có run đang chạy. Bấm vào để mở trang Runs. Đọc lúc mở Feed và khi đóng hộp Sources, không tự làm mới</td></tr>
+      </table></div>
+
+      <h3>Ví dụ: một run HYBRID 200 bài</h3>
+      <ol>
+        <li>10:00 Bạn tạo run (HYBRID, cap 200, từ 01/09). Run và CAPTURE ở <code>PENDING</code>.</li>
+        <li>10:01 Tick start job Apify. CAPTURE sang <code>RUNNING</code>, lưu id job.</li>
+        <li>10:02 tới 10:05 Tick poll, job vẫn chạy, không làm gì thêm.</li>
+        <li>10:06 Job SUCCEEDED với 180 bài. CAPTURE DONE; NORMALIZE đọc 2 trang (100 + 80) và lưu; ENRICH bắt đầu chép ảnh.</li>
+        <li>10:07 tới 10:30 Mỗi tick chép ảnh cho 10 bài. Hết ảnh pending thì ENRICH DONE, ANALYZE sang <code>AWAITING_EXTERNAL</code>, run cũng vậy.</li>
+        <li>Bạn chạy <code>/radar work</code>. Khi bài cuối cùng của run có enrichment, tick kế tiếp đưa ANALYZE và run sang DONE.</li>
+      </ol>
+
+      <h3>Ví dụ: một run MANUAL</h3>
+      <ol>
+        <li>Tạo run (MANUAL, cap 300). Run và CAPTURE ở <code>AWAITING_EXTERNAL</code>; tick không làm gì.</li>
+        <li>Chạy actor trên web Apify, tải file JSON, upload với field <code>runId</code>. File vượt cap hoặc run không còn chờ upload thì bị từ chối, không ghi gì.</li>
+        <li>Upload xong: CAPTURE và NORMALIZE DONE, ENRICH RUNNING. Từ đây run đi tiếp giống HYBRID.</li>
+      </ol>
+    </section>
+
     <section id="token">
-      <h2>7. Machine token</h2>
+      <h2>8. Machine token</h2>
       <h3>Cài đặt một lần</h3>
       <pre><code>TOKEN=$(openssl rand -hex 24)                          # key A, không in ra màn hình
 printf %s "$TOKEN" | shasum -a 256 | cut -d' ' -f1     # in ra key B
@@ -374,7 +490,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="doors">
-      <h2>8. Hai cửa và endpoint</h2>
+      <h2>9. Hai cửa và endpoint</h2>
       <div class="doors">
         <div class="door admin">
           <h3>Cửa admin: <code>/api/radar/*</code></h3>
@@ -395,7 +511,11 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>POST</td><td><code>/radar/sources</code></td><td>Tạo source</td></tr>
         <tr><td>Admin</td><td>PATCH</td><td><code>/radar/sources/:id/deactivate</code>, <code>/activate</code></td><td>Tắt, bật source</td></tr>
         <tr><td>Admin</td><td>DELETE</td><td><code>/radar/sources/:id</code></td><td>Xóa source và ảnh</td></tr>
-        <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/captures/upload</code></td><td>Upload file JSON</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/captures/upload</code></td><td>Upload file JSON. Field tùy chọn <code>runId</code> đổ file vào một run MANUAL đang chờ</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL hoặc HYBRID, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn)</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs/:id/cancel</code></td><td>Hủy run đang chạy: bước hiện tại và run thành FAILED với lỗi "Cancelled by the Owner"</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/images/persist</code></td><td>Chạy lại việc chép ảnh</td></tr>
         <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
         <tr><td>Worker</td><td>GET</td><td><code>/radar/work/profile</code></td><td>Đọc profile (chỉ đọc)</td></tr>
@@ -405,7 +525,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="worker">
-      <h2>9. Vòng làm việc của worker</h2>
+      <h2>10. Vòng làm việc của worker</h2>
       <div class="flow">
         <div class="node worker"><b>① Đọc profile</b><small>Chưa có thì nhận chuỗi rỗng</small></div>
         <div class="arrow">→</div>
@@ -440,7 +560,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="lease">
-      <h2>10. Lease và trạng thái bài</h2>
+      <h2>11. Lease và trạng thái bài</h2>
       <p>Khi claim, API ghi lên bài ba thứ: <code>workStatus = CLAIMED</code>, <code>leaseExpiresAt = bây giờ + 30 phút</code>, và tăng <code>claimCount</code>. Tới khi hết lease, không lần claim nào khác nhận được bài đó. Bài chỉ rời CLAIMED theo hai đường:</p>
       <ol>
         <li><b>Có kết quả hợp lệ</b> → DONE, lease bị xóa.</li>
@@ -491,7 +611,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="enrichment">
-      <h2>11. Enrichment</h2>
+      <h2>12. Enrichment</h2>
       <p>Mỗi kết quả Claude Code nộp phải khớp schema dưới đây (Zod v4). Danh sách provider tag và content type nằm trong <code>@portfolio/shared/types</code> để console dùng lại cho bộ lọc.</p>
       <div class="scroll"><table>
         <tr><th>Field</th><th>Kiểu / giới hạn</th><th>Ý nghĩa</th></tr>
@@ -512,7 +632,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="reading">
-      <h2>12. Đọc Feed: Score, Type, Provider, Status</h2>
+      <h2>13. Đọc Feed: Score, Type, Provider, Status</h2>
       <p>Mỗi dòng trên Feed là một bài. Bốn cột Score, Type, Providers và Status đều lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Bài chưa phân tích thì chưa có giá trị nào trong bốn cột này.</p>
 
       <h3>Score (signal score)</h3>
@@ -575,7 +695,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="profile">
-      <h2>13. Workflow profile</h2>
+      <h2>14. Workflow profile</h2>
       <p>Một văn bản markdown duy nhất (tối đa 20.000 ký tự) mô tả bạn đang làm việc với AI thế nào. Claude Code đọc nó trước mỗi vòng để viết <code>applyNote</code> sát với bạn.</p>
       <ul>
         <li>Bạn đọc và sửa qua cửa admin: <code>GET/PUT /api/radar/profile</code>. Trang sửa nằm ở console: <code>/radar/profile</code> (nút "Workflow profile" trên Feed).</li>
@@ -586,12 +706,12 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="data">
-      <h2>14. Data model</h2>
+      <h2>15. Data model</h2>
       <div class="scroll"><table>
         <tr><th>Bảng</th><th>Chứa gì</th><th>Ghi chú</th></tr>
         <tr><td><code>radar_sources</code></td><td>Trang được theo dõi</td><td><code>url</code> duy nhất, <code>isActive</code></td></tr>
-        <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Phase A: chỉ MANUAL, DONE ngay. Phase B: có state machine</td></tr>
-        <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Dùng từ Phase B (task 409)</td></tr>
+        <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Flow, trạng thái, window, cap, số bài tạo mới / cập nhật / lỗi. Upload không có <code>runId</code> tạo run MANUAL đã DONE. Xem <a href="#runs">mục 7</a></td></tr>
+        <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
         <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài</td></tr>
         <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Task 412</td></tr>
@@ -601,7 +721,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="errors">
-      <h2>15. Mã lỗi</h2>
+      <h2>16. Mã lỗi</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>HTTP</th><th>Khi nào</th></tr>
         <tr><td><code>RADAR_SOURCE_NOT_FOUND</code></td><td>404</td><td>Source id không tồn tại</td></tr>
@@ -610,12 +730,17 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>RADAR_INVALID_INPUT</code></td><td>400</td><td>Body sai: tạo source, claim, results, profile</td></tr>
         <tr><td><code>RADAR_INVALID_UPLOAD</code></td><td>400</td><td>File không phải JSON, không phải mảng, quá nhiều bài, sai định dạng</td></tr>
         <tr><td><code>RADAR_IMAGE_DELETE_FAILED</code></td><td>502</td><td>Xóa source nhưng xóa ảnh Cloudinary lỗi</td></tr>
+        <tr><td><code>RADAR_RUN_NOT_FOUND</code></td><td>404</td><td>Run id không tồn tại (xem run, hoặc upload kèm <code>runId</code>)</td></tr>
+        <tr><td><code>RADAR_RUN_ALREADY_ACTIVE</code></td><td>409</td><td>Tạo run, hoặc upload không kèm <code>runId</code>, khi source đã có run chưa xong</td></tr>
+        <tr><td><code>RADAR_RUN_NOT_AWAITING_UPLOAD</code></td><td>400</td><td>Upload kèm <code>runId</code> của run không phải MANUAL, khác source, đã qua bước upload, hoặc vừa bị hủy hay vừa nhận một upload khác trong lúc file đang được lưu (bài đã lưu vẫn giữ)</td></tr>
+        <tr><td><code>RADAR_RUN_FINISHED</code></td><td>400</td><td>Hủy một run đã DONE hoặc FAILED</td></tr>
+        <tr><td><code>RADAR_CAPTURE_NOT_CONFIGURED</code></td><td>400</td><td>Tạo run HYBRID khi server chưa có <code>APIFY_TOKEN</code></td></tr>
         <tr><td>(guard)</td><td>401</td><td>Thiếu hoặc sai JWT / machine token</td></tr>
       </table></div>
     </section>
 
     <section id="rules">
-      <h2>16. Business rules</h2>
+      <h2>17. Business rules</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>Quy tắc</th></tr>
         <tr><td>RAD-001</td><td>Mỗi bài là duy nhất theo (source, external id). Capture lại chỉ làm mới, không bao giờ tạo bản trùng</td></tr>
@@ -628,7 +753,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="decisions">
-      <h2>17. Các quyết định</h2>
+      <h2>18. Các quyết định</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Quyết định</th><th>Lý do</th></tr>
         <tr><td>Epic</td><td>Làm thẳng trong console + API, lưu hết vào Postgres trên Railway</td><td>Laptop công ty sắp trả, không giữ gì ở local</td></tr>
@@ -640,23 +765,39 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>404</td><td>Thiếu biến hash thì tắt worker, không crash</td><td>Deploy không phụ thuộc biến này</td></tr>
         <tr><td>404</td><td>Kết quả sai không release, có attempt cap 3</td><td>Tránh lặp vô hạn và tránh giật bài của worker khác</td></tr>
         <tr><td>404</td><td>Job CI chạy unit test có Postgres</td><td>Logic lease nằm trong SQL, chỉ test được trên DB thật</td></tr>
+        <tr><td>409</td><td>Không dùng queue; state nằm trong <code>radar_runs</code> / <code>radar_step_runs</code>, cron tick mỗi phút đẩy từng lô nhỏ</td><td>Một người dùng, chạy khi cần. Redis là thêm một service luôn bật trên Railway</td></tr>
+        <tr><td>409</td><td>Bốn bước CAPTURE, NORMALIZE, ENRICH (ảnh), ANALYZE; không có dòng SYNTHESIZE</td><td>Brief tóm tắt theo khoảng thời gian, không theo run (bạn đồng ý 2026-10-05)</td></tr>
+        <tr><td>409</td><td>Run MANUAL chờ upload kèm <code>runId</code>; upload không có <code>runId</code> giữ cách Phase A</td><td>Cả hai flow cùng theo dõi được trên trang Runs (bạn đồng ý 2026-10-05)</td></tr>
+        <tr><td>409</td><td>Adapter capture và LLM chọn theo tên lưu trên run, không cố định cho cả process</td><td>Mỗi run có thể dùng provider khác (Phase C thêm Gemini, Anthropic)</td></tr>
+        <tr><td>409</td><td>Có endpoint hủy run</td><td>Luật một run mỗi source cần một lối ra cho run bị bỏ dở</td></tr>
+        <tr><td>409</td><td>Lỗi bất ngờ thử lại 5 tick rồi mới FAILED</td><td>Mạng chập chờn không làm hỏng cả run (giống lỗi TLS gặp ở task 408)</td></tr>
+        <tr><td>410</td><td>Trang Runs chỉ tự làm mới khi còn run đang chạy, mỗi 10 giây</td><td>Không gọi API vô ích khi mọi run đã xong</td></tr>
+        <tr><td>410</td><td>Ngày đầu window mặc định nối tiếp run DONE gần nhất của source, tính ở console</td><td>Các run nối nhau không hở, không cần thêm endpoint</td></tr>
+        <tr><td>410</td><td>Badge "run in progress" trên Feed đọc lại <code>GET /radar/runs</code></td><td>Không thêm endpoint (bạn đồng ý 2026-10-05)</td></tr>
+        <tr><td>410</td><td>Window tính theo nguyên ngày UTC; run mới bắt đầu từ ngày sau ngày cuối của run trước</td><td>Khớp ngày Apify lọc, không trùng ngày, không gặp lỗi 400 khi ngày đầu bằng ngày cuối</td></tr>
+        <tr><td>409</td><td>Mọi lệnh ghi vào run và step có điều kiện "run còn đang chạy"</td><td>Lệnh hủy tới giữa tick không bị tick ghi đè</td></tr>
+        <tr><td>409</td><td>Bài bị kẹt và bài của source tạm dừng không giữ run ở ANALYZE</td><td>Run không đứng mãi; các bài này đã có chỗ xử lý riêng trên Feed</td></tr>
         <tr><td>406</td><td>Hiện số bài bị kẹt + nút xếp hàng lại</td><td>Bài đủ 3 lần claim cần một lối ra (bạn đồng ý 2026-10-05)</td></tr>
       </table></div>
     </section>
 
     <section id="gaps">
-      <h2>18. Chỗ hở đã biết</h2>
+      <h2>19. Chỗ hở đã biết</h2>
       <div class="scroll"><table>
         <tr><th>Chỗ hở</th><th>Hậu quả hiện tại</th><th>Hướng xử lý</th></tr>
         <tr><td>Upload lại không phân tích lại bài DONE</td><td>Tác giả sửa bài thì enrichment vẫn là bản cũ</td><td>Hiếm với tin AI. Có thể thêm nút "phân tích lại" ở Detail</td></tr>
         <tr><td>Ảnh chưa lưu xong lúc claim</td><td>Claude Code nhận URL Facebook gốc</td><td>Không cần làm gì: Detail đọc media từ DB sau khi đã lưu</td></tr>
+        <tr><td>Bài bị kẹt (claim đủ 3 lần) thuộc một run</td><td>Run vẫn DONE, bài kẹt chưa có enrichment</td><td>Bấm "Re-queue stuck" ở Feed rồi chạy <code>/radar work</code></td></tr>
+        <tr><td>Hủy run không dừng job Apify</td><td>Job đã start vẫn chạy hết và vẫn tính tiền</td><td>Thêm gọi "abort run" của Apify nếu thấy cần</td></tr>
+        <tr><td>Bài của run cũ được run mới capture lại</td><td><code>lastRunId</code> chuyển sang run mới, run cũ không còn tính bài đó</td><td>Chấp nhận: run cũ thường đã DONE trước khi tạo run mới</td></tr>
+        <tr><td>Job Apify đã start nhưng API không lưu được mã job</td><td>Tick sau start thêm một job nữa (tính tiền hai lần). Mã job bị bỏ được ghi vào log lỗi</td><td>Rất hiếm (chỉ khi ghi DB lỗi ngay sau khi start). Tìm mã job trong log rồi abort trên web Apify</td></tr>
         <tr><td>Chưa có comments</td><td><code>commentDigest</code> luôn trống</td><td>Task 411</td></tr>
         <tr><td>Chưa sửa được tên, URL của source</td><td>Muốn đổi thì phải xóa rồi tạo lại (mất dữ liệu)</td><td>Thêm <code>PATCH /radar/sources/:id</code> khi cần</td></tr>
       </table></div>
     </section>
 
     <section id="roadmap">
-      <h2>19. Lộ trình task</h2>
+      <h2>20. Lộ trình task</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Nội dung</th><th>Trạng thái</th></tr>
         <tr><td>400</td><td>Chọn công cụ capture (Apify), lấy dữ liệu mẫu</td><td><span class="status done">Xong</span></td></tr>
@@ -667,10 +808,10 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>405</td><td>Skill <code>/radar work</code> + workflow profile đầu tiên</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>406</td><td>Console: feature lib, sources, upload, Feed, bài bị kẹt</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>407</td><td>Console: Detail + trang sửa profile</td><td><span class="status done">Xong</span></td></tr>
-        <tr><td>408</td><td>Chạy thật 6 tháng trên production, nghiệm thu Phase A</td><td><span class="status next">Kế tiếp</span></td></tr>
-        <tr><td>409</td><td>Run state machine, cron tick, Apify API, <code>LLM_PROVIDER</code> port</td><td><span class="status todo">Phase B</span></td></tr>
-        <tr><td>410</td><td>Console: trang Runs</td><td><span class="status todo">Phase B</span></td></tr>
-        <tr><td>411</td><td>Comments + tóm tắt comment</td><td><span class="status todo">Phase B</span></td></tr>
+        <tr><td>408</td><td>Chạy thật 6 tháng trên production, nghiệm thu Phase A</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>409</td><td>Run state machine, cron tick, Apify API, <code>LLM_PROVIDER</code> port, hủy run</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>410</td><td>Console: trang Runs, badge "run đang chạy" ở Feed, hủy run và upload vào run MANUAL</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>411</td><td>Comments + tóm tắt comment</td><td><span class="status next">Kế tiếp</span></td></tr>
         <tr><td>412</td><td>Bước tóm tắt + trang Brief</td><td><span class="status todo">Phase B</span></td></tr>
       </table></div>
     </section>
