@@ -30,6 +30,7 @@ Epic `epic-radar-ai-news` (Phase B). No queue: state lives in `RadarRun` / `Rada
 **Key sections to read:** logic vs non-logic triage
 
 - **Carried over from 402 (decided 2026-10-04):** 402 shipped only the format normalizer (`ICaptureNormalizer`, token `CAPTURE_NORMALIZERS`, `ApifyFacebookNormalizer`) and `IRadarCaptureRepository.saveCapture` (MANUAL runs only). This task defines the `CAPTURE_PROVIDER` start/poll/fetch port, reuses the normalizer on the fetched dataset, and generalises `saveCapture` for runs that already exist (HYBRID).
+- **Carried over from 404 (decided 2026-10-05):** 404 shipped only the worker HTTP API (claim/results/profile). This task defines the `LLM_PROVIDER` port (`process(step, items, profile)`, resolved per run by adapter name) and the `ExternalWorker` adapter that parks the analyze step in `AWAITING_EXTERNAL`; the worker endpoints from 404 stay the way that work gets done.
 
 ## Files to Touch
 - apps/api/src/modules/radar/infrastructure/capture/apify-capture.adapter.ts
@@ -37,6 +38,8 @@ Epic `epic-radar-ai-news` (Phase B). No queue: state lives in `RadarRun` / `Rada
 - apps/api/src/modules/radar/application/commands/run.create.command.ts
 - apps/api/src/modules/radar/application/commands/run.advance.command.ts (+ .spec.ts)
 - apps/api/src/modules/radar/presentation/radar-admin.controller.ts
+- apps/api/src/modules/radar/application/ports/llm-provider.port.ts
+- apps/api/src/modules/radar/infrastructure/llm/external-worker.adapter.ts
 
 ## Dependencies
 - 402, 403, 404

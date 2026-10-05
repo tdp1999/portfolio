@@ -90,3 +90,6 @@ export function applyImageResults(
   const orphaned = [...remaining.values()].flatMap((r) => (r.outcome === 'stored' ? [r.storedExternalId] : []));
   return { media: nextMedia, sharedMedia: nextShared, orphaned };
 }
+
+/** The URL a reader should load: our stored copy once it exists, else the (short-lived) original. */
+export const servedUrl = (m: RadarMedia) => (m.storageStatus === 'stored' && m.storedUrl ? m.storedUrl : m.url);

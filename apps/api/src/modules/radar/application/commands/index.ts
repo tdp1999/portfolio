@@ -3,3 +3,6 @@ export * from './set-source-active.command';
 export * from './upload-capture.command';
 export * from './persist-item-images.command';
 export * from './delete-source.command';
+export * from './claim-work.command';
+export * from './submit-results.command';
+export * from './upsert-workflow-profile.command';

@@ -26,6 +26,8 @@ Epic `epic-radar-ai-news` (Phase A). The skill lives in the repo (`.claude/skill
 **Specialized Skill:** skill-creator — skill structure and description that triggers on "radar work"
 **Key sections to read:** writing the SKILL.md and its description
 
+- **From 404 (2026-10-05):** submit at most 10 results per request; on HTTP 413 resubmit them one by one. A rejected result keeps the lease, so fix and resubmit in the same session. Items claimed 3 times without a stored result are skipped by claim (re-queue is a console concern).
+
 ## Files to Touch
 - .claude/skills/radar/SKILL.md
 - .claude/skills/radar/references/enrichment-guide.md

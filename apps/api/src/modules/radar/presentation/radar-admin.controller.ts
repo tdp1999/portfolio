@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -24,8 +25,9 @@ import {
   PersistItemImagesCommand,
   SetSourceActiveCommand,
   UploadCaptureCommand,
+  UpsertWorkflowProfileCommand,
 } from '../application/commands';
-import { ListSourcesQuery } from '../application/queries';
+import { GetWorkflowProfileQuery, ListSourcesQuery } from '../application/queries';
 import { MAX_UPLOAD_BYTES } from '../application/radar.dto';
 
 @Controller('radar')
@@ -79,5 +81,15 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async persistImages() {
     return await this.commandBus.execute(new PersistItemImagesCommand());
+  }
+
+  @Get('profile')
+  async getProfile() {
+    return await this.queryBus.execute(new GetWorkflowProfileQuery());
+  }
+
+  @Put('profile')
+  async upsertProfile(@Body() body: unknown) {
+    return await this.commandBus.execute(new UpsertWorkflowProfileCommand(body));
   }
 }
