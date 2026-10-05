@@ -647,6 +647,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><b>Ô viền đứt, icon đồng hồ cát</b></td><td>Bài chưa được phân tích nên chưa có điểm</td><td>Bài vừa upload, chưa chạy <code>/radar work</code></td><td>Viền đứt</td></tr>
       </table></div>
       <p>Bộ lọc <b>Min score</b> dùng đúng các mốc này: <code>9+</code>, <code>7+</code>, <code>4+</code>. Khi sort theo Score, bài chưa phân tích luôn nằm cuối ở cả hai chiều.</p>
+      <p>Feed phân trang với số dòng mỗi trang chọn được: 20, 50 (mặc định), 100 hoặc 200. Lựa chọn này nằm trên URL (<code>?size=</code>, chỉ ghi khi khác 50) cùng với bộ lọc, sort và trang, nên nút prev/next ở trang chi tiết đi theo đúng cỡ trang đó. Đổi cỡ trang giữ lại bài đang ở đầu trang. API nhận <code>limit</code> tối đa 200.</p>
 
       <h3>Type (content type)</h3>
       <p><b>Định nghĩa:</b> bài thuộc loại nội dung nào. Mỗi bài có đúng một type.</p>
@@ -791,6 +792,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Hủy run không dừng job Apify</td><td>Job đã start vẫn chạy hết và vẫn tính tiền</td><td>Thêm gọi "abort run" của Apify nếu thấy cần</td></tr>
         <tr><td>Bài của run cũ được run mới capture lại</td><td><code>lastRunId</code> chuyển sang run mới, run cũ không còn tính bài đó</td><td>Chấp nhận: run cũ thường đã DONE trước khi tạo run mới</td></tr>
         <tr><td>Job Apify đã start nhưng API không lưu được mã job</td><td>Tick sau start thêm một job nữa (tính tiền hai lần). Mã job bị bỏ được ghi vào log lỗi</td><td>Rất hiếm (chỉ khi ghi DB lỗi ngay sau khi start). Tìm mã job trong log rồi abort trên web Apify</td></tr>
+        <tr><td>Capture Apify còn hardcode</td><td>Chỉ có một adapter Apify và một normalizer <code>apify-facebook-posts</code>; dạng input của actor (<code>startUrls</code>, <code>resultsLimit</code>, <code>onlyPostsNewerThan</code>) viết cứng trong adapter; chỉ hỗ trợ source FACEBOOK; các mốc thời gian và kích thước (trang 100 bài, 5 trang mỗi tick, hạn 60 phút) là hằng số. URL source lấy từ DB, actor lấy từ env <code>RADAR_APIFY_POSTS_ACTOR</code></td><td>Phase C: cấu hình capture riêng cho từng source (platform, actor, input template, normalizer), adapter chọn theo cấu hình đó thay vì cố định</td></tr>
         <tr><td>Chưa có comments</td><td><code>commentDigest</code> luôn trống</td><td>Task 411</td></tr>
         <tr><td>Chưa sửa được tên, URL của source</td><td>Muốn đổi thì phải xóa rồi tạo lại (mất dữ liệu)</td><td>Thêm <code>PATCH /radar/sources/:id</code> khi cần</td></tr>
       </table></div>
