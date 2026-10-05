@@ -10,6 +10,7 @@ import {
   CreateSourceHandler,
   DeleteSourceHandler,
   PersistItemImagesHandler,
+  RequeueStuckHandler,
   SetSourceActiveHandler,
   SubmitResultsHandler,
   UploadCaptureHandler,
@@ -17,12 +18,19 @@ import {
 } from './application/commands';
 import { MachineTokenGuard } from './application/guards/machine-token.guard';
 import { RADAR_WORKER_CONFIG, loadRadarWorkerConfig } from './application/radar-worker.config';
-import { GetWorkflowProfileHandler, ListSourcesHandler } from './application/queries';
+import {
+  GetRadarItemHandler,
+  GetRadarQueueStatsHandler,
+  GetWorkflowProfileHandler,
+  ListRadarItemsHandler,
+  ListSourcesHandler,
+} from './application/queries';
 import {
   CAPTURE_NORMALIZERS,
   IMAGE_DOWNLOADER,
   RADAR_CAPTURE_REPOSITORY,
   RADAR_IMAGE_REPOSITORY,
+  RADAR_ITEM_REPOSITORY,
   RADAR_PROFILE_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
   RADAR_WORK_REPOSITORY,
@@ -31,6 +39,7 @@ import { ApifyFacebookNormalizer } from './infrastructure/capture/apify-facebook
 import { FetchImageDownloader } from './infrastructure/capture/fetch-image.downloader';
 import { RadarCaptureRepository } from './infrastructure/repositories/radar-capture.repository';
 import { RadarImageRepository } from './infrastructure/repositories/radar-image.repository';
+import { RadarItemRepository } from './infrastructure/repositories/radar-item.repository';
 import { RadarProfileRepository } from './infrastructure/repositories/radar-profile.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
 import { RadarWorkRepository } from './infrastructure/repositories/radar-work.repository';
@@ -46,8 +55,15 @@ const CommandHandlers = [
   ClaimWorkHandler,
   SubmitResultsHandler,
   UpsertWorkflowProfileHandler,
+  RequeueStuckHandler,
 ];
-const QueryHandlers = [ListSourcesHandler, GetWorkflowProfileHandler];
+const QueryHandlers = [
+  ListSourcesHandler,
+  GetWorkflowProfileHandler,
+  ListRadarItemsHandler,
+  GetRadarItemHandler,
+  GetRadarQueueStatsHandler,
+];
 
 @Module({
   imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule), MediaModule],
@@ -56,6 +72,7 @@ const QueryHandlers = [ListSourcesHandler, GetWorkflowProfileHandler];
     { provide: RADAR_SOURCE_REPOSITORY, useClass: RadarSourceRepository },
     { provide: RADAR_CAPTURE_REPOSITORY, useClass: RadarCaptureRepository },
     { provide: RADAR_IMAGE_REPOSITORY, useClass: RadarImageRepository },
+    { provide: RADAR_ITEM_REPOSITORY, useClass: RadarItemRepository },
     { provide: RADAR_WORK_REPOSITORY, useClass: RadarWorkRepository },
     { provide: RADAR_PROFILE_REPOSITORY, useClass: RadarProfileRepository },
     { provide: IMAGE_DOWNLOADER, useClass: FetchImageDownloader },

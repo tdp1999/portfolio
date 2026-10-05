@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -23,11 +24,18 @@ import {
   CreateSourceCommand,
   DeleteSourceCommand,
   PersistItemImagesCommand,
+  RequeueStuckCommand,
   SetSourceActiveCommand,
   UploadCaptureCommand,
   UpsertWorkflowProfileCommand,
 } from '../application/commands';
-import { GetWorkflowProfileQuery, ListSourcesQuery } from '../application/queries';
+import {
+  GetRadarItemQuery,
+  GetRadarQueueStatsQuery,
+  GetWorkflowProfileQuery,
+  ListRadarItemsQuery,
+  ListSourcesQuery,
+} from '../application/queries';
 import { MAX_UPLOAD_BYTES } from '../application/radar.dto';
 
 @Controller('radar')
@@ -81,6 +89,28 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async persistImages() {
     return await this.commandBus.execute(new PersistItemImagesCommand());
+  }
+
+  @Get('items')
+  async listItems(@Query() query: unknown) {
+    return await this.queryBus.execute(new ListRadarItemsQuery(query));
+  }
+
+  /** Declared before `items/:id` so "stats" is not read as an item id. */
+  @Get('items/stats')
+  async queueStats() {
+    return await this.queryBus.execute(new GetRadarQueueStatsQuery());
+  }
+
+  @Post('items/requeue-stuck')
+  @HttpCode(HttpStatus.OK)
+  async requeueStuck() {
+    return await this.commandBus.execute(new RequeueStuckCommand());
+  }
+
+  @Get('items/:id')
+  async getItem(@Param('id') id: string) {
+    return await this.queryBus.execute(new GetRadarItemQuery(id));
   }
 
   @Get('profile')

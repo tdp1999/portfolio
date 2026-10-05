@@ -1,7 +1,17 @@
-import { RadarItemKind, RadarPlatform, RadarStep } from '@prisma/client';
+import { RadarItemKind, RadarPlatform, RadarStep, RadarWorkStatus } from '@prisma/client';
 import { z } from 'zod/v4';
 
-import { RadarEngagement, RadarLink, RadarNormalizeFailure } from '../domain/radar.types';
+import {
+  RADAR_CONTENT_TYPES,
+  RADAR_FEED_PAGE_SIZE,
+  RADAR_FEED_SORT_KEYS,
+  RADAR_MAX_CLAIM_ATTEMPTS,
+  RADAR_MAX_PROFILE_CHARS,
+  RADAR_PROVIDER_TAGS,
+} from '@portfolio/shared/types';
+
+import { RadarEngagement, RadarLink, RadarMediaStorageStatus, RadarNormalizeFailure } from '../domain/radar.types';
+import { RadarEnrichmentDetail, RadarEnrichmentSummary, RadarQueueStats } from './ports/radar-item.repository.port';
 
 /** A 6-month backfill of one prolific profile is ~1,100 posts; leave room without inviting abuse. */
 export const MAX_UPLOAD_POSTS = 5000;
@@ -49,9 +59,8 @@ export const WORK_LEASE_MS = 30 * 60 * 1000;
 export const MAX_CLAIM_ITEMS = 20;
 /** One worst-case result is ~30 KB, so 10 keep a normal batch under the 100 KB JSON body limit; on a 413 the worker resubmits one by one. */
 export const MAX_SUBMIT_RESULTS = 10;
-/** An item claimed this many times without a stored result is skipped from then on, so a post the worker keeps failing on cannot cost tokens forever. */
-export const MAX_CLAIM_ATTEMPTS = 3;
-export const MAX_PROFILE_CHARS = 20_000;
+export const MAX_CLAIM_ATTEMPTS = RADAR_MAX_CLAIM_ATTEMPTS;
+export const MAX_PROFILE_CHARS = RADAR_MAX_PROFILE_CHARS;
 
 /** Items carry one work status, so only the item-level analyze step is claimable today. */
 export const ClaimWorkSchema = z.object({
@@ -106,4 +115,93 @@ export interface RadarWorkflowProfileDto {
   body: string;
   /** Null until the Owner saves a profile for the first time. */
   updatedAt: Date | null;
+}
+
+export const FEED_PAGE_SIZE = RADAR_FEED_PAGE_SIZE;
+/** What the Feed shows for an item the worker has not analyzed yet. */
+export const FEED_PREVIEW_CHARS = 200;
+
+/** Query-string shape of `GET /radar/items`, so every value arrives as a string. */
+
+export const ListRadarItemsSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(FEED_PAGE_SIZE),
+  search: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((v) => v || undefined),
+  providerTag: z.enum(RADAR_PROVIDER_TAGS).optional(),
+  contentType: z.enum(RADAR_CONTENT_TYPES).optional(),
+  minScore: z.coerce.number().int().min(0).max(10).optional(),
+  // stringbool, not coerce.boolean: coerce turns the string "false" into true.
+  includePromo: z.stringbool().default(false),
+  sourceId: z.uuid().optional(),
+  sortBy: z.enum(RADAR_FEED_SORT_KEYS).default('publishedAt'),
+  sortDir: z.enum(['asc', 'desc']).default('desc'),
+});
+
+interface RadarItemSourceDto {
+  id: string;
+  displayName: string;
+  isActive: boolean;
+}
+
+export interface RadarFeedItemDto {
+  id: string;
+  source: RadarItemSourceDto;
+  kind: RadarItemKind;
+  permalink: string;
+  authorName: string;
+  publishedAt: Date;
+  /** The first `FEED_PREVIEW_CHARS` characters of the post text. */
+  preview: string;
+  workStatus: RadarWorkStatus;
+  enrichment: RadarEnrichmentSummary | null;
+}
+
+export interface RadarFeedPageDto {
+  data: RadarFeedItemDto[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface RadarItemImageDto {
+  type: 'photo' | 'video';
+  /** Our stored copy when there is one, else the provider URL (which may have expired). */
+  url: string;
+  storageStatus: RadarMediaStorageStatus;
+  width: number | null;
+  height: number | null;
+  ocrText: string | null;
+}
+
+export interface RadarItemDetailDto {
+  id: string;
+  source: RadarItemSourceDto;
+  kind: RadarItemKind;
+  permalink: string;
+  authorName: string;
+  publishedAt: Date;
+  text: string;
+  workStatus: RadarWorkStatus;
+  images: RadarItemImageDto[];
+  links: RadarLink[];
+  sharedPost: {
+    authorName: string | null;
+    permalink: string | null;
+    publishedAt: string | null;
+    text: string;
+    images: RadarItemImageDto[];
+  } | null;
+  engagement: RadarEngagement;
+  enrichment: RadarEnrichmentDetail | null;
+}
+
+export type RadarQueueStatsDto = RadarQueueStats;
+
+export interface RequeueStuckResponseDto {
+  requeued: number;
 }

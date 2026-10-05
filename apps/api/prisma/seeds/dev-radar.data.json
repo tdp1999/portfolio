@@ -1,0 +1,124 @@
+{
+  "10239156953634770": {
+    "tldr": "Qwen3.8-27B ra open weights, benchmark do Qwen công bố vượt Qwen3.7-Plus và nhiều mục vượt Opus 4.6 Max, chạy local được qua HuggingFace.",
+    "providerTags": [
+      "opensource"
+    ],
+    "contentType": "news",
+    "signalScore": 6,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": "Hai bảng benchmark so Qwen3.8-27B với Qwen3.6-27B, Qwen3.7-Plus, Muse Glimmer-30B và Opus 4.6 Max.\n- Multimodal agentic: Computer use (OSWorld-Verified) 84.3 so với 72.7 của Opus 4.6 Max; Browser use 64.8; Mobile use 81.9 so với 62.0; Visual web development (Vision2Web) 62.9.\n- Coding: Agentic terminal coding (Terminal Bench 2.1) 73.0, thua Opus 4.6 Max 78.2; SWE-bench Pro 61.7 so với 53.4; repo-level code generation 42.3 thua 47.6.\n- Agent: long-horizon office work 79.7 so với 68.2.\n- General: instruction following 79.5 so với 62.5; scientific reasoning 89.2 thua 91.3; competitive coding 90.3 so với 88.8.\nChú thích cuối bảng ghi SWE-bench Multimodal chạy trên Claude Code harness.",
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": "\"Benchmark chỉnh hơn cả Opus 4.6 Max\" chỉ đúng một phần: theo chính bảng trong ảnh, Opus 4.6 Max vẫn hơn ở agentic terminal coding (78.2 so với 73.0), repo-level code generation (47.6 so với 42.3), scientific reasoning (91.3 so với 89.2) và multidisciplinary reasoning (40.0 so với 30.8). Đây là số liệu do Qwen tự công bố, chưa có đánh giá độc lập. Bài không kèm link HuggingFace nên chưa kiểm chứng được license và yêu cầu phần cứng.",
+    "applyNote": "- Không thay Claude Code (Opus) trong workflow hằng ngày của bạn: mục bạn dùng nhiều nhất là agentic terminal coding thì Opus vẫn hơn.\n- Đáng ghi nhận khi chọn công cụ cho team: model 27B open weights chạy local hoặc self-host là lựa chọn khi cần giữ code trong nội bộ hoặc giảm chi phí.\n- Điểm Computer use và Visual web development cao gợi ý dùng thử cho việc kiểm tra UI bằng browser automation, nếu sau này bạn cần một model rẻ chạy song song với Playwright."
+  },
+  "10239154688658147": {
+    "tldr": "So sánh ba kiểu advisor trong agentic workflow: built-in advisor của Claude Code (native call, chung context), kongming của AgentKit (tư vấn one-shot theo checkpoint với evidence packet) và AgentKit advisor (hỏi từng câu kiểu interview).",
+    "providerTags": [
+      "anthropic",
+      "other"
+    ],
+    "contentType": "workflow",
+    "signalScore": 7,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": "Slide \"AgentKit Concepts 01: Advisory Supervision\" của bài gốc (fb.com/shinantori) vẽ ba luồng: built-in advisor là native call trong main coding session; kongming là workflow checkpoint spawn một lần tư vấn kèm evidence packet rồi quay lại; AgentKit advisor là interview relay, hỏi và trả lời từng câu một.",
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": "Link duy nhất là bài Facebook gốc nên không mở (Radar không dùng tài khoản mạng xã hội). Tài liệu AgentKit được nhắc là \"link trong còm\" nên chưa thu thập. Mô tả built-in advisor của Claude Code dựa trên lời tác giả, chưa đối chiếu với tài liệu chính thức. AgentKit là sản phẩm của chính người đăng nên góc nhìn \"advisor của CC chưa đủ\" có thiên vị.",
+    "applyNote": "Đã có trong setup của bạn: `/cap` gọi một review agent có context riêng trước khi commit, đúng ý \"người kiểm không biết trước plan thì ít bias\".\n- Cái mới là đặt checkpoint tư vấn **trước khi quyết định** (kiến trúc, go/no-go), không chỉ review sau khi code xong. Ý này khớp với bộ maker-checker bạn chưa dựng: có thể thêm một bước \"gom evidence rồi hỏi một agent độc lập\" ở pha 2 Solution Design của làn L.\n- Không cần cài AgentKit để thử: một subagent nhận task, evidence, câu hỏi cụ thể và trả lời một lần là đủ để làm thử."
+  },
+  "10239149790175688": {
+    "tldr": "Ước tính chi phí 10 tỷ tokens DeepSeek theo giá cũ không cache ($0.435/1M input, $0.87/1M output): khoảng $4,350 nếu toàn input, $8,700 nếu toàn output, $6,525 nếu chia đôi.",
+    "providerTags": [
+      "deepseek"
+    ],
+    "contentType": "news",
+    "signalScore": 3,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": "Screenshot hỏi Claude ước tính chi phí 10B tokens với giá $0.435/1M input và $0.87/1M output; câu trả lời là ~$4,350 (toàn input), ~$8,700 (toàn output), ~$6,525 (chia đôi 5B/5B).",
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": "Phép tính đúng: 10B tokens là 10.000 lần 1M, nên 10.000 x $0.435 = $4,350 và 10.000 x $0.87 = $8,700; chia đôi là $2,175 + $4,350 = $6,525. Bài không ghi nguồn bảng giá và không nói giá mới là bao nhiêu; giá cache nằm trong comment nên chưa thu thập.",
+    "applyNote": "Không cần làm gì. Chỉ hữu ích như một mốc giá khi bạn so sánh model và chi phí cho team; khi đó nên lấy giá từ trang pricing chính thức thay vì bài này."
+  },
+  "10239149639371918": {
+    "tldr": "Claude Code có tùy chọn tự chờ khi chạm usage limit rồi chạy tiếp, thay vì dừng session.",
+    "providerTags": [
+      "anthropic"
+    ],
+    "contentType": "tool",
+    "signalScore": 5,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": null,
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": null,
+    "applyNote": "Bật thử cho các session dài chạy qua đêm; tác giả không ghi tên setting, cần tra changelog."
+  },
+  "10239085569570213": {
+    "tldr": "Chạy Claude Code trên Cloud Environment của Claude, cài AgentKit qua setup script để có lại bộ công cụ quen thuộc, chạy được nhiều session song song.",
+    "providerTags": [
+      "anthropic",
+      "other"
+    ],
+    "contentType": "workflow",
+    "signalScore": 6,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": null,
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": null,
+    "applyNote": "Đáng thử khi cần chạy nhiều session song song mà không tốn RAM máy local."
+  },
+  "10239149466247590": {
+    "tldr": "Google ra Gemini 3.7 Flash: nhanh hơn, chính xác hơn, giá rẻ hơn 50% so với 3.6 tới cuối năm.",
+    "providerTags": [
+      "google"
+    ],
+    "contentType": "news",
+    "signalScore": 5,
+    "isPromo": false,
+    "isRelevant": true,
+    "imageNotes": null,
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": "Bài không kèm link chính thức; mức giảm giá chưa kiểm chứng.",
+    "applyNote": null
+  },
+  "10239125080757968": {
+    "tldr": "Quảng cáo chương trình \"AgentKit Build Sprint\" 4 tuần cho người không rành kỹ thuật, tặng kèm AgentKit.",
+    "providerTags": [
+      "other"
+    ],
+    "contentType": "promo",
+    "signalScore": 1,
+    "isPromo": true,
+    "isRelevant": false,
+    "imageNotes": null,
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": null,
+    "applyNote": null
+  },
+  "10239126938884420": {
+    "tldr": "Câu chuyện một học viên từ không biết code sau một năm tự build hệ thống agents, giới thiệu làm tutor.",
+    "providerTags": [
+      "other"
+    ],
+    "contentType": "opinion",
+    "signalScore": 2,
+    "isPromo": true,
+    "isRelevant": false,
+    "imageNotes": null,
+    "linkSummaries": [],
+    "commentDigest": null,
+    "factCheck": null,
+    "applyNote": null
+  }
+}
