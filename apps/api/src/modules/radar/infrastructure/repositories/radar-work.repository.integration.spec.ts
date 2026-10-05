@@ -14,6 +14,7 @@ describe('RadarWorkRepository (integration)', () => {
   let prisma: PrismaService;
   let repo: RadarWorkRepository;
   const sourceId = '01a10755-0000-7000-8000-' + String(Date.now()).slice(-12);
+  const inactiveSourceId = '01a10755-0000-7000-8002-' + String(Date.now()).slice(-12);
   const itemIds = ['a', 'b'].map((s) => `01a10755-0000-7000-8001-${String(Date.now()).slice(-11)}${s}`);
 
   beforeAll(async () => {
@@ -38,7 +39,7 @@ describe('RadarWorkRepository (integration)', () => {
   });
 
   afterAll(async () => {
-    await prisma.radarSource.deleteMany({ where: { id: sourceId } });
+    await prisma.radarSource.deleteMany({ where: { id: { in: [sourceId, inactiveSourceId] } } });
     await prisma.$disconnect();
   });
 
@@ -63,5 +64,32 @@ describe('RadarWorkRepository (integration)', () => {
     const claimed = await repo.claim(1, LEASE_MS, later, MAX_ATTEMPTS);
 
     expect(claimed.map((i) => i.id)).toEqual([itemIds[1]]);
+  });
+
+  it('should skip items whose source is inactive', async () => {
+    const [activeId, inactiveId] = ['c', 'd'].map(
+      (s) => `01a10755-0000-7000-8001-${String(Date.now()).slice(-11)}${s}`
+    );
+    await prisma.radarSource.create({
+      data: { id: inactiveSourceId, url: `https://fb.test/${inactiveSourceId}`, displayName: 'test', isActive: false },
+    });
+    // The inactive item is the newest of all, so without the filter it would be handed out first.
+    await prisma.radarItem.createMany({
+      data: [
+        { id: activeId, sourceId, publishedAt: new Date(FUTURE + 1000) },
+        { id: inactiveId, sourceId: inactiveSourceId, publishedAt: new Date(FUTURE + 2000) },
+      ].map((i) => ({
+        ...i,
+        externalId: i.id,
+        provider: 'test',
+        permalink: `https://fb.test/${i.id}`,
+        authorName: 'test',
+        rawPayload: {},
+      })),
+    });
+
+    const claimed = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+
+    expect(claimed.map((i) => i.id)).toEqual([activeId]);
   });
 });

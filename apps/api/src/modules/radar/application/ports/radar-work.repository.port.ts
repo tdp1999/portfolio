@@ -21,7 +21,8 @@ export interface IRadarWorkRepository {
   /**
    * Atomically claims up to `limit` items that are pending or whose lease expired before `now`
    * (RAD-005), newest first, and leases them until `now + leaseMs`. Two concurrent claims never
-   * receive the same item. Items already claimed `maxAttempts` times are skipped.
+   * receive the same item. Items already claimed `maxAttempts` times, or whose source is
+   * inactive, are skipped.
    */
   claim(limit: number, leaseMs: number, now: Date, maxAttempts: number): Promise<ClaimedRadarItem[]>;
   /** Replaces the item's enrichment and marks it done. False when the item no longer exists. */

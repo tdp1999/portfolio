@@ -33,9 +33,11 @@ export class RadarWorkRepository implements IRadarWorkRepository {
       // comparison independent of the session time zone.
       // SKIP LOCKED: a concurrent claim passes over rows this one holds instead of waiting for them,
       // so two workers never leave with the same item.
+      // The source check is a subquery, not a join, so the row lock stays on radar_items alone.
       const rows = await tx.$queryRaw<{ id: string }[]>`
         SELECT id FROM radar_items
         WHERE "claimCount" < ${maxAttempts}
+          AND EXISTS (SELECT 1 FROM radar_sources s WHERE s.id = radar_items."sourceId" AND s."isActive")
           AND ("workStatus" = 'PENDING'
                OR ("workStatus" = 'CLAIMED' AND "leaseExpiresAt" < ${now.toISOString()}::timestamp(3)))
         ORDER BY "publishedAt" DESC
