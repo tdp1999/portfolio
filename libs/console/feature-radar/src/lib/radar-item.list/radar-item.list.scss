@@ -1,7 +1,11 @@
 @use '../radar-state';
 
+/* Fill host for `.crud-page--fill`: see _crud.scss. */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% + 2rem);
+  margin-bottom: -2rem;
 }
 
 .radar-title {

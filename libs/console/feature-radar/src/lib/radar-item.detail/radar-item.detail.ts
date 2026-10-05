@@ -23,7 +23,6 @@ import { MarkdownPipe } from '../markdown.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
 import { isViewableImage } from '../radar-item.util';
 import { UrlHostPipe } from '../url-host.pipe';
-import { FEED_PAGE_SIZE } from '../radar.constants';
 import { CONTENT_TYPE_LABELS, PROVIDER_LABELS, WORK_STATUS_LABELS } from '../radar.data';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { RadarService } from '../radar.service';
@@ -204,15 +203,14 @@ export default class RadarItemDetail implements OnInit {
     this.next.set(null);
     this.position.set(null);
     const state = this.feedState();
-    const pageAt = (pageIndex: number) =>
-      this.radarService.listItems(toFeedRequest({ ...state, pageIndex }, FEED_PAGE_SIZE));
+    const pageAt = (pageIndex: number) => this.radarService.listItems(toFeedRequest({ ...state, pageIndex }));
     const at = (item: RadarFeedItem | undefined, pageIndex: number): RadarNeighbour | null =>
       item ? { id: item.id, pageIndex } : null;
 
     this.neighbourSub = pageAt(state.pageIndex)
       .pipe(
         switchMap((page) => {
-          const spot = locateInPage(page, id, state.pageIndex, FEED_PAGE_SIZE);
+          const spot = locateInPage(page, id, state.pageIndex, state.pageSize);
           if (!spot) return of(null);
           const side = (
             n: RadarFeedItem | 'previous-page' | 'next-page' | null,

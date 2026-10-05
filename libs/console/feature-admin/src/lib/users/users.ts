@@ -1,18 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-  computed,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -24,6 +14,8 @@ import {
   FilterBar,
   FilterSearch,
   FilterSelect,
+  Paginator,
+  type PaginatorChange,
   ProgressBarService,
   RelativeTime,
   SkeletonTable,
@@ -38,8 +30,8 @@ import { AdminUser } from '../admin-user.types';
   selector: 'console-users',
   standalone: true,
   imports: [
+    Paginator,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatSortModule,
@@ -63,8 +55,6 @@ export default class Users implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly currentUserId = computed(() => this.authStore.user()?.id ?? '');
-
-  readonly paginator = viewChild.required(MatPaginator);
 
   readonly displayedColumns = ['name', 'email', 'role', 'status', 'updatedAt', 'actions'];
 
@@ -103,11 +93,10 @@ export default class Users implements OnInit {
     this.sortBy.set(sort.active || 'updatedAt');
     this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadUsers();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadUsers();
@@ -150,7 +139,6 @@ export default class Users implements OnInit {
 
   private resetAndLoad(): void {
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadUsers();
   }
 

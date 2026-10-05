@@ -4,6 +4,7 @@ import { z } from 'zod/v4';
 import {
   RADAR_CONTENT_TYPES,
   RADAR_FEED_PAGE_SIZE,
+  RADAR_FEED_PAGE_SIZES,
   RADAR_FEED_SORT_KEYS,
   RADAR_FEED_STATUSES,
   RADAR_MAX_CLAIM_ATTEMPTS,
@@ -129,7 +130,12 @@ export const FEED_PREVIEW_CHARS = 200;
 
 export const ListRadarItemsSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(FEED_PAGE_SIZE),
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(Math.max(...RADAR_FEED_PAGE_SIZES))
+    .default(FEED_PAGE_SIZE),
   search: z
     .string()
     .trim()

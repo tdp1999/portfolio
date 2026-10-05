@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { filter, switchMap } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,17 +11,19 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
 import {
+  ConfirmDialogComponent,
+  type ConfirmDialogData,
   FilterBar,
   FilterSearch,
   FilterSelect,
-  SkeletonTable,
-  RelativeTime,
+  MediaThumbPipe,
+  Paginator,
+  type PaginatorChange,
   ProgressBarService,
-  ConfirmDialogComponent,
-  type ConfirmDialogData,
+  RelativeTime,
+  SkeletonTable,
   ToastService,
   withListLoading,
-  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ProjectService } from '../project.service';
@@ -33,9 +34,9 @@ import { STATUS_OPTIONS } from './projects.data';
   selector: 'console-projects',
   standalone: true,
   imports: [
+    Paginator,
     DatePipe,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -59,8 +60,6 @@ export default class Projects implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly progress = inject(ProgressBarService);
-
-  readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = ['thumbnail', 'title', 'status', 'featured', 'startDate', 'updatedAt', 'actions'];
 
   readonly projects = signal<AdminProject[]>([]);
@@ -107,11 +106,10 @@ export default class Projects implements OnInit {
     this.sortBy.set(sort.active || 'updatedAt');
     this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadProjects();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadProjects();

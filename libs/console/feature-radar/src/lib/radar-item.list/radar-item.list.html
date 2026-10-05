@@ -1,4 +1,4 @@
-<div class="crud-page">
+<div class="crud-page crud-page--fill">
   <div class="crud-header">
     <div>
       <div class="radar-title">
@@ -49,54 +49,56 @@
     </div>
   </div>
 
-  <console-filter-bar>
-    <console-filter-search
-      placeholder="Search post text and TL;DR..."
-      [value]="search()"
-      (searchChange)="onSearchChange($event)"
-    />
-    <console-filter-select
-      label="Provider"
-      [options]="providerOptions"
-      [value]="providerTag()"
-      (selectionChange)="onProviderChange($event)"
-    />
-    <console-filter-select
-      label="Type"
-      [options]="contentTypeOptions"
-      [value]="contentType()"
-      (selectionChange)="onContentTypeChange($event)"
-    />
-    <console-filter-select
-      class="radar-filter--wide"
-      label="Min score"
-      [options]="minScoreOptions"
-      [value]="minScore()"
-      (selectionChange)="onMinScoreChange($event)"
-    />
-    <console-filter-select
-      label="Status"
-      [options]="statusOptions()"
-      [value]="status()"
-      (selectionChange)="onStatusChange($event)"
-    />
-    <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
-  </console-filter-bar>
+  <div class="crud-toolbar">
+    <console-filter-bar>
+      <console-filter-search
+        placeholder="Search post text and TL;DR..."
+        [value]="search()"
+        (searchChange)="onSearchChange($event)"
+      />
+      <console-filter-select
+        label="Provider"
+        [options]="providerOptions"
+        [value]="providerTag()"
+        (selectionChange)="onProviderChange($event)"
+      />
+      <console-filter-select
+        label="Type"
+        [options]="contentTypeOptions"
+        [value]="contentType()"
+        (selectionChange)="onContentTypeChange($event)"
+      />
+      <console-filter-select
+        class="radar-filter--wide"
+        label="Min score"
+        [options]="minScoreOptions"
+        [value]="minScore()"
+        (selectionChange)="onMinScoreChange($event)"
+      />
+      <console-filter-select
+        label="Status"
+        [options]="statusOptions()"
+        [value]="status()"
+        (selectionChange)="onStatusChange($event)"
+      />
+      <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
+    </console-filter-bar>
 
-  @if (activeFilters().length > 0) {
-    <mat-chip-set>
-      @for (filter of activeFilters(); track filter.key) {
-        <mat-chip (removed)="onRemoveFilter(filter.key)" highlighted>
-          {{ filter.label }}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-      }
-    </mat-chip-set>
-  }
+    @if (activeFilters().length > 0) {
+      <mat-chip-set>
+        @for (filter of activeFilters(); track filter.key) {
+          <mat-chip (removed)="onRemoveFilter(filter.key)" highlighted>
+            {{ filter.label }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        }
+      </mat-chip-set>
+    }
+  </div>
 
   <div class="crud-table-container">
     @if (loading()) {
-      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="24" fill />
     } @else {
       <table
         mat-table
@@ -249,13 +251,13 @@
     }
   </div>
 
-  <mat-paginator
+  <console-paginator
     class="crud-pagination"
     [length]="total()"
     [pageIndex]="pageIndex()"
-    [pageSize]="pageSize"
-    [hidePageSize]="true"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="pageSizeOptions"
+    [disabled]="loading()"
     (page)="onPage($event)"
-    showFirstLastButtons
   />
 </div>

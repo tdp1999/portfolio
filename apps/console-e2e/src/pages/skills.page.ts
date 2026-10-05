@@ -30,7 +30,7 @@ export class SkillsPage {
     this.searchInput = page.locator('console-filter-search input');
     this.categoryFilter = page.locator('console-filter-select');
     this.table = page.locator('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
   }
 
   async goto(): Promise<void> {

@@ -193,11 +193,5 @@
     }
   </div>
 
-  <mat-paginator
-    [length]="total"
-    [pageSize]="20"
-    [pageSizeOptions]="[10, 20, 50]"
-    showFirstLastButtons
-    class="crud-pagination"
-  />
+  <console-paginator class="crud-pagination" [length]="total" [pageIndex]="0" [pageSize]="20" />
 </div>

@@ -12,6 +12,54 @@
   margin-inline: auto;
 }
 
+/* Fill variant — the list card always reaches the bottom of the viewport, whatever the row
+   count, so the paginator sits at the same place while loading and once loaded. Uses
+   min-height (never a fixed height): a long page must still grow and scroll under the sticky
+   paginator. The host must be a column flex box that also takes over the scroll container's
+   2rem bottom padding, so a short page ends its paginator exactly where a long page's sticky
+   one (bottom: -2rem) rests:
+   `:host { display: flex; flex-direction: column; min-height: calc(100% + 2rem); margin-bottom: -2rem; }`. Pair with
+   `<console-skeleton-table fill>`, which fills the card instead of setting its height. */
+.crud-page--fill {
+  flex: 1 0 auto;
+  height: auto;
+
+  > .crud-table-container {
+    position: relative;
+    min-height: 240px;
+  }
+}
+
+/* Toolbar — filter bar + active-filter chips, pinned under the topbar while the list scrolls.
+   top: -2rem cancels the scroll container's p-8 top padding (same reason as .crud-pagination).
+   The padding/negative-margin pair gives the stuck bar breathing room without moving it at rest.
+   The divider only shows once the page has scrolled (scroll-driven, ignored where unsupported). */
+.crud-toolbar {
+  position: sticky;
+  top: -2rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 12px;
+  margin-block: -12px;
+  background: var(--color-background);
+}
+
+@supports (animation-timeline: scroll()) {
+  .crud-toolbar {
+    animation: crud-toolbar-divider linear both;
+    animation-timeline: scroll(nearest);
+    animation-range: 0 32px;
+  }
+}
+
+@keyframes crud-toolbar-divider {
+  to {
+    box-shadow: 0 1px 0 var(--color-border);
+  }
+}
+
 /* Page header: title (left) + action button (right) */
 .crud-header {
   display: flex;
@@ -112,7 +160,7 @@
   }
 }
 
-/* Pagination bar — mat-paginator styled as sticky bottom bar. When it follows a
+/* Pagination bar — console-paginator as a sticky bottom bar. When it follows a
    table container it joins flush into one card (no gap, shared border/radius).
    The scroll container (.console-content) has 2rem bottom padding (p-8); sticky is
    constrained to that content box, so a plain `bottom: 0` would pin the bar 2rem

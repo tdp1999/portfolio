@@ -1,0 +1,95 @@
+<div class="paginator">
+  <div class="paginator__size">
+    <span class="paginator__label">Rows per page</span>
+    <mat-select
+      class="paginator__size-select"
+      panelWidth=""
+      aria-label="Rows per page"
+      [value]="pageSize()"
+      [disabled]="disabled()"
+      (selectionChange)="onSizeChange($event.value)"
+    >
+      @for (size of pageSizeOptions(); track size) {
+        <mat-option [value]="size">{{ size }}</mat-option>
+      }
+    </mat-select>
+  </div>
+
+  <span class="paginator__range" aria-live="polite">{{ rangeLabel() }}</span>
+
+  <nav class="paginator__nav" aria-label="Pagination">
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="First page"
+      matTooltip="First page"
+      [disabled]="disabled() || isFirst()"
+      (click)="onGoTo(0)"
+    >
+      <mat-icon>first_page</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Previous page"
+      matTooltip="Previous page"
+      [disabled]="disabled() || isFirst()"
+      (click)="onGoTo(pageIndex() - 1)"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <ol class="paginator__pages">
+      @for (slot of slots(); track $index) {
+        <li>
+          @if (slot.kind === 'page') {
+            <button
+              type="button"
+              class="paginator__page"
+              [class.paginator__page--current]="slot.current"
+              [attr.aria-current]="slot.current ? 'page' : null"
+              [attr.aria-label]="'Page ' + slot.label"
+              [disabled]="disabled()"
+              (click)="onGoTo(slot.index)"
+            >
+              {{ slot.label }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="paginator__page paginator__page--gap"
+              [attr.aria-label]="slot.label"
+              [matTooltip]="slot.label"
+              [disabled]="disabled()"
+              (click)="onGoTo(slot.target)"
+            >
+              <span aria-hidden="true">…</span>
+            </button>
+          }
+        </li>
+      }
+    </ol>
+    <span class="paginator__compact">{{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Next page"
+      matTooltip="Next page"
+      [disabled]="disabled() || isLast()"
+      (click)="onGoTo(pageIndex() + 1)"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Last page"
+      matTooltip="Last page"
+      [disabled]="disabled() || isLast()"
+      (click)="onGoTo(pageCount() - 1)"
+    >
+      <mat-icon>last_page</mat-icon>
+    </button>
+  </nav>
+</div>

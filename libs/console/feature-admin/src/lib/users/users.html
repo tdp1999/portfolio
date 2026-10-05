@@ -1,4 +1,4 @@
-<div class="crud-page">
+<div class="crud-page crud-page--fill">
   <div class="crud-header">
     <div>
       <h1 class="text-page-title">User Management</h1>
@@ -10,14 +10,16 @@
     </button>
   </div>
 
-  <console-filter-bar>
-    <console-filter-search placeholder="Search by name or email..." (searchChange)="onSearchChange($event)" />
-    <console-filter-select label="Status" [options]="statusOptions" (selectionChange)="onStatusChange($event)" />
-  </console-filter-bar>
+  <div class="crud-toolbar">
+    <console-filter-bar>
+      <console-filter-search placeholder="Search by name or email..." (searchChange)="onSearchChange($event)" />
+      <console-filter-select label="Status" [options]="statusOptions" (selectionChange)="onStatusChange($event)" />
+    </console-filter-bar>
+  </div>
 
   <div class="crud-table-container relative">
     @if (loading()) {
-      <console-skeleton-table [columns]="displayedColumns.length" [rows]="8" />
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="24" fill />
     } @else {
       <table
         mat-table
@@ -111,13 +113,12 @@
     }
   </div>
 
-  <mat-paginator
+  <console-paginator
     class="crud-pagination"
     [length]="total()"
     [pageIndex]="pageIndex()"
     [pageSize]="pageSize()"
     [pageSizeOptions]="pageSizeOptions"
     (page)="onPage($event)"
-    showFirstLastButtons
   />
 </div>

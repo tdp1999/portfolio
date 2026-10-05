@@ -28,8 +28,11 @@ export type RadarFeedSortKey = (typeof RADAR_FEED_SORT_KEYS)[number];
 export const RADAR_FEED_STATUSES = ['pending', 'analyzed', 'stuck', 'paused'] as const;
 export type RadarFeedStatus = (typeof RADAR_FEED_STATUSES)[number];
 
-/** Default page size of `GET /radar/items`; the console asks for exactly this many. */
+/** Default page size of `GET /radar/items`. */
 export const RADAR_FEED_PAGE_SIZE = 50;
+
+/** Page sizes the Feed offers; the largest is also the most `GET /radar/items` returns at once. */
+export const RADAR_FEED_PAGE_SIZES = [20, 50, 100, 200] as const;
 
 /** Longest workflow profile `PUT /radar/profile` accepts. */
 export const RADAR_MAX_PROFILE_CHARS = 20_000;

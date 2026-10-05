@@ -43,6 +43,8 @@ export { ChipSelect } from './components/chip-select/chip-select';
 export type { ChipSelectOption } from './components/chip-select/chip-select.types';
 export { ChipBoolean } from './components/chip-boolean/chip-boolean';
 export { SegmentedControl } from './components/segmented-control/segmented-control';
+export { Paginator } from './components/paginator/paginator';
+export type { PaginatorChange } from './components/paginator/paginator.types';
 export type { SegmentedControlOption } from './components/segmented-control/segmented-control.types';
 export type { LanguageConfig } from './components/translatable-group/translatable-group';
 export { AssetGrid } from './components/asset-grid/asset-grid';

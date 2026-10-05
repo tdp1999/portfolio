@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
@@ -16,6 +15,8 @@ import {
   type FilterOption,
   FilterSearch,
   FilterSelect,
+  Paginator,
+  type PaginatorChange,
   ProgressBarService,
   RelativeTime,
   SkeletonTable,
@@ -31,8 +32,8 @@ import { AdminSkill } from '../skill.types';
   selector: 'console-skills',
   standalone: true,
   imports: [
+    Paginator,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -55,8 +56,6 @@ export default class Skills implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly progress = inject(ProgressBarService);
-
-  readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = [
     'name',
     'category',
@@ -113,11 +112,10 @@ export default class Skills implements OnInit {
     this.sortBy.set(sort.active || 'updatedAt');
     this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadSkills();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadSkills();
@@ -139,7 +137,6 @@ export default class Skills implements OnInit {
 
   private resetAndLoad(): void {
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadSkills();
   }
 

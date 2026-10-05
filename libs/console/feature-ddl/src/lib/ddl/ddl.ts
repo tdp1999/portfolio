@@ -3,24 +3,24 @@ import {
   AssetFilterBar,
   AssetGrid,
   AssetUploadZone,
-  type MimeGroup,
-  type SortOption,
-  type UploadFolder,
   FilterBar,
   FilterOption,
   FilterSearch,
   FilterSelect,
+  type MimeGroup,
+  Paginator,
   Skeleton,
+  type SortOption,
   SpinnerOverlay,
   SpinnerService,
   ToastService,
   UploadFn,
+  type UploadFolder,
 } from '@portfolio/console/shared/ui';
 import type { MediaItem } from '@portfolio/console/shared/util';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { Router, RouterLink } from '@angular/router';
 import { map, mergeMap, of, throwError, timer } from 'rxjs';
 
@@ -39,7 +39,7 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTableModule,
-    MatPaginatorModule,
+    Paginator,
     RouterLink,
   ],
   template: `
@@ -209,7 +209,7 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
             </table>
           </div>
 
-          <mat-paginator [length]="5" [pageSize]="20" showFirstLastButtons class="crud-pagination" />
+          <console-paginator class="crud-pagination" [length]="5" [pageIndex]="0" [pageSize]="20" />
         </div>
       </section>
 

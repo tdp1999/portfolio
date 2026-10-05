@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { SkeletonRow } from './skeleton-row';
 
 /**
@@ -8,11 +8,15 @@ import { SkeletonRow } from './skeleton-row';
  *
  * For background refresh after a mutation, do NOT render this — use the
  * top progress bar (`ProgressBarService`) instead. See `.context/design/cookbook/loading.md`.
+ *
+ * `fill` pins the skeleton to its container's box and clips the rows that do not fit, so a
+ * `.crud-page--fill` list keeps the same height while loading as when loaded (no paginator jump).
  */
 @Component({
   selector: 'console-skeleton-table',
   standalone: true,
   imports: [SkeletonRow],
+  host: { '[class.skeleton-table--fill]': 'fill()' },
   template: `
     <table class="skeleton-table w-full">
       <thead>
@@ -34,6 +38,12 @@ import { SkeletonRow } from './skeleton-row';
   styles: `
     :host {
       display: block;
+    }
+
+    :host(.skeleton-table--fill) {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
     }
 
     .skeleton-table {
@@ -84,6 +94,7 @@ export class SkeletonTable {
   readonly columns = input<number>(4);
   readonly rows = input<number>(8);
   readonly widths = input<string[] | undefined>(undefined);
+  readonly fill = input(false, { transform: booleanAttribute });
 
   protected readonly headerCells = computed(() => Array.from({ length: this.columns() }, (_, i) => i));
   protected readonly rowIndices = computed(() => Array.from({ length: this.rows() }, (_, i) => i));

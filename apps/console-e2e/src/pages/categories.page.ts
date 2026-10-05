@@ -22,7 +22,7 @@ export class CategoriesPage {
     // `console-filter-search` never sets `label`, so the accessible name is the default "Search".
     this.searchInput = page.locator('console-filter-search input');
     this.table = page.locator('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
     this.showDeletedChip = page.getByRole('option', { name: 'Show deleted' });
     this.emptyState = page.getByText('No categories found');
   }

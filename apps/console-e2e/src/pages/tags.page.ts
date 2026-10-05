@@ -26,7 +26,7 @@ export class TagsPage {
     // "Search" — not the placeholder "Search tags...". Target the input structurally.
     this.searchInput = page.locator('console-filter-search input');
     this.table = page.locator('table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
     this.showDeletedChip = page.getByRole('option', { name: 'Show deleted' });
     this.emptyState = page.getByText('No tags found');
   }

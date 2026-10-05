@@ -79,6 +79,8 @@ export interface RadarFeedState {
   sortBy: RadarFeedSortKey;
   sortDir: 'asc' | 'desc';
   pageIndex: number;
+  /** One of `FEED_PAGE_SIZES`. */
+  pageSize: number;
 }
 
 /** A prev/next target in the Feed, with the page it sits on so the walk can continue from there. */

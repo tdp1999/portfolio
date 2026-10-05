@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,6 +16,8 @@ import {
   FilterSearch,
   FilterSelect,
   EnumLabelPipe,
+  Paginator,
+  type PaginatorChange,
   RelativeTime,
   SkeletonTable,
   ToastService,
@@ -24,7 +25,7 @@ import {
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
-import { FEED_PAGE_SIZE, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
+import { FEED_PAGE_SIZE, FEED_PAGE_SIZES, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
 import { parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { isRunActive } from '../radar-run.util';
 import {
@@ -48,7 +49,6 @@ import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from
     MatCheckboxModule,
     MatChipsModule,
     MatIconModule,
-    MatPaginatorModule,
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
@@ -56,6 +56,7 @@ import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from
     FilterSearch,
     FilterSelect,
     EnumLabelPipe,
+    Paginator,
     RadarScoreTonePipe,
     RelativeTime,
     SkeletonTable,
@@ -72,15 +73,13 @@ export default class RadarItemList implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
 
-  // ── Queries ───────────────────────────────────────────────────────
-  private readonly paginator = viewChild.required(MatPaginator);
-
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly items = signal<RadarFeedItem[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
   protected readonly loadError = signal(false);
   protected readonly pageIndex = signal(0);
+  protected readonly pageSize = signal(FEED_PAGE_SIZE);
   protected readonly search = signal('');
   protected readonly providerTag = signal('');
   protected readonly contentType = signal('');
@@ -132,10 +131,11 @@ export default class RadarItemList implements OnInit {
     sortBy: this.sortBy(),
     sortDir: this.sortDir(),
     pageIndex: this.pageIndex(),
+    pageSize: this.pageSize(),
   }));
 
   // ── Plain state ───────────────────────────────────────────────────
-  protected readonly pageSize = FEED_PAGE_SIZE;
+  protected readonly pageSizeOptions = FEED_PAGE_SIZES;
   protected readonly maxClaimAttempts = MAX_CLAIM_ATTEMPTS;
   private itemsSub?: Subscription;
   protected readonly providerOptions = PROVIDER_OPTIONS;
@@ -156,6 +156,7 @@ export default class RadarItemList implements OnInit {
     this.sortBy.set(state.sortBy);
     this.sortDir.set(state.sortDir);
     this.pageIndex.set(state.pageIndex);
+    this.pageSize.set(state.pageSize);
     this.loadItems();
     this.loadStats();
     this.loadActiveRuns();
@@ -241,8 +242,10 @@ export default class RadarItemList implements OnInit {
     this.loadItems();
   }
 
-  onPage(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
+  /** The new page starts at its first row, so the list scrolls back to the top. */
+  onPage({ pageIndex, pageSize }: PaginatorChange): void {
+    this.pageIndex.set(pageIndex);
+    this.pageSize.set(pageSize);
     this.loadItems();
   }
 
@@ -284,7 +287,6 @@ export default class RadarItemList implements OnInit {
   // ── shared helpers ────────────────────────────────────────────────
   private resetAndLoad(): void {
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadItems();
   }
 
@@ -294,7 +296,7 @@ export default class RadarItemList implements OnInit {
     this.loadError.set(false);
     // A filter changed again before the last page came back: only the newest request may land.
     this.itemsSub?.unsubscribe();
-    this.itemsSub = this.radarService.listItems(toFeedRequest(this.feedState(), this.pageSize)).subscribe({
+    this.itemsSub = this.radarService.listItems(toFeedRequest(this.feedState())).subscribe({
       next: (res) => {
         this.items.set(res.data);
         this.total.set(res.total);

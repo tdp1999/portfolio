@@ -6,6 +6,7 @@ import {
   MIN_SCORE_OPTIONS,
   PROVIDER_LABELS,
 } from './radar.data';
+import { FEED_PAGE_SIZE, FEED_PAGE_SIZES } from './radar.constants';
 import type { RadarFeedItem, RadarFeedParams, RadarFeedSortKey, RadarFeedState } from './radar.types';
 
 export const DEFAULT_FEED_STATE: RadarFeedState = {
@@ -18,6 +19,7 @@ export const DEFAULT_FEED_STATE: RadarFeedState = {
   sortBy: 'publishedAt',
   sortDir: 'desc',
   pageIndex: 0,
+  pageSize: FEED_PAGE_SIZE,
 };
 
 /** A stale or hand-edited filter value would make the API answer 400 on every retry; drop it. */
@@ -27,6 +29,7 @@ const known = (value: unknown, allowed: readonly string[]): string =>
 /** Reads the Feed's URL query params. Unknown or malformed values fall back to the default. */
 export function parseFeedQuery(params: Params): RadarFeedState {
   const page = Number(params['page']);
+  const size = Number(params['size']);
   return {
     search: params['search'] ?? '',
     providerTag: known(params['provider'], Object.keys(PROVIDER_LABELS)),
@@ -40,6 +43,7 @@ export function parseFeedQuery(params: Params): RadarFeedState {
     sortBy: FEED_SORT_KEYS.includes(params['sort']) ? (params['sort'] as RadarFeedSortKey) : 'publishedAt',
     sortDir: params['dir'] === 'asc' ? 'asc' : 'desc',
     pageIndex: Number.isInteger(page) && page > 1 ? page - 1 : 0,
+    pageSize: (FEED_PAGE_SIZES as readonly number[]).includes(size) ? size : FEED_PAGE_SIZE,
   };
 }
 
@@ -55,13 +59,14 @@ export function toFeedQuery(state: RadarFeedState): Record<string, string> {
   if (state.sortBy !== 'publishedAt') params['sort'] = state.sortBy;
   if (state.sortDir === 'asc') params['dir'] = 'asc';
   if (state.pageIndex > 0) params['page'] = String(state.pageIndex + 1);
+  if (state.pageSize !== FEED_PAGE_SIZE) params['size'] = String(state.pageSize);
   return params;
 }
 
-export function toFeedRequest(state: RadarFeedState, limit: number): RadarFeedParams {
+export function toFeedRequest(state: RadarFeedState): RadarFeedParams {
   return {
     page: state.pageIndex + 1,
-    limit,
+    limit: state.pageSize,
     search: state.search || undefined,
     providerTag: state.providerTag || undefined,
     contentType: state.contentType || undefined,

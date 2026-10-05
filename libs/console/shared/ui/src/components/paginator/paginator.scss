@@ -1,0 +1,122 @@
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
+.paginator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 24px;
+  min-height: 56px;
+  padding: 8px 12px 8px 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
+
+.paginator__size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+
+.paginator__size-select {
+  width: 64px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: var(--text-xs);
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+}
+
+.paginator__range {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The theme's default icon-button colour is tuned for dark chrome and reads as near-white on a
+   surface card, so the arrows set theirs explicitly. */
+.paginator__nav {
+  --mat-icon-button-icon-color: var(--color-text-secondary);
+  --mat-icon-button-disabled-icon-color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  > button:disabled {
+    opacity: 0.5;
+  }
+}
+
+.paginator__pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paginator__page {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.paginator__page--current {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.paginator__page--gap {
+  color: var(--color-text-muted);
+}
+
+.paginator__compact {
+  display: none;
+  min-width: 64px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Narrow lists (or a narrow viewport) keep the arrows and swap the strip for "10 / 18". */
+@container (max-width: 640px) {
+  .paginator__pages {
+    display: none;
+  }
+
+  .paginator__compact {
+    display: inline-block;
+  }
+}

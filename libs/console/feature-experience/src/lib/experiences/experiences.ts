@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { filter, switchMap } from 'rxjs';
@@ -7,7 +7,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import {
@@ -17,12 +16,14 @@ import {
   type FilterOption,
   FilterSearch,
   FilterSelect,
+  MediaThumbPipe,
+  Paginator,
+  type PaginatorChange,
   ProgressBarService,
   RelativeTime,
   SkeletonTable,
   ToastService,
   withListLoading,
-  MediaThumbPipe,
 } from '@portfolio/console/shared/ui';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@portfolio/console/shared/util';
 import { ExperienceService } from '../experience.service';
@@ -35,8 +36,8 @@ import { EMPLOYMENT_TYPE_LABELS, LOCATION_TYPE_LABELS } from '@portfolio/shared/
   selector: 'console-experiences',
   standalone: true,
   imports: [
+    Paginator,
     MatTableModule,
-    MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -66,8 +67,6 @@ export default class Experiences implements OnInit {
 
   readonly employmentTypeLabels = EMPLOYMENT_TYPE_LABELS;
   readonly locationTypeLabels = LOCATION_TYPE_LABELS;
-
-  readonly paginator = viewChild.required(MatPaginator);
   readonly displayedColumns = [
     'company',
     'position',
@@ -125,11 +124,10 @@ export default class Experiences implements OnInit {
     this.sortBy.set(sort.active || 'updatedAt');
     this.sortDir.set((sort.direction as 'asc' | 'desc') || 'desc');
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadExperiences();
   }
 
-  onPage(event: PageEvent): void {
+  onPage(event: PaginatorChange): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadExperiences();
@@ -191,7 +189,6 @@ export default class Experiences implements OnInit {
 
   private resetAndLoad(): void {
     this.pageIndex.set(0);
-    this.paginator().pageIndex = 0;
     this.loadExperiences();
   }
 

@@ -26,7 +26,7 @@ export class AdminUsersPage {
     this.searchInput = page.locator('console-filter-search input');
     this.statusFilter = page.locator('console-filter-select');
     this.table = page.locator('table.mat-mdc-table');
-    this.paginator = page.locator('mat-paginator');
+    this.paginator = page.locator('console-paginator');
     this.noDataMessage = page.getByText('No users found');
     this.spinnerOverlay = page.locator('console-spinner-overlay');
 

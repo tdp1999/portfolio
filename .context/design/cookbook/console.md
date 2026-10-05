@@ -121,8 +121,17 @@ page root that isn't already `.crud-page` / `.detail-page` (e.g. section-tabs fo
 filters/actions after it sit to the right (`ml-auto` on the first trailing control).
 
 **List table + pagination:** put the table in `.crud-table-container` with a sibling
-`<mat-paginator class="crud-pagination">`. Shared CSS joins them **flush** into one bordered
-card (no gap). Don't add your own wrapper or spacing.
+`<console-paginator class="crud-pagination">` (never `mat-paginator`; see
+`components/paginator.md`). Shared CSS joins them **flush** into one bordered card (no gap).
+Don't add your own wrapper or spacing.
+
+**Stable list frame (every list page):** so the paginator stays put between loading and
+loaded, add `.crud-page--fill` to the page root, give the host
+`display: flex; flex-direction: column; min-height: calc(100% + 2rem); margin-bottom: -2rem`,
+and render `<console-skeleton-table fill>` (lists that keep old rows under a spinner overlay
+skip the skeleton part). The card then always reaches the viewport bottom
+and the skeleton fills it instead of setting its height. Wrap the filter bar and active-filter
+chips in `.crud-toolbar` to pin them under the topbar while the list scrolls.
 
 **Badges / status pills:** use the shared `.console-badge` class (`--success` / `--warn` /
 `--danger` / `--muted`) for status cells, detail-header status, and header count badges. Never

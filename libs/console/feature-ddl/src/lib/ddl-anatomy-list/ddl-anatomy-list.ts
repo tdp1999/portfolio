@@ -3,9 +3,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { FilterBar, FilterSearch, FilterSelect, SkeletonTable, type FilterOption } from '@portfolio/console/shared/ui';
+import {
+  FilterBar,
+  type FilterOption,
+  FilterSearch,
+  FilterSelect,
+  Paginator,
+  SkeletonTable,
+} from '@portfolio/console/shared/ui';
 
 type Status = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
 interface ProjectRow {
@@ -33,7 +39,7 @@ type ViewState = 'data' | 'loading' | 'empty' | 'error';
     MatCheckboxModule,
     MatIconModule,
     MatMenuModule,
-    MatPaginatorModule,
+    Paginator,
     MatTableModule,
     FilterBar,
     FilterSearch,

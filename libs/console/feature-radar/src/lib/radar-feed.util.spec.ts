@@ -16,6 +16,7 @@ describe('feed query', () => {
       sortBy: 'signalScore' as const,
       sortDir: 'asc' as const,
       pageIndex: 2,
+      pageSize: 200,
     };
     expect(parseFeedQuery(toFeedQuery(state))).toEqual(state);
   });
@@ -27,6 +28,7 @@ describe('feed query', () => {
   it('falls back to the default for malformed values', () => {
     expect(parseFeedQuery({ sort: 'text', dir: 'up', page: 'abc' })).toEqual(DEFAULT_FEED_STATE);
     expect(parseFeedQuery({ page: '0' }).pageIndex).toBe(0);
+    expect(parseFeedQuery({ size: '30' }).pageSize).toBe(DEFAULT_FEED_STATE.pageSize);
   });
 
   it('drops filter values the API would reject', () => {
@@ -35,8 +37,8 @@ describe('feed query', () => {
   });
 
   it('builds the API request with a 1-based page and a numeric score', () => {
-    const req = toFeedRequest({ ...DEFAULT_FEED_STATE, minScore: '4', pageIndex: 1 }, 50);
-    expect(req).toMatchObject({ page: 2, limit: 50, minScore: 4, sortBy: 'publishedAt', sortDir: 'desc' });
+    const req = toFeedRequest({ ...DEFAULT_FEED_STATE, minScore: '4', pageIndex: 1, pageSize: 20 });
+    expect(req).toMatchObject({ page: 2, limit: 20, minScore: 4, sortBy: 'publishedAt', sortDir: 'desc' });
     expect(req.search).toBeUndefined();
     expect(req.status).toBeUndefined();
   });
