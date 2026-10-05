@@ -79,6 +79,15 @@ import { map, mergeMap, of, throwError, timer } from 'rxjs';
       </section>
 
       <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Radar Triage Study</h2>
+        <p class="text-sm text-gray-500 mb-2">
+          Three ways to skim a Radar post, decide (done or to try) and land on the next one: split inbox, focus queue,
+          table with inline expand. Interactive, keyboard included.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/ddl/radar-triage">Open radar triage study</a>
+      </section>
+
+      <section class="mb-8">
         <h2 class="text-lg font-semibold mb-3">Console Favicon</h2>
         <p class="text-sm text-gray-500 mb-2">
           The shipped transparent <code>tdp.</code> Monogram, rendered from <code>/brand/favicon.svg</code> itself on

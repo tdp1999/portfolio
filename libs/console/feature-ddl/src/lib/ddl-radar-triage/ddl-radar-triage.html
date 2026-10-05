@@ -1,0 +1,261 @@
+<!-- ═══ Prototype chrome — not part of the pattern ═══════════════════════ -->
+<div class="tr-toolbar">
+  <a mat-icon-button routerLink="/ddl" aria-label="Back to DDL"><mat-icon>arrow_back</mat-icon></a>
+  <console-segmented-control [options]="screenOptions" [ngModel]="screen()" (ngModelChange)="screen.set($event)" />
+  <console-segmented-control [options]="sidebarOptions" [ngModel]="sidebar()" (ngModelChange)="sidebar.set($event)" />
+  <console-segmented-control [options]="densityOptions" [ngModel]="density()" (ngModelChange)="density.set($event)" />
+  <p class="tr-toolbar__budget">
+    Content {{ frameWidth() }}px = list {{ listWidth() }} + detail {{ paneWidth() }}. Property rail
+    {{ railBeside() ? 'beside the post' : 'under the post' }}.
+  </p>
+</div>
+
+<!-- The frame is the console content box at the simulated width. It owns focus for the keys. -->
+<div
+  class="tr-frame"
+  [class.tr-frame--compact]="density() === 'compact'"
+  [style.width.px]="frameWidth()"
+  tabindex="0"
+  (keydown)="onKeydown($event)"
+  aria-label="Radar triage study"
+>
+  <!-- Row 1: the existing page header, one line -->
+  <div class="tr-header">
+    <h1 class="text-page-title">Radar</h1>
+    <span class="console-badge console-badge--muted">2 pending</span>
+    <span class="tr-header__spacer"></span>
+    <button mat-stroked-button type="button">
+      <mat-icon class="icon-sm">edit_note</mat-icon>
+      Workflow profile
+    </button>
+    <button mat-stroked-button type="button">
+      <mat-icon class="icon-sm">rss_feed</mat-icon>
+      Sources and upload
+    </button>
+  </div>
+
+  <!-- Row 2: search and the narrowing filters; one row from 976px up -->
+  <console-filter-bar>
+    <console-filter-search placeholder="Search post text and TL;DR..." (searchChange)="search.set($event)" />
+    <console-filter-select
+      label="Provider"
+      [options]="providerOptions"
+      [value]="provider()"
+      (selectionChange)="provider.set($event)"
+    />
+    <console-filter-select label="Type" [options]="typeOptions" [value]="type()" (selectionChange)="type.set($event)" />
+    <console-filter-select
+      label="Min score"
+      [options]="scoreOptions"
+      [value]="minScore()"
+      (selectionChange)="minScore.set($event)"
+    />
+  </console-filter-bar>
+
+  <!-- Row 3: triage tabs (counts follow the filters), then undo, sort and promo on the right -->
+  <div class="tr-head">
+    <div class="tr-tabs" role="tablist">
+      @for (v of views; track v.value) {
+        <button
+          type="button"
+          role="tab"
+          class="tr-tab"
+          [class.tr-tab--active]="view() === v.value"
+          [attr.aria-selected]="view() === v.value"
+          (click)="onView(v.value)"
+        >
+          {{ v.label }}
+          <span class="tr-tab__count">{{ counts()[v.value] }}</span>
+        </button>
+      }
+    </div>
+    <div class="tr-head__status" role="status">
+      @if (lastAction(); as a) {
+        {{ a.label }}.
+        <button type="button" class="rv-linkbtn" (click)="onUndo()">Undo (U)</button>
+      }
+    </div>
+    <mat-checkbox [checked]="includePromo()" (change)="includePromo.set($event.checked)">Show promo</mat-checkbox>
+    <console-filter-select
+      class="tr-head__sort"
+      label="Sort"
+      [options]="sortOptions"
+      [value]="sort()"
+      [showAll]="false"
+      (selectionChange)="sort.set($any($event))"
+    />
+  </div>
+
+  <div class="tr-split" [style.grid-template-columns]="listWidth() + 'px 1fr'">
+    <ul class="tr-list" role="listbox" aria-label="Posts">
+      @for (it of visible(); track it.id) {
+        <li
+          class="tr-row"
+          role="option"
+          [class.tr-row--active]="selected()?.id === it.id"
+          [attr.aria-selected]="selected()?.id === it.id"
+          (click)="onSelect(it.id)"
+        >
+          <ng-container *ngTemplateOutlet="score; context: { $implicit: it }" />
+          <div class="tr-row__body">
+            <p class="tr-row__tldr">{{ it.tldr }}</p>
+            <p class="tr-row__meta">
+              {{ it.type || 'Pending' }}
+              @if (it.providers.length) {
+                · {{ it.providers.join(', ') }}
+              }
+              · {{ it.ageDays }}d
+              @if (it.images.length) {
+                · <mat-icon class="icon-sm">image</mat-icon>{{ it.images.length }}
+              }
+              @if (it.comments) {
+                · <mat-icon class="icon-sm">forum</mat-icon>{{ it.comments.count }}
+              }
+            </p>
+          </div>
+        </li>
+      } @empty {
+        <li class="tr-empty">
+          <mat-icon class="icon-xl">task_alt</mat-icon>
+          <p>Nothing left to decide with these filters.</p>
+        </li>
+      }
+    </ul>
+
+    <div class="tr-pane">
+      @if (selected(); as it) {
+        <!-- Detail header, sticky: identity on the left, decisions on the right -->
+        <div class="tr-pane__head">
+          <div class="tr-pane__titles">
+            <span class="tr-pane__author">{{ it.source }}</span>
+            <span class="tr-pane__meta">{{ it.published }} · {{ position() }} of {{ visible().length }}</span>
+          </div>
+          <button mat-icon-button type="button" matTooltip="Previous (K)" (click)="onMove(-1)">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </button>
+          <button mat-icon-button type="button" matTooltip="Next (J)" (click)="onMove(1)">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </button>
+          <button mat-icon-button type="button" matTooltip="Original post on Facebook">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="setStatus([it.id], it.status === 'saved' ? 'inbox' : 'saved')"
+          >
+            <mat-icon>bookmark_add</mat-icon>
+            {{ it.status === 'saved' ? 'Inbox' : 'To try' }}
+            <kbd>S</kbd>
+          </button>
+          <button mat-flat-button type="button" (click)="setStatus([it.id], 'done')">
+            <mat-icon>check</mat-icon>
+            Done
+            <kbd>E</kbd>
+          </button>
+        </div>
+
+        <!-- The shipped Detail chassis, unchanged; only the rail placement adapts to the pane width -->
+        <div class="tr-pane__body">
+          <console-record-layout>
+            @if (it.score !== null) {
+              <p class="rv-lead">{{ it.tldr }}</p>
+              <console-record-section title="Apply to my workflow">
+                <console-record-field
+                  label="Apply note"
+                  [state]="it.applyNote ? 'filled' : 'unset'"
+                  unsetLabel="No apply note: the worker marked this post as promo or not relevant."
+                >
+                  <p class="rv-prose">{{ plain(it.applyNote) }}</p>
+                </console-record-field>
+              </console-record-section>
+            } @else {
+              <p class="rv-absent">Pending analysis. Only the original text, images and links are shown.</p>
+            }
+
+            @if (it.images.length) {
+              <console-record-section title="Images" [count]="it.images.length">
+                <div class="tr-thumbs">
+                  @for (img of it.images; track img.label) {
+                    <div class="tr-thumb" [style.aspect-ratio]="img.ratio">
+                      <mat-icon class="icon-md">zoom_in</mat-icon>
+                      <span>{{ img.label }}</span>
+                    </div>
+                  }
+                </div>
+              </console-record-section>
+            }
+
+            @if (it.links.length || it.comments?.links?.length) {
+              <console-record-section title="Links" [count]="it.links.length + (it.comments?.links?.length ?? 0)">
+                <ul class="tr-links">
+                  @for (link of it.links; track link.host) {
+                    <li>
+                      <a class="tr-link">{{ link.host }} <mat-icon class="icon-sm">open_in_new</mat-icon></a>
+                      @if (link.summary) {
+                        <p class="rv-prose">{{ link.summary }}</p>
+                      } @else {
+                        <p class="rv-absent">No summary: the worker skips Facebook links.</p>
+                      }
+                    </li>
+                  }
+                  @for (link of it.comments?.links ?? []; track link) {
+                    <li>
+                      <a class="tr-link">{{ link }} <mat-icon class="icon-sm">open_in_new</mat-icon></a>
+                      <span class="console-badge console-badge--muted">From comments</span>
+                    </li>
+                  }
+                </ul>
+              </console-record-section>
+            }
+
+            @if (it.comments; as c) {
+              <console-record-section title="Comments" [count]="c.count">
+                <console-record-field label="Digest">
+                  <p class="rv-prose">{{ c.digest }}</p>
+                </console-record-field>
+              </console-record-section>
+            }
+
+            <console-record-section title="Post">
+              <console-record-field label="Original text">
+                <p class="rv-prose tr-original">{{ it.text }}</p>
+              </console-record-field>
+            </console-record-section>
+
+            <ng-container aside>
+              <console-record-panel title="Properties" flush>
+                <console-property-list>
+                  <console-property label="Signal score">
+                    {{ it.score !== null ? it.score + ' / 10' : 'Pending' }}
+                  </console-property>
+                  <console-property label="Type">{{ it.type || 'Pending' }}</console-property>
+                  <console-property label="Providers">{{ it.providers.join(', ') || 'Pending' }}</console-property>
+                  <console-property label="Relevant">{{ it.relevant ? 'Yes' : 'No' }}</console-property>
+                  <console-property label="Promo">{{ it.promo ? 'Yes' : 'No' }}</console-property>
+                  <console-property label="Published">{{ it.published }}</console-property>
+                  <console-property label="Source">{{ it.source }}</console-property>
+                </console-property-list>
+              </console-record-panel>
+            </ng-container>
+          </console-record-layout>
+        </div>
+      } @else {
+        <div class="tr-empty">
+          <mat-icon class="icon-xl">task_alt</mat-icon>
+          <p>Inbox zero. Nothing left to decide.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #score let-it>
+  <span class="tr-score" [class]="scoreTone(it.score)">
+    @if (it.score !== null) {
+      {{ it.score }}
+    } @else {
+      <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+    }
+  </span>
+</ng-template>

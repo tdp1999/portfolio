@@ -1,0 +1,369 @@
+/* DDL: Radar triage study, layout A. Prototype only; the pieces that win move into feature-radar. */
+
+:host {
+  display: block;
+}
+
+/* ═══ Prototype chrome ═══════════════════════════════════════════════ */
+.tr-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+
+  &__budget {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+}
+
+/* ═══ Frame = the console content box at the simulated width ════════ */
+.tr-frame {
+  --tr-gap: 16px;
+  --tr-pane-x: 24px;
+  --tr-row-y: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--tr-gap);
+  height: calc(var(--vh-full) - 180px);
+  min-height: 640px;
+  outline: 1px dashed var(--color-border);
+  outline-offset: 8px;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+  }
+}
+
+/* Compact trades whitespace, never font size: `--type-scale` already runs at 0.8. */
+.tr-frame--compact {
+  --tr-gap: 12px;
+  --tr-pane-x: 16px;
+  --tr-row-y: 8px;
+}
+
+.tr-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  h1 {
+    margin: 0;
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+}
+
+/* ═══ Tabs + undo ════════════════════════════════════════════════════ */
+.tr-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: calc(var(--tr-gap) * -1);
+  border-bottom: 1px solid var(--color-border);
+
+  &__sort {
+    margin-bottom: 4px;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+}
+
+.tr-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+
+  &--active {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-text);
+  }
+
+  &__count {
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--color-surface-alt);
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+  }
+}
+
+/* ═══ Split ══════════════════════════════════════════════════════════ */
+.tr-split {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: var(--color-surface);
+}
+
+.tr-list {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.tr-row {
+  display: flex;
+  gap: 12px;
+  padding: var(--tr-row-y) 16px;
+  border-bottom: 1px solid var(--color-border);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-alt);
+  }
+
+  &__body {
+    min-width: 0;
+  }
+
+  &__tldr {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: var(--leading-normal);
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 4px 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+}
+
+.tr-row--active {
+  border-left-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.tr-score {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+
+  &.tr-score--high {
+    background: color-mix(in srgb, var(--color-success) 15%, transparent);
+    color: var(--color-success);
+  }
+
+  &.tr-score--mid {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+  }
+
+  &.tr-score--pending {
+    border: 1px dashed var(--color-border);
+    background: transparent;
+  }
+}
+
+/* ═══ Pane: sticky decision bar + the Detail chassis ═════════════════ */
+.tr-pane {
+  container: tr-pane / inline-size;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.tr-pane__head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px var(--tr-pane-x);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+
+  kbd {
+    margin-left: 4px;
+    padding: 0 4px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    opacity: 0.7;
+  }
+
+  button[mat-flat-button],
+  button[mat-stroked-button] {
+    margin-left: 4px;
+  }
+}
+
+.tr-pane__titles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tr-pane__author {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tr-pane__meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.tr-pane__body {
+  padding: var(--tr-gap) var(--tr-pane-x) 32px;
+}
+
+/*
+ * The shipped chassis decides rail-beside vs stacked on the viewport (max-width 1024). Inside a
+ * pane the viewport says nothing, so the pane's own width decides: below ~920px the rail drops
+ * under the post (as the shipped page does on small screens) and lays out as a grid strip. The
+ * TL;DR stays first; score, type and providers are already on the list row.
+ */
+.tr-pane__body ::ng-deep {
+  .rv-layout__main {
+    gap: calc(var(--tr-gap) * 1.5);
+  }
+
+  @container tr-pane (max-width: 919px) {
+    .rv-layout:has(.rv-layout__aside > *):has(.rv-layout__main > *) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tr-gap);
+    }
+
+    .rv-layout__aside {
+      position: static;
+    }
+
+    .rv-props {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0 24px;
+    }
+  }
+
+  @container tr-pane (min-width: 920px) {
+    .rv-layout:has(.rv-layout__aside > *):has(.rv-layout__main > *) {
+      grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+      gap: calc(var(--tr-gap) * 2);
+    }
+
+    .rv-layout__aside {
+      position: sticky;
+      top: 64px;
+    }
+  }
+}
+
+.tr-original {
+  white-space: pre-line;
+}
+
+.tr-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Contain, never crop: these are slides and screenshots, the edges carry the text. */
+.tr-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 120px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  cursor: zoom-in;
+}
+
+.tr-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tr-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.tr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 64px 16px;
+  color: var(--color-text-muted);
+  list-style: none;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}

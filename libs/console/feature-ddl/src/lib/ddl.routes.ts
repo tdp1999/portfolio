@@ -28,6 +28,10 @@ export const ddlRoutes: Route[] = [
     loadComponent: () => import('./ddl-anatomy-form/ddl-anatomy-form'),
   },
   {
+    path: 'radar-triage',
+    loadComponent: () => import('./ddl-radar-triage/ddl-radar-triage'),
+  },
+  {
     path: 'favicon',
     loadComponent: () => import('./ddl-favicon/ddl-favicon'),
   },
