@@ -7,6 +7,9 @@ import { MediaModule } from '../media/media.module';
 
 import {
   AdvanceRunHandler,
+  CollectItemCommentsHandler,
+  FetchItemCommentsHandler,
+  UploadCommentsHandler,
   CancelRunHandler,
   ClaimWorkHandler,
   CreateRunHandler,
@@ -24,6 +27,7 @@ import { RadarTickJob } from './application/jobs/radar-tick.job';
 import { RADAR_CAPTURE_CONFIG, loadRadarCaptureConfig, RadarCaptureConfig } from './application/radar-capture.config';
 import { RADAR_WORKER_CONFIG, loadRadarWorkerConfig } from './application/radar-worker.config';
 import {
+  GetCommentsSettingsHandler,
   GetRadarItemHandler,
   GetRadarQueueStatsHandler,
   GetRunHandler,
@@ -38,6 +42,8 @@ import {
   LLM_PROVIDERS,
   IMAGE_DOWNLOADER,
   RADAR_CAPTURE_REPOSITORY,
+  RADAR_COMMENTS_REPOSITORY,
+  COMMENTS_PROVIDER,
   RADAR_IMAGE_REPOSITORY,
   RADAR_ITEM_REPOSITORY,
   RADAR_PROFILE_REPOSITORY,
@@ -46,9 +52,12 @@ import {
   RADAR_WORK_REPOSITORY,
 } from './application/radar.token';
 import { ApifyCaptureAdapter } from './infrastructure/capture/apify-capture.adapter';
+import { ApifyCommentsAdapter } from './infrastructure/capture/apify-comments.adapter';
+import { RunCommentsPhase } from './application/commands/run.comments.phase';
 import { ApifyFacebookNormalizer } from './infrastructure/capture/apify-facebook.normalizer';
 import { FetchImageDownloader } from './infrastructure/capture/fetch-image.downloader';
 import { RadarCaptureRepository } from './infrastructure/repositories/radar-capture.repository';
+import { RadarCommentsRepository } from './infrastructure/repositories/radar-comments.repository';
 import { RadarImageRepository } from './infrastructure/repositories/radar-image.repository';
 import { RadarItemRepository } from './infrastructure/repositories/radar-item.repository';
 import { ExternalWorkerAdapter } from './infrastructure/llm/external-worker.adapter';
@@ -72,12 +81,16 @@ const CommandHandlers = [
   CreateRunHandler,
   AdvanceRunHandler,
   CancelRunHandler,
+  FetchItemCommentsHandler,
+  CollectItemCommentsHandler,
+  UploadCommentsHandler,
 ];
 const QueryHandlers = [
   ListSourcesHandler,
   GetWorkflowProfileHandler,
   ListRadarItemsHandler,
   GetRadarItemHandler,
+  GetCommentsSettingsHandler,
   GetRadarQueueStatsHandler,
   ListRunsHandler,
   GetRunHandler,
@@ -89,6 +102,7 @@ const QueryHandlers = [
   providers: [
     { provide: RADAR_SOURCE_REPOSITORY, useClass: RadarSourceRepository },
     { provide: RADAR_CAPTURE_REPOSITORY, useClass: RadarCaptureRepository },
+    { provide: RADAR_COMMENTS_REPOSITORY, useClass: RadarCommentsRepository },
     { provide: RADAR_IMAGE_REPOSITORY, useClass: RadarImageRepository },
     { provide: RADAR_ITEM_REPOSITORY, useClass: RadarItemRepository },
     { provide: RADAR_WORK_REPOSITORY, useClass: RadarWorkRepository },
@@ -129,6 +143,12 @@ const QueryHandlers = [
       inject: [RADAR_CAPTURE_CONFIG],
       useFactory: (config: RadarCaptureConfig) => [new ApifyCaptureAdapter(config)],
     },
+    {
+      provide: COMMENTS_PROVIDER,
+      inject: [RADAR_CAPTURE_CONFIG],
+      useFactory: (config: RadarCaptureConfig) => new ApifyCommentsAdapter(config),
+    },
+    RunCommentsPhase,
     {
       // Resolved per run by the run's llmAdapter name.
       provide: LLM_PROVIDERS,

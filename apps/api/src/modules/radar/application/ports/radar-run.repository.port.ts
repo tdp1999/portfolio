@@ -27,7 +27,11 @@ export interface RadarRunSnapshot {
   itemsCreated: number;
   itemsUpdated: number;
   itemsFailed: number;
+  /** ENRICH also fetches comments for the selected posts. */
+  fetchComments: boolean;
   error: string | null;
+  /** A side step (comments) failed but the run went on. */
+  warning: string | null;
   createdAt: Date;
   startedAt: Date | null;
   finishedAt: Date | null;
@@ -45,13 +49,14 @@ export interface CreateRunData {
   itemCap: number;
   captureAdapter: string;
   llmAdapter: string;
+  fetchComments: boolean;
   steps: { step: RadarStep; status: RadarStatus; adapter: string }[];
 }
 
 export type StepPatch = Partial<
   Pick<RadarStepSnapshot, 'status' | 'providerJobRef' | 'meta' | 'error' | 'startedAt' | 'finishedAt'>
 >;
-export type RunPatch = Partial<Pick<RadarRunSnapshot, 'status' | 'error' | 'startedAt' | 'finishedAt'>>;
+export type RunPatch = Partial<Pick<RadarRunSnapshot, 'status' | 'error' | 'warning' | 'startedAt' | 'finishedAt'>>;
 
 export interface RadarRunItemCounts {
   /** Items whose last capture was this run. */

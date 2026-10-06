@@ -10,3 +10,5 @@ export * from './requeue-stuck.command';
 export * from './run.create.command';
 export * from './run.advance.command';
 export * from './run.cancel.command';
+export * from './comments.fetch.command';
+export * from './comments.upload.command';

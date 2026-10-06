@@ -1,4 +1,6 @@
-import { RadarItemKind } from '@prisma/client';
+import { RadarCommentsStatus, RadarItemKind } from '@prisma/client';
+
+import { RadarComment } from '../../domain/radar-comments';
 
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RadarEnrichmentInput } from '../radar-enrichment.schema';
@@ -14,6 +16,8 @@ export interface ClaimedRadarItem {
   links: RadarLink[];
   sharedPost: RadarSharedPost | null;
   engagement: RadarEngagement;
+  comments: RadarComment[];
+  commentsStatus: RadarCommentsStatus;
   leaseExpiresAt: Date;
 }
 

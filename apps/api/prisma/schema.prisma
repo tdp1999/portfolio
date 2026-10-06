@@ -816,6 +816,15 @@ enum RadarStep {
   SYNTHESIZE
 }
 
+/// Whether an item's comments were captured. `comments = []` alone cannot tell "never fetched" from "none".
+enum RadarCommentsStatus {
+  NOT_FETCHED
+  FETCHED
+  /// The run's charge cap stopped the actor before this post was read in full.
+  PARTIAL
+  FAILED
+}
+
 enum RadarStatus {
   PENDING
   RUNNING
@@ -867,7 +876,11 @@ model RadarRun {
   itemsCreated   Int          @default(0)
   itemsUpdated   Int          @default(0)
   itemsFailed    Int          @default(0)
+  /// Fetch comments for the selected posts during ENRICH (incremental Hybrid runs only).
+  fetchComments  Boolean      @default(false)
   error          String?
+  /// A side step failed (comments capture) but the run went on; shown next to the status.
+  warning        String?      @db.VarChar(500)
   createdAt      DateTime     @default(now())
   startedAt      DateTime?
   finishedAt     DateTime?
@@ -904,29 +917,34 @@ model RadarStepRun {
 }
 
 model RadarItem {
-  id               String          @id @db.Uuid
-  sourceId         String          @db.Uuid
-  lastRunId        String?         @db.Uuid
-  externalId       String          @db.VarChar(64)
-  provider         String          @db.VarChar(64)
-  kind             RadarItemKind   @default(POST)
-  permalink        String          @db.VarChar(1000)
-  authorName       String          @db.VarChar(200)
-  authorExternalId String?         @db.VarChar(64)
-  publishedAt      DateTime
-  text             String          @default("")
-  media            Json            @default("[]") @db.JsonB
-  links            Json            @default("[]") @db.JsonB
-  comments         Json            @default("[]") @db.JsonB
-  sharedPost       Json?           @db.JsonB
-  engagement       Json            @default("{}") @db.JsonB
-  rawPayload       Json            @db.JsonB
-  workStatus       RadarWorkStatus @default(PENDING)
-  leaseExpiresAt   DateTime?
-  claimCount       Int             @default(0)
-  capturedAt       DateTime        @default(now())
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id                   String              @id @db.Uuid
+  sourceId             String              @db.Uuid
+  lastRunId            String?             @db.Uuid
+  externalId           String              @db.VarChar(64)
+  provider             String              @db.VarChar(64)
+  kind                 RadarItemKind       @default(POST)
+  permalink            String              @db.VarChar(1000)
+  authorName           String              @db.VarChar(200)
+  authorExternalId     String?             @db.VarChar(64)
+  publishedAt          DateTime
+  text                 String              @default("")
+  media                Json                @default("[]") @db.JsonB
+  links                Json                @default("[]") @db.JsonB
+  comments             Json                @default("[]") @db.JsonB
+  commentsStatus       RadarCommentsStatus @default(NOT_FETCHED)
+  commentsFetchedAt    DateTime?
+  /// Comments stored after filtering, kept as a column so the list never loads the JSON to count.
+  commentsFetchedCount Int                 @default(0)
+  commentsError        String?             @db.VarChar(500)
+  sharedPost           Json?               @db.JsonB
+  engagement           Json                @default("{}") @db.JsonB
+  rawPayload           Json                @db.JsonB
+  workStatus           RadarWorkStatus     @default(PENDING)
+  leaseExpiresAt       DateTime?
+  claimCount           Int                 @default(0)
+  capturedAt           DateTime            @default(now())
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
 
   source     RadarSource      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   lastRun    RadarRun?        @relation(fields: [lastRunId], references: [id], onDelete: SetNull)
@@ -952,6 +970,8 @@ model RadarEnrichment {
   imageNotes      String?
   linkSummaries   Json     @default("[]") @db.JsonB
   commentDigest   String?
+  /// The analysis thinks the comments hold value (links, corrections); shown as a hint, never auto-fetched.
+  wantsComments   Boolean  @default(false)
   factCheck       String?
   applyNote       String?
   /// v2: background the post assumes (what a named tool or model is, price, alternatives).

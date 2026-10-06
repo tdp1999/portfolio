@@ -92,4 +92,43 @@ describe('RadarWorkRepository (integration)', () => {
 
     expect(claimed.map((i) => i.id)).toEqual([activeId]);
   });
+
+  it('should hold an item while its run is still fetching comments', async () => {
+    const [waitingId, freeId] = ['e', 'f'].map((s) => `01a10755-0000-7000-8001-${String(Date.now()).slice(-11)}${s}`);
+    const runId = `01a10755-0000-7000-8003-${String(Date.now()).slice(-12)}`;
+    await prisma.radarRun.create({
+      data: {
+        id: runId,
+        sourceId,
+        status: 'RUNNING',
+        itemCap: 10,
+        captureAdapter: 'test',
+        llmAdapter: 'test',
+        fetchComments: true,
+        steps: { create: { id: runId.replace('8003', '8004'), step: 'ENRICH', status: 'RUNNING', adapter: 'test' } },
+      },
+    });
+    // The waiting item is the newest, so without the hold it would be handed out first.
+    await prisma.radarItem.createMany({
+      data: [
+        { id: waitingId, lastRunId: runId, publishedAt: new Date(FUTURE + 4000) },
+        { id: freeId, lastRunId: null, publishedAt: new Date(FUTURE + 3000) },
+      ].map((i) => ({
+        ...i,
+        sourceId,
+        externalId: i.id,
+        provider: 'test',
+        permalink: `https://fb.test/${i.id}`,
+        authorName: 'test',
+        rawPayload: {},
+      })),
+    });
+
+    const whileFetching = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+    await prisma.radarStepRun.updateMany({ where: { runId }, data: { status: 'DONE' } });
+    const afterComments = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+
+    expect(whileFetching.map((i) => i.id)).toEqual([freeId]);
+    expect(afterComments.map((i) => i.id)).toEqual([waitingId]);
+  });
 });

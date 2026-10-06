@@ -1,4 +1,14 @@
-import { RadarItemKind, RadarPlatform, RadarRunFlow, RadarStatus, RadarStep, RadarWorkStatus } from '@prisma/client';
+import {
+  RadarCommentsStatus,
+  RadarItemKind,
+  RadarPlatform,
+  RadarRunFlow,
+  RadarStatus,
+  RadarStep,
+  RadarWorkStatus,
+} from '@prisma/client';
+
+import { RadarComment } from '../domain/radar-comments';
 import { z } from 'zod/v4';
 
 import {
@@ -50,6 +60,49 @@ export interface RadarSourceResponseDto {
   updatedAt: Date;
 }
 
+/** A comments export: one dataset item per comment, a few thousand at most. */
+export const MAX_UPLOAD_COMMENTS = 20_000;
+export const UploadCommentsFileSchema = z.array(z.unknown()).min(1).max(MAX_UPLOAD_COMMENTS);
+
+export interface UploadCommentsResponseDto {
+  /** Posts whose comment list was replaced. */
+  posts: number;
+  /** Comments stored across those posts, after filtering. */
+  comments: number;
+  /** Comments whose post is not an item of this source. */
+  unmatched: number;
+  failed: number;
+  failures: RadarNormalizeFailure[];
+}
+
+/** An item's comment capture state, for the list chip and the Detail page. */
+export interface RadarItemCommentsDto {
+  status: RadarCommentsStatus;
+  fetchedCount: number;
+  fetchedAt: Date | null;
+  error: string | null;
+}
+
+/** Comment limits the console quotes in its confirm texts; they follow the server's config. */
+export interface RadarCommentsSettingsDto {
+  /** Charge cap shared by all comments jobs of one run. */
+  runMaxChargeUsd: number;
+  /** Charge cap of one Detail page fetch. */
+  itemMaxChargeUsd: number;
+  /** Top-level comments a Detail page fetch reads (replies come on top). */
+  itemTopLevelLimit: number;
+}
+
+/** The Detail page's comments fetch: `running` until the provider job ends, then what was stored. */
+export type RadarItemCommentsFetchDto =
+  | { state: 'running'; jobRef: string }
+  | { state: 'done'; jobRef: string; status: RadarCommentsStatus; fetchedCount: number };
+
+export interface RadarItemCommentsSummaryDto extends RadarItemCommentsDto {
+  /** Comments Facebook reported on the post when it was captured. */
+  postCount: number;
+}
+
 export interface UploadCaptureResponseDto {
   runId: string;
   created: number;
@@ -91,6 +144,12 @@ export interface RadarWorkImageDto {
   ocrText: string | null;
 }
 
+/** A comment as the worker reads it: author comments in full, others cut short, low and spam left out. */
+export type RadarWorkCommentDto = Pick<
+  RadarComment,
+  'id' | 'parentId' | 'depth' | 'isAuthor' | 'authorName' | 'text' | 'likes' | 'replies' | 'links' | 'images'
+>;
+
 export interface RadarWorkItemDto {
   id: string;
   kind: RadarItemKind;
@@ -102,6 +161,8 @@ export interface RadarWorkItemDto {
   links: RadarLink[];
   sharedPost: { authorName: string | null; permalink: string | null; text: string; images: RadarWorkImageDto[] } | null;
   engagement: RadarEngagement;
+  /** `NOT_FETCHED` means nobody looked, not that the post has none: never infer "no discussion" from it. */
+  comments: { status: RadarCommentsStatus; items: RadarWorkCommentDto[] };
 }
 
 export interface ClaimWorkResponseDto {
@@ -170,6 +231,7 @@ export interface RadarFeedItemDto {
   preview: string;
   workStatus: RadarWorkStatus;
   enrichment: RadarEnrichmentSummary | null;
+  comments: RadarItemCommentsSummaryDto;
 }
 
 export interface RadarFeedPageDto {
@@ -209,6 +271,8 @@ export interface RadarItemDetailDto {
   } | null;
   engagement: RadarEngagement;
   enrichment: RadarEnrichmentDetail | null;
+  /** Stored comments: every author comment plus the best others, labelled. */
+  comments: RadarItemCommentsSummaryDto & { items: RadarComment[] };
 }
 
 export type RadarQueueStatsDto = RadarQueueStats;
@@ -227,10 +291,16 @@ export const CreateRunSchema = z
     windowFrom: z.coerce.date().optional(),
     windowTo: z.coerce.date().optional(),
     itemCap: z.int().min(1).max(MAX_RUN_ITEM_CAP),
+    fetchComments: z.boolean().default(false),
   })
   .refine((v) => !v.windowFrom || !v.windowTo || v.windowFrom < v.windowTo, {
     message: 'windowFrom must be before windowTo',
     path: ['windowTo'],
+  })
+  // Task 411 cost plan: a backfill (no window start) never buys comments; old posts get them on demand.
+  .refine((v) => !v.fetchComments || (v.flow === RadarRunFlow.HYBRID && v.windowFrom !== undefined), {
+    message: 'Comments are fetched only on a Hybrid run with a window start',
+    path: ['fetchComments'],
   });
 
 export interface RadarStepRunDto {
@@ -256,7 +326,9 @@ export interface RadarRunDto {
   itemsCreated: number;
   itemsUpdated: number;
   itemsFailed: number;
+  fetchComments: boolean;
   error: string | null;
+  warning: string | null;
   createdAt: Date;
   startedAt: Date | null;
   finishedAt: Date | null;

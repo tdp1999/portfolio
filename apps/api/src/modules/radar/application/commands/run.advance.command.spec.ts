@@ -6,6 +6,7 @@ import { ApifyFacebookNormalizer } from '../../infrastructure/capture/apify-face
 import { ExternalWorkerAdapter } from '../../infrastructure/llm/external-worker.adapter';
 import { CaptureJobStatus, ICaptureProvider } from '../ports/capture-provider.port';
 import { IRadarCaptureRepository } from '../ports/radar-capture.repository.port';
+import { RunCommentsPhase } from './run.comments.phase';
 import {
   IRadarRunRepository,
   RadarRunItemCounts,
@@ -54,7 +55,9 @@ const makeRun = (
   itemsCreated: 0,
   itemsUpdated: 0,
   itemsFailed: 0,
+  fetchComments: false,
   error: null,
+  warning: null,
   createdAt: NOW,
   startedAt: NOW,
   finishedAt: null,
@@ -111,7 +114,10 @@ const post = (id: number) => ({
   text: 'hi',
 });
 
-const setup = (run: RadarRunSnapshot, opts: { poll?: CaptureJobStatus; pages?: unknown[][] } = {}) => {
+const setup = (
+  run: RadarRunSnapshot,
+  opts: { poll?: CaptureJobStatus; pages?: unknown[][]; commentsDone?: boolean[] } = {}
+) => {
   const runs = new FakeRuns(run);
   const pages = [...(opts.pages ?? [])];
   const provider = {
@@ -128,6 +134,10 @@ const setup = (run: RadarRunSnapshot, opts: { poll?: CaptureJobStatus; pages?: u
   } satisfies IRadarCaptureRepository;
   const commandBus = { execute: jest.fn(async () => undefined) } as unknown as CommandBus;
   const storage = { delete: jest.fn() } as unknown as IStorageService;
+  const done = [...(opts.commentsDone ?? [])];
+  const commentsPhase = {
+    advance: jest.fn(async () => ({ startedAt: NOW.toISOString(), jobs: [], errors: 0, done: done.shift() ?? true })),
+  };
   const handler = new AdvanceRunHandler(
     commandBus,
     runs,
@@ -135,10 +145,11 @@ const setup = (run: RadarRunSnapshot, opts: { poll?: CaptureJobStatus; pages?: u
     [provider],
     [new ApifyFacebookNormalizer()],
     [new ExternalWorkerAdapter()],
-    storage
+    storage,
+    commentsPhase as unknown as RunCommentsPhase
   );
   const advance = (now = NOW) => handler.execute(new AdvanceRunCommand(RUN_ID, now));
-  return { runs, provider, captures, advance };
+  return { runs, provider, captures, commentsPhase, advance };
 };
 
 const runningCapture = { status: RadarStatus.RUNNING, providerJobRef: 'job-1', startedAt: NOW };
@@ -306,6 +317,23 @@ describe('AdvanceRunHandler', () => {
       expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.DONE);
       expect(runs.stepOf(RadarStep.ANALYZE).status).toBe(RadarStatus.AWAITING_EXTERNAL);
       expect(runs.run.status).toBe(RadarStatus.AWAITING_EXTERNAL);
+    });
+
+    it('should hold ENRICH open until the comments phase is done, keeping its state in the step meta', async () => {
+      const run = makeRun(RadarRunFlow.HYBRID, {
+        [RadarStep.CAPTURE]: { status: RadarStatus.DONE },
+        [RadarStep.NORMALIZE]: { status: RadarStatus.DONE },
+        [RadarStep.ENRICH]: { status: RadarStatus.RUNNING },
+      });
+      const { runs, commentsPhase, advance } = setup({ ...run, fetchComments: true }, { commentsDone: [false, true] });
+
+      await advance();
+      expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.RUNNING);
+      expect(runs.stepOf(RadarStep.ENRICH).meta['comments']).toMatchObject({ done: false });
+
+      await advance();
+      expect(commentsPhase.advance).toHaveBeenCalledTimes(2);
+      expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.DONE);
     });
 
     it('should finish the analyze step and the run only once every run item is analyzed', async () => {

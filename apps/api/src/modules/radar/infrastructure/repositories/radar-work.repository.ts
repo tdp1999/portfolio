@@ -5,6 +5,7 @@ import { IdentifierValue } from '@portfolio/shared/types';
 
 import { ClaimedRadarItem, IRadarWorkRepository } from '../../application/ports/radar-work.repository.port';
 import { RadarEnrichmentInput } from '../../application/radar-enrichment.schema';
+import { RadarComment } from '../../domain/radar-comments';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { PrismaService } from '../../../../shared/prisma';
 
@@ -19,6 +20,8 @@ const claimedSelect = {
   links: true,
   sharedPost: true,
   engagement: true,
+  comments: true,
+  commentsStatus: true,
 } as const;
 
 @Injectable()
@@ -33,11 +36,17 @@ export class RadarWorkRepository implements IRadarWorkRepository {
       // comparison independent of the session time zone.
       // SKIP LOCKED: a concurrent claim passes over rows this one holds instead of waiting for them,
       // so two workers never leave with the same item.
-      // The source check is a subquery, not a join, so the row lock stays on radar_items alone.
+      // The source and run checks are subqueries, not joins, so the row lock stays on radar_items alone.
+      // An item whose run is still fetching comments waits for them, so its analysis can use them.
       const rows = await tx.$queryRaw<{ id: string }[]>`
         SELECT id FROM radar_items
         WHERE "claimCount" < ${maxAttempts}
           AND EXISTS (SELECT 1 FROM radar_sources s WHERE s.id = radar_items."sourceId" AND s."isActive")
+          AND NOT (radar_items."commentsStatus" = 'NOT_FETCHED' AND EXISTS (
+                SELECT 1 FROM radar_runs r
+                JOIN radar_step_runs e ON e."runId" = r.id AND e.step = 'ENRICH'
+                WHERE r.id = radar_items."lastRunId" AND r."fetchComments" AND r.status = 'RUNNING'
+                  AND e.status <> 'DONE'))
           AND ("workStatus" = 'PENDING'
                OR ("workStatus" = 'CLAIMED' AND "leaseExpiresAt" < ${now.toISOString()}::timestamp(3)))
         ORDER BY "publishedAt" DESC
@@ -62,6 +71,7 @@ export class RadarWorkRepository implements IRadarWorkRepository {
         links: i.links as unknown as RadarLink[],
         sharedPost: i.sharedPost as unknown as RadarSharedPost | null,
         engagement: i.engagement as unknown as RadarEngagement,
+        comments: i.comments as unknown as RadarComment[],
         leaseExpiresAt,
       }));
     });

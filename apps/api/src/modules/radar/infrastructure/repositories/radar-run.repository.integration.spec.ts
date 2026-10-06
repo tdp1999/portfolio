@@ -23,6 +23,7 @@ describe('RadarRunRepository (integration)', () => {
     sourceId,
     flow: RadarRunFlow.MANUAL,
     status: AWAITING_EXTERNAL,
+    fetchComments: false,
     windowFrom: null,
     windowTo: null,
     itemCap: 10,

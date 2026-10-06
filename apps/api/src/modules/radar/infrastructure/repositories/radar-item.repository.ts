@@ -11,6 +11,7 @@ import {
   RadarQueueStats,
 } from '../../application/ports/radar-item.repository.port';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
+import { RadarComment } from '../../domain/radar-comments';
 import { PrismaService } from '../../../../shared/prisma';
 
 const sourceSelect = { select: { id: true, displayName: true, isActive: true } } as const;
@@ -23,9 +24,22 @@ const feedSelect = {
   publishedAt: true,
   text: true,
   workStatus: true,
+  engagement: true,
+  commentsStatus: true,
+  commentsFetchedCount: true,
+  commentsFetchedAt: true,
+  commentsError: true,
   source: sourceSelect,
   enrichment: {
-    select: { tldr: true, providerTags: true, contentType: true, signalScore: true, isPromo: true, isRelevant: true },
+    select: {
+      tldr: true,
+      providerTags: true,
+      contentType: true,
+      signalScore: true,
+      isPromo: true,
+      isRelevant: true,
+      wantsComments: true,
+    },
   },
 } as const;
 
@@ -34,7 +48,7 @@ const detailSelect = {
   media: true,
   links: true,
   sharedPost: true,
-  engagement: true,
+  comments: true,
   enrichment: {
     select: {
       ...feedSelect.enrichment.select,
@@ -123,7 +137,7 @@ export class RadarItemRepository implements IRadarItemRepository {
       }),
       this.prisma.radarItem.count({ where }),
     ]);
-    return { data, total };
+    return { data: data.map((row) => ({ ...row, engagement: row.engagement as unknown as RadarEngagement })), total };
   }
 
   async findById(id: string): Promise<RadarItemDetail | null> {
@@ -135,6 +149,7 @@ export class RadarItemRepository implements IRadarItemRepository {
       links: item.links as unknown as RadarLink[],
       sharedPost: item.sharedPost as unknown as RadarSharedPost | null,
       engagement: item.engagement as unknown as RadarEngagement,
+      comments: item.comments as unknown as RadarComment[],
       enrichment: item.enrichment && {
         ...item.enrichment,
         linkSummaries: item.enrichment.linkSummaries as unknown as { url: string; summary: string }[],

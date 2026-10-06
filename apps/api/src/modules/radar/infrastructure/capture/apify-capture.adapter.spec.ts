@@ -8,7 +8,12 @@ const setup = (responses: unknown[]) => {
   const queue = [...responses];
   const http = jest.fn(async (_url: string | URL | Request, _init?: RequestInit) => respond(queue.shift()));
   const adapter = new ApifyCaptureAdapter(
-    { apifyToken: TOKEN, apifyPostsActor: 'apify/facebook-posts-scraper' },
+    {
+      apifyToken: TOKEN,
+      apifyPostsActor: 'apify/facebook-posts-scraper',
+      apifyCommentsActor: 'apify/facebook-comments-scraper',
+      commentsMaxChargeUsd: 0.5,
+    },
     http as unknown as typeof fetch
   );
   return { http, adapter };

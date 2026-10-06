@@ -9,5 +9,8 @@ export const RADAR_ITEM_REPOSITORY = Symbol('RADAR_ITEM_REPOSITORY');
 export const RADAR_RUN_REPOSITORY = Symbol('RADAR_RUN_REPOSITORY');
 /** Hybrid capture providers, resolved per run by the run's `captureAdapter` name. */
 export const CAPTURE_PROVIDERS = Symbol('CAPTURE_PROVIDERS');
+/** The comments provider (one: Apify). Hybrid runs and the Detail "Fetch comments" action use it. */
+export const COMMENTS_PROVIDER = Symbol('COMMENTS_PROVIDER');
+export const RADAR_COMMENTS_REPOSITORY = Symbol('RADAR_COMMENTS_REPOSITORY');
 /** Analysis providers, resolved per run by the run's `llmAdapter` name. */
 export const LLM_PROVIDERS = Symbol('LLM_PROVIDERS');

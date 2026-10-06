@@ -18,6 +18,11 @@ const row: RadarFeedRow = {
   publishedAt: new Date('2026-10-01T00:00:00Z'),
   text: 'x'.repeat(500),
   workStatus: 'PENDING',
+  engagement: { likes: 0, comments: 4, shares: 0, views: null },
+  commentsStatus: 'NOT_FETCHED',
+  commentsFetchedCount: 0,
+  commentsFetchedAt: null,
+  commentsError: null,
   enrichment: null,
 };
 
@@ -108,6 +113,7 @@ describe('Radar item queries', () => {
     it('should return the item with served image URLs', async () => {
       const detail: RadarItemDetail = {
         ...row,
+        comments: [],
         media: [
           {
             type: 'photo',

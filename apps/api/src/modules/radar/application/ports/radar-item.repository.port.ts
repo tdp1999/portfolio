@@ -1,7 +1,8 @@
-import { RadarItemKind, RadarWorkStatus } from '@prisma/client';
+import { RadarCommentsStatus, RadarItemKind, RadarWorkStatus } from '@prisma/client';
 
 import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 
+import { RadarComment } from '../../domain/radar-comments';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 
 export interface RadarItemListFilter {
@@ -29,6 +30,8 @@ export interface RadarEnrichmentSummary {
   signalScore: number;
   isPromo: boolean;
   isRelevant: boolean;
+  /** The analysis thinks the unfetched comments are worth reading. */
+  wantsComments: boolean;
 }
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
@@ -54,6 +57,11 @@ interface RadarItemBase {
   publishedAt: Date;
   text: string;
   workStatus: RadarWorkStatus;
+  engagement: RadarEngagement;
+  commentsStatus: RadarCommentsStatus;
+  commentsFetchedCount: number;
+  commentsFetchedAt: Date | null;
+  commentsError: string | null;
 }
 
 export interface RadarFeedRow extends RadarItemBase {
@@ -64,7 +72,7 @@ export interface RadarItemDetail extends RadarItemBase {
   media: RadarMedia[];
   links: RadarLink[];
   sharedPost: RadarSharedPost | null;
-  engagement: RadarEngagement;
+  comments: RadarComment[];
   enrichment: RadarEnrichmentDetail | null;
 }
 

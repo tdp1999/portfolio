@@ -19,6 +19,7 @@ import {
 } from '../radar.token';
 import { MAX_CLAIM_ATTEMPTS } from '../radar.dto';
 import { PersistItemImagesCommand } from './persist-item-images.command';
+import { CommentsPhaseMeta, RunCommentsPhase } from './run.comments.phase';
 
 /** Steps a run walks, in order. SYNTHESIZE belongs to the brief (412), not to a run. */
 const PIPELINE: RadarStep[] = [RadarStep.CAPTURE, RadarStep.NORMALIZE, RadarStep.ENRICH, RadarStep.ANALYZE];
@@ -63,7 +64,8 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     @Inject(CAPTURE_PROVIDERS) private readonly captureProviders: ICaptureProvider[],
     @Inject(CAPTURE_NORMALIZERS) private readonly normalizers: ICaptureNormalizer[],
     @Inject(LLM_PROVIDERS) private readonly llmProviders: ILlmProvider[],
-    @Inject(STORAGE_SERVICE) private readonly storage: IStorageService
+    @Inject(STORAGE_SERVICE) private readonly storage: IStorageService,
+    private readonly commentsPhase: RunCommentsPhase
   ) {}
 
   async execute({ runId, now }: AdvanceRunCommand): Promise<void> {
@@ -193,15 +195,30 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     return 'advanced';
   }
 
-  /** Copies images in small batches per tick; done when none of the run's items has a pending one. */
+  /**
+   * Copies images in small batches per tick and, when the run asks for it, fetches comments for
+   * the selected posts. Done when no image is pending and the comments phase is settled; a
+   * comments failure only warns (see {@link RunCommentsPhase}).
+   */
   private async enrich(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
     if (step.status === RadarStatus.PENDING) {
       await this.runs.updateStep(run.id, RadarStep.ENRICH, { status: RadarStatus.RUNNING, startedAt: now });
     }
     await this.commandBus.execute(new PersistItemImagesCommand(IMAGE_ITEMS_PER_TICK));
 
+    let commentsDone = true;
+    if (run.fetchComments) {
+      const comments = await this.commentsPhase.advance(
+        run,
+        step.meta['comments'] as CommentsPhaseMeta | undefined,
+        now
+      );
+      commentsDone = comments.done;
+      if (!(await this.runs.updateStep(run.id, RadarStep.ENRICH, { meta: { ...step.meta, comments } }))) return 'wait';
+    }
+
     const { withPendingImages } = await this.runs.countItems(run.id, now, MAX_CLAIM_ATTEMPTS);
-    if (withPendingImages > 0) return 'wait';
+    if (withPendingImages > 0 || !commentsDone) return 'wait';
     await this.runs.updateStep(run.id, RadarStep.ENRICH, { status: RadarStatus.DONE, finishedAt: now, error: null });
     return 'advanced';
   }

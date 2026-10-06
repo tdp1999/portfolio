@@ -1,3 +1,4 @@
+import { commentsForClaim } from '../domain/radar-comments';
 import { servedUrl } from '../domain/radar-media.util';
 import { RadarMedia } from '../domain/radar.types';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
@@ -7,6 +8,7 @@ import { RadarSourceWithCount } from './ports/radar-source.repository.port';
 import {
   FEED_PREVIEW_CHARS,
   RadarFeedItemDto,
+  RadarItemCommentsSummaryDto,
   RadarItemDetailDto,
   RadarItemImageDto,
   RadarRunDto,
@@ -45,7 +47,9 @@ export class RadarPresenter {
       itemsCreated: run.itemsCreated,
       itemsUpdated: run.itemsUpdated,
       itemsFailed: run.itemsFailed,
+      fetchComments: run.fetchComments,
       error: run.error,
+      warning: run.warning,
       createdAt: run.createdAt,
       startedAt: run.startedAt,
       finishedAt: run.finishedAt,
@@ -90,16 +94,55 @@ export class RadarPresenter {
         images: toImages(item.sharedPost.media),
       },
       engagement: item.engagement,
+      comments: {
+        status: item.commentsStatus,
+        items: commentsForClaim(item.comments).map(
+          ({ id, parentId, depth, isAuthor, authorName, text, likes, replies, links, images }) => ({
+            id,
+            parentId,
+            depth,
+            isAuthor,
+            authorName,
+            text,
+            likes,
+            replies,
+            links,
+            images,
+          })
+        ),
+      },
     };
   }
 
-  static toFeedItem({ text, ...row }: RadarFeedRow): RadarFeedItemDto {
-    return { ...row, preview: text.slice(0, FEED_PREVIEW_CHARS) };
+  static toFeedItem(row: RadarFeedRow): RadarFeedItemDto {
+    return {
+      id: row.id,
+      source: row.source,
+      kind: row.kind,
+      permalink: row.permalink,
+      authorName: row.authorName,
+      publishedAt: row.publishedAt,
+      preview: row.text.slice(0, FEED_PREVIEW_CHARS),
+      workStatus: row.workStatus,
+      enrichment: row.enrichment,
+      comments: toCommentsSummary(row),
+    };
   }
 
-  static toItemDetail({ media, sharedPost, ...item }: RadarItemDetail): RadarItemDetailDto {
+  static toItemDetail(detail: RadarItemDetail): RadarItemDetailDto {
+    const {
+      media,
+      sharedPost,
+      comments,
+      commentsStatus,
+      commentsFetchedCount,
+      commentsFetchedAt,
+      commentsError,
+      ...item
+    } = detail;
     return {
       ...item,
+      comments: { ...toCommentsSummary(detail), items: comments },
       images: toItemImages(media),
       sharedPost: sharedPost && {
         authorName: sharedPost.authorName,
@@ -110,4 +153,15 @@ export class RadarPresenter {
       },
     };
   }
+}
+
+/** `postCount` is what Facebook reported on the post; `fetchedCount` what we stored after filtering. */
+function toCommentsSummary(row: RadarFeedRow | RadarItemDetail): RadarItemCommentsSummaryDto {
+  return {
+    status: row.commentsStatus,
+    fetchedCount: row.commentsFetchedCount,
+    fetchedAt: row.commentsFetchedAt,
+    error: row.commentsError,
+    postCount: row.engagement.comments ?? 0,
+  };
 }

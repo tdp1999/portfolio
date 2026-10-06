@@ -33,6 +33,8 @@ export const RadarEnrichmentSchema = z.object({
     .max(20)
     .default([]),
   commentDigest: optionalText(4000),
+  /** The comments likely hold the real content (links, corrections) but were not fetched: a hint for the Owner. */
+  wantsComments: z.boolean().default(false),
   factCheck: optionalText(4000),
   /** Background the post assumes: what a named tool or model is, its price, the alternatives. */
   context: requiredText(4000),

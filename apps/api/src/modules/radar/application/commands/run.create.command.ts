@@ -87,6 +87,7 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
       itemCap: input.itemCap,
       captureAdapter,
       llmAdapter: EXTERNAL_WORKER_ADAPTER,
+      fetchComments: input.fetchComments,
       steps: [
         { step: RadarStep.CAPTURE, status: waiting, adapter: captureAdapter },
         { step: RadarStep.NORMALIZE, status: RadarStatus.PENDING, adapter: NORMALIZE_ADAPTER },

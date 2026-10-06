@@ -3,6 +3,7 @@ import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
 import { ICaptureProvider } from '../ports/capture-provider.port';
 import { CreateRunData, IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
+import { CreateRunSchema } from '../radar.dto';
 import { CreateRunCommand, CreateRunHandler } from './run.create.command';
 
 const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
@@ -91,5 +92,19 @@ describe('CreateRunHandler', () => {
       RadarStep.ENRICH,
       RadarStep.ANALYZE,
     ]);
+  });
+});
+
+describe('CreateRunSchema fetchComments', () => {
+  const from = '2026-10-01';
+
+  it.each([
+    ['a Hybrid run with a window start', RadarRunFlow.HYBRID, from, true],
+    ['a Hybrid backfill (no window start)', RadarRunFlow.HYBRID, undefined, false],
+    ['a Manual run', RadarRunFlow.MANUAL, from, false],
+  ])('should %s be allowed to fetch comments: %s', (_label, flow, windowFrom, allowed) => {
+    const result = CreateRunSchema.safeParse({ ...body(flow), windowFrom, fetchComments: true });
+
+    expect(result.success).toBe(allowed);
   });
 });
