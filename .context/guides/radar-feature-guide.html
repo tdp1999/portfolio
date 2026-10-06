@@ -127,22 +127,23 @@
       <li><a href="#capture">5. Upload và normalize</a></li>
       <li><a href="#images">6. Ảnh và Cloudinary</a></li>
       <li><a href="#runs">7. Runs: Manual và Hybrid</a></li>
+      <li><a href="#comments">8. Comments</a></li>
       <li class="group">Phân tích</li>
-      <li><a href="#token">8. Machine token</a></li>
-      <li><a href="#doors">9. Hai cửa và endpoint</a></li>
-      <li><a href="#worker">10. Vòng làm việc của worker</a></li>
-      <li><a href="#lease">11. Lease và trạng thái bài</a></li>
-      <li><a href="#enrichment">12. Enrichment</a></li>
-      <li><a href="#reading">13. Đọc Feed: Score, Type, Provider, Status</a></li>
-      <li><a href="#profile">14. Workflow profile</a></li>
+      <li><a href="#token">9. Machine token</a></li>
+      <li><a href="#doors">10. Hai cửa và endpoint</a></li>
+      <li><a href="#worker">11. Vòng làm việc của worker</a></li>
+      <li><a href="#lease">12. Lease và trạng thái bài</a></li>
+      <li><a href="#enrichment">13. Enrichment</a></li>
+      <li><a href="#reading">14. Đọc Feed: Score, Type, Provider, Status</a></li>
+      <li><a href="#profile">15. Workflow profile</a></li>
       <li class="group">Tham chiếu</li>
-      <li><a href="#data">15. Data model</a></li>
-      <li><a href="#errors">16. Mã lỗi</a></li>
-      <li><a href="#rules">17. Business rules</a></li>
-      <li><a href="#decisions">18. Các quyết định</a></li>
+      <li><a href="#data">16. Data model</a></li>
+      <li><a href="#errors">17. Mã lỗi</a></li>
+      <li><a href="#rules">18. Business rules</a></li>
+      <li><a href="#decisions">19. Các quyết định</a></li>
       <li class="group">Tiếp theo</li>
-      <li><a href="#gaps">19. Chỗ hở đã biết</a></li>
-      <li><a href="#roadmap">20. Lộ trình task</a></li>
+      <li><a href="#gaps">20. Chỗ hở đã biết</a></li>
+      <li><a href="#roadmap">21. Lộ trình task</a></li>
     </ol>
   </nav>
 
@@ -406,11 +407,11 @@
         <tr><td>Bảng run</td><td>Source, flow và cap, window, trạng thái, 4 bước, số bài, thời điểm tạo</td><td>Mới nhất ở trên. Window trống hai đầu ghi "All posts"</td></tr>
         <tr><td>Cột Steps</td><td>Capture, Normalize, Images, Analyze, mỗi bước có biểu tượng theo trạng thái</td><td>Rê chuột vào bước để thấy adapter và lỗi (nếu có)</td></tr>
         <tr><td>Tự làm mới</td><td>Trang gọi lại API mỗi 10 giây</td><td>Chỉ khi còn run đang chạy (<code>PENDING</code>, <code>RUNNING</code>, <code>AWAITING_EXTERNAL</code>). Hết run đang chạy hoặc rời trang thì dừng. Lỗi khi tự làm mới không hiện toast, lần sau gọi lại</td></tr>
-        <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export</td><td>Run đang chạy bình thường hoặc đã DONE thì không có dòng này</td></tr>
+        <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export. Run có <code>warning</code> (comment bị bỏ qua hoặc chỉ đọc một phần): thêm một dòng vàng, kể cả khi run đã DONE</td><td>Run đang chạy bình thường hoặc đã DONE mà không có warning thì không có dòng này</td></tr>
         <tr><td>Run đã hủy</td><td>Badge "Cancelled" màu xám và dòng "Cancelled at &lt;bước&gt;", không phải "Failed" màu đỏ</td><td>API vẫn lưu run hủy là FAILED với lỗi "Cancelled by the Owner"; console đọc đúng thông điệp này (hằng số dùng chung <code>RADAR_RUN_CANCELLED_MESSAGE</code>) để hiển thị khác đi</td></tr>
         <tr><td>Nút "Cancel"</td><td>Có ở mọi run đang chạy</td><td>Hỏi xác nhận trước khi gọi <code>POST /api/radar/runs/:id/cancel</code>. Hộp xác nhận nhắc rằng job Apify đã start vẫn tính tiền</td></tr>
         <tr><td>Nút "Upload export"</td><td>Chỉ có ở run MANUAL đang chờ upload</td><td>Gửi file kèm <code>runId</code> của run đó</td></tr>
-        <tr><td>Form "New run"</td><td>Source, flow, window, item cap</td><td>Chỉ liệt kê source đang bật. Flow mặc định HYBRID. Cap mặc định 200, tối đa 1.500. Ngày đầu window mặc định là ngày ngay sau ngày cuối của run DONE gần nhất của source đó (hoặc ngày tạo run nếu run đó không có <code>windowTo</code>), không muộn hơn hôm nay; source chưa có run DONE thì lùi 6 tháng. Ngày cuối để trống nghĩa là tới hiện tại; chọn ngày cuối thì tính tới hết ngày đó. Window tính theo nguyên ngày UTC, đúng ngày <code>YYYY-MM-DD</code> mà Apify lọc, nên hai run nối nhau không trùng ngày và ngày đầu không bao giờ bằng ngày cuối</td></tr>
+        <tr><td>Form "New run"</td><td>Source, flow, window, item cap, ô "Fetch comments"</td><td>Chỉ liệt kê source đang bật. Flow mặc định HYBRID. Cap mặc định 200, tối đa 1.500. Ngày đầu window mặc định là ngày ngay sau ngày cuối của run DONE gần nhất của source đó (hoặc ngày tạo run nếu run đó không có <code>windowTo</code>), không muộn hơn hôm nay; source chưa có run DONE thì lùi 6 tháng. Ngày cuối để trống nghĩa là tới hiện tại; chọn ngày cuối thì tính tới hết ngày đó. Window tính theo nguyên ngày UTC, đúng ngày <code>YYYY-MM-DD</code> mà Apify lọc, nên hai run nối nhau không trùng ngày và ngày đầu không bao giờ bằng ngày cuối</td></tr>
         <tr><td>Badge trên Feed</td><td>"1 run in progress" (hoặc "N runs in progress") cạnh số bài pending</td><td>Chỉ hiện khi có run đang chạy. Bấm vào để mở trang Runs. Đọc lúc mở Feed và khi đóng hộp Sources, không tự làm mới</td></tr>
       </table></div>
 
@@ -432,8 +433,61 @@
       </ol>
     </section>
 
+    <section id="comments">
+      <h2>8. Comments</h2>
+      <p>Comment dưới bài thường giữ phần quan trọng: link tác giả để "dưới còm", lời đính chính, trải nghiệm thật của người dùng. Radar đọc comment bằng actor Apify <code>apify/facebook-comments-scraper</code>, không bao giờ qua tài khoản Facebook của bạn (RAD-003). Mỗi comment tính tiền ($0.0025 một comment, $0.001 mỗi lần start actor), nên Radar chọn bài trước, giới hạn số tiền, rồi mới đọc.</p>
+
+      <h3>Ba cách lấy comment</h3>
+      <div class="scroll"><table>
+        <tr><th>Cách</th><th>Khi nào</th><th>Giới hạn tiền</th></tr>
+        <tr><td>Trong run</td><td>Tick ô "Fetch comments" ở form New run. Chỉ bật được với run HYBRID có ngày đầu window (run nối tiếp, không phải run quét cả năm)</td><td>Tối đa $0.50 mỗi run (env <code>RADAR_COMMENTS_MAX_CHARGE_USD</code>)</td></tr>
+        <tr><td>Từng bài</td><td>Nút "Fetch comments" ở section Comments của trang Detail, có hộp xác nhận</td><td>Tối đa $0.10 mỗi lần bấm</td></tr>
+        <tr><td>Upload</td><td>Nút "Upload comments" ở hộp Sources: file JSON xuất từ actor comments trên web Apify</td><td>Không tốn tiền phía API; chỉ gắn comment vào bài đã có của source đó</td></tr>
+      </table></div>
+
+      <h3>Chọn bài và mức đọc (tier)</h3>
+      <p>Trong run, Radar chỉ xét bài của chính run đó, chưa có comment. Mỗi bài được xếp vào một tier dựa trên số comment Facebook báo và nội dung bài, hoàn toàn bằng luật cố định, không gọi model:</p>
+      <div class="scroll"><table>
+        <tr><th>Tier</th><th>Đọc gì</th><th>Khi nào</th></tr>
+        <tr><td><code>skip</code></td><td>Không đọc</td><td>Dưới 3 comment; hoặc bài meme (có ảnh, không link, không nhắc tới comment, chữ dưới 80 ký tự sau khi bỏ hashtag); hoặc dưới 20 comment mà bài không nhắc tới comment</td></tr>
+        <tr><td><code>light</code></td><td>5 comment cấp 1, không reply</td><td>Bài nhắc tới comment ("link dưới còm", "cmt", 👇) mà ít comment; hoặc bài giveaway kiểu "comment để nhận" (hàng trăm comment một chữ, chỉ cần comment của tác giả)</td></tr>
+        <tr><td><code>full</code></td><td>15 comment cấp 1 kèm reply</td><td>Từ 20 tới 99 comment: một cuộc thảo luận thật</td></tr>
+        <tr><td><code>full-flat</code></td><td>15 comment cấp 1, không reply</td><td>Từ 100 comment: reply có thể ăn hết tiền của run</td></tr>
+      </table></div>
+      <p>Mỗi tier là một job Apify riêng, nên một run có tối đa 3 job và trả tối đa 3 lần phí start ($0.001 mỗi job). Tier không có reply có chi phí tối đa biết trước, nên nhận đúng phần đó (bị thu nhỏ nếu vượt 80% của $0.50); tier <code>full</code> nhận phần còn lại. Ví dụ: 4 bài <code>light</code> (4 × 5 × $0.0025 + $0.001 = $0.051) và 2 bài <code>full-flat</code> ($0.076) thì <code>full</code> còn $0.373.</p>
+
+      <h3>Lọc và nhãn</h3>
+      <div class="scroll"><table>
+        <tr><th>Nhãn</th><th>Nghĩa</th><th>Ví dụ</th></tr>
+        <tr><td><code>author</code></td><td>Comment của chính tác giả bài</td><td>"Link repo đây: github.com/..."</td></tr>
+        <tr><td><code>substantive</code></td><td>Có nội dung</td><td>"Mình dùng bản này thấy tốn token hơn bản cũ"</td></tr>
+        <tr><td><code>low</code> (hiện là "Filler")</td><td>Không nói gì</td><td>"hóng", "xin link", sticker</td></tr>
+        <tr><td><code>spam</code></td><td>Quảng cáo, rủ inbox, copy y hệt của người khác</td><td>Link shopee, "ib mình nha"</td></tr>
+      </table></div>
+      <p>API giữ mọi comment của tác giả và 50 comment khác tốt nhất (nhãn trước, rồi lượt thích + reply). Tên người comment chỉ lưu cho tác giả; người khác luôn ẩn danh. Worker chỉ nhận comment <code>author</code> và <code>substantive</code>, comment không phải của tác giả bị cắt còn 500 ký tự.</p>
+
+      <h3>Trạng thái comment của một bài</h3>
+      <div class="scroll"><table>
+        <tr><th>Trạng thái</th><th>Nghĩa</th><th>Trên Feed</th></tr>
+        <tr><td><code>NOT_FETCHED</code></td><td>Chưa đọc</td><td>Số comment Facebook báo, chữ xám. Chấm nhỏ khi phân tích gợi ý nên đọc (<code>wantsComments</code>)</td></tr>
+        <tr><td><code>FETCHED</code></td><td>Đã đọc đủ</td><td>"giữ lại / Facebook báo", ví dụ 12 / 40</td></tr>
+        <tr><td><code>PARTIAL</code></td><td>Job dừng vì chạm giới hạn tiền trước khi đọc đủ bài này</td><td>Badge vàng</td></tr>
+        <tr><td><code>FAILED</code></td><td>Job lỗi hoặc quá hạn</td><td>Badge đỏ, lỗi ở tooltip</td></tr>
+      </table></div>
+
+      <h3>Trong một run</h3>
+      <p>Comment chạy trong bước ENRICH, song song với việc chép ảnh; ENRICH chỉ xong khi cả hai xong. Comment không bao giờ làm run FAILED: job lỗi, quá 45 phút hoặc lỗi 5 lần thì các bài liên quan thành <code>FAILED</code>, run ghi <code>warning</code>, và phân tích vẫn chạy tiếp không có comment. Trang Runs hiện warning thành một dòng vàng dưới run. Khi run bỏ cuộc với comment, hoặc khi bạn hủy run, API gọi abort cho các job comment còn chạy để Apify ngừng tính tiền.</p>
+      <p>Trong lúc ENRICH còn đọc comment, claim <b>giữ lại</b> các bài chưa có comment của run đó, để worker không phân tích một bài rồi mới nhận comment của nó. Bài đã có comment, hoặc bài của run không đọc comment, vẫn được claim như thường.</p>
+
+      <h3>Trên trang Detail</h3>
+      <p>Bấm "Fetch comments" chỉ <b>bắt đầu</b> job Apify và nhận về mã job. Trang hỏi lại kết quả mỗi 5 giây, tối đa 10 phút. Không request nào phải chờ Apify chạy xong, nên proxy (Cloudflare cắt request sau khoảng 100 giây) không làm mất kết quả đã trả tiền. Rời trang giữa chừng thì việc hỏi lại vẫn chạy tiếp tới khi comment được lưu. Hộp xác nhận lấy số comment và giới hạn tiền từ <code>GET /radar/comments/settings</code>, nên luôn khớp cấu hình của server.</p>
+
+      <h3>Worker dùng comment thế nào</h3>
+      <p>Claim mang theo <code>comments: { status, items }</code>. Worker viết <code>commentDigest</code> (đính chính, phản biện, trải nghiệm thật, phần tác giả bổ sung) và không bao giờ nêu tên người comment. Khi bài phụ thuộc vào comment mà comment chưa được đọc, worker đặt <code>wantsComments = true</code>; đây chỉ là gợi ý trên Feed, không tự động đọc gì.</p>
+    </section>
+
     <section id="token">
-      <h2>8. Machine token</h2>
+      <h2>9. Machine token</h2>
       <h3>Cài đặt một lần</h3>
       <pre><code>TOKEN=$(openssl rand -hex 24)                          # key A, không in ra màn hình
 printf %s "$TOKEN" | shasum -a 256 | cut -d' ' -f1     # in ra key B
@@ -490,7 +544,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="doors">
-      <h2>9. Hai cửa và endpoint</h2>
+      <h2>10. Hai cửa và endpoint</h2>
       <div class="doors">
         <div class="door admin">
           <h3>Cửa admin: <code>/api/radar/*</code></h3>
@@ -512,7 +566,11 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>PATCH</td><td><code>/radar/sources/:id/deactivate</code>, <code>/activate</code></td><td>Tắt, bật source</td></tr>
         <tr><td>Admin</td><td>DELETE</td><td><code>/radar/sources/:id</code></td><td>Xóa source và ảnh</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/captures/upload</code></td><td>Upload file JSON. Field tùy chọn <code>runId</code> đổ file vào một run MANUAL đang chờ</td></tr>
-        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL hoặc HYBRID, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn)</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/comments/upload</code></td><td>Upload file JSON của actor comments (tối đa 20.000 comment). Chỉ gắn vào bài đã có của source; trả về số bài, số comment, số không khớp, số lỗi</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL hoặc HYBRID, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn), <code>fetchComments</code> (mặc định false, chỉ hợp lệ với HYBRID có <code>windowFrom</code>)</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch</code></td><td>Bắt đầu đọc comment của một bài (tính tiền, tối đa $0.10). Trả 202 kèm <code>{ state: 'running', jobRef }</code></td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch/:jobRef</code></td><td>Hỏi kết quả: <code>running</code> khi job chưa xong; <code>done</code> kèm <code>status</code>, <code>fetchedCount</code> khi đã thay danh sách cũ. Job lỗi thì bài thành FAILED và trả lỗi <code>RADAR_COMMENTS_FETCH_FAILED</code></td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/comments/settings</code></td><td>Giới hạn tiền của run và của một lần đọc, số comment cấp 1 một lần đọc</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs/:id/cancel</code></td><td>Hủy run đang chạy: bước hiện tại và run thành FAILED với lỗi "Cancelled by the Owner"</td></tr>
@@ -525,7 +583,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="worker">
-      <h2>10. Vòng làm việc của worker</h2>
+      <h2>11. Vòng làm việc của worker</h2>
       <div class="flow">
         <div class="node worker"><b>① Đọc profile</b><small>Chưa có thì nhận chuỗi rỗng</small></div>
         <div class="arrow">→</div>
@@ -560,7 +618,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="lease">
-      <h2>11. Lease và trạng thái bài</h2>
+      <h2>12. Lease và trạng thái bài</h2>
       <p>Khi claim, API ghi lên bài ba thứ: <code>workStatus = CLAIMED</code>, <code>leaseExpiresAt = bây giờ + 30 phút</code>, và tăng <code>claimCount</code>. Tới khi hết lease, không lần claim nào khác nhận được bài đó. Bài chỉ rời CLAIMED theo hai đường:</p>
       <ol>
         <li><b>Có kết quả hợp lệ</b> → DONE, lease bị xóa.</li>
@@ -611,7 +669,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="enrichment">
-      <h2>12. Enrichment</h2>
+      <h2>13. Enrichment</h2>
       <p>Mỗi kết quả Claude Code nộp phải khớp schema dưới đây (Zod v4). Danh sách provider tag và content type nằm trong <code>@portfolio/shared/types</code> để console dùng lại cho bộ lọc.</p>
       <div class="scroll"><table>
         <tr><th>Field</th><th>Kiểu / giới hạn</th><th>Ý nghĩa</th></tr>
@@ -632,7 +690,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="reading">
-      <h2>13. Đọc Feed: Score, Type, Provider, Status</h2>
+      <h2>14. Đọc Feed: Score, Type, Provider, Status</h2>
       <p>Mỗi dòng trên Feed là một bài. Bốn cột Score, Type, Providers và Status đều lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Bài chưa phân tích thì chưa có giá trị nào trong bốn cột này.</p>
 
       <h3>Score (signal score)</h3>
@@ -690,13 +748,13 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><th>Badge</th><th>Định nghĩa tiếng Việt</th><th>Việc cần làm</th></tr>
         <tr><td><b>N pending</b></td><td>Số bài của các source đang bật mà chưa có kết quả và còn có thể claim</td><td>Chạy <code>/radar work</code></td></tr>
         <tr><td><b>N paused</b></td><td>Số bài chưa phân tích thuộc source đang tạm dừng. Worker bỏ qua các bài này</td><td>Bấm Resume trong hộp thoại Sources nếu muốn phân tích</td></tr>
-        <tr><td><b>N stuck</b> (đỏ)</td><td>Số bài đã bị claim đủ 3 lần mà vẫn chưa có kết quả hợp lệ (xem mục 10)</td><td>Bấm <b>Re-queue stuck</b> để đưa về hàng chờ</td></tr>
+        <tr><td><b>N stuck</b> (đỏ)</td><td>Số bài đã bị claim đủ 3 lần mà vẫn chưa có kết quả hợp lệ (xem <a href="#lease">mục 12</a>)</td><td>Bấm <b>Re-queue stuck</b> để đưa về hàng chờ</td></tr>
       </table></div>
       <p>Trang Detail còn hiện <code>workStatus</code> thô của bài: <b>PENDING</b> (đang chờ), <b>CLAIMED</b> (Claude Code đang giữ, lease 30 phút), <b>DONE</b> (đã có enrichment).</p>
     </section>
 
     <section id="profile">
-      <h2>14. Workflow profile</h2>
+      <h2>15. Workflow profile</h2>
       <p>Một văn bản markdown duy nhất (tối đa 20.000 ký tự) mô tả bạn đang làm việc với AI thế nào. Claude Code đọc nó trước mỗi vòng để viết <code>applyNote</code> sát với bạn.</p>
       <ul>
         <li>Bạn đọc và sửa qua cửa admin: <code>GET/PUT /api/radar/profile</code>. Trang sửa nằm ở console: <code>/radar/profile</code> (nút "Workflow profile" trên Feed).</li>
@@ -707,14 +765,14 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="data">
-      <h2>15. Data model</h2>
+      <h2>16. Data model</h2>
       <div class="scroll"><table>
         <tr><th>Bảng</th><th>Chứa gì</th><th>Ghi chú</th></tr>
         <tr><td><code>radar_sources</code></td><td>Trang được theo dõi</td><td><code>url</code> duy nhất, <code>isActive</code></td></tr>
-        <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Flow, trạng thái, window, cap, số bài tạo mới / cập nhật / lỗi. Upload không có <code>runId</code> tạo run MANUAL đã DONE. Xem <a href="#runs">mục 7</a></td></tr>
+        <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Flow, trạng thái, window, cap, số bài tạo mới / cập nhật / lỗi, <code>fetchComments</code>, <code>warning</code>. Upload không có <code>runId</code> tạo run MANUAL đã DONE. Xem <a href="#runs">mục 7</a></td></tr>
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
-        <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code></td></tr>
-        <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài</td></tr>
+        <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a></td></tr>
+        <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
         <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Task 412</td></tr>
         <tr><td><code>radar_workflow_profiles</code></td><td>Workflow profile</td><td>Một dòng với id cố định</td></tr>
       </table></div>
@@ -722,7 +780,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="errors">
-      <h2>16. Mã lỗi</h2>
+      <h2>17. Mã lỗi</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>HTTP</th><th>Khi nào</th></tr>
         <tr><td><code>RADAR_SOURCE_NOT_FOUND</code></td><td>404</td><td>Source id không tồn tại</td></tr>
@@ -736,12 +794,13 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>RADAR_RUN_NOT_AWAITING_UPLOAD</code></td><td>400</td><td>Upload kèm <code>runId</code> của run không phải MANUAL, khác source, đã qua bước upload, hoặc vừa bị hủy hay vừa nhận một upload khác trong lúc file đang được lưu (bài đã lưu vẫn giữ)</td></tr>
         <tr><td><code>RADAR_RUN_FINISHED</code></td><td>400</td><td>Hủy một run đã DONE hoặc FAILED</td></tr>
         <tr><td><code>RADAR_CAPTURE_NOT_CONFIGURED</code></td><td>400</td><td>Tạo run HYBRID khi server chưa có <code>APIFY_TOKEN</code></td></tr>
+        <tr><td><code>RADAR_COMMENTS_FETCH_FAILED</code></td><td>502</td><td>Nút "Fetch comments" ở Detail: Apify lỗi hoặc quá hạn. Bài thành <code>FAILED</code></td></tr>
         <tr><td>(guard)</td><td>401</td><td>Thiếu hoặc sai JWT / machine token</td></tr>
       </table></div>
     </section>
 
     <section id="rules">
-      <h2>17. Business rules</h2>
+      <h2>18. Business rules</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>Quy tắc</th></tr>
         <tr><td>RAD-001</td><td>Mỗi bài là duy nhất theo (source, external id). Capture lại chỉ làm mới, không bao giờ tạo bản trùng</td></tr>
@@ -754,7 +813,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="decisions">
-      <h2>18. Các quyết định</h2>
+      <h2>19. Các quyết định</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Quyết định</th><th>Lý do</th></tr>
         <tr><td>Epic</td><td>Làm thẳng trong console + API, lưu hết vào Postgres trên Railway</td><td>Laptop công ty sắp trả, không giữ gì ở local</td></tr>
@@ -783,23 +842,23 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="gaps">
-      <h2>19. Chỗ hở đã biết</h2>
+      <h2>20. Chỗ hở đã biết</h2>
       <div class="scroll"><table>
         <tr><th>Chỗ hở</th><th>Hậu quả hiện tại</th><th>Hướng xử lý</th></tr>
         <tr><td>Upload lại không phân tích lại bài DONE</td><td>Tác giả sửa bài thì enrichment vẫn là bản cũ</td><td>Hiếm với tin AI. Có thể thêm nút "phân tích lại" ở Detail</td></tr>
         <tr><td>Ảnh chưa lưu xong lúc claim</td><td>Claude Code nhận URL Facebook gốc</td><td>Không cần làm gì: Detail đọc media từ DB sau khi đã lưu</td></tr>
         <tr><td>Bài bị kẹt (claim đủ 3 lần) thuộc một run</td><td>Run vẫn DONE, bài kẹt chưa có enrichment</td><td>Bấm "Re-queue stuck" ở Feed rồi chạy <code>/radar work</code></td></tr>
-        <tr><td>Hủy run không dừng job Apify</td><td>Job đã start vẫn chạy hết và vẫn tính tiền</td><td>Thêm gọi "abort run" của Apify nếu thấy cần</td></tr>
+        <tr><td>Hủy run không dừng job capture của Apify</td><td>Job capture đã start vẫn chạy hết và vẫn tính tiền (job comment thì được abort)</td><td>Thêm gọi abort cho job capture nếu thấy cần</td></tr>
         <tr><td>Bài của run cũ được run mới capture lại</td><td><code>lastRunId</code> chuyển sang run mới, run cũ không còn tính bài đó</td><td>Chấp nhận: run cũ thường đã DONE trước khi tạo run mới</td></tr>
         <tr><td>Job Apify đã start nhưng API không lưu được mã job</td><td>Tick sau start thêm một job nữa (tính tiền hai lần). Mã job bị bỏ được ghi vào log lỗi</td><td>Rất hiếm (chỉ khi ghi DB lỗi ngay sau khi start). Tìm mã job trong log rồi abort trên web Apify</td></tr>
         <tr><td>Capture Apify còn hardcode</td><td>Chỉ có một adapter Apify và một normalizer <code>apify-facebook-posts</code>; dạng input của actor (<code>startUrls</code>, <code>resultsLimit</code>, <code>onlyPostsNewerThan</code>) viết cứng trong adapter; chỉ hỗ trợ source FACEBOOK; các mốc thời gian và kích thước (trang 100 bài, 5 trang mỗi tick, hạn 60 phút) là hằng số. URL source lấy từ DB, actor lấy từ env <code>RADAR_APIFY_POSTS_ACTOR</code></td><td>Phase C: cấu hình capture riêng cho từng source (platform, actor, input template, normalizer), adapter chọn theo cấu hình đó thay vì cố định</td></tr>
-        <tr><td>Chưa có comments</td><td><code>commentDigest</code> luôn trống</td><td>Task 411</td></tr>
+        <tr><td>Domain của Radar còn mỏng</td><td>Luật về run, tier, nhãn nằm ở lớp application và các hàm thuần, chưa có entity</td><td>Task refactor riêng: aggregate <code>RadarRun</code>, entity <code>RadarItem</code>, value object cho comment</td></tr>
         <tr><td>Chưa sửa được tên, URL của source</td><td>Muốn đổi thì phải xóa rồi tạo lại (mất dữ liệu)</td><td>Thêm <code>PATCH /radar/sources/:id</code> khi cần</td></tr>
       </table></div>
     </section>
 
     <section id="roadmap">
-      <h2>20. Lộ trình task</h2>
+      <h2>21. Lộ trình task</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Nội dung</th><th>Trạng thái</th></tr>
         <tr><td>400</td><td>Chọn công cụ capture (Apify), lấy dữ liệu mẫu</td><td><span class="status done">Xong</span></td></tr>
@@ -813,7 +872,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>408</td><td>Chạy thật 6 tháng trên production, nghiệm thu Phase A</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>409</td><td>Run state machine, cron tick, Apify API, <code>LLM_PROVIDER</code> port, hủy run</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>410</td><td>Console: trang Runs, badge "run đang chạy" ở Feed, hủy run và upload vào run MANUAL</td><td><span class="status done">Xong</span></td></tr>
-        <tr><td>411</td><td>Comments + tóm tắt comment</td><td><span class="status next">Kế tiếp</span></td></tr>
+        <tr><td>411</td><td>Comments: chọn bài theo tier, giới hạn tiền, nhãn, nút fetch từng bài, upload, <code>commentDigest</code></td><td><span class="status done">Xong</span></td></tr>
         <tr><td>412</td><td>Bước tóm tắt + trang Brief</td><td><span class="status todo">Phase B</span></td></tr>
       </table></div>
     </section>

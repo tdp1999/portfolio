@@ -45,7 +45,11 @@ Claude Code daily, and say in the final report that the profile is empty.
 Repeat until a claim returns zero items or `--limit` is reached:
 
 1. **Claim:** `radar-api.sh claim <batch> <workdir>/claim-<n>.json`, then read that file.
-   The lease is 30 minutes, so finish and submit a batch well within that.
+   The lease is 30 minutes, so finish and submit a batch well within that. Each item carries
+   `comments: { status, items }` (fetched by the run, or `NOT_FETCHED`); the Comments section
+   of `references/enrichment-guide.md` says how to use them. Never fetch comments yourself.
+   While a run is still fetching comments, the claim holds back that run's posts that have no comments yet, so an empty
+   claim can mean "wait a few minutes" when a run is active.
 2. **Images:** `radar-api.sh images <workdir>/claim-<n>.json <workdir>/img-<n>` and Read
    every file it lists. Images in these posts are usually slides, screenshots of tools or
    benchmark charts, and they often carry the actual news. Files are named

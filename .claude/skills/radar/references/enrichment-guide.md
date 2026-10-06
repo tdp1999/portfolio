@@ -25,13 +25,30 @@ em-dashes or en-dashes; use commas, colons or a new sentence.
 | `isRelevant` | True when it matters for someone who builds web frontends and works daily with Claude Code. Image-generation art, crypto, or pure business gossip are usually false. |
 | `imageNotes` | What the images say that the text does not: numbers on a benchmark chart, steps in a screenshot, code on a slide. Null when there are no images or they add nothing. Mention images that failed to download. |
 | `linkSummaries` | One entry per link you actually read: `{ "url", "summary" }`, summary at most 1000 characters, focused on what the link adds to the post. Leave out links you could not open. |
-| `commentDigest` | Null for now (comments arrive in a later phase). |
+| `commentDigest` | From the claim's `comments.items`, see Comments below. Null when `comments.status` is `NOT_FETCHED` or `FAILED`, or when the comments add nothing to the post. |
+| `wantsComments` | True only when `comments.status` is `NOT_FETCHED` and the post depends on its comments: "link dưới còm", "chi tiết trong comment", a heated thread the post replies to. It shows a hint in the console; it never fetches anything. False otherwise. |
 | `factCheck` | Claims that look wrong, outdated, unverifiable or exaggerated, and what you checked. "Bài nói X miễn phí, trang pricing hiện ghi $20/tháng." Null when nothing needs flagging. |
 | `context` | Required, markdown, at most 4000 characters. The background the post assumes the reader knows, from your research (see below): for each tool, model or company the post names, what it is, who makes it, when it came out, price if relevant, and how it compares with the obvious alternatives. Two to five bullets. This is what lets the Owner understand a one-line post cold. |
 | `scoreReason` | Required, at most 1000 characters. One to three sentences on why this `signalScore`, `contentType` and `isRelevant`: what the post offers (a fact, a number, a workflow) and what it lacks. The Owner reads it to decide whether to disagree with the score. |
 | `applyNote` | Required, markdown, see below. For promos and off-topic posts it is one line saying why there is nothing to do. |
 | `producer` | `{ "adapter": "claude-code", "model": "<your exact model id from the system prompt>" }` |
 | `schemaVersion` | `2` |
+
+## Comments
+
+`comments.items` holds what the API kept: every comment by the post's author (`isAuthor: true`,
+full text) and the best other comments labelled `substantive` (text cut to 500 characters).
+Spam and filler never reach the claim. `PARTIAL` means the run's charge cap stopped early, so
+the list is not the whole thread.
+
+- Read the author's comments first: they often hold the link, the price or the screenshot the
+  post points to. Treat their links like `links` (read them, summarise in `linkSummaries`) and
+  their image `ocrText` like an image.
+- Write `commentDigest` as two to four bullets: corrections, counter-arguments, real usage
+  reports, and what the author added. Quote the author verbatim when the detail matters.
+- Never name a commenter. Say "một người dùng", "một bình luận"; only the post's author may be
+  named, and only as the author.
+- A comment that contradicts the post with evidence belongs in `factCheck` too.
 
 ## Research
 
@@ -110,8 +127,10 @@ what is missing instead of guessing.
   the video, not the video. Score on the text and the frame. If the text alone does not say
   what the video shows, write in `imageNotes` that the video could not be watched, and keep
   `signalScore` at most 4 unless the text itself carries the news.
-- **"Link in the comments"**: comments are not captured yet. Score on the visible text, and say
-  in `factCheck` that the linked resource was not available, naming what the post promised.
+- **"Link in the comments"**: when `comments.status` is `FETCHED` or `PARTIAL`, look for the link
+  in the author's comments. When it is `NOT_FETCHED`, score on the visible text, set
+  `wantsComments` to true, and say in `factCheck` that the linked resource was not available,
+  naming what the post promised.
 - **`ocrText`** is often only a generic caption ("May be an image of text"). Ignore it then and
   read the image itself.
 - **Off-topic posts** (memes, jokes, personal life): `isRelevant` false, `signalScore` 0 to 1,
