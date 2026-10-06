@@ -197,3 +197,71 @@
   margin: 0 auto;
   object-fit: contain;
 }
+
+/* Comments: capture state on one line, then the stored comments as a flat thread. */
+.radar-comments-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__note {
+    color: var(--color-text-secondary);
+  }
+}
+
+.radar-comments--idle {
+  color: var(--color-text-secondary);
+}
+
+.radar-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.radar-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--reply {
+    padding-left: 16px;
+    border-left: 2px solid var(--color-border);
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+
+  &__who {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  &__image {
+    margin: 4px 0 0;
+
+    img {
+      max-width: 240px;
+      max-height: 240px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+  }
+}

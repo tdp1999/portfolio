@@ -11,6 +11,9 @@ import {
   RadarQueueStats,
   RadarSource,
   RadarUploadResult,
+  RadarCommentsSettings,
+  RadarCommentsUploadResult,
+  RadarItemCommentsFetch,
   RadarWorkflowProfile,
 } from './radar.types';
 
@@ -72,6 +75,27 @@ export class RadarService {
     body.append('file', file, file.name);
     if (runId) body.append('runId', runId);
     return this.api.post<RadarUploadResult>(`/radar/sources/${sourceId}/captures/upload`, body);
+  }
+
+  /** A comments export from the Apify console; comments are matched to this source's posts by URL. */
+  uploadComments(sourceId: string, file: File) {
+    const body = new FormData();
+    body.append('file', file, file.name);
+    return this.api.post<RadarCommentsUploadResult>(`/radar/sources/${sourceId}/comments/upload`, body);
+  }
+
+  /** Billed: starts the comments actor for this one post (capped per call). Poll {@link collectComments} for the result. */
+  fetchComments(itemId: string) {
+    return this.api.post<RadarItemCommentsFetch>(`/radar/items/${itemId}/comments/fetch`, {});
+  }
+
+  /** Reads the job; once it finished, the item's comments are replaced. A failed job errors once, ending the poll. */
+  collectComments(itemId: string, jobRef: string) {
+    return this.api.post<RadarItemCommentsFetch>(`/radar/items/${itemId}/comments/fetch/${jobRef}`, {});
+  }
+
+  commentsSettings() {
+    return this.api.get<RadarCommentsSettings>('/radar/comments/settings');
   }
 
   /** `silent` skips the error toast: a background poll or a header badge must not raise one every few seconds. */

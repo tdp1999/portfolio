@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { SegmentedControl } from '@portfolio/console/shared/ui';
+import { map } from 'rxjs';
 import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_ITEM_CAP } from '../radar.constants';
 import { RUN_FLOW_OPTIONS } from '../radar.data';
@@ -21,6 +23,7 @@ import { defaultWindowFrom, utcDayEnd, utcDayStart } from '../radar-run.util';
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -55,18 +58,36 @@ export class RadarRunCreateDialog {
       Validators.min(1),
       Validators.max(MAX_RUN_ITEM_CAP),
     ]),
+    fetchComments: this.fb.nonNullable.control(true),
   });
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly flowOptions = RUN_FLOW_OPTIONS;
   protected readonly maxItemCap = MAX_RUN_ITEM_CAP;
   protected readonly today = new Date();
+  /** The server's run cap for comments; null until it loads, then the hint quotes it. */
+  protected readonly commentsCapUsd = toSignal(
+    this.radarService.commentsSettings().pipe(map((s) => s.runMaxChargeUsd)),
+    {
+      initialValue: null,
+    }
+  );
 
   constructor() {
     // A different source chains from its own last run, so the window start follows the pick.
     this.form.controls.sourceId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((id) => this.form.controls.windowFrom.setValue(this.windowStart(id)));
+
+    // Comments ride on incremental Hybrid runs only; a backfill (no window start) never buys them.
+    const syncComments = () => {
+      const { flow, windowFrom } = this.form.getRawValue();
+      const control = this.form.controls.fetchComments;
+      if (flow === 'HYBRID' && windowFrom) control.enable({ emitEvent: false });
+      else control.disable({ emitEvent: false });
+    };
+    syncComments();
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(syncComments);
   }
 
   onSubmit(): void {
@@ -83,6 +104,7 @@ export class RadarRunCreateDialog {
         itemCap: v.itemCap,
         windowFrom: v.windowFrom ? utcDayStart(v.windowFrom).toISOString() : undefined,
         windowTo: v.windowTo ? utcDayEnd(v.windowTo).toISOString() : undefined,
+        fetchComments: this.form.controls.fetchComments.enabled && v.fetchComments,
       })
       .subscribe({
         next: (run) => this.dialogRef.close(run),

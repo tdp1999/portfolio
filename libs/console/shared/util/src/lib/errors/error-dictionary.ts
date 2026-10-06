@@ -150,6 +150,7 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.RUN_FINISHED]: 'This run has already finished.',
   [RadarErrorCode.CAPTURE_NOT_CONFIGURED]:
     'Hybrid capture is not configured on the server. Set the Apify token, or start a Manual run.',
+  [RadarErrorCode.COMMENTS_FETCH_FAILED]: 'Comments could not be fetched from the provider. Please try again later.',
 
   // --- Tag ---
   [TagErrorCode.NOT_FOUND]: 'Tag not found.',

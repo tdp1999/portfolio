@@ -132,6 +132,19 @@
     background: var(--color-error-container);
     color: var(--color-error);
   }
+
+  /* A finished run can still carry a warning; it stacks under the main notice. */
+  &--warn {
+    background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+
+    mat-icon {
+      color: var(--color-warning);
+    }
+  }
+
+  & + & {
+    margin-top: 8px;
+  }
 }
 
 .run-notice__message {

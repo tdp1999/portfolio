@@ -48,6 +48,22 @@
                   <mat-icon class="icon-sm">upload_file</mat-icon>
                   Upload JSON
                 </button>
+                <input
+                  #commentsInput
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  (change)="onCommentsFileSelected(s, $event)"
+                />
+                <button
+                  mat-stroked-button
+                  [disabled]="!s.itemCount || busySourceId() !== null"
+                  matTooltip="Apify comments-scraper export for posts already in this source"
+                  (click)="commentsInput.click()"
+                >
+                  <mat-icon class="icon-sm">forum</mat-icon>
+                  Upload comments
+                </button>
                 <button mat-button [disabled]="busySourceId() !== null" (click)="onToggleActive(s)">
                   {{ s.isActive ? 'Pause' : 'Resume' }}
                 </button>

@@ -98,6 +98,30 @@ console-filter-bar ::ng-deep {
   width: 168px;
 }
 
+.col-comments {
+  width: 120px;
+}
+
+/* Plain muted text until fetched, then a console badge (classes come from radarCommentsChip). */
+.radar-comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+
+  &--idle {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  &__hint {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+}
+
 .col-source {
   width: 176px;
 }

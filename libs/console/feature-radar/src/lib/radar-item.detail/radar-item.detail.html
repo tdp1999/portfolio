@@ -162,6 +162,48 @@
         </console-record-section>
       }
 
+      @if (hasComments()) {
+        @let chip = it.comments | radarCommentsChip: it.enrichment?.wantsComments ?? false;
+        <console-record-section title="Comments" [count]="it.comments.fetchedCount">
+          <button action type="button" class="rv-linkbtn" [disabled]="fetchingComments()" (click)="onFetchComments()">
+            {{ it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch again' }}
+          </button>
+          <div class="radar-comments-state">
+            <span class="radar-comments-state__chip" [class]="chip.badge">
+              <mat-icon class="icon-sm">{{ chip.icon }}</mat-icon>
+              {{ chip.label }}
+            </span>
+            <span class="radar-comments-state__note">{{ chip.tooltip }}</span>
+          </div>
+          @if (fetchingComments()) {
+            <p class="rv-absent">Fetching comments from Apify. This can take a few minutes.</p>
+          }
+
+          @if (authorComments().length) {
+            <console-record-field label="From the author">
+              <ng-container
+                [ngTemplateOutlet]="commentList"
+                [ngTemplateOutletContext]="{ $implicit: authorComments() }"
+              />
+            </console-record-field>
+          }
+          @if (otherComments().length) {
+            <console-record-fold
+              title="Other comments"
+              [gist]="otherCommentsGist()"
+              [index]="otherComments().length"
+              [open]="otherCommentsOpen()"
+              (openChange)="otherCommentsOpen.set($event)"
+            >
+              <ng-container
+                [ngTemplateOutlet]="commentList"
+                [ngTemplateOutletContext]="{ $implicit: otherComments() }"
+              />
+            </console-record-fold>
+          }
+        </console-record-section>
+      }
+
       @if (it.enrichment; as e) {
         @if (e.factCheck || e.commentDigest) {
           <console-record-section title="Fact check">
@@ -206,6 +248,12 @@
             </console-property>
             <console-property label="Kind">{{ it.kind }}</console-property>
             <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
+            <console-property label="Comments">
+              {{ it.comments.postCount }} on Facebook
+              @if (it.comments.fetchedAt) {
+                <span class="rv-absent">(read {{ it.comments.fetchedAt | date: 'mediumDate' }})</span>
+              }
+            </console-property>
           </console-property-list>
         </console-record-panel>
 
@@ -277,6 +325,48 @@
       }
     }
   </div>
+</ng-template>
+
+<!-- Comments as stored: replies indent under their parent; commenters stay anonymous, only the author is named. -->
+<ng-template #commentList let-comments>
+  <ul class="radar-comments-list">
+    @for (c of comments; track c.id) {
+      <li class="radar-comment" [class.radar-comment--reply]="c.depth > 0">
+        <div class="radar-comment__meta">
+          @if (c.isAuthor) {
+            <span class="radar-comment__who">{{ c.authorName ?? 'Author' }}</span>
+          } @else {
+            <span [class]="c.tag.badge">{{ c.tag.text }}</span>
+          }
+          @if (c.publishedAt) {
+            <span>{{ c.publishedAt | date: 'mediumDate' }}</span>
+          }
+          @if (c.likes) {
+            <span>{{ c.likes }} {{ c.likes === 1 ? 'like' : 'likes' }}</span>
+          }
+        </div>
+        @if (c.text) {
+          <p class="rv-prose radar-text">{{ c.text }}</p>
+        }
+        @for (link of c.links; track link) {
+          <a class="radar-link" [href]="link" target="_blank" rel="noopener noreferrer">
+            {{ link | urlHost }}
+            <mat-icon class="icon-sm">open_in_new</mat-icon>
+          </a>
+        }
+        @for (img of c.images; track img.url) {
+          <figure class="radar-comment__image">
+            <a [href]="img.url" target="_blank" rel="noopener noreferrer">
+              <img [src]="img.url" alt="Image in a comment" loading="lazy" />
+            </a>
+            @if (img.ocrText) {
+              <figcaption class="rv-absent">Text in image: {{ img.ocrText }}</figcaption>
+            }
+          </figure>
+        }
+      </li>
+    }
+  </ul>
 </ng-template>
 
 <console-quick-look

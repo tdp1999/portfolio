@@ -14,3 +14,7 @@ export const DEFAULT_RUN_ITEM_CAP = 200;
 
 /** Window start when a source has no successful run yet. */
 export const DEFAULT_RUN_WINDOW_MONTHS = 6;
+
+/** How often the Detail page polls a comments fetch, and how many polls (10 minutes) before it stops waiting. */
+export const COMMENTS_POLL_MS = 5_000;
+export const COMMENTS_POLL_MAX = 120;

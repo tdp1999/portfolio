@@ -17,6 +17,8 @@ export interface RadarEnrichmentSummary {
   signalScore: number;
   isPromo: boolean;
   isRelevant: boolean;
+  /** The analysis thinks the comments hold value (links, corrections) and they were not fetched. */
+  wantsComments: boolean;
 }
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
@@ -33,6 +35,35 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   updatedAt: string;
 }
 
+export type RadarCommentsStatus = 'NOT_FETCHED' | 'FETCHED' | 'PARTIAL' | 'FAILED';
+
+/** An item's comment capture state. `postCount` is what Facebook reported; `fetchedCount` what was kept. */
+export interface RadarCommentsSummary {
+  status: RadarCommentsStatus;
+  fetchedCount: number;
+  fetchedAt: string | null;
+  error: string | null;
+  postCount: number;
+}
+
+export type RadarCommentLabel = 'author' | 'substantive' | 'low' | 'spam';
+
+export interface RadarComment {
+  id: string;
+  parentId: string | null;
+  depth: number;
+  isAuthor: boolean;
+  /** Only set on the post author's own comments. */
+  authorName: string | null;
+  text: string;
+  publishedAt: string | null;
+  likes: number;
+  replies: number;
+  label: RadarCommentLabel;
+  links: string[];
+  images: { url: string; ocrText: string | null }[];
+}
+
 export interface RadarFeedItem {
   id: string;
   source: RadarItemSource;
@@ -44,6 +75,7 @@ export interface RadarFeedItem {
   preview: string;
   workStatus: RadarWorkStatus;
   enrichment: RadarEnrichmentSummary | null;
+  comments: RadarCommentsSummary;
 }
 
 export interface RadarFeedPage {
@@ -103,7 +135,7 @@ export interface RadarItemImage {
   ocrText: string | null;
 }
 
-export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrichment'> {
+export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrichment' | 'comments'> {
   text: string;
   images: RadarItemImage[];
   links: { url: string; origin: 'post' | 'shared-post' }[];
@@ -116,6 +148,7 @@ export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrich
   } | null;
   engagement: { likes: number; comments: number; shares: number; views: number | null };
   enrichment: RadarEnrichmentDetail | null;
+  comments: RadarCommentsSummary & { items: RadarComment[] };
 }
 
 export interface RadarQueueStats {
@@ -150,6 +183,26 @@ export interface RadarUploadResult {
   failures: { index: number; reason: string }[];
 }
 
+/** Comment limits from the server's config, quoted in the confirm texts. */
+export interface RadarCommentsSettings {
+  runMaxChargeUsd: number;
+  itemMaxChargeUsd: number;
+  itemTopLevelLimit: number;
+}
+
+/** One Detail page fetch: `running` until the Apify job ends, then what was stored. */
+export type RadarItemCommentsFetch =
+  | { state: 'running'; jobRef: string }
+  | { state: 'done'; jobRef: string; status: RadarCommentsStatus; fetchedCount: number };
+
+export interface RadarCommentsUploadResult {
+  posts: number;
+  comments: number;
+  unmatched: number;
+  failed: number;
+  failures: { index: number; reason: string }[];
+}
+
 export type RadarRunFlow = 'MANUAL' | 'HYBRID';
 export type RadarRunStatus = 'PENDING' | 'RUNNING' | 'AWAITING_EXTERNAL' | 'DONE' | 'FAILED';
 /** A run status as the Runs page shows it: a FAILED run the Owner cancelled reads as `CANCELLED`. */
@@ -180,7 +233,10 @@ export interface RadarRun {
   itemsCreated: number;
   itemsUpdated: number;
   itemsFailed: number;
+  fetchComments: boolean;
   error: string | null;
+  /** A side step (comments) failed but the run went on. */
+  warning: string | null;
   createdAt: string;
   startedAt: string | null;
   finishedAt: string | null;
@@ -194,6 +250,8 @@ export interface CreateRadarRunInput {
   itemCap: number;
   windowFrom?: string;
   windowTo?: string;
+  /** Only on a Hybrid run with a window start; the API refuses it on a backfill. */
+  fetchComments?: boolean;
 }
 
 export interface RadarRunCreateDialogData {

@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '@portfolio/console/shared/ui';
 import { extractApiError, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { RadarService } from '../radar.service';
@@ -24,6 +25,7 @@ import { toUploadErrorLines } from './radar-source.dialog.util';
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     FormErrorPipe,
     ServerErrorDirective,
   ],
@@ -110,6 +112,44 @@ export class RadarSourceDialog implements OnInit {
         const apiError = extractApiError(err);
         this.uploadError.set({
           title: `Upload to ${source.displayName} was rejected. The Feed is unchanged.`,
+          message: apiError.message,
+          lines: toUploadErrorLines(apiError.data),
+        });
+      },
+    });
+  }
+
+  /** Comments only attach to posts this source already has; the rest of the file is counted as unmatched. */
+  onCommentsFileSelected(source: RadarSource, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    this.uploadError.set(null);
+    this.busySourceId.set(source.id);
+    this.radarService.uploadComments(source.id, file).subscribe({
+      next: (r) => {
+        this.busySourceId.set(null);
+        const summary = `${r.comments} comments on ${r.posts} posts, ${r.unmatched} unmatched, ${r.failed} failed`;
+        if (!r.failed && r.posts) {
+          this.toast.success(`Uploaded comments: ${summary}`);
+          return;
+        }
+        this.toast.warning(`Uploaded comments: ${summary}`);
+        this.uploadError.set({
+          title: r.posts
+            ? `Some comments for ${source.displayName} were not saved.`
+            : `No comment in the file belongs to a post of ${source.displayName}.`,
+          message: summary + '.',
+          lines: toUploadErrorLines(Object.fromEntries(r.failures.map((f) => [String(f.index), [f.reason]]))),
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.busySourceId.set(null);
+        const apiError = extractApiError(err);
+        this.uploadError.set({
+          title: `Comments upload to ${source.displayName} was rejected. Nothing changed.`,
           message: apiError.message,
           lines: toUploadErrorLines(apiError.data),
         });

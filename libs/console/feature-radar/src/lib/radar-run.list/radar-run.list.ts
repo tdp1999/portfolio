@@ -89,8 +89,11 @@ export default class RadarRunList implements OnInit {
   protected readonly stepIcons = RUN_STEP_ICONS;
   private pollSub?: Subscription;
 
-  /** `when` predicate of the notice row (a mat-table input, not a template call): only runs that need the Owner get one. */
-  protected readonly hasNotice = (_: number, row: RadarRunRow): boolean => row.notice !== null;
+  /**
+   * `when` predicate of the notice row (a mat-table input, not a template call): only runs that need
+   * the Owner get one, or that finished with a warning (comments skipped or partial).
+   */
+  protected readonly hasNotice = (_: number, row: RadarRunRow): boolean => row.notice !== null || !!row.warning;
 
   ngOnInit(): void {
     this.loadRuns();

@@ -22,6 +22,7 @@ import {
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
@@ -58,6 +59,7 @@ import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from
     EnumLabelPipe,
     Paginator,
     RadarScoreTonePipe,
+    RadarCommentsChipPipe,
     RelativeTime,
     SkeletonTable,
   ],
@@ -143,7 +145,16 @@ export default class RadarItemList implements OnInit {
   protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   protected readonly contentTypeOptions = CONTENT_TYPE_OPTIONS;
   protected readonly minScoreOptions = MIN_SCORE_OPTIONS;
-  protected readonly displayedColumns = ['score', 'summary', 'type', 'providers', 'status', 'source', 'publishedAt'];
+  protected readonly displayedColumns = [
+    'score',
+    'summary',
+    'type',
+    'providers',
+    'status',
+    'comments',
+    'source',
+    'publishedAt',
+  ];
 
   ngOnInit(): void {
     const state = parseFeedQuery(this.route.snapshot.queryParams);

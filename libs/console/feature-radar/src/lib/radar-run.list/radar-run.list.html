@@ -153,6 +153,15 @@
                 </p>
               </div>
             }
+            @if (run.warning) {
+              <div class="run-notice run-notice--warn" role="status">
+                <mat-icon class="icon-sm" aria-hidden="true">warning_amber</mat-icon>
+                <div>
+                  <p class="text-body font-semibold">Comments</p>
+                  <p class="text-body run-notice__message">{{ run.warning }}</p>
+                </div>
+              </div>
+            }
           </td>
         </ng-container>
 
@@ -179,7 +188,7 @@
           mat-row
           *matRowDef="let row; columns: displayedColumns"
           class="run-row"
-          [class.run-row--has-notice]="row.notice !== null"
+          [class.run-row--has-notice]="row.notice !== null || !!row.warning"
         ></tr>
         <tr mat-row *matRowDef="let row; columns: ['notice']; when: hasNotice" class="run-notice-row"></tr>
       </table>

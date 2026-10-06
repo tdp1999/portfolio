@@ -41,6 +41,23 @@
         <mat-hint>Most posts this run captures, 1 to {{ maxItemCap }}. Apify bills per post.</mat-hint>
         <mat-error>{{ form.controls.itemCap | formError }}</mat-error>
       </mat-form-field>
+
+      <div class="flex flex-col gap-1">
+        <mat-checkbox formControlName="fetchComments">Fetch comments</mat-checkbox>
+        <p class="text-caption">
+          @if (form.controls.fetchComments.enabled) {
+            Only for posts that point to their comments or hold a real discussion. Apify stops at
+            @if (commentsCapUsd(); as cap) {
+              ${{ cap }}
+            } @else {
+              a charge cap
+            }
+            per run; a normal week costs a few cents.
+          } @else {
+            Needs a Hybrid run with a window start. Backfilled posts get comments from their Detail page.
+          }
+        </p>
+      </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
