@@ -218,7 +218,7 @@
 
 ### Outstanding owner actions (non-code)
 
-- [ ] **⚠️ Rotate console admin password** — the old credential is in git history (compromised; epic 395 / gitignored `.context/design/workflow/visual-feedback-creds.local.md`). Rotate on prod, then fill the new value into that creds file. Security hygiene; blocks no code.
+- [x] **Rotate console admin password** — done 2026-10-06 (Owner confirmed). The old credential is in git history (compromised; epic 395 / gitignored `.context/design/workflow/visual-feedback-creds.local.md`). Rotate on prod, then fill the new value into that creds file. Security hygiene; blocks no code.
 
 ---
 
@@ -437,7 +437,7 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Pending — Radar, AI news catch-up (broken down 2026-10-04)
 
-From: `epic-radar-ai-news`. Owner-only console tool: capture public FB posts of AI influencers (first: mrgoonie) via Apify, enrich via Claude Code external worker, skim Feed + Detail. Urgent (before laptop return + onboarding 2026-11-02); light testing, must run end to end.
+From: `epic-radar-ai-news`. Owner-only console tool: capture public FB posts of AI influencers (first: mrgoonie) via Apify, enrich via Claude Code external worker, skim Feed + Detail. Urgent (before laptop return + onboarding 2026-11-02); light testing, must run end to end. Done tasks archived → `tasks-done/epic-radar-ai-news/`.
 
 Phase A (usable first):
 - [x] 400-radar-apify-probe (S) — Owner runs Apify on ~50 posts, confirm profile coverage, commit fixture, pick actor
@@ -446,15 +446,20 @@ Phase A (usable first):
 - [x] 403-radar-image-persistence (M) — copy post images to Cloudinary `radar/` (deps 402)
 - [x] 404-radar-worker-api (L) — machine token guard, LLM port, claim/lease/submit, workflow profile API (deps 401, 402)
 - [x] 405-radar-work-skill (M) — `/radar work` project skill + first workflow profile (deps 404)
-- [ ] 406-radar-console-feed (L) — feature-radar lib, sources, upload, Feed (deps 402, 404)
-- [ ] 407-radar-console-detail (M) — Detail page + profile editor (deps 406, 404)
-- [ ] 408-radar-phase-a-acceptance (S) — 6-month real run on production (deps 403, 405, 406, 407)
+- [x] 406-radar-console-feed (L) — feature-radar lib, sources, upload, Feed (deps 402, 404)
+- [x] 407-radar-console-detail (M) — Detail page + profile editor (deps 406, 404)
+- [x] 408-radar-phase-a-acceptance (S) — 6-month real run on production (deps 403, 405, 406, 407)
 
 Phase B (Hybrid flow):
-- [ ] 409-radar-run-state-machine-apify (L) — runs, cron tick, Apify API adapter (deps 402, 403, 404)
-- [ ] 410-radar-console-runs (M) — trigger run + step progress (deps 409, 406)
-- [ ] 411-radar-comments (M) — comments capture + digest (deps 409, 405)
-- [ ] 412-radar-brief (M) — synthesize step + Brief page (deps 404, 405, 407)
+- [x] 409-radar-run-state-machine-apify (L) — runs, cron tick, Apify API adapter (deps 402, 403, 404)
+- [x] 410-radar-console-runs (M) — trigger run + step progress (deps 409, 406)
+- [x] 411-radar-comments (M) — comments capture + digest (deps 409, 405)
+- [x] 415-radar-domain-refactor (M) — `RadarRun` aggregate, `RadarItem` / `RadarSource` entities, comment value object + policies, mappers; save writes only changed fields under status guards; no behavior change (162 radar tests)
+- [x] 412-radar-brief (M) — Brief: requested in console, written by `/radar work brief`, Briefs page
+- [ ] 414-radar-triage-split-view (L) — Feed as split inbox (Inbox / To try / Done), spec = `/ddl/radar-triage` layout A v2
+
+Related (not Radar-specific):
+- [ ] 413-console-help-viewer (M) — (?) button opens a feature guide inside the console; first consumer = `radar-feature-guide.html`
 
 ## Done — Prose Block Renderer (implemented directly from epic)
 
@@ -478,12 +483,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status            | Count   |
 | ----------------- | ------- |
-| Done (archived)   | 373     |
+| Done (archived)   | 387     |
 | In Progress       | 5       |
-| Pending           | 6       |
+| Pending           | 8       |
 | Blocked           | 0       |
-| **Total Created** | **384** |
+| **Total Created** | **400** |
 | Epics completed   | 52      |
+
+_**2026-10-06 — `/ctx:sync`.** Archive 13 task Radar đã xong (400–411, 415) → `tasks-done/epic-radar-ai-news/`; dòng 406–411 trong progress trước đó chưa được tick dù task đã done. Thêm dòng cho 413, 414, 415 (có file nhưng chưa có trong progress). Bảng đếm khớp filesystem: 386 file trong `tasks-done/`, 14 trong `tasks/`. **pending (9):** 323, 328, 382, 387, 389, 398, 412, 413, 414; **in-progress (5):** 361, 383, 386, 396, 399. `epic-radar-ai-news` vẫn `broken-down` (còn 412, 414). Owner đã đổi mật khẩu console._
 
 _**2026-09-26.** Thêm task **399-job-change-content-sweep** (in-progress, M) → in-progress 4→5, total 383→384. Author đổi việc; đây là đợt cập nhật content mà việc đổi việc làm lệch, cộng 3 record Experience lấp `/about` §01._
 

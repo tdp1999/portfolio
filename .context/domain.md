@@ -254,13 +254,19 @@
 - **End states:** Items enriched and visible in the Feed
 
 ### Generate Radar Brief
-- **Trigger:** Owner requests a brief for a time window
-- **Actors:** Owner (via Console), LLM provider
+- **Trigger:** Owner requests a brief for a time window, optionally for one source
+- **Actors:** Owner (via Console), Radar worker (Claude Code)
 - **Happy path:**
-  1. System gathers the enriched items in the window
-  2. LLM provider synthesizes the brief
-  3. System stores the RadarBrief
-- **End states:** Brief readable in Console
+  1. System checks that no other brief is waiting and that the window holds analyzed items, then stores a pending RadarBrief
+  2. Worker claims the brief under a lease and reads the window's analyzed items
+  3. Worker submits markdown grouped by provider and topic, with new terms (first-seen date) and a timeline, linking every claim to its item
+  4. System accepts it only if every link points to an item in the window, then marks the brief done
+- **Error paths:**
+  - Another brief still waiting: refused, nothing created
+  - Window without analyzed items: refused, nothing created
+  - Body with no item link, or a link outside the window: rejected, the brief stays claimed
+  - Lease expired and another worker claimed it: the late result is rejected
+- **End states:** Brief readable in Console, each claim linking to its item Detail page
 
 ## Rules
 
@@ -369,6 +375,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-06] Generate Radar Brief now matches the code (task 412): the Radar worker, not an LLM provider, writes the brief; one brief waits at a time, an empty window is refused, and every claim must link to an item in the window.
 - [2026-10-04] Added the Radar domain (RadarSource, RadarRun, RadarStepRun, RadarItem, RadarEnrichment, RadarBrief, WorkflowProfile, RunFlow), three flows and RAD-001..006, from `epic-radar-ai-news`. Radar is an Owner-only console tool for catching up on AI news from followed social profiles.
 - [2026-09-26] Added the Content Freshness rules (CNF-001..003). They came out of a job change that invalidated eight Profile prose fields at once, because a year count, an employer name and a present-tense claim about the current role had each been written into evergreen copy in several places. The rules name the one place each kind of fact belongs.
 - [2026-07-28] First reconciliation against the code since 2026-05-28, after six epics closed. Added AboutPrinciple + AboutFailure (with PrincipleClaim / PrincipleExpansion) and the Author About-page Essays flow, from `epic-portfolio-about`. Added the Press contact purpose, the bot-challenge step, and the derived-subject step to Receive Contact Message (CTM-006, CTM-007) — the flow had claimed the visitor types a subject, which the form has never asked for. Added the Locale rules (LOC-001..005) from the landing i18n work. Corrected the invariant that said all content goes through Console: the fixed interface wording and the /uses + /colophon pages are authored in the codebase today. Also structural — the Upload Media flow had been sitting under a second `## Rules` heading; it is now a flow, and there is one Rules section.

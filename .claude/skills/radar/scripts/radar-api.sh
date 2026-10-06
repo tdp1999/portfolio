@@ -8,6 +8,12 @@
 #   radar-api.sh images <claim.json> <dir> download every image of the claimed items into <dir>
 #                                          as <itemId>-<own|shared>-<n>.<ext>, then print a count
 #   radar-api.sh submit <results.json>     submit {"results":[...]}; falls back to one-by-one on 413
+#   radar-api.sh brief-claim <out.json>    claim the waiting brief (if any), save it, print a summary
+#   radar-api.sh brief-items <id> <out.json>
+#                                          fetch every analyzed post of the brief's window into one
+#                                          file, then print the post count per month
+#   radar-api.sh brief-submit <id> <brief.md> <adapter> <model>
+#                                          submit the markdown body and who wrote it
 set -euo pipefail
 
 die() { echo "radar: $*" >&2; exit 1; }
@@ -121,8 +127,47 @@ case "$cmd" in
     fi
     ;;
 
+  brief-claim)
+    require_env
+    out=${2:?usage: brief-claim <out.json>}
+    call POST /radar/work/briefs/claim
+    is_2xx || die "brief-claim: HTTP $STATUS $(head -c 300 "$RESP")"
+    cp "$RESP" "$out"
+    jq -r 'if .brief == null then "no brief waiting"
+      else "claimed brief \(.brief.id): \(.brief.windowFrom[:10]) to \(.brief.windowTo[:10]), \(if .brief.sourceId then "source \(.brief.sourceId)" else "all sources" end), \(.brief.itemCount) post(s), lease until \(.brief.leaseExpiresAt)" end' "$out"
+    ;;
+
+  brief-items)
+    require_env
+    id=${2:?usage: brief-items <id> <out.json>}; out=${3:?usage: brief-items <id> <out.json>}
+    # Pages of 100 (the API maximum) until nextOffset is null, merged into one {items, total} file.
+    pages=(); offset=0
+    while :; do
+      call GET "/radar/work/briefs/$id/items?offset=$offset&limit=100"
+      is_2xx || die "brief-items: HTTP $STATUS $(head -c 300 "$RESP")"
+      pages+=("$RESP")
+      offset=$(jq -r '.nextOffset // empty' "$RESP")
+      [ -n "$offset" ] || break
+    done
+    jq -s '{items: (map(.items) | add // []), total: (.[0].total // 0)}' "${pages[@]}" > "$out"
+    jq -r '"\(.items | length) post(s)", (.items | group_by(.publishedAt[:7])[] | "  \(.[0].publishedAt[:7]): \(length)")' "$out"
+    ;;
+
+  brief-submit)
+    require_env
+    id=${2:?usage: brief-submit <id> <brief.md> <adapter> <model>}
+    md=${3:?usage: brief-submit <id> <brief.md> <adapter> <model>}
+    adapter=${4:?usage: brief-submit <id> <brief.md> <adapter> <model>}
+    model=${5:?usage: brief-submit <id> <brief.md> <adapter> <model>}
+    body="$TMP/brief-body.json"
+    jq -n --rawfile b "$md" --arg a "$adapter" --arg m "$model" '{body: $b, producer: {adapter: $a, model: $m}}' > "$body"
+    call POST "/radar/work/briefs/$id/result" "$body"
+    is_2xx || die "brief-submit: HTTP $STATUS $(head -c 800 "$RESP")"
+    cat "$RESP"
+    ;;
+
   *)
-    sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
     exit 1
     ;;
 esac

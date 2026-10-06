@@ -4,9 +4,11 @@ description: |
   Radar external worker. `/radar work` claims captured AI-news posts from the portfolio API,
   reads each one (text, images, links, shared post), writes a structured enrichment (TL;DR,
   provider tags, content type, signal score, apply note against the Owner's workflow profile)
-  and submits it, looping until the queue is empty. Use this whenever the user says
+  and submits it, looping until the queue is empty. `/radar work brief` writes the catch-up
+  brief the Owner requested in the console (a window of analyzed posts, grouped by provider and
+  topic, with new terms and links to each post). Use this whenever the user says
   "radar work", "/radar", "analyze the radar queue", "enrich radar items", "chạy radar",
-  "phân tích bài radar", or wants the captured Facebook AI posts processed, even if they do
+  "phân tích bài radar", "viết brief radar", or wants the captured Facebook AI posts processed, even if they do
   not name the skill.
 ---
 
@@ -15,7 +17,7 @@ description: |
 Radar stores public AI-news posts in the portfolio database. The API cannot read them, you can.
 This skill is the loop that turns a queue of raw posts into enrichments the console Feed shows.
 
-Arguments: `/radar work [--batch N] [--limit M]`. `--batch` is items per claim (default 10, max
+Arguments: `/radar work [--batch N] [--limit M]`, or `/radar work brief` (section 5). `--batch` is items per claim (default 10, max
 10 because one submit takes at most 10 results). `--limit` caps the items handled in this
 session (default 30) so the context does not run out; the next session continues where this
 one stopped.
@@ -88,6 +90,51 @@ When the loop ends, print:
   to continue")
 
 Do not summarise the posts themselves in the report; the Feed is where they are read.
+
+## 5. Brief mode (`/radar work brief`)
+
+A brief is the catch-up page the Owner requests on the console Briefs page: every analyzed post
+of a window (all sources, or one), summarized into one markdown document. Only one brief waits
+at a time, so there is at most one to write. Run the Preflight and load the profile (sections 1
+and 2) first, then:
+
+1. **Claim:** `radar-api.sh brief-claim <workdir>/brief.json`. "no brief waiting" ends the mode:
+   tell the Owner to request one on the Briefs page. Otherwise note the brief id, the window,
+   `sourceId` (null means all sources) and the post count.
+2. **Read the posts:** `radar-api.sh brief-items <id> <workdir>/brief-items.json`. It saves every
+   analyzed post of the window, oldest first, and prints how many fall in each month. Each post
+   carries its enrichment (`tldr`, `providerTags`, `contentType`, `signalScore`, `context`,
+   `factCheck`, `applyNote`, `linkSummaries`), the post text and `detailPath`, the link a brief
+   uses to cite it. Do not Read the whole file at once: pull one month at a time with
+   `jq '[.items[] | select(.publishedAt[:7] == "2026-09")]'`.
+3. **Summarize per month:** for each month write notes to `<workdir>/brief-<yyyy-mm>.md`: what
+   happened per provider, the topics, and every term that appears for the first time (with that
+   post's date). Skip promos (`isPromo`) and posts marked not relevant unless they carry real
+   news; prefer high `signalScore` posts when several say the same thing. A single month of a
+   small window needs no separate notes.
+4. **Merge** the month notes into one body, `<workdir>/brief.md`, in this shape:
+   - One short opening paragraph, with no `#` title (the page already names the brief): the
+     window, the sources, the 3 to 5 changes that matter most for the Owner's workflow profile.
+   - `## <Provider>` for each provider with news (Anthropic, OpenAI, Google, ...; tools without
+     a provider go under `## Tools and community`), then `### <Topic>` inside, newest change
+     last so it reads as a timeline. Each point is one or two sentences.
+   - `## New terms`: a list of `**term**: one-line meaning (first seen YYYY-MM-DD)`, the date
+     taken from the earliest post that mentions it.
+   - `## Timeline`: one line per notable date, oldest first.
+5. **Link every claim:** each point ends with the posts it comes from, written exactly as
+   `[label](/radar/items/<id>)` (the `detailPath` of the post). The label must read on its own:
+   the author and date (`Duy, 05/10`) or the product name (`cf CLI`), never a single letter. Never link a post that is not in `brief-items.json`: the API rejects the
+   whole brief if one link points outside the window, and it also rejects a brief with no links.
+6. **Submit:** `radar-api.sh brief-submit <id> <workdir>/brief.md <adapter> <model>`, with
+   `claude-code` as the adapter and your model id as the model. The answer is
+   `{ "id", "itemCount" }`. A 400 names the problem (`RADAR_BRIEF_INVALID_LINKS` lists the bad
+   ids in `outsideItemIds`): fix the body and submit once more. The lease is 30 minutes; a late
+   submit still lands unless another session already submitted the brief.
+
+Write the brief in Vietnamese, the Owner's language, keeping technical terms and product names
+verbatim in English (Claude Code, MCP, context window), and use no em-dashes or en-dashes, as
+the Language section of `references/enrichment-guide.md` says. Report the brief id, the post
+count and the months covered; the console Briefs page is where it is read.
 
 ## Admin helpers (the Owner runs these, never Claude)
 

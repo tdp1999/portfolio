@@ -116,7 +116,7 @@
 <div class="layout">
   <nav class="toc" aria-label="Mục lục">
     <div class="brand">Radar</div>
-    <div class="sub">Feature guide, cập nhật 2026-10-05</div>
+    <div class="sub">Feature guide, cập nhật 2026-10-06</div>
     <ol>
       <li class="group">Bắt đầu</li>
       <li><a href="#overview">1. Tổng quan</a></li>
@@ -136,14 +136,15 @@
       <li><a href="#enrichment">13. Enrichment</a></li>
       <li><a href="#reading">14. Đọc Feed: Score, Type, Provider, Status</a></li>
       <li><a href="#profile">15. Workflow profile</a></li>
+      <li><a href="#briefs">16. Briefs</a></li>
       <li class="group">Tham chiếu</li>
-      <li><a href="#data">16. Data model</a></li>
-      <li><a href="#errors">17. Mã lỗi</a></li>
-      <li><a href="#rules">18. Business rules</a></li>
-      <li><a href="#decisions">19. Các quyết định</a></li>
+      <li><a href="#data">17. Data model</a></li>
+      <li><a href="#errors">18. Mã lỗi</a></li>
+      <li><a href="#rules">19. Business rules</a></li>
+      <li><a href="#decisions">20. Các quyết định</a></li>
       <li class="group">Tiếp theo</li>
-      <li><a href="#gaps">20. Chỗ hở đã biết</a></li>
-      <li><a href="#roadmap">21. Lộ trình task</a></li>
+      <li><a href="#gaps">21. Chỗ hở đã biết</a></li>
+      <li><a href="#roadmap">22. Lộ trình task</a></li>
     </ol>
   </nav>
 
@@ -575,10 +576,15 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs/:id/cancel</code></td><td>Hủy run đang chạy: bước hiện tại và run thành FAILED với lỗi "Cancelled by the Owner"</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/images/persist</code></td><td>Chạy lại việc chép ảnh</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/briefs</code></td><td>Yêu cầu brief. Body: <code>windowFrom</code>, <code>windowTo</code>, <code>sourceId</code> (tùy chọn, bỏ trống là tất cả nguồn)</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/briefs</code>, <code>/radar/briefs/:id</code></td><td>50 brief mới nhất (không kèm body); một brief kèm body</td></tr>
         <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
         <tr><td>Worker</td><td>GET</td><td><code>/radar/work/profile</code></td><td>Đọc profile (chỉ đọc)</td></tr>
         <tr><td>Worker</td><td>POST</td><td><code>/radar/work/claim</code></td><td>Xin bài</td></tr>
         <tr><td>Worker</td><td>POST</td><td><code>/radar/work/results</code></td><td>Nộp kết quả</td></tr>
+        <tr><td>Worker</td><td>POST</td><td><code>/radar/work/briefs/claim</code></td><td>Nhận brief đang chờ (hoặc <code>{ brief: null }</code>), kèm <code>sourceId</code> và số bài của window</td></tr>
+        <tr><td>Worker</td><td>GET</td><td><code>/radar/work/briefs/:id/items?offset&amp;limit</code></td><td>Các bài đã phân tích của window, cũ nhất trước, tối đa 100 mỗi trang, kèm <code>nextOffset</code> và <code>detailPath</code></td></tr>
+        <tr><td>Worker</td><td>POST</td><td><code>/radar/work/briefs/:id/result</code></td><td>Nộp body markdown (tối đa 60.000 ký tự) và producer</td></tr>
       </table></div>
     </section>
 
@@ -764,8 +770,44 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       </ul>
     </section>
 
+    <section id="briefs">
+      <h2>16. Briefs</h2>
+      <p>Brief là bản tóm tắt markdown các bài <b>đã phân tích</b> trong một khoảng ngày, để bạn đọc lại một tháng tin AI trong vài phút. Nội dung được nhóm theo provider rồi theo topic, có mục thuật ngữ mới (kèm ngày bài đầu tiên nhắc tới) và timeline. Mỗi ý đều link về bài gốc.</p>
+      <div class="flow">
+        <div class="node"><b>① Yêu cầu</b><small>Console <code>/radar/briefs</code>, nút "New brief": chọn window và nguồn (mặc định tất cả)</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>② Claim</b><small><code>/radar work brief</code> nhận brief đang chờ, lease 30 phút</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>③ Đọc và viết</b><small>Đọc bài theo từng trang, tóm tắt từng tháng rồi gộp lại</small></div>
+        <div class="arrow">→</div>
+        <div class="node worker"><b>④ Nộp</b><small>API kiểm tra link rồi chuyển brief sang DONE</small></div>
+      </div>
+      <h3>Brief chính là việc cần làm</h3>
+      <p>Mỗi dòng <code>radar_briefs</code> có <code>workStatus</code> và <code>leaseExpiresAt</code> riêng, giống một bài trong hàng chờ: PENDING, rồi CLAIMED, rồi DONE. Brief không thuộc run nào và không có bước SYNTHESIZE. Lệnh claim dùng cùng kiểu <code>SKIP LOCKED</code> như claim bài, và lấy brief cũ nhất trước. Brief CLAIMED mà hết lease thì claim lại được.</p>
+      <h3>Luật khi tạo</h3>
+      <ul>
+        <li>Window tính cả hai đầu, theo nguyên ngày UTC. Console gửi đầu ngày của ngày bắt đầu và cuối ngày của ngày kết thúc.</li>
+        <li>Không chọn nguồn thì brief đọc tất cả nguồn; chọn một nguồn thì chỉ đọc bài của nguồn đó.</li>
+        <li>Mỗi lúc chỉ có một brief chờ (PENDING hoặc CLAIMED). Yêu cầu thêm thì nhận lỗi <code>RADAR_BRIEF_ALREADY_WAITING</code>, và nút "New brief" bị tắt.</li>
+        <li>Window không có bài nào đã phân tích thì bị từ chối với <code>RADAR_BRIEF_EMPTY_WINDOW</code>, không tạo brief rỗng.</li>
+      </ul>
+      <h3>Luật khi nộp</h3>
+      <ul>
+        <li>Link về bài viết đúng dạng <code>[nhãn](/radar/items/&lt;id&gt;)</code>.</li>
+        <li>Body phải có ít nhất một link, và mọi link phải trỏ tới bài nằm trong window. Sai thì nhận <code>RADAR_BRIEF_INVALID_LINKS</code> kèm <code>outsideItemIds</code> để worker tự sửa.</li>
+        <li>Chỉ nộp được khi brief còn CLAIMED. Không có claim token: nếu lease hết hạn và một phiên khác claim lại, phiên nào nộp trước sẽ được nhận, phiên sau nhận <code>RADAR_BRIEF_NOT_CLAIMED</code>.</li>
+        <li>Khi nộp thành công, <code>itemIds</code> lưu toàn bộ bài của window lúc đó (số "Posts" trên console), và lưu cả producer (adapter, model).</li>
+      </ul>
+      <h3>Trên console</h3>
+      <ul>
+        <li><code>/radar/briefs</code> (nút "Briefs" trên Feed): danh sách mới nhất trước. Trang tự làm mới mỗi 10 giây trong lúc có brief chờ.</li>
+        <li><code>/radar/briefs/:id</code>: body markdown nằm ở cột chính, window, nguồn, số bài và producer nằm ở rail. Link <code>/radar/items/...</code> mở trang Detail ngay trong console; link ngoài mở tab mới.</li>
+        <li>Thuật ngữ mới nằm trong body markdown, không có cột riêng.</li>
+      </ul>
+    </section>
+
     <section id="data">
-      <h2>16. Data model</h2>
+      <h2>17. Data model</h2>
       <div class="scroll"><table>
         <tr><th>Bảng</th><th>Chứa gì</th><th>Ghi chú</th></tr>
         <tr><td><code>radar_sources</code></td><td>Trang được theo dõi</td><td><code>url</code> duy nhất, <code>isActive</code></td></tr>
@@ -773,14 +815,14 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
         <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
-        <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Task 412</td></tr>
+        <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Là việc cần làm của chính nó: <code>workStatus</code>, <code>leaseExpiresAt</code>. <code>sourceId</code> null là tất cả nguồn. <code>itemIds</code> là các bài của window lúc nộp. Xem <a href="#briefs">mục 16</a></td></tr>
         <tr><td><code>radar_workflow_profiles</code></td><td>Workflow profile</td><td>Một dòng với id cố định</td></tr>
       </table></div>
       <p>Xóa source kéo theo (cascade) runs, items, enrichments.</p>
     </section>
 
     <section id="errors">
-      <h2>17. Mã lỗi</h2>
+      <h2>18. Mã lỗi</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>HTTP</th><th>Khi nào</th></tr>
         <tr><td><code>RADAR_SOURCE_NOT_FOUND</code></td><td>404</td><td>Source id không tồn tại</td></tr>
@@ -795,12 +837,17 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>RADAR_RUN_FINISHED</code></td><td>400</td><td>Hủy một run đã DONE hoặc FAILED</td></tr>
         <tr><td><code>RADAR_CAPTURE_NOT_CONFIGURED</code></td><td>400</td><td>Tạo run HYBRID khi server chưa có <code>APIFY_TOKEN</code></td></tr>
         <tr><td><code>RADAR_COMMENTS_FETCH_FAILED</code></td><td>502</td><td>Nút "Fetch comments" ở Detail: Apify lỗi hoặc quá hạn. Bài thành <code>FAILED</code></td></tr>
+        <tr><td><code>RADAR_BRIEF_NOT_FOUND</code></td><td>404</td><td>Brief id không tồn tại</td></tr>
+        <tr><td><code>RADAR_BRIEF_EMPTY_WINDOW</code></td><td>400</td><td>Yêu cầu brief cho window không có bài nào đã phân tích</td></tr>
+        <tr><td><code>RADAR_BRIEF_ALREADY_WAITING</code></td><td>409</td><td>Yêu cầu brief khi đã có một brief chờ worker</td></tr>
+        <tr><td><code>RADAR_BRIEF_NOT_CLAIMED</code></td><td>400</td><td>Nộp brief chưa được claim, hoặc đã có một phiên khác nộp trước</td></tr>
+        <tr><td><code>RADAR_BRIEF_INVALID_LINKS</code></td><td>400</td><td>Body không có link nào về bài, hoặc link tới bài ngoài window (<code>outsideItemIds</code>)</td></tr>
         <tr><td>(guard)</td><td>401</td><td>Thiếu hoặc sai JWT / machine token</td></tr>
       </table></div>
     </section>
 
     <section id="rules">
-      <h2>18. Business rules</h2>
+      <h2>19. Business rules</h2>
       <div class="scroll"><table>
         <tr><th>Mã</th><th>Quy tắc</th></tr>
         <tr><td>RAD-001</td><td>Mỗi bài là duy nhất theo (source, external id). Capture lại chỉ làm mới, không bao giờ tạo bản trùng</td></tr>
@@ -813,7 +860,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="decisions">
-      <h2>19. Các quyết định</h2>
+      <h2>20. Các quyết định</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Quyết định</th><th>Lý do</th></tr>
         <tr><td>Epic</td><td>Làm thẳng trong console + API, lưu hết vào Postgres trên Railway</td><td>Laptop công ty sắp trả, không giữ gì ở local</td></tr>
@@ -837,12 +884,15 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>410</td><td>Window tính theo nguyên ngày UTC; run mới bắt đầu từ ngày sau ngày cuối của run trước</td><td>Khớp ngày Apify lọc, không trùng ngày, không gặp lỗi 400 khi ngày đầu bằng ngày cuối</td></tr>
         <tr><td>409</td><td>Mọi lệnh ghi vào run và step có điều kiện "run còn đang chạy"</td><td>Lệnh hủy tới giữa tick không bị tick ghi đè</td></tr>
         <tr><td>409</td><td>Bài bị kẹt và bài của source tạm dừng không giữ run ở ANALYZE</td><td>Run không đứng mãi; các bài này đã có chỗ xử lý riêng trên Feed</td></tr>
+        <tr><td>412</td><td>Dòng brief là việc cần làm của chính nó (lease riêng), không có run hay bước SYNTHESIZE</td><td>Brief tóm tắt theo khoảng thời gian, không theo run</td></tr>
+        <tr><td>412</td><td>Mặc định tất cả nguồn, có thể lọc một nguồn; mỗi lúc một brief chờ; thuật ngữ mới nằm trong markdown</td><td>Bạn chọn 2026-10-06</td></tr>
+        <tr><td>412</td><td>API từ chối brief không có link, hoặc có link ra ngoài window</td><td>Mọi ý trong brief phải truy ngược được về bài gốc</td></tr>
         <tr><td>406</td><td>Hiện số bài bị kẹt + nút xếp hàng lại</td><td>Bài đủ 3 lần claim cần một lối ra (bạn đồng ý 2026-10-05)</td></tr>
       </table></div>
     </section>
 
     <section id="gaps">
-      <h2>20. Chỗ hở đã biết</h2>
+      <h2>21. Chỗ hở đã biết</h2>
       <div class="scroll"><table>
         <tr><th>Chỗ hở</th><th>Hậu quả hiện tại</th><th>Hướng xử lý</th></tr>
         <tr><td>Upload lại không phân tích lại bài DONE</td><td>Tác giả sửa bài thì enrichment vẫn là bản cũ</td><td>Hiếm với tin AI. Có thể thêm nút "phân tích lại" ở Detail</td></tr>
@@ -853,12 +903,17 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Job Apify đã start nhưng API không lưu được mã job</td><td>Tick sau start thêm một job nữa (tính tiền hai lần). Mã job bị bỏ được ghi vào log lỗi</td><td>Rất hiếm (chỉ khi ghi DB lỗi ngay sau khi start). Tìm mã job trong log rồi abort trên web Apify</td></tr>
         <tr><td>Capture Apify còn hardcode</td><td>Chỉ có một adapter Apify và một normalizer <code>apify-facebook-posts</code>; dạng input của actor (<code>startUrls</code>, <code>resultsLimit</code>, <code>onlyPostsNewerThan</code>) viết cứng trong adapter; chỉ hỗ trợ source FACEBOOK; các mốc thời gian và kích thước (trang 100 bài, 5 trang mỗi tick, hạn 60 phút) là hằng số. URL source lấy từ DB, actor lấy từ env <code>RADAR_APIFY_POSTS_ACTOR</code></td><td>Phase C: cấu hình capture riêng cho từng source (platform, actor, input template, normalizer), adapter chọn theo cấu hình đó thay vì cố định</td></tr>
         <tr><td>Domain của Radar còn mỏng</td><td>Luật về run, tier, nhãn nằm ở lớp application và các hàm thuần, chưa có entity</td><td>Task refactor riêng: aggregate <code>RadarRun</code>, entity <code>RadarItem</code>, value object cho comment</td></tr>
+        <tr><td>Luật "một brief chờ" kiểm tra rồi mới insert</td><td>Hai yêu cầu gửi cùng lúc có thể cùng lọt qua</td><td>Chấp nhận: một người dùng, nút "New brief" bị tắt khi đang có brief chờ</td></tr>
+        <tr><td>Brief không có claim token</td><td>Lease hết hạn và một phiên khác claim lại thì phiên nào nộp trước sẽ thắng, kể cả phiên cũ</td><td>Chấp nhận: chỉ có một worker. Muốn chặn hẳn thì trả token lúc claim và kiểm tra lúc nộp</td></tr>
+        <tr><td>Brief không có giới hạn số lần claim</td><td>Brief mà worker cứ làm hỏng sẽ quay lại hàng chờ mãi và chặn mọi yêu cầu brief mới; console chưa có nút hủy</td><td>Thêm nút hủy brief, hoặc giới hạn số lần claim như bài</td></tr>
+        <tr><td>Xóa source khi brief của nó đang chờ</td><td><code>sourceId</code> thành null nên brief chuyển sang đọc tất cả nguồn</td><td>Hiếm. Chặn xóa source khi có brief chờ nếu thấy cần</td></tr>
+        <tr><td>Giới hạn 60.000 tính theo ký tự</td><td>Brief tiếng Việt gần mức tối đa có thể vượt giới hạn body 100 KB và nhận 413</td><td>Hạ giới hạn ký tự hoặc tăng giới hạn body cho route nộp brief</td></tr>
         <tr><td>Chưa sửa được tên, URL của source</td><td>Muốn đổi thì phải xóa rồi tạo lại (mất dữ liệu)</td><td>Thêm <code>PATCH /radar/sources/:id</code> khi cần</td></tr>
       </table></div>
     </section>
 
     <section id="roadmap">
-      <h2>21. Lộ trình task</h2>
+      <h2>22. Lộ trình task</h2>
       <div class="scroll"><table>
         <tr><th>Task</th><th>Nội dung</th><th>Trạng thái</th></tr>
         <tr><td>400</td><td>Chọn công cụ capture (Apify), lấy dữ liệu mẫu</td><td><span class="status done">Xong</span></td></tr>
@@ -873,7 +928,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>409</td><td>Run state machine, cron tick, Apify API, <code>LLM_PROVIDER</code> port, hủy run</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>410</td><td>Console: trang Runs, badge "run đang chạy" ở Feed, hủy run và upload vào run MANUAL</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>411</td><td>Comments: chọn bài theo tier, giới hạn tiền, nhãn, nút fetch từng bài, upload, <code>commentDigest</code></td><td><span class="status done">Xong</span></td></tr>
-        <tr><td>412</td><td>Bước tóm tắt + trang Brief</td><td><span class="status todo">Phase B</span></td></tr>
+        <tr><td>412</td><td>Brief: yêu cầu ở console, <code>/radar work brief</code> viết, trang Briefs</td><td><span class="status done">Xong</span></td></tr>
       </table></div>
     </section>
   </main>
