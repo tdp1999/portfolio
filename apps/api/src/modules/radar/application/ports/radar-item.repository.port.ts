@@ -2,7 +2,7 @@ import { RadarCommentsStatus, RadarItemKind, RadarWorkStatus } from '@prisma/cli
 
 import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 
-import { RadarComment } from '../../domain/radar-comments';
+import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 
 export interface RadarItemListFilter {

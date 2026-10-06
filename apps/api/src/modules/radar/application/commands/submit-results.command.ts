@@ -45,7 +45,8 @@ export class SubmitResultsHandler implements ICommandHandler<SubmitResultsComman
       }
 
       try {
-        if (await this.repo.saveEnrichment(itemId, parsed.data)) stored++;
+        const item = await this.repo.findById(itemId);
+        if (item && (await this.repo.saveEnrichment(item.takeEnrichment(), parsed.data))) stored++;
         else rejected.push({ itemId, reason: 'Item not found' });
       } catch (err) {
         this.logger.error(`Saving enrichment for ${itemId} failed`, err instanceof Error ? err.stack : err);

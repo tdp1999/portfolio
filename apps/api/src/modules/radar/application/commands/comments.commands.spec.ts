@@ -3,7 +3,9 @@ import { RadarErrorCode } from '@portfolio/shared/errors';
 import { MulterFile } from '../../../../shared/types';
 import { normalizeApifyComments } from '../../infrastructure/capture/apify-comments.normalizer';
 import { CommentsJobStatus, ICommentsProvider } from '../ports/comments-provider.port';
-import { IRadarCommentsRepository, RadarCommentCandidate } from '../ports/radar-comments.repository.port';
+import { radarItem } from '../../domain/__fixtures__/radar-item.fixture';
+import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { IRadarCommentsRepository } from '../ports/radar-comments.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import {
   CollectItemCommentsCommand,
@@ -17,24 +19,27 @@ const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
 const ITEM_ID = '01a10b5b-9d90-753e-a6a3-000000000101';
 const OTHER_ID = '01a10b5b-9d90-753e-a6a3-000000000102';
 
-const target = (id: string, permalink: string): RadarCommentCandidate => ({
-  id,
-  permalink,
-  authorExternalId: 'author',
-  text: 'post',
-  engagement: { likes: 0, comments: 10, shares: 0, views: null },
-  links: [],
-  media: [],
-  publishedAt: new Date('2026-10-01T00:00:00Z'),
-});
+const target = (id: string, permalink: string) => radarItem({ id, permalink });
 
-const commentsRepo = (candidates: RadarCommentCandidate[]) =>
+const commentsRepo = (items: RadarItem[]) =>
   ({
-    findCandidate: jest.fn(async (id: string) => candidates.find((c) => c.id === id) ?? null),
-    findBySource: jest.fn(async () => candidates),
+    findById: jest.fn(async (id: string) => items.find((c) => c.id === id) ?? null),
+    findByIds: jest.fn(async (ids: string[]) => items.filter((c) => ids.includes(c.id))),
+    findBySource: jest.fn(async () => items),
     saveComments: jest.fn(async () => undefined),
-    markFailed: jest.fn(async () => undefined),
+    saveCommentsFailure: jest.fn(async () => undefined),
   }) as unknown as jest.Mocked<IRadarCommentsRepository>;
+
+/** The comment state a saved item carries. */
+const saved = (repo: jest.Mocked<IRadarCommentsRepository>) =>
+  [
+    ...repo.saveComments.mock.calls.map(([item]) => item),
+    ...repo.saveCommentsFailure.mock.calls.flatMap(([items]) => items),
+  ].map((item) => ({
+    id: item.id,
+    status: item.commentsStatus,
+    error: item.commentsError,
+  }));
 
 describe('FetchItemCommentsHandler', () => {
   it('should mark the item FAILED and throw COMMENTS_FETCH_FAILED when the job cannot start', async () => {
@@ -49,7 +54,7 @@ describe('FetchItemCommentsHandler', () => {
     await expect(
       new FetchItemCommentsHandler(provider, repo).execute(new FetchItemCommentsCommand(ITEM_ID))
     ).rejects.toMatchObject({ errorCode: RadarErrorCode.COMMENTS_FETCH_FAILED });
-    expect(repo.markFailed).toHaveBeenCalledWith([ITEM_ID], 'Apify 402: not enough credit');
+    expect(saved(repo)).toEqual([{ id: ITEM_ID, status: 'FAILED', error: 'Apify 402: not enough credit' }]);
   });
 });
 
@@ -78,13 +83,13 @@ describe('CollectItemCommentsHandler', () => {
     const { repo, run } = collect(async () => ({ state: 'finished', datasetRef: 'ds', itemCount: 1, stopped: false }));
 
     await expect(run()).resolves.toEqual({ state: 'done', jobRef: 'job1', status: 'FETCHED', fetchedCount: 1 });
-    expect(repo.saveComments).toHaveBeenCalledWith(expect.objectContaining({ itemId: ITEM_ID, status: 'FETCHED' }));
+    expect(saved(repo)).toEqual([{ id: ITEM_ID, status: 'FETCHED', error: null }]);
   });
 
   it('should mark the item FAILED when the job failed, and reject a job ref that is not an id', async () => {
     const failed = collect(async () => ({ state: 'failed', message: 'Apify run FAILED' }));
     await expect(failed.run()).rejects.toMatchObject({ errorCode: RadarErrorCode.COMMENTS_FETCH_FAILED });
-    expect(failed.repo.markFailed).toHaveBeenCalledWith([ITEM_ID], 'Apify run FAILED');
+    expect(saved(failed.repo)).toEqual([{ id: ITEM_ID, status: 'FAILED', error: 'Apify run FAILED' }]);
 
     const forged = collect(async () => ({ state: 'running' }), '../acts');
     await expect(forged.run()).rejects.toMatchObject({ errorCode: RadarErrorCode.INVALID_INPUT });
@@ -112,7 +117,7 @@ describe('UploadCommentsHandler', () => {
     const result = await handler.execute(new UploadCommentsCommand(SOURCE_ID, file));
 
     expect(repo.saveComments).toHaveBeenCalledTimes(1);
-    expect(repo.saveComments).toHaveBeenCalledWith(expect.objectContaining({ itemId: ITEM_ID, status: 'FETCHED' }));
+    expect(saved(repo)).toEqual([{ id: ITEM_ID, status: 'FETCHED', error: null }]);
     expect(result).toEqual({ posts: 1, comments: 1, unmatched: 1, failed: 0, failures: [] });
   });
 });

@@ -22,13 +22,14 @@ export class SetSourceActiveHandler implements ICommandHandler<SetSourceActiveCo
   async execute(command: SetSourceActiveCommand): Promise<void> {
     IdentifierValue.from(command.sourceId);
 
-    if (!(await this.repo.findById(command.sourceId))) {
+    const source = await this.repo.findById(command.sourceId);
+    if (!source) {
       throw NotFoundError('Radar source not found', {
         errorCode: RadarErrorCode.SOURCE_NOT_FOUND,
         layer: ErrorLayer.APPLICATION,
       });
     }
 
-    await this.repo.setActive(command.sourceId, command.isActive);
+    await this.repo.save(source.setActive(command.isActive));
   }
 }

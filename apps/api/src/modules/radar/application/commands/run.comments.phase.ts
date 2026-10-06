@@ -1,43 +1,26 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import { COMMENT_TIER_INPUT, RadarCommentTier, selectCommentTier } from '../../domain/radar-comments';
+import { RadarCommentTierPolicy } from '../../domain/policies/radar-comment-tier.policy';
+import { RadarCommentsCostPolicy } from '../../domain/policies/radar-comments-cost.policy';
+import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
+import { RadarFetchTier } from '../../domain/radar-comment.types';
+import { RadarCommentsJob } from '../../domain/radar-run.types';
+import { RadarCommentsProgress } from '../../domain/value-objects/radar-comments-progress';
 import { ICommentsProvider } from '../ports/comments-provider.port';
-import { IRadarCommentsRepository, RadarCommentCandidate } from '../ports/radar-comments.repository.port';
-import { IRadarRunRepository, RadarRunSnapshot } from '../ports/radar-run.repository.port';
+import { IRadarCommentsRepository } from '../ports/radar-comments.repository.port';
+import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { RADAR_CAPTURE_CONFIG, RadarCaptureConfig } from '../radar-capture.config';
-import {
-  applyComments,
-  CHARGE_CAP_SLACK_USD,
-  reachedChargeCap,
-  toCommentPost,
-  worstCaseUsd,
-} from '../radar-comments.apply';
+import { applyComments, markCommentsFailed } from '../radar-comments.apply';
 import { COMMENTS_PROVIDER, RADAR_COMMENTS_REPOSITORY, RADAR_RUN_REPOSITORY } from '../radar.token';
 
-type FetchTier = Exclude<RadarCommentTier, 'skip'>;
-
-export interface CommentsJob {
-  tier: FetchTier;
-  itemIds: string[];
-  maxChargeUsd: number;
-  jobRef: string | null;
-  done: boolean;
-}
-
-/** Kept in the ENRICH step's `meta.comments`, so the phase resumes on the next tick. */
-export interface CommentsPhaseMeta {
-  startedAt: string;
-  jobs: CommentsJob[];
-  errors: number;
-  done: boolean;
-}
-
-/** A comments job that is not done by then is given up (its posts become FAILED), not waited on. */
-export const COMMENTS_DEADLINE_MS = 45 * 60 * 1000;
-export const MAX_COMMENTS_ERRORS = 5;
 const PAGE_SIZE = 1000;
-/** Share of the run's cap the bounded tiers may take, leaving the rest for the reply-heavy one. */
-const BOUNDED_SHARE = 0.8;
+
+/** What one tick did to a job: settled or not, and the warning it leaves on the run. */
+interface Collected {
+  settled: boolean;
+  warning?: string;
+}
 
 /**
  * The comments side of ENRICH (task 411). Never fails the run: anything that goes wrong marks the
@@ -54,137 +37,121 @@ export class RunCommentsPhase {
     @Inject(RADAR_RUN_REPOSITORY) private readonly runs: IRadarRunRepository
   ) {}
 
-  /** Moves the phase one tick forward and returns its new state; `done` lets ENRICH finish. */
-  async advance(run: RadarRunSnapshot, current: CommentsPhaseMeta | undefined, now: Date): Promise<CommentsPhaseMeta> {
-    if (current?.done) return current;
-    let meta = current ?? (await this.plan(run, now));
+  /**
+   * Moves the phase one tick forward. Returns the run with the phase's new state and any warning,
+   * for the caller to save; `commentsProgress.done` lets ENRICH finish. Null when the run was
+   * cancelled while a job was starting.
+   */
+  async advance(loaded: RadarRun, now: Date): Promise<RadarRun | null> {
+    let run = loaded;
+    let progress = run.commentsProgress ?? (await this.plan(run, now));
+    if (progress.done) return run.withCommentsProgress(progress);
 
     try {
-      for (const job of meta.jobs.filter((j) => !j.done)) {
+      for (const [index, job] of progress.jobs.entries()) {
+        if (job.done) continue;
         if (!job.jobRef) {
-          job.jobRef = await this.provider.start({
+          const jobRef = await this.provider.start({
             postUrls: await this.urlsOf(job.itemIds),
-            tier: COMMENT_TIER_INPUT[job.tier],
+            tier: RadarCommentTierPolicy.input(job.tier),
             maxChargeUsd: job.maxChargeUsd,
           });
+          progress = progress.withJobStarted(index, jobRef);
           // Billed from here on: keep the reference before anything else can throw.
-          await this.save(run, meta);
+          const saved = await this.runs.save(run.withCommentsProgress(progress));
+          if (!saved) return null;
+          run = saved;
           continue;
         }
-        job.done = await this.collect(run, job, now);
+        const { settled, warning } = await this.collect(job, now);
+        if (settled) progress = progress.withJobSettled(index);
+        if (warning) run = run.warn(warning);
       }
     } catch (error) {
-      meta = { ...meta, errors: meta.errors + 1 };
+      progress = progress.withError();
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.warn(`Radar run ${run.id} comments error ${meta.errors}/${MAX_COMMENTS_ERRORS}: ${message}`);
-      if (meta.errors >= MAX_COMMENTS_ERRORS) return this.giveUp(run, meta, message);
+      this.logger.warn(
+        `Radar run ${run.id} comments error ${progress.errors}/${RadarCommentsProgress.MAX_ERRORS}: ${message}`
+      );
+      if (progress.reachedErrorLimit) return this.giveUp(run, progress, message);
     }
 
-    if (meta.jobs.every((j) => j.done)) return { ...meta, done: true };
-    if (now.getTime() - new Date(meta.startedAt).getTime() > COMMENTS_DEADLINE_MS) {
-      return this.giveUp(run, meta, 'Comments did not finish within 45 minutes');
+    progress = progress.settle();
+    if (!progress.done && progress.isOverdue(now)) {
+      return this.giveUp(run, progress, 'Comments did not finish within 45 minutes');
     }
-    return meta;
+    return run.withCommentsProgress(progress);
   }
 
   /** Picks the posts and splits them into one job per tier, each with its share of the run's cap. */
-  private async plan(run: RadarRunSnapshot, now: Date): Promise<CommentsPhaseMeta> {
-    const byTier = new Map<FetchTier, RadarCommentCandidate[]>();
+  private async plan(run: RadarRun, now: Date): Promise<RadarCommentsProgress> {
+    const byTier = new Map<RadarFetchTier, RadarItem[]>();
     for (const item of await this.comments.findCandidates(run.id)) {
-      const tier = selectCommentTier(toCommentPost(item));
+      const tier = RadarCommentTierPolicy.select(item.commentPost);
       if (tier === 'skip') continue;
       byTier.set(tier, [...(byTier.get(tier) ?? []), item]);
     }
 
-    const caps = splitCap(byTier, this.config.commentsMaxChargeUsd);
+    const caps = RadarCommentsCostPolicy.splitCap(byTier, this.config.commentsMaxChargeUsd);
     const jobs = [...byTier].map(([tier, items]) => ({
       tier,
       itemIds: items.map((i) => i.id),
       maxChargeUsd: caps.get(tier) ?? 0,
-      jobRef: null,
-      done: false,
     }));
-    return { startedAt: now.toISOString(), jobs, errors: 0, done: jobs.length === 0 };
+    return RadarCommentsProgress.plan(jobs, now);
   }
 
-  /** True once the job is settled: its comments are stored, or its posts are marked FAILED. */
-  private async collect(run: RadarRunSnapshot, job: CommentsJob, now: Date): Promise<boolean> {
+  /** Settled once the job's comments are stored, or its posts are marked FAILED. */
+  private async collect(job: Readonly<RadarCommentsJob>, now: Date): Promise<Collected> {
     const status = await this.provider.poll(job.jobRef as string);
-    if (status.state === 'running') return false;
+    if (status.state === 'running') return { settled: false };
 
-    const targets = await this.targetsOf(job.itemIds);
     if (status.state === 'failed') {
-      await this.comments.markFailed(job.itemIds, status.message);
-      await this.warn(run, `Comments for ${job.itemIds.length} posts failed: ${status.message}`);
-      return true;
+      await markCommentsFailed(this.comments, job.itemIds, status.message);
+      return { settled: true, warning: `Comments for ${job.itemIds.length} posts failed: ${status.message}` };
     }
 
     const raw: unknown[] = [];
     for (let offset = 0; offset < status.itemCount; offset += PAGE_SIZE) {
       raw.push(...(await this.provider.fetchPage(status.datasetRef, offset, PAGE_SIZE)));
     }
+    const targets = await this.comments.findByIds(job.itemIds);
     const result = this.provider.normalize(raw, targets);
-    const tier = COMMENT_TIER_INPUT[job.tier];
+    const tier = RadarCommentTierPolicy.input(job.tier);
     const capHit =
-      status.stopped || reachedChargeCap(status.itemCount, job.maxChargeUsd, worstCaseUsd(tier, job.itemIds.length));
+      status.stopped ||
+      RadarCommentsCostPolicy.reachedChargeCap(
+        status.itemCount,
+        job.maxChargeUsd,
+        RadarCommentsCostPolicy.worstCaseUsd(tier, job.itemIds.length)
+      );
     const { partial } = await applyComments(this.comments, result, targets, {
       capHit,
       resultsLimit: tier.resultsLimit,
       onlyMatched: false,
       now,
     });
-    if (partial > 0) await this.warn(run, `Comments hit the $${job.maxChargeUsd} cap; ${partial} posts are partial`);
-    return true;
+    return {
+      settled: true,
+      warning: partial > 0 ? `Comments hit the $${job.maxChargeUsd} cap; ${partial} posts are partial` : undefined,
+    };
   }
 
-  private async giveUp(run: RadarRunSnapshot, meta: CommentsPhaseMeta, message: string): Promise<CommentsPhaseMeta> {
-    const open = meta.jobs.filter((j) => !j.done);
-    await this.comments.markFailed(
+  private async giveUp(run: RadarRun, progress: RadarCommentsProgress, message: string): Promise<RadarRun> {
+    const open = progress.openJobs;
+    await markCommentsFailed(
+      this.comments,
       open.flatMap((j) => j.itemIds),
       message
     );
     await abortCommentJobs(this.provider, open, this.logger, run.id);
-    await this.warn(run, `Comments skipped: ${message}`);
-    return { ...meta, jobs: meta.jobs.map((j) => ({ ...j, done: true })), done: true };
+    return run.withCommentsProgress(progress.giveUp()).warn(`Comments skipped: ${message}`);
   }
 
-  private async warn(run: RadarRunSnapshot, message: string) {
-    await this.runs.updateRun(run.id, { warning: message.slice(0, 500) });
-  }
-
-  private async save(run: RadarRunSnapshot, meta: CommentsPhaseMeta) {
-    const step = run.steps.find((s) => s.step === 'ENRICH');
-    await this.runs.updateStep(run.id, 'ENRICH', { meta: { ...step?.meta, comments: meta } });
-  }
-
-  private async targetsOf(itemIds: string[]): Promise<RadarCommentCandidate[]> {
-    const found = await Promise.all(itemIds.map((id) => this.comments.findCandidate(id)));
-    return found.filter((c): c is RadarCommentCandidate => c !== null);
-  }
-
-  private async urlsOf(itemIds: string[]): Promise<string[]> {
-    return (await this.targetsOf(itemIds)).map((t) => t.permalink);
+  private async urlsOf(itemIds: readonly string[]): Promise<string[]> {
+    return (await this.comments.findByIds(itemIds)).map((t) => t.permalink);
   }
 }
-
-/**
- * Bounded tiers (no replies) get their worst case plus a little slack, so a full answer never
- * reads as a cap hit; the reply-heavy `full` tier gets what is left. If the bounded tiers alone
- * would pass {@link BOUNDED_SHARE} of the cap, they are scaled down.
- */
-export function splitCap(byTier: ReadonlyMap<FetchTier, readonly unknown[]>, totalUsd: number): Map<FetchTier, number> {
-  const bound = (tier: FetchTier) =>
-    worstCaseUsd(COMMENT_TIER_INPUT[tier], byTier.get(tier)?.length ?? 0) + CHARGE_CAP_SLACK_USD;
-  const bounded = (['light', 'full-flat'] as const).filter((t) => byTier.has(t));
-  const boundedSum = bounded.reduce((sum, t) => sum + bound(t), 0);
-  const scale = boundedSum > totalUsd * BOUNDED_SHARE ? (totalUsd * BOUNDED_SHARE) / boundedSum : 1;
-
-  const caps = new Map<FetchTier, number>(bounded.map((t) => [t, round(bound(t) * scale)]));
-  if (byTier.has('full')) caps.set('full', round(totalUsd - boundedSum * scale));
-  return caps;
-}
-
-const round = (usd: number) => Math.floor(usd * 1000) / 1000;
 
 /**
  * Stops jobs nobody will read (the phase gave up, or the run was cancelled), so they bill no
@@ -192,7 +159,7 @@ const round = (usd: number) => Math.floor(usd * 1000) / 1000;
  */
 export async function abortCommentJobs(
   provider: ICommentsProvider,
-  jobs: readonly Pick<CommentsJob, 'jobRef'>[],
+  jobs: readonly Pick<RadarCommentsJob, 'jobRef'>[],
   logger: Logger,
   runId: string
 ): Promise<void> {

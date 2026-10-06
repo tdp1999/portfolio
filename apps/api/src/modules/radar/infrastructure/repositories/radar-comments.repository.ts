@@ -1,75 +1,61 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, RadarCommentsStatus } from '@prisma/client';
+import { RadarCommentsStatus } from '@prisma/client';
 
-import {
-  IRadarCommentsRepository,
-  RadarCommentCandidate,
-  SaveCommentsInput,
-} from '../../application/ports/radar-comments.repository.port';
-import { RadarEngagement, RadarLink, RadarMedia } from '../../domain/radar.types';
+import { IRadarCommentsRepository } from '../../application/ports/radar-comments.repository.port';
+import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { RADAR_ITEM_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
 import { PrismaService } from '../../../../shared/prisma';
-
-const select = {
-  id: true,
-  permalink: true,
-  authorExternalId: true,
-  text: true,
-  engagement: true,
-  links: true,
-  media: true,
-  publishedAt: true,
-} satisfies Prisma.RadarItemSelect;
-
-type Row = Prisma.RadarItemGetPayload<{ select: typeof select }>;
-
-const toCandidate = (row: Row): RadarCommentCandidate => ({
-  ...row,
-  engagement: row.engagement as unknown as RadarEngagement,
-  links: row.links as unknown as RadarLink[],
-  media: row.media as unknown as RadarMedia[],
-});
 
 @Injectable()
 export class RadarCommentsRepository implements IRadarCommentsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findCandidates(runId: string): Promise<RadarCommentCandidate[]> {
+  async findCandidates(runId: string): Promise<RadarItem[]> {
     const rows = await this.prisma.radarItem.findMany({
       where: { lastRunId: runId, commentsStatus: RadarCommentsStatus.NOT_FETCHED },
-      select,
+      select: RADAR_ITEM_SELECT,
       orderBy: { publishedAt: 'desc' },
     });
-    return rows.map(toCandidate);
+    return rows.map((row) => RadarItemMapper.toDomain(row));
   }
 
-  async findCandidate(itemId: string): Promise<RadarCommentCandidate | null> {
-    const row = await this.prisma.radarItem.findUnique({ where: { id: itemId }, select });
-    return row ? toCandidate(row) : null;
+  async findById(itemId: string): Promise<RadarItem | null> {
+    const row = await this.prisma.radarItem.findUnique({ where: { id: itemId }, select: RADAR_ITEM_SELECT });
+    return row ? RadarItemMapper.toDomain(row) : null;
   }
 
-  async findBySource(sourceId: string): Promise<RadarCommentCandidate[]> {
-    const rows = await this.prisma.radarItem.findMany({ where: { sourceId }, select });
-    return rows.map(toCandidate);
+  async findByIds(itemIds: readonly string[]): Promise<RadarItem[]> {
+    if (itemIds.length === 0) return [];
+    const rows = await this.prisma.radarItem.findMany({
+      where: { id: { in: [...itemIds] } },
+      select: RADAR_ITEM_SELECT,
+    });
+    return rows.map((row) => RadarItemMapper.toDomain(row));
   }
 
-  async saveComments({ itemId, comments, status, fetchedAt }: SaveCommentsInput): Promise<void> {
+  async findBySource(sourceId: string): Promise<RadarItem[]> {
+    const rows = await this.prisma.radarItem.findMany({ where: { sourceId }, select: RADAR_ITEM_SELECT });
+    return rows.map((row) => RadarItemMapper.toDomain(row));
+  }
+
+  async saveComments(item: RadarItem): Promise<void> {
     await this.prisma.radarItem.update({
-      where: { id: itemId },
-      data: {
-        comments: comments as unknown as Prisma.InputJsonValue,
-        commentsStatus: status,
-        commentsFetchedAt: fetchedAt,
-        commentsFetchedCount: comments.length,
-        commentsError: null,
-      },
+      where: { id: item.id },
+      data: RadarItemMapper.toCommentsPersistence(item),
     });
   }
 
-  async markFailed(itemIds: string[], error: string): Promise<void> {
-    if (itemIds.length === 0) return;
-    await this.prisma.radarItem.updateMany({
-      where: { id: { in: itemIds } },
-      data: { commentsStatus: RadarCommentsStatus.FAILED, commentsError: error.slice(0, 500) },
-    });
+  async saveCommentsFailure(items: readonly RadarItem[]): Promise<void> {
+    // Items failed together share one error, so this is one statement in practice.
+    const byError = new Map<string | null, string[]>();
+    for (const item of items) byError.set(item.commentsError, [...(byError.get(item.commentsError) ?? []), item.id]);
+    await this.prisma.$transaction(
+      [...byError].map(([commentsError, ids]) =>
+        this.prisma.radarItem.updateMany({
+          where: { id: { in: ids } },
+          data: { commentsStatus: RadarCommentsStatus.FAILED, commentsError },
+        })
+      )
+    );
   }
 }

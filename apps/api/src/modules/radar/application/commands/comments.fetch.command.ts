@@ -11,11 +11,13 @@ import {
 } from '@portfolio/shared/errors';
 import { IdentifierValue } from '@portfolio/shared/types';
 
-import { COMMENT_TIER_INPUT, NO_REPLIES_MIN_COMMENTS } from '../../domain/radar-comments';
+import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { RadarCommentTierPolicy } from '../../domain/policies/radar-comment-tier.policy';
+import { RadarCommentsCostPolicy } from '../../domain/policies/radar-comments-cost.policy';
 import { CommentsJobRequest, ICommentsProvider } from '../ports/comments-provider.port';
-import { IRadarCommentsRepository, RadarCommentCandidate } from '../ports/radar-comments.repository.port';
+import { IRadarCommentsRepository } from '../ports/radar-comments.repository.port';
 import { DEFAULT_ITEM_COMMENTS_MAX_CHARGE_USD } from '../radar-capture.config';
-import { applyComments, reachedChargeCap, worstCaseUsd } from '../radar-comments.apply';
+import { applyComments, markCommentsFailed } from '../radar-comments.apply';
 import { RadarItemCommentsFetchDto } from '../radar.dto';
 import { COMMENTS_PROVIDER, RADAR_COMMENTS_REPOSITORY } from '../radar.token';
 
@@ -103,7 +105,13 @@ export class CollectItemCommentsHandler implements ICommandHandler<CollectItemCo
     const now = new Date();
     const result = this.provider.normalize(raw, [item]);
     const { partial } = await applyComments(this.comments, result, [item], {
-      capHit: stopped || reachedChargeCap(raw.length, request.maxChargeUsd, worstCaseUsd(request.tier, 1)),
+      capHit:
+        stopped ||
+        RadarCommentsCostPolicy.reachedChargeCap(
+          raw.length,
+          request.maxChargeUsd,
+          RadarCommentsCostPolicy.worstCaseUsd(request.tier, 1)
+        ),
       resultsLimit: request.tier.resultsLimit,
       onlyMatched: false,
       now,
@@ -112,14 +120,14 @@ export class CollectItemCommentsHandler implements ICommandHandler<CollectItemCo
       state: 'done',
       jobRef,
       status: partial > 0 ? RadarCommentsStatus.PARTIAL : RadarCommentsStatus.FETCHED,
-      fetchedCount: result.byPermalink.get(item.permalink)?.length ?? 0,
+      fetchedCount: result.threads.get(item.permalink)?.size ?? 0,
     };
   }
 }
 
-async function findItem(comments: IRadarCommentsRepository, itemId: string): Promise<RadarCommentCandidate> {
+async function findItem(comments: IRadarCommentsRepository, itemId: string): Promise<RadarItem> {
   IdentifierValue.from(itemId);
-  const item = await comments.findCandidate(itemId);
+  const item = await comments.findById(itemId);
   if (!item) {
     throw NotFoundError('Radar item not found', {
       errorCode: RadarErrorCode.ITEM_NOT_FOUND,
@@ -130,11 +138,10 @@ async function findItem(comments: IRadarCommentsRepository, itemId: string): Pro
 }
 
 /** Same post, same request on both steps: the collect step needs the tier and cap the job ran with. */
-function jobRequest(item: RadarCommentCandidate): CommentsJobRequest {
-  const tier = item.engagement.comments >= NO_REPLIES_MIN_COMMENTS ? 'full-flat' : 'full';
+function jobRequest(item: RadarItem): CommentsJobRequest {
   return {
     postUrls: [item.permalink],
-    tier: COMMENT_TIER_INPUT[tier],
+    tier: RadarCommentTierPolicy.input(RadarCommentTierPolicy.forRequestedPost(item.engagement.comments)),
     maxChargeUsd: DEFAULT_ITEM_COMMENTS_MAX_CHARGE_USD,
   };
 }
@@ -143,7 +150,7 @@ function jobRequest(item: RadarCommentCandidate): CommentsJobRequest {
 async function fetchFailed(comments: IRadarCommentsRepository, logger: Logger, itemId: string, error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
   logger.warn(`Radar item ${itemId}: fetching comments failed: ${message}`);
-  await comments.markFailed([itemId], message);
+  await markCommentsFailed(comments, [itemId], message);
   return ExternalServiceError('Fetching comments failed', error instanceof Error ? error : undefined, {
     errorCode: RadarErrorCode.COMMENTS_FETCH_FAILED,
   });

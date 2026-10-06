@@ -8,9 +8,6 @@ export const DEFAULT_APIFY_COMMENTS_ACTOR = 'apify/facebook-comments-scraper';
 export const DEFAULT_COMMENTS_MAX_CHARGE_USD = 0.5;
 /** Cap for the single-post "Fetch comments" action on the Detail page. */
 export const DEFAULT_ITEM_COMMENTS_MAX_CHARGE_USD = 0.1;
-/** The comments actor's pay-per-event price (free tier), used for the estimate and to spot a cap hit. */
-export const COMMENT_PRICE_USD = 0.0025;
-export const ACTOR_START_PRICE_USD = 0.001;
 
 export interface RadarCaptureConfig {
   /** Null when `APIFY_TOKEN` is unset: Hybrid runs are refused, Manual runs still work. */

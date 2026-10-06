@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { RadarWorkStatus } from '@prisma/client';
+import { Prisma, RadarWorkStatus } from '@prisma/client';
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
 import { ClaimedRadarItem, IRadarWorkRepository } from '../../application/ports/radar-work.repository.port';
 import { RadarEnrichmentInput } from '../../application/radar-enrichment.schema';
-import { RadarComment } from '../../domain/radar-comments';
+import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
+import { RADAR_ITEM_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
 import { PrismaService } from '../../../../shared/prisma';
 
 const claimedSelect = {
@@ -28,9 +30,7 @@ const claimedSelect = {
 export class RadarWorkRepository implements IRadarWorkRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async claim(limit: number, leaseMs: number, now: Date, maxAttempts: number): Promise<ClaimedRadarItem[]> {
-    const leaseExpiresAt = new Date(now.getTime() + leaseMs);
-
+  async claim(limit: number, leaseExpiresAt: Date, now: Date, maxAttempts: number): Promise<ClaimedRadarItem[]> {
     return this.prisma.$transaction(async (tx) => {
       // `leaseExpiresAt` is `timestamp` (UTC wall time, no zone); casting the ISO string keeps the
       // comparison independent of the session time zone.
@@ -77,22 +77,26 @@ export class RadarWorkRepository implements IRadarWorkRepository {
     });
   }
 
-  async saveEnrichment(itemId: string, enrichment: RadarEnrichmentInput): Promise<boolean> {
+  async findById(itemId: string): Promise<RadarItem | null> {
+    const row = await this.prisma.radarItem.findUnique({ where: { id: itemId }, select: RADAR_ITEM_SELECT });
+    return row ? RadarItemMapper.toDomain(row) : null;
+  }
+
+  async saveEnrichment(item: RadarItem, enrichment: RadarEnrichmentInput): Promise<boolean> {
     const { producer, ...fields } = enrichment;
     const data = { ...fields, producerAdapter: producer.adapter, producerModel: producer.model };
 
     return this.prisma.$transaction(async (tx) => {
-      const item = await tx.radarItem.findUnique({ where: { id: itemId }, select: { id: true } });
-      if (!item) return false;
+      const { count } = await tx.radarItem.updateMany({
+        where: { id: item.id },
+        data: RadarItemMapper.toWorkPersistence(item) as Prisma.RadarItemUpdateManyMutationInput,
+      });
+      if (count === 0) return false;
 
       await tx.radarEnrichment.upsert({
-        where: { itemId },
-        create: { id: IdentifierValue.v7(), itemId, ...data },
+        where: { itemId: item.id },
+        create: { id: IdentifierValue.v7(), itemId: item.id, ...data },
         update: data,
-      });
-      await tx.radarItem.update({
-        where: { id: itemId },
-        data: { workStatus: RadarWorkStatus.DONE, leaseExpiresAt: null },
       });
       return true;
     });

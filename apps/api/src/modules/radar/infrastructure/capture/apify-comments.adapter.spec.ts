@@ -1,4 +1,4 @@
-import { COMMENT_TIER_INPUT } from '../../domain/radar-comments';
+import { RadarCommentTierPolicy } from '../../domain/policies/radar-comment-tier.policy';
 import { ApifyCommentsAdapter } from './apify-comments.adapter';
 
 const TOKEN = 'apify_api_secret';
@@ -40,7 +40,11 @@ describe('ApifyCommentsAdapter', () => {
   it('should put the charge cap on every start, the only hard limit on replies', async () => {
     const { http, adapter } = setup([{ data: { id: 'run-1' } }]);
 
-    await adapter.start({ postUrls: ['https://fb.test/p/1'], tier: COMMENT_TIER_INPUT.full, maxChargeUsd: 0.25 });
+    await adapter.start({
+      postUrls: ['https://fb.test/p/1'],
+      tier: RadarCommentTierPolicy.input('full'),
+      maxChargeUsd: 0.25,
+    });
 
     const [url, init] = http.mock.calls[0];
     expect(String(url)).toContain('/acts/apify~facebook-comments-scraper/runs?');

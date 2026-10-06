@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { ConflictError, ErrorLayer, RadarErrorCode, ValidationError } from '@portfolio/shared/errors';
-import { IdentifierValue } from '@portfolio/shared/types';
+import { RadarSource } from '../../domain/entities/radar-source.entity';
 
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { CreateRadarSourceSchema, RadarSourceResponseDto } from '../radar.dto';
@@ -30,7 +30,8 @@ export class CreateSourceHandler implements ICommandHandler<CreateSourceCommand>
       });
     }
 
-    const source = await this.repo.create({ id: IdentifierValue.v7(), ...data });
-    return RadarPresenter.toSource(source);
+    const source = RadarSource.create(data);
+    await this.repo.add(source);
+    return RadarPresenter.toSource({ source, itemCount: 0 });
   }
 }

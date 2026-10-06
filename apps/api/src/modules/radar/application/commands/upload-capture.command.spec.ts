@@ -1,14 +1,28 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
 
+import { RadarSource } from '../../domain/entities/radar-source.entity';
 import { MulterFile } from '../../../../shared/types';
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
 import { ApifyFacebookNormalizer } from '../../infrastructure/capture/apify-facebook.normalizer';
 import { IRadarCaptureRepository, SaveCaptureResult } from '../ports/radar-capture.repository.port';
+import { radarRun } from '../../domain/__fixtures__/radar-run.fixture';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { PersistItemImagesCommand } from './persist-item-images.command';
 import { UploadCaptureCommand, UploadCaptureHandler } from './upload-capture.command';
+
+const source = (isActive = true) =>
+  RadarSource.load({
+    id: SOURCE_ID,
+    platform: 'FACEBOOK',
+    url: 'https://fb.test/s',
+    displayName: 's',
+    isActive,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
 
 const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
 const RUN_ID = '01a10b5b-9d90-753e-a6a3-000000000001';
@@ -27,7 +41,7 @@ const setup = (
   opts: { isActive?: boolean; saved?: Partial<SaveCaptureResult>; run?: WaitingRun; activeRun?: boolean } = {}
 ) => {
   const sources = {
-    findById: jest.fn(async () => ({ id: SOURCE_ID, isActive: opts.isActive ?? true })),
+    findById: jest.fn(async () => source(opts.isActive ?? true)),
   } as unknown as IRadarSourceRepository;
   const captures = {
     saveCapture: jest.fn(async () => ({ created: 1, updated: 0, orphanedImageIds: [], ...opts.saved })),
@@ -37,17 +51,20 @@ const setup = (
   const runs = {
     findById: jest.fn(async () =>
       run
-        ? {
-            id: RUN_ID,
-            sourceId: SOURCE_ID,
-            flow: run.flow,
-            itemCap: run.itemCap,
-            steps: [{ step: RadarStep.CAPTURE, status: run.captureStatus }],
-          }
+        ? radarRun(
+            {
+              id: RUN_ID,
+              sourceId: SOURCE_ID,
+              flow: run.flow,
+              itemCap: run.itemCap,
+              status: RadarStatus.AWAITING_EXTERNAL,
+            },
+            { [RadarStep.CAPTURE]: { status: run.captureStatus } }
+          )
         : null
     ),
     hasActiveRun: jest.fn(async () => opts.activeRun ?? false),
-    completeUpload: jest.fn(async () => run?.completes ?? true),
+    save: jest.fn(async (next: RadarRun) => (run?.completes === false ? null : RadarRun.load(next.toProps()))),
   } as unknown as jest.Mocked<IRadarRunRepository>;
   const commandBus = { execute: jest.fn(async () => undefined) } as unknown as jest.Mocked<CommandBus>;
   const storage = { delete: jest.fn(async () => undefined) } as unknown as jest.Mocked<IStorageService>;
@@ -130,7 +147,12 @@ describe('UploadCaptureHandler', () => {
       expect(result.runId).toBe(RUN_ID);
       expect(captures.saveCapture).not.toHaveBeenCalled();
       expect(captures.saveCapturePage).toHaveBeenCalledWith(expect.objectContaining({ runId: RUN_ID }));
-      expect(runs.completeUpload).toHaveBeenCalledWith(RUN_ID, expect.any(Date), expect.any(Date));
+      expect(runs.save.mock.calls[0][0].steps.map((s) => s.status)).toEqual([
+        RadarStatus.DONE,
+        RadarStatus.DONE,
+        RadarStatus.RUNNING,
+        RadarStatus.PENDING,
+      ]);
     });
 
     it('should refuse when the run was cancelled or filled by another upload while this file was saved', async () => {

@@ -2,7 +2,9 @@ import { RadarErrorCode } from '@portfolio/shared/errors';
 
 import { RequeueStuckHandler } from '../commands/requeue-stuck.command';
 import { IRadarItemRepository, RadarFeedRow, RadarItemDetail } from '../ports/radar-item.repository.port';
-import { MAX_CLAIM_ATTEMPTS } from '../radar.dto';
+import { RadarLeasePolicy } from '../../domain/policies/radar-lease.policy';
+
+const { MAX_CLAIM_ATTEMPTS } = RadarLeasePolicy;
 import { GetRadarItemHandler, GetRadarItemQuery } from './get-radar-item.query';
 import { GetRadarQueueStatsHandler } from './get-radar-queue-stats.query';
 import { ListRadarItemsHandler, ListRadarItemsQuery } from './list-radar-items.query';

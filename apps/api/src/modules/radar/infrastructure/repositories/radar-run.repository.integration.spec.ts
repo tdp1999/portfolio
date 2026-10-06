@@ -5,12 +5,12 @@ import { RadarRunFlow, RadarStatus, RadarStep, RadarWorkStatus } from '@prisma/c
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
-import { CreateRunData } from '../../application/ports/radar-run.repository.port';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { PrismaModule, PrismaService } from '../../../../shared/prisma';
 import { RadarRunRepository } from './radar-run.repository';
 
 const MAX_ATTEMPTS = 3;
-const { PENDING, RUNNING, AWAITING_EXTERNAL, DONE, FAILED } = RadarStatus;
+const { PENDING, RUNNING, DONE, FAILED } = RadarStatus;
 
 /** The guards that keep a cancelled run cancelled live in SQL, so they are checked against Postgres. */
 describe('RadarRunRepository (integration)', () => {
@@ -18,24 +18,18 @@ describe('RadarRunRepository (integration)', () => {
   let repo: RadarRunRepository;
   const sourceId = IdentifierValue.v7();
 
-  const manualRun = (): CreateRunData => ({
-    id: IdentifierValue.v7(),
-    sourceId,
-    flow: RadarRunFlow.MANUAL,
-    status: AWAITING_EXTERNAL,
-    fetchComments: false,
-    windowFrom: null,
-    windowTo: null,
-    itemCap: 10,
-    captureAdapter: 'upload',
-    llmAdapter: 'external-worker',
-    steps: [
-      { step: RadarStep.CAPTURE, status: AWAITING_EXTERNAL, adapter: 'upload' },
-      { step: RadarStep.NORMALIZE, status: PENDING, adapter: 'x' },
-      { step: RadarStep.ENRICH, status: PENDING, adapter: 'x' },
-      { step: RadarStep.ANALYZE, status: PENDING, adapter: 'x' },
-    ],
-  });
+  const manualRun = () =>
+    RadarRun.create({
+      sourceId,
+      sourceUrl: 'https://fb.test/run',
+      sourceName: 'Run test source',
+      flow: RadarRunFlow.MANUAL,
+      fetchComments: false,
+      windowFrom: null,
+      windowTo: null,
+      itemCap: 10,
+      adapters: { capture: 'upload', normalize: 'x', enrich: 'x', analyze: 'external-worker' },
+    });
 
   const seedItem = (runId: string, over: { workStatus?: RadarWorkStatus; claimCount?: number } = {}) => {
     const id = IdentifierValue.v7();
@@ -77,45 +71,66 @@ describe('RadarRunRepository (integration)', () => {
   });
 
   it('should create one run per source even when two creates race', async () => {
-    const results = await Promise.all([repo.create(manualRun()), repo.create(manualRun())]);
+    const results = await Promise.all([repo.add(manualRun()), repo.add(manualRun())]);
 
     expect(results.filter(Boolean)).toHaveLength(1);
     expect(await prisma.radarRun.count({ where: { sourceId } })).toBe(1);
   });
 
-  it('should leave a cancelled run and its steps untouched by later writes', async () => {
-    const run = (await repo.create(manualRun()))!;
-    expect(await repo.fail(run.id, RadarStep.CAPTURE, 'Cancelled by the Owner', new Date())).toBe(true);
+  it('should leave a cancelled run and its steps untouched by saves from older copies', async () => {
+    const run = (await repo.add(manualRun()))!;
+    expect(await repo.save(run.cancel(new Date()))).not.toBeNull();
 
     const writes = await Promise.all([
-      repo.updateRun(run.id, { status: RUNNING }),
-      repo.updateStep(run.id, RadarStep.NORMALIZE, { status: RUNNING }),
-      repo.fail(run.id, RadarStep.NORMALIZE, 'later failure', new Date()),
-      repo.completeUpload(run.id, new Date(), new Date()),
+      repo.save(run.start(new Date())),
+      repo.save(run.fail(RadarStep.NORMALIZE, 'later failure', new Date())),
+      repo.save(run.completeUpload(new Date(), new Date())),
     ]);
 
-    expect(writes).toEqual([false, false, false, false]);
+    expect(writes).toEqual([null, null, null]);
     const after = (await repo.findById(run.id))!;
     expect(after).toMatchObject({ status: FAILED, error: 'Cancelled by the Owner' });
     expect(after.steps.map((s) => s.status)).toEqual([FAILED, PENDING, PENDING, PENDING]);
   });
 
   it('should complete an upload once, and hand the run to image copying', async () => {
-    const run = (await repo.create(manualRun()))!;
+    const run = (await repo.add(manualRun()))!;
 
-    const [first, second] = [
-      await repo.completeUpload(run.id, new Date(), new Date()),
-      await repo.completeUpload(run.id, new Date(), new Date()),
-    ];
+    const first = await repo.save(run.completeUpload(new Date(), new Date()));
+    const second = await repo.save(run.completeUpload(new Date(), new Date()));
 
-    expect([first, second]).toEqual([true, false]);
+    expect([first !== null, second]).toEqual([true, null]);
     const after = (await repo.findById(run.id))!;
     expect(after.status).toBe(RUNNING);
     expect(after.steps.map((s) => s.status)).toEqual([DONE, DONE, RUNNING, PENDING]);
   });
 
+  it('should roll back the run fields of a save whose step was moved by someone else', async () => {
+    const run = (await repo.add(manualRun()))!;
+    expect(await repo.save(run.completeUpload(new Date(), new Date()))).not.toBeNull();
+
+    // The run guard passes (still active), the CAPTURE guard does not: nothing of this save may land.
+    const stale = await repo.save(run.warn('stale warning').completeUpload(new Date(), new Date()));
+
+    expect(stale).toBeNull();
+    expect(await prisma.radarRun.findUnique({ where: { id: run.id } })).toMatchObject({ warning: null });
+  });
+
+  it('should write only what changed, so the counters a capture page added are kept', async () => {
+    const run = (await repo.add(manualRun()))!;
+    await prisma.radarRun.update({ where: { id: run.id }, data: { itemsCaptured: 7 } });
+
+    const saved = await repo.save(run.warn('Comments skipped'));
+
+    expect(saved).not.toBeNull();
+    expect(await prisma.radarRun.findUnique({ where: { id: run.id } })).toMatchObject({
+      itemsCaptured: 7,
+      warning: 'Comments skipped',
+    });
+  });
+
   it('should count only items the worker can still pick up as not analyzed', async () => {
-    const run = (await repo.create(manualRun()))!;
+    const run = (await repo.add(manualRun()))!;
     await seedItem(run.id);
     await seedItem(run.id, { workStatus: RadarWorkStatus.DONE });
     await seedItem(run.id, { claimCount: MAX_ATTEMPTS });

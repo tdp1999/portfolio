@@ -1,3 +1,4 @@
+import { radarItem } from '../../domain/__fixtures__/radar-item.fixture';
 import { IRadarWorkRepository } from '../ports/radar-work.repository.port';
 import { RadarEnrichmentInput } from '../radar-enrichment.schema';
 import { SubmitResultsCommand, SubmitResultsHandler } from './submit-results.command';
@@ -27,6 +28,7 @@ describe('SubmitResultsHandler', () => {
   beforeEach(() => {
     repo = {
       claim: jest.fn(),
+      findById: jest.fn(async (id: string) => radarItem({ id })),
       saveEnrichment: jest.fn().mockResolvedValue(true),
     };
     handler = new SubmitResultsHandler(repo);

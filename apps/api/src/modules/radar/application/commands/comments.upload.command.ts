@@ -58,7 +58,7 @@ export class UploadCommentsHandler implements ICommandHandler<UploadCommentsComm
 
     return {
       posts: fetched,
-      comments: [...result.byPermalink.values()].reduce((sum, list) => sum + list.length, 0),
+      comments: [...result.threads.values()].reduce((sum, thread) => sum + thread.size, 0),
       unmatched: result.unmatched,
       failed: result.failures.length,
       failures: result.failures.slice(0, MAX_REPORTED_FAILURES),

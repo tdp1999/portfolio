@@ -1,21 +1,21 @@
 import { Inject, Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RadarStatus, RadarStep } from '@prisma/client';
 
-import { BadRequestError, ErrorLayer, NotFoundError, RadarErrorCode } from '@portfolio/shared/errors';
-import { IdentifierValue, RADAR_RUN_CANCELLED_MESSAGE } from '@portfolio/shared/types';
+import { ConflictError, ErrorLayer, NotFoundError, RadarErrorCode } from '@portfolio/shared/errors';
+import { IdentifierValue } from '@portfolio/shared/types';
 
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { ICommentsProvider } from '../ports/comments-provider.port';
-import { IRadarRunRepository, RadarRunSnapshot } from '../ports/radar-run.repository.port';
+import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { RadarRunDto } from '../radar.dto';
 import { RadarPresenter } from '../radar.presenter';
 import { COMMENTS_PROVIDER, RADAR_RUN_REPOSITORY } from '../radar.token';
-import { abortCommentJobs, CommentsPhaseMeta } from './run.comments.phase';
+import { abortCommentJobs } from './run.comments.phase';
+
+const CANCEL_ATTEMPTS = 3;
 
 /**
- * The way out of the one-active-run rule: a Manual run nobody uploads to, or a run waiting on
- * analysis the Owner no longer wants, would otherwise block its source for good. Marks the current step
- * and the run FAILED; items already captured stay. A comments job still running is aborted, since
+ * Cancels a run (see {@link RadarRun.cancel}). A comments job still running is aborted, since
  * nobody will read it; a capture job is not (it finishes on Apify's side and is never read).
  */
 export class CancelRunCommand {
@@ -33,29 +33,29 @@ export class CancelRunHandler implements ICommandHandler<CancelRunCommand> {
 
   async execute(command: CancelRunCommand): Promise<RadarRunDto> {
     IdentifierValue.from(command.runId);
-    const run = await this.runs.findById(command.runId);
+    // A tick may move the run between the read and the save; each retry reads where it went, and
+    // throws RUN_FINISHED once the tick finished or failed it.
+    for (let attempt = 1; attempt <= CANCEL_ATTEMPTS; attempt++) {
+      const run = await this.find(command.runId);
+      const cancelled = await this.runs.save(run.cancel(new Date()));
+      if (!cancelled) continue;
+      await abortCommentJobs(this.comments, run.commentsProgress?.openJobs ?? [], this.logger, run.id);
+      return RadarPresenter.toRun(cancelled);
+    }
+    throw ConflictError('This run kept changing while it was being cancelled', {
+      errorCode: RadarErrorCode.RUN_BUSY,
+      layer: ErrorLayer.APPLICATION,
+    });
+  }
+
+  private async find(runId: string): Promise<RadarRun> {
+    const run = await this.runs.findById(runId);
     if (!run) {
       throw NotFoundError('Radar run not found', {
         errorCode: RadarErrorCode.RUN_NOT_FOUND,
         layer: ErrorLayer.APPLICATION,
       });
     }
-    const current = run.steps.find((s) => s.status !== RadarStatus.DONE);
-    if (run.status === RadarStatus.DONE || run.status === RadarStatus.FAILED || !current) throw finished();
-    // False when the tick finished or failed the run since it was read above.
-    if (!(await this.runs.fail(run.id, current.step, RADAR_RUN_CANCELLED_MESSAGE, new Date()))) throw finished();
-    await abortCommentJobs(this.comments, openCommentJobs(run), this.logger, run.id);
-    return RadarPresenter.toRun((await this.runs.findById(run.id)) ?? run);
+    return run;
   }
 }
-
-const openCommentJobs = (run: RadarRunSnapshot) => {
-  const meta = run.steps.find((s) => s.step === RadarStep.ENRICH)?.meta['comments'] as CommentsPhaseMeta | undefined;
-  return meta?.jobs.filter((j) => !j.done) ?? [];
-};
-
-const finished = () =>
-  BadRequestError('This run has already finished', {
-    errorCode: RadarErrorCode.RUN_FINISHED,
-    layer: ErrorLayer.APPLICATION,
-  });

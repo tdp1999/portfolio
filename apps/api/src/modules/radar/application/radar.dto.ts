@@ -8,7 +8,7 @@ import {
   RadarWorkStatus,
 } from '@prisma/client';
 
-import { RadarComment } from '../domain/radar-comments';
+import { RadarComment } from '../domain/radar-comment.types';
 import { z } from 'zod/v4';
 
 import {
@@ -17,7 +17,6 @@ import {
   RADAR_FEED_PAGE_SIZES,
   RADAR_FEED_SORT_KEYS,
   RADAR_FEED_STATUSES,
-  RADAR_MAX_CLAIM_ATTEMPTS,
   RADAR_MAX_PROFILE_CHARS,
   RADAR_MAX_RUN_ITEM_CAP,
   RADAR_PROVIDER_TAGS,
@@ -112,12 +111,9 @@ export interface UploadCaptureResponseDto {
   failures: RadarNormalizeFailure[];
 }
 
-/** A lease long enough for one analyze pass over a batch, short enough that a crashed worker's items return soon. */
-export const WORK_LEASE_MS = 30 * 60 * 1000;
 export const MAX_CLAIM_ITEMS = 20;
 /** One worst-case result is ~30 KB, so 10 keep a normal batch under the 100 KB JSON body limit; on a 413 the worker resubmits one by one. */
 export const MAX_SUBMIT_RESULTS = 10;
-export const MAX_CLAIM_ATTEMPTS = RADAR_MAX_CLAIM_ATTEMPTS;
 export const MAX_PROFILE_CHARS = RADAR_MAX_PROFILE_CHARS;
 
 /** Items carry one work status, so only the item-level analyze step is claimable today. */

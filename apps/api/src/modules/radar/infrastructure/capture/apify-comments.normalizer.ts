@@ -2,20 +2,10 @@ import { z } from 'zod/v4';
 
 import { finiteNumber, isPlainObject, nonEmptyString } from '@portfolio/shared/utils';
 
-import {
-  keepComments,
-  labelComments,
-  MAX_COMMENT_TEXT,
-  RadarComment,
-  RadarCommentDraft,
-  RadarCommentImage,
-} from '../../domain/radar-comments';
+import { RadarCommentDraft, RadarCommentImage } from '../../domain/radar-comment.types';
+import { RadarCommentThread } from '../../domain/value-objects/radar-comment-thread';
 import { RadarNormalizeFailure } from '../../domain/radar.types';
-import {
-  RadarCommentsNormalizeResult,
-  RadarCommentsReceived,
-  RadarCommentTarget,
-} from '../../application/ports/comments-provider.port';
+import { RadarCommentsNormalizeResult, RadarCommentTarget } from '../../application/ports/comments-provider.port';
 
 export const APIFY_FACEBOOK_COMMENTS_FORMAT = 'apify-facebook-comments';
 
@@ -93,20 +83,16 @@ export function normalizeApifyComments(
     drafts.set(target, list);
   });
 
-  const byPermalink = new Map<string, RadarComment[]>();
-  const received = new Map<string, RadarCommentsReceived>();
-  for (const [target, list] of drafts) {
-    byPermalink.set(target.permalink, keepComments(labelComments(list)));
-    received.set(target.permalink, { topLevel: list.filter((c) => c.depth === 0).length, total: list.length });
-  }
-  return { byPermalink, received, unmatched, failures };
+  const threads = new Map<string, RadarCommentThread>();
+  for (const [target, list] of drafts) threads.set(target.permalink, RadarCommentThread.fromDrafts(list));
+  return { threads, unmatched, failures };
 }
 
 function toDraft(comment: Json & { id: string }, target: RadarCommentTarget): RadarCommentDraft {
   const author = isPlainObject(comment['author']) ? comment['author'] : {};
   const profileId = nonEmptyString(comment['profileId']) ?? nonEmptyString(author['id']);
   const isAuthor = profileId !== null && profileId === target.authorExternalId;
-  const text = (nonEmptyString(comment['text']) ?? '').trim().slice(0, MAX_COMMENT_TEXT);
+  const text = (nonEmptyString(comment['text']) ?? '').trim().slice(0, RadarCommentThread.MAX_TEXT);
   const attachments = Array.isArray(comment['attachments']) ? comment['attachments'].filter(isPlainObject) : [];
   const depth = finiteNumber(comment['threadingDepth']) ?? 0;
 

@@ -3,8 +3,9 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 import { ErrorLayer, RadarErrorCode, ValidationError } from '@portfolio/shared/errors';
 
+import { RadarLeasePolicy } from '../../domain/policies/radar-lease.policy';
 import { IRadarItemRepository } from '../ports/radar-item.repository.port';
-import { ListRadarItemsSchema, MAX_CLAIM_ATTEMPTS, RadarFeedPageDto } from '../radar.dto';
+import { ListRadarItemsSchema, RadarFeedPageDto } from '../radar.dto';
 import { RadarPresenter } from '../radar.presenter';
 import { RADAR_ITEM_REPOSITORY } from '../radar.token';
 
@@ -26,7 +27,7 @@ export class ListRadarItemsHandler implements IQueryHandler<ListRadarItemsQuery>
       });
     }
 
-    const { data: rows, total } = await this.repo.list(data, new Date(), MAX_CLAIM_ATTEMPTS);
+    const { data: rows, total } = await this.repo.list(data, new Date(), RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
     return { data: rows.map(RadarPresenter.toFeedItem), total, page: data.page, limit: data.limit };
   }
 }

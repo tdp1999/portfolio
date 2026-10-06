@@ -1,10 +1,10 @@
-import { commentsForClaim } from '../domain/radar-comments';
+import { RadarRun } from '../domain/entities/radar-run.entity';
+import { RadarCommentThread } from '../domain/value-objects/radar-comment-thread';
 import { servedUrl } from '../domain/radar-media.util';
 import { RadarMedia } from '../domain/radar.types';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
-import { RadarRunSnapshot } from './ports/radar-run.repository.port';
 import { ClaimedRadarItem } from './ports/radar-work.repository.port';
-import { RadarSourceWithCount } from './ports/radar-source.repository.port';
+import { RadarSourceListing } from './ports/radar-source.repository.port';
 import {
   FEED_PREVIEW_CHARS,
   RadarFeedItemDto,
@@ -32,7 +32,7 @@ const toItemImages = (media: RadarMedia[]): RadarItemImageDto[] =>
 
 export class RadarPresenter {
   /** Leaves out provider job refs and step meta: internal bookkeeping, not for the console. */
-  static toRun(run: RadarRunSnapshot): RadarRunDto {
+  static toRun(run: RadarRun): RadarRunDto {
     return {
       id: run.id,
       source: { id: run.sourceId, displayName: run.sourceName },
@@ -64,14 +64,14 @@ export class RadarPresenter {
     };
   }
 
-  static toSource(source: RadarSourceWithCount): RadarSourceResponseDto {
+  static toSource({ source, itemCount }: RadarSourceListing): RadarSourceResponseDto {
     return {
       id: source.id,
       platform: source.platform,
       url: source.url,
       displayName: source.displayName,
       isActive: source.isActive,
-      itemCount: source.itemCount,
+      itemCount,
       createdAt: source.createdAt,
       updatedAt: source.updatedAt,
     };
@@ -96,8 +96,9 @@ export class RadarPresenter {
       engagement: item.engagement,
       comments: {
         status: item.commentsStatus,
-        items: commentsForClaim(item.comments).map(
-          ({ id, parentId, depth, isAuthor, authorName, text, likes, replies, links, images }) => ({
+        items: RadarCommentThread.stored(item.comments)
+          .forClaim()
+          .map(({ id, parentId, depth, isAuthor, authorName, text, likes, replies, links, images }) => ({
             id,
             parentId,
             depth,
@@ -108,8 +109,7 @@ export class RadarPresenter {
             replies,
             links,
             images,
-          })
-        ),
+          })),
       },
     };
   }

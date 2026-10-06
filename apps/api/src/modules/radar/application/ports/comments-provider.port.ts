@@ -1,4 +1,5 @@
-import { RadarComment, RadarCommentTierInput } from '../../domain/radar-comments';
+import { RadarCommentTierInput } from '../../domain/radar-comment.types';
+import { RadarCommentThread } from '../../domain/value-objects/radar-comment-thread';
 import { RadarNormalizeFailure } from '../../domain/radar.types';
 
 /** The post a batch of comments may belong to. */
@@ -7,17 +8,9 @@ export interface RadarCommentTarget {
   authorExternalId: string | null;
 }
 
-export interface RadarCommentsReceived {
-  topLevel: number;
-  /** Top-level comments plus replies, the same unit as the post's own comment count. */
-  total: number;
-}
-
 export interface RadarCommentsNormalizeResult {
-  /** Labelled and trimmed comments per target permalink; a target with no comment is absent. */
-  byPermalink: Map<string, RadarComment[]>;
-  /** What the provider returned per permalink, before trimming: tells a cut-short post apart. */
-  received: Map<string, RadarCommentsReceived>;
+  /** One thread per target permalink; a target with no comment is absent. */
+  threads: Map<string, RadarCommentThread>;
   /** Comments whose post is none of the targets. */
   unmatched: number;
   failures: RadarNormalizeFailure[];

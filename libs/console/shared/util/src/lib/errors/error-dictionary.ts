@@ -148,6 +148,7 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
     'This source already has a run in progress. Wait for it to finish, or cancel it.',
   [RadarErrorCode.RUN_NOT_AWAITING_UPLOAD]: 'This run is not waiting for an upload.',
   [RadarErrorCode.RUN_FINISHED]: 'This run has already finished.',
+  [RadarErrorCode.RUN_BUSY]: 'This run is moving to its next step right now. Please try cancelling again.',
   [RadarErrorCode.CAPTURE_NOT_CONFIGURED]:
     'Hybrid capture is not configured on the server. Set the Apify token, or start a Manual run.',
   [RadarErrorCode.COMMENTS_FETCH_FAILED]: 'Comments could not be fetched from the provider. Please try again later.',

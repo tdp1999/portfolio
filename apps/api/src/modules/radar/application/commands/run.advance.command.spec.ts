@@ -6,25 +6,19 @@ import { ApifyFacebookNormalizer } from '../../infrastructure/capture/apify-face
 import { ExternalWorkerAdapter } from '../../infrastructure/llm/external-worker.adapter';
 import { CaptureJobStatus, ICaptureProvider } from '../ports/capture-provider.port';
 import { IRadarCaptureRepository } from '../ports/radar-capture.repository.port';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
+import { RadarRunProps, RadarStepRunProps } from '../../domain/radar-run.types';
+import { RadarCommentsProgress } from '../../domain/value-objects/radar-comments-progress';
+import { IRadarRunRepository, RadarRunItemCounts } from '../ports/radar-run.repository.port';
+import { AdvanceRunCommand, AdvanceRunHandler, DATASET_PAGE_SIZE } from './run.advance.command';
 import { RunCommentsPhase } from './run.comments.phase';
-import {
-  IRadarRunRepository,
-  RadarRunItemCounts,
-  RadarRunSnapshot,
-  RadarStepSnapshot,
-} from '../ports/radar-run.repository.port';
-import {
-  AdvanceRunCommand,
-  AdvanceRunHandler,
-  CAPTURE_DEADLINE_MS,
-  DATASET_PAGE_SIZE,
-  MAX_STEP_ERRORS,
-} from './run.advance.command';
+
+const { CAPTURE_DEADLINE_MS, MAX_STEP_ERRORS } = RadarRun;
 
 const RUN_ID = '01a10b5b-9d90-753e-a6a3-000000000001';
 const NOW = new Date('2026-10-05T10:00:00Z');
 
-const step = (s: RadarStep, status: RadarStatus, extra: Partial<RadarStepSnapshot> = {}): RadarStepSnapshot => ({
+const step = (s: RadarStep, status: RadarStatus, extra: Partial<RadarStepRunProps> = {}): RadarStepRunProps => ({
   step: s,
   status,
   adapter: 'x',
@@ -36,10 +30,7 @@ const step = (s: RadarStep, status: RadarStatus, extra: Partial<RadarStepSnapsho
   ...extra,
 });
 
-const makeRun = (
-  flow: RadarRunFlow,
-  steps: Partial<Record<RadarStep, Partial<RadarStepSnapshot>>>
-): RadarRunSnapshot => ({
+const makeRun = (flow: RadarRunFlow, steps: Partial<Record<RadarStep, Partial<RadarStepRunProps>>>): RadarRunProps => ({
   id: RUN_ID,
   sourceId: 'src',
   sourceUrl: 'https://www.facebook.com/mrgoonie',
@@ -66,43 +57,35 @@ const makeRun = (
   ),
 });
 
-const ACTIVE: RadarStatus[] = [RadarStatus.PENDING, RadarStatus.RUNNING, RadarStatus.AWAITING_EXTERNAL];
-
 /**
- * In-memory run store: the handler re-reads the run between steps, so patches must stick. Like
- * the Prisma repository, writes apply only while the run is active.
+ * In-memory run store: the handler re-reads the run between steps, so saves must stick. Like the
+ * Prisma repository, a save applies only while the run is active and each changed step still has
+ * the status it was read with.
  */
 class FakeRuns implements IRadarRunRepository {
   counts: RadarRunItemCounts = { total: 0, notAnalyzed: 0, withPendingImages: 0 };
-  constructor(public run: RadarRunSnapshot) {}
+  constructor(public run: RadarRunProps) {}
 
   stepOf(s: RadarStep) {
     return this.run.steps.find((x) => x.step === s)!;
   }
-  create = jest.fn();
+  add = jest.fn();
   list = jest.fn();
   findActiveIds = jest.fn();
   hasActiveRun = jest.fn();
-  findById = jest.fn(async () => structuredClone(this.run));
-  private get active() {
-    return ACTIVE.includes(this.run.status);
-  }
-  completeUpload = jest.fn();
-  updateRun = jest.fn(async (_id: string, patch: Partial<RadarRunSnapshot>) => {
-    if (!this.active) return false;
-    Object.assign(this.run, patch);
-    return true;
-  });
-  updateStep = jest.fn(async (_id: string, s: RadarStep, patch: Partial<RadarStepSnapshot>) => {
-    if (!this.active) return false;
-    Object.assign(this.stepOf(s), patch);
-    return true;
-  });
-  fail = jest.fn(async (_id: string, s: RadarStep, message: string) => {
-    if (!this.active) return false;
-    Object.assign(this.stepOf(s), { status: RadarStatus.FAILED, error: message });
-    Object.assign(this.run, { status: RadarStatus.FAILED, error: message });
-    return true;
+  findById = jest.fn(async () => RadarRun.load(structuredClone(this.run)));
+  save = jest.fn(async (next: RadarRun) => {
+    if (!RadarRun.ACTIVE.includes(this.run.status)) return null;
+    const loaded = next.loadedProps!;
+    const stale = next
+      .toProps()
+      .steps.some(
+        (s, i) =>
+          JSON.stringify(s) !== JSON.stringify(loaded.steps[i]) && this.stepOf(s.step).status !== loaded.steps[i].status
+      );
+    if (stale) return null;
+    this.run = { ...next.toProps(), itemsCaptured: this.run.itemsCaptured };
+    return RadarRun.load(structuredClone(this.run));
   });
   countItems = jest.fn(async () => this.counts);
 }
@@ -115,7 +98,7 @@ const post = (id: number) => ({
 });
 
 const setup = (
-  run: RadarRunSnapshot,
+  run: RadarRunProps,
   opts: { poll?: CaptureJobStatus; pages?: unknown[][]; commentsDone?: boolean[] } = {}
 ) => {
   const runs = new FakeRuns(run);
@@ -136,7 +119,11 @@ const setup = (
   const storage = { delete: jest.fn() } as unknown as IStorageService;
   const done = [...(opts.commentsDone ?? [])];
   const commentsPhase = {
-    advance: jest.fn(async () => ({ startedAt: NOW.toISOString(), jobs: [], errors: 0, done: done.shift() ?? true })),
+    advance: jest.fn(async (current: RadarRun) =>
+      current.withCommentsProgress(
+        RadarCommentsProgress.load({ startedAt: NOW.toISOString(), jobs: [], errors: 0, done: done.shift() ?? true })
+      )
+    ),
   };
   const handler = new AdvanceRunHandler(
     commandBus,
@@ -173,7 +160,7 @@ describe('AdvanceRunHandler', () => {
       await advance();
 
       expect(provider.start).not.toHaveBeenCalled();
-      expect(runs.updateStep).not.toHaveBeenCalled();
+      expect(runs.save).not.toHaveBeenCalled();
     });
 
     it('should keep waiting while the provider job is still running', async () => {
@@ -181,8 +168,7 @@ describe('AdvanceRunHandler', () => {
 
       await advance();
 
-      expect(runs.updateStep).not.toHaveBeenCalled();
-      expect(runs.fail).not.toHaveBeenCalled();
+      expect(runs.save).not.toHaveBeenCalled();
     });
 
     it('should fail the step and the run with the provider message when the job fails', async () => {
@@ -329,7 +315,7 @@ describe('AdvanceRunHandler', () => {
 
       await advance();
       expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.RUNNING);
-      expect(runs.stepOf(RadarStep.ENRICH).meta['comments']).toMatchObject({ done: false });
+      expect(runs.stepOf(RadarStep.ENRICH).meta.comments).toMatchObject({ done: false });
 
       await advance();
       expect(commentsPhase.advance).toHaveBeenCalledTimes(2);
@@ -380,7 +366,7 @@ describe('AdvanceRunHandler', () => {
 
     for (let i = 1; i < MAX_STEP_ERRORS; i++) await advance();
     expect(runs.run.status).toBe(RadarStatus.RUNNING);
-    expect(runs.stepOf(RadarStep.CAPTURE).meta['errors']).toBe(MAX_STEP_ERRORS - 1);
+    expect(runs.stepOf(RadarStep.CAPTURE).meta.errors).toBe(MAX_STEP_ERRORS - 1);
 
     await advance();
     expect(runs.run).toMatchObject({ status: RadarStatus.FAILED, error: 'fetch failed' });

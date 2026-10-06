@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-import { COMMENT_TIER_INPUT } from '../../domain/radar-comments';
+import { RadarCommentTierPolicy } from '../../domain/policies/radar-comment-tier.policy';
 import {
   DEFAULT_ITEM_COMMENTS_MAX_CHARGE_USD,
   RADAR_CAPTURE_CONFIG,
@@ -20,7 +20,7 @@ export class GetCommentsSettingsHandler implements IQueryHandler<GetCommentsSett
     return {
       runMaxChargeUsd: this.config.commentsMaxChargeUsd,
       itemMaxChargeUsd: DEFAULT_ITEM_COMMENTS_MAX_CHARGE_USD,
-      itemTopLevelLimit: COMMENT_TIER_INPUT.full.resultsLimit,
+      itemTopLevelLimit: RadarCommentTierPolicy.input('full').resultsLimit,
     };
   }
 }

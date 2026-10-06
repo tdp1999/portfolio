@@ -1,6 +1,5 @@
 import { Inject, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
 
 import {
   BadRequestError,
@@ -13,13 +12,14 @@ import {
 import { IdentifierValue } from '@portfolio/shared/types';
 
 import { MulterFile } from '../../../../shared/types';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { NormalizedRadarItem } from '../../domain/radar.types';
 import { STORAGE_SERVICE } from '../../../media/application/media.token';
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
 import { ICaptureNormalizer } from '../ports/capture-normalizer.port';
 import { IRadarCaptureRepository, SaveCaptureResult } from '../ports/radar-capture.repository.port';
 import { EXTERNAL_WORKER_ADAPTER } from '../ports/llm-provider.port';
-import { IRadarRunRepository, RadarRunSnapshot } from '../ports/radar-run.repository.port';
+import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import {
   MAX_REPORTED_FAILURES,
@@ -88,12 +88,7 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
         layer: ErrorLayer.APPLICATION,
       });
     }
-    if (!source.isActive) {
-      throw BadRequestError('Radar source is inactive', {
-        errorCode: RadarErrorCode.SOURCE_INACTIVE,
-        layer: ErrorLayer.APPLICATION,
-      });
-    }
+    source.ensureCanCapture();
 
     const run = body.data.runId ? await this.findWaitingRun(body.data.runId, source.id) : null;
     // A direct upload would move the active run's items to a run of its own (their lastRunId),
@@ -109,7 +104,7 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
     if (!posts.success) {
       throw ValidationError(posts.error, { errorCode: RadarErrorCode.INVALID_UPLOAD, layer: ErrorLayer.APPLICATION });
     }
-    if (run && posts.data.length > run.itemCap) {
+    if (run?.exceedsItemCap(posts.data.length)) {
       throw invalidUpload(`The file has ${posts.data.length} posts, more than the run's cap of ${run.itemCap}`);
     }
 
@@ -148,7 +143,7 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
     };
   }
 
-  private async findWaitingRun(runId: string, sourceId: string): Promise<RadarRunSnapshot> {
+  private async findWaitingRun(runId: string, sourceId: string): Promise<RadarRun> {
     const run = await this.runs.findById(runId);
     if (!run) {
       throw NotFoundError('Radar run not found', {
@@ -156,14 +151,7 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
         layer: ErrorLayer.APPLICATION,
       });
     }
-    const capture = run.steps.find((s) => s.step === RadarStep.CAPTURE);
-    if (
-      run.sourceId !== sourceId ||
-      run.flow !== RadarRunFlow.MANUAL ||
-      capture?.status !== RadarStatus.AWAITING_EXTERNAL
-    ) {
-      throw notAwaitingUpload();
-    }
+    run.ensureAwaitsUploadFor(sourceId);
     return run;
   }
 
@@ -173,13 +161,13 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
    * cancel or a second upload that landed meanwhile wins, and the posts saved stay in the Feed.
    */
   private async fillRun(
-    run: RadarRunSnapshot,
+    run: RadarRun,
     items: NormalizedRadarItem[],
     failedCount: number,
     startedAt: Date
   ): Promise<SaveCaptureResult> {
     const saved = await this.captures.saveCapturePage({ runId: run.id, sourceId: run.sourceId, items, failedCount });
-    if (!(await this.runs.completeUpload(run.id, startedAt, new Date()))) throw notAwaitingUpload();
+    if (!(await this.runs.save(run.completeUpload(startedAt, new Date())))) throw notAwaitingUpload();
     return saved;
   }
 }

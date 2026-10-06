@@ -11,7 +11,7 @@ import {
   RadarQueueStats,
 } from '../../application/ports/radar-item.repository.port';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
-import { RadarComment } from '../../domain/radar-comments';
+import { RadarComment } from '../../domain/radar-comment.types';
 import { PrismaService } from '../../../../shared/prisma';
 
 const sourceSelect = { select: { id: true, displayName: true, isActive: true } } as const;

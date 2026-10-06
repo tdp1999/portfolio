@@ -1,14 +1,18 @@
 import { Inject, Logger } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
+import { RadarRunFlow, RadarStep } from '@prisma/client';
 
+import { RadarLeasePolicy } from '../../domain/policies/radar-lease.policy';
 import { STORAGE_SERVICE } from '../../../media/application/media.token';
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
+import { RadarStepRun } from '../../domain/entities/radar-step-run.entity';
+import { RadarDatasetCursor } from '../../domain/value-objects/radar-dataset-cursor';
 import { ICaptureNormalizer } from '../ports/capture-normalizer.port';
 import { ICaptureProvider } from '../ports/capture-provider.port';
 import { ILlmProvider } from '../ports/llm-provider.port';
 import { IRadarCaptureRepository } from '../ports/radar-capture.repository.port';
-import { IRadarRunRepository, RadarRunSnapshot, RadarStepSnapshot } from '../ports/radar-run.repository.port';
+import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { deleteStoredImages } from '../radar-image.cleanup';
 import {
   CAPTURE_NORMALIZERS,
@@ -17,34 +21,24 @@ import {
   RADAR_CAPTURE_REPOSITORY,
   RADAR_RUN_REPOSITORY,
 } from '../radar.token';
-import { MAX_CLAIM_ATTEMPTS } from '../radar.dto';
 import { PersistItemImagesCommand } from './persist-item-images.command';
-import { CommentsPhaseMeta, RunCommentsPhase } from './run.comments.phase';
+import { RunCommentsPhase } from './run.comments.phase';
 
-/** Steps a run walks, in order. SYNTHESIZE belongs to the brief (412), not to a run. */
-const PIPELINE: RadarStep[] = [RadarStep.CAPTURE, RadarStep.NORMALIZE, RadarStep.ENRICH, RadarStep.ANALYZE];
-const ACTIVE = new Set<RadarStatus>([RadarStatus.PENDING, RadarStatus.RUNNING, RadarStatus.AWAITING_EXTERNAL]);
-
-/** On top of Apify's own 50-minute run timeout, so a job stuck on the provider side still ends. */
-export const CAPTURE_DEADLINE_MS = 60 * 60 * 1000;
-/**
- * One page in memory at a time; a tick reads a few pages, so 1,000 posts take about 2 ticks. The
- * offset moves by the page size, not by what came back: a cleaned dataset page can hold fewer.
- */
+/** One page in memory at a time; a tick reads a few pages, so 1,000 posts take about 2 ticks. */
 export const DATASET_PAGE_SIZE = 100;
 const PAGES_PER_TICK = 5;
 const IMAGE_ITEMS_PER_TICK = 10;
-/** Errors thrown inside one step (network, provider 5xx) are retried on later ticks up to this. */
-export const MAX_STEP_ERRORS = 5;
 
-type Outcome = 'advanced' | 'wait' | 'failed';
+/** `advanced`: the step finished and the next one starts in the same tick. */
+type Outcome = { state: 'advanced'; run: RadarRun } | { state: 'wait' | 'failed' };
+const WAIT: Outcome = { state: 'wait' };
 
 /**
  * Moves one run as far as it can go in one tick: each step either finishes (and the next one
  * starts in the same call), waits for the provider or the worker, or fails the run. Called only
  * by the tick job, which never overlaps itself, so a run is never advanced twice at once. A cancel
- * can still land mid-tick: every run and step write is conditional on the run being active, and
- * the loop stops as soon as the reloaded run is not.
+ * can still land mid-tick: every save is conditional on the run being active, and the tick stops
+ * at the first save that finds it is not.
  */
 export class AdvanceRunCommand {
   constructor(
@@ -69,17 +63,14 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
   ) {}
 
   async execute({ runId, now }: AdvanceRunCommand): Promise<void> {
-    let run = await this.runs.findById(runId);
-    if (!run || !ACTIVE.has(run.status)) return;
+    const loaded = await this.runs.findById(runId);
+    if (!loaded?.isActive) return;
+    let run: RadarRun | null = loaded.start(now) === loaded ? loaded : await this.runs.save(loaded.start(now));
 
-    if (run.status === RadarStatus.PENDING) {
-      if (!(await this.runs.updateRun(run.id, { status: RadarStatus.RUNNING, startedAt: now }))) return;
-    }
-
-    for (let pass = 0; pass < PIPELINE.length && run && ACTIVE.has(run.status); pass++) {
-      const step = run.steps.find((s) => PIPELINE.includes(s.step) && s.status !== RadarStatus.DONE);
+    for (let pass = 0; pass < RadarRun.PIPELINE.length && run?.isActive; pass++) {
+      const step = run.currentStep;
       if (!step) {
-        await this.runs.updateRun(run.id, { status: RadarStatus.DONE, finishedAt: now });
+        await this.runs.save(run.finish(now));
         return;
       }
 
@@ -87,33 +78,33 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
       try {
         outcome = await this.handle(run, step, now);
       } catch (error) {
-        await this.recordError(run, step, error, now);
+        await this.recordError(run.id, step.step, error, now);
         return;
       }
-      if (outcome !== 'advanced') return;
-      run = await this.runs.findById(run.id);
+      if (outcome.state !== 'advanced') return;
+      run = outcome.run;
     }
   }
 
-  private handle(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
+  private handle(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
     switch (step.step) {
       case RadarStep.CAPTURE:
         return this.capture(run, step, now);
       case RadarStep.NORMALIZE:
         return this.normalize(run, step, now);
       case RadarStep.ENRICH:
-        return this.enrich(run, step, now);
+        return this.enrich(run, now);
       default:
         return this.analyze(run, step, now);
     }
   }
 
   /** Hybrid: start the provider job once, then poll it. Manual: the upload finishes this step. */
-  private async capture(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
-    if (run.flow === RadarRunFlow.MANUAL) return 'wait';
+  private async capture(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+    if (run.flow === RadarRunFlow.MANUAL) return WAIT;
     const provider = this.captureProvider(run);
 
-    if (step.status === RadarStatus.PENDING || !step.providerJobRef) {
+    if (step.isPending || !step.providerJobRef) {
       const jobRef = await provider.start({
         sourceUrl: run.sourceUrl,
         windowFrom: run.windowFrom,
@@ -122,25 +113,20 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
       });
       // The job is billed from here on. If its reference cannot be kept (a cancel landed, or the
       // write failed), name it in the log so it can be found and aborted on Apify by hand.
-      const kept = await this.runs
-        .updateStep(run.id, RadarStep.CAPTURE, { status: RadarStatus.RUNNING, providerJobRef: jobRef, startedAt: now })
-        .catch((error: unknown) => {
-          this.logger.error(`Radar run ${run.id}: provider job ${jobRef} started but its reference was not saved`);
-          throw error;
-        });
+      const kept = await this.runs.save(run.startCapture(jobRef, now)).catch((error: unknown) => {
+        this.logger.error(`Radar run ${run.id}: provider job ${jobRef} started but its reference was not saved`);
+        throw error;
+      });
       if (!kept) this.logger.warn(`Radar run ${run.id} ended while provider job ${jobRef} started; it runs on unread`);
-      return 'wait';
+      return WAIT;
     }
 
-    const startedAt = step.startedAt ?? run.startedAt ?? now;
-    if (now.getTime() - startedAt.getTime() > CAPTURE_DEADLINE_MS) {
-      return this.fail(run, step, 'Capture did not finish within 60 minutes', now);
-    }
+    if (run.captureOverdue(now)) return this.fail(run, step, 'Capture did not finish within 60 minutes', now);
 
     const status = await provider.poll(step.providerJobRef);
-    if (status.state === 'running') return 'wait';
+    if (status.state === 'running') return WAIT;
     if (status.state === 'failed') return this.fail(run, step, status.message, now);
-    if (status.itemCount > run.itemCap) {
+    if (run.exceedsItemCap(status.itemCount)) {
       return this.fail(
         run,
         step,
@@ -149,30 +135,19 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
       );
     }
 
-    const meta = { datasetRef: status.datasetRef, itemCount: status.itemCount, offset: 0 };
-    await this.runs.updateStep(run.id, RadarStep.CAPTURE, {
-      status: RadarStatus.DONE,
-      finishedAt: now,
-      meta,
-      error: null,
-    });
-    await this.runs.updateStep(run.id, RadarStep.NORMALIZE, { status: RadarStatus.RUNNING, startedAt: now, meta });
-    return 'advanced';
+    return this.advanced(run.completeCapture(RadarDatasetCursor.start(status.datasetRef, status.itemCount), now));
   }
 
   /** Reads the finished dataset a page at a time and upserts each page before the next. */
-  private async normalize(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
+  private async normalize(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
     const provider = this.captureProvider(run);
     const normalizer = this.normalizers.find((n) => n.format === provider.format);
     if (!normalizer) return this.fail(run, step, `No normalizer for format "${provider.format}"`, now);
 
-    const datasetRef = String(step.meta['datasetRef']);
-    const itemCount = Number(step.meta['itemCount'] ?? 0);
-    let offset = Number(step.meta['offset'] ?? 0);
-    let exhausted = offset >= itemCount;
-
-    for (let page = 0; page < PAGES_PER_TICK && !exhausted; page++) {
-      const raw = await provider.fetchPage(datasetRef, offset, DATASET_PAGE_SIZE);
+    let cursor = step.cursor ?? RadarDatasetCursor.start('', 0);
+    let current = run;
+    for (let page = 0; page < PAGES_PER_TICK && !cursor.exhausted; page++) {
+      const raw = await provider.fetchPage(cursor.datasetRef, cursor.offset, DATASET_PAGE_SIZE);
       if (raw.length > 0) {
         const { items, failures } = normalizer.normalize(raw);
         const saved = await this.captures.saveCapturePage({
@@ -183,16 +158,15 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
         });
         await deleteStoredImages(this.storage, saved.orphanedImageIds, this.logger);
       }
-      offset += DATASET_PAGE_SIZE;
-      exhausted = offset >= itemCount;
-      // False once the run was cancelled: stop reading pages nobody will finish.
-      if (!(await this.runs.updateStep(run.id, RadarStep.NORMALIZE, { meta: { ...step.meta, offset } }))) return 'wait';
+      cursor = cursor.next(DATASET_PAGE_SIZE);
+      // Null once the run was cancelled: stop reading pages nobody will finish.
+      const moved = await this.runs.save(current.moveCursor(cursor));
+      if (!moved) return WAIT;
+      current = moved;
     }
 
-    if (!exhausted) return 'wait';
-    await this.runs.updateStep(run.id, RadarStep.NORMALIZE, { status: RadarStatus.DONE, finishedAt: now, error: null });
-    await this.runs.updateStep(run.id, RadarStep.ENRICH, { status: RadarStatus.RUNNING, startedAt: now });
-    return 'advanced';
+    if (!cursor.exhausted) return WAIT;
+    return this.advanced(current.completeNormalize(now));
   }
 
   /**
@@ -200,84 +174,82 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
    * the selected posts. Done when no image is pending and the comments phase is settled; a
    * comments failure only warns (see {@link RunCommentsPhase}).
    */
-  private async enrich(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
-    if (step.status === RadarStatus.PENDING) {
-      await this.runs.updateStep(run.id, RadarStep.ENRICH, { status: RadarStatus.RUNNING, startedAt: now });
-    }
+  private async enrich(run: RadarRun, now: Date): Promise<Outcome> {
+    let current: RadarRun | null = run.startEnrich(now) === run ? run : await this.runs.save(run.startEnrich(now));
+    if (!current) return WAIT;
     await this.commandBus.execute(new PersistItemImagesCommand(IMAGE_ITEMS_PER_TICK));
 
-    let commentsDone = true;
-    if (run.fetchComments) {
-      const comments = await this.commentsPhase.advance(
-        run,
-        step.meta['comments'] as CommentsPhaseMeta | undefined,
-        now
-      );
-      commentsDone = comments.done;
-      if (!(await this.runs.updateStep(run.id, RadarStep.ENRICH, { meta: { ...step.meta, comments } }))) return 'wait';
+    if (current.fetchComments) {
+      const advanced = await this.commentsPhase.advance(current, now);
+      current = advanced && (await this.runs.save(advanced));
+      if (!current) return WAIT;
     }
 
-    const { withPendingImages } = await this.runs.countItems(run.id, now, MAX_CLAIM_ATTEMPTS);
-    if (withPendingImages > 0 || !commentsDone) return 'wait';
-    await this.runs.updateStep(run.id, RadarStep.ENRICH, { status: RadarStatus.DONE, finishedAt: now, error: null });
-    return 'advanced';
+    const { withPendingImages } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
+    const commentsDone = current.commentsProgress?.done ?? true;
+    if (withPendingImages > 0 || !commentsDone) return WAIT;
+    return this.advanced(current.completeEnrich(now));
   }
 
   /**
    * Hands the step to the run's analysis adapter; done once no item of the run is left for the
    * worker. Stuck items and items of a paused source do not hold the run open.
    */
-  private async analyze(run: RadarRunSnapshot, step: RadarStepSnapshot, now: Date): Promise<Outcome> {
-    if (step.status === RadarStatus.PENDING) {
+  private async analyze(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+    let current = run;
+    if (step.isPending) {
       const llm = this.llmProviders.find((p) => p.name === run.llmAdapter);
       if (!llm) return this.fail(run, step, `Unknown analysis adapter "${run.llmAdapter}"`, now);
 
       const outcome = await llm.process({ step: RadarStep.ANALYZE, runId: run.id });
       if (outcome.state === 'done') return this.finish(run, now);
-      await this.runs.updateStep(run.id, RadarStep.ANALYZE, {
-        status: RadarStatus.AWAITING_EXTERNAL,
-        startedAt: now,
-      });
-      await this.runs.updateRun(run.id, { status: RadarStatus.AWAITING_EXTERNAL });
+      const awaiting = await this.runs.save(run.awaitAnalysis(now));
+      if (!awaiting) return WAIT;
+      current = awaiting;
     }
 
-    const { notAnalyzed } = await this.runs.countItems(run.id, now, MAX_CLAIM_ATTEMPTS);
-    if (notAnalyzed > 0) return 'wait';
-    return this.finish(run, now);
+    const { notAnalyzed } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
+    if (notAnalyzed > 0) return WAIT;
+    return this.finish(current, now);
   }
 
-  private async finish(run: RadarRunSnapshot, now: Date): Promise<Outcome> {
-    await this.runs.updateStep(run.id, RadarStep.ANALYZE, { status: RadarStatus.DONE, finishedAt: now, error: null });
-    await this.runs.updateRun(run.id, { status: RadarStatus.DONE, finishedAt: now });
-    // Nothing left after ANALYZE; the caller's loop ends on the reloaded DONE run.
-    return 'wait';
+  /** Nothing left after ANALYZE, so the loop ends here. */
+  private async finish(run: RadarRun, now: Date): Promise<Outcome> {
+    await this.runs.save(run.finish(now));
+    return WAIT;
   }
 
-  private async fail(run: RadarRunSnapshot, step: RadarStepSnapshot, message: string, now: Date): Promise<Outcome> {
+  private async advanced(next: RadarRun): Promise<Outcome> {
+    const saved = await this.runs.save(next);
+    return saved ? { state: 'advanced', run: saved } : WAIT;
+  }
+
+  private async fail(run: RadarRun, step: RadarStepRun, message: string, now: Date): Promise<Outcome> {
     this.logger.warn(`Radar run ${run.id} failed at ${step.step}: ${message}`);
-    await this.runs.fail(run.id, step.step, message, now);
-    return 'failed';
+    await this.runs.save(run.fail(step.step, message, now));
+    return { state: 'failed' };
   }
 
   /**
-   * A thrown error is treated as transient until it repeats MAX_STEP_ERRORS times. The step is
-   * re-read first: the step may have saved progress (the NORMALIZE offset) before it threw.
+   * The run is re-read first: the step may have saved progress (the NORMALIZE offset) before it
+   * threw, and the copy the tick holds is older than that.
    */
-  private async recordError(run: RadarRunSnapshot, stale: RadarStepSnapshot, error: unknown, now: Date) {
+  private async recordError(runId: string, step: RadarStep, error: unknown, now: Date) {
     const message = error instanceof Error ? error.message : String(error);
-    const fresh = await this.runs.findById(run.id);
-    if (!fresh || !ACTIVE.has(fresh.status)) return;
-    const step = fresh.steps.find((s) => s.step === stale.step) ?? stale;
-    const errors = Number(step.meta['errors'] ?? 0) + 1;
-    if (errors >= MAX_STEP_ERRORS) {
-      await this.fail(run, step, message, now);
-      return;
+    const fresh = await this.runs.findById(runId);
+    if (!fresh?.isActive) return;
+    const next = fresh.recordStepError(step, message, now);
+    if (next.status === fresh.status) {
+      this.logger.warn(
+        `Radar run ${runId} ${step} error ${next.step(step).errors}/${RadarRun.MAX_STEP_ERRORS}: ${message}`
+      );
+    } else {
+      this.logger.warn(`Radar run ${runId} failed at ${step}: ${message}`);
     }
-    this.logger.warn(`Radar run ${run.id} ${step.step} error ${errors}/${MAX_STEP_ERRORS}: ${message}`);
-    await this.runs.updateStep(run.id, step.step, { meta: { ...step.meta, errors }, error: message.slice(0, 2000) });
+    await this.runs.save(next);
   }
 
-  private captureProvider(run: RadarRunSnapshot): ICaptureProvider {
+  private captureProvider(run: RadarRun): ICaptureProvider {
     const provider = this.captureProviders.find((p) => p.name === run.captureAdapter);
     if (!provider) throw new Error(`Unknown capture adapter "${run.captureAdapter}"`);
     return provider;

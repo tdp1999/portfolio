@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
+import { RadarRunFlow } from '@prisma/client';
 
 import {
   BadRequestError,
@@ -10,8 +10,8 @@ import {
   RadarErrorCode,
   ValidationError,
 } from '@portfolio/shared/errors';
-import { IdentifierValue } from '@portfolio/shared/types';
 
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { ICaptureProvider } from '../ports/capture-provider.port';
 import { EXTERNAL_WORKER_ADAPTER } from '../ports/llm-provider.port';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
@@ -27,11 +27,7 @@ const HYBRID_CAPTURE_ADAPTER = 'apify';
 const NORMALIZE_ADAPTER = 'apify-facebook-posts';
 const IMAGE_ADAPTER = 'storage';
 
-/**
- * Starts a run only because the Owner asked for one (RAD-006). A Hybrid run's capture step is
- * PENDING, so the next tick starts the provider job; a Manual run's capture step waits in
- * AWAITING_EXTERNAL for the upload. SYNTHESIZE gets no row: the brief (412) is per window.
- */
+/** Starts a run because the Owner asked for one (see {@link RadarRun.create}). */
 export class CreateRunCommand {
   constructor(readonly body: unknown) {}
 }
@@ -59,12 +55,7 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         layer: ErrorLayer.APPLICATION,
       });
     }
-    if (!source.isActive) {
-      throw BadRequestError('Radar source is inactive', {
-        errorCode: RadarErrorCode.SOURCE_INACTIVE,
-        layer: ErrorLayer.APPLICATION,
-      });
-    }
+    source.ensureCanCapture();
     if (hybrid && !this.providers.find((p) => p.name === HYBRID_CAPTURE_ADAPTER)?.isConfigured()) {
       throw BadRequestError('Hybrid capture is not configured (APIFY_TOKEN is unset)', {
         errorCode: RadarErrorCode.CAPTURE_NOT_CONFIGURED,
@@ -76,25 +67,24 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
     if (await this.runs.hasActiveRun(source.id)) throw alreadyActive();
 
     const captureAdapter = hybrid ? HYBRID_CAPTURE_ADAPTER : UPLOAD_CAPTURE_ADAPTER;
-    const waiting = hybrid ? RadarStatus.PENDING : RadarStatus.AWAITING_EXTERNAL;
-    const run = await this.runs.create({
-      id: IdentifierValue.v7(),
-      sourceId: source.id,
-      flow: input.flow,
-      status: waiting,
-      windowFrom: input.windowFrom ?? null,
-      windowTo: input.windowTo ?? null,
-      itemCap: input.itemCap,
-      captureAdapter,
-      llmAdapter: EXTERNAL_WORKER_ADAPTER,
-      fetchComments: input.fetchComments,
-      steps: [
-        { step: RadarStep.CAPTURE, status: waiting, adapter: captureAdapter },
-        { step: RadarStep.NORMALIZE, status: RadarStatus.PENDING, adapter: NORMALIZE_ADAPTER },
-        { step: RadarStep.ENRICH, status: RadarStatus.PENDING, adapter: IMAGE_ADAPTER },
-        { step: RadarStep.ANALYZE, status: RadarStatus.PENDING, adapter: EXTERNAL_WORKER_ADAPTER },
-      ],
-    });
+    const run = await this.runs.add(
+      RadarRun.create({
+        sourceId: source.id,
+        sourceUrl: source.url,
+        sourceName: source.displayName,
+        flow: input.flow,
+        windowFrom: input.windowFrom ?? null,
+        windowTo: input.windowTo ?? null,
+        itemCap: input.itemCap,
+        fetchComments: input.fetchComments,
+        adapters: {
+          capture: captureAdapter,
+          normalize: NORMALIZE_ADAPTER,
+          enrich: IMAGE_ADAPTER,
+          analyze: EXTERNAL_WORKER_ADAPTER,
+        },
+      })
+    );
     if (!run) throw alreadyActive();
     return RadarPresenter.toRun(run);
   }

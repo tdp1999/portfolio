@@ -21,8 +21,11 @@ describe('normalizeApifyComments', () => {
       { permalink: POST_B, authorExternalId: AUTHOR_ID },
     ]);
 
-    expect([...result.byPermalink.keys()]).toEqual([`${POST_A}/?__cft__=x`, POST_B]);
-    expect(result.received.get(POST_B)).toEqual({ topLevel: topLevelIn(POST_B), total: commentsOf(POST_B).length });
+    expect([...result.threads.keys()]).toEqual([`${POST_A}/?__cft__=x`, POST_B]);
+    expect(result.threads.get(POST_B)?.received).toEqual({
+      topLevel: topLevelIn(POST_B),
+      total: commentsOf(POST_B).length,
+    });
     // The third post of the file is not a target.
     expect(result.unmatched).toBe(12);
     expect(result.failures).toEqual([]);
@@ -33,8 +36,8 @@ describe('normalizeApifyComments', () => {
       ...normalizeApifyComments(raw, [
         { permalink: POST_A, authorExternalId: AUTHOR_ID },
         { permalink: POST_B, authorExternalId: AUTHOR_ID },
-      ]).byPermalink.values(),
-    ].flat();
+      ]).threads.values(),
+    ].flatMap((t) => t.comments);
 
     expect(all.some((c) => c.isAuthor)).toBe(true);
     expect(all.filter((c) => !c.isAuthor).every((c) => c.authorName === null)).toBe(true);
@@ -54,8 +57,8 @@ describe('normalizeApifyComments', () => {
       ]
     );
 
-    expect(result.byPermalink.get(story('1'))?.map((c) => c.id)).toEqual(['c1']);
-    expect(result.byPermalink.get(story('2'))?.map((c) => c.id)).toEqual(['c2']);
+    expect(result.threads.get(story('1'))?.comments.map((c) => c.id)).toEqual(['c1']);
+    expect(result.threads.get(story('2'))?.comments.map((c) => c.id)).toEqual(['c2']);
   });
 
   it('should skip a repeated comment id and report an entry with no id as a failure', () => {
@@ -74,7 +77,7 @@ describe('normalizeApifyComments', () => {
       ]
     );
 
-    expect([...result.byPermalink.values()].flat()).toHaveLength(1);
+    expect([...result.threads.values()].flatMap((t) => t.comments)).toHaveLength(1);
     expect(result.failures.map((f) => f.index)).toEqual([2]);
   });
 });

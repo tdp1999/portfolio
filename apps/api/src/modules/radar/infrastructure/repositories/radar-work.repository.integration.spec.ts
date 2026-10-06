@@ -15,6 +15,7 @@ describe('RadarWorkRepository (integration)', () => {
   let repo: RadarWorkRepository;
   const sourceId = '01a10755-0000-7000-8000-' + String(Date.now()).slice(-12);
   const inactiveSourceId = '01a10755-0000-7000-8002-' + String(Date.now()).slice(-12);
+  const claim = (now: Date) => repo.claim(1, new Date(now.getTime() + LEASE_MS), now, MAX_ATTEMPTS);
   const itemIds = ['a', 'b'].map((s) => `01a10755-0000-7000-8001-${String(Date.now()).slice(-11)}${s}`);
 
   beforeAll(async () => {
@@ -46,9 +47,9 @@ describe('RadarWorkRepository (integration)', () => {
   it('should skip items under a live lease and hand an expired lease out again (RAD-005)', async () => {
     const now = new Date();
 
-    const first = await repo.claim(1, LEASE_MS, now, MAX_ATTEMPTS);
-    const second = await repo.claim(1, LEASE_MS, now, MAX_ATTEMPTS);
-    const afterExpiry = await repo.claim(1, LEASE_MS, new Date(now.getTime() + LEASE_MS + 1000), MAX_ATTEMPTS);
+    const first = await claim(now);
+    const second = await claim(now);
+    const afterExpiry = await claim(new Date(now.getTime() + LEASE_MS + 1000));
 
     expect(first.map((i) => i.id)).toEqual([itemIds[0]]);
     expect(second.map((i) => i.id)).toEqual([itemIds[1]]);
@@ -61,7 +62,7 @@ describe('RadarWorkRepository (integration)', () => {
     const later = new Date(Date.now() + 3 * LEASE_MS);
 
     // Item 0 (newest) holds 2 claims, item 1 holds 1; both leases expired, so the cap alone skips item 0.
-    const claimed = await repo.claim(1, LEASE_MS, later, MAX_ATTEMPTS);
+    const claimed = await claim(later);
 
     expect(claimed.map((i) => i.id)).toEqual([itemIds[1]]);
   });
@@ -88,7 +89,7 @@ describe('RadarWorkRepository (integration)', () => {
       })),
     });
 
-    const claimed = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+    const claimed = await claim(new Date());
 
     expect(claimed.map((i) => i.id)).toEqual([activeId]);
   });
@@ -124,9 +125,9 @@ describe('RadarWorkRepository (integration)', () => {
       })),
     });
 
-    const whileFetching = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+    const whileFetching = await claim(new Date());
     await prisma.radarStepRun.updateMany({ where: { runId }, data: { status: 'DONE' } });
-    const afterComments = await repo.claim(1, LEASE_MS, new Date(), MAX_ATTEMPTS);
+    const afterComments = await claim(new Date());
 
     expect(whileFetching.map((i) => i.id)).toEqual([freeId]);
     expect(afterComments.map((i) => i.id)).toEqual([waitingId]);

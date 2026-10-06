@@ -1,22 +1,18 @@
-import { RadarPlatform, RadarSource } from '@prisma/client';
+import { RadarSource } from '../../domain/entities/radar-source.entity';
 
-export interface RadarSourceWithCount extends RadarSource {
+/** A source as the Sources dialog lists it. */
+export interface RadarSourceListing {
+  source: RadarSource;
   itemCount: number;
 }
 
-export interface CreateRadarSourceData {
-  id: string;
-  platform: RadarPlatform;
-  url: string;
-  displayName: string;
-}
-
 export interface IRadarSourceRepository {
-  create(data: CreateRadarSourceData): Promise<RadarSourceWithCount>;
+  /** Throws a conflict when another source already has the URL. */
+  add(source: RadarSource): Promise<void>;
   findById(id: string): Promise<RadarSource | null>;
   findByUrl(url: string): Promise<RadarSource | null>;
-  findAll(): Promise<RadarSourceWithCount[]>;
-  setActive(id: string, isActive: boolean): Promise<void>;
+  findAll(): Promise<RadarSourceListing[]>;
+  save(source: RadarSource): Promise<void>;
   /** Cascades to the source's runs and items. */
   delete(id: string): Promise<void>;
 }
