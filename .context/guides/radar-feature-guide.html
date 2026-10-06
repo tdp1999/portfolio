@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Radar Feature Guide</title>
 <style>
   :root {
@@ -134,7 +135,7 @@
       <li><a href="#worker">11. Vòng làm việc của worker</a></li>
       <li><a href="#lease">12. Lease và trạng thái bài</a></li>
       <li><a href="#enrichment">13. Enrichment</a></li>
-      <li><a href="#reading">14. Đọc Feed: Score, Type, Provider, Status</a></li>
+      <li><a href="#reading">14. Đọc Feed: Score, Progress, Status, Source</a></li>
       <li><a href="#profile">15. Workflow profile</a></li>
       <li><a href="#briefs">16. Briefs</a></li>
       <li class="group">Tham chiếu</li>
@@ -571,6 +572,8 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL hoặc HYBRID, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn), <code>fetchComments</code> (mặc định false, chỉ hợp lệ với HYBRID có <code>windowFrom</code>)</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch</code></td><td>Bắt đầu đọc comment của một bài (tính tiền, tối đa $0.10). Trả 202 kèm <code>{ state: 'running', jobRef }</code></td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch/:jobRef</code></td><td>Hỏi kết quả: <code>running</code> khi job chưa xong; <code>done</code> kèm <code>status</code>, <code>fetchedCount</code> khi đã thay danh sách cũ. Job lỗi thì bài thành FAILED và trả lỗi <code>RADAR_COMMENTS_FETCH_FAILED</code></td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/items</code></td><td>Một trang Feed theo bộ lọc. Query <code>triageStatus</code> (INBOX, SAVED, DONE) chọn tab; kết quả kèm <code>triageCounts</code>, số bài của cả ba tab dưới cùng bộ lọc. Query <code>sourceId</code> lọc theo một source. Mỗi bài kèm <code>queueState</code> (analyzed, claimed, pending, stuck, paused) và <code>images</code> (<code>total</code>, <code>pending</code>, <code>failed</code>) cho cột Progress</td></tr>
+        <tr><td>Admin</td><td>PATCH</td><td><code>/radar/items/triage</code></td><td>Đặt một trạng thái triage cho danh sách bài. Body: <code>ids</code> (1 tới 100 uuid), <code>status</code>. Id không tồn tại thì bỏ qua; trả <code>{ updated }</code> là số bài đã đổi</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/comments/settings</code></td><td>Giới hạn tiền của run và của một lần đọc, số comment cấp 1 một lần đọc</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
@@ -687,19 +690,29 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>imageNotes</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Ảnh nói gì (slide, screenshot)</td></tr>
         <tr><td><code>linkSummaries</code></td><td>tối đa 20 mục <code>{url, summary}</code></td><td>Tóm tắt từng link</td></tr>
         <tr><td><code>commentDigest</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Tóm tắt comment (task 411)</td></tr>
-        <tr><td><code>factCheck</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Điểm nào cần kiểm chứng</td></tr>
-        <tr><td><code>applyNote</code></td><td>markdown, tối đa 8.000 ký tự</td><td>Áp dụng vào workflow của bạn thế nào</td></tr>
+        <tr><td><code>factCheck</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Điểm nào cần kiểm chứng. Được lưu, chỉ hiển thị khi mức độ là <code>major</code></td></tr>
+        <tr><td><code>factCheckSeverity</code></td><td><code>minor</code> hoặc <code>major</code>; bắt buộc khi có <code>factCheck</code>, ngược lại là <code>null</code></td><td><code>major</code>: ý chính của bài sai hoặc gây hiểu lầm. Feed hiện icon đỏ ở cột Progress, bài hiện dải cảnh báo đầu phần AI analysis</td></tr>
+        <tr><td><code>overview</code></td><td>markdown, bắt buộc, tối đa 6.000 ký tự</td><td>Nhận định chung, phần chính của AI analysis: chuyện gì xảy ra, vì sao quan trọng, nằm ở đâu trong xu hướng chung và so với lựa chọn khác, giới hạn, nên theo dõi gì tiếp</td></tr>
+        <tr><td><code>context</code></td><td>markdown, bắt buộc, tối đa 4.000 ký tự</td><td>Key terms: mỗi tool, model hay công ty được nhắc tới là gì, một dòng mỗi mục. Hiện thành mục gập "Key terms" dưới overview</td></tr>
+        <tr><td><code>scoreReason</code></td><td>bắt buộc, tối đa 1.000 ký tự</td><td>Vì sao có điểm này. Hiện nhỏ ngay dưới Signal score ở cột phải</td></tr>
+        <tr><td><code>applyNote</code></td><td>markdown, tối đa 8.000 ký tự</td><td>Áp dụng vào workflow của bạn thế nào, 1 tới 3 bullet, đứng cuối phần AI analysis</td></tr>
         <tr><td><code>producer</code></td><td><code>{adapter, model}</code></td><td>Ai tạo ra kết quả này</td></tr>
-        <tr><td><code>schemaVersion</code></td><td>đúng bằng 1</td><td>Phiên bản schema</td></tr>
+        <tr><td><code>schemaVersion</code></td><td>đúng bằng 3</td><td>Phiên bản schema</td></tr>
       </table></div>
-      <p>Chuỗi rỗng hoặc toàn khoảng trắng ở các field có thể trống được lưu thành <code>null</code>.</p>
+      <p>Chuỗi rỗng hoặc toàn khoảng trắng ở các field có thể trống được lưu thành <code>null</code>. Mỗi lần nâng <code>schemaVersion</code>, migration đưa các bài có enrichment cũ về <code>PENDING</code> để worker phân tích lại; bản cũ vẫn hiển thị cho tới khi bản mới được nộp. Bài chưa có <code>overview</code> hiện <code>context</code> dưới nhãn Background như trước.</p>
     </section>
 
     <section id="reading">
-      <h2>14. Đọc Feed: Score, Type, Provider, Status</h2>
-      <p>Mỗi dòng trên Feed là một bài. Bốn cột Score, Type, Providers và Status đều lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Bài chưa phân tích thì chưa có giá trị nào trong bốn cột này.</p>
+      <h2>14. Đọc Feed: Score, Progress, Status, Source</h2>
+      <p>Mỗi dòng trên Feed là một bài, gói trong một dòng: Score, Summary (TL;DR, hoặc đoạn đầu bài khi chưa phân tích; rê chuột để đọc trọn), Progress, Status, Source và ngày đăng. Score, Status, Type và Providers lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Type và Providers không còn là cột trên bảng: chúng nằm trong bộ lọc và trên trang chi tiết của bài.</p>
+      <h3 id="filters">Bộ lọc: hai nhóm</h3>
+      <ul>
+        <li><b>Nhóm dùng thường xuyên, nằm trên thanh lọc:</b> Search, Status và Source (chỉ hiện bài của một source).</li>
+        <li><b>Nhóm ít dùng, nằm trong nút "Filters (n)":</b> Provider, Type, Min score và Show promo. Số <code>n</code> là số bộ lọc đang bật trong nhóm này; "Clear these" chỉ xóa nhóm này.</li>
+        <li>Hai nhóm cộng dồn với nhau, và hàng chip bên dưới hiện bộ lọc của cả hai nhóm. Mọi bộ lọc nằm trên URL (Source là <code>?source=</code>).</li>
+      </ul>
 
-      <h3>Score (signal score)</h3>
+      <h3 id="score">Score (signal score)</h3>
       <p><b>Định nghĩa:</b> số nguyên từ 0 tới 10, trả lời câu hỏi "bài này đáng để bạn bỏ bao nhiêu thời gian đọc". Điểm chấm theo thời điểm bài được đăng chứ không theo hôm nay: một bản release lớn từ 6 tháng trước vẫn được điểm cao, vì bạn đang đọc bù.</p>
       <div class="scroll"><table>
         <tr><th>Điểm</th><th>Ý nghĩa</th><th>Ví dụ</th><th>Màu ô trên Feed</th></tr>
@@ -713,7 +726,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       <p>Bộ lọc <b>Min score</b> dùng đúng các mốc này: <code>9+</code>, <code>7+</code>, <code>4+</code>. Khi sort theo Score, bài chưa phân tích luôn nằm cuối ở cả hai chiều.</p>
       <p>Feed phân trang với số dòng mỗi trang chọn được: 20, 50 (mặc định), 100 hoặc 200. Lựa chọn này nằm trên URL (<code>?size=</code>, chỉ ghi khi khác 50) cùng với bộ lọc, sort và trang, nên nút prev/next ở trang chi tiết đi theo đúng cỡ trang đó. Đổi cỡ trang giữ lại bài đang ở đầu trang. API nhận <code>limit</code> tối đa 200.</p>
 
-      <h3>Type (content type)</h3>
+      <h3 id="type">Type (content type)</h3>
       <p><b>Định nghĩa:</b> bài thuộc loại nội dung nào. Mỗi bài có đúng một type.</p>
       <div class="scroll"><table>
         <tr><th>Type</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
@@ -725,7 +738,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><b>Promo</b></td><td>Bài bán hàng: khóa học, dịch vụ, group trả phí</td><td>"Mở đăng ký Build Sprint khóa 3"</td></tr>
       </table></div>
 
-      <h3>Providers (provider tags)</h3>
+      <h3 id="providers">Providers (provider tags)</h3>
       <p><b>Định nghĩa:</b> bài nói về sản phẩm của hãng nào. Một bài có thể có nhiều tag. Bài không nhắc tới hãng nào (ví dụ bàn chung về "AI") thì để trống và Feed hiện dấu <code>-</code>.</p>
       <div class="scroll"><table>
         <tr><th>Tag</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
@@ -739,7 +752,25 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><b>Other</b></td><td>Bất kỳ công ty nào khác</td><td>Cursor, Perplexity, một startup nhỏ</td></tr>
       </table></div>
 
-      <h3>Status</h3>
+      <h3 id="progress">Progress: bài đã được làm gì</h3>
+      <p><b>Định nghĩa:</b> cột Progress trả lời "bài này đã đi tới đâu" bằng ba icon xếp cố định: phân tích, comment, ảnh. Màu cho biết trạng thái, rê chuột để đọc chi tiết. Cột Status bên cạnh chỉ nói kết luận của phân tích (có liên quan hay không), còn Progress nói việc đã làm.</p>
+      <div class="scroll"><table>
+        <tr><th>Icon</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / việc cần làm</th></tr>
+        <tr><td><b>Phân tích: dấu tick</b> (xanh lá)</td><td><code>analyzed</code>: đã có enrichment</td><td>Đọc TL;DR là đủ</td></tr>
+        <tr><td><b>Phân tích: tam giác cảnh báo</b> (đỏ)</td><td><code>analyzed</code> nhưng fact check ở mức <code>major</code>: ý chính của bài có vẻ sai</td><td>Mở bài, đọc dải cảnh báo đầu phần AI analysis</td></tr>
+        <tr><td><b>Phân tích: mũi tên xoay</b> (xanh dương)</td><td><code>claimed</code>: Claude Code đang giữ bài (lease còn hạn)</td><td>Đang có một phiên <code>/radar work</code> chạy</td></tr>
+        <tr><td><b>Phân tích: đồng hồ</b> (xám)</td><td><code>pending</code>: đang chờ trong hàng. Nếu bài đã có enrichment cũ thì tooltip ghi "Waiting for re-analysis"</td><td>Chạy <code>/radar work</code></td></tr>
+        <tr><td><b>Phân tích: dấu báo lỗi</b> (đỏ)</td><td><code>stuck</code>: đã bị claim đủ 3 lần mà chưa có kết quả hợp lệ</td><td>Bấm <b>Re-queue stuck</b> trên đầu Feed</td></tr>
+        <tr><td><b>Phân tích: dấu tạm dừng</b> (vàng)</td><td><code>paused</code>: source của bài đang tạm dừng nên worker bỏ qua</td><td>Bấm Resume trong hộp thoại Sources</td></tr>
+        <tr><td><b>Comment + số</b></td><td>Xám mờ: chưa lấy (số là số comment Facebook báo). Xanh lá: đã lấy đủ. Vàng: lấy một phần (chạm giới hạn). Đỏ: lấy thất bại. Số khi đã lấy là số comment đã lưu. Chấm nhỏ màu chủ đạo: phân tích gợi ý nên lấy comment</td><td>Bài có chấm gợi ý và 40 comment chưa lấy: mở bài, bấm Fetch comments</td></tr>
+        <tr><td><b>Ảnh + số</b></td><td>Xám mờ: không có ảnh. Màu thường: mọi ảnh đã copy lên Cloudinary. Vàng: còn ảnh chưa copy. Đỏ: có ảnh copy thất bại (link Facebook có thể đã hết hạn)</td><td>Ảnh đỏ: ảnh đó có thể không xem được nữa</td></tr>
+      </table></div>
+      <p>Thứ tự xét trạng thái phân tích giống hệt cách đếm hàng chờ: đã DONE thì là <code>analyzed</code>; source tắt thì <code>paused</code>; lease còn hạn thì <code>claimed</code>; claim đủ 3 lần thì <code>stuck</code>; còn lại là <code>pending</code>.</p>
+
+      <h3 id="source">Source</h3>
+      <p>Cột Source hiện chữ cái đầu của tên source trong một vòng tròn, ví dụ "Duy Nguyen (mrgoonie)" thành <b>DN</b> (phần handle trong ngoặc bị bỏ). Mỗi tên luôn có cùng một màu. Rê chuột để đọc tên đầy đủ. Vòng tròn mờ có viền đứt nghĩa là source đang tạm dừng.</p>
+
+      <h3 id="status">Status</h3>
       <p><b>Định nghĩa:</b> cột Status trên Feed gộp hai cờ của enrichment và trạng thái phân tích. Một bài có thể có hai badge cùng lúc, ví dụ <b>Relevant</b> và <b>Promo</b>.</p>
       <div class="scroll"><table>
         <tr><th>Badge</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
@@ -748,6 +779,27 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><b>Promo</b> (vàng)</td><td>Mục đích chính của bài là bán hàng (<code>isPromo = true</code>). Feed ẩn các bài này mặc định, bật <b>Show promo</b> để xem</td><td>Bài mở bán khóa học, vẫn có thể được 3 tới 5 điểm nếu phần thông tin có thật</td></tr>
         <tr><td><b>Pending</b> (xám)</td><td>Bài chưa được phân tích</td><td>Bài vừa upload</td></tr>
       </table></div>
+
+      <h3 id="triage">Triage: Inbox, To try, Done</h3>
+      <p><b>Định nghĩa:</b> triage là quyết định của bạn về một bài, tách hẳn khỏi việc phân tích. Mỗi bài có <code>triageStatus</code> và <code>triagedAt</code> (lần đổi gần nhất). Bài mới luôn vào <b>Inbox</b>.</p>
+      <div class="scroll"><table>
+        <tr><th>Tab</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
+        <tr><td><b>Inbox</b> (<code>INBOX</code>)</td><td>Bài chưa được bạn quyết định</td><td>Bài vừa upload, đã hoặc chưa phân tích</td></tr>
+        <tr><td><b>To try</b> (<code>SAVED</code>)</td><td>Danh sách lưu để thử sau. Không có ghi chú, không có ngày hẹn</td><td>Một skill Claude Code muốn cài thử cuối tuần</td></tr>
+        <tr><td><b>Done</b> (<code>DONE</code>)</td><td>Đã đọc xong, không cần làm gì thêm</td><td>Tin ra mắt model đã nắm được ý chính</td></tr>
+      </table></div>
+      <ul>
+        <li><b>Mở bài không đổi trạng thái.</b> Trạng thái chỉ đổi khi bạn bấm Done (E) hoặc To try (S).</li>
+        <li><b>Tabs lọc cả hai view.</b> Số trên mỗi tab đếm theo bộ lọc đang dùng (search, status, source, provider, type, score, promo), không phụ thuộc tab đang mở.</li>
+        <li><b>View:</b> ở <b>Table</b>, bấm một dòng mở trang chi tiết của bài. Ở <b>Split</b>, trang vẫn bắt đầu bằng bảng; bấm một dòng thì bảng thu thành danh sách gọn bên trái và nội dung bài trượt vào bên phải, nên bạn thấy cả danh sách lẫn bài. Nút <b>X</b> (hoặc Esc) đóng bài và đưa về bảng. Khi đang mở bài, phần đầu trang thu gọn để bài có thêm chiều cao: subtitle ẩn đi, tabs cùng Sort và View lên chung hàng với bộ lọc, và paginator thu thành một dòng nhỏ dưới danh sách (khoảng dòng, trang trước, trang sau). Muốn đổi số dòng mỗi trang thì đóng bài để về bảng. Chuyển trang khi đang mở bài sẽ mở bài đầu tiên của trang mới. View nằm trên URL (<code>?view=split</code>) và được nhớ trong trình duyệt; URL thắng. Bài đang mở cũng nằm trên URL (<code>?item=</code>); nếu bài đó không còn ở trang hoặc tab hiện tại thì bảng hiện ra thay vì mở bài khác.</li>
+        <li><b>Cuộn:</b> trang Feed chiếm trọn chiều cao màn hình. Bảng cuộn bên trong khung của nó với hàng tiêu đề dính trên cùng. Khi mở bài, danh sách, nội dung bài và cột thuộc tính bên phải cuộn riêng với nhau (cột thuộc tính chỉ nằm bên cạnh khi khung bài rộng từ 920px; hẹp hơn thì nó xuống dưới bài và khung bài cuộn chung).</li>
+        <li><b>Phím tắt (chỉ khi đang mở bài ở Split):</b> J hoặc ↓ sang bài sau, K hoặc ↑ về bài trước, E đánh dấu Done, S lưu vào To try, Esc đóng bài. Bấm lại E (hoặc S) trên bài vừa xử lý thì bài trở về trạng thái trước đó: một bài ở tab To try được đánh Done, bấm E lần nữa thì bài về lại To try. Trên chính tab Done (hoặc To try), bấm lại phím của tab đó thì bài về Inbox. Phím không chạy khi đang gõ, khi có Cmd/Ctrl/Alt, hoặc khi đang mở Quick Look hay hộp thoại.</li>
+        <li><b>Sau khi đổi trạng thái:</b> bài vẫn mở và vẫn nằm đúng chỗ trong danh sách, kèm một dấu nhỏ (check cho Done, bookmark cho To try) và tóm tắt mờ đi. Nút vừa bấm đổi thành nút gỡ: <b>Unmark done</b> hoặc <b>Unsave</b>, bấm lại (hoặc nhấn lại E hay S) thì bài về Inbox. Số đếm trên tabs cập nhật ngay. Bài chỉ rời tab ở lần tải kế tiếp: đổi tab, đổi bộ lọc hoặc chuyển trang. Muốn sang bài tiếp thì nhấn J.</li>
+        <li><b>Bố cục một bài</b> (giống nhau ở trang Detail và trong khung Split): bài gốc đứng đầu trên một nền riêng, bài được share lồng bên trong, và comment của chính tác giả nằm cuối card dưới dòng "Added by the author in the comments". Kế đến là section <b>AI analysis</b>: dải cảnh báo nếu fact check ở mức <code>major</code>, TL;DR, Overview, mục gập Key terms, Image notes, rồi Apply to my workflow ở cuối. Sau đó là <b>Comments</b>. Cột bên phải hẹp (288px) chứa Properties (lý do của điểm số nằm nhỏ dưới Signal score), ảnh và link đính kèm, và thông tin model đã phân tích. Fact check mức <code>minor</code> được lưu nhưng không hiển thị. Đoạn văn chạy hết bề rộng cột.</li>
+        <li><b>Comments:</b> header section có trạng thái đọc comment (rê chuột để xem giải thích) và nút Fetch. Nội dung mở đầu bằng Digest của worker, sau đó là thread: chữ đi trước, ngày và lượt like nhỏ phía sau, reply thụt vào một cấp. Chỉ comment Filler hoặc Spam mới có badge. Hiện sẵn 3 comment đầu, phần còn lại sau nút "Show n more"; nếu chỉ dư 1 comment thì hiện hết, không có nút. Ảnh trong comment bấm để xem lớn trong Quick Look (kèm chữ OCR nếu có); ảnh không tải được thì thay bằng link mở ảnh gốc.</li>
+        <li><b>Ảnh:</b> ảnh nằm ở cột phải dạng thumbnail, hiển thị trọn khung (không cắt), bấm để xem lớn trong Quick Look. Ảnh của bài được share đứng thành một nhóm riêng. Chữ Facebook đọc được trong ảnh (<code>ocrText</code>) nằm sau icon ở góc ảnh, bấm thì hiện popover; trong Quick Look thì chữ này hiện dưới ảnh.</li>
+        <li><b>Link:</b> mỗi link hiện tên miền; phần tóm tắt của worker được gập lại sau dòng "Summary", bấm để mở.</li>
+      </ul>
 
       <h3>Trạng thái hàng chờ trên đầu Feed</h3>
       <div class="scroll"><table>

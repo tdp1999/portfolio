@@ -31,6 +31,7 @@ import {
   PersistItemImagesCommand,
   RequeueStuckCommand,
   SetSourceActiveCommand,
+  TriageItemsCommand,
   UploadCaptureCommand,
   UploadCommentsCommand,
   UpsertWorkflowProfileCommand,
@@ -164,6 +165,11 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async requeueStuck() {
     return await this.commandBus.execute(new RequeueStuckCommand());
+  }
+
+  @Patch('items/triage')
+  async triageItems(@Body() body: unknown) {
+    return await this.commandBus.execute(new TriageItemsCommand(body));
   }
 
   @Get('items/:id')

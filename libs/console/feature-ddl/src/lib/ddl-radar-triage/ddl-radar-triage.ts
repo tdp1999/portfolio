@@ -19,7 +19,6 @@ import {
   SegmentedControl,
 } from '@portfolio/console/shared/ui';
 import {
-  DENSITY_OPTIONS,
   PROVIDER_FILTER,
   SCORE_FILTER,
   SCREEN_OPTIONS,
@@ -29,11 +28,20 @@ import {
   TRIAGE_ITEMS,
   TYPE_FILTER,
 } from './ddl-radar-triage.data';
-import type { TriageDensity, TriageItem, TriageRow, TriageSort, TriageStatus } from './ddl-radar-triage.types';
+import type { TriageItem, TriageRow, TriageSort, TriageStatus } from './ddl-radar-triage.types';
 import { toTriageRow } from './ddl-radar-triage.util';
 
+/** The mark a decided row keeps until the tab is left, as shipped in the Split list. */
+const DECIDED_MARKS: Record<TriageStatus, { icon: string; label: string }> = {
+  inbox: { icon: 'inbox', label: 'Moved to Inbox' },
+  saved: { icon: 'bookmark', label: 'Saved to To try' },
+  done: { icon: 'check', label: 'Marked done' },
+};
+
 /**
- * Radar triage study, layout A: Feed controls on top, list and the full record view side by side.
+ * Radar triage study, layout A. Shipped as the Radar Feed's Split view (`/radar?view=split`,
+ * `feature-radar/radar-item.triage`); this page stays as the width-budget simulator.
+ * Layout A: Feed controls on top, list and the full record view side by side.
  * The frame simulates the content width a given screen and sidebar leave, so the width budget can
  * be judged on one monitor. Keyboard is scoped to the frame; nothing registers a global shortcut.
  */
@@ -67,7 +75,6 @@ export default class DdlRadarTriage {
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly screen = signal('1440');
   protected readonly sidebar = signal('240');
-  protected readonly density = signal<TriageDensity>('comfortable');
   protected readonly view = signal<TriageStatus>('inbox');
   protected readonly items = signal<TriageRow[]>(TRIAGE_ITEMS.map(toTriageRow));
   protected readonly selectedId = signal<string | null>(TRIAGE_ITEMS[0].id);
@@ -77,7 +84,8 @@ export default class DdlRadarTriage {
   protected readonly minScore = signal('');
   protected readonly includePromo = signal(false);
   protected readonly sort = signal<TriageSort>('newest');
-  protected readonly lastAction = signal<{ ids: string[]; from: TriageStatus; label: string } | null>(null);
+  /** Posts decided on this tab: they stay in the list, marked, until the tab changes. */
+  private readonly kept = signal<ReadonlySet<string>>(new Set());
 
   // ── Derived ───────────────────────────────────────────────────────
   /** What the shell leaves: viewport − sidebar − `p-8` on both sides, capped at `--console-page-max`. */
@@ -85,7 +93,8 @@ export default class DdlRadarTriage {
     const vp = SCREENS.find((s) => s.value === this.screen())?.width ?? 1440;
     return Math.min(1440, vp - Number(this.sidebar()) - 64);
   });
-  protected readonly listWidth = computed(() => (this.density() === 'compact' ? 320 : 360));
+  /** Compact density, as shipped: the comfortable 360px variant was not built. */
+  protected readonly listWidth = signal(320);
   protected readonly paneWidth = computed(() => this.frameWidth() - this.listWidth() - 1);
   /** Mirrors the container query in the SCSS, only to print the budget line. */
   protected readonly railBeside = computed(() => this.paneWidth() >= 920);
@@ -110,13 +119,17 @@ export default class DdlRadarTriage {
     };
     return [...list].sort(by[this.sort()]);
   });
-  protected readonly visible = computed(() => this.filtered().filter((it) => it.status === this.view()));
+  protected readonly visible = computed(() =>
+    this.filtered()
+      .filter((it) => it.status === this.view() || this.kept().has(it.id))
+      .map((it) => ({ ...it, decided: it.status === this.view() ? null : DECIDED_MARKS[it.status] }))
+  );
   protected readonly counts = computed(() => {
     const c = { inbox: 0, saved: 0, done: 0 };
     for (const it of this.filtered()) c[it.status]++;
     return c;
   });
-  protected readonly selected = computed<TriageRow | null>(
+  protected readonly selected = computed(
     () => this.visible().find((it) => it.id === this.selectedId()) ?? this.visible().at(0) ?? null
   );
   protected readonly position = computed(() => {
@@ -127,7 +140,6 @@ export default class DdlRadarTriage {
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly screenOptions = SCREEN_OPTIONS;
   protected readonly sidebarOptions = SIDEBAR_OPTIONS;
-  protected readonly densityOptions = DENSITY_OPTIONS;
   protected readonly sortOptions = SORT_OPTIONS;
   protected readonly providerOptions = PROVIDER_FILTER;
   protected readonly typeOptions = TYPE_FILTER;
@@ -148,9 +160,8 @@ export default class DdlRadarTriage {
       ArrowDown: () => this.onMove(1),
       k: () => this.onMove(-1),
       ArrowUp: () => this.onMove(-1),
-      e: () => sel && this.setStatus([sel.id], 'done'),
-      s: () => sel && this.setStatus([sel.id], sel.status === 'saved' ? 'inbox' : 'saved'),
-      u: () => this.onUndo(),
+      e: () => sel && this.onDecide(sel.id, sel.status === 'done' ? 'inbox' : 'done'),
+      s: () => sel && this.onDecide(sel.id, sel.status === 'saved' ? 'inbox' : 'saved'),
     };
     const run = handlers[e.key];
     if (!run) return;
@@ -164,6 +175,7 @@ export default class DdlRadarTriage {
 
   onView(view: TriageStatus): void {
     this.view.set(view);
+    this.kept.set(new Set());
     this.selectedId.set(this.visible()[0]?.id ?? null);
   }
 
@@ -174,23 +186,9 @@ export default class DdlRadarTriage {
     if (next) this.onSelect(next.id);
   }
 
-  onUndo(): void {
-    const last = this.lastAction();
-    if (!last) return;
-    this.items.update((list) => list.map((it) => (last.ids.includes(it.id) ? { ...it, status: last.from } : it)));
-    this.selectedId.set(last.ids[0]);
-    this.lastAction.set(null);
-  }
-
-  /** Changes status, then auto-advances to the post that took the acted one's place. */
-  setStatus(ids: string[], status: TriageStatus): void {
-    if (!ids.length) return;
-    const from = this.items().find((it) => it.id === ids[0])?.status ?? 'inbox';
-    const index = this.visible().findIndex((it) => it.id === ids[0]);
-    this.items.update((list) => list.map((it) => (ids.includes(it.id) ? { ...it, status } : it)));
-    const after = this.visible();
-    this.selectedId.set(after[Math.min(index, after.length - 1)]?.id ?? null);
-    const label = status === 'done' ? 'Marked done' : status === 'saved' ? 'Saved to To try' : 'Moved to Inbox';
-    this.lastAction.set({ ids, from, label });
+  /** A decision keeps the post open and in place; the same key again takes it back to Inbox. */
+  onDecide(id: string, status: TriageStatus): void {
+    this.items.update((list) => list.map((it) => (it.id === id ? { ...it, status } : it)));
+    this.kept.update((set) => new Set(set).add(id));
   }
 }

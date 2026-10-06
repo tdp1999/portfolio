@@ -19,7 +19,11 @@ const row: RadarFeedRow = {
   authorName: 'Duy',
   publishedAt: new Date('2026-10-01T00:00:00Z'),
   text: 'x'.repeat(500),
+  media: [],
   workStatus: 'PENDING',
+  claimCount: 0,
+  leaseExpiresAt: null,
+  triageStatus: 'INBOX',
   engagement: { likes: 0, comments: 4, shares: 0, views: null },
   commentsStatus: 'NOT_FETCHED',
   commentsFetchedCount: 0,
@@ -34,6 +38,8 @@ describe('Radar item queries', () => {
   beforeEach(() => {
     repo = {
       list: jest.fn().mockResolvedValue({ data: [row], total: 1 }),
+      countByTriage: jest.fn().mockResolvedValue({ INBOX: 1, SAVED: 0, DONE: 0 }),
+      setTriage: jest.fn(),
       findById: jest.fn(),
       stats: jest.fn().mockResolvedValue({ pending: 4, stuck: 1, paused: 2, analyzed: 7 }),
       requeueStuck: jest.fn().mockResolvedValue(1),

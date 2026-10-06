@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, RadarWorkStatus } from '@prisma/client';
+import { Prisma, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
 
 import { PaginatedResult, RadarFeedStatus } from '@portfolio/shared/types';
 
@@ -9,6 +9,7 @@ import {
   RadarItemDetail,
   RadarItemListFilter,
   RadarQueueStats,
+  RadarTriageCounts,
 } from '../../application/ports/radar-item.repository.port';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RadarComment } from '../../domain/radar-comment.types';
@@ -23,7 +24,11 @@ const feedSelect = {
   authorName: true,
   publishedAt: true,
   text: true,
+  media: true,
   workStatus: true,
+  claimCount: true,
+  leaseExpiresAt: true,
+  triageStatus: true,
   engagement: true,
   commentsStatus: true,
   commentsFetchedCount: true,
@@ -39,13 +44,13 @@ const feedSelect = {
       isPromo: true,
       isRelevant: true,
       wantsComments: true,
+      factCheckSeverity: true,
     },
   },
 } as const;
 
 const detailSelect = {
   ...feedSelect,
-  media: true,
   links: true,
   sharedPost: true,
   comments: true,
@@ -59,6 +64,7 @@ const detailSelect = {
       applyNote: true,
       context: true,
       scoreReason: true,
+      overview: true,
       producerAdapter: true,
       producerModel: true,
       updatedAt: true,
@@ -93,6 +99,7 @@ const statusWhere = (status: RadarFeedStatus, now: Date, maxAttempts: number): P
 const toFilterWhere = (f: RadarItemListFilter, now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => {
   const and: Prisma.RadarItemWhereInput[] = [];
   if (f.status) and.push(statusWhere(f.status, now, maxAttempts));
+  if (f.triageStatus) and.push({ triageStatus: f.triageStatus });
   if (f.sourceId) and.push({ sourceId: f.sourceId });
   if (f.search) {
     const contains = { contains: f.search, mode: 'insensitive' } as const;
@@ -137,7 +144,33 @@ export class RadarItemRepository implements IRadarItemRepository {
       }),
       this.prisma.radarItem.count({ where }),
     ]);
-    return { data: data.map((row) => ({ ...row, engagement: row.engagement as unknown as RadarEngagement })), total };
+    return {
+      data: data.map((row) => ({
+        ...row,
+        media: row.media as unknown as RadarMedia[],
+        engagement: row.engagement as unknown as RadarEngagement,
+      })),
+      total,
+    };
+  }
+
+  async countByTriage(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<RadarTriageCounts> {
+    const groups = await this.prisma.radarItem.groupBy({
+      by: ['triageStatus'],
+      where: toFilterWhere({ ...filter, triageStatus: undefined }, now, maxAttempts),
+      _count: { _all: true },
+    });
+    const counts: RadarTriageCounts = { INBOX: 0, SAVED: 0, DONE: 0 };
+    for (const g of groups) counts[g.triageStatus] = g._count._all;
+    return counts;
+  }
+
+  async setTriage(ids: readonly string[], status: RadarTriageStatus, now: Date): Promise<number> {
+    const { count } = await this.prisma.radarItem.updateMany({
+      where: { id: { in: [...ids] } },
+      data: { triageStatus: status, triagedAt: now },
+    });
+    return count;
   }
 
   async findById(id: string): Promise<RadarItemDetail | null> {

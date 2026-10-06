@@ -28,6 +28,22 @@ export type RadarFeedSortKey = (typeof RADAR_FEED_SORT_KEYS)[number];
 export const RADAR_FEED_STATUSES = ['pending', 'analyzed', 'stuck', 'paused'] as const;
 export type RadarFeedStatus = (typeof RADAR_FEED_STATUSES)[number];
 
+/**
+ * Where one item stands in the worker's queue, as the Feed shows it per row: a `RadarFeedStatus`,
+ * or `claimed` while a worker holds a live lease on it (a `pending` item, split out).
+ */
+export type RadarQueueState = RadarFeedStatus | 'claimed';
+
+/**
+ * The Owner's triage of a post, independent of the worker's status: `INBOX` not decided yet,
+ * `SAVED` kept to try later ("To try"), `DONE` read and put away. Opening a post never changes it.
+ */
+export const RADAR_TRIAGE_STATUSES = ['INBOX', 'SAVED', 'DONE'] as const;
+export type RadarTriageStatus = (typeof RADAR_TRIAGE_STATUSES)[number];
+
+/** Most item ids one `PATCH /radar/items/triage` accepts. */
+export const RADAR_TRIAGE_MAX_IDS = 100;
+
 /** Default page size of `GET /radar/items`. */
 export const RADAR_FEED_PAGE_SIZE = 50;
 

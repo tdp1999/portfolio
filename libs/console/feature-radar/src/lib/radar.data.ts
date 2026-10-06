@@ -1,6 +1,7 @@
 import type { FilterOption, SegmentedControlOption } from '@portfolio/console/shared/ui';
 import {
   RADAR_FEED_SORT_KEYS,
+  RADAR_MAX_CLAIM_ATTEMPTS,
   type RadarContentType,
   type RadarFeedStatus,
   type RadarProviderTag,
@@ -10,7 +11,9 @@ import type {
   RadarRunDisplayStatus,
   RadarRunFlow,
   RadarRunStatus,
+  RadarQueueState,
   RadarRunStep,
+  RadarTriageStatus,
   RadarWorkStatus,
 } from './radar.types';
 
@@ -119,4 +122,37 @@ export const RUN_STEP_ICONS: Record<RadarRunStatus, string> = {
   AWAITING_EXTERNAL: 'hourglass_top',
   DONE: 'check_circle',
   FAILED: 'error',
+};
+
+/** The Feed's triage tabs, in reading order. `SAVED` reads as "To try". */
+export const TRIAGE_TABS: { value: RadarTriageStatus; label: string }[] = [
+  { value: 'INBOX', label: 'Inbox' },
+  { value: 'SAVED', label: 'To try' },
+  { value: 'DONE', label: 'Done' },
+];
+
+export const FEED_VIEW_OPTIONS: SegmentedControlOption[] = [
+  { value: 'table', label: 'Table', icon: 'table_rows' },
+  { value: 'split', label: 'Split', icon: 'vertical_split' },
+];
+
+/** The Split view has no column headers to sort by, so sort is a select: one option per sort key and direction. */
+export const SPLIT_SORT_OPTIONS: (FilterOption & { sortBy: RadarFeedSortKey; sortDir: 'asc' | 'desc' })[] = [
+  { value: 'newest', label: 'Newest', sortBy: 'publishedAt', sortDir: 'desc' },
+  { value: 'oldest', label: 'Oldest', sortBy: 'publishedAt', sortDir: 'asc' },
+  { value: 'score', label: 'Top score', sortBy: 'signalScore', sortDir: 'desc' },
+  { value: 'source', label: 'Source A to Z', sortBy: 'source', sortDir: 'asc' },
+];
+
+/** The analysis icon of a Feed row, per queue state: shape and tone carry the state, the tooltip names it. */
+export const QUEUE_STATE_ICONS: Record<RadarQueueState, { icon: string; tone: string; label: string }> = {
+  analyzed: { icon: 'check_circle', tone: 'success', label: 'Analyzed' },
+  claimed: { icon: 'autorenew', tone: 'info', label: 'Being analyzed: a worker holds it right now' },
+  pending: { icon: 'schedule', tone: 'muted', label: 'Waiting in the queue for the next /radar work' },
+  stuck: {
+    icon: 'report',
+    tone: 'error',
+    label: `Stuck: claimed ${RADAR_MAX_CLAIM_ATTEMPTS} times with no result. Re-queue it from the header`,
+  },
+  paused: { icon: 'pause_circle', tone: 'warning', label: 'Paused: its source is paused, so the worker skips it' },
 };

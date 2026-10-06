@@ -17,6 +17,7 @@ import {
   RadarCommentsSettings,
   RadarCommentsUploadResult,
   RadarItemCommentsFetch,
+  RadarTriageStatus,
   RadarWorkflowProfile,
 } from './radar.types';
 
@@ -35,13 +36,20 @@ export class RadarService {
     if (params.minScore !== undefined) queryParams['minScore'] = String(params.minScore);
     if (params.includePromo) queryParams['includePromo'] = 'true';
     if (params.status) queryParams['status'] = params.status;
+    if (params.sourceId) queryParams['sourceId'] = params.sourceId;
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;
+    if (params.triageStatus) queryParams['triageStatus'] = params.triageStatus;
     return this.api.get<RadarFeedPage>('/radar/items', { params: queryParams });
   }
 
   getItem(id: string) {
     return this.api.get<RadarItemDetail>(`/radar/items/${id}`);
+  }
+
+  /** One status for every id; ids that no longer exist are skipped, so `updated` can be lower. */
+  triageItems(ids: string[], status: RadarTriageStatus) {
+    return this.api.patch<{ updated: number }>('/radar/items/triage', { ids, status });
   }
 
   getQueueStats() {

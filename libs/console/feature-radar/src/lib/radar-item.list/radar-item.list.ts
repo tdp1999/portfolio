@@ -8,43 +8,59 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FilterBar,
+  FilterMore,
   type FilterOption,
   FilterSearch,
   FilterSelect,
-  EnumLabelPipe,
+  HelpButton,
   Paginator,
   type PaginatorChange,
   RelativeTime,
+  SegmentedControl,
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
+import { RadarItemProgress } from '../radar-item.progress/radar-item.progress';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
+import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
-import { FEED_PAGE_SIZE, FEED_PAGE_SIZES, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
-import { parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
+import { FEED_PAGE_SIZE, FEED_PAGE_SIZES, FEED_VIEW_STORAGE_KEY, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
+import { parseFeedQuery, parseItemParam, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { isRunActive } from '../radar-run.util';
 import {
   CONTENT_TYPE_LABELS,
   CONTENT_TYPE_OPTIONS,
   FEED_STATUS_LABELS,
+  FEED_VIEW_OPTIONS,
   MIN_SCORE_OPTIONS,
   PROVIDER_LABELS,
   PROVIDER_OPTIONS,
+  SPLIT_SORT_OPTIONS,
+  TRIAGE_TABS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from '../radar.types';
+import { RadarItemTriage, type RadarTriageDecision } from '../radar-item.triage/radar-item.triage';
+import {
+  RadarFeedItem,
+  RadarFeedSortKey,
+  RadarFeedState,
+  RadarFeedView,
+  RadarQueueStats,
+  RadarSource,
+  RadarTriageStatus,
+} from '../radar.types';
 
 @Component({
   selector: 'console-radar-item-list',
   standalone: true,
   imports: [
-    DatePipe,
+    HelpButton,
     RouterLink,
     MatButtonModule,
     MatCheckboxModule,
@@ -54,13 +70,18 @@ import { RadarFeedItem, RadarFeedSortKey, RadarFeedState, RadarQueueStats } from
     MatTableModule,
     MatTooltipModule,
     FilterBar,
+    FilterMore,
     FilterSearch,
     FilterSelect,
-    EnumLabelPipe,
+    FormsModule,
+    NgTemplateOutlet,
     Paginator,
+    RadarItemProgress,
     RadarScoreTonePipe,
-    RadarCommentsChipPipe,
+    RadarSourceMonogramPipe,
+    RadarItemTriage,
     RelativeTime,
+    SegmentedControl,
     SkeletonTable,
   ],
   templateUrl: './radar-item.list.html',
@@ -88,28 +109,55 @@ export default class RadarItemList implements OnInit {
   protected readonly minScore = signal('');
   protected readonly includePromo = signal(false);
   protected readonly status = signal('');
+  protected readonly sourceId = signal('');
+  protected readonly sources = signal<RadarSource[]>([]);
   protected readonly sortBy = signal<RadarFeedSortKey>('publishedAt');
   protected readonly sortDir = signal<'asc' | 'desc'>('desc');
   protected readonly stats = signal<RadarQueueStats | null>(null);
   protected readonly requeueing = signal(false);
   protected readonly activeRuns = signal(0);
+  protected readonly triage = signal<RadarTriageStatus>('INBOX');
+  protected readonly triageCounts = signal<Record<RadarTriageStatus, number> | null>(null);
+  protected readonly view = signal<RadarFeedView>('table');
+  /** The post open in the Split pane; none means the Split view shows the plain table. */
+  protected readonly selectedId = signal<string | null>(null);
+  /** A triage change is on its way; decisions wait so two cannot cross. */
+  protected readonly deciding = signal(false);
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly activeFilters = computed(() => {
     const filters: { key: string; label: string }[] = [];
     const s = this.search();
     if (s) filters.push({ key: 'search', label: `Search: ${s}` });
+    const st = this.status();
+    if (st) filters.push({ key: 'status', label: `Status: ${FEED_STATUS_LABELS[st as RadarFeedStatus]}` });
+    const src = this.sourceId();
+    if (src) {
+      const name = this.sources().find((x) => x.id === src)?.displayName ?? 'Unknown';
+      filters.push({ key: 'source', label: `Source: ${name}` });
+    }
     const p = this.providerTag();
     if (p) filters.push({ key: 'provider', label: `Provider: ${this.providerLabel(p)}` });
     const c = this.contentType();
     if (c) filters.push({ key: 'type', label: `Type: ${this.contentTypeLabel(c)}` });
     const m = this.minScore();
     if (m) filters.push({ key: 'score', label: `Score ${m}+` });
-    const st = this.status();
-    if (st) filters.push({ key: 'status', label: `Status: ${FEED_STATUS_LABELS[st as RadarFeedStatus]}` });
     if (this.includePromo()) filters.push({ key: 'promo', label: 'Promo shown' });
     return filters;
   });
+
+  /** How many of the "Filters" panel's filters are set, for its button. */
+  protected readonly moreCount = computed(
+    () =>
+      [this.providerTag(), this.contentType(), this.minScore()].filter(Boolean).length + (this.includePromo() ? 1 : 0)
+  );
+
+  protected readonly sourceOptions = computed<FilterOption[]>(() =>
+    this.sources().map((x) => ({ value: x.id, label: x.displayName }))
+  );
+
+  /** Split view with a post open: compact list plus the post. Otherwise the table. */
+  protected readonly paneOpen = computed(() => this.view() === 'split' && !!this.selectedId());
 
   /** Every queue bucket with its count from the stats call; counts are queue-wide, not narrowed by the other filters. */
   protected readonly statusOptions = computed<FilterOption[]>(() => {
@@ -119,6 +167,11 @@ export default class RadarItemList implements OnInit {
       label: s ? `${label} (${s[value]})` : label,
     }));
   });
+
+  /** The Split view's sort select value, read from the sort key and direction. */
+  protected readonly splitSort = computed(
+    () => SPLIT_SORT_OPTIONS.find((o) => o.sortBy === this.sortBy() && o.sortDir === this.sortDir())?.value ?? ''
+  );
 
   /** Rides along to Detail so its prev/next and Back follow this exact view. */
   protected readonly feedQuery = computed(() => toFeedQuery(this.feedState()));
@@ -130,10 +183,12 @@ export default class RadarItemList implements OnInit {
     minScore: this.minScore(),
     includePromo: this.includePromo(),
     status: this.status(),
+    sourceId: this.sourceId(),
     sortBy: this.sortBy(),
     sortDir: this.sortDir(),
     pageIndex: this.pageIndex(),
     pageSize: this.pageSize(),
+    triage: this.triage(),
   }));
 
   // ── Plain state ───────────────────────────────────────────────────
@@ -141,36 +196,34 @@ export default class RadarItemList implements OnInit {
   protected readonly maxClaimAttempts = MAX_CLAIM_ATTEMPTS;
   private itemsSub?: Subscription;
   protected readonly providerOptions = PROVIDER_OPTIONS;
-  protected readonly providerLabels = PROVIDER_LABELS;
-  protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   protected readonly contentTypeOptions = CONTENT_TYPE_OPTIONS;
   protected readonly minScoreOptions = MIN_SCORE_OPTIONS;
-  protected readonly displayedColumns = [
-    'score',
-    'summary',
-    'type',
-    'providers',
-    'status',
-    'comments',
-    'source',
-    'publishedAt',
-  ];
+  protected readonly triageTabs = TRIAGE_TABS;
+  protected readonly viewOptions = FEED_VIEW_OPTIONS;
+  protected readonly splitSortOptions = SPLIT_SORT_OPTIONS;
+  protected readonly displayedColumns = ['score', 'summary', 'progress', 'status', 'source', 'publishedAt'];
 
   ngOnInit(): void {
-    const state = parseFeedQuery(this.route.snapshot.queryParams);
+    const params = this.route.snapshot.queryParams;
+    const state = parseFeedQuery(params);
     this.search.set(state.search);
     this.providerTag.set(state.providerTag);
     this.contentType.set(state.contentType);
     this.minScore.set(state.minScore);
     this.includePromo.set(state.includePromo);
     this.status.set(state.status);
+    this.sourceId.set(state.sourceId);
     this.sortBy.set(state.sortBy);
     this.sortDir.set(state.sortDir);
     this.pageIndex.set(state.pageIndex);
     this.pageSize.set(state.pageSize);
+    this.triage.set(state.triage);
+    this.view.set(this.initialView(params['view']));
+    this.selectedId.set(parseItemParam(params['item']));
     this.loadItems();
     this.loadStats();
     this.loadActiveRuns();
+    this.loadSources();
   }
 
   // ── Filters ───────────────────────────────────────────────────────
@@ -199,6 +252,11 @@ export default class RadarItemList implements OnInit {
     this.resetAndLoad();
   }
 
+  onSourceChange(value: string): void {
+    this.sourceId.set(value);
+    this.resetAndLoad();
+  }
+
   onPromoChange(checked: boolean): void {
     this.includePromo.set(checked);
     this.resetAndLoad();
@@ -221,6 +279,9 @@ export default class RadarItemList implements OnInit {
       case 'status':
         this.status.set('');
         break;
+      case 'source':
+        this.sourceId.set('');
+        break;
       case 'promo':
         this.includePromo.set(false);
         break;
@@ -230,11 +291,17 @@ export default class RadarItemList implements OnInit {
 
   onClearFilters(): void {
     this.search.set('');
+    this.status.set('');
+    this.sourceId.set('');
+    this.onClearMoreFilters();
+  }
+
+  /** Clears the "Filters" panel's group only; search, status and source stay. */
+  onClearMoreFilters(): void {
     this.providerTag.set('');
     this.contentType.set('');
     this.minScore.set('');
     this.includePromo.set(false);
-    this.status.set('');
     this.resetAndLoad();
   }
 
@@ -245,8 +312,77 @@ export default class RadarItemList implements OnInit {
     this.resetAndLoad();
   }
 
+  // ── Triage ────────────────────────────────────────────────────────
+  onTriageTab(status: RadarTriageStatus): void {
+    if (status === this.triage()) return;
+    this.triage.set(status);
+    this.selectedId.set(null);
+    this.resetAndLoad();
+  }
+
+  onViewChange(view: string): void {
+    const next: RadarFeedView = view === 'split' ? 'split' : 'table';
+    this.view.set(next);
+    this.selectedId.set(null);
+    try {
+      localStorage.setItem(FEED_VIEW_STORAGE_KEY, next);
+    } catch {
+      // Storage blocked (private window): the choice still holds for this visit through the URL.
+    }
+    this.syncQueryParams();
+  }
+
+  onSplitSort(value: string): void {
+    const option = SPLIT_SORT_OPTIONS.find((o) => o.value === value) ?? SPLIT_SORT_OPTIONS[0];
+    this.sortBy.set(option.sortBy);
+    this.sortDir.set(option.sortDir);
+    this.resetAndLoad();
+  }
+
+  onSelect(id: string): void {
+    this.selectedId.set(id);
+    this.syncQueryParams();
+  }
+
+  /** X or Escape: the pane closes and the Split view shows the full table again. */
+  onClosePane(): void {
+    this.selectedId.set(null);
+    this.syncQueryParams();
+  }
+
+  /**
+   * Moves one post to a status. The post keeps its place in the list and stays open, so the
+   * decision button turns into its own undo (pressing it again sends the post back to Inbox).
+   * It leaves the tab on the next load: a tab, filter or page change.
+   */
+  onDecide({ id, status }: RadarTriageDecision): void {
+    const item = this.items().find((it) => it.id === id);
+    if (!item || this.deciding()) return;
+    this.deciding.set(true);
+    this.radarService.triageItems([id], status).subscribe({
+      next: () => {
+        this.items.update((items) => items.map((it) => (it.id === id ? { ...it, triageStatus: status } : it)));
+        this.triageCounts.update((c) =>
+          c ? { ...c, [item.triageStatus]: c[item.triageStatus] - 1, [status]: c[status] + 1 } : c
+        );
+        this.deciding.set(false);
+      },
+      error: () => this.deciding.set(false),
+    });
+  }
+
+  /** The summary is a link for keyboard and middle-click; a plain click in Split opens the pane instead. */
+  onSummaryClick(e: MouseEvent, item: RadarFeedItem): void {
+    e.stopPropagation();
+    if (this.view() !== 'split' || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    this.onSelect(item.id);
+  }
+
+  /** Table view opens the Detail page; Split view opens the post in the pane beside the list. */
   onOpenItem(item: RadarFeedItem): void {
-    this.router.navigate(['/radar/items', item.id], { queryParams: this.feedQuery() });
+    if (this.view() === 'split') this.onSelect(item.id);
+    else this.router.navigate(['/radar/items', item.id], { queryParams: this.feedQuery() });
   }
 
   onRetry(): void {
@@ -257,7 +393,7 @@ export default class RadarItemList implements OnInit {
   onPage({ pageIndex, pageSize }: PaginatorChange): void {
     this.pageIndex.set(pageIndex);
     this.pageSize.set(pageSize);
-    this.loadItems();
+    this.loadItems({ openFirst: this.paneOpen() });
   }
 
   // ── Label helpers (filter chips) ──────────────────────────────────
@@ -301,7 +437,8 @@ export default class RadarItemList implements OnInit {
     this.loadItems();
   }
 
-  private loadItems(): void {
+  /** `openFirst` keeps the pane open on a new page by opening its first post. */
+  private loadItems({ openFirst = false } = {}): void {
     this.syncQueryParams();
     this.loading.set(true);
     this.loadError.set(false);
@@ -311,10 +448,16 @@ export default class RadarItemList implements OnInit {
       next: (res) => {
         this.items.set(res.data);
         this.total.set(res.total);
+        this.triageCounts.set(res.triageCounts);
+        // The URL's post may sit on another page or tab: the pane closes rather than open another post.
+        if (openFirst) this.selectedId.set(res.data[0]?.id ?? null);
+        else if (!res.data.some((it) => it.id === this.selectedId())) this.selectedId.set(null);
         this.loading.set(false);
+        this.syncQueryParams();
       },
       error: () => {
         this.items.set([]);
+        this.selectedId.set(null);
         this.loadError.set(true);
         this.loading.set(false);
       },
@@ -325,6 +468,11 @@ export default class RadarItemList implements OnInit {
     this.radarService.getQueueStats().subscribe((stats) => this.stats.set(stats));
   }
 
+  /** Options for the Source filter; a failed read leaves the select empty, the API toasts. */
+  private loadSources(): void {
+    this.radarService.listSources().subscribe((sources) => this.sources.set(sources));
+  }
+
   /** Header badge only: a failed read hides it rather than raising a toast. */
   private loadActiveRuns(): void {
     this.radarService.listRuns(true).subscribe({
@@ -333,7 +481,24 @@ export default class RadarItemList implements OnInit {
     });
   }
 
+  /** `?view=` wins, then the last view used in this browser, then the table. */
+  private initialView(param: unknown): RadarFeedView {
+    if (param === 'split' || param === 'table') return param;
+    try {
+      return localStorage.getItem(FEED_VIEW_STORAGE_KEY) === 'split' ? 'split' : 'table';
+    } catch {
+      return 'table';
+    }
+  }
+
+  /** The Feed state, plus the view and, in Split, the open post. */
   private syncQueryParams(): void {
-    this.router.navigate([], { queryParams: this.feedQuery(), replaceUrl: true });
+    const queryParams: Record<string, string> = { ...this.feedQuery() };
+    if (this.view() === 'split') {
+      queryParams['view'] = 'split';
+      const id = this.selectedId();
+      if (id) queryParams['item'] = id;
+    }
+    this.router.navigate([], { queryParams, replaceUrl: true });
   }
 }

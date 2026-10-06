@@ -14,11 +14,12 @@ const valid = {
   isPromo: false,
   isRelevant: true,
   factCheck: '   ',
+  overview: 'A new Claude feature, part of the push toward agentic coding tools.',
   context: "Claude is Anthropic's model family.",
   scoreReason: 'A real release the Owner will use.',
   applyNote: 'Try it in the next session.',
   producer: { adapter: 'external-worker', model: 'claude' },
-  schemaVersion: 2,
+  schemaVersion: 3,
 };
 
 describe('SubmitResultsHandler', () => {
@@ -59,14 +60,16 @@ describe('SubmitResultsHandler', () => {
     expect(saved.factCheck).toBeNull();
   });
 
-  it('should require context, score reason and apply note, and reject the v1 shape', async () => {
+  it('should require overview, context, score reason and apply note, and reject older shapes', async () => {
     const { context: _c, ...noContext } = valid;
+    const { overview: _o, ...noOverview } = valid;
     const result = await handler.execute(
       new SubmitResultsCommand({
         results: [
           { itemId: ITEM_A, enrichment: noContext },
           { itemId: ITEM_B, enrichment: { ...valid, applyNote: null, scoreReason: ' ' } },
-          { itemId: ITEM_A, enrichment: { ...valid, schemaVersion: 1 } },
+          { itemId: ITEM_A, enrichment: noOverview },
+          { itemId: ITEM_B, enrichment: { ...valid, schemaVersion: 2 } },
         ],
       })
     );
@@ -75,8 +78,33 @@ describe('SubmitResultsHandler', () => {
     expect(result.rejected.map((r) => r.reason)).toEqual([
       expect.stringContaining('context'),
       expect.stringMatching(/applyNote[\s\S]*scoreReason|scoreReason[\s\S]*applyNote/),
+      expect.stringContaining('overview'),
       expect.stringContaining('schemaVersion'),
     ]);
+  });
+
+  it('should reject a fact check without a severity', async () => {
+    const result = await handler.execute(
+      new SubmitResultsCommand({
+        results: [{ itemId: ITEM_A, enrichment: { ...valid, factCheck: 'The benchmark is from 2024.' } }],
+      })
+    );
+
+    expect(result).toEqual({
+      stored: 0,
+      rejected: [{ itemId: ITEM_A, reason: expect.stringContaining('factCheckSeverity') }],
+    });
+  });
+
+  it('should drop the severity when there is no fact check', async () => {
+    await handler.execute(
+      new SubmitResultsCommand({
+        results: [{ itemId: ITEM_A, enrichment: { ...valid, factCheckSeverity: 'major' } }],
+      })
+    );
+
+    const saved = repo.saveEnrichment.mock.calls[0][1] as RadarEnrichmentInput;
+    expect(saved.factCheckSeverity).toBeNull();
   });
 
   it('should reject a result for an item that no longer exists', async () => {

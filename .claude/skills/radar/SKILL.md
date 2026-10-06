@@ -60,7 +60,7 @@ Repeat until a claim returns zero items or `--limit` is reached:
    in `imageNotes` instead of guessing. The last line counts saved and skipped images, use it
    for the final report.
 3. **Research:** for each item, look up the tools, models and claims it names, following
-   the Research section of `references/enrichment-guide.md`. This feeds `context`,
+   the Research section of `references/enrichment-guide.md`. This feeds `overview`, `context`,
    `scoreReason` and `factCheck`.
 4. **Links:** open each link in `links` (and in the shared post) with WebFetch to write
    `linkSummaries`. Skip facebook.com / fb.watch links: they need a login and Radar never

@@ -1,0 +1,169 @@
+<div class="triage">
+  <div class="triage-side">
+    <ul #list class="triage-list" role="listbox" aria-label="Posts">
+      @for (row of rows(); track row.id) {
+        <li
+          class="triage-row"
+          role="option"
+          [attr.data-id]="row.id"
+          [class.triage-row--active]="row.id === selectedId()"
+          [class.triage-row--decided]="row.decided"
+          [attr.aria-selected]="row.id === selectedId()"
+          (click)="select.emit(row.id)"
+        >
+          @if (row.score !== null) {
+            <span
+              class="radar-score"
+              [class]="row.score | radarScoreTone"
+              [attr.aria-label]="'Signal score ' + row.score"
+            >
+              {{ row.score }}
+            </span>
+          } @else {
+            <span class="radar-score radar-score--pending" aria-label="Not analyzed yet">
+              <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+            </span>
+          }
+          <div class="triage-row__body">
+            <p class="triage-row__summary" [class.triage-row__summary--raw]="row.raw">{{ row.summary }}</p>
+            <div class="triage-row__meta">
+              @let mono = row.source.displayName | radarSourceMonogram;
+              <span
+                class="radar-monogram radar-monogram--sm"
+                [class]="'radar-monogram--t' + mono.tone"
+                [class.radar-monogram--paused]="!row.source.isActive"
+                [matTooltip]="row.source.displayName"
+                [attr.aria-label]="row.source.displayName"
+              >
+                {{ mono.initials }}
+              </span>
+              <console-relative-time [value]="row.publishedAt" />
+              @if (row.decided; as mark) {
+                <mat-icon class="icon-sm triage-row__mark" [matTooltip]="mark.label" [attr.aria-label]="mark.label">
+                  {{ mark.icon }}
+                </mat-icon>
+              }
+              <console-radar-item-progress class="triage-row__progress" [item]="row.item" />
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+    <!-- The host's pager, kept under the list so the post can reach the bottom of the page. -->
+    <ng-content select="[triageListFooter]" />
+  </div>
+
+  <div #pane class="triage-pane">
+    @if (selected(); as it) {
+      <!-- Sticky decision bar: identity on the left, walk and decisions on the right -->
+      <div class="triage-pane__head">
+        <div class="triage-pane__titles">
+          <span class="triage-pane__author">{{ it.authorName }}</span>
+          <span class="triage-pane__meta">
+            {{ it.publishedAt | date: 'mediumDate' }} · {{ it.source.displayName }}
+            @if (position(); as pos) {
+              · {{ pos }} of {{ total() }}
+            }
+          </span>
+        </div>
+        <button mat-icon-button type="button" matTooltip="Previous (K)" aria-label="Previous post" (click)="onMove(-1)">
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <button mat-icon-button type="button" matTooltip="Next (J)" aria-label="Next post" (click)="onMove(1)">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <a
+          mat-icon-button
+          [routerLink]="['/radar/items', it.id]"
+          [queryParams]="feedQuery()"
+          matTooltip="Open full page"
+          aria-label="Open full page"
+        >
+          <mat-icon>open_in_full</mat-icon>
+        </a>
+        <a
+          mat-icon-button
+          [href]="it.permalink"
+          target="_blank"
+          rel="noopener noreferrer"
+          matTooltip="Original post on Facebook"
+          aria-label="Original post on Facebook"
+        >
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+        <!-- Each decision button turns into its own undo once the post carries that status. -->
+        @let saved = it.triageStatus === 'SAVED';
+        @let done = it.triageStatus === 'DONE';
+        <button
+          mat-stroked-button
+          type="button"
+          class="triage-pane__decide"
+          [disabled]="busy()"
+          [matTooltip]="saved ? 'Saved to To try. Press again to undo' : ''"
+          (click)="onSave()"
+        >
+          <mat-icon>{{ saved ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+          {{ saved ? 'Unsave' : 'To try' }}
+          <kbd>S</kbd>
+        </button>
+        @if (done) {
+          <button
+            mat-stroked-button
+            type="button"
+            class="triage-pane__decide"
+            [disabled]="busy()"
+            matTooltip="Marked done. Press again to undo"
+            (click)="onDone()"
+          >
+            <mat-icon>undo</mat-icon>
+            Unmark done
+            <kbd>E</kbd>
+          </button>
+        } @else {
+          <button mat-flat-button type="button" class="triage-pane__decide" [disabled]="busy()" (click)="onDone()">
+            <mat-icon>check</mat-icon>
+            Done
+            <kbd>E</kbd>
+          </button>
+        }
+        <button
+          mat-icon-button
+          type="button"
+          class="triage-pane__close"
+          matTooltip="Close (Esc)"
+          aria-label="Close the post and go back to the table"
+          (click)="close.emit()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="triage-pane__body rv-pane rv-pane--fill" [class.triage-pane__body--stale]="detailLoading()">
+        @if (record(); as rec) {
+          <console-radar-item-record [item]="rec" (refresh)="onRefresh($event)" />
+        } @else if (detailError(); as err) {
+          <div class="radar-state" role="alert">
+            <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">
+              {{ err === 'not-found' ? 'search_off' : 'error_outline' }}
+            </mat-icon>
+            <p class="radar-state__title">
+              {{ err === 'not-found' ? 'This radar item no longer exists' : 'Could not load this post' }}
+            </p>
+            @if (err === 'failed') {
+              <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
+            }
+          </div>
+        } @else {
+          <p class="triage-pane__loading" role="status">Loading the post...</p>
+        }
+      </div>
+    } @else {
+      <div class="radar-state">
+        <mat-icon class="radar-state__icon icon-2xl">task_alt</mat-icon>
+        <p class="radar-state__title">Nothing left to decide here</p>
+        <p class="radar-state__body">Switch tabs or loosen a filter.</p>
+        <button mat-stroked-button type="button" (click)="close.emit()">Back to the table</button>
+      </div>
+    }
+  </div>
+</div>

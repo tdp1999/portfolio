@@ -24,3 +24,11 @@ export interface RadarItemProps {
   commentsFetchedCount: number;
   commentsError: string | null;
 }
+
+/** What decides an item's place in the worker's queue (`RadarLeasePolicy.queueState`). */
+export interface RadarQueueFacts {
+  workStatus: RadarWorkStatus;
+  claimCount: number;
+  leaseExpiresAt: Date | null;
+  sourceActive: boolean;
+}

@@ -41,6 +41,17 @@ describe('QuickLook', () => {
     expect(component.open()).toBe(false);
   });
 
+  it('keeps Space for scrolling in document mode', () => {
+    create({ open: true });
+    fixture.componentRef.setInput('mode', 'document');
+    fixture.detectChanges();
+
+    const event = press(' ');
+
+    expect(component.open()).toBe(true);
+    expect(event.defaultPrevented).toBe(false);
+  });
+
   it('emits prev/next only when enabled', () => {
     create({ open: true, hasPrev: false, hasNext: true });
     const prev = jest.fn();

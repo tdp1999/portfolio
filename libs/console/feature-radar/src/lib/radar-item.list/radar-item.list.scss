@@ -1,11 +1,22 @@
 @use '../radar-state';
+@use '../radar-score';
+@use '../radar-monogram';
 
-/* Fill host for `.crud-page--fill`: see _crud.scss. */
+/* App-shell page: the host takes the scroll area's full height (and its 2rem bottom padding), so
+   the table, the Split list, the post and its rail each scroll on their own while the header,
+   filters and tabs stay put. Below 640px of height the page scrolls as a whole instead. */
 :host {
   display: flex;
   flex-direction: column;
-  min-height: calc(100% + 2rem);
+  height: calc(100% + 2rem);
+  min-height: 640px;
   margin-bottom: -2rem;
+}
+
+.radar-page {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 16px;
 }
 
 .radar-title {
@@ -15,8 +26,8 @@
   gap: 12px;
 }
 
-/* Five filters plus "Show promo" hold one row from laptop width (1440 with the full sidebar):
-   Material's 180px infix default would push Status onto a second row. Radar-only on purpose. */
+/* Search, Status, Source and the Filters button hold one row; Material's 180px infix default
+   would wrap them early. Radar-only on purpose. */
 console-filter-bar ::ng-deep {
   console-filter-search {
     min-width: 240px;
@@ -27,9 +38,8 @@ console-filter-bar ::ng-deep {
     min-width: 0;
   }
 
-  // "7+ worth reading" is the longest label.
   console-filter-select.radar-filter--wide .mat-mdc-form-field {
-    width: 176px;
+    width: 200px;
   }
 
   console-filter-select .mat-mdc-form-field-infix {
@@ -57,19 +67,28 @@ console-filter-bar ::ng-deep {
   }
 }
 
-/* Every cell centres on the row's middle line: the summary may wrap to two lines while the tag
-   and badge cells hold one, so top-aligned cells would read as a ragged row. */
+/* ═══ Table ══════════════════════════════════════════════════════════ */
+.radar-table-container {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 240px;
+  overflow: auto;
+}
+
+/* One-line rows: every cell centres on the row's middle line. */
 .radar-table {
   table-layout: fixed;
 
   .mat-mdc-cell,
   .mat-mdc-header-cell {
     vertical-align: middle;
-    padding-block: 12px;
+    padding-block: 8px;
   }
 
+  /* The header stays while the rows scroll under it. */
   .mat-mdc-header-cell {
     padding-block: 0;
+    background: var(--color-surface);
   }
 }
 
@@ -86,44 +105,16 @@ console-filter-bar ::ng-deep {
   width: 80px;
 }
 
-.col-type {
-  width: 112px;
-}
-
-.col-providers {
-  width: 176px;
+.col-progress {
+  width: 152px;
 }
 
 .col-status {
   width: 168px;
 }
 
-.col-comments {
-  width: 120px;
-}
-
-/* Plain muted text until fetched, then a console badge (classes come from radarCommentsChip). */
-.radar-comments {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-
-  &--idle {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-  }
-
-  &__hint {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--color-primary);
-  }
-}
-
 .col-source {
-  width: 176px;
+  width: 88px;
 }
 
 .col-published {
@@ -132,45 +123,16 @@ console-filter-bar ::ng-deep {
   color: var(--color-text-secondary);
 }
 
-.radar-score {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  line-height: var(--leading-none);
-  background: var(--color-surface-alt);
-  color: var(--color-text-muted);
-  vertical-align: middle;
-
-  &--high {
-    background: color-mix(in srgb, var(--color-success, #16a34a) 15%, transparent);
-    color: var(--color-success, #16a34a);
-  }
-
-  &--mid {
-    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-    color: var(--color-primary);
-  }
-
-  &--pending {
-    background: transparent;
-    border: 1px dashed var(--color-border);
-  }
-}
-
+/* One line; the full text is in the link's title and on the post. */
 .radar-summary {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: block;
   overflow: hidden;
   color: var(--color-text);
   font-weight: 500;
   line-height: var(--leading-normal);
   text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
     color: var(--color-primary);
@@ -195,29 +157,116 @@ console-filter-bar ::ng-deep {
   gap: 4px;
 }
 
-.radar-tag {
+/* ═══ Triage tabs + view switch ══════════════════════════════════════ */
+.radar-triage-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &__spacer {
+    margin-left: auto;
+  }
+
+  &__sort {
+    margin-bottom: 4px;
+  }
+
+  console-segmented-control {
+    margin-bottom: 4px;
+  }
+}
+
+.radar-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.radar-tab {
   display: inline-flex;
   align-items: center;
-  height: 24px;
-  padding: 0 8px;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: var(--text-xs);
-  line-height: var(--leading-none);
-  white-space: nowrap;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    border-radius: 4px;
+  }
+
+  &--active {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-text);
+  }
+
+  &__count {
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--color-surface-alt);
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+  }
 }
 
-.radar-tag--type {
-  background: var(--color-surface-alt);
+/* ═══ Split ══════════════════════════════════════════════════════════ */
+.radar-split {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 360px;
+
+  console-radar-item-triage {
+    flex: 1;
+  }
 }
 
-.radar-source {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* The compact pager under the Split list. */
+.radar-pager {
+  border-top: 1px solid var(--color-border);
 }
 
-.radar-source--paused {
-  color: var(--color-text-muted);
+/* ═══ Post open: the chrome shrinks so the post gets the height ═════
+   No subtitle, and the tabs, Sort and View share the filter row. */
+.radar-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+
+  console-filter-bar {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.radar-page--pane {
+  .crud-header__subtitle {
+    display: none;
+  }
+
+  .radar-triage-bar {
+    flex: 0 1 auto;
+    gap: 12px;
+    border-bottom: 0;
+  }
+
+  /* Narrower Source and Sort so the filters and the tabs hold one row from 1440. */
+  console-filter-bar ::ng-deep console-filter-select.radar-filter--wide .mat-mdc-form-field,
+  .radar-triage-bar__sort ::ng-deep .mat-mdc-form-field {
+    width: 148px;
+  }
 }

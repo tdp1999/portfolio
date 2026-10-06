@@ -27,7 +27,7 @@ to `.crud-table-container`) and adds direct page access without a "Go to page" b
 ## Behavior contract
 
 - **Inputs:** `length`, `pageIndex` (0-based), `pageSize` (all required), `pageSizeOptions`
-  (default `20, 50, 100, 200`), `disabled`. **Output:** `page: { pageIndex, pageSize }`, emitted
+  (default `20, 50, 100, 200`), `disabled`, `compact` (boolean attribute). **Output:** `page: { pageIndex, pageSize }`, emitted
   only on a real change.
 - **Strip:** always 9 slots once there are more than 9 pages, so buttons never shift under the
   pointer: first page, last page, the current page with 2 siblings each side, and an ellipsis for
@@ -40,6 +40,10 @@ to `.crud-table-container`) and adds direct page access without a "Go to page" b
   starts at row one. Lists do not do this themselves.
 - **Narrow:** below a 640px container width the strip collapses to `10 / 18` between the arrows
   (container query, so it follows the card, not the viewport).
+- **Compact:** `compact` drops the rows-per-page select and the first/last arrows and tightens the
+  row to 40px, for a pager
+  under a narrow list column (the Radar Feed's Split list). The page size is then changed from
+  the list's full view.
 - **A11y:** `nav[aria-label="Pagination"]`, current page has `aria-current="page"`, the range is
   `aria-live="polite"`, each arrow has an `aria-label` and tooltip.
 

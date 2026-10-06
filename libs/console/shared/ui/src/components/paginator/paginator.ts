@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, output } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,7 +19,7 @@ import { keepFirstRow, pageSlots } from './paginator.util';
  * Page-size picker, row range and a numbered page strip (first, last, two siblings each side of
  * the current page, an ellipsis per hidden run that jumps five pages). Stateless: the list owns
  * `pageIndex` and `pageSize` and reloads on `page`. Narrow containers drop the strip for
- * "10 / 18" between the arrows. Every change scrolls the console content back to the top, so a
+ * "10 / 18" between the arrows; `compact` also drops the page-size select. Every change scrolls the console content back to the top, so a
  * new page always starts at its first row.
  */
 @Component({
@@ -30,6 +39,8 @@ export class Paginator {
   readonly pageSize = input.required<number>();
   readonly pageSizeOptions = input<readonly number[]>([20, 50, 100, 200]);
   readonly disabled = input(false);
+  /** For a narrow column (a split view's list): range and arrows only, no page-size select. */
+  readonly compact = input(false, { transform: booleanAttribute });
 
   readonly page = output<PaginatorChange>();
 

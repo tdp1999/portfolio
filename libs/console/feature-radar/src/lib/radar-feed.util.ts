@@ -7,7 +7,18 @@ import {
   PROVIDER_LABELS,
 } from './radar.data';
 import { FEED_PAGE_SIZE, FEED_PAGE_SIZES } from './radar.constants';
-import type { RadarFeedItem, RadarFeedParams, RadarFeedSortKey, RadarFeedState } from './radar.types';
+import type {
+  RadarFeedItem,
+  RadarFeedParams,
+  RadarFeedSortKey,
+  RadarFeedState,
+  RadarTriageStatus,
+} from './radar.types';
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** The triage tab as the URL spells it; Inbox is the default and stays out of the URL. */
+const TRIAGE_PARAMS: Record<string, RadarTriageStatus> = { saved: 'SAVED', done: 'DONE' };
 
 export const DEFAULT_FEED_STATE: RadarFeedState = {
   search: '',
@@ -16,10 +27,12 @@ export const DEFAULT_FEED_STATE: RadarFeedState = {
   minScore: '',
   includePromo: false,
   status: '',
+  sourceId: '',
   sortBy: 'publishedAt',
   sortDir: 'desc',
   pageIndex: 0,
   pageSize: FEED_PAGE_SIZE,
+  triage: 'INBOX',
 };
 
 /** A stale or hand-edited filter value would make the API answer 400 on every retry; drop it. */
@@ -40,11 +53,19 @@ export function parseFeedQuery(params: Params): RadarFeedState {
     ),
     includePromo: params['promo'] === '1',
     status: known(params['status'], Object.keys(FEED_STATUS_LABELS)),
+    // Sources are data, not a fixed list: only the shape is checked here.
+    sourceId: typeof params['source'] === 'string' && UUID.test(params['source']) ? params['source'] : '',
     sortBy: FEED_SORT_KEYS.includes(params['sort']) ? (params['sort'] as RadarFeedSortKey) : 'publishedAt',
     sortDir: params['dir'] === 'asc' ? 'asc' : 'desc',
     pageIndex: Number.isInteger(page) && page > 1 ? page - 1 : 0,
     pageSize: (FEED_PAGE_SIZES as readonly number[]).includes(size) ? size : FEED_PAGE_SIZE,
+    triage: Object.hasOwn(TRIAGE_PARAMS, params['triage']) ? TRIAGE_PARAMS[params['triage']] : 'INBOX',
   };
+}
+
+/** The Split pane's open post (`?item=`): only an id-shaped value, so a hand-edited URL never reaches the API. */
+export function parseItemParam(value: unknown): string | null {
+  return typeof value === 'string' && UUID.test(value) ? value : null;
 }
 
 /** The inverse of `parseFeedQuery`: defaults are left out so a plain Feed has a clean URL. */
@@ -56,10 +77,12 @@ export function toFeedQuery(state: RadarFeedState): Record<string, string> {
   if (state.minScore) params['score'] = state.minScore;
   if (state.includePromo) params['promo'] = '1';
   if (state.status) params['status'] = state.status;
+  if (state.sourceId) params['source'] = state.sourceId;
   if (state.sortBy !== 'publishedAt') params['sort'] = state.sortBy;
   if (state.sortDir === 'asc') params['dir'] = 'asc';
   if (state.pageIndex > 0) params['page'] = String(state.pageIndex + 1);
   if (state.pageSize !== FEED_PAGE_SIZE) params['size'] = String(state.pageSize);
+  if (state.triage !== 'INBOX') params['triage'] = state.triage.toLowerCase();
   return params;
 }
 
@@ -73,8 +96,10 @@ export function toFeedRequest(state: RadarFeedState): RadarFeedParams {
     minScore: state.minScore ? Number(state.minScore) : undefined,
     includePromo: state.includePromo,
     status: state.status || undefined,
+    sourceId: state.sourceId || undefined,
     sortBy: state.sortBy,
     sortDir: state.sortDir,
+    triageStatus: state.triage,
   };
 }
 

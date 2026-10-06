@@ -5,6 +5,7 @@ import {
   RadarRunFlow,
   RadarStatus,
   RadarStep,
+  RadarTriageStatus,
   RadarWorkStatus,
 } from '@prisma/client';
 
@@ -20,10 +21,17 @@ import {
   RADAR_MAX_PROFILE_CHARS,
   RADAR_MAX_RUN_ITEM_CAP,
   RADAR_PROVIDER_TAGS,
+  RADAR_TRIAGE_MAX_IDS,
+  type RadarQueueState,
 } from '@portfolio/shared/types';
 
 import { RadarEngagement, RadarLink, RadarMediaStorageStatus, RadarNormalizeFailure } from '../domain/radar.types';
-import { RadarEnrichmentDetail, RadarEnrichmentSummary, RadarQueueStats } from './ports/radar-item.repository.port';
+import {
+  RadarEnrichmentDetail,
+  RadarEnrichmentSummary,
+  RadarQueueStats,
+  RadarTriageCounts,
+} from './ports/radar-item.repository.port';
 
 /** A 6-month backfill of one prolific profile is ~1,100 posts; leave room without inviting abuse. */
 export const MAX_UPLOAD_POSTS = 5000;
@@ -206,6 +214,7 @@ export const ListRadarItemsSchema = z.object({
   includePromo: z.stringbool().default(false),
   sourceId: z.uuid().optional(),
   status: z.enum(RADAR_FEED_STATUSES).optional(),
+  triageStatus: z.enum(RadarTriageStatus).optional(),
   sortBy: z.enum(RADAR_FEED_SORT_KEYS).default('publishedAt'),
   sortDir: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -226,8 +235,21 @@ export interface RadarFeedItemDto {
   /** The first `FEED_PREVIEW_CHARS` characters of the post text. */
   preview: string;
   workStatus: RadarWorkStatus;
+  /** Where the item stands in the worker's queue, split out of `workStatus` and the lease. */
+  queueState: RadarQueueState;
+  triageStatus: RadarTriageStatus;
+  /** Photos and videos of the post itself (a shared post's are not counted), and how their copies stand. */
+  images: RadarImagesSummaryDto;
   enrichment: RadarEnrichmentSummary | null;
   comments: RadarItemCommentsSummaryDto;
+}
+
+export interface RadarImagesSummaryDto {
+  total: number;
+  /** Not copied to our storage yet; shown from the provider URL, which can expire. */
+  pending: number;
+  /** The copy failed; the provider URL is all there is. */
+  failed: number;
 }
 
 export interface RadarFeedPageDto {
@@ -235,6 +257,18 @@ export interface RadarFeedPageDto {
   total: number;
   page: number;
   limit: number;
+  /** Per triage status under the same filters, for the Inbox / To try / Done tabs. */
+  triageCounts: RadarTriageCounts;
+}
+
+export const TriageRadarItemsSchema = z.object({
+  ids: z.array(z.uuid()).min(1).max(RADAR_TRIAGE_MAX_IDS),
+  status: z.enum(RadarTriageStatus),
+});
+
+export interface TriageRadarItemsResponseDto {
+  /** Items that exist and were set; unknown ids are ignored. */
+  updated: number;
 }
 
 export interface RadarItemImageDto {
@@ -256,6 +290,8 @@ export interface RadarItemDetailDto {
   publishedAt: Date;
   text: string;
   workStatus: RadarWorkStatus;
+  queueState: RadarQueueState;
+  triageStatus: RadarTriageStatus;
   images: RadarItemImageDto[];
   links: RadarLink[];
   sharedPost: {
@@ -399,6 +435,7 @@ export interface RadarBriefWorkItemDto {
   signalScore: number;
   isPromo: boolean;
   isRelevant: boolean;
+  overview: string | null;
   context: string | null;
   scoreReason: string | null;
   factCheck: string | null;

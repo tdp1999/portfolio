@@ -14,6 +14,7 @@
           <span class="console-badge" [class]="b.workStatus | enumLabel: statusBadges">{{
             b.workStatus | enumLabel: statusLabels
           }}</span>
+          <console-help-button guide="radar-feature-guide" section="briefs" page label="Radar guide: briefs" />
         </div>
         <div class="detail-meta">
           <span>{{ b.source ? b.source.displayName : 'All sources' }}</span>

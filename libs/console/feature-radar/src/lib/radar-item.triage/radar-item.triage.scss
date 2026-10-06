@@ -1,0 +1,202 @@
+@use '../radar-state';
+@use '../radar-score';
+@use '../radar-monogram';
+
+/* Split view, compact density: list 320px, tighter paddings, font sizes unchanged (`--type-scale`
+   already runs at 0.8). The list, the post and its property rail each scroll on their own
+   (`.rv-pane--fill`); the rail drops under the post when the pane is narrower than 920px. */
+
+:host {
+  display: block;
+  min-height: 0;
+}
+
+.triage {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+/* ═══ List ═══════════════════════════════════════════════════════════ */
+.triage-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--color-border);
+}
+
+.triage-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.triage-row {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px 8px 14px;
+  border-bottom: 1px solid var(--color-border);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-alt);
+  }
+
+  &--active,
+  &--active:hover {
+    border-left-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  }
+
+  .radar-score {
+    flex-shrink: 0;
+  }
+
+  /* Decided here: still listed so the decision can be taken back, dimmed until the next load. */
+  &--decided &__summary {
+    color: var(--color-text-muted);
+  }
+
+  &__mark {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__summary {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: var(--leading-normal);
+
+    &--raw {
+      color: var(--color-text-secondary);
+      font-weight: 400;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  &__progress {
+    margin-left: auto;
+  }
+}
+
+/* ═══ Pane: decision bar + the record ═══════════════════════════════
+   Slides in from the right when a post opens from the table. */
+.triage-pane {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  animation: triage-pane-in 200ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  /* The empty state has no head: it takes the whole pane. */
+  > .radar-state {
+    grid-row: 1 / -1;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+
+    kbd {
+      margin-left: 4px;
+      padding: 0 4px;
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: var(--text-2xs);
+      opacity: 0.7;
+    }
+  }
+
+  &__titles {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__author {
+    overflow: hidden;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    overflow: hidden;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__decide {
+    margin-left: 4px;
+  }
+
+  &__close {
+    margin-left: 4px;
+  }
+
+  &__body {
+    min-height: 0;
+    padding: 12px 16px 0;
+    transition: opacity 120ms ease;
+
+    /* The previous post stays while the next one loads; dimmed so a stale read is obvious. */
+    &--stale {
+      opacity: 0.6;
+    }
+  }
+
+  &__loading {
+    margin: 0;
+    padding: 48px 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+}
+
+@keyframes triage-pane-in {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}

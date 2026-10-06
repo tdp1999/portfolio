@@ -1,4 +1,5 @@
-/* DDL: Radar triage study, layout A. Prototype only; the pieces that win move into feature-radar. */
+/* DDL: Radar triage study, layout A, at the shipped compact density. The real view is
+   feature-radar `radar-item.triage`; this page only simulates screen and sidebar widths. */
 
 :host {
   display: block;
@@ -15,6 +16,12 @@
   border: 1px dashed var(--color-border);
   border-radius: 8px;
 
+  &__shipped {
+    color: var(--color-primary);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
   &__budget {
     margin: 0;
     font-size: var(--text-sm);
@@ -24,9 +31,9 @@
 
 /* ═══ Frame = the console content box at the simulated width ════════ */
 .tr-frame {
-  --tr-gap: 16px;
-  --tr-pane-x: 24px;
-  --tr-row-y: 12px;
+  --tr-gap: 12px;
+  --tr-pane-x: 16px;
+  --tr-row-y: 8px;
 
   display: flex;
   flex-direction: column;
@@ -39,13 +46,6 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary);
   }
-}
-
-/* Compact trades whitespace, never font size: `--type-scale` already runs at 0.8. */
-.tr-frame--compact {
-  --tr-gap: 12px;
-  --tr-pane-x: 16px;
-  --tr-row-y: 8px;
 }
 
 .tr-header {
@@ -62,7 +62,7 @@
   }
 }
 
-/* ═══ Tabs + undo ════════════════════════════════════════════════════ */
+/* ═══ Tabs ═══════════════════════════════════════════════════════════ */
 .tr-head {
   display: flex;
   align-items: center;
@@ -74,13 +74,8 @@
     margin-bottom: 4px;
   }
 
-  &__status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  &__spacer {
     margin-left: auto;
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
   }
 }
 
@@ -173,6 +168,14 @@
     font-size: var(--text-xs);
     color: var(--color-text-muted);
   }
+}
+
+.tr-row--decided .tr-row__tldr {
+  color: var(--color-text-muted);
+}
+
+.tr-row__mark {
+  color: var(--color-text-secondary);
 }
 
 .tr-row--active {

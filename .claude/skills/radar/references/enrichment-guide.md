@@ -7,7 +7,7 @@ news before a new job.
 
 ## Language
 
-Write `tldr`, `context`, `scoreReason`, `imageNotes`, `linkSummaries[].summary`,
+Write `tldr`, `overview`, `context`, `scoreReason`, `imageNotes`, `linkSummaries[].summary`,
 `commentDigest`, `factCheck` and `applyNote` in the post's own language (RAD-002). Most sources post in Vietnamese, so most
 enrichments are in Vietnamese. Keep technical terms and product names verbatim in English
 (Claude Code, MCP, context window, fine-tune), never translate them into a calque. Do not use
@@ -28,11 +28,32 @@ em-dashes or en-dashes; use commas, colons or a new sentence.
 | `commentDigest` | From the claim's `comments.items`, see Comments below. Null when `comments.status` is `NOT_FETCHED` or `FAILED`, or when the comments add nothing to the post. |
 | `wantsComments` | True only when `comments.status` is `NOT_FETCHED` and the post depends on its comments: "link dưới còm", "chi tiết trong comment", a heated thread the post replies to. It shows a hint in the console; it never fetches anything. False otherwise. |
 | `factCheck` | Claims that look wrong, outdated, unverifiable or exaggerated, and what you checked. "Bài nói X miễn phí, trang pricing hiện ghi $20/tháng." Null when nothing needs flagging. |
-| `context` | Required, markdown, at most 4000 characters. The background the post assumes the reader knows, from your research (see below): for each tool, model or company the post names, what it is, who makes it, when it came out, price if relevant, and how it compares with the obvious alternatives. Two to five bullets. This is what lets the Owner understand a one-line post cold. |
-| `scoreReason` | Required, at most 1000 characters. One to three sentences on why this `signalScore`, `contentType` and `isRelevant`: what the post offers (a fact, a number, a workflow) and what it lacks. The Owner reads it to decide whether to disagree with the score. |
-| `applyNote` | Required, markdown, see below. For promos and off-topic posts it is one line saying why there is nothing to do. |
+| `factCheckSeverity` | Required when `factCheck` is set, null otherwise. `major` only when the post's **main** claim is false or misleading in a way that would mislead the Owner (a wrong price that is the point of the post, a "release" that did not happen, a benchmark the source contradicts). Everything else is `minor`: a side detail, an unverifiable aside, a slightly old number. The console warns on `major` only, so keep it rare. |
+| `overview` | Required, markdown, at most 6000 characters. **The main analysis**, the part the Owner reads to understand the topic, not just the post. See Overview below. |
+| `context` | Required, markdown, at most 4000 characters. **Key terms**: a short reference for each tool, model or company the post names: what it is, who makes it, one line each. Two to six bullets. It sits under the overview as a lookup, so keep the reasoning for `overview`. |
+| `scoreReason` | Required, at most 1000 characters. One or two sentences on why this `signalScore`, `contentType` and `isRelevant`. It is shown next to the score as metadata, so keep it short. |
+| `applyNote` | Required, markdown, see below. One to three bullets at most; it is a small last step of the analysis, not its body. For promos and off-topic posts it is one line saying why there is nothing to do. |
 | `producer` | `{ "adapter": "claude-code", "model": "<your exact model id from the system prompt>" }` |
-| `schemaVersion` | `2` |
+| `schemaVersion` | `3` |
+
+## Overview
+
+The Owner is catching up on a year of AI news and wants to understand the field, not only this
+post. The overview is a general, informative read written for that reader. It is not about the
+Owner's setup (that is `applyNote`) and not a glossary (that is `context`).
+
+Cover, in this order, as three to six short paragraphs or bullet groups:
+
+1. **What happened**, in plain words: the concrete claim or release, with the numbers that matter.
+2. **Why it matters**: what changes for people who build with AI, and how big the change is.
+3. **Where it fits**: the trend it belongs to, what came before, how it compares with the main
+   alternatives (name them), and whether it is new or a step in a known direction.
+4. **Limits and open questions**: who it is not for, what is unproven, what the post leaves out.
+5. **What to watch next**: the follow-up that would confirm or change the picture.
+
+Be informative and neutral: state facts from your research, separate them from the post's
+opinion, and say "chưa rõ" when something is unknown instead of guessing. Skip a point that has
+nothing to say rather than padding it. For off-topic posts, one short paragraph is enough.
 
 ## Comments
 
@@ -53,14 +74,14 @@ the list is not the whole thread.
 ## Research
 
 Posts are often one or two lines that assume the reader follows the news. Before writing,
-look up what the post names, so `context` and `factCheck` rest on sources, not memory:
+look up what the post names, so `overview`, `context` and `factCheck` rest on sources, not memory:
 
 - Run WebSearch (and WebFetch on the best result) for each product, model or company the post
   names that you cannot describe with certainty, and for every price, benchmark or date it
   claims. Products released after your knowledge cutoff always need a search.
-- One or two searches per post is usually enough; skip research only for off-topic posts.
+- Two or three searches per post is usually enough, one of them on the main alternatives or the trend, for the "Where it fits" part of `overview`. Skip research only for off-topic posts.
 - Never open facebook.com or fb.watch (RAD-003).
-- Put what you learned in `context`, and any mismatch with the post's claim in `factCheck`
+- Put the picture you formed in `overview`, the one-line definitions in `context`, and any mismatch with the post's claim in `factCheck`
   ("Bài nói 2 video 15s tốn $16.2; bảng giá Seedance hiện là $x/giây, tức khoảng $y, khớp.").
 
 ## Example
@@ -71,7 +92,9 @@ là bay $16.2! ... công nhận AI Voice giờ đỉnh thiệt!"
 ```json
 {
   "tldr": "Tác giả thử ghép Seedance 2.5 (video) với ElevenLabs v4 (giọng nói): 2 video 15 giây tốn $16.2, chất lượng giọng AI rất tốt.",
-  "context": "- **Seedance 2.5**: model text-to-video của ByteDance, ...\n- **ElevenLabs v4**: model text-to-speech, ...\n- So với Veo và Sora: ...",
+  "overview": "Tác giả ghép hai model thương mại để làm video có giọng nói và báo chi phí thật: $16.2 cho 30 giây, tức khoảng $0.5 mỗi giây.\n\nĐiều này cho thấy video AI có tiếng đã dùng được cho demo ngắn, nhưng còn đắt nếu làm nhiều. Giọng nói (ElevenLabs) đã gần như tự nhiên, phần hình (Seedance) là chỗ tốn tiền nhất.\n\nTrong bức tranh chung, Seedance cạnh tranh với Veo của Google và Sora của OpenAI; giá theo giây của cả ba đều đang giảm qua mỗi phiên bản ...\n\nGiới hạn: chỉ là một lần thử, không có prompt, không so chất lượng giữa các model.\n\nNên theo dõi: bảng giá Seedance và Veo trong các bản tới.",
+  "context": "- **Seedance 2.5**: model text-to-video của ByteDance.\n- **ElevenLabs v4**: model text-to-speech của ElevenLabs.",
+  "factCheck": null, "factCheckSeverity": null,
   "scoreReason": "Trải nghiệm cá nhân có một con số chi phí thật, hữu ích để ước lượng giá, nhưng không có prompt hay workflow để làm theo. Liên quan vừa phải vì không phải công cụ frontend.",
   "applyNote": "Không cần làm gì lúc này. Nếu sau này cần video demo cho portfolio, chi phí khoảng $0.5 mỗi giây là mốc để so sánh.",
   "signalScore": 3, "contentType": "opinion", "isRelevant": true

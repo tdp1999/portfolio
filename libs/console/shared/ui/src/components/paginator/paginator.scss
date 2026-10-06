@@ -120,3 +120,22 @@
     display: inline-block;
   }
 }
+
+/* Compact: one tight row under a narrow list. The range takes the left, the arrows the right. */
+.paginator--compact {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding: 4px 4px 4px 12px;
+
+  .paginator__nav {
+    gap: 0;
+
+    /* First and last page give way to the range: a 320px column holds prev, "2 / 9", next. */
+    > button:first-child,
+    > button:last-child {
+      display: none;
+    }
+  }
+}

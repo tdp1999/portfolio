@@ -3,6 +3,7 @@ import { RadarRun } from '../domain/entities/radar-run.entity';
 import { RadarCommentThread } from '../domain/value-objects/radar-comment-thread';
 import { servedUrl } from '../domain/radar-media.util';
 import { RadarMedia } from '../domain/radar.types';
+import { RadarLeasePolicy } from '../domain/policies/radar-lease.policy';
 import { RadarBriefSummary, RadarBriefWorkItem } from './ports/radar-brief.repository.port';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
 import { ClaimedRadarItem } from './ports/radar-work.repository.port';
@@ -13,6 +14,7 @@ import {
   RadarBriefDto,
   RadarBriefWorkItemDto,
   RadarFeedItemDto,
+  RadarImagesSummaryDto,
   RadarItemCommentsSummaryDto,
   RadarItemDetailDto,
   RadarItemImageDto,
@@ -24,6 +26,16 @@ import {
 
 const toImages = (media: RadarMedia[]): RadarWorkImageDto[] =>
   media.map((m) => ({ type: m.type, url: servedUrl(m), ocrText: m.ocrText }));
+
+const toImagesSummary = (media: RadarMedia[]): RadarImagesSummaryDto => ({
+  total: media.length,
+  pending: media.filter((m) => m.storageStatus === 'pending').length,
+  failed: media.filter((m) => m.storageStatus === 'failed').length,
+});
+
+/** The row's queue facts, with the source's state folded in. */
+const toQueueState = (row: Pick<RadarFeedRow, 'workStatus' | 'claimCount' | 'leaseExpiresAt' | 'source'>, now: Date) =>
+  RadarLeasePolicy.queueState({ ...row, sourceActive: row.source.isActive }, now);
 
 const toItemImages = (media: RadarMedia[]): RadarItemImageDto[] =>
   media.map((m) => ({
@@ -119,7 +131,8 @@ export class RadarPresenter {
     };
   }
 
-  static toFeedItem(row: RadarFeedRow): RadarFeedItemDto {
+  /** `now` places the item in the queue (a lease may have run out since it was claimed). */
+  static toFeedItem(row: RadarFeedRow, now: Date): RadarFeedItemDto {
     return {
       id: row.id,
       source: row.source,
@@ -129,13 +142,18 @@ export class RadarPresenter {
       publishedAt: row.publishedAt,
       preview: row.text.slice(0, FEED_PREVIEW_CHARS),
       workStatus: row.workStatus,
+      queueState: toQueueState(row, now),
+      triageStatus: row.triageStatus,
+      images: toImagesSummary(row.media),
       enrichment: row.enrichment,
       comments: toCommentsSummary(row),
     };
   }
 
-  static toItemDetail(detail: RadarItemDetail): RadarItemDetailDto {
+  static toItemDetail(detail: RadarItemDetail, now: Date): RadarItemDetailDto {
     const {
+      claimCount: _claimCount,
+      leaseExpiresAt: _leaseExpiresAt,
       media,
       sharedPost,
       comments,
@@ -147,6 +165,7 @@ export class RadarPresenter {
     } = detail;
     return {
       ...item,
+      queueState: toQueueState(detail, now),
       comments: { ...toCommentsSummary(detail), items: comments },
       images: toItemImages(media),
       sharedPost: sharedPost && {

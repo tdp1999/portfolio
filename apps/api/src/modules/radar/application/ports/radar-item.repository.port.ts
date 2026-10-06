@@ -1,4 +1,4 @@
-import { RadarCommentsStatus, RadarItemKind, RadarWorkStatus } from '@prisma/client';
+import { RadarCommentsStatus, RadarItemKind, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
 
 import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 
@@ -18,6 +18,7 @@ export interface RadarItemListFilter {
   sourceId?: string;
   /** One queue bucket, counted the same way as `RadarQueueStats`. */
   status?: RadarFeedStatus;
+  triageStatus?: RadarTriageStatus;
   /** Unanalyzed items have no score; they sort after every scored item in both directions. */
   sortBy: 'publishedAt' | 'signalScore' | 'source';
   sortDir: 'asc' | 'desc';
@@ -32,6 +33,8 @@ export interface RadarEnrichmentSummary {
   isRelevant: boolean;
   /** The analysis thinks the unfetched comments are worth reading. */
   wantsComments: boolean;
+  /** `major` flags a post that misleads on its main claim; `minor` and null show nothing. */
+  factCheckSeverity: string | null;
 }
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
@@ -43,6 +46,8 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   /** Null on v1 enrichments, written before the field existed. */
   context: string | null;
   scoreReason: string | null;
+  /** Null before v3. */
+  overview: string | null;
   producerAdapter: string;
   producerModel: string;
   updatedAt: Date;
@@ -57,6 +62,9 @@ interface RadarItemBase {
   publishedAt: Date;
   text: string;
   workStatus: RadarWorkStatus;
+  claimCount: number;
+  leaseExpiresAt: Date | null;
+  triageStatus: RadarTriageStatus;
   engagement: RadarEngagement;
   commentsStatus: RadarCommentsStatus;
   commentsFetchedCount: number;
@@ -66,7 +74,11 @@ interface RadarItemBase {
 
 export interface RadarFeedRow extends RadarItemBase {
   enrichment: RadarEnrichmentSummary | null;
+  /** The post's own media, so the list can count its images. */
+  media: RadarMedia[];
 }
+
+export type RadarTriageCounts = Record<RadarTriageStatus, number>;
 
 export interface RadarItemDetail extends RadarItemBase {
   media: RadarMedia[];
@@ -90,6 +102,10 @@ export interface RadarQueueStats {
 export interface IRadarItemRepository {
   /** Newest first. `now` and `maxAttempts` decide the `pending` / `stuck` split of `filter.status`. */
   list(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<PaginatedResult<RadarFeedRow>>;
+  /** Items per triage status under the same filter as `list`, ignoring its `triageStatus` and page. */
+  countByTriage(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<RadarTriageCounts>;
+  /** Sets one triage status on every listed item that exists; returns how many were updated. */
+  setTriage(ids: readonly string[], status: RadarTriageStatus, now: Date): Promise<number>;
   findById(id: string): Promise<RadarItemDetail | null>;
   stats(now: Date, maxAttempts: number): Promise<RadarQueueStats>;
   /** Resets every stuck item (see `RadarQueueStats.stuck`) to pending with no claims. Returns how many. */

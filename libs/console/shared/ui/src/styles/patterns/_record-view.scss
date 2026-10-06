@@ -33,8 +33,9 @@
   gap: 40px;
   align-items: start;
 }
+/* `--rv-aside` lets a record that reads mostly in its main column ask for a narrower rail. */
 .rv-layout:has(.rv-layout__aside > *):has(.rv-layout__main > *) {
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  grid-template-columns: minmax(0, 2fr) var(--rv-aside, minmax(280px, 1fr));
 }
 .rv-layout__main {
   display: flex;
@@ -396,5 +397,63 @@
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+/* Inside a pane (a split view, a drawer) the viewport says nothing about the room a record has.
+   Last in the file so it wins over the base `.rv-props` and `.rv-layout` rules above.
+   Wrap the record in `.rv-pane` and the pane's own width decides: below 920px the rail drops
+   under the content and its properties reflow into a grid strip. */
+.rv-pane {
+  container: rv-pane / inline-size;
+}
+
+@container rv-pane (width < 920px) {
+  .rv-layout:has(.rv-layout__aside > *):has(.rv-layout__main > *) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .rv-layout__aside {
+    position: static;
+  }
+  .rv-props {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0 24px;
+  }
+}
+
+/* `.rv-pane--fill`: the pane has a fixed height (a split view), so the content column and the
+   rail each scroll on their own once there is room for both side by side. Narrower, the rail
+   sits under the content and the pane scrolls as one. Give the pane a height and min-height: 0. */
+.rv-pane--fill {
+  overflow-y: auto;
+
+  .rv-layout {
+    padding-bottom: 24px;
+  }
+}
+
+@container rv-pane (width >= 920px) {
+  .rv-pane--fill > *,
+  .rv-pane--fill console-record-layout {
+    display: block;
+    height: 100%;
+  }
+  .rv-pane--fill .rv-layout {
+    height: 100%;
+    padding-bottom: 0;
+    align-items: stretch;
+  }
+  .rv-pane--fill .rv-layout__main,
+  .rv-pane--fill .rv-layout__aside {
+    position: static;
+    min-height: 0;
+    padding-bottom: 24px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .rv-pane--fill .rv-layout__main {
+    padding-right: 8px;
   }
 }

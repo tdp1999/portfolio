@@ -1,11 +1,16 @@
 /*
- * Worker-written markdown: keep lists and paragraphs compact inside a record field. The HTML comes
+ * Worker-written markdown: paragraphs and list items spaced so each reads as its own unit. The HTML comes
  * from `[innerHTML]`, which carries no `_ngcontent` attribute, so the rules reach in with `::ng-deep`,
  * still anchored on `.radar-md` of the component's own template.
  */
 .radar-md ::ng-deep {
+  /* A paragraph break must read wider than a line break (WCAG 1.4.8: at least 1.5x the leading). */
   :is(p, ul, ol) {
-    margin: 0 0 8px;
+    margin: 0 0 16px;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
   }
 
   /* Tailwind's preflight strips list markers; worker lists need them to read as separate points. */
@@ -22,7 +27,7 @@
   }
 
   li + li {
-    margin-top: 4px;
+    margin-top: 8px;
   }
 
   :is(h1, h2, h3, h4) {

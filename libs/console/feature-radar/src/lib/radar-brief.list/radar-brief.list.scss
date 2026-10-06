@@ -2,6 +2,8 @@
 
 :host {
   display: block;
+  /* Radar pages box at 1920 instead of the console's 1440; the Feed itself is full width. */
+  --console-page-max: 1920px;
 }
 
 .brief-table .mat-mdc-cell {

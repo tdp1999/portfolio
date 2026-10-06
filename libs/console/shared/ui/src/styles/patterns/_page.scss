@@ -6,6 +6,8 @@
  *                      `.crud-page`). Forms carry the section-rail so they need the width.
  *   • Detail pages   → narrower reading column `--console-reading-max` (1200), centred
  *                      (`.detail-page`, `.console-reading`).
+ *   • Workspaces     → `.crud-page--full` (opt-in): no cap, the page fills the content area
+ *                      (a list with a reading pane beside it, such as the Radar Feed).
  *   • Page wrappers never set their own padding — the shell already applies `p-8`.
  */
 

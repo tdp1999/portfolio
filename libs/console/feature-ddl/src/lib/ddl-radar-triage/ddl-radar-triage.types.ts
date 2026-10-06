@@ -3,8 +3,6 @@ export type TriageStatus = 'inbox' | 'saved' | 'done';
 
 export type TriageSort = 'newest' | 'oldest' | 'score' | 'source';
 
-export type TriageDensity = 'comfortable' | 'compact';
-
 export interface TriageImage {
   /** Placeholder label; the study has no real images. */
   label: string;

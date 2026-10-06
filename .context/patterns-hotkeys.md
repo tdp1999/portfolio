@@ -13,10 +13,12 @@ The app has three ways a key ends up doing something. Know which one you are tou
    automatically as an Action. The service is SSR-safe and already skips typing
    contexts via `isEditableTarget` (opt out with `allowInInput: true`).
 2. **Console — per-handler.** There is **no** central hotkey service in the console
-   yet. The one global console shortcut lives in the app shell
-   (`SidebarProviderComponent`, a `document` keydown). Everything else is contextual
+   yet. The global console shortcuts live in the app shell (`SidebarProviderComponent`
+   for the sidebar, `HelpViewer` for the feature guide), each a `document` keydown.
+   Everything else is contextual
    and registered on its own component with `@HostListener`, gated on an
-   `open()` / focus state. If console shortcuts grow, adopt the landing registry
+   `open()` / focus state, or scoped by being mounted only while it applies (the
+   Radar Split view's keys exist only while that view is on screen). If console shortcuts grow, adopt the landing registry
    pattern (or promote it to `@portfolio/shared/ui`) rather than scattering more
    `document` listeners.
 3. **Editor-owned (TipTap / ProseMirror).** The rich-text editor's extensions bind
@@ -74,20 +76,27 @@ inline; import the shared one.
 |---|---|---|---|
 | `Mod + B` | Toggle sidebar (expand / collapse) | `SidebarProviderComponent` · `libs/shared/ui` | Yes |
 | `Escape` | Close sidebar (mobile only, when open) | `SidebarComponent` · `libs/shared/ui` | n/a |
+| `?` | Open the current page's feature guide (no-op on pages without one) | `HelpViewer` · `console/shared/ui` (mounted in `MainLayout`) | Yes |
 
 ### Console — contextual (only while the component is open / focused)
 
 | Chord | Action | Component · lib | Active when |
 |---|---|---|---|
 | `Escape` | Close QuickLook | `quick-look` · `console/shared/ui` | overlay open |
-| `Space` | Close QuickLook | `quick-look` | overlay open · skips typing |
+| `Space` | Close QuickLook | `quick-look` | overlay open, `preview` mode only · skips typing |
 | `← / →` | Previous / next item | `quick-look` | overlay open · skips typing |
 | `← → ↑ ↓` | Move selection | `asset-grid` · `console/shared/ui` | grid focused |
 | `Home / End` | First / last cell | `asset-grid` | grid focused |
 | `Space` | Select cell | `asset-grid` | grid focused |
 | `Enter` | Open / confirm cell | `asset-grid` | grid focused |
+| `Escape` | Close the feature guide while focus is inside its iframe | `help-viewer` · `console/shared/ui` | guide open |
 | `Escape` | Close media picker dialog | `media-picker-dialog` · `console/shared/ui` | dialog open |
 | `Escape` | Close media drawer | `media.drawer` · `console/feature-media` | an item is selected |
+| `J` / `↓` | Open the next post | `radar-item.triage` · `console/feature-radar` | Radar Feed in Split view with a post open · skips typing, modifiers and open overlays |
+| `K` / `↑` | Open the previous post | `radar-item.triage` | same |
+| `E` | Mark the open post Done (pressed again: back to the tab it was decided in, or Inbox on the Done tab) | `radar-item.triage` | same |
+| `S` | Save the open post to To try (pressed again: back to the tab it was decided in, or Inbox on the To try tab) | `radar-item.triage` | same |
+| `Escape` | Close the open post, back to the table | `radar-item.triage` | same (yields to Quick Look, which closes first) |
 
 Console has no `Mod+K` / `/` search shortcut yet, even though the topbar has a
 "Search resources..." field. If you add one, guard it with `isEditableTarget`.

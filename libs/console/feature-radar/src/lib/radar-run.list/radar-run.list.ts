@@ -11,6 +11,7 @@ import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
   EnumLabelPipe,
+  HelpButton,
   RelativeTime,
   SkeletonTable,
   ToastService,
@@ -35,6 +36,7 @@ import type { RadarRun, RadarRunCreateDialogData, RadarRunRow } from '../radar.t
   selector: 'console-radar-run-list',
   standalone: true,
   imports: [
+    HelpButton,
     DatePipe,
     RouterLink,
     MatButtonModule,

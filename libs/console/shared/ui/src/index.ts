@@ -2,6 +2,7 @@ export { BulkActionBar } from './components/bulk-action-bar/bulk-action-bar';
 export { FilterBar } from './components/filter-bar/filter-bar';
 export { FilterSearch } from './components/filter-bar/filter-search';
 export { FilterSelect } from './components/filter-bar/filter-select';
+export { FilterMore } from './components/filter-bar/filter-more';
 export type { FilterOption } from './components/filter-bar/filter-select.types';
 export { BlankLayout } from './components/blank-layout/blank-layout';
 export { MainLayout } from './components/main-layout/main-layout';
@@ -88,6 +89,12 @@ export { EnumLabelPipe } from './pipes/enum-label/enum-label.pipe';
 export { SetHasPipe } from './pipes/set-has/set-has.pipe';
 export { UrlFileNamePipe } from './pipes/url-file-name/url-file-name.pipe';
 export { QuickLook } from './components/quick-look/quick-look';
+export type { QuickLookMode } from './components/quick-look/quick-look.types';
+// Feature guides — (?) entry points and the shell-level viewer.
+export { HelpButton } from './components/help-button/help-button';
+export { HelpViewer } from './components/help-viewer/help-viewer';
+export { HelpService } from './services/help/help.service';
+export type { GuideRef } from './services/help/help.types';
 // Record view — read-only detail chassis (ADR-026).
 export { RecordLayout } from './components/record-view/record-layout';
 export { RecordSection } from './components/record-view/record-section';

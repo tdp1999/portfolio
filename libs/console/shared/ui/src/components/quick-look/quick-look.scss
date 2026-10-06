@@ -28,6 +28,19 @@
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+
+  // Document: a reading window sized for a guide with its own TOC column. A fixed
+  // height (not max-height) because the iframe inside has no intrinsic height.
+  &--document {
+    width: min(80rem, calc(100vw - 2rem));
+    height: min(90vh, 64rem);
+    max-height: none;
+
+    .ql-body {
+      padding: 0;
+      overflow: hidden;
+    }
+  }
 }
 
 .ql-header {

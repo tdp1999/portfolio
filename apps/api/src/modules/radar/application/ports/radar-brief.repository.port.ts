@@ -28,6 +28,7 @@ export interface RadarBriefWorkItem {
   signalScore: number;
   isPromo: boolean;
   isRelevant: boolean;
+  overview: string | null;
   context: string | null;
   scoreReason: string | null;
   factCheck: string | null;

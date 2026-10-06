@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   EnumLabelPipe,
+  HelpButton,
   Property,
   PropertyList,
   RecordLayout,
@@ -29,6 +30,7 @@ import type { RadarBriefDetail as RadarBrief } from '../radar.types';
   selector: 'console-radar-brief-detail',
   standalone: true,
   imports: [
+    HelpButton,
     DatePipe,
     RouterLink,
     MatButtonModule,

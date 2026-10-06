@@ -12,6 +12,7 @@
   <div
     #panel
     class="ql-panel"
+    [class.ql-panel--document]="isDocument()"
     tabindex="-1"
     role="dialog"
     aria-modal="true"
@@ -20,30 +21,33 @@
     cdkTrapFocusAutoCapture
   >
     <header class="ql-header">
-      <div class="ql-header__nav">
-        <button
-          type="button"
-          class="ql-icon-btn"
-          [disabled]="!hasPrev()"
-          (click)="navPrev()"
-          aria-label="Previous (Left arrow)"
-        >
-          <mat-icon class="icon-sm">chevron_left</mat-icon>
-        </button>
-        <button
-          type="button"
-          class="ql-icon-btn"
-          [disabled]="!hasNext()"
-          (click)="navNext()"
-          aria-label="Next (Right arrow)"
-        >
-          <mat-icon class="icon-sm">chevron_right</mat-icon>
-        </button>
-      </div>
+      @if (!isDocument()) {
+        <div class="ql-header__nav">
+          <button
+            type="button"
+            class="ql-icon-btn"
+            [disabled]="!hasPrev()"
+            (click)="navPrev()"
+            aria-label="Previous (Left arrow)"
+          >
+            <mat-icon class="icon-sm">chevron_left</mat-icon>
+          </button>
+          <button
+            type="button"
+            class="ql-icon-btn"
+            [disabled]="!hasNext()"
+            (click)="navNext()"
+            aria-label="Next (Right arrow)"
+          >
+            <mat-icon class="icon-sm">chevron_right</mat-icon>
+          </button>
+        </div>
+      }
 
       <h2 class="ql-header__title text-section-heading">{{ title() }}</h2>
 
       <div class="ql-header__actions">
+        <ng-content select="[qlActions]" />
         <button type="button" class="ql-icon-btn" (click)="close()" aria-label="Close (Esc)">
           <mat-icon class="icon-sm">close</mat-icon>
         </button>
@@ -55,7 +59,11 @@
       <ng-content />
     </div>
     <footer class="ql-hint text-text-muted">
-      <kbd>Space</kbd>/<kbd>Esc</kbd> close · <kbd>←</kbd><kbd>→</kbd> navigate
+      @if (isDocument()) {
+        <kbd>Esc</kbd> close
+      } @else {
+        <kbd>Space</kbd>/<kbd>Esc</kbd> close · <kbd>←</kbd><kbd>→</kbd> navigate
+      }
     </footer>
   </div>
 }

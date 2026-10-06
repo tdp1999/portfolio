@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import {
   HasUnsavedChanges,
+  HelpButton,
   MarkdownEditorComponent,
   onBeforeUnload,
   SectionCard,
@@ -25,6 +26,7 @@ import { RadarService } from '../radar.service';
   selector: 'console-radar-profile-form',
   standalone: true,
   imports: [
+    HelpButton,
     DatePipe,
     DecimalPipe,
     ReactiveFormsModule,

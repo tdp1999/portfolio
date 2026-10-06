@@ -27,7 +27,17 @@ export class ListRadarItemsHandler implements IQueryHandler<ListRadarItemsQuery>
       });
     }
 
-    const { data: rows, total } = await this.repo.list(data, new Date(), RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
-    return { data: rows.map(RadarPresenter.toFeedItem), total, page: data.page, limit: data.limit };
+    const now = new Date();
+    const [{ data: rows, total }, triageCounts] = await Promise.all([
+      this.repo.list(data, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS),
+      this.repo.countByTriage(data, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS),
+    ]);
+    return {
+      data: rows.map((row) => RadarPresenter.toFeedItem(row, now)),
+      total,
+      page: data.page,
+      limit: data.limit,
+      triageCounts,
+    };
   }
 }

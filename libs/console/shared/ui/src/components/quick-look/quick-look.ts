@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   type ElementRef,
   HostListener,
   input,
@@ -12,6 +13,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { MatIconModule } from '@angular/material/icon';
 import { isEditableTarget } from '@portfolio/shared/ui';
 import { SpinnerOverlay } from '../spinner/spinner-overlay';
+import type { QuickLookMode } from './quick-look.types';
 
 /**
  * macOS Quick Look-style preview overlay. Generic and content-projected: the
@@ -19,6 +21,10 @@ import { SpinnerOverlay } from '../spinner/spinner-overlay';
  * across console features. Fully keyboard-driven once open:
  *   Esc / Space → close · ←/→ → prev/next
  * Opening (e.g. a preview button) is the host's responsibility.
+ *
+ * `mode="document"` turns it into a large reading window (feature guides): no
+ * prev/next, an edge-to-edge body for an iframe, and Space no longer closes, since
+ * Space scrolls a document. Extra header actions are projected with `[qlActions]`.
  */
 @Component({
   selector: 'console-quick-look',
@@ -35,6 +41,9 @@ export class QuickLook {
   readonly loading = input<boolean>(false);
   readonly hasPrev = input<boolean>(false);
   readonly hasNext = input<boolean>(false);
+  readonly mode = input<QuickLookMode>('preview');
+
+  protected readonly isDocument = computed(() => this.mode() === 'document');
 
   readonly prev = output<void>();
   readonly next = output<void>();
@@ -71,7 +80,7 @@ export class QuickLook {
         this.close();
         break;
       case ' ':
-        if (typing) return;
+        if (typing || this.isDocument()) return;
         event.preventDefault();
         this.close();
         break;

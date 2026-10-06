@@ -44,6 +44,10 @@ Measured against one fully-populated project record at 1440×900:
 | Split view                            | 1949px        | −25%         | 75           |
 | Split, collapsed                      | 1025px        | −61%         | 75           |
 
+**Rail width override:** a record that reads mostly in its main column (a long post, attachments
+in the rail) sets `--rv-aside` on its host, for example `--rv-aside: 288px`. Unset, the rail is
+`minmax(280px, 1fr)`.
+
 ## Hierarchy — three levels, three treatments
 
 ```

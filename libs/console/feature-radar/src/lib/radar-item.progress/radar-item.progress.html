@@ -1,0 +1,31 @@
+@let a = analysis();
+@let c = comments();
+@let i = images();
+<span class="progress" role="group" aria-label="Progress">
+  <span class="progress__slot" [class]="'tone-' + a.tone" [matTooltip]="a.label" [attr.aria-label]="a.label">
+    <mat-icon class="icon-sm">{{ a.icon }}</mat-icon>
+  </span>
+  <span
+    class="progress__slot progress__slot--count"
+    [class]="'tone-' + c.tone"
+    [class.progress__slot--empty]="c.empty"
+    [matTooltip]="c.label"
+    [attr.aria-label]="c.label"
+  >
+    <mat-icon class="icon-sm">{{ c.icon }}</mat-icon>
+    {{ c.count }}
+    @if (c.suggested) {
+      <span class="progress__hint" aria-hidden="true"></span>
+    }
+  </span>
+  <span
+    class="progress__slot progress__slot--count"
+    [class]="'tone-' + i.tone"
+    [class.progress__slot--empty]="i.empty"
+    [matTooltip]="i.label"
+    [attr.aria-label]="i.label"
+  >
+    <mat-icon class="icon-sm">image</mat-icon>
+    {{ i.total }}
+  </span>
+</span>

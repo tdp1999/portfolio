@@ -1,0 +1,30 @@
+/* Signal score chip of the Feed table and the Split list; tone classes come from `radarScoreTone`. */
+.radar-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: var(--leading-none);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  vertical-align: middle;
+
+  &--high {
+    background: color-mix(in srgb, var(--color-success, #16a34a) 15%, transparent);
+    color: var(--color-success, #16a34a);
+  }
+
+  &--mid {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+  }
+
+  &--pending {
+    background: transparent;
+    border: 1px dashed var(--color-border);
+  }
+}

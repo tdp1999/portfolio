@@ -1,0 +1,43 @@
+/* A source as a 24px initials circle; the full name sits in its tooltip. Shared by the Feed table and the Split list. */
+.radar-monogram {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-wide);
+
+  $tones: (
+    0: var(--color-primary),
+    1: var(--color-success),
+    2: var(--color-info),
+    3: var(--color-warning),
+    4: var(--color-error),
+    5: var(--color-text-secondary),
+  );
+
+  @each $i, $color in $tones {
+    &--t#{$i} {
+      background: color-mix(in srgb, #{$color} 16%, transparent);
+      color: $color;
+    }
+  }
+
+  &--sm {
+    width: 20px;
+    height: 20px;
+    font-size: var(--text-2xs);
+  }
+
+  /* The source is paused: the worker skips its posts. */
+  &--paused {
+    outline: 1px dashed var(--color-text-muted);
+    outline-offset: 1px;
+    opacity: 0.6;
+  }
+}

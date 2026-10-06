@@ -825,6 +825,14 @@ enum RadarCommentsStatus {
   FAILED
 }
 
+/// The Owner's own decision about a post, separate from the worker's `RadarWorkStatus`.
+enum RadarTriageStatus {
+  INBOX
+  /// "To try": kept to come back to.
+  SAVED
+  DONE
+}
+
 enum RadarStatus {
   PENDING
   RUNNING
@@ -942,6 +950,9 @@ model RadarItem {
   workStatus           RadarWorkStatus     @default(PENDING)
   leaseExpiresAt       DateTime?
   claimCount           Int                 @default(0)
+  triageStatus         RadarTriageStatus   @default(INBOX)
+  /// When `triageStatus` last changed; null while the post has never left the Inbox.
+  triagedAt            DateTime?
   capturedAt           DateTime            @default(now())
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
@@ -955,34 +966,39 @@ model RadarItem {
   @@index([publishedAt(sort: Desc)])
   @@index([workStatus, leaseExpiresAt])
   @@index([lastRunId])
+  @@index([triageStatus, publishedAt(sort: Desc)])
   @@map("radar_items")
 }
 
 model RadarEnrichment {
-  id              String   @id @db.Uuid
-  itemId          String   @unique @db.Uuid
-  tldr            String   @db.VarChar(400)
-  providerTags    String[] @default([])
-  contentType     String   @db.VarChar(32)
-  signalScore     Int
-  isPromo         Boolean  @default(false)
-  isRelevant      Boolean  @default(false)
-  imageNotes      String?
-  linkSummaries   Json     @default("[]") @db.JsonB
-  commentDigest   String?
+  id                String   @id @db.Uuid
+  itemId            String   @unique @db.Uuid
+  tldr              String   @db.VarChar(400)
+  providerTags      String[] @default([])
+  contentType       String   @db.VarChar(32)
+  signalScore       Int
+  isPromo           Boolean  @default(false)
+  isRelevant        Boolean  @default(false)
+  imageNotes        String?
+  linkSummaries     Json     @default("[]") @db.JsonB
+  commentDigest     String?
   /// The analysis thinks the comments hold value (links, corrections); shown as a hint, never auto-fetched.
-  wantsComments   Boolean  @default(false)
-  factCheck       String?
-  applyNote       String?
+  wantsComments     Boolean  @default(false)
+  factCheck         String?
+  /// v3: how much the fact check matters: "minor" (stored, not shown) or "major" (warned in the console). Null without a fact check.
+  factCheckSeverity String?  @db.VarChar(16)
+  applyNote         String?
   /// v2: background the post assumes (what a named tool or model is, price, alternatives).
-  context         String?
+  context           String?
   /// v2: why the item got its score, type and relevance.
-  scoreReason     String?
-  producerAdapter String   @db.VarChar(64)
-  producerModel   String   @db.VarChar(100)
-  schemaVersion   Int      @default(1)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  scoreReason       String?
+  /// v3: the general read of the post: what happened, why it matters, where it fits, its limits, what to watch.
+  overview          String?
+  producerAdapter   String   @db.VarChar(64)
+  producerModel     String   @db.VarChar(100)
+  schemaVersion     Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   item RadarItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
 

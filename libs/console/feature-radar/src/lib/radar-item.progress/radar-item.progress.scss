@@ -1,0 +1,64 @@
+:host {
+  display: inline-block;
+}
+
+/* Fixed slots so the icons line up down the column whatever the counts are. */
+.progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &__slot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    width: 16px;
+
+    &--count {
+      width: 40px;
+    }
+
+    &--empty {
+      opacity: 0.5;
+    }
+  }
+
+  /* The analysis suggests fetching the comments. */
+  &__hint {
+    position: absolute;
+    top: -2px;
+    left: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+}
+
+.tone-default {
+  color: var(--color-text-secondary);
+}
+
+.tone-muted {
+  color: var(--color-text-muted);
+}
+
+.tone-success {
+  color: var(--color-success);
+}
+
+.tone-info {
+  color: var(--color-info);
+}
+
+.tone-warning {
+  color: var(--color-warning);
+}
+
+.tone-error {
+  color: var(--color-error);
+}

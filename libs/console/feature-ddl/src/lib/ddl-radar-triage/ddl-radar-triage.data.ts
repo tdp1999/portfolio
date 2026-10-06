@@ -17,11 +17,6 @@ export const SIDEBAR_OPTIONS: SegmentedControlOption[] = [
   { value: '64', label: 'Sidebar 64' },
 ];
 
-export const DENSITY_OPTIONS: SegmentedControlOption[] = [
-  { value: 'comfortable', label: 'Comfortable' },
-  { value: 'compact', label: 'Compact' },
-];
-
 export const SORT_OPTIONS: FilterOption[] = [
   { value: 'newest', label: 'Newest first' },
   { value: 'oldest', label: 'Oldest first' },

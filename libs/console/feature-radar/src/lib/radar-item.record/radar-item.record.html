@@ -1,0 +1,360 @@
+@let it = item();
+<console-record-layout>
+  <!-- The post itself comes first, set apart on its own surface: everything below is about it. -->
+  <section class="radar-post" aria-label="Post">
+    @if (it.text) {
+      <p class="rv-prose radar-text">{{ it.text }}</p>
+    } @else {
+      <p class="rv-absent">This post has no text of its own.</p>
+    }
+    @if (it.sharedPost; as sp) {
+      <div class="radar-post__shared">
+        <span class="radar-post__shared-head">{{
+          sp.authorName ? 'Shared from ' + sp.authorName : 'Shared post'
+        }}</span>
+        @if (sp.text) {
+          <p class="rv-prose radar-text">{{ sp.text }}</p>
+        }
+        @if (sp.permalink) {
+          <a class="radar-link" [href]="sp.permalink" target="_blank" rel="noopener noreferrer">
+            Open shared post
+            <mat-icon class="icon-sm">open_in_new</mat-icon>
+          </a>
+        }
+      </div>
+    }
+    @if (authorComments().length) {
+      <div class="radar-post__addendum">
+        <span class="radar-post__shared-head">Added by the author in the comments</span>
+        <ng-container [ngTemplateOutlet]="commentList" [ngTemplateOutletContext]="{ $implicit: authorComments() }" />
+      </div>
+    }
+  </section>
+
+  <console-record-section title="AI analysis">
+    @if (it.enrichment; as e) {
+      @if (e.factCheckSeverity === 'major' && e.factCheck) {
+        <div class="radar-warning" role="note">
+          <mat-icon class="icon-sm">warning</mat-icon>
+          <div class="radar-warning__body">
+            <strong>The main claim looks wrong</strong>
+            <div class="radar-md" [innerHTML]="e.factCheck | markdown"></div>
+          </div>
+        </div>
+      }
+      <p class="rv-lead">{{ e.tldr }}</p>
+      @if (e.overview) {
+        <div class="rv-prose radar-md" [innerHTML]="e.overview | markdown"></div>
+        @if (e.context) {
+          <console-record-fold
+            title="Key terms"
+            [gist]="keyTermsGist()"
+            [open]="keyTermsOpen()"
+            (openChange)="keyTermsOpen.set($event)"
+          >
+            <div class="rv-prose radar-md" [innerHTML]="e.context | markdown"></div>
+          </console-record-fold>
+        }
+      } @else if (e.context) {
+        <!-- Before enrichment v3 there is no overview: the background is the analysis. -->
+        <console-record-field label="Background">
+          <div class="rv-prose radar-md" [innerHTML]="e.context | markdown"></div>
+        </console-record-field>
+      }
+      @if (imageCount()) {
+        <console-record-field
+          label="Image notes"
+          [state]="e.imageNotes ? 'filled' : 'unset'"
+          unsetLabel="The images add nothing beyond the text."
+        >
+          <div class="rv-prose radar-md" [innerHTML]="e.imageNotes | markdown"></div>
+        </console-record-field>
+      }
+      <console-record-field
+        label="Apply to my workflow"
+        [state]="e.applyNote ? 'filled' : 'unset'"
+        unsetLabel="No apply note: analyzed before apply notes became required. It is re-analyzed on the next worker run."
+      >
+        <div class="rv-prose radar-md" [innerHTML]="e.applyNote | markdown"></div>
+      </console-record-field>
+    } @else {
+      <div class="radar-pending" role="status">
+        <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+        <p>Pending analysis. The radar worker has not read this post yet.</p>
+      </div>
+    }
+  </console-record-section>
+
+  @if (hasComments()) {
+    @let chip = it.comments | radarCommentsChip: it.enrichment?.wantsComments ?? false;
+    <console-record-section title="Comments" [count]="it.comments.fetchedCount">
+      <div action class="radar-comments-head">
+        <span class="radar-comments-head__state" [class]="chip.badge" [matTooltip]="chip.tooltip">
+          <mat-icon class="icon-sm">{{ chip.icon }}</mat-icon>
+          {{ chip.label }}
+        </span>
+        <button type="button" class="rv-linkbtn" [disabled]="fetchingComments()" (click)="onFetchComments()">
+          {{ it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch again' }}
+        </button>
+      </div>
+      @if (fetchingComments()) {
+        <p class="rv-absent">Fetching comments from Apify. This can take a few minutes.</p>
+      }
+
+      @if (it.enrichment?.commentDigest; as digest) {
+        <console-record-field label="Digest">
+          <div class="rv-prose radar-md" [innerHTML]="digest | markdown"></div>
+        </console-record-field>
+      }
+      @if (otherComments().length) {
+        <ng-container [ngTemplateOutlet]="commentList" [ngTemplateOutletContext]="{ $implicit: shownComments() }" />
+        @if (hiddenCommentCount()) {
+          <button type="button" class="rv-linkbtn radar-comments-more" (click)="allCommentsShown.set(true)">
+            Show {{ hiddenCommentCount() }} more
+          </button>
+        }
+      }
+    </console-record-section>
+  }
+
+  <ng-container aside>
+    <console-record-panel title="Properties" flush>
+      <console-property-list>
+        @if (it.enrichment; as e) {
+          <console-property label="Signal score">
+            {{ e.signalScore }} / 10
+            @if (e.scoreReason) {
+              <span class="radar-score-reason">{{ e.scoreReason }}</span>
+            }
+          </console-property>
+          <console-property label="Type">{{ e.contentType | enumLabel: contentTypeLabels }}</console-property>
+          <console-property label="Providers">
+            @if (e.providerTags.length) {
+              {{ providerNames() }}
+            } @else {
+              <span class="rv-absent">Not set</span>
+            }
+          </console-property>
+          <console-property label="Relevant">{{ e.isRelevant ? 'Yes' : 'No' }}</console-property>
+          <console-property label="Promo">{{ e.isPromo ? 'Yes' : 'No' }}</console-property>
+        }
+        <console-property label="Published">{{ it.publishedAt | date: 'mediumDate' }}</console-property>
+        <console-property label="Source">
+          {{ it.source.displayName }}
+          @if (!it.source.isActive) {
+            <span class="rv-absent">(paused)</span>
+          }
+        </console-property>
+        <console-property label="Kind">{{ it.kind }}</console-property>
+        <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
+        <console-property label="Comments">
+          {{ it.comments.postCount }} on Facebook
+          @if (it.comments.fetchedAt) {
+            <span class="rv-absent">(read {{ it.comments.fetchedAt | date: 'mediumDate' }})</span>
+          }
+        </console-property>
+      </console-property-list>
+    </console-record-panel>
+
+    <!-- Attachments sit in the rail: thumbnails to glance at, Quick Look for the full picture. -->
+    @if (imageCount()) {
+      <console-record-panel [title]="'Images (' + imageCount() + ')'">
+        @if (images().length) {
+          <ng-container
+            [ngTemplateOutlet]="gallery"
+            [ngTemplateOutletContext]="{ $implicit: images(), href: it.permalink }"
+          />
+        }
+        @if (sharedImages().length) {
+          <span class="radar-attach__group">From the shared post</span>
+          <ng-container
+            [ngTemplateOutlet]="gallery"
+            [ngTemplateOutletContext]="{ $implicit: sharedImages(), href: it.sharedPost?.permalink ?? it.permalink }"
+          />
+        }
+      </console-record-panel>
+    }
+
+    @if (links().length) {
+      <console-record-panel [title]="'Links (' + links().length + ')'">
+        <ul class="radar-links">
+          @for (link of links(); track link.url) {
+            <li class="radar-links__item">
+              <div class="radar-links__head">
+                <a class="radar-link" [href]="link.url" target="_blank" rel="noopener noreferrer" [title]="link.url">
+                  <span class="radar-link__host">{{ link.url | urlHost }}</span>
+                  <mat-icon class="icon-sm">open_in_new</mat-icon>
+                </a>
+                @if (link.origin === 'shared-post') {
+                  <span class="console-badge console-badge--muted">Shared post</span>
+                }
+              </div>
+              @if (link.summary; as summary) {
+                <details class="radar-links__more">
+                  <summary>Summary</summary>
+                  <div class="rv-prose radar-md" [innerHTML]="summary | markdown"></div>
+                </details>
+              } @else if (it.enrichment) {
+                <span class="rv-absent">Not read by the worker</span>
+              }
+            </li>
+          }
+        </ul>
+      </console-record-panel>
+    }
+
+    @if (it.enrichment; as e) {
+      <console-record-panel title="Analyzed by" flush>
+        <console-property-list>
+          <console-property label="Producer">{{ e.producerAdapter }}</console-property>
+          <console-property label="Model">{{ e.producerModel }}</console-property>
+          <console-property label="Analyzed">{{ e.updatedAt | date: 'medium' }}</console-property>
+        </console-property-list>
+      </console-record-panel>
+    }
+  </ng-container>
+</console-record-layout>
+
+<!-- One gallery: photos open in Quick Look, videos go to Facebook (only the thumbnail is stored). -->
+<ng-template #gallery let-images let-href="href">
+  <div class="radar-images">
+    @for (img of images; track $index) {
+      <figure class="radar-figure">
+        @if (img | radarImageViewable: brokenImages()) {
+          <button
+            type="button"
+            class="radar-image"
+            aria-label="View image full size"
+            (click)="onOpenImage(images, img)"
+          >
+            <img [src]="img.url" alt="Image from the post" loading="lazy" (error)="onImageError(img.url)" />
+          </button>
+        } @else if (img.type === 'video') {
+          <a
+            class="radar-image radar-image--video"
+            [href]="href"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Watch the video on Facebook"
+          >
+            @if (!brokenImages().has(img.url)) {
+              <img [src]="img.url" alt="" loading="lazy" (error)="onImageError(img.url)" />
+            }
+            <span class="radar-image__play">
+              <mat-icon>play_arrow</mat-icon>
+              Watch on Facebook
+            </span>
+          </a>
+        } @else {
+          <div class="radar-image radar-image--placeholder" [title]="img.url">
+            <mat-icon>broken_image</mat-icon>
+            <span class="radar-image__label">
+              {{ img.storageStatus === 'failed' ? 'Image not saved' : 'Image did not load' }}
+            </span>
+            <span class="radar-image__url">{{ img.url | urlHost }}</span>
+          </div>
+        }
+        @if (img.ocrText) {
+          <button
+            type="button"
+            class="radar-figure__ocr"
+            matTooltip="Text in image"
+            aria-label="Show the text Facebook read in this image"
+            [matMenuTriggerFor]="ocrMenu"
+            [matMenuTriggerData]="{ text: img.ocrText }"
+          >
+            <mat-icon class="icon-sm">text_snippet</mat-icon>
+          </button>
+        }
+      </figure>
+    }
+  </div>
+</ng-template>
+
+<!-- Comments as stored: replies indent under their parent; commenters stay anonymous, only the author is named. -->
+<ng-template #commentList let-comments>
+  <ul class="radar-comments-list">
+    @for (c of comments; track c.id) {
+      <li class="radar-comment" [class.radar-comment--reply]="c.depth > 0">
+        @if (c.text) {
+          <p class="rv-prose radar-text">{{ c.text }}</p>
+        }
+        @for (link of c.links; track link) {
+          <a class="radar-link" [href]="link" target="_blank" rel="noopener noreferrer">
+            {{ link | urlHost }}
+            <mat-icon class="icon-sm">open_in_new</mat-icon>
+          </a>
+        }
+        @for (img of c.images; track img.url) {
+          <figure class="radar-comment__image">
+            @if (brokenImages().has(img.url)) {
+              <a class="radar-link" [href]="img.url" target="_blank" rel="noopener noreferrer">
+                Image did not load
+                <mat-icon class="icon-sm">open_in_new</mat-icon>
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="radar-comment__photo"
+                aria-label="View image full size"
+                (click)="onOpenCommentImage(c.images, img)"
+              >
+                <img [src]="img.url" alt="Image in a comment" loading="lazy" (error)="onImageError(img.url)" />
+              </button>
+            }
+            @if (img.ocrText) {
+              <button
+                type="button"
+                class="radar-figure__ocr"
+                matTooltip="Text in image"
+                aria-label="Show the text Facebook read in this image"
+                [matMenuTriggerFor]="ocrMenu"
+                [matMenuTriggerData]="{ text: img.ocrText }"
+              >
+                <mat-icon class="icon-sm">text_snippet</mat-icon>
+              </button>
+            }
+          </figure>
+        }
+        <div class="radar-comment__meta">
+          @if (c.isAuthor) {
+            <span class="radar-comment__who">{{ c.authorName ?? 'Author' }}</span>
+          }
+          @if (c.tag; as tag) {
+            <span [class]="tag.badge">{{ tag.text }}</span>
+          }
+          @if (c.publishedAt) {
+            <span>{{ c.publishedAt | date: 'mediumDate' }}</span>
+          }
+          @if (c.likes) {
+            <span>{{ c.likes }} {{ c.likes === 1 ? 'like' : 'likes' }}</span>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<!-- Facebook's reading of an image's text sits behind an icon: it is rarely worth the space. -->
+<mat-menu #ocrMenu="matMenu" xPosition="before">
+  <ng-template matMenuContent let-text="text">
+    <p class="radar-ocr" (click)="$event.stopPropagation()">{{ text }}</p>
+  </ng-template>
+</mat-menu>
+
+<console-quick-look
+  [open]="lightbox() !== null"
+  (openChange)="onLightboxOpenChange($event)"
+  [title]="'Image ' + ((lightbox()?.index ?? 0) + 1) + ' of ' + (lightbox()?.photos?.length ?? 0)"
+  [hasPrev]="(lightbox()?.index ?? 0) > 0"
+  [hasNext]="(lightbox()?.index ?? 0) < (lightbox()?.photos?.length ?? 0) - 1"
+  (prev)="onLightboxStep(-1)"
+  (next)="onLightboxStep(1)"
+>
+  @if (lightboxPhoto(); as photo) {
+    <img class="radar-lightbox__img" [src]="photo.url" alt="Image in full size" />
+    @if (photo.ocrText) {
+      <p class="radar-lightbox__ocr">Text in image: {{ photo.ocrText }}</p>
+    }
+  }
+</console-quick-look>

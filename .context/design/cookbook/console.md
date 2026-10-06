@@ -86,6 +86,7 @@ set their own padding (the shell already applies `p-8`). Two widths only:
 | Context                    | Rule                                                                                                     |
 | -------------------------- | -------------------------------------------------------------------------------------------------------- |
 | CRUD list / dashboard page | Boxed 1440, centred. Baked into `.crud-page` (keeps `height:100%` so the table scrolls naturally).       |
+| Workspace (list + reading pane) | No cap: add `.crud-page--full` (opt-in, per page). The page fills the content area; the list, the pane and its rail scroll on their own (Radar Feed). |
 | Detail page                | Boxed reading column 1200, centred. Baked into `.detail-page` (`max-width: var(--console-reading-max)`). |
 
 | Multi-section form | `console-section-tabs` (rail + content) inside a `.console-page` root → boxed 1440, centred. |

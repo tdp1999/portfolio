@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { EnumLabelPipe, RelativeTime, SkeletonTable, ToastService } from '@portfolio/console/shared/ui';
+import { EnumLabelPipe, HelpButton, RelativeTime, SkeletonTable, ToastService } from '@portfolio/console/shared/ui';
 import { catchError, EMPTY, filter, finalize, interval, Subscription, switchMap } from 'rxjs';
 import { RadarBriefCreateDialog } from '../radar-brief.create.dialog/radar-brief.create.dialog';
 import { BRIEF_POLL_MS } from '../radar.constants';
@@ -19,6 +19,7 @@ import type { RadarBrief, RadarBriefCreateDialogData } from '../radar.types';
   selector: 'console-radar-brief-list',
   standalone: true,
   imports: [
+    HelpButton,
     DatePipe,
     RouterLink,
     MatButtonModule,

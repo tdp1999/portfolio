@@ -12,6 +12,12 @@
   margin-inline: auto;
 }
 
+/* Full variant — no width cap, for a workspace page that puts a list and a reading pane side
+   by side and needs every pixel of the content area. Ordinary lists stay boxed. */
+.crud-page--full {
+  max-width: none;
+}
+
 /* Fill variant — the list card always reaches the bottom of the viewport, whatever the row
    count, so the paginator sits at the same place while loading and once loaded. Uses
    min-height (never a fixed height): a long page must still grow and scroll under the sticky

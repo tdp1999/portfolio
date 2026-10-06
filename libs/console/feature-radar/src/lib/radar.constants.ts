@@ -24,3 +24,6 @@ export const DEFAULT_RUN_WINDOW_MONTHS = 6;
 /** How often the Detail page polls a comments fetch, and how many polls (10 minutes) before it stops waiting. */
 export const COMMENTS_POLL_MS = 5_000;
 export const COMMENTS_POLL_MAX = 120;
+
+/** localStorage key of the Feed's last used view (Table or Split); `?view=` in the URL wins. */
+export const FEED_VIEW_STORAGE_KEY = 'radar.feed.view';

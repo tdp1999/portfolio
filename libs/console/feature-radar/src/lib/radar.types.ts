@@ -1,6 +1,12 @@
-import type { RadarContentType, RadarFeedSortKey, RadarProviderTag } from '@portfolio/shared/types';
+import type {
+  RadarContentType,
+  RadarFeedSortKey,
+  RadarProviderTag,
+  RadarQueueState,
+  RadarTriageStatus,
+} from '@portfolio/shared/types';
 
-export type { RadarFeedSortKey };
+export type { RadarFeedSortKey, RadarQueueState, RadarTriageStatus };
 
 export type RadarWorkStatus = 'PENDING' | 'CLAIMED' | 'DONE';
 
@@ -19,7 +25,11 @@ export interface RadarEnrichmentSummary {
   isRelevant: boolean;
   /** The analysis thinks the comments hold value (links, corrections) and they were not fetched. */
   wantsComments: boolean;
+  /** `major`: the post misleads on its main claim, so the Feed and the post warn. Null without a fact check. */
+  factCheckSeverity: RadarFactCheckSeverity | null;
 }
+
+export type RadarFactCheckSeverity = 'minor' | 'major';
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   imageNotes: string | null;
@@ -30,6 +40,8 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   /** Null on v1 enrichments, written before the field existed. */
   context: string | null;
   scoreReason: string | null;
+  /** The general read of the post; null before enrichment v3, until the post is re-analyzed. */
+  overview: string | null;
   producerAdapter: string;
   producerModel: string;
   updatedAt: string;
@@ -74,8 +86,22 @@ export interface RadarFeedItem {
   /** The first 200 characters of the post text. */
   preview: string;
   workStatus: RadarWorkStatus;
+  /** Where the post stands in the worker's queue (a live lease reads as `claimed`). */
+  queueState: RadarQueueState;
+  /** The Owner's decision: Inbox until marked Done or To try (`SAVED`). */
+  triageStatus: RadarTriageStatus;
+  /** The post's own images and video thumbnails, and how their stored copies stand. */
+  images: RadarImagesSummary;
   enrichment: RadarEnrichmentSummary | null;
   comments: RadarCommentsSummary;
+}
+
+export interface RadarImagesSummary {
+  total: number;
+  /** Not copied to our storage yet. */
+  pending: number;
+  /** The copy failed; only the provider URL is left, which can expire. */
+  failed: number;
 }
 
 export interface RadarFeedPage {
@@ -83,6 +109,8 @@ export interface RadarFeedPage {
   total: number;
   page: number;
   limit: number;
+  /** Items per triage tab under the same filters, whichever tab is open. */
+  triageCounts: Record<RadarTriageStatus, number>;
 }
 
 export interface RadarFeedParams {
@@ -96,6 +124,8 @@ export interface RadarFeedParams {
   sortBy?: RadarFeedSortKey;
   sortDir?: 'asc' | 'desc';
   status?: string;
+  sourceId?: string;
+  triageStatus?: RadarTriageStatus;
 }
 
 /** The Feed's filters, sort and page as the URL carries them, shared by the Feed and Detail (prev/next). */
@@ -108,12 +138,19 @@ export interface RadarFeedState {
   includePromo: boolean;
   /** A `RADAR_FEED_STATUSES` value; '' means every status. */
   status: string;
+  /** A source id; '' means every source. */
+  sourceId: string;
   sortBy: RadarFeedSortKey;
   sortDir: 'asc' | 'desc';
   pageIndex: number;
   /** One of `FEED_PAGE_SIZES`. */
   pageSize: number;
+  /** The open triage tab. */
+  triage: RadarTriageStatus;
 }
+
+/** How the Feed is shown: the table, or the list with the open post beside it. */
+export type RadarFeedView = 'table' | 'split';
 
 /** A prev/next target in the Feed, with the page it sits on so the walk can continue from there. */
 export interface RadarNeighbour {
@@ -135,7 +172,7 @@ export interface RadarItemImage {
   ocrText: string | null;
 }
 
-export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrichment' | 'comments'> {
+export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrichment' | 'comments' | 'images'> {
   text: string;
   images: RadarItemImage[];
   links: { url: string; origin: 'post' | 'shared-post' }[];

@@ -3,7 +3,7 @@
   <a mat-icon-button routerLink="/ddl" aria-label="Back to DDL"><mat-icon>arrow_back</mat-icon></a>
   <console-segmented-control [options]="screenOptions" [ngModel]="screen()" (ngModelChange)="screen.set($event)" />
   <console-segmented-control [options]="sidebarOptions" [ngModel]="sidebar()" (ngModelChange)="sidebar.set($event)" />
-  <console-segmented-control [options]="densityOptions" [ngModel]="density()" (ngModelChange)="density.set($event)" />
+  <a class="tr-toolbar__shipped" routerLink="/radar" [queryParams]="{ view: 'split' }">Shipped: Radar Split view</a>
   <p class="tr-toolbar__budget">
     Content {{ frameWidth() }}px = list {{ listWidth() }} + detail {{ paneWidth() }}. Property rail
     {{ railBeside() ? 'beside the post' : 'under the post' }}.
@@ -13,7 +13,6 @@
 <!-- The frame is the console content box at the simulated width. It owns focus for the keys. -->
 <div
   class="tr-frame"
-  [class.tr-frame--compact]="density() === 'compact'"
   [style.width.px]="frameWidth()"
   tabindex="0"
   (keydown)="onKeydown($event)"
@@ -52,7 +51,7 @@
     />
   </console-filter-bar>
 
-  <!-- Row 3: triage tabs (counts follow the filters), then undo, sort and promo on the right -->
+  <!-- Row 3: triage tabs (counts follow the filters), then promo and sort on the right -->
   <div class="tr-head">
     <div class="tr-tabs" role="tablist">
       @for (v of views; track v.value) {
@@ -69,12 +68,7 @@
         </button>
       }
     </div>
-    <div class="tr-head__status" role="status">
-      @if (lastAction(); as a) {
-        {{ a.label }}.
-        <button type="button" class="rv-linkbtn" (click)="onUndo()">Undo (U)</button>
-      }
-    </div>
+    <span class="tr-head__spacer"></span>
     <mat-checkbox [checked]="includePromo()" (change)="includePromo.set($event.checked)">Show promo</mat-checkbox>
     <console-filter-select
       class="tr-head__sort"
@@ -93,6 +87,7 @@
           class="tr-row"
           role="option"
           [class.tr-row--active]="selected()?.id === it.id"
+          [class.tr-row--decided]="it.decided"
           [attr.aria-selected]="selected()?.id === it.id"
           (click)="onSelect(it.id)"
         >
@@ -110,6 +105,11 @@
               }
               @if (it.comments) {
                 · <mat-icon class="icon-sm">forum</mat-icon>{{ it.comments.count }}
+              }
+              @if (it.decided; as mark) {
+                <mat-icon class="icon-sm tr-row__mark" [matTooltip]="mark.label" [attr.aria-label]="mark.label">
+                  {{ mark.icon }}
+                </mat-icon>
               }
             </p>
           </div>
@@ -139,20 +139,30 @@
           <button mat-icon-button type="button" matTooltip="Original post on Facebook">
             <mat-icon>open_in_new</mat-icon>
           </button>
+          @let saved = it.status === 'saved';
           <button
             mat-stroked-button
             type="button"
-            (click)="setStatus([it.id], it.status === 'saved' ? 'inbox' : 'saved')"
+            [matTooltip]="saved ? 'Saved to To try. Press again to move it back to Inbox' : ''"
+            (click)="onDecide(it.id, saved ? 'inbox' : 'saved')"
           >
-            <mat-icon>bookmark_add</mat-icon>
-            {{ it.status === 'saved' ? 'Inbox' : 'To try' }}
+            <mat-icon>{{ saved ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+            {{ saved ? 'Unsave' : 'To try' }}
             <kbd>S</kbd>
           </button>
-          <button mat-flat-button type="button" (click)="setStatus([it.id], 'done')">
-            <mat-icon>check</mat-icon>
-            Done
-            <kbd>E</kbd>
-          </button>
+          @if (it.status === 'done') {
+            <button mat-stroked-button type="button" (click)="onDecide(it.id, 'inbox')">
+              <mat-icon>undo</mat-icon>
+              Unmark done
+              <kbd>E</kbd>
+            </button>
+          } @else {
+            <button mat-flat-button type="button" (click)="onDecide(it.id, 'done')">
+              <mat-icon>check</mat-icon>
+              Done
+              <kbd>E</kbd>
+            </button>
+          }
         </div>
 
         <!-- The shipped Detail chassis, unchanged; only the rail placement adapts to the pane width -->

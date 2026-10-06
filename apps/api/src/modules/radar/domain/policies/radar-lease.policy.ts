@@ -1,4 +1,6 @@
-import { RADAR_MAX_CLAIM_ATTEMPTS } from '@portfolio/shared/types';
+import { RADAR_MAX_CLAIM_ATTEMPTS, type RadarQueueState } from '@portfolio/shared/types';
+
+import { RadarQueueFacts } from '../radar-item.types';
 
 /**
  * How long the worker holds a claimed item and how often an item may be claimed (RAD-005). The
@@ -17,5 +19,18 @@ export class RadarLeasePolicy {
 
   static expiresAt(now: Date): Date {
     return new Date(now.getTime() + RadarLeasePolicy.LEASE_MS);
+  }
+
+  /**
+   * One item's place in the queue, by the same rules as the Feed's status filter: done is
+   * analyzed; a paused source wins over everything open; a live lease is claimed; past the claim
+   * cap with no live lease is stuck; anything else waits.
+   */
+  static queueState(item: RadarQueueFacts, now: Date): RadarQueueState {
+    if (item.workStatus === 'DONE') return 'analyzed';
+    if (!item.sourceActive) return 'paused';
+    if (item.leaseExpiresAt && item.leaseExpiresAt >= now) return 'claimed';
+    if (item.claimCount >= RadarLeasePolicy.MAX_CLAIM_ATTEMPTS) return 'stuck';
+    return 'pending';
   }
 }

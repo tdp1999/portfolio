@@ -1,8 +1,9 @@
-<div class="crud-page crud-page--fill">
+<div class="crud-page crud-page--full radar-page" [class.radar-page--pane]="paneOpen()">
   <div class="crud-header">
     <div>
       <div class="radar-title">
         <h1 class="text-page-title">Radar</h1>
+        <console-help-button guide="radar-feature-guide" page label="Radar guide" />
         <div class="radar-queue" role="status">
           @if (stats(); as s) {
             <span class="console-badge console-badge--muted">{{ s.pending }} pending</span>
@@ -54,39 +55,54 @@
   </div>
 
   <div class="crud-toolbar">
-    <console-filter-bar>
-      <console-filter-search
-        placeholder="Search post text and TL;DR..."
-        [value]="search()"
-        (searchChange)="onSearchChange($event)"
-      />
-      <console-filter-select
-        label="Provider"
-        [options]="providerOptions"
-        [value]="providerTag()"
-        (selectionChange)="onProviderChange($event)"
-      />
-      <console-filter-select
-        label="Type"
-        [options]="contentTypeOptions"
-        [value]="contentType()"
-        (selectionChange)="onContentTypeChange($event)"
-      />
-      <console-filter-select
-        class="radar-filter--wide"
-        label="Min score"
-        [options]="minScoreOptions"
-        [value]="minScore()"
-        (selectionChange)="onMinScoreChange($event)"
-      />
-      <console-filter-select
-        label="Status"
-        [options]="statusOptions()"
-        [value]="status()"
-        (selectionChange)="onStatusChange($event)"
-      />
-      <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
-    </console-filter-bar>
+    <!-- Everyday filters on the bar; the rest wait in the Filters panel. Chips show both groups.
+         With a post open, the tabs join this row so the post gets the height. -->
+    <div class="radar-toolbar-row">
+      <console-filter-bar>
+        <console-filter-search
+          placeholder="Search post text and TL;DR..."
+          [value]="search()"
+          (searchChange)="onSearchChange($event)"
+        />
+        <console-filter-select
+          label="Status"
+          [options]="statusOptions()"
+          [value]="status()"
+          (selectionChange)="onStatusChange($event)"
+        />
+        <console-filter-select
+          class="radar-filter--wide"
+          label="Source"
+          [options]="sourceOptions()"
+          [value]="sourceId()"
+          (selectionChange)="onSourceChange($event)"
+        />
+        <console-filter-more [count]="moreCount()" (clear)="onClearMoreFilters()">
+          <console-filter-select
+            label="Provider"
+            [options]="providerOptions"
+            [value]="providerTag()"
+            (selectionChange)="onProviderChange($event)"
+          />
+          <console-filter-select
+            label="Type"
+            [options]="contentTypeOptions"
+            [value]="contentType()"
+            (selectionChange)="onContentTypeChange($event)"
+          />
+          <console-filter-select
+            label="Min score"
+            [options]="minScoreOptions"
+            [value]="minScore()"
+            (selectionChange)="onMinScoreChange($event)"
+          />
+          <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
+        </console-filter-more>
+      </console-filter-bar>
+      @if (paneOpen()) {
+        <ng-container [ngTemplateOutlet]="triageBar" />
+      }
+    </div>
 
     @if (activeFilters().length > 0) {
       <mat-chip-set>
@@ -100,177 +116,242 @@
     }
   </div>
 
-  <div class="crud-table-container">
-    @if (loading()) {
-      <console-skeleton-table [columns]="displayedColumns.length" [rows]="24" fill />
-    } @else {
-      <table
-        mat-table
-        matSort
-        [dataSource]="items()"
-        [matSortActive]="sortBy()"
-        [matSortDirection]="sortDir()"
-        (matSortChange)="onSortChange($event)"
-        class="radar-table w-full"
+  @if (!paneOpen()) {
+    <ng-container [ngTemplateOutlet]="triageBar" />
+  }
+
+  @if (paneOpen()) {
+    <div class="radar-split">
+      <console-radar-item-triage
+        [items]="items()"
+        [selectedId]="selectedId()"
+        [feedQuery]="feedQuery()"
+        [offset]="pageIndex() * pageSize()"
+        [total]="total()"
+        [tab]="triage()"
+        [busy]="deciding()"
+        (select)="onSelect($event)"
+        (decide)="onDecide($event)"
+        (close)="onClosePane()"
       >
-        <ng-container matColumnDef="score">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="signalScore" start="desc" class="col-score">Score</th>
-          <td mat-cell *matCellDef="let item" class="col-score">
-            @if (item.enrichment; as e) {
-              <span
-                class="radar-score"
-                [class]="e.signalScore | radarScoreTone"
-                [attr.aria-label]="'Signal score ' + e.signalScore"
+        <console-paginator
+          triageListFooter
+          compact
+          class="radar-pager"
+          [length]="total()"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [disabled]="loading()"
+          (page)="onPage($event)"
+        />
+      </console-radar-item-triage>
+    </div>
+  } @else {
+    <!-- The table scrolls inside its card under a sticky header; the page around it stays put. -->
+    <div class="crud-table-container radar-table-container">
+      @if (loading()) {
+        <console-skeleton-table [columns]="displayedColumns.length" [rows]="24" fill />
+      } @else {
+        <table
+          mat-table
+          matSort
+          [dataSource]="items()"
+          [matSortActive]="sortBy()"
+          [matSortDirection]="sortDir()"
+          (matSortChange)="onSortChange($event)"
+          class="radar-table w-full"
+        >
+          <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="signalScore" start="desc" class="col-score">
+              Score
+              <console-help-button guide="radar-feature-guide" section="score" label="What the score means" />
+            </th>
+            <td mat-cell *matCellDef="let item" class="col-score">
+              @if (item.enrichment; as e) {
+                <span
+                  class="radar-score"
+                  [class]="e.signalScore | radarScoreTone"
+                  [attr.aria-label]="'Signal score ' + e.signalScore"
+                >
+                  {{ e.signalScore }}
+                </span>
+              } @else {
+                <span
+                  class="radar-score radar-score--pending"
+                  matTooltip="Not analyzed yet"
+                  aria-label="Not analyzed yet"
+                >
+                  <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+                </span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="summary">
+            <th mat-header-cell *matHeaderCellDef>Summary</th>
+            <td mat-cell *matCellDef="let item" class="col-summary">
+              <!-- The row is clickable; the link keeps it reachable by keyboard and middle-click. -->
+              @let text = item.enrichment?.tldr ?? item.preview;
+              <a
+                class="radar-summary"
+                [class.radar-summary--raw]="!item.enrichment"
+                [routerLink]="['/radar/items', item.id]"
+                [queryParams]="feedQuery()"
+                [title]="text"
+                (click)="onSummaryClick($event, item)"
               >
-                {{ e.signalScore }}
-              </span>
-            } @else {
-              <span
-                class="radar-score radar-score--pending"
-                matTooltip="Not analyzed yet"
-                aria-label="Not analyzed yet"
-              >
-                <mat-icon class="icon-sm">hourglass_empty</mat-icon>
-              </span>
-            }
-          </td>
-        </ng-container>
+                {{ text }}
+              </a>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="summary">
-          <th mat-header-cell *matHeaderCellDef>Summary</th>
-          <td mat-cell *matCellDef="let item" class="col-summary">
-            <!-- The row is clickable; the link keeps it reachable by keyboard and middle-click. -->
-            <a
-              class="radar-summary"
-              [class.radar-summary--raw]="!item.enrichment"
-              [routerLink]="['/radar/items', item.id]"
-              [queryParams]="feedQuery()"
-              (click)="$event.stopPropagation()"
-            >
-              {{ item.enrichment?.tldr ?? item.preview }}
-            </a>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="progress">
+            <th mat-header-cell *matHeaderCellDef class="col-progress">
+              Progress
+              <console-help-button guide="radar-feature-guide" section="progress" label="What the icons mean" />
+            </th>
+            <td mat-cell *matCellDef="let item" class="col-progress">
+              <console-radar-item-progress [item]="item" />
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef class="col-type">Type</th>
-          <td mat-cell *matCellDef="let item" class="col-type">
-            @if (item.enrichment; as e) {
-              <span class="radar-tag radar-tag--type">{{ e.contentType | enumLabel: contentTypeLabels }}</span>
-            } @else {
-              <span class="rv-absent">-</span>
-            }
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="providers">
-          <th mat-header-cell *matHeaderCellDef class="col-providers">Providers</th>
-          <td mat-cell *matCellDef="let item" class="col-providers">
-            @if (item.enrichment?.providerTags.length) {
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef class="col-status">
+              Status
+              <console-help-button guide="radar-feature-guide" section="status" label="What the statuses mean" />
+            </th>
+            <td mat-cell *matCellDef="let item" class="col-status">
               <div class="radar-tags">
-                @for (tag of item.enrichment.providerTags; track tag) {
-                  <span class="radar-tag">{{ tag | enumLabel: providerLabels }}</span>
+                @if (item.enrichment; as e) {
+                  @if (e.isRelevant) {
+                    <span class="console-badge console-badge--success">Relevant</span>
+                  } @else {
+                    <span class="console-badge console-badge--muted">Not relevant</span>
+                  }
+                  @if (e.isPromo) {
+                    <span class="console-badge console-badge--warn">Promo</span>
+                  }
+                } @else {
+                  <span class="console-badge console-badge--muted">Pending</span>
                 }
               </div>
-            } @else {
-              <span class="rv-absent">-</span>
-            }
-          </td>
-        </ng-container>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef class="col-status">Status</th>
-          <td mat-cell *matCellDef="let item" class="col-status">
-            <div class="radar-tags">
-              @if (item.enrichment; as e) {
-                @if (e.isRelevant) {
-                  <span class="console-badge console-badge--success">Relevant</span>
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="source" class="col-source">Source</th>
+            <td mat-cell *matCellDef="let item" class="col-source">
+              @let mono = item.source.displayName | radarSourceMonogram;
+              <span
+                class="radar-monogram"
+                [class]="'radar-monogram--t' + mono.tone"
+                [class.radar-monogram--paused]="!item.source.isActive"
+                [matTooltip]="item.source.displayName + (item.source.isActive ? '' : ' (paused)')"
+                [attr.aria-label]="item.source.displayName"
+              >
+                {{ mono.initials }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="publishedAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="publishedAt" start="desc" class="col-published">
+              Published
+            </th>
+            <td mat-cell *matCellDef="let item" class="col-published">
+              <console-relative-time [value]="item.publishedAt" />
+            </td>
+          </ng-container>
+
+          <tr class="mat-mdc-row radar-state-row" *matNoDataRow>
+            <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
+              <div class="radar-state" [attr.role]="loadError() ? 'alert' : null">
+                @if (loadError()) {
+                  <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">error_outline</mat-icon>
+                  <p class="radar-state__title">Could not load the Feed</p>
+                  <p class="radar-state__body">Check that the API is running, then try again.</p>
+                  <div class="flex gap-2">
+                    @if (activeFilters().length) {
+                      <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
+                    }
+                    <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
+                  </div>
+                } @else if (activeFilters().length) {
+                  <mat-icon class="radar-state__icon icon-2xl">filter_alt_off</mat-icon>
+                  <p class="radar-state__title">No items match these filters</p>
+                  <p class="radar-state__body">Loosen a filter or clear them all.</p>
+                  <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
                 } @else {
-                  <span class="console-badge console-badge--muted">Not relevant</span>
+                  <mat-icon class="radar-state__icon icon-2xl">radar</mat-icon>
+                  <p class="radar-state__title">No items yet</p>
+                  <p class="radar-state__body">Add a source and upload a capture to fill the Feed.</p>
+                  <button mat-stroked-button type="button" (click)="onOpenSources()">Sources and upload</button>
                 }
-                @if (e.isPromo) {
-                  <span class="console-badge console-badge--warn">Promo</span>
-                }
-              } @else {
-                <span class="console-badge console-badge--muted">Pending</span>
-              }
-            </div>
-          </td>
-        </ng-container>
+              </div>
+            </td>
+          </tr>
 
-        <ng-container matColumnDef="comments">
-          <th mat-header-cell *matHeaderCellDef class="col-comments">Comments</th>
-          <td mat-cell *matCellDef="let item" class="col-comments">
-            @let chip = item.comments | radarCommentsChip: item.enrichment?.wantsComments ?? false;
-            <span class="radar-comments" [class]="chip.badge" [matTooltip]="chip.tooltip">
-              <mat-icon class="icon-sm">{{ chip.icon }}</mat-icon>
-              {{ chip.label }}
-              @if (chip.suggested) {
-                <span class="radar-comments__hint" role="img" aria-label="Suggested"></span>
-              }
-            </span>
-          </td>
-        </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="radar-row"
+            [class.radar-row--split]="view() === 'split'"
+            (click)="onOpenItem(row)"
+          ></tr>
+        </table>
+      }
+    </div>
+    <console-paginator
+      class="crud-pagination"
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="pageSizeOptions"
+      [disabled]="loading()"
+      (page)="onPage($event)"
+    />
+  }
 
-        <ng-container matColumnDef="source">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="source" class="col-source">Source</th>
-          <td mat-cell *matCellDef="let item" class="col-source">
-            <span class="radar-source" [class.radar-source--paused]="!item.source.isActive">
-              {{ item.source.displayName }}
-            </span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="publishedAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="publishedAt" start="desc" class="col-published">
-            Published
-          </th>
-          <td mat-cell *matCellDef="let item" class="col-published">
-            <console-relative-time [value]="item.publishedAt" />
-          </td>
-        </ng-container>
-
-        <tr class="mat-mdc-row radar-state-row" *matNoDataRow>
-          <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
-            <div class="radar-state" [attr.role]="loadError() ? 'alert' : null">
-              @if (loadError()) {
-                <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">error_outline</mat-icon>
-                <p class="radar-state__title">Could not load the Feed</p>
-                <p class="radar-state__body">Check that the API is running, then try again.</p>
-                <div class="flex gap-2">
-                  @if (activeFilters().length) {
-                    <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
-                  }
-                  <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
-                </div>
-              } @else if (activeFilters().length) {
-                <mat-icon class="radar-state__icon icon-2xl">filter_alt_off</mat-icon>
-                <p class="radar-state__title">No items match these filters</p>
-                <p class="radar-state__body">Loosen a filter or clear them all.</p>
-                <button mat-stroked-button type="button" (click)="onClearFilters()">Clear filters</button>
-              } @else {
-                <mat-icon class="radar-state__icon icon-2xl">radar</mat-icon>
-                <p class="radar-state__title">No items yet</p>
-                <p class="radar-state__body">Add a source and upload a capture to fill the Feed.</p>
-                <button mat-stroked-button type="button" (click)="onOpenSources()">Sources and upload</button>
-              }
-            </div>
-          </td>
-        </tr>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="radar-row" (click)="onOpenItem(row)"></tr>
-      </table>
-    }
-  </div>
-
-  <console-paginator
-    class="crud-pagination"
-    [length]="total()"
-    [pageIndex]="pageIndex()"
-    [pageSize]="pageSize()"
-    [pageSizeOptions]="pageSizeOptions"
-    [disabled]="loading()"
-    (page)="onPage($event)"
-  />
+  <!-- Triage tabs filter both views; counts follow the filters, whichever tab is open. -->
+  <ng-template #triageBar>
+    <div class="radar-triage-bar">
+      <div class="radar-tabs" role="tablist" aria-label="Triage">
+        @for (tab of triageTabs; track tab.value) {
+          <button
+            type="button"
+            role="tab"
+            class="radar-tab"
+            [class.radar-tab--active]="triage() === tab.value"
+            [attr.aria-selected]="triage() === tab.value"
+            (click)="onTriageTab(tab.value)"
+          >
+            {{ tab.label }}
+            @if (triageCounts(); as counts) {
+              <span class="radar-tab__count">{{ counts[tab.value] }}</span>
+            }
+          </button>
+        }
+      </div>
+      <console-help-button guide="radar-feature-guide" section="triage" label="How triage works" />
+      <span class="radar-triage-bar__spacer"></span>
+      @if (paneOpen()) {
+        <console-filter-select
+          class="radar-triage-bar__sort"
+          label="Sort"
+          [options]="splitSortOptions"
+          [value]="splitSort()"
+          [showAll]="false"
+          (selectionChange)="onSplitSort($event)"
+        />
+      }
+      <console-segmented-control
+        iconOnly
+        aria-label="View"
+        [options]="viewOptions"
+        [ngModel]="view()"
+        (ngModelChange)="onViewChange($event)"
+      />
+    </div>
+  </ng-template>
 </div>

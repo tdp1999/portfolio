@@ -117,6 +117,7 @@ export class RadarBriefRepository implements IRadarBriefRepository {
               signalScore: e.signalScore,
               isPromo: e.isPromo,
               isRelevant: e.isRelevant,
+              overview: e.overview,
               context: e.context,
               scoreReason: e.scoreReason,
               factCheck: e.factCheck,

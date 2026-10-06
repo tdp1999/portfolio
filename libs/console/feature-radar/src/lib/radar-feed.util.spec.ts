@@ -1,4 +1,11 @@
-import { DEFAULT_FEED_STATE, locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from './radar-feed.util';
+import {
+  DEFAULT_FEED_STATE,
+  locateInPage,
+  parseFeedQuery,
+  parseItemParam,
+  toFeedQuery,
+  toFeedRequest,
+} from './radar-feed.util';
 import type { RadarFeedItem } from './radar.types';
 
 const item = (id: string) => ({ id }) as RadarFeedItem;
@@ -13,10 +20,12 @@ describe('feed query', () => {
       minScore: '7',
       includePromo: true,
       status: 'stuck',
+      sourceId: '01a10755-0000-7000-8000-00000000000b',
       sortBy: 'signalScore' as const,
       sortDir: 'asc' as const,
       pageIndex: 2,
       pageSize: 200,
+      triage: 'SAVED' as const,
     };
     expect(parseFeedQuery(toFeedQuery(state))).toEqual(state);
   });
@@ -32,8 +41,16 @@ describe('feed query', () => {
   });
 
   it('drops filter values the API would reject', () => {
-    expect(parseFeedQuery({ provider: 'foo', type: 'bar', score: 'x', status: 'claimed' })).toEqual(DEFAULT_FEED_STATE);
+    expect(
+      parseFeedQuery({ provider: 'foo', type: 'bar', score: 'x', status: 'claimed', triage: 'INBOX', source: 'nope' })
+    ).toEqual(DEFAULT_FEED_STATE);
     expect(parseFeedQuery({ score: '5' }).minScore).toBe('');
+  });
+
+  it('ignores object keys and non-id values a hand-edited URL may carry', () => {
+    expect(parseFeedQuery({ triage: 'constructor' }).triage).toBe('INBOX');
+    expect(parseItemParam('x"]')).toBeNull();
+    expect(parseItemParam('01a10b03-8b62-710e-bea1-a96904643101')).toBe('01a10b03-8b62-710e-bea1-a96904643101');
   });
 
   it('builds the API request with a 1-based page and a numeric score', () => {

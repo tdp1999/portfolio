@@ -1,7 +1,10 @@
 <div class="crud-page">
   <div class="crud-header">
     <div>
-      <h1 class="text-page-title">Radar runs</h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-page-title">Radar runs</h1>
+        <console-help-button guide="radar-feature-guide" section="runs" page label="Radar guide: runs" />
+      </div>
       <p class="crud-header__subtitle">
         Each run captures one source, saves its posts and images, then waits for the analysis.
         @if (activeCount()) {

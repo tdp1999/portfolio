@@ -1,19 +1,21 @@
-<div class="paginator">
-  <div class="paginator__size">
-    <span class="paginator__label">Rows per page</span>
-    <mat-select
-      class="paginator__size-select"
-      panelWidth=""
-      aria-label="Rows per page"
-      [value]="pageSize()"
-      [disabled]="disabled()"
-      (selectionChange)="onSizeChange($event.value)"
-    >
-      @for (size of pageSizeOptions(); track size) {
-        <mat-option [value]="size">{{ size }}</mat-option>
-      }
-    </mat-select>
-  </div>
+<div class="paginator" [class.paginator--compact]="compact()">
+  @if (!compact()) {
+    <div class="paginator__size">
+      <span class="paginator__label">Rows per page</span>
+      <mat-select
+        class="paginator__size-select"
+        panelWidth=""
+        aria-label="Rows per page"
+        [value]="pageSize()"
+        [disabled]="disabled()"
+        (selectionChange)="onSizeChange($event.value)"
+      >
+        @for (size of pageSizeOptions(); track size) {
+          <mat-option [value]="size">{{ size }}</mat-option>
+        }
+      </mat-select>
+    </div>
+  }
 
   <span class="paginator__range" aria-live="polite">{{ rangeLabel() }}</span>
 

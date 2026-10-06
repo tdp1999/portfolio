@@ -27,6 +27,6 @@ export class GetRadarItemHandler implements IQueryHandler<GetRadarItemQuery> {
         layer: ErrorLayer.APPLICATION,
       });
     }
-    return RadarPresenter.toItemDetail(item);
+    return RadarPresenter.toItemDetail(item, new Date());
   }
 }
