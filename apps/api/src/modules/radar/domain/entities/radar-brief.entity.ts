@@ -1,0 +1,143 @@
+import { RadarWorkStatus } from '@prisma/client';
+
+import { BadRequestError, ConflictError, ErrorLayer, RadarErrorCode } from '@portfolio/shared/errors';
+import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
+
+import { CreateRadarBriefPayload, RadarBriefProducer, RadarBriefProps } from '../radar-brief.types';
+
+/**
+ * A catch-up summary of the analyzed posts in a time window. The row is its own work item: the
+ * worker claims it under a lease, as it claims posts, and submits the markdown once.
+ */
+export class RadarBrief {
+  // --- Constants ---
+
+  /** How the body links a claim to its post: the console Detail route. */
+  private static readonly ITEM_LINK = /\]\(\/radar\/items\/([0-9a-f-]{36})\)/gi;
+
+  private constructor(private readonly props: RadarBriefProps) {}
+
+  // --- Factory Methods ---
+
+  /**
+   * A brief waits for the worker. A window with no analyzed post would give an empty brief, so it
+   * is refused here; `waiting` says whether another brief is still unwritten (one at a time).
+   */
+  static create(data: CreateRadarBriefPayload, windowItemCount: number, waiting: boolean): RadarBrief {
+    if (waiting) {
+      throw ConflictError('A brief is already waiting for the worker', {
+        errorCode: RadarErrorCode.BRIEF_ALREADY_WAITING,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+    if (windowItemCount === 0) {
+      throw BadRequestError('No analyzed posts fall in this window', {
+        errorCode: RadarErrorCode.BRIEF_EMPTY_WINDOW,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+    return new RadarBrief({
+      ...data,
+      id: IdentifierValue.v7(),
+      body: '',
+      itemIds: [],
+      workStatus: RadarWorkStatus.PENDING,
+      leaseExpiresAt: null,
+      producer: null,
+      createdAt: TemporalValue.now(),
+    });
+  }
+
+  static load(props: RadarBriefProps): RadarBrief {
+    return new RadarBrief(props);
+  }
+
+  // --- Getters ---
+
+  get id(): string {
+    return this.props.id;
+  }
+
+  get sourceId(): string | null {
+    return this.props.sourceId;
+  }
+
+  get windowFrom(): Date {
+    return this.props.windowFrom;
+  }
+
+  get windowTo(): Date {
+    return this.props.windowTo;
+  }
+
+  get body(): string {
+    return this.props.body;
+  }
+
+  get itemIds(): readonly string[] {
+    return this.props.itemIds;
+  }
+
+  get workStatus(): RadarWorkStatus {
+    return this.props.workStatus;
+  }
+
+  get leaseExpiresAt(): Date | null {
+    return this.props.leaseExpiresAt;
+  }
+
+  get producer(): RadarBriefProducer | null {
+    return this.props.producer;
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  // --- Rules ---
+
+  /**
+   * The worker's markdown, accepted only while it holds the brief. Every post the body links to
+   * must be one of the window's analyzed posts, and it must link to at least one: a claim the
+   * Owner cannot trace back to a post is not accepted.
+   */
+  complete(body: string, windowItemIds: readonly string[], producer: RadarBriefProducer): RadarBrief {
+    if (this.props.workStatus !== RadarWorkStatus.CLAIMED) {
+      throw BadRequestError('This brief is not claimed by the worker', {
+        errorCode: RadarErrorCode.BRIEF_NOT_CLAIMED,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+    const linked = RadarBrief.linkedItemIds(body);
+    const inWindow = new Set(windowItemIds);
+    const outside = linked.filter((id) => !inWindow.has(id));
+    if (linked.length === 0 || outside.length > 0) {
+      throw BadRequestError(
+        'The brief must link to posts of its window, and only to those',
+        {
+          errorCode: RadarErrorCode.BRIEF_INVALID_LINKS,
+          layer: ErrorLayer.DOMAIN,
+        },
+        { outsideItemIds: outside }
+      );
+    }
+    return new RadarBrief({
+      ...this.props,
+      body,
+      itemIds: [...windowItemIds],
+      workStatus: RadarWorkStatus.DONE,
+      leaseExpiresAt: null,
+      producer,
+    });
+  }
+
+  toProps(): RadarBriefProps {
+    return { ...this.props, itemIds: [...this.props.itemIds] };
+  }
+
+  // --- Private ---
+
+  private static linkedItemIds(body: string): string[] {
+    return [...new Set([...body.matchAll(RadarBrief.ITEM_LINK)].map((m) => m[1].toLowerCase()))];
+  }
+}

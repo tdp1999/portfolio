@@ -14,3 +14,4 @@ export const COMMENTS_PROVIDER = Symbol('COMMENTS_PROVIDER');
 export const RADAR_COMMENTS_REPOSITORY = Symbol('RADAR_COMMENTS_REPOSITORY');
 /** Analysis providers, resolved per run by the run's `llmAdapter` name. */
 export const LLM_PROVIDERS = Symbol('LLM_PROVIDERS');
+export const RADAR_BRIEF_REPOSITORY = Symbol('RADAR_BRIEF_REPOSITORY');

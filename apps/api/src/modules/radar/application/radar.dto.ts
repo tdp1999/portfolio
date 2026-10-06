@@ -330,3 +330,90 @@ export interface RadarRunDto {
   finishedAt: Date | null;
   steps: RadarStepRunDto[];
 }
+
+// --- Briefs ---
+
+export const BRIEF_LIST_LIMIT = 50;
+/** A 6-month brief of a few hundred posts fits well inside this, and it stays under the 100 KB body limit. */
+export const MAX_BRIEF_CHARS = 60_000;
+export const MAX_BRIEF_ITEMS_PAGE = 100;
+
+export const CreateBriefSchema = z
+  .object({
+    sourceId: z
+      .uuid()
+      .nullish()
+      .transform((v) => v ?? null),
+    windowFrom: z.coerce.date(),
+    windowTo: z.coerce.date(),
+  })
+  .refine((v) => v.windowFrom < v.windowTo, { message: 'windowFrom must be before windowTo', path: ['windowTo'] });
+
+export const SubmitBriefSchema = z.object({
+  body: z.string().trim().min(1).max(MAX_BRIEF_CHARS),
+  producer: z.object({ adapter: z.string().trim().min(1).max(64), model: z.string().trim().min(1).max(100) }),
+});
+
+export const ListBriefItemsSchema = z.object({
+  offset: z.coerce.number().int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(MAX_BRIEF_ITEMS_PAGE).default(50),
+});
+
+export interface RadarBriefDto {
+  id: string;
+  /** Null: the brief covers every source. */
+  source: { id: string; displayName: string } | null;
+  windowFrom: Date;
+  windowTo: Date;
+  workStatus: RadarWorkStatus;
+  leaseExpiresAt: Date | null;
+  itemCount: number;
+  producer: { adapter: string; model: string } | null;
+  createdAt: Date;
+}
+
+export interface RadarBriefDetailDto extends RadarBriefDto {
+  body: string;
+}
+
+export interface ClaimBriefResponseDto {
+  /**
+   * Null when no brief is waiting. `sourceId` null means every source; `itemCount` is how many
+   * analyzed posts the window holds now.
+   */
+  brief: (Omit<RadarBriefDto, 'source' | 'producer' | 'createdAt'> & { sourceId: string | null }) | null;
+}
+
+export interface RadarBriefWorkItemDto {
+  id: string;
+  sourceName: string;
+  permalink: string;
+  /** The link the brief uses to cite this post. */
+  detailPath: string;
+  authorName: string;
+  publishedAt: Date;
+  text: string;
+  tldr: string;
+  providerTags: string[];
+  contentType: string;
+  signalScore: number;
+  isPromo: boolean;
+  isRelevant: boolean;
+  context: string | null;
+  scoreReason: string | null;
+  factCheck: string | null;
+  applyNote: string | null;
+  linkSummaries: { url: string; summary: string }[];
+}
+
+export interface RadarBriefItemsPageDto {
+  items: RadarBriefWorkItemDto[];
+  total: number;
+  /** Null on the last page. */
+  nextOffset: number | null;
+}
+
+export interface SubmitBriefResponseDto {
+  id: string;
+  itemCount: number;
+}

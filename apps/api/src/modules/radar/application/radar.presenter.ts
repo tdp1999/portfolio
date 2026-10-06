@@ -1,12 +1,17 @@
+import { RadarBrief } from '../domain/entities/radar-brief.entity';
 import { RadarRun } from '../domain/entities/radar-run.entity';
 import { RadarCommentThread } from '../domain/value-objects/radar-comment-thread';
 import { servedUrl } from '../domain/radar-media.util';
 import { RadarMedia } from '../domain/radar.types';
+import { RadarBriefSummary, RadarBriefWorkItem } from './ports/radar-brief.repository.port';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
 import { ClaimedRadarItem } from './ports/radar-work.repository.port';
 import { RadarSourceListing } from './ports/radar-source.repository.port';
 import {
   FEED_PREVIEW_CHARS,
+  RadarBriefDetailDto,
+  RadarBriefDto,
+  RadarBriefWorkItemDto,
   RadarFeedItemDto,
   RadarItemCommentsSummaryDto,
   RadarItemDetailDto,
@@ -152,6 +157,31 @@ export class RadarPresenter {
         images: toItemImages(sharedPost.media),
       },
     };
+  }
+
+  static toBrief(brief: RadarBriefSummary): RadarBriefDto {
+    return {
+      id: brief.id,
+      source: brief.sourceId && brief.sourceName ? { id: brief.sourceId, displayName: brief.sourceName } : null,
+      windowFrom: brief.windowFrom,
+      windowTo: brief.windowTo,
+      workStatus: brief.workStatus,
+      leaseExpiresAt: brief.leaseExpiresAt,
+      itemCount: brief.itemCount,
+      producer: brief.producer,
+      createdAt: brief.createdAt,
+    };
+  }
+
+  static toBriefDetail(brief: RadarBrief, sourceName: string | null): RadarBriefDetailDto {
+    return {
+      ...RadarPresenter.toBrief({ ...brief.toProps(), itemCount: brief.itemIds.length, sourceName }),
+      body: brief.body,
+    };
+  }
+
+  static toBriefWorkItem(item: RadarBriefWorkItem): RadarBriefWorkItemDto {
+    return { ...item, detailPath: `/radar/items/${item.id}` };
   }
 }
 

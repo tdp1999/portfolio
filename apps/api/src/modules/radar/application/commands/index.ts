@@ -12,3 +12,6 @@ export * from './run.advance.command';
 export * from './run.cancel.command';
 export * from './comments.fetch.command';
 export * from './comments.upload.command';
+export * from './brief.create.command';
+export * from './brief.claim.command';
+export * from './brief.submit.command';

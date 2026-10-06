@@ -7,6 +7,9 @@ import { MediaModule } from '../media/media.module';
 
 import {
   AdvanceRunHandler,
+  ClaimBriefHandler,
+  CreateBriefHandler,
+  SubmitBriefHandler,
   CollectItemCommentsHandler,
   FetchItemCommentsHandler,
   UploadCommentsHandler,
@@ -27,8 +30,11 @@ import { RadarTickJob } from './application/jobs/radar-tick.job';
 import { RADAR_CAPTURE_CONFIG, loadRadarCaptureConfig, RadarCaptureConfig } from './application/radar-capture.config';
 import { RADAR_WORKER_CONFIG, loadRadarWorkerConfig } from './application/radar-worker.config';
 import {
+  GetBriefHandler,
   GetCommentsSettingsHandler,
   GetRadarItemHandler,
+  ListBriefItemsHandler,
+  ListBriefsHandler,
   GetRadarQueueStatsHandler,
   GetRunHandler,
   GetWorkflowProfileHandler,
@@ -48,6 +54,7 @@ import {
   RADAR_ITEM_REPOSITORY,
   RADAR_PROFILE_REPOSITORY,
   RADAR_RUN_REPOSITORY,
+  RADAR_BRIEF_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
   RADAR_WORK_REPOSITORY,
 } from './application/radar.token';
@@ -56,6 +63,7 @@ import { ApifyCommentsAdapter } from './infrastructure/capture/apify-comments.ad
 import { RunCommentsPhase } from './application/commands/run.comments.phase';
 import { ApifyFacebookNormalizer } from './infrastructure/capture/apify-facebook.normalizer';
 import { FetchImageDownloader } from './infrastructure/capture/fetch-image.downloader';
+import { RadarBriefRepository } from './infrastructure/repositories/radar-brief.repository';
 import { RadarCaptureRepository } from './infrastructure/repositories/radar-capture.repository';
 import { RadarCommentsRepository } from './infrastructure/repositories/radar-comments.repository';
 import { RadarImageRepository } from './infrastructure/repositories/radar-image.repository';
@@ -84,6 +92,9 @@ const CommandHandlers = [
   FetchItemCommentsHandler,
   CollectItemCommentsHandler,
   UploadCommentsHandler,
+  CreateBriefHandler,
+  ClaimBriefHandler,
+  SubmitBriefHandler,
 ];
 const QueryHandlers = [
   ListSourcesHandler,
@@ -94,6 +105,9 @@ const QueryHandlers = [
   GetRadarQueueStatsHandler,
   ListRunsHandler,
   GetRunHandler,
+  ListBriefsHandler,
+  GetBriefHandler,
+  ListBriefItemsHandler,
 ];
 
 @Module({
@@ -108,6 +122,7 @@ const QueryHandlers = [
     { provide: RADAR_WORK_REPOSITORY, useClass: RadarWorkRepository },
     { provide: RADAR_PROFILE_REPOSITORY, useClass: RadarProfileRepository },
     { provide: RADAR_RUN_REPOSITORY, useClass: RadarRunRepository },
+    { provide: RADAR_BRIEF_REPOSITORY, useClass: RadarBriefRepository },
     { provide: IMAGE_DOWNLOADER, useClass: FetchImageDownloader },
     {
       provide: RADAR_WORKER_CONFIG,

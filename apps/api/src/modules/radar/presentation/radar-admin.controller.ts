@@ -22,6 +22,7 @@ import { Roles, RoleGuard } from '../../auth/application/guards/role.guard';
 import { MulterFile } from '../../../shared/types';
 import {
   CancelRunCommand,
+  CreateBriefCommand,
   CreateRunCommand,
   CollectItemCommentsCommand,
   FetchItemCommentsCommand,
@@ -35,7 +36,9 @@ import {
   UpsertWorkflowProfileCommand,
 } from '../application/commands';
 import {
+  GetBriefQuery,
   GetCommentsSettingsQuery,
+  ListBriefsQuery,
   GetRunQuery,
   GetRadarItemQuery,
   GetRadarQueueStatsQuery,
@@ -129,6 +132,21 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async cancelRun(@Param('id') id: string) {
     return await this.commandBus.execute(new CancelRunCommand(id));
+  }
+
+  @Post('briefs')
+  async createBrief(@Body() body: unknown) {
+    return await this.commandBus.execute(new CreateBriefCommand(body));
+  }
+
+  @Get('briefs')
+  async listBriefs() {
+    return await this.queryBus.execute(new ListBriefsQuery());
+  }
+
+  @Get('briefs/:id')
+  async getBrief(@Param('id') id: string) {
+    return await this.queryBus.execute(new GetBriefQuery(id));
   }
 
   @Get('items')

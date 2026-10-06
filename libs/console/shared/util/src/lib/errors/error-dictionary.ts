@@ -152,6 +152,12 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.CAPTURE_NOT_CONFIGURED]:
     'Hybrid capture is not configured on the server. Set the Apify token, or start a Manual run.',
   [RadarErrorCode.COMMENTS_FETCH_FAILED]: 'Comments could not be fetched from the provider. Please try again later.',
+  [RadarErrorCode.BRIEF_NOT_FOUND]: 'This brief no longer exists.',
+  [RadarErrorCode.BRIEF_EMPTY_WINDOW]:
+    'No analyzed posts fall in this window. Pick a wider window or run the worker first.',
+  [RadarErrorCode.BRIEF_ALREADY_WAITING]: 'A brief is already waiting for the worker. Wait for it to finish first.',
+  [RadarErrorCode.BRIEF_NOT_CLAIMED]: 'This brief is not claimed by the worker.',
+  [RadarErrorCode.BRIEF_INVALID_LINKS]: 'The brief links to posts outside its window, or to none.',
 
   // --- Tag ---
   [TagErrorCode.NOT_FOUND]: 'Tag not found.',
