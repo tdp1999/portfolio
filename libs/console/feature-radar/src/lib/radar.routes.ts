@@ -11,6 +11,14 @@ export const radarRoutes: Route[] = [
     loadComponent: () => import('./radar-run.list/radar-run.list'),
   },
   {
+    path: 'briefs',
+    loadComponent: () => import('./radar-brief.list/radar-brief.list'),
+  },
+  {
+    path: 'briefs/:id',
+    loadComponent: () => import('./radar-brief.detail/radar-brief.detail'),
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./radar-profile.form/radar-profile.form'),
     canDeactivate: [unsavedChangesGuard],

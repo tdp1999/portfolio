@@ -9,6 +9,12 @@ export {
 /** How often the Runs page refreshes while a run is active. */
 export const RUN_POLL_MS = 10_000;
 
+/** How often the Briefs page refreshes while a brief waits for the worker. */
+export const BRIEF_POLL_MS = 10_000;
+
+/** Window the New brief form starts with, ending today. */
+export const DEFAULT_BRIEF_WINDOW_MONTHS = 1;
+
 /** Item cap the New run form starts with: enough for a few weeks of one source. */
 export const DEFAULT_RUN_ITEM_CAP = 200;
 

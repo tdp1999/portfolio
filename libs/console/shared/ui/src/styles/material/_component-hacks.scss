@@ -95,3 +95,9 @@
   --mdc-filled-text-field-hover-active-indicator-color: transparent;
   --mdc-filled-text-field-focus-active-indicator-color: var(--color-primary);
 }
+
+/* A tooltip whose text carries `\n` line breaks (opt in with `matTooltipClass="tooltip-multiline"`);
+   Material collapses whitespace by default. Global because the tooltip renders in the overlay. */
+.tooltip-multiline .mdc-tooltip__surface {
+  white-space: pre-line;
+}

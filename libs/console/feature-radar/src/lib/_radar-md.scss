@@ -1,0 +1,45 @@
+/*
+ * Worker-written markdown: keep lists and paragraphs compact inside a record field. The HTML comes
+ * from `[innerHTML]`, which carries no `_ngcontent` attribute, so the rules reach in with `::ng-deep`,
+ * still anchored on `.radar-md` of the component's own template.
+ */
+.radar-md ::ng-deep {
+  :is(p, ul, ol) {
+    margin: 0 0 8px;
+  }
+
+  /* Tailwind's preflight strips list markers; worker lists need them to read as separate points. */
+  :is(ul, ol) {
+    padding-left: 20px;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  li + li {
+    margin-top: 4px;
+  }
+
+  :is(h1, h2, h3, h4) {
+    margin: 16px 0 8px;
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+
+  code {
+    padding: 0 4px;
+    border-radius: 4px;
+    background: var(--color-surface-alt);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+}

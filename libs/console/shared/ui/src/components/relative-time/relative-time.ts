@@ -13,8 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { formatAbsolute, formatRelative, formatRelativeFull, isFresh } from './relative-time.util';
 
 /**
- * Renders a date/time as compact relative text ("3 hours ago"), with a tooltip
- * showing the absolute date and full relative breakdown.
+ * Renders a date/time as compact relative text ("3 hours ago"), with a two-line tooltip:
+ * the absolute date, then the full relative breakdown.
  *
  * Auto-refreshes every 60s while the value is fresh (< 1 hour old).
  */
@@ -23,7 +23,12 @@ import { formatAbsolute, formatRelative, formatRelativeFull, isFresh } from './r
   standalone: true,
   imports: [MatTooltipModule],
   template: `
-    <span [matTooltip]="tooltip()" matTooltipPosition="above" class="whitespace-nowrap text-text-muted">
+    <span
+      [matTooltip]="tooltip()"
+      matTooltipPosition="above"
+      matTooltipClass="tooltip-multiline"
+      class="whitespace-nowrap text-text-muted"
+    >
       {{ relative() }}
     </span>
   `,

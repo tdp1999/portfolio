@@ -2,8 +2,11 @@ import { HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { ApiService, SKIP_ERROR_HANDLING } from '@portfolio/console/shared/data-access';
 import {
+  CreateRadarBriefInput,
   CreateRadarRunInput,
   CreateRadarSourceInput,
+  RadarBrief,
+  RadarBriefDetail,
   RadarRun,
   RadarFeedPage,
   RadarFeedParams,
@@ -110,5 +113,21 @@ export class RadarService {
 
   cancelRun(id: string) {
     return this.api.post<RadarRun>(`/radar/runs/${id}/cancel`, {});
+  }
+
+  /** `silent` as in `listRuns`: the list polls while a brief waits for the worker. */
+  listBriefs(silent = false) {
+    const context = silent ? new HttpContext().set(SKIP_ERROR_HANDLING, true) : undefined;
+    return this.api.get<RadarBrief[]>('/radar/briefs', { context });
+  }
+
+  /** `silent` for the Detail page's poll while the brief waits for the worker. */
+  getBrief(id: string, silent = false) {
+    const context = silent ? new HttpContext().set(SKIP_ERROR_HANDLING, true) : undefined;
+    return this.api.get<RadarBriefDetail>(`/radar/briefs/${id}`, { context });
+  }
+
+  createBrief(input: CreateRadarBriefInput) {
+    return this.api.post<RadarBrief>('/radar/briefs', input);
   }
 }

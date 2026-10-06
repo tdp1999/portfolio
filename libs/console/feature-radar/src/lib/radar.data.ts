@@ -64,6 +64,18 @@ export const WORK_STATUS_LABELS: Record<RadarWorkStatus, string> = {
   DONE: 'Analyzed',
 };
 
+export const BRIEF_STATUS_LABELS: Record<RadarWorkStatus, string> = {
+  PENDING: 'Waiting for worker',
+  CLAIMED: 'Being written',
+  DONE: 'Ready',
+};
+
+export const BRIEF_STATUS_BADGES: Record<RadarWorkStatus, string> = {
+  PENDING: 'console-badge--warn',
+  CLAIMED: 'console-badge--muted',
+  DONE: 'console-badge--success',
+};
+
 export const RUN_STEP_LABELS: Record<RadarRunStep, string> = {
   CAPTURE: 'Capture',
   NORMALIZE: 'Normalize',

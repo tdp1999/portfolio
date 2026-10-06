@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>New brief</h2>
+<form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="flex flex-col gap-4">
+      <mat-form-field>
+        <mat-label>Window</mat-label>
+        <mat-date-range-input [rangePicker]="windowPicker" [max]="today">
+          <input matStartDate formControlName="windowFrom" placeholder="From" readonly />
+          <input matEndDate formControlName="windowTo" placeholder="To" readonly />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="windowPicker" />
+        <mat-date-range-picker #windowPicker />
+        <mat-hint>Posts published in these days, both ends included. Only analyzed posts count.</mat-hint>
+        <mat-error>{{ form.controls.windowFrom | formError }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Source</mat-label>
+        <mat-select formControlName="sourceId">
+          <mat-option [value]="null">All sources</mat-option>
+          @for (s of data.sources; track s.id) {
+            <mat-option [value]="s.id">{{ s.displayName }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Pick one source to read only what it posted.</mat-hint>
+      </mat-form-field>
+
+      <p class="text-caption">
+        The brief waits until you run <code>/radar work brief</code> in Claude Code, which writes it and links each
+        point to its post.
+      </p>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Request brief</button>
+  </mat-dialog-actions>
+</form>

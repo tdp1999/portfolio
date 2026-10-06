@@ -278,3 +278,34 @@ export interface RadarRunRow extends Omit<RadarRun, 'steps'> {
   itemsDetail: string;
   steps: (RadarStepRun & { tooltip: string })[];
 }
+
+// --- Briefs ---
+
+export interface RadarBrief {
+  id: string;
+  /** Null: the brief covers every source. */
+  source: { id: string; displayName: string } | null;
+  windowFrom: string;
+  windowTo: string;
+  workStatus: RadarWorkStatus;
+  leaseExpiresAt: string | null;
+  /** Analyzed posts the brief covers; set when the worker submits it. */
+  itemCount: number;
+  producer: { adapter: string; model: string } | null;
+  createdAt: string;
+}
+
+export interface RadarBriefDetail extends RadarBrief {
+  /** Markdown. Empty until the worker submits the brief. */
+  body: string;
+}
+
+export interface CreateRadarBriefInput {
+  sourceId: string | null;
+  windowFrom: string;
+  windowTo: string;
+}
+
+export interface RadarBriefCreateDialogData {
+  sources: RadarSource[];
+}

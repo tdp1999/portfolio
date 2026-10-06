@@ -1,0 +1,48 @@
+@use '../radar-state';
+
+:host {
+  display: block;
+}
+
+.brief-table .mat-mdc-cell {
+  vertical-align: middle;
+  padding-block: 12px;
+}
+
+.brief-link {
+  color: var(--color-text);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+}
+
+.col-source {
+  width: 200px;
+}
+
+.col-status {
+  width: 160px;
+}
+
+.col-items {
+  width: 176px;
+}
+
+.col-created {
+  width: 128px;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.crud-header__subtitle code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.brief-table .brief-state-row:hover {
+  background: transparent;
+}

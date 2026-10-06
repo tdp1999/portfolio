@@ -1,0 +1,105 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">Radar briefs</h1>
+      <p class="crud-header__subtitle">
+        A brief sums up the analyzed posts of a window, grouped by provider and topic, with each point linked to its
+        post.
+        @if (waiting()) {
+          One brief is waiting: run <code>/radar work brief</code> in Claude Code. This page refreshes every 10 seconds
+          until it is written.
+        }
+      </p>
+    </div>
+    <div class="crud-header__actions">
+      <a mat-stroked-button routerLink="/radar">
+        <mat-icon class="icon-sm">arrow_back</mat-icon>
+        Feed
+      </a>
+      <span [matTooltip]="waiting() ? 'Wait for the current brief to be written first' : ''">
+        <button mat-flat-button color="primary" [disabled]="opening() || waiting()" (click)="onNewBrief()">
+          <mat-icon class="icon-sm">summarize</mat-icon>
+          New brief
+        </button>
+      </span>
+    </div>
+  </div>
+
+  <div class="crud-table-container">
+    @if (loading()) {
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="6" />
+    } @else {
+      <table mat-table [dataSource]="briefs()" class="brief-table w-full">
+        <ng-container matColumnDef="window">
+          <th mat-header-cell *matHeaderCellDef>Window</th>
+          <td mat-cell *matCellDef="let brief">
+            <a class="brief-link text-body font-semibold" [routerLink]="['/radar/briefs', brief.id]">
+              {{ brief.windowFrom | date: 'mediumDate' : 'UTC' }} to {{ brief.windowTo | date: 'mediumDate' : 'UTC' }}
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef class="col-source">Source</th>
+          <td mat-cell *matCellDef="let brief" class="col-source">
+            @if (brief.source) {
+              {{ brief.source.displayName }}
+            } @else {
+              <span class="text-text-secondary">All sources</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef class="col-status">Status</th>
+          <td mat-cell *matCellDef="let brief" class="col-status">
+            <span class="console-badge" [class]="brief.workStatus | enumLabel: statusBadges">{{
+              brief.workStatus | enumLabel: statusLabels
+            }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="items">
+          <th mat-header-cell *matHeaderCellDef class="col-items">Posts</th>
+          <td mat-cell *matCellDef="let brief" class="col-items">
+            @if (brief.workStatus === 'DONE') {
+              {{ brief.itemCount }}
+            } @else {
+              <span class="text-text-secondary">Counted when written</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef class="col-created">Requested</th>
+          <td mat-cell *matCellDef="let brief" class="col-created">
+            <console-relative-time [value]="brief.createdAt" />
+          </td>
+        </ng-container>
+
+        <tr class="mat-mdc-row brief-state-row" *matNoDataRow>
+          <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
+            <div class="radar-state" [attr.role]="loadError() ? 'alert' : null">
+              @if (loadError()) {
+                <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">error_outline</mat-icon>
+                <p class="radar-state__title">Could not load the briefs</p>
+                <p class="radar-state__body">Check that the API is running, then try again.</p>
+                <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
+              } @else {
+                <mat-icon class="radar-state__icon icon-2xl">summarize</mat-icon>
+                <p class="radar-state__title">No briefs yet</p>
+                <p class="radar-state__body">Request one to read a month of news in a few minutes.</p>
+                <button mat-stroked-button type="button" [disabled]="opening()" (click)="onNewBrief()">
+                  New brief
+                </button>
+              }
+            </div>
+          </td>
+        </tr>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    }
+  </div>
+</div>

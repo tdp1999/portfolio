@@ -1,0 +1,86 @@
+<div class="detail-page relative">
+  <console-spinner-overlay [loading]="loading()" />
+
+  @if (brief(); as b) {
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/radar/briefs" aria-label="Back to briefs">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">
+            Brief, {{ b.windowFrom | date: 'mediumDate' : 'UTC' }} to {{ b.windowTo | date: 'mediumDate' : 'UTC' }}
+          </h1>
+          <span class="console-badge" [class]="b.workStatus | enumLabel: statusBadges">{{
+            b.workStatus | enumLabel: statusLabels
+          }}</span>
+        </div>
+        <div class="detail-meta">
+          <span>{{ b.source ? b.source.displayName : 'All sources' }}</span>
+          @if (written()) {
+            <span>{{ b.itemCount }} posts</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <console-record-layout>
+      @if (written()) {
+        <console-record-section title="Brief">
+          <!-- Click handler only routes the body's own links; keyboard users activate them as normal links. -->
+          <div class="rv-prose radar-md brief-body" [innerHTML]="b.body | markdown" (click)="onBodyClick($event)"></div>
+        </console-record-section>
+      } @else {
+        <div class="brief-pending" role="status">
+          <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+          <p>
+            Waiting for the worker. Run <code>/radar work brief</code> in Claude Code; this page shows the brief as soon
+            as it is submitted.
+          </p>
+        </div>
+      }
+
+      <ng-container aside>
+        <console-record-panel title="Properties" flush>
+          <console-property-list>
+            <console-property label="From">{{ b.windowFrom | date: 'mediumDate' : 'UTC' }}</console-property>
+            <console-property label="To">{{ b.windowTo | date: 'mediumDate' : 'UTC' }}</console-property>
+            <console-property label="Source">{{ b.source ? b.source.displayName : 'All sources' }}</console-property>
+            <console-property label="Status">{{ b.workStatus | enumLabel: statusLabels }}</console-property>
+            @if (written()) {
+              <console-property label="Posts">{{ b.itemCount }}</console-property>
+            }
+            <console-property label="Requested">{{ b.createdAt | date: 'medium' }}</console-property>
+          </console-property-list>
+        </console-record-panel>
+
+        @if (b.producer; as p) {
+          <console-record-panel title="Written by" flush>
+            <console-property-list>
+              <console-property label="Producer">{{ p.adapter }}</console-property>
+              <console-property label="Model">{{ p.model }}</console-property>
+            </console-property-list>
+          </console-record-panel>
+        }
+      </ng-container>
+    </console-record-layout>
+  } @else if (loadError(); as err) {
+    <div class="radar-state" role="alert">
+      <mat-icon class="radar-state__icon icon-2xl" [class.radar-state__icon--error]="err === 'failed'">
+        {{ err === 'not-found' ? 'search_off' : 'error_outline' }}
+      </mat-icon>
+      @if (err === 'not-found') {
+        <p class="radar-state__title">This brief no longer exists</p>
+      } @else {
+        <p class="radar-state__title">Could not load this brief</p>
+        <p class="radar-state__body">Check that the API is running, then try again.</p>
+      }
+      <div class="flex gap-2">
+        <a mat-stroked-button routerLink="/radar/briefs">Back to briefs</a>
+        @if (err === 'failed') {
+          <button mat-flat-button type="button" (click)="onRetry()">Retry</button>
+        }
+      </div>
+    </div>
+  }
+</div>
