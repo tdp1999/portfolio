@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import type { UserProfile } from '@portfolio/console/shared/util';
 import { SidebarModule } from '@portfolio/shared/ui';
+import { HelpViewer } from '../help-viewer/help-viewer';
 
 @Component({
   selector: 'console-main-layout',
@@ -23,6 +24,7 @@ import { SidebarModule } from '@portfolio/shared/ui';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    HelpViewer,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',

@@ -1,0 +1,24 @@
+<console-quick-look
+  mode="document"
+  [title]="title()"
+  [loading]="loading()"
+  [open]="isOpen()"
+  (openChange)="onOpenChange($event)"
+>
+  @if (path(); as href) {
+    <a
+      qlActions
+      class="help-viewer__action"
+      [href]="href"
+      target="_blank"
+      rel="noopener"
+      title="Open in a new tab"
+      aria-label="Open in a new tab"
+    >
+      <mat-icon class="icon-sm">open_in_new</mat-icon>
+    </a>
+  }
+  @if (src(); as s) {
+    <iframe #frame class="help-viewer__frame" [src]="s" [title]="title()" (load)="onFrameLoad(frame)"></iframe>
+  }
+</console-quick-look>

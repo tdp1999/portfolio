@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="help-btn"
+  [class.help-btn--page]="page()"
+  [matTooltip]="tooltip()"
+  [attr.aria-label]="label()"
+  (click)="onActivate($event)"
+  (keydown.enter)="$event.stopPropagation()"
+  (keydown.space)="$event.stopPropagation()"
+>
+  <mat-icon [class]="page() ? 'icon-md' : 'icon-sm'">help_outline</mat-icon>
+</button>

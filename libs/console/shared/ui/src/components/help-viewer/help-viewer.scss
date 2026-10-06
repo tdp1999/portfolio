@@ -1,0 +1,26 @@
+// Matches QuickLook's own header icon buttons, which projected content cannot reach.
+.help-viewer__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-text) 8%, transparent);
+    color: var(--color-text);
+  }
+}
+
+.help-viewer__frame {
+  // QuickLook's body is `position: relative`; filling it absolutely avoids relying on
+  // a percentage height inside its flex column.
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
