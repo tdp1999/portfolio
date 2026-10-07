@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RadarRunFlow } from '@prisma/client';
+import { RadarPlatform, RadarRunFlow } from '@prisma/client';
 
 import {
   BadRequestError,
@@ -24,9 +24,8 @@ import { CAPTURE_PROVIDERS, RADAR_RUN_REPOSITORY, RADAR_SOURCE_REPOSITORY } from
 
 /** Manual flow: the Owner uploads the provider export into the run. */
 export const UPLOAD_CAPTURE_ADAPTER = 'upload';
-/** Hybrid and Auto capture; later providers register under their own name. */
-const PROVIDER_CAPTURE_ADAPTER = 'apify';
-const NORMALIZE_ADAPTER = 'apify-facebook-posts';
+/** The upload route reads a Facebook posts export, so a Manual run is Facebook only. */
+const UPLOAD_NORMALIZE_ADAPTER = 'apify-facebook-posts';
 const IMAGE_ADAPTER = 'storage';
 
 /** Starts a run because the Owner asked for one (see {@link RadarRun.create}). */
@@ -63,8 +62,16 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
       });
     }
     source.ensureCanCapture();
-    if (providerCapture && !this.providers.find((p) => p.name === PROVIDER_CAPTURE_ADAPTER)?.isConfigured()) {
-      throw BadRequestError('Provider capture is not configured (APIFY_TOKEN is unset)', {
+    const facebook = source.platform === RadarPlatform.FACEBOOK;
+    if (!providerCapture && !facebook) {
+      throw invalid('A Manual run takes a Facebook export; run this source as Hybrid or Auto');
+    }
+    // The comments actor reads Facebook posts only.
+    if (input.fetchComments && !facebook) throw invalid('Comments can only be fetched for a Facebook source');
+    const provider = providerCapture ? this.providers.find((p) => p.platform === source.platform) : null;
+    if (providerCapture && !provider?.isConfigured()) {
+      const setting = provider ? ` (${provider.credentialName} is unset)` : '';
+      throw BadRequestError(`Provider capture is not configured${setting}`, {
         errorCode: RadarErrorCode.CAPTURE_NOT_CONFIGURED,
         layer: ErrorLayer.APPLICATION,
       });
@@ -79,7 +86,6 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
     // Checked here for a fast answer, and again inside the insert transaction for concurrent calls.
     if (await this.runs.hasActiveRun(source.id)) throw alreadyActive();
 
-    const captureAdapter = providerCapture ? PROVIDER_CAPTURE_ADAPTER : UPLOAD_CAPTURE_ADAPTER;
     const run = await this.runs.add(
       RadarRun.create({
         sourceId: source.id,
@@ -92,8 +98,8 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         fetchComments: input.fetchComments,
         budgetMicroUsd: auto ? this.budgetMicroUsd(input.budgetUsd) : null,
         adapters: {
-          capture: captureAdapter,
-          normalize: NORMALIZE_ADAPTER,
+          capture: provider?.name ?? UPLOAD_CAPTURE_ADAPTER,
+          normalize: provider?.format ?? UPLOAD_NORMALIZE_ADAPTER,
           enrich: IMAGE_ADAPTER,
           analyze: auto ? SERVER_AI_ADAPTER : EXTERNAL_WORKER_ADAPTER,
         },
@@ -108,6 +114,9 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
     return budgetUsd === undefined ? this.analysis.defaultBudgetMicroUsd : Math.round(budgetUsd * 1_000_000);
   }
 }
+
+const invalid = (message: string) =>
+  BadRequestError(message, { errorCode: RadarErrorCode.INVALID_INPUT, layer: ErrorLayer.APPLICATION });
 
 const alreadyActive = () =>
   ConflictError('This source already has an active run', {

@@ -21,7 +21,7 @@ import { ErrorMessage, FormErrorPipe, ServerErrorDirective } from '@portfolio/co
 import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_BUDGET_USD, MAX_RUN_ITEM_CAP, MIN_RUN_BUDGET_USD } from '../radar.constants';
 import { RUN_FLOW_HELP, runFlowOptions } from '../radar.data';
 import { RadarService } from '../radar.service';
-import type { RadarRun, RadarRunCreateDialogData, RadarRunFlow } from '../radar.types';
+import type { RadarPlatform, RadarRun, RadarRunCreateDialogData, RadarRunFlow } from '../radar.types';
 import { defaultWindowFrom, utcDayEnd, utcDayStart } from '../radar-run.util';
 
 @Component({
@@ -97,7 +97,16 @@ export class RadarRunCreateDialog {
   protected readonly aiSettings = toSignal(this.radarService.aiSettings().pipe(catchError(() => of(null))), {
     initialValue: null,
   });
-  protected readonly flowOptions = computed(() => runFlowOptions(this.aiSettings()?.configured ?? false));
+  private readonly sourceId = toSignal(this.form.controls.sourceId.valueChanges, {
+    initialValue: this.form.controls.sourceId.value,
+  });
+  /** Facebook unless the picked source is a YouTube channel. */
+  protected readonly isFacebook = computed(
+    () => (this.data.sources.find((s) => s.id === this.sourceId())?.platform ?? 'FACEBOOK') === 'FACEBOOK'
+  );
+  protected readonly flowOptions = computed(() =>
+    runFlowOptions(this.aiSettings()?.configured ?? false, this.isFacebook())
+  );
   protected readonly flow = toSignal(this.form.controls.flow.valueChanges, {
     initialValue: this.form.controls.flow.value,
   });
@@ -116,17 +125,25 @@ export class RadarRunCreateDialog {
     });
 
     // A different source chains from its own last run, so the window start follows the pick.
-    this.form.controls.sourceId.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((id) => this.form.controls.windowFrom.setValue(this.windowStart(id)));
+    // A YouTube channel cannot take a Manual run (the upload is a Facebook export).
+    this.form.controls.sourceId.valueChanges.pipe(takeUntilDestroyed()).subscribe((id) => {
+      this.form.controls.windowFrom.setValue(this.windowStart(id));
+      const flow = this.form.controls.flow;
+      if (flow.value === 'MANUAL' && this.platformOf(id) !== 'FACEBOOK') {
+        flow.setValue(this.aiSettings()?.configured ? 'AUTO' : 'HYBRID');
+      }
+    });
 
-    // Comments ride on incremental Hybrid runs only; a backfill (no window start) never buys them.
-    // The budget only means something on an AUTO run.
+    // Comments ride on incremental Hybrid and Auto runs of a Facebook source only; a backfill (no
+    // window start) never buys them. The budget only means something on an AUTO run.
     const syncComments = () => {
-      const { flow, windowFrom } = this.form.getRawValue();
+      const { flow, windowFrom, sourceId } = this.form.getRawValue();
       const control = this.form.controls.fetchComments;
-      if (flow !== 'MANUAL' && windowFrom) control.enable({ emitEvent: false });
-      else control.disable({ emitEvent: false });
+      if (flow !== 'MANUAL' && windowFrom && this.platformOf(sourceId) === 'FACEBOOK') {
+        control.enable({ emitEvent: false });
+      } else {
+        control.disable({ emitEvent: false });
+      }
       const budget = this.form.controls.budget;
       if (flow === 'AUTO') budget.enable({ emitEvent: false });
       else budget.disable({ emitEvent: false });
@@ -177,6 +194,10 @@ export class RadarRunCreateDialog {
     if (flow !== 'AUTO' || budget === null || budget <= 0) return undefined;
     // The validator keeps the amount in range, and rounding to cents cannot push it out.
     return Math.round(amountToUsd(budget, this.currency.preference()) * 100) / 100;
+  }
+
+  private platformOf(sourceId: string): RadarPlatform {
+    return this.data.sources.find((s) => s.id === sourceId)?.platform ?? 'FACEBOOK';
   }
 
   private windowStart(sourceId: string | undefined): Date | null {

@@ -1,3 +1,5 @@
+import { RadarPlatform } from '@prisma/client';
+
 import { CaptureJobRequest, CaptureJobStatus, ICaptureProvider } from '../../application/ports/capture-provider.port';
 import { RadarCaptureConfig } from '../../application/radar-capture.config';
 import { actorPath, ApifyClient, dataOf } from './apify.client';
@@ -14,6 +16,8 @@ const ymd = (d: Date) => d.toISOString().slice(0, 10);
 export class ApifyCaptureAdapter implements ICaptureProvider {
   readonly name = 'apify';
   readonly format = 'apify-facebook-posts';
+  readonly platform = RadarPlatform.FACEBOOK;
+  readonly credentialName = 'APIFY_TOKEN';
 
   private readonly client: ApifyClient;
 
@@ -37,7 +41,9 @@ export class ApifyCaptureAdapter implements ICaptureProvider {
       captionText: false,
     };
     if (request.windowFrom) input['onlyPostsNewerThan'] = ymd(request.windowFrom);
-    if (request.windowTo) input['onlyPostsOlderThan'] = ymd(request.windowTo);
+    // The window end is the last millisecond of a UTC day and the actor's bound is a whole day it
+    // excludes, so the bound is the next day; the window's last day itself would read as empty.
+    if (request.windowTo) input['onlyPostsOlderThan'] = ymd(new Date(request.windowTo.getTime() + 1));
 
     const body = await this.client.call(
       `/acts/${actorPath(this.config.apifyPostsActor)}/runs?timeout=${ACTOR_TIMEOUT_SECS}`,

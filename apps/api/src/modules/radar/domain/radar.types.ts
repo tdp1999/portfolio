@@ -54,6 +54,8 @@ export interface NormalizedRadarItem {
   links: RadarLink[];
   sharedPost: RadarSharedPost | null;
   engagement: RadarEngagement;
+  /** The post's own playable video (a reel, a video post), for the transcript; null for other posts. */
+  video: { url: string; durationSec: number | null } | null;
   rawPayload: unknown;
 }
 
@@ -65,7 +67,9 @@ export interface RadarNormalizeFailure {
 
 export interface RadarNormalizeResult {
   items: NormalizedRadarItem[];
-  /** Posts that repeat an externalId already seen earlier in the same batch. */
+  /** Posts left out on purpose: a repeat of an externalId earlier in the batch, or a video not public or not aired yet. */
   skipped: number;
   failures: RadarNormalizeFailure[];
+  /** Rows the provider wrote about the capture itself instead of a post, e.g. "no posts in the window". */
+  notices: string[];
 }

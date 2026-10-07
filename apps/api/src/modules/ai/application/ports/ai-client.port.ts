@@ -3,11 +3,17 @@ import type { ZodType } from 'zod';
 import type { AiBilling } from '../ai.config';
 import type { AiFeature, AiRef, AiTokenUsage, AiTrace } from '../../domain/ai-usage.types';
 
+/**
+ * How finely the provider samples an image or video frame. Lower is far cheaper (Gemini: 64 instead
+ * of 258 tokens per video frame) and still reads slides and on-screen text.
+ */
+export type AiMediaResolution = 'low' | 'medium' | 'high';
+
 /** One piece of the request: text, a file by URL (public YouTube video, image), or inline bytes. */
 export type AiPart =
   | { text: string }
-  | { fileUri: string; mimeType?: string }
-  | { inlineData: { data: string; mimeType: string } };
+  | { fileUri: string; mimeType?: string; resolution?: AiMediaResolution }
+  | { inlineData: { data: string; mimeType: string }; resolution?: AiMediaResolution };
 
 /**
  * Built-in tools the provider runs inside the same request; the app never runs a tool loop (AI-001).

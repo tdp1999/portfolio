@@ -10,6 +10,7 @@ import { HelpButton, SpinnerOverlay } from '@portfolio/console/shared/ui';
 import { forkJoin, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { RadarItemDetailCard } from '../radar-item.detail-card/radar-item.detail-card';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
+import { PLATFORM_LABELS } from '../radar.data';
 import { RadarService } from '../radar.service';
 import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeighbour } from '../radar.types';
 
@@ -42,6 +43,7 @@ export default class RadarItemDetail implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   // ── Writable signals ──────────────────────────────────────────────
+  protected readonly platformLabels = PLATFORM_LABELS;
   protected readonly item = signal<RadarItem | null>(null);
   protected readonly loading = signal(true);
   /** `not-found` for a 404, `failed` for anything else (network, 5xx). */

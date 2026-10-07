@@ -1,6 +1,7 @@
 @let a = analysis();
 @let c = comments();
 @let i = images();
+@let v = video();
 <span class="progress" role="group" aria-label="Progress">
   <span class="progress__slot" [class]="'tone-' + a.tone" [matTooltip]="a.label" [attr.aria-label]="a.label">
     <mat-icon class="icon-sm">{{ a.icon }}</mat-icon>
@@ -27,5 +28,16 @@
   >
     <mat-icon class="icon-sm">image</mat-icon>
     {{ i.total }}
+  </span>
+  <!-- Empty for a post without video, so the other icons stay aligned down the column. -->
+  <span
+    class="progress__slot"
+    [class]="v ? 'tone-' + v.tone : ''"
+    [matTooltip]="v?.label ?? ''"
+    [attr.aria-label]="v?.label"
+  >
+    @if (v) {
+      <mat-icon class="icon-sm">smart_display</mat-icon>
+    }
   </span>
 </span>

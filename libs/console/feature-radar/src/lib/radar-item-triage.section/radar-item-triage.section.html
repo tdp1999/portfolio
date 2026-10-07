@@ -32,7 +32,8 @@
                 class="radar-monogram radar-monogram--sm"
                 [class]="'radar-monogram--t' + mono.tone"
                 [class.radar-monogram--paused]="!row.source.isActive"
-                [matTooltip]="row.source.displayName"
+                [class.radar-monogram--youtube]="row.source.platform === 'YOUTUBE'"
+                [matTooltip]="row.source.displayName + ' on ' + platformLabels[row.source.platform]"
                 [attr.aria-label]="row.source.displayName"
               >
                 {{ mono.initials }}
@@ -86,8 +87,8 @@
           [href]="it.permalink"
           target="_blank"
           rel="noopener noreferrer"
-          matTooltip="Original post on Facebook"
-          aria-label="Original post on Facebook"
+          [matTooltip]="'Original post on ' + platformLabels[it.source.platform]"
+          [attr.aria-label]="'Original post on ' + platformLabels[it.source.platform]"
         >
           <mat-icon>open_in_new</mat-icon>
         </a>

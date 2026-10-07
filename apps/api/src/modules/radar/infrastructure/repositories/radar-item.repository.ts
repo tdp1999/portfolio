@@ -14,8 +14,9 @@ import {
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RadarComment } from '../../domain/radar-comment.types';
 import { PrismaService } from '../../../../shared/prisma';
+import { RADAR_VIDEO_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
 
-const sourceSelect = { select: { id: true, displayName: true, isActive: true } } as const;
+const sourceSelect = { select: { id: true, displayName: true, isActive: true, platform: true } } as const;
 
 const feedSelect = {
   id: true,
@@ -35,6 +36,9 @@ const feedSelect = {
   commentsFetchedAt: true,
   commentsError: true,
   workError: true,
+  videoUrl: true,
+  videoDurationSec: true,
+  transcriptStatus: true,
   source: sourceSelect,
   enrichment: {
     select: {
@@ -54,6 +58,7 @@ const feedSelect = {
 const detailSelect = {
   ...feedSelect,
   links: true,
+  ...RADAR_VIDEO_SELECT,
   sharedPost: true,
   comments: true,
   enrichment: {
@@ -179,8 +184,17 @@ export class RadarItemRepository implements IRadarItemRepository {
   async findById(id: string): Promise<RadarItemDetail | null> {
     const item = await this.prisma.radarItem.findUnique({ where: { id }, select: detailSelect });
     if (!item) return null;
+    const {
+      videoUrl: _videoUrl,
+      videoDurationSec: _videoDurationSec,
+      transcript: _transcript,
+      transcriptStatus: _transcriptStatus,
+      transcriptError: _transcriptError,
+      ...rest
+    } = item;
     return {
-      ...item,
+      ...rest,
+      video: RadarItemMapper.toVideo(item),
       media: item.media as unknown as RadarMedia[],
       links: item.links as unknown as RadarLink[],
       sharedPost: item.sharedPost as unknown as RadarSharedPost | null,

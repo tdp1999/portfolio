@@ -64,6 +64,8 @@
               a charge cap
             }
             per run; a normal week costs a few cents.
+          } @else if (!isFacebook()) {
+            Comments are fetched for Facebook sources only.
           } @else {
             Needs a Hybrid or Auto run with a window start. Backfilled posts get comments from their Detail page.
           }

@@ -50,6 +50,7 @@
 
   h2 { font-size: 24px; margin: 56px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
   h3 { font-size: 18px; margin: 28px 0 8px; }
+  h4 { font-size: 15px; margin: 20px 0 6px; color: var(--muted, inherit); }
   p { margin: 8px 0; }
   code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 6px; border-radius: 4px; }
   pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; overflow-x: auto; font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
@@ -135,7 +136,7 @@
       <li><a href="#worker">11. Vòng làm việc của worker</a></li>
       <li><a href="#lease">12. Lease và trạng thái bài</a></li>
       <li><a href="#enrichment">13. Enrichment</a></li>
-      <li><a href="#reading">14. Đọc Feed: Score, Progress, Status, Source</a></li>
+      <li><a href="#reading">14. Đọc Feed: legend, Score, Progress, Status, Source</a></li>
       <li><a href="#profile">15. Workflow profile</a></li>
       <li><a href="#briefs">16. Briefs</a></li>
       <li class="group">Tham chiếu</li>
@@ -180,7 +181,7 @@
       <h2>2. Thuật ngữ</h2>
       <div class="scroll"><table>
         <tr><th>Term</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / hình dung thực tế</th></tr>
-        <tr><td><b>Source</b></td><td>Một trang Facebook mà Radar theo dõi. Mỗi bài thuộc đúng một source.</td><td><code>facebook.com/mrgoonie</code>, tên hiển thị "Goon Nguyen"</td></tr>
+        <tr><td><b>Source</b></td><td>Một trang Facebook hoặc một kênh YouTube mà Radar theo dõi (<code>platform</code> là FACEBOOK hoặc YOUTUBE). Mỗi bài thuộc đúng một source.</td><td><code>facebook.com/mrgoonie</code>, tên hiển thị "Goon Nguyen"; hoặc kênh <code>youtube.com/channel/UC…</code></td></tr>
         <tr><td><b>Apify</b></td><td>Dịch vụ scrape web có sẵn "actor" lấy bài Facebook công khai. Radar không dùng tài khoản Facebook của bạn.</td><td>Chạy actor <code>facebook-posts-scraper</code>, tải kết quả về dạng JSON</td></tr>
         <tr><td><b>Capture</b></td><td>Bước đầu tiên của một run: lấy bài thô từ Facebook qua Apify. HYBRID và AUTO thì API tự gọi Apify; MANUAL thì bạn upload file JSON vào run.</td><td>Apify trả 180 bài, hoặc bạn upload file 14 MB chứa 1.100 bài</td></tr>
         <tr><td><b>Normalize</b></td><td>Chuyển dữ liệu thô của Apify thành dạng chuẩn của Radar, bỏ trùng, giữ nguyên bản gốc trong <code>rawPayload</code>.</td><td>Bài album: bỏ phần wrapper, giữ 3 ảnh</td></tr>
@@ -189,7 +190,8 @@
         <tr><td><b>Flow HYBRID</b></td><td>Run mà API tự gọi Apify, tự lấy kết quả, rồi chờ Claude Code phân tích. "Hybrid" vì nửa tự động (capture), nửa do worker bên ngoài (phân tích).</td><td>Tạo run HYBRID, vài phút sau run dừng ở bước chờ <code>/radar work</code></td></tr>
         <tr><td><b>Flow AUTO</b></td><td>Run mà API tự làm hết: gọi Apify, chép ảnh, rồi tự phân tích từng bài bằng AI provider đã cấu hình (hiện là Gemini). Bạn chỉ việc đọc kết quả.</td><td>Tạo run AUTO lúc 10:00, khoảng 10:40 run DONE, Feed có bài đã phân tích</td></tr>
         <tr><td><b>AI budget</b></td><td>Số tiền AI tối đa một run AUTO được tiêu, tính từ sổ ghi usage của trang AI (token và lượt search). Hết budget thì run dừng, bài còn lại vẫn chờ.</td><td>Mặc định $1 mỗi run, cộng trần $1 mỗi ngày cho toàn bộ AI</td></tr>
-        <tr><td><b>Step</b></td><td>Một bước trong run: CAPTURE, NORMALIZE, ENRICH (chép ảnh), ANALYZE. Mỗi bước có trạng thái riêng.</td><td>CAPTURE: DONE, ANALYZE: AWAITING_EXTERNAL</td></tr>
+        <tr><td><b>Transcript</b></td><td>Bản chữ của một video (reel Facebook, video YouTube) do AI trên server làm trong ENRICH của run AUTO: lời nói, chữ trên màn hình, tóm tắt hình ảnh và ngôn ngữ. Chỉ lưu chữ, không lưu video.</td><td>Reel 2 phút demo một tool: lời nói rỗng, chữ trên màn hình là tên các lệnh</td></tr>
+        <tr><td><b>Step</b></td><td>Một bước trong run: CAPTURE, NORMALIZE, ENRICH (chép ảnh, comment, transcript), ANALYZE. Mỗi bước có trạng thái riêng.</td><td>CAPTURE: DONE, ANALYZE: AWAITING_EXTERNAL</td></tr>
         <tr><td><b>Cron tick</b></td><td>Hàm API tự gọi mỗi phút để đẩy các run đang chạy đi tiếp một đoạn nhỏ.</td><td>Giống người trực ca, mỗi phút đi kiểm tra một vòng</td></tr>
         <tr><td><b>AWAITING_EXTERNAL</b></td><td>Trạng thái "đang chờ bên ngoài API làm tiếp": chờ bạn upload (MANUAL) hoặc chờ <code>/radar work</code> (ANALYZE).</td><td>Run dừng ở đây cho tới khi mọi bài được phân tích</td></tr>
         <tr><td><b>Re-capture</b></td><td>Upload lại dữ liệu có chứa bài đã có. Bài được cập nhật, không tạo bản thứ hai.</td><td>Upload lại file tuần sau để lấy số like mới</td></tr>
@@ -269,15 +271,26 @@
 
     <section id="sources">
       <h2>4. Sources</h2>
-      <p>Source là trang Facebook mà Radar theo dõi. Có CRUD cho source, nhưng chưa đầy đủ: chỉ có tạo, xem danh sách, bật/tắt và xóa. Chưa có sửa tên hay sửa URL. Quản lý source trong console ở hộp "Sources and upload" trên Feed. Mỗi run gắn với đúng một source.</p>
+      <p>Source là trang Facebook hoặc kênh YouTube mà Radar theo dõi. Có CRUD cho source, nhưng chưa đầy đủ: chỉ có tạo, xem danh sách, bật/tắt và xóa. Chưa có sửa tên hay sửa URL. Quản lý source trong console ở hộp "Sources and upload" trên Feed. Mỗi run gắn với đúng một source.</p>
       <div class="scroll"><table>
         <tr><th>Thao tác</th><th>Endpoint</th><th>Hành vi</th></tr>
         <tr><td>Xem danh sách</td><td><code>GET /api/radar/sources</code></td><td>Trả mọi source kèm số bài (<code>itemCount</code>). Không phân trang vì chỉ có vài source</td></tr>
-        <tr><td>Tạo</td><td><code>POST /api/radar/sources</code></td><td>Nhận <code>url</code>, <code>displayName</code>, <code>platform</code> (mặc định FACEBOOK). Dấu <code>/</code> cuối URL bị bỏ. URL trùng thì 409</td></tr>
+        <tr><td>Tạo</td><td><code>POST /api/radar/sources</code></td><td>Nhận <code>url</code>, <code>displayName</code>, <code>platform</code> (mặc định FACEBOOK). Dấu <code>/</code> cuối URL bị bỏ. URL trùng thì 409. Source YouTube được kiểm tra với YouTube trước khi lưu, xem bên dưới</td></tr>
         <tr><td>Tắt (deactivate)</td><td><code>PATCH /api/radar/sources/:id/deactivate</code></td><td>Đặt <code>isActive = false</code>. Upload mới cho source này bị từ chối (400 <code>RADAR_SOURCE_INACTIVE</code>). Bài cũ và enrichment vẫn giữ nguyên</td></tr>
         <tr><td>Bật lại</td><td><code>PATCH /api/radar/sources/:id/activate</code></td><td>Đặt <code>isActive = true</code></td></tr>
         <tr><td>Xóa</td><td><code>DELETE /api/radar/sources/:id</code></td><td>Xóa ảnh trên Cloudinary trước, rồi xóa source cùng runs, items, enrichments. Xem <a href="#images">mục 6</a></td></tr>
       </table></div>
+      <h3 id="youtube-source">Source YouTube</h3>
+      <p>Trong hộp "Sources and upload", bạn dán URL kênh (<code>youtube.com/@handle</code>, <code>youtube.com/channel/UC…</code>) hoặc chỉ một <code>@handle</code>. Console nhận ra đây là YouTube và hiện chữ "YouTube channel" dưới ô URL; tên hiển thị để trống được.</p>
+      <div class="scroll"><table>
+        <tr><th>Quy tắc</th><th>Cách làm</th><th>Lý do</th></tr>
+        <tr><td>URL chuẩn</td><td>API hỏi YouTube (<code>channels.list</code>) rồi lưu source dưới dạng <code>https://www.youtube.com/channel/UC…</code>. Tên hiển thị trống thì lấy tên kênh. Không tìm thấy kênh thì 400. Nhận <code>/channel/UC…</code>, <code>/@handle</code> và <code>/user/tên</code>; link <code>/c/…</code> và link video không tra được kênh. URL YouTube gửi với platform FACEBOOK bị từ chối</td><td>Cùng một kênh dán theo hai kiểu vẫn chỉ là một source (URL là unique); channel id nằm luôn trong URL nên không cần cột mới</td></tr>
+        <tr><td>API key</td><td>Env <code>YOUTUBE_API_KEY</code> (YouTube Data API v3, chỉ dữ liệu công khai, không OAuth). Thiếu key thì tạo source YouTube và tạo run cho nó đều bị từ chối (400 <code>RADAR_CAPTURE_NOT_CONFIGURED</code>)</td><td>RAD-003: không dùng tài khoản của bạn. Key đi trong header, không lọt vào URL hay log</td></tr>
+        <tr><td>Chỉ Hybrid và Auto</td><td>Run MANUAL và nút upload chỉ có cho source Facebook, vì file upload là export Facebook của Apify</td><td>Kênh YouTube luôn được lấy qua API</td></tr>
+        <tr><td>Không có comment</td><td>Fetch comments (trong run hay từng bài) chỉ dành cho Facebook; số comment YouTube báo vẫn hiện, nhưng không đọc được</td><td>Actor comments của Apify chỉ đọc bài Facebook</td></tr>
+      </table></div>
+      <p><b>Capture.</b> Lần poll đầu đọc playlist "uploads" của kênh, mới nhất trước, mỗi trang 50 video: bỏ qua video mới hơn cuối window, gặp video cũ hơn đầu window thì đọc hết trang đó rồi dừng, đủ <code>itemCap</code> cũng dừng (tối đa 40 trang). Danh sách video id được giữ trong meta của bước CAPTURE, rồi <code>videos.list</code> đọc chi tiết. Chỉ giữ video public đã phát; video private, unlisted, sắp phát hay đang live được đếm là skipped. Mỗi video thành một bài loại <code>VIDEO</code>: text là tiêu đề cộng mô tả, ảnh là thumbnail lớn nhất, link là tối đa 10 link trong mô tả, cùng lượt like, comment, view và thời lượng. Capture lại thì làm mới bài cũ, không tạo bài trùng (RAD-001).</p>
+      <p><b>Quota.</b> Mỗi ngày có 10.000 unit; một run khoảng 50 video tốn chừng 2 tới 3 unit. Kênh chưa có video nào thì capture xong với 0 bài. Hết quota, key bị từ chối hoặc request sai tham số thì bước CAPTURE fail ngay với lý do rõ ràng (quota reset lúc nửa đêm giờ Pacific); lỗi khác của YouTube được thử lại ở tick sau. Bài đã lưu vẫn giữ nguyên.</p>
       <h3>Deactivate dùng để làm gì</h3>
       <p>Deactivate là "tạm ngưng theo dõi" mà không mất dữ liệu. Ví dụ bạn thấy một người dạo này đăng toàn quảng cáo: bạn tắt source của họ để không upload nhầm nữa, nhưng các bài hay từ trước vẫn còn trong Feed. Xóa thì mất hết, kể cả ảnh và phân tích.</p>
       <p>Run cũng dùng cờ này: không tạo được run cho source đang tắt. Claim cũng <b>bỏ qua bài của source đang tắt</b>, nên tạm dừng một source là dừng luôn việc phân tích các bài còn lại của nó.</p>
@@ -346,9 +359,9 @@
         <tr><td>Ai lấy bài từ Facebook</td><td>Bạn chạy actor trên web Apify, tải file JSON</td><td colspan="2">API tự gọi Apify API (start, poll, đọc dataset)</td></tr>
         <tr><td>Bước CAPTURE</td><td>Đứng ở <code>AWAITING_EXTERNAL</code> cho tới khi bạn upload file kèm <code>runId</code></td><td colspan="2">Tick đầu tiên start job Apify, các tick sau poll trạng thái job</td></tr>
         <tr><td>Bước NORMALIZE</td><td>Làm ngay trong request upload (xong cùng CAPTURE)</td><td>Đọc dataset từng trang 100 bài, tối đa 5 trang mỗi tick, nhớ vị trí đã đọc. Vị trí luôn tăng 100 mỗi trang, kể cả khi Apify trả ít hơn (trang đã lọc dòng rỗng), nên không bài nào bị đọc hai lần</td><td>Giống HYBRID</td></tr>
-        <tr><td>ENRICH</td><td colspan="3">Giống nhau: chép ảnh theo lô, đọc comment nếu run bật "Fetch comments"</td></tr>
+        <tr><td>ENRICH</td><td colspan="3">Giống nhau: chép ảnh theo lô, đọc comment nếu run bật "Fetch comments". Riêng AUTO còn làm transcript cho video, xem "Transcript video" bên dưới</td></tr>
         <tr><td>ANALYZE</td><td colspan="2">Chờ bạn chạy <code>/radar work</code> trong Claude Code</td><td>API tự phân tích mỗi tick một lô 3 bài, xem "Phân tích trên server" bên dưới</td></tr>
-        <tr><td>Cần cấu hình</td><td>Không</td><td><code>APIFY_TOKEN</code> trên server. Thiếu thì tạo run HYBRID bị từ chối (400), MANUAL vẫn chạy</td><td><code>APIFY_TOKEN</code> và key của AI provider. Thiếu key thì tạo run AUTO bị từ chối (400 <code>RADAR_AI_NOT_CONFIGURED</code>)</td></tr>
+        <tr><td>Cần cấu hình</td><td>Không</td><td><code>APIFY_TOKEN</code> trên server (source YouTube thì <code>YOUTUBE_API_KEY</code>). Thiếu thì tạo run HYBRID bị từ chối (400), MANUAL vẫn chạy</td><td><code>APIFY_TOKEN</code> (hoặc <code>YOUTUBE_API_KEY</code>) và key của AI provider. Thiếu key thì tạo run AUTO bị từ chối (400 <code>RADAR_AI_NOT_CONFIGURED</code>)</td></tr>
         <tr><td>Chi phí Apify</td><td>Tính trên tài khoản Apify khi bạn chạy trên web</td><td>Giống vậy, nhưng do API khởi chạy. Cap tối đa 1.500 bài mỗi run</td><td>Như HYBRID, cộng tiền AI có budget riêng mỗi run</td></tr>
       </table></div>
       <p>Upload không kèm <code>runId</code> vẫn dùng được như Phase A: nó tự tạo một run MANUAL đã DONE, ảnh được chép ngay, bài vào hàng chờ phân tích. Cách này không có trạng thái để theo dõi trên trang Runs. Khi source đang có run chưa xong, API từ chối cách upload này (409), vì nó sẽ chuyển <code>lastRunId</code> của các bài sang run mới và run đang chạy không còn đếm được các bài đó.</p>
@@ -359,7 +372,7 @@
         <div class="arrow">→</div>
         <div class="node"><b>NORMALIZE</b><small>Đọc dataset từng trang, chuẩn hóa, upsert</small></div>
         <div class="arrow">→</div>
-        <div class="node"><b>ENRICH</b><small>Chép ảnh sang Cloudinary, 10 bài mỗi tick</small></div>
+        <div class="node"><b>ENRICH</b><small>Chép ảnh sang Cloudinary, 10 bài mỗi tick. AUTO: transcript video</small></div>
         <div class="arrow">→</div>
         <div class="node worker"><b>ANALYZE</b><small><code>AWAITING_EXTERNAL</code> tới khi worker hết bài để nhận</small></div>
       </div>
@@ -397,6 +410,7 @@
       <div class="scroll"><table>
         <tr><th>Quy tắc</th><th>Giá trị</th><th>Lý do</th></tr>
         <tr><td>Một run đang chạy mỗi source</td><td>Run thứ hai bị từ chối (409 <code>RADAR_RUN_ALREADY_ACTIVE</code>), kể cả hai yêu cầu tạo gửi cùng lúc (khóa dòng source trong cùng transaction). Upload thẳng không kèm <code>runId</code> cũng bị từ chối</td><td>Hai run cùng ghi đè <code>lastRunId</code> của cùng bài và nhân đôi tiền Apify</td></tr>
+        <tr><td>Window</td><td>Tính theo ngày UTC: From là 0h của ngày đầu, To là ms cuối của ngày cuối, trang Runs hiển thị đúng hai ngày đó. Apify nhận <code>onlyPostsNewerThan</code> = ngày From và <code>onlyPostsOlderThan</code> = ngày <b>sau</b> ngày To, vì cận trên của actor không tính ngày đó. Window một ngày (From = To) vì vậy lấy đúng bài của ngày đó</td><td>Cận trên bằng chính ngày To sẽ thành window rỗng</td></tr>
         <tr><td>Cap mỗi run</td><td>1 tới 1.500 bài</td><td>6 tháng khoảng 1.100 bài; cap cũng là giới hạn tiền</td></tr>
         <tr><td>Source đang tắt</td><td>Không tạo được run</td><td>Giống luật upload</td></tr>
         <tr><td>Tick chồng nhau</td><td>Tick mới thoát ngay nếu tick trước chưa xong</td><td>Một instance API trên Railway, dùng cờ trong bộ nhớ</td></tr>
@@ -413,7 +427,7 @@
         <tr><td>Cột Spend</td><td>Run AUTO: tiền AI đã tiêu "của" budget, ví dụ "2.865 ₫ of 26.000 ₫". Run khác: "None"</td><td>Tiền tiêu là tổng các dòng usage của run (sổ usage gom theo run, một query cho cả trang). Khi <code>AI_GEMINI_BILLING=free</code> thì thêm dòng "Estimate, free tier" vì không có gì bị tính tiền thật</td></tr>
         <tr><td>Cột Steps</td><td>Capture, Normalize, Images, Analyze, mỗi bước có biểu tượng theo trạng thái</td><td>Rê chuột vào bước để thấy adapter và lỗi (nếu có)</td></tr>
         <tr><td>Tự làm mới</td><td>Trang gọi lại API mỗi 10 giây</td><td>Chỉ khi còn run đang chạy (<code>PENDING</code>, <code>RUNNING</code>, <code>AWAITING_EXTERNAL</code>). Hết run đang chạy hoặc rời trang thì dừng. Lỗi khi tự làm mới không hiện toast, lần sau gọi lại</td></tr>
-        <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export. Run có <code>warning</code> (comment bị bỏ qua hoặc chỉ đọc một phần): thêm một dòng vàng, kể cả khi run đã DONE</td><td>Run đang chạy bình thường hoặc đã DONE mà không có warning thì không có dòng này</td></tr>
+        <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export. Run có <code>warning</code> (comment bị bỏ qua hoặc chỉ đọc một phần, Apify không tìm thấy bài nào trong window, hoặc có bài không đọc được kèm lý do của bài đầu tiên): thêm một dòng vàng, kể cả khi run đã DONE</td><td>Run đang chạy bình thường hoặc đã DONE mà không có warning thì không có dòng này</td></tr>
         <tr><td>Run đã hủy</td><td>Badge "Cancelled" màu xám và dòng "Cancelled at &lt;bước&gt;", không phải "Failed" màu đỏ</td><td>API vẫn lưu run hủy là FAILED với lỗi "Cancelled by the Owner"; console đọc đúng thông điệp này (hằng số dùng chung <code>RADAR_RUN_CANCELLED_MESSAGE</code>) để hiển thị khác đi</td></tr>
         <tr><td>Nút "Cancel"</td><td>Có ở mọi run đang chạy</td><td>Hỏi xác nhận trước khi gọi <code>POST /api/radar/runs/:id/cancel</code>. Hộp xác nhận nhắc rằng job Apify đã start vẫn tính tiền</td></tr>
         <tr><td>Nút "Upload export"</td><td>Chỉ có ở run MANUAL đang chờ upload</td><td>Gửi file kèm <code>runId</code> của run đó</td></tr>
@@ -469,6 +483,20 @@
         <li>Model đầu bị 429: bài đó chuyển sang model thứ hai, vẫn xong trong cùng tick.</li>
         <li>Khi không còn bài chờ light và không còn bài chờ deep, run DONE. Trang AI ghi từng request, chia "Radar quick analysis" và "Radar deep analysis".</li>
       </ol>
+      <h3 id="transcripts">Transcript video (AUTO)</h3>
+      <p>Bài là reel hay video thì ảnh chỉ là một khung hình, phần tin thật nằm trong lời nói và chữ trên màn hình. Ở run AUTO, bước ENRICH gửi từng video cho AI (Gemini xem khung hình mỗi giây và nghe tiếng) và nhận về JSON gồm bốn phần: <code>spoken</code> (lời nói, null khi không ai nói), <code>onScreenText</code> (chữ trên màn hình đáng giữ), <code>visualSummary</code> (video cho thấy gì) và <code>language</code>. Caption của Facebook thường rỗng nên không dùng. Video không có lời vẫn có tóm tắt hình ảnh và chữ trên màn hình. Bước ANALYZE đọc transcript như một phần của bài; run MANUAL và HYBRID không làm transcript.</p>
+      <div class="scroll"><table>
+        <tr><th>Quy tắc</th><th>Cách làm</th><th>Lý do</th></tr>
+        <tr><td>Lấy video ở đâu</td><td>Lúc normalize, URL video (bản SD, không có thì HD) và thời lượng được lưu vào bài. Video YouTube được gửi thẳng URL xem video, không tải về</td><td>Không cần thêm lượt Apify nào</td></tr>
+        <tr><td>Từng video một</td><td>Mỗi tick tối đa 3 video, làm lần lượt. Video được stream về, dừng ngay khi vượt 20 MB, mã hóa và gửi inline rồi bỏ khỏi bộ nhớ. Không lưu file nào, DB chỉ giữ chữ</td><td>RAM chỉ chứa một video mỗi lúc; băng thông và dung lượng DB nhỏ</td></tr>
+        <tr><td>Giới hạn độ dài</td><td>Reel và video Facebook dài hơn 10 phút (env <code>RADAR_TRANSCRIPT_MAX_SECONDS</code>, 10 tới 3600 giây), video YouTube dài hơn 45 phút (env <code>RADAR_TRANSCRIPT_YOUTUBE_MAX_SECONDS</code>, 10 tới 10800 giây) bị bỏ qua kèm lý do. Ngân sách của run vẫn được kiểm tra trước mỗi video</td><td>Tiền token tăng theo số giây</td></tr>
+        <tr><td>Model</td><td>Chuỗi Flash (env <code>RADAR_AI_TRANSCRIPT_MODELS</code>), thinking thấp, độ phân giải media thấp (64 token mỗi khung hình). Feature trên trang AI là "Radar transcript", gom theo run</td><td>Đọc được slide và tiếng Việt, rẻ nhất có thể</td></tr>
+        <tr><td>Budget</td><td>Trước mỗi video, ước tính tiền (khoảng 96 token mỗi giây, cộng prompt, và tính câu trả lời bằng cả trần output 16.000 token, đã gồm thinking) rồi cộng với tiền run đã tiêu. Vượt budget thì video bị bỏ qua kèm số tiền ước tính (RAD-007)</td><td>Transcript không được ăn hết budget của phần phân tích</td></tr>
+        <tr><td>Provider bận</td><td>Thử model kế tiếp; hết model thì bài ở <code>PENDING</code> và tick sau thử lại. Bận 3 lần thì <code>FAILED</code></td><td>Không để một video giữ ENRICH mãi</td></tr>
+        <tr><td>Lỗi khác</td><td>Không tải được video, thiếu hoặc sai key, chạm trần mỗi ngày, câu trả lời đọc không được (thường do bị cắt ở trần output): bài thành <code>FAILED</code> ngay, không thử model kế tiếp, kèm lý do, log ghi warning</td><td>RAD-008: transcript lỗi không bao giờ chặn phân tích, bài được phân tích từ chữ và ảnh. Model kế tiếp sẽ tính tiền lại cả video mà vẫn chạm cùng trần</td></tr>
+        <tr><td>ENRICH xong khi nào</td><td>Khi ảnh, comment và transcript đều xong: không còn video nào của run ở <code>NONE</code> hay <code>PENDING</code></td><td>ANALYZE luôn thấy transcript đã có, hoặc lý do không có</td></tr>
+      </table></div>
+      <p>Trạng thái transcript của một bài: <code>NONE</code> (chưa làm, run không phải AUTO), <code>PENDING</code> (provider bận, chờ tick sau), <code>DONE</code>, <code>FAILED</code> (kèm lý do). Trên trang Detail, mục "Video transcript" nằm trong phần bài viết, gấp lại sẵn, hiện thời lượng và trạng thái; mở ra thấy "What it shows", "Spoken" và "On screen". Claim của worker cũng mang <code>video</code> (thời lượng, trạng thái, transcript, lỗi), nên <code>/radar work</code> đọc được transcript của một run AUTO trước đó. Khi có transcript, bài reel không còn bị giới hạn điểm 4 như bài reel chỉ có ảnh.</p>
     </section>
 
     <section id="comments">
@@ -478,7 +506,7 @@
       <h3>Ba cách lấy comment</h3>
       <div class="scroll"><table>
         <tr><th>Cách</th><th>Khi nào</th><th>Giới hạn tiền</th></tr>
-        <tr><td>Trong run</td><td>Tick ô "Fetch comments" ở form New run. Chỉ bật được với run HYBRID hoặc AUTO có ngày đầu window (run nối tiếp, không phải run quét cả năm)</td><td>Tối đa $0.50 mỗi run (env <code>RADAR_COMMENTS_MAX_CHARGE_USD</code>)</td></tr>
+        <tr><td>Trong run</td><td>Tick ô "Fetch comments" ở form New run. Chỉ bật được với run HYBRID hoặc AUTO của source Facebook có ngày đầu window (run nối tiếp, không phải run quét cả năm)</td><td>Tối đa $0.50 mỗi run (env <code>RADAR_COMMENTS_MAX_CHARGE_USD</code>)</td></tr>
         <tr><td>Từng bài</td><td>Nút "Fetch comments" ở section Comments của trang Detail, có hộp xác nhận</td><td>Tối đa $0.10 mỗi lần bấm</td></tr>
         <tr><td>Upload</td><td>Nút "Upload comments" ở hộp Sources: file JSON xuất từ actor comments trên web Apify</td><td>Không tốn tiền phía API; chỉ gắn comment vào bài đã có của source đó</td></tr>
       </table></div>
@@ -757,8 +785,61 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
     </section>
 
     <section id="reading">
-      <h2>14. Đọc Feed: Score, Progress, Status, Source</h2>
+      <h2>14. Đọc Feed: legend, Score, Progress, Status, Source</h2>
       <p>Mỗi dòng trên Feed là một bài, gói trong một dòng: Score, Summary (TL;DR, hoặc đoạn đầu bài khi chưa phân tích; rê chuột để đọc trọn), Progress, Status, Source và ngày đăng. Score, Status, Type và Providers lấy từ enrichment do Claude Code viết theo <code>.claude/skills/radar/references/enrichment-guide.md</code>. Type và Providers không còn là cột trên bảng: chúng nằm trong bộ lọc và trên trang chi tiết của bài.</p>
+      <h3 id="legend">Legend: icon, badge và màu</h3>
+      <p><b>Định nghĩa:</b> bảng tra nhanh mọi icon, badge và màu trên Feed (Table và Split) và trang Detail. Quy ước màu chung: <b>xanh lá</b> là đã xong và tốt, <b>vàng</b> là đang chờ hoặc chỉ xong một phần, <b>đỏ</b> là lỗi hoặc cần bạn để ý, <b>xanh dương</b> là đang chạy, <b>xám</b> là chưa làm hoặc không áp dụng. Mờ hoặc viền đứt nét là thứ đang tạm dừng hay còn trống. Mỗi dòng dưới đây chỉ nói "thấy gì, nghĩa là gì"; giải thích sâu nằm ở các mục được link.</p>
+
+      <h4>Feed: đầu trang</h4>
+      <div class="scroll"><table>
+        <tr><th>Thấy gì</th><th>Nghĩa là gì</th><th>Việc cần làm</th></tr>
+        <tr><td>Badge xám <b>N pending</b></td><td>Số bài còn chờ phân tích và worker còn nhận được</td><td>Chạy <code>/radar work</code></td></tr>
+        <tr><td>Badge xám <b>N paused</b></td><td>Bài chưa phân tích nhưng source đang tạm dừng, worker bỏ qua</td><td>Resume source trong hộp thoại Sources</td></tr>
+        <tr><td>Badge đỏ <b>N stuck</b></td><td>Bài đã bị claim đủ 3 lần mà không có kết quả hợp lệ</td><td>Bấm <b>Re-queue stuck</b> ngay bên cạnh</td></tr>
+        <tr><td>Badge vàng <b>N runs in progress</b></td><td>Có run chưa xong; bấm để mở trang Runs</td><td>Không cần làm gì, hoặc theo dõi trên trang Runs</td></tr>
+        <tr><td>Chip có dấu x dưới thanh lọc</td><td>Một bộ lọc đang bật</td><td>Bấm x để bỏ bộ lọc đó</td></tr>
+      </table></div>
+
+      <h4>Feed: từng dòng</h4>
+      <div class="scroll"><table>
+        <tr><th>Cột</th><th>Thấy gì</th><th>Nghĩa là gì</th></tr>
+        <tr><td>Score</td><td>Ô số nền <b>xanh lá</b> / <b>màu chủ đạo</b> / <b>xám</b></td><td>Điểm 7 tới 10 đáng đọc / 4 tới 6 có thể đọc / dưới 4 bỏ qua được. Xem <a href="#score">Score</a></td></tr>
+        <tr><td>Score</td><td>Ô viền đứt nét có đồng hồ cát</td><td>Bài chưa được phân tích</td></tr>
+        <tr><td>Score</td><td>Chữ nhỏ <b>Quick</b> / <b>Deep</b> dưới điểm</td><td>Server mới chạy bản nhanh (không search, không đọc link) / đã chạy bản sâu. Không có chữ là worker phân tích (luôn đầy đủ). Rê chuột lên điểm để đọc</td></tr>
+        <tr><td>Score</td><td>Icon đỏ hình tròn có dấu chấm than</td><td>Lần phân tích gần nhất bị lỗi (<code>workError</code>); rê chuột để đọc lý do</td></tr>
+        <tr><td>Summary</td><td>Chữ đậm / chữ nhạt</td><td>TL;DR của phân tích / đoạn đầu bài gốc vì bài chưa được phân tích</td></tr>
+        <tr><td>Progress</td><td>Bốn ô: phân tích, comment, ảnh, video</td><td>Việc đã làm cho bài. Từng màu xem bảng <a href="#progress">Progress</a></td></tr>
+        <tr><td>Status</td><td>Badge <b>Relevant</b> (xanh lá), <b>Not relevant</b> (xám), <b>Promo</b> (vàng), <b>Pending</b> (xám)</td><td>Kết luận của phân tích. Xem <a href="#status">Status</a></td></tr>
+        <tr><td>Source</td><td>Ô chữ viết tắt có màu</td><td>Tên source. Mỗi source giữ một màu cố định trong sáu màu, nên nhìn màu là nhận ra source; màu không mang nghĩa trạng thái</td></tr>
+        <tr><td>Source</td><td>Ô chữ viết tắt mờ, viền đứt nét</td><td>Source đang tạm dừng</td></tr>
+        <tr><td>Tab Inbox / To try / Done</td><td>Tab được gạch chân, số bên cạnh</td><td>Tab đang mở, số bài của mỗi tab dưới cùng bộ lọc. Xem <a href="#triage">Triage</a></td></tr>
+      </table></div>
+
+      <h4>Feed: chế độ Split</h4>
+      <div class="scroll"><table>
+        <tr><th>Thấy gì</th><th>Nghĩa là gì</th></tr>
+        <tr><td>Icon <b>hộp thư</b> / <b>bookmark</b> / <b>dấu tick</b> cạnh thời gian của một dòng</td><td>Bài này vừa được bạn chuyển sang Inbox / To try / Done ngay trong tab đang mở. Dòng vẫn ở lại tới khi tải lại danh sách, để bạn thấy mình vừa làm gì</td></tr>
+        <tr><td>Ô Progress nhỏ dưới mỗi dòng</td><td>Giống cột Progress của Table</td></tr>
+      </table></div>
+
+      <h4>Trang Detail</h4>
+      <div class="scroll"><table>
+        <tr><th>Chỗ</th><th>Thấy gì</th><th>Nghĩa là gì</th></tr>
+        <tr><td>Tiêu đề</td><td>Badge xám <b>Pending analysis</b></td><td>Bài chưa được phân tích</td></tr>
+        <tr><td>Bài viết</td><td>Ảnh có nút <b>Watch on Facebook</b> (icon play)</td><td>Ảnh này là khung hình của video; bấm để xem trên Facebook</td></tr>
+        <tr><td>Bài viết</td><td>Ô xám có icon ảnh vỡ, ghi <b>Image not saved</b> / <b>Image did not load</b></td><td>Không copy được ảnh lên Cloudinary / có copy nhưng ảnh không tải được. Dưới đó là tên host của link gốc</td></tr>
+        <tr><td>Bài viết</td><td>Nút nhỏ icon trang giấy ở góc ảnh</td><td>Facebook đọc được chữ trong ảnh (OCR); bấm để xem</td></tr>
+        <tr><td>Bài viết</td><td>Badge xám <b>Shared post</b></td><td>Khối bên dưới là bài được tác giả chia sẻ lại, không phải bài của tác giả</td></tr>
+        <tr><td>Bài viết</td><td>Mục gấp <b>Video transcript</b></td><td>Chỉ có ở bài có file video. Dòng tóm tắt ghi thời lượng và trạng thái transcript. Xem <a href="#transcripts">Transcript video</a></td></tr>
+        <tr><td>AI analysis</td><td>Khung đỏ có icon chấm than</td><td>Lần phân tích gần nhất bị lỗi, kèm lý do</td></tr>
+        <tr><td>AI analysis</td><td>Khung cảnh báo <b>The main claim looks wrong</b></td><td>Fact check ở mức <code>major</code>: ý chính của bài có vẻ sai. Đọc phần fact check trong khung trước khi tin bài</td></tr>
+        <tr><td>AI analysis</td><td>Khung có đồng hồ cát <b>Pending analysis</b></td><td>Chưa có phân tích</td></tr>
+        <tr><td>Comments</td><td>Badge trạng thái cạnh tiêu đề: xám <b>kept / total</b>, vàng <b>kept / total</b>, đỏ <b>Failed</b>, chữ thường kèm icon bong bóng rỗng</td><td>Đã lấy đủ / chỉ lấy một phần vì chạm giới hạn tiền / lấy thất bại / chưa lấy (số là số comment Facebook báo)</td></tr>
+        <tr><td>Comments</td><td>Badge <b>Filler</b> (xám), <b>Spam</b> (đỏ) trên một comment</td><td>Comment ít giá trị / comment rác. Comment không có badge là comment có nội dung (mặc định)</td></tr>
+        <tr><td>Comments</td><td>Comment thụt vào</td><td>Là trả lời của một comment khác</td></tr>
+        <tr><td>Model trials</td><td>Badge xám <b>Running</b> kèm vòng xoay, badge đỏ <b>Failed</b></td><td>Trial đang chạy / trial lỗi, lý do nằm ở dòng TL;DR. Xem <a href="#trials">Quality trials</a></td></tr>
+      </table></div>
+
       <h3 id="filters">Bộ lọc: hai nhóm</h3>
       <ul>
         <li><b>Nhóm dùng thường xuyên, nằm trên thanh lọc:</b> Search, Status và Source (chỉ hiện bài của một source).</li>
@@ -807,7 +888,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       </table></div>
 
       <h3 id="progress">Progress: bài đã được làm gì</h3>
-      <p><b>Định nghĩa:</b> cột Progress trả lời "bài này đã đi tới đâu" bằng ba icon xếp cố định: phân tích, comment, ảnh. Màu cho biết trạng thái, rê chuột để đọc chi tiết. Cột Status bên cạnh chỉ nói kết luận của phân tích (có liên quan hay không), còn Progress nói việc đã làm.</p>
+      <p><b>Định nghĩa:</b> cột Progress trả lời "bài này đã đi tới đâu" bằng các icon xếp cố định: phân tích, comment, ảnh, và video với bài reel hay video. Màu cho biết trạng thái, rê chuột để đọc chi tiết. Cột Status bên cạnh chỉ nói kết luận của phân tích (có liên quan hay không), còn Progress nói việc đã làm.</p>
       <div class="scroll"><table>
         <tr><th>Icon</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / việc cần làm</th></tr>
         <tr><td><b>Phân tích: dấu tick</b> (xanh lá)</td><td><code>analyzed</code>: đã có enrichment</td><td>Đọc TL;DR là đủ</td></tr>
@@ -818,6 +899,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><b>Phân tích: dấu tạm dừng</b> (vàng)</td><td><code>paused</code>: source của bài đang tạm dừng nên worker bỏ qua</td><td>Bấm Resume trong hộp thoại Sources</td></tr>
         <tr><td><b>Comment + số</b></td><td>Xám mờ: chưa lấy (số là số comment Facebook báo). Xanh lá: đã lấy đủ. Vàng: lấy một phần (chạm giới hạn). Đỏ: lấy thất bại. Số khi đã lấy là số comment đã lưu. Chấm nhỏ màu chủ đạo: phân tích gợi ý nên lấy comment</td><td>Bài có chấm gợi ý và 40 comment chưa lấy: mở bài, bấm Fetch comments</td></tr>
         <tr><td><b>Ảnh + số</b></td><td>Xám mờ: không có ảnh. Màu thường: mọi ảnh đã copy lên Cloudinary. Vàng: còn ảnh chưa copy. Đỏ: có ảnh copy thất bại (link Facebook có thể đã hết hạn)</td><td>Ảnh đỏ: ảnh đó có thể không xem được nữa</td></tr>
+        <tr><td><b>Video</b> (chỉ có ở bài reel hay video)</td><td>Màu thường: chưa có transcript (run không phải AUTO). Vàng: transcript đang chờ vì AI bận. Xanh lá: đã có transcript. Đỏ: transcript lỗi. Xám mờ: bài capture trước khi Radar lưu file video, nên không làm transcript được. Tooltip ghi thời lượng. Bài không có video thì ô này để trống</td><td>Lướt Feed tìm reel: nhìn cột cuối của Progress. Muốn có transcript cho reel cũ: capture lại trong một run AUTO</td></tr>
       </table></div>
       <p>Thứ tự xét trạng thái phân tích giống hệt cách đếm hàng chờ: đã DONE thì là <code>analyzed</code>; source tắt thì <code>paused</code>; lease còn hạn thì <code>claimed</code>; claim đủ 3 lần thì <code>stuck</code>; còn lại là <code>pending</code>.</p>
 
@@ -928,7 +1010,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>radar_sources</code></td><td>Trang được theo dõi</td><td><code>url</code> duy nhất, <code>isActive</code></td></tr>
         <tr><td><code>radar_runs</code></td><td>Mỗi lần capture</td><td>Flow, trạng thái, window, cap, số bài tạo mới / cập nhật / lỗi, <code>fetchComments</code>, <code>warning</code>. Upload không có <code>runId</code> tạo run MANUAL đã DONE. Xem <a href="#runs">mục 7</a></td></tr>
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
-        <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a></td></tr>
+        <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a>. Video: <code>videoUrl</code>, <code>videoDurationSec</code>, <code>transcript</code> (JSONB), <code>transcriptStatus</code>, <code>transcriptError</code>, <code>transcriptAttempts</code>. Xem <a href="#transcripts">Transcript video</a></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
         <tr><td><code>radar_enrichment_trials</code></td><td>Quality trial</td><td>Một dòng mỗi trial: bài (xóa theo bài), depth, model đã yêu cầu, <code>status</code> (RUNNING, DONE, FAILED), <code>payload</code> (JSONB, cùng schema với enrichment), lỗi, token, chi phí, số lần search, độ trễ. Xem <a href="#trials">Quality trials</a></td></tr>
         <tr><td><code>ai_usage_records</code></td><td>Mỗi lần gọi Gemini, thành công hay lỗi</td><td>Model, feature (ví dụ <code>radar.analyze</code>), trạng thái, loại lỗi, token vào, ra, thinking, cache, tool, chi phí ước tính theo bảng giá trong code (null khi model chưa có giá), <code>billed</code>, độ trễ, <code>refType</code> và <code>refId</code> trỏ về bài hoặc brief, <code>trace</code> (JSONB: query đã search, URL đã đọc). Màn hình AI trong console đọc bảng này</td></tr>
@@ -973,6 +1055,8 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>RAD-004</td><td>Machine token chỉ gọi được các endpoint worker</td></tr>
         <tr><td>RAD-005</td><td>Bài đã claim quay lại hàng chờ khi hết lease mà chưa có kết quả</td></tr>
         <tr><td>RAD-006</td><td>Run chỉ bắt đầu khi bạn bấm. Không có lịch chạy định kỳ</td></tr>
+        <tr><td>RAD-007</td><td>Run ngừng bắt đầu lệnh gọi AI mới khi tiền đã tiêu chạm budget; bài còn lại vẫn chờ</td></tr>
+        <tr><td>RAD-008</td><td>Transcript lỗi không bao giờ chặn phân tích; bài được phân tích từ chữ và ảnh</td></tr>
       </table></div>
     </section>
 

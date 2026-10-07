@@ -16,10 +16,12 @@ export interface RadarCaptureConfig {
   apifyCommentsActor: string;
   /** Per comments run; `RADAR_COMMENTS_MAX_CHARGE_USD` overrides. */
   commentsMaxChargeUsd: number;
+  /** YouTube Data API v3 key. Null when `YOUTUBE_API_KEY` is unset: YouTube sources cannot be added or run. */
+  youtubeApiKey: string | null;
 }
 
 /**
- * Reads the Apify settings. Optional on purpose, like the worker token: a deploy never depends on
+ * Reads the capture settings (Apify, YouTube). Optional on purpose, like the worker token: a deploy never depends on
  * them, and the token stays inside the adapter (no endpoint returns this config).
  */
 export function loadRadarCaptureConfig(env: NodeJS.ProcessEnv = process.env): RadarCaptureConfig {
@@ -28,6 +30,7 @@ export function loadRadarCaptureConfig(env: NodeJS.ProcessEnv = process.env): Ra
     apifyPostsActor: env['RADAR_APIFY_POSTS_ACTOR']?.trim() || DEFAULT_APIFY_POSTS_ACTOR,
     apifyCommentsActor: env['RADAR_APIFY_COMMENTS_ACTOR']?.trim() || DEFAULT_APIFY_COMMENTS_ACTOR,
     commentsMaxChargeUsd: positiveNumber(env['RADAR_COMMENTS_MAX_CHARGE_USD']) ?? DEFAULT_COMMENTS_MAX_CHARGE_USD,
+    youtubeApiKey: env['YOUTUBE_API_KEY']?.trim() || null,
   };
 }
 

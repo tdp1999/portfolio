@@ -1,0 +1,26 @@
+@let v = video();
+<console-record-fold class="transcript" title="Video transcript" [gist]="gist()">
+  @if (v.transcript; as t) {
+    <div class="transcript__body">
+      <console-record-field label="What it shows">
+        <p class="rv-prose">{{ t.visualSummary }}</p>
+      </console-record-field>
+      <console-record-field
+        label="Spoken"
+        [state]="t.spoken ? 'filled' : 'unset'"
+        unsetLabel="Nobody speaks in this video."
+      >
+        <p class="rv-prose transcript__text">{{ t.spoken }}</p>
+      </console-record-field>
+      <console-record-field
+        label="On screen"
+        [state]="t.onScreenText ? 'filled' : 'unset'"
+        unsetLabel="No text on screen worth keeping."
+      >
+        <p class="rv-prose transcript__text">{{ t.onScreenText }}</p>
+      </console-record-field>
+    </div>
+  } @else {
+    <p class="rv-absent">{{ gist() }}</p>
+  }
+</console-record-fold>

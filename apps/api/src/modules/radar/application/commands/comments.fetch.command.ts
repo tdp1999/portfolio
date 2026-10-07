@@ -54,6 +54,13 @@ export class FetchItemCommentsHandler implements ICommandHandler<FetchItemCommen
 
   async execute({ itemId }: FetchItemCommentsCommand): Promise<RadarItemCommentsFetchDto> {
     const item = await findItem(this.comments, itemId);
+    // The comments actor reads Facebook posts only; a YouTube video has no comments to fetch here.
+    if (!FACEBOOK_POST.test(item.permalink)) {
+      throw BadRequestError('Comments can only be fetched for a Facebook post', {
+        errorCode: RadarErrorCode.INVALID_INPUT,
+        layer: ErrorLayer.APPLICATION,
+      });
+    }
     if (!this.provider.isConfigured()) {
       throw BadRequestError('Comments capture is not configured (APIFY_TOKEN is unset)', {
         errorCode: RadarErrorCode.CAPTURE_NOT_CONFIGURED,
@@ -124,6 +131,8 @@ export class CollectItemCommentsHandler implements ICommandHandler<CollectItemCo
     };
   }
 }
+
+const FACEBOOK_POST = /^https:\/\/([a-z0-9-]+\.)?facebook\.com\//;
 
 async function findItem(comments: IRadarCommentsRepository, itemId: string): Promise<RadarItem> {
   IdentifierValue.from(itemId);

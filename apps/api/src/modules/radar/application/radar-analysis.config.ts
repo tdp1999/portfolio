@@ -17,6 +17,18 @@ export const DEFAULT_RADAR_AI_DEEP_MODELS = ['gemini-3.8-flash', 'gemini-3.5-fla
  * model, no tools. Override with `RADAR_AI_BRIEF_MODELS`.
  */
 export const DEFAULT_RADAR_AI_BRIEF_MODELS = DEFAULT_RADAR_AI_DEEP_MODELS;
+/**
+ * A transcript watches and listens to a video: a Flash model, which reads Vietnamese speech and
+ * slides well at low media resolution. Override with `RADAR_AI_TRANSCRIPT_MODELS`.
+ */
+export const DEFAULT_RADAR_AI_TRANSCRIPT_MODELS = DEFAULT_RADAR_AI_DEEP_MODELS;
+/** Longest video file (a reel) sent for a transcript: 10 minutes. Override with `RADAR_TRANSCRIPT_MAX_SECONDS`. */
+export const DEFAULT_RADAR_TRANSCRIPT_MAX_SECONDS = 600;
+/**
+ * Longest YouTube video: 45 minutes, about 260K input tokens at low resolution. Talks run long, so
+ * this limit is separate from the reels one. Override with `RADAR_TRANSCRIPT_YOUTUBE_MAX_SECONDS`.
+ */
+export const DEFAULT_RADAR_TRANSCRIPT_YOUTUBE_MAX_SECONDS = 2_700;
 /** One AUTO run's AI spend cap when the Owner names none: $1. */
 export const DEFAULT_RADAR_AI_BUDGET_MICRO_USD = 1_000_000;
 /** Items analyzed per tick: small, so one tick stays short and memory stays flat (task 387). */
@@ -54,6 +66,16 @@ export interface RadarAnalysisConfig {
   };
   /** An AUTO brief: one request over the window's analyses, so a longer timeout and answer. */
   brief: Omit<RadarAnalysisPass, 'maxImages'> & { timeoutMs: number };
+  /** A video's transcript, made in ENRICH of an AUTO run before the analysis reads it. */
+  transcript: Omit<RadarAnalysisPass, 'maxImages'> & {
+    timeoutMs: number;
+    /** Longer video files (reels) are skipped with a reason. */
+    maxSeconds: number;
+    /** The same for YouTube videos, which Gemini reads by URL. */
+    youtubeMaxSeconds: number;
+    /** Videos per tick, one after another, so only one file is ever in memory. */
+    perTick: number;
+  };
 }
 
 /** Reads the analysis settings. All optional: the defaults are a working setup. */
@@ -87,6 +109,17 @@ export function loadRadarAnalysisConfig(env: NodeJS.ProcessEnv = process.env): R
       effort: 'medium',
       maxOutputTokens: 32_000,
       timeoutMs: 300_000,
+    },
+    transcript: {
+      models: modelList(env['RADAR_AI_TRANSCRIPT_MODELS']) ?? DEFAULT_RADAR_AI_TRANSCRIPT_MODELS,
+      effort: 'low',
+      maxOutputTokens: 16_000,
+      // A 45-minute talk takes Gemini a few minutes to watch; a reel takes seconds.
+      timeoutMs: 300_000,
+      maxSeconds: intIn(env['RADAR_TRANSCRIPT_MAX_SECONDS'], 10, 3_600) ?? DEFAULT_RADAR_TRANSCRIPT_MAX_SECONDS,
+      youtubeMaxSeconds:
+        intIn(env['RADAR_TRANSCRIPT_YOUTUBE_MAX_SECONDS'], 10, 10_800) ?? DEFAULT_RADAR_TRANSCRIPT_YOUTUBE_MAX_SECONDS,
+      perTick: 3,
     },
   };
 }

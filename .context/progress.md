@@ -448,11 +448,12 @@ From: `epic-radar-phase-c`. Gemini (free tier first) replaces the `/radar work` 
 - [x] 418c-ai-provider-limits-panel (M) — AI page Limits section, provider-neutral limit shape filled per adapter (needs 418)
 - [x] 419-radar-gemini-quality-check (S) — trial table + compare view on ~10 items, pick default model (needs 418)
 - [x] 420-radar-brief-gemini (S) — brief written by Gemini (needs 418)
-- [ ] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418)
-- [ ] 422-radar-youtube-source (M) — YouTube channels via Data API v3 (needs 418, 421)
+- [x] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418)
+- [x] 422-radar-youtube-source (M) — YouTube channels via Data API v3 (needs 418, 421)
 - [ ] 423-radar-rss-substack-source (M) — RSS / Substack feeds (needs 418)
 - [ ] 424-radar-phase-c-acceptance (S) — prod run per source kind, decide the worker path (needs 417, 419, 420, 422, 423)
 - [ ] 425-radar-reanalyze-items (L) — re-analyze items (AUTO by default via a REANALYZE run, or /radar work): Detail action + Feed table bulk select across pages (asked by Owner 2026-10-07)
+- [ ] 426-radar-run-detail-page (M) — `/radar/runs/:id`: capture input sent, step timeline, failed post reasons, posts of the run, AI spend per feature (asked by Owner 2026-10-07)
 
 ## Pending — Radar, AI news catch-up (broken down 2026-10-04)
 

@@ -34,6 +34,7 @@ const item: RadarWorkItemDto = {
   sharedPost: null,
   engagement: { likes: 10, comments: 2, shares: 0, views: null },
   comments: { status: 'FETCHED', items: [comment('c1', true, 'link nè'), comment('c2', false, 'hay')] },
+  video: null,
 } as RadarWorkItemDto;
 
 describe('RadarAnalysisPrompt.parts', () => {

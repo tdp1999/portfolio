@@ -1,7 +1,7 @@
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
 import { ImageResult } from '../../domain/radar-media.util';
 import { RadarMedia } from '../../domain/radar.types';
-import { IImageDownloader } from '../ports/image-downloader.port';
+import { IMediaDownloader } from '../ports/media-downloader.port';
 import { IRadarImageRepository, RadarItemImages } from '../ports/radar-image.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { DeleteSourceCommand, DeleteSourceHandler } from './delete-source.command';
@@ -40,7 +40,7 @@ const setup = (batches: RadarItemImages[][], orphaned: string[] = []) => {
     })),
     delete: jest.fn(async () => undefined),
   } as unknown as jest.Mocked<IStorageService>;
-  const downloader: IImageDownloader = {
+  const downloader: IMediaDownloader = {
     download: jest.fn(async (url: string) => {
       if (url.includes('broken')) throw new Error('Timed out after 15000 ms');
       return { buffer: Buffer.from('x'), mimeType: url.includes('svg') ? 'image/svg+xml' : 'image/jpeg' };

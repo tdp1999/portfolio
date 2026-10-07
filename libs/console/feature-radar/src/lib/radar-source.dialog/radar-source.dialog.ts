@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -12,7 +13,7 @@ import { ToastService } from '@portfolio/console/shared/ui';
 import { extractApiError, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { RadarService } from '../radar.service';
 import { RadarSource } from '../radar.types';
-import { toUploadErrorLines } from './radar-source.dialog.util';
+import { toSourcePlatform, toUploadErrorLines } from './radar-source.dialog.util';
 
 @Component({
   selector: 'console-radar-source-dialog',
@@ -38,6 +39,7 @@ export class RadarSourceDialog implements OnInit {
   private readonly radarService = inject(RadarService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly sources = signal<RadarSource[]>([]);
@@ -49,12 +51,28 @@ export class RadarSourceDialog implements OnInit {
 
   // ── Forms ─────────────────────────────────────────────────────────
   protected readonly form = this.fb.nonNullable.group({
-    url: ['', [Validators.required, Validators.maxLength(500), Validators.pattern(/^https?:\/\/\S+$/)]],
+    // A page URL, or a bare YouTube `@handle`.
+    url: ['', [Validators.required, Validators.maxLength(500), Validators.pattern(/^(https?:\/\/\S+|@[\w.-]+)$/)]],
     displayName: ['', [Validators.required, Validators.maxLength(200)]],
   });
 
+  // ── Computed ──────────────────────────────────────────────────────
+  private readonly url = toSignal(this.form.controls.url.valueChanges, { initialValue: '' });
+  /** Read from the URL as it is typed, so adding a source needs no platform picker. */
+  protected readonly platform = computed(() => toSourcePlatform(this.url()));
+
   ngOnInit(): void {
     this.loadSources();
+    // A YouTube channel brings its own title, so the name is optional there.
+    this.form.controls.url.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((url) => {
+      const name = this.form.controls.displayName;
+      const validators =
+        toSourcePlatform(url) === 'YOUTUBE'
+          ? [Validators.maxLength(200)]
+          : [Validators.required, Validators.maxLength(200)];
+      name.setValidators(validators);
+      name.updateValueAndValidity({ emitEvent: false });
+    });
   }
 
   onRetryLoad(): void {
@@ -70,7 +88,8 @@ export class RadarSourceDialog implements OnInit {
       return;
     }
     this.adding.set(true);
-    this.radarService.createSource(this.form.getRawValue()).subscribe({
+    const value = this.form.getRawValue();
+    this.radarService.createSource({ ...value, platform: toSourcePlatform(value.url) }).subscribe({
       next: (source) => {
         this.adding.set(false);
         formDirective.resetForm();

@@ -28,17 +28,21 @@ const ApifyPostSchema = z.looseObject({
 
 type Json = Record<string, unknown>;
 
-/** Links end up rendered in the console, so only plain http(s) URLs survive (no `javascript:`). */
-const httpUrl = (value: unknown): string | null => {
+/**
+ * Links end up rendered in the console, so only plain http(s) URLs survive (no `javascript:`).
+ * `max` is the column limit; signed video URLs run past the usual 1,000 characters.
+ */
+const httpUrlUpTo = (value: unknown, max: number): string | null => {
   const candidate = nonEmptyString(value);
   return candidate &&
     z
       .url({ protocol: /^https?$/ })
-      .max(1000)
+      .max(max)
       .safeParse(candidate).success
     ? candidate
     : null;
 };
+const httpUrl = (value: unknown): string | null => httpUrlUpTo(value, 1000);
 
 /** `radar_items.authorExternalId` is VARCHAR(64); an oversized id is dropped rather than failing the batch. */
 const shortId = (value: unknown): string | null => {
@@ -60,9 +64,15 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
     const items: NormalizedRadarItem[] = [];
     const failures: RadarNormalizeFailure[] = [];
     const seen = new Set<string>();
+    const notices: string[] = [];
     let skipped = 0;
 
     raw.forEach((entry, index) => {
+      const notice = ApifyFacebookNormalizer.notice(entry);
+      if (notice) {
+        notices.push(notice);
+        return;
+      }
       const parsed = ApifyPostSchema.safeParse(entry);
       if (!parsed.success) {
         failures.push({ index, reason: describeIssues(parsed.error) });
@@ -78,7 +88,20 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
       items.push(this.toItem(post, entry));
     });
 
-    return { items, skipped, failures };
+    return { items, skipped, failures, notices };
+  }
+
+  /**
+   * The actor writes one `{ inputUrl, error, errorDescription }` row when it finds nothing, e.g.
+   * `no_items` for an empty window. It is a note about the capture, not a post that failed.
+   */
+  private static notice(entry: unknown): string | null {
+    if (!isPlainObject(entry) || 'postId' in entry) return null;
+    const code = nonEmptyString(entry['error']);
+    if (!code) return null;
+    const description = nonEmptyString(entry['errorDescription']);
+    const text = code === 'no_items' ? 'Apify found no posts for this source and window' : `Apify reported ${code}`;
+    return (description ? `${text}: ${description}` : text).slice(0, 300);
   }
 
   private toItem(post: Json & z.infer<typeof ApifyPostSchema>, entry: unknown): NormalizedRadarItem {
@@ -104,6 +127,7 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
         shares: finiteNumber(post['shares']) ?? 0,
         views: finiteNumber(post['viewsCount']) ?? finiteNumber(post['videoPostViewCount']),
       },
+      video: toVideo(post['media']),
       rawPayload: entry,
     };
   }
@@ -156,12 +180,34 @@ function toMedia(...lists: unknown[]): RadarMedia[] {
 }
 
 /**
+ * The post's first video with a playable file. The SD file is preferred: the transcript only needs
+ * to read slides and hear speech, and a smaller file keeps the download short.
+ */
+function toVideo(list: unknown): NormalizedRadarItem['video'] {
+  for (const m of Array.isArray(list) ? list : []) {
+    if (!isPlainObject(m) || m['__typename'] !== 'Video') continue;
+    const delivery = isPlainObject(m['videoDeliveryLegacyFields']) ? m['videoDeliveryLegacyFields'] : {};
+    const url = publicCdnUrl(
+      httpUrlUpTo(delivery['browser_native_sd_url'], 2000) ?? httpUrlUpTo(delivery['browser_native_hd_url'], 2000)
+    );
+    if (!url) continue;
+    const ms = finiteNumber(m['playable_duration_in_ms']);
+    return { url, durationSec: ms !== null && ms > 0 ? Math.ceil(ms / 1000) : null };
+  }
+  return null;
+}
+
+/**
  * The actor sometimes returns URLs on ISP-embedded edge hosts (`scontent.fosu2-2.fna.fbcdn.net`)
  * that only resolve inside that ISP, so our server and the worker cannot download them. The
  * signed path is host-independent, so the public host serves the same file.
  */
 function publicCdnUrl(url: string | null): string | null {
-  return url?.replace(/^https:\/\/scontent\.[a-z0-9-]+\.fna\.fbcdn\.net\//, 'https://scontent.xx.fbcdn.net/') ?? null;
+  return (
+    url
+      ?.replace(/^https:\/\/scontent\.[a-z0-9-]+\.fna\.fbcdn\.net\//, 'https://scontent.xx.fbcdn.net/')
+      .replace(/^https:\/\/video\.[a-z0-9-]+\.fna\.fbcdn\.net\//, 'https://video.xx.fbcdn.net/') ?? null
+  );
 }
 
 /** The page's pinned "subscribe now" promo shows up as `link` on most posts; it is not content. */

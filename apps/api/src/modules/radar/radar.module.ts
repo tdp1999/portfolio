@@ -60,6 +60,7 @@ import {
   CAPTURE_PROVIDERS,
   LLM_PROVIDERS,
   IMAGE_DOWNLOADER,
+  VIDEO_DOWNLOADER,
   RADAR_CAPTURE_REPOSITORY,
   RADAR_COMMENTS_REPOSITORY,
   COMMENTS_PROVIDER,
@@ -70,13 +71,17 @@ import {
   RADAR_BRIEF_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
   RADAR_TRIAL_REPOSITORY,
+  RADAR_TRANSCRIPT_REPOSITORY,
   RADAR_WORK_REPOSITORY,
 } from './application/radar.token';
 import { ApifyCaptureAdapter } from './infrastructure/capture/apify-capture.adapter';
 import { ApifyCommentsAdapter } from './infrastructure/capture/apify-comments.adapter';
 import { RunCommentsPhase } from './application/commands/run.comments.phase';
+import { RunTranscriptsPhase } from './application/commands/run.transcripts.phase';
 import { ApifyFacebookNormalizer } from './infrastructure/capture/apify-facebook.normalizer';
-import { FetchImageDownloader } from './infrastructure/capture/fetch-image.downloader';
+import { YouTubeCaptureAdapter } from './infrastructure/capture/youtube-capture.adapter';
+import { YouTubeNormalizer } from './infrastructure/capture/youtube.normalizer';
+import { FetchMediaDownloader } from './infrastructure/capture/fetch-media.downloader';
 import { RadarBriefRepository } from './infrastructure/repositories/radar-brief.repository';
 import { RadarCaptureRepository } from './infrastructure/repositories/radar-capture.repository';
 import { RadarCommentsRepository } from './infrastructure/repositories/radar-comments.repository';
@@ -88,6 +93,7 @@ import { RadarProfileRepository } from './infrastructure/repositories/radar-prof
 import { RadarRunRepository } from './infrastructure/repositories/radar-run.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
 import { RadarTrialRepository } from './infrastructure/repositories/radar-trial.repository';
+import { RadarTranscriptRepository } from './infrastructure/repositories/radar-transcript.repository';
 import { RadarWorkRepository } from './infrastructure/repositories/radar-work.repository';
 import { RadarAdminController } from './presentation/radar-admin.controller';
 import { RadarWorkerController } from './presentation/radar-worker.controller';
@@ -145,7 +151,9 @@ const QueryHandlers = [
     { provide: RADAR_RUN_REPOSITORY, useClass: RadarRunRepository },
     { provide: RADAR_BRIEF_REPOSITORY, useClass: RadarBriefRepository },
     { provide: RADAR_TRIAL_REPOSITORY, useClass: RadarTrialRepository },
-    { provide: IMAGE_DOWNLOADER, useClass: FetchImageDownloader },
+    { provide: RADAR_TRANSCRIPT_REPOSITORY, useClass: RadarTranscriptRepository },
+    { provide: IMAGE_DOWNLOADER, useFactory: () => FetchMediaDownloader.images() },
+    { provide: VIDEO_DOWNLOADER, useFactory: () => FetchMediaDownloader.videos() },
     {
       provide: RADAR_WORKER_CONFIG,
       useFactory: () => {
@@ -162,7 +170,7 @@ const QueryHandlers = [
     {
       // One normalizer per provider export format; the upload route picks by `format`.
       provide: CAPTURE_NORMALIZERS,
-      useFactory: () => [new ApifyFacebookNormalizer()],
+      useFactory: () => [new ApifyFacebookNormalizer(), new YouTubeNormalizer()],
     },
     {
       provide: RADAR_CAPTURE_CONFIG,
@@ -171,6 +179,9 @@ const QueryHandlers = [
         if (!config.apifyToken) {
           new Logger('RadarModule').warn('APIFY_TOKEN is unset; Hybrid runs are refused, Manual runs still work');
         }
+        if (!config.youtubeApiKey) {
+          new Logger('RadarModule').warn('YOUTUBE_API_KEY is unset; YouTube sources cannot be added or captured');
+        }
         return config;
       },
     },
@@ -178,7 +189,7 @@ const QueryHandlers = [
       // Resolved per run by the run's captureAdapter name, not once per process.
       provide: CAPTURE_PROVIDERS,
       inject: [RADAR_CAPTURE_CONFIG],
-      useFactory: (config: RadarCaptureConfig) => [new ApifyCaptureAdapter(config)],
+      useFactory: (config: RadarCaptureConfig) => [new ApifyCaptureAdapter(config), new YouTubeCaptureAdapter(config)],
     },
     {
       provide: COMMENTS_PROVIDER,
@@ -186,6 +197,7 @@ const QueryHandlers = [
       useFactory: (config: RadarCaptureConfig) => new ApifyCommentsAdapter(config),
     },
     RunCommentsPhase,
+    RunTranscriptsPhase,
     { provide: RADAR_ANALYSIS_CONFIG, useFactory: () => loadRadarAnalysisConfig() },
     {
       // Resolved per run by the run's llmAdapter name.

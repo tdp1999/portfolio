@@ -46,6 +46,7 @@ import {
   PROVIDER_OPTIONS,
   SPLIT_SORT_OPTIONS,
   TRIAGE_TABS,
+  PLATFORM_LABELS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
 import { RadarItemTriageSection } from '../radar-item-triage.section/radar-item-triage.section';
@@ -207,6 +208,8 @@ export default class RadarItemList implements OnInit {
   protected readonly viewOptions = FEED_VIEW_OPTIONS;
   protected readonly splitSortOptions = SPLIT_SORT_OPTIONS;
   protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
+  /** Widened: the mat-table row (`let item`) is untyped. */
+  protected readonly platformLabels: Readonly<Record<string, string>> = PLATFORM_LABELS;
   protected readonly depthHelp = ANALYSIS_DEPTH_HELP;
   protected readonly displayedColumns = ['score', 'summary', 'progress', 'status', 'source', 'publishedAt'];
 

@@ -48,6 +48,7 @@ const snapshot = (n: number): RadarWorkSnapshot => ({
   engagement: { likes: 0, comments: 0, shares: 0, views: null },
   comments: [],
   commentsStatus: RadarCommentsStatus.NOT_FETCHED,
+  video: null,
 });
 const claimed = (n: number) => ({ ...snapshot(n), leaseExpiresAt: new Date() });
 const ok = (model: string, data: unknown = answer) => ({ data, model }) as never;

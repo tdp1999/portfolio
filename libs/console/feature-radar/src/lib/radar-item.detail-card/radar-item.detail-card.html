@@ -23,6 +23,9 @@
         }
       </div>
     }
+    @if (it.video; as video) {
+      <console-radar-item-transcript-section [video]="video" />
+    }
     @if (authorComments().length) {
       <div class="radar-post__addendum">
         <span class="radar-post__shared-head">Added by the author in the comments</span>
@@ -109,16 +112,19 @@
   </console-record-section>
 
   @if (hasComments()) {
-    @let chip = it.comments | radarCommentsChip: it.enrichment?.wantsComments ?? false;
+    @let chip = it.comments | radarCommentsChip: it.enrichment?.wantsComments ?? false : it.source.platform;
     <console-record-section title="Comments" [count]="it.comments.fetchedCount">
       <div action class="radar-comments-head">
         <span class="radar-comments-head__state" [class]="chip.badge" [matTooltip]="chip.tooltip">
           <mat-icon class="icon-sm">{{ chip.icon }}</mat-icon>
           {{ chip.label }}
         </span>
-        <button type="button" class="rv-linkbtn" [disabled]="fetchingComments()" (click)="onFetchComments()">
-          {{ it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch again' }}
-        </button>
+        <!-- The comments actor reads Facebook posts only. -->
+        @if (canFetchComments()) {
+          <button type="button" class="rv-linkbtn" [disabled]="fetchingComments()" (click)="onFetchComments()">
+            {{ it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch again' }}
+          </button>
+        }
       </div>
       @if (fetchingComments()) {
         <p class="rv-absent">Fetching comments from Apify. This can take a few minutes.</p>
@@ -174,7 +180,7 @@
         <console-property label="Kind">{{ it.kind }}</console-property>
         <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
         <console-property label="Comments">
-          {{ it.comments.postCount }} on Facebook
+          {{ it.comments.postCount }} on {{ platformLabel() }}
           @if (it.comments.fetchedAt) {
             <span class="rv-absent">(read {{ it.comments.fetchedAt | date: 'mediumDate' }})</span>
           }
@@ -248,7 +254,7 @@
   </ng-container>
 </console-record-layout>
 
-<!-- One gallery: photos open in Quick Look, videos go to Facebook (only the thumbnail is stored). -->
+<!-- One gallery: photos open in Quick Look, videos go to the original post (only the thumbnail is stored). -->
 <ng-template #gallery let-images let-href="href">
   <div class="radar-images">
     @for (img of images; track $index) {
@@ -268,14 +274,14 @@
             [href]="href"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Watch the video on Facebook"
+            [attr.aria-label]="'Watch the video on ' + platformLabel()"
           >
             @if (!brokenImages().has(img.url)) {
               <img [src]="img.url" alt="" loading="lazy" (error)="onImageError(img.url)" />
             }
             <span class="radar-image__play">
               <mat-icon>play_arrow</mat-icon>
-              Watch on Facebook
+              Watch on {{ platformLabel() }}
             </span>
           </a>
         } @else {

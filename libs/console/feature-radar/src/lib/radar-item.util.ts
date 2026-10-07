@@ -1,4 +1,11 @@
-import type { RadarCommentsChip, RadarCommentsSummary, RadarItemImage, RadarSourceMonogram } from './radar.types';
+import { PLATFORM_LABELS } from './radar.data';
+import type {
+  RadarCommentsChip,
+  RadarCommentsSummary,
+  RadarItemImage,
+  RadarPlatform,
+  RadarSourceMonogram,
+} from './radar.types';
 
 /** A photo the browser can show: stored or still pending, and not seen failing to load. */
 export const isViewableImage = (img: RadarItemImage, broken: ReadonlySet<string>): boolean =>
@@ -14,7 +21,14 @@ export function hostOf(url: string): string {
 }
 
 /** An item's comment capture state as the Detail page and the Feed's progress icons show it. */
-export function toCommentsChip(c: RadarCommentsSummary, wantsComments = false): RadarCommentsChip {
+export function toCommentsChip(
+  c: RadarCommentsSummary,
+  wantsComments = false,
+  platform: RadarPlatform = 'FACEBOOK'
+): RadarCommentsChip {
+  const where = PLATFORM_LABELS[platform];
+  // Only a Facebook post's comments can be fetched, so only there may the analysis suggest it.
+  const wantsFetch = wantsComments && platform === 'FACEBOOK';
   const counted = `${c.fetchedCount} / ${c.postCount}`;
   switch (c.status) {
     case 'FETCHED':
@@ -22,7 +36,7 @@ export function toCommentsChip(c: RadarCommentsSummary, wantsComments = false): 
         label: counted,
         badge: 'console-badge console-badge--muted',
         icon: 'forum',
-        tooltip: `${c.fetchedCount} kept of ${c.postCount} on Facebook (spam and filler dropped)`,
+        tooltip: `${c.fetchedCount} kept of ${c.postCount} on ${where} (spam and filler dropped)`,
         suggested: false,
       };
     case 'PARTIAL':
@@ -39,17 +53,17 @@ export function toCommentsChip(c: RadarCommentsSummary, wantsComments = false): 
         badge: 'console-badge console-badge--danger',
         icon: 'error_outline',
         tooltip: c.error ? `Fetching comments failed: ${c.error}` : 'Fetching comments failed',
-        suggested: wantsComments,
+        suggested: wantsFetch,
       };
     default:
       return {
         label: String(c.postCount),
         badge: 'radar-comments--idle',
         icon: 'chat_bubble_outline',
-        tooltip: wantsComments
-          ? `${c.postCount} on Facebook, not fetched. The analysis suggests fetching them.`
-          : `${c.postCount} on Facebook, not fetched`,
-        suggested: wantsComments,
+        tooltip: wantsFetch
+          ? `${c.postCount} on ${where}, not fetched. The analysis suggests fetching them.`
+          : `${c.postCount} on ${where}, not fetched`,
+        suggested: wantsFetch,
       };
   }
 }
@@ -65,4 +79,12 @@ export function toSourceMonogram(displayName: string): RadarSourceMonogram {
   let hash = 0;
   for (const ch of displayName) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
   return { initials, tone: hash % MONOGRAM_TONES };
+}
+
+/** Seconds as a clock time: 75 → "1:15", 3_725 → "1:02:05". */
+export function toClockTime(totalSec: number): string {
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = String(totalSec % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
 }

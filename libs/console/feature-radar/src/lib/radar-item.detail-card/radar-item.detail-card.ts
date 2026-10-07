@@ -37,6 +37,7 @@ import { MarkdownPipe } from '../markdown.pipe';
 import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
 import { RadarItemTrialsSection } from '../radar-item-trials.section/radar-item-trials.section';
+import { RadarItemTranscriptSection } from '../radar-item-transcript.section/radar-item-transcript.section';
 import { isViewableImage } from '../radar-item.util';
 import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS, COMMENTS_PREVIEW } from '../radar.constants';
 import {
@@ -45,6 +46,7 @@ import {
   ANALYSIS_DEPTH_LABELS,
   CONTENT_TYPE_LABELS,
   PROVIDER_LABELS,
+  PLATFORM_LABELS,
   WORK_STATUS_LABELS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
@@ -75,6 +77,7 @@ import { UrlHostPipe } from '../url-host.pipe';
     UrlHostPipe,
     Property,
     RadarItemTrialsSection,
+    RadarItemTranscriptSection,
     PropertyList,
     QuickLook,
     RecordField,
@@ -144,7 +147,10 @@ export class RadarItemDetailCard {
       : this.otherComments().slice(0, COMMENTS_PREVIEW)
   );
   protected readonly hiddenCommentCount = computed(() => this.otherComments().length - this.shownComments().length);
-  /** Nothing to show or fetch when Facebook reports no comments and none were ever fetched. */
+  protected readonly platformLabel = computed(() => PLATFORM_LABELS[this.item().source.platform]);
+  /** The comments actor reads Facebook posts only. */
+  protected readonly canFetchComments = computed(() => this.item().source.platform === 'FACEBOOK');
+  /** Nothing to show or fetch when the platform reports no comments and none were ever fetched. */
   protected readonly hasComments = computed(() => {
     const c = this.item().comments;
     return c.postCount > 0 || c.status !== 'NOT_FETCHED';
@@ -199,7 +205,7 @@ export class RadarItemDetailCard {
             .open(ConfirmDialogComponent, {
               data: {
                 title: it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch comments again',
-                message: `Read up to ${settings.itemTopLevelLimit} top comments of this post (${it.comments.postCount} on Facebook) and their replies with Apify. This is billed, at most ${capText}, and replaces the comments stored now.`,
+                message: `Read up to ${settings.itemTopLevelLimit} top comments of this post (${it.comments.postCount} on ${PLATFORM_LABELS[it.source.platform]}) and their replies with Apify. This is billed, at most ${capText}, and replaces the comments stored now.`,
                 confirmLabel: 'Fetch',
               } satisfies ConfirmDialogData,
             })

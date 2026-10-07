@@ -10,30 +10,45 @@ import type { IAiClient } from '../../../ai';
 import { loadRadarAnalysisConfig } from '../radar-analysis.config';
 import { CreateRunCommand, CreateRunHandler } from './run.create.command';
 
-const source = (isActive = true) =>
+const source = (platform: 'FACEBOOK' | 'YOUTUBE' = 'FACEBOOK') =>
   RadarSource.load({
     id: SOURCE_ID,
-    platform: 'FACEBOOK',
-    url: 'https://fb.test/s',
+    platform,
+    url: platform === 'YOUTUBE' ? 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv' : 'https://fb.test/s',
     displayName: 's',
-    isActive,
+    isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
 
 const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
 
-const setup = (opts: { configured?: boolean; active?: boolean; aiConfigured?: boolean } = {}) => {
+const setup = (
+  opts: { configured?: boolean; active?: boolean; aiConfigured?: boolean; platform?: 'FACEBOOK' | 'YOUTUBE' } = {}
+) => {
   const sources = {
-    findById: jest.fn(async () => source()),
+    findById: jest.fn(async () => source(opts.platform)),
   } as unknown as IRadarSourceRepository;
   const runs = {
     hasActiveRun: jest.fn(async () => opts.active ?? false),
     add: jest.fn(async (run: RadarRun) => RadarRun.load(run.toProps())),
   } as unknown as jest.Mocked<IRadarRunRepository>;
-  const apify = { name: 'apify', isConfigured: () => opts.configured ?? true } as unknown as ICaptureProvider;
+  const apify = {
+    name: 'apify',
+    format: 'apify-facebook-posts',
+    platform: 'FACEBOOK',
+    credentialName: 'APIFY_TOKEN',
+    isConfigured: () => opts.configured ?? true,
+  } as unknown as ICaptureProvider;
+  const youtube = {
+    name: 'youtube',
+    format: 'youtube-videos',
+    platform: 'YOUTUBE',
+    credentialName: 'YOUTUBE_API_KEY',
+    isConfigured: () => true,
+  } as unknown as ICaptureProvider;
   const ai = { configured: opts.aiConfigured ?? true } as unknown as IAiClient;
-  return { runs, handler: new CreateRunHandler(sources, runs, [apify], ai, loadRadarAnalysisConfig({})) };
+  return { runs, handler: new CreateRunHandler(sources, runs, [apify, youtube], ai, loadRadarAnalysisConfig({})) };
 };
 
 const body = (flow: RadarRunFlow) => ({ sourceId: SOURCE_ID, flow, itemCap: 50 });
@@ -111,6 +126,27 @@ describe('CreateRunHandler', () => {
     expect(byDefault.budgetMicroUsd).toBe(1_000_000);
     expect(asked.budgetMicroUsd).toBe(250_000);
     expect(hybrid.budgetMicroUsd).toBeNull();
+  });
+
+  it('should refuse a Manual run and a comments fetch on a YouTube source', async () => {
+    const { runs, handler } = setup({ platform: 'YOUTUBE' });
+    const withComments = { ...body(RadarRunFlow.HYBRID), windowFrom: '2026-10-01', fetchComments: true };
+
+    await expect(handler.execute(new CreateRunCommand(body(RadarRunFlow.MANUAL)))).rejects.toMatchObject({
+      errorCode: 'RADAR_INVALID_INPUT',
+    });
+    await expect(handler.execute(new CreateRunCommand(withComments))).rejects.toMatchObject({
+      errorCode: 'RADAR_INVALID_INPUT',
+    });
+    expect(runs.add).not.toHaveBeenCalled();
+  });
+
+  it("should capture with the provider of the source's platform", async () => {
+    const { handler } = setup({ platform: 'YOUTUBE' });
+
+    const run = await handler.execute(new CreateRunCommand(body(RadarRunFlow.AUTO)));
+
+    expect(run.steps.slice(0, 2).map((s) => s.adapter)).toEqual(['youtube', 'youtube-videos']);
   });
 });
 

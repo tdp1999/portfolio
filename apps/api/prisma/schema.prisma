@@ -801,6 +801,8 @@ model PostTag {
 
 enum RadarPlatform {
   FACEBOOK
+  /// A channel, stored as its canonical `https://www.youtube.com/channel/UC…` URL (the channel id lives in it).
+  YOUTUBE
 }
 
 enum RadarRunFlow {
@@ -819,6 +821,15 @@ enum RadarStep {
 }
 
 /// Whether an item's comments were captured. `comments = []` alone cannot tell "never fetched" from "none".
+/// A video item's transcript: NONE until an AUTO run asks for one, PENDING while a busy provider
+/// makes it wait, then DONE or FAILED (a failure never blocks the analysis, RAD-008).
+enum RadarTranscriptStatus {
+  NONE
+  PENDING
+  DONE
+  FAILED
+}
+
 enum RadarCommentsStatus {
   NOT_FETCHED
   FETCHED
@@ -929,39 +940,48 @@ model RadarStepRun {
 }
 
 model RadarItem {
-  id                   String              @id @db.Uuid
-  sourceId             String              @db.Uuid
-  lastRunId            String?             @db.Uuid
-  externalId           String              @db.VarChar(64)
-  provider             String              @db.VarChar(64)
-  kind                 RadarItemKind       @default(POST)
-  permalink            String              @db.VarChar(1000)
-  authorName           String              @db.VarChar(200)
-  authorExternalId     String?             @db.VarChar(64)
+  id                   String                @id @db.Uuid
+  sourceId             String                @db.Uuid
+  lastRunId            String?               @db.Uuid
+  externalId           String                @db.VarChar(64)
+  provider             String                @db.VarChar(64)
+  kind                 RadarItemKind         @default(POST)
+  permalink            String                @db.VarChar(1000)
+  authorName           String                @db.VarChar(200)
+  authorExternalId     String?               @db.VarChar(64)
   publishedAt          DateTime
-  text                 String              @default("")
-  media                Json                @default("[]") @db.JsonB
-  links                Json                @default("[]") @db.JsonB
-  comments             Json                @default("[]") @db.JsonB
-  commentsStatus       RadarCommentsStatus @default(NOT_FETCHED)
+  text                 String                @default("")
+  media                Json                  @default("[]") @db.JsonB
+  links                Json                  @default("[]") @db.JsonB
+  comments             Json                  @default("[]") @db.JsonB
+  commentsStatus       RadarCommentsStatus   @default(NOT_FETCHED)
   commentsFetchedAt    DateTime?
   /// Comments stored after filtering, kept as a column so the list never loads the JSON to count.
-  commentsFetchedCount Int                 @default(0)
-  commentsError        String?             @db.VarChar(500)
-  sharedPost           Json?               @db.JsonB
-  engagement           Json                @default("{}") @db.JsonB
-  rawPayload           Json                @db.JsonB
-  workStatus           RadarWorkStatus     @default(PENDING)
+  commentsFetchedCount Int                   @default(0)
+  commentsError        String?               @db.VarChar(500)
+  sharedPost           Json?                 @db.JsonB
+  engagement           Json                  @default("{}") @db.JsonB
+  /// The playable file (Facebook re-signs it on every capture, it expires within days) or the public YouTube URL.
+  videoUrl             String?               @db.VarChar(2000)
+  videoDurationSec     Int?
+  /// `{ spoken, onScreenText, visualSummary, language }`; null until a transcript is DONE.
+  transcript           Json?                 @db.JsonB
+  transcriptStatus     RadarTranscriptStatus @default(NONE)
+  transcriptError      String?               @db.VarChar(500)
+  /// Tries a busy provider turned away; the item fails after a few so ENRICH never waits forever.
+  transcriptAttempts   Int                   @default(0)
+  rawPayload           Json                  @db.JsonB
+  workStatus           RadarWorkStatus       @default(PENDING)
   leaseExpiresAt       DateTime?
-  claimCount           Int                 @default(0)
+  claimCount           Int                   @default(0)
   /// Why the server analysis gave up on this item (it is then stuck until requeued); null otherwise.
-  workError            String?             @db.VarChar(1000)
-  triageStatus         RadarTriageStatus   @default(INBOX)
+  workError            String?               @db.VarChar(1000)
+  triageStatus         RadarTriageStatus     @default(INBOX)
   /// When `triageStatus` last changed; null while the post has never left the Inbox.
   triagedAt            DateTime?
-  capturedAt           DateTime            @default(now())
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
+  capturedAt           DateTime              @default(now())
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   source     RadarSource            @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   lastRun    RadarRun?              @relation(fields: [lastRunId], references: [id], onDelete: SetNull)

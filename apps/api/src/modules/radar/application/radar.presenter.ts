@@ -133,6 +133,7 @@ export class RadarPresenter {
             images,
           })),
       },
+      video: item.video,
     };
   }
 
@@ -153,6 +154,7 @@ export class RadarPresenter {
       images: toImagesSummary(row.media),
       enrichment: row.enrichment,
       comments: toCommentsSummary(row),
+      video: row.videoUrl ? { durationSec: row.videoDurationSec, transcriptStatus: row.transcriptStatus } : null,
     };
   }
 

@@ -23,6 +23,7 @@ import {
 } from '../radar.token';
 import { PersistItemImagesCommand } from './persist-item-images.command';
 import { RunCommentsPhase } from './run.comments.phase';
+import { RunTranscriptsPhase } from './run.transcripts.phase';
 
 /** One page in memory at a time; a tick reads a few pages, so 1,000 posts take about 2 ticks. */
 export const DATASET_PAGE_SIZE = 100;
@@ -59,7 +60,8 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     @Inject(CAPTURE_NORMALIZERS) private readonly normalizers: ICaptureNormalizer[],
     @Inject(LLM_PROVIDERS) private readonly llmProviders: ILlmProvider[],
     @Inject(STORAGE_SERVICE) private readonly storage: IStorageService,
-    private readonly commentsPhase: RunCommentsPhase
+    private readonly commentsPhase: RunCommentsPhase,
+    private readonly transcriptsPhase: RunTranscriptsPhase
   ) {}
 
   async execute({ runId, now }: AdvanceRunCommand): Promise<void> {
@@ -148,8 +150,15 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     let current = run;
     for (let page = 0; page < PAGES_PER_TICK && !cursor.exhausted; page++) {
       const raw = await provider.fetchPage(cursor.datasetRef, cursor.offset, DATASET_PAGE_SIZE);
+      let note: string | null = null;
       if (raw.length > 0) {
-        const { items, failures } = normalizer.normalize(raw);
+        const { items, failures, notices } = normalizer.normalize(raw);
+        // The run shows why it captured nothing, or why some posts were not kept.
+        note =
+          notices[0] ??
+          (failures.length > 0
+            ? `${failures.length} ${failures.length === 1 ? 'post' : 'posts'} could not be read: ${failures[0].reason}`
+            : null);
         const saved = await this.captures.saveCapturePage({
           runId: run.id,
           sourceId: run.sourceId,
@@ -159,8 +168,9 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
         await deleteStoredImages(this.storage, saved.orphanedImageIds, this.logger);
       }
       cursor = cursor.next(DATASET_PAGE_SIZE);
+      const next = current.moveCursor(cursor);
       // Null once the run was cancelled: stop reading pages nobody will finish.
-      const moved = await this.runs.save(current.moveCursor(cursor));
+      const moved = await this.runs.save(note ? next.warn(note) : next);
       if (!moved) return WAIT;
       current = moved;
     }
@@ -170,9 +180,10 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
   }
 
   /**
-   * Copies images in small batches per tick and, when the run asks for it, fetches comments for
-   * the selected posts. Done when no image is pending and the comments phase is settled; a
-   * comments failure only warns (see {@link RunCommentsPhase}).
+   * Copies images in small batches per tick, fetches comments for the selected posts when the run
+   * asks for it, and in an AUTO run writes the transcript of each video. Done when no image is
+   * pending and both phases are settled; neither can fail the run (see {@link RunCommentsPhase},
+   * {@link RunTranscriptsPhase}).
    */
   private async enrich(run: RadarRun, now: Date): Promise<Outcome> {
     let current: RadarRun | null = run.startEnrich(now) === run ? run : await this.runs.save(run.startEnrich(now));
@@ -185,9 +196,11 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
       if (!current) return WAIT;
     }
 
+    const transcriptsDone = current.flow === RadarRunFlow.AUTO ? await this.transcriptsPhase.advance(current) : true;
+
     const { withPendingImages } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
     const commentsDone = current.commentsProgress?.done ?? true;
-    if (withPendingImages > 0 || !commentsDone) return WAIT;
+    if (withPendingImages > 0 || !commentsDone || !transcriptsDone) return WAIT;
     return this.advanced(current.completeEnrich(now));
   }
 

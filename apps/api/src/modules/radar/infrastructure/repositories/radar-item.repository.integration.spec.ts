@@ -121,7 +121,12 @@ describe('RadarItemRepository (integration)', () => {
 
       expect(result.data.map((r) => r.id)).toEqual([ids['claude'], ids['gpt'], ids['raw']]);
       expect(result.total).toBe(3);
-      expect(result.data[0].source).toEqual({ id: activeId, displayName: 'Active source', isActive: true });
+      expect(result.data[0].source).toEqual({
+        id: activeId,
+        displayName: 'Active source',
+        isActive: true,
+        platform: 'FACEBOOK',
+      });
       expect(result.data[0].enrichment).toMatchObject({ tldr: 'Anthropic adds hooks', signalScore: 8 });
       expect(result.data[2].enrichment).toBeNull();
     });

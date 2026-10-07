@@ -43,6 +43,7 @@ const snapshot = (n: number): RadarWorkSnapshot => ({
   engagement: { likes: 0, comments: 0, shares: 0, views: null },
   comments: [],
   commentsStatus: RadarCommentsStatus.NOT_FETCHED,
+  video: null,
 });
 const usage = { inputTokens: 1000, outputTokens: 200, thinkingTokens: 300, cachedTokens: 0, toolTokens: 50 };
 const ok = (model: string) =>

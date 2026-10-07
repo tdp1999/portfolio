@@ -251,7 +251,13 @@ export class GeminiProvider implements IAiProvider {
       'fileUri' in part
         ? [part.mimeType, { uri: part.fileUri }]
         : [part.inlineData.mimeType, { data: part.inlineData.data }];
-    return { type: GeminiProvider.mediaType(mime ?? ''), mime_type: mime, ...source } as Interactions.Content;
+    const resolution = part.resolution ? { resolution: part.resolution } : {};
+    return {
+      type: GeminiProvider.mediaType(mime ?? ''),
+      mime_type: mime,
+      ...source,
+      ...resolution,
+    } as Interactions.Content;
   }
 
   /** The content block type a file goes in, by its mime type; an unknown or missing one is sent as an image. */

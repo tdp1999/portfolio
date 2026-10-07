@@ -27,7 +27,7 @@ import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import { RadarService } from '../radar.service';
 import type { RadarFeedItem, RadarItemDetail, RadarTriageDecision, RadarTriageStatus } from '../radar.types';
-import { TRIAGE_ROW_MARKS } from '../radar.data';
+import { PLATFORM_LABELS, TRIAGE_ROW_MARKS } from '../radar.data';
 
 /**
  * The Feed's Split view with a post open: the page of posts as a compact list, and the open post's
@@ -78,6 +78,7 @@ export class RadarItemTriageSection {
   readonly close = output<void>();
 
   // ── Writable signals ──────────────────────────────────────────────
+  protected readonly platformLabels = PLATFORM_LABELS;
   protected readonly detail = signal<RadarItemDetail | null>(null);
   protected readonly detailLoading = signal(false);
   protected readonly detailError = signal<'not-found' | 'failed' | null>(null);

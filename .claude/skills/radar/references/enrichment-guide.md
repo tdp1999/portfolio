@@ -25,6 +25,13 @@ fixed search limit; two or three searches per post is usually enough, one of the
 alternatives or the trend. Images come from `radar-api.sh images` (Read each file), not from
 URLs in the claim. Never open facebook.com or fb.watch (RAD-003).
 
+A video item carries `video: { durationSec, transcriptStatus, transcript, transcriptError }`.
+The transcript exists only when an AUTO run made it; read it as part of the post. Never download
+or watch the video yourself: without a `DONE` transcript, follow the rules' gap bullet for reels.
+A YouTube item (permalink on youtube.com) is a whole video: its text is the title, a blank line,
+then the description, and its one image is the thumbnail. A YouTube permalink may be opened with
+WebFetch for the page text; it never needs a login.
+
 ## Example
 
 Post: "Tính làm cái video test Seedance 2.5 & ElevenLabs v4, mới tạo 2 videos (15s mỗi video)

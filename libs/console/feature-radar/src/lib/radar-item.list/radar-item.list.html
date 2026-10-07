@@ -255,7 +255,13 @@
                 class="radar-monogram"
                 [class]="'radar-monogram--t' + mono.tone"
                 [class.radar-monogram--paused]="!item.source.isActive"
-                [matTooltip]="item.source.displayName + (item.source.isActive ? '' : ' (paused)')"
+                [class.radar-monogram--youtube]="item.source.platform === 'YOUTUBE'"
+                [matTooltip]="
+                  item.source.displayName +
+                  ' on ' +
+                  platformLabels[item.source.platform] +
+                  (item.source.isActive ? '' : ' (paused)')
+                "
                 [attr.aria-label]="item.source.displayName"
               >
                 {{ mono.initials }}

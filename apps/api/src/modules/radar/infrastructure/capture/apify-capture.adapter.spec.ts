@@ -13,6 +13,7 @@ const setup = (responses: unknown[]) => {
       apifyPostsActor: 'apify/facebook-posts-scraper',
       apifyCommentsActor: 'apify/facebook-comments-scraper',
       commentsMaxChargeUsd: 0.5,
+      youtubeApiKey: null,
     },
     http as unknown as typeof fetch
   );
@@ -43,7 +44,11 @@ describe('ApifyCaptureAdapter', () => {
     const base = { sourceUrl: 'https://www.facebook.com/mrgoonie', itemCap: 50 };
 
     await adapter.start({ ...base, windowFrom: null, windowTo: null });
-    await adapter.start({ ...base, windowFrom: new Date('2026-09-01T00:00:00Z'), windowTo: null });
+    await adapter.start({
+      ...base,
+      windowFrom: new Date('2026-09-01T00:00:00Z'),
+      windowTo: new Date('2026-09-01T23:59:59.999Z'),
+    });
 
     const [backfill, windowed] = http.mock.calls.map(([url, init]) => ({
       url: String(url),
@@ -51,7 +56,12 @@ describe('ApifyCaptureAdapter', () => {
       auth: (init?.headers as Record<string, string>)['Authorization'],
     }));
     expect(backfill.input).not.toHaveProperty('onlyPostsNewerThan');
-    expect(windowed.input).toMatchObject({ onlyPostsNewerThan: '2026-09-01', resultsLimit: 50 });
+    // A one-day window: the actor's upper bound is exclusive, so it is the next day.
+    expect(windowed.input).toMatchObject({
+      onlyPostsNewerThan: '2026-09-01',
+      onlyPostsOlderThan: '2026-09-02',
+      resultsLimit: 50,
+    });
     expect(backfill.url).toContain('/acts/apify~facebook-posts-scraper/runs');
     expect(backfill.url).not.toContain(TOKEN);
     expect(backfill.auth).toBe(`Bearer ${TOKEN}`);

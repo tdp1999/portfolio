@@ -10,10 +10,14 @@ export type { RadarFeedSortKey, RadarQueueState, RadarTriageStatus };
 
 export type RadarWorkStatus = 'PENDING' | 'CLAIMED' | 'DONE';
 
+/** Where a source's posts live. A YouTube source is a channel. */
+export type RadarPlatform = 'FACEBOOK' | 'YOUTUBE';
+
 export interface RadarItemSource {
   id: string;
   displayName: string;
   isActive: boolean;
+  platform: RadarPlatform;
 }
 
 export interface RadarEnrichmentSummary {
@@ -102,6 +106,8 @@ export interface RadarFeedItem {
   images: RadarImagesSummary;
   enrichment: RadarEnrichmentSummary | null;
   comments: RadarCommentsSummary;
+  /** Set when the capture carried a video file. */
+  video: Pick<RadarItemVideo, 'durationSec' | 'transcriptStatus'> | null;
 }
 
 export interface RadarImagesSummary {
@@ -194,6 +200,25 @@ export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrich
   engagement: { likes: number; comments: number; shares: number; views: number | null };
   enrichment: RadarEnrichmentDetail | null;
   comments: RadarCommentsSummary & { items: RadarComment[] };
+  /** Null for a post without a playable video. */
+  video: RadarItemVideo | null;
+}
+
+/** What a video says and shows; only `spoken` is null for a silent video. */
+export interface RadarTranscript {
+  spoken: string | null;
+  onScreenText: string | null;
+  visualSummary: string;
+  language: string | null;
+}
+
+export type RadarTranscriptStatus = 'NONE' | 'PENDING' | 'DONE' | 'FAILED';
+
+export interface RadarItemVideo {
+  durationSec: number | null;
+  transcriptStatus: RadarTranscriptStatus;
+  transcript: RadarTranscript | null;
+  transcriptError: string | null;
 }
 
 export interface RadarQueueStats {
@@ -205,7 +230,7 @@ export interface RadarQueueStats {
 
 export interface RadarSource {
   id: string;
-  platform: 'FACEBOOK';
+  platform: RadarPlatform;
   url: string;
   displayName: string;
   isActive: boolean;
@@ -215,7 +240,10 @@ export interface RadarSource {
 }
 
 export interface CreateRadarSourceInput {
+  platform: RadarPlatform;
+  /** A page URL; for YouTube also a channel URL or a bare `@handle`. */
   url: string;
+  /** May be empty for YouTube: the channel's title is used. */
   displayName: string;
 }
 

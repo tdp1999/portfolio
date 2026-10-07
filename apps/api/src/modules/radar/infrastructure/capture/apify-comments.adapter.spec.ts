@@ -14,6 +14,7 @@ const setup = (responses: unknown[]) => {
       apifyPostsActor: 'apify/facebook-posts-scraper',
       apifyCommentsActor: 'apify/facebook-comments-scraper',
       commentsMaxChargeUsd: 0.5,
+      youtubeApiKey: null,
     },
     http as unknown as typeof fetch
   );

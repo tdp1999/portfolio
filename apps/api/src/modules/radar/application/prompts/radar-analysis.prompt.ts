@@ -85,6 +85,16 @@ export class RadarAnalysisPrompt {
         text: strip(item.sharedPost.text),
       },
       engagement: item.engagement,
+      video: item.video && {
+        durationSec: item.video.durationSec,
+        transcriptStatus: item.video.transcriptStatus,
+        transcript: item.video.transcript && {
+          ...item.video.transcript,
+          spoken: item.video.transcript.spoken && strip(item.video.transcript.spoken),
+          onScreenText: item.video.transcript.onScreenText && strip(item.video.transcript.onScreenText),
+        },
+        transcriptError: item.video.transcriptError,
+      },
       images: images.map(({ owner, image }) => ({
         owner,
         type: image.type,

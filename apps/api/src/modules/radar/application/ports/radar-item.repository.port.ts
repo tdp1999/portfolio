@@ -1,9 +1,10 @@
-import { RadarCommentsStatus, RadarItemKind, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
+import { RadarCommentsStatus, RadarItemKind, RadarPlatform, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
 
 import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 
 import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
+import { RadarItemVideo, RadarTranscriptStatus } from '../../domain/radar-transcript.types';
 
 export interface RadarItemListFilter {
   page: number;
@@ -59,7 +60,7 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
 
 interface RadarItemBase {
   id: string;
-  source: { id: string; displayName: string; isActive: boolean };
+  source: { id: string; displayName: string; isActive: boolean; platform: RadarPlatform };
   kind: RadarItemKind;
   permalink: string;
   authorName: string;
@@ -82,6 +83,10 @@ export interface RadarFeedRow extends RadarItemBase {
   enrichment: RadarEnrichmentSummary | null;
   /** The post's own media, so the list can count its images. */
   media: RadarMedia[];
+  /** Null when the capture carried no playable video file. */
+  videoUrl: string | null;
+  videoDurationSec: number | null;
+  transcriptStatus: RadarTranscriptStatus;
 }
 
 export type RadarTriageCounts = Record<RadarTriageStatus, number>;
@@ -92,6 +97,8 @@ export interface RadarItemDetail extends RadarItemBase {
   sharedPost: RadarSharedPost | null;
   comments: RadarComment[];
   enrichment: RadarEnrichmentDetail | null;
+  /** Null for an item without a playable video. */
+  video: RadarItemVideo | null;
 }
 
 export interface RadarQueueStats {

@@ -11,6 +11,7 @@ import {
 } from '@prisma/client';
 
 import { RadarComment } from '../domain/radar-comment.types';
+import { RadarItemVideo } from '../domain/radar-transcript.types';
 import { z } from 'zod/v4';
 
 import {
@@ -43,14 +44,32 @@ export const MAX_UPLOAD_BYTES = 30 * 1024 * 1024;
 /** Cap the per-post failure list in the response; the counts stay exact. */
 export const MAX_REPORTED_FAILURES = 50;
 
-export const CreateRadarSourceSchema = z.object({
-  platform: z.enum(RadarPlatform).default(RadarPlatform.FACEBOOK),
-  url: z
-    .url()
-    .max(500)
-    .transform((v) => v.trim().replace(/\/+$/, '')),
-  displayName: z.string().trim().min(1).max(200),
-});
+/** A bare YouTube handle (`@channel`) stands for its channel page. */
+const withHandleUrl = (v: unknown) =>
+  typeof v === 'string' && /^@[\w.-]+$/.test(v.trim()) ? `https://www.youtube.com/${v.trim()}` : v;
+const YOUTUBE_HOST = /^https?:\/\/([a-z0-9-]+\.)*(youtube\.com|youtu\.be)(\/|$)/i;
+
+export const CreateRadarSourceSchema = z
+  .object({
+    platform: z.enum(RadarPlatform).default(RadarPlatform.FACEBOOK),
+    url: z.preprocess(
+      withHandleUrl,
+      z
+        .url({ protocol: /^https?$/ })
+        .max(500)
+        .transform((v) => v.trim().replace(/\/+$/, ''))
+    ),
+    /** Optional for YouTube: the channel's own title is used when it is left empty. */
+    displayName: z.string().trim().max(200).default(''),
+  })
+  .refine((v) => v.platform !== RadarPlatform.FACEBOOK || v.displayName.length > 0, {
+    path: ['displayName'],
+    message: 'A Facebook source needs a display name',
+  })
+  .refine((v) => v.platform !== RadarPlatform.FACEBOOK || !YOUTUBE_HOST.test(v.url), {
+    path: ['platform'],
+    message: 'This is a YouTube URL; add it as a YouTube source',
+  });
 
 export const UploadCaptureBodySchema = z.object({
   format: z.string().min(1).max(64).default('apify-facebook-posts'),
@@ -180,6 +199,11 @@ export interface RadarWorkItemDto {
   engagement: RadarEngagement;
   /** `NOT_FETCHED` means nobody looked, not that the post has none: never infer "no discussion" from it. */
   comments: { status: RadarCommentsStatus; items: RadarWorkCommentDto[] };
+  /**
+   * The post's video, when it has one: `transcript` is set once status is DONE. `NONE` means no
+   * transcript was made (a Hybrid or Manual run), `FAILED` carries the reason in `transcriptError`.
+   */
+  video: RadarItemVideo | null;
 }
 
 export interface ClaimWorkResponseDto {
@@ -236,6 +260,8 @@ interface RadarItemSourceDto {
   id: string;
   displayName: string;
   isActive: boolean;
+  /** Where the post lives, so the console names it ("Open on YouTube") and marks its monogram. */
+  platform: RadarPlatform;
 }
 
 export interface RadarFeedItemDto {
@@ -257,6 +283,8 @@ export interface RadarFeedItemDto {
   images: RadarImagesSummaryDto;
   enrichment: RadarEnrichmentSummary | null;
   comments: RadarItemCommentsSummaryDto;
+  /** Set when the capture carried a video file, so the Feed can mark the post; never the file URL. */
+  video: Pick<RadarItemVideo, 'durationSec' | 'transcriptStatus'> | null;
 }
 
 export interface RadarImagesSummaryDto {
@@ -352,6 +380,7 @@ export interface RadarItemDetailDto {
   enrichment: RadarEnrichmentDetail | null;
   /** Stored comments: every author comment plus the best others, labelled. */
   comments: RadarItemCommentsSummaryDto & { items: RadarComment[] };
+  video: RadarItemVideo | null;
 }
 
 export type RadarQueueStatsDto = RadarQueueStats;

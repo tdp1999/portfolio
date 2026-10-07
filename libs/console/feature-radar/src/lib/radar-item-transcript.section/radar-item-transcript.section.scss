@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.transcript__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Speech and slide lines keep the model's line breaks. */
+.transcript__text {
+  white-space: pre-line;
+}

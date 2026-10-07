@@ -13,7 +13,7 @@ const ITEM_ID = '01a10755-0000-7000-8000-00000000000a';
 
 const row: RadarFeedRow = {
   id: ITEM_ID,
-  source: { id: '01a10755-0000-7000-8000-00000000000b', displayName: 'mrgoonie', isActive: true },
+  source: { id: '01a10755-0000-7000-8000-00000000000b', displayName: 'mrgoonie', isActive: true, platform: 'FACEBOOK' },
   kind: 'POST',
   permalink: 'https://www.facebook.com/x/posts/1',
   authorName: 'Duy',
@@ -30,6 +30,9 @@ const row: RadarFeedRow = {
   commentsFetchedAt: null,
   commentsError: null,
   workError: null,
+  videoUrl: null,
+  videoDurationSec: null,
+  transcriptStatus: 'NONE',
   enrichment: null,
 };
 
@@ -123,6 +126,7 @@ describe('Radar item queries', () => {
       const detail: RadarItemDetail = {
         ...row,
         comments: [],
+        video: null,
         media: [
           {
             type: 'photo',

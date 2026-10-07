@@ -1,4 +1,4 @@
-/* A source as a 24px initials circle; the full name sits in its tooltip. Shared by the Feed table and the Split list. */
+/* A source as a 24px initials circle (a rounded square for a YouTube channel); the full name sits in its tooltip. Shared by the Feed table and the Split list. */
 .radar-monogram {
   display: inline-flex;
   flex-shrink: 0;
@@ -32,6 +32,11 @@
     width: 20px;
     height: 20px;
     font-size: var(--text-2xs);
+  }
+
+  /* A YouTube channel: a rounded square, so it reads apart from a Facebook page at a glance. */
+  &--youtube {
+    border-radius: 4px;
   }
 
   /* The source is paused: the worker skips its posts. */

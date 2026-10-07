@@ -41,7 +41,7 @@
 | Certification | A professional certification stored as JSON on Profile (name, issuer, year, URL) | Value Object |
 | SocialLink | A social media profile link with platform enum, URL, and optional handle | Value Object |
 | TranslatableJson | A JSON object with locale keys (en, vi) for multilingual content display | Value Object |
-| RadarSource | A followed public social profile (platform, URL, display name). The first platform is Facebook. | Entity |
+| RadarSource | A followed public source (platform, URL, display name): a Facebook page or a YouTube channel. A YouTube channel is stored under its canonical channel URL, so one channel is one source. | Entity |
 | RadarRun | One Owner-triggered execution of the Radar pipeline for one source and one time window, with a chosen RunFlow and item cap. | Aggregate |
 | RadarStepRun | The state of one pipeline step (capture, normalize, enrich, analyze, synthesize) inside a RadarRun, including which provider adapter ran it. | Entity |
 | RadarItem | One captured post, unique per source by its external id. Keeps the provider's raw payload, the persisted images, links and comments. | Aggregate |
@@ -49,7 +49,7 @@
 | RadarBrief | A catch-up summary of the RadarItems in a time window, grouped by provider and topic, listing new terms with their first-seen date. | Entity |
 | WorkflowProfile | The Owner's current AI setup as editable markdown. Single record. The analyze step compares each item against it to write the apply note. | Entity |
 | RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker) or Hybrid (server-side capture + external worker). Auto (server-side capture, transcript and analysis with Gemini, no external worker) is planned in `epic-radar-phase-c`. | Value Object |
-| Transcript | The text of what is said in a video RadarItem (YouTube video, Facebook reel), produced before analysis. Planned. | Value Object |
+| Transcript | What a video RadarItem (Facebook reel, YouTube video) says and shows, made by the server AI in Enrich of an Auto run, before analysis: the spoken words (none when nobody speaks), the text on screen, a short visual summary and the language. Only the text is kept, never the video. | Value Object |
 | EnrichmentTrial | An adapter's result for a RadarItem kept only for comparison (quality check). It never becomes the item's RadarEnrichment. Planned. | Entity |
 | AiUsageRecord | One recorded AI call: provider, model, feature, tokens, cost, status, latency, and its trace (tool uses, queries, URLs, sources). | Entity |
 | AiModelPrice | The price per million tokens (input, output, cached input) of one model, used to compute an AiUsageRecord's cost. Kept as a code constant, not stored. | Value Object |
@@ -230,7 +230,7 @@
 - **End states:** Media stored with Folder, available in listings and pickers
 
 ### Capture Radar Source
-- **Trigger:** Owner uploads a scraper export for a RadarSource (Manual), or starts a Hybrid RadarRun
+- **Trigger:** Owner uploads a scraper export for a Facebook RadarSource (Manual), or starts a Hybrid or Auto RadarRun (the only way a YouTube channel is captured)
 - **Actors:** Owner (via Console), capture provider
 - **Happy path:**
   1. Owner picks the source and the time window
@@ -241,6 +241,7 @@
 - **Error paths:**
   - Uploaded file fails validation: nothing is stored, Owner sees field-level errors
   - Provider job fails or exceeds the item cap: capture step is marked failed with the provider's message
+  - The provider key is missing: the run is refused at creation. The provider's daily quota is used up: capture step is marked failed with that reason
   - An image fails to download: the item is kept, that image is marked failed
 - **End states:** New posts stored once each, existing posts refreshed, items pending analysis
 
@@ -390,6 +391,8 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-07] Added YouTube as a RadarSource platform (task 422): a channel is captured through the YouTube Data API by Hybrid and Auto runs, one item per public video in the window (RAD-001). Manual runs and comment fetching stay Facebook only.
+- [2026-10-07] Transcript is built (task 421): Enrich of an Auto run transcribes each video up to a length limit, one video at a time; a skipped, failed or over-budget transcript leaves the item to be analyzed from its text and images (RAD-007, RAD-008).
 - [2026-10-06] Added the planned Phase C concepts from `epic-radar-phase-c`: Transcript, EnrichmentTrial, AiUsageRecord, AiModelPrice and the Auto RunFlow, plus RAD-007 (run budget), RAD-008 (transcript failure does not block analysis) and the AI Integration rules AI-001..004 (pipeline not harness, bounded traceable sourced tools, every call recorded, keys only in env).
 - [2026-10-07] Generate Radar Brief gains the Auto writer (task 420): the Owner picks Auto (server AI, default) or the worker; an Auto brief that cannot be written ends failed with its reason, a busy or capped one waits for a later tick.
 - [2026-10-06] Generate Radar Brief now matches the code (task 412): the Radar worker, not an LLM provider, writes the brief; one brief waits at a time, an empty window is refused, and every claim must link to an item in the window.

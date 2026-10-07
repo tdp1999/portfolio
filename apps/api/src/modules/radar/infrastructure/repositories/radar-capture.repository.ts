@@ -29,6 +29,9 @@ const contentOf = (item: NormalizedRadarItem, runId: string, capturedAt: Date) =
   links: json(item.links),
   sharedPost: item.sharedPost ? json(item.sharedPost) : Prisma.DbNull,
   engagement: json(item.engagement),
+  // Refreshed on every capture: Facebook re-signs the file URL, the old one expires. The transcript is kept.
+  videoUrl: item.video?.url ?? null,
+  videoDurationSec: item.video?.durationSec ?? null,
   rawPayload: json(item.rawPayload),
   lastRunId: runId,
   capturedAt,

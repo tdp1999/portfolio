@@ -5,7 +5,7 @@ import { STORAGE_SERVICE } from '../../../media/application/media.token';
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
 import { ImageResult, mediaKey } from '../../domain/radar-media.util';
 import { RadarMedia } from '../../domain/radar.types';
-import { IImageDownloader } from '../ports/image-downloader.port';
+import { IMediaDownloader } from '../ports/media-downloader.port';
 import { IRadarImageRepository, RadarItemImages } from '../ports/radar-image.repository.port';
 import { IMAGE_DOWNLOADER, RADAR_IMAGE_REPOSITORY } from '../radar.token';
 import { deleteStoredImages } from '../radar-image.cleanup';
@@ -51,7 +51,7 @@ export class PersistItemImagesHandler implements ICommandHandler<PersistItemImag
   constructor(
     @Inject(RADAR_IMAGE_REPOSITORY) private readonly repo: IRadarImageRepository,
     @Inject(STORAGE_SERVICE) private readonly storage: IStorageService,
-    @Inject(IMAGE_DOWNLOADER) private readonly downloader: IImageDownloader
+    @Inject(IMAGE_DOWNLOADER) private readonly downloader: IMediaDownloader
   ) {}
 
   async execute(command: PersistItemImagesCommand = new PersistItemImagesCommand()): Promise<PersistItemImagesResult> {

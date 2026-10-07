@@ -13,6 +13,7 @@ import { RadarCommentsProgress } from '../../domain/value-objects/radar-comments
 import { IRadarRunRepository, RadarRunItemCounts } from '../ports/radar-run.repository.port';
 import { AdvanceRunCommand, AdvanceRunHandler, DATASET_PAGE_SIZE } from './run.advance.command';
 import { RunCommentsPhase } from './run.comments.phase';
+import { RunTranscriptsPhase } from './run.transcripts.phase';
 
 const { CAPTURE_DEADLINE_MS, MAX_STEP_ERRORS } = RadarRun;
 
@@ -101,13 +102,21 @@ const post = (id: number) => ({
 
 const setup = (
   run: RadarRunProps,
-  opts: { poll?: CaptureJobStatus; pages?: unknown[][]; commentsDone?: boolean[]; llm?: ILlmProvider } = {}
+  opts: {
+    poll?: CaptureJobStatus;
+    pages?: unknown[][];
+    commentsDone?: boolean[];
+    transcriptsDone?: boolean[];
+    llm?: ILlmProvider;
+  } = {}
 ) => {
   const runs = new FakeRuns(run);
   const pages = [...(opts.pages ?? [])];
   const provider = {
     name: 'apify',
     format: 'apify-facebook-posts',
+    platform: 'FACEBOOK' as const,
+    credentialName: 'APIFY_TOKEN',
     isConfigured: () => true,
     start: jest.fn(async () => 'job-1'),
     poll: jest.fn(async () => opts.poll ?? { state: 'running' as const }),
@@ -120,6 +129,8 @@ const setup = (
   const commandBus = { execute: jest.fn(async () => undefined) } as unknown as CommandBus;
   const storage = { delete: jest.fn() } as unknown as IStorageService;
   const done = [...(opts.commentsDone ?? [])];
+  const transcriptsDone = [...(opts.transcriptsDone ?? [])];
+  const transcriptsPhase = { advance: jest.fn(async () => transcriptsDone.shift() ?? true) };
   const commentsPhase = {
     advance: jest.fn(async (current: RadarRun) =>
       current.withCommentsProgress(
@@ -135,10 +146,11 @@ const setup = (
     [new ApifyFacebookNormalizer()],
     [new ExternalWorkerAdapter(), ...(opts.llm ? [opts.llm] : [])],
     storage,
-    commentsPhase as unknown as RunCommentsPhase
+    commentsPhase as unknown as RunCommentsPhase,
+    transcriptsPhase as unknown as RunTranscriptsPhase
   );
   const advance = (now = NOW) => handler.execute(new AdvanceRunCommand(RUN_ID, now));
-  return { runs, provider, captures, commentsPhase, advance };
+  return { runs, provider, captures, commentsPhase, transcriptsPhase, advance };
 };
 
 const runningCapture = { status: RadarStatus.RUNNING, providerJobRef: 'job-1', startedAt: NOW };
@@ -227,6 +239,18 @@ describe('AdvanceRunHandler', () => {
       expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.RUNNING);
     });
 
+    it('should keep the reason on the run when the provider found no posts', async () => {
+      const { runs, captures, advance } = setup(makeRun(RadarRunFlow.HYBRID, { [RadarStep.CAPTURE]: runningCapture }), {
+        poll: { state: 'succeeded', datasetRef: 'ds', itemCount: 1 },
+        pages: [[{ inputUrl: 'https://www.facebook.com/mrgoonie', error: 'no_items' }]],
+      });
+
+      await advance();
+
+      expect(captures.saveCapturePage).toHaveBeenCalledWith(expect.objectContaining({ items: [], failedCount: 0 }));
+      expect(runs.run.warning).toBe('Apify found no posts for this source and window');
+    });
+
     it('should advance by the page size when a cleaned page comes back short, so no item is read twice', async () => {
       const { runs, provider, advance } = setup(
         makeRun(RadarRunFlow.HYBRID, {
@@ -288,7 +312,7 @@ describe('AdvanceRunHandler', () => {
 
   describe('enrich and analyze', () => {
     it('should wait while run items have pending images, then park the analyze step for the external worker', async () => {
-      const { runs, advance } = setup(
+      const { runs, transcriptsPhase, advance } = setup(
         makeRun(RadarRunFlow.HYBRID, {
           [RadarStep.CAPTURE]: { status: RadarStatus.DONE },
           [RadarStep.NORMALIZE]: { status: RadarStatus.DONE },
@@ -305,6 +329,31 @@ describe('AdvanceRunHandler', () => {
       expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.DONE);
       expect(runs.stepOf(RadarStep.ANALYZE).status).toBe(RadarStatus.AWAITING_EXTERNAL);
       expect(runs.run.status).toBe(RadarStatus.AWAITING_EXTERNAL);
+      // Only an AUTO run makes transcripts.
+      expect(transcriptsPhase.advance).not.toHaveBeenCalled();
+    });
+
+    it('should hold ENRICH of an AUTO run open until every video has its transcript settled', async () => {
+      const run = makeRun(RadarRunFlow.AUTO, {
+        [RadarStep.CAPTURE]: { status: RadarStatus.DONE },
+        [RadarStep.NORMALIZE]: { status: RadarStatus.DONE },
+        [RadarStep.ENRICH]: { status: RadarStatus.RUNNING },
+      });
+      const { runs, transcriptsPhase, advance } = setup(
+        { ...run, llmAdapter: 'server-ai', budgetMicroUsd: 1_000_000 },
+        {
+          transcriptsDone: [false, true],
+          llm: { name: 'server-ai', serverSide: true, process: jest.fn(async () => ({ state: 'working' }) as const) },
+        }
+      );
+      runs.counts = { total: 2, notAnalyzed: 2, withPendingImages: 0 };
+
+      await advance();
+      expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.RUNNING);
+
+      await advance();
+      expect(transcriptsPhase.advance).toHaveBeenCalledTimes(2);
+      expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.DONE);
     });
 
     it('should hold ENRICH open until the comments phase is done, keeping its state in the step meta', async () => {

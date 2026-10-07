@@ -4,6 +4,7 @@ import { RadarItem } from '../../domain/entities/radar-item.entity';
 import { RadarAnalysisDepth } from '../../domain/radar-analysis.types';
 import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
+import { RadarItemVideo } from '../../domain/radar-transcript.types';
 import { RadarEnrichmentInput } from '../radar-enrichment.schema';
 
 /** What an analysis reads about one item. */
@@ -20,6 +21,8 @@ export interface RadarWorkSnapshot {
   engagement: RadarEngagement;
   comments: RadarComment[];
   commentsStatus: RadarCommentsStatus;
+  /** Null for an item without a playable video. */
+  video: RadarItemVideo | null;
 }
 
 export interface ClaimedRadarItem extends RadarWorkSnapshot {

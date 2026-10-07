@@ -113,6 +113,26 @@ describe('ApifyFacebookNormalizer', () => {
     expect(item.media[0].thumbnailUrl).toBe(item.media[0].url);
   });
 
+  it('should read the video file and its length from the media list, falling back to HD without SD', () => {
+    const hd = 'https://video.fosu2-1.fna.fbcdn.net/o1/v/t2/r.mp4?oh=1';
+    const post = {
+      ...byId(PLAIN_POST),
+      postId: 'reel-video',
+      media: [
+        {
+          __typename: 'Video',
+          id: 'v1',
+          playable_duration_in_ms: 61_200,
+          videoDeliveryLegacyFields: { browser_native_hd_url: hd },
+        },
+      ],
+    };
+
+    const [item] = normalizer.normalize([post]).items;
+
+    expect(item.video).toEqual({ url: 'https://video.xx.fbcdn.net/o1/v/t2/r.mp4?oh=1', durationSec: 62 });
+  });
+
   it('should drop hashtag links and attribute a link copied from the shared post to it', () => {
     const external = 'https://example.com/article';
     const hashtag = 'https://www.facebook.com/hashtag/buildinpublic?__cft__=x';
@@ -132,6 +152,21 @@ describe('ApifyFacebookNormalizer', () => {
       { url: sharedUrl, origin: 'shared-post' },
     ]);
     expect(b.links).toEqual([]);
+  });
+
+  it("should read the actor's empty-result row as a notice, not a failed post", () => {
+    const row = {
+      inputUrl: 'https://www.facebook.com/mrgoonie',
+      error: 'no_items',
+      errorDescription: 'Empty or private data for provided input',
+    };
+
+    const result = normalizer.normalize([row]);
+
+    expect(result).toMatchObject({ items: [], failures: [] });
+    expect(result.notices).toEqual([
+      'Apify found no posts for this source and window: Empty or private data for provided input',
+    ]);
   });
 
   it('should report a malformed post as a failure and still normalize the rest', () => {

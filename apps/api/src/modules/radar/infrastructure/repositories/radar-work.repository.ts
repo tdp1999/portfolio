@@ -13,7 +13,7 @@ import { RadarItem } from '../../domain/entities/radar-item.entity';
 import { RadarAnalysisDepth } from '../../domain/radar-analysis.types';
 import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
-import { RADAR_ITEM_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
+import { RADAR_ITEM_SELECT, RADAR_VIDEO_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
 import { PrismaService } from '../../../../shared/prisma';
 
 const claimedSelect = {
@@ -29,6 +29,7 @@ const claimedSelect = {
   engagement: true,
   comments: true,
   commentsStatus: true,
+  ...RADAR_VIDEO_SELECT,
 } as const;
 
 @Injectable()
@@ -184,8 +185,17 @@ export class RadarWorkRepository implements IRadarWorkRepository {
   // --- Private ---
 
   private static toSnapshot(i: Prisma.RadarItemGetPayload<{ select: typeof claimedSelect }>): RadarWorkSnapshot {
+    const {
+      videoUrl: _videoUrl,
+      videoDurationSec: _videoDurationSec,
+      transcript: _transcript,
+      transcriptStatus: _transcriptStatus,
+      transcriptError: _transcriptError,
+      ...rest
+    } = i;
     return {
-      ...i,
+      ...rest,
+      video: RadarItemMapper.toVideo(i),
       media: i.media as unknown as RadarMedia[],
       links: i.links as unknown as RadarLink[],
       sharedPost: i.sharedPost as unknown as RadarSharedPost | null,

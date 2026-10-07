@@ -14,9 +14,11 @@ import type {
   RadarBriefWriter,
   RadarBriefDisplayStatus,
   RadarCommentLabel,
+  RadarPlatform,
   RadarRunStatus,
   RadarQueueState,
   RadarRunStep,
+  RadarTranscriptStatus,
   RadarTriageStatus,
   RadarWorkStatus,
 } from './radar.types';
@@ -30,6 +32,12 @@ export const PROVIDER_LABELS: Record<RadarProviderTag, string> = {
   deepseek: 'DeepSeek',
   opensource: 'Open source',
   other: 'Other',
+};
+
+/** Where a source's posts live, as the copy names it (`12 on YouTube`, `Watch on Facebook`). */
+export const PLATFORM_LABELS: Record<RadarPlatform, string> = {
+  FACEBOOK: 'Facebook',
+  YOUTUBE: 'YouTube',
 };
 
 export const CONTENT_TYPE_LABELS: Record<RadarContentType, string> = {
@@ -132,11 +140,12 @@ export function briefWriterOptions(aiConfigured: boolean): SegmentedControlOptio
 }
 
 /** The flow picker; AUTO is greyed out while the server has no AI key. */
-export function runFlowOptions(aiConfigured: boolean): SegmentedControlOption[] {
+/** `manualAllowed`: a Manual run uploads a Facebook export, so a YouTube source cannot take one. */
+export function runFlowOptions(aiConfigured: boolean, manualAllowed = true): SegmentedControlOption[] {
   return RUN_FLOW_ORDER.map((value) => ({
     value,
     label: RUN_FLOW_LABELS[value],
-    disabled: value === 'AUTO' && !aiConfigured,
+    disabled: (value === 'AUTO' && !aiConfigured) || (value === 'MANUAL' && !manualAllowed),
   }));
 }
 
@@ -219,4 +228,10 @@ export const TRIAGE_ROW_MARKS: Record<RadarTriageStatus, { icon: string; label: 
   INBOX: { icon: 'inbox', label: 'Moved to Inbox' },
   SAVED: { icon: 'bookmark', label: 'Saved to To try' },
   DONE: { icon: 'check', label: 'Marked done' },
+};
+
+/** The transcript fold's gist when there is no transcript to show (DONE and FAILED say more). */
+export const TRANSCRIPT_STATUS_GISTS: Record<Exclude<RadarTranscriptStatus, 'DONE' | 'FAILED'>, string> = {
+  NONE: 'No transcript: only Auto runs make one',
+  PENDING: 'Waiting: the AI was busy, the next tick tries again',
 };
