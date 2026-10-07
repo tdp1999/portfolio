@@ -36,9 +36,11 @@ import { filter, finalize, last, switchMap, take, takeWhile, tap, timer } from '
 import { MarkdownPipe } from '../markdown.pipe';
 import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
+import { RadarItemTrialsSection } from '../radar-item-trials.section/radar-item-trials.section';
 import { isViewableImage } from '../radar-item.util';
-import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS } from '../radar.constants';
+import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS, COMMENTS_PREVIEW } from '../radar.constants';
 import {
+  COMMENT_TAGS,
   ANALYSIS_DEPTH_HELP,
   ANALYSIS_DEPTH_LABELS,
   CONTENT_TYPE_LABELS,
@@ -46,23 +48,8 @@ import {
   WORK_STATUS_LABELS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarAnalysisDepth, RadarCommentLabel, RadarItemDetail, RadarItemImage } from '../radar.types';
+import { RadarAnalysisDepth, RadarItemDetail, RadarItemImage, RadarLightboxPhoto } from '../radar.types';
 import { UrlHostPipe } from '../url-host.pipe';
-
-/** Only the exceptions carry a badge: kept comments are substantive by default (spam is filtered at capture). */
-const COMMENT_TAGS: Record<RadarCommentLabel, { text: string; badge: string } | null> = {
-  author: null,
-  substantive: null,
-  low: { text: 'Filler', badge: 'console-badge console-badge--muted' },
-  spam: { text: 'Spam', badge: 'console-badge console-badge--danger' },
-};
-
-/** What Quick Look needs of an image: a post photo or a comment's image. */
-type LightboxPhoto = Pick<RadarItemImage, 'url' | 'ocrText'>;
-
-/** Other comments shown before "Show more": enough to judge the thread without scrolling past it.
- *  One extra comment is shown rather than hidden behind a "Show 1 more" button. */
-const COMMENTS_PREVIEW = 3;
 
 /**
  * One post and everything the worker wrote about it, on the record chassis (ADR-026). Shared by
@@ -72,7 +59,7 @@ const COMMENTS_PREVIEW = 3;
  * Inside a pane, wrap it in `.rv-pane` so the property rail follows the pane's width.
  */
 @Component({
-  selector: 'console-radar-item-record',
+  selector: 'console-radar-item-detail-card',
   standalone: true,
   imports: [
     DatePipe,
@@ -87,6 +74,7 @@ const COMMENTS_PREVIEW = 3;
     RadarCommentsChipPipe,
     UrlHostPipe,
     Property,
+    RadarItemTrialsSection,
     PropertyList,
     QuickLook,
     RecordField,
@@ -95,11 +83,11 @@ const COMMENTS_PREVIEW = 3;
     RecordPanel,
     RecordSection,
   ],
-  templateUrl: './radar-item.record.html',
-  styleUrl: './radar-item.record.scss',
+  templateUrl: './radar-item.detail-card.html',
+  styleUrl: './radar-item.detail-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RadarItemRecord {
+export class RadarItemDetailCard {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly radarService = inject(RadarService);
   private readonly dialog = inject(MatDialog);
@@ -118,7 +106,7 @@ export class RadarItemRecord {
   /** Image URLs the browser could not load (an expired provider link, a pending copy). */
   protected readonly brokenImages = signal<ReadonlySet<string>>(new Set());
   /** The photos of one gallery (the post's, the shared post's or one comment's) and the one open in Quick Look. Closes on a new item. */
-  protected readonly lightbox = linkedSignal<string, { photos: LightboxPhoto[]; index: number } | null>({
+  protected readonly lightbox = linkedSignal<string, { photos: RadarLightboxPhoto[]; index: number } | null>({
     source: () => this.item().id,
     computation: () => null,
   });
@@ -255,7 +243,7 @@ export class RadarItemRecord {
   }
 
   /** A comment's images are always photos: only the ones seen failing to load are left out. */
-  onOpenCommentImage(images: LightboxPhoto[], image: LightboxPhoto): void {
+  onOpenCommentImage(images: RadarLightboxPhoto[], image: RadarLightboxPhoto): void {
     const photos = images.filter((img) => !this.brokenImages().has(img.url));
     this.lightbox.set({ photos, index: Math.max(0, photos.indexOf(image)) });
   }

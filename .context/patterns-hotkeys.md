@@ -92,11 +92,11 @@ inline; import the shared one.
 | `Escape` | Close the feature guide while focus is inside its iframe | `help-viewer` · `console/shared/ui` | guide open |
 | `Escape` | Close media picker dialog | `media-picker-dialog` · `console/shared/ui` | dialog open |
 | `Escape` | Close media drawer | `media.drawer` · `console/feature-media` | an item is selected |
-| `J` / `↓` | Open the next post | `radar-item.triage` · `console/feature-radar` | Radar Feed in Split view with a post open · skips typing, modifiers and open overlays |
-| `K` / `↑` | Open the previous post | `radar-item.triage` | same |
-| `E` | Mark the open post Done (pressed again: back to the tab it was decided in, or Inbox on the Done tab) | `radar-item.triage` | same |
-| `S` | Save the open post to To try (pressed again: back to the tab it was decided in, or Inbox on the To try tab) | `radar-item.triage` | same |
-| `Escape` | Close the open post, back to the table | `radar-item.triage` | same (yields to Quick Look, which closes first) |
+| `J` / `↓` | Open the next post | `radar-item-triage.section` · `console/feature-radar` | Radar Feed in Split view with a post open · skips typing, modifiers and open overlays |
+| `K` / `↑` | Open the previous post | `radar-item-triage.section` | same |
+| `E` | Mark the open post Done (pressed again: back to the tab it was decided in, or Inbox on the Done tab) | `radar-item-triage.section` | same |
+| `S` | Save the open post to To try (pressed again: back to the tab it was decided in, or Inbox on the To try tab) | `radar-item-triage.section` | same |
+| `Escape` | Close the open post, back to the table | `radar-item-triage.section` | same (yields to Quick Look, which closes first) |
 
 Console has no `Mod+K` / `/` search shortcut yet, even though the topbar has a
 "Search resources..." field. If you add one, guard it with `isEditableTarget`.

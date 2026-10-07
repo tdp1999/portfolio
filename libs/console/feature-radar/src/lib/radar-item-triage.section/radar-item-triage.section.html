@@ -43,7 +43,7 @@
                   {{ mark.icon }}
                 </mat-icon>
               }
-              <console-radar-item-progress class="triage-row__progress" [item]="row.item" />
+              <console-radar-item-progress-cell class="triage-row__progress" [item]="row.item" />
             </div>
           </div>
         </li>
@@ -140,7 +140,7 @@
 
       <div class="triage-pane__body rv-pane rv-pane--fill" [class.triage-pane__body--stale]="detailLoading()">
         @if (record(); as rec) {
-          <console-radar-item-record [item]="rec" (refresh)="onRefresh($event)" />
+          <console-radar-item-detail-card [item]="rec" (refresh)="onRefresh($event)" />
         } @else if (detailError(); as err) {
           <div class="radar-state" role="alert">
             <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">

@@ -40,7 +40,7 @@ const DECIDED_MARKS: Record<TriageStatus, { icon: string; label: string }> = {
 
 /**
  * Radar triage study, layout A. Shipped as the Radar Feed's Split view (`/radar?view=split`,
- * `feature-radar/radar-item.triage`); this page stays as the width-budget simulator.
+ * `feature-radar/radar-item-triage.section`); this page stays as the width-budget simulator.
  * Layout A: Feed controls on top, list and the full record view side by side.
  * The frame simulates the content width a given screen and sidebar leave, so the width budget can
  * be judged on one monitor. Keyboard is scoped to the frame; nothing registers a global shortcut.

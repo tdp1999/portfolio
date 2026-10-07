@@ -140,6 +140,9 @@
     </console-record-section>
   }
 
+  <!-- Trials sit in the content column, so they scroll with the record in a fixed-height pane too. -->
+  <console-radar-item-trials-section [item]="it" />
+
   <ng-container aside>
     <console-record-panel title="Properties" flush>
       <console-property-list>

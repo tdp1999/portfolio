@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { toCommentsChip } from '../radar-comments-chip.pipe';
+import { toCommentsChip } from '../radar-item.util';
 import { QUEUE_STATE_ICONS } from '../radar.data';
 import type { RadarFeedItem } from '../radar.types';
 
@@ -11,14 +11,14 @@ import type { RadarFeedItem } from '../radar.types';
  * Tone carries the state, the tooltip spells it out.
  */
 @Component({
-  selector: 'console-radar-item-progress',
+  selector: 'console-radar-item-progress-cell',
   standalone: true,
   imports: [MatIconModule, MatTooltipModule],
-  templateUrl: './radar-item.progress.html',
-  styleUrl: './radar-item.progress.scss',
+  templateUrl: './radar-item-progress.cell.html',
+  styleUrl: './radar-item-progress.cell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RadarItemProgress {
+export class RadarItemProgressCell {
   readonly item = input.required<RadarFeedItem>();
 
   protected readonly analysis = computed(() => {

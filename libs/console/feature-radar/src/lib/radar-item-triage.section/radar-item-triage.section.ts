@@ -21,25 +21,13 @@ import { RouterLink } from '@angular/router';
 import { RelativeTime } from '@portfolio/console/shared/ui';
 import { isEditableTarget } from '@portfolio/shared/ui';
 import { catchError, distinctUntilChanged, map, of, Subject, switchMap, merge, filter } from 'rxjs';
-import { RadarItemProgress } from '../radar-item.progress/radar-item.progress';
-import { RadarItemRecord } from '../radar-item.record/radar-item.record';
+import { RadarItemProgressCell } from '../radar-item-progress.cell/radar-item-progress.cell';
+import { RadarItemDetailCard } from '../radar-item.detail-card/radar-item.detail-card';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import { RadarService } from '../radar.service';
-import type { RadarFeedItem, RadarItemDetail, RadarTriageStatus } from '../radar.types';
-
-/** The mark a row carries once it was moved out of the open tab (it leaves on the next load). */
-const TRIAGE_ROW_MARKS: Record<RadarTriageStatus, { icon: string; label: string }> = {
-  INBOX: { icon: 'inbox', label: 'Moved to Inbox' },
-  SAVED: { icon: 'bookmark', label: 'Saved to To try' },
-  DONE: { icon: 'check', label: 'Marked done' },
-};
-
-/** A triage decision on the open post: the status it moves to. */
-export interface RadarTriageDecision {
-  id: string;
-  status: RadarTriageStatus;
-}
+import type { RadarFeedItem, RadarItemDetail, RadarTriageDecision, RadarTriageStatus } from '../radar.types';
+import { TRIAGE_ROW_MARKS } from '../radar.data';
 
 /**
  * The Feed's Split view with a post open: the page of posts as a compact list, and the open post's
@@ -48,7 +36,7 @@ export interface RadarTriageDecision {
  * and turns keys into intents. Its keys live only while it is mounted, so the table never sees them.
  */
 @Component({
-  selector: 'console-radar-item-triage',
+  selector: 'console-radar-item-triage-section',
   standalone: true,
   imports: [
     DatePipe,
@@ -56,17 +44,17 @@ export interface RadarTriageDecision {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    RadarItemProgress,
-    RadarItemRecord,
+    RadarItemProgressCell,
+    RadarItemDetailCard,
     RadarScoreTonePipe,
     RadarSourceMonogramPipe,
     RelativeTime,
   ],
-  templateUrl: './radar-item.triage.html',
-  styleUrl: './radar-item.triage.scss',
+  templateUrl: './radar-item-triage.section.html',
+  styleUrl: './radar-item-triage.section.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RadarItemTriage {
+export class RadarItemTriageSection {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly radarService = inject(RadarService);
 
