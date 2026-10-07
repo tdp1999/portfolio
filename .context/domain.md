@@ -258,19 +258,22 @@
 - **End states:** Items enriched and visible in the Feed
 
 ### Generate Radar Brief
-- **Trigger:** Owner requests a brief for a time window, optionally for one source
-- **Actors:** Owner (via Console), Radar worker (Claude Code)
+- **Trigger:** Owner requests a brief for a time window, optionally for one source, and picks its writer: Auto (the server AI, the default) or the Radar worker (Claude Code)
+- **Actors:** Owner (via Console), System (Auto writer), Radar worker (Claude Code)
 - **Happy path:**
-  1. System checks that no other brief is waiting and that the window holds analyzed items, then stores a pending RadarBrief
-  2. Worker claims the brief under a lease and reads the window's analyzed items
-  3. Worker submits markdown grouped by provider and topic, with new terms (first-seen date) and a timeline, linking every claim to its item
+  1. System checks that no other brief is waiting and that the window holds analyzed items, then stores a pending RadarBrief with its writer
+  2. The writer claims the brief under a lease: an Auto brief is claimed by the System on its next tick, a worker brief by `/radar work brief`; neither takes the other's briefs
+  3. The writer produces markdown grouped by provider and topic, with new terms (first-seen date) and a timeline, linking every claim to its item. The Auto writer sends one AI request over the window's analyses (not the raw posts); both writers follow the same brief rules
   4. System accepts it only if every link points to an item in the window, then marks the brief done
 - **Error paths:**
   - Another brief still waiting: refused, nothing created
   - Window without analyzed items: refused, nothing created
-  - Body with no item link, or a link outside the window: rejected, the brief stays claimed
+  - Auto requested while the server has no AI key: refused, nothing created
+  - Body with no item link, or a link outside the window: a worker submit is rejected and the brief stays claimed; the Auto writer retries once with the reason, then marks the brief failed with it
+  - Auto writer finds every model busy, or the daily AI spend cap reached: the brief goes back to pending and a later tick retries
+  - Auto writer hits any other failure (rejected key, a model error): the brief is marked failed with the reason; the Owner can request a new one
   - Lease expired and another worker claimed it: the late result is rejected
-- **End states:** Brief readable in Console, each claim linking to its item Detail page
+- **End states:** Brief readable in Console, each claim linking to its item Detail page; or a failed Auto brief showing why
 
 ## Rules
 
@@ -388,6 +391,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 ## Changelog
 - [2026-10-06] Added the planned Phase C concepts from `epic-radar-phase-c`: Transcript, EnrichmentTrial, AiUsageRecord, AiModelPrice and the Auto RunFlow, plus RAD-007 (run budget), RAD-008 (transcript failure does not block analysis) and the AI Integration rules AI-001..004 (pipeline not harness, bounded traceable sourced tools, every call recorded, keys only in env).
+- [2026-10-07] Generate Radar Brief gains the Auto writer (task 420): the Owner picks Auto (server AI, default) or the worker; an Auto brief that cannot be written ends failed with its reason, a busy or capped one waits for a later tick.
 - [2026-10-06] Generate Radar Brief now matches the code (task 412): the Radar worker, not an LLM provider, writes the brief; one brief waits at a time, an empty window is refused, and every claim must link to an item in the window.
 - [2026-10-04] Added the Radar domain (RadarSource, RadarRun, RadarStepRun, RadarItem, RadarEnrichment, RadarBrief, WorkflowProfile, RunFlow), three flows and RAD-001..006, from `epic-radar-ai-news`. Radar is an Owner-only console tool for catching up on AI news from followed social profiles.
 - [2026-09-26] Added the Content Freshness rules (CNF-001..003). They came out of a job change that invalidated eight Profile prose fields at once, because a year count, an employer name and a present-tense claim about the current role had each been written into evergreen copy in several places. The rules name the one place each kind of fact belongs.

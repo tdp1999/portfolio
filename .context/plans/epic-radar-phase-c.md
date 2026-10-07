@@ -213,7 +213,7 @@ L
 
 - The exact caps (tool rounds, tokens per item) and the default run budget, set from the quality check's real numbers.
 - Which YouTube channels and Substack feeds come first, and the backfill window for each.
-- Default model per feature (for example Flash for transcripts, the model chosen by the quality check for analysis and brief).
+- Default model per feature: **settled 2026-10-07 by the quality check (task 419)**. Gemini replaces Claude Code as the default writer. Analysis deep pass `gemini-3.8-flash` then `gemini-3.5-flash`, light pass `gemini-3.1-flash-lite` then `gemini-3.5-flash-lite`, brief on the deep chain; no Pro model needed. Content matched Claude Code; the only gap was markdown formatting, fixed in the analysis rules.
 
 ## Specialized Skills
 

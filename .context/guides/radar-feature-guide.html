@@ -610,13 +610,15 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch/:jobRef</code></td><td>Hỏi kết quả: <code>running</code> khi job chưa xong; <code>done</code> kèm <code>status</code>, <code>fetchedCount</code> khi đã thay danh sách cũ. Job lỗi thì bài thành FAILED và trả lỗi <code>RADAR_COMMENTS_FETCH_FAILED</code></td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/items</code></td><td>Một trang Feed theo bộ lọc. Query <code>triageStatus</code> (INBOX, SAVED, DONE) chọn tab; kết quả kèm <code>triageCounts</code>, số bài của cả ba tab dưới cùng bộ lọc. Query <code>sourceId</code> lọc theo một source. Mỗi bài kèm <code>queueState</code> (analyzed, claimed, pending, stuck, paused) và <code>images</code> (<code>total</code>, <code>pending</code>, <code>failed</code>) cho cột Progress</td></tr>
         <tr><td>Admin</td><td>PATCH</td><td><code>/radar/items/triage</code></td><td>Đặt một trạng thái triage cho danh sách bài. Body: <code>ids</code> (1 tới 100 uuid), <code>status</code>. Id không tồn tại thì bỏ qua; trả <code>{ updated }</code> là số bài đã đổi</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/trials</code></td><td>Quality trial: phân tích lại các bài đã có enrichment, lưu cạnh enrichment. Body: <code>itemIds</code> (1 tới 10 uuid), <code>depth</code> (mặc định <code>deep</code>), <code>model</code> (tùy chọn). Trả <code>202</code> với <code>{ started, skipped }</code>; trial chạy nền. Xem <a href="#trials">Quality trials</a></td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/items/:id/trials</code></td><td>Các trial của một bài, mới nhất trước</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/comments/settings</code></td><td>Giới hạn tiền của run và của một lần đọc, số comment cấp 1 một lần đọc</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/ai/settings</code></td><td><code>{ configured, billing, defaultBudgetMicroUsd }</code>: key AI có chưa, free hay paid, budget mặc định của run AUTO</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước; run AUTO kèm <code>budgetMicroUsd</code> và <code>spentMicroUsd</code> (run khác: <code>null</code>)</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs/:id/cancel</code></td><td>Hủy run đang chạy: bước hiện tại và run thành FAILED với lỗi "Cancelled by the Owner"</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/images/persist</code></td><td>Chạy lại việc chép ảnh</td></tr>
-        <tr><td>Admin</td><td>POST</td><td><code>/radar/briefs</code></td><td>Yêu cầu brief. Body: <code>windowFrom</code>, <code>windowTo</code>, <code>sourceId</code> (tùy chọn, bỏ trống là tất cả nguồn)</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/briefs</code></td><td>Yêu cầu brief. Body: <code>windowFrom</code>, <code>windowTo</code>, <code>sourceId</code> (tùy chọn, bỏ trống là tất cả nguồn), <code>writer</code> (<code>AUTO</code> mặc định, hoặc <code>WORKER</code>)</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/briefs</code>, <code>/radar/briefs/:id</code></td><td>50 brief mới nhất (không kèm body); một brief kèm body</td></tr>
         <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/ai/status</code></td><td>Provider đang dùng (tên hiển thị, biến env của key, link pricing, usage và rate limit do adapter khai báo), đã cấu hình chưa, 4 ký tự cuối của key, billing (free hoặc paid), model mặc định, lần gọi cuối và lỗi cuối. Không bao giờ trả key</td></tr>
@@ -743,6 +745,15 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>schemaVersion</code></td><td>đúng bằng 3</td><td>Phiên bản schema</td></tr>
       </table></div>
       <p>Chuỗi rỗng hoặc toàn khoảng trắng ở các field có thể trống được lưu thành <code>null</code>. Mỗi lần nâng <code>schemaVersion</code>, migration đưa các bài có enrichment cũ về <code>PENDING</code> để worker phân tích lại; bản cũ vẫn hiển thị cho tới khi bản mới được nộp. Bài chưa có <code>overview</code> hiện <code>context</code> dưới nhãn Background như trước.</p>
+      <h3 id="trials">Quality trials</h3>
+      <p>Quality trial dùng để thử một model trước khi chọn làm mặc định cho run AUTO. Trial phân tích lại một bài <strong>đã có enrichment</strong> bằng AI trên server, rồi lưu kết quả vào bảng <code>radar_enrichment_trials</code>, bên cạnh enrichment hiện tại. Trial không bao giờ thay enrichment của bài.</p>
+      <ul>
+        <li>Trong nội dung bài (cả trang Detail lẫn khung xem trước của Feed) có một dòng gập "Model trials" ở cuối cột nội dung, đóng sẵn vì đây là công cụ phụ; mở ra để chọn depth (mặc định deep, có web search) và model (để trống là chuỗi model mặc định của depth đó), bấm "Run trial". Bảng bên dưới đặt cột Current (enrichment hiện tại) cạnh từng trial: TL;DR, score, overview, key terms, apply note, fact check, sources, và token, chi phí, thời gian, số lần search của trial.</li>
+        <li><code>POST /radar/trials</code> nhận tối đa 10 bài, trả về ngay <code>{ started, skipped }</code>. Bài chưa có enrichment nằm trong <code>skipped</code>. Các trial chạy nền, lần lượt từng cái (một trial deep mất khoảng một phút); trang Detail tự tải lại mỗi 5 giây khi còn trial đang chạy.</li>
+        <li>Một trial lỗi (model trả lời sai hai lần, model bận, model không tồn tại) chỉ làm trial đó FAILED, các trial sau vẫn chạy. Khi chạm daily cap hoặc API key sai, mọi trial còn lại FAILED ngay mà không gọi provider nữa.</li>
+        <li>Trial chạy trong bộ nhớ của server: nếu server khởi động lại, trial đang dở vẫn ở RUNNING và sau 1 giờ được hiển thị là FAILED (Interrupted).</li>
+        <li>Mỗi lần gọi được ghi vào ledger với feature <code>radar.trial</code>, nên chi phí hiện trên màn hình AI và tính vào daily cap. Trial cần server có AI key, nếu không thì bị từ chối với <code>AI_NOT_CONFIGURED</code>.</li>
+      </ul>
     </section>
 
     <section id="reading">
@@ -869,14 +880,22 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       <h2>16. Briefs</h2>
       <p>Brief là bản tóm tắt markdown các bài <b>đã phân tích</b> trong một khoảng ngày, để bạn đọc lại một tháng tin AI trong vài phút. Nội dung được nhóm theo provider rồi theo topic, có mục thuật ngữ mới (kèm ngày bài đầu tiên nhắc tới) và timeline. Mỗi ý đều link về bài gốc.</p>
       <div class="flow">
-        <div class="node"><b>① Yêu cầu</b><small>Console <code>/radar/briefs</code>, nút "New brief": chọn window và nguồn (mặc định tất cả)</small></div>
+        <div class="node"><b>① Yêu cầu</b><small>Console <code>/radar/briefs</code>, nút "New brief": chọn window, nguồn (mặc định tất cả) và người viết (mặc định Auto)</small></div>
         <div class="arrow">→</div>
-        <div class="node worker"><b>② Claim</b><small><code>/radar work brief</code> nhận brief đang chờ, lease 30 phút</small></div>
+        <div class="node worker"><b>② Claim</b><small>Auto: tick kế tiếp của server. Claude Code: <code>/radar work brief</code>. Lease 30 phút</small></div>
         <div class="arrow">→</div>
-        <div class="node worker"><b>③ Đọc và viết</b><small>Đọc bài theo từng trang, tóm tắt từng tháng rồi gộp lại</small></div>
+        <div class="node worker"><b>③ Viết</b><small>Auto: một request AI trên phần phân tích của các bài. Claude Code: đọc bài theo trang, tóm tắt từng tháng rồi gộp lại</small></div>
         <div class="arrow">→</div>
-        <div class="node worker"><b>④ Nộp</b><small>API kiểm tra link rồi chuyển brief sang DONE</small></div>
+        <div class="node worker"><b>④ Kiểm tra</b><small>API kiểm tra link rồi chuyển brief sang DONE</small></div>
       </div>
+      <h3>Hai người viết: Auto và Claude Code</h3>
+      <p>Khi tạo brief, bạn chọn <b>Written by</b>: <b>Auto</b> (mặc định) hoặc <b>Claude Code</b>. Cột <code>writer</code> lưu lựa chọn này. Auto bị tắt (và Claude Code được chọn sẵn) khi server không có AI key; API cũng từ chối Auto lúc đó với <code>RADAR_AI_NOT_CONFIGURED</code>. Hai bên dùng chung một bộ luật viết brief, nằm ở <code>apps/api/src/modules/radar/application/prompts/radar-brief.rules.ts</code>; skill <code>/radar</code> đọc file này thay vì giữ bản riêng.</p>
+      <ul>
+        <li><b>Auto:</b> mỗi phút, tick của server lấy một brief Auto đang chờ và viết nó bằng <b>một</b> request AI (feature <code>radar.brief</code>, không có tool). Request chỉ gửi phần phân tích gọn của các bài (id, ngày, tác giả, nguồn, tldr, provider tags, content type, score, isPromo, isRelevant, 600 ký tự đầu của key terms), không gửi bài gốc. Window quá 800 bài thì giữ 800 bài điểm cao nhất. Việc viết brief chạy song song với vòng chạy run, nên một brief dài không làm chậm run.</li>
+        <li>Body có link sai (trỏ ra ngoài window, hoặc không có link nào): gửi lại một lần kèm lý do và danh sách id sai, sai nữa thì brief <b>Failed</b>.</li>
+        <li>Mọi model đều bận, hoặc đã chạm daily cap: brief quay về PENDING, tick sau thử lại. Nếu brief đã chờ quá 1 giờ thì nó Failed thay vì quay về hàng chờ, để không chặn mãi các yêu cầu mới. Server không có AI key, API key sai hoặc lỗi model: brief Failed ngay. Brief Failed là DONE với body rỗng và cột <code>error</code> ghi lý do; nó không chặn yêu cầu mới, bạn chỉ cần tạo brief khác.</li>
+        <li><b>Claude Code:</b> giữ nguyên như trước. Worker chỉ claim brief có writer là Claude Code, tick chỉ claim brief Auto.</li>
+      </ul>
       <h3>Brief chính là việc cần làm</h3>
       <p>Mỗi dòng <code>radar_briefs</code> có <code>workStatus</code> và <code>leaseExpiresAt</code> riêng, giống một bài trong hàng chờ: PENDING, rồi CLAIMED, rồi DONE. Brief không thuộc run nào và không có bước SYNTHESIZE. Lệnh claim dùng cùng kiểu <code>SKIP LOCKED</code> như claim bài, và lấy brief cũ nhất trước. Brief CLAIMED mà hết lease thì claim lại được.</p>
       <h3>Luật khi tạo</h3>
@@ -895,7 +914,8 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       </ul>
       <h3>Trên console</h3>
       <ul>
-        <li><code>/radar/briefs</code> (nút "Briefs" trên Feed): danh sách mới nhất trước. Trang tự làm mới mỗi 10 giây trong lúc có brief chờ.</li>
+        <li><code>/radar/briefs</code> (nút "Briefs" trên Feed): danh sách mới nhất trước. Trang tự làm mới mỗi 10 giây trong lúc có brief chờ. Status: <i>Queued</i> (Auto đang chờ tick), <i>Waiting for worker</i> (chờ Claude Code), <i>Being written</i>, <i>Ready</i>, <i>Failed</i>.</li>
+        <li>Trang của một brief Failed hiện lý do lỗi thay cho body; rail có thêm dòng Writer.</li>
         <li><code>/radar/briefs/:id</code>: body markdown nằm ở cột chính, window, nguồn, số bài và producer nằm ở rail. Link <code>/radar/items/...</code> mở trang Detail ngay trong console; link ngoài mở tab mới.</li>
         <li>Thuật ngữ mới nằm trong body markdown, không có cột riêng.</li>
       </ul>
@@ -910,8 +930,9 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
         <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
+        <tr><td><code>radar_enrichment_trials</code></td><td>Quality trial</td><td>Một dòng mỗi trial: bài (xóa theo bài), depth, model đã yêu cầu, <code>status</code> (RUNNING, DONE, FAILED), <code>payload</code> (JSONB, cùng schema với enrichment), lỗi, token, chi phí, số lần search, độ trễ. Xem <a href="#trials">Quality trials</a></td></tr>
         <tr><td><code>ai_usage_records</code></td><td>Mỗi lần gọi Gemini, thành công hay lỗi</td><td>Model, feature (ví dụ <code>radar.analyze</code>), trạng thái, loại lỗi, token vào, ra, thinking, cache, tool, chi phí ước tính theo bảng giá trong code (null khi model chưa có giá), <code>billed</code>, độ trễ, <code>refType</code> và <code>refId</code> trỏ về bài hoặc brief, <code>trace</code> (JSONB: query đã search, URL đã đọc). Màn hình AI trong console đọc bảng này</td></tr>
-        <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Là việc cần làm của chính nó: <code>workStatus</code>, <code>leaseExpiresAt</code>. <code>sourceId</code> null là tất cả nguồn. <code>itemIds</code> là các bài của window lúc nộp. Xem <a href="#briefs">mục 16</a></td></tr>
+        <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Là việc cần làm của chính nó: <code>workStatus</code>, <code>leaseExpiresAt</code>. <code>writer</code> (AUTO hoặc WORKER), <code>error</code> khi brief Auto không viết được. <code>sourceId</code> null là tất cả nguồn. <code>itemIds</code> là các bài của window lúc nộp. Xem <a href="#briefs">mục 16</a></td></tr>
         <tr><td><code>radar_workflow_profiles</code></td><td>Workflow profile</td><td>Một dòng với id cố định</td></tr>
       </table></div>
       <p>Xóa source kéo theo (cascade) runs, items, enrichments.</p>

@@ -99,8 +99,10 @@ of a window (all sources, or one), summarized into one markdown document. Only o
 at a time, so there is at most one to write. Run the Preflight and load the profile (sections 1
 and 2) first, then:
 
-1. **Claim:** `radar-api.sh brief-claim <workdir>/brief.json`. "no brief waiting" ends the mode:
-   tell the Owner to request one on the Briefs page. Otherwise note the brief id, the window,
+1. **Claim:** `radar-api.sh brief-claim <workdir>/brief.json`. Only briefs requested with
+   Claude Code as the writer come here; the server writes the Auto ones itself. "no brief
+   waiting" ends the mode: tell the Owner to request one on the Briefs page, with Claude Code as
+   the writer. Otherwise note the brief id, the window,
    `sourceId` (null means all sources) and the post count.
 2. **Read the posts:** `radar-api.sh brief-items <id> <workdir>/brief-items.json`. It saves every
    analyzed post of the window, oldest first, and prints how many fall in each month. Each post
@@ -108,35 +110,21 @@ and 2) first, then:
    `factCheck`, `applyNote`, `linkSummaries`), the post text and `detailPath`, the link a brief
    uses to cite it. Do not Read the whole file at once: pull one month at a time with
    `jq '[.items[] | select(.publishedAt[:7] == "2026-09")]'`.
-3. **Summarize per month:** for each month write notes to `<workdir>/brief-<yyyy-mm>.md`: what
-   happened per provider, the topics, and every term that appears for the first time (with that
-   post's date). Skip promos (`isPromo`) and posts marked not relevant unless they carry real
-   news; prefer high `signalScore` posts when several say the same thing. A single month of a
-   small window needs no separate notes.
-4. **Merge** the month notes into one body, `<workdir>/brief.md`, in this shape:
-   - One short opening paragraph, with no `#` title (the page already names the brief): the
-     window, the sources, the 3 to 5 changes that matter most for the Owner's workflow profile.
-   - `## <Provider>` for each provider with news (Anthropic, OpenAI, Google, ...; tools without
-     a provider go under `## Tools and community`), then `### <Topic>` inside, newest change
-     last so it reads as a timeline. Each point is one or two sentences.
-   - `## New terms`: a list of `**term**: one-line meaning (first seen YYYY-MM-DD)`, the date
-     taken from the earliest post that mentions it.
-   - `## Timeline`: one line per notable date, oldest first.
-5. **Link every claim:** each point ends with the posts it comes from, written exactly as
-   `[label](/radar/items/<id>)` (the `detailPath` of the post). The label must read on its own:
-   the author and date (`Duy, 05/10`) or the product name (`cf CLI`), never a single letter. Never link a post that is not in `brief-items.json`: the API rejects the
-   whole brief if one link points outside the window, and it also rejects a brief with no links.
-6. **Submit:** `radar-api.sh brief-submit <id> <workdir>/brief.md <adapter> <model>`, with
+3. **Write** the body following the brief rules in
+   `apps/api/src/modules/radar/application/prompts/radar-brief.rules.ts` (read it once; it is the
+   same file the server sends when it writes an AUTO brief, so edit the rules there only). It
+   covers what to keep, the shape of the body, the language and the link format. On a long
+   window, summarize month by month into `<workdir>/brief-<yyyy-mm>.md` notes, then merge them
+   into `<workdir>/brief.md`. Link only posts from `brief-items.json`, as
+   `[label](<detailPath>)`.
+4. **Submit:** `radar-api.sh brief-submit <id> <workdir>/brief.md <adapter> <model>`, with
    `claude-code` as the adapter and your model id as the model. The answer is
    `{ "id", "itemCount" }`. A 400 names the problem (`RADAR_BRIEF_INVALID_LINKS` lists the bad
    ids in `outsideItemIds`): fix the body and submit once more. The lease is 30 minutes; a late
    submit still lands unless another session already submitted the brief.
 
-Write the brief in Vietnamese, the Owner's language, keeping technical terms and product names
-verbatim in English (Claude Code, MCP, context window), and use no em-dashes or en-dashes, as
-the Language section of the analysis rules
-(`apps/api/src/modules/radar/application/prompts/radar-analysis.rules.ts`) says. Report the brief id, the post
-count and the months covered; the console Briefs page is where it is read.
+Report the brief id, the post count and the months covered; the console Briefs page is where it
+is read.
 
 ## Admin helpers (the Owner runs these, never Claude)
 
