@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -8,11 +8,18 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { SegmentedControl } from '@portfolio/console/shared/ui';
-import { map } from 'rxjs';
-import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
-import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_ITEM_CAP } from '../radar.constants';
-import { RUN_FLOW_OPTIONS } from '../radar.data';
+import {
+  CurrencyService,
+  Money,
+  SegmentedControl,
+  amountToUsd,
+  microUsdToAmount,
+  toMoneyView,
+} from '@portfolio/console/shared/ui';
+import { catchError, map, of } from 'rxjs';
+import { ErrorMessage, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
+import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_BUDGET_USD, MAX_RUN_ITEM_CAP, MIN_RUN_BUDGET_USD } from '../radar.constants';
+import { RUN_FLOW_HELP, runFlowOptions } from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarRun, RadarRunCreateDialogData, RadarRunFlow } from '../radar.types';
 import { defaultWindowFrom, utcDayEnd, utcDayStart } from '../radar-run.util';
@@ -29,6 +36,7 @@ import { defaultWindowFrom, utcDayEnd, utcDayStart } from '../radar-run.util';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    Money,
     SegmentedControl,
     FormErrorPipe,
     ServerErrorDirective,
@@ -43,6 +51,7 @@ export class RadarRunCreateDialog {
   private readonly dialogRef = inject<MatDialogRef<RadarRunCreateDialog, RadarRun>>(MatDialogRef);
   private readonly radarService = inject(RadarService);
   private readonly fb = inject(FormBuilder);
+  private readonly currency = inject(CurrencyService);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly saving = signal(false);
@@ -59,32 +68,68 @@ export class RadarRunCreateDialog {
       Validators.max(MAX_RUN_ITEM_CAP),
     ]),
     fetchComments: this.fb.nonNullable.control(true),
+    /** In the display currency (Settings → Currency); sent to the API in USD. AUTO only. */
+    budget: this.fb.control<number | null>(null, [
+      Validators.required,
+      (c: AbstractControl<number | null>) => this.budgetRangeError(c.value),
+    ]),
   });
 
   // ── Plain state ───────────────────────────────────────────────────
-  protected readonly flowOptions = RUN_FLOW_OPTIONS;
+  protected readonly flowHelp = RUN_FLOW_HELP;
   protected readonly maxItemCap = MAX_RUN_ITEM_CAP;
+  protected readonly budgetMessages: Record<string, ErrorMessage> = {
+    budgetRange: (p) => `Between ${p['min']} and ${p['max']}.`,
+  };
   protected readonly today = new Date();
   /** The server's run cap for comments; null until it loads, then the hint quotes it. */
-  protected readonly commentsCapUsd = toSignal(
-    this.radarService.commentsSettings().pipe(map((s) => s.runMaxChargeUsd)),
+  protected readonly commentsCapMicroUsd = toSignal(
+    this.radarService.commentsSettings().pipe(
+      map((s) => Math.round(s.runMaxChargeUsd * 1_000_000)),
+      catchError(() => of(null))
+    ),
     {
       initialValue: null,
     }
   );
 
+  /** Null until it loads (or when it fails): AUTO stays greyed out and the budget empty. */
+  protected readonly aiSettings = toSignal(this.radarService.aiSettings().pipe(catchError(() => of(null))), {
+    initialValue: null,
+  });
+  protected readonly flowOptions = computed(() => runFlowOptions(this.aiSettings()?.configured ?? false));
+  protected readonly flow = toSignal(this.form.controls.flow.valueChanges, {
+    initialValue: this.form.controls.flow.value,
+  });
+  protected readonly currencyCode = computed(() => this.currency.preference().currency);
+  protected readonly defaultBudgetMicroUsd = computed(() => this.aiSettings()?.defaultBudgetMicroUsd ?? null);
+
   constructor() {
+    // Once the server says AI is ready, AUTO becomes the default flow with the default budget.
+    effect(() => {
+      const ai = this.aiSettings();
+      if (!ai) return;
+      const pref = this.currency.preference();
+      const amount = microUsdToAmount(ai.defaultBudgetMicroUsd, pref);
+      this.form.controls.budget.setValue(pref.currency === 'VND' ? Math.round(amount) : Number(amount.toFixed(2)));
+      if (ai.configured && this.form.controls.flow.pristine) this.form.controls.flow.setValue('AUTO');
+    });
+
     // A different source chains from its own last run, so the window start follows the pick.
     this.form.controls.sourceId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((id) => this.form.controls.windowFrom.setValue(this.windowStart(id)));
 
     // Comments ride on incremental Hybrid runs only; a backfill (no window start) never buys them.
+    // The budget only means something on an AUTO run.
     const syncComments = () => {
       const { flow, windowFrom } = this.form.getRawValue();
       const control = this.form.controls.fetchComments;
-      if (flow === 'HYBRID' && windowFrom) control.enable({ emitEvent: false });
+      if (flow !== 'MANUAL' && windowFrom) control.enable({ emitEvent: false });
       else control.disable({ emitEvent: false });
+      const budget = this.form.controls.budget;
+      if (flow === 'AUTO') budget.enable({ emitEvent: false });
+      else budget.disable({ emitEvent: false });
     };
     syncComments();
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(syncComments);
@@ -105,11 +150,33 @@ export class RadarRunCreateDialog {
         windowFrom: v.windowFrom ? utcDayStart(v.windowFrom).toISOString() : undefined,
         windowTo: v.windowTo ? utcDayEnd(v.windowTo).toISOString() : undefined,
         fetchComments: this.form.controls.fetchComments.enabled && v.fetchComments,
+        budgetUsd: this.budgetUsd(v.flow, v.budget),
       })
       .subscribe({
         next: (run) => this.dialogRef.close(run),
         error: () => this.saving.set(false),
       });
+  }
+
+  /** The server takes $0.01 to $100 per run: checked here in the display currency, the range quoted in it. */
+  private budgetRangeError(value: number | null): ValidationErrors | null {
+    if (value === null) return null;
+    const pref = this.currency.preference();
+    const usd = amountToUsd(value, pref);
+    if (usd >= MIN_RUN_BUDGET_USD && usd <= MAX_RUN_BUDGET_USD) return null;
+    return {
+      budgetRange: {
+        min: toMoneyView(MIN_RUN_BUDGET_USD * 1_000_000, pref).text,
+        max: toMoneyView(MAX_RUN_BUDGET_USD * 1_000_000, pref).text,
+      },
+    };
+  }
+
+  /** The typed budget in USD (cents kept), or undefined to let the server apply its default. */
+  private budgetUsd(flow: RadarRunFlow, budget: number | null): number | undefined {
+    if (flow !== 'AUTO' || budget === null || budget <= 0) return undefined;
+    // The validator keeps the amount in range, and rounding to cents cannot push it out.
+    return Math.round(amountToUsd(budget, this.currency.preference()) * 100) / 100;
   }
 
   private windowStart(sourceId: string | undefined): Date | null {

@@ -1,0 +1,44 @@
+<div class="console-page-header">
+  <div class="console-page-header__titles">
+    <h1 class="text-page-title">Currency</h1>
+    <p class="console-page-header__subtitle">
+      How the console shows money. Prices and budgets stay in USD; hover any amount to see it.
+    </p>
+  </div>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-6 flex max-w-md flex-col gap-6">
+  <div class="flex flex-col gap-2">
+    <span class="text-body">Show amounts in</span>
+    <console-segmented-control formControlName="currency" [options]="options" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Rate (₫ per 1 USD)</mat-label>
+      <input matInput type="number" formControlName="vndPerUsd" [min]="minRate" [max]="maxRate" step="1" />
+      <mat-hint>
+        @if (savedRateAt(); as at) {
+          Last set <console-relative-time [value]="at" />. It does not need to be exact.
+        } @else {
+          A built-in estimate. It does not need to be exact.
+        }
+      </mat-hint>
+      <mat-error>{{ form.controls.vndPerUsd | formError }}</mat-error>
+    </mat-form-field>
+    <div>
+      <button mat-stroked-button type="button" [disabled]="fetching()" (click)="onFetchRate()">
+        <mat-icon>sync</mat-icon>
+        {{ fetching() ? 'Fetching…' : "Fetch today's rate" }}
+      </button>
+    </div>
+  </div>
+
+  @if (preview(); as p) {
+    <p class="text-caption">A $1 run budget shows as {{ p.budget }}; one quick Radar analysis as {{ p.call }}.</p>
+  }
+
+  <div>
+    <button mat-flat-button type="submit" [disabled]="form.pristine">Save</button>
+  </div>
+</form>

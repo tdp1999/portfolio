@@ -32,6 +32,12 @@
   </section>
 
   <console-record-section title="AI analysis">
+    @if (it.workError) {
+      <div class="radar-pending radar-pending--error" role="note">
+        <mat-icon class="icon-sm">error_outline</mat-icon>
+        <p>{{ it.workError }}</p>
+      </div>
+    }
     @if (it.enrichment; as e) {
       @if (e.factCheckSeverity === 'major' && e.factCheck) {
         <div class="radar-warning" role="note">
@@ -77,10 +83,27 @@
       >
         <div class="rv-prose radar-md" [innerHTML]="e.applyNote | markdown"></div>
       </console-record-field>
+      @if (e.sources.length) {
+        <console-record-field label="Sources">
+          <ul class="radar-sources">
+            @for (s of e.sources; track s.url) {
+              <li>
+                <a class="radar-link" [href]="s.url" target="_blank" rel="noopener noreferrer" [title]="s.url">
+                  <span>{{ s.title ?? (s.url | urlHost) }}</span>
+                  <mat-icon class="icon-sm">open_in_new</mat-icon>
+                </a>
+              </li>
+            }
+          </ul>
+        </console-record-field>
+      }
+      @if (e.analysisDepth === 'light') {
+        <p class="text-caption">{{ depthHelp.light }}</p>
+      }
     } @else {
       <div class="radar-pending" role="status">
         <mat-icon class="icon-sm">hourglass_empty</mat-icon>
-        <p>Pending analysis. The radar worker has not read this post yet.</p>
+        <p>Pending analysis. This post has not been analyzed yet.</p>
       </div>
     }
   </console-record-section>
@@ -194,8 +217,10 @@
                   <summary>Summary</summary>
                   <div class="rv-prose radar-md" [innerHTML]="summary | markdown"></div>
                 </details>
+              } @else if (it.enrichment?.analysisDepth === 'light') {
+                <span class="rv-absent">Not read in the quick pass</span>
               } @else if (it.enrichment) {
-                <span class="rv-absent">Not read by the worker</span>
+                <span class="rv-absent">Not read by the analysis</span>
               }
             </li>
           }
@@ -206,6 +231,11 @@
     @if (it.enrichment; as e) {
       <console-record-panel title="Analyzed by" flush>
         <console-property-list>
+          @if (depth(); as d) {
+            <console-property label="Depth">
+              <span [matTooltip]="depthHelp[d]">{{ depthLabels[d] }}</span>
+            </console-property>
+          }
           <console-property label="Producer">{{ e.producerAdapter }}</console-property>
           <console-property label="Model">{{ e.producerModel }}</console-property>
           <console-property label="Analyzed">{{ e.updatedAt | date: 'medium' }}</console-property>

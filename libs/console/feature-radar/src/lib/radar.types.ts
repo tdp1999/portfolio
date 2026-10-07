@@ -27,7 +27,11 @@ export interface RadarEnrichmentSummary {
   wantsComments: boolean;
   /** `major`: the post misleads on its main claim, so the Feed and the post warn. Null without a fact check. */
   factCheckSeverity: RadarFactCheckSeverity | null;
+  /** A server (AUTO) analysis: `light` quick pass or `deep` researched one. Null for a worker analysis (always full). */
+  analysisDepth: RadarAnalysisDepth | null;
 }
+
+export type RadarAnalysisDepth = 'light' | 'deep';
 
 export type RadarFactCheckSeverity = 'minor' | 'major';
 
@@ -42,6 +46,8 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   scoreReason: string | null;
   /** The general read of the post; null before enrichment v3, until the post is re-analyzed. */
   overview: string | null;
+  /** Pages the analysis used as evidence; empty when it named none. */
+  sources: { url: string; title: string | null }[];
   producerAdapter: string;
   producerModel: string;
   updatedAt: string;
@@ -90,6 +96,8 @@ export interface RadarFeedItem {
   queueState: RadarQueueState;
   /** The Owner's decision: Inbox until marked Done or To try (`SAVED`). */
   triageStatus: RadarTriageStatus;
+  /** Why the last analysis failed: a stuck post, or a deep pass that kept the quick result. */
+  workError: string | null;
   /** The post's own images and video thumbnails, and how their stored copies stand. */
   images: RadarImagesSummary;
   enrichment: RadarEnrichmentSummary | null;
@@ -220,6 +228,15 @@ export interface RadarUploadResult {
   failures: { index: number; reason: string }[];
 }
 
+/** Whether an AUTO run can start, and the budget the New run dialog proposes. */
+export interface RadarAiSettings {
+  /** False while the server has no AI key: AUTO is disabled. */
+  configured: boolean;
+  /** `free`: spend is a list-price estimate, nothing is charged. */
+  billing: 'free' | 'paid';
+  defaultBudgetMicroUsd: number;
+}
+
 /** Comment limits from the server's config, quoted in the confirm texts. */
 export interface RadarCommentsSettings {
   runMaxChargeUsd: number;
@@ -240,7 +257,7 @@ export interface RadarCommentsUploadResult {
   failures: { index: number; reason: string }[];
 }
 
-export type RadarRunFlow = 'MANUAL' | 'HYBRID';
+export type RadarRunFlow = 'MANUAL' | 'HYBRID' | 'AUTO';
 export type RadarRunStatus = 'PENDING' | 'RUNNING' | 'AWAITING_EXTERNAL' | 'DONE' | 'FAILED';
 /** A run status as the Runs page shows it: a FAILED run the Owner cancelled reads as `CANCELLED`. */
 export type RadarRunDisplayStatus = RadarRunStatus | 'CANCELLED';
@@ -271,6 +288,10 @@ export interface RadarRun {
   itemsUpdated: number;
   itemsFailed: number;
   fetchComments: boolean;
+  /** AUTO only: the AI spend cap, micro-USD. */
+  budgetMicroUsd: number | null;
+  /** AUTO only: the AI cost recorded so far, micro-USD (an estimate on the free tier). */
+  spentMicroUsd: number | null;
   error: string | null;
   /** A side step (comments) failed but the run went on. */
   warning: string | null;
@@ -289,6 +310,8 @@ export interface CreateRadarRunInput {
   windowTo?: string;
   /** Only on a Hybrid run with a window start; the API refuses it on a backfill. */
   fetchComments?: boolean;
+  /** AUTO only, in USD; the server's default when left out. */
+  budgetUsd?: number;
 }
 
 export interface RadarRunCreateDialogData {
@@ -313,6 +336,8 @@ export interface RadarRunRow extends Omit<RadarRun, 'steps'> {
   notice: RunNotice | null;
   stepSummary: string;
   itemsDetail: string;
+  /** What the Owner does by hand in this run's flow. */
+  flowHelp: string;
   steps: (RadarStepRun & { tooltip: string })[];
 }
 

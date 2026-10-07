@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>New run</h2>
-<form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="onSubmit()">
+<form [formGroup]="form" [consoleServerErrorMap]="{ budgetUsd: 'budget' }" (ngSubmit)="onSubmit()">
   <mat-dialog-content>
     <div class="flex flex-col gap-4">
       <mat-form-field>
@@ -14,14 +14,11 @@
 
       <div class="flex flex-col gap-2">
         <span class="text-body">Flow</span>
-        <console-segmented-control formControlName="flow" [options]="flowOptions" />
-        <p class="text-caption">
-          @if (form.controls.flow.value === 'HYBRID') {
-            The server captures the posts with Apify, then the rest runs on its own.
-          } @else {
-            You export the posts yourself, then upload the file into this run.
-          }
-        </p>
+        <console-segmented-control formControlName="flow" [options]="flowOptions()" />
+        <p class="text-caption">{{ flowHelp[flow()] }}</p>
+        @if (aiSettings()?.configured === false) {
+          <p class="text-caption">Auto is off: the server has no AI provider key.</p>
+        }
       </div>
 
       <mat-form-field>
@@ -42,19 +39,33 @@
         <mat-error>{{ form.controls.itemCap | formError }}</mat-error>
       </mat-form-field>
 
+      @if (flow() === 'AUTO') {
+        <mat-form-field>
+          <mat-label>AI budget ({{ currencyCode() }})</mat-label>
+          <input matInput type="number" formControlName="budget" min="0" />
+          <mat-hint>
+            No new AI call once the run spends this. The daily AI cap still applies.
+            @if (defaultBudgetMicroUsd(); as d) {
+              Default: <console-money [microUsd]="d" />
+            }
+          </mat-hint>
+          <mat-error>{{ form.controls.budget | formError: budgetMessages }}</mat-error>
+        </mat-form-field>
+      }
+
       <div class="flex flex-col gap-1">
         <mat-checkbox formControlName="fetchComments">Fetch comments</mat-checkbox>
         <p class="text-caption">
           @if (form.controls.fetchComments.enabled) {
             Only for posts that point to their comments or hold a real discussion. Apify stops at
-            @if (commentsCapUsd(); as cap) {
-              ${{ cap }}
+            @if (commentsCapMicroUsd(); as cap) {
+              <console-money [microUsd]="cap" />
             } @else {
               a charge cap
             }
             per run; a normal week costs a few cents.
           } @else {
-            Needs a Hybrid run with a window start. Backfilled posts get comments from their Detail page.
+            Needs a Hybrid or Auto run with a window start. Backfilled posts get comments from their Detail page.
           }
         </p>
       </div>

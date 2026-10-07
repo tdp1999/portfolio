@@ -314,6 +314,19 @@
   align-self: flex-start;
 }
 
+/* The last analysis error (a stuck item, or a deep pass that failed over its light result). */
+.radar-pending--error {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--color-error) 40%, transparent);
+  color: var(--color-text);
+}
+
+.radar-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 /* A post whose main claim the worker found wrong: said before anything else in the analysis. */
 .radar-warning {
   display: flex;

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,11 +12,12 @@ import {
   type ConfirmDialogData,
   EnumLabelPipe,
   HelpButton,
+  Money,
   RelativeTime,
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { catchError, EMPTY, filter, finalize, interval, map, Subscription, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, filter, finalize, interval, map, of, Subscription, switchMap, tap } from 'rxjs';
 import { RadarRunCreateDialog } from '../radar-run.create.dialog/radar-run.create.dialog';
 import {
   awaitsUpload,
@@ -28,7 +29,14 @@ import {
   stepTooltip,
 } from '../radar-run.util';
 import { RUN_POLL_MS } from '../radar.constants';
-import { RUN_FLOW_LABELS, RUN_STATUS_BADGES, RUN_STATUS_LABELS, RUN_STEP_ICONS, RUN_STEP_LABELS } from '../radar.data';
+import {
+  RUN_FLOW_HELP,
+  RUN_FLOW_LABELS,
+  RUN_STATUS_BADGES,
+  RUN_STATUS_LABELS,
+  RUN_STEP_ICONS,
+  RUN_STEP_LABELS,
+} from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarRun, RadarRunCreateDialogData, RadarRunRow } from '../radar.types';
 
@@ -44,6 +52,7 @@ import type { RadarRun, RadarRunCreateDialogData, RadarRunRow } from '../radar.t
     MatTableModule,
     MatTooltipModule,
     EnumLabelPipe,
+    Money,
     RelativeTime,
     SkeletonTable,
   ],
@@ -67,6 +76,15 @@ export default class RadarRunList implements OnInit {
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly activeCount = computed(() => this.runs().filter(isRunActive).length);
+  /** On the free tier the AI spend is what the calls would cost at list price, not a charge. */
+  protected readonly spendIsEstimate = toSignal(
+    this.radarService.aiSettings().pipe(
+      map((s) => s.billing === 'free'),
+      // A failed load must not break the page: the spend just shows without the estimate note.
+      catchError(() => of(false))
+    ),
+    { initialValue: false }
+  );
 
   /** Each run with what its row shows precomputed, so the template only reads fields. */
   protected readonly rows = computed<RadarRunRow[]>(() =>
@@ -78,12 +96,22 @@ export default class RadarRunList implements OnInit {
       notice: runNotice(run),
       stepSummary: stepSummary(run),
       itemsDetail: itemsDetail(run),
+      flowHelp: RUN_FLOW_HELP[run.flow],
       steps: run.steps.map((step) => ({ ...step, tooltip: stepTooltip(step) })),
     }))
   );
 
   // ── Plain state ───────────────────────────────────────────────────
-  protected readonly displayedColumns = ['source', 'window', 'status', 'steps', 'items', 'createdAt', 'actions'];
+  protected readonly displayedColumns = [
+    'source',
+    'window',
+    'status',
+    'steps',
+    'items',
+    'spend',
+    'createdAt',
+    'actions',
+  ];
   protected readonly flowLabels = RUN_FLOW_LABELS;
   protected readonly statusLabels = RUN_STATUS_LABELS;
   protected readonly statusBadges = RUN_STATUS_BADGES;

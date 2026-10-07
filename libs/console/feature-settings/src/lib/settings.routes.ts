@@ -5,5 +5,9 @@ export const settingsRoutes: Route[] = [
     path: 'change-password',
     loadComponent: () => import('./change-password/change-password'),
   },
+  {
+    path: 'currency',
+    loadComponent: () => import('./currency.form/currency.form'),
+  },
   { path: '', redirectTo: 'change-password', pathMatch: 'full' },
 ];

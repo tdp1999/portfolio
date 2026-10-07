@@ -19,6 +19,7 @@ import {
   RadarItemCommentsFetch,
   RadarTriageStatus,
   RadarWorkflowProfile,
+  RadarAiSettings,
 } from './radar.types';
 
 @Injectable({ providedIn: 'root' })
@@ -103,6 +104,10 @@ export class RadarService {
   /** Reads the job; once it finished, the item's comments are replaced. A failed job errors once, ending the poll. */
   collectComments(itemId: string, jobRef: string) {
     return this.api.post<RadarItemCommentsFetch>(`/radar/items/${itemId}/comments/fetch/${jobRef}`, {});
+  }
+
+  aiSettings() {
+    return this.api.get<RadarAiSettings>('/radar/ai/settings');
   }
 
   commentsSettings() {

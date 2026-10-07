@@ -105,6 +105,19 @@ console-filter-bar ::ng-deep {
   width: 80px;
 }
 
+/* Quick or Deep under the score: only server analyses carry a depth. */
+.radar-depth {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-2xs);
+  color: var(--color-text-secondary);
+}
+
+.radar-depth-error {
+  margin-top: 4px;
+  color: var(--color-error);
+}
+
 .col-progress {
   width: 152px;
 }

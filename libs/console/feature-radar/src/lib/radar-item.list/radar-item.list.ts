@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
+  EnumLabelPipe,
   FilterBar,
   FilterMore,
   type FilterOption,
@@ -34,6 +35,8 @@ import { FEED_PAGE_SIZE, FEED_PAGE_SIZES, FEED_VIEW_STORAGE_KEY, MAX_CLAIM_ATTEM
 import { parseFeedQuery, parseItemParam, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { isRunActive } from '../radar-run.util';
 import {
+  ANALYSIS_DEPTH_HELP,
+  ANALYSIS_DEPTH_LABELS,
   CONTENT_TYPE_LABELS,
   CONTENT_TYPE_OPTIONS,
   FEED_STATUS_LABELS,
@@ -69,6 +72,7 @@ import {
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
+    EnumLabelPipe,
     FilterBar,
     FilterMore,
     FilterSearch,
@@ -201,6 +205,8 @@ export default class RadarItemList implements OnInit {
   protected readonly triageTabs = TRIAGE_TABS;
   protected readonly viewOptions = FEED_VIEW_OPTIONS;
   protected readonly splitSortOptions = SPLIT_SORT_OPTIONS;
+  protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
+  protected readonly depthHelp = ANALYSIS_DEPTH_HELP;
   protected readonly displayedColumns = ['score', 'summary', 'progress', 'status', 'source', 'publishedAt'];
 
   ngOnInit(): void {

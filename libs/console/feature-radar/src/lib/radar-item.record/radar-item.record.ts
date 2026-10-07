@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
+  CurrencyService,
   ConfirmDialogComponent,
   type ConfirmDialogData,
   EnumLabelPipe,
@@ -28,6 +29,8 @@ import {
   RecordPanel,
   RecordSection,
   ToastService,
+  formatUsd,
+  toMoneyView,
 } from '@portfolio/console/shared/ui';
 import { filter, finalize, last, switchMap, take, takeWhile, tap, timer } from 'rxjs';
 import { MarkdownPipe } from '../markdown.pipe';
@@ -35,9 +38,15 @@ import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
 import { isViewableImage } from '../radar-item.util';
 import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS } from '../radar.constants';
-import { CONTENT_TYPE_LABELS, PROVIDER_LABELS, WORK_STATUS_LABELS } from '../radar.data';
+import {
+  ANALYSIS_DEPTH_HELP,
+  ANALYSIS_DEPTH_LABELS,
+  CONTENT_TYPE_LABELS,
+  PROVIDER_LABELS,
+  WORK_STATUS_LABELS,
+} from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarCommentLabel, RadarItemDetail, RadarItemImage } from '../radar.types';
+import { RadarAnalysisDepth, RadarCommentLabel, RadarItemDetail, RadarItemImage } from '../radar.types';
 import { UrlHostPipe } from '../url-host.pipe';
 
 /** Only the exceptions carry a badge: kept comments are substantive by default (spam is filtered at capture). */
@@ -95,6 +104,7 @@ export class RadarItemRecord {
   private readonly radarService = inject(RadarService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly currency = inject(CurrencyService);
   private readonly destroyRef = inject(DestroyRef);
 
   // ── Inputs / outputs ──────────────────────────────────────────────
@@ -167,6 +177,13 @@ export class RadarItemRecord {
   });
 
   // ── Plain state ───────────────────────────────────────────────────
+  /** `worker` stands for a worker analysis (no depth: always full). */
+  protected readonly depth = computed((): RadarAnalysisDepth | 'worker' | null => {
+    const e = this.item().enrichment;
+    return e ? (e.analysisDepth ?? 'worker') : null;
+  });
+  protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
+  protected readonly depthHelp = ANALYSIS_DEPTH_HELP;
   protected readonly workStatusLabels = WORK_STATUS_LABELS;
   protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   private destroyed = false;
@@ -185,17 +202,21 @@ export class RadarItemRecord {
     this.radarService
       .commentsSettings()
       .pipe(
-        switchMap((settings) =>
-          this.dialog
+        switchMap((settings) => {
+          const cap = Math.round(settings.itemMaxChargeUsd * 1_000_000);
+          const pref = this.currency.preference();
+          const capText =
+            pref.currency === 'USD' ? formatUsd(cap) : `${toMoneyView(cap, pref).text} (${formatUsd(cap)})`;
+          return this.dialog
             .open(ConfirmDialogComponent, {
               data: {
                 title: it.comments.status === 'NOT_FETCHED' ? 'Fetch comments' : 'Fetch comments again',
-                message: `Read up to ${settings.itemTopLevelLimit} top comments of this post (${it.comments.postCount} on Facebook) and their replies with Apify. This is billed, at most $${settings.itemMaxChargeUsd}, and replaces the comments stored now.`,
+                message: `Read up to ${settings.itemTopLevelLimit} top comments of this post (${it.comments.postCount} on Facebook) and their replies with Apify. This is billed, at most ${capText}, and replaces the comments stored now.`,
                 confirmLabel: 'Fetch',
               } satisfies ConfirmDialogData,
             })
-            .afterClosed()
-        ),
+            .afterClosed();
+        }),
         filter(Boolean),
         tap(() => this.fetchingId.set(it.id)),
         switchMap(() => this.radarService.fetchComments(it.id)),

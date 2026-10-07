@@ -6,7 +6,11 @@
   (change)="onSelection($event)"
 >
   @for (opt of options(); track opt.value) {
-    <mat-button-toggle [value]="opt.value" [attr.aria-label]="iconOnly() ? opt.label : null">
+    <mat-button-toggle
+      [value]="opt.value"
+      [disabled]="!!opt.disabled"
+      [attr.aria-label]="iconOnly() ? opt.label : null"
+    >
       @if (opt.icon) {
         <mat-icon class="icon-md">{{ opt.icon }}</mat-icon>
       }

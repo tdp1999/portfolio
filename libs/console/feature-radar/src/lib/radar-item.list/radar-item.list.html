@@ -172,9 +172,13 @@
                   class="radar-score"
                   [class]="e.signalScore | radarScoreTone"
                   [attr.aria-label]="'Signal score ' + e.signalScore"
+                  [matTooltip]="e.analysisDepth ?? 'worker' | enumLabel: depthHelp"
                 >
                   {{ e.signalScore }}
                 </span>
+                @if (e.analysisDepth) {
+                  <span class="radar-depth">{{ e.analysisDepth | enumLabel: depthLabels }}</span>
+                }
               } @else {
                 <span
                   class="radar-score radar-score--pending"
@@ -183,6 +187,11 @@
                 >
                   <mat-icon class="icon-sm">hourglass_empty</mat-icon>
                 </span>
+              }
+              @if (item.workError) {
+                <mat-icon class="icon-sm radar-depth-error" [matTooltip]="item.workError" aria-label="Analysis error"
+                  >error_outline</mat-icon
+                >
               }
             </td>
           </ng-container>

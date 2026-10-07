@@ -26,6 +26,18 @@
   width: 176px;
 }
 
+.col-spend {
+  width: 128px;
+  white-space: nowrap;
+}
+
+/* The flow name carries a tooltip saying what the Owner does in that flow. */
+.run-flow {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: help;
+}
+
 .col-created {
   width: 128px;
   white-space: nowrap;

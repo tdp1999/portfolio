@@ -7,6 +7,7 @@ import {
   type RadarProviderTag,
 } from '@portfolio/shared/types';
 import type {
+  RadarAnalysisDepth,
   RadarFeedSortKey,
   RadarRunDisplayStatus,
   RadarRunFlow,
@@ -96,14 +97,28 @@ export const RUN_STATUS_LABELS: Record<RadarRunDisplayStatus, string> = {
 };
 
 export const RUN_FLOW_LABELS: Record<RadarRunFlow, string> = {
+  AUTO: 'Auto',
   HYBRID: 'Hybrid',
   MANUAL: 'Manual',
 };
 
-export const RUN_FLOW_OPTIONS: SegmentedControlOption[] = (['HYBRID', 'MANUAL'] as const).map((value) => ({
-  value,
-  label: RUN_FLOW_LABELS[value],
-}));
+/** What the Owner does by hand in each flow, shown under the flow picker and on the Runs page. */
+export const RUN_FLOW_HELP: Record<RadarRunFlow, string> = {
+  AUTO: 'The server captures the posts with Apify and analyzes them with AI. You only read the Feed.',
+  HYBRID: 'The server captures the posts with Apify. You analyze them with /radar work in Claude Code.',
+  MANUAL: 'You export the posts from Apify, upload the file into the run, then run /radar work.',
+};
+
+export const RUN_FLOW_ORDER: readonly RadarRunFlow[] = ['AUTO', 'HYBRID', 'MANUAL'];
+
+/** The flow picker; AUTO is greyed out while the server has no AI key. */
+export function runFlowOptions(aiConfigured: boolean): SegmentedControlOption[] {
+  return RUN_FLOW_ORDER.map((value) => ({
+    value,
+    label: RUN_FLOW_LABELS[value],
+    disabled: value === 'AUTO' && !aiConfigured,
+  }));
+}
 
 /** Badge tone of a run's overall status on the Runs page. */
 export const RUN_STATUS_BADGES: Record<RadarRunDisplayStatus, string> = {
@@ -155,4 +170,18 @@ export const QUEUE_STATE_ICONS: Record<RadarQueueState, { icon: string; tone: st
     label: `Stuck: claimed ${RADAR_MAX_CLAIM_ATTEMPTS} times with no result. Re-queue it from the header`,
   },
   paused: { icon: 'pause_circle', tone: 'warning', label: 'Paused: its source is paused, so the worker skips it' },
+};
+
+/** How deep an analysis went: server quick pass, server researched pass, or the worker (always full). */
+export const ANALYSIS_DEPTH_LABELS: Record<RadarAnalysisDepth | 'worker', string> = {
+  light: 'Quick',
+  deep: 'Deep',
+  worker: 'Full',
+};
+
+export const ANALYSIS_DEPTH_HELP: Record<RadarAnalysisDepth | 'worker', string> = {
+  light:
+    'Quick pass on the server: images, TL;DR and score, no web search and no link reading. The best-scoring posts then get the deep analysis.',
+  deep: 'Deep analysis on the server: web search, links read, fact check.',
+  worker: 'Analyzed by /radar work in Claude Code, with research and links read.',
 };

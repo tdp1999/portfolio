@@ -17,6 +17,18 @@ export { Skeleton } from './components/skeleton/skeleton';
 export { SkeletonRow } from './components/skeleton/skeleton-row';
 export { SkeletonTable } from './components/skeleton/skeleton-table';
 export { RelativeTime } from './components/relative-time/relative-time';
+export { Money } from './components/money/money';
+export { CurrencyService } from './services/currency/currency.service';
+export type { CurrencyPreference, DisplayCurrency, MoneyView } from './services/currency/currency.types';
+export {
+  DEFAULT_CURRENCY_PREFERENCE,
+  MAX_VND_PER_USD,
+  MIN_VND_PER_USD,
+  amountToUsd,
+  formatUsd,
+  microUsdToAmount,
+  toMoneyView,
+} from './services/currency/currency.util';
 export { SpinnerService } from './components/spinner/spinner.service';
 export { FullPageSpinner } from './components/spinner/full-page-spinner';
 export { SpinnerOverlay } from './components/spinner/spinner-overlay';
