@@ -312,7 +312,7 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       domain: v.domain || undefined,
       teamSizeMin: v.teamSizeMin ?? undefined,
       teamSizeMax: v.teamSizeMax ?? undefined,
-      startDate: v.startDate?.toISOString() ?? '',
+      startDate: v.startDate ? MonthYearPicker.toIso(v.startDate) : '',
       skillIds: this.selectedSkills().map((s) => s.id),
       displayOrder: v.displayOrder,
     };
@@ -326,7 +326,7 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       const updatePayload = {
         ...basePayload,
         companyLogoId: v.companyLogoId || null,
-        endDate: isCurrent ? null : (v.endDate?.toISOString() ?? undefined),
+        endDate: isCurrent ? null : v.endDate ? MonthYearPicker.toIso(v.endDate) : undefined,
       };
       this.experienceService
         .update(editId, updatePayload)
@@ -345,7 +345,7 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
       const createPayload = {
         ...basePayload,
         companyLogoId: v.companyLogoId || undefined,
-        endDate: isCurrent ? undefined : (v.endDate?.toISOString() ?? undefined),
+        endDate: isCurrent || !v.endDate ? undefined : MonthYearPicker.toIso(v.endDate),
       };
       this.experienceService
         .create(createPayload)
@@ -447,8 +447,8 @@ export default class ExperienceForm implements OnInit, HasUnsavedChanges {
         highlights: exp.highlightsJson ?? { en: null, vi: null },
         teamRole: { en: exp.teamRole?.en ?? '', vi: exp.teamRole?.vi ?? '' },
         employmentType: exp.employmentType,
-        startDate: exp.startDate ? new Date(exp.startDate) : null,
-        endDate: exp.endDate ? new Date(exp.endDate) : null,
+        startDate: exp.startDate ? MonthYearPicker.fromIso(exp.startDate) : null,
+        endDate: exp.endDate ? MonthYearPicker.fromIso(exp.endDate) : null,
         isCurrent: !exp.endDate,
         locationType: exp.locationType,
         locationCountry: exp.locationCountry ?? '',

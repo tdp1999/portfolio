@@ -49,5 +49,5 @@ export function buildLinkGroups(
 
 /** Returns the 4-digit start-year of a project, or '' when missing. */
 export function projectYear(startDate: string | null | undefined): string {
-  return startDate ? new Date(startDate).getFullYear().toString() : '';
+  return startDate ? new Date(startDate).getUTCFullYear().toString() : '';
 }

@@ -20,6 +20,6 @@ export function initialViewMode(raw: string | null): ViewMode {
 }
 
 export function yearOf(iso: string): string {
-  const y = new Date(iso).getFullYear();
+  const y = new Date(iso).getUTCFullYear();
   return Number.isFinite(y) ? String(y) : '';
 }

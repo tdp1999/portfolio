@@ -12,7 +12,11 @@ import { MONTH_YEAR_FORMATS } from './month-year-picker.constants';
 /**
  * Month-year picker for "duration / period" fields (Experience, Project start/end).
  * Wraps `mat-datepicker` configured for year-first → month selection. Day is fixed
- * to the 1st of the chosen month at midnight. See `.context/design/cookbook/forms.md`.
+ * to the 1st of the chosen month at local midnight, which is what the datepicker shows.
+ * The API stores the month as the 1st at 00:00 UTC, and the landing reads it in UTC:
+ * cross that boundary only through {@link MonthYearPicker.toIso} and {@link MonthYearPicker.fromIso}.
+ * A plain `toISOString()` east of UTC lands on the previous day, so the previous month.
+ * See `.context/design/cookbook/forms.md`.
  */
 @Component({
   selector: 'console-month-year-picker',
@@ -70,6 +74,17 @@ export class MonthYearPicker {
   clearable = input<boolean>(false);
 
   private readonly picker = viewChild.required<MatDatepicker<Date>>('picker');
+
+  /** The picked month as the API stores it: the 1st at 00:00 UTC, whatever the browser's time zone. */
+  static toIso(month: Date): string {
+    return new Date(Date.UTC(month.getFullYear(), month.getMonth(), 1)).toISOString();
+  }
+
+  /** A stored month back into the picker: its UTC month at local midnight, so the same month shows. */
+  static fromIso(iso: string): Date {
+    const d = new Date(iso);
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), 1);
+  }
 
   onMonthSelected(date: Date): void {
     const normalized = new Date(date.getFullYear(), date.getMonth(), 1);

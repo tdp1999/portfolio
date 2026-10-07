@@ -8,8 +8,8 @@ export function sortedIndex(list: readonly ProjectListItem[]): readonly ProjectI
 }
 
 export function yearRange(start: string, end: string | null): string {
-  const s = new Date(start).getFullYear();
-  const e = end ? new Date(end).getFullYear() : null;
+  const s = new Date(start).getUTCFullYear();
+  const e = end ? new Date(end).getUTCFullYear() : null;
   if (!Number.isFinite(s)) return '—';
   if (e === null) return `${s} → Present`;
   return s === e ? String(s) : `${s} → ${e}`;

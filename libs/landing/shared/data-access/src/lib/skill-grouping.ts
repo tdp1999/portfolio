@@ -99,7 +99,7 @@ export function groupedTopSkills(
 export function distinctYears(projects: readonly ProjectListItem[]): readonly number[] {
   const years = new Set<number>();
   for (const p of projects) {
-    const y = new Date(p.startDate).getFullYear();
+    const y = new Date(p.startDate).getUTCFullYear();
     if (Number.isFinite(y)) years.add(y);
   }
   return [...years].sort((a, b) => b - a);

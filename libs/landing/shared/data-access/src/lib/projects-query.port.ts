@@ -89,7 +89,7 @@ function applyFilters(list: readonly ProjectListItem[], q: ProjectsQuery): reado
   const statuses = new Set(q.statuses);
   const skills = new Set(q.skills);
   return list.filter((p) => {
-    if (years.size > 0 && !years.has(new Date(p.startDate).getFullYear())) return false;
+    if (years.size > 0 && !years.has(new Date(p.startDate).getUTCFullYear())) return false;
     if (statuses.size > 0 && !statuses.has(p.lifecycleStatus)) return false;
     if (skills.size > 0 && !p.skills.some((s) => skills.has(s.slug))) return false;
     return true;
