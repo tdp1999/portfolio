@@ -25,6 +25,11 @@ export class AiCostPolicy {
 
   // --- Rules ---
 
+  /** A model with a price: only those may be called by name, so the daily cap sees every call. */
+  static isPriced(model: string): boolean {
+    return Object.hasOwn(AiCostPolicy.PRICES, model);
+  }
+
   /**
    * Cost of one call in micro-USD, or null when the model has no price. Cached input is charged at
    * the cache price, tool tokens at the input price, thinking at the output price, and each web

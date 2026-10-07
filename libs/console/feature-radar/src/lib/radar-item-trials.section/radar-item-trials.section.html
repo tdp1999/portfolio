@@ -1,0 +1,148 @@
+<!-- A side tool, not part of reading a post: folded away until the Owner asks for it. -->
+<console-record-fold class="trials" title="Model trials" [gist]="gist()">
+  <div class="trials__body">
+    <div class="trials__head">
+      <p class="text-caption">
+        Analyze this post again with the server AI and compare. A trial never replaces the current analysis.
+      </p>
+      <form class="trials__form" [formGroup]="form" (ngSubmit)="onRun()">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Depth</mat-label>
+          <mat-select formControlName="depth">
+            <mat-option value="deep">Deep (web search)</mat-option>
+            <mat-option value="light">Light</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Model</mat-label>
+          <input matInput formControlName="model" placeholder="Default chain" list="trial-models" autocomplete="off" />
+          <datalist id="trial-models">
+            @for (m of modelSuggestions; track m) {
+              <option [value]="m"></option>
+            }
+          </datalist>
+        </mat-form-field>
+        <button mat-stroked-button type="submit" [disabled]="busy()">
+          @if (busy()) {
+            <mat-spinner diameter="16" class="trials__spinner" />
+          } @else {
+            <mat-icon class="icon-sm">science</mat-icon>
+          }
+          {{ busy() ? 'Running…' : 'Run trial' }}
+        </button>
+      </form>
+    </div>
+
+    @if (busy()) {
+      <div class="trials__progress" role="status">
+        <mat-progress-bar mode="indeterminate" />
+        <p class="text-caption">
+          The server is analyzing this post again. A deep trial usually takes under a minute; the table fills in by
+          itself.
+        </p>
+      </div>
+    }
+
+    @if (columns().length > 1) {
+      <div class="trials__scroll">
+        <table class="trials__table">
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Field</span></th>
+              @for (c of columns(); track c.key) {
+                <th scope="col">
+                  <span class="trials__col-title">{{ c.heading }}</span>
+                  <span class="trials__col-model">{{ c.model }}</span>
+                  @if (c.status === 'RUNNING') {
+                    <span class="trials__running">
+                      <span class="console-badge console-badge--muted">Running</span>
+                      <mat-spinner diameter="14" aria-label="Trial running" />
+                    </span>
+                  } @else if (c.status === 'FAILED') {
+                    <span class="console-badge console-badge--danger">Failed</span>
+                  }
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">TL;DR</th>
+              @for (c of columns(); track c.key) {
+                <td>
+                  @if (c.status === 'RUNNING') {
+                    <p class="trials__pending">Analyzing…</p>
+                  } @else if (c.error) {
+                    <p class="trials__error">{{ c.error }}</p>
+                  } @else {
+                    {{ c.tldr }}
+                  }
+                </td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Score</th>
+              @for (c of columns(); track c.key) {
+                <td>{{ c.score }}</td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Overview</th>
+              @for (c of columns(); track c.key) {
+                <td><div class="radar-md" [innerHTML]="c.overview | markdown"></div></td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Key terms</th>
+              @for (c of columns(); track c.key) {
+                <td><div class="radar-md" [innerHTML]="c.context | markdown"></div></td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Apply note</th>
+              @for (c of columns(); track c.key) {
+                <td><div class="radar-md" [innerHTML]="c.applyNote | markdown"></div></td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Fact check</th>
+              @for (c of columns(); track c.key) {
+                <td><div class="radar-md" [innerHTML]="c.factCheck | markdown"></div></td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Sources</th>
+              @for (c of columns(); track c.key) {
+                <td>
+                  <ul class="trials__sources">
+                    @for (s of c.sources; track s.url) {
+                      <li>
+                        <a [href]="s.url" target="_blank" rel="noopener noreferrer">{{ s.title || s.url }}</a>
+                      </li>
+                    }
+                  </ul>
+                </td>
+              }
+            </tr>
+            <tr>
+              <th scope="row">Usage</th>
+              @for (c of columns(); track c.key) {
+                <td class="trials__usage">
+                  @if (c.usage; as u) {
+                    <span>{{ u.tokensIn }} in · {{ u.tokensOut }} out</span>
+                    <span><console-money [microUsd]="u.costMicroUsd" /></span>
+                    <span>{{ u.seconds }} s · {{ u.searches }} searches</span>
+                  }
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    } @else if (!item().enrichment) {
+      <p class="text-caption">Trials compare against the current analysis; this post has none yet.</p>
+    } @else {
+      <p class="text-caption">No trial yet.</p>
+    }
+  </div>
+</console-record-fold>

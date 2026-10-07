@@ -26,7 +26,7 @@ import {
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
-import { RadarItemProgress } from '../radar-item.progress/radar-item.progress';
+import { RadarItemProgressCell } from '../radar-item-progress.cell/radar-item-progress.cell';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
@@ -48,7 +48,7 @@ import {
   TRIAGE_TABS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarItemTriage, type RadarTriageDecision } from '../radar-item.triage/radar-item.triage';
+import { RadarItemTriageSection } from '../radar-item-triage.section/radar-item-triage.section';
 import {
   RadarFeedItem,
   RadarFeedSortKey,
@@ -56,6 +56,7 @@ import {
   RadarFeedView,
   RadarQueueStats,
   RadarSource,
+  RadarTriageDecision,
   RadarTriageStatus,
 } from '../radar.types';
 
@@ -80,10 +81,10 @@ import {
     FormsModule,
     NgTemplateOutlet,
     Paginator,
-    RadarItemProgress,
+    RadarItemProgressCell,
     RadarScoreTonePipe,
     RadarSourceMonogramPipe,
-    RadarItemTriage,
+    RadarItemTriageSection,
     RelativeTime,
     SegmentedControl,
     SkeletonTable,

@@ -1,5 +1,11 @@
 /** What an AI call was for. Every caller names one, so the ledger can be read per feature. */
-export type AiFeature = 'radar.analyze' | 'radar.analyze.light' | 'radar.transcript' | 'radar.brief' | 'ai.test';
+export type AiFeature =
+  | 'radar.analyze'
+  | 'radar.analyze.light'
+  | 'radar.trial'
+  | 'radar.transcript'
+  | 'radar.brief'
+  | 'ai.test';
 
 export type AiCallStatus = 'SUCCEEDED' | 'FAILED' | 'RATE_LIMITED';
 

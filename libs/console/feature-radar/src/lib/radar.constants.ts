@@ -29,3 +29,19 @@ export const COMMENTS_POLL_MAX = 120;
 
 /** localStorage key of the Feed's last used view (Table or Split); `?view=` in the URL wins. */
 export const FEED_VIEW_STORAGE_KEY = 'radar.feed.view';
+
+/** How often the Detail page refreshes its quality trials while one runs. */
+export const TRIAL_POLL_MS = 5_000;
+
+/** Models the trial form suggests: the server's default chains plus the Pro fallback. Any id is accepted. */
+export const TRIAL_MODEL_SUGGESTIONS = [
+  'gemini-3.8-flash',
+  'gemini-3.5-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-pro-preview',
+] as const;
+
+/** Other comments shown before "Show more": enough to judge the thread without scrolling past it.
+ *  One extra comment is shown rather than hidden behind a "Show 1 more" button. */
+export const COMMENTS_PREVIEW = 3;

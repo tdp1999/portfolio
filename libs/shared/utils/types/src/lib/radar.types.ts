@@ -44,6 +44,9 @@ export type RadarTriageStatus = (typeof RADAR_TRIAGE_STATUSES)[number];
 /** Most item ids one `PATCH /radar/items/triage` accepts. */
 export const RADAR_TRIAGE_MAX_IDS = 100;
 
+/** Most items one quality-trial request takes: a deep trial runs ~45 s, so ten finish in minutes. */
+export const RADAR_TRIAL_MAX_IDS = 10;
+
 /** Default page size of `GET /radar/items`. */
 export const RADAR_FEED_PAGE_SIZE = 50;
 

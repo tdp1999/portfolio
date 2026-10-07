@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, RadarWorkStatus } from '@prisma/client';
+import { Prisma, RadarBriefWriter, RadarWorkStatus } from '@prisma/client';
 
 import {
   IRadarBriefRepository,
@@ -44,14 +44,15 @@ export class RadarBriefRepository implements IRadarBriefRepository {
     return count > 0;
   }
 
-  async claim(leaseExpiresAt: Date, now: Date): Promise<RadarBrief | null> {
+  async claim(writer: RadarBriefWriter, leaseExpiresAt: Date, now: Date): Promise<RadarBrief | null> {
     return this.prisma.$transaction(async (tx) => {
       // Same shape as the item claim: SKIP LOCKED so two workers never leave with the same brief,
       // and the ISO cast keeps the lease comparison independent of the session time zone.
       const [picked] = await tx.$queryRaw<{ id: string }[]>`
         SELECT id FROM radar_briefs
-        WHERE "workStatus" = 'PENDING'
-           OR ("workStatus" = 'CLAIMED' AND "leaseExpiresAt" < ${now.toISOString()}::timestamp(3))
+        WHERE "writer" = ${writer}::"RadarBriefWriter"
+          AND ("workStatus" = 'PENDING'
+           OR ("workStatus" = 'CLAIMED' AND "leaseExpiresAt" < ${now.toISOString()}::timestamp(3)))
         ORDER BY "createdAt"
         LIMIT 1
         FOR UPDATE SKIP LOCKED`;
@@ -62,6 +63,13 @@ export class RadarBriefRepository implements IRadarBriefRepository {
         data: { workStatus: RadarWorkStatus.CLAIMED, leaseExpiresAt },
       });
       return RadarBriefMapper.toDomain(row);
+    });
+  }
+
+  async release(id: string): Promise<void> {
+    await this.prisma.radarBrief.updateMany({
+      where: { id, workStatus: RadarWorkStatus.CLAIMED },
+      data: { workStatus: RadarWorkStatus.PENDING, leaseExpiresAt: null },
     });
   }
 

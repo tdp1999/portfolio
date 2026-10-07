@@ -11,12 +11,14 @@ import {
   ClaimBriefHandler,
   CreateBriefHandler,
   SubmitBriefHandler,
+  WriteAutoBriefHandler,
   CollectItemCommentsHandler,
   FetchItemCommentsHandler,
   UploadCommentsHandler,
   CancelRunHandler,
   ClaimWorkHandler,
   CreateRunHandler,
+  CreateTrialsHandler,
   CreateSourceHandler,
   DeleteSourceHandler,
   PersistItemImagesHandler,
@@ -50,6 +52,7 @@ import {
   GetWorkflowProfileHandler,
   ListRunsHandler,
   ListRadarItemsHandler,
+  ListItemTrialsHandler,
   ListSourcesHandler,
 } from './application/queries';
 import {
@@ -66,6 +69,7 @@ import {
   RADAR_RUN_REPOSITORY,
   RADAR_BRIEF_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
+  RADAR_TRIAL_REPOSITORY,
   RADAR_WORK_REPOSITORY,
 } from './application/radar.token';
 import { ApifyCaptureAdapter } from './infrastructure/capture/apify-capture.adapter';
@@ -83,6 +87,7 @@ import { ServerAiAdapter } from './infrastructure/llm/server-ai.adapter';
 import { RadarProfileRepository } from './infrastructure/repositories/radar-profile.repository';
 import { RadarRunRepository } from './infrastructure/repositories/radar-run.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
+import { RadarTrialRepository } from './infrastructure/repositories/radar-trial.repository';
 import { RadarWorkRepository } from './infrastructure/repositories/radar-work.repository';
 import { RadarAdminController } from './presentation/radar-admin.controller';
 import { RadarWorkerController } from './presentation/radar-worker.controller';
@@ -107,6 +112,8 @@ const CommandHandlers = [
   CreateBriefHandler,
   ClaimBriefHandler,
   SubmitBriefHandler,
+  WriteAutoBriefHandler,
+  CreateTrialsHandler,
 ];
 const QueryHandlers = [
   ListSourcesHandler,
@@ -121,6 +128,7 @@ const QueryHandlers = [
   ListBriefsHandler,
   GetBriefHandler,
   ListBriefItemsHandler,
+  ListItemTrialsHandler,
 ];
 
 @Module({
@@ -136,6 +144,7 @@ const QueryHandlers = [
     { provide: RADAR_PROFILE_REPOSITORY, useClass: RadarProfileRepository },
     { provide: RADAR_RUN_REPOSITORY, useClass: RadarRunRepository },
     { provide: RADAR_BRIEF_REPOSITORY, useClass: RadarBriefRepository },
+    { provide: RADAR_TRIAL_REPOSITORY, useClass: RadarTrialRepository },
     { provide: IMAGE_DOWNLOADER, useClass: FetchImageDownloader },
     {
       provide: RADAR_WORKER_CONFIG,

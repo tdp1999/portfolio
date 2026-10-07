@@ -1,4 +1,5 @@
 import {
+  RadarBriefWriter,
   RadarCommentsStatus,
   RadarItemKind,
   RadarPlatform,
@@ -24,6 +25,7 @@ import {
   RADAR_MIN_RUN_BUDGET_USD,
   RADAR_PROVIDER_TAGS,
   RADAR_TRIAGE_MAX_IDS,
+  RADAR_TRIAL_MAX_IDS,
   type RadarQueueState,
 } from '@portfolio/shared/types';
 
@@ -279,6 +281,37 @@ export const TriageRadarItemsSchema = z.object({
   status: z.enum(RadarTriageStatus),
 });
 
+export const CreateTrialsSchema = z.object({
+  itemIds: z.array(z.uuid()).min(1).max(RADAR_TRIAL_MAX_IDS),
+  depth: z.enum(['light', 'deep']).default('deep'),
+  /** A model id to try; the depth's default chain when left out. */
+  model: z.string().trim().min(1).max(100).optional(),
+});
+
+export interface CreateTrialsResponseDto {
+  /** Trials started, in the background; read them with `GET /radar/items/:id/trials`. */
+  started: { id: string; itemId: string }[];
+  /** Items with nothing to compare against: unknown, or not analyzed yet. */
+  skipped: { itemId: string; reason: string }[];
+}
+
+export interface RadarTrialDto {
+  id: string;
+  depth: 'light' | 'deep';
+  requestedModel: string | null;
+  status: 'RUNNING' | 'DONE' | 'FAILED';
+  /** The trial's enrichment (same fields as the item's), null until DONE. */
+  enrichment: Record<string, unknown> | null;
+  error: string | null;
+  tokensIn: number;
+  tokensOut: number;
+  costMicroUsd: number | null;
+  searchQueries: number;
+  latencyMs: number | null;
+  createdAt: string;
+  finishedAt: string | null;
+}
+
 export interface TriageRadarItemsResponseDto {
   /** Items that exist and were set; unknown ids are ignored. */
   updated: number;
@@ -406,6 +439,8 @@ export const CreateBriefSchema = z
       .transform((v) => v ?? null),
     windowFrom: z.coerce.date(),
     windowTo: z.coerce.date(),
+    /** AUTO: the server AI writes it within a minute or two; WORKER: it waits for `/radar work brief`. */
+    writer: z.enum(RadarBriefWriter).default(RadarBriefWriter.AUTO),
   })
   .refine((v) => v.windowFrom < v.windowTo, { message: 'windowFrom must be before windowTo', path: ['windowTo'] });
 
@@ -429,6 +464,9 @@ export interface RadarBriefDto {
   leaseExpiresAt: Date | null;
   itemCount: number;
   producer: { adapter: string; model: string } | null;
+  writer: RadarBriefWriter;
+  /** Set when an AUTO brief could not be written; the brief is DONE with an empty body. */
+  error: string | null;
   createdAt: Date;
 }
 
@@ -441,7 +479,9 @@ export interface ClaimBriefResponseDto {
    * Null when no brief is waiting. `sourceId` null means every source; `itemCount` is how many
    * analyzed posts the window holds now.
    */
-  brief: (Omit<RadarBriefDto, 'source' | 'producer' | 'createdAt'> & { sourceId: string | null }) | null;
+  brief:
+    | (Omit<RadarBriefDto, 'source' | 'producer' | 'createdAt' | 'writer' | 'error'> & { sourceId: string | null })
+    | null;
 }
 
 export interface RadarBriefWorkItemDto {

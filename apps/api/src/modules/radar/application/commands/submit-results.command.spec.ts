@@ -36,6 +36,7 @@ describe('SubmitResultsHandler', () => {
       findDeepCandidates: jest.fn(),
       countDeep: jest.fn(),
       noteError: jest.fn(),
+      findAnalyzed: jest.fn(),
     };
     handler = new SubmitResultsHandler(repo);
   });

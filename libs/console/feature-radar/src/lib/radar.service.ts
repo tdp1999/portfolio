@@ -20,6 +20,9 @@ import {
   RadarTriageStatus,
   RadarWorkflowProfile,
   RadarAiSettings,
+  RadarTrial,
+  CreateRadarTrialsInput,
+  CreateRadarTrialsResult,
 } from './radar.types';
 
 @Injectable({ providedIn: 'root' })
@@ -51,6 +54,15 @@ export class RadarService {
   /** One status for every id; ids that no longer exist are skipped, so `updated` can be lower. */
   triageItems(ids: string[], status: RadarTriageStatus) {
     return this.api.patch<{ updated: number }>('/radar/items/triage', { ids, status });
+  }
+
+  /** Quality trials run in the background; poll `listTrials` until none is RUNNING. */
+  createTrials(input: CreateRadarTrialsInput) {
+    return this.api.post<CreateRadarTrialsResult>('/radar/trials', input);
+  }
+
+  listTrials(itemId: string) {
+    return this.api.get<RadarTrial[]>(`/radar/items/${itemId}/trials`);
   }
 
   getQueueStats() {

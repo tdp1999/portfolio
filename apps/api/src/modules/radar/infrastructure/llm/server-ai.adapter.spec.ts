@@ -77,6 +77,7 @@ describe('ServerAiAdapter', () => {
       findDeepCandidates: jest.fn().mockResolvedValue([]),
       countDeep: jest.fn().mockResolvedValue(0),
       noteError: jest.fn(),
+      findAnalyzed: jest.fn(),
     };
   });
 

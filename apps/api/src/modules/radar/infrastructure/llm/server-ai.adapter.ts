@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { z } from 'zod/v4';
 
-import { AiCallError, type AiTool, type IAiClient } from '../../../ai';
+import type { IAiClient } from '../../../ai';
 import { RadarLeasePolicy } from '../../domain/policies/radar-lease.policy';
 import { RadarAnalysisDepth } from '../../domain/radar-analysis.types';
 import {
@@ -12,13 +11,9 @@ import {
 } from '../../application/ports/llm-provider.port';
 import { IRadarProfileRepository } from '../../application/ports/radar-profile.repository.port';
 import { IRadarWorkRepository, RadarWorkSnapshot } from '../../application/ports/radar-work.repository.port';
-import {
-  RadarAnalysisOptions,
-  RadarAnalysisPrompt,
-  RadarAnalysisAnswerSchema,
-} from '../../application/prompts/radar-analysis.prompt';
+import { RadarAnalysisPrompt } from '../../application/prompts/radar-analysis.prompt';
+import { RadarAnalyzer, RadarEnrichmentData } from '../../application/radar-analyzer';
 import { RADAR_RUN_AI_GROUP, RadarAnalysisConfig } from '../../application/radar-analysis.config';
-import { RadarEnrichmentSchema } from '../../application/radar-enrichment.schema';
 import { RadarPresenter } from '../../application/radar.presenter';
 
 /**
@@ -48,9 +43,6 @@ type Group = { type: string; id: string };
 export class ServerAiAdapter implements ILlmProvider {
   // --- Constants ---
 
-  /** Not the provider's fault and not the item's: the whole tick stops and the step records an error. */
-  private static readonly FATAL = new Set(['auth', 'not-configured']);
-  private static readonly BUSY = new Set(['rate-limited', 'unavailable', 'network']);
   private static readonly BUDGET_REACHED = "The run's AI budget is reached; the remaining items stay pending";
   private static readonly DAILY_CAP_REACHED = 'The daily AI spend cap is reached; the remaining items stay pending';
   /** How long a run waits on a busy provider (no item analyzed) before it stops. */
@@ -63,13 +55,16 @@ export class ServerAiAdapter implements ILlmProvider {
   private readonly logger = new Logger(ServerAiAdapter.name);
   /** Per run: when the provider started answering busy with no item analyzed since. In memory: a restart starts a fresh wait. */
   private readonly busySince = new Map<string, number>();
+  private readonly analyzer: RadarAnalyzer;
 
   constructor(
     private readonly ai: IAiClient,
     private readonly work: IRadarWorkRepository,
     private readonly profiles: IRadarProfileRepository,
     private readonly config: RadarAnalysisConfig
-  ) {}
+  ) {
+    this.analyzer = new RadarAnalyzer(ai, config);
+  }
 
   async process({ runId, budgetMicroUsd }: LlmStepRequest): Promise<LlmStepOutcome> {
     const group: Group = { type: RADAR_RUN_AI_GROUP, id: runId };
@@ -157,61 +152,22 @@ export class ServerAiAdapter implements ILlmProvider {
     system: string,
     group: Group
   ): Promise<ItemResult> {
-    const { deep, light } = this.config;
-    const options: RadarAnalysisOptions =
-      depth === 'deep'
-        ? { depth, maxImages: deep.maxImages, webSearch: deep.webSearch, maxSearchQueries: deep.maxSearchQueries }
-        : { depth, maxImages: light.maxImages, deepMinScore: deep.maxPerRun > 0 ? deep.minScore : null };
-    const tools: AiTool[] = depth === 'light' ? [] : deep.webSearch ? ['webSearch', 'readUrls'] : ['readUrls'];
-    const pass = depth === 'deep' ? deep : light;
-    const parts = RadarAnalysisPrompt.parts(RadarPresenter.toWorkItem(item), options);
-    let busy = false;
-    let lastError = 'No model answered';
-
-    for (const model of pass.models) {
-      let refused: string | null = null;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          const result = await this.ai.generateStructured({
-            model,
-            system,
-            parts: refused ? RadarAnalysisPrompt.retryParts(parts, refused) : parts,
-            schema: RadarAnalysisAnswerSchema,
-            feature: depth === 'deep' ? 'radar.analyze' : 'radar.analyze.light',
-            ref: { type: 'radar-item', id: item.id },
-            group,
-            tools,
-            limits: { maxOutputTokens: pass.maxOutputTokens, timeoutMs: this.config.timeoutMs, effort: pass.effort },
-          });
-          const enrichment = RadarEnrichmentSchema.safeParse(
-            RadarAnalysisPrompt.toEnrichment(result.data, { adapter: this.ai.provider, model: result.model })
-          );
-          if (enrichment.success) return this.store(item.id, enrichment.data, depth);
-          refused = ServerAiAdapter.describe(enrichment.error);
-        } catch (error) {
-          if (!(error instanceof AiCallError)) throw error;
-          if (ServerAiAdapter.FATAL.has(error.kind)) throw error;
-          if (error.kind === 'over-budget') return 'capped';
-          if (error.kind !== 'invalid-output') {
-            busy ||= ServerAiAdapter.BUSY.has(error.kind);
-            lastError = error.message;
-            refused = null;
-            break;
-          }
-          refused = error.message;
-        }
-      }
-      // Refused twice: the model, not the provider, is the problem, and the rule allows one retry.
-      if (refused) return this.fail(item.id, depth, `Invalid answer after one retry (${model}): ${refused}`);
+    const outcome = await this.analyzer.analyze(RadarPresenter.toWorkItem(item), depth, system, {
+      feature: depth === 'deep' ? 'radar.analyze' : 'radar.analyze.light',
+      group,
+    });
+    switch (outcome.kind) {
+      case 'answered':
+        return this.store(item.id, outcome.enrichment, depth);
+      case 'refused':
+      case 'failed':
+        return this.fail(item.id, depth, outcome.reason);
+      default:
+        return outcome.kind;
     }
-    return busy ? 'busy' : this.fail(item.id, depth, lastError);
   }
 
-  private async store(
-    itemId: string,
-    enrichment: z.infer<typeof RadarEnrichmentSchema>,
-    depth: RadarAnalysisDepth
-  ): Promise<ItemResult> {
+  private async store(itemId: string, enrichment: RadarEnrichmentData, depth: RadarAnalysisDepth): Promise<ItemResult> {
     const item = await this.work.findById(itemId);
     if (item && (await this.work.saveEnrichment(item.takeEnrichment(), enrichment, depth))) return 'stored';
     this.logger.warn(`Radar item ${itemId} disappeared before its analysis was saved`);
@@ -224,9 +180,5 @@ export class ServerAiAdapter implements ILlmProvider {
     if (depth === 'deep') await this.work.noteError(itemId, `Deep analysis failed: ${reason}`);
     else await this.work.markFailed(itemId, reason, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
     return 'failed';
-  }
-
-  private static describe(error: z.ZodError): string {
-    return error.issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ');
   }
 }

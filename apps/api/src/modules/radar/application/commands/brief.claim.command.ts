@@ -1,12 +1,13 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { RadarBriefWriter } from '@prisma/client';
 
 import { RadarLeasePolicy } from '../../domain/policies/radar-lease.policy';
 import { IRadarBriefRepository } from '../ports/radar-brief.repository.port';
 import { ClaimBriefResponseDto } from '../radar.dto';
 import { RADAR_BRIEF_REPOSITORY } from '../radar.token';
 
-/** The worker takes the oldest waiting brief under the same lease as a batch of posts. */
+/** The worker takes the oldest waiting WORKER brief under the same lease as a batch of posts. */
 export class ClaimBriefCommand {}
 
 @CommandHandler(ClaimBriefCommand)
@@ -15,7 +16,7 @@ export class ClaimBriefHandler implements ICommandHandler<ClaimBriefCommand> {
 
   async execute(): Promise<ClaimBriefResponseDto> {
     const now = new Date();
-    const brief = await this.briefs.claim(RadarLeasePolicy.expiresAt(now), now);
+    const brief = await this.briefs.claim(RadarBriefWriter.WORKER, RadarLeasePolicy.expiresAt(now), now);
     if (!brief) return { brief: null };
 
     const itemIds = await this.briefs.windowItemIds(brief);

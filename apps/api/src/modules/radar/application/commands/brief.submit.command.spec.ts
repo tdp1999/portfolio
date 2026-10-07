@@ -1,4 +1,4 @@
-import { RadarWorkStatus } from '@prisma/client';
+import { RadarBriefWriter, RadarWorkStatus } from '@prisma/client';
 
 import { RadarBrief } from '../../domain/entities/radar-brief.entity';
 import { IRadarBriefRepository } from '../ports/radar-brief.repository.port';
@@ -18,6 +18,8 @@ const claimed = RadarBrief.load({
   workStatus: RadarWorkStatus.CLAIMED,
   leaseExpiresAt: new Date(),
   producer: null,
+  writer: RadarBriefWriter.WORKER,
+  error: null,
   createdAt: new Date(),
 });
 

@@ -12,6 +12,11 @@ export const RADAR_RUN_AI_GROUP = 'radar-run';
  */
 export const DEFAULT_RADAR_AI_LIGHT_MODELS = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'];
 export const DEFAULT_RADAR_AI_DEEP_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash'];
+/**
+ * A brief reads the window's analyses (already researched) and writes one long document: a Flash
+ * model, no tools. Override with `RADAR_AI_BRIEF_MODELS`.
+ */
+export const DEFAULT_RADAR_AI_BRIEF_MODELS = DEFAULT_RADAR_AI_DEEP_MODELS;
 /** One AUTO run's AI spend cap when the Owner names none: $1. */
 export const DEFAULT_RADAR_AI_BUDGET_MICRO_USD = 1_000_000;
 /** Items analyzed per tick: small, so one tick stays short and memory stays flat (task 387). */
@@ -47,6 +52,8 @@ export interface RadarAnalysisConfig {
     /** Search queries the prompt allows per item. A prompt rule, not a hard cap: no provider exposes one. */
     maxSearchQueries: number;
   };
+  /** An AUTO brief: one request over the window's analyses, so a longer timeout and answer. */
+  brief: Omit<RadarAnalysisPass, 'maxImages'> & { timeoutMs: number };
 }
 
 /** Reads the analysis settings. All optional: the defaults are a working setup. */
@@ -74,6 +81,12 @@ export function loadRadarAnalysisConfig(env: NodeJS.ProcessEnv = process.env): R
       maxPerRun: intIn(env['RADAR_AI_DEEP_MAX'], 0, 1_500) ?? DEFAULT_RADAR_AI_DEEP_MAX,
       webSearch: env['RADAR_AI_SEARCH']?.trim().toLowerCase() !== 'off',
       maxSearchQueries: 2,
+    },
+    brief: {
+      models: modelList(env['RADAR_AI_BRIEF_MODELS']) ?? DEFAULT_RADAR_AI_BRIEF_MODELS,
+      effort: 'medium',
+      maxOutputTokens: 32_000,
+      timeoutMs: 300_000,
     },
   };
 }

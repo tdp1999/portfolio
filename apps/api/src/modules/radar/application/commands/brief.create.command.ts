@@ -1,7 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { RadarBriefWriter } from '@prisma/client';
 
-import { ErrorLayer, RadarErrorCode, ValidationError } from '@portfolio/shared/errors';
+import { BadRequestError, ErrorLayer, RadarErrorCode, ValidationError } from '@portfolio/shared/errors';
+
+import { AI_CLIENT, type IAiClient } from '../../../ai';
 
 import { RadarBrief } from '../../domain/entities/radar-brief.entity';
 import { IRadarBriefRepository } from '../ports/radar-brief.repository.port';
@@ -10,7 +13,10 @@ import { CreateBriefSchema, RadarBriefDto } from '../radar.dto';
 import { RadarPresenter } from '../radar.presenter';
 import { RADAR_BRIEF_REPOSITORY, RADAR_SOURCE_REPOSITORY } from '../radar.token';
 
-/** The Owner asks for a brief of a window (see {@link RadarBrief.create}); `/radar work brief` writes it. */
+/**
+ * The Owner asks for a brief of a window (see {@link RadarBrief.create}). An AUTO brief is written
+ * by the server AI on the next tick ({@link WriteAutoBriefHandler}), a WORKER one by `/radar work brief`.
+ */
 export class CreateBriefCommand {
   constructor(readonly dto: unknown) {}
 }
@@ -19,13 +25,20 @@ export class CreateBriefCommand {
 export class CreateBriefHandler implements ICommandHandler<CreateBriefCommand> {
   constructor(
     @Inject(RADAR_BRIEF_REPOSITORY) private readonly briefs: IRadarBriefRepository,
-    @Inject(RADAR_SOURCE_REPOSITORY) private readonly sources: IRadarSourceRepository
+    @Inject(RADAR_SOURCE_REPOSITORY) private readonly sources: IRadarSourceRepository,
+    @Inject(AI_CLIENT) private readonly ai: IAiClient
   ) {}
 
   async execute(command: CreateBriefCommand): Promise<RadarBriefDto> {
     const { success, data, error } = CreateBriefSchema.safeParse(command.dto ?? {});
     if (!success) {
       throw ValidationError(error, { errorCode: RadarErrorCode.INVALID_INPUT, layer: ErrorLayer.APPLICATION });
+    }
+    if (data.writer === RadarBriefWriter.AUTO && !this.ai.configured) {
+      throw BadRequestError('Auto writing is not configured (the server has no AI provider key)', {
+        errorCode: RadarErrorCode.AI_NOT_CONFIGURED,
+        layer: ErrorLayer.APPLICATION,
+      });
     }
 
     const [itemIds, waiting] = await Promise.all([this.briefs.windowItemIds(data), this.briefs.hasWaiting()]);

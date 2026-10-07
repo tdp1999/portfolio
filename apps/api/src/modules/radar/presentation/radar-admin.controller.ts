@@ -24,6 +24,7 @@ import {
   CancelRunCommand,
   CreateBriefCommand,
   CreateRunCommand,
+  CreateTrialsCommand,
   CollectItemCommentsCommand,
   FetchItemCommentsCommand,
   CreateSourceCommand,
@@ -47,6 +48,7 @@ import {
   GetWorkflowProfileQuery,
   ListRadarItemsQuery,
   ListRunsQuery,
+  ListItemTrialsQuery,
   ListSourcesQuery,
 } from '../application/queries';
 import { MAX_UPLOAD_BYTES } from '../application/radar.dto';
@@ -171,6 +173,18 @@ export class RadarAdminController {
   @Patch('items/triage')
   async triageItems(@Body() body: unknown) {
     return await this.commandBus.execute(new TriageItemsCommand(body));
+  }
+
+  /** Quality trials: analyzes analyzed items again, stored next to their enrichment (runs in the background). */
+  @Post('trials')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async createTrials(@Body() body: unknown) {
+    return await this.commandBus.execute(new CreateTrialsCommand(body));
+  }
+
+  @Get('items/:id/trials')
+  async listItemTrials(@Param('id') id: string) {
+    return await this.queryBus.execute(new ListItemTrialsQuery(id));
   }
 
   @Get('items/:id')

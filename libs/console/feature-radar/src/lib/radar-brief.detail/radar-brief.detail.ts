@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnIni
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   EnumLabelPipe,
@@ -18,6 +19,7 @@ import {
 import { catchError, EMPTY, Subscription, switchMap, takeWhile, timer } from 'rxjs';
 import { MarkdownPipe } from '../markdown.pipe';
 import { BRIEF_POLL_MS } from '../radar.constants';
+import { RadarBriefStatusPipe } from '../radar-brief-status.pipe';
 import { BRIEF_STATUS_BADGES, BRIEF_STATUS_LABELS } from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarBriefDetail as RadarBrief } from '../radar.types';
@@ -35,7 +37,9 @@ import type { RadarBriefDetail as RadarBrief } from '../radar.types';
     RouterLink,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     EnumLabelPipe,
+    RadarBriefStatusPipe,
     MarkdownPipe,
     Property,
     PropertyList,
@@ -62,7 +66,10 @@ export default class RadarBriefDetail implements OnInit {
   protected readonly loadError = signal<'not-found' | 'failed' | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────────
-  protected readonly written = computed(() => this.brief()?.workStatus === 'DONE');
+  /** Not written yet and not failed: a writer has it or will pick it up. */
+  protected readonly pending = computed(() => this.brief()?.workStatus !== 'DONE');
+  /** Done with a body; a failed Auto brief is done too, with the error instead. */
+  protected readonly written = computed(() => this.brief()?.workStatus === 'DONE' && !this.brief()?.error);
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly statusLabels = BRIEF_STATUS_LABELS;

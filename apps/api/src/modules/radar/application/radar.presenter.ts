@@ -194,6 +194,8 @@ export class RadarPresenter {
       leaseExpiresAt: brief.leaseExpiresAt,
       itemCount: brief.itemCount,
       producer: brief.producer,
+      writer: brief.writer,
+      error: brief.error,
       createdAt: brief.createdAt,
     };
   }

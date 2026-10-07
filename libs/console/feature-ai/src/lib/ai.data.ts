@@ -30,6 +30,7 @@ export const AI_STATUS_BADGES: Record<AiCallStatus, string> = {
 export const AI_FEATURE_LABELS: Record<string, string> = {
   'radar.analyze': 'Radar deep analysis',
   'radar.analyze.light': 'Radar quick analysis',
+  'radar.trial': 'Radar quality trial',
   'radar.transcript': 'Radar transcript',
   'radar.brief': 'Radar brief',
   'ai.test': 'Connection test',

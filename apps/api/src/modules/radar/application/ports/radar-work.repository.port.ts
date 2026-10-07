@@ -42,6 +42,8 @@ export interface IRadarWorkRepository {
     runId?: string
   ): Promise<ClaimedRadarItem[]>;
   findById(itemId: string): Promise<RadarItem | null>;
+  /** The given items that hold an enrichment (a quality trial compares against it); others are left out. */
+  findAnalyzed(itemIds: readonly string[]): Promise<RadarWorkSnapshot[]>;
   /**
    * Replaces the item's enrichment and writes its work state, in one transaction. False when the
    * item no longer exists. `depth` is set by the server analysis only; null for the worker.

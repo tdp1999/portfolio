@@ -963,9 +963,10 @@ model RadarItem {
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
 
-  source     RadarSource      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-  lastRun    RadarRun?        @relation(fields: [lastRunId], references: [id], onDelete: SetNull)
+  source     RadarSource            @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  lastRun    RadarRun?              @relation(fields: [lastRunId], references: [id], onDelete: SetNull)
   enrichment RadarEnrichment?
+  trials     RadarEnrichmentTrial[]
 
   @@unique([sourceId, externalId])
   @@index([sourceId, publishedAt(sort: Desc)])
@@ -1018,19 +1019,62 @@ model RadarEnrichment {
   @@map("radar_enrichments")
 }
 
+/// Where a quality trial is: running in the background, stored, or failed with a reason.
+enum RadarTrialStatus {
+  RUNNING
+  DONE
+  FAILED
+}
+
+/// A server analysis run next to an item's current enrichment, to compare models (task 419). Never replaces the enrichment.
+model RadarEnrichmentTrial {
+  id             String           @id @db.Uuid
+  itemId         String           @db.Uuid
+  /// "light" or "deep", as the AUTO analysis.
+  depth          String           @db.VarChar(8)
+  /// The model asked for; null means the depth's default chain.
+  requestedModel String?          @db.VarChar(100)
+  status         RadarTrialStatus @default(RUNNING)
+  /// The enrichment the trial produced (same shape as radar_enrichments, producer included). Null until DONE.
+  payload        Json?            @db.JsonB
+  error          String?          @db.VarChar(1000)
+  inputTokens    Int              @default(0)
+  outputTokens   Int              @default(0)
+  /// Null when the model has no price.
+  costMicroUsd   Int?
+  searchQueries  Int              @default(0)
+  latencyMs      Int?
+  createdAt      DateTime         @default(now())
+  finishedAt     DateTime?
+
+  item RadarItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId, createdAt(sort: Desc)])
+  @@map("radar_enrichment_trials")
+}
+
+/// Who writes a brief: the server AI in the tick (AUTO) or `/radar work brief` (WORKER).
+enum RadarBriefWriter {
+  AUTO
+  WORKER
+}
+
 model RadarBrief {
-  id              String          @id @db.Uuid
-  sourceId        String?         @db.Uuid
+  id              String           @id @db.Uuid
+  sourceId        String?          @db.Uuid
   windowFrom      DateTime
   windowTo        DateTime
-  body            String          @default("")
-  itemIds         String[]        @default([])
-  workStatus      RadarWorkStatus @default(PENDING)
+  body            String           @default("")
+  itemIds         String[]         @default([])
+  workStatus      RadarWorkStatus  @default(PENDING)
   leaseExpiresAt  DateTime?
-  producerAdapter String?         @db.VarChar(64)
-  producerModel   String?         @db.VarChar(100)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  producerAdapter String?          @db.VarChar(64)
+  producerModel   String?          @db.VarChar(100)
+  writer          RadarBriefWriter @default(WORKER)
+  /// Why an AUTO brief could not be written; the brief is then DONE with an empty body.
+  error           String?          @db.VarChar(1000)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   source RadarSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
 

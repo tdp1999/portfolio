@@ -162,6 +162,14 @@ export class RadarWorkRepository implements IRadarWorkRepository {
     return items.map(RadarWorkRepository.toSnapshot);
   }
 
+  async findAnalyzed(itemIds: readonly string[]): Promise<RadarWorkSnapshot[]> {
+    const items = await this.prisma.radarItem.findMany({
+      where: { id: { in: [...itemIds] }, enrichment: { isNot: null } },
+      select: claimedSelect,
+    });
+    return items.map(RadarWorkRepository.toSnapshot);
+  }
+
   countDeep(runId: string): Promise<number> {
     return this.prisma.radarItem.count({ where: { lastRunId: runId, enrichment: { analysisDepth: 'deep' } } });
   }

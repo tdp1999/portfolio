@@ -2,6 +2,7 @@
   <console-spinner-overlay [loading]="loading()" />
 
   @if (brief(); as b) {
+    @let status = b | radarBriefStatus;
     <div class="console-page-header">
       <a mat-icon-button routerLink="/radar/briefs" aria-label="Back to briefs">
         <mat-icon>arrow_back</mat-icon>
@@ -11,9 +12,12 @@
           <h1 class="text-page-title">
             Brief, {{ b.windowFrom | date: 'mediumDate' : 'UTC' }} to {{ b.windowTo | date: 'mediumDate' : 'UTC' }}
           </h1>
-          <span class="console-badge" [class]="b.workStatus | enumLabel: statusBadges">{{
-            b.workStatus | enumLabel: statusLabels
+          <span class="console-badge" [class]="status | enumLabel: statusBadges">{{
+            status | enumLabel: statusLabels
           }}</span>
+          @if (pending()) {
+            <mat-spinner diameter="16" aria-label="Brief not written yet" />
+          }
           <console-help-button guide="radar-feature-guide" section="briefs" page label="Radar guide: briefs" />
         </div>
         <div class="detail-meta">
@@ -31,6 +35,16 @@
           <!-- Click handler only routes the body's own links; keyboard users activate them as normal links. -->
           <div class="rv-prose radar-md brief-body" [innerHTML]="b.body | markdown" (click)="onBodyClick($event)"></div>
         </console-record-section>
+      } @else if (b.error) {
+        <div class="brief-pending brief-pending--error" role="alert">
+          <mat-icon class="icon-sm">error_outline</mat-icon>
+          <p>The brief could not be written: {{ b.error }} Request a new one from the Briefs page.</p>
+        </div>
+      } @else if (b.writer === 'AUTO') {
+        <div class="brief-pending" role="status">
+          <mat-spinner diameter="16" />
+          <p>The server is writing this brief with AI; this page shows it as soon as it is ready.</p>
+        </div>
       } @else {
         <div class="brief-pending" role="status">
           <mat-icon class="icon-sm">hourglass_empty</mat-icon>
@@ -47,7 +61,8 @@
             <console-property label="From">{{ b.windowFrom | date: 'mediumDate' : 'UTC' }}</console-property>
             <console-property label="To">{{ b.windowTo | date: 'mediumDate' : 'UTC' }}</console-property>
             <console-property label="Source">{{ b.source ? b.source.displayName : 'All sources' }}</console-property>
-            <console-property label="Status">{{ b.workStatus | enumLabel: statusLabels }}</console-property>
+            <console-property label="Status">{{ status | enumLabel: statusLabels }}</console-property>
+            <console-property label="Writer">{{ b.writer === 'AUTO' ? 'Auto' : 'Claude Code' }}</console-property>
             @if (written()) {
               <console-property label="Posts">{{ b.itemCount }}</console-property>
             }

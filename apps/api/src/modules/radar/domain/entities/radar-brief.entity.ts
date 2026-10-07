@@ -1,4 +1,4 @@
-import { RadarWorkStatus } from '@prisma/client';
+import { RadarBriefWriter, RadarWorkStatus } from '@prisma/client';
 
 import { BadRequestError, ConflictError, ErrorLayer, RadarErrorCode } from '@portfolio/shared/errors';
 import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
@@ -6,8 +6,9 @@ import { IdentifierValue, TemporalValue } from '@portfolio/shared/types';
 import { CreateRadarBriefPayload, RadarBriefProducer, RadarBriefProps } from '../radar-brief.types';
 
 /**
- * A catch-up summary of the analyzed posts in a time window. The row is its own work item: the
- * worker claims it under a lease, as it claims posts, and submits the markdown once.
+ * A catch-up summary of the analyzed posts in a time window. The row is its own work item: its
+ * writer (the server AI in the tick, or the worker) claims it under a lease, as posts are claimed,
+ * and submits the markdown once.
  */
 export class RadarBrief {
   // --- Constants ---
@@ -20,12 +21,12 @@ export class RadarBrief {
   // --- Factory Methods ---
 
   /**
-   * A brief waits for the worker. A window with no analyzed post would give an empty brief, so it
+   * A brief waits for its writer. A window with no analyzed post would give an empty brief, so it
    * is refused here; `waiting` says whether another brief is still unwritten (one at a time).
    */
   static create(data: CreateRadarBriefPayload, windowItemCount: number, waiting: boolean): RadarBrief {
     if (waiting) {
-      throw ConflictError('A brief is already waiting for the worker', {
+      throw ConflictError('A brief is already waiting for its writer', {
         errorCode: RadarErrorCode.BRIEF_ALREADY_WAITING,
         layer: ErrorLayer.DOMAIN,
       });
@@ -44,6 +45,7 @@ export class RadarBrief {
       workStatus: RadarWorkStatus.PENDING,
       leaseExpiresAt: null,
       producer: null,
+      error: null,
       createdAt: TemporalValue.now(),
     });
   }
@@ -90,6 +92,14 @@ export class RadarBrief {
     return this.props.producer;
   }
 
+  get writer(): RadarBriefWriter {
+    return this.props.writer;
+  }
+
+  get error(): string | null {
+    return this.props.error;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -97,13 +107,13 @@ export class RadarBrief {
   // --- Rules ---
 
   /**
-   * The worker's markdown, accepted only while it holds the brief. Every post the body links to
+   * The writer's markdown, accepted only while it holds the brief. Every post the body links to
    * must be one of the window's analyzed posts, and it must link to at least one: a claim the
    * Owner cannot trace back to a post is not accepted.
    */
   complete(body: string, windowItemIds: readonly string[], producer: RadarBriefProducer): RadarBrief {
     if (this.props.workStatus !== RadarWorkStatus.CLAIMED) {
-      throw BadRequestError('This brief is not claimed by the worker', {
+      throw BadRequestError('This brief is not claimed by its writer', {
         errorCode: RadarErrorCode.BRIEF_NOT_CLAIMED,
         layer: ErrorLayer.DOMAIN,
       });
@@ -128,7 +138,22 @@ export class RadarBrief {
       workStatus: RadarWorkStatus.DONE,
       leaseExpiresAt: null,
       producer,
+      error: null,
     });
+  }
+
+  /**
+   * The writer gave up on a claimed brief (an AUTO brief the AI could not write): it ends DONE with
+   * no body and the reason, so it stops blocking a new request and the Owner sees why.
+   */
+  fail(reason: string): RadarBrief {
+    if (this.props.workStatus !== RadarWorkStatus.CLAIMED) {
+      throw BadRequestError('This brief is not claimed by its writer', {
+        errorCode: RadarErrorCode.BRIEF_NOT_CLAIMED,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+    return new RadarBrief({ ...this.props, workStatus: RadarWorkStatus.DONE, leaseExpiresAt: null, error: reason });
   }
 
   toProps(): RadarBriefProps {

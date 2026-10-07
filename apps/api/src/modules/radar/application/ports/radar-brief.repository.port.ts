@@ -1,3 +1,5 @@
+import { RadarBriefWriter } from '@prisma/client';
+
 import { RadarBrief } from '../../domain/entities/radar-brief.entity';
 import { RadarBriefProps } from '../../domain/radar-brief.types';
 
@@ -43,9 +45,14 @@ export interface IRadarBriefRepository {
   list(limit: number): Promise<RadarBriefSummary[]>;
   /** A brief not written yet (pending, or claimed under a lease) blocks a new request. */
   hasWaiting(): Promise<boolean>;
-  /** The oldest pending brief, or one whose lease ran out, claimed under a new lease; null if none. */
-  claim(leaseExpiresAt: Date, now: Date): Promise<RadarBrief | null>;
-  /** Writes the submitted brief while it is still claimed; false once it is not. */
+  /**
+   * The oldest pending brief of this writer, or one whose lease ran out, claimed under a new lease;
+   * null if none. The worker never takes an AUTO brief, nor the tick a WORKER one.
+   */
+  claim(writer: RadarBriefWriter, leaseExpiresAt: Date, now: Date): Promise<RadarBrief | null>;
+  /** Gives a claimed brief back to the queue (the AI was busy): pending again, no lease. */
+  release(id: string): Promise<void>;
+  /** Writes the submitted (or failed) brief while it is still claimed; false once it is not. */
   saveResult(brief: RadarBrief): Promise<boolean>;
   windowItemIds(scope: RadarBriefScope): Promise<string[]>;
   /** Oldest first, so the worker reads the window as a timeline. */

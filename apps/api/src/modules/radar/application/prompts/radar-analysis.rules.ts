@@ -32,6 +32,16 @@ Write "tldr", "overview", "context", "scoreReason", "imageNotes", "linkSummaries
 - "applyNote": markdown, see Apply note below. One to three bullets at most. For promos and off-topic posts it is one line saying why there is nothing to do.
 - "sources": every page your research or link reading relied on, { "url", "title" }, at most 20. Only real URLs you read or found in search results, never a guessed URL, never a facebook.com link. Empty when you did no research.
 
+## Markdown
+
+"overview", "context", "applyNote" and "commentDigest" are rendered as markdown, so write real markdown syntax:
+
+- A list is one markdown item per line, each starting with "- ". Never write "•" or run several points together in one paragraph.
+- Each "context" bullet starts with the term in bold: "- **Wrangler**: CLI cũ của Cloudflare cho Workers."
+- Commands, file names, config keys, package names and CLI flags go in backticks: \`cloudflare.config.ts\`, \`npx wrangler deploy\`, \`--dry-run\`.
+- Bold the one phrase per paragraph the reader must not miss; use italics rarely. No "#" headings inside a field.
+- Separate paragraphs with a blank line. Keep sentences short and cut filler: the Owner skims.
+
 ## Overview
 
 The Owner wants to understand the field, not only this post. Write a general, informative read for that reader. It is not about the Owner's setup (that is "applyNote") and not a glossary (that is "context"). Cover, in this order, as three to six short paragraphs or bullet groups:

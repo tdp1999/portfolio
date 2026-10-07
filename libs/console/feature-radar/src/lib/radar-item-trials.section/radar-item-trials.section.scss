@@ -1,0 +1,129 @@
+@use '../radar-md';
+
+:host {
+  display: block;
+}
+
+.trials {
+  display: block;
+  margin-top: 8px;
+}
+
+.trials__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trials__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.trials__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  mat-form-field {
+    width: 200px;
+  }
+}
+
+/* Columns keep a readable width; the table scrolls sideways instead of squeezing them. */
+.trials__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.trials__table {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+
+  td {
+    min-width: 320px;
+    max-width: 420px;
+    padding: 12px 16px;
+    vertical-align: top;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  th {
+    max-width: 420px;
+    padding: 12px 16px;
+    vertical-align: top;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  tbody th {
+    position: sticky;
+    left: 0;
+    min-width: 112px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  thead th {
+    background: var(--color-surface-alt);
+  }
+}
+
+.trials__col-title {
+  display: block;
+  font-weight: 600;
+}
+
+.trials__col-model {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.trials__spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.trials__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trials__running {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trials__pending {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.trials__error {
+  color: var(--color-error);
+}
+
+.trials__sources {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-break: break-all;
+}
+
+.trials__usage span {
+  display: block;
+}

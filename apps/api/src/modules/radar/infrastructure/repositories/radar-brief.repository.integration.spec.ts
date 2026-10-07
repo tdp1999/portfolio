@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Test } from '@nestjs/testing';
-import { RadarWorkStatus } from '@prisma/client';
+import { RadarBriefWriter, RadarWorkStatus } from '@prisma/client';
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
@@ -51,11 +51,16 @@ describe('RadarBriefRepository (integration)', () => {
     return id;
   };
 
-  const addBrief = async (createdAt: Date, workStatus: RadarWorkStatus, leaseExpiresAt: Date | null = null) => {
+  const addBrief = async (
+    createdAt: Date,
+    workStatus: RadarWorkStatus,
+    leaseExpiresAt: Date | null = null,
+    writer: RadarBriefWriter = RadarBriefWriter.WORKER
+  ) => {
     const id = IdentifierValue.v7();
     briefIds.push(id);
     await prisma.radarBrief.create({
-      data: { id, windowFrom: FROM, windowTo: TO, workStatus, leaseExpiresAt, createdAt },
+      data: { id, windowFrom: FROM, windowTo: TO, workStatus, leaseExpiresAt, createdAt, writer },
     });
     return id;
   };
@@ -101,14 +106,33 @@ describe('RadarBriefRepository (integration)', () => {
     );
     const pending = await addBrief(new Date('1990-01-02T00:00:00Z'), RadarWorkStatus.PENDING);
 
-    const first = await repo.claim(new Date(now.getTime() + LEASE_MS), now);
+    const first = await repo.claim(RadarBriefWriter.WORKER, new Date(now.getTime() + LEASE_MS), now);
     const afterExpiry = await repo.claim(
+      RadarBriefWriter.WORKER,
       new Date(now.getTime() + 3 * LEASE_MS),
       new Date(now.getTime() + LEASE_MS + 1000)
     );
 
     expect(first?.id).toBe(pending);
     expect(afterExpiry?.id).toBe(leased);
+  });
+
+  it('should hand an AUTO brief only to the AUTO writer, and give a released one back to the queue', async () => {
+    const now = new Date();
+    // The AUTO brief is older, so a claim that ignored the writer would take it first.
+    const auto = await addBrief(new Date('1989-12-30T00:00:00Z'), RadarWorkStatus.PENDING, null, RadarBriefWriter.AUTO);
+    const worker = await addBrief(new Date('1989-12-31T00:00:00Z'), RadarWorkStatus.PENDING);
+
+    const byWorker = await repo.claim(RadarBriefWriter.WORKER, new Date(now.getTime() + LEASE_MS), now);
+    const byAuto = await repo.claim(RadarBriefWriter.AUTO, new Date(now.getTime() + LEASE_MS), now);
+    await repo.release(auto);
+
+    expect(byWorker?.id).toBe(worker);
+    expect(byAuto?.id).toBe(auto);
+    expect(await prisma.radarBrief.findUnique({ where: { id: auto } })).toMatchObject({
+      workStatus: RadarWorkStatus.PENDING,
+      leaseExpiresAt: null,
+    });
   });
 
   it('should save a result only while the brief is still claimed', async () => {
@@ -125,6 +149,8 @@ describe('RadarBriefRepository (integration)', () => {
         workStatus: RadarWorkStatus.CLAIMED,
         leaseExpiresAt: null,
         producer: null,
+        writer: RadarBriefWriter.WORKER,
+        error: null,
         createdAt: FROM,
       }).complete(`[p](/radar/items/${claimedId})`, [claimedId], { adapter: 'test', model: 'test' });
 

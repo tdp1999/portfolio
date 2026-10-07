@@ -11,6 +11,9 @@ import type {
   RadarFeedSortKey,
   RadarRunDisplayStatus,
   RadarRunFlow,
+  RadarBriefWriter,
+  RadarBriefDisplayStatus,
+  RadarCommentLabel,
   RadarRunStatus,
   RadarQueueState,
   RadarRunStep,
@@ -68,16 +71,20 @@ export const WORK_STATUS_LABELS: Record<RadarWorkStatus, string> = {
   DONE: 'Analyzed',
 };
 
-export const BRIEF_STATUS_LABELS: Record<RadarWorkStatus, string> = {
-  PENDING: 'Waiting for worker',
-  CLAIMED: 'Being written',
-  DONE: 'Ready',
+export const BRIEF_STATUS_LABELS: Record<RadarBriefDisplayStatus, string> = {
+  WAITING_WORKER: 'Waiting for worker',
+  QUEUED: 'Queued',
+  WRITING: 'Being written',
+  READY: 'Ready',
+  FAILED: 'Failed',
 };
 
-export const BRIEF_STATUS_BADGES: Record<RadarWorkStatus, string> = {
-  PENDING: 'console-badge--warn',
-  CLAIMED: 'console-badge--muted',
-  DONE: 'console-badge--success',
+export const BRIEF_STATUS_BADGES: Record<RadarBriefDisplayStatus, string> = {
+  WAITING_WORKER: 'console-badge--warn',
+  QUEUED: 'console-badge--muted',
+  WRITING: 'console-badge--muted',
+  READY: 'console-badge--success',
+  FAILED: 'console-badge--danger',
 };
 
 export const RUN_STEP_LABELS: Record<RadarRunStep, string> = {
@@ -110,6 +117,19 @@ export const RUN_FLOW_HELP: Record<RadarRunFlow, string> = {
 };
 
 export const RUN_FLOW_ORDER: readonly RadarRunFlow[] = ['AUTO', 'HYBRID', 'MANUAL'];
+
+export const BRIEF_WRITER_HELP: Record<RadarBriefWriter, string> = {
+  AUTO: 'The server writes it with AI within a minute or two, linking each point to its post.',
+  WORKER: 'It waits until you run /radar work brief in Claude Code, which writes it and links each point to its post.',
+};
+
+/** The writer picker; Auto is greyed out while the server has no AI key. */
+export function briefWriterOptions(aiConfigured: boolean): SegmentedControlOption[] {
+  return [
+    { value: 'AUTO', label: 'Auto', disabled: !aiConfigured },
+    { value: 'WORKER', label: 'Claude Code' },
+  ];
+}
 
 /** The flow picker; AUTO is greyed out while the server has no AI key. */
 export function runFlowOptions(aiConfigured: boolean): SegmentedControlOption[] {
@@ -184,4 +204,19 @@ export const ANALYSIS_DEPTH_HELP: Record<RadarAnalysisDepth | 'worker', string> 
     'Quick pass on the server: images, TL;DR and score, no web search and no link reading. The best-scoring posts then get the deep analysis.',
   deep: 'Deep analysis on the server: web search, links read, fact check.',
   worker: 'Analyzed by /radar work in Claude Code, with research and links read.',
+};
+
+/** Only the exceptions carry a badge: kept comments are substantive by default (spam is filtered at capture). */
+export const COMMENT_TAGS: Record<RadarCommentLabel, { text: string; badge: string } | null> = {
+  author: null,
+  substantive: null,
+  low: { text: 'Filler', badge: 'console-badge console-badge--muted' },
+  spam: { text: 'Spam', badge: 'console-badge console-badge--danger' },
+};
+
+/** The mark a row carries once it was moved out of the open tab (it leaves on the next load). */
+export const TRIAGE_ROW_MARKS: Record<RadarTriageStatus, { icon: string; label: string }> = {
+  INBOX: { icon: 'inbox', label: 'Moved to Inbox' },
+  SAVED: { icon: 'bookmark', label: 'Saved to To try' },
+  DONE: { icon: 'check', label: 'Marked done' },
 };

@@ -122,7 +122,7 @@
 
   @if (paneOpen()) {
     <div class="radar-split">
-      <console-radar-item-triage
+      <console-radar-item-triage-section
         [items]="items()"
         [selectedId]="selectedId()"
         [feedQuery]="feedQuery()"
@@ -144,7 +144,7 @@
           [disabled]="loading()"
           (page)="onPage($event)"
         />
-      </console-radar-item-triage>
+      </console-radar-item-triage-section>
     </div>
   } @else {
     <!-- The table scrolls inside its card under a sticky header; the page around it stays put. -->
@@ -220,7 +220,7 @@
               <console-help-button guide="radar-feature-guide" section="progress" label="What the icons mean" />
             </th>
             <td mat-cell *matCellDef="let item" class="col-progress">
-              <console-radar-item-progress [item]="item" />
+              <console-radar-item-progress-cell [item]="item" />
             </td>
           </ng-container>
 

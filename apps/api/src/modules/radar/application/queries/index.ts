@@ -7,3 +7,4 @@ export * from './run.queries';
 export * from './get-comments-settings.query';
 export * from './get-ai-settings.query';
 export * from './brief.queries';
+export * from './trial.queries';

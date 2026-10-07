@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
@@ -11,6 +12,7 @@ import { EnumLabelPipe, HelpButton, RelativeTime, SkeletonTable, ToastService } 
 import { catchError, EMPTY, filter, finalize, interval, Subscription, switchMap } from 'rxjs';
 import { RadarBriefCreateDialog } from '../radar-brief.create.dialog/radar-brief.create.dialog';
 import { BRIEF_POLL_MS } from '../radar.constants';
+import { RadarBriefStatusPipe } from '../radar-brief-status.pipe';
 import { BRIEF_STATUS_BADGES, BRIEF_STATUS_LABELS } from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarBrief, RadarBriefCreateDialogData } from '../radar.types';
@@ -24,9 +26,11 @@ import type { RadarBrief, RadarBriefCreateDialogData } from '../radar.types';
     RouterLink,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatTableModule,
     MatTooltipModule,
     EnumLabelPipe,
+    RadarBriefStatusPipe,
     RelativeTime,
     SkeletonTable,
   ],
@@ -48,8 +52,9 @@ export default class RadarBriefList implements OnInit {
   protected readonly opening = signal(false);
 
   // ── Derived ───────────────────────────────────────────────────────
-  /** Only one brief may wait for the worker at a time, so New brief stays off while one does. */
-  protected readonly waiting = computed(() => this.briefs().some((b) => b.workStatus !== 'DONE'));
+  /** Only one brief may wait for its writer at a time, so New brief stays off while one does. */
+  protected readonly waitingFor = computed(() => this.briefs().find((b) => b.workStatus !== 'DONE')?.writer ?? null);
+  protected readonly waiting = computed(() => this.waitingFor() !== null);
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly displayedColumns = ['window', 'source', 'status', 'items', 'createdAt'];
@@ -85,8 +90,12 @@ export default class RadarBriefList implements OnInit {
         filter((brief): brief is RadarBrief => !!brief),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => {
-        this.toast.success('Brief requested. Run /radar work brief in Claude Code to write it.');
+      .subscribe((brief) => {
+        this.toast.success(
+          brief.writer === 'AUTO'
+            ? 'Brief requested. The server writes it within a minute or two.'
+            : 'Brief requested. Run /radar work brief in Claude Code to write it.'
+        );
         this.loadBriefs();
       });
   }

@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <console-radar-item-record [item]="it" (refresh)="onRefresh($event)" />
+    <console-radar-item-detail-card [item]="it" (refresh)="onRefresh($event)" />
   } @else if (loadError(); as err) {
     <div class="radar-state" role="alert">
       <mat-icon class="radar-state__icon icon-2xl" [class.radar-state__icon--error]="err === 'failed'">

@@ -16,3 +16,5 @@ export * from './comments.upload.command';
 export * from './brief.create.command';
 export * from './brief.claim.command';
 export * from './brief.submit.command';
+export * from './brief.write.command';
+export * from './trial.create.command';

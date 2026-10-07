@@ -8,7 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HelpButton, SpinnerOverlay } from '@portfolio/console/shared/ui';
 import { forkJoin, map, Observable, of, Subscription, switchMap } from 'rxjs';
-import { RadarItemRecord } from '../radar-item.record/radar-item.record';
+import { RadarItemDetailCard } from '../radar-item.detail-card/radar-item.detail-card';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { RadarService } from '../radar.service';
 import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeighbour } from '../radar.types';
@@ -28,7 +28,7 @@ import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeigh
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    RadarItemRecord,
+    RadarItemDetailCard,
     SpinnerOverlay,
   ],
   templateUrl: './radar-item.detail.html',

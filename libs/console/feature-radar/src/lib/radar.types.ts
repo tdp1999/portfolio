@@ -354,11 +354,19 @@ export interface RadarBrief {
   /** Analyzed posts the brief covers; set when the worker submits it. */
   itemCount: number;
   producer: { adapter: string; model: string } | null;
+  writer: RadarBriefWriter;
+  /** Why an Auto brief could not be written; it is then done with an empty body. */
+  error: string | null;
   createdAt: string;
 }
 
+/** AUTO: the server AI writes it within a minute or two; WORKER: `/radar work brief` in Claude Code. */
+export type RadarBriefWriter = 'AUTO' | 'WORKER';
+
+export type RadarBriefDisplayStatus = 'WAITING_WORKER' | 'QUEUED' | 'WRITING' | 'READY' | 'FAILED';
+
 export interface RadarBriefDetail extends RadarBrief {
-  /** Markdown. Empty until the worker submits the brief. */
+  /** Markdown. Empty until the brief is written. */
   body: string;
 }
 
@@ -366,8 +374,102 @@ export interface CreateRadarBriefInput {
   sourceId: string | null;
   windowFrom: string;
   windowTo: string;
+  writer: RadarBriefWriter;
 }
 
 export interface RadarBriefCreateDialogData {
   sources: RadarSource[];
+}
+
+export type RadarTrialStatus = 'RUNNING' | 'DONE' | 'FAILED';
+
+/** The enrichment a quality trial produced: the same fields as the item's, with who produced it. */
+export interface RadarTrialEnrichment {
+  tldr: string;
+  signalScore: number;
+  overview: string;
+  context: string;
+  applyNote: string;
+  factCheck: string | null;
+  sources: { url: string; title: string | null }[];
+  producer: { adapter: string; model: string };
+}
+
+/** One quality trial: the item analyzed again by the server AI, stored next to its enrichment. */
+export interface RadarTrial {
+  id: string;
+  depth: RadarAnalysisDepth;
+  requestedModel: string | null;
+  status: RadarTrialStatus;
+  enrichment: RadarTrialEnrichment | null;
+  error: string | null;
+  tokensIn: number;
+  tokensOut: number;
+  costMicroUsd: number | null;
+  searchQueries: number;
+  latencyMs: number | null;
+  createdAt: string;
+  finishedAt: string | null;
+}
+
+export interface CreateRadarTrialsInput {
+  itemIds: string[];
+  depth: RadarAnalysisDepth;
+  /** A model id; the depth's default chain when left out. */
+  model?: string;
+}
+
+export interface CreateRadarTrialsResult {
+  started: { id: string; itemId: string }[];
+  skipped: { itemId: string; reason: string }[];
+}
+
+/** One column of the compare table: the item's current enrichment, or one trial. */
+export interface RadarTrialColumn {
+  key: string;
+  heading: string;
+  model: string;
+  status: RadarTrialStatus;
+  error: string | null;
+  tldr: string | null;
+  score: number | null;
+  overview: string | null;
+  context: string | null;
+  applyNote: string | null;
+  factCheck: string | null;
+  sources: { url: string; title: string | null }[];
+  /** Null for the current enrichment: its call was not recorded. */
+  usage: {
+    tokensIn: number;
+    tokensOut: number;
+    costMicroUsd: number | null;
+    seconds: string | null;
+    searches: number;
+  } | null;
+}
+
+export interface RadarCommentsChip {
+  /** `12 / 40`: kept after filtering / reported by Facebook. Just the Facebook count when not fetched. */
+  label: string;
+  /** Classes for the cell: a console badge once fetched, plain muted text before. */
+  badge: string;
+  icon: string;
+  tooltip: string;
+  /** The analysis suggests fetching them; shown only while they are not fetched. */
+  suggested: boolean;
+}
+
+export interface RadarSourceMonogram {
+  initials: string;
+  /** One of six fixed tones, the same for a name on every row and every visit. */
+  tone: number;
+}
+
+/** What Quick Look needs of an image: a post photo or a comment's image. */
+export type RadarLightboxPhoto = Pick<RadarItemImage, 'url' | 'ocrText'>;
+
+/** A triage decision on the open post: the status it moves to. */
+export interface RadarTriageDecision {
+  id: string;
+  status: RadarTriageStatus;
 }

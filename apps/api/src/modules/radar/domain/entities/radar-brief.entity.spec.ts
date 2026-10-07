@@ -1,4 +1,4 @@
-import { RadarWorkStatus } from '@prisma/client';
+import { RadarBriefWriter, RadarWorkStatus } from '@prisma/client';
 
 import { RadarBriefProps } from '../radar-brief.types';
 import { RadarBrief } from './radar-brief.entity';
@@ -7,6 +7,7 @@ const WINDOW = {
   sourceId: null,
   windowFrom: new Date('2026-09-01T00:00:00Z'),
   windowTo: new Date('2026-09-30T23:59:59.999Z'),
+  writer: RadarBriefWriter.AUTO,
 };
 const IN_A = '01a10b5b-9d90-753e-a6a3-0000000000a1';
 const IN_B = '01a10b5b-9d90-753e-a6a3-0000000000b2';
@@ -22,6 +23,7 @@ const brief = (over: Partial<RadarBriefProps> = {}): RadarBrief =>
     workStatus: RadarWorkStatus.CLAIMED,
     leaseExpiresAt: new Date('2026-10-06T10:30:00Z'),
     producer: null,
+    error: null,
     createdAt: new Date('2026-10-06T10:00:00Z'),
     ...over,
   });
@@ -92,6 +94,25 @@ describe('RadarBrief', () => {
         itemIds: [IN_A, IN_B],
         producer: PRODUCER,
       });
+    });
+  });
+
+  describe('fail()', () => {
+    it('should end a claimed brief done, with no body and the reason, so it stops blocking a new request', () => {
+      const failed = brief().fail('Every model was busy');
+
+      expect(failed.toProps()).toMatchObject({
+        workStatus: RadarWorkStatus.DONE,
+        leaseExpiresAt: null,
+        body: '',
+        error: 'Every model was busy',
+      });
+    });
+
+    it('should refuse a brief that is not claimed', () => {
+      expect(() => brief({ workStatus: RadarWorkStatus.PENDING }).fail('x')).toThrow(
+        expect.objectContaining({ errorCode: 'RADAR_BRIEF_NOT_CLAIMED' })
+      );
     });
   });
 });

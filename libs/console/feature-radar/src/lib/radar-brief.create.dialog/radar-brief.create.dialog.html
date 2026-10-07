@@ -25,10 +25,14 @@
         <mat-hint>Pick one source to read only what it posted.</mat-hint>
       </mat-form-field>
 
-      <p class="text-caption">
-        The brief waits until you run <code>/radar work brief</code> in Claude Code, which writes it and links each
-        point to its post.
-      </p>
+      <div class="flex flex-col gap-2">
+        <span class="text-body">Written by</span>
+        <console-segmented-control formControlName="writer" [options]="writerOptions()" />
+        <p class="text-caption">{{ writerHelp[writer()] }}</p>
+        @if (aiSettingsLoaded() && !aiConfigured()) {
+          <p class="text-caption">Auto is off: the server has no AI provider key.</p>
+        }
+      </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
