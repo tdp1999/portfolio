@@ -1,6 +1,7 @@
 import { Logger, Module, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { AI_CLIENT, AiModule, type IAiClient } from '../ai';
 import { AuthModule } from '../auth';
 import { UserModule } from '../user';
 import { MediaModule } from '../media/media.module';
@@ -28,11 +29,19 @@ import {
 } from './application/commands';
 import { MachineTokenGuard } from './application/guards/machine-token.guard';
 import { RadarTickJob } from './application/jobs/radar-tick.job';
+import {
+  RADAR_ANALYSIS_CONFIG,
+  loadRadarAnalysisConfig,
+  RadarAnalysisConfig,
+} from './application/radar-analysis.config';
 import { RADAR_CAPTURE_CONFIG, loadRadarCaptureConfig, RadarCaptureConfig } from './application/radar-capture.config';
+import type { IRadarProfileRepository } from './application/ports/radar-profile.repository.port';
+import type { IRadarWorkRepository } from './application/ports/radar-work.repository.port';
 import { RADAR_WORKER_CONFIG, loadRadarWorkerConfig } from './application/radar-worker.config';
 import {
   GetBriefHandler,
   GetCommentsSettingsHandler,
+  GetAiSettingsHandler,
   GetRadarItemHandler,
   ListBriefItemsHandler,
   ListBriefsHandler,
@@ -70,6 +79,7 @@ import { RadarCommentsRepository } from './infrastructure/repositories/radar-com
 import { RadarImageRepository } from './infrastructure/repositories/radar-image.repository';
 import { RadarItemRepository } from './infrastructure/repositories/radar-item.repository';
 import { ExternalWorkerAdapter } from './infrastructure/llm/external-worker.adapter';
+import { ServerAiAdapter } from './infrastructure/llm/server-ai.adapter';
 import { RadarProfileRepository } from './infrastructure/repositories/radar-profile.repository';
 import { RadarRunRepository } from './infrastructure/repositories/radar-run.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
@@ -104,6 +114,7 @@ const QueryHandlers = [
   ListRadarItemsHandler,
   GetRadarItemHandler,
   GetCommentsSettingsHandler,
+  GetAiSettingsHandler,
   GetRadarQueueStatsHandler,
   ListRunsHandler,
   GetRunHandler,
@@ -113,7 +124,7 @@ const QueryHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule), MediaModule],
+  imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule), MediaModule, AiModule],
   controllers: [RadarAdminController, RadarWorkerController],
   providers: [
     { provide: RADAR_SOURCE_REPOSITORY, useClass: RadarSourceRepository },
@@ -166,10 +177,17 @@ const QueryHandlers = [
       useFactory: (config: RadarCaptureConfig) => new ApifyCommentsAdapter(config),
     },
     RunCommentsPhase,
+    { provide: RADAR_ANALYSIS_CONFIG, useFactory: () => loadRadarAnalysisConfig() },
     {
       // Resolved per run by the run's llmAdapter name.
       provide: LLM_PROVIDERS,
-      useFactory: () => [new ExternalWorkerAdapter()],
+      inject: [AI_CLIENT, RADAR_WORK_REPOSITORY, RADAR_PROFILE_REPOSITORY, RADAR_ANALYSIS_CONFIG],
+      useFactory: (
+        ai: IAiClient,
+        work: IRadarWorkRepository,
+        profiles: IRadarProfileRepository,
+        config: RadarAnalysisConfig
+      ) => [new ExternalWorkerAdapter(), new ServerAiAdapter(ai, work, profiles, config)],
     },
     RadarTickJob,
     ...CommandHandlers,

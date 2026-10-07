@@ -6,6 +6,8 @@ import { ICaptureProvider } from '../ports/capture-provider.port';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { CreateRunSchema } from '../radar.dto';
+import type { IAiClient } from '../../../ai';
+import { loadRadarAnalysisConfig } from '../radar-analysis.config';
 import { CreateRunCommand, CreateRunHandler } from './run.create.command';
 
 const source = (isActive = true) =>
@@ -21,7 +23,7 @@ const source = (isActive = true) =>
 
 const SOURCE_ID = '01a10755-fd0d-700c-af4f-05a7a675700e';
 
-const setup = (opts: { configured?: boolean; active?: boolean } = {}) => {
+const setup = (opts: { configured?: boolean; active?: boolean; aiConfigured?: boolean } = {}) => {
   const sources = {
     findById: jest.fn(async () => source()),
   } as unknown as IRadarSourceRepository;
@@ -30,7 +32,8 @@ const setup = (opts: { configured?: boolean; active?: boolean } = {}) => {
     add: jest.fn(async (run: RadarRun) => RadarRun.load(run.toProps())),
   } as unknown as jest.Mocked<IRadarRunRepository>;
   const apify = { name: 'apify', isConfigured: () => opts.configured ?? true } as unknown as ICaptureProvider;
-  return { runs, handler: new CreateRunHandler(sources, runs, [apify]) };
+  const ai = { configured: opts.aiConfigured ?? true } as unknown as IAiClient;
+  return { runs, handler: new CreateRunHandler(sources, runs, [apify], ai, loadRadarAnalysisConfig({})) };
 };
 
 const body = (flow: RadarRunFlow) => ({ sourceId: SOURCE_ID, flow, itemCap: 50 });
@@ -86,6 +89,29 @@ describe('CreateRunHandler', () => {
       RadarStep.ANALYZE,
     ]);
   });
+
+  it('should refuse an Auto run while the AI provider has no key', async () => {
+    const { runs, handler } = setup({ aiConfigured: false });
+
+    await expect(handler.execute(new CreateRunCommand(body(RadarRunFlow.AUTO)))).rejects.toMatchObject({
+      errorCode: 'RADAR_AI_NOT_CONFIGURED',
+    });
+    expect(runs.add).not.toHaveBeenCalled();
+  });
+
+  it('should give an Auto run the server analysis and a budget (the default or the one asked), and other flows none', async () => {
+    const { handler } = setup();
+
+    const byDefault = await handler.execute(new CreateRunCommand(body(RadarRunFlow.AUTO)));
+    const asked = await handler.execute(new CreateRunCommand({ ...body(RadarRunFlow.AUTO), budgetUsd: 0.25 }));
+    const hybrid = await handler.execute(new CreateRunCommand(body(RadarRunFlow.HYBRID)));
+
+    expect(byDefault.status).toBe(RadarStatus.PENDING);
+    expect([byDefault.steps[0].adapter, byDefault.steps[3].adapter]).toEqual(['apify', 'server-ai']);
+    expect(byDefault.budgetMicroUsd).toBe(1_000_000);
+    expect(asked.budgetMicroUsd).toBe(250_000);
+    expect(hybrid.budgetMicroUsd).toBeNull();
+  });
 });
 
 describe('CreateRunSchema fetchComments', () => {
@@ -99,5 +125,10 @@ describe('CreateRunSchema fetchComments', () => {
     const result = CreateRunSchema.safeParse({ ...body(flow), windowFrom, fetchComments: true });
 
     expect(result.success).toBe(allowed);
+  });
+
+  it('should accept a budget on an Auto run only', () => {
+    expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.AUTO), budgetUsd: 2 }).success).toBe(true);
+    expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.HYBRID), budgetUsd: 2 }).success).toBe(false);
   });
 });

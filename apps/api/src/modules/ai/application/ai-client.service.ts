@@ -2,12 +2,13 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 
 import { AiCostPolicy } from '../domain/policies/ai-cost.policy';
-import type { AiCallStatus, AiTokenUsage, AiTrace } from '../domain/ai-usage.types';
+import type { AiCallStatus, AiRef, AiTokenUsage, AiTrace } from '../domain/ai-usage.types';
 import { AiCallError } from './ai-call.error';
+import { AiLimitStore } from './ai-limit.store';
 import { AI_CONFIG, AI_PROVIDER, AI_USAGE_REPOSITORY } from './ai.token';
-import type { AiConfig } from './ai.config';
+import type { AiBilling, AiConfig } from './ai.config';
 import type { AiStructuredRequest, AiStructuredResult, IAiClient } from './ports/ai-client.port';
-import type { IAiProvider } from './ports/ai-provider.port';
+import type { AiProviderResponse, IAiProvider } from './ports/ai-provider.port';
 import type { IAiUsageRepository } from './ports/ai-usage.repository.port';
 
 const NO_USAGE: AiTokenUsage = { inputTokens: 0, outputTokens: 0, thinkingTokens: 0, cachedTokens: 0, toolTokens: 0 };
@@ -27,32 +28,55 @@ export class AiClientService implements IAiClient {
 
   constructor(
     @Inject(AI_CONFIG) private readonly config: AiConfig,
-    @Inject(AI_PROVIDER) private readonly provider: IAiProvider,
-    @Inject(AI_USAGE_REPOSITORY) private readonly usageRepo: IAiUsageRepository
+    @Inject(AI_PROVIDER) private readonly providerAdapter: IAiProvider,
+    @Inject(AI_USAGE_REPOSITORY) private readonly usageRepo: IAiUsageRepository,
+    private readonly limitStore: AiLimitStore
   ) {}
 
   get configured(): boolean {
-    return this.config.geminiApiKey !== null;
+    return this.config.apiKey !== null;
+  }
+
+  get provider(): string {
+    return this.providerAdapter.profile.name;
+  }
+
+  get billing(): AiBilling {
+    return this.config.billing;
+  }
+
+  spentMicroUsd(group: AiRef): Promise<number> {
+    return this.usageRepo.sumCost(group);
+  }
+
+  spentByGroup(type: string, ids: readonly string[]): Promise<Map<string, number>> {
+    return this.usageRepo.sumCostByGroup(type, ids);
   }
 
   async generateStructured<T>(request: AiStructuredRequest<T>): Promise<AiStructuredResult<T>> {
     const tools = request.tools ?? [];
     // Not a call: nothing reaches the provider, so nothing is recorded.
-    if (!this.configured) throw new AiCallError('not-configured', 'GEMINI_API_KEY is not set');
+    if (!this.configured) throw new AiCallError('not-configured', `${this.providerAdapter.profile.keyEnv} is not set`);
+    if (await this.overDailyCap()) {
+      throw new AiCallError('over-budget', 'The daily AI spend cap is reached; calls resume at 00:00 UTC');
+    }
     if (tools.length > 0 && !request.limits) {
       throw new AiCallError('refused', 'Tools need limits (AI-002)');
     }
-    if (request.ref && !AiClientService.REF_ID.safeParse(request.ref.id).success) {
-      throw new AiCallError('refused', 'The ref id is not a uuid');
+    for (const ref of [request.ref, request.group]) {
+      if (ref && !AiClientService.REF_ID.safeParse(ref.id).success) {
+        throw new AiCallError('refused', 'The ref id is not a uuid');
+      }
     }
 
     const model = request.model ?? this.config.defaultModel;
     const startedAt = Date.now();
     let usage = NO_USAGE;
+    let searchQueries = 0;
     let trace: AiTrace | null = null;
     let data: T;
     try {
-      const response = await this.provider.generate({
+      const response = await this.providerAdapter.generate({
         model,
         system: request.system,
         parts: request.parts,
@@ -60,28 +84,54 @@ export class AiClientService implements IAiClient {
         tools,
         limits: request.limits,
       });
+      this.limitStore.observe(response.limits);
       usage = response.usage;
+      searchQueries = response.searchQueries;
       trace = response.trace;
-      data = AiClientService.parse(response.text, request.schema, response.trace.finishReason);
+      data = AiClientService.parse(response, request.schema);
     } catch (err) {
       // An answer that fails validation still used tokens: they are recorded with the failure.
       // The message is redacted here, so no caller can return the key in a response (AI-004).
       const cause = err instanceof AiCallError ? err : null;
+      if (cause) this.limitStore.observe(cause.limits);
       const error = new AiCallError(
         cause?.kind ?? 'provider',
         this.redact(err instanceof Error ? err.message : String(err)),
         cause?.retryAfterMs ?? null
       );
       const status: AiCallStatus = error.kind === 'rate-limited' ? 'RATE_LIMITED' : 'FAILED';
-      await this.record(request, model, status, error, usage, Date.now() - startedAt, trace);
+      await this.record(request, model, status, error, { usage, searchQueries }, Date.now() - startedAt, trace);
       throw error;
     }
     const latencyMs = Date.now() - startedAt;
-    const costMicroUsd = await this.record(request, model, 'SUCCEEDED', null, usage, latencyMs, trace);
-    return { data, model, usage, costMicroUsd, latencyMs, trace: trace ?? AiClientService.EMPTY_TRACE };
+    const costMicroUsd = await this.record(
+      request,
+      model,
+      'SUCCEEDED',
+      null,
+      { usage, searchQueries },
+      latencyMs,
+      trace
+    );
+    return {
+      data,
+      model,
+      usage,
+      searchQueries,
+      costMicroUsd,
+      latencyMs,
+      trace: trace ?? AiClientService.EMPTY_TRACE,
+    };
   }
 
   // --- Private ---
+
+  /** Spend since 00:00 UTC, the whole ledger: a loop or many runs cannot pass the cap. */
+  private async overDailyCap(): Promise<boolean> {
+    const dayStart = new Date();
+    dayStart.setUTCHours(0, 0, 0, 0);
+    return (await this.usageRepo.sumCostSince(dayStart)) >= this.config.dailyCapMicroUsd;
+  }
 
   /**
    * Writes the usage row and returns the call's cost. A failed write is logged, never thrown: it
@@ -92,14 +142,14 @@ export class AiClientService implements IAiClient {
     model: string,
     status: AiCallStatus,
     error: AiCallError | null,
-    usage: AiTokenUsage,
+    { usage, searchQueries }: { usage: AiTokenUsage; searchQueries: number },
     latencyMs: number,
     trace: AiTrace | null
   ): Promise<number | null> {
-    const costMicroUsd = AiCostPolicy.costMicroUsd(model, usage);
+    const costMicroUsd = AiCostPolicy.costMicroUsd(model, usage, searchQueries);
     try {
       await this.usageRepo.add({
-        provider: this.provider.name,
+        provider: this.providerAdapter.profile.name,
         model,
         feature: request.feature,
         status,
@@ -110,6 +160,8 @@ export class AiClientService implements IAiClient {
         billed: this.config.billing === 'paid',
         latencyMs,
         ref: request.ref ?? null,
+        group: request.group ?? null,
+        searchQueries,
         trace,
       });
     } catch (err) {
@@ -122,7 +174,7 @@ export class AiClientService implements IAiClient {
 
   /** The key never lands in a row, even if a provider echoes it back (AI-004). */
   private redact(message: string): string {
-    const key = this.config.geminiApiKey;
+    const key = this.config.apiKey;
     return key ? message.split(key).join('[redacted]') : message;
   }
 
@@ -131,9 +183,9 @@ export class AiClientService implements IAiClient {
     return jsonSchema;
   }
 
-  private static parse<T>(text: string, schema: z.ZodType<T>, finishReason: string | null): T {
+  private static parse<T>({ text, complete, trace }: AiProviderResponse, schema: z.ZodType<T>): T {
     // A cut-off answer is the common cause of broken JSON, so the reason goes into the message.
-    const cutOff = finishReason && finishReason !== 'STOP' ? ` (finish reason ${finishReason})` : '';
+    const cutOff = complete ? '' : ` (stopped early: ${trace.finishReason ?? 'unknown'})`;
     if (!text) throw new AiCallError('invalid-output', `Empty answer${cutOff}`);
     let json: unknown;
     try {

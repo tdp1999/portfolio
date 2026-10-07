@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { v7 as uuidv7 } from 'uuid';
 
-import type { AiLastCall, IAiUsageRepository } from '../application/ports/ai-usage.repository.port';
+import type { AiLastCall, AiLedgerWindows, IAiUsageRepository } from '../application/ports/ai-usage.repository.port';
+import type { AiLedgerCounts } from '../domain/ai-limit.types';
 import type {
   AiCallRecord,
+  AiRef,
   AiTrace,
   AiUsageRecordInput,
   AiUsageSummary,
@@ -24,6 +26,16 @@ interface TotalsRow {
   tokens_out: number;
   cost: number;
   billed: number;
+}
+
+interface CountsRow {
+  calls_minute: number;
+  calls_day: number;
+  input_minute: number;
+  input_day: number;
+  tokens_day: number;
+  search_month: number;
+  spent_day: number;
 }
 
 /** The Prisma adapter for the usage ledger. Rows are only added, never changed. */
@@ -58,6 +70,9 @@ export class AiUsageRepository implements IAiUsageRepository {
         latencyMs: record.latencyMs,
         refType: record.ref?.type ?? null,
         refId: record.ref?.id ?? null,
+        groupType: record.group?.type ?? null,
+        groupId: record.group?.id ?? null,
+        searchQueries: record.searchQueries,
         trace: record.trace ? (record.trace as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
       },
     });
@@ -117,10 +132,72 @@ export class AiUsageRepository implements IAiUsageRepository {
         billed: row.billed,
         latencyMs: row.latencyMs,
         ref: row.refType && row.refId ? { type: row.refType, id: row.refId } : null,
-        searchCount: trace?.searchQueries?.length ?? 0,
+        // Rows written before the searchQueries column hold 0 there; their trace still lists the queries.
+        searchCount: Math.max(row.searchQueries, trace?.searchQueries?.length ?? 0),
         urlCount: trace?.urls?.length ?? 0,
       };
     });
+  }
+
+  async sumCost(group: AiRef): Promise<number> {
+    const { _sum } = await this.prisma.aiUsageRecord.aggregate({
+      where: { groupType: group.type, groupId: group.id },
+      _sum: { costMicroUsd: true },
+    });
+    return _sum.costMicroUsd ?? 0;
+  }
+
+  async sumCostByGroup(type: string, ids: readonly string[]): Promise<Map<string, number>> {
+    if (ids.length === 0) return new Map();
+    const rows = await this.prisma.aiUsageRecord.groupBy({
+      by: ['groupId'],
+      where: { groupType: type, groupId: { in: [...ids] } },
+      _sum: { costMicroUsd: true },
+    });
+    return new Map(rows.flatMap((r) => (r.groupId ? [[r.groupId, r._sum.costMicroUsd ?? 0] as const] : [])));
+  }
+
+  async sumCostSince(from: Date): Promise<number> {
+    const { _sum } = await this.prisma.aiUsageRecord.aggregate({
+      where: { createdAt: { gte: from } },
+      _sum: { costMicroUsd: true },
+    });
+    return _sum.costMicroUsd ?? 0;
+  }
+
+  async countLedger({ minuteFrom, dayFrom, monthFrom }: AiLedgerWindows): Promise<AiLedgerCounts> {
+    const from = minuteFrom < monthFrom ? minuteFrom : monthFrom;
+    const [row] = await this.prisma.$queryRaw<CountsRow[]>`
+      SELECT
+        (COUNT(*) FILTER (WHERE "createdAt" >= ${minuteFrom}))::int AS calls_minute,
+        (COUNT(*) FILTER (WHERE "createdAt" >= ${dayFrom}))::int AS calls_day,
+        COALESCE(SUM("inputTokens" + "toolTokens") FILTER (WHERE "createdAt" >= ${minuteFrom}), 0)::float8 AS input_minute,
+        COALESCE(SUM("inputTokens" + "toolTokens") FILTER (WHERE "createdAt" >= ${dayFrom}), 0)::float8 AS input_day,
+        COALESCE(SUM("inputTokens" + "toolTokens" + "outputTokens" + "thinkingTokens") FILTER (WHERE "createdAt" >= ${dayFrom}), 0)::float8 AS tokens_day,
+        COALESCE(SUM("searchQueries") FILTER (WHERE "createdAt" >= ${monthFrom}), 0)::float8 AS search_month,
+        COALESCE(SUM("costMicroUsd") FILTER (WHERE "createdAt" >= ${dayFrom}), 0)::float8 AS spent_day
+      FROM ai_usage_records
+      WHERE "createdAt" >= ${from}`;
+    return {
+      callsLastMinute: row?.calls_minute ?? 0,
+      callsToday: row?.calls_day ?? 0,
+      inputTokensLastMinute: Number(row?.input_minute ?? 0),
+      inputTokensToday: Number(row?.input_day ?? 0),
+      tokensToday: Number(row?.tokens_day ?? 0),
+      searchQueriesThisMonth: Number(row?.search_month ?? 0),
+      spentTodayMicroUsd: Math.round(Number(row?.spent_day ?? 0)),
+    };
+  }
+
+  async listModelsSince(from: Date, limit: number): Promise<string[]> {
+    const rows = await this.prisma.aiUsageRecord.groupBy({
+      by: ['model'],
+      where: { createdAt: { gte: from } },
+      _count: { _all: true },
+      orderBy: { _count: { model: 'desc' } },
+      take: limit,
+    });
+    return rows.map((r) => r.model);
   }
 
   // --- Private ---

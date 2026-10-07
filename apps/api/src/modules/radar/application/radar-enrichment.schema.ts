@@ -2,13 +2,16 @@ import { z } from 'zod/v4';
 
 import { RADAR_CONTENT_TYPES, RADAR_PROVIDER_TAGS } from '@portfolio/shared/types';
 
+import { RadarFactCheckSeverity } from '../domain/radar-analysis.types';
+
 /**
  * v2 added `context` and `scoreReason` and made `applyNote` required. v3 added `overview` (the
- * general read, now the main analysis) and `factCheckSeverity`.
+ * general read, now the main analysis) and `factCheckSeverity`. `sources` is optional within v3.
  */
 export const RADAR_ENRICHMENT_SCHEMA_VERSION = 3;
 
-export const RADAR_FACT_CHECK_SEVERITIES = ['minor', 'major'] as const;
+export const RADAR_FACT_CHECK_SEVERITIES = ['minor', 'major'] as const satisfies readonly RadarFactCheckSeverity[];
+export const MAX_RADAR_SOURCES = 20;
 
 const optionalText = (max: number) =>
   z
@@ -20,7 +23,7 @@ const optionalText = (max: number) =>
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
 
-/** What the external worker submits for one item. Text stays in the source language (RAD-002). */
+/** One enrichment, from the external worker or the server analysis. Text stays in the source language (RAD-002). */
 export const RadarEnrichmentSchema = z
   .object({
     tldr: z.string().trim().min(1).max(280),
@@ -52,6 +55,11 @@ export const RadarEnrichmentSchema = z
     scoreReason: requiredText(1000),
     /** Required even for promo and off-topic posts: then it says why there is nothing to do. */
     applyNote: requiredText(8000),
+    /** Pages the analysis used as evidence (search results, links it read). */
+    sources: z
+      .array(z.object({ url: z.url({ protocol: /^https?$/ }).max(1000), title: optionalText(300) }))
+      .max(MAX_RADAR_SOURCES)
+      .default([]),
     producer: z.object({ adapter: z.string().trim().min(1).max(64), model: z.string().trim().min(1).max(100) }),
     schemaVersion: z.literal(RADAR_ENRICHMENT_SCHEMA_VERSION),
   })

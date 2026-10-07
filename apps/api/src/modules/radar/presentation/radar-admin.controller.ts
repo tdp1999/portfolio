@@ -39,6 +39,7 @@ import {
 import {
   GetBriefQuery,
   GetCommentsSettingsQuery,
+  GetAiSettingsQuery,
   ListBriefsQuery,
   GetRunQuery,
   GetRadarItemQuery,
@@ -194,6 +195,11 @@ export class RadarAdminController {
   @Get('comments/settings')
   async getCommentsSettings() {
     return await this.queryBus.execute(new GetCommentsSettingsQuery());
+  }
+
+  @Get('ai/settings')
+  async getAiSettings() {
+    return await this.queryBus.execute(new GetAiSettingsQuery());
   }
 
   @Get('profile')

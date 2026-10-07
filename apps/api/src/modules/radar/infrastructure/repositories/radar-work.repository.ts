@@ -3,9 +3,14 @@ import { Prisma, RadarWorkStatus } from '@prisma/client';
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
-import { ClaimedRadarItem, IRadarWorkRepository } from '../../application/ports/radar-work.repository.port';
+import {
+  ClaimedRadarItem,
+  IRadarWorkRepository,
+  RadarWorkSnapshot,
+} from '../../application/ports/radar-work.repository.port';
 import { RadarEnrichmentInput } from '../../application/radar-enrichment.schema';
 import { RadarItem } from '../../domain/entities/radar-item.entity';
+import { RadarAnalysisDepth } from '../../domain/radar-analysis.types';
 import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RADAR_ITEM_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
@@ -28,9 +33,19 @@ const claimedSelect = {
 
 @Injectable()
 export class RadarWorkRepository implements IRadarWorkRepository {
+  /** The column's length. */
+  private static readonly MAX_WORK_ERROR = 1000;
+
   constructor(private readonly prisma: PrismaService) {}
 
-  async claim(limit: number, leaseExpiresAt: Date, now: Date, maxAttempts: number): Promise<ClaimedRadarItem[]> {
+  async claim(
+    limit: number,
+    leaseExpiresAt: Date,
+    now: Date,
+    maxAttempts: number,
+    runId?: string
+  ): Promise<ClaimedRadarItem[]> {
+    const runFilter = runId ? Prisma.sql`AND "lastRunId" = ${runId}::uuid` : Prisma.empty;
     return this.prisma.$transaction(async (tx) => {
       // `leaseExpiresAt` is `timestamp` (UTC wall time, no zone); casting the ISO string keeps the
       // comparison independent of the session time zone.
@@ -41,6 +56,7 @@ export class RadarWorkRepository implements IRadarWorkRepository {
       const rows = await tx.$queryRaw<{ id: string }[]>`
         SELECT id FROM radar_items
         WHERE "claimCount" < ${maxAttempts}
+          ${runFilter}
           AND EXISTS (SELECT 1 FROM radar_sources s WHERE s.id = radar_items."sourceId" AND s."isActive")
           AND NOT (radar_items."commentsStatus" = 'NOT_FETCHED' AND EXISTS (
                 SELECT 1 FROM radar_runs r
@@ -65,15 +81,7 @@ export class RadarWorkRepository implements IRadarWorkRepository {
         orderBy: { publishedAt: 'desc' },
       });
 
-      return items.map((i) => ({
-        ...i,
-        media: i.media as unknown as RadarMedia[],
-        links: i.links as unknown as RadarLink[],
-        sharedPost: i.sharedPost as unknown as RadarSharedPost | null,
-        engagement: i.engagement as unknown as RadarEngagement,
-        comments: i.comments as unknown as RadarComment[],
-        leaseExpiresAt,
-      }));
+      return items.map((i) => ({ ...RadarWorkRepository.toSnapshot(i), leaseExpiresAt }));
     });
   }
 
@@ -82,14 +90,28 @@ export class RadarWorkRepository implements IRadarWorkRepository {
     return row ? RadarItemMapper.toDomain(row) : null;
   }
 
-  async saveEnrichment(item: RadarItem, enrichment: RadarEnrichmentInput): Promise<boolean> {
+  async saveEnrichment(
+    item: RadarItem,
+    enrichment: RadarEnrichmentInput,
+    depth: RadarAnalysisDepth | null = null
+  ): Promise<boolean> {
     const { producer, ...fields } = enrichment;
-    const data = { ...fields, producerAdapter: producer.adapter, producerModel: producer.model };
+    const { sources, ...rest } = fields;
+    const data = {
+      ...rest,
+      sources: sources as unknown as Prisma.InputJsonValue,
+      producerAdapter: producer.adapter,
+      producerModel: producer.model,
+      analysisDepth: depth,
+    };
 
     return this.prisma.$transaction(async (tx) => {
       const { count } = await tx.radarItem.updateMany({
         where: { id: item.id },
-        data: RadarItemMapper.toWorkPersistence(item) as Prisma.RadarItemUpdateManyMutationInput,
+        data: {
+          ...(RadarItemMapper.toWorkPersistence(item) as Prisma.RadarItemUpdateManyMutationInput),
+          workError: null,
+        },
       });
       if (count === 0) return false;
 
@@ -100,5 +122,67 @@ export class RadarWorkRepository implements IRadarWorkRepository {
       });
       return true;
     });
+  }
+
+  async release(itemIds: string[], countAttempt: boolean): Promise<void> {
+    if (itemIds.length === 0) return;
+    await this.prisma.radarItem.updateMany({
+      where: { id: { in: itemIds }, workStatus: RadarWorkStatus.CLAIMED },
+      data: {
+        workStatus: RadarWorkStatus.PENDING,
+        leaseExpiresAt: null,
+        ...(countAttempt ? {} : { claimCount: { decrement: 1 } }),
+      },
+    });
+  }
+
+  async markFailed(itemId: string, reason: string, maxAttempts: number): Promise<void> {
+    await this.prisma.radarItem.updateMany({
+      where: { id: itemId, workStatus: RadarWorkStatus.CLAIMED },
+      data: {
+        workStatus: RadarWorkStatus.PENDING,
+        leaseExpiresAt: null,
+        claimCount: maxAttempts,
+        workError: reason.slice(0, RadarWorkRepository.MAX_WORK_ERROR),
+      },
+    });
+  }
+
+  async findDeepCandidates(runId: string, minScore: number, limit: number): Promise<RadarWorkSnapshot[]> {
+    const items = await this.prisma.radarItem.findMany({
+      where: {
+        lastRunId: runId,
+        workError: null,
+        enrichment: { analysisDepth: 'light', signalScore: { gte: minScore } },
+      },
+      select: claimedSelect,
+      orderBy: [{ enrichment: { signalScore: 'desc' } }, { publishedAt: 'desc' }],
+      take: limit,
+    });
+    return items.map(RadarWorkRepository.toSnapshot);
+  }
+
+  countDeep(runId: string): Promise<number> {
+    return this.prisma.radarItem.count({ where: { lastRunId: runId, enrichment: { analysisDepth: 'deep' } } });
+  }
+
+  async noteError(itemId: string, reason: string): Promise<void> {
+    await this.prisma.radarItem.updateMany({
+      where: { id: itemId },
+      data: { workError: reason.slice(0, RadarWorkRepository.MAX_WORK_ERROR) },
+    });
+  }
+
+  // --- Private ---
+
+  private static toSnapshot(i: Prisma.RadarItemGetPayload<{ select: typeof claimedSelect }>): RadarWorkSnapshot {
+    return {
+      ...i,
+      media: i.media as unknown as RadarMedia[],
+      links: i.links as unknown as RadarLink[],
+      sharedPost: i.sharedPost as unknown as RadarSharedPost | null,
+      engagement: i.engagement as unknown as RadarEngagement,
+      comments: i.comments as unknown as RadarComment[],
+    };
   }
 }

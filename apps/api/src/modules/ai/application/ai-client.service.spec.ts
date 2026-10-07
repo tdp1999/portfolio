@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { AiCallError } from './ai-call.error';
 import { AiClientService } from './ai-client.service';
+import { AiLimitStore } from './ai-limit.store';
 import type { AiConfig } from './ai.config';
 import type { IAiProvider } from './ports/ai-provider.port';
 import type { IAiUsageRepository } from './ports/ai-usage.repository.port';
@@ -15,30 +16,64 @@ const request = { system: 's', parts: [{ text: 'hi' }], schema, feature: 'ai.tes
 describe('AiClientService', () => {
   let provider: jest.Mocked<IAiProvider>;
   let usageRepo: jest.Mocked<IAiUsageRepository>;
+  let store: AiLimitStore;
 
   const client = (config: Partial<AiConfig> = {}) =>
     new AiClientService(
-      { geminiApiKey: KEY, billing: 'free', defaultModel: 'gemini-2.5-flash', ...config },
+      { apiKey: KEY, billing: 'free', defaultModel: 'gemini-2.5-flash', dailyCapMicroUsd: 1_000_000, ...config },
       provider,
-      usageRepo
+      usageRepo,
+      store
     );
   const recorded = () => usageRepo.add.mock.calls[0][0];
 
   beforeEach(() => {
-    provider = { name: 'gemini', generate: jest.fn() };
-    usageRepo = { add: jest.fn(), findLatest: jest.fn(), summarize: jest.fn(), listRecent: jest.fn() };
+    provider = {
+      profile: { name: 'gemini', keyEnv: 'GEMINI_API_KEY' } as IAiProvider['profile'],
+      generate: jest.fn(),
+      getModelInfo: jest.fn(),
+      getBalance: jest.fn(),
+    };
+    store = new AiLimitStore();
+    usageRepo = {
+      add: jest.fn(),
+      findLatest: jest.fn(),
+      summarize: jest.fn(),
+      listRecent: jest.fn(),
+      sumCost: jest.fn(),
+      sumCostSince: jest.fn().mockResolvedValue(0),
+      sumCostByGroup: jest.fn(),
+      countLedger: jest.fn(),
+      listModelsSince: jest.fn(),
+    };
   });
 
   it('should refuse tools without limits before calling the provider (AI-002)', async () => {
-    await expect(client().generateStructured({ ...request, tools: ['googleSearch'] })).rejects.toMatchObject({
+    await expect(client().generateStructured({ ...request, tools: ['webSearch'] })).rejects.toMatchObject({
       kind: 'refused',
     });
     expect(provider.generate).not.toHaveBeenCalled();
     expect(usageRepo.add).not.toHaveBeenCalled();
   });
 
+  it('should refuse every call once the recorded spend of the day reaches the cap, without calling the provider', async () => {
+    usageRepo.sumCostSince.mockResolvedValue(1_000_000);
+
+    await expect(client().generateStructured(request)).rejects.toMatchObject({ kind: 'over-budget' });
+    expect(usageRepo.sumCostSince.mock.calls[0][0].toISOString()).toMatch(/T00:00:00\.000Z$/);
+    expect(provider.generate).not.toHaveBeenCalled();
+    expect(usageRepo.add).not.toHaveBeenCalled();
+  });
+
   it('should record a succeeded call with its cost and return the validated data', async () => {
-    provider.generate.mockResolvedValue({ text: '{"ok":true}', usage, trace });
+    provider.generate.mockResolvedValue({
+      text: '{"ok":true}',
+      complete: true,
+      usage,
+      searchQueries: 0,
+      trace,
+      limits: [],
+    });
 
     const result = await client().generateStructured(request);
 
@@ -48,7 +83,14 @@ describe('AiClientService', () => {
   });
 
   it('should record an answer that fails the schema as failed, with the tokens it used', async () => {
-    provider.generate.mockResolvedValue({ text: '{"ok":"yes"}', usage, trace });
+    provider.generate.mockResolvedValue({
+      text: '{"ok":"yes"}',
+      complete: true,
+      usage,
+      searchQueries: 0,
+      trace,
+      limits: [],
+    });
 
     await expect(client().generateStructured(request)).rejects.toMatchObject({ kind: 'invalid-output' });
     expect(recorded()).toMatchObject({ status: 'FAILED', errorKind: 'invalid-output', usage });
@@ -64,11 +106,38 @@ describe('AiClientService', () => {
     expect(recorded()).toMatchObject({ status: 'RATE_LIMITED', errorKind: 'rate-limited' });
   });
 
+  it('should keep the limit a rate-limit error names, so the AI page shows it after the run', async () => {
+    const limit = {
+      metric: 'requests-per-minute',
+      label: 'Requests per minute',
+      kind: 'requests' as const,
+      window: 'minute' as const,
+      model: 'gemini-2.5-flash',
+      limit: 10,
+      remaining: 0,
+      resetAt: null,
+      source: 'error' as const,
+      observedAt: new Date(),
+    };
+    provider.generate.mockRejectedValue(new AiCallError('rate-limited', 'quota', null, [limit]));
+
+    await expect(client().generateStructured(request)).rejects.toMatchObject({ kind: 'rate-limited' });
+
+    expect(store.listObserved()).toEqual([limit]);
+  });
+
   it.each([
     ['free', false],
     ['paid', true],
   ] as const)('should mark a %s-tier call billed=%s while still estimating its cost', async (billing, billed) => {
-    provider.generate.mockResolvedValue({ text: '{"ok":true}', usage, trace });
+    provider.generate.mockResolvedValue({
+      text: '{"ok":true}',
+      complete: true,
+      usage,
+      searchQueries: 0,
+      trace,
+      limits: [],
+    });
 
     await client({ billing }).generateStructured(request);
 
@@ -86,7 +155,14 @@ describe('AiClientService', () => {
   });
 
   it('should still return a paid answer when the ledger write fails', async () => {
-    provider.generate.mockResolvedValue({ text: '{"ok":true}', usage, trace });
+    provider.generate.mockResolvedValue({
+      text: '{"ok":true}',
+      complete: true,
+      usage,
+      searchQueries: 0,
+      trace,
+      limits: [],
+    });
     usageRepo.add.mockRejectedValue(new Error('db down'));
 
     await expect(client().generateStructured(request)).resolves.toMatchObject({ data: { ok: true } });

@@ -50,12 +50,12 @@ export class RadarRun {
   // --- Factory Methods ---
 
   /**
-   * A run starts only because the Owner asked for one (RAD-006). A Hybrid run's capture is
-   * PENDING, so the next tick starts the provider job; a Manual run's capture waits in
+   * A run starts only because the Owner asked for one (RAD-006). A Hybrid or Auto run's capture
+   * is PENDING, so the next tick starts the provider job; a Manual run's capture waits in
    * AWAITING_EXTERNAL for the upload. SYNTHESIZE gets no step: the brief (412) is per window.
    */
   static create(data: CreateRadarRunPayload): RadarRun {
-    const waiting = data.flow === RadarRunFlow.HYBRID ? RadarStatus.PENDING : RadarStatus.AWAITING_EXTERNAL;
+    const waiting = data.flow === RadarRunFlow.MANUAL ? RadarStatus.AWAITING_EXTERNAL : RadarStatus.PENDING;
     const { adapters, ...run } = data;
     return new RadarRun(
       {
@@ -152,6 +152,10 @@ export class RadarRun {
 
   get fetchComments(): boolean {
     return this.props.fetchComments;
+  }
+
+  get budgetMicroUsd(): number | null {
+    return this.props.budgetMicroUsd;
   }
 
   get error(): string | null {
@@ -258,6 +262,12 @@ export class RadarRun {
 
   completeEnrich(now: Date): RadarRun {
     return this.withStep(RadarStep.ENRICH, (s) => s.finish(now));
+  }
+
+  /** A server-side analysis works the step itself, tick by tick. */
+  startAnalysis(now: Date): RadarRun {
+    if (!this.step(RadarStep.ANALYZE).isPending) return this;
+    return this.withStep(RadarStep.ANALYZE, (s) => s.start(now));
   }
 
   /** The analysis adapter took the step; the run waits on the worker. */

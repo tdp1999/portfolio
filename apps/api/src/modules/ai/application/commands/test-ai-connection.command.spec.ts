@@ -4,12 +4,24 @@ import type { IAiClient } from '../ports/ai-client.port';
 import { TestAiConnectionCommand, TestAiConnectionHandler } from './test-ai-connection.command';
 
 describe('TestAiConnectionHandler', () => {
-  const config: AiConfig = { geminiApiKey: 'k', billing: 'free', defaultModel: 'gemini-3.5-flash-lite' };
+  const config: AiConfig = {
+    apiKey: 'k',
+    billing: 'free',
+    defaultModel: 'gemini-3.5-flash-lite',
+    dailyCapMicroUsd: 1_000_000,
+  };
   let ai: jest.Mocked<IAiClient>;
   const handler = () => new TestAiConnectionHandler(config, ai);
 
   beforeEach(() => {
-    ai = { configured: true, generateStructured: jest.fn() };
+    ai = {
+      configured: true,
+      provider: 'gemini',
+      billing: 'free',
+      generateStructured: jest.fn(),
+      spentMicroUsd: jest.fn(),
+      spentByGroup: jest.fn(),
+    };
   });
 
   it('should refuse a model id that is not one, without calling the model', async () => {

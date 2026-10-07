@@ -31,6 +31,7 @@ describe('RadarRun', () => {
         windowTo: null,
         itemCap: 300,
         fetchComments: false,
+        budgetMicroUsd: null,
         adapters,
       });
 

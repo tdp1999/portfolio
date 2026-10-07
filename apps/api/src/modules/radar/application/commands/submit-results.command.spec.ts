@@ -31,6 +31,11 @@ describe('SubmitResultsHandler', () => {
       claim: jest.fn(),
       findById: jest.fn(async (id: string) => radarItem({ id })),
       saveEnrichment: jest.fn().mockResolvedValue(true),
+      release: jest.fn(),
+      markFailed: jest.fn(),
+      findDeepCandidates: jest.fn(),
+      countDeep: jest.fn(),
+      noteError: jest.fn(),
     };
     handler = new SubmitResultsHandler(repo);
   });

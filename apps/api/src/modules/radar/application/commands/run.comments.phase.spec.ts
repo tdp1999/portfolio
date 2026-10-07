@@ -38,6 +38,7 @@ const runAt = (comments?: CommentsPhaseMeta) =>
     itemsUpdated: 0,
     itemsFailed: 0,
     fetchComments: true,
+    budgetMicroUsd: null,
     error: null,
     warning: null,
     createdAt: NOW,

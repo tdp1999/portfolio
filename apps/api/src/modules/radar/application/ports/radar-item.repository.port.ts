@@ -35,6 +35,8 @@ export interface RadarEnrichmentSummary {
   wantsComments: boolean;
   /** `major` flags a post that misleads on its main claim; `minor` and null show nothing. */
   factCheckSeverity: string | null;
+  /** `light` (quick pass) or `deep` (researched) for a server analysis; null for a worker analysis. */
+  analysisDepth: string | null;
 }
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
@@ -48,6 +50,8 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   scoreReason: string | null;
   /** Null before v3. */
   overview: string | null;
+  /** Pages the analysis used as evidence; empty when it named none or predates the field. */
+  sources: { url: string; title: string | null }[];
   producerAdapter: string;
   producerModel: string;
   updatedAt: Date;
@@ -70,6 +74,8 @@ interface RadarItemBase {
   commentsFetchedCount: number;
   commentsFetchedAt: Date | null;
   commentsError: string | null;
+  /** Why the last analysis failed (a stuck item, or a deep pass that kept the quick result). */
+  workError: string | null;
 }
 
 export interface RadarFeedRow extends RadarItemBase {

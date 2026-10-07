@@ -67,6 +67,8 @@ export interface RadarRunProps {
   itemsFailed: number;
   /** ENRICH also fetches comments for the selected posts. */
   fetchComments: boolean;
+  /** AUTO only: the AI spend cap; the analysis stops starting calls once the run's recorded spend reaches it. */
+  budgetMicroUsd: number | null;
   error: string | null;
   /** A side step (comments) failed but the run went on. */
   warning: string | null;
@@ -94,5 +96,6 @@ export interface CreateRadarRunPayload {
   windowTo: Date | null;
   itemCap: number;
   fetchComments: boolean;
+  budgetMicroUsd: number | null;
   adapters: RadarRunAdapters;
 }

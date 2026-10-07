@@ -34,6 +34,7 @@ const feedSelect = {
   commentsFetchedCount: true,
   commentsFetchedAt: true,
   commentsError: true,
+  workError: true,
   source: sourceSelect,
   enrichment: {
     select: {
@@ -45,6 +46,7 @@ const feedSelect = {
       isRelevant: true,
       wantsComments: true,
       factCheckSeverity: true,
+      analysisDepth: true,
     },
   },
 } as const;
@@ -65,6 +67,7 @@ const detailSelect = {
       context: true,
       scoreReason: true,
       overview: true,
+      sources: true,
       producerAdapter: true,
       producerModel: true,
       updatedAt: true,
@@ -186,6 +189,7 @@ export class RadarItemRepository implements IRadarItemRepository {
       enrichment: item.enrichment && {
         ...item.enrichment,
         linkSummaries: item.enrichment.linkSummaries as unknown as { url: string; summary: string }[],
+        sources: (item.enrichment.sources ?? []) as unknown as { url: string; title: string | null }[],
       },
     };
   }
@@ -205,7 +209,7 @@ export class RadarItemRepository implements IRadarItemRepository {
   async requeueStuck(now: Date, maxAttempts: number): Promise<number> {
     const { count } = await this.prisma.radarItem.updateMany({
       where: stuckWhere(now, maxAttempts),
-      data: { workStatus: RadarWorkStatus.PENDING, claimCount: 0, leaseExpiresAt: null },
+      data: { workStatus: RadarWorkStatus.PENDING, claimCount: 0, leaseExpiresAt: null, workError: null },
     });
     return count;
   }

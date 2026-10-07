@@ -5,6 +5,7 @@ export type {
   AiPart,
   AiStructuredRequest,
   AiStructuredResult,
+  AiEffort,
   AiTool,
   IAiClient,
 } from './application/ports/ai-client.port';

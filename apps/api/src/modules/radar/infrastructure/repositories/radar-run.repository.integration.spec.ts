@@ -25,6 +25,7 @@ describe('RadarRunRepository (integration)', () => {
       sourceName: 'Run test source',
       flow: RadarRunFlow.MANUAL,
       fetchComments: false,
+      budgetMicroUsd: null,
       windowFrom: null,
       windowTo: null,
       itemCap: 10,

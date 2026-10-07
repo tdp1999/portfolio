@@ -806,6 +806,8 @@ enum RadarPlatform {
 enum RadarRunFlow {
   MANUAL
   HYBRID
+  /// The API captures and analyzes with the server AI client; the Owner only reads.
+  AUTO
 }
 
 enum RadarStep {
@@ -886,6 +888,8 @@ model RadarRun {
   itemsFailed    Int          @default(0)
   /// Fetch comments for the selected posts during ENRICH (incremental Hybrid runs only).
   fetchComments  Boolean      @default(false)
+  /// AUTO only: the run stops starting AI calls once its recorded AI spend reaches this. Null on other flows.
+  budgetMicroUsd Int?
   error          String?
   /// A side step failed (comments capture) but the run went on; shown next to the status.
   warning        String?      @db.VarChar(500)
@@ -950,6 +954,8 @@ model RadarItem {
   workStatus           RadarWorkStatus     @default(PENDING)
   leaseExpiresAt       DateTime?
   claimCount           Int                 @default(0)
+  /// Why the server analysis gave up on this item (it is then stuck until requeued); null otherwise.
+  workError            String?             @db.VarChar(1000)
   triageStatus         RadarTriageStatus   @default(INBOX)
   /// When `triageStatus` last changed; null while the post has never left the Inbox.
   triagedAt            DateTime?
@@ -994,6 +1000,10 @@ model RadarEnrichment {
   scoreReason       String?
   /// v3: the general read of the post: what happened, why it matters, where it fits, its limits, what to watch.
   overview          String?
+  /// Pages the analysis used as evidence: [{ url, title }]. Null for enrichments written before sources existed.
+  sources           Json?    @db.JsonB
+  /// Server analysis only: "light" (quick pass, no research) or "deep" (with web search and links). Null for the worker, whose analysis is always full.
+  analysisDepth     String?  @db.VarChar(8)
   producerAdapter   String   @db.VarChar(64)
   producerModel     String   @db.VarChar(100)
   schemaVersion     Int      @default(1)
@@ -1060,6 +1070,8 @@ model AiUsageRecord {
   thinkingTokens Int          @default(0)
   cachedTokens   Int          @default(0)
   toolTokens     Int          @default(0)
+  /// Web search queries the provider ran; billed per query on top of tokens.
+  searchQueries  Int          @default(0)
   /// Null when the model is missing from the price constant.
   costMicroUsd   Int?
   /// False on the free tier: the cost is a list-price estimate, nothing was charged.
@@ -1067,11 +1079,15 @@ model AiUsageRecord {
   latencyMs      Int          @default(0)
   refType        String?      @db.VarChar(32)
   refId          String?      @db.Uuid
+  /// The larger unit the call belongs to (a Radar run), so spend can be summed per unit for budgets.
+  groupType      String?      @db.VarChar(32)
+  groupId        String?      @db.Uuid
   trace          Json?
   createdAt      DateTime     @default(now())
 
   @@index([createdAt(sort: Desc)])
   @@index([feature, createdAt(sort: Desc)])
   @@index([refType, refId])
+  @@index([groupType, groupId])
   @@map("ai_usage_records")
 }

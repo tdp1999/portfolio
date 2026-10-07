@@ -29,6 +29,7 @@ const row: RadarFeedRow = {
   commentsFetchedCount: 0,
   commentsFetchedAt: null,
   commentsError: null,
+  workError: null,
   enrichment: null,
 };
 

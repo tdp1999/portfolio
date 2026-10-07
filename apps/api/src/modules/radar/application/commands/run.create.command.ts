@@ -11,9 +11,11 @@ import {
   ValidationError,
 } from '@portfolio/shared/errors';
 
+import { AI_CLIENT, type IAiClient } from '../../../ai';
 import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { ICaptureProvider } from '../ports/capture-provider.port';
-import { EXTERNAL_WORKER_ADAPTER } from '../ports/llm-provider.port';
+import { EXTERNAL_WORKER_ADAPTER, SERVER_AI_ADAPTER } from '../ports/llm-provider.port';
+import { RADAR_ANALYSIS_CONFIG, RadarAnalysisConfig } from '../radar-analysis.config';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { CreateRunSchema, RadarRunDto } from '../radar.dto';
@@ -22,8 +24,8 @@ import { CAPTURE_PROVIDERS, RADAR_RUN_REPOSITORY, RADAR_SOURCE_REPOSITORY } from
 
 /** Manual flow: the Owner uploads the provider export into the run. */
 export const UPLOAD_CAPTURE_ADAPTER = 'upload';
-/** Hybrid flow default; later providers register under their own name. */
-const HYBRID_CAPTURE_ADAPTER = 'apify';
+/** Hybrid and Auto capture; later providers register under their own name. */
+const PROVIDER_CAPTURE_ADAPTER = 'apify';
 const NORMALIZE_ADAPTER = 'apify-facebook-posts';
 const IMAGE_ADAPTER = 'storage';
 
@@ -37,7 +39,9 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
   constructor(
     @Inject(RADAR_SOURCE_REPOSITORY) private readonly sources: IRadarSourceRepository,
     @Inject(RADAR_RUN_REPOSITORY) private readonly runs: IRadarRunRepository,
-    @Inject(CAPTURE_PROVIDERS) private readonly providers: ICaptureProvider[]
+    @Inject(CAPTURE_PROVIDERS) private readonly providers: ICaptureProvider[],
+    @Inject(AI_CLIENT) private readonly ai: IAiClient,
+    @Inject(RADAR_ANALYSIS_CONFIG) private readonly analysis: RadarAnalysisConfig
   ) {}
 
   async execute(command: CreateRunCommand): Promise<RadarRunDto> {
@@ -46,7 +50,10 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
       throw ValidationError(parsed.error, { errorCode: RadarErrorCode.INVALID_INPUT, layer: ErrorLayer.APPLICATION });
     }
     const input = parsed.data;
-    const hybrid = input.flow === RadarRunFlow.HYBRID;
+    // A flow says how much the Owner does by hand: MANUAL uploads and runs `/radar work`, HYBRID
+    // runs `/radar work`, AUTO only reads. The flow picks both adapters; the Owner never picks them apart.
+    const auto = input.flow === RadarRunFlow.AUTO;
+    const providerCapture = input.flow !== RadarRunFlow.MANUAL;
 
     const source = await this.sources.findById(input.sourceId);
     if (!source) {
@@ -56,9 +63,15 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
       });
     }
     source.ensureCanCapture();
-    if (hybrid && !this.providers.find((p) => p.name === HYBRID_CAPTURE_ADAPTER)?.isConfigured()) {
-      throw BadRequestError('Hybrid capture is not configured (APIFY_TOKEN is unset)', {
+    if (providerCapture && !this.providers.find((p) => p.name === PROVIDER_CAPTURE_ADAPTER)?.isConfigured()) {
+      throw BadRequestError('Provider capture is not configured (APIFY_TOKEN is unset)', {
         errorCode: RadarErrorCode.CAPTURE_NOT_CONFIGURED,
+        layer: ErrorLayer.APPLICATION,
+      });
+    }
+    if (auto && !this.ai.configured) {
+      throw BadRequestError('Auto analysis is not configured (the server has no AI provider key)', {
+        errorCode: RadarErrorCode.AI_NOT_CONFIGURED,
         layer: ErrorLayer.APPLICATION,
       });
     }
@@ -66,7 +79,7 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
     // Checked here for a fast answer, and again inside the insert transaction for concurrent calls.
     if (await this.runs.hasActiveRun(source.id)) throw alreadyActive();
 
-    const captureAdapter = hybrid ? HYBRID_CAPTURE_ADAPTER : UPLOAD_CAPTURE_ADAPTER;
+    const captureAdapter = providerCapture ? PROVIDER_CAPTURE_ADAPTER : UPLOAD_CAPTURE_ADAPTER;
     const run = await this.runs.add(
       RadarRun.create({
         sourceId: source.id,
@@ -77,16 +90,22 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         windowTo: input.windowTo ?? null,
         itemCap: input.itemCap,
         fetchComments: input.fetchComments,
+        budgetMicroUsd: auto ? this.budgetMicroUsd(input.budgetUsd) : null,
         adapters: {
           capture: captureAdapter,
           normalize: NORMALIZE_ADAPTER,
           enrich: IMAGE_ADAPTER,
-          analyze: EXTERNAL_WORKER_ADAPTER,
+          analyze: auto ? SERVER_AI_ADAPTER : EXTERNAL_WORKER_ADAPTER,
         },
       })
     );
     if (!run) throw alreadyActive();
     return RadarPresenter.toRun(run);
+  }
+
+  /** The Owner's cap in USD, or the configured default. */
+  private budgetMicroUsd(budgetUsd: number | undefined): number {
+    return budgetUsd === undefined ? this.analysis.defaultBudgetMicroUsd : Math.round(budgetUsd * 1_000_000);
   }
 }
 

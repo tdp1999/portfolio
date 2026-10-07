@@ -11,6 +11,11 @@ describe('AI queries', () => {
       findLatest: jest.fn(),
       summarize: jest.fn().mockResolvedValue({ totals: {}, byModel: [], byFeature: [] }),
       listRecent: jest.fn().mockResolvedValue([]),
+      sumCost: jest.fn(),
+      sumCostSince: jest.fn(),
+      sumCostByGroup: jest.fn(),
+      countLedger: jest.fn(),
+      listModelsSince: jest.fn(),
     };
   });
 

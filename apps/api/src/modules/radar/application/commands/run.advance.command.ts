@@ -192,20 +192,37 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
   }
 
   /**
-   * Hands the step to the run's analysis adapter; done once no item of the run is left for the
-   * worker. Stuck items and items of a paused source do not hold the run open.
+   * Hands the step to the run's analysis adapter; done once no item of the run is left. An
+   * external adapter is asked once and the step waits on the worker; a server-side adapter works
+   * a batch on every tick, and the step is checked for completion only on a tick where the adapter
+   * found nothing to do (its last batch may have opened deep analyses). Stuck items and items of a
+   * paused source do not hold the run open.
    */
   private async analyze(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
-    let current = run;
-    if (step.isPending) {
-      const llm = this.llmProviders.find((p) => p.name === run.llmAdapter);
-      if (!llm) return this.fail(run, step, `Unknown analysis adapter "${run.llmAdapter}"`, now);
+    const llm = this.llmProviders.find((p) => p.name === run.llmAdapter);
+    if (!llm) return this.fail(run, step, `Unknown analysis adapter "${run.llmAdapter}"`, now);
 
-      const outcome = await llm.process({ step: RadarStep.ANALYZE, runId: run.id });
-      if (outcome.state === 'done') return this.finish(run, now);
-      const awaiting = await this.runs.save(run.awaitAnalysis(now));
-      if (!awaiting) return WAIT;
-      current = awaiting;
+    let current = run;
+    if (llm.serverSide || step.isPending) {
+      if (llm.serverSide && step.isPending) {
+        const started = await this.runs.save(run.startAnalysis(now));
+        if (!started) return WAIT;
+        current = started;
+      }
+      const outcome = await llm.process({
+        step: RadarStep.ANALYZE,
+        runId: run.id,
+        budgetMicroUsd: run.budgetMicroUsd,
+      });
+      if (outcome.state === 'done') return this.finish(current, now);
+      // The budget is spent: the run ends, and what is left waits for a later run or `/radar work`.
+      if (outcome.state === 'stopped') return this.finish(current.warn(outcome.reason), now);
+      if (outcome.state === 'working') return WAIT;
+      if (outcome.state === 'awaiting-external') {
+        const awaiting = await this.runs.save(current.awaitAnalysis(now));
+        if (!awaiting) return WAIT;
+        current = awaiting;
+      }
     }
 
     const { notAnalyzed } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);

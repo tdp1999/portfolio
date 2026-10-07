@@ -49,7 +49,7 @@ Repeat until a claim returns zero items or `--limit` is reached:
 1. **Claim:** `radar-api.sh claim <batch> <workdir>/claim-<n>.json`, then read that file.
    The lease is 30 minutes, so finish and submit a batch well within that. Each item carries
    `comments: { status, items }` (fetched by the run, or `NOT_FETCHED`); the Comments section
-   of `references/enrichment-guide.md` says how to use them. Never fetch comments yourself.
+   of the analysis rules (`apps/api/src/modules/radar/application/prompts/radar-analysis.rules.ts`, linked from `references/enrichment-guide.md`) says how to use them. Never fetch comments yourself.
    While a run is still fetching comments, the claim holds back that run's posts that have no comments yet, so an empty
    claim can mean "wait a few minutes" when a run is active.
 2. **Images:** `radar-api.sh images <workdir>/claim-<n>.json <workdir>/img-<n>` and Read
@@ -60,14 +60,15 @@ Repeat until a claim returns zero items or `--limit` is reached:
    in `imageNotes` instead of guessing. The last line counts saved and skipped images, use it
    for the final report.
 3. **Research:** for each item, look up the tools, models and claims it names, following
-   the Research section of `references/enrichment-guide.md`. This feeds `overview`, `context`,
+   the Research section of the analysis rules and the Tools section of
+   `references/enrichment-guide.md`. This feeds `overview`, `context`,
    `scoreReason` and `factCheck`.
 4. **Links:** open each link in `links` (and in the shared post) with WebFetch to write
    `linkSummaries`. Skip facebook.com / fb.watch links: they need a login and Radar never
    uses the Owner's social accounts (RAD-003). A link that fails to load gets no summary
    entry; note the failure in `factCheck` if the post's claim depends on it.
-5. **Write** one enrichment per item, following `references/enrichment-guide.md` (read it
-   once per session before the first batch). Write the batch as
+5. **Write** one enrichment per item, following `references/enrichment-guide.md` and the rules file it
+   points to (read both once per session before the first batch). Write the batch as
    `{"results":[{"itemId": "...", "enrichment": {...}}]}` to `<workdir>/results-<n>.json`.
 6. **Submit:** `radar-api.sh submit <workdir>/results-<n>.json`. The answer is
    `{ "stored": k, "rejected": [{ "itemId", "reason" }] }`.
@@ -133,7 +134,8 @@ and 2) first, then:
 
 Write the brief in Vietnamese, the Owner's language, keeping technical terms and product names
 verbatim in English (Claude Code, MCP, context window), and use no em-dashes or en-dashes, as
-the Language section of `references/enrichment-guide.md` says. Report the brief id, the post
+the Language section of the analysis rules
+(`apps/api/src/modules/radar/application/prompts/radar-analysis.rules.ts`) says. Report the brief id, the post
 count and the months covered; the console Briefs page is where it is read.
 
 ## Admin helpers (the Owner runs these, never Claude)

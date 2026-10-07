@@ -6,6 +6,7 @@ import { EXTERNAL_WORKER_ADAPTER, ILlmProvider, LlmStepOutcome } from '../../app
  */
 export class ExternalWorkerAdapter implements ILlmProvider {
   readonly name = EXTERNAL_WORKER_ADAPTER;
+  readonly serverSide = false;
 
   async process(): Promise<LlmStepOutcome> {
     return { state: 'awaiting-external' };

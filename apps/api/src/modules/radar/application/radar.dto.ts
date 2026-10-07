@@ -19,7 +19,9 @@ import {
   RADAR_FEED_SORT_KEYS,
   RADAR_FEED_STATUSES,
   RADAR_MAX_PROFILE_CHARS,
+  RADAR_MAX_RUN_BUDGET_USD,
   RADAR_MAX_RUN_ITEM_CAP,
+  RADAR_MIN_RUN_BUDGET_USD,
   RADAR_PROVIDER_TAGS,
   RADAR_TRIAGE_MAX_IDS,
   type RadarQueueState,
@@ -88,6 +90,15 @@ export interface RadarItemCommentsDto {
   fetchedCount: number;
   fetchedAt: Date | null;
   error: string | null;
+}
+
+/** What the New run dialog needs to offer an AUTO run. */
+export interface RadarAiSettingsDto {
+  /** False while the AI provider has no key: an AUTO run is refused. */
+  configured: boolean;
+  /** `free`: spend figures are list-price estimates, nothing is charged. */
+  billing: 'free' | 'paid';
+  defaultBudgetMicroUsd: number;
 }
 
 /** Comment limits the console quotes in its confirm texts; they follow the server's config. */
@@ -238,6 +249,8 @@ export interface RadarFeedItemDto {
   /** Where the item stands in the worker's queue, split out of `workStatus` and the lease. */
   queueState: RadarQueueState;
   triageStatus: RadarTriageStatus;
+  /** Why the last analysis failed; null when it did not. */
+  workError: string | null;
   /** Photos and videos of the post itself (a shared post's are not counted), and how their copies stand. */
   images: RadarImagesSummaryDto;
   enrichment: RadarEnrichmentSummary | null;
@@ -292,6 +305,7 @@ export interface RadarItemDetailDto {
   workStatus: RadarWorkStatus;
   queueState: RadarQueueState;
   triageStatus: RadarTriageStatus;
+  workError: string | null;
   images: RadarItemImageDto[];
   links: RadarLink[];
   sharedPost: {
@@ -324,15 +338,21 @@ export const CreateRunSchema = z
     windowTo: z.coerce.date().optional(),
     itemCap: z.int().min(1).max(MAX_RUN_ITEM_CAP),
     fetchComments: z.boolean().default(false),
+    /** AUTO only: the run's AI spend cap in USD; the configured default when absent. */
+    budgetUsd: z.number().min(RADAR_MIN_RUN_BUDGET_USD).max(RADAR_MAX_RUN_BUDGET_USD).optional(),
   })
   .refine((v) => !v.windowFrom || !v.windowTo || v.windowFrom < v.windowTo, {
     message: 'windowFrom must be before windowTo',
     path: ['windowTo'],
   })
   // Task 411 cost plan: a backfill (no window start) never buys comments; old posts get them on demand.
-  .refine((v) => !v.fetchComments || (v.flow === RadarRunFlow.HYBRID && v.windowFrom !== undefined), {
-    message: 'Comments are fetched only on a Hybrid run with a window start',
+  .refine((v) => !v.fetchComments || (v.flow !== RadarRunFlow.MANUAL && v.windowFrom !== undefined), {
+    message: 'Comments are fetched only on a Hybrid or Auto run with a window start',
     path: ['fetchComments'],
+  })
+  .refine((v) => v.budgetUsd === undefined || v.flow === RadarRunFlow.AUTO, {
+    message: 'A budget applies only to an Auto run',
+    path: ['budgetUsd'],
   });
 
 export interface RadarStepRunDto {
@@ -359,6 +379,10 @@ export interface RadarRunDto {
   itemsUpdated: number;
   itemsFailed: number;
   fetchComments: boolean;
+  /** AUTO only: the AI spend cap in micro-USD. */
+  budgetMicroUsd: number | null;
+  /** AUTO only: the recorded AI cost of the run so far, in micro-USD (an estimate on the free tier). */
+  spentMicroUsd: number | null;
   error: string | null;
   warning: string | null;
   createdAt: Date;

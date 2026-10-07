@@ -5,6 +5,7 @@ import { IStorageService } from '../../../media/application/ports/storage.servic
 import { ApifyFacebookNormalizer } from '../../infrastructure/capture/apify-facebook.normalizer';
 import { ExternalWorkerAdapter } from '../../infrastructure/llm/external-worker.adapter';
 import { CaptureJobStatus, ICaptureProvider } from '../ports/capture-provider.port';
+import { ILlmProvider, LlmStepOutcome } from '../ports/llm-provider.port';
 import { IRadarCaptureRepository } from '../ports/radar-capture.repository.port';
 import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { RadarRunProps, RadarStepRunProps } from '../../domain/radar-run.types';
@@ -47,6 +48,7 @@ const makeRun = (flow: RadarRunFlow, steps: Partial<Record<RadarStep, Partial<Ra
   itemsUpdated: 0,
   itemsFailed: 0,
   fetchComments: false,
+  budgetMicroUsd: null,
   error: null,
   warning: null,
   createdAt: NOW,
@@ -99,7 +101,7 @@ const post = (id: number) => ({
 
 const setup = (
   run: RadarRunProps,
-  opts: { poll?: CaptureJobStatus; pages?: unknown[][]; commentsDone?: boolean[] } = {}
+  opts: { poll?: CaptureJobStatus; pages?: unknown[][]; commentsDone?: boolean[]; llm?: ILlmProvider } = {}
 ) => {
   const runs = new FakeRuns(run);
   const pages = [...(opts.pages ?? [])];
@@ -131,7 +133,7 @@ const setup = (
     captures,
     [provider],
     [new ApifyFacebookNormalizer()],
-    [new ExternalWorkerAdapter()],
+    [new ExternalWorkerAdapter(), ...(opts.llm ? [opts.llm] : [])],
     storage,
     commentsPhase as unknown as RunCommentsPhase
   );
@@ -341,6 +343,53 @@ describe('AdvanceRunHandler', () => {
       await advance();
       expect(runs.stepOf(RadarStep.ANALYZE).status).toBe(RadarStatus.DONE);
       expect(runs.run.status).toBe(RadarStatus.DONE);
+    });
+  });
+
+  describe('server-side analysis (AUTO)', () => {
+    const autoRun = () => ({
+      ...makeRun(RadarRunFlow.AUTO, {
+        [RadarStep.CAPTURE]: { status: RadarStatus.DONE },
+        [RadarStep.NORMALIZE]: { status: RadarStatus.DONE },
+        [RadarStep.ENRICH]: { status: RadarStatus.DONE },
+      }),
+      llmAdapter: 'server-ai',
+      budgetMicroUsd: 1_000_000,
+    });
+    const serverAi = (...outcomes: LlmStepOutcome[]) => ({
+      name: 'server-ai',
+      serverSide: true,
+      process: jest.fn(async () => outcomes.shift() ?? ({ state: 'idle' } as const)),
+    });
+
+    it('should start the step, wait while batches run, and finish only on an idle tick with no item left', async () => {
+      const llm = serverAi({ state: 'working' }, { state: 'idle' }, { state: 'idle' });
+      const { runs, advance } = setup(autoRun(), { llm });
+      runs.counts = { total: 3, notAnalyzed: 0, withPendingImages: 0 };
+
+      // A working tick never finishes the step, even with nothing counted: its batch may open deep work.
+      await advance();
+      expect(llm.process).toHaveBeenCalledWith({ step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000 });
+      expect(runs.stepOf(RadarStep.ANALYZE).status).toBe(RadarStatus.RUNNING);
+
+      runs.counts.notAnalyzed = 1;
+      await advance();
+      expect(runs.run.status).toBe(RadarStatus.RUNNING);
+
+      runs.counts.notAnalyzed = 0;
+      await advance();
+      expect(llm.process).toHaveBeenCalledTimes(3);
+      expect(runs.run.status).toBe(RadarStatus.DONE);
+    });
+
+    it('should end the run with the warning when the analysis stops on the budget', async () => {
+      const llm = serverAi({ state: 'stopped', reason: 'budget reached' });
+      const { runs, advance } = setup(autoRun(), { llm });
+      runs.counts = { total: 3, notAnalyzed: 2, withPendingImages: 0 };
+
+      await advance();
+
+      expect(runs.run).toMatchObject({ status: RadarStatus.DONE, warning: 'budget reached' });
     });
   });
 

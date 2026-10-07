@@ -4,8 +4,8 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAccessGuard } from '../../auth/application/guards/jwt-access.guard';
 import { Roles, RoleGuard } from '../../auth/application/guards/role.guard';
 import { TestAiConnectionCommand } from '../application/commands';
-import { AiCallDto, AiStatusDto, AiTestResultDto, AiUsageDto } from '../application/ai.dto';
-import { GetAiStatusQuery, GetAiUsageQuery, ListAiCallsQuery } from '../application/queries';
+import { AiCallDto, AiLimitsDto, AiStatusDto, AiTestResultDto, AiUsageDto } from '../application/ai.dto';
+import { GetAiLimitsQuery, GetAiStatusQuery, GetAiUsageQuery, ListAiCallsQuery } from '../application/queries';
 
 @Controller('ai')
 @UseGuards(JwtAccessGuard, RoleGuard)
@@ -24,6 +24,11 @@ export class AiAdminController {
   @Get('usage')
   usage(@Query('range') range?: string): Promise<AiUsageDto> {
     return this.queryBus.execute(new GetAiUsageQuery(range));
+  }
+
+  @Get('limits')
+  limits(): Promise<AiLimitsDto> {
+    return this.queryBus.execute(new GetAiLimitsQuery());
   }
 
   @Get('calls')

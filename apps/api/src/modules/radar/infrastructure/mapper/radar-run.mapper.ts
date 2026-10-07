@@ -38,6 +38,7 @@ export class RadarRunMapper {
       itemsUpdated: row.itemsUpdated,
       itemsFailed: row.itemsFailed,
       fetchComments: row.fetchComments,
+      budgetMicroUsd: row.budgetMicroUsd,
       error: row.error,
       warning: row.warning,
       createdAt: row.createdAt,
@@ -71,6 +72,7 @@ export class RadarRunMapper {
       captureAdapter: run.captureAdapter,
       llmAdapter: run.llmAdapter,
       fetchComments: run.fetchComments,
+      budgetMicroUsd: run.budgetMicroUsd,
       createdAt: run.createdAt,
     };
   }

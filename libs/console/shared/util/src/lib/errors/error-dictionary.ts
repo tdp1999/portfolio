@@ -151,6 +151,8 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.RUN_BUSY]: 'This run is moving to its next step right now. Please try cancelling again.',
   [RadarErrorCode.CAPTURE_NOT_CONFIGURED]:
     'Hybrid capture is not configured on the server. Set the Apify token, or start a Manual run.',
+  [RadarErrorCode.AI_NOT_CONFIGURED]:
+    'Auto runs need the AI key on the server. Set it, or start a Hybrid run and analyze with /radar work.',
   [RadarErrorCode.COMMENTS_FETCH_FAILED]: 'Comments could not be fetched from the provider. Please try again later.',
   [RadarErrorCode.BRIEF_NOT_FOUND]: 'This brief no longer exists.',
   [RadarErrorCode.BRIEF_EMPTY_WINDOW]:

@@ -1,3 +1,5 @@
+import { RadarRunFlow } from '@prisma/client';
+
 import { RadarBrief } from '../domain/entities/radar-brief.entity';
 import { RadarRun } from '../domain/entities/radar-run.entity';
 import { RadarCommentThread } from '../domain/value-objects/radar-comment-thread';
@@ -6,7 +8,7 @@ import { RadarMedia } from '../domain/radar.types';
 import { RadarLeasePolicy } from '../domain/policies/radar-lease.policy';
 import { RadarBriefSummary, RadarBriefWorkItem } from './ports/radar-brief.repository.port';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
-import { ClaimedRadarItem } from './ports/radar-work.repository.port';
+import { RadarWorkSnapshot } from './ports/radar-work.repository.port';
 import { RadarSourceListing } from './ports/radar-source.repository.port';
 import {
   FEED_PREVIEW_CHARS,
@@ -49,7 +51,8 @@ const toItemImages = (media: RadarMedia[]): RadarItemImageDto[] =>
 
 export class RadarPresenter {
   /** Leaves out provider job refs and step meta: internal bookkeeping, not for the console. */
-  static toRun(run: RadarRun): RadarRunDto {
+  /** `spentMicroUsd`: the run's recorded AI cost; only AUTO runs carry one (0 before the first call). */
+  static toRun(run: RadarRun, spentMicroUsd: number | null = null): RadarRunDto {
     return {
       id: run.id,
       source: { id: run.sourceId, displayName: run.sourceName },
@@ -65,6 +68,8 @@ export class RadarPresenter {
       itemsUpdated: run.itemsUpdated,
       itemsFailed: run.itemsFailed,
       fetchComments: run.fetchComments,
+      budgetMicroUsd: run.budgetMicroUsd,
+      spentMicroUsd: run.flow === RadarRunFlow.AUTO ? (spentMicroUsd ?? 0) : null,
       error: run.error,
       warning: run.warning,
       createdAt: run.createdAt,
@@ -94,7 +99,7 @@ export class RadarPresenter {
     };
   }
 
-  static toWorkItem(item: ClaimedRadarItem): RadarWorkItemDto {
+  static toWorkItem(item: RadarWorkSnapshot): RadarWorkItemDto {
     return {
       id: item.id,
       kind: item.kind,
@@ -144,6 +149,7 @@ export class RadarPresenter {
       workStatus: row.workStatus,
       queueState: toQueueState(row, now),
       triageStatus: row.triageStatus,
+      workError: row.workError,
       images: toImagesSummary(row.media),
       enrichment: row.enrichment,
       comments: toCommentsSummary(row),

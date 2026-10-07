@@ -1,3 +1,4 @@
+import type { AiObservedLimit } from '../domain/ai-limit.types';
 import type { AiErrorKind } from '../domain/ai-usage.types';
 
 /**
@@ -10,7 +11,9 @@ export class AiCallError extends Error {
     readonly kind: AiErrorKind,
     message: string,
     /** Set on `rate-limited` when the provider said how long to wait. */
-    readonly retryAfterMs: number | null = null
+    readonly retryAfterMs: number | null = null,
+    /** Limits the provider named in the error (a 429 body), kept so the AI page can show them. */
+    readonly limits: readonly AiObservedLimit[] = []
   ) {
     super(message);
     this.name = 'AiCallError';

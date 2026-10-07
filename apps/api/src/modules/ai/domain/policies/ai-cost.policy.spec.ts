@@ -19,4 +19,10 @@ describe('AiCostPolicy.costMicroUsd', () => {
     // (600 + 200) * 0.3 + 400 * 0.03 + (100 + 300) * 2.5 = 240 + 12 + 1000
     expect(cost).toBe(1252);
   });
+
+  it('should add the search fee per query, only for models that price search', () => {
+    // gemini-3.1-flash-lite: input 0.25 USD per 1M tokens, search 14 USD per 1,000 queries
+    expect(AiCostPolicy.costMicroUsd('gemini-3.1-flash-lite', { ...usage, inputTokens: 1000 }, 2)).toBe(250 + 28_000);
+    expect(AiCostPolicy.costMicroUsd('gemini-2.5-flash', usage, 2)).toBe(0);
+  });
 });
