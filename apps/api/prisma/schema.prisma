@@ -1037,3 +1037,41 @@ model RadarWorkflowProfile {
 
   @@map("radar_workflow_profiles")
 }
+
+// ── AI integration ─────────────────────────────────────────────────
+
+enum AiCallStatus {
+  SUCCEEDED
+  FAILED
+  RATE_LIMITED
+}
+
+/// One AI provider call: tokens, cost and what the model searched or read (AI-003).
+model AiUsageRecord {
+  id             String       @id @db.Uuid
+  provider       String       @db.VarChar(32)
+  model          String       @db.VarChar(100)
+  feature        String       @db.VarChar(64)
+  status         AiCallStatus
+  errorKind      String?      @db.VarChar(32)
+  error          String?
+  inputTokens    Int          @default(0)
+  outputTokens   Int          @default(0)
+  thinkingTokens Int          @default(0)
+  cachedTokens   Int          @default(0)
+  toolTokens     Int          @default(0)
+  /// Null when the model is missing from the price constant.
+  costMicroUsd   Int?
+  /// False on the free tier: the cost is a list-price estimate, nothing was charged.
+  billed         Boolean      @default(false)
+  latencyMs      Int          @default(0)
+  refType        String?      @db.VarChar(32)
+  refId          String?      @db.Uuid
+  trace          Json?
+  createdAt      DateTime     @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([feature, createdAt(sort: Desc)])
+  @@index([refType, refId])
+  @@map("ai_usage_records")
+}
