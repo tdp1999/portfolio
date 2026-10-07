@@ -1,0 +1,279 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div>
+      <h1 class="text-page-title">AI integration</h1>
+      <p class="crud-header__subtitle">
+        The model the API calls for Radar, what each call used and what it would cost.
+      </p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <console-skeleton-table [columns]="4" [rows]="6" />
+  } @else if (loadError()) {
+    <div class="ai-state" role="alert">
+      <mat-icon class="icon-2xl ai-state__icon">error_outline</mat-icon>
+      <p class="text-card-title">Could not load the AI integration</p>
+      <p class="text-body text-text-secondary">Check that the API is running, then try again.</p>
+      <button mat-stroked-button type="button" (click)="onRetry()">Retry</button>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-8">
+      <!-- ── Provider ─────────────────────────────────────────────── -->
+      @if (status(); as s) {
+        <section class="flex flex-col gap-4" aria-labelledby="ai-provider-title">
+          <div class="ai-section-head">
+            <h2 id="ai-provider-title" class="text-section-heading">Provider</h2>
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="!s.configured || testing()"
+              (click)="onTest()"
+            >
+              <mat-icon class="icon-sm">bolt</mat-icon>
+              {{ testing() ? 'Testing' : 'Test connection' }}
+            </button>
+          </div>
+
+          @if (!s.configured) {
+            <div class="ai-notice ai-notice--warn" role="status">
+              <mat-icon class="icon-sm" aria-hidden="true">key_off</mat-icon>
+              <p class="text-body">
+                No API key. Set <code>GEMINI_API_KEY</code> in the API environment, then restart the API. This page
+                never asks for the key or shows it.
+              </p>
+            </div>
+          }
+
+          @if (testResult(); as r) {
+            @if (r.ok) {
+              <div class="ai-notice ai-notice--success" role="status">
+                <mat-icon class="icon-sm" aria-hidden="true">check_circle</mat-icon>
+                <p class="text-body">Connected: {{ r.model }} answered in {{ r.latencyMs }} ms.</p>
+              </div>
+            } @else {
+              <div class="ai-notice ai-notice--error" role="alert">
+                <mat-icon class="icon-sm" aria-hidden="true">error_outline</mat-icon>
+                <div>
+                  <p class="text-body font-semibold">{{ r.model }} failed ({{ r.errorKind }})</p>
+                  <p class="text-body ai-notice__message">{{ r.message }}</p>
+                </div>
+              </div>
+            }
+          }
+
+          <div class="rv-props rv-props--grid">
+            <console-property label="Provider">Google Gemini</console-property>
+            <console-property label="API key">
+              @if (s.configured) {
+                <span class="ai-inline">
+                  <span class="console-badge console-badge--success">Configured</span>
+                  <span class="ai-mono">{{ s.keySuffix }}</span>
+                </span>
+              } @else {
+                <span class="console-badge console-badge--danger">Missing</span>
+              }
+            </console-property>
+            <console-property label="Billing">{{ s.billing === 'paid' ? 'Paid tier' : 'Free tier' }}</console-property>
+            <console-property label="Default model" mono>{{ s.defaultModel }}</console-property>
+            <console-property label="Last call">
+              @if (s.lastCall; as last) {
+                <span class="ai-inline">
+                  <span class="console-badge" [class]="last.status | enumLabel: statusBadges">{{
+                    last.status | enumLabel: statusLabels
+                  }}</span>
+                  <console-relative-time [value]="last.at" />
+                </span>
+              } @else {
+                <span class="text-text-secondary">No calls yet</span>
+              }
+            </console-property>
+          </div>
+          @if (s.lastCall?.error; as lastError) {
+            <p class="text-caption ai-notice__message">Last error: {{ lastError }}</p>
+          }
+        </section>
+      }
+
+      <!-- ── Usage ────────────────────────────────────────────────── -->
+      <section class="flex flex-col gap-4" aria-labelledby="ai-usage-title">
+        <div class="ai-section-head">
+          <h2 id="ai-usage-title" class="text-section-heading">Usage</h2>
+          <console-segmented-control
+            [options]="rangeOptions"
+            [ngModel]="range()"
+            (ngModelChange)="onRangeChange($event)"
+            aria-label="Usage range"
+          />
+        </div>
+
+        @if (usageError()) {
+          <div class="ai-notice ai-notice--error" role="alert">
+            <mat-icon class="icon-sm" aria-hidden="true">error_outline</mat-icon>
+            <p class="text-body">Could not load the usage for the {{ rangeLabel() }}. Pick the range again to retry.</p>
+          </div>
+        }
+        @if (totals(); as t) {
+          <div class="ai-stats">
+            <div class="ai-stat">
+              <span class="text-stat-label">Calls</span>
+              <span class="text-stat-value-sm">{{ t.calls }}</span>
+              <span class="text-caption">{{ t.failed }} failed</span>
+            </div>
+            <div class="ai-stat">
+              <span class="text-stat-label">Tokens in</span>
+              <span class="text-stat-value-sm">{{ t.tokensIn }}</span>
+              <span class="text-caption">Prompt and tool results</span>
+            </div>
+            <div class="ai-stat">
+              <span class="text-stat-label">Tokens out</span>
+              <span class="text-stat-value-sm">{{ t.tokensOut }}</span>
+              <span class="text-caption">Answer and thinking</span>
+            </div>
+            <div class="ai-stat">
+              <span class="text-stat-label">Cost</span>
+              <span class="text-stat-value-sm">{{ t.cost }}</span>
+              <span class="text-caption">
+                @if (free()) {
+                  Estimate at paid prices, not billed
+                } @else {
+                  {{ t.billed }} billed
+                }
+              </span>
+            </div>
+          </div>
+
+          @if (t.calls) {
+            <div class="ai-breakdowns">
+              @for (group of breakdowns(); track group.title) {
+                <div class="crud-table-container">
+                  <table mat-table [dataSource]="group.rows" class="w-full" [attr.aria-label]="group.title">
+                    <ng-container matColumnDef="label">
+                      <th mat-header-cell *matHeaderCellDef>{{ group.title }}</th>
+                      <td mat-cell *matCellDef="let row">{{ row.label }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="calls">
+                      <th mat-header-cell *matHeaderCellDef class="ai-num">Calls</th>
+                      <td mat-cell *matCellDef="let row" class="ai-num">
+                        {{ row.calls }}
+                        @if (row.failed) {
+                          <span class="text-caption block">{{ row.failed }} failed</span>
+                        }
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="tokens">
+                      <th mat-header-cell *matHeaderCellDef class="ai-num">Tokens</th>
+                      <td mat-cell *matCellDef="let row" class="ai-num">{{ row.tokens }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="cost">
+                      <th mat-header-cell *matHeaderCellDef class="ai-num">Cost</th>
+                      <td mat-cell *matCellDef="let row" class="ai-num">{{ row.cost }}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="breakdownColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: breakdownColumns"></tr>
+                  </table>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-body text-text-secondary">No AI calls in the {{ rangeLabel() }}.</p>
+          }
+        }
+      </section>
+
+      <!-- ── Recent calls ─────────────────────────────────────────── -->
+      <section class="flex flex-col gap-4" aria-labelledby="ai-calls-title">
+        <h2 id="ai-calls-title" class="text-section-heading">Recent calls</h2>
+        <div class="crud-table-container ai-scroll">
+          <table mat-table [dataSource]="callRows()" class="w-full ai-calls">
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>When</th>
+              <td mat-cell *matCellDef="let call" class="ai-nowrap">
+                <console-relative-time [value]="call.createdAt" />
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="feature">
+              <th mat-header-cell *matHeaderCellDef>Feature</th>
+              <td mat-cell *matCellDef="let call">
+                {{ call.featureLabel }}
+                @if (call.tools) {
+                  <span class="text-caption block">{{ call.tools }}</span>
+                }
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="model">
+              <th mat-header-cell *matHeaderCellDef>Model</th>
+              <td mat-cell *matCellDef="let call" class="ai-mono">{{ call.model }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let call">
+                <span
+                  class="console-badge"
+                  [class]="call.status | enumLabel: statusBadges"
+                  [matTooltip]="call.error ?? ''"
+                  >{{ call.status | enumLabel: statusLabels }}</span
+                >
+                @if (call.errorKind) {
+                  <span class="text-caption block">{{ call.errorKind }}</span>
+                }
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="tokens">
+              <th mat-header-cell *matHeaderCellDef class="ai-num">Tokens</th>
+              <td mat-cell *matCellDef="let call" class="ai-num ai-nowrap">{{ call.tokens }}</td>
+            </ng-container>
+            <ng-container matColumnDef="cost">
+              <th mat-header-cell *matHeaderCellDef class="ai-num">Cost</th>
+              <td mat-cell *matCellDef="let call" class="ai-num">{{ call.cost }}</td>
+            </ng-container>
+            <ng-container matColumnDef="latency">
+              <th mat-header-cell *matHeaderCellDef class="ai-num">Latency</th>
+              <td mat-cell *matCellDef="let call" class="ai-num ai-nowrap">{{ call.latency }}</td>
+            </ng-container>
+            <ng-container matColumnDef="served">
+              <th mat-header-cell *matHeaderCellDef>Served</th>
+              <td mat-cell *matCellDef="let call">
+                @if (call.refLink) {
+                  <a class="ai-link" [routerLink]="call.refLink">Open</a>
+                } @else {
+                  <span class="text-text-secondary">None</span>
+                }
+              </td>
+            </ng-container>
+
+            <tr class="mat-mdc-row" *matNoDataRow>
+              <td class="mat-mdc-cell" [attr.colspan]="callColumns.length">
+                <p class="text-body text-text-secondary py-4">No calls recorded yet.</p>
+              </td>
+            </tr>
+            <tr mat-header-row *matHeaderRowDef="callColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: callColumns"></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Notes ────────────────────────────────────────────────── -->
+      <section class="flex flex-col gap-4" aria-labelledby="ai-notes-title">
+        <h2 id="ai-notes-title" class="text-section-heading">Quota and data</h2>
+        <ul class="ai-notes text-body text-text-secondary">
+          <li>
+            Google does not let an API key read its remaining quota, so this page cannot show it. Check limits on the
+            <a class="ai-link" [href]="rateLimitUrl" target="_blank" rel="noopener">AI Studio rate limit page</a>
+            and spend on the
+            <a class="ai-link" [href]="usageUrl" target="_blank" rel="noopener">AI Studio usage page</a>.
+          </li>
+          <li>
+            Cost uses the price constant in the API, checked against the
+            <a class="ai-link" [href]="pricingUrl" target="_blank" rel="noopener">Gemini pricing page</a>. A model
+            without a price shows "No price" and is left out of the totals.
+          </li>
+          @if (free()) {
+            <li>On the free tier, Google may use prompts and answers to improve its products.</li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+</div>

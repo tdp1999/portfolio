@@ -75,6 +75,10 @@ export const appRoutes: Route[] = [
             loadChildren: () => import('@portfolio/console/feature-radar').then((m) => m.radarRoutes),
           },
           {
+            path: 'ai',
+            loadChildren: () => import('@portfolio/console/feature-ai').then((m) => m.aiRoutes),
+          },
+          {
             path: 'projects',
             loadChildren: () => import('@portfolio/console/feature-project').then((m) => m.projectRoutes),
           },

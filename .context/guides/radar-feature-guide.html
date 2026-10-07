@@ -582,6 +582,10 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>POST</td><td><code>/radar/briefs</code></td><td>Yêu cầu brief. Body: <code>windowFrom</code>, <code>windowTo</code>, <code>sourceId</code> (tùy chọn, bỏ trống là tất cả nguồn)</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/briefs</code>, <code>/radar/briefs/:id</code></td><td>50 brief mới nhất (không kèm body); một brief kèm body</td></tr>
         <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/ai/status</code></td><td>Gemini đã cấu hình chưa, 4 ký tự cuối của key, billing (free hoặc paid), model mặc định, lần gọi cuối và lỗi cuối. Không bao giờ trả key</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/ai/test</code></td><td>Gọi thử model (tùy chọn <code>{ model }</code>), giới hạn 25 giây. Lỗi là câu trả lời bình thường <code>{ ok: false, errorKind, message }</code>, không phải lỗi HTTP. Lần thử cũng ghi một dòng usage</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/ai/usage?range</code></td><td>Tổng số lần gọi, số lỗi, token, chi phí trong <code>24h</code>, <code>7d</code> hoặc <code>30d</code> (giá trị lạ thành <code>7d</code>), chia theo model và theo feature. Cộng trong SQL nên khớp tổng các dòng usage</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/ai/calls?limit</code></td><td>Các dòng usage mới nhất (mặc định 50, tối đa 100), kèm bài hoặc brief mà lần gọi phục vụ</td></tr>
         <tr><td>Worker</td><td>GET</td><td><code>/radar/work/profile</code></td><td>Đọc profile (chỉ đọc)</td></tr>
         <tr><td>Worker</td><td>POST</td><td><code>/radar/work/claim</code></td><td>Xin bài</td></tr>
         <tr><td>Worker</td><td>POST</td><td><code>/radar/work/results</code></td><td>Nộp kết quả</td></tr>
@@ -867,6 +871,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
         <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
+        <tr><td><code>ai_usage_records</code></td><td>Mỗi lần gọi Gemini, thành công hay lỗi</td><td>Model, feature (ví dụ <code>radar.analyze</code>), trạng thái, loại lỗi, token vào, ra, thinking, cache, tool, chi phí ước tính theo bảng giá trong code (null khi model chưa có giá), <code>billed</code>, độ trễ, <code>refType</code> và <code>refId</code> trỏ về bài hoặc brief, <code>trace</code> (JSONB: query đã search, URL đã đọc). Màn hình AI trong console đọc bảng này</td></tr>
         <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Là việc cần làm của chính nó: <code>workStatus</code>, <code>leaseExpiresAt</code>. <code>sourceId</code> null là tất cả nguồn. <code>itemIds</code> là các bài của window lúc nộp. Xem <a href="#briefs">mục 16</a></td></tr>
         <tr><td><code>radar_workflow_profiles</code></td><td>Workflow profile</td><td>Một dòng với id cố định</td></tr>
       </table></div>
@@ -981,6 +986,8 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>410</td><td>Console: trang Runs, badge "run đang chạy" ở Feed, hủy run và upload vào run MANUAL</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>411</td><td>Comments: chọn bài theo tier, giới hạn tiền, nhãn, nút fetch từng bài, upload, <code>commentDigest</code></td><td><span class="status done">Xong</span></td></tr>
         <tr><td>412</td><td>Brief: yêu cầu ở console, <code>/radar work brief</code> viết, trang Briefs</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>416</td><td>Module AI: client Gemini một lần gọi có schema, sổ usage, endpoint status và test</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>417</td><td>Console: màn hình AI (status, test connection, usage, các lần gọi gần đây)</td><td><span class="status done">Xong</span></td></tr>
       </table></div>
     </section>
   </main>
