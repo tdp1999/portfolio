@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from '@portfolio/console/shared/data-access';
 
-import type { AiCall, AiStatus, AiTestResult, AiUsage, AiUsageRange } from './ai.types';
+import type { AiCall, AiLimits, AiStatus, AiTestResult, AiUsage, AiUsageRange } from './ai.types';
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
@@ -13,6 +13,10 @@ export class AiService {
 
   getUsage(range: AiUsageRange) {
     return this.api.get<AiUsage>('/ai/usage', { params: { range } });
+  }
+
+  getLimits() {
+    return this.api.get<AiLimits>('/ai/limits');
   }
 
   listCalls(limit = 50) {

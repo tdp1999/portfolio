@@ -443,7 +443,9 @@ From: `epic-radar-phase-c`. Gemini (free tier first) replaces the `/radar work` 
 
 - [x] 416-ai-module-gemini-client (M) — `ai` module: Gemini client, price constant, usage ledger with trace, status/test, 429 typed
 - [x] 417-console-ai-integration-screen (M) — `/ai` page: status, test, usage totals, recent calls (needs 416)
-- [ ] 418-radar-gemini-analysis-adapter (L) — `gemini` adapter + `AUTO` flow, prompt moved into API, retry once, budget, sources (needs 416)
+- [x] 418-radar-gemini-analysis-adapter (L) — `gemini` adapter + `AUTO` flow, prompt moved into API, retry once, budget, sources (needs 416)
+- [x] 418b-radar-auto-run-console (M) — Runs dialog AUTO + budget, run spend, sources on Detail, VND display + Settings → Currency (needs 418)
+- [x] 418c-ai-provider-limits-panel (M) — AI page Limits section, provider-neutral limit shape filled per adapter (needs 418)
 - [ ] 419-radar-gemini-quality-check (S) — trial table + compare view on ~10 items, pick default model (needs 418)
 - [ ] 420-radar-brief-gemini (S) — brief written by Gemini (needs 418)
 - [ ] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418)

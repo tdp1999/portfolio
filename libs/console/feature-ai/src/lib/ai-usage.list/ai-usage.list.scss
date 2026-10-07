@@ -26,6 +26,25 @@
   background: var(--color-surface);
 }
 
+.ai-bar {
+  height: 4px;
+  margin-block: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--color-surface-alt);
+}
+
+.ai-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+
+  &--full {
+    background: var(--color-error);
+  }
+}
+
 .ai-breakdowns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));

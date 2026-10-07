@@ -3,7 +3,7 @@
     <div>
       <h1 class="text-page-title">AI integration</h1>
       <p class="crud-header__subtitle">
-        The model the API calls for Radar, what each call used and what it would cost.
+        The AI provider the API calls, what each call used, what it cost, and the limits it runs into.
       </p>
     </div>
   </div>
@@ -40,8 +40,8 @@
             <div class="ai-notice ai-notice--warn" role="status">
               <mat-icon class="icon-sm" aria-hidden="true">key_off</mat-icon>
               <p class="text-body">
-                No API key. Set <code>GEMINI_API_KEY</code> in the API environment, then restart the API. This page
-                never asks for the key or shows it.
+                No API key. Set <code>{{ s.provider.keyEnv }}</code> in the API environment, then restart the API. This
+                page never asks for the key or shows it.
               </p>
             </div>
           }
@@ -64,7 +64,7 @@
           }
 
           <div class="rv-props rv-props--grid">
-            <console-property label="Provider">Google Gemini</console-property>
+            <console-property label="Provider">{{ s.provider.displayName }}</console-property>
             <console-property label="API key">
               @if (s.configured) {
                 <span class="ai-inline">
@@ -133,12 +133,12 @@
             </div>
             <div class="ai-stat">
               <span class="text-stat-label">Cost</span>
-              <span class="text-stat-value-sm">{{ t.cost }}</span>
+              <span class="text-stat-value-sm"><console-money [microUsd]="t.costMicroUsd" /></span>
               <span class="text-caption">
                 @if (free()) {
                   Estimate at paid prices, not billed
                 } @else {
-                  {{ t.billed }} billed
+                  <console-money [microUsd]="t.billedMicroUsd" /> billed
                 }
               </span>
             </div>
@@ -168,7 +168,9 @@
                     </ng-container>
                     <ng-container matColumnDef="cost">
                       <th mat-header-cell *matHeaderCellDef class="ai-num">Cost</th>
-                      <td mat-cell *matCellDef="let row" class="ai-num">{{ row.cost }}</td>
+                      <td mat-cell *matCellDef="let row" class="ai-num">
+                        <console-money [microUsd]="row.costMicroUsd" />
+                      </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="breakdownColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: breakdownColumns"></tr>
@@ -179,6 +181,196 @@
           } @else {
             <p class="text-body text-text-secondary">No AI calls in the {{ rangeLabel() }}.</p>
           }
+        }
+      </section>
+
+      <!-- ── Limits ───────────────────────────────────────────────── -->
+      <section class="flex flex-col gap-4" aria-labelledby="ai-limits-title">
+        <h2 id="ai-limits-title" class="text-section-heading">Limits</h2>
+
+        @if (limitsError()) {
+          <div class="ai-notice ai-notice--error" role="alert">
+            <mat-icon class="icon-sm" aria-hidden="true">error_outline</mat-icon>
+            <p class="text-body">Could not load the limits. The rest of the page still works; reload to try again.</p>
+          </div>
+        } @else if (limits(); as data) {
+          @if (limitsView(); as v) {
+            <div class="ai-stats">
+              <div class="ai-stat">
+                <span class="text-stat-label">Spend today</span>
+                <span class="text-stat-value-sm"><console-money [microUsd]="v.capSpentMicroUsd" /></span>
+                <div
+                  class="ai-bar"
+                  role="progressbar"
+                  aria-label="Daily spend cap used"
+                  [attr.aria-valuenow]="v.capPercent"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <span
+                    class="ai-bar__fill"
+                    [class.ai-bar__fill--full]="v.capPercent >= 100"
+                    [style.width.%]="v.capPercent"
+                  ></span>
+                </div>
+                <span class="text-caption">
+                  of <console-money [microUsd]="v.capMicroUsd" /> daily cap, resets
+                  <console-relative-time [value]="v.capResetsAt" />
+                </span>
+              </div>
+              <div class="ai-stat">
+                <span class="text-stat-label">Calls</span>
+                <span class="text-stat-value-sm">{{ v.callsToday }}</span>
+                <span class="text-caption">today, {{ v.callsLastMinute }} in the last minute</span>
+              </div>
+              <div class="ai-stat">
+                <span class="text-stat-label">Tokens today</span>
+                <span class="text-stat-value-sm">{{ v.tokensToday }}</span>
+                <span class="text-caption">Prompt, tools, answer and thinking</span>
+              </div>
+              <div class="ai-stat">
+                <span class="text-stat-label">Search queries</span>
+                <span class="text-stat-value-sm">{{ v.searchQueriesThisMonth }}</span>
+                <span class="text-caption">this month (UTC)</span>
+              </div>
+              @if (v.balance) {
+                <div class="ai-stat">
+                  <span class="text-stat-label">Credit left</span>
+                  <span class="text-stat-value-sm">{{ v.balance }}</span>
+                  <span class="text-caption">As the provider reports it</span>
+                </div>
+              }
+            </div>
+
+            @if (!data.reportsRateLimits && provider(); as p) {
+              <div class="ai-notice" role="note">
+                <mat-icon class="icon-sm" aria-hidden="true">info</mat-icon>
+                <p class="text-body">
+                  {{ p.displayName }} does not report request and token rate limits to an API key, so the table only
+                  holds limits it named in an error or documents.
+                  @if (p.links.limits; as limitsUrl) {
+                    See the full list on the
+                    <a class="ai-link" [href]="limitsUrl" target="_blank" rel="noopener">provider's rate limit page</a>.
+                  }
+                </p>
+              </div>
+            }
+            @if (!v.balance && provider(); as p) {
+              <p class="text-caption">
+                @if (data.balanceError) {
+                  Could not read the credit left: {{ data.balanceError }}
+                } @else {
+                  {{ p.displayName }} does not show the credit left to an API key.
+                  @if (p.links.usage; as usageUrl) {
+                    Check it on the <a class="ai-link" [href]="usageUrl" target="_blank" rel="noopener">usage page</a>.
+                  }
+                }
+              </p>
+            }
+
+            <div class="crud-table-container ai-scroll">
+              <table mat-table [dataSource]="v.rows" class="w-full ai-calls" aria-label="Known limits">
+                <ng-container matColumnDef="label">
+                  <th mat-header-cell *matHeaderCellDef>Limit</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ row.label }}
+                    <span class="text-caption block">{{ row.scope }}</span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="used">
+                  <th mat-header-cell *matHeaderCellDef class="ai-num">Used</th>
+                  <td mat-cell *matCellDef="let row" class="ai-num ai-nowrap">{{ row.used }}</td>
+                </ng-container>
+                <ng-container matColumnDef="limit">
+                  <th mat-header-cell *matHeaderCellDef class="ai-num">Limit</th>
+                  <td mat-cell *matCellDef="let row" class="ai-num ai-nowrap">{{ row.limit }}</td>
+                </ng-container>
+                <ng-container matColumnDef="remaining">
+                  <th mat-header-cell *matHeaderCellDef class="ai-num">Remaining</th>
+                  <td mat-cell *matCellDef="let row" class="ai-num ai-nowrap">{{ row.remaining }}</td>
+                </ng-container>
+                <ng-container matColumnDef="reset">
+                  <th mat-header-cell *matHeaderCellDef>Resets</th>
+                  <td mat-cell *matCellDef="let row" class="ai-nowrap">
+                    @if (row.resetAt) {
+                      <console-relative-time [value]="row.resetAt" />
+                    } @else {
+                      <span class="text-text-secondary">Not stated</span>
+                    }
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="source">
+                  <th mat-header-cell *matHeaderCellDef>Source</th>
+                  <td mat-cell *matCellDef="let row">
+                    @if (row.url) {
+                      <a class="ai-link" [href]="row.url" target="_blank" rel="noopener">{{ row.sourceLabel }}</a>
+                    } @else {
+                      {{ row.sourceLabel }}
+                    }
+                    @if (row.sourceHint) {
+                      <span class="text-caption block">{{ row.sourceHint }}</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <tr class="mat-mdc-row" *matNoDataRow>
+                  <td class="mat-mdc-cell" [attr.colspan]="limitColumns.length">
+                    <p class="text-body text-text-secondary py-4">No limits known yet.</p>
+                  </td>
+                </tr>
+                <tr mat-header-row *matHeaderRowDef="limitColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: limitColumns"></tr>
+              </table>
+            </div>
+
+            <h3 class="text-card-title">Model limits</h3>
+            @if (data.modelsError === 'not-configured') {
+              <p class="text-body text-text-secondary">
+                No API key, so the model limits cannot be read. Set
+                <code class="ai-mono">{{ provider()?.keyEnv }}</code> to see them.
+              </p>
+            } @else {
+              @if (data.modelsError; as modelsError) {
+                <div class="ai-notice ai-notice--error" role="alert">
+                  <mat-icon class="icon-sm" aria-hidden="true">error_outline</mat-icon>
+                  <p class="text-body ai-notice__message">Could not read the model limits: {{ modelsError }}</p>
+                </div>
+              }
+              <div class="crud-table-container ai-scroll">
+                <table mat-table [dataSource]="v.models" class="w-full ai-calls" aria-label="Model limits">
+                  <ng-container matColumnDef="model">
+                    <th mat-header-cell *matHeaderCellDef>Model</th>
+                    <td mat-cell *matCellDef="let m">
+                      <span class="ai-mono">{{ m.model }}</span>
+                      @if (m.error) {
+                        <span class="text-caption block ai-notice__message">Could not read: {{ m.error }}</span>
+                      }
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="input">
+                    <th mat-header-cell *matHeaderCellDef class="ai-num">Input tokens</th>
+                    <td mat-cell *matCellDef="let m" class="ai-num ai-nowrap">{{ m.input }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="output">
+                    <th mat-header-cell *matHeaderCellDef class="ai-num">Output tokens</th>
+                    <td mat-cell *matCellDef="let m" class="ai-num ai-nowrap">{{ m.output }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="thinking">
+                    <th mat-header-cell *matHeaderCellDef>Thinking</th>
+                    <td mat-cell *matCellDef="let m">{{ m.thinking }}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="modelColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: modelColumns"></tr>
+                </table>
+              </div>
+              <p class="text-caption">
+                The default model and the models called in the last 30 days, from the provider's model metadata
+                (refreshed every few hours).
+              </p>
+            }
+          }
+        } @else {
+          <console-skeleton-table [columns]="4" [rows]="3" />
         }
       </section>
 
@@ -226,7 +418,7 @@
             </ng-container>
             <ng-container matColumnDef="cost">
               <th mat-header-cell *matHeaderCellDef class="ai-num">Cost</th>
-              <td mat-cell *matCellDef="let call" class="ai-num">{{ call.cost }}</td>
+              <td mat-cell *matCellDef="let call" class="ai-num"><console-money [microUsd]="call.costMicroUsd" /></td>
             </ng-container>
             <ng-container matColumnDef="latency">
               <th mat-header-cell *matHeaderCellDef class="ai-num">Latency</th>
@@ -255,25 +447,28 @@
       </section>
 
       <!-- ── Notes ────────────────────────────────────────────────── -->
-      <section class="flex flex-col gap-4" aria-labelledby="ai-notes-title">
-        <h2 id="ai-notes-title" class="text-section-heading">Quota and data</h2>
-        <ul class="ai-notes text-body text-text-secondary">
-          <li>
-            Google does not let an API key read its remaining quota, so this page cannot show it. Check limits on the
-            <a class="ai-link" [href]="rateLimitUrl" target="_blank" rel="noopener">AI Studio rate limit page</a>
-            and spend on the
-            <a class="ai-link" [href]="usageUrl" target="_blank" rel="noopener">AI Studio usage page</a>.
-          </li>
-          <li>
-            Cost uses the price constant in the API, checked against the
-            <a class="ai-link" [href]="pricingUrl" target="_blank" rel="noopener">Gemini pricing page</a>. A model
-            without a price shows "No price" and is left out of the totals.
-          </li>
-          @if (free()) {
-            <li>On the free tier, Google may use prompts and answers to improve its products.</li>
-          }
-        </ul>
-      </section>
+      @if (provider(); as p) {
+        <section class="flex flex-col gap-4" aria-labelledby="ai-notes-title">
+          <h2 id="ai-notes-title" class="text-section-heading">Cost and data</h2>
+          <ul class="ai-notes text-body text-text-secondary">
+            <li>
+              Cost uses the price constant in the API, checked against the
+              <a class="ai-link" [href]="p.links.pricing" target="_blank" rel="noopener"
+                >{{ p.displayName }} pricing page</a
+              >. A model without a price shows "No price" and is left out of the totals.
+            </li>
+            @if (p.links.usage; as usageUrl) {
+              <li>
+                What the provider actually charged is on its
+                <a class="ai-link" [href]="usageUrl" target="_blank" rel="noopener">usage page</a>.
+              </li>
+            }
+            @if (free()) {
+              <li>On a free tier, the provider may use prompts and answers to improve its products.</li>
+            }
+          </ul>
+        </section>
+      }
     </div>
   }
 </div>

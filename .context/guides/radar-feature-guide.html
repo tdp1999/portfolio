@@ -127,7 +127,7 @@
       <li><a href="#sources">4. Sources</a></li>
       <li><a href="#capture">5. Upload và normalize</a></li>
       <li><a href="#images">6. Ảnh và Cloudinary</a></li>
-      <li><a href="#runs">7. Runs: Manual và Hybrid</a></li>
+      <li><a href="#runs">7. Runs: Manual, Hybrid và Auto</a></li>
       <li><a href="#comments">8. Comments</a></li>
       <li class="group">Phân tích</li>
       <li><a href="#token">9. Machine token</a></li>
@@ -182,11 +182,13 @@
         <tr><th>Term</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ / hình dung thực tế</th></tr>
         <tr><td><b>Source</b></td><td>Một trang Facebook mà Radar theo dõi. Mỗi bài thuộc đúng một source.</td><td><code>facebook.com/mrgoonie</code>, tên hiển thị "Goon Nguyen"</td></tr>
         <tr><td><b>Apify</b></td><td>Dịch vụ scrape web có sẵn "actor" lấy bài Facebook công khai. Radar không dùng tài khoản Facebook của bạn.</td><td>Chạy actor <code>facebook-posts-scraper</code>, tải kết quả về dạng JSON</td></tr>
-        <tr><td><b>Capture</b></td><td>Bước đầu tiên của một run: lấy bài thô từ Facebook qua Apify. HYBRID thì API tự gọi Apify; MANUAL thì bạn upload file JSON vào run.</td><td>Apify trả 180 bài, hoặc bạn upload file 14 MB chứa 1.100 bài</td></tr>
+        <tr><td><b>Capture</b></td><td>Bước đầu tiên của một run: lấy bài thô từ Facebook qua Apify. HYBRID và AUTO thì API tự gọi Apify; MANUAL thì bạn upload file JSON vào run.</td><td>Apify trả 180 bài, hoặc bạn upload file 14 MB chứa 1.100 bài</td></tr>
         <tr><td><b>Normalize</b></td><td>Chuyển dữ liệu thô của Apify thành dạng chuẩn của Radar, bỏ trùng, giữ nguyên bản gốc trong <code>rawPayload</code>.</td><td>Bài album: bỏ phần wrapper, giữ 3 ảnh</td></tr>
         <tr><td><b>Run</b></td><td>Một lần thu thập bài cho một source, có trạng thái tổng và một dòng trạng thái cho từng bước. Chỉ bắt đầu khi bạn yêu cầu (RAD-006).</td><td>"Lấy tối đa 200 bài của mrgoonie từ 01/09"</td></tr>
         <tr><td><b>Flow MANUAL</b></td><td>Run mà bạn tự chạy Apify trên web rồi upload file JSON vào run đó.</td><td>Tạo run MANUAL, upload file kèm <code>runId</code></td></tr>
         <tr><td><b>Flow HYBRID</b></td><td>Run mà API tự gọi Apify, tự lấy kết quả, rồi chờ Claude Code phân tích. "Hybrid" vì nửa tự động (capture), nửa do worker bên ngoài (phân tích).</td><td>Tạo run HYBRID, vài phút sau run dừng ở bước chờ <code>/radar work</code></td></tr>
+        <tr><td><b>Flow AUTO</b></td><td>Run mà API tự làm hết: gọi Apify, chép ảnh, rồi tự phân tích từng bài bằng AI provider đã cấu hình (hiện là Gemini). Bạn chỉ việc đọc kết quả.</td><td>Tạo run AUTO lúc 10:00, khoảng 10:40 run DONE, Feed có bài đã phân tích</td></tr>
+        <tr><td><b>AI budget</b></td><td>Số tiền AI tối đa một run AUTO được tiêu, tính từ sổ ghi usage của trang AI (token và lượt search). Hết budget thì run dừng, bài còn lại vẫn chờ.</td><td>Mặc định $1 mỗi run, cộng trần $1 mỗi ngày cho toàn bộ AI</td></tr>
         <tr><td><b>Step</b></td><td>Một bước trong run: CAPTURE, NORMALIZE, ENRICH (chép ảnh), ANALYZE. Mỗi bước có trạng thái riêng.</td><td>CAPTURE: DONE, ANALYZE: AWAITING_EXTERNAL</td></tr>
         <tr><td><b>Cron tick</b></td><td>Hàm API tự gọi mỗi phút để đẩy các run đang chạy đi tiếp một đoạn nhỏ.</td><td>Giống người trực ca, mỗi phút đi kiểm tra một vòng</td></tr>
         <tr><td><b>AWAITING_EXTERNAL</b></td><td>Trạng thái "đang chờ bên ngoài API làm tiếp": chờ bạn upload (MANUAL) hoặc chờ <code>/radar work</code> (ANALYZE).</td><td>Run dừng ở đây cho tới khi mọi bài được phân tích</td></tr>
@@ -262,7 +264,7 @@
         <p class="text-small">Feed hiện badge "1 run in progress" khi còn run đang chạy; bấm vào để mở trang Runs.</p>
       </div>
 
-      <div class="callout blue"><b>Vì sao Claude Code làm worker mà API không tự gọi LLM?</b> Claude Code trên máy bạn không tốn thêm tiền API và đã biết bối cảnh làm việc của bạn. Phase C mới thêm adapter để API tự gọi Gemini hoặc Anthropic API.</div>
+      <div class="callout blue"><b>Hai cách phân tích.</b> Run HYBRID và MANUAL để Claude Code làm worker: không tốn thêm tiền API và Claude Code đã biết bối cảnh làm việc của bạn. Run AUTO để API tự phân tích qua AI client (mỗi bài đúng một request có cấu trúc, không có agent loop), có tính tiền và có budget. Hai cách dùng chung một bộ luật phân tích, xem <a href="#runs">mục 7</a>.</div>
     </section>
 
     <section id="sources">
@@ -335,18 +337,19 @@
     </section>
 
     <section id="runs">
-      <h2>7. Runs: Manual và Hybrid</h2>
+      <h2>7. Runs: Manual, Hybrid và Auto</h2>
       <p>Một run là một lần thu thập bài cho một source. Bạn tạo run bằng nút "New run" ở trang Runs của console (<code>/radar/runs</code>), nút này gọi <code>POST /api/radar/runs</code>. Từ lúc đó, <b>cron tick</b> của API chạy mỗi phút và đẩy run đi qua từng bước cho tới khi xong hoặc lỗi. Không có lịch chạy tự động: run chỉ tồn tại vì bạn tạo nó (RAD-006).</p>
 
-      <h3>Hai flow</h3>
+      <h3>Ba flow</h3>
       <div class="scroll"><table>
-        <tr><th></th><th>MANUAL</th><th>HYBRID</th></tr>
-        <tr><td>Ai lấy bài từ Facebook</td><td>Bạn chạy actor trên web Apify, tải file JSON</td><td>API tự gọi Apify API (start, poll, đọc dataset)</td></tr>
-        <tr><td>Bước CAPTURE</td><td>Đứng ở <code>AWAITING_EXTERNAL</code> cho tới khi bạn upload file kèm <code>runId</code></td><td>Tick đầu tiên start job Apify, các tick sau poll trạng thái job</td></tr>
-        <tr><td>Bước NORMALIZE</td><td>Làm ngay trong request upload (xong cùng CAPTURE)</td><td>Đọc dataset từng trang 100 bài, tối đa 5 trang mỗi tick, nhớ vị trí đã đọc. Vị trí luôn tăng 100 mỗi trang, kể cả khi Apify trả ít hơn (trang đã lọc dòng rỗng), nên không bài nào bị đọc hai lần</td></tr>
-        <tr><td>ENRICH, ANALYZE</td><td colspan="2">Giống nhau: chép ảnh theo lô, rồi chờ <code>/radar work</code></td></tr>
-        <tr><td>Cần cấu hình</td><td>Không</td><td><code>APIFY_TOKEN</code> trên server. Thiếu thì tạo run HYBRID bị từ chối (400), MANUAL vẫn chạy</td></tr>
-        <tr><td>Chi phí Apify</td><td>Tính trên tài khoản Apify khi bạn chạy trên web</td><td>Giống vậy, nhưng do API khởi chạy. Cap tối đa 1.500 bài mỗi run</td></tr>
+        <tr><th></th><th>MANUAL</th><th>HYBRID</th><th>AUTO</th></tr>
+        <tr><td>Ai lấy bài từ Facebook</td><td>Bạn chạy actor trên web Apify, tải file JSON</td><td colspan="2">API tự gọi Apify API (start, poll, đọc dataset)</td></tr>
+        <tr><td>Bước CAPTURE</td><td>Đứng ở <code>AWAITING_EXTERNAL</code> cho tới khi bạn upload file kèm <code>runId</code></td><td colspan="2">Tick đầu tiên start job Apify, các tick sau poll trạng thái job</td></tr>
+        <tr><td>Bước NORMALIZE</td><td>Làm ngay trong request upload (xong cùng CAPTURE)</td><td>Đọc dataset từng trang 100 bài, tối đa 5 trang mỗi tick, nhớ vị trí đã đọc. Vị trí luôn tăng 100 mỗi trang, kể cả khi Apify trả ít hơn (trang đã lọc dòng rỗng), nên không bài nào bị đọc hai lần</td><td>Giống HYBRID</td></tr>
+        <tr><td>ENRICH</td><td colspan="3">Giống nhau: chép ảnh theo lô, đọc comment nếu run bật "Fetch comments"</td></tr>
+        <tr><td>ANALYZE</td><td colspan="2">Chờ bạn chạy <code>/radar work</code> trong Claude Code</td><td>API tự phân tích mỗi tick một lô 3 bài, xem "Phân tích trên server" bên dưới</td></tr>
+        <tr><td>Cần cấu hình</td><td>Không</td><td><code>APIFY_TOKEN</code> trên server. Thiếu thì tạo run HYBRID bị từ chối (400), MANUAL vẫn chạy</td><td><code>APIFY_TOKEN</code> và key của AI provider. Thiếu key thì tạo run AUTO bị từ chối (400 <code>RADAR_AI_NOT_CONFIGURED</code>)</td></tr>
+        <tr><td>Chi phí Apify</td><td>Tính trên tài khoản Apify khi bạn chạy trên web</td><td>Giống vậy, nhưng do API khởi chạy. Cap tối đa 1.500 bài mỗi run</td><td>Như HYBRID, cộng tiền AI có budget riêng mỗi run</td></tr>
       </table></div>
       <p>Upload không kèm <code>runId</code> vẫn dùng được như Phase A: nó tự tạo một run MANUAL đã DONE, ảnh được chép ngay, bài vào hàng chờ phân tích. Cách này không có trạng thái để theo dõi trên trang Runs. Khi source đang có run chưa xong, API từ chối cách upload này (409), vì nó sẽ chuyển <code>lastRunId</code> của các bài sang run mới và run đang chạy không còn đếm được các bài đó.</p>
 
@@ -365,8 +368,8 @@
       <h3>Trạng thái</h3>
       <div class="scroll"><table>
         <tr><th>Trạng thái</th><th>Nghĩa ở run</th><th>Nghĩa ở step</th></tr>
-        <tr><td><code>PENDING</code></td><td>HYBRID vừa tạo, tick chưa chạm tới</td><td>Chưa tới lượt</td></tr>
-        <tr><td><code>RUNNING</code></td><td>Đang capture, normalize hoặc chép ảnh</td><td>Đang làm, có thể kéo dài qua nhiều tick</td></tr>
+        <tr><td><code>PENDING</code></td><td>HYBRID hoặc AUTO vừa tạo, tick chưa chạm tới</td><td>Chưa tới lượt</td></tr>
+        <tr><td><code>RUNNING</code></td><td>Đang capture, normalize, chép ảnh, hoặc (AUTO) đang phân tích</td><td>Đang làm, có thể kéo dài qua nhiều tick</td></tr>
         <tr><td><code>AWAITING_EXTERNAL</code></td><td>Đang chờ bạn: upload (MANUAL) hoặc <code>/radar work</code></td><td>CAPTURE của MANUAL chờ upload; ANALYZE chờ worker</td></tr>
         <tr><td><code>DONE</code></td><td>Không còn bài nào của run chờ worker. Bài bị kẹt (claim đủ 3 lần) và bài của source đang tạm dừng không giữ run lại; chúng vẫn hiện ở "N stuck" và "N paused" trên Feed</td><td>Xong</td></tr>
         <tr><td><code>FAILED</code></td><td>Một bước lỗi; <code>error</code> giữ thông điệp của provider</td><td>Bước gây lỗi, có <code>error</code></td></tr>
@@ -406,16 +409,20 @@
       <p>Trang <code>/radar/runs</code> mở từ nút "Runs" trên Feed. Trang chỉ đọc <code>GET /api/radar/runs</code> (50 run mới nhất), không có endpoint riêng.</p>
       <div class="scroll"><table>
         <tr><th>Phần</th><th>Hiển thị gì</th><th>Quy tắc</th></tr>
-        <tr><td>Bảng run</td><td>Source, flow và cap, window, trạng thái, 4 bước, số bài, thời điểm tạo</td><td>Mới nhất ở trên. Window trống hai đầu ghi "All posts"</td></tr>
+        <tr><td>Bảng run</td><td>Source, flow và cap, window, trạng thái, 4 bước, số bài, tiền AI, thời điểm tạo</td><td>Mới nhất ở trên. Window trống hai đầu ghi "All posts". Rê chuột vào tên flow để thấy bạn phải làm gì ở flow đó</td></tr>
+        <tr><td>Cột Spend</td><td>Run AUTO: tiền AI đã tiêu "của" budget, ví dụ "2.865 ₫ of 26.000 ₫". Run khác: "None"</td><td>Tiền tiêu là tổng các dòng usage của run (sổ usage gom theo run, một query cho cả trang). Khi <code>AI_GEMINI_BILLING=free</code> thì thêm dòng "Estimate, free tier" vì không có gì bị tính tiền thật</td></tr>
         <tr><td>Cột Steps</td><td>Capture, Normalize, Images, Analyze, mỗi bước có biểu tượng theo trạng thái</td><td>Rê chuột vào bước để thấy adapter và lỗi (nếu có)</td></tr>
         <tr><td>Tự làm mới</td><td>Trang gọi lại API mỗi 10 giây</td><td>Chỉ khi còn run đang chạy (<code>PENDING</code>, <code>RUNNING</code>, <code>AWAITING_EXTERNAL</code>). Hết run đang chạy hoặc rời trang thì dừng. Lỗi khi tự làm mới không hiện toast, lần sau gọi lại</td></tr>
         <tr><td>Dòng thông báo dưới run</td><td>Run lỗi: tên bước lỗi và thông điệp của provider. ANALYZE đang chờ: nhắc chạy <code>/radar work</code>. Run MANUAL đang chờ: nhắc upload file export. Run có <code>warning</code> (comment bị bỏ qua hoặc chỉ đọc một phần): thêm một dòng vàng, kể cả khi run đã DONE</td><td>Run đang chạy bình thường hoặc đã DONE mà không có warning thì không có dòng này</td></tr>
         <tr><td>Run đã hủy</td><td>Badge "Cancelled" màu xám và dòng "Cancelled at &lt;bước&gt;", không phải "Failed" màu đỏ</td><td>API vẫn lưu run hủy là FAILED với lỗi "Cancelled by the Owner"; console đọc đúng thông điệp này (hằng số dùng chung <code>RADAR_RUN_CANCELLED_MESSAGE</code>) để hiển thị khác đi</td></tr>
         <tr><td>Nút "Cancel"</td><td>Có ở mọi run đang chạy</td><td>Hỏi xác nhận trước khi gọi <code>POST /api/radar/runs/:id/cancel</code>. Hộp xác nhận nhắc rằng job Apify đã start vẫn tính tiền</td></tr>
         <tr><td>Nút "Upload export"</td><td>Chỉ có ở run MANUAL đang chờ upload</td><td>Gửi file kèm <code>runId</code> của run đó</td></tr>
-        <tr><td>Form "New run"</td><td>Source, flow, window, item cap, ô "Fetch comments"</td><td>Chỉ liệt kê source đang bật. Flow mặc định HYBRID. Cap mặc định 200, tối đa 1.500. Ngày đầu window mặc định là ngày ngay sau ngày cuối của run DONE gần nhất của source đó (hoặc ngày tạo run nếu run đó không có <code>windowTo</code>), không muộn hơn hôm nay; source chưa có run DONE thì lùi 6 tháng. Ngày cuối để trống nghĩa là tới hiện tại; chọn ngày cuối thì tính tới hết ngày đó. Window tính theo nguyên ngày UTC, đúng ngày <code>YYYY-MM-DD</code> mà Apify lọc, nên hai run nối nhau không trùng ngày và ngày đầu không bao giờ bằng ngày cuối</td></tr>
+        <tr><td>Form "New run"</td><td>Source, flow, window, item cap, AI budget, ô "Fetch comments"</td><td>Chỉ liệt kê source đang bật. Flow mặc định là AUTO khi server có key AI, ngược lại là HYBRID; thiếu key thì ô AUTO bị khóa kèm dòng giải thích. Dưới ô flow có một dòng nói bạn phải làm gì ở flow đó. Ô AI budget chỉ bật với AUTO, nhập theo tiền đang hiển thị (VND hoặc USD), mặc định là budget của server (<code>GET /radar/ai/settings</code>); phải nằm trong khoảng $0.01 tới $100 (form báo lỗi ngay, khoảng này được quy ra tiền đang hiển thị); console đổi sang USD (làm tròn tới cent) trước khi gửi <code>budgetUsd</code>, và lỗi server của ô này hiện ngay dưới ô. Cap mặc định 200, tối đa 1.500. Ngày đầu window mặc định là ngày ngay sau ngày cuối của run DONE gần nhất của source đó (hoặc ngày tạo run nếu run đó không có <code>windowTo</code>), không muộn hơn hôm nay; source chưa có run DONE thì lùi 6 tháng. Ngày cuối để trống nghĩa là tới hiện tại; chọn ngày cuối thì tính tới hết ngày đó. Window tính theo nguyên ngày UTC, đúng ngày <code>YYYY-MM-DD</code> mà Apify lọc, nên hai run nối nhau không trùng ngày và ngày đầu không bao giờ bằng ngày cuối</td></tr>
+        <tr><td>Độ sâu phân tích</td><td>Feed: dưới điểm có chữ "Quick" hoặc "Deep", rê chuột vào điểm để thấy nghĩa; bài deep lỗi có icon cảnh báo với <code>workError</code>. Detail: thuộc tính "Depth" trong panel "Analyzed by" (Quick, Deep, hoặc Full khi worker phân tích), dòng ghi chú khi bài chỉ qua tầng light, dòng lỗi khi deep lỗi, và mục "Sources" liệt kê link (không có nguồn thì không hiện)</td><td>Bạn biết điểm nào là đánh giá nhanh, điểm nào đã được nghiên cứu</td></tr>
         <tr><td>Badge trên Feed</td><td>"1 run in progress" (hoặc "N runs in progress") cạnh số bài pending</td><td>Chỉ hiện khi có run đang chạy. Bấm vào để mở trang Runs. Đọc lúc mở Feed và khi đóng hộp Sources, không tự làm mới</td></tr>
       </table></div>
+
+      <div class="callout blue"><b>Tiền hiển thị theo VND.</b> API và database luôn lưu micro-USD. Console đổi sang VND chỉ khi hiển thị, theo tỷ giá ở trang Settings → Currency (mặc định 26.000 ₫ cho 1 USD, nhập tay từ 1.000 tới 100.000, hoặc bấm lấy tỷ giá hôm nay từ open.er-api.com). Lựa chọn này lưu trong trình duyệt, giống theme. Mọi số tiền đều có tooltip ghi giá gốc bằng USD và tỷ giá đang dùng.</div>
 
       <h3>Ví dụ: một run HYBRID 200 bài</h3>
       <ol>
@@ -433,6 +440,35 @@
         <li>Chạy actor trên web Apify, tải file JSON, upload với field <code>runId</code>. File vượt cap hoặc run không còn chờ upload thì bị từ chối, không ghi gì.</li>
         <li>Upload xong: CAPTURE và NORMALIZE DONE, ENRICH RUNNING. Từ đây run đi tiếp giống HYBRID.</li>
       </ol>
+
+      <h3>Phân tích trên server (AUTO)</h3>
+      <p>Ở run AUTO, bước ANALYZE do adapter <code>server-ai</code> làm ngay trong tick, qua AI client của module AI (cùng sổ usage và giá với trang AI). Adapter không biết provider nào đứng sau: hôm nay là Gemini, sau này có thể là OpenAI hay Claude mà không đổi Radar. Luật phân tích nằm ở một chỗ duy nhất, <code>radar-analysis.rules.ts</code>; skill <code>/radar work</code> đọc cùng file đó.</p>
+      <div class="callout blue"><b>Thay provider AI.</b> Module AI chỉ biết port <code>IAiProvider</code>, nên đổi provider (ví dụ một API OpenAI-compatible như DeepSeek) nghĩa là viết một adapter mới và đổi factory <code>AI_PROVIDER</code> trong <code>ai.module.ts</code>, cộng giá model vào <code>AiCostPolicy.PRICES</code> và đọc env của key trong <code>ai.config.ts</code>. Adapter cung cấp bốn thứ: <code>generate</code> (một request có schema), <code>getModelInfo</code> (token limit của model), <code>getBalance</code> (credit còn lại, hoặc <code>null</code> khi provider không cho đọc) và <code>profile</code> (tên hiển thị, biến env của key, link pricing, usage và rate limit, có gửi header rate limit hay không, bảng hạn mức trong tài liệu kèm ngày kiểm tra). Limit nào provider báo trong header hay lỗi 429 thì adapter đổi sang dạng chung <code>AiObservedLimit</code>. Console và Radar không đọc tên field riêng của provider nào.</div>
+      <div class="scroll"><table>
+        <tr><th>Quy tắc</th><th>Cách làm</th><th>Lý do</th></tr>
+        <tr><td>Hai tầng: light rồi deep</td><td><b>Light</b> cho mọi bài: không search, không đọc link, tối đa 3 ảnh, câu trả lời ngắn. <b>Deep</b> chỉ cho bài có điểm light từ 7 trở lên, tối đa 15 bài mỗi run (env <code>RADAR_AI_DEEP_MIN_SCORE</code>, <code>RADAR_AI_DEEP_MAX</code>, đặt 0 để tắt deep): có search (tối đa 2 lượt), đọc link, tối đa 8 ảnh. Bản deep thay bản light; deep lỗi thì giữ bản light và ghi <code>workError</code>. Cột <code>analysisDepth</code> của enrichment ghi bài đã đi tới tầng nào (worker để trống)</td><td>Search là phần đắt nhất; tiền chỉ nên tiêu cho bài đáng đọc, bài nào cũng vẫn có TL;DR</td></tr>
+        <tr><td>Mỗi tick một lô</td><td>Tối đa 3 bài, mỗi bài đúng một request có cấu trúc (JSON theo schema) kèm workflow profile, nội dung bài và comment. Bài chờ deep được làm trước, sau đó mới claim bài light của chính run đó</td><td>Không có agent loop; bài quan trọng được nghiên cứu khi budget còn</td></tr>
+        <tr><td>Model theo tầng</td><td>Light dùng Flash-Lite (<code>gemini-3.1-flash-lite</code> rồi <code>gemini-3.5-flash-lite</code>, env <code>RADAR_AI_LIGHT_MODELS</code>), thinking thấp: đọc ảnh, viết TL;DR, chấm điểm. Deep dùng Flash (<code>gemini-3.8-flash</code> rồi <code>gemini-3.5-flash</code>, env <code>RADAR_AI_DEEP_MODELS</code>), thinking trung bình: search, fact check, suy luận. Trong mỗi tầng, model bận hoặc lỗi thì chuyển model kế tiếp</td><td>Flash-Lite đủ cho việc đọc và tóm tắt, nhưng không đáng tin cho fact check; model mạnh hơn chỉ chạy cho số ít bài đáng đọc</td></tr>
+        <tr><td>Tắt search</td><td>Env <code>RADAR_AI_SEARCH=off</code>: deep vẫn đọc link nhưng không search</td><td>Cắt khoản đắt nhất khi cần</td></tr>
+        <tr><td>Câu trả lời sai schema</td><td>Gửi lại một lần kèm lý do bị từ chối. Sai lần nữa thì bài thành stuck và <code>workError</code> ghi lý do</td><td>App quyết định mọi lần thử lại, không để model tự lặp</td></tr>
+        <tr><td>Provider bận (429, 503, timeout, mất mạng)</td><td>Hết model để thử thì trả bài về hàng chờ, không tính vào số lần claim, và dừng tick. Tick sau thử lại. Nếu provider bận suốt 30 phút mà không phân tích được bài nào thì run DONE kèm warning, bài còn lại vẫn chờ</td><td>Bận là lỗi tạm thời, không phải lỗi của bài; nhưng một run không chờ mãi một provider đã hết quota</td></tr>
+        <tr><td>Key sai hoặc thiếu</td><td>Trả bài về hàng chờ và ghi lỗi vào bước ANALYZE; lặp 5 lần thì run FAILED</td><td>Lỗi cấu hình, thử bài khác cũng vô ích</td></tr>
+        <tr><td>Budget mỗi run</td><td>Trước mỗi bài, cộng tiền AI đã tiêu của run (sổ usage gom theo run). Đủ budget thì run DONE kèm warning; bài còn lại vẫn chờ một run sau hoặc <code>/radar work</code>. Mặc định $1 (env <code>RADAR_AI_BUDGET_USD</code>), đổi từng run bằng <code>budgetUsd</code></td><td>Một run không thể tiêu quá số tiền bạn chấp nhận</td></tr>
+        <tr><td>Trần mỗi ngày</td><td>AI client cộng tiền của mọi feature từ 0h UTC. Chạm trần (mặc định $1, env <code>AI_DAILY_CAP_USD</code>) thì mọi lệnh gọi AI bị từ chối trước khi gửi đi; run AUTO dừng như khi hết budget</td><td>Nhiều run hoặc một vòng lặp lỗi cũng không vượt được trần</td></tr>
+        <tr><td>Tiền search</td><td>Mỗi lượt search tính theo giá niêm yết ($14 cho 1.000 lượt), không trừ phần miễn phí hằng tháng</td><td>Con số trên trang AI là mức trần, không bao giờ thấp hơn tiền thật</td></tr>
+        <tr><td>Link Facebook</td><td>Bị gỡ khỏi text, link và ảnh trước khi gửi; nguồn trỏ về Facebook bị bỏ khỏi <code>sources</code></td><td>RAD-003: provider không được mở facebook.com</td></tr>
+        <tr><td>Bài stuck</td><td>Feed hiện ở "N stuck", kèm <code>workError</code>. Requeue xóa lỗi và đưa bài về hàng chờ</td><td>Bạn thấy vì sao bài không được phân tích</td></tr>
+      </table></div>
+
+      <h3>Ví dụ: một run AUTO 200 bài</h3>
+      <ol>
+        <li>10:00 tới 10:30 Giống run HYBRID: capture, normalize, chép ảnh.</li>
+        <li>10:31 ANALYZE sang <code>RUNNING</code>. Mỗi tick chạy light cho 3 bài, mỗi bài vài giây.</li>
+        <li>Một bài light được 8 điểm: tick sau làm deep cho bài đó trước (search, đọc link), rồi mới chạy light tiếp.</li>
+        <li>Một bài trả lời thiếu field: gửi lại một lần, lần này đúng, bài DONE.</li>
+        <li>Model đầu bị 429: bài đó chuyển sang model thứ hai, vẫn xong trong cùng tick.</li>
+        <li>Khi không còn bài chờ light và không còn bài chờ deep, run DONE. Trang AI ghi từng request, chia "Radar quick analysis" và "Radar deep analysis".</li>
+      </ol>
     </section>
 
     <section id="comments">
@@ -442,7 +478,7 @@
       <h3>Ba cách lấy comment</h3>
       <div class="scroll"><table>
         <tr><th>Cách</th><th>Khi nào</th><th>Giới hạn tiền</th></tr>
-        <tr><td>Trong run</td><td>Tick ô "Fetch comments" ở form New run. Chỉ bật được với run HYBRID có ngày đầu window (run nối tiếp, không phải run quét cả năm)</td><td>Tối đa $0.50 mỗi run (env <code>RADAR_COMMENTS_MAX_CHARGE_USD</code>)</td></tr>
+        <tr><td>Trong run</td><td>Tick ô "Fetch comments" ở form New run. Chỉ bật được với run HYBRID hoặc AUTO có ngày đầu window (run nối tiếp, không phải run quét cả năm)</td><td>Tối đa $0.50 mỗi run (env <code>RADAR_COMMENTS_MAX_CHARGE_USD</code>)</td></tr>
         <tr><td>Từng bài</td><td>Nút "Fetch comments" ở section Comments của trang Detail, có hộp xác nhận</td><td>Tối đa $0.10 mỗi lần bấm</td></tr>
         <tr><td>Upload</td><td>Nút "Upload comments" ở hộp Sources: file JSON xuất từ actor comments trên web Apify</td><td>Không tốn tiền phía API; chỉ gắn comment vào bài đã có của source đó</td></tr>
       </table></div>
@@ -569,22 +605,24 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>DELETE</td><td><code>/radar/sources/:id</code></td><td>Xóa source và ảnh</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/captures/upload</code></td><td>Upload file JSON. Field tùy chọn <code>runId</code> đổ file vào một run MANUAL đang chờ</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/sources/:id/comments/upload</code></td><td>Upload file JSON của actor comments (tối đa 20.000 comment). Chỉ gắn vào bài đã có của source; trả về số bài, số comment, số không khớp, số lỗi</td></tr>
-        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL hoặc HYBRID, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn), <code>fetchComments</code> (mặc định false, chỉ hợp lệ với HYBRID có <code>windowFrom</code>)</td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL, HYBRID hoặc AUTO, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn), <code>fetchComments</code> (mặc định false, chỉ hợp lệ với HYBRID hoặc AUTO có <code>windowFrom</code>), <code>budgetUsd</code> (chỉ với AUTO, từ 0.01 tới 100; bỏ trống thì lấy mặc định của server)</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch</code></td><td>Bắt đầu đọc comment của một bài (tính tiền, tối đa $0.10). Trả 202 kèm <code>{ state: 'running', jobRef }</code></td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch/:jobRef</code></td><td>Hỏi kết quả: <code>running</code> khi job chưa xong; <code>done</code> kèm <code>status</code>, <code>fetchedCount</code> khi đã thay danh sách cũ. Job lỗi thì bài thành FAILED và trả lỗi <code>RADAR_COMMENTS_FETCH_FAILED</code></td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/items</code></td><td>Một trang Feed theo bộ lọc. Query <code>triageStatus</code> (INBOX, SAVED, DONE) chọn tab; kết quả kèm <code>triageCounts</code>, số bài của cả ba tab dưới cùng bộ lọc. Query <code>sourceId</code> lọc theo một source. Mỗi bài kèm <code>queueState</code> (analyzed, claimed, pending, stuck, paused) và <code>images</code> (<code>total</code>, <code>pending</code>, <code>failed</code>) cho cột Progress</td></tr>
         <tr><td>Admin</td><td>PATCH</td><td><code>/radar/items/triage</code></td><td>Đặt một trạng thái triage cho danh sách bài. Body: <code>ids</code> (1 tới 100 uuid), <code>status</code>. Id không tồn tại thì bỏ qua; trả <code>{ updated }</code> là số bài đã đổi</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/comments/settings</code></td><td>Giới hạn tiền của run và của một lần đọc, số comment cấp 1 một lần đọc</td></tr>
-        <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/ai/settings</code></td><td><code>{ configured, billing, defaultBudgetMicroUsd }</code>: key AI có chưa, free hay paid, budget mặc định của run AUTO</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước; run AUTO kèm <code>budgetMicroUsd</code> và <code>spentMicroUsd</code> (run khác: <code>null</code>)</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs/:id</code></td><td>Một run kèm trạng thái và lỗi của từng bước</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs/:id/cancel</code></td><td>Hủy run đang chạy: bước hiện tại và run thành FAILED với lỗi "Cancelled by the Owner"</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/images/persist</code></td><td>Chạy lại việc chép ảnh</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/briefs</code></td><td>Yêu cầu brief. Body: <code>windowFrom</code>, <code>windowTo</code>, <code>sourceId</code> (tùy chọn, bỏ trống là tất cả nguồn)</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/briefs</code>, <code>/radar/briefs/:id</code></td><td>50 brief mới nhất (không kèm body); một brief kèm body</td></tr>
         <tr><td>Admin</td><td>GET, PUT</td><td><code>/radar/profile</code></td><td>Đọc, lưu workflow profile</td></tr>
-        <tr><td>Admin</td><td>GET</td><td><code>/ai/status</code></td><td>Gemini đã cấu hình chưa, 4 ký tự cuối của key, billing (free hoặc paid), model mặc định, lần gọi cuối và lỗi cuối. Không bao giờ trả key</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/ai/status</code></td><td>Provider đang dùng (tên hiển thị, biến env của key, link pricing, usage và rate limit do adapter khai báo), đã cấu hình chưa, 4 ký tự cuối của key, billing (free hoặc paid), model mặc định, lần gọi cuối và lỗi cuối. Không bao giờ trả key</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/ai/test</code></td><td>Gọi thử model (tùy chọn <code>{ model }</code>), giới hạn 25 giây. Lỗi là câu trả lời bình thường <code>{ ok: false, errorKind, message }</code>, không phải lỗi HTTP. Lần thử cũng ghi một dòng usage</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/ai/usage?range</code></td><td>Tổng số lần gọi, số lỗi, token, chi phí trong <code>24h</code>, <code>7d</code> hoặc <code>30d</code> (giá trị lạ thành <code>7d</code>), chia theo model và theo feature. Cộng trong SQL nên khớp tổng các dòng usage</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/ai/limits</code></td><td>Trần chi tiêu mỗi ngày so với tiền đã tiêu hôm nay; số lần gọi (phút vừa qua, hôm nay), token hôm nay, lượt search tháng này (UTC); các limit đã biết (lấy từ tài liệu của provider, hoặc lần cuối provider báo trong header hay lỗi 429) kèm số đã dùng, còn lại, lúc reset và nguồn; token limit của model mặc định và các model đã gọi trong 30 ngày (cache vài giờ); credit còn lại nếu provider cho đọc. Thiếu key hay provider lỗi thì các phần đó ghi lý do, phần còn lại vẫn trả về</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/ai/calls?limit</code></td><td>Các dòng usage mới nhất (mặc định 50, tối đa 100), kèm bài hoặc brief mà lần gọi phục vụ</td></tr>
         <tr><td>Worker</td><td>GET</td><td><code>/radar/work/profile</code></td><td>Đọc profile (chỉ đọc)</td></tr>
         <tr><td>Worker</td><td>POST</td><td><code>/radar/work/claim</code></td><td>Xin bài</td></tr>
@@ -683,7 +721,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
 
     <section id="enrichment">
       <h2>13. Enrichment</h2>
-      <p>Mỗi kết quả Claude Code nộp phải khớp schema dưới đây (Zod v4). Danh sách provider tag và content type nằm trong <code>@portfolio/shared/types</code> để console dùng lại cho bộ lọc.</p>
+      <p>Mỗi kết quả, do Claude Code nộp hay do phân tích trên server (run AUTO) tạo ra, phải khớp schema dưới đây (Zod v4). Danh sách provider tag và content type nằm trong <code>@portfolio/shared/types</code> để console dùng lại cho bộ lọc.</p>
       <div class="scroll"><table>
         <tr><th>Field</th><th>Kiểu / giới hạn</th><th>Ý nghĩa</th></tr>
         <tr><td><code>tldr</code></td><td>chuỗi, 1 tới 280 ký tự</td><td>Một câu tóm tắt, ngôn ngữ gốc</td></tr>
@@ -695,12 +733,13 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>linkSummaries</code></td><td>tối đa 20 mục <code>{url, summary}</code></td><td>Tóm tắt từng link</td></tr>
         <tr><td><code>commentDigest</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Tóm tắt comment (task 411)</td></tr>
         <tr><td><code>factCheck</code></td><td>tối đa 4.000 ký tự, có thể trống</td><td>Điểm nào cần kiểm chứng. Được lưu, chỉ hiển thị khi mức độ là <code>major</code></td></tr>
-        <tr><td><code>factCheckSeverity</code></td><td><code>minor</code> hoặc <code>major</code>; bắt buộc khi có <code>factCheck</code>, ngược lại là <code>null</code></td><td><code>major</code>: ý chính của bài sai hoặc gây hiểu lầm. Feed hiện icon đỏ ở cột Progress, bài hiện dải cảnh báo đầu phần AI analysis</td></tr>
+        <tr><td><code>factCheckSeverity</code></td><td><code>minor</code> hoặc <code>major</code>; bắt buộc khi có <code>factCheck</code>, ngược lại là <code>null</code></td><td><code>major</code>: ý chính của bài sai hoặc gây hiểu lầm, và chỉ khi <code>sources</code> có trang chứng minh điều đó (phân tích trên server tự hạ <code>major</code> không có nguồn xuống <code>minor</code>). Feed hiện icon đỏ ở cột Progress, bài hiện dải cảnh báo đầu phần AI analysis</td></tr>
         <tr><td><code>overview</code></td><td>markdown, bắt buộc, tối đa 6.000 ký tự</td><td>Nhận định chung, phần chính của AI analysis: chuyện gì xảy ra, vì sao quan trọng, nằm ở đâu trong xu hướng chung và so với lựa chọn khác, giới hạn, nên theo dõi gì tiếp</td></tr>
         <tr><td><code>context</code></td><td>markdown, bắt buộc, tối đa 4.000 ký tự</td><td>Key terms: mỗi tool, model hay công ty được nhắc tới là gì, một dòng mỗi mục. Hiện thành mục gập "Key terms" dưới overview</td></tr>
         <tr><td><code>scoreReason</code></td><td>bắt buộc, tối đa 1.000 ký tự</td><td>Vì sao có điểm này. Hiện nhỏ ngay dưới Signal score ở cột phải</td></tr>
         <tr><td><code>applyNote</code></td><td>markdown, tối đa 8.000 ký tự</td><td>Áp dụng vào workflow của bạn thế nào, 1 tới 3 bullet, đứng cuối phần AI analysis</td></tr>
-        <tr><td><code>producer</code></td><td><code>{adapter, model}</code></td><td>Ai tạo ra kết quả này</td></tr>
+        <tr><td><code>sources</code></td><td>tối đa 20 mục <code>{url, title}</code>, URL <code>http(s)</code>, mặc định rỗng</td><td>Các trang mà phần research đã dựa vào. Không bao giờ có link Facebook</td></tr>
+        <tr><td><code>producer</code></td><td><code>{adapter, model}</code></td><td>Ai tạo ra kết quả này: <code>claude-code</code> khi worker nộp, tên AI provider (ví dụ <code>gemini</code>) và model thật đã trả lời khi phân tích trên server</td></tr>
         <tr><td><code>schemaVersion</code></td><td>đúng bằng 3</td><td>Phiên bản schema</td></tr>
       </table></div>
       <p>Chuỗi rỗng hoặc toàn khoảng trắng ở các field có thể trống được lưu thành <code>null</code>. Mỗi lần nâng <code>schemaVersion</code>, migration đưa các bài có enrichment cũ về <code>PENDING</code> để worker phân tích lại; bản cũ vẫn hiển thị cho tới khi bản mới được nộp. Bài chưa có <code>overview</code> hiện <code>context</code> dưới nhãn Background như trước.</p>
@@ -988,6 +1027,9 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>412</td><td>Brief: yêu cầu ở console, <code>/radar work brief</code> viết, trang Briefs</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>416</td><td>Module AI: client Gemini một lần gọi có schema, sổ usage, endpoint status và test</td><td><span class="status done">Xong</span></td></tr>
         <tr><td>417</td><td>Console: màn hình AI (status, test connection, usage, các lần gọi gần đây)</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>418</td><td>Phân tích trên server (flow AUTO): hai tầng light và deep, budget mỗi run, trần mỗi ngày, <code>sources</code></td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>418c</td><td>Trang AI: mục Limits theo dạng chung cho mọi provider (trần ngày, limit đã biết, token limit của model, credit)</td><td><span class="status done">Xong</span></td></tr>
+        <tr><td>418b</td><td>Console cho AUTO: flow mặc định, budget, cột Spend, độ sâu phân tích, Sources; hiển thị tiền theo VND</td><td><span class="status done">Xong</span></td></tr>
       </table></div>
     </section>
   </main>

@@ -1,6 +1,6 @@
 import type { SegmentedControlOption } from '@portfolio/console/shared/ui';
 
-import type { AiCallStatus, AiUsageRange } from './ai.types';
+import type { AiCallStatus, AiLimitSource, AiLimitWindow, AiUsageRange } from './ai.types';
 
 export const AI_RANGE_OPTIONS: SegmentedControlOption[] = [
   { value: '24h', label: '24 hours' },
@@ -28,7 +28,8 @@ export const AI_STATUS_BADGES: Record<AiCallStatus, string> = {
 
 /** What each usage feature is for, in the Owner's words. Unknown features show their raw name. */
 export const AI_FEATURE_LABELS: Record<string, string> = {
-  'radar.analyze': 'Radar analysis',
+  'radar.analyze': 'Radar deep analysis',
+  'radar.analyze.light': 'Radar quick analysis',
   'radar.transcript': 'Radar transcript',
   'radar.brief': 'Radar brief',
   'ai.test': 'Connection test',
@@ -40,6 +41,15 @@ export const AI_REF_ROUTES: Record<string, (id: string) => string[]> = {
   'radar-brief': (id) => ['/radar/briefs', id],
 };
 
-export const AI_STUDIO_USAGE_URL = 'https://aistudio.google.com/usage';
-export const AI_STUDIO_RATE_LIMIT_URL = 'https://aistudio.google.com/rate-limit';
-export const GEMINI_PRICING_URL = 'https://ai.google.dev/gemini-api/docs/pricing';
+export const AI_LIMIT_WINDOW_LABELS: Record<AiLimitWindow, string> = {
+  minute: 'per minute',
+  day: 'per day',
+  month: 'per month',
+};
+
+export const AI_LIMIT_SOURCE_LABELS: Record<AiLimitSource, string> = {
+  header: 'Response headers',
+  error: 'Rate-limit error',
+  'model-info': 'Model metadata',
+  documented: 'Provider docs',
+};

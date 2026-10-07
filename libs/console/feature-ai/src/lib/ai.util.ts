@@ -1,14 +1,7 @@
-const COMPACT = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+import { AI_LIMIT_SOURCE_LABELS, AI_LIMIT_WINDOW_LABELS } from './ai.data';
+import type { AiLimitRow, AiLimits, AiLimitsView, AiModelRow } from './ai.types';
 
-/** Micro-USD as dollars, precise enough to tell tiny costs apart: 18 → "$0.000018", 1_234_567 → "$1.23". */
-export function formatCost(microUsd: number | null): string {
-  if (microUsd === null) return 'No price';
-  if (microUsd === 0) return '$0';
-  const usd = microUsd / 1_000_000;
-  if (usd >= 1) return `$${usd.toFixed(2)}`;
-  if (usd >= 0.01) return `$${usd.toFixed(4)}`;
-  return `$${Number(usd.toPrecision(2))}`;
-}
+const COMPACT = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 
 /** Token counts in short form: 950 → "950", 12_400 → "12.4K". */
 export function formatTokens(tokens: number): string {
@@ -26,4 +19,63 @@ export function toolSummary(searchCount: number, urlCount: number): string | nul
     urlCount ? `${urlCount} ${urlCount === 1 ? 'page' : 'pages'} read` : '',
   ].filter(Boolean);
   return parts.length ? parts.join(', ') : null;
+}
+
+const GROUPED = new Intl.NumberFormat('en');
+
+/** A limit figure: grouped below 10,000, short above, "Unknown" when the provider gave none. */
+export function formatCount(value: number | null, missing = 'Unknown'): string {
+  if (value === null) return missing;
+  return value < 10_000 ? GROUPED.format(value) : COMPACT.format(value);
+}
+
+/** "2026-10-07 10:00 UTC": readable without depending on the viewer's locale. */
+function utcStamp(iso: string): string {
+  return `${iso.slice(0, 16).replace('T', ' ')} UTC`;
+}
+
+/** The Limits section's figures, formatted once per response so the template only reads fields. */
+export function toLimitsView(data: AiLimits): AiLimitsView {
+  const { dailyCap, usage } = data;
+  return {
+    capSpentMicroUsd: dailyCap.spentMicroUsd,
+    capMicroUsd: dailyCap.capMicroUsd,
+    capPercent:
+      dailyCap.capMicroUsd > 0 ? Math.min(100, Math.round((dailyCap.spentMicroUsd / dailyCap.capMicroUsd) * 100)) : 0,
+    capResetsAt: dailyCap.resetsAt,
+    callsLastMinute: formatCount(usage.callsLastMinute),
+    callsToday: formatCount(usage.callsToday),
+    tokensToday: formatTokens(usage.tokensToday),
+    searchQueriesThisMonth: formatCount(usage.searchQueriesThisMonth),
+    rows: data.limits.map(
+      (l): AiLimitRow => ({
+        key: `${l.metric}|${l.model ?? ''}`,
+        label: l.label,
+        scope: [l.model ?? 'All models', l.window ? AI_LIMIT_WINDOW_LABELS[l.window] : null].filter(Boolean).join(', '),
+        limit: formatCount(l.limit),
+        used: formatCount(l.used, 'Not counted'),
+        remaining: formatCount(l.remaining),
+        resetAt: l.resetAt,
+        sourceLabel: AI_LIMIT_SOURCE_LABELS[l.source],
+        sourceHint: l.checkedOn
+          ? `Checked on ${l.checkedOn}`
+          : l.observedAt
+            ? `Last reported ${utcStamp(l.observedAt)}`
+            : '',
+        url: l.url,
+      })
+    ),
+    models: data.models.map(
+      (m): AiModelRow => ({
+        model: m.model,
+        input: formatCount(m.inputTokenLimit),
+        output: formatCount(m.outputTokenLimit),
+        thinking: m.thinking === null ? 'Unknown' : m.thinking ? 'Yes' : 'No',
+        error: m.error,
+      })
+    ),
+    balance: data.balance
+      ? new Intl.NumberFormat('en', { style: 'currency', currency: data.balance.currency }).format(data.balance.amount)
+      : null,
+  };
 }

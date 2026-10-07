@@ -6,7 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { EnumLabelPipe, Property, RelativeTime, SegmentedControl, SkeletonTable } from '@portfolio/console/shared/ui';
+import {
+  EnumLabelPipe,
+  Money,
+  Property,
+  RelativeTime,
+  SegmentedControl,
+  SkeletonTable,
+} from '@portfolio/console/shared/ui';
 import { catchError, EMPTY, finalize, forkJoin, Subject, switchMap, tap } from 'rxjs';
 
 import {
@@ -16,22 +23,20 @@ import {
   AI_REF_ROUTES,
   AI_STATUS_BADGES,
   AI_STATUS_LABELS,
-  AI_STUDIO_RATE_LIMIT_URL,
-  AI_STUDIO_USAGE_URL,
-  GEMINI_PRICING_URL,
 } from '../ai.data';
 import { AiService } from '../ai.service';
 import type {
   AiBreakdownRow,
   AiCall,
   AiCallRow,
+  AiLimits,
   AiStatus,
   AiTestResult,
   AiUsage,
   AiUsageRange,
   AiUsageTotals,
 } from '../ai.types';
-import { formatCost, formatLatency, formatTokens, toolSummary } from '../ai.util';
+import { formatLatency, formatTokens, toLimitsView, toolSummary } from '../ai.util';
 
 @Component({
   selector: 'console-ai-usage-list',
@@ -44,6 +49,7 @@ import { formatCost, formatLatency, formatTokens, toolSummary } from '../ai.util
     MatTableModule,
     MatTooltipModule,
     EnumLabelPipe,
+    Money,
     Property,
     RelativeTime,
     SegmentedControl,
@@ -68,9 +74,17 @@ export default class AiUsageList implements OnInit {
   protected readonly testing = signal(false);
   protected readonly testResult = signal<AiTestResult | null>(null);
   protected readonly usageError = signal(false);
+  /** Loaded on its own: a failed limits read leaves the rest of the page working. */
+  protected readonly limits = signal<AiLimits | null>(null);
+  protected readonly limitsError = signal(false);
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly free = computed(() => this.status()?.billing !== 'paid');
+  protected readonly provider = computed(() => this.status()?.provider ?? null);
+  protected readonly limitsView = computed(() => {
+    const limits = this.limits();
+    return limits ? toLimitsView(limits) : null;
+  });
 
   protected readonly totals = computed(() => {
     const t = this.usage()?.totals;
@@ -80,8 +94,8 @@ export default class AiUsageList implements OnInit {
       failed: t.failed,
       tokensIn: formatTokens(t.tokensIn),
       tokensOut: formatTokens(t.tokensOut),
-      cost: formatCost(t.costMicroUsd),
-      billed: formatCost(t.billedMicroUsd),
+      costMicroUsd: t.costMicroUsd,
+      billedMicroUsd: t.billedMicroUsd,
     };
   });
 
@@ -105,7 +119,6 @@ export default class AiUsageList implements OnInit {
       ...call,
       featureLabel: AI_FEATURE_LABELS[call.feature] ?? call.feature,
       tokens: `${formatTokens(call.tokensIn)} in, ${formatTokens(call.tokensOut)} out`,
-      cost: formatCost(call.costMicroUsd),
       latency: formatLatency(call.latencyMs),
       tools: toolSummary(call.searchCount, call.urlCount),
       refLink: call.ref ? (AI_REF_ROUTES[call.ref.type]?.(call.ref.id) ?? null) : null,
@@ -118,9 +131,8 @@ export default class AiUsageList implements OnInit {
   protected readonly rangeOptions = AI_RANGE_OPTIONS;
   protected readonly statusLabels = AI_STATUS_LABELS;
   protected readonly statusBadges = AI_STATUS_BADGES;
-  protected readonly rateLimitUrl = AI_STUDIO_RATE_LIMIT_URL;
-  protected readonly usageUrl = AI_STUDIO_USAGE_URL;
-  protected readonly pricingUrl = GEMINI_PRICING_URL;
+  protected readonly limitColumns = ['label', 'used', 'limit', 'remaining', 'reset', 'source'];
+  protected readonly modelColumns = ['model', 'input', 'output', 'thinking'];
   protected readonly breakdownColumns = ['label', 'calls', 'tokens', 'cost'];
   protected readonly callColumns = ['createdAt', 'feature', 'model', 'status', 'tokens', 'cost', 'latency', 'served'];
 
@@ -177,6 +189,7 @@ export default class AiUsageList implements OnInit {
   // ── Private ───────────────────────────────────────────────────────
   private load(): void {
     this.loadError.set(false);
+    this.loadLimits();
     forkJoin({
       status: this.aiService.getStatus(),
       usage: this.aiService.getUsage(this.range()),
@@ -196,6 +209,17 @@ export default class AiUsageList implements OnInit {
       });
   }
 
+  private loadLimits(): void {
+    this.limitsError.set(false);
+    this.aiService
+      .getLimits()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (limits) => this.limits.set(limits),
+        error: () => this.limitsError.set(true),
+      });
+  }
+
   private static toBreakdown(key: string, label: string, totals: AiUsageTotals): AiBreakdownRow {
     return {
       key,
@@ -203,7 +227,7 @@ export default class AiUsageList implements OnInit {
       calls: totals.calls,
       failed: totals.failed,
       tokens: `${formatTokens(totals.tokensIn)} in, ${formatTokens(totals.tokensOut)} out`,
-      cost: formatCost(totals.costMicroUsd),
+      costMicroUsd: totals.costMicroUsd,
     };
   }
 }
