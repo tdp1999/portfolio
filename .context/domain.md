@@ -48,7 +48,11 @@
 | RadarEnrichment | The LLM output for a RadarItem: TL;DR, provider tags, content-type tag, signal score, promo flag, relevant flag, image notes, link summaries, comment digest, fact-check notes and the apply note. Records which adapter and model produced it. | Entity |
 | RadarBrief | A catch-up summary of the RadarItems in a time window, grouped by provider and topic, listing new terms with their first-seen date. | Entity |
 | WorkflowProfile | The Owner's current AI setup as editable markdown. Single record. The analyze step compares each item against it to write the apply note. | Entity |
-| RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker) or Hybrid (server-side capture + external worker). Auto (server-side LLM) is planned. | Value Object |
+| RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker) or Hybrid (server-side capture + external worker). Auto (server-side capture, transcript and analysis with Gemini, no external worker) is planned in `epic-radar-phase-c`. | Value Object |
+| Transcript | The text of what is said in a video RadarItem (YouTube video, Facebook reel), produced before analysis. Planned. | Value Object |
+| EnrichmentTrial | An adapter's result for a RadarItem kept only for comparison (quality check). It never becomes the item's RadarEnrichment. Planned. | Entity |
+| AiUsageRecord | One recorded AI call: provider, model, feature, tokens, cost, status, latency, and its trace (tool uses, queries, URLs, sources). | Entity |
+| AiModelPrice | The price per million tokens (input, output, cached input) of one model, used to compute an AiUsageRecord's cost. Kept as a code constant, not stored. | Value Object |
 | Media | An uploaded asset (image, document, video) stored externally. Belongs to a named Folder for organization. Supports soft delete and metadata (alt text, caption). | Entity |
 | MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
 | Home (root page) | The landing app's entry route `/` — the only page that owns the full marketing hero (portrait, large display heading, hero CTAs, marquee sections). Composition rules differ from feature pages: home does NOT use the canonical sub-page header (breadcrumb + page-hero); it has its own hero composition. | UI Concept |
@@ -357,6 +361,14 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 - RAD-004: A machine token may call the Radar worker endpoints only
 - RAD-005: A claimed item returns to pending when its lease expires without a result
 - RAD-006: Radar runs start only when the Owner triggers them. There are no recurring runs
+- RAD-007: A RadarRun stops starting AI calls once its recorded spend reaches its budget; its remaining items stay pending
+- RAD-008: A failed Transcript never blocks analysis; the item is analyzed from its text and images
+
+### AI Integration
+- AI-001: The app is a pipeline, not an agent harness. Radar's state machine decides the steps; an AI call only fills in one step's output. No chat or general agent surface, and no model output adds steps, starts runs, or writes outside its step
+- AI-002: Tools are allowed inside an AI call only when bounded (caps on tool rounds, tokens per item, spend per run), traceable (every tool use, query, URL and failure recorded against what it served) and sourced (claims from search or links keep their source)
+- AI-003: Every AI call is recorded as an AiUsageRecord, whether it succeeds or fails
+- AI-004: API keys live only in environment variables. The app never stores a key in the database or returns it in a response
 
 ## Invariants
 - The Landing Page only displays content that has been saved and is in a public-visible state
@@ -375,6 +387,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-06] Added the planned Phase C concepts from `epic-radar-phase-c`: Transcript, EnrichmentTrial, AiUsageRecord, AiModelPrice and the Auto RunFlow, plus RAD-007 (run budget), RAD-008 (transcript failure does not block analysis) and the AI Integration rules AI-001..004 (pipeline not harness, bounded traceable sourced tools, every call recorded, keys only in env).
 - [2026-10-06] Generate Radar Brief now matches the code (task 412): the Radar worker, not an LLM provider, writes the brief; one brief waits at a time, an empty window is refused, and every claim must link to an item in the window.
 - [2026-10-04] Added the Radar domain (RadarSource, RadarRun, RadarStepRun, RadarItem, RadarEnrichment, RadarBrief, WorkflowProfile, RunFlow), three flows and RAD-001..006, from `epic-radar-ai-news`. Radar is an Owner-only console tool for catching up on AI news from followed social profiles.
 - [2026-09-26] Added the Content Freshness rules (CNF-001..003). They came out of a job change that invalidated eight Profile prose fields at once, because a year count, an employer name and a present-tense claim about the current role had each been written into evergreen copy in several places. The rules name the one place each kind of fact belongs.

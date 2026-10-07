@@ -8,7 +8,7 @@
 ## Folder Structure
 
 - `.context/tasks/` - Active tasks (pending, in-progress, blocked)
-- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (353 tasks)
+- `.context/tasks-done/<epic-name>/` - Archived completed tasks, organized by epic (355 tasks)
 
 ## Completed Milestones
 
@@ -215,6 +215,8 @@
 ### Active Epics (broken-down / queued — work not yet started)
 
 - [ ] **Component Docs & DDL Canonical** (epic-component-docs-and-ddl) — status `open`; research/audit done 2026-06-22 (`_audit.md`), folds task 304. DDL → canonical doc site for all components (landing+console); 6 phases (foundations → DDL primitives → extractions → landing rollout → console parity → lint sweep), not yet broken down (L)
+
+- [ ] **Radar Phase C** (epic-radar-phase-c) — status `broken-down` (2026-10-06, tasks 416-424). Fully automatic Radar on Gemini (replaces the `/radar work` skill: analysis, links, research, comments, brief), YouTube then RSS/Substack sources, video transcripts, run budget, AI integration console screen, quality check vs Claude Code. Not a harness (AI-001/002). 9 tasks (L)
 
 ### Outstanding owner actions (non-code)
 
@@ -435,6 +437,20 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 - [ ] 382-rte-console-landing-preview (M) — landing-accurate preview in console; from 311 S3 verification; deps: 312, 313, 314
 - [x] 381-rte-heading-levels-toolbar-mismatch (S) — done 2026-07-28 (archived → tasks-done/epic-portfolio-rich-text-editor/). Toolbar block-type dropdown giờ dẫn xuất từ `config.heading.levels` thay vì hằng số cứng: bỏ mục H1 chết, mở được H4. Sửa ở upstream **document-engine 0.1.4** (`buildHeadingOptions` + spec 7 case), portfolio chỉ bump dep `0.1.2 → 0.1.4`, không đổi code. Owner xác nhận bằng mắt sau khi restart console dev server.
 
+## Pending — Radar Phase C, automatic Radar on Gemini (broken down 2026-10-06)
+
+From: `epic-radar-phase-c`. Gemini (free tier first) replaces the `/radar work` skill; YouTube then RSS sources; transcripts; run budget; AI integration screen. Pipeline, not a harness (AI-001).
+
+- [x] 416-ai-module-gemini-client (M) — `ai` module: Gemini client, price constant, usage ledger with trace, status/test, 429 typed
+- [x] 417-console-ai-integration-screen (M) — `/ai` page: status, test, usage totals, recent calls (needs 416)
+- [ ] 418-radar-gemini-analysis-adapter (L) — `gemini` adapter + `AUTO` flow, prompt moved into API, retry once, budget, sources (needs 416)
+- [ ] 419-radar-gemini-quality-check (S) — trial table + compare view on ~10 items, pick default model (needs 418)
+- [ ] 420-radar-brief-gemini (S) — brief written by Gemini (needs 418)
+- [ ] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418)
+- [ ] 422-radar-youtube-source (M) — YouTube channels via Data API v3 (needs 418, 421)
+- [ ] 423-radar-rss-substack-source (M) — RSS / Substack feeds (needs 418)
+- [ ] 424-radar-phase-c-acceptance (S) — prod run per source kind, decide the worker path (needs 417, 419, 420, 422, 423)
+
 ## Pending — Radar, AI news catch-up (broken down 2026-10-04)
 
 From: `epic-radar-ai-news`. Owner-only console tool: capture public FB posts of AI influencers (first: mrgoonie) via Apify, enrich via Claude Code external worker, skim Feed + Detail. Urgent (before laptop return + onboarding 2026-11-02); light testing, must run end to end. Done tasks archived → `tasks-done/epic-radar-ai-news/`.
@@ -456,10 +472,10 @@ Phase B (Hybrid flow):
 - [x] 411-radar-comments (M) — comments capture + digest (deps 409, 405)
 - [x] 415-radar-domain-refactor (M) — `RadarRun` aggregate, `RadarItem` / `RadarSource` entities, comment value object + policies, mappers; save writes only changed fields under status guards; no behavior change (162 radar tests)
 - [x] 412-radar-brief (M) — Brief: requested in console, written by `/radar work brief`, Briefs page
-- [ ] 414-radar-triage-split-view (L) — Feed as split inbox (Inbox / To try / Done), spec = `/ddl/radar-triage` layout A v2
+- [x] 414-radar-triage-split-view (L) — Feed as split inbox (Inbox / To try / Done), spec = `/ddl/radar-triage` layout A v2
 
 Related (not Radar-specific):
-- [ ] 413-console-help-viewer (M) — (?) button opens a feature guide inside the console; first consumer = `radar-feature-guide.html`
+- [x] 413-console-help-viewer (M) — (?) button opens a feature guide inside the console; first consumer = `radar-feature-guide.html`
 
 ## Done — Prose Block Renderer (implemented directly from epic)
 
@@ -483,12 +499,12 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status            | Count   |
 | ----------------- | ------- |
-| Done (archived)   | 387     |
+| Done (archived)   | 389     |
 | In Progress       | 5       |
-| Pending           | 8       |
+| Pending           | 14      |
 | Blocked           | 0       |
-| **Total Created** | **400** |
-| Epics completed   | 52      |
+| **Total Created** | **409** |
+| Epics completed   | 53      |
 
 _**2026-10-06 — `/ctx:sync`.** Archive 13 task Radar đã xong (400–411, 415) → `tasks-done/epic-radar-ai-news/`; dòng 406–411 trong progress trước đó chưa được tick dù task đã done. Thêm dòng cho 413, 414, 415 (có file nhưng chưa có trong progress). Bảng đếm khớp filesystem: 386 file trong `tasks-done/`, 14 trong `tasks/`. **pending (9):** 323, 328, 382, 387, 389, 398, 412, 413, 414; **in-progress (5):** 361, 383, 386, 396, 399. `epic-radar-ai-news` vẫn `broken-down` (còn 412, 414). Owner đã đổi mật khẩu console._
 
