@@ -53,7 +53,7 @@ The app stays a pipeline: Radar's state machine decides the steps, and a model c
 
 **New sources (YouTube first, then RSS)**
 - **YouTube**: a source is a channel. Capture lists the channel's uploads for a window through the YouTube Data API v3 (uploads playlist, API key, no OAuth, no Owner account). Each video becomes an item: title, description, duration, thumbnail, link.
-- **RSS**: a source is a feed URL, Substack first. Capture reads the feed and creates one item per entry, with best-effort backfill from the site's archive listing.
+- ~~**RSS**~~ (dropped 2026-10-07, see Changelog): a source is a feed URL, Substack first. Capture reads the feed and creates one item per entry, with best-effort backfill from the site's archive listing.
 - Adding a source row of either kind from the console.
 
 **Quality check before the switch**
@@ -86,7 +86,7 @@ The app stays a pipeline: Radar's state machine decides the steps, and a model c
 13. If a link cannot be fetched, then the API shall analyze the item without that link and shall leave it out of `linkSummaries`.
 14. When the Owner requests a brief, the API shall write it with Gemini from the analyzed items in the window and shall link every claim to an item in that window.
 15. When a YouTube source is captured for a window, the API shall create one item per public video published in that window (RAD-001 applies).
-16. When an RSS source is captured, the API shall create one item per feed entry not seen before for that source and refresh the ones it has seen.
+16. (Dropped 2026-10-07, see Changelog.) ~~When an RSS source is captured, the API shall create one item per feed entry not seen before for that source and refresh the ones it has seen.~~
 17. When the Owner runs the quality check on a set of items, the API shall store each result as a trial and shall not change the items' current enrichment.
 18. The AI integration screen shall show usage and cost totals per model and feature for today, the last 7 days and the last 30 days.
 
@@ -188,7 +188,7 @@ The app stays a pipeline: Radar's state machine decides the steps, and a model c
 - [ ] A brief requested in the console is written by Gemini without a Claude Code session, and every claim links to a post in its window.
 - [ ] A run with a budget of $0.50 stops before its recorded spend exceeds the budget plus one call, and its remaining items stay pending.
 - [ ] A YouTube video of 20 minutes or more shows a transcript and an enrichment that refers to what was said in it.
-- [ ] One YouTube channel and one Substack feed each capture a 3-month window into the Feed with no duplicates.
+- [ ] One YouTube channel captures a 3-month window into the Feed with no duplicates.
 - [ ] The quality check page shows Gemini next to Claude Code for at least 10 items, and the Owner has recorded the chosen default model per feature.
 - [ ] The AI integration screen shows Gemini's status, and its 30-day cost matches the sum of the usage rows.
 - [ ] For any analyzed item, the Detail page shows the sources the analysis used and the AI calls behind it (tokens, cost, tool uses, failures).
@@ -217,8 +217,8 @@ L
 
 ## Specialized Skills
 
-- **prisma-migrate**: ledger, trial table, transcript columns, `AUTO` flow and platform enum values. → tasks 416, 418, 419, 421, 422, 423
-- **be-test**: cost math, budget stop, retry rule, validation, YouTube and RSS normalizers, link fetcher refusal of Facebook. → tasks 416, 418, 421, 422, 423
+- **prisma-migrate**: ledger, trial table, transcript columns, `AUTO` flow and platform enum values. → tasks 416, 418, 419, 421, 422
+- **be-test**: cost math, budget stop, retry rule, validation, YouTube normalizer, link fetcher refusal of Facebook. → tasks 416, 418, 421, 422, 423
 - **ng-lib**: the console AI integration library. → task 417
 
 ## Status
@@ -230,3 +230,9 @@ Broken down into tasks 416-424 on 2026-10-06. Simplified at breakdown: prices as
 ## Created
 
 2026-10-06
+
+## Changelog
+
+### 2026-10-07 RSS / Substack dropped
+- Updated: task 423 (RSS / Substack source) aborted; Phase C new sources are YouTube only. The RSS requirement (16), scope bullet and success criterion no longer apply.
+- Reason: the Owner's decision.

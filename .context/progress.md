@@ -216,7 +216,7 @@
 
 - [ ] **Component Docs & DDL Canonical** (epic-component-docs-and-ddl) — status `open`; research/audit done 2026-06-22 (`_audit.md`), folds task 304. DDL → canonical doc site for all components (landing+console); 6 phases (foundations → DDL primitives → extractions → landing rollout → console parity → lint sweep), not yet broken down (L)
 
-- [ ] **Radar Phase C** (epic-radar-phase-c) — status `broken-down` (2026-10-06, tasks 416-424). Fully automatic Radar on Gemini (replaces the `/radar work` skill: analysis, links, research, comments, brief), YouTube then RSS/Substack sources, video transcripts, run budget, AI integration console screen, quality check vs Claude Code. Not a harness (AI-001/002). 9 tasks (L)
+- [ ] **Radar Phase C** (epic-radar-phase-c) — status `broken-down` (2026-10-06, tasks 416-424). Fully automatic Radar on Gemini (replaces the `/radar work` skill: analysis, links, research, comments, brief), YouTube source (RSS/Substack dropped 2026-10-07, task 423 aborted), video transcripts, run budget, AI integration console screen, quality check vs Claude Code. Not a harness (AI-001/002). 416–423 archived; open: 424 acceptance, plus 425, 426 added 2026-10-07 (L)
 
 ### Outstanding owner actions (non-code)
 
@@ -439,21 +439,21 @@ From: `epic-portfolio-rich-text-editor`. External: `document-engine` Sprint 1 (v
 
 ## Pending — Radar Phase C, automatic Radar on Gemini (broken down 2026-10-06)
 
-From: `epic-radar-phase-c`. Gemini (free tier first) replaces the `/radar work` skill; YouTube then RSS sources; transcripts; run budget; AI integration screen. Pipeline, not a harness (AI-001).
+From: `epic-radar-phase-c`. Gemini (free tier first) replaces the `/radar work` skill; YouTube source (RSS dropped 2026-10-07); transcripts; run budget; AI integration screen. Pipeline, not a harness (AI-001).
 
-- [x] 416-ai-module-gemini-client (M) — `ai` module: Gemini client, price constant, usage ledger with trace, status/test, 429 typed
-- [x] 417-console-ai-integration-screen (M) — `/ai` page: status, test, usage totals, recent calls (needs 416)
-- [x] 418-radar-gemini-analysis-adapter (L) — `gemini` adapter + `AUTO` flow, prompt moved into API, retry once, budget, sources (needs 416)
-- [x] 418b-radar-auto-run-console (M) — Runs dialog AUTO + budget, run spend, sources on Detail, VND display + Settings → Currency (needs 418)
-- [x] 418c-ai-provider-limits-panel (M) — AI page Limits section, provider-neutral limit shape filled per adapter (needs 418)
-- [x] 419-radar-gemini-quality-check (S) — trial table + compare view on ~10 items, pick default model (needs 418)
-- [x] 420-radar-brief-gemini (S) — brief written by Gemini (needs 418)
-- [x] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418)
-- [x] 422-radar-youtube-source (M) — YouTube channels via Data API v3 (needs 418, 421)
-- [ ] 423-radar-rss-substack-source (M) — RSS / Substack feeds (needs 418)
-- [ ] 424-radar-phase-c-acceptance (S) — prod run per source kind, decide the worker path (needs 417, 419, 420, 422, 423)
-- [ ] 425-radar-reanalyze-items (L) — re-analyze items (AUTO by default via a REANALYZE run, or /radar work): Detail action + Feed table bulk select across pages (asked by Owner 2026-10-07)
-- [ ] 426-radar-run-detail-page (M) — `/radar/runs/:id`: capture input sent, step timeline, failed post reasons, posts of the run, AI spend per feature (asked by Owner 2026-10-07)
+- [x] 416-ai-module-gemini-client (M) — `ai` module: Gemini client, price constant, usage ledger with trace, status/test, 429 typed → `tasks-done/epic-radar-phase-c/`
+- [x] 417-console-ai-integration-screen (M) — `/ai` page: status, test, usage totals, recent calls (needs 416) → `tasks-done/epic-radar-phase-c/`
+- [x] 418-radar-gemini-analysis-adapter (L) — `gemini` adapter + `AUTO` flow, prompt moved into API, retry once, budget, sources (needs 416) → `tasks-done/epic-radar-phase-c/`
+- [x] 418b-radar-auto-run-console (M) — Runs dialog AUTO + budget, run spend, sources on Detail, VND display + Settings → Currency (needs 418) → `tasks-done/epic-radar-phase-c/`
+- [x] 418c-ai-provider-limits-panel (M) — AI page Limits section, provider-neutral limit shape filled per adapter (needs 418) → `tasks-done/epic-radar-phase-c/`
+- [x] 419-radar-gemini-quality-check (S) — trial table + compare view on ~10 items, pick default model (needs 418) → `tasks-done/epic-radar-phase-c/`
+- [x] 420-radar-brief-gemini (S) — brief written by Gemini (needs 418) → `tasks-done/epic-radar-phase-c/`
+- [x] 421-radar-video-transcripts (M) — transcripts for YouTube + reels, failure never blocks analysis (needs 418) → `tasks-done/epic-radar-phase-c/`
+- [x] 422-radar-youtube-source (M) — YouTube channels via Data API v3 (needs 418, 421) → `tasks-done/epic-radar-phase-c/`
+- [x] 423-radar-rss-substack-source (M) — ABORTED 2026-10-07 by the Owner: RSS / Substack left out of Phase C, nothing built → `tasks-done/epic-radar-phase-c/`
+- [ ] 424-radar-phase-c-acceptance (S) — prod run per source kind, decide the worker path (needs 417, 419, 420, 422)
+- [x] 425-radar-reanalyze-items (L) — **done** 2026-10-08 — re-analyze items (AUTO by default via a REANALYZE run, or /radar work): Detail action + Feed table bulk select across pages (asked by Owner 2026-10-07)
+- [x] 426-radar-run-detail-page (M) (done 2026-10-08) — `/radar/runs/:id`: capture input sent, step timeline, failed post reasons, posts of the run, AI spend per feature (asked by Owner 2026-10-07)
 
 ## Pending — Radar, AI news catch-up (broken down 2026-10-04)
 
@@ -503,12 +503,14 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status            | Count   |
 | ----------------- | ------- |
-| Done (archived)   | 389     |
+| Done (archived)   | 399     |
 | In Progress       | 5       |
-| Pending           | 14      |
+| Pending           | 9       |
 | Blocked           | 0       |
-| **Total Created** | **409** |
+| **Total Created** | **413** |
 | Epics completed   | 53      |
+
+_**2026-10-07 — `/ctx:sync`.** Archive 10 task Phase C đã xong (416–422, 418b, 418c, cùng 423 bị Owner hủy: RSS/Substack bỏ khỏi Phase C, AC đánh `[~]`) → `tasks-done/epic-radar-phase-c/`. Task 424 bỏ phụ thuộc 423 và bỏ RSS khỏi AC; epic thêm Changelog. Bảng đếm khớp filesystem: 399 file trong `tasks-done/`, 14 trong `tasks/`. **pending (9):** 323, 328, 382, 387, 389, 398, 424, 425, 426; **in-progress (5):** 361, 383, 386, 396, 399. `epic-radar-phase-c` vẫn `broken-down` (còn 424, 425, 426). Cặp số trùng `065` (cả hai đã archive) vẫn để nguyên như ghi chú 2026-07-28._
 
 _**2026-10-06 — `/ctx:sync`.** Archive 13 task Radar đã xong (400–411, 415) → `tasks-done/epic-radar-ai-news/`; dòng 406–411 trong progress trước đó chưa được tick dù task đã done. Thêm dòng cho 413, 414, 415 (có file nhưng chưa có trong progress). Bảng đếm khớp filesystem: 386 file trong `tasks-done/`, 14 trong `tasks/`. **pending (9):** 323, 328, 382, 387, 389, 398, 412, 413, 414; **in-progress (5):** 361, 383, 386, 396, 399. `epic-radar-ai-news` vẫn `broken-down` (còn 412, 414). Owner đã đổi mật khẩu console._
 

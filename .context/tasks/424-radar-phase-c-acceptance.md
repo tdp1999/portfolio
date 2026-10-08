@@ -10,7 +10,7 @@ From `epic-radar-phase-c`. Closes the epic the same way 408 closed Phase A.
 
 ## Acceptance Criteria
 - [ ] Production has `GEMINI_API_KEY`, `AI_GEMINI_BILLING` and `YOUTUBE_API_KEY` set (Owner action) and the AI integration screen shows Gemini configured.
-- [ ] One `AUTO` run per source kind (Facebook, YouTube, RSS) reaches `done` with no Claude Code session; every item has a v3 enrichment with sources.
+- [ ] One `AUTO` run per source kind (Facebook, YouTube) reaches `done` with no Claude Code session; every item has a v3 enrichment with sources.
 - [ ] A run with a small budget stops at the budget and leaves the rest pending.
 - [ ] A brief requested in the console is written by Gemini.
 - [ ] The AI integration screen's 30-day cost equals the sum of usage rows.
@@ -25,7 +25,7 @@ From `epic-radar-phase-c`. Closes the epic the same way 408 closed Phase A.
 - .context/decisions.md
 
 ## Dependencies
-- 417, 419, 420, 422, 423
+- 417, 419, 420, 422
 
 ## Complexity: S
 
