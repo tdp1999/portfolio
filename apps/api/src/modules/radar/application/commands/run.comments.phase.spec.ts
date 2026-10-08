@@ -23,6 +23,7 @@ const NOW = new Date('2026-10-06T10:00:00Z');
 const runAt = (comments?: CommentsPhaseMeta) =>
   RadarRun.load({
     id: 'run-1',
+    kind: 'CAPTURE',
     sourceId: 'src',
     sourceUrl: 'https://www.facebook.com/page',
     sourceName: 'page',

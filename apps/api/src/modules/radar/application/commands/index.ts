@@ -8,6 +8,7 @@ export * from './submit-results.command';
 export * from './upsert-workflow-profile.command';
 export * from './requeue-stuck.command';
 export * from './item.triage.command';
+export * from './reanalyze-items.command';
 export * from './run.create.command';
 export * from './run.advance.command';
 export * from './run.cancel.command';

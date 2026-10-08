@@ -69,6 +69,7 @@ describe('CreateTrialsHandler', () => {
       generateStructured: jest.fn(),
       spentMicroUsd: jest.fn(),
       spentByGroup: jest.fn(),
+      spendByFeature: jest.fn(),
     };
     work = { findAnalyzed: jest.fn().mockResolvedValue([snapshot(1), snapshot(2)]) };
     trials = { start: jest.fn(), finish: jest.fn(), fail: jest.fn(), listByItem: jest.fn() };

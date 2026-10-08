@@ -145,7 +145,7 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
     'Some stored images could not be deleted. Nothing else was removed; please try again.',
   [RadarErrorCode.RUN_NOT_FOUND]: 'This radar run no longer exists.',
   [RadarErrorCode.RUN_ALREADY_ACTIVE]:
-    'This source already has a run in progress. Wait for it to finish, or cancel it.',
+    'This source already has a run in progress, or a re-analysis of its posts. Wait for it to finish, or cancel it.',
   [RadarErrorCode.RUN_NOT_AWAITING_UPLOAD]: 'This run is not waiting for an upload.',
   [RadarErrorCode.RUN_FINISHED]: 'This run has already finished.',
   [RadarErrorCode.RUN_BUSY]: 'This run is moving to its next step right now. Please try cancelling again.',

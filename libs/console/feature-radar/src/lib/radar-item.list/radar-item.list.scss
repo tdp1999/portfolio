@@ -101,6 +101,10 @@ console-filter-bar ::ng-deep {
   background: transparent;
 }
 
+.col-select {
+  width: 48px;
+}
+
 .col-score {
   width: 80px;
 }
@@ -182,7 +186,8 @@ console-filter-bar ::ng-deep {
     margin-left: auto;
   }
 
-  &__sort {
+  &__sort,
+  &__select {
     margin-bottom: 4px;
   }
 

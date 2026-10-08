@@ -33,7 +33,13 @@
         <ng-container matColumnDef="source">
           <th mat-header-cell *matHeaderCellDef>Source</th>
           <td mat-cell *matCellDef="let run" class="col-source">
-            <span class="text-body font-semibold">{{ run.source.displayName }}</span>
+            <!-- The row is clickable; the link keeps the run reachable by keyboard and middle-click. -->
+            <a
+              class="run-link text-body font-semibold"
+              [routerLink]="['/radar/runs', run.id]"
+              (click)="$event.stopPropagation()"
+              >{{ run.sourceLabel }}</a
+            >
             <span class="text-caption block">
               <span class="run-flow" [matTooltip]="run.flowHelp">{{ run.flow | enumLabel: flowLabels }}</span
               >, cap
@@ -45,7 +51,9 @@
         <ng-container matColumnDef="window">
           <th mat-header-cell *matHeaderCellDef class="col-window">Window</th>
           <td mat-cell *matCellDef="let run" class="col-window">
-            @if (run.windowFrom || run.windowTo) {
+            @if (run.kind === 'REANALYZE') {
+              <span class="text-text-secondary">Picked posts</span>
+            } @else if (run.windowFrom || run.windowTo) {
               {{ run.windowFrom ? (run.windowFrom | date: 'mediumDate' : 'UTC') : 'Start' }} to
               {{ run.windowTo ? (run.windowTo | date: 'mediumDate' : 'UTC') : 'now' }}
             } @else {
@@ -67,7 +75,7 @@
           <th mat-header-cell *matHeaderCellDef>Steps</th>
           <td mat-cell *matCellDef="let run" class="col-steps">
             @if (run.steps.length) {
-              <ol class="run-steps" [attr.aria-label]="'Steps of the run for ' + run.source.displayName">
+              <ol class="run-steps" [attr.aria-label]="'Steps of the run for ' + run.sourceLabel">
                 @for (step of run.steps; track step.step) {
                   <li class="run-step" [class]="'run-step--' + step.status.toLowerCase()" [matTooltip]="step.tooltip">
                     <mat-icon class="icon-sm" aria-hidden="true">{{ step.status | enumLabel: stepIcons }}</mat-icon>
@@ -83,7 +91,7 @@
         <ng-container matColumnDef="items">
           <th mat-header-cell *matHeaderCellDef class="col-items">Items</th>
           <td mat-cell *matCellDef="let run" class="col-items">
-            <span class="text-body">{{ run.itemsCaptured }} captured</span>
+            <span class="text-body">{{ run.itemsLabel }}</span>
             <span class="text-caption block">{{ run.itemsDetail }}</span>
           </td>
         </ng-container>
@@ -114,7 +122,7 @@
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="col-actions"><span class="sr-only">Actions</span></th>
-          <td mat-cell *matCellDef="let run" class="col-actions">
+          <td mat-cell *matCellDef="let run" class="col-actions" (click)="$event.stopPropagation()">
             @if (run.active) {
               <div class="run-actions">
                 @if (run.awaitingUpload) {
@@ -214,6 +222,7 @@
           *matRowDef="let row; columns: displayedColumns"
           class="run-row"
           [class.run-row--has-notice]="row.notice !== null || !!row.warning"
+          (click)="onOpenRun(row)"
         ></tr>
         <tr mat-row *matRowDef="let row; columns: ['notice']; when: hasNotice" class="run-notice-row"></tr>
       </table>

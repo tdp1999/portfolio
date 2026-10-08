@@ -8,6 +8,7 @@ import { IStorageService } from '../../../media/application/ports/storage.servic
 import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { RadarStepRun } from '../../domain/entities/radar-step-run.entity';
 import { RadarDatasetCursor } from '../../domain/value-objects/radar-dataset-cursor';
+import { RadarNormalizeFailure } from '../../domain/radar.types';
 import { ICaptureNormalizer } from '../ports/capture-normalizer.port';
 import { ICaptureProvider } from '../ports/capture-provider.port';
 import { ILlmProvider } from '../ports/llm-provider.port';
@@ -33,6 +34,20 @@ const IMAGE_ITEMS_PER_TICK = 10;
 /** `advanced`: the step finished and the next one starts in the same tick. */
 type Outcome = { state: 'advanced'; run: RadarRun } | { state: 'wait' | 'failed' };
 const WAIT: Outcome = { state: 'wait' };
+
+/**
+ * The tick's time, moved on by the real time spent since the tick began. A step that finishes
+ * after half a minute of transcript calls is stamped when it finished, not when the tick started.
+ */
+class TickClock {
+  private readonly origin = Date.now();
+
+  constructor(private readonly start: Date) {}
+
+  now(): Date {
+    return new Date(this.start.getTime() + Date.now() - this.origin);
+  }
+}
 
 /**
  * Moves one run as far as it can go in one tick: each step either finishes (and the next one
@@ -67,20 +82,21 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
   async execute({ runId, now }: AdvanceRunCommand): Promise<void> {
     const loaded = await this.runs.findById(runId);
     if (!loaded?.isActive) return;
+    const clock = new TickClock(now);
     let run: RadarRun | null = loaded.start(now) === loaded ? loaded : await this.runs.save(loaded.start(now));
 
     for (let pass = 0; pass < RadarRun.PIPELINE.length && run?.isActive; pass++) {
       const step = run.currentStep;
       if (!step) {
-        await this.runs.save(run.finish(now));
+        await this.runs.save(run.finish(clock.now()));
         return;
       }
 
       let outcome: Outcome;
       try {
-        outcome = await this.handle(run, step, now);
+        outcome = await this.handle(run, step, clock);
       } catch (error) {
-        await this.recordError(run.id, step.step, error, now);
+        await this.recordError(run.id, step.step, error, clock.now());
         return;
       }
       if (outcome.state !== 'advanced') return;
@@ -88,34 +104,34 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     }
   }
 
-  private handle(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+  private handle(run: RadarRun, step: RadarStepRun, clock: TickClock): Promise<Outcome> {
     switch (step.step) {
       case RadarStep.CAPTURE:
-        return this.capture(run, step, now);
+        return this.capture(run, step, clock);
       case RadarStep.NORMALIZE:
-        return this.normalize(run, step, now);
+        return this.normalize(run, step, clock);
       case RadarStep.ENRICH:
-        return this.enrich(run, now);
+        return this.enrich(run, clock);
       default:
-        return this.analyze(run, step, now);
+        return this.analyze(run, step, clock);
     }
   }
 
   /** Hybrid: start the provider job once, then poll it. Manual: the upload finishes this step. */
-  private async capture(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+  private async capture(run: RadarRun, step: RadarStepRun, clock: TickClock): Promise<Outcome> {
     if (run.flow === RadarRunFlow.MANUAL) return WAIT;
     const provider = this.captureProvider(run);
 
     if (step.isPending || !step.providerJobRef) {
-      const jobRef = await provider.start({
-        sourceUrl: run.sourceUrl,
+      const { jobRef, input } = await provider.start({
+        sourceUrl: run.captureSource.url,
         windowFrom: run.windowFrom,
         windowTo: run.windowTo,
         itemCap: run.itemCap,
       });
       // The job is billed from here on. If its reference cannot be kept (a cancel landed, or the
       // write failed), name it in the log so it can be found and aborted on Apify by hand.
-      const kept = await this.runs.save(run.startCapture(jobRef, now)).catch((error: unknown) => {
+      const kept = await this.runs.save(run.startCapture(jobRef, input, clock.now())).catch((error: unknown) => {
         this.logger.error(`Radar run ${run.id}: provider job ${jobRef} started but its reference was not saved`);
         throw error;
       });
@@ -123,34 +139,37 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
       return WAIT;
     }
 
-    if (run.captureOverdue(now)) return this.fail(run, step, 'Capture did not finish within 60 minutes', now);
+    if (run.captureOverdue(clock.now())) return this.fail(run, step, 'Capture did not finish within 60 minutes', clock);
 
     const status = await provider.poll(step.providerJobRef);
     if (status.state === 'running') return WAIT;
-    if (status.state === 'failed') return this.fail(run, step, status.message, now);
+    if (status.state === 'failed') return this.fail(run, step, status.message, clock);
     if (run.exceedsItemCap(status.itemCount)) {
       return this.fail(
         run,
         step,
         `The provider returned ${status.itemCount} items, more than the run's cap of ${run.itemCap}`,
-        now
+        clock
       );
     }
 
-    return this.advanced(run.completeCapture(RadarDatasetCursor.start(status.datasetRef, status.itemCount), now));
+    return this.advanced(
+      run.completeCapture(RadarDatasetCursor.start(status.datasetRef, status.itemCount), clock.now())
+    );
   }
 
   /** Reads the finished dataset a page at a time and upserts each page before the next. */
-  private async normalize(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+  private async normalize(run: RadarRun, step: RadarStepRun, clock: TickClock): Promise<Outcome> {
     const provider = this.captureProvider(run);
     const normalizer = this.normalizers.find((n) => n.format === provider.format);
-    if (!normalizer) return this.fail(run, step, `No normalizer for format "${provider.format}"`, now);
+    if (!normalizer) return this.fail(run, step, `No normalizer for format "${provider.format}"`, clock);
 
     let cursor = step.cursor ?? RadarDatasetCursor.start('', 0);
     let current = run;
     for (let page = 0; page < PAGES_PER_TICK && !cursor.exhausted; page++) {
       const raw = await provider.fetchPage(cursor.datasetRef, cursor.offset, DATASET_PAGE_SIZE);
       let note: string | null = null;
+      let failed: RadarNormalizeFailure[] = [];
       if (raw.length > 0) {
         const { items, failures, notices } = normalizer.normalize(raw);
         // The run shows why it captured nothing, or why some posts were not kept.
@@ -159,16 +178,17 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
           (failures.length > 0
             ? `${failures.length} ${failures.length === 1 ? 'post' : 'posts'} could not be read: ${failures[0].reason}`
             : null);
+        failed = failures;
         const saved = await this.captures.saveCapturePage({
           runId: run.id,
-          sourceId: run.sourceId,
+          sourceId: run.captureSource.id,
           items,
           failedCount: failures.length,
         });
         await deleteStoredImages(this.storage, saved.orphanedImageIds, this.logger);
       }
       cursor = cursor.next(DATASET_PAGE_SIZE);
-      const next = current.moveCursor(cursor);
+      const next = current.moveCursor(cursor).noteFailures(failed);
       // Null once the run was cancelled: stop reading pages nobody will finish.
       const moved = await this.runs.save(note ? next.warn(note) : next);
       if (!moved) return WAIT;
@@ -176,7 +196,7 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     }
 
     if (!cursor.exhausted) return WAIT;
-    return this.advanced(current.completeNormalize(now));
+    return this.advanced(current.completeNormalize(clock.now()));
   }
 
   /**
@@ -185,23 +205,24 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
    * pending and both phases are settled; neither can fail the run (see {@link RunCommentsPhase},
    * {@link RunTranscriptsPhase}).
    */
-  private async enrich(run: RadarRun, now: Date): Promise<Outcome> {
-    let current: RadarRun | null = run.startEnrich(now) === run ? run : await this.runs.save(run.startEnrich(now));
+  private async enrich(run: RadarRun, clock: TickClock): Promise<Outcome> {
+    let current: RadarRun | null =
+      run.startEnrich(clock.now()) === run ? run : await this.runs.save(run.startEnrich(clock.now()));
     if (!current) return WAIT;
     await this.commandBus.execute(new PersistItemImagesCommand(IMAGE_ITEMS_PER_TICK));
 
     if (current.fetchComments) {
-      const advanced = await this.commentsPhase.advance(current, now);
+      const advanced = await this.commentsPhase.advance(current, clock.now());
       current = advanced && (await this.runs.save(advanced));
       if (!current) return WAIT;
     }
 
     const transcriptsDone = current.flow === RadarRunFlow.AUTO ? await this.transcriptsPhase.advance(current) : true;
 
-    const { withPendingImages } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
+    const { withPendingImages } = await this.runs.countItems(run.id, clock.now(), RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
     const commentsDone = current.commentsProgress?.done ?? true;
     if (withPendingImages > 0 || !commentsDone || !transcriptsDone) return WAIT;
-    return this.advanced(current.completeEnrich(now));
+    return this.advanced(current.completeEnrich(clock.now()));
   }
 
   /**
@@ -211,14 +232,14 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
    * found nothing to do (its last batch may have opened deep analyses). Stuck items and items of a
    * paused source do not hold the run open.
    */
-  private async analyze(run: RadarRun, step: RadarStepRun, now: Date): Promise<Outcome> {
+  private async analyze(run: RadarRun, step: RadarStepRun, clock: TickClock): Promise<Outcome> {
     const llm = this.llmProviders.find((p) => p.name === run.llmAdapter);
-    if (!llm) return this.fail(run, step, `Unknown analysis adapter "${run.llmAdapter}"`, now);
+    if (!llm) return this.fail(run, step, `Unknown analysis adapter "${run.llmAdapter}"`, clock);
 
     let current = run;
     if (llm.serverSide || step.isPending) {
       if (llm.serverSide && step.isPending) {
-        const started = await this.runs.save(run.startAnalysis(now));
+        const started = await this.runs.save(run.startAnalysis(clock.now()));
         if (!started) return WAIT;
         current = started;
       }
@@ -227,25 +248,25 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
         runId: run.id,
         budgetMicroUsd: run.budgetMicroUsd,
       });
-      if (outcome.state === 'done') return this.finish(current, now);
+      if (outcome.state === 'done') return this.finish(current, clock);
       // The budget is spent: the run ends, and what is left waits for a later run or `/radar work`.
-      if (outcome.state === 'stopped') return this.finish(current.warn(outcome.reason), now);
+      if (outcome.state === 'stopped') return this.finish(current.warn(outcome.reason), clock);
       if (outcome.state === 'working') return WAIT;
       if (outcome.state === 'awaiting-external') {
-        const awaiting = await this.runs.save(current.awaitAnalysis(now));
+        const awaiting = await this.runs.save(current.awaitAnalysis(clock.now()));
         if (!awaiting) return WAIT;
         current = awaiting;
       }
     }
 
-    const { notAnalyzed } = await this.runs.countItems(run.id, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
+    const { notAnalyzed } = await this.runs.countItems(run.id, clock.now(), RadarLeasePolicy.MAX_CLAIM_ATTEMPTS);
     if (notAnalyzed > 0) return WAIT;
-    return this.finish(current, now);
+    return this.finish(current, clock);
   }
 
   /** Nothing left after ANALYZE, so the loop ends here. */
-  private async finish(run: RadarRun, now: Date): Promise<Outcome> {
-    await this.runs.save(run.finish(now));
+  private async finish(run: RadarRun, clock: TickClock): Promise<Outcome> {
+    await this.runs.save(run.finish(clock.now()));
     return WAIT;
   }
 
@@ -254,9 +275,9 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
     return saved ? { state: 'advanced', run: saved } : WAIT;
   }
 
-  private async fail(run: RadarRun, step: RadarStepRun, message: string, now: Date): Promise<Outcome> {
+  private async fail(run: RadarRun, step: RadarStepRun, message: string, clock: TickClock): Promise<Outcome> {
     this.logger.warn(`Radar run ${run.id} failed at ${step.step}: ${message}`);
-    await this.runs.save(run.fail(step.step, message, now));
+    await this.runs.save(run.fail(step.step, message, clock.now()));
     return { state: 'failed' };
   }
 

@@ -62,6 +62,8 @@ export interface NormalizedRadarItem {
 export interface RadarNormalizeFailure {
   /** Zero-based position in the uploaded array. */
   index: number;
+  /** The post's URL or id when the row carried one, so the Owner can find it. */
+  ref?: string;
   reason: string;
 }
 

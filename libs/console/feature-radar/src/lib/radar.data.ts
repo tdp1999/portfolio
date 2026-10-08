@@ -1,4 +1,4 @@
-import type { FilterOption, SegmentedControlOption } from '@portfolio/console/shared/ui';
+import type { FilterOption, SegmentedControlOption, ToastAction } from '@portfolio/console/shared/ui';
 import {
   RADAR_FEED_SORT_KEYS,
   RADAR_MAX_CLAIM_ATTEMPTS,
@@ -8,6 +8,7 @@ import {
 } from '@portfolio/shared/types';
 import type {
   RadarAnalysisDepth,
+  RadarFeedItem,
   RadarFeedSortKey,
   RadarRunDisplayStatus,
   RadarRunFlow,
@@ -17,10 +18,12 @@ import type {
   RadarPlatform,
   RadarRunStatus,
   RadarQueueState,
+  RadarReanalyzeMode,
   RadarRunStep,
   RadarTranscriptStatus,
   RadarTriageStatus,
   RadarWorkStatus,
+  ReanalyzeItemsResult,
 } from './radar.types';
 
 export const PROVIDER_LABELS: Record<RadarProviderTag, string> = {
@@ -123,6 +126,56 @@ export const RUN_FLOW_HELP: Record<RadarRunFlow, string> = {
   HYBRID: 'The server captures the posts with Apify. You analyze them with /radar work in Claude Code.',
   MANUAL: 'You export the posts from Apify, upload the file into the run, then run /radar work.',
 };
+
+export const REANALYZE_HELP =
+  'Posts picked in the Feed, analyzed again by the server with AI. No capture: each post keeps its text, images and transcript.';
+
+export const REANALYZE_MODE_HELP: Record<RadarReanalyzeMode, string> = {
+  AUTO: 'The server analyzes the posts now with AI, in a re-analysis run you can follow on the Runs page.',
+  WORKER: 'The posts wait in the queue for the next /radar work in Claude Code.',
+};
+
+/** Auto first; greyed out with no AI key on the server. */
+export function reanalyzeModeOptions(aiConfigured: boolean): SegmentedControlOption[] {
+  return [
+    { value: 'AUTO', label: 'Auto', disabled: !aiConfigured },
+    { value: 'WORKER', label: 'Claude Code' },
+  ];
+}
+
+/**
+ * What the toast after a re-analysis request says: how many went back and how many were left. A
+ * worker re-analysis adds the next step; an Auto one gets a link to the Runs page instead.
+ */
+export function reanalyzeToast(result: ReanalyzeItemsResult, mode: RadarReanalyzeMode): string {
+  const posts = (n: number) => `${n} ${n === 1 ? 'post' : 'posts'}`;
+  const skipped = result.skipped
+    ? ` ${posts(result.skipped)} skipped (still being analyzed, in a running run, or on a paused source).`
+    : '';
+  if (result.requeued === 0) return `Nothing was queued.${skipped}`;
+  const next = mode === 'WORKER' ? ' Run /radar work to analyze them.' : '';
+  return `${posts(result.requeued)} queued for re-analysis.${skipped}${next}`;
+}
+
+/** AI ledger features a run can spend on. Unknown features show their raw name. */
+export const RUN_AI_FEATURE_LABELS: Record<string, string> = {
+  'radar.analyze': 'Deep analysis',
+  'radar.analyze.light': 'Quick analysis',
+  'radar.transcript': 'Video transcripts',
+};
+
+export const ITEM_KIND_LABELS: Record<RadarFeedItem['kind'], string> = {
+  POST: 'Post',
+  REEL: 'Reel',
+  VIDEO: 'Video',
+  SHARE: 'Share',
+};
+
+/** The toast action of an Auto re-analysis: opens the run it started. */
+export const reanalyzeRunLink = (runId: string): ToastAction => ({
+  label: 'Follow the run',
+  link: ['/radar/runs', runId],
+});
 
 export const RUN_FLOW_ORDER: readonly RadarRunFlow[] = ['AUTO', 'HYBRID', 'MANUAL'];
 

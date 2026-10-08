@@ -1,10 +1,12 @@
 import { Component, DestroyRef, effect, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../services/toast/toast.service';
 import { ToastType } from '../../services/toast/toast.model';
 
 @Component({
   selector: 'console-toast-container',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-80">
       @for (toast of toastService.toasts(); track toast.id) {
@@ -12,7 +14,14 @@ import { ToastType } from '../../services/toast/toast.model';
           class="toast-item flex items-start gap-3 rounded-lg px-4 py-3 shadow-lg text-sm"
           [class]="typeClasses(toast.type)"
         >
-          <span class="flex-1">{{ toast.message }}</span>
+          <span class="flex-1">
+            {{ toast.message }}
+            @if (toast.action; as action) {
+              <a class="toast-item__action" [routerLink]="action.link" (click)="toastService.dismiss(toast.id)">
+                {{ action.label }}
+              </a>
+            }
+          </span>
           <button
             class="shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
             (click)="toastService.dismiss(toast.id)"
@@ -27,6 +36,14 @@ import { ToastType } from '../../services/toast/toast.model';
   styles: `
     .toast-item {
       animation: toast-in 0.3s ease-out;
+    }
+
+    .toast-item__action {
+      display: block;
+      margin-top: 4px;
+      font-weight: 600;
+      text-decoration: underline;
+      color: inherit;
     }
 
     @keyframes toast-in {

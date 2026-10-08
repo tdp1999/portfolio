@@ -11,6 +11,10 @@ export const radarRoutes: Route[] = [
     loadComponent: () => import('./radar-run.list/radar-run.list'),
   },
   {
+    path: 'runs/:id',
+    loadComponent: () => import('./radar-run.detail/radar-run.detail'),
+  },
+  {
     path: 'briefs',
     loadComponent: () => import('./radar-brief.list/radar-brief.list'),
   },

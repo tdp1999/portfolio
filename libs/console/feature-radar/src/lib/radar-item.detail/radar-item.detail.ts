@@ -3,16 +3,26 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HelpButton, SpinnerOverlay } from '@portfolio/console/shared/ui';
-import { forkJoin, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { filter, forkJoin, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { RadarItemDetailCard } from '../radar-item.detail-card/radar-item.detail-card';
+import { RadarItemReanalyzeDialog } from '../radar-item.reanalyze-dialog/radar-item.reanalyze-dialog';
 import { locateInPage, parseFeedQuery, toFeedQuery, toFeedRequest } from '../radar-feed.util';
+import { isReanalysisQueued } from '../radar-item.util';
 import { PLATFORM_LABELS } from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarFeedItem, RadarFeedState, RadarItemDetail as RadarItem, RadarNeighbour } from '../radar.types';
+import {
+  RadarFeedItem,
+  RadarFeedState,
+  RadarItemDetail as RadarItem,
+  RadarNeighbour,
+  RadarReanalyzeDialogData,
+  ReanalyzeItemsResult,
+} from '../radar.types';
 
 /**
  * The full page for one post: its record plus the page chrome. Prev/next walk the Feed in the
@@ -41,6 +51,7 @@ export default class RadarItemDetail implements OnInit {
   private readonly radarService = inject(RadarService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly platformLabels = PLATFORM_LABELS;
@@ -56,6 +67,10 @@ export default class RadarItemDetail implements OnInit {
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly feedQuery = computed(() => toFeedQuery(this.feedState()));
+  protected readonly reanalysisQueued = computed(() => {
+    const it = this.item();
+    return !!it && isReanalysisQueued(it);
+  });
 
   /** Query params of the prev/next links: same view, with the page the neighbour sits on. */
   protected readonly prevQuery = computed(() => this.neighbourQuery(this.prev()));
@@ -84,6 +99,19 @@ export default class RadarItemDetail implements OnInit {
   /** A comments fetch ended; prev/next may have moved on since it started. */
   onRefresh(id: string): void {
     if (this.item()?.id === id) this.load(id);
+  }
+
+  onReanalyze(): void {
+    const it = this.item();
+    if (!it) return;
+    this.dialog
+      .open<RadarItemReanalyzeDialog, RadarReanalyzeDialogData, ReanalyzeItemsResult>(RadarItemReanalyzeDialog, {
+        data: { ids: [it.id] },
+        width: '480px',
+      })
+      .afterClosed()
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.onRefresh(it.id));
   }
 
   // ── shared helpers ────────────────────────────────────────────────

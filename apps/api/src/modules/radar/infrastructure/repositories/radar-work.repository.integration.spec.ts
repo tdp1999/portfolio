@@ -132,4 +132,54 @@ describe('RadarWorkRepository (integration)', () => {
     expect(whileFetching.map((i) => i.id)).toEqual([freeId]);
     expect(afterComments.map((i) => i.id)).toEqual([waitingId]);
   });
+
+  it('should give the deep pass only the items this run analyzed, not old enrichments still waiting', async () => {
+    const runId = `01a10755-0000-7000-8005-${String(Date.now()).slice(-12)}`;
+    await prisma.radarRun.create({
+      data: { id: runId, sourceId, status: 'RUNNING', itemCap: 10, captureAdapter: 'none', llmAdapter: 'test' },
+    });
+    const seeded = [
+      { key: 'a', workStatus: 'PENDING', analysisDepth: 'light' },
+      { key: 'b', workStatus: 'DONE', analysisDepth: 'light' },
+      { key: 'c', workStatus: 'PENDING', analysisDepth: 'deep' },
+      { key: 'd', workStatus: 'DONE', analysisDepth: 'deep' },
+    ] as const;
+    const idOf = (key: string) => `01a10755-0000-7000-8006-${String(Date.now()).slice(-11)}${key}`;
+    const ids = Object.fromEntries(seeded.map((x) => [x.key, idOf(x.key)]));
+    for (const [n, x] of seeded.entries()) {
+      await prisma.radarItem.create({
+        data: {
+          id: ids[x.key],
+          sourceId,
+          lastRunId: runId,
+          externalId: ids[x.key],
+          provider: 'test',
+          permalink: `https://fb.test/${ids[x.key]}`,
+          authorName: 'test',
+          publishedAt: new Date(FUTURE - 10_000 - n * 1000),
+          rawPayload: {},
+          workStatus: x.workStatus,
+          enrichment: {
+            create: {
+              id: ids[x.key].replace('8006', '8007'),
+              tldr: 'x',
+              providerTags: [],
+              contentType: 'news',
+              signalScore: 9,
+              isPromo: false,
+              isRelevant: true,
+              producerAdapter: 'test',
+              producerModel: 'test',
+              analysisDepth: x.analysisDepth,
+            },
+          },
+        },
+      });
+    }
+
+    const candidates = await repo.findDeepCandidates(runId, 7, 10);
+
+    expect(candidates.map((c) => c.id)).toEqual([ids['b']]);
+    expect(await repo.countDeep(runId)).toBe(1);
+  });
 });

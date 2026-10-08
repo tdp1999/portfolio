@@ -42,6 +42,12 @@
       </div>
     }
     @if (it.enrichment; as e) {
+      @if (reanalysisQueued()) {
+        <div class="radar-pending" role="status">
+          <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+          <p>Re-analysis queued. This analysis stays until the new one replaces it.</p>
+        </div>
+      }
       @if (e.factCheckSeverity === 'major' && e.factCheck) {
         <div class="radar-warning" role="note">
           <mat-icon class="icon-sm">warning</mat-icon>
@@ -178,11 +184,20 @@
           }
         </console-property>
         <console-property label="Kind">{{ it.kind }}</console-property>
-        <console-property label="Status">{{ workStatusLabels[it.workStatus] }}</console-property>
+        <console-property label="Status">{{
+          reanalysisQueued() ? 'Re-analysis queued' : workStatusLabels[it.workStatus]
+        }}</console-property>
         <console-property label="Comments">
           {{ it.comments.postCount }} on {{ platformLabel() }}
           @if (it.comments.fetchedAt) {
             <span class="rv-absent">(read {{ it.comments.fetchedAt | date: 'mediumDate' }})</span>
+          }
+        </console-property>
+        <console-property label="Run">
+          @if (it.lastRunId) {
+            <a class="radar-link" [routerLink]="['/radar/runs', it.lastRunId]">Last run of this post</a>
+          } @else {
+            <span class="rv-absent">Stored before runs</span>
           }
         </console-property>
       </console-property-list>

@@ -2,10 +2,18 @@ import { PLATFORM_LABELS } from './radar.data';
 import type {
   RadarCommentsChip,
   RadarCommentsSummary,
+  RadarItemDetail,
   RadarItemImage,
   RadarPlatform,
   RadarSourceMonogram,
 } from './radar.types';
+
+/**
+ * Analyzed once and back in the queue: the old analysis shows until the new one lands. A stuck
+ * post is not queued (its retries ran out), so it keeps the Re-analyze button that resets it.
+ */
+export const isReanalysisQueued = (item: Pick<RadarItemDetail, 'enrichment' | 'workStatus' | 'queueState'>): boolean =>
+  !!item.enrichment && item.workStatus !== 'DONE' && item.queueState !== 'stuck';
 
 /** A photo the browser can show: stored or still pending, and not seen failing to load. */
 export const isViewableImage = (img: RadarItemImage, broken: ReadonlySet<string>): boolean =>

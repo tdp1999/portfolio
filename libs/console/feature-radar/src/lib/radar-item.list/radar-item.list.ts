@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
+  BulkActionBar,
   EnumLabelPipe,
   FilterBar,
   FilterMore,
@@ -23,15 +24,23 @@ import {
   type PaginatorChange,
   RelativeTime,
   SegmentedControl,
+  SetHasPipe,
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { RadarItemReanalyzeDialog } from '../radar-item.reanalyze-dialog/radar-item.reanalyze-dialog';
 import { RadarItemProgressCell } from '../radar-item-progress.cell/radar-item-progress.cell';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
-import { FEED_PAGE_SIZE, FEED_PAGE_SIZES, FEED_VIEW_STORAGE_KEY, MAX_CLAIM_ATTEMPTS } from '../radar.constants';
+import {
+  FEED_PAGE_SIZE,
+  FEED_PAGE_SIZES,
+  FEED_VIEW_STORAGE_KEY,
+  MAX_CLAIM_ATTEMPTS,
+  REANALYZE_MAX_IDS,
+} from '../radar.constants';
 import { parseFeedQuery, parseItemParam, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { isRunActive } from '../radar-run.util';
 import {
@@ -56,15 +65,18 @@ import {
   RadarFeedState,
   RadarFeedView,
   RadarQueueStats,
+  RadarReanalyzeDialogData,
   RadarSource,
   RadarTriageDecision,
   RadarTriageStatus,
+  ReanalyzeItemsResult,
 } from '../radar.types';
 
 @Component({
   selector: 'console-radar-item-list',
   standalone: true,
   imports: [
+    BulkActionBar,
     HelpButton,
     RouterLink,
     MatButtonModule,
@@ -88,6 +100,7 @@ import {
     RadarItemTriageSection,
     RelativeTime,
     SegmentedControl,
+    SetHasPipe,
     SkeletonTable,
   ],
   templateUrl: './radar-item.list.html',
@@ -129,6 +142,10 @@ export default class RadarItemList implements OnInit {
   protected readonly selectedId = signal<string | null>(null);
   /** A triage change is on its way; decisions wait so two cannot cross. */
   protected readonly deciding = signal(false);
+  /** Checkboxes on the table rows, for re-analyzing several posts at once. */
+  protected readonly bulkMode = signal(false);
+  /** Picked post ids; kept across pages, sorts, filters and tabs until cleared. */
+  protected readonly selection = signal<ReadonlySet<string>>(new Set());
 
   // ── Derived ───────────────────────────────────────────────────────
   protected readonly activeFilters = computed(() => {
@@ -164,6 +181,20 @@ export default class RadarItemList implements OnInit {
 
   /** Split view with a post open: compact list plus the post. Otherwise the table. */
   protected readonly paneOpen = computed(() => this.view() === 'split' && !!this.selectedId());
+
+  /** Bulk mode lives in the Table view only; Split keeps the picks but hides the checkboxes. */
+  protected readonly showBulk = computed(() => this.bulkMode() && this.view() === 'table');
+  protected readonly tableColumns = computed(() =>
+    this.showBulk() ? ['select', ...this.displayedColumns] : this.displayedColumns
+  );
+  protected readonly pageAllSelected = computed(() => {
+    const items = this.items();
+    const sel = this.selection();
+    return items.length > 0 && items.every((it) => sel.has(it.id));
+  });
+  protected readonly pageSomeSelected = computed(
+    () => !this.pageAllSelected() && this.items().some((it) => this.selection().has(it.id))
+  );
 
   /** Every queue bucket with its count from the stats call; counts are queue-wide, not narrowed by the other filters. */
   protected readonly statusOptions = computed<FilterOption[]>(() => {
@@ -415,6 +446,59 @@ export default class RadarItemList implements OnInit {
     return CONTENT_TYPE_LABELS[type as RadarContentType] ?? type;
   }
 
+  // ── Bulk re-analysis ──────────────────────────────────────────────
+  /** Turning bulk mode off drops the picks with it. */
+  onToggleBulk(): void {
+    const on = !this.bulkMode();
+    this.bulkMode.set(on);
+    if (!on) this.onClearSelection();
+  }
+
+  onToggleRow(id: string): void {
+    const sel = this.selection();
+    if (sel.has(id)) {
+      this.selection.set(new Set([...sel].filter((x) => x !== id)));
+      return;
+    }
+    if (this.overCap(sel.size + 1)) return;
+    this.selection.set(new Set([...sel, id]));
+  }
+
+  /** The header box: picks every post on this page, or unpicks them once all are picked. */
+  onTogglePage(): void {
+    const sel = new Set(this.selection());
+    const ids = this.items().map((it) => it.id);
+    if (this.pageAllSelected()) {
+      ids.forEach((id) => sel.delete(id));
+    } else {
+      ids.forEach((id) => sel.add(id));
+      if (this.overCap(sel.size)) return;
+    }
+    this.selection.set(sel);
+  }
+
+  onClearSelection(): void {
+    this.selection.set(new Set());
+  }
+
+  onReanalyzeSelected(): void {
+    const ids = [...this.selection()];
+    if (!ids.length) return;
+    this.dialog
+      .open<RadarItemReanalyzeDialog, RadarReanalyzeDialogData, ReanalyzeItemsResult>(RadarItemReanalyzeDialog, {
+        data: { ids },
+        width: '480px',
+      })
+      .afterClosed()
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.onClearSelection();
+        this.loadItems();
+        this.loadStats();
+        this.loadActiveRuns();
+      });
+  }
+
   // ── Queue ─────────────────────────────────────────────────────────
   onRequeueStuck(): void {
     this.requeueing.set(true);
@@ -442,6 +526,13 @@ export default class RadarItemList implements OnInit {
   }
 
   // ── shared helpers ────────────────────────────────────────────────
+  /** One re-analysis takes at most `REANALYZE_MAX_IDS` posts; a pick past that is refused. */
+  private overCap(size: number): boolean {
+    if (size <= REANALYZE_MAX_IDS) return false;
+    this.toast.warning(`One re-analysis takes at most ${REANALYZE_MAX_IDS} posts.`);
+    return true;
+  }
+
   private resetAndLoad(): void {
     this.pageIndex.set(0);
     this.loadItems();

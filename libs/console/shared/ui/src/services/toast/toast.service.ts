@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Toast, ToastType } from './toast.model';
+import { Toast, ToastOptions, ToastType } from './toast.model';
 import { DEFAULT_DURATION } from './toast.data';
 import { getNextToastId } from './toast.util';
 
@@ -23,29 +23,31 @@ export class ToastService {
 
   // ── Plain state ───────────────────────────────────────────────────────
 
-  success(message: string, duration = DEFAULT_DURATION): void {
-    this.add(message, 'success', duration);
+  success(message: string, options: number | ToastOptions = DEFAULT_DURATION): void {
+    this.add(message, 'success', options);
   }
 
-  error(message: string, duration = DEFAULT_DURATION): void {
-    this.add(message, 'error', duration);
+  error(message: string, options: number | ToastOptions = DEFAULT_DURATION): void {
+    this.add(message, 'error', options);
   }
 
-  warning(message: string, duration = DEFAULT_DURATION): void {
-    this.add(message, 'warning', duration);
+  warning(message: string, options: number | ToastOptions = DEFAULT_DURATION): void {
+    this.add(message, 'warning', options);
   }
 
-  info(message: string, duration = DEFAULT_DURATION): void {
-    this.add(message, 'info', duration);
+  info(message: string, options: number | ToastOptions = DEFAULT_DURATION): void {
+    this.add(message, 'info', options);
   }
 
   dismiss(id: string): void {
     this.toastsSignal.update((toasts) => toasts.filter((t) => t.id !== id));
   }
 
-  private add(message: string, type: ToastType, duration: number): void {
+  /** `options` is the duration in ms, or an object that can also carry an action link. */
+  private add(message: string, type: ToastType, options: number | ToastOptions): void {
     const id = getNextToastId();
-    const toast: Toast = { id, message, type, duration };
+    const { duration = DEFAULT_DURATION, action } = typeof options === 'number' ? { duration: options } : options;
+    const toast: Toast = { id, message, type, duration, ...(action ? { action } : {}) };
     this.toastsSignal.update((toasts) => [...toasts, toast]);
   }
 }

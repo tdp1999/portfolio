@@ -9,6 +9,12 @@ export interface CaptureJobRequest {
   itemCap: number;
 }
 
+/** A started job: the provider's reference, and the input it was sent (kept on the run for the Owner to read). */
+export interface CaptureJobStart {
+  jobRef: string;
+  input: Record<string, unknown>;
+}
+
 export type CaptureJobStatus =
   | { state: 'running' }
   | { state: 'succeeded'; datasetRef: string; itemCount: number }
@@ -42,8 +48,8 @@ export interface ICaptureProvider {
    * provider does not know it. Absent when any URL is taken as pasted (Facebook).
    */
   resolveSource?(url: string): Promise<ResolvedSource | null>;
-  /** Starts the job and returns the provider's job reference. */
-  start(request: CaptureJobRequest): Promise<string>;
+  /** Starts the job and returns the provider's job reference with the input it sent. */
+  start(request: CaptureJobRequest): Promise<CaptureJobStart>;
   poll(jobRef: string): Promise<CaptureJobStatus>;
   fetchPage(datasetRef: string, offset: number, limit: number): Promise<unknown[]>;
 }

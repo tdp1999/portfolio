@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import {
   CurrencyService,
   ConfirmDialogComponent,
@@ -38,7 +39,7 @@ import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
 import { RadarItemTrialsSection } from '../radar-item-trials.section/radar-item-trials.section';
 import { RadarItemTranscriptSection } from '../radar-item-transcript.section/radar-item-transcript.section';
-import { isViewableImage } from '../radar-item.util';
+import { isReanalysisQueued, isViewableImage } from '../radar-item.util';
 import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS, COMMENTS_PREVIEW } from '../radar.constants';
 import {
   COMMENT_TAGS,
@@ -70,6 +71,7 @@ import { UrlHostPipe } from '../url-host.pipe';
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
+    RouterLink,
     EnumLabelPipe,
     MarkdownPipe,
     RadarImageViewablePipe,
@@ -123,6 +125,8 @@ export class RadarItemDetailCard {
   protected readonly images = computed(() => this.item().images);
   protected readonly sharedImages = computed(() => this.item().sharedPost?.images ?? []);
   protected readonly imageCount = computed(() => this.images().length + this.sharedImages().length);
+  /** Analyzed once and back in the queue: this analysis shows until the new one lands. */
+  protected readonly reanalysisQueued = computed(() => isReanalysisQueued(this.item()));
 
   /** The shared post's permalink already sits next to its text as "Open shared post"; every other link stays. */
   protected readonly links = computed(() => {

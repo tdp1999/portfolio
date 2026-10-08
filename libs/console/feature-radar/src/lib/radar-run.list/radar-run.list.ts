@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   ConfirmDialogComponent,
   type ConfirmDialogData,
@@ -24,12 +24,15 @@ import {
   displayStatus,
   isRunActive,
   itemsDetail,
+  runItemsLabel,
   runNotice,
+  runSourceLabel,
   stepSummary,
   stepTooltip,
 } from '../radar-run.util';
 import { RUN_POLL_MS } from '../radar.constants';
 import {
+  REANALYZE_HELP,
   RUN_FLOW_HELP,
   RUN_FLOW_LABELS,
   RUN_STATUS_BADGES,
@@ -66,6 +69,7 @@ export default class RadarRunList implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly runs = signal<RadarRun[]>([]);
@@ -96,7 +100,9 @@ export default class RadarRunList implements OnInit {
       notice: runNotice(run),
       stepSummary: stepSummary(run),
       itemsDetail: itemsDetail(run),
-      flowHelp: RUN_FLOW_HELP[run.flow],
+      flowHelp: run.kind === 'REANALYZE' ? REANALYZE_HELP : RUN_FLOW_HELP[run.flow],
+      sourceLabel: runSourceLabel(run),
+      itemsLabel: runItemsLabel(run),
       steps: run.steps.map((step) => ({ ...step, tooltip: stepTooltip(step) })),
     }))
   );
@@ -134,6 +140,10 @@ export default class RadarRunList implements OnInit {
     this.loadRuns();
   }
 
+  onOpenRun(run: RadarRun): void {
+    void this.router.navigate(['/radar/runs', run.id]);
+  }
+
   // ── New run ───────────────────────────────────────────────────────
   /** Sources load on open, not on page load: the list can change in the Sources dialog meanwhile. */
   onNewRun(): void {
@@ -160,7 +170,7 @@ export default class RadarRunList implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((run) => {
-        this.toast.success(`Run started for ${run.source.displayName}`);
+        this.toast.success(`Run started for ${runSourceLabel(run)}`);
         this.loadRuns();
       });
   }
@@ -171,7 +181,10 @@ export default class RadarRunList implements OnInit {
       .open(ConfirmDialogComponent, {
         data: {
           title: 'Cancel run',
-          message: `Stop the run for ${run.source.displayName}? Posts it already saved stay in the Feed. A capture already started on Apify still finishes there and is billed.`,
+          message:
+            run.kind === 'REANALYZE'
+              ? 'Stop this re-analysis? Posts it already analyzed keep their new analysis; the rest stay pending.'
+              : `Stop the run for ${runSourceLabel(run)}? Posts it already saved stay in the Feed. A capture already started on Apify still finishes there and is billed.`,
           confirmLabel: 'Cancel run',
         } satisfies ConfirmDialogData,
       })
@@ -194,7 +207,8 @@ export default class RadarRunList implements OnInit {
     const file = input.files?.[0];
     // Reset so picking the same file again after a fix still fires `change`.
     input.value = '';
-    if (!file) return;
+    // Only a Manual capture run waits for an upload, and it always has a source.
+    if (!file || !run.source) return;
 
     this.busyRunId.set(run.id);
     this.radarService.uploadCapture(run.source.id, file, run.id).subscribe({

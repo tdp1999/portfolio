@@ -3,10 +3,11 @@ import type {
   RadarFeedSortKey,
   RadarProviderTag,
   RadarQueueState,
+  RadarReanalyzeMode,
   RadarTriageStatus,
 } from '@portfolio/shared/types';
 
-export type { RadarFeedSortKey, RadarQueueState, RadarTriageStatus };
+export type { RadarFeedSortKey, RadarQueueState, RadarReanalyzeMode, RadarTriageStatus };
 
 export type RadarWorkStatus = 'PENDING' | 'CLAIMED' | 'DONE';
 
@@ -139,6 +140,8 @@ export interface RadarFeedParams {
   sortDir?: 'asc' | 'desc';
   status?: string;
   sourceId?: string;
+  /** Posts this run touched last. */
+  runId?: string;
   triageStatus?: RadarTriageStatus;
 }
 
@@ -202,6 +205,8 @@ export interface RadarItemDetail extends Omit<RadarFeedItem, 'preview' | 'enrich
   comments: RadarCommentsSummary & { items: RadarComment[] };
   /** Null for a post without a playable video. */
   video: RadarItemVideo | null;
+  /** The run that touched this post last; null for a post stored before runs existed. */
+  lastRunId: string | null;
 }
 
 /** What a video says and shows; only `spoken` is null for a silent video. */
@@ -300,9 +305,14 @@ export interface RadarStepRun {
   finishedAt: string | null;
 }
 
+/** `REANALYZE`: analyzes posts picked in the Feed again; no source, no capture, ANALYZE only. */
+export type RadarRunKind = 'CAPTURE' | 'REANALYZE';
+
 export interface RadarRun {
   id: string;
-  source: { id: string; displayName: string };
+  kind: RadarRunKind;
+  /** Null on a re-analysis run, whose posts can come from several sources. */
+  source: { id: string; displayName: string } | null;
   flow: RadarRunFlow;
   status: RadarRunStatus;
   /** Null on both ends means a backfill with no date filter. */
@@ -326,8 +336,58 @@ export interface RadarRun {
   createdAt: string;
   startedAt: string | null;
   finishedAt: string | null;
-  /** Always in pipeline order: CAPTURE, NORMALIZE, ENRICH, ANALYZE. */
+  /** In pipeline order: CAPTURE, NORMALIZE, ENRICH, ANALYZE (ANALYZE only on a re-analysis). */
   steps: RadarStepRun[];
+}
+
+/** One AI feature's share of a run's calls. */
+export interface RadarRunAiSpend {
+  feature: string;
+  calls: number;
+  failed: number;
+  tokensIn: number;
+  tokensOut: number;
+  costMicroUsd: number;
+}
+
+export interface RadarRunFailure {
+  /** The post's URL or id, when the unreadable row still had one. */
+  ref: string | null;
+  reason: string;
+}
+
+/** The run detail page: the list row plus what the run sent, could not read and spent. */
+export interface RadarRunDetail extends RadarRun {
+  /** The input sent to the capture provider; null for a Manual run, a re-analysis or an older run. */
+  captureInput: Record<string, unknown> | null;
+  /** The provider's job reference (the Apify run id); null before the capture started or for an upload. */
+  captureJobRef: string | null;
+  /** The first unreadable posts with their reason; `dropped` counts the rest. */
+  failures: { items: RadarRunFailure[]; dropped: number };
+  /** AUTO only: calls, tokens and cost per AI feature, most expensive first. */
+  aiSpend: RadarRunAiSpend[] | null;
+}
+
+/** One step of the run detail timeline, with what the row shows precomputed. */
+export interface RadarRunStepRow extends RadarStepRun {
+  label: string;
+  /** "Not reached" for a step a finished run never got to, otherwise the status label. */
+  statusLabel: string;
+  icon: string;
+  /** "1 min 12 s"; null when the step has not both started and ended. */
+  duration: string | null;
+  notReached: boolean;
+}
+
+/** One post of the run detail list, ready to render. */
+export interface RadarRunPostRow {
+  id: string;
+  authorName: string;
+  publishedAt: string;
+  isVideo: boolean;
+  kindLabel: string;
+  statusLabel: string;
+  score: number | null;
 }
 
 export interface CreateRadarRunInput {
@@ -366,6 +426,10 @@ export interface RadarRunRow extends Omit<RadarRun, 'steps'> {
   itemsDetail: string;
   /** What the Owner does by hand in this run's flow. */
   flowHelp: string;
+  /** The source's name, or "Re-analysis" for a run with no source. */
+  sourceLabel: string;
+  /** "12 captured", or "12 to analyze" for a re-analysis. */
+  itemsLabel: string;
   steps: (RadarStepRun & { tooltip: string })[];
 }
 
@@ -500,4 +564,25 @@ export type RadarLightboxPhoto = Pick<RadarItemImage, 'url' | 'ocrText'>;
 export interface RadarTriageDecision {
   id: string;
   status: RadarTriageStatus;
+}
+
+// --- Re-analysis ---
+
+export interface ReanalyzeItemsInput {
+  ids: string[];
+  mode: RadarReanalyzeMode;
+  /** AUTO only, in USD; the server's default when left out. */
+  budgetUsd?: number;
+}
+
+export interface ReanalyzeItemsResult {
+  requeued: number;
+  /** Unknown, under a live lease, still in an active run, or on a paused source. */
+  skipped: number;
+  /** The re-analysis run; null for WORKER or when nothing was requeued. */
+  runId: string | null;
+}
+
+export interface RadarReanalyzeDialogData {
+  ids: string[];
 }

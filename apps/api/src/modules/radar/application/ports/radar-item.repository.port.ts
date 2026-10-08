@@ -1,3 +1,4 @@
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { RadarCommentsStatus, RadarItemKind, RadarPlatform, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
 
 import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
@@ -17,6 +18,8 @@ export interface RadarItemListFilter {
   /** False hides items whose enrichment is flagged promo; unenriched items always stay. */
   includePromo: boolean;
   sourceId?: string;
+  /** Items whose `lastRunId` is this run. */
+  runId?: string;
   /** One queue bucket, counted the same way as `RadarQueueStats`. */
   status?: RadarFeedStatus;
   triageStatus?: RadarTriageStatus;
@@ -99,6 +102,7 @@ export interface RadarItemDetail extends RadarItemBase {
   enrichment: RadarEnrichmentDetail | null;
   /** Null for an item without a playable video. */
   video: RadarItemVideo | null;
+  lastRunId: string | null;
 }
 
 export interface RadarQueueStats {
@@ -123,4 +127,21 @@ export interface IRadarItemRepository {
   stats(now: Date, maxAttempts: number): Promise<RadarQueueStats>;
   /** Resets every stuck item (see `RadarQueueStats.stuck`) to pending with no claims. Returns how many. */
   requeueStuck(now: Date, maxAttempts: number): Promise<number>;
+  /**
+   * Puts the listed items back in the queue for another analysis: pending, no claims, no lease, no
+   * work error, enrichment kept until the next one replaces it. Skips unknown ids, items under a
+   * live lease, items whose last run is still active and items of a paused source. When `buildRun`
+   * is given and an item qualifies, the run it builds (from the requeued count) is inserted and the
+   * items point at it, in the same transaction.
+   */
+  requeueForAnalysis(
+    ids: readonly string[],
+    now: Date,
+    buildRun: ((count: number) => RadarRun) | null
+  ): Promise<RadarRequeueResult>;
+}
+
+export interface RadarRequeueResult {
+  requeued: number;
+  run: RadarRun | null;
 }

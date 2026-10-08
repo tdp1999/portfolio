@@ -169,13 +169,13 @@ describe('ApifyFacebookNormalizer', () => {
     ]);
   });
 
-  it('should report a malformed post as a failure and still normalize the rest', () => {
+  it('should report a malformed post as a failure, naming it by its URL, and still normalize the rest', () => {
     const { postId: _omit, ...malformed } = byId(PLAIN_POST);
 
     const result = normalizer.normalize([byId(ALBUM_POST), malformed, byId(REEL_POST)]);
 
     expect(result.items.map((i) => i.externalId)).toEqual([ALBUM_POST, REEL_POST]);
-    expect(result.failures).toEqual([{ index: 1, reason: expect.stringContaining('postId') }]);
+    expect(result.failures).toEqual([{ index: 1, ref: malformed['url'], reason: expect.stringContaining('postId') }]);
   });
 
   it('should keep the first copy of a post repeated in the same batch and count the rest as skipped', () => {

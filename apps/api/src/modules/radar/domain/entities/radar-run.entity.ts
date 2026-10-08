@@ -1,4 +1,4 @@
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
+import { RadarRunFlow, RadarRunKind, RadarStatus, RadarStep } from '@prisma/client';
 
 import {
   BadRequestError,
@@ -9,7 +9,8 @@ import {
 } from '@portfolio/shared/errors';
 import { IdentifierValue, RADAR_RUN_CANCELLED_MESSAGE, TemporalValue } from '@portfolio/shared/types';
 
-import { CreateRadarRunPayload, RadarRunProps } from '../radar-run.types';
+import { RadarNormalizeFailure } from '../radar.types';
+import { CreateRadarRunPayload, CreateReanalyzeRunPayload, RadarRunProps, RadarRunSource } from '../radar-run.types';
 import { RadarCommentsProgress } from '../value-objects/radar-comments-progress';
 import { RadarDatasetCursor } from '../value-objects/radar-dataset-cursor';
 import { RadarStepRun } from './radar-step-run.entity';
@@ -17,7 +18,8 @@ import { RadarStepRun } from './radar-step-run.entity';
 type RadarRunState = Omit<RadarRunProps, 'steps'> & { steps: readonly RadarStepRun[] };
 
 /**
- * One capture-to-analysis pass over a source, and its steps. Owns every status change of the run
+ * One capture-to-analysis pass over a source (a CAPTURE run), or a second analysis of items the
+ * Owner picked (a REANALYZE run, ANALYZE step only, no source), and its steps. Owns every status change of the run
  * and its steps; the repository saves it only while the run is still active, so a run cancelled
  * mid-tick stays cancelled.
  */
@@ -41,6 +43,8 @@ export class RadarRun {
   /** Errors thrown inside one step (network, provider 5xx) are retried on later ticks up to this. */
   static readonly MAX_STEP_ERRORS = 5;
   static readonly MAX_WARNING = 500;
+  /** The capture adapter a REANALYZE run records: it captures nothing. */
+  static readonly NO_CAPTURE_ADAPTER = 'none';
 
   private constructor(
     private readonly props: RadarRunState,
@@ -55,12 +59,19 @@ export class RadarRun {
    * AWAITING_EXTERNAL for the upload. SYNTHESIZE gets no step: the brief (412) is per window.
    */
   static create(data: CreateRadarRunPayload): RadarRun {
+    if (!data.sourceId) {
+      throw BadRequestError('A capture run needs a source', {
+        errorCode: RadarErrorCode.INVALID_INPUT,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
     const waiting = data.flow === RadarRunFlow.MANUAL ? RadarStatus.AWAITING_EXTERNAL : RadarStatus.PENDING;
     const { adapters, ...run } = data;
     return new RadarRun(
       {
         ...run,
         id: IdentifierValue.v7(),
+        kind: RadarRunKind.CAPTURE,
         status: waiting,
         captureAdapter: adapters.capture,
         llmAdapter: adapters.analyze,
@@ -84,6 +95,42 @@ export class RadarRun {
     );
   }
 
+  /**
+   * An AUTO analysis with no capture: the requeued items point at this run, and the tick analyzes
+   * them as it does any AUTO run's items (light, then deep), under this run's budget.
+   */
+  static reanalyze(data: CreateReanalyzeRunPayload): RadarRun {
+    return new RadarRun(
+      {
+        id: IdentifierValue.v7(),
+        kind: RadarRunKind.REANALYZE,
+        sourceId: null,
+        sourceUrl: null,
+        sourceName: null,
+        flow: RadarRunFlow.AUTO,
+        status: RadarStatus.PENDING,
+        windowFrom: null,
+        windowTo: null,
+        itemCap: data.itemCount,
+        captureAdapter: RadarRun.NO_CAPTURE_ADAPTER,
+        llmAdapter: data.analyzeAdapter,
+        itemsCaptured: 0,
+        itemsCreated: 0,
+        itemsUpdated: 0,
+        itemsFailed: 0,
+        fetchComments: false,
+        budgetMicroUsd: data.budgetMicroUsd,
+        error: null,
+        warning: null,
+        createdAt: TemporalValue.now(),
+        startedAt: null,
+        finishedAt: null,
+        steps: [RadarStepRun.create(RadarStep.ANALYZE, RadarStatus.PENDING, data.analyzeAdapter)],
+      },
+      null
+    );
+  }
+
   static load(props: RadarRunProps): RadarRun {
     return new RadarRun({ ...props, steps: props.steps.map((s) => RadarStepRun.load(s)) }, props);
   }
@@ -94,16 +141,28 @@ export class RadarRun {
     return this.props.id;
   }
 
-  get sourceId(): string {
+  get kind(): RadarRunKind {
+    return this.props.kind;
+  }
+
+  get sourceId(): string | null {
     return this.props.sourceId;
   }
 
-  get sourceUrl(): string {
-    return this.props.sourceUrl;
+  get sourceName(): string | null {
+    return this.props.sourceName;
   }
 
-  get sourceName(): string {
-    return this.props.sourceName;
+  /** The source a capture step reads; only a CAPTURE run has one. */
+  get captureSource(): RadarRunSource {
+    const { sourceId, sourceUrl, sourceName } = this.props;
+    if (!sourceId || sourceUrl === null || sourceName === null) {
+      throw InternalServerError(`Radar run ${this.props.id} has no source to capture`, {
+        errorCode: CommonErrorCode.INTERNAL_ERROR,
+        layer: ErrorLayer.DOMAIN,
+      });
+    }
+    return { id: sourceId, url: sourceUrl, name: sourceName };
   }
 
   get flow(): RadarRunFlow {
@@ -224,9 +283,9 @@ export class RadarRun {
   }
 
   /** The provider job started: it is billed from here, so its reference must be kept. */
-  startCapture(jobRef: string, now: Date): RadarRun {
+  startCapture(jobRef: string, input: Record<string, unknown>, now: Date): RadarRun {
     return this.withStep(RadarStep.CAPTURE, (s) =>
-      s.with({ status: RadarStatus.RUNNING, providerJobRef: jobRef, startedAt: now })
+      s.with({ status: RadarStatus.RUNNING, providerJobRef: jobRef, startedAt: now, meta: { ...s.meta, input } })
     );
   }
 
@@ -237,14 +296,21 @@ export class RadarRun {
 
   /** The provider's dataset is ready: NORMALIZE reads it from the start. */
   completeCapture(cursor: RadarDatasetCursor, now: Date): RadarRun {
-    return this.withStep(RadarStep.CAPTURE, (s) => s.finish(now).with({ meta: cursor.toMeta() })).withStep(
-      RadarStep.NORMALIZE,
-      (s) => s.start(now).with({ meta: cursor.toMeta() })
-    );
+    return this.withStep(RadarStep.CAPTURE, (s) =>
+      s.finish(now).with({ meta: { ...s.meta, ...cursor.toMeta() } })
+    ).withStep(RadarStep.NORMALIZE, (s) => s.start(now).with({ meta: cursor.toMeta() }));
   }
 
   moveCursor(cursor: RadarDatasetCursor): RadarRun {
     return this.withStep(RadarStep.NORMALIZE, (s) => s.with({ meta: { ...s.meta, offset: cursor.offset } }));
+  }
+
+  /** Keeps the posts NORMALIZE could not read, up to the failure log's cap. */
+  noteFailures(failures: readonly RadarNormalizeFailure[]): RadarRun {
+    if (failures.length === 0) return this;
+    return this.withStep(RadarStep.NORMALIZE, (s) =>
+      s.with({ meta: { ...s.meta, ...s.failureLog.add(failures).toMeta() } })
+    );
   }
 
   completeNormalize(now: Date): RadarRun {

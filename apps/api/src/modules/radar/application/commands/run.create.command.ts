@@ -16,6 +16,7 @@ import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { ICaptureProvider } from '../ports/capture-provider.port';
 import { EXTERNAL_WORKER_ADAPTER, SERVER_AI_ADAPTER } from '../ports/llm-provider.port';
 import { RADAR_ANALYSIS_CONFIG, RadarAnalysisConfig } from '../radar-analysis.config';
+import { RadarAutoRun } from '../radar-auto-run';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { IRadarSourceRepository } from '../ports/radar-source.repository.port';
 import { CreateRunSchema, RadarRunDto } from '../radar.dto';
@@ -76,13 +77,9 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         layer: ErrorLayer.APPLICATION,
       });
     }
-    if (auto && !this.ai.configured) {
-      throw BadRequestError('Auto analysis is not configured (the server has no AI provider key)', {
-        errorCode: RadarErrorCode.AI_NOT_CONFIGURED,
-        layer: ErrorLayer.APPLICATION,
-      });
-    }
+    if (auto) RadarAutoRun.ensureConfigured(this.ai);
     // Two runs on one source would race on the same items' lastRunId and double the provider bill.
+    // An active re-analysis holding posts of this source counts too: a capture would take them over.
     // Checked here for a fast answer, and again inside the insert transaction for concurrent calls.
     if (await this.runs.hasActiveRun(source.id)) throw alreadyActive();
 
@@ -96,7 +93,7 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         windowTo: input.windowTo ?? null,
         itemCap: input.itemCap,
         fetchComments: input.fetchComments,
-        budgetMicroUsd: auto ? this.budgetMicroUsd(input.budgetUsd) : null,
+        budgetMicroUsd: auto ? RadarAutoRun.budgetMicroUsd(this.analysis, input.budgetUsd) : null,
         adapters: {
           capture: provider?.name ?? UPLOAD_CAPTURE_ADAPTER,
           normalize: provider?.format ?? UPLOAD_NORMALIZE_ADAPTER,
@@ -108,18 +105,13 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
     if (!run) throw alreadyActive();
     return RadarPresenter.toRun(run);
   }
-
-  /** The Owner's cap in USD, or the configured default. */
-  private budgetMicroUsd(budgetUsd: number | undefined): number {
-    return budgetUsd === undefined ? this.analysis.defaultBudgetMicroUsd : Math.round(budgetUsd * 1_000_000);
-  }
 }
 
 const invalid = (message: string) =>
   BadRequestError(message, { errorCode: RadarErrorCode.INVALID_INPUT, layer: ErrorLayer.APPLICATION });
 
 const alreadyActive = () =>
-  ConflictError('This source already has an active run', {
+  ConflictError('This source already has an active run, or a re-analysis of its posts', {
     errorCode: RadarErrorCode.RUN_ALREADY_ACTIVE,
     layer: ErrorLayer.APPLICATION,
   });

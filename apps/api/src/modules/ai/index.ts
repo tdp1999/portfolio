@@ -11,4 +11,4 @@ export type {
   AiTool,
   IAiClient,
 } from './application/ports/ai-client.port';
-export type { AiFeature, AiRef } from './domain/ai-usage.types';
+export type { AiFeature, AiRef, AiUsageSummary } from './domain/ai-usage.types';

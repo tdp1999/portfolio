@@ -4,6 +4,7 @@ import {
   RadarItemKind,
   RadarPlatform,
   RadarRunFlow,
+  RadarRunKind,
   RadarStatus,
   RadarStep,
   RadarTriageStatus,
@@ -12,6 +13,7 @@ import {
 
 import { RadarComment } from '../domain/radar-comment.types';
 import { RadarItemVideo } from '../domain/radar-transcript.types';
+import { RadarRunFailure } from '../domain/radar-run.types';
 import { z } from 'zod/v4';
 
 import {
@@ -25,6 +27,8 @@ import {
   RADAR_MAX_RUN_ITEM_CAP,
   RADAR_MIN_RUN_BUDGET_USD,
   RADAR_PROVIDER_TAGS,
+  RADAR_REANALYZE_MAX_IDS,
+  RADAR_REANALYZE_MODES,
   RADAR_TRIAGE_MAX_IDS,
   RADAR_TRIAL_MAX_IDS,
   type RadarQueueState,
@@ -250,6 +254,8 @@ export const ListRadarItemsSchema = z.object({
   // stringbool, not coerce.boolean: coerce turns the string "false" into true.
   includePromo: z.stringbool().default(false),
   sourceId: z.uuid().optional(),
+  /** Posts this run touched last (`lastRunId`); a later run that touches a post takes it over. */
+  runId: z.uuid().optional(),
   status: z.enum(RADAR_FEED_STATUSES).optional(),
   triageStatus: z.enum(RadarTriageStatus).optional(),
   sortBy: z.enum(RADAR_FEED_SORT_KEYS).default('publishedAt'),
@@ -308,6 +314,26 @@ export const TriageRadarItemsSchema = z.object({
   ids: z.array(z.uuid()).min(1).max(RADAR_TRIAGE_MAX_IDS),
   status: z.enum(RadarTriageStatus),
 });
+
+export const ReanalyzeItemsSchema = z
+  .object({
+    ids: z.array(z.uuid()).min(1).max(RADAR_REANALYZE_MAX_IDS),
+    mode: z.enum(RADAR_REANALYZE_MODES).default('AUTO'),
+    budgetUsd: z.number().min(RADAR_MIN_RUN_BUDGET_USD).max(RADAR_MAX_RUN_BUDGET_USD).optional(),
+  })
+  .refine((v) => v.budgetUsd === undefined || v.mode === 'AUTO', {
+    message: 'A budget applies only to an Auto re-analysis',
+    path: ['budgetUsd'],
+  });
+
+export interface ReanalyzeItemsResponseDto {
+  /** Items put back in the queue. */
+  requeued: number;
+  /** Unknown ids, items under a live lease, items whose run is still active, items of a paused source. */
+  skipped: number;
+  /** The REANALYZE run analyzing them; null for `WORKER`, or when nothing was requeued. */
+  runId: string | null;
+}
 
 export const CreateTrialsSchema = z.object({
   itemIds: z.array(z.uuid()).min(1).max(RADAR_TRIAL_MAX_IDS),
@@ -381,6 +407,8 @@ export interface RadarItemDetailDto {
   /** Stored comments: every author comment plus the best others, labelled. */
   comments: RadarItemCommentsSummaryDto & { items: RadarComment[] };
   video: RadarItemVideo | null;
+  /** The run that touched this post last; null for a post stored before runs existed. */
+  lastRunId: string | null;
 }
 
 export type RadarQueueStatsDto = RadarQueueStats;
@@ -428,7 +456,9 @@ export interface RadarStepRunDto {
 
 export interface RadarRunDto {
   id: string;
-  source: { id: string; displayName: string };
+  kind: RadarRunKind;
+  /** Null on a REANALYZE run, whose items can come from several sources. */
+  source: { id: string; displayName: string } | null;
   flow: RadarRunFlow;
   status: RadarStatus;
   windowFrom: Date | null;
@@ -451,6 +481,28 @@ export interface RadarRunDto {
   startedAt: Date | null;
   finishedAt: Date | null;
   steps: RadarStepRunDto[];
+}
+
+/** One feature's share of a run's AI calls. */
+export interface RadarRunAiSpendDto {
+  feature: string;
+  calls: number;
+  failed: number;
+  tokensIn: number;
+  tokensOut: number;
+  costMicroUsd: number;
+}
+
+/** The run detail page: the list row plus what the run sent, what it could not read and what it spent. */
+export interface RadarRunDetailDto extends RadarRunDto {
+  /** The input sent to the capture provider; null for a Manual run, a re-analysis or a run older than this field. */
+  captureInput: Record<string, unknown> | null;
+  /** The provider's job reference (the Apify run id); null before the capture started or for an upload. */
+  captureJobRef: string | null;
+  /** Posts the normalizer could not read: the first ones kept with their reason, the rest counted. */
+  failures: { items: RadarRunFailure[]; dropped: number };
+  /** AUTO only: calls, tokens and cost per AI feature, most expensive first. */
+  aiSpend: RadarRunAiSpendDto[] | null;
 }
 
 // --- Briefs ---

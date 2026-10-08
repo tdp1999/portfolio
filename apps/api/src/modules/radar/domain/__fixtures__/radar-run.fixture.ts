@@ -1,4 +1,4 @@
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
+import { RadarRunFlow, RadarRunKind, RadarStatus, RadarStep } from '@prisma/client';
 
 import { RadarRun } from '../entities/radar-run.entity';
 import { RadarRunProps, RadarStepRunProps } from '../radar-run.types';
@@ -15,6 +15,7 @@ export function radarRunProps(
   const at = new Date('2026-10-05T10:00:00Z');
   return {
     id: RUN_FIXTURE_ID,
+    kind: RadarRunKind.CAPTURE,
     sourceId: RUN_FIXTURE_SOURCE_ID,
     sourceUrl: 'https://www.facebook.com/mrgoonie',
     sourceName: 'mrgoonie',

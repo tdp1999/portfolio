@@ -812,6 +812,12 @@ enum RadarRunFlow {
   AUTO
 }
 
+/// What a run does. REANALYZE has only the ANALYZE step and no source: it analyzes items picked in the console again.
+enum RadarRunKind {
+  CAPTURE
+  REANALYZE
+}
+
 enum RadarStep {
   CAPTURE
   NORMALIZE
@@ -885,7 +891,9 @@ model RadarSource {
 
 model RadarRun {
   id             String       @id @db.Uuid
-  sourceId       String       @db.Uuid
+  kind           RadarRunKind @default(CAPTURE)
+  /// Null only on a REANALYZE run, whose items can come from several sources.
+  sourceId       String?      @db.Uuid
   flow           RadarRunFlow @default(HYBRID)
   status         RadarStatus  @default(PENDING)
   windowFrom     DateTime?
@@ -909,7 +917,7 @@ model RadarRun {
   finishedAt     DateTime?
   updatedAt      DateTime     @updatedAt
 
-  source RadarSource    @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  source RadarSource?   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   steps  RadarStepRun[]
   items  RadarItem[]
 

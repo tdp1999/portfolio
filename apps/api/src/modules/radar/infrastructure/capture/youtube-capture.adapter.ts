@@ -4,6 +4,7 @@ import { isPlainObject, nonEmptyString } from '@portfolio/shared/utils';
 
 import {
   CaptureJobRequest,
+  CaptureJobStart,
   CaptureJobStatus,
   ICaptureProvider,
   ResolvedSource,
@@ -65,7 +66,7 @@ export class YouTubeCaptureAdapter implements ICaptureProvider {
     return { url: YouTubeCaptureAdapter.channelUrl(id), name: nonEmptyString(snippet['title']) ?? id };
   }
 
-  async start(request: CaptureJobRequest): Promise<string> {
+  async start(request: CaptureJobRequest): Promise<CaptureJobStart> {
     const channelId = YouTubeCaptureAdapter.channelIdOf(request.sourceUrl);
     if (!channelId) throw new Error(`Not a YouTube channel URL: ${request.sourceUrl}`);
     const job: YouTubeJob = {
@@ -74,7 +75,8 @@ export class YouTubeCaptureAdapter implements ICaptureProvider {
       to: request.windowTo?.toISOString() ?? null,
       cap: request.itemCap,
     };
-    return JSON.stringify(job);
+    // The job runs on the first poll; the reference carries everything it needs.
+    return { jobRef: JSON.stringify(job), input: { ...job } };
   }
 
   async poll(jobRef: string): Promise<CaptureJobStatus> {

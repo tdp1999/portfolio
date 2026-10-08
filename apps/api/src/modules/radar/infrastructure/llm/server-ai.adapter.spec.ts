@@ -68,6 +68,7 @@ describe('ServerAiAdapter', () => {
       generateStructured: jest.fn(),
       spentMicroUsd: jest.fn().mockResolvedValue(0),
       spentByGroup: jest.fn(),
+      spendByFeature: jest.fn(),
     };
     work = {
       claim: jest.fn().mockResolvedValue([claimed(1)]),

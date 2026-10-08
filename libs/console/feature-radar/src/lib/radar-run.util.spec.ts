@@ -1,4 +1,4 @@
-import { defaultWindowFrom, runNotice, stepSummary } from './radar-run.util';
+import { defaultWindowFrom, formatDuration, runNotice, runStepRows, stepSummary } from './radar-run.util';
 import type { RadarRun, RadarRunStatus, RadarStepRun } from './radar.types';
 
 const SOURCE = 'src-1';
@@ -88,5 +88,32 @@ describe('stepSummary', () => {
     ).toBe('Analyze: waiting');
     expect(stepSummary(run({}))).toBe('All steps done');
     expect(stepSummary(run({ steps: [] }))).toBe('Direct upload, no steps');
+  });
+});
+
+describe('runStepRows', () => {
+  it('should time a finished step and read a step a failed run never got to as not reached', () => {
+    const failed = steps(['DONE', 'FAILED', 'PENDING', 'PENDING'], 'boom');
+    failed[0] = { ...failed[0], startedAt: '2026-10-05T10:00:00Z', finishedAt: '2026-10-05T10:01:12Z' };
+
+    const rows = runStepRows(run({ status: 'FAILED', steps: failed }));
+
+    expect(rows.map((r) => [r.statusLabel, r.duration])).toEqual([
+      ['Done', '1 min 12 s'],
+      ['Failed', null],
+      ['Not reached', null],
+      ['Not reached', null],
+    ]);
+  });
+});
+
+describe('formatDuration', () => {
+  it.each([
+    [400, 'under 1 s'],
+    [8_000, '8 s'],
+    [120_000, '2 min'],
+    [7_500_000, '2 h 5 min'],
+  ])('should read %i ms as "%s"', (ms, text) => {
+    expect(formatDuration(ms)).toBe(text);
   });
 });

@@ -1,4 +1,4 @@
-import { RadarRunFlow, RadarStatus, RadarStep } from '@prisma/client';
+import { RadarRunFlow, RadarRunKind, RadarStatus, RadarStep } from '@prisma/client';
 
 import { RadarFetchTier } from './radar-comment.types';
 
@@ -29,10 +29,24 @@ export interface RadarDatasetCursorProps {
 }
 
 /** A step's bookkeeping, stored as JSON: each step uses the keys it needs. */
-export interface RadarStepMeta extends Partial<RadarDatasetCursorProps> {
+/** One post NORMALIZE could not read: its URL or id when the row had one, and why. */
+export interface RadarRunFailure {
+  ref: string | null;
+  reason: string;
+}
+
+export interface RadarRunFailureLogProps {
+  failures: RadarRunFailure[];
+  /** Failures past the kept ones, counted only. */
+  failuresDropped: number;
+}
+
+export interface RadarStepMeta extends Partial<RadarDatasetCursorProps>, Partial<RadarRunFailureLogProps> {
   /** Errors thrown inside the step so far; the run fails at the limit. */
   errors?: number;
   comments?: RadarCommentsProgressProps;
+  /** CAPTURE: the input sent to the provider when the job started. */
+  input?: Record<string, unknown>;
 }
 
 // --- Run ---
@@ -48,11 +62,20 @@ export interface RadarStepRunProps {
   finishedAt: Date | null;
 }
 
+/** The source a capture run reads. */
+export interface RadarRunSource {
+  id: string;
+  url: string;
+  name: string;
+}
+
 export interface RadarRunProps {
   id: string;
-  sourceId: string;
-  sourceUrl: string;
-  sourceName: string;
+  kind: RadarRunKind;
+  /** Null only on a REANALYZE run, whose items can come from several sources. */
+  sourceId: string | null;
+  sourceUrl: string | null;
+  sourceName: string | null;
   flow: RadarRunFlow;
   status: RadarStatus;
   windowFrom: Date | null;
@@ -98,4 +121,11 @@ export interface CreateRadarRunPayload {
   fetchComments: boolean;
   budgetMicroUsd: number | null;
   adapters: RadarRunAdapters;
+}
+
+/** A REANALYZE run: the AUTO analysis of items the Owner picked again, with its own budget. */
+export interface CreateReanalyzeRunPayload {
+  itemCount: number;
+  budgetMicroUsd: number;
+  analyzeAdapter: string;
 }

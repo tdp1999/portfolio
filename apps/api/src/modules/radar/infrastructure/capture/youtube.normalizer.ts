@@ -56,6 +56,7 @@ export class YouTubeNormalizer implements ICaptureNormalizer {
       if (!parsed.success) {
         failures.push({
           index,
+          ref: YouTubeNormalizer.refOf(entry),
           reason: parsed.error.issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; '),
         });
         return;
@@ -73,6 +74,12 @@ export class YouTubeNormalizer implements ICaptureNormalizer {
   }
 
   // --- Private ---
+
+  /** The video's watch URL when the unreadable row still has an id. */
+  private static refOf(entry: unknown): string | undefined {
+    const id = isPlainObject(entry) ? nonEmptyString(entry['id']) : null;
+    return id ? `https://www.youtube.com/watch?v=${encodeURIComponent(id)}` : undefined;
+  }
 
   private static isWatchable(video: Video): boolean {
     const status = isPlainObject(video['status']) ? video['status'] : {};

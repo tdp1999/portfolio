@@ -44,6 +44,16 @@ export type RadarTriageStatus = (typeof RADAR_TRIAGE_STATUSES)[number];
 /** Most item ids one `PATCH /radar/items/triage` accepts. */
 export const RADAR_TRIAGE_MAX_IDS = 100;
 
+/**
+ * Most items one `POST /radar/items/reanalyze` takes, and the most the Feed lets the Owner select,
+ * so the console never splits a request.
+ */
+export const RADAR_REANALYZE_MAX_IDS = 200;
+
+/** Who analyzes requeued items: `AUTO` a server run right away, `WORKER` the next `/radar work`. */
+export const RADAR_REANALYZE_MODES = ['AUTO', 'WORKER'] as const;
+export type RadarReanalyzeMode = (typeof RADAR_REANALYZE_MODES)[number];
+
 /** Most items one quality-trial request takes: a deep trial runs ~45 s, so ten finish in minutes. */
 export const RADAR_TRIAL_MAX_IDS = 10;
 

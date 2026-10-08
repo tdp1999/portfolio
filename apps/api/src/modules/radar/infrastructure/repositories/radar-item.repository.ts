@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, RadarTriageStatus, RadarWorkStatus } from '@prisma/client';
+import { v7 as uuidv7 } from 'uuid';
 
 import { PaginatedResult, RadarFeedStatus } from '@portfolio/shared/types';
 
@@ -9,12 +10,15 @@ import {
   RadarItemDetail,
   RadarItemListFilter,
   RadarQueueStats,
+  RadarRequeueResult,
   RadarTriageCounts,
 } from '../../application/ports/radar-item.repository.port';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RadarComment } from '../../domain/radar-comment.types';
 import { PrismaService } from '../../../../shared/prisma';
 import { RADAR_VIDEO_SELECT, RadarItemMapper } from '../mapper/radar-item.mapper';
+import { RADAR_RUN_INCLUDE, RadarRunMapper } from '../mapper/radar-run.mapper';
 
 const sourceSelect = { select: { id: true, displayName: true, isActive: true, platform: true } } as const;
 
@@ -57,6 +61,7 @@ const feedSelect = {
 
 const detailSelect = {
   ...feedSelect,
+  lastRunId: true,
   links: true,
   ...RADAR_VIDEO_SELECT,
   sharedPost: true,
@@ -104,11 +109,24 @@ const statusWhere = (status: RadarFeedStatus, now: Date, maxAttempts: number): P
   }
 };
 
+/** Items a re-analysis may take: no live lease a worker could still submit under, no active run, an active source. */
+const requeueableWhere = (ids: readonly string[], now: Date): Prisma.RadarItemWhereInput => ({
+  id: { in: [...ids] },
+  source: { isActive: true },
+  AND: [
+    {
+      OR: [{ workStatus: { not: RadarWorkStatus.CLAIMED } }, { leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }],
+    },
+    { OR: [{ lastRunId: null }, { lastRun: { status: { notIn: [...RadarRun.ACTIVE] } } }] },
+  ],
+});
+
 const toFilterWhere = (f: RadarItemListFilter, now: Date, maxAttempts: number): Prisma.RadarItemWhereInput => {
   const and: Prisma.RadarItemWhereInput[] = [];
   if (f.status) and.push(statusWhere(f.status, now, maxAttempts));
   if (f.triageStatus) and.push({ triageStatus: f.triageStatus });
   if (f.sourceId) and.push({ sourceId: f.sourceId });
+  if (f.runId) and.push({ lastRunId: f.runId });
   if (f.search) {
     const contains = { contains: f.search, mode: 'insensitive' } as const;
     and.push({ OR: [{ text: contains }, { enrichment: { is: { tldr: contains } } }] });
@@ -226,5 +244,42 @@ export class RadarItemRepository implements IRadarItemRepository {
       data: { workStatus: RadarWorkStatus.PENDING, claimCount: 0, leaseExpiresAt: null, workError: null },
     });
     return count;
+  }
+
+  async requeueForAnalysis(
+    ids: readonly string[],
+    now: Date,
+    buildRun: ((count: number) => RadarRun) | null
+  ): Promise<RadarRequeueResult> {
+    return this.prisma.$transaction(async (tx) => {
+      const where = requeueableWhere(ids, now);
+      const eligible = await tx.radarItem.findMany({ where, select: { id: true } });
+      if (eligible.length === 0) return { requeued: 0, run: null };
+
+      let run: RadarRun | null = null;
+      if (buildRun) {
+        const built = buildRun(eligible.length);
+        const row = await tx.radarRun.create({
+          data: {
+            ...RadarRunMapper.toPersistence(built),
+            steps: { create: built.toProps().steps.map((s) => RadarRunMapper.toStepPersistence(uuidv7(), s)) },
+          },
+          include: RADAR_RUN_INCLUDE,
+        });
+        run = RadarRunMapper.toDomain(row);
+      }
+      // Same filter again: an item claimed between the read and this write is left alone.
+      const { count } = await tx.radarItem.updateMany({
+        where: { ...where, id: { in: eligible.map((e) => e.id) } },
+        data: {
+          workStatus: RadarWorkStatus.PENDING,
+          claimCount: 0,
+          leaseExpiresAt: null,
+          workError: null,
+          ...(run ? { lastRunId: run.id } : {}),
+        },
+      });
+      return { requeued: count, run };
+    });
   }
 }

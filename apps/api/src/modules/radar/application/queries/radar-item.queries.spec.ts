@@ -44,6 +44,7 @@ describe('Radar item queries', () => {
       list: jest.fn().mockResolvedValue({ data: [row], total: 1 }),
       countByTriage: jest.fn().mockResolvedValue({ INBOX: 1, SAVED: 0, DONE: 0 }),
       setTriage: jest.fn(),
+      requeueForAnalysis: jest.fn(),
       findById: jest.fn(),
       stats: jest.fn().mockResolvedValue({ pending: 4, stuck: 1, paused: 2, analyzed: 7 }),
       requeueStuck: jest.fn().mockResolvedValue(1),
@@ -127,6 +128,7 @@ describe('Radar item queries', () => {
         ...row,
         comments: [],
         video: null,
+        lastRunId: null,
         media: [
           {
             type: 'photo',

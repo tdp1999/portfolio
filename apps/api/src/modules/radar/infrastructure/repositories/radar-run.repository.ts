@@ -14,6 +14,15 @@ const ACTIVE: RadarStatus[] = [...RadarRun.ACTIVE];
 // jsonb `@>` containment: matches when any array element carries storageStatus "pending".
 const HAS_PENDING = [{ storageStatus: 'pending' }];
 
+/**
+ * An active run that owns posts of the source: its own capture run, or a re-analysis (no source)
+ * holding some of its posts. A capture during either would move those posts' lastRunId away.
+ */
+const activeOnSource = (sourceId: string): Prisma.RadarRunWhereInput => ({
+  status: { in: ACTIVE },
+  OR: [{ sourceId }, { sourceId: null, items: { some: { sourceId } } }],
+});
+
 /** Thrown inside the save transaction to roll it back when a guard does not hold. */
 class StaleRunError extends Error {}
 
@@ -25,7 +34,7 @@ export class RadarRunRepository implements IRadarRunRepository {
   async add(run: RadarRun): Promise<RadarRun | null> {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM radar_sources WHERE id = ${run.sourceId}::uuid FOR UPDATE`;
-      if ((await tx.radarRun.count({ where: { sourceId: run.sourceId, status: { in: ACTIVE } } })) > 0) return null;
+      if (run.sourceId && (await tx.radarRun.count({ where: activeOnSource(run.sourceId) })) > 0) return null;
       const row = await tx.radarRun.create({
         data: {
           ...RadarRunMapper.toPersistence(run),
@@ -61,7 +70,7 @@ export class RadarRunRepository implements IRadarRunRepository {
   }
 
   async hasActiveRun(sourceId: string): Promise<boolean> {
-    return (await this.prisma.radarRun.count({ where: { sourceId, status: { in: ACTIVE } } })) > 0;
+    return (await this.prisma.radarRun.count({ where: activeOnSource(sourceId) })) > 0;
   }
 
   /**

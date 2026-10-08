@@ -20,6 +20,7 @@ export interface IRadarRunRepository {
   list(limit: number): Promise<RadarRun[]>;
   /** The idle tick's only query: ids of runs that are neither DONE nor FAILED. */
   findActiveIds(): Promise<string[]>;
+  /** An active capture run of the source, or an active re-analysis holding some of its posts. */
   hasActiveRun(sourceId: string): Promise<boolean>;
   /**
    * Writes what changed since the run was read, in one transaction, and returns the run as now

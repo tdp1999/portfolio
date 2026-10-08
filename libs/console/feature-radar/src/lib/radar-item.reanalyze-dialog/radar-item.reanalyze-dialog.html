@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<form [formGroup]="form" [consoleServerErrorMap]="{ budgetUsd: 'budget' }" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="flex flex-col gap-4">
+      <p class="text-body">
+        Each post keeps its current analysis until the new one replaces it. Text, images and transcripts are reused,
+        nothing is captured again.
+      </p>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-body">Analyzed by</span>
+        <console-segmented-control formControlName="mode" [options]="modeOptions()" />
+        <p class="text-caption">{{ modeHelp[mode()] }}</p>
+        @if (aiSettings()?.configured === false) {
+          <p class="text-caption">Auto is off: the server has no AI provider key.</p>
+        }
+      </div>
+
+      @if (mode() === 'AUTO') {
+        <mat-form-field>
+          <mat-label>AI budget ({{ currencyCode() }})</mat-label>
+          <input matInput type="number" formControlName="budget" min="0" />
+          <mat-hint>
+            No new AI call once the re-analysis spends this. The daily AI cap still applies.
+            @if (defaultBudgetMicroUsd(); as d) {
+              Default: <console-money [microUsd]="d" />
+            }
+          </mat-hint>
+          <mat-error>{{ form.controls.budget | formError: budgetMessages }}</mat-error>
+        </mat-form-field>
+      }
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Re-analyze</button>
+  </mat-dialog-actions>
+</form>

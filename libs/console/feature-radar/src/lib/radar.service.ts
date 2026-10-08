@@ -23,6 +23,9 @@ import {
   RadarTrial,
   CreateRadarTrialsInput,
   CreateRadarTrialsResult,
+  ReanalyzeItemsInput,
+  ReanalyzeItemsResult,
+  RadarRunDetail,
 } from './radar.types';
 
 @Injectable({ providedIn: 'root' })
@@ -41,6 +44,7 @@ export class RadarService {
     if (params.includePromo) queryParams['includePromo'] = 'true';
     if (params.status) queryParams['status'] = params.status;
     if (params.sourceId) queryParams['sourceId'] = params.sourceId;
+    if (params.runId) queryParams['runId'] = params.runId;
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;
     if (params.triageStatus) queryParams['triageStatus'] = params.triageStatus;
@@ -54,6 +58,11 @@ export class RadarService {
   /** One status for every id; ids that no longer exist are skipped, so `updated` can be lower. */
   triageItems(ids: string[], status: RadarTriageStatus) {
     return this.api.patch<{ updated: number }>('/radar/items/triage', { ids, status });
+  }
+
+  /** AUTO starts a re-analysis run right away; WORKER leaves the posts for the next `/radar work`. */
+  reanalyzeItems(input: ReanalyzeItemsInput) {
+    return this.api.post<ReanalyzeItemsResult>('/radar/items/reanalyze', input);
   }
 
   /** Quality trials run in the background; poll `listTrials` until none is RUNNING. */
@@ -130,6 +139,12 @@ export class RadarService {
   listRuns(silent = false) {
     const context = silent ? new HttpContext().set(SKIP_ERROR_HANDLING, true) : undefined;
     return this.api.get<RadarRun[]>('/radar/runs', { context });
+  }
+
+  /** `silent` for the Detail page's poll while the run is still going. */
+  getRun(id: string, silent = false) {
+    const context = silent ? new HttpContext().set(SKIP_ERROR_HANDLING, true) : undefined;
+    return this.api.get<RadarRunDetail>(`/radar/runs/${id}`, { context });
   }
 
   createRun(input: CreateRadarRunInput) {

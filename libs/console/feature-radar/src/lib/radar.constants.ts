@@ -6,6 +6,7 @@ export {
   RADAR_MAX_RUN_BUDGET_USD as MAX_RUN_BUDGET_USD,
   RADAR_MAX_RUN_ITEM_CAP as MAX_RUN_ITEM_CAP,
   RADAR_MIN_RUN_BUDGET_USD as MIN_RUN_BUDGET_USD,
+  RADAR_REANALYZE_MAX_IDS as REANALYZE_MAX_IDS,
 } from '@portfolio/shared/types';
 
 /** How often the Runs page refreshes while a run is active. */

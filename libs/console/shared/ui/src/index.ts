@@ -8,7 +8,7 @@ export { BlankLayout } from './components/blank-layout/blank-layout';
 export { MainLayout } from './components/main-layout/main-layout';
 export { ToastService } from './services/toast/toast.service';
 export { ToastContainer } from './components/toast-container/toast-container';
-export type { Toast, ToastType } from './services/toast/toast.model';
+export type { Toast, ToastAction, ToastOptions, ToastType } from './services/toast/toast.model';
 export { LoadingBar } from './components/loading-bar/loading-bar';
 export { ProgressBarService } from './components/loading-bar/progress-bar.service';
 export type { ProgressBarHandle } from './components/loading-bar/progress-bar.types';

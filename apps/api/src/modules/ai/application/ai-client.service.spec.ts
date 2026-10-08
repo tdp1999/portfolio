@@ -43,6 +43,7 @@ describe('AiClientService', () => {
       sumCost: jest.fn(),
       sumCostSince: jest.fn().mockResolvedValue(0),
       sumCostByGroup: jest.fn(),
+      summarizeGroup: jest.fn(),
       countLedger: jest.fn(),
       listModelsSince: jest.fn(),
     };

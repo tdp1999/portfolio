@@ -1,7 +1,14 @@
 import { RADAR_RUN_CANCELLED_MESSAGE } from '@portfolio/shared/types';
 import { DEFAULT_RUN_WINDOW_MONTHS } from './radar.constants';
-import { RUN_STATUS_LABELS, RUN_STEP_LABELS } from './radar.data';
-import type { RadarRun, RadarRunDisplayStatus, RadarRunStatus, RadarStepRun, RunNotice } from './radar.types';
+import { RUN_STATUS_LABELS, RUN_STEP_ICONS, RUN_STEP_LABELS } from './radar.data';
+import type {
+  RadarRun,
+  RadarRunDisplayStatus,
+  RadarRunStatus,
+  RadarRunStepRow,
+  RadarStepRun,
+  RunNotice,
+} from './radar.types';
 
 const ACTIVE_STATUSES: readonly RadarRunStatus[] = ['PENDING', 'RUNNING', 'AWAITING_EXTERNAL'];
 
@@ -20,7 +27,7 @@ export const awaitsUpload = (run: RadarRun): boolean =>
  */
 export function defaultWindowFrom(runs: RadarRun[], sourceId: string, now: Date): Date {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const last = runs.find((r) => r.source.id === sourceId && r.status === 'DONE');
+  const last = runs.find((r) => r.source?.id === sourceId && r.status === 'DONE');
   if (!last) {
     return new Date(today.getFullYear(), today.getMonth() - DEFAULT_RUN_WINDOW_MONTHS, today.getDate());
   }
@@ -77,8 +84,16 @@ export function stepSummary(run: RadarRun): string {
   return `${RUN_STEP_LABELS[current.step]}: ${RUN_STATUS_LABELS[current.status].toLowerCase()}`;
 }
 
-/** "3 new, 7 updated", plus the failed count only when there is one. */
+/** What a run is about: its source, or a re-analysis of posts picked in the Feed. */
+export const runSourceLabel = (run: RadarRun): string => run.source?.displayName ?? 'Re-analysis';
+
+/** The headline count: posts captured, or for a re-analysis the posts it was given. */
+export const runItemsLabel = (run: RadarRun): string =>
+  run.kind === 'REANALYZE' ? `${run.itemCap} to analyze` : `${run.itemsCaptured} captured`;
+
+/** "3 new, 7 updated", plus the failed count only when there is one. A re-analysis creates nothing. */
 export function itemsDetail(run: RadarRun): string {
+  if (run.kind === 'REANALYZE') return 'Posts picked in the Feed';
   const parts = [`${run.itemsCreated} new`, `${run.itemsUpdated} updated`];
   if (run.itemsFailed) parts.push(`${run.itemsFailed} failed`);
   return parts.join(', ');
@@ -89,3 +104,45 @@ export const isCancelled = (run: RadarRun): boolean =>
   run.status === 'FAILED' && run.error === RADAR_RUN_CANCELLED_MESSAGE;
 
 export const displayStatus = (run: RadarRun): RadarRunDisplayStatus => (isCancelled(run) ? 'CANCELLED' : run.status);
+
+/** "8 s", "1 min 12 s", "2 h 5 min"; under a second reads as "under 1 s". */
+export function formatDuration(ms: number): string {
+  const seconds = Math.round(ms / 1000);
+  if (seconds < 1) return 'under 1 s';
+  if (seconds < 60) return `${seconds} s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return seconds % 60 ? `${minutes} min ${seconds % 60} s` : `${minutes} min`;
+  const rest = minutes % 60;
+  return rest ? `${Math.floor(minutes / 60)} h ${rest} min` : `${Math.floor(minutes / 60)} h`;
+}
+
+/**
+ * The run detail timeline. A step still PENDING on a run that has finished never ran: it reads
+ * "Not reached" (a failed or cancelled run stops at the step that failed).
+ */
+export function runStepRows(run: RadarRun): RadarRunStepRow[] {
+  const finished = !isRunActive(run);
+  return run.steps.map((step) => {
+    const notReached = finished && step.status === 'PENDING';
+    const ms =
+      step.startedAt && step.finishedAt
+        ? new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime()
+        : null;
+    return {
+      ...step,
+      label: RUN_STEP_LABELS[step.step],
+      statusLabel: notReached ? 'Not reached' : RUN_STATUS_LABELS[step.status],
+      icon: notReached ? 'remove_circle_outline' : RUN_STEP_ICONS[step.status],
+      duration: ms === null ? null : formatDuration(Math.max(0, ms)),
+      notReached,
+    };
+  });
+}
+
+/** The capture input as label/value rows; objects and arrays print as compact JSON. */
+export function captureInputRows(input: Record<string, unknown>): { key: string; value: string }[] {
+  return Object.entries(input).map(([key, value]) => ({
+    key,
+    value: typeof value === 'string' ? value : JSON.stringify(value),
+  }));
+}

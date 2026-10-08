@@ -34,6 +34,7 @@ const step = (s: RadarStep, status: RadarStatus, extra: Partial<RadarStepRunProp
 
 const makeRun = (flow: RadarRunFlow, steps: Partial<Record<RadarStep, Partial<RadarStepRunProps>>>): RadarRunProps => ({
   id: RUN_ID,
+  kind: 'CAPTURE',
   sourceId: 'src',
   sourceUrl: 'https://www.facebook.com/mrgoonie',
   sourceName: 'mrgoonie',
@@ -118,7 +119,7 @@ const setup = (
     platform: 'FACEBOOK' as const,
     credentialName: 'APIFY_TOKEN',
     isConfigured: () => true,
-    start: jest.fn(async () => 'job-1'),
+    start: jest.fn(async () => ({ jobRef: 'job-1', input: {} })),
     poll: jest.fn(async () => opts.poll ?? { state: 'running' as const }),
     fetchPage: jest.fn(async (_ref: string, _offset: number, _limit: number) => pages.shift() ?? []),
   } satisfies ICaptureProvider;
@@ -237,6 +238,40 @@ describe('AdvanceRunHandler', () => {
       expect(runs.stepOf(RadarStep.CAPTURE).status).toBe(RadarStatus.DONE);
       expect(runs.stepOf(RadarStep.NORMALIZE).status).toBe(RadarStatus.DONE);
       expect(runs.stepOf(RadarStep.ENRICH).status).toBe(RadarStatus.RUNNING);
+    });
+
+    it('should keep the posts it could not read, by URL and reason, on the NORMALIZE step', async () => {
+      const { postId: _omit, ...malformed } = post(2);
+      const { runs, advance } = setup(makeRun(RadarRunFlow.HYBRID, { [RadarStep.CAPTURE]: runningCapture }), {
+        poll: { state: 'succeeded', datasetRef: 'ds', itemCount: 2 },
+        pages: [[post(1), malformed]],
+      });
+
+      await advance();
+
+      expect(runs.stepOf(RadarStep.NORMALIZE).meta).toMatchObject({
+        failures: [{ ref: malformed.url, reason: expect.stringContaining('postId') }],
+        failuresDropped: 0,
+      });
+    });
+
+    it('should stamp each step with the time it really ended, not the time the tick started', async () => {
+      let elapsed = 0;
+      const clock = jest.spyOn(Date, 'now').mockImplementation(() => 1_000_000 + elapsed);
+      const { runs, provider, advance } = setup(makeRun(RadarRunFlow.HYBRID, { [RadarStep.CAPTURE]: runningCapture }), {
+        poll: { state: 'succeeded', datasetRef: 'ds', itemCount: 1 },
+        pages: [[post(1)]],
+      });
+      provider.fetchPage.mockImplementation(async () => {
+        elapsed += 5_000;
+        return [post(1)];
+      });
+
+      await advance();
+      clock.mockRestore();
+
+      expect(runs.stepOf(RadarStep.CAPTURE).finishedAt).toEqual(NOW);
+      expect(runs.stepOf(RadarStep.NORMALIZE).finishedAt).toEqual(new Date(NOW.getTime() + 5_000));
     });
 
     it('should keep the reason on the run when the provider found no posts', async () => {
@@ -439,6 +474,21 @@ describe('AdvanceRunHandler', () => {
       await advance();
 
       expect(runs.run).toMatchObject({ status: RadarStatus.DONE, warning: 'budget reached' });
+    });
+
+    it('should take a re-analysis run straight to ANALYZE, with no capture', async () => {
+      const llm = serverAi({ state: 'idle' });
+      const reanalysis = {
+        ...RadarRun.reanalyze({ itemCount: 2, budgetMicroUsd: 1_000_000, analyzeAdapter: 'server-ai' }).toProps(),
+        id: RUN_ID,
+      };
+      const { runs, provider, advance } = setup(reanalysis, { llm });
+      runs.counts = { total: 2, notAnalyzed: 0, withPendingImages: 0 };
+
+      await advance();
+
+      expect(provider.start).not.toHaveBeenCalled();
+      expect(llm.process).toHaveBeenCalledWith({ step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000 });
     });
   });
 

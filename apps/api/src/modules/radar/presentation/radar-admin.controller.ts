@@ -32,6 +32,7 @@ import {
   PersistItemImagesCommand,
   RequeueStuckCommand,
   SetSourceActiveCommand,
+  ReanalyzeItemsCommand,
   TriageItemsCommand,
   UploadCaptureCommand,
   UploadCommentsCommand,
@@ -168,6 +169,13 @@ export class RadarAdminController {
   @HttpCode(HttpStatus.OK)
   async requeueStuck() {
     return await this.commandBus.execute(new RequeueStuckCommand());
+  }
+
+  /** Analyzes items again: a REANALYZE run (AUTO) or the next `/radar work` (WORKER). */
+  @Post('items/reanalyze')
+  @HttpCode(HttpStatus.OK)
+  async reanalyzeItems(@Body() body: unknown) {
+    return await this.commandBus.execute(new ReanalyzeItemsCommand(body));
   }
 
   @Patch('items/triage')

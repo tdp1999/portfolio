@@ -34,6 +34,14 @@ describe('YouTubeNormalizer', () => {
     expect(result.failures).toEqual([]);
   });
 
+  it('should report an unreadable video as a failure named by its watch URL', () => {
+    const result = normalize([video('abc123', { snippet: { publishedAt: 'yesterday' } })]);
+
+    expect(result.failures).toEqual([
+      { index: 0, ref: 'https://www.youtube.com/watch?v=abc123', reason: expect.stringContaining('publishedAt') },
+    ]);
+  });
+
   it('should read an ISO 8601 duration in seconds and leave a zero duration unknown', () => {
     const result = normalize([
       video('long', { contentDetails: { duration: 'PT1H2M3S' } }),

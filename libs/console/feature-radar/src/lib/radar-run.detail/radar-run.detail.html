@@ -1,0 +1,275 @@
+<div class="detail-page relative">
+  <console-spinner-overlay [loading]="loading()" />
+
+  @if (view(); as r) {
+    <div class="console-page-header">
+      <a mat-icon-button routerLink="/radar/runs" aria-label="Back to runs">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="console-page-header__titles">
+        <div class="flex items-center gap-2">
+          <h1 class="text-page-title">Run, {{ r.sourceLabel }}</h1>
+          <span class="console-badge" [class]="r.displayStatus | enumLabel: statusBadges">{{
+            r.displayStatus | enumLabel: statusLabels
+          }}</span>
+          @if (r.active) {
+            <mat-spinner diameter="16" aria-label="Run in progress" />
+          }
+          <console-help-button guide="radar-feature-guide" section="run-detail" page label="Radar guide: run detail" />
+        </div>
+        <div class="detail-meta">
+          <span>{{ r.flow | enumLabel: flowLabels }}</span>
+          <span>{{ r.itemsLabel }}</span>
+          <span>{{ r.createdAt | date: 'medium' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <console-record-layout>
+      @if (r.error) {
+        <div class="run-banner run-banner--error" role="alert">
+          <mat-icon class="icon-sm" aria-hidden="true">error_outline</mat-icon>
+          <p>{{ r.error }}</p>
+        </div>
+      }
+      @if (r.warning) {
+        <div class="run-banner run-banner--warn" role="status">
+          <mat-icon class="icon-sm" aria-hidden="true">warning_amber</mat-icon>
+          <p>{{ r.warning }}</p>
+        </div>
+      }
+
+      @if (r.kind === 'CAPTURE') {
+        <console-record-section title="Capture request">
+          @if (r.captureRows.length) {
+            <dl class="run-kv">
+              @for (row of r.captureRows; track row.key) {
+                <dt>{{ row.key }}</dt>
+                <dd>{{ row.value }}</dd>
+              }
+            </dl>
+          } @else {
+            <p class="run-absent">Not recorded for this run.</p>
+          }
+          @if (r.captureJobRef) {
+            <p class="run-caption">
+              Provider job <code>{{ r.captureJobRef }}</code>
+            </p>
+          }
+        </console-record-section>
+      }
+
+      <console-record-section title="Steps" [count]="r.stepRows.length">
+        @if (r.stepRows.length) {
+          <ol class="run-timeline">
+            @for (step of r.stepRows; track step.step) {
+              <li
+                class="run-timeline__row"
+                [class]="
+                  step.notReached ? 'run-timeline__row--skipped' : 'run-timeline__row--' + step.status.toLowerCase()
+                "
+              >
+                <mat-icon class="icon-sm run-timeline__icon" aria-hidden="true">{{ step.icon }}</mat-icon>
+                <div class="run-timeline__body">
+                  <p class="run-timeline__title">
+                    <span class="font-semibold">{{ step.label }}</span>
+                    <span>{{ step.statusLabel }}</span>
+                    <span class="run-caption">{{ step.adapter }}</span>
+                  </p>
+                  @if (step.duration) {
+                    <p class="run-caption">
+                      {{ step.startedAt | date: 'mediumTime' }} to {{ step.finishedAt | date: 'mediumTime' }}, took
+                      {{ step.duration }}
+                    </p>
+                  } @else if (step.startedAt) {
+                    <p class="run-caption">Started {{ step.startedAt | date: 'mediumTime' }}</p>
+                  }
+                  @if (step.error) {
+                    <p class="run-timeline__error">{{ step.error }}</p>
+                  }
+                </div>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="run-absent">Direct upload, no steps.</p>
+        }
+      </console-record-section>
+
+      @if (r.failures.items.length) {
+        <console-record-section
+          title="Posts that could not be read"
+          [count]="r.failures.items.length + r.failures.dropped"
+        >
+          <ul class="run-failures">
+            @for (f of r.failures.items; track $index) {
+              <li>
+                @if (f.ref) {
+                  <span class="run-failures__ref" [title]="f.ref">{{ f.ref }}</span>
+                } @else {
+                  <span class="run-absent">No post id</span>
+                }
+                <span class="run-failures__reason">{{ f.reason }}</span>
+              </li>
+            }
+          </ul>
+          @if (r.failures.dropped) {
+            <p class="run-caption">{{ r.failures.dropped }} more failed; only the first ones are kept.</p>
+          }
+        </console-record-section>
+      }
+
+      <console-record-section title="Posts of this run" [count]="posts()?.total ?? null">
+        <p class="run-caption">
+          Posts this run touched last. A later run of the same source that captures a post again takes it over.
+        </p>
+        @if (postsError()) {
+          <p class="run-absent" role="alert">Could not load the posts of this run.</p>
+        } @else if (postRows().length) {
+          <ul class="run-posts" [class.opacity-60]="postsLoading()">
+            @for (p of postRows(); track p.id) {
+              <li>
+                <a class="run-posts__row" [routerLink]="['/radar/items', p.id]">
+                  @if (p.score !== null) {
+                    <span class="radar-score" [class]="p.score | radarScoreTone">{{ p.score }}</span>
+                  } @else {
+                    <span class="radar-score radar-score--pending" aria-label="Not analyzed yet">
+                      <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+                    </span>
+                  }
+                  <span class="run-posts__author">{{ p.authorName }}</span>
+                  <span class="run-posts__kind">
+                    @if (p.isVideo) {
+                      <mat-icon class="icon-sm" aria-hidden="true">videocam</mat-icon>
+                    }
+                    {{ p.kindLabel }}
+                  </span>
+                  <span class="run-caption">{{ p.publishedAt | date: 'mediumDate' }}</span>
+                  <span class="run-caption">{{ p.statusLabel }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+          @if ((posts()?.total ?? 0) > postsPageSize) {
+            <console-paginator
+              compact
+              [length]="posts()?.total ?? 0"
+              [pageIndex]="postsPageIndex()"
+              [pageSize]="postsPageSize"
+              [disabled]="postsLoading()"
+              (page)="onPostsPage($event)"
+            />
+          }
+        } @else if (!postsLoading()) {
+          <p class="run-absent">No post points to this run.</p>
+        }
+      </console-record-section>
+
+      @if (r.aiSpend) {
+        <console-record-section title="AI spend">
+          @if (r.spendRows.length) {
+            <table class="run-spend">
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th>
+                  <th scope="col">Calls</th>
+                  <th scope="col">Tokens in</th>
+                  <th scope="col">Tokens out</th>
+                  <th scope="col">Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (f of r.spendRows; track f.feature) {
+                  <tr>
+                    <td>{{ f.label }}</td>
+                    <td>
+                      {{ f.calls | number }}
+                      @if (f.failed) {
+                        <span class="run-caption">({{ f.failed }} failed)</span>
+                      }
+                    </td>
+                    <td>{{ f.tokensIn | number }}</td>
+                    <td>{{ f.tokensOut | number }}</td>
+                    <td><console-money [microUsd]="f.costMicroUsd" /></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="run-absent">No AI call recorded for this run yet.</p>
+          }
+        </console-record-section>
+      }
+
+      <ng-container aside>
+        <console-record-panel title="Properties" flush>
+          <console-property-list>
+            <console-property label="Source">{{ r.sourceLabel }}</console-property>
+            <console-property label="Flow">
+              <span [title]="r.flowHelp">{{ r.flow | enumLabel: flowLabels }}</span>
+            </console-property>
+            <console-property label="Status">{{ r.displayStatus | enumLabel: statusLabels }}</console-property>
+            @if (r.kind === 'CAPTURE') {
+              <console-property label="Window">
+                @if (r.windowFrom || r.windowTo) {
+                  {{ r.windowFrom ? (r.windowFrom | date: 'mediumDate' : 'UTC') : 'Start' }} to
+                  {{ r.windowTo ? (r.windowTo | date: 'mediumDate' : 'UTC') : 'now' }}
+                } @else {
+                  All posts
+                }
+              </console-property>
+            }
+            <console-property label="Item cap">{{ r.itemCap }}</console-property>
+            <console-property label="Posts">{{ r.itemsDetail }}</console-property>
+            @if (r.kind === 'CAPTURE') {
+              <console-property label="Comments">{{ r.fetchComments ? 'Fetched' : 'Off' }}</console-property>
+            }
+            <console-property label="Capture">{{ r.captureAdapter }}</console-property>
+            <console-property label="Analysis">{{ r.llmAdapter }}</console-property>
+          </console-property-list>
+        </console-record-panel>
+
+        @if (r.spentMicroUsd !== null) {
+          <console-record-panel title="Spend" flush>
+            <console-property-list>
+              <console-property label="Spent"><console-money [microUsd]="r.spentMicroUsd" /></console-property>
+              @if (r.budgetMicroUsd !== null) {
+                <console-property label="Budget"><console-money [microUsd]="r.budgetMicroUsd" /></console-property>
+              }
+            </console-property-list>
+          </console-record-panel>
+        }
+
+        <console-record-panel title="Times" flush>
+          <console-property-list>
+            <console-property label="Created">{{ r.createdAt | date: 'medium' }}</console-property>
+            <console-property label="Started">{{
+              r.startedAt ? (r.startedAt | date: 'medium') : 'Not yet'
+            }}</console-property>
+            <console-property label="Finished">{{
+              r.finishedAt ? (r.finishedAt | date: 'medium') : 'Not yet'
+            }}</console-property>
+          </console-property-list>
+        </console-record-panel>
+      </ng-container>
+    </console-record-layout>
+  } @else if (loadError(); as err) {
+    <div class="radar-state" role="alert">
+      <mat-icon class="radar-state__icon icon-2xl" [class.radar-state__icon--error]="err === 'failed'">
+        {{ err === 'not-found' ? 'search_off' : 'error_outline' }}
+      </mat-icon>
+      @if (err === 'not-found') {
+        <p class="radar-state__title">This run does not exist</p>
+      } @else {
+        <p class="radar-state__title">Could not load this run</p>
+        <p class="radar-state__body">Check that the API is running, then try again.</p>
+      }
+      <div class="flex gap-2">
+        <a mat-stroked-button routerLink="/radar/runs">Back to runs</a>
+        @if (err === 'failed') {
+          <button mat-flat-button type="button" (click)="onRetry()">Retry</button>
+        }
+      </div>
+    </div>
+  }
+</div>

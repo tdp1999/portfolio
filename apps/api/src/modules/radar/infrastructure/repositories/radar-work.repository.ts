@@ -153,6 +153,8 @@ export class RadarWorkRepository implements IRadarWorkRepository {
     const items = await this.prisma.radarItem.findMany({
       where: {
         lastRunId: runId,
+        // Finished by this run's light pass: a re-analyzed item keeps its old light enrichment while it waits.
+        workStatus: RadarWorkStatus.DONE,
         workError: null,
         enrichment: { analysisDepth: 'light', signalScore: { gte: minScore } },
       },
@@ -172,7 +174,10 @@ export class RadarWorkRepository implements IRadarWorkRepository {
   }
 
   countDeep(runId: string): Promise<number> {
-    return this.prisma.radarItem.count({ where: { lastRunId: runId, enrichment: { analysisDepth: 'deep' } } });
+    // An old deep enrichment on an item waiting for re-analysis is not this run's.
+    return this.prisma.radarItem.count({
+      where: { lastRunId: runId, workStatus: RadarWorkStatus.DONE, enrichment: { analysisDepth: 'deep' } },
+    });
   }
 
   async noteError(itemId: string, reason: string): Promise<void> {

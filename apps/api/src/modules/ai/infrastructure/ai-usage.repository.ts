@@ -139,6 +139,22 @@ export class AiUsageRepository implements IAiUsageRepository {
     });
   }
 
+  async summarizeGroup(group: AiRef): Promise<AiUsageSummary['byFeature']> {
+    const rows = await this.prisma.$queryRaw<TotalsRow[]>`
+      SELECT NULL AS model, feature, 1 AS by_model, 0 AS by_feature,
+        COUNT(*)::int AS calls,
+        (COUNT(*) FILTER (WHERE status <> 'SUCCEEDED'))::int AS failed,
+        COALESCE(SUM("inputTokens" + "toolTokens"), 0)::float8 AS tokens_in,
+        COALESCE(SUM("outputTokens" + "thinkingTokens"), 0)::float8 AS tokens_out,
+        COALESCE(SUM("costMicroUsd"), 0)::float8 AS cost,
+        COALESCE(SUM("costMicroUsd") FILTER (WHERE billed), 0)::float8 AS billed
+      FROM ai_usage_records
+      WHERE "groupType" = ${group.type} AND "groupId" = ${group.id}
+      GROUP BY feature
+      ORDER BY cost DESC, calls DESC`;
+    return rows.map((row) => ({ feature: row.feature ?? '', ...AiUsageRepository.toTotals(row) }));
+  }
+
   async sumCost(group: AiRef): Promise<number> {
     const { _sum } = await this.prisma.aiUsageRecord.aggregate({
       where: { groupType: group.type, groupId: group.id },

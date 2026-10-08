@@ -26,7 +26,7 @@ export class RadarItemProgressCell {
     const it = this.item();
     const state = QUEUE_STATE_ICONS[it.queueState];
     // A re-queued post keeps its old analysis while it waits for the new one.
-    const label = it.queueState === 'pending' && it.enrichment ? 'Waiting for re-analysis' : state.label;
+    const label = it.queueState === 'pending' && it.enrichment ? 'Re-analysis queued' : state.label;
     if (it.queueState === 'analyzed' && it.enrichment?.factCheckSeverity === 'major') {
       return {
         icon: 'warning',

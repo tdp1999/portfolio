@@ -1,4 +1,6 @@
-import { RadarRunFlow } from '@prisma/client';
+import { RadarRunFlow, RadarStep } from '@prisma/client';
+
+import type { AiUsageSummary } from '../../ai';
 
 import { RadarBrief } from '../domain/entities/radar-brief.entity';
 import { RadarRun } from '../domain/entities/radar-run.entity';
@@ -20,6 +22,7 @@ import {
   RadarItemCommentsSummaryDto,
   RadarItemDetailDto,
   RadarItemImageDto,
+  RadarRunDetailDto,
   RadarRunDto,
   RadarSourceResponseDto,
   RadarWorkImageDto,
@@ -55,7 +58,8 @@ export class RadarPresenter {
   static toRun(run: RadarRun, spentMicroUsd: number | null = null): RadarRunDto {
     return {
       id: run.id,
-      source: { id: run.sourceId, displayName: run.sourceName },
+      kind: run.kind,
+      source: run.sourceId && run.sourceName !== null ? { id: run.sourceId, displayName: run.sourceName } : null,
       flow: run.flow,
       status: run.status,
       windowFrom: run.windowFrom,
@@ -83,6 +87,30 @@ export class RadarPresenter {
         startedAt: s.startedAt,
         finishedAt: s.finishedAt,
       })),
+    };
+  }
+
+  /** The run detail: capture input from CAPTURE, unreadable posts from NORMALIZE, AI spend per feature. */
+  static toRunDetail(run: RadarRun, aiSpend: AiUsageSummary['byFeature'] | null): RadarRunDetailDto {
+    // A re-analysis has no CAPTURE or NORMALIZE step, so look them up instead of `run.step()`.
+    const stepOf = (step: RadarStep) => run.steps.find((s) => s.step === step);
+    const failureLog = stepOf(RadarStep.NORMALIZE)?.failureLog;
+    return {
+      ...RadarPresenter.toRun(run, aiSpend?.reduce((sum, f) => sum + f.costMicroUsd, 0) ?? null),
+      captureInput: stepOf(RadarStep.CAPTURE)?.captureInput ?? null,
+      captureJobRef: stepOf(RadarStep.CAPTURE)?.providerJobRef ?? null,
+      failures: { items: [...(failureLog?.failures ?? [])], dropped: failureLog?.dropped ?? 0 },
+      aiSpend:
+        run.flow === RadarRunFlow.AUTO
+          ? (aiSpend ?? []).map(({ feature, calls, failed, tokensIn, tokensOut, costMicroUsd }) => ({
+              feature,
+              calls,
+              failed,
+              tokensIn,
+              tokensOut,
+              costMicroUsd,
+            }))
+          : null,
     };
   }
 

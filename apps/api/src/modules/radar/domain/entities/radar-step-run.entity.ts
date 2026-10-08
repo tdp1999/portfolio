@@ -3,6 +3,7 @@ import { RadarStatus, RadarStep } from '@prisma/client';
 import { RadarStepMeta, RadarStepRunProps } from '../radar-run.types';
 import { RadarCommentsProgress } from '../value-objects/radar-comments-progress';
 import { RadarDatasetCursor } from '../value-objects/radar-dataset-cursor';
+import { RadarRunFailureLog } from '../value-objects/radar-run-failure-log';
 
 /** One step of a run. Changed only through its {@link RadarRun}, which keeps run and steps consistent. */
 export class RadarStepRun {
@@ -80,6 +81,15 @@ export class RadarStepRun {
 
   get cursor(): RadarDatasetCursor | null {
     return RadarDatasetCursor.fromMeta(this.props.meta);
+  }
+
+  get failureLog(): RadarRunFailureLog {
+    return RadarRunFailureLog.fromMeta(this.props.meta);
+  }
+
+  /** CAPTURE: what was sent to the provider; null on runs captured before it was recorded, or by upload. */
+  get captureInput(): Readonly<Record<string, unknown>> | null {
+    return this.props.meta.input ?? null;
   }
 
   get comments(): RadarCommentsProgress | null {

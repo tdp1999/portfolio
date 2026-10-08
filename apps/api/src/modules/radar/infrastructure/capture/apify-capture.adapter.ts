@@ -1,6 +1,11 @@
 import { RadarPlatform } from '@prisma/client';
 
-import { CaptureJobRequest, CaptureJobStatus, ICaptureProvider } from '../../application/ports/capture-provider.port';
+import {
+  CaptureJobRequest,
+  CaptureJobStart,
+  CaptureJobStatus,
+  ICaptureProvider,
+} from '../../application/ports/capture-provider.port';
 import { RadarCaptureConfig } from '../../application/radar-capture.config';
 import { actorPath, ApifyClient, dataOf } from './apify.client';
 
@@ -32,7 +37,7 @@ export class ApifyCaptureAdapter implements ICaptureProvider {
     return this.client.isConfigured;
   }
 
-  async start(request: CaptureJobRequest): Promise<string> {
+  async start(request: CaptureJobRequest): Promise<CaptureJobStart> {
     // Input from the task 400 probe. The date filter is billed per post, so it is sent only
     // when the run has a window; a backfill relies on `resultsLimit` alone.
     const input: Record<string, unknown> = {
@@ -54,7 +59,7 @@ export class ApifyCaptureAdapter implements ICaptureProvider {
     );
     const id = dataOf(body)['id'];
     if (typeof id !== 'string') throw new Error('Apify did not return a run id');
-    return id;
+    return { jobRef: id, input };
   }
 
   async poll(jobRef: string): Promise<CaptureJobStatus> {

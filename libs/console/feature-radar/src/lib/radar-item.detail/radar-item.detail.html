@@ -11,6 +11,8 @@
           <h1 class="text-page-title">{{ it.authorName }}</h1>
           @if (!it.enrichment) {
             <span class="console-badge console-badge--muted">Pending analysis</span>
+          } @else if (reanalysisQueued()) {
+            <span class="console-badge console-badge--muted">Re-analysis queued</span>
           }
           <console-help-button guide="radar-feature-guide" section="enrichment" page label="Radar guide: enrichment" />
         </div>
@@ -54,6 +56,12 @@
               </button>
             }
           </div>
+        }
+        @if (!reanalysisQueued()) {
+          <button mat-stroked-button type="button" (click)="onReanalyze()">
+            <mat-icon class="icon-sm">refresh</mat-icon>
+            Re-analyze
+          </button>
         }
         <a mat-stroked-button [href]="it.permalink" target="_blank" rel="noopener noreferrer">
           <mat-icon class="icon-sm">open_in_new</mat-icon>

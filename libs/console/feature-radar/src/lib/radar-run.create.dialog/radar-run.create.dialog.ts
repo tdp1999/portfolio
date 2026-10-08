@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -8,17 +8,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import {
-  CurrencyService,
-  Money,
-  SegmentedControl,
-  amountToUsd,
-  microUsdToAmount,
-  toMoneyView,
-} from '@portfolio/console/shared/ui';
+import { CurrencyService, Money, SegmentedControl } from '@portfolio/console/shared/ui';
 import { catchError, map, of } from 'rxjs';
-import { ErrorMessage, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
-import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_BUDGET_USD, MAX_RUN_ITEM_CAP, MIN_RUN_BUDGET_USD } from '../radar.constants';
+import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
+import { BUDGET_MESSAGES, budgetFieldValue, budgetRangeValidator, budgetToUsd } from '../radar-budget.util';
+import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_ITEM_CAP } from '../radar.constants';
 import { RUN_FLOW_HELP, runFlowOptions } from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarPlatform, RadarRun, RadarRunCreateDialogData, RadarRunFlow } from '../radar.types';
@@ -71,16 +65,14 @@ export class RadarRunCreateDialog {
     /** In the display currency (Settings → Currency); sent to the API in USD. AUTO only. */
     budget: this.fb.control<number | null>(null, [
       Validators.required,
-      (c: AbstractControl<number | null>) => this.budgetRangeError(c.value),
+      budgetRangeValidator(() => this.currency.preference()),
     ]),
   });
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly flowHelp = RUN_FLOW_HELP;
   protected readonly maxItemCap = MAX_RUN_ITEM_CAP;
-  protected readonly budgetMessages: Record<string, ErrorMessage> = {
-    budgetRange: (p) => `Between ${p['min']} and ${p['max']}.`,
-  };
+  protected readonly budgetMessages = BUDGET_MESSAGES;
   protected readonly today = new Date();
   /** The server's run cap for comments; null until it loads, then the hint quotes it. */
   protected readonly commentsCapMicroUsd = toSignal(
@@ -118,9 +110,7 @@ export class RadarRunCreateDialog {
     effect(() => {
       const ai = this.aiSettings();
       if (!ai) return;
-      const pref = this.currency.preference();
-      const amount = microUsdToAmount(ai.defaultBudgetMicroUsd, pref);
-      this.form.controls.budget.setValue(pref.currency === 'VND' ? Math.round(amount) : Number(amount.toFixed(2)));
+      this.form.controls.budget.setValue(budgetFieldValue(ai.defaultBudgetMicroUsd, this.currency.preference()));
       if (ai.configured && this.form.controls.flow.pristine) this.form.controls.flow.setValue('AUTO');
     });
 
@@ -167,33 +157,12 @@ export class RadarRunCreateDialog {
         windowFrom: v.windowFrom ? utcDayStart(v.windowFrom).toISOString() : undefined,
         windowTo: v.windowTo ? utcDayEnd(v.windowTo).toISOString() : undefined,
         fetchComments: this.form.controls.fetchComments.enabled && v.fetchComments,
-        budgetUsd: this.budgetUsd(v.flow, v.budget),
+        budgetUsd: v.flow === 'AUTO' ? budgetToUsd(v.budget, this.currency.preference()) : undefined,
       })
       .subscribe({
         next: (run) => this.dialogRef.close(run),
         error: () => this.saving.set(false),
       });
-  }
-
-  /** The server takes $0.01 to $100 per run: checked here in the display currency, the range quoted in it. */
-  private budgetRangeError(value: number | null): ValidationErrors | null {
-    if (value === null) return null;
-    const pref = this.currency.preference();
-    const usd = amountToUsd(value, pref);
-    if (usd >= MIN_RUN_BUDGET_USD && usd <= MAX_RUN_BUDGET_USD) return null;
-    return {
-      budgetRange: {
-        min: toMoneyView(MIN_RUN_BUDGET_USD * 1_000_000, pref).text,
-        max: toMoneyView(MAX_RUN_BUDGET_USD * 1_000_000, pref).text,
-      },
-    };
-  }
-
-  /** The typed budget in USD (cents kept), or undefined to let the server apply its default. */
-  private budgetUsd(flow: RadarRunFlow, budget: number | null): number | undefined {
-    if (flow !== 'AUTO' || budget === null || budget <= 0) return undefined;
-    // The validator keeps the amount in range, and rounding to cents cannot push it out.
-    return Math.round(amountToUsd(budget, this.currency.preference()) * 100) / 100;
   }
 
   private platformOf(sourceId: string): RadarPlatform {

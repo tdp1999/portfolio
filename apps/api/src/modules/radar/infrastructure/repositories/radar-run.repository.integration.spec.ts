@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Test } from '@nestjs/testing';
-import { RadarRunFlow, RadarStatus, RadarStep, RadarWorkStatus } from '@prisma/client';
+import { RadarRunFlow, RadarRunKind, RadarStatus, RadarStep, RadarWorkStatus } from '@prisma/client';
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
@@ -76,6 +76,32 @@ describe('RadarRunRepository (integration)', () => {
 
     expect(results.filter(Boolean)).toHaveLength(1);
     expect(await prisma.radarRun.count({ where: { sourceId } })).toBe(1);
+  });
+
+  it('should treat an active re-analysis holding a post of the source as an active run on it', async () => {
+    const otherSource = IdentifierValue.v7();
+    const reanalysis = await prisma.radarRun.create({
+      data: {
+        id: IdentifierValue.v7(),
+        kind: RadarRunKind.REANALYZE,
+        sourceId: null,
+        flow: RadarRunFlow.AUTO,
+        status: RUNNING,
+        itemCap: 1,
+        captureAdapter: 'none',
+        llmAdapter: 'server-ai',
+      },
+    });
+    await seedItem(reanalysis.id);
+
+    try {
+      expect(await repo.hasActiveRun(sourceId)).toBe(true);
+      expect(await repo.hasActiveRun(otherSource)).toBe(false);
+      expect(await repo.add(manualRun())).toBeNull();
+    } finally {
+      await prisma.radarItem.deleteMany({ where: { sourceId } });
+      await prisma.radarRun.delete({ where: { id: reanalysis.id } });
+    }
   });
 
   it('should leave a cancelled run and its steps untouched by saves from older copies', async () => {

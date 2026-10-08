@@ -1,7 +1,7 @@
 import type { ZodType } from 'zod';
 
 import type { AiBilling } from '../ai.config';
-import type { AiFeature, AiRef, AiTokenUsage, AiTrace } from '../../domain/ai-usage.types';
+import type { AiFeature, AiRef, AiTokenUsage, AiTrace, AiUsageSummary } from '../../domain/ai-usage.types';
 
 /**
  * How finely the provider samples an image or video frame. Lower is far cheaper (Gemini: 64 instead
@@ -74,4 +74,6 @@ export interface IAiClient {
   spentMicroUsd(group: AiRef): Promise<number>;
   /** `spentMicroUsd` for many groups of one type at once; a group with no calls maps to nothing. */
   spentByGroup(type: string, ids: readonly string[]): Promise<Map<string, number>>;
+  /** What `group` spent, per feature: calls, tokens and cost. Empty when it made no call. */
+  spendByFeature(group: AiRef): Promise<AiUsageSummary['byFeature']>;
 }

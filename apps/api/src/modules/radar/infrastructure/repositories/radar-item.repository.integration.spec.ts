@@ -1,11 +1,12 @@
 import 'dotenv/config';
 
 import { Test } from '@nestjs/testing';
-import { RadarWorkStatus } from '@prisma/client';
+import { RadarRunKind, RadarStatus, RadarWorkStatus } from '@prisma/client';
 
 import { IdentifierValue } from '@portfolio/shared/types';
 
 import { RadarItemListFilter } from '../../application/ports/radar-item.repository.port';
+import { RadarRun } from '../../domain/entities/radar-run.entity';
 import { PrismaModule, PrismaService } from '../../../../shared/prisma';
 import { RadarItemRepository } from './radar-item.repository';
 
@@ -170,6 +171,29 @@ describe('RadarItemRepository (integration)', () => {
     });
   });
 
+  describe('list by run', () => {
+    it('should return only the posts whose last run is the asked run', async () => {
+      const run = await prisma.radarRun.create({
+        data: {
+          id: IdentifierValue.v7(),
+          sourceId: activeId,
+          status: RadarStatus.DONE,
+          itemCap: 10,
+          captureAdapter: 'apify',
+          llmAdapter: 'external-worker',
+        },
+      });
+      await prisma.radarItem.updateMany({
+        where: { id: { in: [ids['gpt'], ids['course']] } },
+        data: { lastRunId: run.id },
+      });
+
+      const result = await list({ sourceId: undefined, runId: run.id, includePromo: true });
+
+      expect(result.data.map((r) => r.id)).toEqual([ids['gpt'], ids['course']]);
+    });
+  });
+
   describe('findById', () => {
     it('should return the full item with its enrichment', async () => {
       const item = await repo.findById(ids['claude']);
@@ -232,6 +256,103 @@ describe('RadarItemRepository (integration)', () => {
       expect(byId[ids['leased']]).toMatchObject({ workStatus: 'CLAIMED', claimCount: MAX_ATTEMPTS });
       expect(byId[ids['pausedStuck']]).toMatchObject({ workStatus: 'CLAIMED', claimCount: MAX_ATTEMPTS });
       expect((await repo.stats(now, MAX_ATTEMPTS)).stuck).toBe(0);
+    });
+  });
+
+  describe('requeueForAnalysis', () => {
+    const reanalysis = (count: number) =>
+      RadarRun.reanalyze({ itemCount: count, budgetMicroUsd: 1_000_000, analyzeAdapter: 'server-ai' });
+
+    it('should reset the eligible items into one new run and skip the leased, the busy, the paused and the unknown', async () => {
+      const now = new Date();
+      const busyRun = await prisma.radarRun.create({
+        data: {
+          id: IdentifierValue.v7(),
+          sourceId: activeId,
+          status: RadarStatus.RUNNING,
+          itemCap: 10,
+          captureAdapter: 'apify',
+          llmAdapter: 'server-ai',
+        },
+      });
+      await seed(activeId, 'redo', {
+        publishedAt: BASE - 8 * DAY,
+        text: 'analyzed, failed once since',
+        workStatus: RadarWorkStatus.DONE,
+        claimCount: 2,
+      });
+      await prisma.radarItem.update({ where: { id: ids['redo'] }, data: { workError: 'old error' } });
+      await seed(activeId, 'expiredLease', {
+        publishedAt: BASE - 9 * DAY,
+        text: 'lease ran out',
+        workStatus: RadarWorkStatus.CLAIMED,
+        claimCount: 1,
+        leaseExpiresAt: new Date(now.getTime() - 1000),
+      });
+      await seed(activeId, 'liveLease', {
+        publishedAt: BASE - 10 * DAY,
+        text: 'worker still holds it',
+        workStatus: RadarWorkStatus.CLAIMED,
+        claimCount: 1,
+        leaseExpiresAt: new Date(now.getTime() + LEASE_MS),
+      });
+      await seed(activeId, 'inBusyRun', { publishedAt: BASE - 11 * DAY, text: 'its run will analyze it' });
+      await prisma.radarItem.update({ where: { id: ids['inBusyRun'] }, data: { lastRunId: busyRun.id } });
+      await seed(inactiveId, 'pausedRedo', {
+        publishedAt: BASE - 12 * DAY,
+        text: 'paused source',
+        workStatus: RadarWorkStatus.DONE,
+      });
+      const asked = [
+        ids['redo'],
+        ids['expiredLease'],
+        ids['liveLease'],
+        ids['inBusyRun'],
+        ids['pausedRedo'],
+        IdentifierValue.v7(),
+      ];
+
+      const { requeued, run } = await repo.requeueForAnalysis(asked, now, reanalysis);
+
+      try {
+        expect(requeued).toBe(2);
+        expect([run?.kind, run?.itemCap]).toEqual([RadarRunKind.REANALYZE, 2]);
+        const rows = await prisma.radarItem.findMany({
+          where: { id: { in: asked } },
+          select: {
+            id: true,
+            workStatus: true,
+            claimCount: true,
+            leaseExpiresAt: true,
+            workError: true,
+            lastRunId: true,
+          },
+        });
+        const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
+        const reset = {
+          workStatus: 'PENDING',
+          claimCount: 0,
+          leaseExpiresAt: null,
+          workError: null,
+          lastRunId: run?.id,
+        };
+        expect(byId[ids['redo']]).toMatchObject(reset);
+        expect(byId[ids['expiredLease']]).toMatchObject(reset);
+        expect(byId[ids['liveLease']]).toMatchObject({ workStatus: 'CLAIMED', lastRunId: null });
+        expect(byId[ids['inBusyRun']]).toMatchObject({ lastRunId: busyRun.id });
+        expect(byId[ids['pausedRedo']]).toMatchObject({ workStatus: 'DONE', lastRunId: null });
+      } finally {
+        await prisma.radarRun.deleteMany({ where: { id: { in: [busyRun.id, ...(run ? [run.id] : [])] } } });
+      }
+    });
+
+    it('should create no run when no item is eligible', async () => {
+      const before = await prisma.radarRun.count();
+
+      const result = await repo.requeueForAnalysis([IdentifierValue.v7()], new Date(), reanalysis);
+
+      expect(result).toEqual({ requeued: 0, run: null });
+      expect(await prisma.radarRun.count()).toBe(before);
     });
   });
 });

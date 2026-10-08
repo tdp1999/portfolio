@@ -23,9 +23,10 @@ export class RadarRunMapper {
   static toDomain(row: RadarRunRow): RadarRun {
     return RadarRun.load({
       id: row.id,
+      kind: row.kind,
       sourceId: row.sourceId,
-      sourceUrl: row.source.url,
-      sourceName: row.source.displayName,
+      sourceUrl: row.source?.url ?? null,
+      sourceName: row.source?.displayName ?? null,
       flow: row.flow,
       status: row.status,
       windowFrom: row.windowFrom,
@@ -63,6 +64,7 @@ export class RadarRunMapper {
   static toPersistence(run: RadarRun): Prisma.RadarRunUncheckedCreateWithoutStepsInput {
     return {
       id: run.id,
+      kind: run.kind,
       sourceId: run.sourceId,
       flow: run.flow,
       status: run.status,

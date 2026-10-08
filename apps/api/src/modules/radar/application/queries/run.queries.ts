@@ -8,7 +8,7 @@ import { IdentifierValue } from '@portfolio/shared/types';
 import { AI_CLIENT, type IAiClient } from '../../../ai';
 import { IRadarRunRepository } from '../ports/radar-run.repository.port';
 import { RADAR_RUN_AI_GROUP } from '../radar-analysis.config';
-import { RUN_LIST_LIMIT, RadarRunDto } from '../radar.dto';
+import { RUN_LIST_LIMIT, RadarRunDetailDto, RadarRunDto } from '../radar.dto';
 import { RadarPresenter } from '../radar.presenter';
 import { RADAR_RUN_REPOSITORY } from '../radar.token';
 
@@ -42,7 +42,7 @@ export class GetRunHandler implements IQueryHandler<GetRunQuery> {
     @Inject(AI_CLIENT) private readonly ai: IAiClient
   ) {}
 
-  async execute(query: GetRunQuery): Promise<RadarRunDto> {
+  async execute(query: GetRunQuery): Promise<RadarRunDetailDto> {
     IdentifierValue.from(query.runId);
     const run = await this.runs.findById(query.runId);
     if (!run) {
@@ -51,8 +51,8 @@ export class GetRunHandler implements IQueryHandler<GetRunQuery> {
         layer: ErrorLayer.APPLICATION,
       });
     }
-    const spent =
-      run.flow === RadarRunFlow.AUTO ? await this.ai.spentMicroUsd({ type: RADAR_RUN_AI_GROUP, id: run.id }) : null;
-    return RadarPresenter.toRun(run, spent);
+    const aiSpend =
+      run.flow === RadarRunFlow.AUTO ? await this.ai.spendByFeature({ type: RADAR_RUN_AI_GROUP, id: run.id }) : null;
+    return RadarPresenter.toRunDetail(run, aiSpend);
   }
 }

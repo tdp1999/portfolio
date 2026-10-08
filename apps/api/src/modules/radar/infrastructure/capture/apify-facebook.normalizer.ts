@@ -75,7 +75,7 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
       }
       const parsed = ApifyPostSchema.safeParse(entry);
       if (!parsed.success) {
-        failures.push({ index, reason: describeIssues(parsed.error) });
+        failures.push({ index, ref: ApifyFacebookNormalizer.refOf(entry), reason: describeIssues(parsed.error) });
         return;
       }
 
@@ -89,6 +89,12 @@ export class ApifyFacebookNormalizer implements ICaptureNormalizer {
     });
 
     return { items, skipped, failures, notices };
+  }
+
+  /** The post's URL, or its id, when the unreadable row still has one. */
+  private static refOf(entry: unknown): string | undefined {
+    if (!isPlainObject(entry)) return undefined;
+    return nonEmptyString(entry['url']) ?? nonEmptyString(entry['postId']) ?? undefined;
   }
 
   /**

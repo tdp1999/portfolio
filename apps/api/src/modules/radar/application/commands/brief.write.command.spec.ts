@@ -55,6 +55,7 @@ describe('WriteAutoBriefHandler', () => {
       generateStructured: jest.fn(),
       spentMicroUsd: jest.fn(),
       spentByGroup: jest.fn(),
+      spendByFeature: jest.fn(),
     };
     briefs = {
       claim: jest.fn(async () => claimed()),

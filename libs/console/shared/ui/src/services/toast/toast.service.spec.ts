@@ -47,6 +47,14 @@ describe('ToastService', () => {
       expect(service.toasts()[0].duration).toBe(2000);
     });
 
+    it('should keep an action link and default the duration when given options', () => {
+      service.success('Run started', { action: { label: 'View run', link: '/radar/runs' } });
+      expect(service.toasts()[0]).toMatchObject({
+        duration: 5000,
+        action: { label: 'View run', link: '/radar/runs' },
+      });
+    });
+
     it('should stack multiple toasts', () => {
       service.success('First');
       service.error('Second');

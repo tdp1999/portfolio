@@ -19,6 +19,8 @@ export interface IAiUsageRepository {
   /** Totals since `from`, summed in the database, overall and per model and feature. */
   summarize(from: Date): Promise<AiUsageSummary>;
   listRecent(limit: number): Promise<AiCallRecord[]>;
+  /** Calls, tokens and cost of one group's rows, per feature, most expensive first. */
+  summarizeGroup(group: AiRef): Promise<AiUsageSummary['byFeature']>;
   /** Sum of `costMicroUsd` over the group's rows; rows without a price count as 0. */
   sumCost(group: AiRef): Promise<number>;
   /** `sumCost` for many groups of one type in one query; a group with no rows is left out. */

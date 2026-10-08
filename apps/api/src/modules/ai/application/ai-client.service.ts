@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 
 import { AiCostPolicy } from '../domain/policies/ai-cost.policy';
-import type { AiCallStatus, AiRef, AiTokenUsage, AiTrace } from '../domain/ai-usage.types';
+import type { AiCallStatus, AiRef, AiTokenUsage, AiTrace, AiUsageSummary } from '../domain/ai-usage.types';
 import { AiCallError } from './ai-call.error';
 import { AiLimitStore } from './ai-limit.store';
 import { AI_CONFIG, AI_PROVIDER, AI_USAGE_REPOSITORY } from './ai.token';
@@ -51,6 +51,10 @@ export class AiClientService implements IAiClient {
 
   spentByGroup(type: string, ids: readonly string[]): Promise<Map<string, number>> {
     return this.usageRepo.sumCostByGroup(type, ids);
+  }
+
+  spendByFeature(group: AiRef): Promise<AiUsageSummary['byFeature']> {
+    return this.usageRepo.summarizeGroup(group);
   }
 
   async generateStructured<T>(request: AiStructuredRequest<T>): Promise<AiStructuredResult<T>> {

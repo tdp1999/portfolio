@@ -21,6 +21,7 @@ describe('TestAiConnectionHandler', () => {
       generateStructured: jest.fn(),
       spentMicroUsd: jest.fn(),
       spentByGroup: jest.fn(),
+      spendByFeature: jest.fn(),
     };
   });
 

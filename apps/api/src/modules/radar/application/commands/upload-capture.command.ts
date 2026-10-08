@@ -13,7 +13,7 @@ import { IdentifierValue } from '@portfolio/shared/types';
 
 import { MulterFile } from '../../../../shared/types';
 import { RadarRun } from '../../domain/entities/radar-run.entity';
-import { NormalizedRadarItem } from '../../domain/radar.types';
+import { NormalizedRadarItem, RadarNormalizeFailure } from '../../domain/radar.types';
 import { STORAGE_SERVICE } from '../../../media/application/media.token';
 import { IStorageService } from '../../../media/application/ports/storage.service.port';
 import { ICaptureNormalizer } from '../ports/capture-normalizer.port';
@@ -94,10 +94,13 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
     // A direct upload would move the active run's items to a run of its own (their lastRunId),
     // and that run would stop counting them. The file belongs in the active run instead.
     if (!run && (await this.runs.hasActiveRun(source.id))) {
-      throw ConflictError('This source has an active run; upload into that run from the Runs page', {
-        errorCode: RadarErrorCode.RUN_ALREADY_ACTIVE,
-        layer: ErrorLayer.APPLICATION,
-      });
+      throw ConflictError(
+        'This source has an active run or a re-analysis of its posts; upload into its capture run from the Runs page, or wait',
+        {
+          errorCode: RadarErrorCode.RUN_ALREADY_ACTIVE,
+          layer: ErrorLayer.APPLICATION,
+        }
+      );
     }
 
     const posts = UploadCaptureFileSchema.safeParse(parseJson(command.file));
@@ -111,7 +114,7 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
     const { items, skipped, failures } = normalizer.normalize(posts.data);
     const runId = run?.id ?? IdentifierValue.v7();
     const { created, updated, orphanedImageIds } = run
-      ? await this.fillRun(run, items, failures.length, startedAt)
+      ? await this.fillRun(run, items, failures, startedAt)
       : await this.captures.saveCapture({
           runId,
           sourceId: source.id,
@@ -163,11 +166,18 @@ export class UploadCaptureHandler implements ICommandHandler<UploadCaptureComman
   private async fillRun(
     run: RadarRun,
     items: NormalizedRadarItem[],
-    failedCount: number,
+    failures: RadarNormalizeFailure[],
     startedAt: Date
   ): Promise<SaveCaptureResult> {
-    const saved = await this.captures.saveCapturePage({ runId: run.id, sourceId: run.sourceId, items, failedCount });
-    if (!(await this.runs.save(run.completeUpload(startedAt, new Date())))) throw notAwaitingUpload();
+    const saved = await this.captures.saveCapturePage({
+      runId: run.id,
+      sourceId: run.captureSource.id,
+      items,
+      failedCount: failures.length,
+    });
+    if (!(await this.runs.save(run.noteFailures(failures).completeUpload(startedAt, new Date())))) {
+      throw notAwaitingUpload();
+    }
     return saved;
   }
 }

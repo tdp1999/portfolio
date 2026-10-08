@@ -14,6 +14,7 @@ describe('AI queries', () => {
       sumCost: jest.fn(),
       sumCostSince: jest.fn(),
       sumCostByGroup: jest.fn(),
+      summarizeGroup: jest.fn(),
       countLedger: jest.fn(),
       listModelsSince: jest.fn(),
     };
