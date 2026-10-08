@@ -57,6 +57,10 @@
 | MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
 | Home (root page) | The landing app's entry route `/` — the only page that owns the full marketing hero (portrait, large display heading, hero CTAs, marquee sections). Composition rules differ from feature pages: home does NOT use the canonical sub-page header (breadcrumb + page-hero); it has its own hero composition. | UI Concept |
 | Feature page (subpage) | Any non-home landing route: `/about`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/uses`, `/contact`, `/colophon`, `/privacy`, `/terms`. All feature pages SHARE one canonical structure: `<article>` > `<header>` (breadcrumb + `landing-page-hero` + optional meta strip) > one-or-more `<section aria-labelledby>` body blocks > optional `<footer>` (CTA / last-updated). Variants are additive inside the header slot, never structural deviations. | UI Concept |
+| ChecklistDoc | A parsed copy of one markdown file from the Owner's workflow folder, keyed by its file stem. Three kinds: Template (a lane checklist: phases, gate lines, rows with doer and checker), Lookup (the `bang-tra` table, sections A..H) and Project (a project profile, sections §1..§10). Authored in markdown, never on the web. | Entity |
+| ChecklistRun | One working copy of a Template for one ticket, tied to one Project doc. Holds its own rows, so it is a snapshot of the Template at creation. Status: active, done, archived. | Aggregate |
+| ChecklistRow | One line of a ChecklistRun: a task, or a group with child tasks. Carries text, doer, checker, a plain-text note and a RowState. | Entity |
+| RowState | todo, done or skipped. Skipped means done without doing it, and counts as complete. | Value Object |
 
 ## Flows
 
@@ -289,6 +293,31 @@
   - Lease expired and another worker claimed it: the late result is rejected
 - **End states:** Brief readable in Console, each claim linking to its item Detail page; or a failed Auto brief showing why
 
+### Sync Checklist Docs
+- **Trigger:** Owner runs `pnpm checklist:push` after editing the workflow markdown
+- **Actors:** Owner, push script (machine client)
+- **Happy path:**
+  1. Script sends every workflow file (lane checklists, lookup table, project profiles) with the checklist machine token
+  2. System parses each file and upserts it as a ChecklistDoc by its stem
+  3. A doc whose file is no longer sent is archived
+- **Error paths:**
+  - Invalid or missing machine token: rejected, nothing changes
+  - A file fails to parse: the whole push is rejected with that file's path, nothing changes
+- **End states:** Docs match the folder. Existing ChecklistRuns are untouched
+
+### Work a Checklist Run
+- **Trigger:** Owner opens `/checklist` on the landing site
+- **Actors:** Owner (authenticated with the console account)
+- **Happy path:**
+  1. Owner creates a run: name, a Template, a Project
+  2. System copies the Template's rows into the run
+  3. Owner ticks, skips, reorders (a group moves with its children), notes, adds, edits and deletes rows; each change saves
+  4. Owner opens `tra X` / `📁 §N` references, read live from the Lookup and Project docs
+- **Error paths:**
+  - Not signed in: login form, no run data in the page
+  - Save with a stale version (another tab saved first): rejected, Owner reloads
+- **End states:** Run progress saved; run marked done or archived when the ticket ends
+
 ## Rules
 
 ### Post
@@ -388,8 +417,15 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 - AI-003: Every AI call is recorded as an AiUsageRecord, whether it succeeds or fails
 - AI-004: API keys live only in environment variables. The app never stores a key in the database or returns it in a response
 
+### Checklist
+- CHK-001: A ChecklistRun is a snapshot. Pushing a Template again never changes the rows of an existing run
+- CHK-002: An archived ChecklistDoc cannot start a new run, and every run already made from it still opens
+- CHK-003: A skipped row counts as complete in progress
+- CHK-004: Checklist data is Owner-only. Every checklist endpoint requires the Owner's session, except the docs sync, which requires the checklist machine token and nothing else
+- CHK-005: Moving a group row moves its child rows with it
+
 ## Invariants
-- The Landing Page only displays content that has been saved and is in a public-visible state
+- The Landing Page only displays content that has been saved and is in a public-visible state. The one exception is the Owner-only `/checklist` area, which requires sign-in and never renders its data on the server
 - Visitor-facing content is read-only for visitors; the Owner is the only author
 - Most content is authored in Console. Two exceptions are authored in the codebase and ship with a release: the fixed interface wording, and the /uses and /colophon pages. Moving those into Console is open work, not a property of the system today
 - Contact form submission is the only public write operation (no auth required)
@@ -405,6 +441,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-08] Added the Checklist domain (ChecklistDoc, ChecklistRun, ChecklistRow, RowState), two flows and CHK-001..005, from `epic-landing-checklist`. Amended the landing invariant: `/checklist` is the one authenticated, Owner-only area on the landing site.
 - [2026-10-08] Auto RunFlow is live: RunFlow no longer says planned; added the Analyze Radar Items (Auto) flow and RAD-009 (quick analysis for every item, deep analysis only when the Owner turns it on for the run, ADR-036, task 427).
 - [2026-10-07] Added YouTube as a RadarSource platform (task 422): a channel is captured through the YouTube Data API by Hybrid and Auto runs, one item per public video in the window (RAD-001). Manual runs and comment fetching stay Facebook only.
 - [2026-10-07] Transcript is built (task 421): Enrich of an Auto run transcribes each video up to a length limit, one video at a time; a skipped, failed or over-budget transcript leaves the item to be analyzed from its text and images (RAD-007, RAD-008).

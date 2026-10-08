@@ -345,6 +345,17 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 324-landing-pwa-manifest-and-icons (M) — done 2026-07-02 → `tasks-done/other/`. Minimal `manifest.webmanifest` + standard icon set + `theme-color` meta on landing.
 - [x] 326-landing-analytics-umami-self-host (M) — done 2026-07-02 → `tasks-done/other/`. Self-hosted Umami on Railway (`analytics.thunderphong.com`), cookieless script embedded in landing `index.html`, custom `data-umami-event` events wired across nav/theme/social/palette.
 
+## Pending — Landing Checklist (broken down 2026-10-08)
+
+From: `epic-landing-checklist` (appetite 2 days)
+
+- [x] 429-checklist-api-module (L) — schema, parser, docs sync, runs API
+- [x] 430-checklist-push-script (S) — deps: 429
+- [ ] 431-landing-auth-and-proxy-cookies (M) — deps: 429
+- [ ] 432-ddl-checklist-layout-options (M) — deps: 429 (types)
+- [ ] 433-checklist-runs-list-page (S) — deps: 429, 431, 432
+- [ ] 434-checklist-run-page (L) — deps: 429, 431, 432, 433
+
 ## Pending — Landing follow-up
 
 - [ ] 323-landing-llms-txt (S)
