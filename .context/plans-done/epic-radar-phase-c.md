@@ -184,15 +184,24 @@ The app stays a pipeline: Radar's state machine decides the steps, and a model c
 
 ## Success Criteria
 
-- [ ] An `AUTO` run triggered from the Runs page reaches `done` with no Claude Code session, and every item in it has a valid v3 enrichment.
+- [x] An `AUTO` run triggered from the Runs page reaches `done` with no Claude Code session, and every item in it has a valid v3 enrichment.
 - [ ] A brief requested in the console is written by Gemini without a Claude Code session, and every claim links to a post in its window.
-- [ ] A run with a budget of $0.50 stops before its recorded spend exceeds the budget plus one call, and its remaining items stay pending.
-- [ ] A YouTube video of 20 minutes or more shows a transcript and an enrichment that refers to what was said in it.
+- [x] A run with a budget of $0.50 stops before its recorded spend exceeds the budget plus one call, and its remaining items stay pending.
+- [x] A YouTube video of 20 minutes or more shows a transcript and an enrichment that refers to what was said in it.
 - [ ] One YouTube channel captures a 3-month window into the Feed with no duplicates.
 - [ ] The quality check page shows Gemini next to Claude Code for at least 10 items, and the Owner has recorded the chosen default model per feature.
-- [ ] The AI integration screen shows Gemini's status, and its 30-day cost matches the sum of the usage rows.
+- [x] The AI integration screen shows Gemini's status, and its 30-day cost matches the sum of the usage rows.
 - [ ] For any analyzed item, the Detail page shows the sources the analysis used and the AI calls behind it (tokens, cost, tool uses, failures).
-- [ ] No AI request is sent with tools and without limits (enforced by a test on the `ai` client).
+- [x] No AI request is sent with tools and without limits (enforced by a test on the `ai` client).
+
+### Acceptance gaps (accepted by the Owner, no fix task)
+
+Production acceptance (task 424, 2026-10-08) left four criteria unticked. The Owner accepted them as they are:
+
+- **Brief links:** the brief was written by Gemini and all 33 cited posts fall inside its window; that every claim carries a link was not checked by eye.
+- **3-month YouTube window:** the YouTube run captured one day (one video). A 3-month window was not run, mainly for cost: a 20-minute transcript alone costs about $0.10.
+- **Quality check:** no Gemini trials were run next to Claude Code enrichments, and no default model per feature was recorded. ADR-036 makes the quick pass the default, which settles the question in practice.
+- **Detail page:** sources show on a deep post; the AI-calls panel was not checked by eye.
 
 ## Estimated Complexity
 
@@ -223,7 +232,7 @@ L
 
 ## Status
 
-broken-down
+completed
 
 Broken down into tasks 416-424 on 2026-10-06. Simplified at breakdown: prices as a code constant (no price table), call trace as JSON on the usage row, quality check as a trial table plus a plain compare view, Gemini free tier first (429 leaves work pending, cost recorded as an estimate).
 
@@ -232,6 +241,10 @@ Broken down into tasks 416-424 on 2026-10-06. Simplified at breakdown: prices as
 2026-10-06
 
 ## Changelog
+
+### 2026-10-08 Production acceptance and quick-only analysis
+- Updated: acceptance results and gaps recorded under Success Criteria; ADR-036 makes the quick analysis the default and deep a per-run opt-in (task 427).
+- Reason: deep was 85% of an Auto run's spend and most deep calls lowered the quick score.
 
 ### 2026-10-07 RSS / Substack dropped
 - Updated: task 423 (RSS / Substack source) aborted; Phase C new sources are YouTube only. The RSS requirement (16), scope bullet and success criterion no longer apply.
