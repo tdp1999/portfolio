@@ -13,6 +13,23 @@ pnpm dev                  # Run both FE & BE in parallel
 The `/ddl` route on the landing app displays all UI components for visual testing.
 Start the landing app and navigate to `http://localhost:4200/ddl`.
 
+### Checklist push
+
+Sends the workflow markdown (`checklist-lane-*.md`, `bang-tra.md`, `projects/*.md`) to the checklist sync route. Runs already made are never changed; a file that is gone is archived.
+
+```bash
+CHECKLIST_SYNC_TOKEN=<token> pnpm checklist:push                       # local API
+CHECKLIST_SYNC_TOKEN=<token> CHECKLIST_API_URL=https://dashboard-api.thunderphong.com pnpm checklist:push
+# optional: CHECKLIST_WORKFLOW_DIR (default ~/Code/personal/learning/workflow)
+```
+
+One-time token setup (one token per environment):
+
+```bash
+TOKEN=$(openssl rand -hex 32); echo "token: $TOKEN"
+echo -n "$TOKEN" | shasum -a 256 | cut -d' ' -f1   # → CHECKLIST_SYNC_TOKEN_HASH on the API (local env / Railway)
+```
+
 ## Build
 
 ```bash
