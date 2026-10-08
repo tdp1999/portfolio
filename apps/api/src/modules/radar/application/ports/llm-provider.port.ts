@@ -10,6 +10,8 @@ export interface LlmStepRequest {
   runId: string;
   /** The run's AI spend cap; null means the run has none. */
   budgetMicroUsd: number | null;
+  /** Posts whose quick score reaches the threshold also get the deep analysis (ADR-036: off by default). */
+  deepAnalysis: boolean;
 }
 
 export type LlmStepOutcome =

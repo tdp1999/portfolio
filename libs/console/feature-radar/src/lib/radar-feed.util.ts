@@ -15,6 +15,8 @@ import type {
   RadarTriageStatus,
 } from './radar.types';
 
+/** Model ids are data too (`gemini-3.1-flash-lite`, `claude-opus-4-6[1m]`): same rule as the API, 1 to 100 characters. */
+const MODEL_ID_MAX = 100;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** The triage tab as the URL spells it; Inbox is the default and stays out of the URL. */
@@ -28,6 +30,7 @@ export const DEFAULT_FEED_STATE: RadarFeedState = {
   includePromo: false,
   status: '',
   sourceId: '',
+  producerModel: '',
   sortBy: 'publishedAt',
   sortDir: 'desc',
   pageIndex: 0,
@@ -55,12 +58,18 @@ export function parseFeedQuery(params: Params): RadarFeedState {
     status: known(params['status'], Object.keys(FEED_STATUS_LABELS)),
     // Sources are data, not a fixed list: only the shape is checked here.
     sourceId: typeof params['source'] === 'string' && UUID.test(params['source']) ? params['source'] : '',
+    producerModel: modelParam(params['model']),
     sortBy: FEED_SORT_KEYS.includes(params['sort']) ? (params['sort'] as RadarFeedSortKey) : 'publishedAt',
     sortDir: params['dir'] === 'asc' ? 'asc' : 'desc',
     pageIndex: Number.isInteger(page) && page > 1 ? page - 1 : 0,
     pageSize: (FEED_PAGE_SIZES as readonly number[]).includes(size) ? size : FEED_PAGE_SIZE,
     triage: Object.hasOwn(TRIAGE_PARAMS, params['triage']) ? TRIAGE_PARAMS[params['triage']] : 'INBOX',
   };
+}
+
+function modelParam(value: unknown): string {
+  const model = typeof value === 'string' ? value.trim() : '';
+  return model.length <= MODEL_ID_MAX ? model : '';
 }
 
 /** The Split pane's open post (`?item=`): only an id-shaped value, so a hand-edited URL never reaches the API. */
@@ -78,6 +87,7 @@ export function toFeedQuery(state: RadarFeedState): Record<string, string> {
   if (state.includePromo) params['promo'] = '1';
   if (state.status) params['status'] = state.status;
   if (state.sourceId) params['source'] = state.sourceId;
+  if (state.producerModel) params['model'] = state.producerModel;
   if (state.sortBy !== 'publishedAt') params['sort'] = state.sortBy;
   if (state.sortDir === 'asc') params['dir'] = 'asc';
   if (state.pageIndex > 0) params['page'] = String(state.pageIndex + 1);
@@ -97,6 +107,7 @@ export function toFeedRequest(state: RadarFeedState): RadarFeedParams {
     includePromo: state.includePromo,
     status: state.status || undefined,
     sourceId: state.sourceId || undefined,
+    producerModel: state.producerModel || undefined,
     sortBy: state.sortBy,
     sortDir: state.sortDir,
     triageStatus: state.triage,

@@ -127,6 +127,10 @@ export const RUN_FLOW_HELP: Record<RadarRunFlow, string> = {
   MANUAL: 'You export the posts from Apify, upload the file into the run, then run /radar work.',
 };
 
+/** ADR-036: every post gets the quick analysis; research on top of it is a choice per run. */
+export const DEEP_ANALYSIS_HELP =
+  'Off: every post gets the quick analysis only (score, TL;DR, cents per run). On: posts that score high also get a deep analysis with web search and link reading, which costs over ten times more per post and takes longer.';
+
 export const REANALYZE_HELP =
   'Posts picked in the Feed, analyzed again by the server with AI. No capture: each post keeps its text, images and transcript.';
 
@@ -262,10 +266,20 @@ export const ANALYSIS_DEPTH_LABELS: Record<RadarAnalysisDepth | 'worker', string
 };
 
 export const ANALYSIS_DEPTH_HELP: Record<RadarAnalysisDepth | 'worker', string> = {
-  light:
-    'Quick pass on the server: images, TL;DR and score, no web search and no link reading. The best-scoring posts then get the deep analysis.',
-  deep: 'Deep analysis on the server: web search, links read, fact check.',
-  worker: 'Analyzed by /radar work in Claude Code, with research and links read.',
+  light: 'Quick: score and TL;DR, no web search.',
+  deep: 'Deep: web search, links read, fact check.',
+  worker: 'Full: /radar work in Claude Code.',
+};
+
+/** The Detail note under a quick analysis: a full sentence, since it reads as page text rather than a tooltip. */
+export const LIGHT_ANALYSIS_NOTE =
+  'This is the quick analysis: it searched nothing on the web and read no links. Re-analyze with Deep analysis on for a fact-checked read.';
+
+/** The Feed's dot before the score: one colour per provider, the exact model is in the tooltip. Unknown adapters get the muted dot. */
+export const PRODUCER_DOT_CLASSES: Record<string, string> = {
+  gemini: 'radar-producer--gemini',
+  anthropic: 'radar-producer--claude',
+  'claude-code': 'radar-producer--claude',
 };
 
 /** Only the exceptions carry a badge: kept comments are substantive by default (spam is filtered at capture). */

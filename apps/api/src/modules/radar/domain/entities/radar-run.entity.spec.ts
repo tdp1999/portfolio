@@ -33,6 +33,7 @@ describe('RadarRun', () => {
         itemCap: 300,
         fetchComments: false,
         budgetMicroUsd: null,
+        deepAnalysis: false,
         adapters,
       });
 
@@ -57,6 +58,7 @@ describe('RadarRun', () => {
           itemCap: 300,
           fetchComments: false,
           budgetMicroUsd: null,
+          deepAnalysis: false,
           adapters,
         })
       ).toThrow();
@@ -65,7 +67,12 @@ describe('RadarRun', () => {
 
   describe('reanalyze()', () => {
     it('should start an Auto run with no source and only the ANALYZE step, capped at the item count', () => {
-      const run = RadarRun.reanalyze({ itemCount: 7, budgetMicroUsd: 500_000, analyzeAdapter: 'gemini' });
+      const run = RadarRun.reanalyze({
+        itemCount: 7,
+        budgetMicroUsd: 500_000,
+        deepAnalysis: false,
+        analyzeAdapter: 'gemini',
+      });
 
       expect(run.kind).toBe(RadarRunKind.REANALYZE);
       expect(run.sourceId).toBeNull();

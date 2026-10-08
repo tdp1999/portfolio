@@ -129,6 +129,11 @@
     </section>
   </div>
 </mat-dialog-content>
+<!-- Every action above saves on the spot; the label only says whether the Feed will refresh. -->
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
+  @if (changed()) {
+    <button mat-flat-button color="primary" mat-dialog-close>Done</button>
+  } @else {
+    <button mat-button mat-dialog-close>Cancel</button>
+  }
 </mat-dialog-actions>

@@ -43,10 +43,10 @@
         <mat-icon class="icon-sm">summarize</mat-icon>
         Briefs
       </a>
-      <a mat-stroked-button routerLink="/radar/profile">
+      <button mat-stroked-button (click)="onOpenProfile()">
         <mat-icon class="icon-sm">edit_note</mat-icon>
         Workflow profile
-      </a>
+      </button>
       <button mat-stroked-button (click)="onOpenSources()">
         <mat-icon class="icon-sm">rss_feed</mat-icon>
         Sources and upload
@@ -89,6 +89,12 @@
             [options]="contentTypeOptions"
             [value]="contentType()"
             (selectionChange)="onContentTypeChange($event)"
+          />
+          <console-filter-select
+            label="Model"
+            [options]="modelOptions()"
+            [value]="producerModel()"
+            (selectionChange)="onModelChange($event)"
           />
           <console-filter-select
             label="Min score"
@@ -187,16 +193,19 @@
             <td mat-cell *matCellDef="let item" class="col-score">
               @if (item.enrichment; as e) {
                 <span
+                  class="radar-producer"
+                  [class]="e.producerAdapter | enumLabel: producerDots"
+                  aria-hidden="true"
+                ></span>
+                <span
                   class="radar-score"
                   [class]="e.signalScore | radarScoreTone"
-                  [attr.aria-label]="'Signal score ' + e.signalScore"
-                  [matTooltip]="e.analysisDepth ?? 'worker' | enumLabel: depthHelp"
+                  [class.radar-score--deep]="e.analysisDepth === 'deep'"
+                  [attr.aria-label]="'Signal score ' + e.signalScore + ', ' + e.producerModel"
+                  [matTooltip]="(e.analysisDepth ?? 'worker' | enumLabel: depthLabels) + ' · ' + e.producerModel"
                 >
                   {{ e.signalScore }}
                 </span>
-                @if (e.analysisDepth) {
-                  <span class="radar-depth">{{ e.analysisDepth | enumLabel: depthLabels }}</span>
-                }
               } @else {
                 <span
                   class="radar-score radar-score--pending"

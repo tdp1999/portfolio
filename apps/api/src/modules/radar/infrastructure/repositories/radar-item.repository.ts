@@ -55,6 +55,8 @@ const feedSelect = {
       wantsComments: true,
       factCheckSeverity: true,
       analysisDepth: true,
+      producerAdapter: true,
+      producerModel: true,
     },
   },
 } as const;
@@ -78,8 +80,6 @@ const detailSelect = {
       scoreReason: true,
       overview: true,
       sources: true,
-      producerAdapter: true,
-      producerModel: true,
       updatedAt: true,
     },
   },
@@ -126,6 +126,7 @@ const toFilterWhere = (f: RadarItemListFilter, now: Date, maxAttempts: number): 
   if (f.status) and.push(statusWhere(f.status, now, maxAttempts));
   if (f.triageStatus) and.push({ triageStatus: f.triageStatus });
   if (f.sourceId) and.push({ sourceId: f.sourceId });
+  if (f.producerModel) and.push({ enrichment: { is: { producerModel: f.producerModel } } });
   if (f.runId) and.push({ lastRunId: f.runId });
   if (f.search) {
     const contains = { contains: f.search, mode: 'insensitive' } as const;
@@ -189,6 +190,14 @@ export class RadarItemRepository implements IRadarItemRepository {
     const counts: RadarTriageCounts = { INBOX: 0, SAVED: 0, DONE: 0 };
     for (const g of groups) counts[g.triageStatus] = g._count._all;
     return counts;
+  }
+
+  async listProducerModels(): Promise<string[]> {
+    const groups = await this.prisma.radarEnrichment.groupBy({
+      by: ['producerModel'],
+      orderBy: { producerModel: 'asc' },
+    });
+    return groups.map((g) => g.producerModel);
   }
 
   async setTriage(ids: readonly string[], status: RadarTriageStatus, now: Date): Promise<number> {

@@ -18,6 +18,8 @@ export interface RadarItemListFilter {
   /** False hides items whose enrichment is flagged promo; unenriched items always stay. */
   includePromo: boolean;
   sourceId?: string;
+  /** Items whose enrichment was written by this model (`producerModel`). */
+  producerModel?: string;
   /** Items whose `lastRunId` is this run. */
   runId?: string;
   /** One queue bucket, counted the same way as `RadarQueueStats`. */
@@ -41,6 +43,9 @@ export interface RadarEnrichmentSummary {
   factCheckSeverity: string | null;
   /** `light` (quick pass) or `deep` (researched) for a server analysis; null for a worker analysis. */
   analysisDepth: string | null;
+  /** Who wrote it: `gemini`, `anthropic`, `claude-code`, ... and the exact model id. */
+  producerAdapter: string;
+  producerModel: string;
 }
 
 export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
@@ -56,8 +61,6 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   overview: string | null;
   /** Pages the analysis used as evidence; empty when it named none or predates the field. */
   sources: { url: string; title: string | null }[];
-  producerAdapter: string;
-  producerModel: string;
   updatedAt: Date;
 }
 
@@ -121,6 +124,8 @@ export interface IRadarItemRepository {
   list(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<PaginatedResult<RadarFeedRow>>;
   /** Items per triage status under the same filter as `list`, ignoring its `triageStatus` and page. */
   countByTriage(filter: RadarItemListFilter, now: Date, maxAttempts: number): Promise<RadarTriageCounts>;
+  /** Every model that has written an enrichment, sorted: the options of the Feed's Model filter. */
+  listProducerModels(): Promise<string[]>;
   /** Sets one triage status on every listed item that exists; returns how many were updated. */
   setTriage(ids: readonly string[], status: RadarTriageStatus, now: Date): Promise<number>;
   findById(id: string): Promise<RadarItemDetail | null>;

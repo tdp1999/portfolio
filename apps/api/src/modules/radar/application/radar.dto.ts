@@ -254,6 +254,7 @@ export const ListRadarItemsSchema = z.object({
   // stringbool, not coerce.boolean: coerce turns the string "false" into true.
   includePromo: z.stringbool().default(false),
   sourceId: z.uuid().optional(),
+  producerModel: z.string().trim().min(1).max(100).optional(),
   /** Posts this run touched last (`lastRunId`); a later run that touches a post takes it over. */
   runId: z.uuid().optional(),
   status: z.enum(RADAR_FEED_STATUSES).optional(),
@@ -308,6 +309,8 @@ export interface RadarFeedPageDto {
   limit: number;
   /** Per triage status under the same filters, for the Inbox / To try / Done tabs. */
   triageCounts: RadarTriageCounts;
+  /** Every model that has analyzed a post, for the Model filter; not narrowed by the other filters. */
+  producerModels: string[];
 }
 
 export const TriageRadarItemsSchema = z.object({
@@ -320,10 +323,16 @@ export const ReanalyzeItemsSchema = z
     ids: z.array(z.uuid()).min(1).max(RADAR_REANALYZE_MAX_IDS),
     mode: z.enum(RADAR_REANALYZE_MODES).default('AUTO'),
     budgetUsd: z.number().min(RADAR_MIN_RUN_BUDGET_USD).max(RADAR_MAX_RUN_BUDGET_USD).optional(),
+    /** AUTO only: also run the deep analysis for posts whose quick score reaches the threshold. */
+    deepAnalysis: z.boolean().default(false),
   })
   .refine((v) => v.budgetUsd === undefined || v.mode === 'AUTO', {
     message: 'A budget applies only to an Auto re-analysis',
     path: ['budgetUsd'],
+  })
+  .refine((v) => !v.deepAnalysis || v.mode === 'AUTO', {
+    message: 'Deep analysis applies only to an Auto re-analysis',
+    path: ['deepAnalysis'],
   });
 
 export interface ReanalyzeItemsResponseDto {
@@ -430,6 +439,8 @@ export const CreateRunSchema = z
     fetchComments: z.boolean().default(false),
     /** AUTO only: the run's AI spend cap in USD; the configured default when absent. */
     budgetUsd: z.number().min(RADAR_MIN_RUN_BUDGET_USD).max(RADAR_MAX_RUN_BUDGET_USD).optional(),
+    /** AUTO only: also run the deep analysis for posts whose quick score reaches the threshold. */
+    deepAnalysis: z.boolean().default(false),
   })
   .refine((v) => !v.windowFrom || !v.windowTo || v.windowFrom < v.windowTo, {
     message: 'windowFrom must be before windowTo',
@@ -443,6 +454,10 @@ export const CreateRunSchema = z
   .refine((v) => v.budgetUsd === undefined || v.flow === RadarRunFlow.AUTO, {
     message: 'A budget applies only to an Auto run',
     path: ['budgetUsd'],
+  })
+  .refine((v) => !v.deepAnalysis || v.flow === RadarRunFlow.AUTO, {
+    message: 'Deep analysis applies only to an Auto run',
+    path: ['deepAnalysis'],
   });
 
 export interface RadarStepRunDto {
@@ -473,6 +488,8 @@ export interface RadarRunDto {
   fetchComments: boolean;
   /** AUTO only: the AI spend cap in micro-USD. */
   budgetMicroUsd: number | null;
+  /** AUTO only: whether posts with a high quick score also get the deep analysis. */
+  deepAnalysis: boolean;
   /** AUTO only: the recorded AI cost of the run so far, in micro-USD (an estimate on the free tier). */
   spentMicroUsd: number | null;
   error: string | null;

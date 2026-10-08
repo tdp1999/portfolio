@@ -681,3 +681,20 @@ Two further gaps surfaced while checking the library docs. Material's Accessibil
 - The generator gained a `console-favicons` target with its own output directory, so one Stage-2 run serves both apps. Stage 1 was not touched: the mark did not change, so the glyph data did not either.
 - `apps/console/public/favicon.ico` — previously Angular's default, byte-identical to the stale copy still sitting in landing's public root — now holds the brand `.ico`, so an implicit `/favicon.ico` request resolves correctly even though both apps declare their icons explicitly.
 - **The living reference renders the shipped file, not a copy of it.** `/ddl/favicon` loads `/brand/favicon.svg` itself and shows both states by wrapping it in `color-scheme: light` / `color-scheme: dark` — an `<img>`-loaded SVG follows the wrapper's colour-scheme, while an inlined one does not. The page therefore cannot drift from what ships and adds no image assets to `public/`. The 21 candidate PNGs used during exploration were deleted, not kept.
+
+### ADR-036: Radar Analyzes Quick by Default, Deep Is Opt-In, and the External Worker Path Stays for Now
+
+**Status:** Accepted (2026-10-08)
+**Context:** The Phase C acceptance runs on production (task 424) measured the two-tier analysis. In a 17-post Facebook run the quick pass scored 9 posts at 7 or more, so 9 deep analyses ran; the deep pass, which searches the web, then lowered 6 of them to between 2 and 6. Deep was 85% of the run's spend ($0.375 of $0.44) and the analysis step took 14 minutes, most of it deep calls of about 38 s each. A $0.10 budget was gone after three posts. Claude Code's external worker path (`/radar work`, the machine token, RAD-004 and RAD-005) is no longer needed for analysis, since Gemini runs every Auto run.
+
+**Decision:**
+
+1. **Every post gets the quick analysis only.** Its job is to score and filter, and the score decides what the Owner reads.
+2. **Deep analysis is a per-run opt-in.** New run and Re-analyze each have a "Deep analysis" checkbox, off by default. When it is on, the existing `RADAR_AI_DEEP_MIN_SCORE` and `RADAR_AI_DEEP_MAX` limits apply. Research on a post the Owner cares about happens in a conversation with Claude Code, not in the pipeline.
+3. **The external worker path stays.** It costs nothing while it sits unused and it still works. It is reviewed after the Owner has used the quick-only flow for a while; removing it is a separate task then.
+
+**Consequences:**
+
+- A run's AI spend is mostly quick calls (about $0.003 per post on Flash-Lite), so a small budget covers a whole capture.
+- Sources appear only on posts that had a deep analysis that searched the web. A quick enrichment has none by design, and a deep one has none when the model chose not to search.
+- Implemented in task 427.

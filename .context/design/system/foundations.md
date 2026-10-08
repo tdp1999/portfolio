@@ -83,6 +83,8 @@ For decorative elements or when semantic tokens don't fit:
 
 **Feedback colors:** `--color-success`, `--color-warning`, `--color-error`, `--color-info` (each with `-container` variant)
 
+**Series colors:** `--color-series-blue`, `--color-series-orange`, `--color-series-violet` tell categories apart (a provider dot, a chart line) and carry no feedback meaning. Use them instead of a hex literal whenever a category needs its own color; each has a dark-theme value.
+
 ## Typography Usage
 
 ### Tailwind Text Utilities

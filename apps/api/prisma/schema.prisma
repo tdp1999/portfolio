@@ -909,6 +909,8 @@ model RadarRun {
   fetchComments  Boolean      @default(false)
   /// AUTO only: the run stops starting AI calls once its recorded AI spend reaches this. Null on other flows.
   budgetMicroUsd Int?
+  /// AUTO only: posts whose quick score reaches the threshold also get the deep analysis (web search, link reading). Off by default.
+  deepAnalysis   Boolean      @default(false)
   error          String?
   /// A side step failed (comments capture) but the run went on; shown next to the status.
   warning        String?      @db.VarChar(500)
@@ -1044,6 +1046,8 @@ model RadarEnrichment {
   @@index([signalScore])
   @@index([contentType])
   @@index([providerTags], type: Gin)
+  /// The Feed's Model filter options: one distinct scan per Feed load.
+  @@index([producerModel])
   @@map("radar_enrichments")
 }
 

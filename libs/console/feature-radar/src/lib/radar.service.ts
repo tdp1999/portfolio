@@ -44,6 +44,7 @@ export class RadarService {
     if (params.includePromo) queryParams['includePromo'] = 'true';
     if (params.status) queryParams['status'] = params.status;
     if (params.sourceId) queryParams['sourceId'] = params.sourceId;
+    if (params.producerModel) queryParams['producerModel'] = params.producerModel;
     if (params.runId) queryParams['runId'] = params.runId;
     if (params.sortBy) queryParams['sortBy'] = params.sortBy;
     if (params.sortDir) queryParams['sortDir'] = params.sortDir;

@@ -21,7 +21,14 @@ type Seed = {
   workStatus?: RadarWorkStatus;
   claimCount?: number;
   leaseExpiresAt?: Date | null;
-  enrichment?: { tldr: string; providerTags: string[]; contentType: string; signalScore: number; isPromo?: boolean };
+  enrichment?: {
+    tldr: string;
+    providerTags: string[];
+    contentType: string;
+    signalScore: number;
+    isPromo?: boolean;
+    producerModel?: string;
+  };
 };
 
 describe('RadarItemRepository (integration)', () => {
@@ -90,12 +97,24 @@ describe('RadarItemRepository (integration)', () => {
     await seed(activeId, 'claude', {
       publishedAt: BASE,
       text: 'Claude Code ships hooks',
-      enrichment: { tldr: 'Anthropic adds hooks', providerTags: ['anthropic'], contentType: 'tool', signalScore: 8 },
+      enrichment: {
+        tldr: 'Anthropic adds hooks',
+        providerTags: ['anthropic'],
+        contentType: 'tool',
+        signalScore: 8,
+        producerModel: 'test-model-b',
+      },
     });
     await seed(activeId, 'gpt', {
       publishedAt: BASE - DAY,
       text: 'New GPT benchmark',
-      enrichment: { tldr: 'OpenAI tops a benchmark', providerTags: ['openai'], contentType: 'news', signalScore: 5 },
+      enrichment: {
+        tldr: 'OpenAI tops a benchmark',
+        providerTags: ['openai'],
+        contentType: 'news',
+        signalScore: 5,
+        producerModel: 'test-model-a',
+      },
     });
     await seed(activeId, 'course', {
       publishedAt: BASE - 2 * DAY,
@@ -142,6 +161,15 @@ describe('RadarItemRepository (integration)', () => {
       expect((await list({ providerTag: 'openai' })).data.map((r) => r.id)).toEqual([ids['gpt']]);
       expect((await list({ contentType: 'tool' })).data.map((r) => r.id)).toEqual([ids['claude']]);
       expect((await list({ minScore: 6 })).data.map((r) => r.id)).toEqual([ids['claude']]);
+    });
+
+    it('should filter by the model that wrote the enrichment, and list every model once, sorted', async () => {
+      expect((await list({ producerModel: 'test-model-a' })).data.map((r) => r.id)).toEqual([ids['gpt']]);
+
+      const models = await repo.listProducerModels();
+      const ours = models.filter((m) => m.startsWith('test-model-'));
+      expect(ours).toEqual(['test-model-a', 'test-model-b']);
+      expect(models).toEqual([...models].sort());
     });
 
     it('should search post text and TL;DR, case-insensitively', async () => {
@@ -261,7 +289,12 @@ describe('RadarItemRepository (integration)', () => {
 
   describe('requeueForAnalysis', () => {
     const reanalysis = (count: number) =>
-      RadarRun.reanalyze({ itemCount: count, budgetMicroUsd: 1_000_000, analyzeAdapter: 'server-ai' });
+      RadarRun.reanalyze({
+        itemCount: count,
+        budgetMicroUsd: 1_000_000,
+        deepAnalysis: false,
+        analyzeAdapter: 'server-ai',
+      });
 
     it('should reset the eligible items into one new run and skip the leased, the busy, the paused and the unknown', async () => {
       const now = new Date();

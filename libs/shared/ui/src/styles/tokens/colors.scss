@@ -35,4 +35,9 @@
   --color-error-container: #fee2e2; /* red-100 */
   --color-info: hsl(var(--accent-hue) var(--accent-saturation) 42%);
   --color-info-container: hsl(var(--accent-hue) var(--accent-saturation) 94%);
+
+  /* Series colors: tell categories apart (a provider, a chart line); they carry no feedback meaning */
+  --color-series-blue: #2563eb; /* blue-600 */
+  --color-series-orange: #ea580c; /* orange-600 */
+  --color-series-violet: #9333ea; /* purple-600 */
 }

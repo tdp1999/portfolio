@@ -127,6 +127,8 @@ export class CreateTrialsHandler implements ICommandHandler<CreateTrialsCommand>
     system: string
   ): Promise<string | null> {
     try {
+      // No deepPass: a light trial gets the prompt of a quick-only run, the default since ADR-036.
+      // Trials made before that saw the "earns a full analysis" line, so their scores may differ slightly.
       const outcome = await this.analyzer.analyze(RadarPresenter.toWorkItem(item), depth, system, {
         feature: 'radar.trial',
         models: model ? [model] : undefined,

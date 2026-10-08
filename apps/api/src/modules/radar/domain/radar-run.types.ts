@@ -92,6 +92,8 @@ export interface RadarRunProps {
   fetchComments: boolean;
   /** AUTO only: the AI spend cap; the analysis stops starting calls once the run's recorded spend reaches it. */
   budgetMicroUsd: number | null;
+  /** AUTO only: posts whose quick score reaches the threshold also get the deep analysis. Off by default (ADR-036). */
+  deepAnalysis: boolean;
   error: string | null;
   /** A side step (comments) failed but the run went on. */
   warning: string | null;
@@ -120,6 +122,7 @@ export interface CreateRadarRunPayload {
   itemCap: number;
   fetchComments: boolean;
   budgetMicroUsd: number | null;
+  deepAnalysis: boolean;
   adapters: RadarRunAdapters;
 }
 
@@ -127,5 +130,6 @@ export interface CreateRadarRunPayload {
 export interface CreateReanalyzeRunPayload {
   itemCount: number;
   budgetMicroUsd: number;
+  deepAnalysis: boolean;
   analyzeAdapter: string;
 }

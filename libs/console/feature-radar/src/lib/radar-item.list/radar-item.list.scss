@@ -76,13 +76,15 @@ console-filter-bar ::ng-deep {
 }
 
 /* One-line rows: every cell centres on the row's middle line. */
+/* Dense rows: Material's 52px default fits fewer posts than a triage list wants. */
 .radar-table {
+  --mat-table-row-item-container-height: 44px;
   table-layout: fixed;
 
   .mat-mdc-cell,
   .mat-mdc-header-cell {
     vertical-align: middle;
-    padding-block: 8px;
+    padding-block: 4px;
   }
 
   /* The header stays while the rows scroll under it. */
@@ -109,16 +111,28 @@ console-filter-bar ::ng-deep {
   width: 80px;
 }
 
-/* Quick or Deep under the score: only server analyses carry a depth. */
-.radar-depth {
-  display: block;
-  margin-top: 4px;
-  font-size: var(--text-2xs);
-  color: var(--color-text-secondary);
+/* Provider dot before the score: blue for Gemini, orange for Claude, muted for anything else. */
+.radar-producer {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+  vertical-align: middle;
+
+  &--gemini {
+    background: var(--color-series-blue);
+  }
+
+  &--claude {
+    background: var(--color-series-orange);
+  }
 }
 
 .radar-depth-error {
-  margin-top: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
   color: var(--color-error);
 }
 

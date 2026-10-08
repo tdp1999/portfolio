@@ -73,6 +73,7 @@ export class RadarPresenter {
       itemsFailed: run.itemsFailed,
       fetchComments: run.fetchComments,
       budgetMicroUsd: run.budgetMicroUsd,
+      deepAnalysis: run.deepAnalysis,
       spentMicroUsd: run.flow === RadarRunFlow.AUTO ? (spentMicroUsd ?? 0) : null,
       error: run.error,
       warning: run.warning,

@@ -34,16 +34,17 @@ const builtRun = (items: jest.Mocked<IRadarItemRepository>): RadarRun => {
 };
 
 describe('ReanalyzeItemsHandler', () => {
-  it('should build an Auto re-analysis run with the server adapter and the asked budget, and report the skipped count', async () => {
+  it('should build an Auto re-analysis run with the server adapter, the asked budget and deep flag, and report the skipped count', async () => {
     const { items, handler } = setup({ requeued: 2 });
 
     const result = await handler.execute(
-      new ReanalyzeItemsCommand({ ids: [ID_A, ID_B, ID_C], mode: 'AUTO', budgetUsd: 0.5 })
+      new ReanalyzeItemsCommand({ ids: [ID_A, ID_B, ID_C], mode: 'AUTO', budgetUsd: 0.5, deepAnalysis: true })
     );
 
     const run = builtRun(items);
     expect(run.kind).toBe(RadarRunKind.REANALYZE);
     expect(run.budgetMicroUsd).toBe(500_000);
+    expect(run.deepAnalysis).toBe(true);
     expect(run.steps.map((s) => [s.step, s.adapter])).toEqual([[RadarStep.ANALYZE, SERVER_AI_ADAPTER]]);
     expect(result).toEqual({ requeued: 2, skipped: 1, runId: expect.any(String) });
   });
@@ -81,6 +82,7 @@ describe('ReanalyzeItemsSchema', () => {
     ['no ids', { ids: [] }],
     ['more ids than the cap', { ids: Array.from({ length: 201 }, () => ID_A) }],
     ['a budget on a worker re-analysis', { ids: [ID_A], mode: 'WORKER', budgetUsd: 0.5 }],
+    ['deep analysis on a worker re-analysis', { ids: [ID_A], mode: 'WORKER', deepAnalysis: true }],
   ])('should reject %s', (_, body) => {
     expect(ReanalyzeItemsSchema.safeParse(body).success).toBe(false);
   });

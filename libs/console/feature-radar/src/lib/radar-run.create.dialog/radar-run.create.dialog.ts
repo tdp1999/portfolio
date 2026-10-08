@@ -13,7 +13,7 @@ import { catchError, map, of } from 'rxjs';
 import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { BUDGET_MESSAGES, budgetFieldValue, budgetRangeValidator, budgetToUsd } from '../radar-budget.util';
 import { DEFAULT_RUN_ITEM_CAP, MAX_RUN_ITEM_CAP } from '../radar.constants';
-import { RUN_FLOW_HELP, runFlowOptions } from '../radar.data';
+import { DEEP_ANALYSIS_HELP, RUN_FLOW_HELP, runFlowOptions } from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarPlatform, RadarRun, RadarRunCreateDialogData, RadarRunFlow } from '../radar.types';
 import { defaultWindowFrom, utcDayEnd, utcDayStart } from '../radar-run.util';
@@ -62,6 +62,8 @@ export class RadarRunCreateDialog {
       Validators.max(MAX_RUN_ITEM_CAP),
     ]),
     fetchComments: this.fb.nonNullable.control(true),
+    /** AUTO only, off by default: every post gets the quick analysis, and research is a choice. */
+    deepAnalysis: this.fb.nonNullable.control(false),
     /** In the display currency (Settings → Currency); sent to the API in USD. AUTO only. */
     budget: this.fb.control<number | null>(null, [
       Validators.required,
@@ -73,6 +75,7 @@ export class RadarRunCreateDialog {
   protected readonly flowHelp = RUN_FLOW_HELP;
   protected readonly maxItemCap = MAX_RUN_ITEM_CAP;
   protected readonly budgetMessages = BUDGET_MESSAGES;
+  protected readonly deepHelp = DEEP_ANALYSIS_HELP;
   protected readonly today = new Date();
   /** The server's run cap for comments; null until it loads, then the hint quotes it. */
   protected readonly commentsCapMicroUsd = toSignal(
@@ -158,6 +161,7 @@ export class RadarRunCreateDialog {
         windowTo: v.windowTo ? utcDayEnd(v.windowTo).toISOString() : undefined,
         fetchComments: this.form.controls.fetchComments.enabled && v.fetchComments,
         budgetUsd: v.flow === 'AUTO' ? budgetToUsd(v.budget, this.currency.preference()) : undefined,
+        deepAnalysis: v.flow === 'AUTO' && v.deepAnalysis,
       })
       .subscribe({
         next: (run) => this.dialogRef.close(run),

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,7 +10,13 @@ import { CurrencyService, Money, SegmentedControl, ToastService } from '@portfol
 import { FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
 import { catchError, of } from 'rxjs';
 import { BUDGET_MESSAGES, budgetFieldValue, budgetRangeValidator, budgetToUsd } from '../radar-budget.util';
-import { REANALYZE_MODE_HELP, reanalyzeModeOptions, reanalyzeRunLink, reanalyzeToast } from '../radar.data';
+import {
+  DEEP_ANALYSIS_HELP,
+  REANALYZE_MODE_HELP,
+  reanalyzeModeOptions,
+  reanalyzeRunLink,
+  reanalyzeToast,
+} from '../radar.data';
 import { RadarService } from '../radar.service';
 import type { RadarReanalyzeDialogData, RadarReanalyzeMode, ReanalyzeItemsResult } from '../radar.types';
 
@@ -24,6 +31,7 @@ import type { RadarReanalyzeDialogData, RadarReanalyzeMode, ReanalyzeItemsResult
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -56,11 +64,14 @@ export class RadarItemReanalyzeDialog {
       Validators.required,
       budgetRangeValidator(() => this.currency.preference()),
     ]),
+    /** Auto only, off by default (ADR-036). */
+    deepAnalysis: this.fb.nonNullable.control(false),
   });
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly modeHelp = REANALYZE_MODE_HELP;
   protected readonly budgetMessages = BUDGET_MESSAGES;
+  protected readonly deepHelp = DEEP_ANALYSIS_HELP;
   protected readonly title =
     this.data.ids.length === 1 ? 'Re-analyze this post' : `Re-analyze ${this.data.ids.length} posts`;
 
@@ -100,13 +111,14 @@ export class RadarItemReanalyzeDialog {
       this.form.markAllAsTouched();
       return;
     }
-    const { mode, budget } = this.form.getRawValue();
+    const { mode, budget, deepAnalysis } = this.form.getRawValue();
     this.saving.set(true);
     this.radarService
       .reanalyzeItems({
         ids: this.data.ids,
         mode,
         budgetUsd: mode === 'AUTO' ? budgetToUsd(budget, this.currency.preference()) : undefined,
+        deepAnalysis: mode === 'AUTO' && deepAnalysis,
       })
       .subscribe({
         next: (result) => {

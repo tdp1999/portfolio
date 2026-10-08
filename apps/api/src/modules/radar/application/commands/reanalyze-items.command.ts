@@ -47,7 +47,13 @@ export class ReanalyzeItemsHandler implements ICommandHandler<ReanalyzeItemsComm
       ids,
       new Date(),
       auto
-        ? (count) => RadarRun.reanalyze({ itemCount: count, budgetMicroUsd, analyzeAdapter: SERVER_AI_ADAPTER })
+        ? (count) =>
+            RadarRun.reanalyze({
+              itemCount: count,
+              budgetMicroUsd,
+              deepAnalysis: data.deepAnalysis,
+              analyzeAdapter: SERVER_AI_ADAPTER,
+            })
         : null
     );
     return { requeued, skipped: ids.length - requeued, runId: run?.id ?? null };

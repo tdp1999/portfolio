@@ -114,11 +114,13 @@ describe('CreateRunHandler', () => {
     expect(runs.add).not.toHaveBeenCalled();
   });
 
-  it('should give an Auto run the server analysis and a budget (the default or the one asked), and other flows none', async () => {
+  it('should give an Auto run the server analysis, a budget and the deep flag (the default or the one asked), and other flows none', async () => {
     const { handler } = setup();
 
     const byDefault = await handler.execute(new CreateRunCommand(body(RadarRunFlow.AUTO)));
-    const asked = await handler.execute(new CreateRunCommand({ ...body(RadarRunFlow.AUTO), budgetUsd: 0.25 }));
+    const asked = await handler.execute(
+      new CreateRunCommand({ ...body(RadarRunFlow.AUTO), budgetUsd: 0.25, deepAnalysis: true })
+    );
     const hybrid = await handler.execute(new CreateRunCommand(body(RadarRunFlow.HYBRID)));
 
     expect(byDefault.status).toBe(RadarStatus.PENDING);
@@ -126,6 +128,7 @@ describe('CreateRunHandler', () => {
     expect(byDefault.budgetMicroUsd).toBe(1_000_000);
     expect(asked.budgetMicroUsd).toBe(250_000);
     expect(hybrid.budgetMicroUsd).toBeNull();
+    expect([byDefault.deepAnalysis, asked.deepAnalysis]).toEqual([false, true]);
   });
 
   it('should refuse a Manual run and a comments fetch on a YouTube source', async () => {
@@ -166,5 +169,11 @@ describe('CreateRunSchema fetchComments', () => {
   it('should accept a budget on an Auto run only', () => {
     expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.AUTO), budgetUsd: 2 }).success).toBe(true);
     expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.HYBRID), budgetUsd: 2 }).success).toBe(false);
+  });
+
+  it('should leave deep analysis off unless asked, and accept it on an Auto run only (ADR-036)', () => {
+    expect(CreateRunSchema.parse(body(RadarRunFlow.AUTO)).deepAnalysis).toBe(false);
+    expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.AUTO), deepAnalysis: true }).success).toBe(true);
+    expect(CreateRunSchema.safeParse({ ...body(RadarRunFlow.HYBRID), deepAnalysis: true }).success).toBe(false);
   });
 });

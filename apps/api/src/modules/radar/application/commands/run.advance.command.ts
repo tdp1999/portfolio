@@ -247,6 +247,7 @@ export class AdvanceRunHandler implements ICommandHandler<AdvanceRunCommand> {
         step: RadarStep.ANALYZE,
         runId: run.id,
         budgetMicroUsd: run.budgetMicroUsd,
+        deepAnalysis: run.deepAnalysis,
       });
       if (outcome.state === 'done') return this.finish(current, clock);
       // The budget is spent: the run ends, and what is left waits for a later run or `/radar work`.

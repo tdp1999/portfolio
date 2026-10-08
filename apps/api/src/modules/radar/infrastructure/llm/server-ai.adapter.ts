@@ -27,8 +27,8 @@ type Group = { type: string; id: string };
 /**
  * The AUTO analysis, in two depths so money goes to the posts worth it:
  * - light: every item of the run, claimed a few per tick, on a cheap model chain with no web search
- *   and no link reading (images, TL;DR, score);
- * - deep: only items whose light score reaches the threshold, at most N per run, on a stronger
+ *   and no link reading (images, TL;DR, score). By default this is all a run does (ADR-036);
+ * - deep: only on a run with `deepAnalysis`, only items whose light score reaches the threshold, at most N per run, on a stronger
  *   chain with search and link reading (research, fact check, reasoning). A deep result replaces the light one; a failed deep analysis keeps it.
  * Each tick does deep candidates first (the best posts get researched while budget remains), then
  * light items. Each item is a single structured request through the AI client (AI-001: no agent
@@ -66,13 +66,13 @@ export class ServerAiAdapter implements ILlmProvider {
     this.analyzer = new RadarAnalyzer(ai, config);
   }
 
-  async process({ runId, budgetMicroUsd }: LlmStepRequest): Promise<LlmStepOutcome> {
+  async process({ runId, budgetMicroUsd, deepAnalysis }: LlmStepRequest): Promise<LlmStepOutcome> {
     const group: Group = { type: RADAR_RUN_AI_GROUP, id: runId };
     const overBudget = async () => budgetMicroUsd !== null && (await this.ai.spentMicroUsd(group)) >= budgetMicroUsd;
     if (await overBudget()) return { state: 'stopped', reason: ServerAiAdapter.BUDGET_REACHED };
 
     let depth: RadarAnalysisDepth = 'deep';
-    let items: RadarWorkSnapshot[] = await this.deepCandidates(runId);
+    let items: RadarWorkSnapshot[] = deepAnalysis ? await this.deepCandidates(runId) : [];
     if (items.length === 0) {
       depth = 'light';
       const now = new Date();
@@ -105,7 +105,7 @@ export class ServerAiAdapter implements ILlmProvider {
       }
       let result: ItemResult;
       try {
-        result = await this.analyze(items[i], depth, system, group);
+        result = await this.analyze(items[i], depth, system, group, deepAnalysis);
       } catch (error) {
         await release(i);
         throw error;
@@ -150,11 +150,13 @@ export class ServerAiAdapter implements ILlmProvider {
     item: RadarWorkSnapshot,
     depth: RadarAnalysisDepth,
     system: string,
-    group: Group
+    group: Group,
+    deepPass: boolean
   ): Promise<ItemResult> {
     const outcome = await this.analyzer.analyze(RadarPresenter.toWorkItem(item), depth, system, {
       feature: depth === 'deep' ? 'radar.analyze' : 'radar.analyze.light',
       group,
+      deepPass,
     });
     switch (outcome.kind) {
       case 'answered':

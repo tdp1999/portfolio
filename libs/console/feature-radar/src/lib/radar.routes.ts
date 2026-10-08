@@ -5,6 +5,8 @@ export const radarRoutes: Route[] = [
   {
     path: '',
     loadComponent: () => import('./radar-item.list/radar-item.list'),
+    // The workflow profile dialog lives on the Feed; leaving with unsaved edits asks first.
+    canDeactivate: [unsavedChangesGuard],
   },
   {
     path: 'runs',
@@ -22,11 +24,8 @@ export const radarRoutes: Route[] = [
     path: 'briefs/:id',
     loadComponent: () => import('./radar-brief.detail/radar-brief.detail'),
   },
-  {
-    path: 'profile',
-    loadComponent: () => import('./radar-profile.form/radar-profile.form'),
-    canDeactivate: [unsavedChangesGuard],
-  },
+  // The workflow profile is a dialog on the Feed now; old bookmarks land there.
+  { path: 'profile', redirectTo: '' },
   {
     path: 'items/:id',
     loadComponent: () => import('./radar-item.detail/radar-item.detail'),

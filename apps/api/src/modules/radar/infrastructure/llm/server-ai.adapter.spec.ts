@@ -10,7 +10,8 @@ import { loadRadarAnalysisConfig } from '../../application/radar-analysis.config
 import { ServerAiAdapter } from './server-ai.adapter';
 
 const RUN_ID = '01a10b5b-9d90-753e-a6a3-000000000001';
-const request = { step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000 };
+const request = { step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000, deepAnalysis: false };
+const deepRequest = { ...request, deepAnalysis: true };
 const config = loadRadarAnalysisConfig({});
 const [LITE_1, LITE_2] = config.light.models;
 const [DEEP_1] = config.deep.models;
@@ -196,13 +197,34 @@ describe('ServerAiAdapter', () => {
   });
 
   describe('deep pass', () => {
+    const lightPrompt = () => JSON.stringify(ai.generateStructured.mock.calls[0][0].parts);
+
+    it('should skip the deep pass when the run did not ask for it, and not promise one in the light prompt (ADR-036)', async () => {
+      work.findDeepCandidates.mockResolvedValue([snapshot(2)]);
+      ai.generateStructured.mockResolvedValue(ok(LITE_1));
+
+      await adapter().process(request);
+
+      expect(work.findDeepCandidates).not.toHaveBeenCalled();
+      expect(work.saveEnrichment).toHaveBeenCalledWith(expect.anything(), expect.anything(), 'light');
+      expect(lightPrompt()).not.toMatch(/earns a full analysis/);
+    });
+
+    it('should tell the light pass which score earns the deep pass when the run asked for it', async () => {
+      ai.generateStructured.mockResolvedValue(ok(LITE_1));
+
+      await adapter().process(deepRequest);
+
+      expect(lightPrompt()).toMatch(new RegExp(`score of ${config.deep.minScore} or more earns a full analysis`));
+    });
+
     it('should research deep candidates before claiming new items, keeping a failed one at its light result', async () => {
       work.findDeepCandidates.mockResolvedValue([snapshot(1), snapshot(2)]);
       ai.generateStructured
         .mockResolvedValueOnce(ok(DEEP_1))
         .mockRejectedValue(new AiCallError('provider', 'bad request'));
 
-      await adapter().process(request);
+      await adapter().process(deepRequest);
 
       expect(work.claim).not.toHaveBeenCalled();
       expect(ai.generateStructured.mock.calls[0][0]).toMatchObject({
@@ -219,8 +241,8 @@ describe('ServerAiAdapter', () => {
       work.countDeep.mockResolvedValueOnce(config.deep.maxPerRun - 1).mockResolvedValueOnce(config.deep.maxPerRun);
       ai.generateStructured.mockResolvedValue(ok(LITE_1));
 
-      await adapter().process(request);
-      await adapter().process(request);
+      await adapter().process(deepRequest);
+      await adapter().process(deepRequest);
 
       expect(work.findDeepCandidates).toHaveBeenCalledTimes(1);
       expect(work.findDeepCandidates).toHaveBeenCalledWith(RUN_ID, config.deep.minScore, 1);

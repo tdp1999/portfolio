@@ -29,6 +29,8 @@ export interface RadarAnalysisCall {
   feature: AiFeature;
   group?: { type: string; id: string };
   models?: readonly string[];
+  /** A light call: whether a deep pass follows for high scores, so the prompt can say what a high score earns. */
+  deepPass?: boolean;
 }
 
 /**
@@ -60,7 +62,11 @@ export class RadarAnalyzer {
     const options: RadarAnalysisOptions =
       depth === 'deep'
         ? { depth, maxImages: deep.maxImages, webSearch: deep.webSearch, maxSearchQueries: deep.maxSearchQueries }
-        : { depth, maxImages: light.maxImages, deepMinScore: deep.maxPerRun > 0 ? deep.minScore : null };
+        : {
+            depth,
+            maxImages: light.maxImages,
+            deepMinScore: call.deepPass && deep.maxPerRun > 0 ? deep.minScore : null,
+          };
     const tools: AiTool[] = depth === 'light' ? [] : deep.webSearch ? ['webSearch', 'readUrls'] : ['readUrls'];
     const pass = depth === 'deep' ? deep : light;
     const parts = RadarAnalysisPrompt.parts(item, options);

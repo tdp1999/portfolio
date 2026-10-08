@@ -15,6 +15,14 @@
   border-left: 0;
 }
 
+/* AI analysis: the TL;DR leads, then each part (overview, key terms, image notes, apply, sources)
+   sits under its own rule. */
+.radar-analysis__part {
+  display: block;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
 /* Radar reads in full width: the shared chassis caps prose at 68ch, this record lets it flow to
    the column, in the Detail page and in the Split pane alike. */
 .rv-lead,

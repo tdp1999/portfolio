@@ -66,7 +66,10 @@ like a sibling.
 `console-record-section` is the hierarchy bug the family exists to prevent.
 
 **4 · A fold must carry a gist.** Without one it is a tab, and tabs are rejected
-for read views. The gist is what lets a reader decide without opening.
+for read views. The gist is what lets a reader decide without opening. A section
+whose children are all folds packs them 8px apart, so they read as one list. A
+section that mixes fields and folds keeps the 20px field rhythm, so a fold placed
+among fields does not pull the fields together.
 
 **5 · Absence is reported once.** Field-level gaps render inline; whole absent
 sections go to `console-record-empty-sections`. Never both.

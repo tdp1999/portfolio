@@ -28,9 +28,10 @@ export class ListRadarItemsHandler implements IQueryHandler<ListRadarItemsQuery>
     }
 
     const now = new Date();
-    const [{ data: rows, total }, triageCounts] = await Promise.all([
+    const [{ data: rows, total }, triageCounts, producerModels] = await Promise.all([
       this.repo.list(data, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS),
       this.repo.countByTriage(data, now, RadarLeasePolicy.MAX_CLAIM_ATTEMPTS),
+      this.repo.listProducerModels(),
     ]);
     return {
       data: rows.map((row) => RadarPresenter.toFeedItem(row, now)),
@@ -38,6 +39,7 @@ export class ListRadarItemsHandler implements IQueryHandler<ListRadarItemsQuery>
       page: data.page,
       limit: data.limit,
       triageCounts,
+      producerModels,
     };
   }
 }

@@ -3,50 +3,51 @@ import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject, O
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { filter, merge } from 'rxjs';
 import {
-  HasUnsavedChanges,
   HelpButton,
   MarkdownEditorComponent,
   onBeforeUnload,
-  SectionCard,
-  SpinnerOverlay,
-  StickySaveBar,
   ToastService,
+  UnsavedChangesDialog,
+  type UnsavedChangesResult,
 } from '@portfolio/console/shared/ui';
 import { PROFILE_MAX_CHARS } from '../radar.constants';
 import { RadarService } from '../radar.service';
 
 /**
- * The Owner's workflow profile: the markdown the radar worker reads before writing each apply
- * note. One document, so the page is a single editor rather than a list.
+ * The Owner's workflow profile: the markdown the analysis reads before writing each apply note.
+ * Opened from the Feed header; closing with unsaved edits asks first (the dialog opens with
+ * `disableClose`, so Escape and the backdrop come through `onCancel`).
  */
 @Component({
-  selector: 'console-radar-profile-form',
+  selector: 'console-radar-profile-dialog',
   standalone: true,
   imports: [
     HelpButton,
     DatePipe,
     DecimalPipe,
     ReactiveFormsModule,
-    RouterLink,
     MatButtonModule,
+    MatDialogModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MarkdownEditorComponent,
-    SectionCard,
-    SpinnerOverlay,
-    StickySaveBar,
   ],
-  templateUrl: './radar-profile.form.html',
-  styleUrl: './radar-profile.form.scss',
+  templateUrl: './radar-profile.dialog.html',
+  styleUrl: './radar-profile.dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
+export class RadarProfileDialog implements OnInit {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly radarService = inject(RadarService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject(MatDialogRef<RadarProfileDialog>);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly loading = signal(true);
@@ -55,6 +56,8 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
   protected readonly dirty = signal(false);
   protected readonly length = signal(0);
   protected readonly updatedAt = signal<string | null>(null);
+  /** Read by the Feed's leave guard: Back or a link while editing asks before the edits are lost. */
+  readonly unsaved = this.dirty.asReadonly();
 
   // ── Forms ─────────────────────────────────────────────────────────
   protected readonly body = new FormControl('', {
@@ -64,7 +67,7 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
 
   // ── Plain state ───────────────────────────────────────────────────
   protected readonly maxChars = PROFILE_MAX_CHARS;
-  /** Last saved text, so Discard does not need a round trip. */
+  /** Last saved text, so the dirty check needs no round trip. */
   private savedBody = '';
 
   ngOnInit(): void {
@@ -72,6 +75,13 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
       this.length.set(value.length);
       this.dirty.set(value !== this.savedBody);
     });
+    // An Escape a widget inside the dialog already handled (a menu closing) is not a request to close.
+    merge(
+      this.dialogRef.backdropClick(),
+      this.dialogRef.keydownEvents().pipe(filter((e) => e.key === 'Escape' && !e.defaultPrevented))
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.onCancel());
     this.load();
   }
 
@@ -80,16 +90,23 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
     onBeforeUnload(event, this.dirty());
   }
 
-  hasUnsavedChanges() {
-    return this.dirty;
-  }
-
   onRetry(): void {
     this.load();
   }
 
-  onDiscard(): void {
-    this.reset(this.savedBody);
+  onCancel(): void {
+    if (!this.dirty()) {
+      this.dialogRef.close();
+      return;
+    }
+    this.dialog
+      .open<UnsavedChangesDialog, { showSave: boolean }, UnsavedChangesResult>(UnsavedChangesDialog, {
+        data: { showSave: false },
+        disableClose: true,
+      })
+      .afterClosed()
+      .pipe(filter((result) => result === 'discard'))
+      .subscribe(() => this.dialogRef.close());
   }
 
   onSave(): void {
@@ -99,11 +116,10 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
     }
     this.saving.set(true);
     this.radarService.saveProfile(this.body.value).subscribe({
-      next: (profile) => {
+      next: () => {
         this.saving.set(false);
-        this.updatedAt.set(profile.updatedAt);
-        this.reset(profile.body);
         this.toast.success('Workflow profile saved');
+        this.dialogRef.close();
       },
       error: () => this.saving.set(false),
     });
@@ -116,7 +132,9 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
     this.radarService.getProfile().subscribe({
       next: (profile) => {
         this.updatedAt.set(profile.updatedAt);
-        this.reset(profile.body);
+        this.savedBody = profile.body;
+        this.body.setValue(profile.body);
+        this.dirty.set(false);
         this.loading.set(false);
       },
       error: () => {
@@ -124,11 +142,5 @@ export default class RadarProfileForm implements OnInit, HasUnsavedChanges {
         this.loading.set(false);
       },
     });
-  }
-
-  private reset(body: string): void {
-    this.savedBody = body;
-    this.body.setValue(body);
-    this.dirty.set(false);
   }
 }

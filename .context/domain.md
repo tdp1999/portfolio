@@ -48,7 +48,7 @@
 | RadarEnrichment | The LLM output for a RadarItem: TL;DR, provider tags, content-type tag, signal score, promo flag, relevant flag, image notes, link summaries, comment digest, fact-check notes and the apply note. Records which adapter and model produced it. | Entity |
 | RadarBrief | A catch-up summary of the RadarItems in a time window, grouped by provider and topic, listing new terms with their first-seen date. | Entity |
 | WorkflowProfile | The Owner's current AI setup as editable markdown. Single record. The analyze step compares each item against it to write the apply note. | Entity |
-| RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker) or Hybrid (server-side capture + external worker). Auto (server-side capture, transcript and analysis with Gemini, no external worker) is planned in `epic-radar-phase-c`. | Value Object |
+| RunFlow | How a RadarRun is executed: Manual (uploaded JSON + external worker), Hybrid (server-side capture + external worker) or Auto (server-side capture, transcript and analysis by the server AI, no external worker). | Value Object |
 | Transcript | What a video RadarItem (Facebook reel, YouTube video) says and shows, made by the server AI in Enrich of an Auto run, before analysis: the spoken words (none when nobody speaks), the text on screen, a short visual summary and the language. Only the text is kept, never the video. | Value Object |
 | EnrichmentTrial | An adapter's result for a RadarItem kept only for comparison (quality check). It never becomes the item's RadarEnrichment. Planned. | Entity |
 | AiUsageRecord | One recorded AI call: provider, model, feature, tokens, cost, status, latency, and its trace (tool uses, queries, URLs, sources). | Entity |
@@ -258,6 +258,19 @@
   - Worker stops mid-batch: leased items return to pending when the lease expires
 - **End states:** Items enriched and visible in the Feed
 
+### Analyze Radar Items (Auto)
+- **Trigger:** The tick advances an Auto RadarRun (capture or re-analysis) to its analysis step
+- **Actors:** System (server AI)
+- **Happy path:**
+  1. System analyzes each pending item of the run with the quick analysis: score, TL;DR and the other enrichment fields, no web search and no link reading
+  2. When the Owner turned Deep analysis on for that run, items whose quick score reaches the threshold also get the deep analysis (web search, link reading, fact check), up to a cap per run; the deep result replaces the quick one
+  3. When no item of the run is left to analyze, the run is done
+- **Error paths:**
+  - The quick analysis keeps failing: the item becomes stuck after its attempts, with no fallback to the deep analysis
+  - The deep analysis fails: the item keeps its quick result and records the error
+  - The run's budget is spent: no new AI call starts and the remaining items stay pending (RAD-007)
+- **End states:** Every item of the run carries a quick or a deep RadarEnrichment, visible in the Feed
+
 ### Generate Radar Brief
 - **Trigger:** Owner requests a brief for a time window, optionally for one source, and picks its writer: Auto (the server AI, the default) or the Radar worker (Claude Code)
 - **Actors:** Owner (via Console), System (Auto writer), Radar worker (Claude Code)
@@ -367,6 +380,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 - RAD-006: Radar runs start only when the Owner triggers them. There are no recurring runs
 - RAD-007: A RadarRun stops starting AI calls once its recorded spend reaches its budget; its remaining items stay pending
 - RAD-008: A failed Transcript never blocks analysis; the item is analyzed from its text and images
+- RAD-009: Every item an Auto run analyzes gets the quick analysis. The deep analysis runs only when the Owner turns it on for that run, and only for items whose quick score reaches the threshold (ADR-036)
 
 ### AI Integration
 - AI-001: The app is a pipeline, not an agent harness. Radar's state machine decides the steps; an AI call only fills in one step's output. No chat or general agent surface, and no model output adds steps, starts runs, or writes outside its step
@@ -391,6 +405,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-08] Auto RunFlow is live: RunFlow no longer says planned; added the Analyze Radar Items (Auto) flow and RAD-009 (quick analysis for every item, deep analysis only when the Owner turns it on for the run, ADR-036, task 427).
 - [2026-10-07] Added YouTube as a RadarSource platform (task 422): a channel is captured through the YouTube Data API by Hybrid and Auto runs, one item per public video in the window (RAD-001). Manual runs and comment fetching stay Facebook only.
 - [2026-10-07] Transcript is built (task 421): Enrich of an Auto run transcribes each video up to a length limit, one video at a time; a skipped, failed or over-budget transcript leaves the item to be analyzed from its text and images (RAD-007, RAD-008).
 - [2026-10-06] Added the planned Phase C concepts from `epic-radar-phase-c`: Transcript, EnrichmentTrial, AiUsageRecord, AiModelPrice and the Auto RunFlow, plus RAD-007 (run budget), RAD-008 (transcript failure does not block analysis) and the AI Integration rules AI-001..004 (pipeline not harness, bounded traceable sourced tools, every call recorded, keys only in env).

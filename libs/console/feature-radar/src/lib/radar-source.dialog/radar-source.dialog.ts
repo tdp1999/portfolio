@@ -48,6 +48,8 @@ export class RadarSourceDialog implements OnInit {
   protected readonly adding = signal(false);
   protected readonly busySourceId = signal<string | null>(null);
   protected readonly uploadError = signal<{ title: string; message: string; lines: string[] } | null>(null);
+  /** True once an upload, an added source or a pause/resume went through: the Feed reloads only then. */
+  readonly changed = signal(false);
 
   // ── Forms ─────────────────────────────────────────────────────────
   protected readonly form = this.fb.nonNullable.group({
@@ -93,6 +95,7 @@ export class RadarSourceDialog implements OnInit {
       next: (source) => {
         this.adding.set(false);
         formDirective.resetForm();
+        this.changed.set(true);
         this.toast.success(`Added ${source.displayName}`);
         this.loadSources();
       },
@@ -113,6 +116,7 @@ export class RadarSourceDialog implements OnInit {
     this.radarService.uploadCapture(source.id, file).subscribe({
       next: (r) => {
         this.busySourceId.set(null);
+        this.changed.set(true);
         this.loadSources();
         if (!r.failed) {
           this.toast.success(`Uploaded: ${r.created} created, ${r.updated} updated, 0 failed`);
@@ -150,6 +154,7 @@ export class RadarSourceDialog implements OnInit {
     this.radarService.uploadComments(source.id, file).subscribe({
       next: (r) => {
         this.busySourceId.set(null);
+        if (r.posts) this.changed.set(true);
         const summary = `${r.comments} comments on ${r.posts} posts, ${r.unmatched} unmatched, ${r.failed} failed`;
         if (!r.failed && r.posts) {
           this.toast.success(`Uploaded comments: ${summary}`);
@@ -182,6 +187,7 @@ export class RadarSourceDialog implements OnInit {
     this.radarService.setSourceActive(source.id, !source.isActive).subscribe({
       next: () => {
         this.busySourceId.set(null);
+        this.changed.set(true);
         this.loadSources();
       },
       error: () => this.busySourceId.set(null),

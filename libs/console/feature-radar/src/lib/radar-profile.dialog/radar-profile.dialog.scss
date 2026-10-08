@@ -1,14 +1,14 @@
-@use '../radar-state';
-
 .radar-profile {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-bottom: 96px;
+  &__intro {
+    margin-bottom: 16px;
+  }
 
-  > console-section-card {
-    max-width: var(--console-reading-max);
+  &__state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 360px;
   }
 
   &__meta {
@@ -24,8 +24,4 @@
     color: var(--color-error);
     font-weight: 600;
   }
-}
-
-.radar-state {
-  padding-block: 96px;
 }

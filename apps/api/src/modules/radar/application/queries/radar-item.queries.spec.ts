@@ -43,6 +43,7 @@ describe('Radar item queries', () => {
     repo = {
       list: jest.fn().mockResolvedValue({ data: [row], total: 1 }),
       countByTriage: jest.fn().mockResolvedValue({ INBOX: 1, SAVED: 0, DONE: 0 }),
+      listProducerModels: jest.fn().mockResolvedValue([]),
       setTriage: jest.fn(),
       requeueForAnalysis: jest.fn(),
       findById: jest.fn(),

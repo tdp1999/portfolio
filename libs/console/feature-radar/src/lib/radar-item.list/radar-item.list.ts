@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { filter, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -19,6 +19,7 @@ import {
   type FilterOption,
   FilterSearch,
   FilterSelect,
+  type HasUnsavedChanges,
   HelpButton,
   Paginator,
   type PaginatorChange,
@@ -33,6 +34,7 @@ import { RadarItemProgressCell } from '../radar-item-progress.cell/radar-item-pr
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
+import { RadarProfileDialog } from '../radar-profile.dialog/radar-profile.dialog';
 import { RadarSourceDialog } from '../radar-source.dialog/radar-source.dialog';
 import {
   FEED_PAGE_SIZE,
@@ -44,7 +46,6 @@ import {
 import { parseFeedQuery, parseItemParam, toFeedQuery, toFeedRequest } from '../radar-feed.util';
 import { isRunActive } from '../radar-run.util';
 import {
-  ANALYSIS_DEPTH_HELP,
   ANALYSIS_DEPTH_LABELS,
   CONTENT_TYPE_LABELS,
   CONTENT_TYPE_OPTIONS,
@@ -56,6 +57,7 @@ import {
   SPLIT_SORT_OPTIONS,
   TRIAGE_TABS,
   PLATFORM_LABELS,
+  PRODUCER_DOT_CLASSES,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
 import { RadarItemTriageSection } from '../radar-item-triage.section/radar-item-triage.section';
@@ -107,13 +109,14 @@ import {
   styleUrl: './radar-item.list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class RadarItemList implements OnInit {
+export default class RadarItemList implements OnInit, HasUnsavedChanges {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly radarService = inject(RadarService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly items = signal<RadarFeedItem[]>([]);
@@ -129,6 +132,9 @@ export default class RadarItemList implements OnInit {
   protected readonly includePromo = signal(false);
   protected readonly status = signal('');
   protected readonly sourceId = signal('');
+  protected readonly producerModel = signal('');
+  /** Every model that has analyzed a post, from the last page load. */
+  protected readonly producerModels = signal<string[]>([]);
   protected readonly sources = signal<RadarSource[]>([]);
   protected readonly sortBy = signal<RadarFeedSortKey>('publishedAt');
   protected readonly sortDir = signal<'asc' | 'desc'>('desc');
@@ -163,6 +169,8 @@ export default class RadarItemList implements OnInit {
     if (p) filters.push({ key: 'provider', label: `Provider: ${this.providerLabel(p)}` });
     const c = this.contentType();
     if (c) filters.push({ key: 'type', label: `Type: ${this.contentTypeLabel(c)}` });
+    const model = this.producerModel();
+    if (model) filters.push({ key: 'model', label: `Model: ${model}` });
     const m = this.minScore();
     if (m) filters.push({ key: 'score', label: `Score ${m}+` });
     if (this.includePromo()) filters.push({ key: 'promo', label: 'Promo shown' });
@@ -172,11 +180,16 @@ export default class RadarItemList implements OnInit {
   /** How many of the "Filters" panel's filters are set, for its button. */
   protected readonly moreCount = computed(
     () =>
-      [this.providerTag(), this.contentType(), this.minScore()].filter(Boolean).length + (this.includePromo() ? 1 : 0)
+      [this.providerTag(), this.contentType(), this.producerModel(), this.minScore()].filter(Boolean).length +
+      (this.includePromo() ? 1 : 0)
   );
 
   protected readonly sourceOptions = computed<FilterOption[]>(() =>
     this.sources().map((x) => ({ value: x.id, label: x.displayName }))
+  );
+
+  protected readonly modelOptions = computed<FilterOption[]>(() =>
+    this.producerModels().map((m) => ({ value: m, label: m }))
   );
 
   /** Split view with a post open: compact list plus the post. Otherwise the table. */
@@ -221,6 +234,7 @@ export default class RadarItemList implements OnInit {
     includePromo: this.includePromo(),
     status: this.status(),
     sourceId: this.sourceId(),
+    producerModel: this.producerModel(),
     sortBy: this.sortBy(),
     sortDir: this.sortDir(),
     pageIndex: this.pageIndex(),
@@ -232,19 +246,23 @@ export default class RadarItemList implements OnInit {
   protected readonly pageSizeOptions = FEED_PAGE_SIZES;
   protected readonly maxClaimAttempts = MAX_CLAIM_ATTEMPTS;
   private itemsSub?: Subscription;
+  /** The open profile dialog, for the leave guard; null while it is closed. */
+  private profileDialog: MatDialogRef<RadarProfileDialog> | null = null;
   protected readonly providerOptions = PROVIDER_OPTIONS;
   protected readonly contentTypeOptions = CONTENT_TYPE_OPTIONS;
   protected readonly minScoreOptions = MIN_SCORE_OPTIONS;
   protected readonly triageTabs = TRIAGE_TABS;
   protected readonly viewOptions = FEED_VIEW_OPTIONS;
   protected readonly splitSortOptions = SPLIT_SORT_OPTIONS;
-  protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
   /** Widened: the mat-table row (`let item`) is untyped. */
   protected readonly platformLabels: Readonly<Record<string, string>> = PLATFORM_LABELS;
-  protected readonly depthHelp = ANALYSIS_DEPTH_HELP;
+  protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
+  protected readonly producerDots = PRODUCER_DOT_CLASSES;
   protected readonly displayedColumns = ['score', 'summary', 'progress', 'status', 'source', 'publishedAt'];
 
   ngOnInit(): void {
+    // The profile dialog opens with closeOnNavigation off, so it is closed here once the leave guard lets the Feed go.
+    this.destroyRef.onDestroy(() => this.profileDialog?.close());
     const params = this.route.snapshot.queryParams;
     const state = parseFeedQuery(params);
     this.search.set(state.search);
@@ -254,6 +272,7 @@ export default class RadarItemList implements OnInit {
     this.includePromo.set(state.includePromo);
     this.status.set(state.status);
     this.sourceId.set(state.sourceId);
+    this.producerModel.set(state.producerModel);
     this.sortBy.set(state.sortBy);
     this.sortDir.set(state.sortDir);
     this.pageIndex.set(state.pageIndex);
@@ -298,6 +317,11 @@ export default class RadarItemList implements OnInit {
     this.resetAndLoad();
   }
 
+  onModelChange(value: string): void {
+    this.producerModel.set(value);
+    this.resetAndLoad();
+  }
+
   onPromoChange(checked: boolean): void {
     this.includePromo.set(checked);
     this.resetAndLoad();
@@ -323,6 +347,9 @@ export default class RadarItemList implements OnInit {
       case 'source':
         this.sourceId.set('');
         break;
+      case 'model':
+        this.producerModel.set('');
+        break;
       case 'promo':
         this.includePromo.set(false);
         break;
@@ -341,6 +368,7 @@ export default class RadarItemList implements OnInit {
   onClearMoreFilters(): void {
     this.providerTag.set('');
     this.contentType.set('');
+    this.producerModel.set('');
     this.minScore.set('');
     this.includePromo.set(false);
     this.resetAndLoad();
@@ -512,17 +540,40 @@ export default class RadarItemList implements OnInit {
     });
   }
 
+  // ── Profile ───────────────────────────────────────────────────────
+  /** The profile only shapes future apply notes, so closing it never reloads the Feed. */
+  onOpenProfile(): void {
+    // closeOnNavigation off: Back would close it before the route's leave guard can ask about unsaved edits.
+    const ref = this.dialog.open(RadarProfileDialog, {
+      width: '800px',
+      maxWidth: '95vw',
+      disableClose: true,
+      closeOnNavigation: false,
+    });
+    this.profileDialog = ref;
+    ref.afterClosed().subscribe(() => (this.profileDialog = null));
+  }
+
+  /** The route's leave guard: only an open profile dialog with unsaved edits holds the Feed. */
+  hasUnsavedChanges(): boolean {
+    return this.profileDialog?.componentInstance.unsaved() ?? false;
+  }
+
   // ── Sources ───────────────────────────────────────────────────────
-  /** Reloads on every close: an upload or a source toggle inside the dialog changes the Feed and the counts. */
+  /**
+   * Reloads only when something changed inside (upload, new source, pause/resume), however the dialog closed:
+   * Escape and the backdrop return no result, so the flag is read from the instance kept at open.
+   */
   onOpenSources(): void {
-    this.dialog
-      .open(RadarSourceDialog, { width: '720px', maxWidth: '95vw' })
-      .afterClosed()
-      .subscribe(() => {
-        this.loadItems();
-        this.loadStats();
-        this.loadActiveRuns();
-      });
+    const ref = this.dialog.open(RadarSourceDialog, { width: '720px', maxWidth: '95vw' });
+    const sourceDialog = ref.componentInstance;
+    ref.afterClosed().subscribe(() => {
+      if (!sourceDialog.changed()) return;
+      this.loadSources();
+      this.loadItems();
+      this.loadStats();
+      this.loadActiveRuns();
+    });
   }
 
   // ── shared helpers ────────────────────────────────────────────────
@@ -550,6 +601,7 @@ export default class RadarItemList implements OnInit {
         this.items.set(res.data);
         this.total.set(res.total);
         this.triageCounts.set(res.triageCounts);
+        this.producerModels.set(res.producerModels);
         // The URL's post may sit on another page or tab: the pane closes rather than open another post.
         if (openFirst) this.selectedId.set(res.data[0]?.id ?? null);
         else if (!res.data.some((it) => it.id === this.selectedId())) this.selectedId.set(null);

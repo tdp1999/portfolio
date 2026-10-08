@@ -21,6 +21,7 @@ describe('feed query', () => {
       includePromo: true,
       status: 'stuck',
       sourceId: '01a10755-0000-7000-8000-00000000000b',
+      producerModel: 'claude-opus-4-6[1m]',
       sortBy: 'signalScore' as const,
       sortDir: 'asc' as const,
       pageIndex: 2,
@@ -45,6 +46,7 @@ describe('feed query', () => {
       parseFeedQuery({ provider: 'foo', type: 'bar', score: 'x', status: 'claimed', triage: 'INBOX', source: 'nope' })
     ).toEqual(DEFAULT_FEED_STATE);
     expect(parseFeedQuery({ score: '5' }).minScore).toBe('');
+    expect(parseFeedQuery({ model: 'm'.repeat(101) }).producerModel).toBe('');
   });
 
   it('ignores object keys and non-id values a hand-edited URL may carry', () => {

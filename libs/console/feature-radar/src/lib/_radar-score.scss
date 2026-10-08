@@ -23,6 +23,32 @@
     color: var(--color-primary);
   }
 
+  /* A deep analysis (web search, links read) wears a rainbow ring; quick and worker scores stay plain. */
+  &--deep {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      padding: 2px;
+      border-radius: 12px;
+      background: conic-gradient(
+        from 180deg,
+        var(--color-error),
+        var(--color-warning),
+        var(--color-success),
+        var(--color-primary),
+        var(--color-series-violet),
+        var(--color-error)
+      );
+      mask:
+        linear-gradient(#000 0 0) content-box exclude,
+        linear-gradient(#000 0 0);
+      pointer-events: none;
+    }
+  }
+
   &--pending {
     background: transparent;
     border: 1px dashed var(--color-border);

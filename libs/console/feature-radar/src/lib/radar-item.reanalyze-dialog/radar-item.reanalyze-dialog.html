@@ -28,6 +28,11 @@
           </mat-hint>
           <mat-error>{{ form.controls.budget | formError: budgetMessages }}</mat-error>
         </mat-form-field>
+
+        <div class="flex flex-col gap-1">
+          <mat-checkbox formControlName="deepAnalysis">Deep analysis</mat-checkbox>
+          <p class="text-caption">{{ deepHelp }}</p>
+        </div>
       }
     </div>
   </mat-dialog-content>

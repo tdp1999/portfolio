@@ -107,7 +107,9 @@
   padding-left: 12px;
   border-left: 1px solid var(--color-border);
 }
-.rv-section__body:has(.rv-fold) {
+/* A stack of folds reads as one list, so it packs tight. A body that mixes fields and a fold keeps
+   the field rhythm: tightening it too would run the fields together. */
+.rv-section__body:has(> console-record-fold):not(:has(> :not(console-record-fold))) {
   gap: 8px;
 }
 

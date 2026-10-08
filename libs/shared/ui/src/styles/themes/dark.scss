@@ -30,4 +30,8 @@
   --color-error-container: #3d0808; /* deep red — clearly distinct from warning */
   --color-info: hsl(var(--accent-hue) var(--accent-saturation) 58%);
   --color-info-container: hsl(var(--accent-hue) 40% 18%);
+
+  --color-series-blue: #60a5fa; /* blue-400 */
+  --color-series-orange: #fb923c; /* orange-400 */
+  --color-series-violet: #c084fc; /* purple-400 */
 }

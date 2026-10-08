@@ -18,14 +18,15 @@ describe('RadarRunRepository (integration)', () => {
   let repo: RadarRunRepository;
   const sourceId = IdentifierValue.v7();
 
-  const manualRun = () =>
+  const manualRun = (over: { flow?: RadarRunFlow; deepAnalysis?: boolean } = {}) =>
     RadarRun.create({
       sourceId,
       sourceUrl: 'https://fb.test/run',
       sourceName: 'Run test source',
-      flow: RadarRunFlow.MANUAL,
+      flow: over.flow ?? RadarRunFlow.MANUAL,
       fetchComments: false,
       budgetMicroUsd: null,
+      deepAnalysis: over.deepAnalysis ?? false,
       windowFrom: null,
       windowTo: null,
       itemCap: 10,
@@ -76,6 +77,12 @@ describe('RadarRunRepository (integration)', () => {
 
     expect(results.filter(Boolean)).toHaveLength(1);
     expect(await prisma.radarRun.count({ where: { sourceId } })).toBe(1);
+  });
+
+  it('should keep the deep analysis flag through a save and a read (ADR-036)', async () => {
+    const added = await repo.add(manualRun({ flow: RadarRunFlow.AUTO, deepAnalysis: true }));
+
+    expect((await repo.findById(added!.id))?.deepAnalysis).toBe(true);
   });
 
   it('should treat an active re-analysis holding a post of the source as an active run on it', async () => {

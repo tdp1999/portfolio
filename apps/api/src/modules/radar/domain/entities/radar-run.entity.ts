@@ -97,7 +97,7 @@ export class RadarRun {
 
   /**
    * An AUTO analysis with no capture: the requeued items point at this run, and the tick analyzes
-   * them as it does any AUTO run's items (light, then deep), under this run's budget.
+   * them as it does any AUTO run's items (light, then deep when the run asks for it), under this run's budget.
    */
   static reanalyze(data: CreateReanalyzeRunPayload): RadarRun {
     return new RadarRun(
@@ -120,6 +120,7 @@ export class RadarRun {
         itemsFailed: 0,
         fetchComments: false,
         budgetMicroUsd: data.budgetMicroUsd,
+        deepAnalysis: data.deepAnalysis,
         error: null,
         warning: null,
         createdAt: TemporalValue.now(),
@@ -215,6 +216,10 @@ export class RadarRun {
 
   get budgetMicroUsd(): number | null {
     return this.props.budgetMicroUsd;
+  }
+
+  get deepAnalysis(): boolean {
+    return this.props.deepAnalysis;
   }
 
   get error(): string | null {

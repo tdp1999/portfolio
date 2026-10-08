@@ -1,0 +1,50 @@
+<h2 mat-dialog-title class="flex items-center gap-2">
+  Workflow profile
+  <console-help-button guide="radar-feature-guide" section="profile" label="Radar guide: workflow profile" />
+</h2>
+<mat-dialog-content>
+  <p class="text-body text-text-secondary radar-profile__intro">
+    How you work: tools, skills and habits, in markdown. The analysis reads it before writing each apply note. It
+    applies to posts analyzed after you save; existing apply notes are not rewritten.
+  </p>
+
+  @if (loading()) {
+    <div class="radar-profile__state">
+      <mat-spinner diameter="24" />
+    </div>
+  } @else if (loadError()) {
+    <div class="radar-profile__state" role="alert">
+      <span class="text-body">Could not load the workflow profile.</span>
+      <button mat-button type="button" (click)="onRetry()">Retry</button>
+    </div>
+  } @else {
+    <console-markdown-editor
+      [formControl]="body"
+      ariaLabel="Workflow profile"
+      placeholder="e.g. Frontend engineer. Daily tools: Claude Code, Angular, Nx..."
+      [minHeight]="360"
+    />
+    <div class="radar-profile__meta">
+      <span>
+        @if (updatedAt(); as at) {
+          Last saved {{ at | date: 'medium' }}
+        } @else {
+          Not saved yet. The analysis falls back to a generic frontend engineer profile.
+        }
+      </span>
+      <span [class.radar-profile__over]="length() > maxChars"> {{ length() | number }} / {{ maxChars | number }} </span>
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!dirty() || saving() || loading()"
+    (click)="onSave()"
+  >
+    Save
+  </button>
+</mat-dialog-actions>

@@ -51,6 +51,7 @@ const makeRun = (flow: RadarRunFlow, steps: Partial<Record<RadarStep, Partial<Ra
   itemsFailed: 0,
   fetchComments: false,
   budgetMicroUsd: null,
+  deepAnalysis: false,
   error: null,
   warning: null,
   createdAt: NOW,
@@ -439,6 +440,7 @@ describe('AdvanceRunHandler', () => {
       }),
       llmAdapter: 'server-ai',
       budgetMicroUsd: 1_000_000,
+      deepAnalysis: true,
     });
     const serverAi = (...outcomes: LlmStepOutcome[]) => ({
       name: 'server-ai',
@@ -453,7 +455,12 @@ describe('AdvanceRunHandler', () => {
 
       // A working tick never finishes the step, even with nothing counted: its batch may open deep work.
       await advance();
-      expect(llm.process).toHaveBeenCalledWith({ step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000 });
+      expect(llm.process).toHaveBeenCalledWith({
+        step: RadarStep.ANALYZE,
+        runId: RUN_ID,
+        budgetMicroUsd: 1_000_000,
+        deepAnalysis: true,
+      });
       expect(runs.stepOf(RadarStep.ANALYZE).status).toBe(RadarStatus.RUNNING);
 
       runs.counts.notAnalyzed = 1;
@@ -479,7 +486,12 @@ describe('AdvanceRunHandler', () => {
     it('should take a re-analysis run straight to ANALYZE, with no capture', async () => {
       const llm = serverAi({ state: 'idle' });
       const reanalysis = {
-        ...RadarRun.reanalyze({ itemCount: 2, budgetMicroUsd: 1_000_000, analyzeAdapter: 'server-ai' }).toProps(),
+        ...RadarRun.reanalyze({
+          itemCount: 2,
+          budgetMicroUsd: 1_000_000,
+          deepAnalysis: false,
+          analyzeAdapter: 'server-ai',
+        }).toProps(),
         id: RUN_ID,
       };
       const { runs, provider, advance } = setup(reanalysis, { llm });
@@ -488,7 +500,12 @@ describe('AdvanceRunHandler', () => {
       await advance();
 
       expect(provider.start).not.toHaveBeenCalled();
-      expect(llm.process).toHaveBeenCalledWith({ step: RadarStep.ANALYZE, runId: RUN_ID, budgetMicroUsd: 1_000_000 });
+      expect(llm.process).toHaveBeenCalledWith({
+        step: RadarStep.ANALYZE,
+        runId: RUN_ID,
+        budgetMicroUsd: 1_000_000,
+        deepAnalysis: false,
+      });
     });
   });
 

@@ -226,6 +226,9 @@
             }
             <console-property label="Capture">{{ r.captureAdapter }}</console-property>
             <console-property label="Analysis">{{ r.llmAdapter }}</console-property>
+            @if (r.flow === 'AUTO') {
+              <console-property label="Deep analysis">{{ r.deepAnalysis ? 'On' : 'Off' }}</console-property>
+            }
           </console-property-list>
         </console-record-panel>
 

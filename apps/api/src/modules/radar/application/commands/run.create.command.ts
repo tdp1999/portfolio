@@ -94,6 +94,7 @@ export class CreateRunHandler implements ICommandHandler<CreateRunCommand> {
         itemCap: input.itemCap,
         fetchComments: input.fetchComments,
         budgetMicroUsd: auto ? RadarAutoRun.budgetMicroUsd(this.analysis, input.budgetUsd) : null,
+        deepAnalysis: auto && input.deepAnalysis,
         adapters: {
           capture: provider?.name ?? UPLOAD_CAPTURE_ADAPTER,
           normalize: provider?.format ?? UPLOAD_NORMALIZE_ADAPTER,

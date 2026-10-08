@@ -34,6 +34,9 @@ export interface RadarEnrichmentSummary {
   factCheckSeverity: RadarFactCheckSeverity | null;
   /** A server (AUTO) analysis: `light` quick pass or `deep` researched one. Null for a worker analysis (always full). */
   analysisDepth: RadarAnalysisDepth | null;
+  /** Who wrote it (`gemini`, `anthropic`, `claude-code`) and the exact model id. */
+  producerAdapter: string;
+  producerModel: string;
 }
 
 export type RadarAnalysisDepth = 'light' | 'deep';
@@ -53,8 +56,6 @@ export interface RadarEnrichmentDetail extends RadarEnrichmentSummary {
   overview: string | null;
   /** Pages the analysis used as evidence; empty when it named none. */
   sources: { url: string; title: string | null }[];
-  producerAdapter: string;
-  producerModel: string;
   updatedAt: string;
 }
 
@@ -126,6 +127,8 @@ export interface RadarFeedPage {
   limit: number;
   /** Items per triage tab under the same filters, whichever tab is open. */
   triageCounts: Record<RadarTriageStatus, number>;
+  /** Every model that has analyzed a post: the Model filter's options. */
+  producerModels: string[];
 }
 
 export interface RadarFeedParams {
@@ -140,6 +143,7 @@ export interface RadarFeedParams {
   sortDir?: 'asc' | 'desc';
   status?: string;
   sourceId?: string;
+  producerModel?: string;
   /** Posts this run touched last. */
   runId?: string;
   triageStatus?: RadarTriageStatus;
@@ -157,6 +161,8 @@ export interface RadarFeedState {
   status: string;
   /** A source id; '' means every source. */
   sourceId: string;
+  /** A model id (`producerModel`); '' means every model. */
+  producerModel: string;
   sortBy: RadarFeedSortKey;
   sortDir: 'asc' | 'desc';
   pageIndex: number;
@@ -328,6 +334,8 @@ export interface RadarRun {
   fetchComments: boolean;
   /** AUTO only: the AI spend cap, micro-USD. */
   budgetMicroUsd: number | null;
+  /** AUTO only: whether posts with a high quick score also got the deep analysis. */
+  deepAnalysis: boolean;
   /** AUTO only: the AI cost recorded so far, micro-USD (an estimate on the free tier). */
   spentMicroUsd: number | null;
   error: string | null;
@@ -400,6 +408,8 @@ export interface CreateRadarRunInput {
   fetchComments?: boolean;
   /** AUTO only, in USD; the server's default when left out. */
   budgetUsd?: number;
+  /** AUTO only: posts with a high quick score also get the deep analysis. */
+  deepAnalysis?: boolean;
 }
 
 export interface RadarRunCreateDialogData {
@@ -573,6 +583,8 @@ export interface ReanalyzeItemsInput {
   mode: RadarReanalyzeMode;
   /** AUTO only, in USD; the server's default when left out. */
   budgetUsd?: number;
+  /** AUTO only: posts with a high quick score also get the deep analysis. */
+  deepAnalysis?: boolean;
 }
 
 export interface ReanalyzeItemsResult {

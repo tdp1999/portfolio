@@ -32,6 +32,7 @@ export function radarRunProps(
     itemsFailed: 0,
     fetchComments: false,
     budgetMicroUsd: flow === RadarRunFlow.AUTO ? 500_000 : null,
+    deepAnalysis: false,
     error: null,
     warning: null,
     createdAt: at,

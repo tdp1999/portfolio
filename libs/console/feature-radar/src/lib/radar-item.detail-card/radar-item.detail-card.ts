@@ -44,6 +44,7 @@ import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS, COMMENTS_PREVIEW } from '../radar.
 import {
   COMMENT_TAGS,
   ANALYSIS_DEPTH_HELP,
+  LIGHT_ANALYSIS_NOTE,
   ANALYSIS_DEPTH_LABELS,
   CONTENT_TYPE_LABELS,
   PROVIDER_LABELS,
@@ -182,6 +183,7 @@ export class RadarItemDetailCard {
   });
   protected readonly depthLabels = ANALYSIS_DEPTH_LABELS;
   protected readonly depthHelp = ANALYSIS_DEPTH_HELP;
+  protected readonly lightNote = LIGHT_ANALYSIS_NOTE;
   protected readonly workStatusLabels = WORK_STATUS_LABELS;
   protected readonly contentTypeLabels = CONTENT_TYPE_LABELS;
   private destroyed = false;

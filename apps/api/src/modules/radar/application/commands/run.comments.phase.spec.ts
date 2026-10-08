@@ -40,6 +40,7 @@ const runAt = (comments?: CommentsPhaseMeta) =>
     itemsFailed: 0,
     fetchComments: true,
     budgetMicroUsd: null,
+    deepAnalysis: false,
     error: null,
     warning: null,
     createdAt: NOW,

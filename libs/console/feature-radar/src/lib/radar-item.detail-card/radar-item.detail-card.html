@@ -34,7 +34,7 @@
     }
   </section>
 
-  <console-record-section title="AI analysis">
+  <console-record-section title="AI analysis" class="radar-analysis">
     @if (it.workError) {
       <div class="radar-pending radar-pending--error" role="note">
         <mat-icon class="icon-sm">error_outline</mat-icon>
@@ -59,9 +59,12 @@
       }
       <p class="rv-lead">{{ e.tldr }}</p>
       @if (e.overview) {
-        <div class="rv-prose radar-md" [innerHTML]="e.overview | markdown"></div>
+        <console-record-field label="Overview" class="radar-analysis__part">
+          <div class="rv-prose radar-md" [innerHTML]="e.overview | markdown"></div>
+        </console-record-field>
         @if (e.context) {
           <console-record-fold
+            class="radar-analysis__part"
             title="Key terms"
             [gist]="keyTermsGist()"
             [open]="keyTermsOpen()"
@@ -72,12 +75,13 @@
         }
       } @else if (e.context) {
         <!-- Before enrichment v3 there is no overview: the background is the analysis. -->
-        <console-record-field label="Background">
+        <console-record-field label="Background" class="radar-analysis__part">
           <div class="rv-prose radar-md" [innerHTML]="e.context | markdown"></div>
         </console-record-field>
       }
       @if (imageCount()) {
         <console-record-field
+          class="radar-analysis__part"
           label="Image notes"
           [state]="e.imageNotes ? 'filled' : 'unset'"
           unsetLabel="The images add nothing beyond the text."
@@ -86,6 +90,7 @@
         </console-record-field>
       }
       <console-record-field
+        class="radar-analysis__part"
         label="Apply to my workflow"
         [state]="e.applyNote ? 'filled' : 'unset'"
         unsetLabel="No apply note: analyzed before apply notes became required. It is re-analyzed on the next worker run."
@@ -93,7 +98,7 @@
         <div class="rv-prose radar-md" [innerHTML]="e.applyNote | markdown"></div>
       </console-record-field>
       @if (e.sources.length) {
-        <console-record-field label="Sources">
+        <console-record-field label="Sources" class="radar-analysis__part">
           <ul class="radar-sources">
             @for (s of e.sources; track s.url) {
               <li>
@@ -107,7 +112,7 @@
         </console-record-field>
       }
       @if (e.analysisDepth === 'light') {
-        <p class="text-caption">{{ depthHelp.light }}</p>
+        <p class="text-caption">{{ lightNote }}</p>
       }
     } @else {
       <div class="radar-pending" role="status">

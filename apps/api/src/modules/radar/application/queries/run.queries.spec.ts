@@ -81,7 +81,9 @@ describe('GetRunHandler', () => {
   });
 
   it('should describe a re-analysis run, which has no source and no CAPTURE or NORMALIZE step', async () => {
-    const { get } = setup(RadarRun.reanalyze({ itemCount: 3, budgetMicroUsd: 500_000, analyzeAdapter: 'server-ai' }));
+    const { get } = setup(
+      RadarRun.reanalyze({ itemCount: 3, budgetMicroUsd: 500_000, deepAnalysis: false, analyzeAdapter: 'server-ai' })
+    );
 
     const result = await get();
 
