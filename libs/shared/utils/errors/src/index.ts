@@ -31,3 +31,4 @@ export { BlogPostErrorCode } from './lib/error-codes/blog-post.error-codes';
 export { AboutPrincipleErrorCode } from './lib/error-codes/about-principle.error-codes';
 export { AboutFailureErrorCode } from './lib/error-codes/about-failure.error-codes';
 export { RadarErrorCode } from './lib/error-codes/radar.error-codes';
+export { ChecklistErrorCode } from './lib/error-codes/checklist.error-codes';

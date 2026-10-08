@@ -1167,3 +1167,57 @@ model AiUsageRecord {
   @@index([groupType, groupId])
   @@map("ai_usage_records")
 }
+
+// ─── Checklist ──────────────────────────────────────────────────────────────
+// The Owner's work checklists, authored as markdown in the workflow folder and synced here by
+// `pnpm checklist:push`. Runs are worked on the landing site at /checklist (Owner-only).
+
+enum ChecklistDocKind {
+  TEMPLATE
+  LOOKUP
+  PROJECT
+}
+
+enum ChecklistRunStatus {
+  ACTIVE
+  DONE
+  ARCHIVED
+}
+
+/// A parsed markdown file. Overwritten on every push; archived when its file is no longer sent.
+model ChecklistDoc {
+  id         String           @id @db.Uuid
+  kind       ChecklistDocKind
+  slug       String           @db.VarChar(100)
+  title      String           @db.VarChar(200)
+  /// `ChecklistTemplateContent` or `ChecklistSectionedContent`, by kind.
+  content    Json
+  /// SHA-256 of the markdown, so an unchanged file is not rewritten.
+  sourceHash String           @db.VarChar(64)
+  archivedAt DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([kind, slug])
+  @@map("checklist_docs")
+}
+
+/// One working copy of a template for one ticket. Its rows are a snapshot (CHK-001), so there is
+/// no relation to the doc: the doc may be rewritten or archived and the run stays as it is.
+model ChecklistRun {
+  id            String             @id @db.Uuid
+  name          String             @db.VarChar(200)
+  templateSlug  String             @db.VarChar(100)
+  templateTitle String             @db.VarChar(200)
+  projectSlug   String             @db.VarChar(100)
+  status        ChecklistRunStatus @default(ACTIVE)
+  /// `ChecklistRunBody`.
+  body          Json
+  /// Optimistic lock: a save must carry the version it was based on.
+  version       Int                @default(1)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([status, updatedAt(sort: Desc)])
+  @@map("checklist_runs")
+}
