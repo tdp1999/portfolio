@@ -1,0 +1,15 @@
+@switch (status()) {
+  @case ('signed-in') {
+    <ng-container [ngTemplateOutlet]="content() ?? null" />
+  }
+  @case ('signed-out') {
+    <div class="auth-gate__center">
+      <landing-sign-in-form [submitting]="submitting()" [error]="error()" (submitted)="signIn.emit($event)" />
+    </div>
+  }
+  @default {
+    <div class="auth-gate__center">
+      <landing-loading-spinner [message]="checkingLabel()" />
+    </div>
+  }
+}

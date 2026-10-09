@@ -33,7 +33,7 @@ import { LandingThemeService } from '../../services/theme/theme.service';
       fxSpotlightScope="viewport"
       fxKeyboardShortcuts
     >
-      <landing-header [resumeUrl]="resumeUrl()" [resumeName]="resumeName()" />
+      <landing-header [resumeUrl]="resumeUrl()" [resumeName]="resumeName()" [signedIn]="signedIn()" />
       <main class="flex-1">
         <ng-content />
       </main>
@@ -59,6 +59,8 @@ export class Shell {
   readonly socialLinks = input<readonly SocialLink[]>([]);
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV');
+  /** App-wide Owner session, passed to the header (hides "Sign in" in More once signed in). */
+  readonly signedIn = input(false);
 
   private readonly shortcuts = inject(KeyboardShortcutService);
   private readonly theme = inject(LandingThemeService);

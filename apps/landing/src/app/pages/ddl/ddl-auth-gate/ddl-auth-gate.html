@@ -1,0 +1,65 @@
+<landing-ddl-doc-page slug="auth-gate" [sections]="sections">
+  <landing-ddl-section anchor="sign-in-form" heading="Sign-in form" [framed]="true">
+    <div class="grid gap-12 laptop:grid-cols-3">
+      <div>
+        <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">idle</h3>
+        <landing-sign-in-form />
+      </div>
+      <div>
+        <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">error · invalid</h3>
+        <landing-sign-in-form error="invalid" />
+      </div>
+      <div>
+        <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">submitting</h3>
+        <landing-sign-in-form [submitting]="true" />
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="gate" heading="Gate" [framed]="true" [code]="gateSnippet">
+    <div class="grid gap-12 tablet:grid-cols-2">
+      <div>
+        <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">status · checking</h3>
+        <landing-auth-gate status="checking" />
+      </div>
+      <div>
+        <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">status · signed-in</h3>
+        <landing-auth-gate status="signed-in">
+          <ng-template>
+            <p class="text-body-md text-landing-text-400">Private content renders here, and only here.</p>
+          </ng-template>
+        </landing-auth-gate>
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="session-bar" heading="Session bar" [framed]="true">
+    <h3 class="font-mono text-mono-md text-landing-text-500 mb-3">signed in · under the header</h3>
+    <landing-session-bar />
+  </landing-ddl-section>
+
+  <landing-ddl-section anchor="usage" heading="Usage" [code]="routeSnippet">
+    <div class="space-y-6 max-w-3xl font-sans text-body-md text-landing-text-400">
+      <p>
+        Private pages form one group. A new private page is one entry in
+        <code class="font-mono text-mono-sm text-landing-text-300">PRIVATE_ROUTES</code>. The whole area lives in
+        <code class="font-mono text-mono-sm text-landing-text-300">pages/private/</code> (routes, frame, sign-in page).
+        The group gives each page the rest: the gate (inside an
+        <code class="font-mono text-mono-sm text-landing-text-300">ng-template</code>, so nothing private is created
+        before sign-in), an HttpClient that sends the token on API calls,
+        <code class="font-mono text-mono-sm text-landing-text-300">RenderMode.Client</code> and
+        <code class="font-mono text-mono-sm text-landing-text-300">X-Robots-Tag: noindex</code>. The feature itself
+        holds no auth code.
+      </p>
+      <p>
+        The session is app-wide state, restored once per page load. The header stays the same for every visitor. Sign-in
+        is the "Sign in" entry in the More menu (its own Account section, stacked under Documents), which opens
+        <code class="font-mono text-mono-sm text-landing-text-300">/sign-in</code>, or the gate on any private page.
+        Sign-out is <code class="font-mono text-mono-sm text-landing-text-300">landing-session-bar</code>, a slim row
+        the private frame puts right under the header once signed in. Public pages never show it, even for the signed-in
+        Owner. The account is the console's, and so is the session: prod cookies are scoped to the parent domain, so
+        signing in or out here does the same on the console.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

@@ -1,0 +1,46 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="sign-in-form" autocomplete="on">
+  <h1 class="sign-in-form__title">{{ 'auth.signIn.title' | landingCopy: locale() }}</h1>
+  <p class="sign-in-form__lede">{{ 'auth.signIn.lede' | landingCopy: locale() }}</p>
+
+  @let email = form.controls.email;
+  <landing-form-field
+    [label]="'auth.signIn.email' | landingCopy: locale()"
+    inputId="sign-in-email"
+    metaId="sign-in-email-meta"
+    [error]="email.invalid && email.touched ? ('auth.signIn.emailInvalid' | landingCopy: locale()) : null"
+  >
+    <landing-input
+      inputId="sign-in-email"
+      formControlName="email"
+      type="email"
+      autocomplete="username"
+      [hasError]="email.invalid && email.touched"
+      ariaDescribedBy="sign-in-email-meta"
+    />
+  </landing-form-field>
+
+  @let password = form.controls.password;
+  <landing-form-field
+    [label]="'auth.signIn.password' | landingCopy: locale()"
+    inputId="sign-in-password"
+    metaId="sign-in-password-meta"
+    [error]="password.invalid && password.touched ? ('auth.signIn.passwordRequired' | landingCopy: locale()) : null"
+  >
+    <landing-input
+      inputId="sign-in-password"
+      formControlName="password"
+      type="password"
+      autocomplete="current-password"
+      [hasError]="password.invalid && password.touched"
+      ariaDescribedBy="sign-in-password-meta"
+    />
+  </landing-form-field>
+
+  @if (errorKey(); as key) {
+    <p class="sign-in-form__error" role="alert">{{ key | landingCopy: locale() }}</p>
+  }
+
+  <landing-button type="submit" variant="solid" [disabled]="submitting()">
+    {{ (submitting() ? 'auth.signIn.submitting' : 'auth.signIn.submit') | landingCopy: locale() }}
+  </landing-button>
+</form>

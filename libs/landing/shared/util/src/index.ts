@@ -5,3 +5,4 @@ export * from './lib/inline-markdown';
 export * from './lib/rte-headings';
 export * from './lib/hydrate-image-refs';
 export * from './lib/time-ago';
+export * from './lib/landing-auth.types';

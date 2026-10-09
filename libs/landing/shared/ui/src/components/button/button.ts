@@ -7,7 +7,7 @@ import type { LandingButtonVariant, LandingButtonSize, LandingButtonArrow } from
   standalone: true,
   imports: [IconArrow],
   template: `
-    <button type="button" [class]="buttonClasses()" [disabled]="disabled()" (click)="handleClick($event)">
+    <button [type]="type()" [class]="buttonClasses()" [disabled]="disabled()" (click)="handleClick($event)">
       <span class="landing-btn__text"><ng-content /></span>
       @if (arrow(); as dir) {
         <span class="landing-btn__arrow-stack" aria-hidden="true">
@@ -24,6 +24,8 @@ export class Button {
   readonly variant = input<LandingButtonVariant>('solid');
   readonly size = input<LandingButtonSize>('md');
   readonly disabled = input<boolean>(false);
+  /** `submit` lets the button submit its parent `<form>` (Enter key included). */
+  readonly type = input<'button' | 'submit'>('button');
   readonly arrow = input<LandingButtonArrow>(null);
 
   readonly buttonClick = output<MouseEvent>();

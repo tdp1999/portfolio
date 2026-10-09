@@ -356,6 +356,7 @@ export const LANDING_COPY = {
   'nav.explore': { en: 'Explore', vi: 'Khám phá' },
   'nav.products': { en: 'Products', vi: 'Sản phẩm' },
   'nav.documents': { en: 'Documents', vi: 'Tài liệu' },
+  'nav.account': { en: 'Account', vi: 'Tài khoản' },
   'nav.resume': { en: 'Resume', vi: 'CV' },
   'nav.product.documentEngine.desc': {
     en: 'A framework-agnostic rich-text engine for structured, versioned documents.',
@@ -368,6 +369,32 @@ export const LANDING_COPY = {
   // ── Footer (footer-banner.ts:36-56) ───────────────────────────────────────
   'footer.column.general': { en: 'General', vi: 'Tổng quát' },
   'footer.column.legal': { en: 'Legal', vi: 'Pháp lý' },
+
+  // ── Owner sign-in (sign-in-form, auth-gate) ─────────────────────────────
+  'auth.signIn.title': { en: 'Sign in', vi: 'Đăng nhập' },
+  'auth.signIn.lede': {
+    en: 'This page is private. Sign in with the console account.',
+    vi: 'Trang này là trang riêng. Đăng nhập bằng tài khoản console.',
+  },
+  'auth.signIn.email': { en: 'Email', vi: 'Email' },
+  'auth.signIn.password': { en: 'Password', vi: 'Mật khẩu' },
+  'auth.signIn.emailInvalid': { en: 'Enter a valid email.', vi: 'Nhập email hợp lệ.' },
+  'auth.signIn.passwordRequired': { en: 'Enter the password.', vi: 'Nhập mật khẩu.' },
+  'auth.signIn.submit': { en: 'Sign in', vi: 'Đăng nhập' },
+  'auth.signIn.submitting': { en: 'Signing in…', vi: 'Đang đăng nhập…' },
+  'auth.signIn.error.invalid': { en: 'Wrong email or password.', vi: 'Sai email hoặc mật khẩu.' },
+  'auth.signIn.error.throttled': {
+    en: 'Too many attempts. Wait a minute, then try again.',
+    vi: 'Thử quá nhiều lần. Chờ một phút rồi thử lại.',
+  },
+  'auth.signIn.error.network': {
+    en: 'Cannot reach the server. Check the connection and try again.',
+    vi: 'Không kết nối được server. Kiểm tra mạng rồi thử lại.',
+  },
+  'auth.signIn.error.unknown': { en: 'Sign-in failed. Try again.', vi: 'Đăng nhập không được. Thử lại.' },
+  'auth.gate.checking': { en: 'Checking your session', vi: 'Đang kiểm tra phiên đăng nhập' },
+  'auth.signOut': { en: 'Sign out', vi: 'Đăng xuất' },
+  'auth.session.signedIn': { en: 'Signed in as Owner', vi: 'Đang đăng nhập với quyền Owner' },
 
   // ── /404 (not-found.html:3-10, not-found.ts:22) ───────────────────────────
   'notFound.lede': {

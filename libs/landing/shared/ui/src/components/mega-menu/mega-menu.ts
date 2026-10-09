@@ -16,7 +16,7 @@ import { resolveCopy } from '../../services/copy';
 import { LandingLocaleService } from '../../services/locale/landing-locale.service';
 import type { MegaMenuAlign, MegaMenuColumns, MegaMenuItem, MegaMenuSection } from './mega-menu.types';
 import { CLOSE_DELAY_MS, HOVER_GRACE_MS, OPEN_DELAY_MS } from './mega-menu.constants';
-import { nextMegaMenuId } from './mega-menu.util';
+import { nextMegaMenuId, sectionColumnsOf } from './mega-menu.util';
 
 /**
  * Mega-menu dropdown — icon-forward "Products column + titled columns" layout
@@ -99,18 +99,22 @@ import { nextMegaMenuId } from './mega-menu.util';
 
         <!-- ─── Titled icon columns (Explore, Documents, …) ───────────── -->
         <div class="landing-mega-menu__sections">
-          @for (col of sections(); track col.title ?? $index) {
+          @for (col of sectionColumns(); track col.key ?? $index) {
             <div class="landing-mega-menu__col">
-              @if (col.title) {
-                <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">{{ col.title }}</h3>
+              @for (section of col.sections; track section.title ?? $index) {
+                <div class="landing-mega-menu__group">
+                  @if (section.title) {
+                    <h3 class="landing-mega-menu__eyebrow landing-mega-menu__eyebrow--accent">{{ section.title }}</h3>
+                  }
+                  <ul class="landing-mega-menu__list">
+                    @for (item of section.items; track item.label) {
+                      <li class="landing-mega-menu__item">
+                        <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: item }" />
+                      </li>
+                    }
+                  </ul>
+                </div>
               }
-              <ul class="landing-mega-menu__list">
-                @for (item of col.items; track item.label) {
-                  <li class="landing-mega-menu__item">
-                    <ng-container [ngTemplateOutlet]="rowTpl" [ngTemplateOutletContext]="{ $implicit: item }" />
-                  </li>
-                }
-              </ul>
             </div>
           }
         </div>
@@ -270,6 +274,9 @@ export class MegaMenu {
     }
     return [...groups.entries()].map(([title, items]) => ({ title, items }));
   });
+
+  /** Sections placed into grid columns (sections sharing a `column` stack in one). */
+  protected readonly sectionColumns = computed(() => sectionColumnsOf(this.sections()));
 
   private openTimer: ReturnType<typeof setTimeout> | null = null;
   private closeTimer: ReturnType<typeof setTimeout> | null = null;

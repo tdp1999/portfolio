@@ -17,7 +17,7 @@ import { UmamiEventDirective } from '../../directives/umami-event/umami-event.di
 import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
 import { resolveCopy } from '../../services/copy';
-import { LANGUAGES, navItems, SCROLL_THRESHOLD } from './header.data';
+import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.data';
 
 @Component({
   selector: 'landing-header',
@@ -289,6 +289,8 @@ import { LANGUAGES, navItems, SCROLL_THRESHOLD } from './header.data';
 export class Header {
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV');
+  /** The Owner is signed in (app-wide session): hides the "Sign in" entry in More. */
+  readonly signedIn = input(false);
 
   readonly languages = LANGUAGES;
   readonly scrolled = signal(false);
@@ -342,50 +344,7 @@ export class Header {
   protected readonly siteMenuLabel = computed(() => resolveCopy('a11y.nav.siteMenu', this.lang()));
   protected readonly switchLanguageLabel = computed(() => resolveCopy('a11y.button.switchLanguage', this.lang()));
 
-  readonly moreItems = computed<readonly MegaMenuItem[]>(() => {
-    const locale = this.lang();
-    const explore = resolveCopy('nav.explore', locale);
-    const items: MegaMenuItem[] = [];
-
-    // Products lead the menu as the featured first column. Today there is one, so it
-    // renders as the solo flagship card (preview screenshot that cross-fades to the
-    // icon tile on hover). When `claude-code-ctx` ships, add it here with
-    // `product: true` and the column auto-switches to a stacked "Products" list —
-    // no layout or caller change needed.
-    items.push({
-      label: resolveCopy('common.page.documentEngine', locale),
-      description: resolveCopy('nav.product.documentEngine.desc', locale),
-      href: '/document-engine',
-      iconName: 'file-pen',
-      product: true,
-      cta: resolveCopy('nav.product.documentEngine.cta', locale),
-      image: '/menu/document-engine-light.webp',
-      imageDark: '/menu/document-engine-dark.webp',
-    });
-
-    // Explore — utility / content links (framed icon + self-explanatory label).
-    items.push(
-      { label: resolveCopy('common.page.blog', locale), href: '/blog', section: explore, iconName: 'pen-line' },
-      { label: resolveCopy('common.page.uses', locale), href: '/uses', section: explore, iconName: 'wrench' },
-      { label: resolveCopy('common.page.colophon', locale), href: '/colophon', section: explore, iconName: 'layers' },
-      { label: resolveCopy('common.page.ddl', locale), href: '/ddl', section: explore, iconName: 'palette' }
-    );
-
-    // Documents — downloadables.
-    const resume = this.resumeUrl();
-    if (resume) {
-      items.push({
-        label: resolveCopy('nav.resume', locale),
-        hint: 'PDF',
-        href: resume,
-        kind: 'download',
-        iconName: 'file-down',
-        section: resolveCopy('nav.documents', locale),
-      });
-    }
-
-    return items;
-  });
+  readonly moreItems = computed(() => moreMenuItems(this.lang(), this.resumeUrl(), this.signedIn()));
 
   /** The same items grouped by section for the mobile sheet — Products first, then
    *  each titled section in first-seen order. Mirrors the desktop mega-menu shape.

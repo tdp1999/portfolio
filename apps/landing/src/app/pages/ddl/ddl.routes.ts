@@ -11,6 +11,10 @@ export const DDL_ROUTES: Route[] = [
 
   // ── Components — primitives migrated to per-page docs ───────────────────
   {
+    path: 'auth-gate',
+    loadComponent: () => import('./ddl-auth-gate/ddl-auth-gate').then((m) => m.DdlAuthGate),
+  },
+  {
     path: 'button',
     loadComponent: () => import('./ddl-button/ddl-button').then((m) => m.DdlButton),
   },

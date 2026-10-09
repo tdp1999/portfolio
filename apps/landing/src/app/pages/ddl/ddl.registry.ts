@@ -279,6 +279,14 @@ export const DDL_REGISTRY: readonly DdlEntry[] = [
     source: 'route:/ddl/form-lib',
   },
   {
+    slug: 'auth-gate',
+    title: 'Auth gate',
+    group: 'components',
+    status: 'shipped',
+    summary: 'Owner sign-in for private landing pages · sign-in form.',
+    source: 'route:/ddl/auth-gate',
+  },
+  {
     slug: 'form-input',
     title: 'Form input (historical)',
     group: 'components',

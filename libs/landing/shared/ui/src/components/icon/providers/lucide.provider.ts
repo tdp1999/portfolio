@@ -54,6 +54,8 @@ import {
   Layers,
   Palette,
   FileDown,
+  LogIn,
+  LogOut,
 } from 'lucide-angular';
 import { IconProvider } from '../icon-provider.interface';
 
@@ -113,6 +115,8 @@ const ICON_MAP: Record<string, LucideIconData> = {
   layers: Layers,
   palette: Palette,
   'file-down': FileDown,
+  'log-in': LogIn,
+  'log-out': LogOut,
 };
 
 export class LucideIconProvider implements IconProvider {

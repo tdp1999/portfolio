@@ -152,7 +152,16 @@
     min-width: 0;
   }
 
+  // A column holds one or more titled groups (sections sharing a `column`);
+  // stacked groups get a section-sized break so each title reads as its own.
   &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  &__group {
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -412,6 +421,11 @@
 
     &__sections {
       grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    // Columns stack here, so stacked groups match the gap between columns.
+    &__col {
       gap: 16px;
     }
   }

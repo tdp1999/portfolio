@@ -19,6 +19,12 @@ export interface MegaMenuItem {
    * in first-seen order; items with no `section` fall into one untitled column.
    */
   readonly section?: string;
+  /**
+   * Layout column this item's section sits in. Sections whose items share a `column` stack in one
+   * grid column, each keeping its own title (e.g. "Account" under "Documents"). Defaults to the
+   * section itself, so every section is its own column unless told otherwise.
+   */
+  readonly column?: string;
   /** Optional freshness pill shown next to the label (e.g. "New", "Sandbox"). */
   readonly badge?: string;
   /** Call-to-action label for a sole product's featured card (e.g. "Explore"). Falls back to "Explore". */
@@ -52,6 +58,12 @@ export interface MegaMenuItem {
 export interface MegaMenuSection {
   readonly title: string | null;
   readonly items: readonly MegaMenuItem[];
+}
+
+/** One grid column of the panel: one or more titled sections stacked top to bottom. */
+export interface MegaMenuColumn {
+  readonly key: string | null;
+  readonly sections: readonly MegaMenuSection[];
 }
 
 /** `screen` centres the panel on the viewport; the rest anchor it to the trigger. */
