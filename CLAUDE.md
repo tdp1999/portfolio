@@ -9,6 +9,7 @@ Nx monorepo for a professional portfolio website. Angular 21 SSR frontend, NestJ
 
 ## Tech Stack
 
+- **Angular:** follow the personal Angular rules: @apps/landing/public/agent/angular.md
 - **Zod:** v4 — Use latest Zod v4 syntax (e.g., `z.email()` not `z.string().email()`)
 
 ## Quick Start
@@ -21,7 +22,7 @@ Full command list in `.context/commands.md`.
 - **Design System:** Tokens, components, layout patterns. Start at `.context/design/index.md` (bucket map); system tokens in `design/system/` (foundations, landing, console, shared)
 - **Console Cookbook:** Actionable spacing/typography rules for console pages — read this before writing any console HTML/SCSS. See `.context/design/cookbook/console.md` (+ `cookbook/forms.md`)
 - **Design skill + library:** Universal `/design` skill (research / ingest / review / revamp / document) carrying the reusable principles / patterns / taste library at `~/.claude/skills/design/shared/`. The project bank links it by concept
-- **TDD:** Red → Green → Refactor. Delegate test execution to test-runner subagent. See `.context/testing-guide.md`
+- **TDD:** Red → Green → Refactor. See `.context/testing-guide.md`
 - **Nx:** Projects in `apps/*/project.json`, `libs/*/project.json`. Use `nx affected` for scoped runs.
 
 ## Skills
@@ -70,7 +71,7 @@ Use these skills for specific workflows. More will be added over time.
 
 ### Component Domain Separation
 
-**CRITICAL: Components are separated by application domain:**
+Components are separated by application domain, because landing and console are two different design systems:
 
 | Component Type              | Selector Prefix | Location                  | Usage                                                                                    |
 | --------------------------- | --------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
@@ -80,9 +81,8 @@ Use these skills for specific workflows. More will be added over time.
 
 **Rules:**
 
-- Landing page MUST use `landing-*` components exclusively (custom, visually distinctive)
 - Dashboard/internal apps prioritize Angular Material but may also use `ui-*` shared components
-- NEVER use `landing-*` components in dashboard, or Material in landing
+- Landing uses only `landing-*` components; dashboard uses Material and `ui-*`. Mixing them breaks each app's visual identity.
 - Shared `ui-*` components are available to any non-landing app
 - When creating new UI components, determine the target application first
 
