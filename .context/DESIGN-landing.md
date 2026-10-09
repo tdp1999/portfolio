@@ -15,9 +15,9 @@ Dark, minimalist developer portfolio. "Digital Architect" aesthetic — technica
 - **Azure Accent** (hsl 210, 65%, 50%) — Primary CTA, links, brand color
 - **Azure Hover** (hsl 210, 65%, 68%) — Hover/active state for primary
 - **Azure Container** (hsl 210, 40%, 22%) — Light primary backgrounds
-- **Soft Silver** (#e2e8f0) — Primary text on dark surfaces
-- **Muted Slate** (#94a3b8) — Secondary text, descriptions
-- **Dim Slate** (#64748b) — Placeholder, hints, disabled text
+- **Soft Silver** (#f1f5f9) — Primary text on dark surfaces
+- **Muted Slate** (#bcc6d4) — Secondary text, descriptions
+- **Dim Slate** (#aab5c6) — Captions and hints
 - **Subtle Border** (#2d3148) — Default borders between surfaces
 - **Strong Border** (#3d4266) — Emphasized borders, hover states
 
