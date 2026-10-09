@@ -191,6 +191,8 @@
        the run (the run keeps its left edge and gives up its right). Narrower: a popup over the
        page; a click on the backdrop or Escape closes it. -->
   @if (panel(); as open) {
+    <!-- Backdrop click closes the popup; Escape is the keyboard way (host listener). -->
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
     <aside class="cl-side" aria-label="Reference" (click)="onBackdrop($event)">
       <landing-checklist-ref-panel
         class="cl-side__card"

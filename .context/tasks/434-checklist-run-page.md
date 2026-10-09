@@ -1,6 +1,6 @@
 # Task: Run page (tick, skip, drag, notes, edit, filter, refs) + prod verify
 
-## Status: in-progress
+## Status: done
 
 ## Goal
 At `/checklist/:id` the Owner works a run end to end, and it runs on production.
@@ -17,7 +17,7 @@ Epic `epic-landing-checklist`, the main surface. Rules CHK-001..005.
 - [x] Clicking `tra X` opens lookup section X; clicking `📁 §N` opens section N of the run's project; both in a read-only side panel with a "sửa ở `<file>`" hint.
 - [x] Every change autosaves (debounced); if the save returns 409, then the page shall show a reload prompt and stop autosaving.
 - [x] All changes survive a reload and show on a second device.
-- [ ] Prod: `nx build landing` + `nx build api` green, deployed, `CHECKLIST_SYNC_TOKEN_HASH` set on Railway (prod token stored in the password manager; generated on the company machine by the Owner's decision of 2026-10-09), push run against prod, and `curl https://thunderphong.com/checklist` contains no run data.
+- [x] Prod: `nx build landing` + `nx build api` green, deployed, `CHECKLIST_SYNC_TOKEN_HASH` set on Railway (prod token stored in the password manager; generated on the company machine by the Owner's decision of 2026-10-09), push run against prod, and `curl https://thunderphong.com/checklist` contains no run data.
 
 ## Technical Notes
 - `@angular/cdk/drag-drop` with connected drop lists per phase; move whole group objects (children nested in the JSON) so CHK-005 holds by structure. Keyboard: up/down move buttons instead of keyboard drag.
@@ -47,3 +47,5 @@ Epic `epic-landing-checklist`, the main surface. Rules CHK-001..005.
 - 2026-10-09 Owner restarted the dev servers and confirmed the live list and the reload / second-device check.
 - 2026-10-09 Owner chose to generate the prod sync token on the company machine (overrides the old "personal machine only" rule). Token generated with `openssl rand -hex 32`; its SHA-256 set as `CHECKLIST_SYNC_TOKEN_HASH` on Railway service "Dashboard API" (production) with deploys skipped, so the next deploy picks it up. Remaining for the Prod AC: commit + deploy landing and api, `pnpm checklist:push` against prod, `curl https://thunderphong.com/checklist` shows no run data.
 - 2026-10-09 Owner UI feedback: run progress moved right, its right edge matches the phase bars (also below 600px); group, child and task note icons share one x; save text replaced by a state icon (cloud-check / upload / spinner / alert / off) with a tooltip and an sr-only status; template and project shown as icon chips; edit mode works on a draft (Cancel reverts, Save writes once, beforeunload while dirty), opens every phase, hides phase toggles and run / phase tools, sticky Cancel / Save bar; ref panel text at body-sm like the rows. Dark-mode flash on opening a note: not reproduced (screencast frames on the dev server and the build, OS light + site dark, before and after); added `color-scheme` to the theme roots so native control parts follow the site theme. Verified on the built SSR at 1440 and 375.
+- 2026-10-09 Prod: commits 78b836e9, e1b85f48, 5bc1cd0a pushed and deployed (smoke test green). `nx build landing` and `nx build api` green locally. Prod header reads Home About Projects Contact Sign in More; `curl https://thunderphong.com/checklist` is 200 with no run data; checklist API answers 401 without a token. Owner ran `pnpm checklist:push` against prod with the sync token. CI lint errors in this feature (backdrop click on dialogs / ref aside) fixed with justified disables, as in `sidebar.component.ts`; the remaining CI failures (console libs, `errors` irregular whitespace, format check) predate this task.
+- 2026-10-09 Done, all ACs satisfied
