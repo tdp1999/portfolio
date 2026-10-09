@@ -24,10 +24,10 @@ export function navItems(locale: Locale): readonly NavItem[] {
 }
 
 /**
- * The header's More menu, resolved per locale: the featured product, then the Explore, Documents and
- * Account sections. `resumeUrl` adds the CV download; `signedIn` drops the "Sign in" entry.
+ * The header's More menu, resolved per locale: the featured product, then the Explore and Documents
+ * sections. `resumeUrl` adds the CV download.
  */
-export function moreMenuItems(locale: Locale, resumeUrl: string, signedIn: boolean): readonly MegaMenuItem[] {
+export function moreMenuItems(locale: Locale, resumeUrl: string): readonly MegaMenuItem[] {
   const explore = resolveCopy('nav.explore', locale);
   const items: MegaMenuItem[] = [];
 
@@ -64,24 +64,29 @@ export function moreMenuItems(locale: Locale, resumeUrl: string, signedIn: boole
       kind: 'download',
       iconName: 'file-down',
       section: resolveCopy('nav.documents', locale),
-      column: 'documents',
-    });
-  }
-
-  // Owner sign-in: its own "Account" section, stacked under Documents in the same column (a third
-  // column would wrap under Explore in the 2-column panel). Hidden once signed in: sign-out lives
-  // in the session bar under the header.
-  if (!signedIn) {
-    items.push({
-      label: resolveCopy('auth.signIn.title', locale),
-      href: '/sign-in',
-      iconName: 'log-in',
-      section: resolveCopy('nav.account', locale),
-      column: 'documents',
     });
   }
 
   return items;
+}
+
+/** Where the header's "Sign in" link goes while the Owner is signed out. */
+export const SIGN_IN_HREF = '/sign-in';
+
+/**
+ * The pages behind the Owner sign-in, resolved per locale. One list for the header's Workspace menu,
+ * the mobile sheet and the workspace bar under the header on those pages. A new private page adds
+ * its entry here and its route in the app's `PRIVATE_ROUTES`.
+ */
+export function workspacePages(locale: Locale): readonly MegaMenuItem[] {
+  return [
+    {
+      label: resolveCopy('common.page.checklist', locale),
+      hint: resolveCopy('nav.workspace.checklist.hint', locale),
+      href: '/checklist',
+      iconName: 'list-checks',
+    },
+  ];
 }
 
 export const SCROLL_THRESHOLD = 8;

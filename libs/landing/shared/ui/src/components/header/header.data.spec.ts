@@ -1,20 +1,18 @@
-import { moreMenuItems } from './header.data';
+import { moreMenuItems, SIGN_IN_HREF, workspacePages } from './header.data';
 
 describe('moreMenuItems', () => {
-  const hrefs = (resumeUrl: string, signedIn: boolean) => moreMenuItems('en', resumeUrl, signedIn).map((i) => i.href);
-
-  it('should offer "Sign in" in its own Account section, stacked with Documents, while signed out', () => {
-    const signIn = moreMenuItems('en', '/cv.pdf', false).find((i) => i.href === '/sign-in');
-
-    expect(signIn).toMatchObject({ section: 'Account', column: 'documents' });
-  });
-
-  it('should drop "Sign in" once the Owner is signed in', () => {
-    expect(hrefs('/cv.pdf', true)).not.toContain('/sign-in');
+  it('should not offer "Sign in": it is a header item of its own', () => {
+    expect(moreMenuItems('en', '/cv.pdf').map((i) => i.href)).not.toContain(SIGN_IN_HREF);
   });
 
   it('should list the CV only when a resume URL exists', () => {
-    expect(hrefs('/cv.pdf', false)).toContain('/cv.pdf');
-    expect(moreMenuItems('en', '', false).some((i) => i.kind === 'download')).toBe(false);
+    expect(moreMenuItems('en', '/cv.pdf').map((i) => i.href)).toContain('/cv.pdf');
+    expect(moreMenuItems('en', '').some((i) => i.kind === 'download')).toBe(false);
+  });
+});
+
+describe('workspacePages', () => {
+  it('should list the private pages as internal links', () => {
+    expect(workspacePages('en').every((page) => page.href.startsWith('/'))).toBe(true);
   });
 });

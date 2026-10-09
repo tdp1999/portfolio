@@ -1,4 +1,19 @@
+@use 'base/breakpoints' as bp;
+
+:host {
+  display: block;
+}
+
+// Same rhythm as /contact's form block under the page hero.
 .sign-in-page {
-  min-height: var(--vh-full);
-  padding-block: 96px 64px;
+  padding-block: 32px 64px;
+
+  @include bp.respond-to('laptop') {
+    padding-block: 48px 96px;
+  }
+}
+
+.sign-in-page__waiting {
+  display: flex;
+  justify-content: center;
 }

@@ -1,0 +1,36 @@
+<div class="workspace-bar">
+  <span class="workspace-bar__eyebrow">{{ workspaceLabel() }}</span>
+
+  <nav class="workspace-bar__tabs" [attr.aria-label]="navLabel()">
+    @for (page of pages(); track page.href) {
+      <a
+        class="workspace-bar__tab"
+        [routerLink]="page.href"
+        [hydrationSafeActive]="page.href"
+        hydrationSafeActiveClass="workspace-bar__tab--active"
+      >
+        @if (page.iconName) {
+          <landing-icon [name]="page.iconName" [size]="16" />
+        }
+        {{ page.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="workspace-bar__end">
+    <span class="workspace-bar__owner" role="img" [attr.title]="signedInLabel()" [attr.aria-label]="signedInLabel()">
+      <span class="workspace-bar__dot" aria-hidden="true"></span>
+      <span class="workspace-bar__collapsible" aria-hidden="true">{{ ownerLabel() }}</span>
+    </span>
+    <button
+      type="button"
+      class="workspace-bar__sign-out"
+      [attr.aria-label]="signOutLabel()"
+      (click)="signOut.emit()"
+      data-testid="session-sign-out"
+    >
+      <landing-icon name="log-out" [size]="16" />
+      <span class="workspace-bar__collapsible" aria-hidden="true">{{ signOutLabel() }}</span>
+    </button>
+  </div>
+</div>

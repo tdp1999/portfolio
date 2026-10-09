@@ -8,7 +8,7 @@ export * from './components/checkbox';
 export * from './components/form-field';
 export * from './components/sign-in-form';
 export * from './components/auth-gate';
-export * from './components/session-bar';
+export * from './components/workspace-bar';
 export * from './components/radio';
 export * from './components/link';
 export * from './components/container';

@@ -17,7 +17,7 @@ import { UmamiEventDirective } from '../../directives/umami-event/umami-event.di
 import { Monogram } from '@portfolio/shared/features/brand';
 import type { Locale } from '@portfolio/shared/types';
 import { resolveCopy } from '../../services/copy';
-import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.data';
+import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD, SIGN_IN_HREF, workspacePages } from './header.data';
 
 @Component({
   selector: 'landing-header',
@@ -77,6 +77,20 @@ import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.d
                     [umamiData]="{ to: item.label }"
                   >
                     {{ item.label }}
+                  </a>
+                }
+                <!-- Owner entry: "Sign in" while signed out; the Workspace menu (private pages) once signed in. -->
+                @if (signedIn()) {
+                  <landing-mega-menu [triggerLabel]="workspaceLabel()" align="center" [items]="workspaceItems()" />
+                } @else {
+                  <a
+                    [routerLink]="signInHref"
+                    [hydrationSafeActive]="signInHref"
+                    class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                    umamiEvent="nav-primary"
+                    [umamiData]="{ to: 'sign-in' }"
+                  >
+                    {{ signInLabel() }}
                   </a>
                 }
                 <landing-mega-menu [triggerLabel]="moreLabel()" align="screen" [columns]="2" [items]="moreItems()" />
@@ -157,6 +171,20 @@ import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.d
                   [umamiData]="{ to: item.label }"
                 >
                   {{ item.label }}
+                </a>
+              }
+              <!-- Owner entry: "Sign in" while signed out; the Workspace menu (private pages) once signed in. -->
+              @if (signedIn()) {
+                <landing-mega-menu [triggerLabel]="workspaceLabel()" align="center" [items]="workspaceItems()" />
+              } @else {
+                <a
+                  [routerLink]="signInHref"
+                  [hydrationSafeActive]="signInHref"
+                  class="nav-link font-sans text-body-sm text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                  umamiEvent="nav-primary"
+                  [umamiData]="{ to: 'sign-in' }"
+                >
+                  {{ signInLabel() }}
                 </a>
               }
               <landing-mega-menu [triggerLabel]="moreLabel()" align="screen" [columns]="2" [items]="moreItems()" />
@@ -256,12 +284,42 @@ import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.d
               <span class="mobile-sheet__arrow" aria-hidden="true">→</span>
             </a>
           }
+          @if (!signedIn()) {
+            <a
+              [routerLink]="signInHref"
+              [hydrationSafeActive]="signInHref"
+              (click)="closeMenu()"
+              class="mobile-sheet__row nav-link flex items-center justify-between py-3 font-display text-display-sm font-medium text-landing-text-300 transition-colors duration-motion-base ease-landing-ease hover:text-landing-accent"
+            >
+              <span>{{ signInLabel() }}</span>
+              <span class="mobile-sheet__arrow" aria-hidden="true">→</span>
+            </a>
+          }
         </nav>
 
         <!-- "More" grown into the same titled categories as the desktop mega-menu
              (Products / Explore / Documents). Own top+bottom padding — the theme and
              language controls already live in the top bar, so no footer here. -->
         <div class="flex w-full max-w-[30rem] flex-col gap-7 px-6 pb-10 pt-10">
+          @if (signedIn()) {
+            <div class="flex flex-col">
+              <landing-eyebrow [label]="workspaceLabel()" class="mb-3 block" />
+              @for (page of workspaceItems(); track page.href) {
+                <a
+                  [routerLink]="page.href"
+                  (click)="closeMenu()"
+                  class="flex items-center justify-between py-2 font-sans text-body-md text-landing-text-400 transition-colors duration-motion-base ease-landing-ease hover:text-landing-text-300"
+                >
+                  <span>{{ page.label }}</span>
+                  @if (page.hint) {
+                    <span class="font-mono text-mono-sm uppercase tracking-wider text-landing-text-600">
+                      {{ page.hint }}
+                    </span>
+                  }
+                </a>
+              }
+            </div>
+          }
           @for (group of moreSections(); track group.title) {
             <div class="flex flex-col">
               <landing-eyebrow [label]="group.title" class="mb-3 block" />
@@ -289,7 +347,7 @@ import { LANGUAGES, moreMenuItems, navItems, SCROLL_THRESHOLD } from './header.d
 export class Header {
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV');
-  /** The Owner is signed in (app-wide session): hides the "Sign in" entry in More. */
+  /** The Owner is signed in (app-wide session): the "Sign in" link becomes the Workspace menu. */
   readonly signedIn = input(false);
 
   readonly languages = LANGUAGES;
@@ -344,7 +402,12 @@ export class Header {
   protected readonly siteMenuLabel = computed(() => resolveCopy('a11y.nav.siteMenu', this.lang()));
   protected readonly switchLanguageLabel = computed(() => resolveCopy('a11y.button.switchLanguage', this.lang()));
 
-  readonly moreItems = computed(() => moreMenuItems(this.lang(), this.resumeUrl(), this.signedIn()));
+  readonly moreItems = computed(() => moreMenuItems(this.lang(), this.resumeUrl()));
+
+  protected readonly signInHref = SIGN_IN_HREF;
+  protected readonly signInLabel = computed(() => resolveCopy('auth.signIn.title', this.lang()));
+  protected readonly workspaceLabel = computed(() => resolveCopy('nav.workspace', this.lang()));
+  protected readonly workspaceItems = computed(() => workspacePages(this.lang()));
 
   /** The same items grouped by section for the mobile sheet — Products first, then
    *  each titled section in first-seen order. Mirrors the desktop mega-menu shape.

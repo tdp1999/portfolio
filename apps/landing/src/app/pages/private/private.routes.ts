@@ -3,8 +3,9 @@ import { Route } from '@angular/router';
 import { provideLandingAuthHttp } from '@portfolio/landing/shared/data-access';
 
 /**
- * Pages behind the Owner sign-in. Adding a route here is all a new private page needs: it is mounted
- * inside the private group below (gate + session bar + token-carrying HttpClient), and
+ * Pages behind the Owner sign-in. A new private page needs a route here and an entry in shared ui's
+ * `workspacePages` (the header's Workspace menu and the workspace bar). The route is mounted inside
+ * the private group below (sign-in redirect + workspace bar + token-carrying HttpClient), and
  * `NOINDEX_PATHS` makes `app.routes.server.ts` render it client-only (the server HTML holds no
  * private data) and `server.ts` send `X-Robots-Tag: noindex`. Keep these paths out of
  * `public/robots.txt`: a `Disallow` stops crawlers from fetching the page, so they never see the
@@ -19,7 +20,10 @@ export const PRIVATE_ROUTES: Route[] = [
 
 export const PRIVATE_PATHS: readonly string[] = PRIVATE_ROUTES.map((route) => route.path ?? '');
 
-/** Public sign-in page (More menu → "Sign in"). Not private, but client-only and noindex like them. */
+/**
+ * Public sign-in page: the header's "Sign in" item, and where a private page sends a signed-out
+ * Owner. Not private, but client-only and noindex like them.
+ */
 export const SIGN_IN_PATH = 'sign-in';
 
 /** Paths rendered client-only and served with `X-Robots-Tag: noindex`. */

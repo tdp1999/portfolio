@@ -1,0 +1,127 @@
+@use 'base/breakpoints' as bp;
+
+// One 48px row on a hairline: eyebrow, page tabs, then owner + sign-out pushed right.
+// The active tab's accent rule sits on the hairline itself (margin-bottom -1px).
+.workspace-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  height: 48px;
+  border-bottom: 1px solid var(--landing-border);
+
+  @include bp.respond-to('tablet') {
+    gap: 24px;
+  }
+}
+
+.workspace-bar__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+.workspace-bar__tabs {
+  display: flex;
+  gap: 16px;
+  min-width: 0;
+}
+
+.workspace-bar__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color var(--landing-motion-fast) var(--landing-ease),
+    border-color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 2px;
+  }
+}
+
+.workspace-bar__tab--active {
+  border-bottom-color: var(--landing-accent);
+  color: var(--landing-text);
+}
+
+.workspace-bar__end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.workspace-bar__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+// Same green as landing-status-dot's "available".
+.workspace-bar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.workspace-bar__sign-out {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-400);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  cursor: pointer;
+  transition:
+    color var(--landing-motion-fast) var(--landing-ease),
+    border-color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    border-color: var(--landing-border-strong);
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+}
+
+// A phone keeps the dot and the icon; the words come back from tablet.
+.workspace-bar__collapsible {
+  display: none;
+
+  @include bp.respond-to('tablet') {
+    display: inline;
+  }
+}

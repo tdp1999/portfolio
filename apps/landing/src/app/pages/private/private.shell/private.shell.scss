@@ -1,14 +1,17 @@
+// The workspace bar sits right under the header; the page keeps its usual distance
+// below the bar. Pages own their side gutters.
 .private-shell {
   min-height: var(--vh-full);
-  padding-block: 96px 64px;
-}
-
-// Signed in, the session bar sits right under the header; the page keeps its
-// usual distance below the bar.
-.private-shell--signed-in {
-  padding-top: 0;
+  padding-bottom: 64px;
 }
 
 .private-shell__page {
   padding-top: 64px;
+}
+
+// Checking the session, or on the way to /sign-in.
+.private-shell--waiting {
+  display: flex;
+  justify-content: center;
+  padding-top: 144px;
 }

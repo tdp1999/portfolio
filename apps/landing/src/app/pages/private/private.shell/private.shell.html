@@ -1,17 +1,16 @@
-<landing-container size="wide">
-  <div class="private-shell" [class.private-shell--signed-in]="signedIn()">
-    <landing-auth-gate
-      [status]="auth.status()"
-      [submitting]="auth.isSubmitting()"
-      [error]="auth.signInError()"
-      (signIn)="auth.signIn($event)"
-    >
-      <ng-template>
-        <landing-session-bar (signOut)="auth.signOut()" />
-        <div class="private-shell__page">
-          <router-outlet />
-        </div>
-      </ng-template>
-    </landing-auth-gate>
+<!-- No page-wide container: each private page sets its own frame (the checklist run page needs the
+     full width for its reference rail). The workspace bar keeps the usual wide container. -->
+@if (signedIn()) {
+  <div class="private-shell">
+    <landing-container size="wide">
+      <landing-workspace-bar (signOut)="signOut()" />
+    </landing-container>
+    <div class="private-shell__page">
+      <router-outlet />
+    </div>
   </div>
-</landing-container>
+} @else {
+  <div class="private-shell private-shell--waiting">
+    <landing-loading-spinner [message]="checkingLabel()" />
+  </div>
+}

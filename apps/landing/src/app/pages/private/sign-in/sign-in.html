@@ -1,12 +1,20 @@
-<landing-container size="wide">
-  <div class="sign-in-page">
-    <landing-auth-gate
-      [status]="auth.status()"
-      [submitting]="auth.isSubmitting()"
-      [error]="auth.signInError()"
-      (signIn)="auth.signIn($event)"
-    >
-      <ng-template />
-    </landing-auth-gate>
-  </div>
-</landing-container>
+<landing-page-shell [breadcrumb]="breadcrumb()" align="center">
+  <span hero-heading>{{ title() }}</span>
+
+  <section class="sign-in-page" [attr.aria-label]="title()">
+    <landing-container size="wide">
+      @if (auth.status() === 'signed-out') {
+        <landing-sign-in-form
+          [withHeading]="false"
+          [submitting]="auth.isSubmitting()"
+          [error]="auth.signInError()"
+          (submitted)="auth.signIn($event)"
+        />
+      } @else {
+        <div class="sign-in-page__waiting">
+          <landing-loading-spinner [message]="checkingLabel()" />
+        </div>
+      }
+    </landing-container>
+  </section>
+</landing-page-shell>

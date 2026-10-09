@@ -34,7 +34,7 @@ export class App {
   readonly resumeUrl = computed(() => this.resumeEntry()?.url ?? '');
   readonly resumeName = computed(() => this.resumeEntry()?.name ?? 'CV');
 
-  /** App-wide Owner session: the header hides "Sign in" from it, private pages gate on it. */
+  /** App-wide Owner session: the header swaps "Sign in" for the Workspace menu on it, private pages gate on it. */
   private readonly auth = inject(LandingAuthService);
   readonly signedIn = computed(() => this.auth.status() === 'signed-in');
 

@@ -45,6 +45,7 @@ export const LANDING_COPY = {
   /** product names — never translated */
   'common.page.documentEngine': { en: 'Document Engine', vi: 'Document Engine' },
   'common.page.ddl': { en: 'DDL', vi: 'DDL' },
+  'common.page.checklist': { en: 'Checklist', vi: 'Checklist' },
 
   /** copy-to-clipboard button, shared by /contact and /document-engine */
   'common.copy': { en: 'Copy', vi: 'Sao chép' },
@@ -356,7 +357,9 @@ export const LANDING_COPY = {
   'nav.explore': { en: 'Explore', vi: 'Khám phá' },
   'nav.products': { en: 'Products', vi: 'Sản phẩm' },
   'nav.documents': { en: 'Documents', vi: 'Tài liệu' },
-  'nav.account': { en: 'Account', vi: 'Tài khoản' },
+  /** header item in place of "Sign in" once the Owner is signed in; also the workspace bar's eyebrow */
+  'nav.workspace': { en: 'Workspace', vi: 'Workspace' },
+  'nav.workspace.checklist.hint': { en: 'Ticket runs', vi: 'Theo ticket' },
   'nav.resume': { en: 'Resume', vi: 'CV' },
   'nav.product.documentEngine.desc': {
     en: 'A framework-agnostic rich-text engine for structured, versioned documents.',
@@ -395,6 +398,9 @@ export const LANDING_COPY = {
   'auth.gate.checking': { en: 'Checking your session', vi: 'Đang kiểm tra phiên đăng nhập' },
   'auth.signOut': { en: 'Sign out', vi: 'Đăng xuất' },
   'auth.session.signedIn': { en: 'Signed in as Owner', vi: 'Đang đăng nhập với quyền Owner' },
+  /** workspace bar: the short owner badge, and the label of its page tabs for screen readers */
+  'auth.session.owner': { en: 'Owner', vi: 'Owner' },
+  'auth.workspace.nav': { en: 'Workspace pages', vi: 'Các trang trong Workspace' },
 
   // ── /404 (not-found.html:3-10, not-found.ts:22) ───────────────────────────
   'notFound.lede': {

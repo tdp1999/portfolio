@@ -1,6 +1,8 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="sign-in-form" autocomplete="on">
-  <h1 class="sign-in-form__title">{{ 'auth.signIn.title' | landingCopy: locale() }}</h1>
-  <p class="sign-in-form__lede">{{ 'auth.signIn.lede' | landingCopy: locale() }}</p>
+  @if (withHeading()) {
+    <h1 class="sign-in-form__title">{{ 'auth.signIn.title' | landingCopy: locale() }}</h1>
+    <p class="sign-in-form__lede">{{ 'auth.signIn.lede' | landingCopy: locale() }}</p>
+  }
 
   @let email = form.controls.email;
   <landing-form-field

@@ -24,6 +24,8 @@ import { SIGN_IN_ERROR_COPY } from './sign-in-form.data';
 export class SignInForm {
   protected readonly locale = inject(LandingLocaleService).locale;
 
+  /** Its own heading and lede. Off where the page already titles the form (`/sign-in`). */
+  readonly withHeading = input(true);
   readonly submitting = input(false);
   readonly error = input<LandingSignInError | null>(null);
 

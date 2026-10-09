@@ -59,7 +59,7 @@ export class Shell {
   readonly socialLinks = input<readonly SocialLink[]>([]);
   readonly resumeUrl = input<string>('');
   readonly resumeName = input<string>('CV');
-  /** App-wide Owner session, passed to the header (hides "Sign in" in More once signed in). */
+  /** App-wide Owner session, passed to the header (swaps "Sign in" for the Workspace menu once signed in). */
   readonly signedIn = input(false);
 
   private readonly shortcuts = inject(KeyboardShortcutService);
