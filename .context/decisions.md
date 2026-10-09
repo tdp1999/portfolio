@@ -698,3 +698,15 @@ Two further gaps surfaced while checking the library docs. Material's Accessibil
 - A run's AI spend is mostly quick calls (about $0.003 per post on Flash-Lite), so a small budget covers a whole capture.
 - Sources appear only on posts that had a deep analysis that searched the web. A quick enrichment has none by design, and a deep one has none when the model chose not to search.
 - Implemented in task 427.
+
+### ADR-037: The Landing Checklist Is Outside the Landing i18n Contract
+
+**Status:** Accepted (2026-10-09)
+**Context:** ADR-028 requires every user-visible landing string to go through `LANDING_COPY` in both English and Vietnamese. `/checklist` (epic `epic-landing-checklist`) is the Owner's private tool behind login, with one reader. Its content is the Owner's own markdown, mixed Vietnamese and English, and is rendered exactly as written.
+
+**Decision:** `libs/landing/feature-checklist` does not use `LANDING_COPY`. Its UI chrome is plain English strings in templates, and the lib is excluded from `landing-copy-contract.spec.ts` (`OUT_OF_SCOPE`). The exception covers this lib only. The reusable Owner sign-in it uses (`landing-auth-gate`, `landing-sign-in-form`, `LandingAuthService`, the `landing-session-bar` sign-out row) is shared code and keeps the normal rule: its strings are `auth.*` keys in `LANDING_COPY`.
+
+**Consequences:**
+
+- No dictionary keys or VI translations to maintain for a page only the Owner sees.
+- If any part of the checklist becomes public, its strings move into `LANDING_COPY` first and the exclusion is removed.

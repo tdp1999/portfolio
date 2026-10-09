@@ -1,5 +1,7 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
+import { NOINDEX_PATHS } from './pages/private/private.routes';
+
 /**
  * Why so little is prerendered.
  *
@@ -25,6 +27,13 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'contact', renderMode: RenderMode.Server },
   { path: '404', renderMode: RenderMode.Server, status: 404 },
   { path: 'ddl', renderMode: RenderMode.Prerender },
+  // The Owner's private pages and `/sign-in`. Client-only so the server never
+  // renders private data: each page fetches it after sign-in, with a token the
+  // server never sees. `server.ts` adds `X-Robots-Tag: noindex` to the same paths.
+  ...NOINDEX_PATHS.flatMap((path): ServerRoute[] => [
+    { path, renderMode: RenderMode.Client },
+    { path: `${path}/**`, renderMode: RenderMode.Client },
+  ]),
   // No server data (npm/GitHub figures are fetched in the browser, the editor is
   // deferred) but it is fully localized, so it renders per request like the rest.
   // Listing it is not optional: an unlisted path falls through to the `**` rule

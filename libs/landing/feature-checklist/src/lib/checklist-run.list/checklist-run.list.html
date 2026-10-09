@@ -1,0 +1,18 @@
+<h1 class="run-list__title">Runs</h1>
+
+@if (runs(); as state) {
+  @if (state.failed) {
+    <p class="run-list__note" role="alert">Could not load the runs.</p>
+  } @else {
+    <ul class="run-list" role="list">
+      @for (run of state.runs; track run.id) {
+        <li class="run-list__row">
+          <span>{{ run.name }}</span>
+          <span class="run-list__meta">{{ run.templateTitle }} · {{ run.projectSlug }}</span>
+        </li>
+      } @empty {
+        <li class="run-list__note">No runs yet.</li>
+      }
+    </ul>
+  }
+}

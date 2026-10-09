@@ -114,9 +114,16 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
+/**
+ * Landing code outside the i18n contract altogether (ADR-037). Checklist is the
+ * Owner's private tool: English UI chrome, content rendered as written.
+ */
+const OUT_OF_SCOPE = ['libs/landing/feature-checklist/'];
+
 const FILES = SCAN_ROOTS.flatMap((root) => walk(join(WORKSPACE, root)))
   .map((f) => relative(WORKSPACE, f).split('\\').join('/'))
   .filter((f) => !MECHANISM_FILES.some((m) => f.startsWith(m)))
+  .filter((f) => !OUT_OF_SCOPE.some((m) => f.startsWith(m)))
   .filter((f) => !f.endsWith('.spec.ts'));
 
 describe('landing i18n contract', () => {

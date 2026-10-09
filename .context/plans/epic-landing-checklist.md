@@ -59,7 +59,7 @@ The Owner only. Single user, authenticated. No public visitor ever sees checklis
 
 - **API**: new `checklist` module, Controllers → Services → Repositories. Two controllers: `checklist-sync.controller` (machine token, reuse the radar `MachineTokenGuard` pattern with its own token hash) and `checklist.controller` (user JWT guard, same as console endpoints).
 - **Parser** lives in the API (unit tested, one place). The push script stays a thin file reader + POST.
-- **Landing**: new lib `libs/landing/feature-checklist` (create via `ng-lib`). Routes `/checklist` (runs list + create) and `/checklist/:id` (run). Both `RenderMode.Client` in `app.routes.server.ts`, `noindex` meta, excluded from sitemap and nav, `Disallow` in robots.
+- **Landing**: new lib `libs/landing/feature-checklist` (create via `ng-lib`). Routes `/checklist` (runs list + create) and `/checklist/:id` (run). Both `RenderMode.Client` in `app.routes.server.ts`, `noindex` meta plus `X-Robots-Tag: noindex` header, excluded from sitemap and nav. No `Disallow` in robots: a blocked URL is never fetched, so its noindex is never seen.
 - **Landing auth**: a small auth service in the feature lib (cannot import `libs/console/*`). Login `POST /api/auth/login`; refresh `POST /api/auth/refresh` with `x-csrf-token` read from the `csrf_token` cookie; interceptor attaches the bearer token to `/api/checklist*` only.
 - **UI**: `landing-*` components only, no Material. `@angular/cdk/drag-drop` (already installed). Row text is inline markdown (bold, code) rendered safely.
 

@@ -1,0 +1,17 @@
+<landing-container size="wide">
+  <div class="private-shell" [class.private-shell--signed-in]="signedIn()">
+    <landing-auth-gate
+      [status]="auth.status()"
+      [submitting]="auth.isSubmitting()"
+      [error]="auth.signInError()"
+      (signIn)="auth.signIn($event)"
+    >
+      <ng-template>
+        <landing-session-bar (signOut)="auth.signOut()" />
+        <div class="private-shell__page">
+          <router-outlet />
+        </div>
+      </ng-template>
+    </landing-auth-gate>
+  </div>
+</landing-container>

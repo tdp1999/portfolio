@@ -1,0 +1,12 @@
+<landing-container size="wide">
+  <div class="sign-in-page">
+    <landing-auth-gate
+      [status]="auth.status()"
+      [submitting]="auth.isSubmitting()"
+      [error]="auth.signInError()"
+      (signIn)="auth.signIn($event)"
+    >
+      <ng-template />
+    </landing-auth-gate>
+  </div>
+</landing-container>

@@ -2,6 +2,8 @@ import { Route, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { Home } from '@portfolio/landing/feature-home';
 
+import { PRIVATE_AREA_ROUTES } from './pages/private/private.routes';
+
 // `/experience` redirects to `/about#experience`. Server-side `server.ts` issues
 // a real 301 (with fragment) for direct loads & bots. This client-side variant
 // only fires for in-app SPA navigation — kept as a defensive fallback since no
@@ -59,6 +61,8 @@ export const appRoutes: Route[] = [
     path: 'terms',
     loadComponent: () => import('./pages/legal/terms').then((m) => m.Terms),
   },
+  // `/sign-in` + every page behind the Owner sign-in (see `pages/private/private.routes.ts`).
+  ...PRIVATE_AREA_ROUTES,
   {
     path: 'ddl',
     loadComponent: () => import('./pages/ddl/ddl-shell/ddl-shell').then((m) => m.DdlShell),

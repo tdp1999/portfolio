@@ -9,6 +9,9 @@ import { Readable } from 'node:stream';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { NOINDEX_PATHS } from './app/pages/private/private.routes';
+import { isUnderPaths, proxyResponseHeaders } from './server.util';
+
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
@@ -68,17 +71,23 @@ app.use('/api', async (req, res) => {
     } as RequestInit);
 
     res.status(upstream.status);
-    upstream.headers.forEach((value, key) => {
-      // Skip hop-by-hop headers Express/Node will manage
-      if (['transfer-encoding', 'connection'].includes(key.toLowerCase())) return;
-      res.setHeader(key, value);
-    });
+    for (const [key, value] of proxyResponseHeaders(upstream.headers)) res.setHeader(key, value);
     if (upstream.body) Readable.fromWeb(upstream.body as never).pipe(res);
     else res.end();
   } catch (err) {
     console.error('[api-proxy]', req.method, targetUrl, err);
     res.status(502).json({ error: 'Bad Gateway', detail: String(err) });
   }
+});
+
+/**
+ * `NOINDEX_PATHS` are the Owner's private pages and `/sign-in` (client-rendered).
+ * The header reaches crawlers before any JavaScript runs, which the `noindex`
+ * meta tag set by the page cannot do on a client-rendered route.
+ */
+app.use((req, res, next) => {
+  if (isUnderPaths(req.path, NOINDEX_PATHS)) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  next();
 });
 
 /**
