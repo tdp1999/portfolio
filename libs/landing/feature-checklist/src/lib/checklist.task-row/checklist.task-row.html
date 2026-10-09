@@ -1,0 +1,105 @@
+<div class="task-row__check">
+  <landing-checkbox [ngModel]="checked()" (ngModelChange)="onCheck($event)" [ariaLabel]="label()" />
+</div>
+
+@if (editing() === 'text') {
+  <landing-checklist-row-editor
+    class="task-row__text task-row__editor"
+    label="Task text"
+    [value]="task().text"
+    (saved)="saveText($event)"
+    (cancelled)="editing.set(null)"
+  />
+} @else {
+  <p class="task-row__text">
+    <landing-checklist-inline [text]="task().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+    @if (task().state === 'skipped') {
+      <span class="task-row__tag">Skipped</span>
+    }
+  </p>
+}
+
+@if (task().doer || task().checker) {
+  <dl class="task-row__roles">
+    <div class="task-row__role">
+      <dt class="task-row__role-label">Do</dt>
+      <dd class="task-row__role-value">{{ task().doer || '—' }}</dd>
+    </div>
+    <div class="task-row__role">
+      <dt class="task-row__role-label">Check</dt>
+      <dd class="task-row__role-value" [class.task-row__role-value--none]="task().checker === '—'">
+        {{ task().checker || '—' }}
+      </dd>
+    </div>
+  </dl>
+}
+
+@if (editing() === 'note') {
+  <landing-checklist-row-editor
+    class="task-row__note-editor"
+    label="Note"
+    [multiline]="true"
+    [maxLength]="5000"
+    [value]="task().note"
+    (saved)="saveNote($event)"
+    (cancelled)="editing.set(null)"
+  />
+} @else if (task().note) {
+  <p class="task-row__note">{{ task().note }}</p>
+}
+
+<div class="task-row__action">
+  @if (editing() === null) {
+    <landing-tooltip [text]="task().note ? 'Edit note' : 'Add note'" position="bottom" align="end">
+      <button
+        type="button"
+        class="task-row__action-btn"
+        [attr.aria-label]="task().note ? 'Edit note' : 'Add note'"
+        (click)="editing.set('note')"
+      >
+        <landing-icon name="message-square" [size]="16" />
+      </button>
+    </landing-tooltip>
+    @if (editable()) {
+      <landing-tooltip text="Edit text" position="bottom" align="end">
+        <button type="button" class="task-row__action-btn" aria-label="Edit text" (click)="editing.set('text')">
+          <landing-icon name="pen-line" [size]="16" />
+        </button>
+      </landing-tooltip>
+      <landing-tooltip text="Delete row" position="bottom" align="end">
+        <button type="button" class="task-row__action-btn task-row__delete" aria-label="Delete row" (click)="remove()">
+          <landing-icon name="trash-2" [size]="16" />
+        </button>
+      </landing-tooltip>
+    }
+    @switch (task().state) {
+      @case ('todo') {
+        <landing-tooltip text="Skip" position="bottom" align="end">
+          <button
+            type="button"
+            class="task-row__action-btn task-row__skip"
+            aria-label="Skip this task"
+            (click)="setState('skipped')"
+          >
+            <landing-icon name="x" [size]="16" />
+          </button>
+        </landing-tooltip>
+      }
+      @case ('skipped') {
+        <landing-tooltip text="Undo skip" position="bottom" align="end">
+          <button
+            type="button"
+            class="task-row__action-btn task-row__restore"
+            aria-label="Undo skip"
+            (click)="setState('todo')"
+          >
+            <landing-icon name="undo-2" [size]="16" />
+          </button>
+        </landing-tooltip>
+      }
+      @default {
+        <span class="task-row__action-slot" aria-hidden="true"></span>
+      }
+    }
+  }
+</div>

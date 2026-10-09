@@ -59,6 +59,13 @@
     background-color 160ms ease;
 }
 
+.input--sm {
+  padding: 8px 12px;
+  min-height: 36px;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
 .input::placeholder {
   color: var(--landing-text-600);
 }

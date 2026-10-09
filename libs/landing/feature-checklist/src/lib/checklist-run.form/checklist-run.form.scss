@@ -1,0 +1,20 @@
+// One column: it lives in the 480px "New run" dialog.
+.run-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.run-form__error {
+  margin: 0;
+  color: #f87171; // same red as landing-form-field's field errors
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.run-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}

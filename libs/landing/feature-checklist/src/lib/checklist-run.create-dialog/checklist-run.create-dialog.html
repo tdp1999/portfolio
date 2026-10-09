@@ -1,0 +1,21 @@
+<dialog
+  #dialog
+  class="create"
+  aria-labelledby="checklist-create-heading"
+  (cancel)="onCancel($event)"
+  (click)="onClick($event)"
+>
+  @if (open()) {
+    <div class="create__card">
+      <h2 id="checklist-create-heading" class="create__heading">New run</h2>
+      <landing-checklist-run-form
+        [templates]="templates()"
+        [projects]="projects()"
+        [submitting]="submitting()"
+        [error]="error()"
+        (submitted)="submitted.emit($event)"
+        (cancelled)="cancelled.emit()"
+      />
+    </div>
+  }
+</dialog>

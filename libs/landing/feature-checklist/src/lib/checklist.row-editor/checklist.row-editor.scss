@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.row-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row-editor__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.row-editor__hint {
+  margin-right: auto;
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+}

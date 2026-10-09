@@ -1,0 +1,388 @@
+@use 'base/breakpoints' as bp;
+
+// ── Frame ────────────────────────────────────────────────────────────────
+// Blog-style: the run is one 72rem column in the middle, well past the blog's
+// 760px since a run is a table of task, Do and Check. The left gutter is what
+// centres it, and it stays put when a ref opens: on a frame of 1280px and up the
+// panel takes the space right of the run (30% of the frame, 400 to 640px) and
+// the run narrows from the right edge. Below 1280px the ref is a popup instead.
+// The board is a named container so a DDL stage and the real page behave alike.
+:host {
+  display: block;
+  container: cl-frame / inline-size;
+}
+
+.cl {
+  --cl-gutter: max(var(--container-padding), (100cqw - 72rem) / 2);
+
+  // Two buttons per row at work (note, skip), four in edit mode (+ edit text, delete).
+  // Task rows and the column captions both read it, so Do and Check stay aligned.
+  --checklist-row-actions: 64px;
+  --cl-tools-w: 68px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 32px;
+  padding: 8px var(--cl-gutter) 48px;
+}
+
+.cl--editing {
+  --checklist-row-actions: 128px;
+}
+
+@container cl-frame (min-width: 1280px) {
+  .cl--panel {
+    grid-template-columns: minmax(0, 1fr) clamp(400px, 30cqw, 640px);
+    padding-right: var(--container-padding);
+  }
+}
+
+// The column is also the container the task rows query: Do/Check become
+// columns only when it is at least 880px wide (task-row's container query).
+.cl-main {
+  container-type: inline-size;
+  min-width: 0;
+}
+
+// The run's progress sits where each phase's does: a 120px bar right of the
+// filter, then the tools slot (same width as a phase's), so the bars line up
+// down the page. Narrow: the title takes its own line above them.
+.cl-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 120px var(--cl-tools-w);
+  grid-template-areas:
+    'title title title title'
+    'filter . progress tools';
+  align-items: center;
+  gap: 12px 8px;
+  margin-bottom: 32px;
+
+  @include bp.respond-to('tablet') {
+    grid-template-columns: minmax(0, 1fr) auto 120px var(--cl-tools-w);
+    grid-template-areas: 'title filter progress tools';
+  }
+}
+
+.cl-head__title {
+  grid-area: title;
+  min-width: 0;
+  margin: 0;
+  color: var(--landing-text);
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+}
+
+.cl-head__progress {
+  grid-area: progress;
+  min-width: 0;
+}
+
+.cl-head__filter {
+  grid-area: filter;
+
+  @include bp.respond-to('tablet') {
+    margin-right: 16px;
+  }
+}
+
+// Icon-only tools beside a progress bar: expand/collapse all on the run, check /
+// uncheck all on each phase. Quiet until hovered, greyed when nothing would move.
+// Fixed width, end-aligned: the run's two 32px tools and a phase's two 28px
+// ones end at the same edge, so the progress bars before them line up.
+.cl-tools {
+  grid-area: tools;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 4px;
+  width: var(--cl-tools-w);
+}
+
+.cl-tools__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-500);
+  cursor: pointer;
+  transition:
+    color var(--landing-motion-fast) var(--landing-ease),
+    border-color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover:not(:disabled) {
+    border-color: var(--landing-border-strong);
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+
+  &:disabled {
+    opacity: 0.32;
+    cursor: default;
+  }
+}
+
+// A toggle that is on (edit mode): accent, with its hairline kept.
+.cl-tools__btn--on {
+  border-color: var(--landing-accent);
+  color: var(--landing-accent);
+
+  &:hover:not(:disabled) {
+    border-color: var(--landing-accent);
+    color: var(--landing-accent);
+  }
+}
+
+// In a phase head the tools sit after its progress bar, one name line tall.
+.cl-tools--phase {
+  align-items: center;
+  height: var(--cl-phase-line);
+
+  .cl-tools__btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// Column captions follow the same container query as the rows and line up with
+// the row grid: the text track, Do (200px), Check (240px), the action slot.
+// Left inset = phase indent (32) + row padding (8) + checkbox and gap.
+.cl-columns {
+  display: none;
+
+  @container (min-width: 880px) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px 240px var(--checklist-row-actions);
+    column-gap: 12px;
+    margin-bottom: 8px;
+    padding: 0 8px 8px 72px;
+    border-bottom: 1px solid var(--landing-border);
+    color: var(--landing-text-600);
+    font-family: var(--landing-font-mono);
+    font-size: var(--landing-mono-sm);
+    line-height: var(--landing-mono-sm-lh);
+    letter-spacing: var(--landing-tracking-mono);
+    text-transform: uppercase;
+  }
+}
+
+// A hairline between phases marks the section break; rows inside stay rule-free.
+.cl-phase {
+  padding-block: 8px;
+
+  & + & {
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--landing-border);
+  }
+}
+
+// The toggle is one name line tall so its chevron and the header share a centre.
+.cl-phase__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  --cl-phase-line: calc(var(--landing-body-md) * var(--landing-body-md-lh));
+}
+
+.cl-phase__header {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cl-phase__toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: var(--cl-phase-line);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-500);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+}
+
+// Rows indent under the phase name from tablet; on a phone the indent would
+// cost a fifth of the line, so they start at the edge. In edit mode the indent
+// holds the drag handles, so it is there on a phone too.
+.cl-rows {
+  margin-top: 8px;
+
+  @include bp.respond-to('tablet') {
+    padding-left: 24px;
+  }
+}
+
+.cl--editing .cl-rows {
+  padding-left: 24px;
+}
+
+// ── Edit mode ───────────────────────────────────────────────────────────
+.cl-row {
+  position: relative;
+}
+
+// The handle sits in the rows' indent, level with the row's first line (a
+// task's text line; a group's 32px title line under its 16px top padding).
+.cl-row__grip {
+  position: absolute;
+  top: 8px;
+  left: -24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: calc(var(--landing-body-sm) * var(--landing-body-sm-lh));
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-600);
+  cursor: grab;
+  touch-action: none;
+
+  &:hover {
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+}
+
+.cl-row--group > .cl-row__grip {
+  top: 16px;
+  height: 32px;
+}
+
+// Drag feedback: the lifted row floats on the surface, its slot stays as a ghost,
+// the other rows slide out of the way.
+.cl-row.cdk-drag-preview {
+  border-radius: 4px;
+  background: var(--landing-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 32%);
+}
+
+.cl-row.cdk-drag-placeholder {
+  opacity: 0.32;
+}
+
+.cl-row.cdk-drag-animating,
+.cl-rows.cdk-drop-list-dragging .cl-row:not(.cdk-drag-placeholder) {
+  transition: transform var(--landing-motion-base) var(--landing-ease);
+}
+
+// A phase with no rows still takes a drop.
+.cl-rows:empty {
+  min-height: 40px;
+}
+
+.cl-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 24px;
+  padding: 4px 8px;
+  border: 1px dashed var(--landing-border-strong);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-500);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--landing-accent);
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+}
+
+.cl-add__editor {
+  margin: 8px 0 0 24px;
+}
+
+// Edit mode's exit. It sits after the last phase and sticks to the bottom of
+// the viewport until the run's end scrolls into view.
+.cl-editbar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 12px;
+  margin-top: 32px;
+  padding: 12px 12px 12px 20px;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 8px;
+  background: var(--landing-surface-elevated);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 32%);
+}
+
+.cl-editbar__text {
+  flex: 1 1 240px;
+  margin: 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+// ── Reference: popup (narrow frame) or right panel (wide frame) ─────────
+.cl-side {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--container-padding);
+  background: rgb(0 0 0 / 48%);
+
+  @container cl-frame (min-width: 1280px) {
+    position: static;
+    z-index: auto;
+    display: block;
+    padding: 0;
+    background: none;
+  }
+}
+
+.cl-side__card {
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(var(--vh-full) * 0.8);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 32%);
+
+  // Panel: held at the vertical middle of the viewport (top 50% of the
+  // scrollport, pulled up by half its own height), level with what is read.
+  @container cl-frame (min-width: 1280px) {
+    position: sticky;
+    top: 50%;
+    max-width: none;
+    max-height: calc(var(--vh-full) - 128px);
+    box-shadow: none;
+    transform: translateY(-50%);
+  }
+}

@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+// Comfortable: number and role as an eyebrow above the name, so the name
+// lines up with the rows below it. The titles wrapper dissolves into the grid.
+.phase-header__top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 120px;
+  grid-template-areas:
+    'number role .'
+    'name name progress';
+  align-items: end;
+  column-gap: 12px;
+  row-gap: 4px;
+}
+
+.phase-header__titles {
+  display: contents;
+}
+
+.phase-header__number {
+  grid-area: number;
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-header__name {
+  grid-area: name;
+  margin: 0;
+  color: var(--landing-text);
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+}
+
+.phase-header__role {
+  grid-area: role;
+  margin: 0;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+.phase-header__progress {
+  grid-area: progress;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.phase-header__gate,
+.phase-header__note {
+  margin: 16px 0 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.phase-header__gate-label {
+  margin-right: 8px;
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+// Compact: one line of name + role + progress, the gate as a quiet second line.
+:host(.phase-header--compact) {
+  .phase-header__top {
+    grid-template-areas: 'number titles progress';
+    align-items: center;
+    column-gap: 16px;
+  }
+
+  .phase-header__number {
+    font-size: var(--landing-mono-md);
+    line-height: var(--landing-body-md-lh);
+  }
+
+  .phase-header__titles {
+    grid-area: titles;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+  }
+
+  .phase-header__name {
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-md);
+    font-weight: 600;
+    line-height: var(--landing-body-md-lh);
+  }
+
+  .phase-header__name,
+  .phase-header__role {
+    grid-area: auto;
+  }
+
+  .phase-header__progress {
+    padding-bottom: 0;
+  }
+
+  // A narrow column cannot hold name, role and bar on one line: the bar drops
+  // under the name (container query on the run column, responsive contract §4).
+  @container (max-width: 599px) {
+    .phase-header__top {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        'number titles'
+        '. progress';
+      // Top, not centre: the number stays on the name's line when the role wraps under it.
+      align-items: start;
+      row-gap: 4px;
+    }
+
+    // Same width and right edge as the run's bar in the page head.
+    .phase-header__progress {
+      justify-self: end;
+      max-width: 120px;
+    }
+  }
+
+  .phase-header__gate,
+  .phase-header__note {
+    margin-top: 4px;
+  }
+}

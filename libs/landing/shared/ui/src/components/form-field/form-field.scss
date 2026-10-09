@@ -36,6 +36,13 @@
   line-height: var(--landing-body-sm-lh);
 }
 
+// Both are <p>: inherit the meta row's body-sm, or the landing base `p` size wins.
+.ff__error,
+.ff__hint {
+  font-size: inherit;
+  line-height: inherit;
+}
+
 .ff__error {
   margin: 0;
   flex: 1 1 auto;

@@ -1,0 +1,32 @@
+<div class="phase-header__top">
+  @if (number()) {
+    <span class="phase-header__number">{{ number() }}</span>
+  }
+  <div class="phase-header__titles">
+    @if (level() === 2) {
+      <h2 class="phase-header__name">{{ phase().name }}</h2>
+    } @else {
+      <h3 class="phase-header__name">{{ phase().name }}</h3>
+    }
+    @if (phase().role) {
+      <p class="phase-header__role">{{ phase().role }}</p>
+    }
+  </div>
+  <landing-checklist-progress
+    class="phase-header__progress"
+    [progress]="progress()"
+    [label]="phase().name + ' progress'"
+  />
+</div>
+
+@if (showGate() && phase().gate; as gate) {
+  <p class="phase-header__gate">
+    <span class="phase-header__gate-label">Pass when</span>
+    <landing-checklist-inline [text]="gate.markdown" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+  </p>
+}
+@if (showGate() && phase().note; as note) {
+  <p class="phase-header__note">
+    <landing-checklist-inline [text]="note.markdown" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+  </p>
+}

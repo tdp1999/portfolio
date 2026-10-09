@@ -66,7 +66,8 @@
   &__panel {
     position: absolute;
     top: calc(100% + 8px);
-    min-width: 180px;
+    // Override per use with --landing-select-panel-min-width (long option labels).
+    min-width: var(--landing-select-panel-min-width, 180px);
     z-index: 60;
     padding: 6px;
     border-radius: 12px;
@@ -175,6 +176,10 @@
     min-width: 0;
   }
 
+  &__option-label--end {
+    justify-content: space-between;
+  }
+
   &__option-name {
     font-family: var(--landing-font-sans);
     font-size: var(--landing-body-sm);
@@ -193,6 +198,59 @@
   &__check {
     color: var(--landing-accent);
     flex-shrink: 0;
+  }
+}
+
+// ── Field appearance: a compact form control (matches landing-input size="sm") ──
+:host(.landing-select--field) {
+  display: flex;
+  width: 100%;
+
+  .landing-select__trigger {
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--landing-border);
+    border-radius: 6px;
+    background-color: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+    color: var(--landing-text-100);
+    font-family: var(--landing-font-body);
+    font-size: var(--landing-body-sm);
+    line-height: var(--landing-body-sm-lh);
+    letter-spacing: normal;
+    text-align: left;
+    text-transform: none;
+    transition: border-color 160ms ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--landing-border-strong);
+      background-color: color-mix(in srgb, var(--landing-ink-1) 50%, transparent);
+      color: var(--landing-text-100);
+    }
+
+    &:focus-visible:not(:disabled),
+    &.landing-select__trigger--open {
+      border-color: var(--landing-accent);
+      background-color: color-mix(in srgb, var(--landing-ink-1) 70%, transparent);
+      color: var(--landing-text-100);
+    }
+  }
+
+  .landing-select__trigger--placeholder {
+    color: var(--landing-text-600);
+  }
+
+  .landing-select__value {
+    overflow: hidden;
+    line-height: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .landing-select__panel {
+    right: 0;
+    left: 0;
+    min-width: 0;
   }
 }
 

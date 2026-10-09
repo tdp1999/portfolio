@@ -1,0 +1,99 @@
+<landing-ddl-doc-page slug="checklist" [sections]="sections">
+  <!-- ═══ Run page ══════════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="run-page" heading="Run page">
+    <div class="cl-intro">
+      <p>
+        The run page in the picked layout, <strong>Compact</strong>, on the real <code>checklist-lane-l.md</code> run
+        through the API parser; a few rows are preset as done, skipped and noted. The run is a wide column in the
+        middle. A ref chip (<code>tra B</code>, <code>📁 §1</code>) opens its section: on a frame of 1280px and up as a
+        panel taking the space to the right (the run keeps its left edge and narrows from the right), narrower as a
+        popup over the page. The same chip, the close button, the backdrop or Escape closes it. The pen in the toolbar
+        turns on edit mode: every phase opens, each row gets a drag handle, edit and delete, each phase an add button,
+        and a bar at the bottom holds Cancel and Save. Use <strong>Full width</strong> to judge at true viewport size.
+      </p>
+    </div>
+
+    <landing-ddl-stage label="Run page · lane L · project portfolio" width="full">
+      <landing-checklist-board
+        heading="Checklist làn L"
+        projectSlug="portfolio"
+        [(body)]="body"
+        [lookup]="lookup"
+        [project]="project"
+      />
+    </landing-ddl-stage>
+  </landing-ddl-section>
+
+  <!-- ═══ Pieces ════════════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="pieces" heading="Pieces" [framed]="true">
+    <div class="cl-pieces">
+      <div>
+        <h3 class="cl-pieces__label">task row · todo, refs, hover note and ×</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().todo" (action)="onPieceAction($event)" />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · done</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().done" (action)="onPieceAction($event)" />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · skipped (checkbox empty, struck through, undo restores it)</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().skipped" (action)="onPieceAction($event)" />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · with a note</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().noted" (action)="onPieceAction($event)" />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · edit mode (note, edit text, delete, ×)</h3>
+        <landing-checklist-task-row
+          density="compact"
+          [task]="sampleTasks().todo"
+          [editable]="true"
+          (action)="onPieceAction($event)"
+        />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · dimmed by role filter (Manager)</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().noted" role="Manager" />
+      </div>
+      @if (sampleGroup(); as group) {
+        <div>
+          <h3 class="cl-pieces__label">group · title with count, children behind a guide line</h3>
+          <landing-checklist-group-row density="compact" [group]="group" (action)="onPieceAction($event)" />
+        </div>
+      }
+      <div>
+        <h3 class="cl-pieces__label">role filter</h3>
+        <landing-checklist-role-filter [roles]="roles" [counts]="roleCounts()" [(active)]="role" />
+      </div>
+    </div>
+  </landing-ddl-section>
+
+  <!-- ═══ Notes ═════════════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="notes" heading="Notes">
+    <div class="cl-notes">
+      <p>
+        <strong>Picked: Compact.</strong> One line per phase, collapsible, Do and Check as columns. The stage above is
+        <code>landing-checklist-board</code>, the same component the run page at <code>/checklist/:id</code> renders.
+      </p>
+      <p>
+        <strong>Not picked:</strong> <em>Document</em> (phases as chapters with a progress rail on the left) read well
+        top to bottom but made sixty rows long to scan; <em>Focus</em> (one phase at a time behind a stepper) hid the
+        rest of the run. A <em>phase board</em> was never offered: eight phases with sentence-long rows give columns
+        under 280px.
+      </p>
+      <p>
+        <strong>Shared rules:</strong> the × marks a task skipped, which counts as complete but leaves the checkbox
+        empty; the undo icon returns it to todo. The role filter dims rows whose Do and Check both leave the role out,
+        it never hides them. A ref chip opens its section in the panel, read-only, with the file to edit it in.
+      </p>
+      <p>
+        <strong>Work vs edit:</strong> ticking, skipping and notes are always on, since they are the work. Structure
+        changes (drag, edit text, add, delete) wait behind the pen, so the working view stays calm. Edit mode works on a
+        draft: no structure change reaches the run until Save, and Cancel puts the structure back as it was. A tick,
+        skip or note made while editing still saves at once. Deleting a row or group and checking or unchecking a whole
+        phase ask first. The handle also moves a row from the keyboard: focus it, then press ↑ or ↓.
+      </p>
+    </div>
+  </landing-ddl-section>
+</landing-ddl-doc-page>

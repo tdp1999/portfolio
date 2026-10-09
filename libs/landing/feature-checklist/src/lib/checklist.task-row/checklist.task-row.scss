@@ -1,0 +1,222 @@
+// Grid areas, so the same markup serves both densities:
+//   comfortable  check text action / . roles . / . note .
+//   compact      check text roles action / . note . .   (wide container)
+//
+// Compact columns follow the CONTAINER, not the viewport (responsive contract §4):
+// the row sits beside a 320px panel or inside a DDL stage, so a laptop viewport
+// can still leave it too narrow for two fixed role columns. The page that wants
+// columns declares `container-type: inline-size` on an ancestor; without one the
+// row stays stacked.
+:host {
+  display: grid;
+  // The action slot is a fixed width so Do and Check line up down the run: two buttons
+  // (note, skip) at work, four in the page's edit mode. The page sets the variable.
+  grid-template-columns: auto minmax(0, 1fr) var(--checklist-row-actions, 64px);
+  grid-template-areas:
+    'check text action'
+    '. roles .'
+    '. note .';
+  column-gap: 12px;
+  row-gap: 4px;
+  padding-block: 12px;
+  // One text line's height. The checkbox and the action button centre in a
+  // slot this tall, so a one-line row is middle-aligned and a longer row lines
+  // its controls up with the first line, not the block.
+  --task-row-line: calc(var(--landing-body-md) * var(--landing-body-md-lh));
+  border-bottom: 1px solid var(--landing-border);
+  transition: opacity var(--landing-motion-base) var(--landing-ease);
+}
+
+:host(.task-row--compact) {
+  --task-row-line: calc(var(--landing-body-sm) * var(--landing-body-sm-lh));
+
+  // No dividers between compact rows: spacing and a hover wash separate them.
+  padding: 8px;
+  border-bottom: 0;
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--landing-surface);
+  }
+
+  @container (min-width: 880px) {
+    grid-template-columns: auto minmax(0, 1fr) 200px 240px var(--checklist-row-actions, 64px);
+    grid-template-areas:
+      'check text roles roles action'
+      '. note note note .';
+    align-items: start;
+  }
+}
+
+.task-row__check {
+  grid-area: check;
+  display: flex;
+  align-items: center;
+  height: var(--task-row-line);
+}
+
+.task-row__text {
+  grid-area: text;
+  margin: 0;
+  color: var(--landing-text-300);
+  font-size: var(--landing-body-md);
+  line-height: var(--landing-body-md-lh);
+}
+
+:host(.task-row--compact) .task-row__text {
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+// Done reads as settled: muted, no strike (the text stays legible for review).
+:host(.task-row--done) .task-row__text {
+  color: var(--landing-text-500);
+}
+
+// Skipped is done without doing it: struck through, plus a mono tag.
+:host(.task-row--skipped) .task-row__text {
+  color: var(--landing-text-500);
+  text-decoration: line-through;
+  text-decoration-color: var(--landing-text-600);
+}
+
+.task-row__tag {
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.task-row__roles {
+  grid-area: roles;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+:host(.task-row--compact) .task-row__roles {
+  @container (min-width: 880px) {
+    display: grid;
+    grid-template-columns: 200px 240px;
+    column-gap: 12px;
+  }
+}
+
+.task-row__role {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+:host(.task-row--compact) .task-row__role-label {
+  @container (min-width: 880px) {
+    display: none;
+  }
+}
+
+.task-row__role-label {
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+.task-row__role-value {
+  margin: 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.task-row__role-value--none {
+  color: var(--landing-text-600);
+}
+
+.task-row__note {
+  grid-area: note;
+  margin: 4px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--landing-accent);
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+  white-space: pre-line;
+}
+
+.task-row__action {
+  grid-area: action;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: var(--task-row-line);
+}
+
+// Quiet at rest so 60 rows do not shout ×; full strength when the row is hovered or focused.
+.task-row__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-600);
+  opacity: 0.4;
+  cursor: pointer;
+  transition:
+    opacity var(--landing-motion-fast) var(--landing-ease),
+    color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 0;
+  }
+}
+
+:host(:hover) .task-row__action-btn,
+:host(:focus-within) .task-row__action-btn {
+  opacity: 1;
+}
+
+// A done row has no skip or undo; the empty slot keeps its other buttons where a todo row has them.
+.task-row__action-slot {
+  width: 32px;
+}
+
+.task-row__delete:hover {
+  color: #f87171;
+}
+
+// An open editor replaces the text or note in its own grid area.
+.task-row__editor,
+.task-row__note-editor {
+  min-width: 0;
+}
+
+.task-row__note-editor {
+  grid-area: note;
+  margin-top: 4px;
+}
+
+// Undo stays visible at rest: it is the only way back from skipped.
+.task-row__restore {
+  opacity: 0.72;
+}
+
+:host(.task-row--dimmed) {
+  opacity: 0.32;
+}

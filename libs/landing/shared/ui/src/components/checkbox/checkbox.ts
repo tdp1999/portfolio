@@ -38,6 +38,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         [disabled]="disabled()"
         [attr.aria-invalid]="hasError() ? 'true' : null"
         [attr.aria-describedby]="ariaDescribedBy() || null"
+        [attr.aria-label]="ariaLabel() || null"
         (change)="onChangeEvent($event)"
         (blur)="onTouched()"
       />
@@ -66,6 +67,8 @@ export class Checkbox implements ControlValueAccessor {
   readonly hasError = input<boolean>(false);
   readonly inputId = input<string>('');
   readonly ariaDescribedBy = input<string>('');
+  /** Accessible name when the label is not projected (e.g. a list row whose text sits beside it). */
+  readonly ariaLabel = input<string>('');
 
   protected readonly checked = signal<boolean>(false);
   protected onChange: (value: boolean) => void = () => {

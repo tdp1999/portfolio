@@ -1,0 +1,65 @@
+<form class="run-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @let name = form.controls.name;
+  <landing-form-field
+    label="Name"
+    inputId="run-form-name"
+    metaId="run-form-name-meta"
+    [error]="name.invalid && name.touched ? 'Give the run a name.' : null"
+  >
+    <landing-input
+      inputId="run-form-name"
+      formControlName="name"
+      autocomplete="off"
+      placeholder="The ticket, e.g. PROJ-142 export to CSV"
+      size="sm"
+      [maxLength]="200"
+      [hasError]="name.invalid && name.touched"
+      ariaDescribedBy="run-form-name-meta"
+    />
+  </landing-form-field>
+
+  @let template = form.controls.templateSlug;
+  <landing-form-field
+    label="Template"
+    inputId="run-form-template"
+    metaId="run-form-template-meta"
+    [error]="template.invalid && template.touched ? 'Pick a template.' : null"
+  >
+    <landing-select
+      formControlName="templateSlug"
+      [options]="templateOptions()"
+      placeholder="Choose a template"
+      ariaLabel="Template"
+      appearance="field"
+    />
+  </landing-form-field>
+
+  @let project = form.controls.projectSlug;
+  <landing-form-field
+    label="Project"
+    inputId="run-form-project"
+    metaId="run-form-project-meta"
+    [error]="project.invalid && project.touched ? 'Pick a project.' : null"
+  >
+    <landing-select
+      formControlName="projectSlug"
+      [options]="projectOptions()"
+      placeholder="Choose a project"
+      ariaLabel="Project"
+      appearance="field"
+    />
+  </landing-form-field>
+
+  @if (error(); as message) {
+    <p class="run-form__error" role="alert">{{ message }}</p>
+  }
+
+  <div class="run-form__actions">
+    <landing-button variant="ghost" size="sm" [disabled]="submitting()" (buttonClick)="cancelled.emit()">
+      Cancel
+    </landing-button>
+    <landing-button type="submit" variant="solid" size="sm" [disabled]="submitting()">
+      {{ submitting() ? 'Creating…' : 'Create run' }}
+    </landing-button>
+  </div>
+</form>

@@ -1,0 +1,33 @@
+@for (segment of segments(); track $index) {
+  @switch (segment.kind) {
+    @case ('strong') {
+      <strong class="checklist-inline__strong">{{ segment.text }}</strong>
+    }
+    @case ('code') {
+      <code class="checklist-inline__code">{{ segment.text }}</code>
+    }
+    @case ('ref') {
+      <button
+        type="button"
+        class="checklist-inline__ref"
+        [class.checklist-inline__ref--project]="segment.ref.kind === 'project'"
+        [attr.aria-pressed]="
+          activeRef()?.kind === segment.ref.kind && activeRef()?.key === segment.ref.key ? 'true' : 'false'
+        "
+        [attr.aria-label]="
+          segment.ref.kind === 'lookup' ? 'Lookup ' + segment.ref.key : 'Project section ' + segment.ref.key
+        "
+        (click)="openRef.emit(segment.ref)"
+      >
+        @if (segment.ref.kind === 'project') {
+          <landing-icon name="folder-open" [size]="12" />
+        }
+        {{ segment.label }}
+      </button>
+    }
+    @default {
+      <!-- Wrapped so the template's line breaks are dropped, not collapsed into a space before punctuation. -->
+      <ng-container>{{ segment.text }}</ng-container>
+    }
+  }
+}

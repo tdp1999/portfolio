@@ -1,0 +1,214 @@
+<div class="cl" [class.cl--panel]="!!panel()" [class.cl--editing]="editing()">
+  <div class="cl-main" cdkDropListGroup [attr.inert]="locked() ? '' : null">
+    <ng-content select="[checklistBoardLead]" />
+
+    <header class="cl-head">
+      <h1 class="cl-head__title">{{ heading() }}</h1>
+      <landing-checklist-role-filter
+        class="cl-head__filter"
+        [roles]="roles"
+        [counts]="roleCounts()"
+        [(active)]="role"
+      />
+      <landing-checklist-progress class="cl-head__progress" [progress]="total()" label="Run progress" />
+      <!-- Edit mode opens every phase and owns its exit (Save / Cancel below), so the run tools step aside. -->
+      <div class="cl-tools" role="toolbar" aria-label="Run tools">
+        @if (!editing()) {
+          <landing-tooltip text="Edit rows" position="bottom" align="end">
+            <button type="button" class="cl-tools__btn" aria-label="Edit rows" (click)="startEditing()">
+              <landing-icon name="pen-line" [size]="16" />
+            </button>
+          </landing-tooltip>
+          <landing-tooltip
+            [text]="allCollapsed() ? 'Expand all phases' : 'Collapse all phases'"
+            position="bottom"
+            align="end"
+          >
+            <button
+              type="button"
+              class="cl-tools__btn"
+              [attr.aria-label]="allCollapsed() ? 'Expand all phases' : 'Collapse all phases'"
+              (click)="toggleAll()"
+            >
+              <landing-icon [name]="allCollapsed() ? 'chevrons-up-down' : 'chevrons-down-up'" [size]="16" />
+            </button>
+          </landing-tooltip>
+        }
+      </div>
+    </header>
+
+    <div class="cl-columns" aria-hidden="true">
+      <span>Task</span>
+      <span>Do</span>
+      <span>Check</span>
+    </div>
+
+    @for (item of phases(); track item.phase.id) {
+      <section class="cl-phase" [id]="'cl-section-' + item.phase.id">
+        <div class="cl-phase__head">
+          @if (editing()) {
+            <span class="cl-phase__toggle" aria-hidden="true"></span>
+          } @else {
+            <button
+              type="button"
+              class="cl-phase__toggle"
+              [attr.aria-expanded]="!item.collapsed"
+              [attr.aria-controls]="'cl-phase-' + item.phase.id"
+              [attr.aria-label]="(item.collapsed ? 'Expand ' : 'Collapse ') + item.phase.name"
+              (click)="toggleCollapsed(item.phase.id)"
+            >
+              <landing-icon [name]="item.collapsed ? 'chevron-right' : 'chevron-down'" [size]="16" />
+            </button>
+          }
+          <landing-checklist-phase-header
+            class="cl-phase__header"
+            density="compact"
+            [phase]="item.phase"
+            [showGate]="!item.collapsed"
+            [activeRef]="activeRef()"
+            (openRef)="toggleRef($event)"
+          />
+          <div class="cl-tools cl-tools--phase" role="toolbar" [attr.aria-label]="item.phase.name + ' tools'">
+            @if (!editing()) {
+              <landing-tooltip text="Check all open tasks" position="bottom" align="end">
+                <button
+                  type="button"
+                  class="cl-tools__btn"
+                  [attr.aria-label]="'Check all open tasks in ' + item.phase.name"
+                  [disabled]="!item.todo"
+                  (click)="checkPhase(item.phase.id, item.phase.name, item.todo)"
+                >
+                  <landing-icon name="list-checks" [size]="16" />
+                </button>
+              </landing-tooltip>
+              <landing-tooltip text="Uncheck all done tasks" position="bottom" align="end">
+                <button
+                  type="button"
+                  class="cl-tools__btn"
+                  [attr.aria-label]="'Uncheck all done tasks in ' + item.phase.name"
+                  [disabled]="!item.done"
+                  (click)="uncheckPhase(item.phase.id, item.phase.name, item.done)"
+                >
+                  <landing-icon name="list-x" [size]="16" />
+                </button>
+              </landing-tooltip>
+            }
+          </div>
+        </div>
+
+        @if (!item.collapsed) {
+          <div
+            class="cl-rows"
+            [id]="'cl-phase-' + item.phase.id"
+            cdkDropList
+            [cdkDropListData]="item.phase.id"
+            [cdkDropListDisabled]="!editing()"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (entry of item.rows; track entry.row.id) {
+              <div
+                class="cl-row"
+                [class.cl-row--group]="entry.row.kind === 'group'"
+                cdkDrag
+                [cdkDragDisabled]="!editing()"
+              >
+                @if (editing()) {
+                  <button
+                    type="button"
+                    class="cl-row__grip"
+                    cdkDragHandle
+                    [attr.data-grip]="entry.row.id"
+                    [attr.aria-label]="'Move ' + entry.label"
+                    aria-describedby="cl-grip-help"
+                    (keydown)="onGripKey($event, entry.row)"
+                  >
+                    <landing-icon name="grip-vertical" [size]="16" />
+                  </button>
+                }
+                @if (entry.row.kind === 'task') {
+                  <landing-checklist-task-row
+                    density="compact"
+                    [task]="entry.row"
+                    [role]="role()"
+                    [activeRef]="activeRef()"
+                    [editable]="editing()"
+                    (action)="onRowAction($event)"
+                    (openRef)="toggleRef($event)"
+                  />
+                } @else {
+                  <landing-checklist-group-row
+                    density="compact"
+                    [group]="entry.row"
+                    [role]="role()"
+                    [activeRef]="activeRef()"
+                    [editable]="editing()"
+                    (action)="onRowAction($event)"
+                    (openRef)="toggleRef($event)"
+                  />
+                }
+              </div>
+            }
+          </div>
+
+          @if (editing()) {
+            @if (addingTo() === item.phase.id) {
+              <landing-checklist-row-editor
+                class="cl-add__editor"
+                [label]="'New task in ' + item.phase.name"
+                (saved)="addTask(item.phase.id, $event)"
+                (cancelled)="addingTo.set(null)"
+              />
+            } @else {
+              <button type="button" class="cl-add" (click)="addingTo.set(item.phase.id)">
+                <landing-icon name="plus" [size]="16" />
+                Add task
+              </button>
+            }
+          }
+        }
+      </section>
+    }
+
+    <!-- Edit mode's exit, held at the bottom of the viewport while the run scrolls under it. -->
+    @if (editing()) {
+      <div class="cl-editbar" role="region" aria-label="Edit rows">
+        <p class="cl-editbar__text" role="status">
+          @if (dirty()) {
+            Unsaved changes to this run's rows.
+          } @else {
+            Editing rows: drag a row by its handle, or focus it and press ↑ / ↓.
+          }
+        </p>
+        <landing-button variant="ghost" size="sm" (buttonClick)="stopEditing()">Cancel</landing-button>
+        <landing-button variant="solid" size="sm" (buttonClick)="saveEditing()">Save</landing-button>
+      </div>
+    }
+
+    <p id="cl-grip-help" class="sr-only">Press arrow up or down to move this row.</p>
+  </div>
+
+  <!-- Reference: closed until a ref chip opens it. Wide frame: a panel taking the space right of
+       the run (the run keeps its left edge and gives up its right). Narrower: a popup over the
+       page; a click on the backdrop or Escape closes it. -->
+  @if (panel(); as open) {
+    <aside class="cl-side" aria-label="Reference" (click)="onBackdrop($event)">
+      <landing-checklist-ref-panel
+        class="cl-side__card"
+        [ref]="open.ref"
+        [section]="open.section"
+        [source]="open.source"
+        [file]="open.file"
+        (closed)="closeRef()"
+      />
+    </aside>
+  }
+</div>
+
+<landing-checklist-confirm-dialog
+  [open]="!!confirm()"
+  [heading]="confirm()?.heading ?? ''"
+  [message]="confirm()?.message ?? ''"
+  [confirmLabel]="confirm()?.confirmLabel ?? 'Confirm'"
+  (confirmed)="onConfirmed()"
+  (cancelled)="confirm.set(null)"
+/>

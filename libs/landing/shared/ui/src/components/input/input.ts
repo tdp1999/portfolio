@@ -34,7 +34,9 @@ import { LandingLocaleService } from '../../services/locale/landing-locale.servi
       <input
         [type]="type()"
         [placeholder]="placeholder()"
-        [class]="inputClasses()"
+        class="input"
+        [class.input--sm]="size() === 'sm'"
+        [class.input--error]="error() || hasError()"
         [disabled]="disabled()"
         [value]="value()"
         [attr.id]="inputId() || null"
@@ -42,6 +44,7 @@ import { LandingLocaleService } from '../../services/locale/landing-locale.servi
         [attr.inputmode]="inputmode() || null"
         [attr.maxlength]="maxLength() || null"
         [attr.aria-describedby]="ariaDescribedBy() || null"
+        [attr.aria-label]="ariaLabel() || null"
         [attr.aria-invalid]="error() || hasError() ? 'true' : null"
         (input)="onInput($event)"
         (blur)="onTouched()"
@@ -69,6 +72,10 @@ export class Input implements ControlValueAccessor {
   readonly inputmode = input<string>('');
   readonly maxLength = input<number | null>(null);
   readonly ariaDescribedBy = input<string>('');
+  /** Accessible name when no `<label for>` points at the input (an inline rename, a search box). */
+  readonly ariaLabel = input<string>('');
+  /** `sm` is the compact field for dense surfaces (dialogs, toolbars): 36px tall, body-sm text. */
+  readonly size = input<'md' | 'sm'>('md');
   /** Show an "X" button on the right when the input has a value. */
   readonly clearable = input<boolean>(false);
 
@@ -77,13 +84,6 @@ export class Input implements ControlValueAccessor {
 
   protected readonly value = signal<string>('');
   protected readonly showClearButton = computed(() => this.clearable() && !this.disabled() && this.value().length > 0);
-  protected readonly inputClasses = computed(() => {
-    const classes = ['input'];
-    if (this.error() || this.hasError()) {
-      classes.push('input--error');
-    }
-    return classes.join(' ');
-  });
   protected onChange: (value: string) => void = () => {
     /* empty */
   };

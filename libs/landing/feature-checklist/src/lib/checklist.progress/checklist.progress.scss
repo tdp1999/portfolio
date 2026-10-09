@@ -1,0 +1,38 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.progress__bar {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 32px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--landing-border);
+}
+
+.progress__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--landing-text-500);
+  transition: width var(--landing-motion-base) var(--landing-ease);
+}
+
+// The accent is spent once: on a finished phase.
+:host(.progress--complete) .progress__fill {
+  background: var(--landing-accent);
+}
+
+.progress__count {
+  flex: 0 0 auto;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  font-variant-numeric: tabular-nums;
+}

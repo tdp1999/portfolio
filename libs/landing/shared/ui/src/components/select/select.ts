@@ -58,6 +58,7 @@ import { nextSelectId } from './select.util';
   ],
   host: {
     class: 'landing-select',
+    '[class.landing-select--field]': "appearance() === 'field'",
     '(mouseenter)': 'onMouseEnter()',
     '(mouseleave)': 'onMouseLeave()',
     '(document:click)': 'onDocumentClick($event)',
@@ -70,6 +71,7 @@ import { nextSelectId } from './select.util';
       class="landing-select__trigger"
       [class.landing-select__trigger--open]="open()"
       [class.landing-select__trigger--icon-only]="!showTriggerLabel()"
+      [class.landing-select__trigger--placeholder]="!selectedOption()"
       [disabled]="effectiveDisabled()"
       [attr.aria-haspopup]="'listbox'"
       [attr.aria-expanded]="open()"
@@ -119,7 +121,10 @@ import { nextSelectId } from './select.util';
                 aria-hidden="true"
               />
             }
-            <span class="landing-select__option-label">
+            <span
+              class="landing-select__option-label"
+              [class.landing-select__option-label--end]="sublabelAlign() === 'end'"
+            >
               <span class="landing-select__option-name">{{ option.label }}</span>
               @if (option.sublabel) {
                 <span class="landing-select__option-sub">{{ option.sublabel }}</span>
@@ -162,6 +167,12 @@ export class Select<T = string> implements ControlValueAccessor {
   /** Vertical placement: `down` (default) opens below the trigger; `up` opens above
    *  — use when the trigger sits near the bottom of the viewport (e.g. a bottom sheet). */
   readonly placement = input<'down' | 'up'>('down');
+  /** Where an option's sublabel sits: right after the name (`inline`, default) or pushed to the
+   *  row's end (`end`), so counts or codes line up in a column. */
+  readonly sublabelAlign = input<'inline' | 'end'>('inline');
+  /** `ghost` (default) is the quiet mono trigger of the header switchers. `field` dresses it as a
+   *  compact form field: full width, boxed like `landing-input size="sm"`, the panel as wide as it. */
+  readonly appearance = input<'ghost' | 'field'>('ghost');
   /** Stable id used for `aria-controls`. */
   readonly panelId = input<string>(`landing-select-${nextSelectId()}`);
 

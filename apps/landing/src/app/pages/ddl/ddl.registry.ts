@@ -419,6 +419,14 @@ export const DDL_REGISTRY: readonly DdlEntry[] = [
     source: 'route:/ddl/page-shell',
   },
   {
+    slug: 'checklist',
+    title: 'Checklist run',
+    group: 'pages',
+    status: 'exploring',
+    summary: 'Owner checklist run page · compact layout, refs in a side panel.',
+    source: 'route:/ddl/checklist',
+  },
+  {
     slug: 'project-detail',
     title: 'Project detail',
     group: 'pages',

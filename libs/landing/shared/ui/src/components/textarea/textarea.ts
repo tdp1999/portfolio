@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
@@ -26,11 +26,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     <textarea
       [placeholder]="placeholder()"
       [rows]="rows()"
-      [class]="textareaClasses()"
+      class="textarea"
+      [class.textarea--error]="hasError()"
       [disabled]="disabled()"
       [attr.id]="inputId() || null"
       [attr.maxlength]="maxLength() || null"
       [attr.aria-describedby]="ariaDescribedBy() || null"
+      [attr.aria-label]="ariaLabel() || null"
       [attr.aria-invalid]="hasError() ? 'true' : null"
       (input)="onInput($event)"
       (blur)="onTouched()"
@@ -48,17 +50,13 @@ export class Textarea implements ControlValueAccessor {
   readonly inputId = input<string>('');
   readonly maxLength = input<number | null>(null);
   readonly ariaDescribedBy = input<string>('');
+  /** Accessible name when no `<label>` points at the field (an in-place editor). */
+  readonly ariaLabel = input<string>('');
 
   // ── Writable state ────────────────────────────────────────────────
   protected readonly value = signal<string>('');
 
   // ── Derived ───────────────────────────────────────────────────────
-  protected readonly textareaClasses = computed(() => {
-    const classes = ['textarea'];
-    if (this.hasError()) classes.push('textarea--error');
-    return classes.join(' ');
-  });
-
   // ── CVA callbacks ─────────────────────────────────────────────────
   protected onChange: (value: string) => void = () => {
     /* empty */

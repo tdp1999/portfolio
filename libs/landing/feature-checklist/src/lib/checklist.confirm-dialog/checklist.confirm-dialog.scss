@@ -1,0 +1,40 @@
+.confirm {
+  width: min(400px, calc(100vw - 2 * var(--container-padding)));
+  padding: 0;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 8px;
+  background: var(--landing-surface);
+  color: var(--landing-text);
+
+  &::backdrop {
+    background: rgb(0 0 0 / 48%);
+  }
+}
+
+.confirm__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+}
+
+.confirm__heading {
+  margin: 0;
+  font-size: var(--landing-body-lg);
+  font-weight: 600;
+  line-height: var(--landing-body-lg-lh);
+}
+
+.confirm__message {
+  margin: 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

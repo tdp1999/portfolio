@@ -1,0 +1,130 @@
+@use 'base/prefers' as prefers;
+
+:host {
+  display: block;
+}
+
+.run-detail__lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+}
+
+.run-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+// Template and project as two quiet chips: an icon says which is which, the
+// project slug reads in mono like the file it comes from.
+.run-detail__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 12px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background: var(--landing-surface);
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.run-detail__fact--project {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  letter-spacing: var(--landing-tracking-mono);
+}
+
+.run-detail__fact-icon {
+  flex: 0 0 auto;
+  color: var(--landing-text-600);
+}
+
+.run-detail__tag {
+  color: var(--landing-text-300);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+// The save state as one icon; the tooltip carries the words.
+.run-detail__save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  color: var(--landing-text-600);
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+  }
+
+  &[data-state='pending'],
+  &[data-state='saving'] {
+    color: var(--landing-text-400);
+  }
+
+  &[data-state='saving'] landing-icon {
+    display: inline-flex;
+    animation: run-detail-spin 1s linear infinite;
+
+    @include prefers.reduce-motion {
+      animation: none;
+    }
+  }
+
+  &[data-state='failed'],
+  &[data-state='conflict'] {
+    color: #f87171;
+  }
+}
+
+@keyframes run-detail-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Pinned to the bottom of the viewport so the run stays readable above it.
+.run-detail__alert {
+  position: fixed;
+  right: var(--container-padding);
+  bottom: var(--container-padding);
+  left: var(--container-padding);
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 16px 20px;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 8px;
+  background: var(--landing-surface);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 32%);
+  color: var(--landing-text-300);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+
+  p {
+    flex: 1 1 280px;
+    margin: 0;
+  }
+}
+
+.run-detail__alert--conflict {
+  border-color: #f87171;
+}

@@ -1,0 +1,13 @@
+<form class="row-editor" [formGroup]="form" (ngSubmit)="save()" (keydown)="onKeydown($event)">
+  <landing-textarea
+    formControlName="text"
+    [rows]="multiline() ? 3 : 1"
+    [maxLength]="maxLength()"
+    [ariaLabel]="label()"
+  />
+  <div class="row-editor__actions">
+    <span class="row-editor__hint">{{ multiline() ? '⌘ Enter to save' : 'Enter to save' }} · Esc to cancel</span>
+    <landing-button variant="ghost" size="sm" (buttonClick)="cancelled.emit()">Cancel</landing-button>
+    <landing-button type="submit" variant="solid" size="sm">Save</landing-button>
+  </div>
+</form>

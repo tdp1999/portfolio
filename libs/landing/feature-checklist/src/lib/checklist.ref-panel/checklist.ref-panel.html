@@ -1,0 +1,27 @@
+<header class="ref-panel__head">
+  <div class="ref-panel__titles">
+    <p class="ref-panel__source">{{ source() }}</p>
+    <h2 class="ref-panel__title">
+      <span class="ref-panel__key">{{ key() }}</span>
+      {{ section()?.title ?? 'Section not found' }}
+    </h2>
+  </div>
+  <div class="ref-panel__actions">
+    <button type="button" class="ref-panel__btn" aria-label="Close panel" (click)="closed.emit()">
+      <landing-icon name="x" [size]="16" />
+    </button>
+  </div>
+</header>
+
+@if (section()) {
+  <div class="ref-panel__body" [innerHTML]="html()"></div>
+} @else {
+  <p class="ref-panel__empty">This document has no section {{ key() }}.</p>
+}
+
+@if (file()) {
+  <p class="ref-panel__file">
+    Edit in <code>{{ file() }}</code
+    >, then push the docs
+  </p>
+}

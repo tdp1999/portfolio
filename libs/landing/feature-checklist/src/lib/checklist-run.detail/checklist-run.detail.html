@@ -1,0 +1,66 @@
+@if (run(); as current) {
+  @if (body(); as working) {
+    <landing-checklist-board
+      [heading]="current.name"
+      [projectSlug]="current.projectSlug"
+      [body]="working"
+      [lookup]="lookup()"
+      [project]="project()"
+      [locked]="saveState() === 'conflict'"
+      (bodyChange)="onBodyChange($event)"
+    >
+      <div checklistBoardLead class="run-detail__lead">
+        <landing-back-link href="/checklist">All runs</landing-back-link>
+        <div class="run-detail__meta">
+          <span class="run-detail__fact">
+            <landing-icon name="file-text" [size]="14" class="run-detail__fact-icon" />
+            <span class="sr-only">Template:</span>
+            {{ current.templateTitle }}
+          </span>
+          <span class="run-detail__fact run-detail__fact--project">
+            <landing-icon name="folder" [size]="14" class="run-detail__fact-icon" />
+            <span class="sr-only">Project:</span>
+            {{ current.projectSlug }}
+          </span>
+          @if (current.status !== 'ACTIVE') {
+            <span class="run-detail__tag">{{ current.status === 'DONE' ? 'Done' : 'Archived' }}</span>
+          }
+          <landing-tooltip [text]="saveInfo().label" position="bottom" align="end">
+            <span
+              class="run-detail__save"
+              tabindex="0"
+              [attr.data-state]="saveState()"
+              [attr.aria-label]="saveInfo().label"
+            >
+              <landing-icon [name]="saveInfo().icon" [size]="16" />
+            </span>
+          </landing-tooltip>
+          <span class="sr-only" role="status">{{ saveInfo().label }}</span>
+        </div>
+      </div>
+    </landing-checklist-board>
+  }
+
+  @if (saveState() === 'failed') {
+    <div class="run-detail__alert" role="alert">
+      <p>Could not save the last change. It stays on this page and saves with the next change.</p>
+      <landing-button variant="ghost" size="sm" (buttonClick)="retry()">Try again</landing-button>
+    </div>
+  } @else if (saveState() === 'conflict') {
+    <div class="run-detail__alert run-detail__alert--conflict" role="alert">
+      <p>
+        This run was saved from another tab or device, so changes here are no longer saved. Reload to work on the latest
+        version.
+      </p>
+      <landing-button variant="solid" size="sm" (buttonClick)="reload()">Reload run</landing-button>
+    </div>
+  }
+} @else if (notFound()) {
+  <landing-empty-state icon="list-x" title="Run not found" message="It may have been deleted.">
+    <landing-back-link href="/checklist">All runs</landing-back-link>
+  </landing-empty-state>
+} @else if (loadFailed()) {
+  <landing-empty-state icon="list-x" title="Could not load this run" message="Reload the page to try again.">
+    <landing-back-link href="/checklist">All runs</landing-back-link>
+  </landing-empty-state>
+}

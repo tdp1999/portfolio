@@ -1,18 +1,71 @@
-<h1 class="run-list__title">Runs</h1>
+<landing-container size="wide">
+  <header class="run-list__head">
+    <h1 class="run-list__title">Checklist</h1>
+    <landing-button variant="solid" size="sm" (buttonClick)="openForm()">New run</landing-button>
+  </header>
 
-@if (runs(); as state) {
-  @if (state.failed) {
-    <p class="run-list__note" role="alert">Could not load the runs.</p>
-  } @else {
-    <ul class="run-list" role="list">
-      @for (run of state.runs; track run.id) {
-        <li class="run-list__row">
-          <span>{{ run.name }}</span>
-          <span class="run-list__meta">{{ run.templateTitle }} · {{ run.projectSlug }}</span>
-        </li>
-      } @empty {
-        <li class="run-list__note">No runs yet.</li>
-      }
-    </ul>
+  @if (actionError(); as message) {
+    <p class="run-list__alert" role="alert">{{ message }}</p>
   }
-}
+
+  @if (runs(); as all) {
+    @if (loadFailed()) {
+      <p class="run-list__alert" role="alert">Could not load the runs. Reload the page to try again.</p>
+    } @else if (all.length === 0) {
+      <landing-empty-state
+        icon="list-checks"
+        title="No runs yet"
+        message="Start one with New run, from a template for the ticket you are on."
+      />
+    } @else {
+      <div class="run-list" role="list" aria-label="Active runs">
+        @for (run of active(); track run.id) {
+          <landing-checklist-run-row
+            [run]="run"
+            [busy]="busyId() === run.id"
+            (renamed)="rename(run, $event)"
+            (statusChange)="setStatus(run, $event)"
+            (deleted)="remove(run)"
+          />
+        } @empty {
+          <p class="run-list__note">No active runs. Every run is done or archived.</p>
+        }
+      </div>
+
+      @if (closed().length) {
+        <button
+          type="button"
+          class="run-list__toggle"
+          [attr.aria-expanded]="showClosed()"
+          aria-controls="run-list-closed"
+          (click)="showClosed.set(!showClosed())"
+        >
+          {{ showClosed() ? 'Hide' : 'Show' }} done and archived ({{ closed().length }})
+        </button>
+        @if (showClosed()) {
+          <div id="run-list-closed" class="run-list run-list--closed" role="list" aria-label="Done and archived runs">
+            @for (run of closed(); track run.id) {
+              <landing-checklist-run-row
+                [run]="run"
+                [busy]="busyId() === run.id"
+                (renamed)="rename(run, $event)"
+                (statusChange)="setStatus(run, $event)"
+                (deleted)="remove(run)"
+              />
+            }
+          </div>
+        }
+      }
+    }
+  }
+</landing-container>
+
+<landing-checklist-run-create-dialog
+  [open]="formOpen()"
+  [templates]="templates()"
+  [projects]="projects()"
+  [submitting]="creating()"
+  [error]="createError()"
+  (submitted)="create($event)"
+  (cancelled)="formOpen.set(false)"
+/>

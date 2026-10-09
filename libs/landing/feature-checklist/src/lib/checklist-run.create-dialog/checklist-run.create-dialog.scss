@@ -1,0 +1,30 @@
+.create {
+  width: min(480px, calc(100vw - 2 * var(--container-padding)));
+  padding: 0;
+  border: 1px solid var(--landing-border-strong);
+  border-radius: 8px;
+  background: var(--landing-surface);
+  color: var(--landing-text);
+  // A modal dialog scrolls its own overflow by default, which clips the select panels
+  // (absolute, below their trigger) and adds a scrollbar. The form is short, so let them hang out.
+  overflow: visible;
+
+  &::backdrop {
+    background: rgb(0 0 0 / 48%);
+  }
+}
+
+.create__card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+}
+
+.create__heading {
+  margin: 0;
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-body-lg);
+  font-weight: 600;
+  line-height: var(--landing-body-lg-lh);
+}

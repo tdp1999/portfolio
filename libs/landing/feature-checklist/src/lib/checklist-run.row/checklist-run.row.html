@@ -1,0 +1,82 @@
+<div class="run-row__main">
+  @if (editing()) {
+    <form class="run-row__rename" [formGroup]="renameForm" (ngSubmit)="saveRename()" (keydown.escape)="cancelRename()">
+      <landing-input
+        formControlName="name"
+        ariaLabel="Run name"
+        [maxLength]="200"
+        [hasError]="name.invalid"
+        autocomplete="off"
+      />
+      <landing-button type="submit" variant="solid" size="sm" [disabled]="name.invalid">Save</landing-button>
+      <landing-button variant="ghost" size="sm" (buttonClick)="cancelRename()">Cancel</landing-button>
+    </form>
+  } @else {
+    <a class="run-row__name" [routerLink]="['/checklist', run().id]">{{ run().name }}</a>
+  }
+  <p class="run-row__meta">
+    {{ run().templateTitle }} · {{ run().projectSlug }}
+    @if (done()) {
+      <span class="run-row__status">Done</span>
+    } @else if (archived()) {
+      <span class="run-row__status">Archived</span>
+    }
+  </p>
+</div>
+
+<landing-checklist-progress class="run-row__progress" [progress]="run().progress" [label]="run().name + ' progress'" />
+
+<time class="run-row__updated" [attr.datetime]="run().updatedAt">{{ run().updatedAt | date: 'd MMM y, HH:mm' }}</time>
+
+<div class="run-row__actions">
+  @if (confirming()) {
+    <span class="run-row__confirm">Delete this run?</span>
+    <landing-button variant="solid" size="sm" [disabled]="busy()" (buttonClick)="deleted.emit()">Delete</landing-button>
+    <landing-button variant="ghost" size="sm" (buttonClick)="confirming.set(false)">Cancel</landing-button>
+  } @else {
+    <landing-tooltip text="Rename" position="bottom">
+      <button
+        type="button"
+        class="run-row__btn"
+        aria-label="Rename run"
+        [disabled]="busy() || editing()"
+        (click)="startRename()"
+      >
+        <landing-icon name="pen-line" [size]="16" />
+      </button>
+    </landing-tooltip>
+    <landing-tooltip [text]="done() ? 'Reopen' : 'Mark done'" position="bottom">
+      <button
+        type="button"
+        class="run-row__btn"
+        [attr.aria-label]="done() ? 'Reopen run' : 'Mark run done'"
+        [disabled]="busy()"
+        (click)="statusChange.emit(done() ? 'ACTIVE' : 'DONE')"
+      >
+        <landing-icon [name]="done() ? 'rotate-ccw' : 'check-check'" [size]="16" />
+      </button>
+    </landing-tooltip>
+    <landing-tooltip [text]="archived() ? 'Unarchive' : 'Archive'" position="bottom">
+      <button
+        type="button"
+        class="run-row__btn"
+        [attr.aria-label]="archived() ? 'Unarchive run' : 'Archive run'"
+        [disabled]="busy()"
+        (click)="statusChange.emit(archived() ? 'ACTIVE' : 'ARCHIVED')"
+      >
+        <landing-icon [name]="archived() ? 'archive-restore' : 'archive'" [size]="16" />
+      </button>
+    </landing-tooltip>
+    <landing-tooltip text="Delete" position="bottom" align="end">
+      <button
+        type="button"
+        class="run-row__btn run-row__btn--danger"
+        aria-label="Delete run"
+        [disabled]="busy()"
+        (click)="confirming.set(true)"
+      >
+        <landing-icon name="trash-2" [size]="16" />
+      </button>
+    </landing-tooltip>
+  }
+</div>

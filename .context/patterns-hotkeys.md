@@ -122,6 +122,13 @@ Console has no `Mod+K` / `/` search shortcut yet, even though the topbar has a
 | `Escape` | Close lightbox | `lightbox-overlay` | lightbox open |
 | `Mod / Ctrl + wheel` | Zoom image | `lightbox-overlay` | lightbox open |
 | `Escape` | Close the expanded evidence pane | `document-engine` · `apps/landing` page | pane expanded |
+| `Escape` | Close the open checklist reference (side panel or popup) | `checklist-board` · `landing/feature-checklist` (run page + `/ddl/checklist`) | a ref is open |
+| `↑ / ↓` | Move the row one step (crosses into the next phase at an edge) | `checklist-board` | focus on a row's drag handle (edit mode) |
+| `Enter` / `Mod + Enter` | Save the row text / the note | `checklist-row-editor` · `landing/feature-checklist` | a row or note editor has focus |
+| `Escape` | Cancel the row or note editor (stops there, an open ref stays) | `checklist-row-editor` | a row or note editor has focus |
+| `Escape` | Cancel the confirm dialog (stops there) | `checklist-confirm-dialog` · `landing/feature-checklist` | a confirm dialog is open |
+| `Escape` | Cancel the New run dialog (also a backdrop click; not while creating) | `checklist-run-create-dialog` · `landing/feature-checklist` | the New run dialog is open |
+| `Escape` | Cancel the inline rename of a run | `checklist-run-row` · `landing/feature-checklist` | the rename field has focus |
 
 ### Editor-owned (TipTap, only while the caret is in the rich-text editor)
 

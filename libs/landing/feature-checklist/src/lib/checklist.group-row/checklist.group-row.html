@@ -1,0 +1,83 @@
+<div class="group-row__head">
+  @if (editing() === 'text') {
+    <landing-checklist-row-editor
+      class="group-row__title"
+      label="Group text"
+      [value]="group().text"
+      (saved)="saveText($event)"
+      (cancelled)="editing.set(null)"
+    />
+  } @else {
+    <p class="group-row__title">
+      <landing-checklist-inline [text]="group().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+    </p>
+    <span class="group-row__count" [attr.aria-label]="progress().complete + ' of ' + progress().total + ' complete'">
+      {{ progress().complete }}/{{ progress().total }}
+    </span>
+    @if (editing() === null) {
+      <div class="group-row__actions">
+        <landing-tooltip [text]="group().note ? 'Edit note' : 'Add note'" position="bottom" align="end">
+          <button
+            type="button"
+            class="group-row__btn"
+            [attr.aria-label]="(group().note ? 'Edit note on ' : 'Add note to ') + label()"
+            (click)="editing.set('note')"
+          >
+            <landing-icon name="message-square" [size]="16" />
+          </button>
+        </landing-tooltip>
+        @if (editable()) {
+          <landing-tooltip text="Edit text" position="bottom" align="end">
+            <button
+              type="button"
+              class="group-row__btn"
+              [attr.aria-label]="'Edit text of ' + label()"
+              (click)="editing.set('text')"
+            >
+              <landing-icon name="pen-line" [size]="16" />
+            </button>
+          </landing-tooltip>
+          <landing-tooltip text="Delete group and its tasks" position="bottom" align="end">
+            <button
+              type="button"
+              class="group-row__btn group-row__btn--danger"
+              [attr.aria-label]="'Delete group ' + label()"
+              (click)="remove()"
+            >
+              <landing-icon name="trash-2" [size]="16" />
+            </button>
+          </landing-tooltip>
+        }
+        <!-- A task row's last button is skip; the empty slot keeps the note button in its column. -->
+        <span class="group-row__slot" aria-hidden="true"></span>
+      </div>
+    }
+  }
+</div>
+@if (editing() === 'note') {
+  <landing-checklist-row-editor
+    class="group-row__note-editor"
+    label="Group note"
+    [multiline]="true"
+    [maxLength]="5000"
+    [value]="group().note"
+    (saved)="saveNote($event)"
+    (cancelled)="editing.set(null)"
+  />
+} @else if (group().note) {
+  <p class="group-row__note">{{ group().note }}</p>
+}
+<div class="group-row__children" role="group" [attr.aria-label]="label()">
+  @for (task of group().children; track task.id) {
+    <landing-checklist-task-row
+      [task]="task"
+      [child]="true"
+      [role]="role()"
+      [density]="density()"
+      [activeRef]="activeRef()"
+      [editable]="editable()"
+      (action)="action.emit($event)"
+      (openRef)="openRef.emit($event)"
+    />
+  }
+</div>

@@ -186,6 +186,10 @@ export const DDL_ROUTES: Route[] = [
     loadComponent: () => import('./ddl-feed-pagination/ddl-feed-pagination').then((m) => m.DdlFeedPagination),
   },
   {
+    path: 'checklist',
+    loadComponent: () => import('./ddl-checklist/ddl-checklist').then((m) => m.DdlChecklist),
+  },
+  {
     path: 'project-detail',
     loadComponent: () => import('./ddl-project-detail/ddl-project-detail').then((m) => m.DdlProjectDetail),
   },

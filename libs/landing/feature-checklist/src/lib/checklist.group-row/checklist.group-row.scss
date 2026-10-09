@@ -1,0 +1,102 @@
+:host {
+  display: block;
+  padding-top: 16px;
+}
+
+// The group title is a label for its children, not a task: no checkbox, its own count at the end.
+.group-row__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-inline: 8px;
+}
+
+.group-row__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: var(--landing-text);
+  font-size: var(--landing-body-sm);
+  font-weight: 600;
+  line-height: var(--landing-body-sm-lh);
+}
+
+.group-row__count {
+  flex: 0 0 auto;
+  color: var(--landing-text-600);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  font-variant-numeric: tabular-nums;
+}
+
+// Same slot as a task row's actions (same width, end-aligned, a skip-sized gap
+// at the end), so the note buttons of groups, their children and plain tasks
+// stand in one column. Same quiet-until-hover rule too.
+.group-row__actions {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  width: var(--checklist-row-actions, 64px);
+}
+
+.group-row__slot {
+  width: 32px;
+}
+
+.group-row__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--landing-text-600);
+  opacity: 0.4;
+  cursor: pointer;
+  transition:
+    opacity var(--landing-motion-fast) var(--landing-ease),
+    color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 0;
+  }
+}
+
+.group-row__btn--danger:hover {
+  color: #f87171;
+}
+
+.group-row__head:hover .group-row__btn,
+.group-row__head:focus-within .group-row__btn {
+  opacity: 1;
+}
+
+.group-row__note-editor {
+  display: block;
+  margin: 8px 0 0;
+  padding-inline: 8px;
+}
+
+.group-row__note {
+  margin: 4px 0 0;
+  padding-inline: 8px;
+  color: var(--landing-text-500);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+// Children sit behind a guide line under the title, the way a file tree shows nesting.
+.group-row__children {
+  margin: 4px 0 0 16px;
+  padding-left: 8px;
+  border-left: 1px solid var(--landing-border-strong);
+}
