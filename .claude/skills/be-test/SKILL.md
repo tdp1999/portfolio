@@ -41,7 +41,7 @@ Skip: controllers (thin adapters), repository implementations (CRUD wrappers), i
 
 ## Core Workflow: Analyze -> Plan -> Write -> Validate
 
-**MANDATORY OUTPUT GATES.** Steps 1, 2, and 4 each require a structured output block in your reply to the user. These are not mental exercises — they are deliverables. Skipping any of them (including when the user says "go ahead", "bắt đầu", "start", or similar) is a skill violation. A generic "start" message does NOT authorize skipping Step 2's approval gate.
+**Output gates.** Steps 1, 2, and 4 each require a structured output block in your reply to the user. These are not mental exercises — they are deliverables. Skipping any of them (including when the user says "go ahead", "bắt đầu", "start", or similar) is a skill violation. A generic "start" message does NOT authorize skipping Step 2's approval gate.
 
 ### Step 1: Analyze the Source
 
