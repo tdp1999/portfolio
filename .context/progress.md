@@ -209,6 +209,9 @@
   - Consolidated `design-ingest` / `design-check` / `component-bank` / `ui-research` into ONE universal user-scope `/design` skill — 7 modes (init, adopt, research, ingest, revamp, review, document) over a knowledge-accretion library at `~/.claude/skills/design/shared/` (principles / patterns / taste), plus 3 config knobs and a splittable-to-plugin layout
   - Split the project `.context/design/` bank into 7 buckets (`system/ contracts/ cookbook/ patterns/ components/ workflow/ ingest/`) that link the global library by concept (source-of-truth, link-don't-copy); deleted the 4 old fragmented skills; added the ambient "Design authority" guardrail row to CLAUDE.md (nudge, not hook)
   - Security (395): live console credentials removed from `visual-feedback.md` → gitignored `*.local.md`. **⚠️ owner still owes a password rotation** — the credential is in git history, so working-tree removal does not undo exposure
+- [x] **Landing Checklist** (epic-landing-checklist) - Completed 2026-10-09; archived to `plans-done/` (sync 2026-10-09)
+  - Tasks 429–434 → archived in `tasks-done/epic-landing-checklist/`
+  - Private, Owner-only `/checklist` on landing: checklist API + docs sync with a machine token, push script, header Sign in / Workspace menu, run list and run page (Compact layout, autosave with 409 stop, refs panel, edit mode on a draft). CHK-001..005 confirmed by the Owner.
 
 ## In Progress
 
@@ -345,16 +348,16 @@ From: `epic-portfolio-e5-implementation` (E3 descoped, content folded in here)
 - [x] 324-landing-pwa-manifest-and-icons (M) — done 2026-07-02 → `tasks-done/other/`. Minimal `manifest.webmanifest` + standard icon set + `theme-color` meta on landing.
 - [x] 326-landing-analytics-umami-self-host (M) — done 2026-07-02 → `tasks-done/other/`. Self-hosted Umami on Railway (`analytics.thunderphong.com`), cookieless script embedded in landing `index.html`, custom `data-umami-event` events wired across nav/theme/social/palette.
 
-## Pending — Landing Checklist (broken down 2026-10-08)
+## Done — Landing Checklist (epic COMPLETED 2026-10-09 → `plans-done/epic-landing-checklist.md`)
 
-From: `epic-landing-checklist` (appetite 2 days)
+From: `epic-landing-checklist` (appetite 2 days). All tasks → `tasks-done/epic-landing-checklist/`.
 
 - [x] 429-checklist-api-module (L) — schema, parser, docs sync, runs API
 - [x] 430-checklist-push-script (S) — deps: 429
-- [ ] 431-landing-auth-and-proxy-cookies (M) — deps: 429
-- [ ] 432-ddl-checklist-layout-options (M) — deps: 429 (types)
-- [ ] 433-checklist-runs-list-page (S) — deps: 429, 431, 432
-- [ ] 434-checklist-run-page (L) — deps: 429, 431, 432, 433
+- [x] 431-landing-auth-and-proxy-cookies (M) — private route group, sign-in page, header Sign in slot / Workspace menu, workspace bar
+- [x] 432-ddl-checklist-layout-options (M) — Compact layout picked, `/ddl/checklist`
+- [x] 433-checklist-runs-list-page (S) — list, New run dialog, rename / status / delete
+- [x] 434-checklist-run-page (L) — run page, autosave + 409, refs panel, edit mode on a draft; prod verified 2026-10-09
 
 ## Pending — Landing follow-up
 
@@ -515,12 +518,12 @@ From: `epic-portfolio-prose-block-renderer` (`redoc-blocks`). **Completed 2026-0
 
 | Status            | Count   |
 | ----------------- | ------- |
-| Done (archived)   | 399     |
+| Done (archived)   | 405     |
 | In Progress       | 5       |
-| Pending           | 9       |
+| Pending           | 6       |
 | Blocked           | 0       |
-| **Total Created** | **413** |
-| Epics completed   | 53      |
+| **Total Created** | **416** |
+| Epics completed   | 54      |
 
 _**2026-10-08, `/ctx:sync`.** Archive 427 vào `tasks-done/epic-radar-phase-c/`. Cặp số trùng `065` đã được sửa theo yêu cầu của Owner: file mới hơn `065-optimize-landing-serve-performance` đổi thành `428-optimize-landing-serve-performance`; file `065-restructure-libs-architecture` giữ số cũ. Commit cũ vẫn ghi số 065, không sửa được. `domain.md` cập nhật cho Phase C: RunFlow Auto, flow Analyze Radar Items (Auto), RAD-009 (ADR-036). **pending (6):** 323, 328, 382, 387, 389, 398; **in-progress (5):** 361, 383, 386, 396, 399._
 
@@ -553,3 +556,5 @@ _Archived in the 2026-07-24 sync: epic-design-skill tasks 390–395 → tasks-do
 - **Module Pattern:** Schema → Entity → Repo → DTO → Commands → Queries → Controller → Wire
 - Future sprints broken down only when current sprint completes
 - Completed tasks archived to `tasks-done/` folder
+
+_**2026-10-09, `/ctx:sync`.** Epic Landing Checklist hoàn thành: archive 429-434 vào `tasks-done/epic-landing-checklist/`, epic chuyển sang `plans-done/`. Owner xác nhận CHK-001..005 vẫn đúng. **pending (6):** 323, 328, 382, 387, 389, 398; **in-progress (5):** 361, 383, 386, 396, 399._

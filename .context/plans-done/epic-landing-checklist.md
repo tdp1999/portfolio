@@ -146,9 +146,9 @@ M
 
 ## Status
 
-broken-down
+completed
 
-Broken down into tasks 429-434 on 2026-10-08.
+Broken down into tasks 429-434 on 2026-10-08. Completed 2026-10-09 (all 6 tasks done, live on prod).
 
 ## Created
 
