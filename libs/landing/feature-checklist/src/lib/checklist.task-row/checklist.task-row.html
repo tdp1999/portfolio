@@ -1,5 +1,12 @@
 <div class="task-row__check">
-  <landing-checkbox [ngModel]="checked()" (ngModelChange)="onCheck($event)" [ariaLabel]="label()" />
+  @if (!viewOnly()) {
+    <landing-checkbox
+      [inputId]="checkId"
+      [ngModel]="checked()"
+      (ngModelChange)="onCheck($event)"
+      [ariaLabel]="label()"
+    />
+  }
 </div>
 
 @if (editing() === 'text') {
@@ -10,14 +17,26 @@
     (saved)="saveText($event)"
     (cancelled)="editing.set(null)"
   />
-} @else {
+} @else if (viewOnly()) {
   <p class="task-row__text">
-    <landing-checklist-inline [text]="task().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
-    @if (task().state === 'skipped') {
-      <span class="task-row__tag">Skipped</span>
-    }
+    <ng-container [ngTemplateOutlet]="text" />
   </p>
+} @else {
+  <!-- The text is the checkbox's label, as with a native checkbox: a click on it ticks or unticks
+       (a ref inside is a button, which a label never forwards). The click handler only cancels a
+       tick that ends a text selection; the keyboard way is the checkbox itself. -->
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+  <label class="task-row__text task-row__text--toggle" [for]="checkId" (click)="onTextClick($event)">
+    <ng-container [ngTemplateOutlet]="text" />
+  </label>
 }
+
+<ng-template #text>
+  <landing-checklist-inline [text]="task().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+  @if (task().state === 'skipped') {
+    <span class="task-row__tag">Skipped</span>
+  }
+</ng-template>
 
 @if (task().doer || task().checker) {
   <dl class="task-row__roles">
@@ -49,7 +68,7 @@
 }
 
 <div class="task-row__action">
-  @if (editing() === null) {
+  @if (editing() === null && !viewOnly()) {
     <landing-tooltip [text]="task().note ? 'Edit note' : 'Add note'" position="bottom" align="end">
       <button
         type="button"

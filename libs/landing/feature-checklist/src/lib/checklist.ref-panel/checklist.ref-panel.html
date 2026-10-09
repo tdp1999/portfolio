@@ -3,7 +3,7 @@
     <p class="ref-panel__source">{{ source() }}</p>
     <h2 class="ref-panel__title">
       <span class="ref-panel__key">{{ key() }}</span>
-      {{ section()?.title ?? 'Section not found' }}
+      {{ section()?.title ?? missingTitle() }}
     </h2>
   </div>
   <div class="ref-panel__actions">
@@ -16,7 +16,7 @@
 @if (section()) {
   <div class="ref-panel__body" [innerHTML]="html()"></div>
 } @else {
-  <p class="ref-panel__empty">This document has no section {{ key() }}.</p>
+  <p class="ref-panel__empty">{{ empty() }}</p>
 }
 
 @if (file()) {

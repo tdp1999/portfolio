@@ -11,10 +11,12 @@
     <p class="group-row__title">
       <landing-checklist-inline [text]="group().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
     </p>
-    <span class="group-row__count" [attr.aria-label]="progress().complete + ' of ' + progress().total + ' complete'">
-      {{ progress().complete }}/{{ progress().total }}
-    </span>
-    @if (editing() === null) {
+    @if (!viewOnly()) {
+      <span class="group-row__count" [attr.aria-label]="progress().complete + ' of ' + progress().total + ' complete'">
+        {{ progress().complete }}/{{ progress().total }}
+      </span>
+    }
+    @if (editing() === null && !viewOnly()) {
       <div class="group-row__actions">
         <landing-tooltip [text]="group().note ? 'Edit note' : 'Add note'" position="bottom" align="end">
           <button
@@ -76,6 +78,7 @@
       [density]="density()"
       [activeRef]="activeRef()"
       [editable]="editable()"
+      [viewOnly]="viewOnly()"
       (action)="action.emit($event)"
       (openRef)="openRef.emit($event)"
     />

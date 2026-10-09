@@ -3,13 +3,13 @@
 <dialog
   #dialog
   class="confirm"
-  aria-labelledby="checklist-confirm-heading"
+  [attr.aria-labelledby]="headingId"
   (cancel)="onCancel($event)"
   (click)="onClick($event)"
   (keydown.escape)="$event.stopPropagation()"
 >
   <div class="confirm__card">
-    <h2 id="checklist-confirm-heading" class="confirm__heading">{{ heading() }}</h2>
+    <h2 class="confirm__heading" [id]="headingId">{{ heading() }}</h2>
     @if (message()) {
       <p class="confirm__message">{{ message() }}</p>
     }

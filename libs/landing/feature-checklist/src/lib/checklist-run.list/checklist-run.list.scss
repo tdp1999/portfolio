@@ -6,6 +6,12 @@
   margin-bottom: 32px;
 }
 
+.run-list__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .run-list__title {
   margin: 0;
   color: var(--landing-text);

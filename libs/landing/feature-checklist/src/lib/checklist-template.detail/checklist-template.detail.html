@@ -1,0 +1,28 @@
+@if (doc(); as current) {
+  @if (content(); as template) {
+    <landing-checklist-board [heading]="current.title" [body]="template" [lookup]="lookup()" [viewOnly]="true">
+      <div checklistBoardLead class="template-detail__lead">
+        <landing-back-link href="/checklist/templates">All templates</landing-back-link>
+        <div class="template-detail__meta">
+          <span class="template-detail__fact">
+            <landing-icon name="file-text" [size]="14" class="template-detail__fact-icon" />
+            {{ current.slug }}.md
+          </span>
+          @if (current.archived) {
+            <span class="template-detail__tag">Archived</span>
+          }
+          <span class="template-detail__tag">Read only</span>
+        </div>
+      </div>
+    </landing-checklist-board>
+  }
+}
+@if (notFound()) {
+  <landing-empty-state icon="file-text" title="Template not found" message="It may have been renamed or removed.">
+    <landing-back-link href="/checklist/templates">All templates</landing-back-link>
+  </landing-empty-state>
+} @else if (loadFailed()) {
+  <landing-empty-state icon="file-text" title="Could not load this template" message="Reload the page to try again.">
+    <landing-back-link href="/checklist/templates">All templates</landing-back-link>
+  </landing-empty-state>
+}

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router } from '@angular/router';
 import type { Observable } from 'rxjs';
 
-import { Button, Container, EmptyState, LandingMetaService } from '@portfolio/landing/shared/ui';
+import { Button, Container, EmptyState, LandingMetaService, Link } from '@portfolio/landing/shared/ui';
 import type { ChecklistDocSummary, ChecklistRunStatus, ChecklistRunSummary } from '@portfolio/shared/types';
 
 import { ChecklistRunCreateDialog } from '../checklist-run.create-dialog/checklist-run.create-dialog';
@@ -16,7 +16,7 @@ import type { CreateChecklistRunInput } from '../checklist.types';
  */
 @Component({
   selector: 'landing-checklist-run-list',
-  imports: [Button, Container, EmptyState, ChecklistRunCreateDialog, ChecklistRunRow],
+  imports: [Button, Container, EmptyState, Link, ChecklistRunCreateDialog, ChecklistRunRow],
   templateUrl: './checklist-run.list.html',
   styleUrl: './checklist-run.list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

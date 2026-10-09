@@ -24,6 +24,22 @@
     </landing-ddl-stage>
   </landing-ddl-section>
 
+  <!-- ═══ Template view ═══════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="template-view" heading="Template view">
+    <div class="cl-intro">
+      <p>
+        <code>/checklist/templates/:slug</code> renders the same board with <code>viewOnly</code>: no progress, no
+        checkbox, no note, skip or edit, and no counts on groups. The empty check slot keeps the text and the Do and
+        Check columns where a run has them. Folding, the role filter and lookup refs still work; a project ref says it
+        waits for the project a run picks.
+      </p>
+    </div>
+
+    <landing-ddl-stage label="Template view · lane L" width="full">
+      <landing-checklist-board heading="Checklist làn L" [body]="template" [lookup]="lookup" [viewOnly]="true" />
+    </landing-ddl-stage>
+  </landing-ddl-section>
+
   <!-- ═══ Pieces ════════════════════════════════════════════════════════ -->
   <landing-ddl-section anchor="pieces" heading="Pieces" [framed]="true">
     <div class="cl-pieces">
@@ -81,6 +97,12 @@
         top to bottom but made sixty rows long to scan; <em>Focus</em> (one phase at a time behind a stepper) hid the
         rest of the run. A <em>phase board</em> was never offered: eight phases with sentence-long rows give columns
         under 280px.
+      </p>
+      <p>
+        <strong>Click targets:</strong> a row's text is its checkbox's label, so a click on it ticks or unticks the row,
+        as on a native checkbox; a ref inside it only opens the ref, and a click that ends a text selection does
+        nothing. A click on a phase's title line folds or opens it, like the chevron (not in edit mode, where every
+        phase stays open).
       </p>
       <p>
         <strong>Shared rules:</strong> the × marks a task skipped, which counts as complete but leaves the checkbox

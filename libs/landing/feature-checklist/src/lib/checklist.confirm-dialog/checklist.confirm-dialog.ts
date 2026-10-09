@@ -15,6 +15,9 @@ import { Button } from '@portfolio/landing/shared/ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChecklistConfirmDialog {
+  private static nextId = 0;
+  /** One dialog per board, and a page can hold two boards (the DDL). */
+  protected readonly headingId = `checklist-confirm-heading-${ChecklistConfirmDialog.nextId++}`;
   readonly open = input(false);
   readonly heading = input.required<string>();
   readonly message = input('');

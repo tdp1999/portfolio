@@ -36,6 +36,24 @@
   line-height: var(--landing-body-sm-lh);
 }
 
+// The template chip opens the template it came from (read only; the run is a snapshot of it).
+.run-detail__fact--link {
+  text-decoration: none;
+  transition:
+    border-color var(--landing-motion-fast) var(--landing-ease),
+    color var(--landing-motion-fast) var(--landing-ease);
+
+  &:hover {
+    border-color: var(--landing-accent);
+    color: var(--landing-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--landing-accent);
+    outline-offset: 2px;
+  }
+}
+
 .run-detail__fact--project {
   font-family: var(--landing-font-mono);
   font-size: var(--landing-mono-sm);

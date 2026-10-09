@@ -55,6 +55,17 @@
   height: var(--task-row-line);
 }
 
+// A template has no checkbox; the slot keeps the text where a run's row has it: the checkbox's
+// 18px box plus the 12px gap it keeps before its (empty) label.
+:host(.task-row--view) .task-row__check {
+  width: 30px;
+}
+
+// The text is the checkbox's label: it ticks on click, like a native checkbox's text.
+.task-row__text--toggle {
+  cursor: pointer;
+}
+
 .task-row__text {
   grid-area: text;
   margin: 0;

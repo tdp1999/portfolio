@@ -1,7 +1,10 @@
 <landing-container size="wide">
   <header class="run-list__head">
     <h1 class="run-list__title">Checklist</h1>
-    <landing-button variant="solid" size="sm" (buttonClick)="openForm()">New run</landing-button>
+    <div class="run-list__actions">
+      <landing-link href="/checklist/templates">Templates</landing-link>
+      <landing-button variant="solid" size="sm" (buttonClick)="openForm()">New run</landing-button>
+    </div>
   </header>
 
   @if (actionError(); as message) {

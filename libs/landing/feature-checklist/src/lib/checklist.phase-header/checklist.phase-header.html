@@ -1,4 +1,6 @@
-<div class="phase-header__top">
+<!-- A click on the title folds the phase, as on the chevron beside it. Keyboard: that chevron button. -->
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+<div class="phase-header__top" (click)="onTitleClick($event)">
   @if (number()) {
     <span class="phase-header__number">{{ number() }}</span>
   }
@@ -12,11 +14,13 @@
       <p class="phase-header__role">{{ phase().role }}</p>
     }
   </div>
-  <landing-checklist-progress
-    class="phase-header__progress"
-    [progress]="progress()"
-    [label]="phase().name + ' progress'"
-  />
+  @if (showProgress()) {
+    <landing-checklist-progress
+      class="phase-header__progress"
+      [progress]="progress()"
+      [label]="phase().name + ' progress'"
+    />
+  }
 </div>
 
 @if (showGate() && phase().gate; as gate) {

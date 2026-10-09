@@ -63,6 +63,19 @@
   }
 }
 
+// A template has no progress: the filter sits next to the tools.
+.cl-head--view {
+  grid-template-columns: auto minmax(0, 1fr) var(--cl-tools-w);
+  grid-template-areas:
+    'title title title'
+    'filter . tools';
+
+  @include bp.respond-to('tablet') {
+    grid-template-columns: minmax(0, 1fr) auto var(--cl-tools-w);
+    grid-template-areas: 'title filter tools';
+  }
+}
+
 .cl-head__title {
   grid-area: title;
   min-width: 0;

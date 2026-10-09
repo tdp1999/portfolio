@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { Checkbox, Icon, Tooltip } from '@portfolio/landing/shared/ui';
@@ -18,10 +19,12 @@ import { taskMatchesRole } from '../checklist.util';
  *
  * The note is part of working a run, so its button is always there. Editing the text and deleting
  * the row are structure changes, offered only when `editable` (the page's edit mode) is on.
+ * The text is the checkbox's label, so a click on it ticks the row. `viewOnly` (a template) drops
+ * the checkbox and every action; the empty check slot keeps the columns where a run has them.
  */
 @Component({
   selector: 'landing-checklist-task-row',
-  imports: [FormsModule, Checkbox, Icon, Tooltip, ChecklistInline, ChecklistRowEditor],
+  imports: [FormsModule, NgTemplateOutlet, Checkbox, Icon, Tooltip, ChecklistInline, ChecklistRowEditor],
   templateUrl: './checklist.task-row.html',
   styleUrl: './checklist.task-row.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +35,7 @@ import { taskMatchesRole } from '../checklist.util';
     '[class.task-row--child]': 'child()',
     '[class.task-row--compact]': "density() === 'compact'",
     '[class.task-row--editing]': 'editing() !== null',
+    '[class.task-row--view]': 'viewOnly()',
   },
 })
 export class ChecklistTaskRow {
@@ -44,10 +48,17 @@ export class ChecklistTaskRow {
   readonly activeRef = input<ChecklistRef | null>(null);
   /** The page's edit mode: offer edit text and delete. */
   readonly editable = input(false);
+  /** A template, not a run: nothing to tick, note or change. */
+  readonly viewOnly = input(false);
 
   readonly action = output<ChecklistRowAction>();
   readonly openRef = output<ChecklistRef>();
 
+  private static nextId = 0;
+  private readonly document = inject(DOCUMENT);
+
+  /** Ties the text (a label) to the checkbox; unique per row on the page. */
+  protected readonly checkId = `checklist-task-${ChecklistTaskRow.nextId++}`;
   protected readonly editing = signal<ChecklistRowField | null>(null);
 
   protected readonly checked = computed(() => this.task().state === 'done');
@@ -57,6 +68,11 @@ export class ChecklistTaskRow {
 
   protected onCheck(checked: boolean): void {
     this.setState(checked ? 'done' : 'todo');
+  }
+
+  /** Selecting part of the text to copy it is not a tick. */
+  protected onTextClick(event: MouseEvent): void {
+    if (this.document.getSelection()?.toString()) event.preventDefault();
   }
 
   protected setState(state: ChecklistTask['state']): void {

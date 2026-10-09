@@ -2,7 +2,7 @@
   <div class="cl-main" cdkDropListGroup [attr.inert]="locked() ? '' : null">
     <ng-content select="[checklistBoardLead]" />
 
-    <header class="cl-head">
+    <header class="cl-head" [class.cl-head--view]="viewOnly()">
       <h1 class="cl-head__title">{{ heading() }}</h1>
       <landing-checklist-role-filter
         class="cl-head__filter"
@@ -10,15 +10,19 @@
         [counts]="roleCounts()"
         [(active)]="role"
       />
-      <landing-checklist-progress class="cl-head__progress" [progress]="total()" label="Run progress" />
+      @if (!viewOnly()) {
+        <landing-checklist-progress class="cl-head__progress" [progress]="total()" label="Run progress" />
+      }
       <!-- Edit mode opens every phase and owns its exit (Save / Cancel below), so the run tools step aside. -->
       <div class="cl-tools" role="toolbar" aria-label="Run tools">
         @if (!editing()) {
-          <landing-tooltip text="Edit rows" position="bottom" align="end">
-            <button type="button" class="cl-tools__btn" aria-label="Edit rows" (click)="startEditing()">
-              <landing-icon name="pen-line" [size]="16" />
-            </button>
-          </landing-tooltip>
+          @if (!viewOnly()) {
+            <landing-tooltip text="Edit rows" position="bottom" align="end">
+              <button type="button" class="cl-tools__btn" aria-label="Edit rows" (click)="startEditing()">
+                <landing-icon name="pen-line" [size]="16" />
+              </button>
+            </landing-tooltip>
+          }
           <landing-tooltip
             [text]="allCollapsed() ? 'Expand all phases' : 'Collapse all phases'"
             position="bottom"
@@ -44,7 +48,7 @@
     </div>
 
     @for (item of phases(); track item.phase.id) {
-      <section class="cl-phase" [id]="'cl-section-' + item.phase.id">
+      <section class="cl-phase" [id]="uid + '-section-' + item.phase.id">
         <div class="cl-phase__head">
           @if (editing()) {
             <span class="cl-phase__toggle" aria-hidden="true"></span>
@@ -53,7 +57,7 @@
               type="button"
               class="cl-phase__toggle"
               [attr.aria-expanded]="!item.collapsed"
-              [attr.aria-controls]="'cl-phase-' + item.phase.id"
+              [attr.aria-controls]="uid + '-phase-' + item.phase.id"
               [attr.aria-label]="(item.collapsed ? 'Expand ' : 'Collapse ') + item.phase.name"
               (click)="toggleCollapsed(item.phase.id)"
             >
@@ -65,11 +69,14 @@
             density="compact"
             [phase]="item.phase"
             [showGate]="!item.collapsed"
+            [showProgress]="!viewOnly()"
+            [foldable]="!editing()"
             [activeRef]="activeRef()"
             (openRef)="toggleRef($event)"
+            (titleToggle)="toggleCollapsed(item.phase.id)"
           />
           <div class="cl-tools cl-tools--phase" role="toolbar" [attr.aria-label]="item.phase.name + ' tools'">
-            @if (!editing()) {
+            @if (!editing() && !viewOnly()) {
               <landing-tooltip text="Check all open tasks" position="bottom" align="end">
                 <button
                   type="button"
@@ -99,7 +106,7 @@
         @if (!item.collapsed) {
           <div
             class="cl-rows"
-            [id]="'cl-phase-' + item.phase.id"
+            [id]="uid + '-phase-' + item.phase.id"
             cdkDropList
             [cdkDropListData]="item.phase.id"
             [cdkDropListDisabled]="!editing()"
@@ -119,7 +126,7 @@
                     cdkDragHandle
                     [attr.data-grip]="entry.row.id"
                     [attr.aria-label]="'Move ' + entry.label"
-                    aria-describedby="cl-grip-help"
+                    [attr.aria-describedby]="uid + '-grip-help'"
                     (keydown)="onGripKey($event, entry.row)"
                   >
                     <landing-icon name="grip-vertical" [size]="16" />
@@ -132,6 +139,7 @@
                     [role]="role()"
                     [activeRef]="activeRef()"
                     [editable]="editing()"
+                    [viewOnly]="viewOnly()"
                     (action)="onRowAction($event)"
                     (openRef)="toggleRef($event)"
                   />
@@ -142,6 +150,7 @@
                     [role]="role()"
                     [activeRef]="activeRef()"
                     [editable]="editing()"
+                    [viewOnly]="viewOnly()"
                     (action)="onRowAction($event)"
                     (openRef)="toggleRef($event)"
                   />
@@ -184,7 +193,7 @@
       </div>
     }
 
-    <p id="cl-grip-help" class="sr-only">Press arrow up or down to move this row.</p>
+    <p class="sr-only" [id]="uid + '-grip-help'">Press arrow up or down to move this row.</p>
   </div>
 
   <!-- Reference: closed until a ref chip opens it. Wide frame: a panel taking the space right of
@@ -200,6 +209,7 @@
         [section]="open.section"
         [source]="open.source"
         [file]="open.file"
+        [emptyMessage]="open.emptyMessage"
         (closed)="closeRef()"
       />
     </aside>

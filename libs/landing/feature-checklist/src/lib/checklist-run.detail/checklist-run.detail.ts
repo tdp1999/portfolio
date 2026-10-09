@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, concatMap, debounceTime, defer, EMPTY, Subject, tap } from 'rxjs';
 
 import { BackLink, Button, EmptyState, Icon, LandingMetaService, Tooltip } from '@portfolio/landing/shared/ui';
@@ -24,7 +24,7 @@ import type { ChecklistSaveState } from '../checklist.types';
  */
 @Component({
   selector: 'landing-checklist-run-detail',
-  imports: [BackLink, Button, EmptyState, Icon, Tooltip, ChecklistBoard],
+  imports: [RouterLink, BackLink, Button, EmptyState, Icon, Tooltip, ChecklistBoard],
   templateUrl: './checklist-run.detail.html',
   styleUrl: './checklist-run.detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

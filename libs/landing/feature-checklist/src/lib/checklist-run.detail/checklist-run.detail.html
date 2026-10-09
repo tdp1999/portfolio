@@ -12,11 +12,14 @@
       <div checklistBoardLead class="run-detail__lead">
         <landing-back-link href="/checklist">All runs</landing-back-link>
         <div class="run-detail__meta">
-          <span class="run-detail__fact">
+          <a
+            class="run-detail__fact run-detail__fact--link"
+            [routerLink]="['/checklist/templates', current.templateSlug]"
+          >
             <landing-icon name="file-text" [size]="14" class="run-detail__fact-icon" />
             <span class="sr-only">Template:</span>
             {{ current.templateTitle }}
-          </span>
+          </a>
           <span class="run-detail__fact run-detail__fact--project">
             <landing-icon name="folder" [size]="14" class="run-detail__fact-icon" />
             <span class="sr-only">Project:</span>

@@ -1,0 +1,36 @@
+<landing-container size="wide">
+  <landing-back-link href="/checklist">All runs</landing-back-link>
+  <header class="template-list__head">
+    <h1 class="template-list__title">Templates</h1>
+    <p class="template-list__lede">What a new run starts from. Read only: edit the file, then push the docs.</p>
+  </header>
+
+  @if (sorted(); as all) {
+    @if (loadFailed()) {
+      <p class="template-list__alert" role="alert">Could not load the templates. Reload the page to try again.</p>
+    } @else if (all.length === 0) {
+      <landing-empty-state
+        icon="file-text"
+        title="No templates yet"
+        message="Push the docs from the workflow repo and they show here."
+      />
+    } @else {
+      <ul class="template-list" aria-label="Templates">
+        @for (template of all; track template.slug) {
+          <li class="template-list__item">
+            <a class="template-list__link" [routerLink]="['/checklist/templates', template.slug]">
+              <landing-icon name="file-text" [size]="16" class="template-list__icon" />
+              <span class="template-list__main">
+                <span class="template-list__name">{{ template.title }}</span>
+                <span class="template-list__file">{{ template.slug }}.md</span>
+              </span>
+              <time class="template-list__updated" [attr.datetime]="template.updatedAt">
+                {{ template.updatedAt | date: 'd MMM y' }}
+              </time>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</landing-container>

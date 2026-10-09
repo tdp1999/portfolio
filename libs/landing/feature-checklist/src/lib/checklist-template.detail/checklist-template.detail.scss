@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.template-detail__lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+}
+
+.template-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+// The file the template comes from, as the run page shows its template and project.
+.template-detail__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 12px;
+  border: 1px solid var(--landing-border);
+  border-radius: 999px;
+  background: var(--landing-surface);
+  color: var(--landing-text-400);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+}
+
+.template-detail__fact-icon {
+  flex: 0 0 auto;
+  color: var(--landing-text-600);
+}
+
+.template-detail__tag {
+  color: var(--landing-text-300);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}

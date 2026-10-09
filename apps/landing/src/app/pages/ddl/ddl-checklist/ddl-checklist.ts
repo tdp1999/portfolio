@@ -16,7 +16,7 @@ import {
   withTaskState,
 } from '@portfolio/landing/feature-checklist';
 import type { InPageSection } from '@portfolio/landing/shared/ui';
-import type { ChecklistTask } from '@portfolio/shared/types';
+import type { ChecklistRunBody, ChecklistTask } from '@portfolio/shared/types';
 
 import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { DdlSection } from '../ddl-section/ddl-section';
@@ -37,6 +37,7 @@ import { DDL_CHECKLIST_LOOKUP, DDL_CHECKLIST_PROJECT, DDL_CHECKLIST_RUN } from '
 export class DdlChecklist {
   protected readonly sections: readonly InPageSection[] = [
     { id: 'run-page', title: 'Run page', level: 2 },
+    { id: 'template-view', title: 'Template view', level: 2 },
     { id: 'pieces', title: 'Pieces', level: 2 },
     { id: 'notes', title: 'Notes', level: 2 },
   ];
@@ -44,6 +45,23 @@ export class DdlChecklist {
   protected readonly lookup = DDL_CHECKLIST_LOOKUP;
   protected readonly project = DDL_CHECKLIST_PROJECT;
   protected readonly body = signal(DDL_CHECKLIST_RUN);
+
+  /** The same lane as a template: every row todo, no notes (the board in `viewOnly` shows neither). */
+  protected readonly template: ChecklistRunBody = {
+    ...DDL_CHECKLIST_RUN,
+    phases: DDL_CHECKLIST_RUN.phases.map((phase) => ({
+      ...phase,
+      rows: phase.rows.map((row) =>
+        row.kind === 'task'
+          ? { ...row, state: 'todo' as const, note: '' }
+          : {
+              ...row,
+              note: '',
+              children: row.children.map((child) => ({ ...child, state: 'todo' as const, note: '' })),
+            }
+      ),
+    })),
+  };
 
   protected readonly roles = CHECKLIST_ROLES;
   protected readonly role = signal<string | null>(null);

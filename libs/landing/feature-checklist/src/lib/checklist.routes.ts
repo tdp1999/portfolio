@@ -13,6 +13,12 @@ export const CHECKLIST_ROUTES: Route[] = [
     providers: [ChecklistService],
     children: [
       { path: '', loadComponent: () => import('./checklist-run.list/checklist-run.list') },
+      // Before `:id`, so "templates" is never read as a run id.
+      { path: 'templates', loadComponent: () => import('./checklist-template.list/checklist-template.list') },
+      {
+        path: 'templates/:slug',
+        loadComponent: () => import('./checklist-template.detail/checklist-template.detail'),
+      },
       { path: ':id', loadComponent: () => import('./checklist-run.detail/checklist-run.detail') },
     ],
   },

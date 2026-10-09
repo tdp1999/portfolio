@@ -29,6 +29,8 @@ export class ChecklistGroupRow {
   readonly activeRef = input<ChecklistRef | null>(null);
   /** The page's edit mode: offer edit text and delete, on the group and its children. */
   readonly editable = input(false);
+  /** A template, not a run: no count and no actions, here or on the children. */
+  readonly viewOnly = input(false);
 
   readonly action = output<ChecklistRowAction>();
   readonly openRef = output<ChecklistRef>();

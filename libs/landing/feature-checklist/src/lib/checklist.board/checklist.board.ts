@@ -54,7 +54,8 @@ import {
  * structure (drag, edit text, add, delete) waits for edit mode, which works on a draft: every phase
  * opens, and no structure change leaves the board until Save; Cancel drops them. Work done while
  * editing still goes out at once. Saving `body` is the
- * page's job. The DDL showcase drives the same component with a local body.
+ * page's job. The DDL showcase drives the same component with a local body. `viewOnly` shows a
+ * template the same way, with nothing to tick or change.
  */
 @Component({
   selector: 'landing-checklist-board',
@@ -85,7 +86,10 @@ import {
   },
 })
 export class ChecklistBoard {
+  private static nextId = 0;
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
+  /** Prefix for the board's element ids, so two boards on one page (the DDL) never share one. */
+  protected readonly uid = `cl-${ChecklistBoard.nextId++}`;
   private readonly injector = inject(Injector);
 
   readonly body = model.required<ChecklistRunBody>();
@@ -97,6 +101,8 @@ export class ChecklistBoard {
   readonly projectSlug = input('');
   /** Nothing can be changed (the page stopped saving): the run stays readable. */
   readonly locked = input(false);
+  /** A template, not a run: no progress, no ticks, notes or edit mode; reading, folding and refs only. */
+  readonly viewOnly = input(false);
 
   protected readonly roles = CHECKLIST_ROLES;
   protected readonly role = signal<string | null>(null);
@@ -141,8 +147,15 @@ export class ChecklistBoard {
     return {
       ref,
       section: doc?.sections.find((s) => s.key === ref.key) ?? null,
-      source: lookup ? `Lookup table · ${CHECKLIST_LOOKUP_SLUG}` : `Project profile · ${this.projectSlug()}`,
-      file: lookup ? `${CHECKLIST_LOOKUP_SLUG}.md` : `projects/${this.projectSlug()}.md`,
+      source: lookup
+        ? `Lookup table · ${CHECKLIST_LOOKUP_SLUG}`
+        : this.projectSlug()
+          ? `Project profile · ${this.projectSlug()}`
+          : 'Project profile',
+      file: lookup ? `${CHECKLIST_LOOKUP_SLUG}.md` : this.projectSlug() ? `projects/${this.projectSlug()}.md` : '',
+      // A template has no project yet: its § refs point at whichever project a run picks.
+      emptyMessage:
+        !lookup && !this.projectSlug() ? `Section ${ref.key} comes from the project profile a run picks.` : '',
     };
   });
 
