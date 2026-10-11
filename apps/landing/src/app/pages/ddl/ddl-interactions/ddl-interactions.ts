@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   PLATFORM_ID,
   computed,
   effect,
@@ -31,7 +32,7 @@ import { PICKS_STORAGE_KEY } from './ddl-interactions.constants';
   templateUrl: './ddl-interactions.html',
   styleUrl: './ddl-interactions.scss',
 })
-export class DdlInteractions {
+export class DdlInteractions implements OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly groups: readonly WishlistGroup[] = [
@@ -342,5 +343,11 @@ export class DdlInteractions {
       this.clockMinute.update((m) => (m + 1) % 60);
       this.clockTickKey.update((k) => k + 1);
     }, 6000); // demo speed — real interaction would be one tick per real minute.
+  }
+
+  ngOnDestroy(): void {
+    if (this.clockTimer !== null) {
+      clearInterval(this.clockTimer);
+    }
   }
 }
