@@ -24,7 +24,7 @@ export default class ChecklistTemplateList {
   /** Null until the first load answers. */
   private readonly templates = signal<ChecklistDocSummary[] | null>(null);
   protected readonly loadFailed = signal(false);
-  /** By title, so a lane is found where its name says. */
+  /** By title, so a size is found where its name says. */
   protected readonly sorted = computed(() => {
     const all = this.templates();
     return all ? [...all].sort((a, b) => a.title.localeCompare(b.title)) : null;

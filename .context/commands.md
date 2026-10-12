@@ -15,7 +15,7 @@ Start the landing app and navigate to `http://localhost:4200/ddl`.
 
 ### Checklist push
 
-Sends the workflow markdown (`checklist-lane-*.md`, `bang-tra.md`, `projects/*.md`) to the checklist sync route. Runs already made are never changed; a file that is gone is archived.
+Sends the workflow markdown (`checklist-size-*.md`, `bang-tra.md`, `projects/*.md`) to the checklist sync route. Runs already made are never changed; a file that is gone is archived.
 
 ```bash
 CHECKLIST_SYNC_TOKEN=<token> pnpm checklist:push                       # local API

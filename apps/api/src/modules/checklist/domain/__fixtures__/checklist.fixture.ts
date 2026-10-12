@@ -38,7 +38,7 @@ export const templateContent = (): ChecklistTemplateContent => ({
 
 export const parsedFile = (overrides: Partial<ParsedChecklistFile> = {}): ParsedChecklistFile => ({
   kind: ChecklistDocKind.TEMPLATE,
-  slug: 'checklist-lane-l',
+  slug: 'checklist-size-l',
   title: 'Checklist làn L',
   content: templateContent(),
   sourceHash: 'hash-1',

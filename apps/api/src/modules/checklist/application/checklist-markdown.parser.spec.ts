@@ -5,15 +5,15 @@ import type { ChecklistGroup } from '@portfolio/shared/types';
 
 import { ChecklistMarkdownParser } from './checklist-markdown.parser';
 
-const LANE_L = readFileSync(join(__dirname, '__fixtures__/checklist-lane-l.md'), 'utf8');
+const SIZE_L = readFileSync(join(__dirname, '__fixtures__/checklist-size-l.md'), 'utf8');
 
 const template = (body: string) => `# Checklist test\n\nIntro.\n\n${body}`;
 const TABLE_HEAD = '| ✔ | Việc | Ai làm | Ai kiểm |\n| --- | --- | --- | --- |';
 
 describe('ChecklistMarkdownParser', () => {
   describe('parseTemplate()', () => {
-    it('should read the 8 phases of lane L and nest ↳ rows under their group', () => {
-      const { title, content } = ChecklistMarkdownParser.parseTemplate(LANE_L, 'checklist-lane-l.md');
+    it('should read the 8 phases of size L and nest ↳ rows under their group', () => {
+      const { title, content } = ChecklistMarkdownParser.parseTemplate(SIZE_L, 'checklist-size-l.md');
 
       expect(title).toBe('Checklist làn L');
       expect(content.phases).toHaveLength(8);
@@ -25,7 +25,7 @@ describe('ChecklistMarkdownParser', () => {
     });
 
     it('should read the phase number, name, role and gate', () => {
-      const { content } = ChecklistMarkdownParser.parseTemplate(LANE_L, 'checklist-lane-l.md');
+      const { content } = ChecklistMarkdownParser.parseTemplate(SIZE_L, 'checklist-size-l.md');
 
       const { number, name, role, gate } = content.phases[1];
       expect({ number, name, role, gate: gate?.markdown }).toEqual({
@@ -36,8 +36,19 @@ describe('ChecklistMarkdownParser', () => {
       });
     });
 
+    it('should read a gate written as "Qua phase khi" like "Qua pha khi"', () => {
+      const md = template(
+        `## 1. Problem Discovery | Business Analyst\n\n**Qua phase khi:** Owner hiểu đúng vấn đề.\n\n${TABLE_HEAD}\n| [ ] | Việc | Owner | — |`
+      );
+
+      const { content } = ChecklistMarkdownParser.parseTemplate(md, 'checklist-size-x.md');
+
+      expect(content.phases[0].gate?.markdown).toBe('Owner hiểu đúng vấn đề.');
+      expect(content.phases[0].note).toBeNull();
+    });
+
     it('should make prose after the last table the checklist footer, not a note of the last phase', () => {
-      const { content } = ChecklistMarkdownParser.parseTemplate(LANE_L, 'checklist-lane-l.md');
+      const { content } = ChecklistMarkdownParser.parseTemplate(SIZE_L, 'checklist-size-l.md');
 
       expect(content.footer).toEqual({
         markdown: '**Gặp bug ở bất kỳ pha nào:** tra E.',

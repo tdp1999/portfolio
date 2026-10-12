@@ -5,7 +5,7 @@ import type { ChecklistDocContent, ChecklistRunBody } from '@portfolio/shared/ty
 export interface ChecklistDocProps {
   id: string;
   kind: ChecklistDocKind;
-  /** The file stem: `checklist-lane-l`, `bang-tra`, `portfolio`. */
+  /** The file stem: `checklist-size-l`, `bang-tra`, `portfolio`. */
   slug: string;
   title: string;
   content: ChecklistDocContent;

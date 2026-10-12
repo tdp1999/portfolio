@@ -8,7 +8,7 @@ import { ChecklistDocKind } from '@prisma/client';
 export class ChecklistFilePolicy {
   // --- Constants ---
 
-  private static readonly TEMPLATE_PREFIX = 'checklist-lane-';
+  private static readonly TEMPLATE_PREFIX = 'checklist-size-';
   private static readonly LOOKUP_STEM = 'bang-tra';
   private static readonly PROJECT_DIR = 'projects';
   private static readonly PROJECT_SKELETON = '_template';

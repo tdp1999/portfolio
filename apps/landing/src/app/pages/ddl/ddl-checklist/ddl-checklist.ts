@@ -46,7 +46,7 @@ export class DdlChecklist {
   protected readonly project = DDL_CHECKLIST_PROJECT;
   protected readonly body = signal(DDL_CHECKLIST_RUN);
 
-  /** The same lane as a template: every row todo, no notes (the board in `viewOnly` shows neither). */
+  /** The same size as a template: every row todo, no notes (the board in `viewOnly` shows neither). */
   protected readonly template: ChecklistRunBody = {
     ...DDL_CHECKLIST_RUN,
     phases: DDL_CHECKLIST_RUN.phases.map((phase) => ({

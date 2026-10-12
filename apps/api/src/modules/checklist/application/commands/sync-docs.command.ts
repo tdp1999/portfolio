@@ -84,7 +84,7 @@ export class SyncChecklistDocsHandler implements ICommandHandler<SyncChecklistDo
   private static parseFile(path: string, content: string): ParsedChecklistFile {
     const target = ChecklistFilePolicy.classify(path);
     if (!target) {
-      throw BadRequestError(`${path}: not a lane checklist, the lookup table or a project profile`, {
+      throw BadRequestError(`${path}: not a size checklist, the lookup table or a project profile`, {
         errorCode: ChecklistErrorCode.UNKNOWN_FILE,
         layer: ErrorLayer.APPLICATION,
       });

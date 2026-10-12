@@ -1,7 +1,7 @@
 import type { ChecklistRunBody, ChecklistSectionedContent } from '@portfolio/shared/types';
 
 /**
- * Fixture for /ddl/checklist: `checklist-lane-l.md`, `bang-tra.md` and `projects/portfolio.md` from the
+ * Fixture for /ddl/checklist: `checklist-size-l.md`, `bang-tra.md` and `projects/portfolio.md` from the
  * workflow folder, run through the API's own parser (`ChecklistMarkdownParser`), so every layout
  * option shows real content. A few rows are preset (done, skipped, one note) to show every state.
  */

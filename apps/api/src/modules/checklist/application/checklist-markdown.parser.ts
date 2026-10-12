@@ -24,8 +24,8 @@ export interface ParsedSectioned {
 /**
  * Reads the Owner's workflow markdown. Two shapes:
  *
- * - A lane checklist: intro prose, then `## N. Name | Role` phases, each with a
- *   `**Qua pha khi:** …` gate and a `| ✔ | Việc | Ai làm | Ai kiểm |` table. A bold row with an
+ * - A size checklist: intro prose, then `## N. Name | Role` phases, each with a
+ *   `**Qua phase khi:** …` gate ("Qua pha khi" also accepted) and a `| ✔ | Việc | Ai làm | Ai kiểm |` table. A bold row with an
  *   empty ✔ cell is a group; the `↳` rows under it are its children.
  * - A sectioned doc (lookup table, project profile): `## A. Title` / `## 6. Title` sections.
  *
@@ -37,7 +37,7 @@ export class ChecklistMarkdownParser {
 
   private static readonly PHASE_HEADING = /^##\s+(?:(\d+)\.\s+)?(.+?)(?:\s+\|\s+(.+))?$/;
   private static readonly SECTION_HEADING = /^##\s+([A-Z]|\d+)\.\s+(.+)$/;
-  private static readonly GATE_PREFIX = /^\*\*Qua pha khi:\*\*\s*/;
+  private static readonly GATE_PREFIX = /^\*\*Qua pha(?:se)? khi:\*\*\s*/;
   private static readonly TABLE_SEPARATOR = /^\|(\s*:?-+:?\s*\|)+$/;
   /** `tra B`, but not the placeholder `"tra X"` and not the verb `kiểm tra`. */
   private static readonly LOOKUP_REF = /(?<!["\p{L}])(?<!kiểm )tra ([A-Z])(?![\p{L}\d])/gu;

@@ -13,7 +13,7 @@ export const SyncChecklistDocsSchema = z.object({
   files: z
     .array(
       z.object({
-        /** Relative to the workflow folder: `checklist-lane-l.md`, `projects/portfolio.md`. */
+        /** Relative to the workflow folder: `checklist-size-l.md`, `projects/portfolio.md`. */
         path: z.string().trim().min(1).max(300),
         content: z.string().max(MAX_FILE_CHARS),
       })

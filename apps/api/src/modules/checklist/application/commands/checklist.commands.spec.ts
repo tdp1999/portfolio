@@ -27,8 +27,8 @@ describe('SyncChecklistDocsHandler', () => {
   it('should write nothing when one file in the push cannot be parsed', async () => {
     const { docs, handler } = setup();
     const files = [
-      { path: 'checklist-lane-s.md', content: LANE },
-      { path: 'checklist-lane-m.md', content: '# Checklist làn M\n\nNo phase.' },
+      { path: 'checklist-size-s.md', content: LANE },
+      { path: 'checklist-size-m.md', content: '# Checklist làn M\n\nNo phase.' },
     ];
 
     await expect(handler.execute(new SyncChecklistDocsCommand({ files }))).rejects.toMatchObject({
@@ -42,38 +42,38 @@ describe('SyncChecklistDocsHandler', () => {
     const { docs, handler } = setup([lookup]);
 
     const result = await handler.execute(
-      new SyncChecklistDocsCommand({ files: [{ path: 'checklist-lane-s.md', content: LANE }] })
+      new SyncChecklistDocsCommand({ files: [{ path: 'checklist-size-s.md', content: LANE }] })
     );
 
-    expect(result).toEqual({ created: ['checklist-lane-s'], updated: [], unchanged: [], archived: ['bang-tra'] });
+    expect(result).toEqual({ created: ['checklist-size-s'], updated: [], unchanged: [], archived: ['bang-tra'] });
     const [created, changed] = docs.saveSync.mock.calls[0];
-    expect(created.map((doc) => doc.slug)).toEqual(['checklist-lane-s']);
+    expect(created.map((doc) => doc.slug)).toEqual(['checklist-size-s']);
     expect(changed.map((doc) => [doc.slug, doc.isArchived])).toEqual([['bang-tra', true]]);
   });
 
   it('should report a doc as updated when its markdown changed and unchanged when it did not', async () => {
-    const lane = ChecklistDoc.create(parsedFile({ slug: 'checklist-lane-s', sourceHash: 'old-hash' }));
+    const lane = ChecklistDoc.create(parsedFile({ slug: 'checklist-size-s', sourceHash: 'old-hash' }));
     const lookup = ChecklistDoc.create(
       parsedFile({ kind: ChecklistDocKind.LOOKUP, slug: 'bang-tra', sourceHash: sha(LOOKUP) })
     );
     const { docs, handler } = setup([lane, lookup]);
     const files = [
-      { path: 'checklist-lane-s.md', content: LANE },
+      { path: 'checklist-size-s.md', content: LANE },
       { path: 'bang-tra.md', content: LOOKUP },
     ];
 
     const result = await handler.execute(new SyncChecklistDocsCommand({ files }));
 
-    expect(result).toEqual({ created: [], updated: ['checklist-lane-s'], unchanged: ['bang-tra'], archived: [] });
+    expect(result).toEqual({ created: [], updated: ['checklist-size-s'], unchanged: ['bang-tra'], archived: [] });
     const [, changed] = docs.saveSync.mock.calls[0];
-    expect(changed.map((doc) => [doc.slug, doc.sourceHash])).toEqual([['checklist-lane-s', sha(LANE)]]);
+    expect(changed.map((doc) => [doc.slug, doc.sourceHash])).toEqual([['checklist-size-s', sha(LANE)]]);
   });
 
   it('should refuse a push where two files map to the same doc', async () => {
     const { docs, handler } = setup();
     const files = [
-      { path: 'checklist-lane-s.md', content: LANE },
-      { path: 'old/checklist-lane-s.md', content: LANE },
+      { path: 'checklist-size-s.md', content: LANE },
+      { path: 'old/checklist-size-s.md', content: LANE },
     ];
 
     await expect(handler.execute(new SyncChecklistDocsCommand({ files }))).rejects.toMatchObject({
@@ -115,7 +115,7 @@ describe('CreateChecklistRunHandler', () => {
 
     await expect(
       handler.execute(
-        new CreateChecklistRunCommand({ name: 'CIMB-123', templateSlug: 'checklist-lane-l', projectSlug: 'ghost' })
+        new CreateChecklistRunCommand({ name: 'CIMB-123', templateSlug: 'checklist-size-l', projectSlug: 'ghost' })
       )
     ).rejects.toMatchObject({ errorCode: 'CHECKLIST_DOC_NOT_FOUND' });
     expect(runs.add).not.toHaveBeenCalled();
