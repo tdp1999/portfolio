@@ -3,6 +3,16 @@ import { z } from 'zod/v4';
 import { stripHtmlTags, PaginatedQuerySchema } from '@portfolio/shared/utils';
 import { LIMITS } from '@portfolio/shared/validation';
 
+export const CONTACT_MESSAGE_PURPOSES = [
+  'GENERAL',
+  'JOB_OPPORTUNITY',
+  'FREELANCE',
+  'COLLABORATION',
+  'BUG_REPORT',
+  'PRESS',
+  'OTHER',
+] as const;
+
 export const SubmitContactMessageSchema = z.object({
   name: z
     .string()
@@ -11,7 +21,7 @@ export const SubmitContactMessageSchema = z.object({
     .transform((v) => stripHtmlTags(v.trim())),
   email: z.email().max(LIMITS.EMAIL_MAX),
   purpose: z
-    .enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER'])
+    .enum(CONTACT_MESSAGE_PURPOSES)
     .default('GENERAL'),
   subject: z
     .string()
@@ -40,8 +50,8 @@ export const ContactMessageQuerySchema = PaginatedQuerySchema.extend({
     .optional(),
   purpose: z
     .union([
-      z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER']),
-      z.array(z.enum(['GENERAL', 'JOB_OPPORTUNITY', 'FREELANCE', 'COLLABORATION', 'BUG_REPORT', 'PRESS', 'OTHER'])),
+      z.enum(CONTACT_MESSAGE_PURPOSES),
+      z.array(z.enum(CONTACT_MESSAGE_PURPOSES)),
     ])
     .optional(),
   includeDeleted: z.coerce.boolean().default(false),
