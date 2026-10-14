@@ -24,7 +24,9 @@ import {
   CancelRunCommand,
   CreateBriefCommand,
   CreateRunCommand,
+  CreateItemNoteCommand,
   CreateTrialsCommand,
+  DeleteItemNoteCommand,
   CollectItemCommentsCommand,
   FetchItemCommentsCommand,
   CreateSourceCommand,
@@ -49,6 +51,7 @@ import {
   GetWorkflowProfileQuery,
   ListRadarItemsQuery,
   ListRunsQuery,
+  ListItemNotesQuery,
   ListItemTrialsQuery,
   ListSourcesQuery,
 } from '../application/queries';
@@ -193,6 +196,22 @@ export class RadarAdminController {
   @Get('items/:id/trials')
   async listItemTrials(@Param('id') id: string) {
     return await this.queryBus.execute(new ListItemTrialsQuery(id));
+  }
+
+  /** The Owner's notes on a post, newest first. */
+  @Get('items/:id/notes')
+  async listItemNotes(@Param('id') id: string) {
+    return await this.queryBus.execute(new ListItemNotesQuery(id));
+  }
+
+  @Post('items/:id/notes')
+  async createItemNote(@Param('id') id: string, @Body() body: unknown) {
+    return await this.commandBus.execute(new CreateItemNoteCommand(id, body));
+  }
+
+  @Delete('items/:id/notes/:noteId')
+  async deleteItemNote(@Param('id') id: string, @Param('noteId') noteId: string) {
+    return await this.commandBus.execute(new DeleteItemNoteCommand(id, noteId));
   }
 
   @Get('items/:id')

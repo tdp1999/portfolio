@@ -57,6 +57,9 @@ export type RadarReanalyzeMode = (typeof RADAR_REANALYZE_MODES)[number];
 /** Most items one quality-trial request takes: a deep trial runs ~45 s, so ten finish in minutes. */
 export const RADAR_TRIAL_MAX_IDS = 10;
 
+/** Longest note the Owner can keep on a post (the column's length). */
+export const RADAR_NOTE_MAX_CHARS = 2000;
+
 /** Default page size of `GET /radar/items`. */
 export const RADAR_FEED_PAGE_SIZE = 50;
 

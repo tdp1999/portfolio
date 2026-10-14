@@ -10,6 +10,7 @@ import { RadarMedia } from '../domain/radar.types';
 import { RadarLeasePolicy } from '../domain/policies/radar-lease.policy';
 import { RadarBriefSummary, RadarBriefWorkItem } from './ports/radar-brief.repository.port';
 import { RadarFeedRow, RadarItemDetail } from './ports/radar-item.repository.port';
+import { RadarNoteRecord } from './ports/radar-note.repository.port';
 import { RadarWorkSnapshot } from './ports/radar-work.repository.port';
 import { RadarSourceListing } from './ports/radar-source.repository.port';
 import {
@@ -22,6 +23,7 @@ import {
   RadarItemCommentsSummaryDto,
   RadarItemDetailDto,
   RadarItemImageDto,
+  RadarItemNoteDto,
   RadarRunDetailDto,
   RadarRunDto,
   RadarSourceResponseDto,
@@ -184,6 +186,16 @@ export class RadarPresenter {
       enrichment: row.enrichment,
       comments: toCommentsSummary(row),
       video: row.videoUrl ? { durationSec: row.videoDurationSec, transcriptStatus: row.transcriptStatus } : null,
+      notes: { count: row.noteCount, latest: row.latestNote && RadarPresenter.toNote(row.latestNote) },
+    };
+  }
+
+  static toNote(note: RadarNoteRecord): RadarItemNoteDto {
+    return {
+      id: note.id,
+      body: note.body,
+      triageStatus: note.triageStatus,
+      createdAt: note.createdAt.toISOString(),
     };
   }
 

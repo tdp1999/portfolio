@@ -6,6 +6,7 @@ import { PaginatedResult, RadarContentType, RadarFeedStatus, RadarProviderTag } 
 import { RadarComment } from '../../domain/radar-comment.types';
 import { RadarEngagement, RadarLink, RadarMedia, RadarSharedPost } from '../../domain/radar.types';
 import { RadarItemVideo, RadarTranscriptStatus } from '../../domain/radar-transcript.types';
+import { RadarNoteRecord } from './radar-note.repository.port';
 
 export interface RadarItemListFilter {
   page: number;
@@ -93,6 +94,9 @@ export interface RadarFeedRow extends RadarItemBase {
   videoUrl: string | null;
   videoDurationSec: number | null;
   transcriptStatus: RadarTranscriptStatus;
+  noteCount: number;
+  /** The newest note, null when there is none. */
+  latestNote: RadarNoteRecord | null;
 }
 
 export type RadarTriageCounts = Record<RadarTriageStatus, number>;

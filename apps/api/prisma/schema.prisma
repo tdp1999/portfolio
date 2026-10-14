@@ -997,6 +997,7 @@ model RadarItem {
   lastRun    RadarRun?              @relation(fields: [lastRunId], references: [id], onDelete: SetNull)
   enrichment RadarEnrichment?
   trials     RadarEnrichmentTrial[]
+  notes      RadarItemNote[]
 
   @@unique([sourceId, externalId])
   @@index([sourceId, publishedAt(sort: Desc)])
@@ -1083,6 +1084,21 @@ model RadarEnrichmentTrial {
 
   @@index([itemId, createdAt(sort: Desc)])
   @@map("radar_enrichment_trials")
+}
+
+/// The Owner's own notes on a post: why it was marked Done or To try, and what came of it.
+model RadarItemNote {
+  id           String             @id @db.Uuid
+  itemId       String             @db.Uuid
+  body         String             @db.VarChar(2000)
+  /// The post's triage status when the note was written; null when the note was not tied to a decision.
+  triageStatus RadarTriageStatus?
+  createdAt    DateTime           @default(now())
+
+  item RadarItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId, createdAt(sort: Desc)])
+  @@map("radar_item_notes")
 }
 
 /// Who writes a brief: the server AI in the tick (AUTO) or `/radar work brief` (WORKER).

@@ -30,6 +30,7 @@ import {
   RADAR_REANALYZE_MAX_IDS,
   RADAR_REANALYZE_MODES,
   RADAR_TRIAGE_MAX_IDS,
+  RADAR_NOTE_MAX_CHARS,
   RADAR_TRIAL_MAX_IDS,
   type RadarQueueState,
 } from '@portfolio/shared/types';
@@ -292,6 +293,7 @@ export interface RadarFeedItemDto {
   comments: RadarItemCommentsSummaryDto;
   /** Set when the capture carried a video file, so the Feed can mark the post; never the file URL. */
   video: Pick<RadarItemVideo, 'durationSec' | 'transcriptStatus'> | null;
+  notes: RadarNotesSummaryDto;
 }
 
 export interface RadarImagesSummaryDto {
@@ -373,6 +375,25 @@ export interface RadarTrialDto {
   latencyMs: number | null;
   createdAt: string;
   finishedAt: string | null;
+}
+
+export const CreateRadarItemNoteSchema = z.object({
+  body: z.string().trim().min(1).max(RADAR_NOTE_MAX_CHARS),
+  /** The decision the note explains; left out for a note written on its own. */
+  triageStatus: z.enum(RadarTriageStatus).nullable().default(null),
+});
+
+export interface RadarItemNoteDto {
+  id: string;
+  body: string;
+  triageStatus: RadarTriageStatus | null;
+  createdAt: string;
+}
+
+/** What the Feed shows of a post's notes: how many, and the newest. */
+export interface RadarNotesSummaryDto {
+  count: number;
+  latest: RadarItemNoteDto | null;
 }
 
 export interface TriageRadarItemsResponseDto {

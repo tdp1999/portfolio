@@ -18,7 +18,9 @@ import {
   CancelRunHandler,
   ClaimWorkHandler,
   CreateRunHandler,
+  CreateItemNoteHandler,
   CreateTrialsHandler,
+  DeleteItemNoteHandler,
   CreateSourceHandler,
   DeleteSourceHandler,
   PersistItemImagesHandler,
@@ -53,6 +55,7 @@ import {
   GetWorkflowProfileHandler,
   ListRunsHandler,
   ListRadarItemsHandler,
+  ListItemNotesHandler,
   ListItemTrialsHandler,
   ListSourcesHandler,
 } from './application/queries';
@@ -71,6 +74,7 @@ import {
   RADAR_RUN_REPOSITORY,
   RADAR_BRIEF_REPOSITORY,
   RADAR_SOURCE_REPOSITORY,
+  RADAR_NOTE_REPOSITORY,
   RADAR_TRIAL_REPOSITORY,
   RADAR_TRANSCRIPT_REPOSITORY,
   RADAR_WORK_REPOSITORY,
@@ -93,6 +97,7 @@ import { ServerAiAdapter } from './infrastructure/llm/server-ai.adapter';
 import { RadarProfileRepository } from './infrastructure/repositories/radar-profile.repository';
 import { RadarRunRepository } from './infrastructure/repositories/radar-run.repository';
 import { RadarSourceRepository } from './infrastructure/repositories/radar-source.repository';
+import { RadarNoteRepository } from './infrastructure/repositories/radar-note.repository';
 import { RadarTrialRepository } from './infrastructure/repositories/radar-trial.repository';
 import { RadarTranscriptRepository } from './infrastructure/repositories/radar-transcript.repository';
 import { RadarWorkRepository } from './infrastructure/repositories/radar-work.repository';
@@ -122,6 +127,8 @@ const CommandHandlers = [
   SubmitBriefHandler,
   WriteAutoBriefHandler,
   CreateTrialsHandler,
+  CreateItemNoteHandler,
+  DeleteItemNoteHandler,
 ];
 const QueryHandlers = [
   ListSourcesHandler,
@@ -137,6 +144,7 @@ const QueryHandlers = [
   GetBriefHandler,
   ListBriefItemsHandler,
   ListItemTrialsHandler,
+  ListItemNotesHandler,
 ];
 
 @Module({
@@ -153,6 +161,7 @@ const QueryHandlers = [
     { provide: RADAR_RUN_REPOSITORY, useClass: RadarRunRepository },
     { provide: RADAR_BRIEF_REPOSITORY, useClass: RadarBriefRepository },
     { provide: RADAR_TRIAL_REPOSITORY, useClass: RadarTrialRepository },
+    { provide: RADAR_NOTE_REPOSITORY, useClass: RadarNoteRepository },
     { provide: RADAR_TRANSCRIPT_REPOSITORY, useClass: RadarTranscriptRepository },
     { provide: IMAGE_DOWNLOADER, useFactory: () => FetchMediaDownloader.images() },
     { provide: VIDEO_DOWNLOADER, useFactory: () => FetchMediaDownloader.videos() },

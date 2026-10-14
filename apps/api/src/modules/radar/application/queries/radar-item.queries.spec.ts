@@ -33,6 +33,8 @@ const row: RadarFeedRow = {
   videoUrl: null,
   videoDurationSec: null,
   transcriptStatus: 'NONE',
+  noteCount: 0,
+  latestNote: null,
   enrichment: null,
 };
 

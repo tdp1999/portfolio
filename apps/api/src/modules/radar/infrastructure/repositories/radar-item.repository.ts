@@ -44,6 +44,8 @@ const feedSelect = {
   videoDurationSec: true,
   transcriptStatus: true,
   source: sourceSelect,
+  notes: { orderBy: { createdAt: 'desc' }, take: 1 },
+  _count: { select: { notes: true } },
   enrichment: {
     select: {
       tldr: true,
@@ -63,6 +65,9 @@ const feedSelect = {
 
 const detailSelect = {
   ...feedSelect,
+  /** The Detail page loads notes on their own (`GET /radar/items/:id/notes`). */
+  notes: false,
+  _count: false,
   lastRunId: true,
   links: true,
   ...RADAR_VIDEO_SELECT,
@@ -172,8 +177,10 @@ export class RadarItemRepository implements IRadarItemRepository {
       this.prisma.radarItem.count({ where }),
     ]);
     return {
-      data: data.map((row) => ({
+      data: data.map(({ notes, _count, ...row }) => ({
         ...row,
+        noteCount: _count.notes,
+        latestNote: notes[0] ?? null,
         media: row.media as unknown as RadarMedia[],
         engagement: row.engagement as unknown as RadarEngagement,
       })),
