@@ -4,7 +4,9 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnIni
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HelpButton, SpinnerOverlay } from '@portfolio/console/shared/ui';
@@ -37,7 +39,9 @@ import {
     DatePipe,
     RouterLink,
     MatButtonModule,
+    MatDividerModule,
     MatIconModule,
+    MatMenuModule,
     MatTooltipModule,
     RadarItemDetailCard,
     SpinnerOverlay,

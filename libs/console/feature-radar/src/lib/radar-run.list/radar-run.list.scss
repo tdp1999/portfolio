@@ -1,5 +1,6 @@
 @use 'base/prefers';
 @use '../radar-state';
+@use '../radar-dialog-page';
 
 :host {
   display: block;
@@ -185,4 +186,120 @@
 
 .run-table .run-state-row:hover {
   background: transparent;
+}
+
+/* ═══ Container queries: last, so they win over the base rules above ═══ */
+/* The table's own width decides (a phone, or the popup on a narrow screen): each run becomes a
+   card, the source and status on top, the window, then steps with items, spend with the date. */
+.crud-table-container {
+  container: run-table / inline-size;
+}
+
+@container run-table (max-width: 639px) {
+  .run-table,
+  .run-table tbody {
+    display: block;
+  }
+
+  .run-table .mat-mdc-header-row {
+    display: none;
+  }
+
+  .run-row {
+    display: grid;
+    grid-template-areas:
+      'source status'
+      'window window'
+      'steps items'
+      'spend created'
+      'actions actions';
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 16px;
+    height: auto;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .run-row--has-notice {
+    border-bottom-color: transparent;
+    padding-bottom: 8px;
+  }
+
+  .run-table .run-row > .mat-mdc-cell {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  /* The card, not each cell, takes the hover tint. */
+  .run-row:hover {
+    background: var(--color-surface-alt);
+
+    .mat-mdc-cell {
+      background: transparent;
+    }
+  }
+
+  .col-source {
+    grid-area: source;
+  }
+
+  .col-status {
+    grid-area: status;
+    justify-self: end;
+  }
+
+  .col-window {
+    grid-area: window;
+    color: var(--color-text-secondary);
+  }
+
+  .col-steps {
+    grid-area: steps;
+  }
+
+  .col-items {
+    grid-area: items;
+    text-align: right;
+  }
+
+  .col-spend {
+    grid-area: spend;
+  }
+
+  .col-created {
+    grid-area: created;
+    text-align: right;
+  }
+
+  .run-table .run-row > .col-actions {
+    grid-area: actions;
+
+    &:empty,
+    &:not(:has(.run-actions)) {
+      display: none;
+    }
+  }
+
+  .run-actions {
+    justify-content: flex-start;
+  }
+
+  .run-notice-row {
+    display: block;
+    height: auto;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .run-notice-row > .run-notice-cell {
+    display: block;
+    padding: 0 16px 16px;
+    border: 0;
+  }
+
+  .run-state-row,
+  .run-state-row > .mat-mdc-cell {
+    display: block;
+  }
 }

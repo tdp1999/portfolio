@@ -110,6 +110,28 @@ export interface RadarFeedItem {
   comments: RadarCommentsSummary;
   /** Set when the capture carried a video file. */
   video: Pick<RadarItemVideo, 'durationSec' | 'transcriptStatus'> | null;
+  /** The Owner's notes on the post: how many, and the newest. */
+  notes: RadarNotesSummary;
+}
+
+/** One of the Owner's notes on a post: why it was triaged, or what came of it. */
+export interface RadarItemNote {
+  id: string;
+  body: string;
+  /** The decision the note explains; null for a note written on its own. */
+  triageStatus: RadarTriageStatus | null;
+  createdAt: string;
+}
+
+export interface RadarNotesSummary {
+  count: number;
+  latest: RadarItemNote | null;
+}
+
+/** A post's notes changed: its id and the new summary. */
+export interface RadarNotesChange {
+  id: string;
+  notes: RadarNotesSummary;
 }
 
 export interface RadarImagesSummary {
@@ -417,6 +439,8 @@ export interface RadarRunCreateDialogData {
   sources: RadarSource[];
   /** The Runs page's list, newest first, used to chain the default window. */
   runs: RadarRun[];
+  /** Preselected source (a re-run from Sources and upload); the first source when left out. */
+  sourceId?: string;
 }
 
 export type RunNotice =

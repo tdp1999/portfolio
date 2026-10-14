@@ -1,3 +1,4 @@
+@use 'base/breakpoints' as bp;
 @use '../radar-state';
 
 /* Page chrome only; the post itself is `console-radar-item-detail-card`. */
@@ -18,5 +19,51 @@
     color: var(--color-text-secondary);
     text-align: center;
     white-space: nowrap;
+  }
+}
+
+.radar-detail-head__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.radar-detail-head__more {
+  display: none;
+}
+
+/* Phone: two lines, the name with the menu, then the meta; badge, help and the inline actions
+   leave (the actions sit in the menu, the detail card still shows the analysis state). */
+@include bp.respond-down('tablet') {
+  .radar-detail-head {
+    align-items: center;
+    gap: 4px;
+
+    h1 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .detail-meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      span + span::before {
+        content: ' · ';
+      }
+    }
+  }
+
+  .radar-detail-head__extra,
+  .radar-detail-head__inline {
+    display: none;
+  }
+
+  .radar-detail-head__more {
+    display: inline-flex;
   }
 }

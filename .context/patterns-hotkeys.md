@@ -92,11 +92,14 @@ inline; import the shared one.
 | `Escape` | Close the feature guide while focus is inside its iframe | `help-viewer` · `console/shared/ui` | guide open |
 | `Escape` | Close media picker dialog | `media-picker-dialog` · `console/shared/ui` | dialog open |
 | `Escape` | Close media drawer | `media.drawer` · `console/feature-media` | an item is selected |
-| `J` / `↓` | Open the next post | `radar-item-triage.section` · `console/feature-radar` | Radar Feed in Split view with a post open · skips typing, modifiers and open overlays |
-| `K` / `↑` | Open the previous post | `radar-item-triage.section` | same |
+| `J` / `↓` | Open the next post (crosses into the next page; stops at the Feed's last post) | `radar-item-triage.section` · `console/feature-radar` | Radar Feed in Split view with a post open · skips typing, modifiers and open overlays |
+| `K` / `↑` | Open the previous post (crosses into the previous page; stops at the first post) | `radar-item-triage.section` | same |
 | `E` | Mark the open post Done (pressed again: back to the tab it was decided in, or Inbox on the Done tab) | `radar-item-triage.section` | same |
 | `S` | Save the open post to To try (pressed again: back to the tab it was decided in, or Inbox on the To try tab) | `radar-item-triage.section` | same |
+| `N` | Open the quick note for the open post (a note not tied to a decision) | `radar-item-triage.section` | same |
 | `Escape` | Close the open post, back to the table | `radar-item-triage.section` | same (yields to Quick Look, which closes first) |
+| `Enter` / `Escape` / `↑` `↓` | In the quick note (opens under the pane header after E/S or N): save / skip / skip while empty and walk to the previous or next post | `radar-item-triage.section` · element-scoped on the note input | Quick note focused (the global keys above yield while it has focus) |
+| `Mod+Enter` | Save the note being written in the My notes panel | `radar-item-notes.section` · element-scoped on the textarea | Notes textarea focused |
 
 Console has no `Mod+K` / `/` search shortcut yet, even though the topbar has a
 "Search resources..." field. If you add one, guard it with `isEditableTarget`.

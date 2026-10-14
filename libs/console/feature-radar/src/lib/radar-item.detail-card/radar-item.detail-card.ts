@@ -37,7 +37,7 @@ import { filter, finalize, last, switchMap, take, takeWhile, tap, timer } from '
 import { MarkdownPipe } from '../markdown.pipe';
 import { RadarCommentsChipPipe } from '../radar-comments-chip.pipe';
 import { RadarImageViewablePipe } from '../radar-image-viewable.pipe';
-import { RadarItemTrialsSection } from '../radar-item-trials.section/radar-item-trials.section';
+import { RadarItemNotesSection } from '../radar-item-notes.section/radar-item-notes.section';
 import { RadarItemTranscriptSection } from '../radar-item-transcript.section/radar-item-transcript.section';
 import { isReanalysisQueued, isViewableImage } from '../radar-item.util';
 import { COMMENTS_POLL_MAX, COMMENTS_POLL_MS, COMMENTS_PREVIEW } from '../radar.constants';
@@ -52,7 +52,13 @@ import {
   WORK_STATUS_LABELS,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
-import { RadarAnalysisDepth, RadarItemDetail, RadarItemImage, RadarLightboxPhoto } from '../radar.types';
+import {
+  RadarAnalysisDepth,
+  RadarItemDetail,
+  RadarItemImage,
+  RadarLightboxPhoto,
+  RadarNotesChange,
+} from '../radar.types';
 import { UrlHostPipe } from '../url-host.pipe';
 
 /**
@@ -79,7 +85,7 @@ import { UrlHostPipe } from '../url-host.pipe';
     RadarCommentsChipPipe,
     UrlHostPipe,
     Property,
-    RadarItemTrialsSection,
+    RadarItemNotesSection,
     RadarItemTranscriptSection,
     PropertyList,
     QuickLook,
@@ -103,8 +109,12 @@ export class RadarItemDetailCard {
 
   // ── Inputs / outputs ──────────────────────────────────────────────
   readonly item = input.required<RadarItemDetail>();
+  /** Bumped when a note was saved outside the card (the quick note after a decision). */
+  readonly notesRevision = input(0);
   /** A comments fetch ended: the host reloads this item id if it still shows it. */
   readonly refresh = output<string>();
+  /** The notes changed in the card: the Feed updates that post's note summary. */
+  readonly notesChange = output<RadarNotesChange>();
 
   // ── Writable signals ──────────────────────────────────────────────
   /** The item whose comments are being fetched; the pane can move on while it runs. */

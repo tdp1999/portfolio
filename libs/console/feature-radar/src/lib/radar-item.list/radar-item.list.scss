@@ -1,3 +1,4 @@
+@use 'base/breakpoints' as bp;
 @use '../radar-state';
 @use '../radar-score';
 @use '../radar-monogram';
@@ -19,6 +20,40 @@
   padding-bottom: 16px;
 }
 
+/* The header wraps instead of squeezing the title: the actions drop to their own row when the
+   content area is narrower than title plus buttons. On a phone the buttons fold into one menu. */
+.crud-header {
+  flex-wrap: wrap;
+
+  .crud-header__actions {
+    flex-shrink: 1;
+    flex-wrap: wrap;
+  }
+
+  > :first-child {
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+}
+
+.radar-header-menu {
+  display: none;
+}
+
+@include bp.respond-down('tablet') {
+  .radar-header-buttons {
+    display: none;
+  }
+
+  .radar-header-menu {
+    display: inline-flex;
+  }
+
+  .crud-header > :first-child {
+    flex-basis: 0;
+  }
+}
+
 .radar-title {
   display: flex;
   flex-wrap: wrap;
@@ -26,20 +61,22 @@
   gap: 12px;
 }
 
-/* Search, Status, Source and the Filters button hold one row; Material's 180px infix default
-   would wrap them early. Radar-only on purpose. */
+/* Search, Status, Source and the Filters button share the row with the tabs and the view tools;
+   Material's 180px infix default would wrap them early. Radar-only on purpose. */
 console-filter-bar ::ng-deep {
+  /* The shared search grows to 1200px; here it shares the row, so it stops at 280px. */
   console-filter-search {
-    min-width: 240px;
+    min-width: 180px;
+    max-width: 280px;
   }
 
   console-filter-select .mat-mdc-form-field {
-    width: 148px;
+    width: 136px;
     min-width: 0;
   }
 
   console-filter-select.radar-filter--wide .mat-mdc-form-field {
-    width: 200px;
+    width: 160px;
   }
 
   console-filter-select .mat-mdc-form-field-infix {
@@ -73,6 +110,7 @@ console-filter-bar ::ng-deep {
   flex: 1 1 0;
   min-height: 240px;
   overflow: auto;
+  container: radar-table / inline-size;
 }
 
 /* One-line rows: every cell centres on the row's middle line. */
@@ -137,7 +175,7 @@ console-filter-bar ::ng-deep {
 }
 
 .col-progress {
-  width: 168px;
+  width: 192px;
 }
 
 .col-status {
@@ -188,70 +226,50 @@ console-filter-bar ::ng-deep {
   gap: 4px;
 }
 
-/* ═══ Triage tabs + view switch ══════════════════════════════════════ */
-.radar-triage-bar {
+/* ═══ Toolbar: triage tabs, filters, view tools in one row ═════════ */
+.radar-toolbar-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 0;
-  border-bottom: 1px solid var(--color-border);
+  gap: 12px 16px;
 
-  &__spacer {
-    margin-left: auto;
-  }
-
-  &__sort,
-  &__select {
-    margin-bottom: 4px;
-  }
-
-  console-segmented-control {
-    margin-bottom: 4px;
+  /* Zero basis: the bar takes what the tabs and the view tools leave, and the search shrinks
+     (down to 180px) before anything wraps. One row from 1440. */
+  console-filter-bar {
+    flex: 1 1 0;
+    min-width: 0;
   }
 }
 
-.radar-tabs {
+.radar-triage {
   display: flex;
+  align-items: center;
   gap: 4px;
 }
 
-.radar-tab {
-  display: inline-flex;
+/* The toolbar's width drives its layout (container queries at the end of the file). Narrower
+   than one row: tabs and view tools share the first row, the filters take the second. On a
+   phone one row holds icon tabs, the Filters icon button (search, Status and Source move into
+   its panel) and the view switcher. */
+.crud-toolbar {
+  container: radar-toolbar / inline-size;
+}
+
+/* Every control on the row is 40px tall: the segmented track (1px border + 4px inset) holds
+   30px segments so it lines up with the 40px fields and the Select button. */
+.radar-toolbar__actions {
+  display: flex;
   align-items: center;
   gap: 8px;
+  margin-left: auto;
+
+  console-segmented-control {
+    --mat-button-toggle-height: 30px;
+  }
+}
+
+.radar-toolbar__select {
   height: 40px;
-  padding: 0 12px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: none;
-  color: var(--color-text-secondary);
-  font: inherit;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover {
-    color: var(--color-text);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-    border-radius: 4px;
-  }
-
-  &--active {
-    border-bottom-color: var(--color-primary);
-    color: var(--color-text);
-  }
-
-  &__count {
-    padding: 0 8px;
-    border-radius: 999px;
-    background: var(--color-surface-alt);
-    font-size: var(--text-xs);
-    line-height: var(--leading-normal);
-  }
 }
 
 /* ═══ Split ══════════════════════════════════════════════════════════ */
@@ -271,34 +289,124 @@ console-filter-bar ::ng-deep {
   border-top: 1px solid var(--color-border);
 }
 
-/* ═══ Post open: the chrome shrinks so the post gets the height ═════
-   No subtitle, and the tabs, Sort and View share the filter row. */
-.radar-toolbar-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 24px;
-
-  console-filter-bar {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-}
-
+/* ═══ Post open: the chrome shrinks so the post gets the height ═════ */
 .radar-page--pane {
   .crud-header__subtitle {
     display: none;
   }
 
-  .radar-triage-bar {
-    flex: 0 1 auto;
-    gap: 12px;
-    border-bottom: 0;
+  /* Narrower Source and Sort so the row holds from 1440 with Sort added. */
+  console-filter-bar ::ng-deep console-filter-select.radar-filter--wide .mat-mdc-form-field,
+  .radar-toolbar__sort ::ng-deep .mat-mdc-form-field {
+    width: 128px;
+  }
+}
+
+/* ═══ Container queries: last, so they win over the base rules above ═══ */
+/* Columns give way to the summary as the table narrows (sidebar open, laptop, tablet): Status
+   first, then Progress. Below 560px each row becomes a card. */
+@container radar-table (max-width: 959px) {
+  .col-status {
+    display: none;
+  }
+}
+
+@container radar-table (max-width: 799px) {
+  .col-progress {
+    display: none;
+  }
+}
+
+/* Card: score on the left, the summary on two lines, then progress, source and date. */
+@container radar-table (max-width: 559px) {
+  .radar-table,
+  tbody {
+    display: block;
   }
 
-  /* Narrower Source and Sort so the filters and the tabs hold one row from 1440. */
-  console-filter-bar ::ng-deep console-filter-select.radar-filter--wide .mat-mdc-form-field,
-  .radar-triage-bar__sort ::ng-deep .mat-mdc-form-field {
-    width: 148px;
+  .mat-mdc-header-row {
+    display: none;
+  }
+
+  .radar-row {
+    display: grid;
+    grid-template-areas: 'select score summary source';
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0;
+    height: auto;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .radar-row > .mat-mdc-cell {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .col-select {
+    grid-area: select;
+    margin-right: 8px;
+  }
+
+  .col-score {
+    grid-area: score;
+    align-self: start;
+    margin-right: 12px;
+  }
+
+  .col-summary {
+    grid-area: summary;
+  }
+
+  /* A card keeps the title, the score (or the pending hourglass) and who posted it. Raised
+     specificity: the cell rule above would otherwise show them again. */
+  .radar-row > .col-progress,
+  .radar-row > .col-status,
+  .radar-row > .col-published {
+    display: none;
+  }
+
+  .col-source {
+    grid-area: source;
+    margin-left: 12px;
+  }
+
+  .radar-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+  }
+}
+
+@container radar-toolbar (max-width: 1099px) {
+  .radar-toolbar-row console-filter-bar {
+    flex-basis: 100%;
+    order: 3;
+  }
+}
+
+@container radar-toolbar (max-width: 559px) {
+  /* Search keeps a usable width: where Status and Source still sit in the bar (a tablet with the
+     sidebar open), they wrap below it instead of squeezing it. */
+  console-filter-bar ::ng-deep console-filter-search {
+    flex: 1 1 0;
+    min-width: 160px;
+    max-width: none;
+  }
+}
+
+/* A phone: one row of icon tabs, the Filters icon button (the bar holds nothing else) and the
+   view switcher. Doubled class to win over the container rules above. */
+.radar-toolbar-row.radar-toolbar-row--phone {
+  flex-wrap: nowrap;
+  gap: 8px;
+
+  console-filter-bar {
+    flex: 0 0 auto;
+    order: 0;
   }
 }

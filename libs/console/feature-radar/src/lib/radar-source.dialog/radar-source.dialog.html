@@ -14,7 +14,8 @@
         </div>
       } @else {
         <ul class="radar-sources">
-          @for (s of sources(); track s.id) {
+          @for (row of rows(); track row.source.id) {
+            @let s = row.source;
             <li class="radar-source">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
@@ -29,10 +30,17 @@
                 <a class="text-caption truncate block" [href]="s.url" target="_blank" rel="noopener noreferrer">
                   {{ s.url }}
                 </a>
-                <span class="text-caption">{{ s.itemCount }} item(s)</span>
+                <span class="text-caption radar-source__meta">
+                  {{ s.itemCount }} item(s)
+                  @if (row.lastRunAt; as at) {
+                    · Last run <console-relative-time [value]="at" />
+                  } @else {
+                    · Never run
+                  }
+                </span>
               </div>
 
-              <div class="flex items-center gap-2 shrink-0">
+              <div class="radar-source__actions flex items-center gap-2 shrink-0">
                 @if (busySourceId() === s.id) {
                   <mat-spinner diameter="20" />
                 }
@@ -70,6 +78,19 @@
                     Upload comments
                   </button>
                 }
+                <!-- A paused source cannot run: Resume it first. -->
+                <button
+                  mat-icon-button
+                  type="button"
+                  [disabled]="!s.isActive || busySourceId() !== null"
+                  [matTooltip]="
+                    s.isActive ? 'New run from ' + (row.resumeFrom | date: 'mediumDate') + ' to today' : 'Resume to run'
+                  "
+                  [attr.aria-label]="'New run for ' + s.displayName + ' from where the last run left off'"
+                  (click)="onRerun(s)"
+                >
+                  <mat-icon class="icon-sm">update</mat-icon>
+                </button>
                 <button mat-button [disabled]="busySourceId() !== null" (click)="onToggleActive(s)">
                   {{ s.isActive ? 'Pause' : 'Resume' }}
                 </button>

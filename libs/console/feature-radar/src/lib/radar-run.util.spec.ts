@@ -1,4 +1,4 @@
-import { defaultWindowFrom, formatDuration, runNotice, runStepRows, stepSummary } from './radar-run.util';
+import { defaultWindowFrom, formatDuration, lastDoneRun, runNotice, runStepRows, stepSummary } from './radar-run.util';
 import type { RadarRun, RadarRunStatus, RadarStepRun } from './radar.types';
 
 const SOURCE = 'src-1';
@@ -28,6 +28,20 @@ const run = (over: Partial<RadarRun>): RadarRun =>
   }) as RadarRun;
 
 const ymd = (d: Date) => [d.getFullYear(), d.getMonth() + 1, d.getDate()];
+
+describe('lastDoneRun', () => {
+  it('should pick the newest successful run of the source and skip failed runs and other sources', () => {
+    const runs = [
+      run({ status: 'FAILED', createdAt: '2026-10-01T00:00:00Z' }),
+      run({ source: { id: 'other', displayName: 'O' }, createdAt: '2026-09-30T00:00:00Z' }),
+      run({ createdAt: '2026-09-25T00:00:00Z' }),
+      run({ createdAt: '2026-09-10T00:00:00Z' }),
+    ];
+
+    expect(lastDoneRun(runs, SOURCE)?.createdAt).toBe('2026-09-25T00:00:00Z');
+    expect(lastDoneRun(runs.slice(0, 2), SOURCE)).toBeUndefined();
+  });
+});
 
 describe('defaultWindowFrom', () => {
   it('should chain from the day after the newest successful run of the same source, or the day it ran', () => {

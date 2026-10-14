@@ -26,36 +26,38 @@
       --ext: #c3b2ff; --ext-bg: #2a2342;
     }
   }
+  /* Sizes are in rem: the console's guide viewer sets the root to its own body size, so the
+     guide follows the console type scale; opened on its own it reads at the browser default. */
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 24px; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 1rem/1.65 -apple-system, "Segoe UI", Roboto, sans-serif; }
 
   .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1240px; margin: 0 auto; }
   nav.toc { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 16px 32px 24px; border-right: 1px solid var(--line); }
-  nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  nav.toc .brand { font-weight: 700; font-size: 0.9375rem; margin-bottom: 4px; }
+  nav.toc .sub { color: var(--muted); font-size: 0.8125rem; margin-bottom: 20px; }
   nav.toc ol { list-style: none; margin: 0; padding: 0; }
   nav.toc li { margin: 0; }
-  nav.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.4; border-left: 2px solid transparent; }
+  nav.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 0.875rem; line-height: 1.4; border-left: 2px solid transparent; }
   nav.toc a:hover { color: var(--ink); background: var(--surface); }
   nav.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
-  nav.toc .group { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+  nav.toc .group { font-size: 0.6875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
 
   main { padding: 40px 48px 120px; max-width: 900px; }
   header.doc { margin-bottom: 32px; }
-  header.doc h1 { font-size: 32px; line-height: 1.2; margin: 0 0 8px; }
+  header.doc h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; }
   header.doc p { color: var(--muted); margin: 0; }
   .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-  .chip { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+  .chip { font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
 
-  h2 { font-size: 24px; margin: 56px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
-  h3 { font-size: 18px; margin: 28px 0 8px; }
-  h4 { font-size: 15px; margin: 20px 0 6px; color: var(--muted, inherit); }
+  h2 { font-size: 1.5rem; margin: 56px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.125rem; margin: 28px 0 8px; }
+  h4 { font-size: 0.9375rem; margin: 20px 0 6px; color: var(--muted, inherit); }
   p { margin: 8px 0; }
-  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 6px; border-radius: 4px; }
-  pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; overflow-x: auto; font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  code { font: 0.8438rem ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 6px; border-radius: 4px; }
+  pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; overflow-x: auto; font: 0.8438rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
   pre code { background: none; padding: 0; }
-  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 14.5px; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 0.9062rem; }
   th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
   th { background: var(--bg); font-weight: 600; white-space: nowrap; }
   tr:last-child td { border-bottom: 0; }
@@ -63,10 +65,10 @@
   ol li, ul li { margin: 4px 0; }
 
   .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 14px 0; }
-  .node { flex: 1 1 140px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
-  .node b { display: block; font-size: 14.5px; margin-bottom: 2px; }
-  .node small { color: var(--muted); display: block; font-size: 13px; line-height: 1.5; }
-  .arrow { flex: 0 0 auto; align-self: center; color: var(--muted); font-size: 20px; }
+  .node { flex: 1 1 140px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 0.875rem; }
+  .node b { display: block; font-size: 0.9062rem; margin-bottom: 2px; }
+  .node small { color: var(--muted); display: block; font-size: 0.8125rem; line-height: 1.5; }
+  .arrow { flex: 0 0 auto; align-self: center; color: var(--muted); font-size: 1.25rem; }
   .admin { border-color: var(--admin); background: var(--admin-bg); }
   .worker { border-color: var(--worker); background: var(--worker-bg); }
   .db { border-color: var(--db); background: var(--db-bg); }
@@ -75,41 +77,44 @@
 
   .phase { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
   .phase-title { font-weight: 700; margin-bottom: 2px; }
-  .tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 99px; margin-right: 6px; border: 1px solid currentColor; background: none; }
+  .tag { display: inline-block; font-size: 0.7188rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; margin-right: 6px; border: 1px solid currentColor; background: none; }
   .tag.admin { color: var(--admin); } .tag.worker { color: var(--worker); } .tag.db { color: var(--db); } .tag.ext { color: var(--ext); } .tag.bad { color: var(--bad); }
 
   .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
-  .door { border: 2px solid; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
+  .door { border: 2px solid; border-radius: 12px; padding: 14px 16px; font-size: 0.9375rem; }
   .door h3 { margin-top: 0; }
 
   .callout { border-left: 4px solid var(--worker); background: var(--worker-bg); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
   .callout.blue { border-color: var(--admin); background: var(--admin-bg); }
   .callout.green { border-color: var(--db); background: var(--db-bg); }
-  .text-small { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+  .text-small { font-size: 0.8125rem; color: var(--muted); margin: 8px 0 0; }
 
   .svgbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin: 14px 0; overflow-x: auto; }
   .svgbox svg { display: block; width: 100%; min-width: 640px; height: auto; }
-  .svgbox text { fill: var(--ink); font: 13px -apple-system, "Segoe UI", sans-serif; }
+  .svgbox text { fill: var(--ink); font: 0.8125rem -apple-system, "Segoe UI", sans-serif; }
   .svgbox .muted { fill: var(--muted); }
   .svgbox .okt { fill: var(--db); } .svgbox .not { fill: var(--bad); }
   .svgbox .lifeline { stroke: var(--line); stroke-dasharray: 4 4; }
   .svgbox .head { fill: var(--bg); stroke: var(--line); }
   .svgbox .note { fill: var(--worker-bg); stroke: var(--worker); }
 
-  .status { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
+  .status { font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
   .status.done { background: var(--db-bg); color: var(--db); }
   .status.next { background: var(--worker-bg); color: var(--worker); }
   .status.todo { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 
   .mobile-toc { display: none; }
   @media (max-width: 960px) {
-    .layout { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: minmax(0, 1fr); }
     nav.toc { display: none; }
     main { padding: 24px 16px 80px; }
     .mobile-toc { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 24px; }
     .mobile-toc summary { font-weight: 600; cursor: pointer; }
     .mobile-toc a { color: var(--accent); text-decoration: none; }
     .doors { grid-template-columns: 1fr; }
+    /* Narrow tables wrap instead of pushing the page wider: headers and long code may break. */
+    th { white-space: normal; }
+    th, td { overflow-wrap: anywhere; }
   }
   @media (max-width: 640px) { .arrow { transform: rotate(90deg); width: 100%; text-align: center; } }
 </style>
@@ -351,7 +356,7 @@
 
     <section id="runs">
       <h2>7. Runs: Manual, Hybrid và Auto</h2>
-      <p>Một run là một lần thu thập bài cho một source. Bạn tạo run bằng nút "New run" ở trang Runs của console (<code>/radar/runs</code>), nút này gọi <code>POST /api/radar/runs</code>. Từ lúc đó, <b>cron tick</b> của API chạy mỗi phút và đẩy run đi qua từng bước cho tới khi xong hoặc lỗi. Không có lịch chạy tự động: run chỉ tồn tại vì bạn tạo nó (RAD-006).</p>
+      <p>Một run là một lần thu thập bài cho một source. Bạn tạo run bằng nút "New run" ở trang Runs của console (<code>/radar/runs</code>), nút này gọi <code>POST /api/radar/runs</code>. Trang Runs (và trang Briefs, <code>/radar/briefs</code>) mở thành popup lớn đè lên Feed nhưng vẫn có URL riêng: mở thẳng URL đó thì Feed hiện ra kèm popup đang mở. Esc, bấm ra ngoài hoặc nút X đóng popup và trả về Feed với bộ lọc cũ. Trang chi tiết của một run hay một brief (<code>/radar/runs/:id</code>) vẫn là trang đầy đủ, và nút "Back to runs" mở lại popup. Cách thứ hai: trong hộp "Sources and upload", mỗi source ghi "Last run" (thời gian từ lần run thành công gần nhất) hoặc "Never run", kèm nút icon mở form New run đã chọn sẵn source đó, với window bắt đầu từ chỗ run trước dừng lại (ngày sau window end của run thành công gần nhất) tới hôm nay. Source đang pause thì nút này bị tắt. Từ lúc đó, <b>cron tick</b> của API chạy mỗi phút và đẩy run đi qua từng bước cho tới khi xong hoặc lỗi. Không có lịch chạy tự động: run chỉ tồn tại vì bạn tạo nó (RAD-006).</p>
 
       <h3>Ba flow</h3>
       <div class="scroll"><table>
@@ -517,7 +522,7 @@
       <p>Phân tích lại dùng khi bạn muốn một bài đã có enrichment được phân tích lần nữa, ví dụ sau khi đổi workflow profile, đổi model mặc định, hoặc khi bản cũ chấm điểm sai. Bài giữ nguyên text, ảnh và transcript đã lưu; chỉ có bước ANALYZE chạy lại. Enrichment cũ vẫn hiển thị cho tới khi bản mới thay nó.</p>
       <div class="scroll"><table>
         <tr><th>Phần</th><th>Cách làm</th><th>Lý do</th></tr>
-        <tr><td>Bắt đầu ở đâu</td><td>Trang Detail: nút "Re-analyze" trên header, ẩn khi bài đang chờ phân tích lại. Feed (chỉ ở Table view): nút "Select" trên thanh triage bật chế độ chọn, mỗi dòng có checkbox và header có ô chọn cả trang; thanh dưới đáy hiện "N selected", "Re-analyze" và "Clear". Tắt chế độ chọn thì danh sách đã chọn bị xóa. Danh sách đã chọn vẫn giữ khi đổi trang, sort, filter hay tab; sang Split view thì vẫn giữ nhưng ẩn checkbox và thanh dưới đáy</td><td>Cột checkbox chỉ xuất hiện khi bạn cần, Feed bình thường không bị chật</td></tr>
+        <tr><td>Bắt đầu ở đâu</td><td>Trang Detail: nút "Re-analyze" trên header (ghi "Analyze" khi bài chưa có phân tích), ẩn khi bài đang chờ phân tích lại. Khung Split của Feed: nút icon cùng chức năng trên header của bài. Feed (chỉ ở Table view): nút "Select" trên thanh triage bật chế độ chọn, mỗi dòng có checkbox và header có ô chọn cả trang; thanh dưới đáy hiện "N selected", "Re-analyze" và "Clear". Tắt chế độ chọn thì danh sách đã chọn bị xóa. Danh sách đã chọn vẫn giữ khi đổi trang, sort, filter hay tab; sang Split view thì vẫn giữ nhưng ẩn checkbox và thanh dưới đáy</td><td>Cột checkbox chỉ xuất hiện khi bạn cần, Feed bình thường không bị chật</td></tr>
         <tr><td>Hộp xác nhận</td><td>Chọn mode: <b>Auto</b> (mặc định khi server có key AI) hoặc <b>Claude Code</b>. Auto có ô AI budget theo tiền đang hiển thị và ô "Deep analysis" (mặc định không tick), giống form New run. Server không có key thì ô Auto bị khóa và Claude Code được chọn sẵn</td><td>Cùng cách chọn như khi tạo run</td></tr>
         <tr><td>Giới hạn</td><td>Tối đa 200 bài mỗi lần (hằng số <code>RADAR_REANALYZE_MAX_IDS</code> trong <code>@portfolio/shared/types</code>, API và console dùng chung). Feed từ chối chọn quá số này và báo con số giới hạn</td><td>Một run re-analysis không quá lớn</td></tr>
         <tr><td>Bài được đưa lại hàng chờ</td><td>Về <code>PENDING</code>, <code>claimCount = 0</code>, không lease, xóa <code>workError</code></td><td>Bài bắt đầu lại sạch, kể cả bài từng bị stuck</td></tr>
@@ -666,11 +671,14 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td>Admin</td><td>POST</td><td><code>/radar/runs</code></td><td>Tạo run. Body: <code>sourceId</code>, <code>flow</code> (MANUAL, HYBRID hoặc AUTO, mặc định HYBRID), <code>itemCap</code> (1 tới 1.500), <code>windowFrom</code>, <code>windowTo</code> (tùy chọn), <code>fetchComments</code> (mặc định false, chỉ hợp lệ với HYBRID hoặc AUTO có <code>windowFrom</code>), <code>budgetUsd</code> (chỉ với AUTO, từ 0.01 tới 100; bỏ trống thì lấy mặc định của server)</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch</code></td><td>Bắt đầu đọc comment của một bài (tính tiền, tối đa $0.10). Trả 202 kèm <code>{ state: 'running', jobRef }</code></td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/comments/fetch/:jobRef</code></td><td>Hỏi kết quả: <code>running</code> khi job chưa xong; <code>done</code> kèm <code>status</code>, <code>fetchedCount</code> khi đã thay danh sách cũ. Job lỗi thì bài thành FAILED và trả lỗi <code>RADAR_COMMENTS_FETCH_FAILED</code></td></tr>
-        <tr><td>Admin</td><td>GET</td><td><code>/radar/items</code></td><td>Một trang Feed theo bộ lọc. Query <code>triageStatus</code> (INBOX, SAVED, DONE) chọn tab; kết quả kèm <code>triageCounts</code>, số bài của cả ba tab dưới cùng bộ lọc. Query <code>sourceId</code> lọc theo một source, query <code>producerModel</code> lọc theo model đã phân tích (kết quả kèm <code>producerModels</code>, mọi model từng phân tích bài), query <code>runId</code> lọc các bài có <code>lastRunId</code> là run đó. Mỗi bài kèm <code>queueState</code> (analyzed, claimed, pending, stuck, paused) và <code>images</code> (<code>total</code>, <code>pending</code>, <code>failed</code>) cho cột Progress</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/items</code></td><td>Một trang Feed theo bộ lọc. Query <code>triageStatus</code> (INBOX, SAVED, DONE) chọn tab; kết quả kèm <code>triageCounts</code>, số bài của cả ba tab dưới cùng bộ lọc. Query <code>sourceId</code> lọc theo một source, query <code>producerModel</code> lọc theo model đã phân tích (kết quả kèm <code>producerModels</code>, mọi model từng phân tích bài), query <code>runId</code> lọc các bài có <code>lastRunId</code> là run đó. Mỗi bài kèm <code>queueState</code> (analyzed, claimed, pending, stuck, paused), <code>images</code> (<code>total</code>, <code>pending</code>, <code>failed</code>) và <code>notes</code> (<code>count</code>, <code>latest</code>) cho cột Progress</td></tr>
         <tr><td>Admin</td><td>PATCH</td><td><code>/radar/items/triage</code></td><td>Đặt một trạng thái triage cho danh sách bài. Body: <code>ids</code> (1 tới 100 uuid), <code>status</code>. Id không tồn tại thì bỏ qua; trả <code>{ updated }</code> là số bài đã đổi</td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/items/reanalyze</code></td><td>Phân tích lại các bài. Body: <code>ids</code> (1 tới 200 uuid), <code>mode</code> (<code>AUTO</code> mặc định, hoặc <code>WORKER</code>), <code>budgetUsd</code> (chỉ với AUTO, cùng khoảng như một run, mặc định là budget của server). Trả <code>{ requeued, skipped, runId }</code>; <code>runId</code> là null với WORKER hoặc khi không có bài nào hợp lệ. Xem <a href="#reanalyze">Phân tích lại</a></td></tr>
         <tr><td>Admin</td><td>POST</td><td><code>/radar/trials</code></td><td>Quality trial: phân tích lại các bài đã có enrichment, lưu cạnh enrichment. Body: <code>itemIds</code> (1 tới 10 uuid), <code>depth</code> (mặc định <code>deep</code>), <code>model</code> (tùy chọn). Trả <code>202</code> với <code>{ started, skipped }</code>; trial chạy nền. Xem <a href="#trials">Quality trials</a></td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/items/:id/trials</code></td><td>Các trial của một bài, mới nhất trước</td></tr>
+        <tr><td>Admin</td><td>GET</td><td><code>/radar/items/:id/notes</code></td><td>Note của một bài, mới nhất trước. Id không tồn tại thì trả danh sách rỗng. Xem <a href="#notes">Note của bạn</a></td></tr>
+        <tr><td>Admin</td><td>POST</td><td><code>/radar/items/:id/notes</code></td><td>Thêm một note. Body: <code>body</code> (1 tới 2000 ký tự, cắt khoảng trắng hai đầu), <code>triageStatus</code> (tùy chọn, mặc định null). Bài không tồn tại thì <code>404 RADAR_ITEM_NOT_FOUND</code></td></tr>
+        <tr><td>Admin</td><td>DELETE</td><td><code>/radar/items/:id/notes/:noteId</code></td><td>Xóa một note. Trả <code>{ deleted }</code>; note đã mất thì <code>deleted: false</code>, không báo lỗi</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/comments/settings</code></td><td>Giới hạn tiền của run và của một lần đọc, số comment cấp 1 một lần đọc</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/ai/settings</code></td><td><code>{ configured, billing, defaultBudgetMicroUsd }</code>: key AI có chưa, free hay paid, budget mặc định của run AUTO</td></tr>
         <tr><td>Admin</td><td>GET</td><td><code>/radar/runs</code></td><td>50 run mới nhất kèm trạng thái từng bước; run AUTO kèm <code>budgetMicroUsd</code> và <code>spentMicroUsd</code> (run khác: <code>null</code>)</td></tr>
@@ -807,7 +815,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       <h3 id="trials">Quality trials</h3>
       <p>Quality trial dùng để thử một model trước khi chọn làm mặc định cho run AUTO. Trial phân tích lại một bài <strong>đã có enrichment</strong> bằng AI trên server, rồi lưu kết quả vào bảng <code>radar_enrichment_trials</code>, bên cạnh enrichment hiện tại. Trial không bao giờ thay enrichment của bài.</p>
       <ul>
-        <li>Trong nội dung bài (cả trang Detail lẫn khung xem trước của Feed) có một dòng gập "Model trials" ở cuối cột nội dung, đóng sẵn vì đây là công cụ phụ; mở ra để chọn depth (mặc định deep, có web search) và model (để trống là chuỗi model mặc định của depth đó), bấm "Run trial". Bảng bên dưới đặt cột Current (enrichment hiện tại) cạnh từng trial: TL;DR, score, overview, key terms, apply note, fact check, sources, và token, chi phí, thời gian, số lần search của trial.</li>
+        <li>Console không còn hiện phần "Model trials": việc chọn model đã chốt. API trial và component vẫn còn trong code. Trước đây phần này là một dòng gập ở cuối cột nội dung của bài; mở ra để chọn depth (mặc định deep, có web search) và model (để trống là chuỗi model mặc định của depth đó), bấm "Run trial". Bảng bên dưới đặt cột Current (enrichment hiện tại) cạnh từng trial: TL;DR, score, overview, key terms, apply note, fact check, sources, và token, chi phí, thời gian, số lần search của trial.</li>
         <li><code>POST /radar/trials</code> nhận tối đa 10 bài, trả về ngay <code>{ started, skipped }</code>. Bài chưa có enrichment nằm trong <code>skipped</code>. Các trial chạy nền, lần lượt từng cái (một trial deep mất khoảng một phút); trang Detail tự tải lại mỗi 5 giây khi còn trial đang chạy.</li>
         <li>Một trial lỗi (model trả lời sai hai lần, model bận, model không tồn tại) chỉ làm trial đó FAILED, các trial sau vẫn chạy. Khi chạm daily cap hoặc API key sai, mọi trial còn lại FAILED ngay mà không gọi provider nữa.</li>
         <li>Trial chạy trong bộ nhớ của server: nếu server khởi động lại, trial đang dở vẫn ở RUNNING và sau 1 giờ được hiển thị là FAILED (Interrupted).</li>
@@ -954,20 +962,28 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
       <div class="scroll"><table>
         <tr><th>Tab</th><th>Định nghĩa tiếng Việt</th><th>Ví dụ</th></tr>
         <tr><td><b>Inbox</b> (<code>INBOX</code>)</td><td>Bài chưa được bạn quyết định</td><td>Bài vừa upload, đã hoặc chưa phân tích</td></tr>
-        <tr><td><b>To try</b> (<code>SAVED</code>)</td><td>Danh sách lưu để thử sau. Không có ghi chú, không có ngày hẹn</td><td>Một skill Claude Code muốn cài thử cuối tuần</td></tr>
+        <tr><td><b>To try</b> (<code>SAVED</code>)</td><td>Danh sách lưu để thử sau. Không có ngày hẹn; lý do lưu ghi bằng note (xem <a href="#notes">Note của bạn</a>)</td><td>Một skill Claude Code muốn cài thử cuối tuần</td></tr>
         <tr><td><b>Done</b> (<code>DONE</code>)</td><td>Đã đọc xong, không cần làm gì thêm</td><td>Tin ra mắt model đã nắm được ý chính</td></tr>
       </table></div>
       <ul>
         <li><b>Mở bài không đổi trạng thái.</b> Trạng thái chỉ đổi khi bạn bấm Done (E) hoặc To try (S).</li>
         <li><b>Tabs lọc cả hai view.</b> Số trên mỗi tab đếm theo bộ lọc đang dùng (search, status, source, provider, type, model, score, promo), không phụ thuộc tab đang mở.</li>
-        <li><b>View:</b> ở <b>Table</b>, bấm một dòng mở trang chi tiết của bài. Ở <b>Split</b>, trang vẫn bắt đầu bằng bảng; bấm một dòng thì bảng thu thành danh sách gọn bên trái và nội dung bài trượt vào bên phải, nên bạn thấy cả danh sách lẫn bài. Nút <b>X</b> (hoặc Esc) đóng bài và đưa về bảng. Khi đang mở bài, phần đầu trang thu gọn để bài có thêm chiều cao: subtitle ẩn đi, tabs cùng Sort và View lên chung hàng với bộ lọc, và paginator thu thành một dòng nhỏ dưới danh sách (khoảng dòng, trang trước, trang sau). Muốn đổi số dòng mỗi trang thì đóng bài để về bảng. Chuyển trang khi đang mở bài sẽ mở bài đầu tiên của trang mới. View nằm trên URL (<code>?view=split</code>) và được nhớ trong trình duyệt; URL thắng. Bài đang mở cũng nằm trên URL (<code>?item=</code>); nếu bài đó không còn ở trang hoặc tab hiện tại thì bảng hiện ra thay vì mở bài khác.</li>
+        <li><b>View:</b> ở <b>Table</b>, bấm một dòng mở trang chi tiết của bài. Ở <b>Split</b>, trang vẫn bắt đầu bằng bảng; bấm một dòng thì bảng thu thành danh sách gọn bên trái và nội dung bài trượt vào bên phải, nên bạn thấy cả danh sách lẫn bài. Nút <b>X</b> (hoặc Esc) đóng bài và đưa về bảng. Tabs triage, bộ lọc, nút Select (chỉ ở Table) và View luôn nằm chung một hàng: tabs đứng đầu, rồi tới bộ lọc, nhóm Select và View nằm bên phải. Khi đang mở bài, phần đầu trang thu gọn để bài có thêm chiều cao: subtitle ẩn đi, Sort xuất hiện cạnh View, và paginator thu thành một dòng nhỏ dưới danh sách (khoảng dòng, trang trước, trang sau). Muốn đổi số dòng mỗi trang thì đóng bài để về bảng. Chuyển trang khi đang mở bài sẽ mở bài đầu tiên của trang mới. Trên header của bài, hai nút mũi tên (trước, sau) đi qua ranh giới trang: ở bài cuối của trang thì nút sau tải trang kế và mở bài đầu của trang đó, ở bài đầu thì nút trước tải trang trước và mở bài cuối. Nút bị tắt khi đã tới bài đầu tiên hoặc bài cuối cùng của cả Feed. Cạnh hai mũi tên là nút <b>Analyze this post</b> (bài chưa có phân tích) hoặc <b>Re-analyze</b> (bài đã có), mở cùng hộp phân tích lại như trang Detail và ẩn khi bài đang chờ phân tích lại; tiếp theo là nút mở trang Detail và nút mở bài gốc. View nằm trên URL (<code>?view=split</code>) và được nhớ trong trình duyệt; URL thắng. Bài đang mở cũng nằm trên URL (<code>?item=</code>); nếu bài đó không còn ở trang hoặc tab hiện tại thì bảng hiện ra thay vì mở bài khác.</li>
         <li><b>Cuộn:</b> trang Feed chiếm trọn chiều cao màn hình. Bảng cuộn bên trong khung của nó với hàng tiêu đề dính trên cùng. Khi mở bài, danh sách, nội dung bài và cột thuộc tính bên phải cuộn riêng với nhau (cột thuộc tính chỉ nằm bên cạnh khi khung bài rộng từ 920px; hẹp hơn thì nó xuống dưới bài và khung bài cuộn chung).</li>
-        <li><b>Phím tắt (chỉ khi đang mở bài ở Split):</b> J hoặc ↓ sang bài sau, K hoặc ↑ về bài trước, E đánh dấu Done, S lưu vào To try, Esc đóng bài. Bấm lại E (hoặc S) trên bài vừa xử lý thì bài trở về trạng thái trước đó: một bài ở tab To try được đánh Done, bấm E lần nữa thì bài về lại To try. Trên chính tab Done (hoặc To try), bấm lại phím của tab đó thì bài về Inbox. Phím không chạy khi đang gõ, khi có Cmd/Ctrl/Alt, hoặc khi đang mở Quick Look hay hộp thoại.</li>
+        <li><b>Phím tắt (chỉ khi đang mở bài ở Split):</b> J hoặc ↓ sang bài sau, K hoặc ↑ về bài trước (đi qua ranh giới trang như hai nút mũi tên), E đánh dấu Done, S lưu vào To try, N mở ô ghi note, Esc đóng bài. Bấm lại E (hoặc S) trên bài vừa xử lý thì bài trở về trạng thái trước đó: một bài ở tab To try được đánh Done, bấm E lần nữa thì bài về lại To try. Trên chính tab Done (hoặc To try), bấm lại phím của tab đó thì bài về Inbox. Phím không chạy khi đang gõ, khi có Cmd/Ctrl/Alt, hoặc khi đang mở Quick Look hay hộp thoại.</li>
         <li><b>Sau khi đổi trạng thái:</b> bài vẫn mở và vẫn nằm đúng chỗ trong danh sách, kèm một dấu nhỏ (check cho Done, bookmark cho To try) và tóm tắt mờ đi. Nút vừa bấm đổi thành nút gỡ: <b>Unmark done</b> hoặc <b>Unsave</b>, bấm lại (hoặc nhấn lại E hay S) thì bài về Inbox. Số đếm trên tabs cập nhật ngay. Bài chỉ rời tab ở lần tải kế tiếp: đổi tab, đổi bộ lọc hoặc chuyển trang. Muốn sang bài tiếp thì nhấn J.</li>
         <li><b>Bố cục một bài</b> (giống nhau ở trang Detail và trong khung Split): bài gốc đứng đầu trên một nền riêng, bài được share lồng bên trong, và comment của chính tác giả nằm cuối card dưới dòng "Added by the author in the comments". Kế đến là section <b>AI analysis</b>: dải cảnh báo nếu fact check ở mức <code>major</code>, TL;DR, Overview, mục gập Key terms, Image notes, rồi Apply to my workflow ở cuối. Sau đó là <b>Comments</b>. Cột bên phải hẹp (288px) chứa Properties (lý do của điểm số nằm nhỏ dưới Signal score), ảnh và link đính kèm, và thông tin model đã phân tích. Fact check mức <code>minor</code> được lưu nhưng không hiển thị. Đoạn văn chạy hết bề rộng cột.</li>
         <li><b>Comments:</b> header section có trạng thái đọc comment (rê chuột để xem giải thích) và nút Fetch. Nội dung mở đầu bằng Digest của worker, sau đó là thread: chữ đi trước, ngày và lượt like nhỏ phía sau, reply thụt vào một cấp. Chỉ comment Filler hoặc Spam mới có badge. Hiện sẵn 3 comment đầu, phần còn lại sau nút "Show n more"; nếu chỉ dư 1 comment thì hiện hết, không có nút. Ảnh trong comment bấm để xem lớn trong Quick Look (kèm chữ OCR nếu có); ảnh không tải được thì thay bằng link mở ảnh gốc.</li>
         <li><b>Ảnh:</b> ảnh nằm ở cột phải dạng thumbnail, hiển thị trọn khung (không cắt), bấm để xem lớn trong Quick Look. Ảnh của bài được share đứng thành một nhóm riêng. Chữ Facebook đọc được trong ảnh (<code>ocrText</code>) nằm sau icon ở góc ảnh, bấm thì hiện popover; trong Quick Look thì chữ này hiện dưới ảnh.</li>
         <li><b>Link:</b> mỗi link hiện tên miền; phần tóm tắt của worker được gập lại sau dòng "Summary", bấm để mở.</li>
+      </ul>
+
+      <h3 id="notes">Note của bạn</h3>
+      <p><b>Định nghĩa:</b> note là ghi chú riêng của bạn về một bài: vì sao bạn bấm Done hay To try, bạn đã thử gì, kết quả ra sao. Một bài có nhiều note, xếp mới nhất trước. Mỗi note là chữ thường (không định dạng, tối đa 2000 ký tự) và ghi kèm quyết định lúc viết (<code>triageStatus</code>: Done, To try, hoặc trống khi note không gắn với quyết định nào). Note không ảnh hưởng tới phân tích hay triage.</p>
+      <ul>
+        <li><b>Ghi lý do ngay sau quyết định (khung Split):</b> bấm Done hay To try (hoặc E, S) thì ngay dưới header của bài hiện một ô "Why done? What did you do with it?" (hoặc "Why try it?") đã có con trỏ sẵn. Enter lưu note kèm quyết định đó; Enter khi ô trống, Esc, hoặc nút X thì bỏ qua. Khi ô trống, ↑ hoặc ↓ bỏ qua và đi luôn sang bài trước hoặc sau, nên nhịp duyệt bằng phím vẫn giữ được. Gỡ quyết định (về Inbox) thì không hỏi. Phím N mở cùng ô đó để ghi một note không gắn quyết định. Sang bài khác thì ô tự đóng.</li>
+        <li><b>Panel My notes:</b> nằm đầu cột bên phải của bài (trang Detail và khung Split; khi khung hẹp thì cột này xuống dưới bài). Có ô soạn nhiều dòng (Cmd hoặc Ctrl+Enter, hay nút "Add note", để lưu), rồi danh sách note: nội dung, quyết định đi kèm, thời gian, nút xóa. Xóa không hỏi lại.</li>
+        <li><b>Trên Feed:</b> bài có note hiện icon note (xanh) ở cuối cột Progress, cả ở bảng lẫn danh sách gọn của Split. Rê chuột lên icon để đọc note mới nhất và tổng số note. Bài không có note thì ô này trống.</li>
       </ul>
 
       <h3>Trạng thái hàng chờ trên đầu Feed</h3>
@@ -1045,6 +1061,7 @@ echo "export RADAR_WORKER_TOKEN=$TOKEN" >> ~/.zshrc    # lưu A cho skill /radar
         <tr><td><code>radar_step_runs</code></td><td>Từng bước của một run</td><td>Một dòng mỗi bước (CAPTURE, NORMALIZE, ENRICH, ANALYZE). <code>providerJobRef</code> là id job Apify, <code>meta</code> nhớ dataset và vị trí đã đọc</td></tr>
         <tr><td><code>radar_items</code></td><td>Từng bài</td><td>Duy nhất theo (source, externalId). <code>media</code>, <code>links</code>, <code>sharedPost</code> là JSONB. Có <code>workStatus</code>, <code>leaseExpiresAt</code>, <code>claimCount</code>. Comment nằm trong <code>comments</code> (JSONB) kèm <code>commentsStatus</code>, <code>commentsFetchedAt</code>, <code>commentsFetchedCount</code>, <code>commentsError</code>. Xem <a href="#comments">mục 8</a>. Video: <code>videoUrl</code>, <code>videoDurationSec</code>, <code>transcript</code> (JSONB), <code>transcriptStatus</code>, <code>transcriptError</code>, <code>transcriptAttempts</code>. Xem <a href="#transcripts">Transcript video</a></td></tr>
         <tr><td><code>radar_enrichments</code></td><td>Kết quả phân tích</td><td>Tối đa 1 dòng mỗi bài, xóa theo bài. <code>wantsComments</code> là gợi ý đọc comment của worker</td></tr>
+        <tr><td><code>radar_item_notes</code></td><td>Note của bạn</td><td>Một dòng mỗi note: bài (xóa theo bài), <code>body</code> (tối đa 2000 ký tự), <code>triageStatus</code> lúc viết (có thể null), <code>createdAt</code>. Xem <a href="#notes">Note của bạn</a></td></tr>
         <tr><td><code>radar_enrichment_trials</code></td><td>Quality trial</td><td>Một dòng mỗi trial: bài (xóa theo bài), depth, model đã yêu cầu, <code>status</code> (RUNNING, DONE, FAILED), <code>payload</code> (JSONB, cùng schema với enrichment), lỗi, token, chi phí, số lần search, độ trễ. Xem <a href="#trials">Quality trials</a></td></tr>
         <tr><td><code>ai_usage_records</code></td><td>Mỗi lần gọi Gemini, thành công hay lỗi</td><td>Model, feature (ví dụ <code>radar.analyze</code>), trạng thái, loại lỗi, token vào, ra, thinking, cache, tool, chi phí ước tính theo bảng giá trong code (null khi model chưa có giá), <code>billed</code>, độ trễ, <code>refType</code> và <code>refId</code> trỏ về bài hoặc brief, <code>trace</code> (JSONB: query đã search, URL đã đọc). Màn hình AI trong console đọc bảng này</td></tr>
         <tr><td><code>radar_briefs</code></td><td>Bản tóm tắt theo khoảng thời gian</td><td>Là việc cần làm của chính nó: <code>workStatus</code>, <code>leaseExpiresAt</code>. <code>writer</code> (AUTO hoặc WORKER), <code>error</code> khi brief Auto không viết được. <code>sourceId</code> null là tất cả nguồn. <code>itemIds</code> là các bài của window lúc nộp. Xem <a href="#briefs">mục 16</a></td></tr>

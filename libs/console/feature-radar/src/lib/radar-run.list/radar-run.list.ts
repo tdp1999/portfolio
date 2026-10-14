@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -50,6 +50,7 @@ import type { RadarRun, RadarRunCreateDialogData, RadarRunRow } from '../radar.t
     HelpButton,
     DatePipe,
     RouterLink,
+    MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
@@ -61,12 +62,15 @@ import type { RadarRun, RadarRunCreateDialogData, RadarRunRow } from '../radar.t
   ],
   templateUrl: './radar-run.list.html',
   styleUrl: './radar-run.list.scss',
+  host: { '[class.radar-page--dialog]': 'inDialog' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RadarRunList implements OnInit {
   // ── DI ────────────────────────────────────────────────────────────
   private readonly radarService = inject(RadarService);
   private readonly dialog = inject(MatDialog);
+  /** Opened as the Feed's popup (`radar-page.dialog`): a close button replaces the Feed link. */
+  protected readonly inDialog = !!inject(MatDialogRef, { optional: true });
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);

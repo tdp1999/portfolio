@@ -1,0 +1,24 @@
+<div class="radar-tabs" role="tablist" aria-label="Triage">
+  @for (tab of tabs; track tab.value) {
+    <button
+      type="button"
+      role="tab"
+      class="radar-tab"
+      [class.radar-tab--active]="value() === tab.value"
+      [class.radar-tab--compact]="compact()"
+      [attr.aria-selected]="value() === tab.value"
+      [attr.aria-label]="compact() ? tab.label : null"
+      [matTooltip]="compact() ? tab.label : ''"
+      (click)="valueChange.emit(tab.value)"
+    >
+      @if (compact()) {
+        <mat-icon class="icon-sm" aria-hidden="true">{{ tab.icon }}</mat-icon>
+      } @else {
+        {{ tab.label }}
+      }
+      @if (counts(); as c) {
+        <span class="radar-tab__count">{{ c[tab.value] }}</span>
+      }
+    </button>
+  }
+</div>

@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { filter, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
-import { NgTemplateOutlet } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import {
   BulkActionBar,
   EnumLabelPipe,
@@ -29,8 +30,10 @@ import {
   SkeletonTable,
   ToastService,
 } from '@portfolio/console/shared/ui';
+import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 import { RadarItemReanalyzeDialog } from '../radar-item.reanalyze-dialog/radar-item.reanalyze-dialog';
 import { RadarItemProgressCell } from '../radar-item-progress.cell/radar-item-progress.cell';
+import { RadarTriageTabs } from '../radar-triage.tabs/radar-triage.tabs';
 import { RadarScoreTonePipe } from '../radar-score-tone.pipe';
 import { RadarSourceMonogramPipe } from '../radar-source-monogram.pipe';
 import type { RadarContentType, RadarFeedStatus, RadarProviderTag } from '@portfolio/shared/types';
@@ -55,14 +58,15 @@ import {
   PROVIDER_LABELS,
   PROVIDER_OPTIONS,
   SPLIT_SORT_OPTIONS,
-  TRIAGE_TABS,
   PLATFORM_LABELS,
   PRODUCER_DOT_CLASSES,
 } from '../radar.data';
 import { RadarService } from '../radar.service';
 import { RadarItemTriageSection } from '../radar-item-triage.section/radar-item-triage.section';
+import { adjacentPage } from '../radar-triage.util';
 import {
   RadarFeedItem,
+  RadarNotesChange,
   RadarFeedSortKey,
   RadarFeedState,
   RadarFeedView,
@@ -79,12 +83,15 @@ import {
   standalone: true,
   imports: [
     BulkActionBar,
+    NgTemplateOutlet,
     HelpButton,
     RouterLink,
+    RouterOutlet,
     MatButtonModule,
     MatCheckboxModule,
     MatChipsModule,
     MatIconModule,
+    MatMenuModule,
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
@@ -94,9 +101,9 @@ import {
     FilterSearch,
     FilterSelect,
     FormsModule,
-    NgTemplateOutlet,
     Paginator,
     RadarItemProgressCell,
+    RadarTriageTabs,
     RadarScoreTonePipe,
     RadarSourceMonogramPipe,
     RadarItemTriageSection,
@@ -117,6 +124,7 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly breakpoints = inject(BreakpointObserverService);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly items = signal<RadarFeedItem[]>([]);
@@ -193,6 +201,8 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
   );
 
   /** Split view with a post open: compact list plus the post. Otherwise the table. */
+  /** A phone keeps the toolbar to one row and moves the rest into the Filters panel and menus. */
+  protected readonly isPhone = computed(() => this.breakpoints.isMobile());
   protected readonly paneOpen = computed(() => this.view() === 'split' && !!this.selectedId());
 
   /** Bulk mode lives in the Table view only; Split keeps the picks but hides the checkboxes. */
@@ -251,7 +261,6 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
   protected readonly providerOptions = PROVIDER_OPTIONS;
   protected readonly contentTypeOptions = CONTENT_TYPE_OPTIONS;
   protected readonly minScoreOptions = MIN_SCORE_OPTIONS;
-  protected readonly triageTabs = TRIAGE_TABS;
   protected readonly viewOptions = FEED_VIEW_OPTIONS;
   protected readonly splitSortOptions = SPLIT_SORT_OPTIONS;
   /** Widened: the mat-table row (`let item`) is untyped. */
@@ -440,6 +449,11 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
     });
   }
 
+  /** A note was added or removed in the pane: the row's note icon follows. */
+  onNotesChange({ id, notes }: RadarNotesChange): void {
+    this.items.update((items) => items.map((it) => (it.id === id ? { ...it, notes } : it)));
+  }
+
   /** The summary is a link for keyboard and middle-click; a plain click in Split opens the pane instead. */
   onSummaryClick(e: MouseEvent, item: RadarFeedItem): void {
     e.stopPropagation();
@@ -462,7 +476,15 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
   onPage({ pageIndex, pageSize }: PaginatorChange): void {
     this.pageIndex.set(pageIndex);
     this.pageSize.set(pageSize);
-    this.loadItems({ openFirst: this.paneOpen() });
+    this.loadItems({ open: this.paneOpen() ? 'first' : null });
+  }
+
+  /** J/K or the pane arrows walked past the page's edge: the adjacent page opens at its near end. */
+  onPageStep(delta: 1 | -1): void {
+    const pageIndex = adjacentPage(this.pageIndex(), this.pageSize(), this.total(), delta);
+    if (pageIndex === null || this.loading()) return;
+    this.pageIndex.set(pageIndex);
+    this.loadItems({ open: delta > 0 ? 'first' : 'last' });
   }
 
   // ── Label helpers (filter chips) ──────────────────────────────────
@@ -589,8 +611,8 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
     this.loadItems();
   }
 
-  /** `openFirst` keeps the pane open on a new page by opening its first post. */
-  private loadItems({ openFirst = false } = {}): void {
+  /** `open` keeps the pane open on a new page by opening its first or last post. */
+  private loadItems({ open = null }: { open?: 'first' | 'last' | null } = {}): void {
     this.syncQueryParams();
     this.loading.set(true);
     this.loadError.set(false);
@@ -603,7 +625,7 @@ export default class RadarItemList implements OnInit, HasUnsavedChanges {
         this.triageCounts.set(res.triageCounts);
         this.producerModels.set(res.producerModels);
         // The URL's post may sit on another page or tab: the pane closes rather than open another post.
-        if (openFirst) this.selectedId.set(res.data[0]?.id ?? null);
+        if (open) this.selectedId.set((open === 'first' ? res.data[0] : res.data.at(-1))?.id ?? null);
         else if (!res.data.some((it) => it.id === this.selectedId())) this.selectedId.set(null);
         this.loading.set(false);
         this.syncQueryParams();

@@ -67,30 +67,60 @@
             }
           </span>
         </div>
-        <button mat-icon-button type="button" matTooltip="Previous (K)" aria-label="Previous post" (click)="onMove(-1)">
-          <mat-icon>keyboard_arrow_up</mat-icon>
+        <button
+          mat-icon-button
+          type="button"
+          class="triage-pane__tool"
+          matTooltip="Previous (K)"
+          aria-label="Previous post"
+          [disabled]="atFirst()"
+          (click)="onMove(-1)"
+        >
+          <mat-icon class="icon-sm">keyboard_arrow_up</mat-icon>
         </button>
-        <button mat-icon-button type="button" matTooltip="Next (J)" aria-label="Next post" (click)="onMove(1)">
-          <mat-icon>keyboard_arrow_down</mat-icon>
+        <button
+          mat-icon-button
+          type="button"
+          class="triage-pane__tool"
+          matTooltip="Next (J)"
+          aria-label="Next post"
+          [disabled]="atLast()"
+          (click)="onMove(1)"
+        >
+          <mat-icon class="icon-sm">keyboard_arrow_down</mat-icon>
         </button>
+        @if (analyzeAction(); as action) {
+          <button
+            mat-icon-button
+            type="button"
+            class="triage-pane__tool"
+            [matTooltip]="action.label"
+            [attr.aria-label]="action.label"
+            (click)="onAnalyze()"
+          >
+            <mat-icon class="icon-sm">{{ action.icon }}</mat-icon>
+          </button>
+        }
         <a
           mat-icon-button
+          class="triage-pane__tool"
           [routerLink]="['/radar/items', it.id]"
           [queryParams]="feedQuery()"
-          matTooltip="Open full page"
-          aria-label="Open full page"
+          matTooltip="Open the detail page"
+          aria-label="Open the detail page"
         >
-          <mat-icon>open_in_full</mat-icon>
+          <mat-icon class="icon-sm">article</mat-icon>
         </a>
         <a
           mat-icon-button
+          class="triage-pane__tool"
           [href]="it.permalink"
           target="_blank"
           rel="noopener noreferrer"
           [matTooltip]="'Original post on ' + platformLabels[it.source.platform]"
           [attr.aria-label]="'Original post on ' + platformLabels[it.source.platform]"
         >
-          <mat-icon>open_in_new</mat-icon>
+          <mat-icon class="icon-sm">link</mat-icon>
         </a>
         <!-- Each decision button turns into its own undo once the post carries that status. -->
         @let saved = it.triageStatus === 'SAVED';
@@ -127,6 +157,54 @@
             <kbd>E</kbd>
           </button>
         }
+        <!-- Phone width: the tools and decisions above fold into this menu, so the head keeps two lines. -->
+        <button
+          mat-icon-button
+          type="button"
+          class="triage-pane__more"
+          aria-label="Post actions"
+          [matMenuTriggerFor]="paneMenu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #paneMenu="matMenu" xPosition="before">
+          <button mat-menu-item type="button" [disabled]="busy()" (click)="onSave()">
+            <mat-icon>{{ saved ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+            {{ saved ? 'Unsave' : 'To try' }}
+          </button>
+          <button mat-menu-item type="button" [disabled]="busy()" (click)="onDone()">
+            <mat-icon>{{ done ? 'undo' : 'check' }}</mat-icon>
+            {{ done ? 'Unmark done' : 'Done' }}
+          </button>
+          <mat-divider />
+          <button mat-menu-item type="button" [disabled]="atFirst()" (click)="onMove(-1)">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+            Previous
+          </button>
+          <button mat-menu-item type="button" [disabled]="atLast()" (click)="onMove(1)">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+            Next
+          </button>
+          <mat-divider />
+          @if (analyzeAction(); as action) {
+            <button mat-menu-item type="button" (click)="onAnalyze()">
+              <mat-icon>{{ action.icon }}</mat-icon>
+              {{ action.label }}
+            </button>
+          }
+          <button mat-menu-item type="button" (click)="onAddNote()">
+            <mat-icon>edit_note</mat-icon>
+            Add a note
+          </button>
+          <a mat-menu-item [routerLink]="['/radar/items', it.id]" [queryParams]="feedQuery()">
+            <mat-icon>article</mat-icon>
+            Open the detail page
+          </a>
+          <a mat-menu-item [href]="it.permalink" target="_blank" rel="noopener noreferrer">
+            <mat-icon>link</mat-icon>
+            Original post on {{ platformLabels[it.source.platform] }}
+          </a>
+        </mat-menu>
         <button
           mat-icon-button
           type="button"
@@ -137,11 +215,46 @@
         >
           <mat-icon>close</mat-icon>
         </button>
+
+        <!-- After a decision: one line for why. Enter saves, Esc skips, the notes list keeps it. -->
+        @if (notePrompt(); as prompt) {
+          <div class="triage-note" role="group" aria-label="Quick note">
+            <mat-icon class="icon-sm triage-note__icon">edit_note</mat-icon>
+            <input
+              #noteInput
+              class="triage-note__input"
+              type="text"
+              autocomplete="off"
+              [formControl]="noteControl"
+              [placeholder]="prompt"
+              [attr.aria-label]="prompt"
+              [maxlength]="noteMaxChars"
+              [readonly]="noteSaving()"
+              (keydown)="onNoteKeydown($event)"
+            />
+            <span class="triage-note__hint">Enter saves · Esc skips</span>
+            <button
+              mat-icon-button
+              type="button"
+              class="triage-pane__tool"
+              matTooltip="Skip the note"
+              aria-label="Skip the note"
+              (click)="onNoteDismiss()"
+            >
+              <mat-icon class="icon-sm">close</mat-icon>
+            </button>
+          </div>
+        }
       </div>
 
       <div class="triage-pane__body rv-pane rv-pane--fill" [class.triage-pane__body--stale]="detailLoading()">
         @if (record(); as rec) {
-          <console-radar-item-detail-card [item]="rec" (refresh)="onRefresh($event)" />
+          <console-radar-item-detail-card
+            [item]="rec"
+            [notesRevision]="notesRevision()"
+            (refresh)="onRefresh($event)"
+            (notesChange)="notesChange.emit($event)"
+          />
         } @else if (detailError(); as err) {
           <div class="radar-state" role="alert">
             <mat-icon class="radar-state__icon radar-state__icon--error icon-2xl">

@@ -2,26 +2,32 @@
   <console-spinner-overlay [loading]="loading()" />
 
   @if (item(); as it) {
-    <div class="console-page-header">
+    <div class="console-page-header radar-detail-head">
       <a mat-icon-button routerLink="/radar" [queryParams]="feedQuery()" aria-label="Back to Radar">
         <mat-icon>arrow_back</mat-icon>
       </a>
       <div class="console-page-header__titles">
-        <div class="flex items-center gap-2">
+        <div class="radar-detail-head__title">
           <h1 class="text-page-title">{{ it.authorName }}</h1>
           @if (!it.enrichment) {
-            <span class="console-badge console-badge--muted">Pending analysis</span>
+            <span class="console-badge console-badge--muted radar-detail-head__extra">Pending analysis</span>
           } @else if (reanalysisQueued()) {
-            <span class="console-badge console-badge--muted">Re-analysis queued</span>
+            <span class="console-badge console-badge--muted radar-detail-head__extra">Re-analysis queued</span>
           }
-          <console-help-button guide="radar-feature-guide" section="enrichment" page label="Radar guide: enrichment" />
+          <console-help-button
+            class="radar-detail-head__extra"
+            guide="radar-feature-guide"
+            section="enrichment"
+            page
+            label="Radar guide: enrichment"
+          />
         </div>
         <div class="detail-meta">
           <span>Published {{ it.publishedAt | date: 'medium' }}</span>
           <span>{{ it.source.displayName }}</span>
         </div>
       </div>
-      <div class="console-page-header__actions">
+      <div class="console-page-header__actions radar-detail-head__inline">
         @if (position(); as pos) {
           <div class="radar-walk" role="navigation" aria-label="Feed order">
             @if (prev(); as p) {
@@ -59,8 +65,8 @@
         }
         @if (!reanalysisQueued()) {
           <button mat-stroked-button type="button" (click)="onReanalyze()">
-            <mat-icon class="icon-sm">refresh</mat-icon>
-            Re-analyze
+            <mat-icon class="icon-sm">{{ it.enrichment ? 'refresh' : 'auto_awesome' }}</mat-icon>
+            {{ it.enrichment ? 'Re-analyze' : 'Analyze' }}
           </button>
         }
         <a mat-stroked-button [href]="it.permalink" target="_blank" rel="noopener noreferrer">
@@ -68,6 +74,53 @@
           Open on {{ platformLabels[it.source.platform] }}
         </a>
       </div>
+      <!-- A phone keeps the head to two lines: the walk and the actions fold into this menu. -->
+      <button
+        mat-icon-button
+        type="button"
+        class="radar-detail-head__more"
+        aria-label="Post actions"
+        [matMenuTriggerFor]="detailMenu"
+      >
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #detailMenu="matMenu" xPosition="before">
+        @if (position(); as pos) {
+          @if (prev(); as p) {
+            <a mat-menu-item [routerLink]="['/radar/items', p.id]" [queryParams]="prevQuery()">
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </a>
+          } @else {
+            <button mat-menu-item type="button" disabled>
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+          }
+          @if (next(); as n) {
+            <a mat-menu-item [routerLink]="['/radar/items', n.id]" [queryParams]="nextQuery()">
+              <mat-icon>chevron_right</mat-icon>
+              Next ({{ pos.index }} of {{ pos.total }})
+            </a>
+          } @else {
+            <button mat-menu-item type="button" disabled>
+              <mat-icon>chevron_right</mat-icon>
+              Next ({{ pos.index }} of {{ pos.total }})
+            </button>
+          }
+          <mat-divider />
+        }
+        @if (!reanalysisQueued()) {
+          <button mat-menu-item type="button" (click)="onReanalyze()">
+            <mat-icon>{{ it.enrichment ? 'refresh' : 'auto_awesome' }}</mat-icon>
+            {{ it.enrichment ? 'Re-analyze' : 'Analyze' }}
+          </button>
+        }
+        <a mat-menu-item [href]="it.permalink" target="_blank" rel="noopener noreferrer">
+          <mat-icon>open_in_new</mat-icon>
+          Open on {{ platformLabels[it.source.platform] }}
+        </a>
+      </mat-menu>
     </div>
 
     <console-radar-item-detail-card [item]="it" (refresh)="onRefresh($event)" />

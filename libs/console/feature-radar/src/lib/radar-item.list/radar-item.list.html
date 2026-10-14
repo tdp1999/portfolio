@@ -26,7 +26,11 @@
           }
           <!-- Outside the stats block: a failed stats call must not hide the runs in progress. -->
           @if (activeRuns(); as n) {
-            <a class="console-badge console-badge--warn radar-runs-badge" routerLink="/radar/runs">
+            <a
+              class="console-badge console-badge--warn radar-runs-badge"
+              routerLink="/radar/runs"
+              queryParamsHandling="preserve"
+            >
               {{ n }} {{ n === 1 ? 'run' : 'runs' }} in progress
             </a>
           }
@@ -34,12 +38,12 @@
       </div>
       <p class="crud-header__subtitle">AI news from followed sources, analyzed by the radar worker.</p>
     </div>
-    <div class="crud-header__actions">
-      <a mat-stroked-button routerLink="/radar/runs">
+    <div class="crud-header__actions radar-header-buttons">
+      <a mat-stroked-button routerLink="/radar/runs" queryParamsHandling="preserve">
         <mat-icon class="icon-sm">play_circle</mat-icon>
         Runs
       </a>
-      <a mat-stroked-button routerLink="/radar/briefs">
+      <a mat-stroked-button routerLink="/radar/briefs" queryParamsHandling="preserve">
         <mat-icon class="icon-sm">summarize</mat-icon>
         Briefs
       </a>
@@ -52,32 +56,69 @@
         Sources and upload
       </button>
     </div>
+    <!-- Phone: the four header actions fold into one menu. -->
+    <button
+      mat-icon-button
+      type="button"
+      class="radar-header-menu"
+      aria-label="Radar actions"
+      [matMenuTriggerFor]="headerMenu"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #headerMenu="matMenu" xPosition="before">
+      <a mat-menu-item routerLink="/radar/runs" queryParamsHandling="preserve">
+        <mat-icon>play_circle</mat-icon>
+        Runs
+      </a>
+      <a mat-menu-item routerLink="/radar/briefs" queryParamsHandling="preserve">
+        <mat-icon>summarize</mat-icon>
+        Briefs
+      </a>
+      <button mat-menu-item type="button" (click)="onOpenProfile()">
+        <mat-icon>edit_note</mat-icon>
+        Workflow profile
+      </button>
+      @if (view() === 'table') {
+        <button mat-menu-item type="button" (click)="onToggleBulk()">
+          <mat-icon>{{ bulkMode() ? 'close' : 'checklist' }}</mat-icon>
+          {{ bulkMode() ? 'Done selecting' : 'Select posts' }}
+        </button>
+      }
+      <button mat-menu-item type="button" (click)="onOpenSources()">
+        <mat-icon>rss_feed</mat-icon>
+        Sources and upload
+      </button>
+    </mat-menu>
   </div>
 
   <div class="crud-toolbar">
-    <!-- Everyday filters on the bar; the rest wait in the Filters panel. Chips show both groups.
-         With a post open, the tabs join this row so the post gets the height. -->
-    <div class="radar-toolbar-row">
+    <!-- One row: the triage tabs first (they filter both views, counts follow the filters), then the
+         everyday filters (the rest wait in the Filters panel, chips show both groups), then the view tools. -->
+    <div class="radar-toolbar-row" [class.radar-toolbar-row--phone]="isPhone()">
+      <div class="radar-triage">
+        <console-radar-triage-tabs
+          [compact]="isPhone()"
+          [value]="triage()"
+          [counts]="triageCounts()"
+          (valueChange)="onTriageTab($event)"
+        />
+        @if (!isPhone()) {
+          <console-help-button guide="radar-feature-guide" section="triage" label="How triage works" />
+        }
+      </div>
       <console-filter-bar>
-        <console-filter-search
-          placeholder="Search post text and TL;DR..."
-          [value]="search()"
-          (searchChange)="onSearchChange($event)"
-        />
-        <console-filter-select
-          label="Status"
-          [options]="statusOptions()"
-          [value]="status()"
-          (selectionChange)="onStatusChange($event)"
-        />
-        <console-filter-select
-          class="radar-filter--wide"
-          label="Source"
-          [options]="sourceOptions()"
-          [value]="sourceId()"
-          (selectionChange)="onSourceChange($event)"
-        />
-        <console-filter-more [count]="moreCount()" (clear)="onClearMoreFilters()">
+        <!-- A phone keeps one toolbar row: search, Status and Source move into the Filters panel. -->
+        @if (!isPhone()) {
+          <ng-container [ngTemplateOutlet]="mainFilters" />
+        }
+        <console-filter-more [count]="moreCount()" [iconOnly]="isPhone()" (clear)="onClearMoreFilters()">
+          @if (isPhone()) {
+            <ng-container [ngTemplateOutlet]="mainFilters" />
+            @if (paneOpen()) {
+              <ng-container [ngTemplateOutlet]="sortSelect" />
+            }
+          }
           <console-filter-select
             label="Provider"
             [options]="providerOptions"
@@ -105,9 +146,30 @@
           <mat-checkbox [checked]="includePromo()" (change)="onPromoChange($event.checked)">Show promo</mat-checkbox>
         </console-filter-more>
       </console-filter-bar>
-      @if (paneOpen()) {
-        <ng-container [ngTemplateOutlet]="triageBar" />
-      }
+      <div class="radar-toolbar__actions">
+        @if (view() === 'table' && !isPhone()) {
+          <button
+            mat-stroked-button
+            type="button"
+            class="radar-toolbar__select"
+            [attr.aria-pressed]="bulkMode()"
+            (click)="onToggleBulk()"
+          >
+            <mat-icon class="icon-sm">{{ bulkMode() ? 'close' : 'checklist' }}</mat-icon>
+            {{ bulkMode() ? 'Done selecting' : 'Select' }}
+          </button>
+        }
+        @if (paneOpen() && !isPhone()) {
+          <ng-container [ngTemplateOutlet]="sortSelect" />
+        }
+        <console-segmented-control
+          iconOnly
+          aria-label="View"
+          [options]="viewOptions"
+          [ngModel]="view()"
+          (ngModelChange)="onViewChange($event)"
+        />
+      </div>
     </div>
 
     @if (activeFilters().length > 0) {
@@ -122,10 +184,6 @@
     }
   </div>
 
-  @if (!paneOpen()) {
-    <ng-container [ngTemplateOutlet]="triageBar" />
-  }
-
   @if (paneOpen()) {
     <div class="radar-split">
       <console-radar-item-triage-section
@@ -137,8 +195,10 @@
         [tab]="triage()"
         [busy]="deciding()"
         (select)="onSelect($event)"
+        (pageStep)="onPageStep($event)"
         (decide)="onDecide($event)"
         (close)="onClosePane()"
+        (notesChange)="onNotesChange($event)"
       >
         <console-paginator
           triageListFooter
@@ -364,57 +424,39 @@
     </console-bulk-action-bar>
   }
 
-  <!-- Triage tabs filter both views; counts follow the filters, whichever tab is open. -->
-  <ng-template #triageBar>
-    <div class="radar-triage-bar">
-      <div class="radar-tabs" role="tablist" aria-label="Triage">
-        @for (tab of triageTabs; track tab.value) {
-          <button
-            type="button"
-            role="tab"
-            class="radar-tab"
-            [class.radar-tab--active]="triage() === tab.value"
-            [attr.aria-selected]="triage() === tab.value"
-            (click)="onTriageTab(tab.value)"
-          >
-            {{ tab.label }}
-            @if (triageCounts(); as counts) {
-              <span class="radar-tab__count">{{ counts[tab.value] }}</span>
-            }
-          </button>
-        }
-      </div>
-      <console-help-button guide="radar-feature-guide" section="triage" label="How triage works" />
-      <span class="radar-triage-bar__spacer"></span>
-      @if (view() === 'table') {
-        <button
-          mat-stroked-button
-          type="button"
-          class="radar-triage-bar__select"
-          [attr.aria-pressed]="bulkMode()"
-          (click)="onToggleBulk()"
-        >
-          <mat-icon class="icon-sm">{{ bulkMode() ? 'close' : 'checklist' }}</mat-icon>
-          {{ bulkMode() ? 'Done selecting' : 'Select' }}
-        </button>
-      }
-      @if (paneOpen()) {
-        <console-filter-select
-          class="radar-triage-bar__sort"
-          label="Sort"
-          [options]="splitSortOptions"
-          [value]="splitSort()"
-          [showAll]="false"
-          (selectionChange)="onSplitSort($event)"
-        />
-      }
-      <console-segmented-control
-        iconOnly
-        aria-label="View"
-        [options]="viewOptions"
-        [ngModel]="view()"
-        (ngModelChange)="onViewChange($event)"
-      />
-    </div>
-  </ng-template>
+  <!-- Runs and Briefs open over the Feed as routed popups (radar-page.dialog); the outlet renders nothing. -->
+  <router-outlet />
 </div>
+
+<!-- The everyday filters: in the bar, or in the Filters panel on a phone. -->
+<ng-template #mainFilters>
+  <console-filter-search
+    placeholder="Search post text and TL;DR..."
+    [value]="search()"
+    (searchChange)="onSearchChange($event)"
+  />
+  <console-filter-select
+    label="Status"
+    [options]="statusOptions()"
+    [value]="status()"
+    (selectionChange)="onStatusChange($event)"
+  />
+  <console-filter-select
+    class="radar-filter--wide"
+    label="Source"
+    [options]="sourceOptions()"
+    [value]="sourceId()"
+    (selectionChange)="onSourceChange($event)"
+  />
+</ng-template>
+
+<ng-template #sortSelect>
+  <console-filter-select
+    class="radar-toolbar__sort"
+    label="Sort"
+    [options]="splitSortOptions"
+    [value]="splitSort()"
+    [showAll]="false"
+    (selectionChange)="onSplitSort($event)"
+  />
+</ng-template>

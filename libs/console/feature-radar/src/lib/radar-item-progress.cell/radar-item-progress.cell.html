@@ -2,6 +2,7 @@
 @let c = comments();
 @let i = images();
 @let v = video();
+@let n = note();
 <span class="progress" role="group" aria-label="Progress">
   <span class="progress__slot" [class]="'tone-' + a.tone" [matTooltip]="a.label" [attr.aria-label]="a.label">
     <mat-icon class="icon-sm">{{ a.icon }}</mat-icon>
@@ -38,6 +39,18 @@
   >
     @if (v) {
       <mat-icon class="icon-sm">smart_display</mat-icon>
+    }
+  </span>
+  <!-- The Owner's notes, only when there are some: the tooltip quotes the newest. -->
+  <span
+    class="progress__slot"
+    [class.tone-info]="n"
+    [matTooltip]="n?.label ?? ''"
+    matTooltipClass="tooltip-multiline"
+    [attr.aria-label]="n?.label"
+  >
+    @if (n) {
+      <mat-icon class="icon-sm">sticky_note_2</mat-icon>
     }
   </span>
 </span>

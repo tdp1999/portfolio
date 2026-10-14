@@ -226,10 +226,10 @@ export const RUN_STEP_ICONS: Record<RadarRunStatus, string> = {
 };
 
 /** The Feed's triage tabs, in reading order. `SAVED` reads as "To try". */
-export const TRIAGE_TABS: { value: RadarTriageStatus; label: string }[] = [
-  { value: 'INBOX', label: 'Inbox' },
-  { value: 'SAVED', label: 'To try' },
-  { value: 'DONE', label: 'Done' },
+export const TRIAGE_TABS: { value: RadarTriageStatus; label: string; icon: string }[] = [
+  { value: 'INBOX', label: 'Inbox', icon: 'inbox' },
+  { value: 'SAVED', label: 'To try', icon: 'bookmark' },
+  { value: 'DONE', label: 'Done', icon: 'task_alt' },
 ];
 
 export const FEED_VIEW_OPTIONS: SegmentedControlOption[] = [
@@ -295,6 +295,21 @@ export const TRIAGE_ROW_MARKS: Record<RadarTriageStatus, { icon: string; label: 
   INBOX: { icon: 'inbox', label: 'Moved to Inbox' },
   SAVED: { icon: 'bookmark', label: 'Saved to To try' },
   DONE: { icon: 'check', label: 'Marked done' },
+};
+
+/** The decision a note was written with, as a short tag on the note. */
+export const NOTE_DECISION_MARKS: Record<RadarTriageStatus, { icon: string; label: string }> = {
+  INBOX: { icon: 'inbox', label: 'Inbox' },
+  SAVED: { icon: 'bookmark', label: 'To try' },
+  DONE: { icon: 'check', label: 'Done' },
+};
+
+/** The quick-note prompt after a decision, by the decision (null: a note on its own, N key). */
+export const NOTE_PROMPTS: Record<RadarTriageStatus | 'NONE', string> = {
+  INBOX: 'Why back to the Inbox?',
+  SAVED: 'Why try it? What do you plan to do?',
+  DONE: 'Why done? What did you do with it?',
+  NONE: 'Add a note',
 };
 
 /** The transcript fold's gist when there is no transcript to show (DONE and FAILED say more). */

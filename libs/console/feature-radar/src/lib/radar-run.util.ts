@@ -19,6 +19,10 @@ export const isRunActive = (run: RadarRun): boolean => ACTIVE_STATUSES.includes(
 export const awaitsUpload = (run: RadarRun): boolean =>
   run.flow === 'MANUAL' && run.steps[0]?.status === 'AWAITING_EXTERNAL';
 
+/** The newest successful run of a source, from the newest-first list `GET /radar/runs` returns. */
+export const lastDoneRun = (runs: RadarRun[], sourceId: string): RadarRun | undefined =>
+  runs.find((r) => r.source?.id === sourceId && r.status === 'DONE');
+
 /**
  * Where the next run of a source should start, as a picker date: the day after its last successful
  * run's window end (or the day it ran, if it had none), so runs chain without a gap and the two
@@ -27,7 +31,7 @@ export const awaitsUpload = (run: RadarRun): boolean =>
  */
 export function defaultWindowFrom(runs: RadarRun[], sourceId: string, now: Date): Date {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const last = runs.find((r) => r.source?.id === sourceId && r.status === 'DONE');
+  const last = lastDoneRun(runs, sourceId);
   if (!last) {
     return new Date(today.getFullYear(), today.getMonth() - DEFAULT_RUN_WINDOW_MONTHS, today.getDate());
   }

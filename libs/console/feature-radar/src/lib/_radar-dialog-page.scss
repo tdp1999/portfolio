@@ -1,0 +1,14 @@
+/* A list page (Runs, Briefs) opened as the Feed's big popup by `radar-page.dialog`. The dialog
+   surface has no padding of its own, so the page brings it and scrolls inside the popup. */
+:host(.radar-page--dialog) {
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* The list card takes the popup's remaining height; it scrolls inside itself so the header (title,
+   New run, close) stays in view. Its base `overflow: hidden` would clip the rest of the list. */
+:host(.radar-page--dialog) .crud-table-container {
+  min-height: 0;
+  overflow-y: auto;
+}

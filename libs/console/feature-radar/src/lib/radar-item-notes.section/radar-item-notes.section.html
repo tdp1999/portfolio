@@ -1,0 +1,50 @@
+<div class="notes">
+  <form class="notes__composer" [formGroup]="form" (ngSubmit)="onAdd()">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>New note</mat-label>
+      <textarea
+        matInput
+        formControlName="body"
+        rows="2"
+        placeholder="Why this decision, what you tried, what came of it"
+        [maxlength]="maxChars"
+        (keydown)="onComposerKeydown($event)"
+      ></textarea>
+    </mat-form-field>
+    <button mat-stroked-button type="submit" [disabled]="saving() || form.invalid">
+      <mat-icon class="icon-sm">add</mat-icon>
+      Add note
+    </button>
+  </form>
+
+  @if (rows().length) {
+    <ul class="notes__list">
+      @for (note of rows(); track note.id) {
+        <li class="notes__item">
+          <p class="notes__body">{{ note.body }}</p>
+          <div class="notes__meta">
+            @if (note.mark; as mark) {
+              <span class="notes__decision">
+                <mat-icon class="icon-sm">{{ mark.icon }}</mat-icon>
+                {{ mark.label }}
+              </span>
+            }
+            <console-relative-time [value]="note.createdAt" />
+            <button
+              mat-icon-button
+              type="button"
+              class="notes__delete"
+              matTooltip="Delete note"
+              aria-label="Delete note"
+              (click)="onDelete(note)"
+            >
+              <mat-icon class="icon-sm">delete_outline</mat-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else if (loaded()) {
+    <p class="notes__empty">No notes yet. Write why you marked it, or what you did with it.</p>
+  }
+</div>

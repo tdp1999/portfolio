@@ -50,11 +50,16 @@ export class RadarRunCreateDialog {
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly saving = signal(false);
 
+  // ── Plain state ───────────────────────────────────────────────────
+  /** The asked-for source when it is still runnable, else the first one. */
+  private readonly initialSourceId =
+    this.data.sources.find((s) => s.id === this.data.sourceId)?.id ?? this.data.sources[0]?.id;
+
   // ── Forms ─────────────────────────────────────────────────────────
   protected readonly form = this.fb.group({
-    sourceId: this.fb.nonNullable.control(this.data.sources[0]?.id ?? '', Validators.required),
+    sourceId: this.fb.nonNullable.control(this.initialSourceId ?? '', Validators.required),
     flow: this.fb.nonNullable.control<RadarRunFlow>('HYBRID'),
-    windowFrom: this.fb.control<Date | null>(this.windowStart(this.data.sources[0]?.id)),
+    windowFrom: this.fb.control<Date | null>(this.windowStart(this.initialSourceId)),
     windowTo: this.fb.control<Date | null>(null),
     itemCap: this.fb.nonNullable.control(DEFAULT_RUN_ITEM_CAP, [
       Validators.required,

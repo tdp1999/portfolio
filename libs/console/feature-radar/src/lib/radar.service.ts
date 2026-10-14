@@ -21,6 +21,7 @@ import {
   RadarWorkflowProfile,
   RadarAiSettings,
   RadarTrial,
+  RadarItemNote,
   CreateRadarTrialsInput,
   CreateRadarTrialsResult,
   ReanalyzeItemsInput,
@@ -73,6 +74,19 @@ export class RadarService {
 
   listTrials(itemId: string) {
     return this.api.get<RadarTrial[]>(`/radar/items/${itemId}/trials`);
+  }
+
+  /** The Owner's notes on a post, newest first. */
+  listNotes(itemId: string) {
+    return this.api.get<RadarItemNote[]>(`/radar/items/${itemId}/notes`);
+  }
+
+  createNote(itemId: string, body: string, triageStatus: RadarTriageStatus | null = null) {
+    return this.api.post<RadarItemNote>(`/radar/items/${itemId}/notes`, { body, triageStatus });
+  }
+
+  deleteNote(itemId: string, noteId: string) {
+    return this.api.delete<{ deleted: boolean }>(`/radar/items/${itemId}/notes/${noteId}`);
   }
 
   getQueueStats() {

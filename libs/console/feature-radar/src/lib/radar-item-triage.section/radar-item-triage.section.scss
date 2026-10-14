@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+@use 'base/prefers';
 @use '../radar-state';
 @use '../radar-score';
 @use '../radar-monogram';
@@ -9,6 +11,7 @@
 :host {
   display: block;
   min-height: 0;
+  container: triage / inline-size;
 }
 
 .triage {
@@ -105,6 +108,47 @@
   }
 }
 
+/* ═══ Quick note: the reason for a decision, typed under the bar ════ */
+.triage-note {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+
+  &__icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-sm);
+
+    &::placeholder {
+      color: var(--color-placeholder);
+    }
+  }
+
+  &__hint {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+}
+
 /* ═══ Pane: decision bar + the record ═══════════════════════════════
    Slides in from the right when a post opens from the table. */
 .triage-pane {
@@ -115,7 +159,7 @@
   min-height: 0;
   animation: triage-pane-in 200ms ease-out;
 
-  @media (prefers-reduced-motion: reduce) {
+  @include prefers.reduce-motion {
     animation: none;
   }
 
@@ -126,6 +170,7 @@
 
   &__head {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 4px;
     padding: 8px 16px;
@@ -145,7 +190,7 @@
 
   &__titles {
     display: flex;
-    flex: 1;
+    flex: 1 1 160px;
     flex-direction: column;
     min-width: 0;
   }
@@ -164,6 +209,14 @@
     color: var(--color-text-muted);
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* Compact 32px tools beside the 40px decision buttons, so the icons read as secondary. */
+  &__tool.mat-mdc-icon-button {
+    --mat-icon-button-state-layer-size: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
   }
 
   &__decide {
@@ -198,5 +251,58 @@
   from {
     opacity: 0;
     transform: translateX(32px);
+  }
+}
+
+.triage-pane__more {
+  display: none;
+}
+
+/* iOS zooms the page when a focused native input's text is under 16px, and this one takes focus
+   after every decision. Same guard as the Material inputs in material/_tokens.scss. */
+@supports (-webkit-touch-callout: none) {
+  @include bp.respond-down('tablet') {
+    .triage-note__input {
+      font-size: max(16px, var(--text-sm)); /* scale-ok: iOS auto-zoom floor */
+    }
+  }
+}
+
+/* ═══ Container queries: last, so they win over the base rules above ═══ */
+/* Too narrow for list and post side by side (laptop with the sidebar open, tablet, phone): the
+   open post takes the whole width, and X goes back to the list. */
+@container triage (max-width: 839px) {
+  .triage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .triage-side {
+    display: none;
+  }
+}
+
+/* Phone-width pane: identity, the actions menu and close on one row; tools fold into the menu. */
+@container triage (max-width: 559px) {
+  .triage-pane__titles {
+    flex: 1 1 0;
+  }
+
+  .triage-pane__head .triage-pane__tool,
+  .triage-pane__decide,
+  .triage-note__hint {
+    display: none;
+  }
+
+  .triage-pane__head .triage-pane__more {
+    display: inline-flex;
+  }
+
+  /* The quick note keeps its own skip button. */
+  .triage-note .triage-pane__tool {
+    display: inline-flex;
+  }
+
+  .triage-pane__body {
+    padding-inline: 12px;
   }
 }

@@ -3,22 +3,27 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnIni
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ToastService } from '@portfolio/console/shared/ui';
+import { RelativeTime, ToastService } from '@portfolio/console/shared/ui';
 import { extractApiError, FormErrorPipe, ServerErrorDirective } from '@portfolio/console/shared/util';
+import { filter } from 'rxjs';
+import { RadarRunCreateDialog } from '../radar-run.create.dialog/radar-run.create.dialog';
+import { defaultWindowFrom, lastDoneRun, runSourceLabel } from '../radar-run.util';
 import { RadarService } from '../radar.service';
-import { RadarSource } from '../radar.types';
+import { RadarRun, RadarRunCreateDialogData, RadarSource } from '../radar.types';
 import { toSourcePlatform, toUploadErrorLines } from './radar-source.dialog.util';
 
 @Component({
   selector: 'console-radar-source-dialog',
   standalone: true,
   imports: [
+    DatePipe,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
@@ -28,6 +33,7 @@ import { toSourcePlatform, toUploadErrorLines } from './radar-source.dialog.util
     MatProgressSpinnerModule,
     MatTooltipModule,
     FormErrorPipe,
+    RelativeTime,
     ServerErrorDirective,
   ],
   templateUrl: './radar-source.dialog.html',
@@ -40,9 +46,12 @@ export class RadarSourceDialog implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
 
   // ── Writable signals ──────────────────────────────────────────────
   protected readonly sources = signal<RadarSource[]>([]);
+  /** Newest first; empty when the read failed, so the rows just leave out their last run. */
+  private readonly runs = signal<RadarRun[]>([]);
   protected readonly loading = signal(true);
   protected readonly loadError = signal(false);
   protected readonly adding = signal(false);
@@ -63,8 +72,20 @@ export class RadarSourceDialog implements OnInit {
   /** Read from the URL as it is typed, so adding a source needs no platform picker. */
   protected readonly platform = computed(() => toSourcePlatform(this.url()));
 
+  /** Each source with its last successful run and where a re-run would pick up from. */
+  protected readonly rows = computed(() => {
+    const runs = this.runs();
+    const now = new Date();
+    return this.sources().map((source) => ({
+      source,
+      lastRunAt: lastDoneRun(runs, source.id)?.createdAt ?? null,
+      resumeFrom: defaultWindowFrom(runs, source.id, now),
+    }));
+  });
+
   ngOnInit(): void {
     this.loadSources();
+    this.loadRuns();
     // A YouTube channel brings its own title, so the name is optional there.
     this.form.controls.url.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((url) => {
       const name = this.form.controls.displayName;
@@ -194,7 +215,36 @@ export class RadarSourceDialog implements OnInit {
     });
   }
 
+  // ── Re-run ────────────────────────────────────────────────────────
+  /** Opens New run on this source; its window starts where the last successful run left off. */
+  onRerun(source: RadarSource): void {
+    const sources = this.sources().filter((s) => s.isActive);
+    this.dialog
+      .open<RadarRunCreateDialog, RadarRunCreateDialogData, RadarRun>(RadarRunCreateDialog, {
+        width: '520px',
+        maxWidth: '95vw',
+        data: { sources, runs: this.runs(), sourceId: source.id },
+      })
+      .afterClosed()
+      .pipe(
+        filter((run): run is RadarRun => !!run),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((run) => {
+        this.changed.set(true);
+        this.toast.success(`Run started for ${runSourceLabel(run)}`);
+        this.loadRuns();
+      });
+  }
+
   // ── shared helpers ────────────────────────────────────────────────
+  private loadRuns(): void {
+    this.radarService.listRuns(true).subscribe({
+      next: (runs) => this.runs.set(runs),
+      error: () => this.runs.set([]),
+    });
+  }
+
   private loadSources(): void {
     this.loadError.set(false);
     this.radarService.listSources().subscribe({

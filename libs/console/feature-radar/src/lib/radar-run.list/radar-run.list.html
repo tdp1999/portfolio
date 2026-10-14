@@ -14,14 +14,21 @@
       </p>
     </div>
     <div class="crud-header__actions">
-      <a mat-stroked-button routerLink="/radar">
-        <mat-icon class="icon-sm">arrow_back</mat-icon>
-        Feed
-      </a>
+      @if (!inDialog) {
+        <a mat-stroked-button routerLink="/radar">
+          <mat-icon class="icon-sm">arrow_back</mat-icon>
+          Feed
+        </a>
+      }
       <button mat-flat-button color="primary" [disabled]="opening()" (click)="onNewRun()">
         <mat-icon class="icon-sm">play_arrow</mat-icon>
         New run
       </button>
+      @if (inDialog) {
+        <button mat-icon-button type="button" mat-dialog-close matTooltip="Close (Esc)" aria-label="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </div>
   </div>
 

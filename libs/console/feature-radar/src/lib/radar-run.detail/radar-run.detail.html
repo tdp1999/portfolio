@@ -126,33 +126,38 @@
         @if (postsError()) {
           <p class="run-absent" role="alert">Could not load the posts of this run.</p>
         } @else if (postRows().length) {
-          <ul class="run-posts" [class.opacity-60]="postsLoading()">
-            @for (p of postRows(); track p.id) {
-              <li>
-                <a class="run-posts__row" [routerLink]="['/radar/items', p.id]">
-                  @if (p.score !== null) {
-                    <span class="radar-score" [class]="p.score | radarScoreTone">{{ p.score }}</span>
-                  } @else {
-                    <span class="radar-score radar-score--pending" aria-label="Not analyzed yet">
-                      <mat-icon class="icon-sm">hourglass_empty</mat-icon>
-                    </span>
-                  }
-                  <span class="run-posts__author">{{ p.authorName }}</span>
-                  <span class="run-posts__kind">
-                    @if (p.isVideo) {
-                      <mat-icon class="icon-sm" aria-hidden="true">videocam</mat-icon>
+          <!-- The next page loads in place: the page keeps its scroll and the old rows stay under a spinner. -->
+          <div class="relative">
+            <console-spinner-overlay [loading]="postsLoading()" size="sm" />
+            <ul class="run-posts">
+              @for (p of postRows(); track p.id) {
+                <li>
+                  <a class="run-posts__row" [routerLink]="['/radar/items', p.id]">
+                    @if (p.score !== null) {
+                      <span class="radar-score" [class]="p.score | radarScoreTone">{{ p.score }}</span>
+                    } @else {
+                      <span class="radar-score radar-score--pending" aria-label="Not analyzed yet">
+                        <mat-icon class="icon-sm">hourglass_empty</mat-icon>
+                      </span>
                     }
-                    {{ p.kindLabel }}
-                  </span>
-                  <span class="run-caption">{{ p.publishedAt | date: 'mediumDate' }}</span>
-                  <span class="run-caption">{{ p.statusLabel }}</span>
-                </a>
-              </li>
-            }
-          </ul>
+                    <span class="run-posts__author">{{ p.authorName }}</span>
+                    <span class="run-posts__kind">
+                      @if (p.isVideo) {
+                        <mat-icon class="icon-sm" aria-hidden="true">videocam</mat-icon>
+                      }
+                      {{ p.kindLabel }}
+                    </span>
+                    <span class="run-caption">{{ p.publishedAt | date: 'mediumDate' }}</span>
+                    <span class="run-caption">{{ p.statusLabel }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
           @if ((posts()?.total ?? 0) > postsPageSize) {
             <console-paginator
               compact
+              keepScroll
               [length]="posts()?.total ?? 0"
               [pageIndex]="postsPageIndex()"
               [pageSize]="postsPageSize"

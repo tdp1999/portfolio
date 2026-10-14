@@ -19,16 +19,23 @@
       </p>
     </div>
     <div class="crud-header__actions">
-      <a mat-stroked-button routerLink="/radar">
-        <mat-icon class="icon-sm">arrow_back</mat-icon>
-        Feed
-      </a>
+      @if (!inDialog) {
+        <a mat-stroked-button routerLink="/radar">
+          <mat-icon class="icon-sm">arrow_back</mat-icon>
+          Feed
+        </a>
+      }
       <span [matTooltip]="waiting() ? 'Wait for the current brief to be written first' : ''">
         <button mat-flat-button color="primary" [disabled]="opening() || waiting()" (click)="onNewBrief()">
           <mat-icon class="icon-sm">summarize</mat-icon>
           New brief
         </button>
       </span>
+      @if (inDialog) {
+        <button mat-icon-button type="button" mat-dialog-close matTooltip="Close (Esc)" aria-label="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </div>
   </div>
 

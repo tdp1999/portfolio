@@ -60,6 +60,14 @@ export class RadarItemProgressCell {
     return { tone: 'default', total, label: `${total} ${total === 1 ? 'image' : 'images'}, all saved`, empty: false };
   });
 
+  /** Null without notes; the tooltip quotes the newest one. */
+  protected readonly note = computed(() => {
+    const { count, latest } = this.item().notes;
+    if (!count || !latest) return null;
+    const more = count > 1 ? `\n(${count} notes, newest shown)` : '';
+    return { count, label: `My note: ${latest.body}${more}` };
+  });
+
   /** Null for a post without video. A reel captured before video files were kept has no file to transcribe. */
   protected readonly video = computed(() => {
     const { kind, video } = this.item();
