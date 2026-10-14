@@ -53,6 +53,9 @@ export class HelpViewer {
     const doc = frame.contentDocument;
     if (!doc) return;
     if (doc.title) this.title.set(doc.title);
+    // Guides size their text in rem: rooting them at the console's body size makes them follow
+    // the console type scale (and its phone sizes) instead of the browser's 16px default.
+    doc.documentElement.style.fontSize = getComputedStyle(document.body).fontSize;
     doc.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') this.help.close();
     });

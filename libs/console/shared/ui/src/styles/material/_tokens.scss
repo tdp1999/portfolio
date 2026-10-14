@@ -50,10 +50,14 @@
   );
 
   /* Icon Button */
+  /* The theme is built as dark, so the stock icon color is the dark-theme on-surface-variant and
+     reads as disabled on the light theme; the semantic tokens follow both themes. */
   @include mat.icon-button-overrides(
     (
       state-layer-size: 40px,
       icon-size: 24px,
+      icon-color: var(--color-text-secondary),
+      disabled-icon-color: color-mix(in srgb, var(--color-text) 38%, transparent),
     )
   );
 
@@ -63,6 +67,9 @@
       container-color: var(--color-surface),
       item-label-text-color: var(--color-text),
       item-hover-state-layer-color: var(--color-surface-hover),
+      /* Stock values come from the dark base theme: a near-black divider and pale icons. */
+      item-icon-color: var(--color-text-secondary),
+      divider-color: var(--color-border),
     )
   );
 
@@ -128,20 +135,21 @@
 /* Form-field density is set to -2 in material/_theme.scss (after mat.theme, so it
  * wins over the global -1). Kept there, not here, for cascade correctness. */
 
-/* Form fields now inherit the globally-scaled Material system type scale
- * (--mat-sys-*-size, scaled by --type-scale in material/_theme.scss), so the former
- * desktop `var(--text-sm)` override is gone — form fields size like every other
- * Material component.
+/* Form fields inherit the globally-scaled Material system type scale
+ * (--mat-sys-*-size, scaled by --type-scale in material/_theme.scss), like every
+ * other Material component.
  *
- * iOS auto-zoom guard: Safari zooms the viewport when a focused input's font-size
- * is < 16px. The global --type-scale shrink drops the inherited size below 16px, so
- * on mobile we floor the INPUT text back to 16px. Desktop keeps the scaled size. */
-@media (max-width: 767px) /* scale-ok: 768−1 breakpoint boundary, not on-grid spacing */ {
-  :root {
-    --mdc-filled-text-field-input-text-size: 1rem;
-    --mdc-outlined-text-field-input-text-size: 1rem;
-    --mat-form-field-container-text-size: 1rem;
-    --mat-select-trigger-text-size: 1rem;
-    --mat-option-label-text-size: 1rem;
+ * iOS auto-zoom guard: iOS Safari zooms the viewport when a focused native input's
+ * font-size is under 16px, so on a phone the TEXT input floors at 16px there. Only
+ * iOS does this (`-webkit-touch-callout` exists only on iOS), so Android, desktop and
+ * a narrow desktop window keep the scaled size. A mat-select is not a native input
+ * (it never zooms), so its trigger and options always keep the scaled size. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 767px) /* scale-ok: 768−1 breakpoint boundary, not on-grid spacing */ {
+    :root {
+      --mdc-filled-text-field-input-text-size: 1rem;
+      --mdc-outlined-text-field-input-text-size: 1rem;
+      --mat-form-field-container-text-size: 1rem;
+    }
   }
 }

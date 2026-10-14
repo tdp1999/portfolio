@@ -20,12 +20,16 @@ import { MatIconModule } from '@angular/material/icon';
       cdkOverlayOrigin
       #origin="cdkOverlayOrigin"
       class="filter-more__trigger"
+      [class.filter-more__trigger--icon]="iconOnly()"
+      [attr.aria-label]="iconOnly() ? label() : null"
       [attr.aria-expanded]="open()"
       aria-haspopup="dialog"
       (click)="open.set(!open())"
     >
       <mat-icon class="icon-sm">tune</mat-icon>
-      {{ label() }}
+      @if (!iconOnly()) {
+        {{ label() }}
+      }
       @if (count()) {
         <span class="filter-more__count">{{ count() }}</span>
       }
@@ -35,6 +39,8 @@ import { MatIconModule } from '@angular/material/icon';
       [cdkConnectedOverlayOrigin]="origin"
       [cdkConnectedOverlayOpen]="open()"
       [cdkConnectedOverlayPositions]="positions"
+      [cdkConnectedOverlayViewportMargin]="16"
+      cdkConnectedOverlayPush
       cdkConnectedOverlayHasBackdrop
       cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
       (backdropClick)="open.set(false)"
@@ -57,6 +63,18 @@ import { MatIconModule } from '@angular/material/icon';
       height: 40px;
     }
 
+    /* Icon only: a square button, the count still shows beside the icon. Material offsets a
+       button icon for the label after it (negative start margin, gap at the end); with no label
+       that offset only pushes the icon off center. */
+    .filter-more__trigger--icon {
+      min-width: 40px;
+      padding-inline: 8px;
+    }
+
+    .filter-more__trigger.filter-more__trigger--icon .mat-icon {
+      margin-inline: 0;
+    }
+
     .filter-more__count {
       margin-left: 4px;
       padding: 0 8px;
@@ -72,6 +90,7 @@ import { MatIconModule } from '@angular/material/icon';
       flex-direction: column;
       gap: 16px;
       width: 320px;
+      max-width: calc(100vw - 32px);
       margin-top: 4px;
       padding: 16px;
       border: 1px solid var(--color-border);
@@ -101,6 +120,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class FilterMore {
   readonly label = input('Filters');
+  /** The button shows the icon (and count) only, for a narrow toolbar; the label stays as its name. */
+  readonly iconOnly = input(false);
   /** How many of the panel's filters are set; shown on the button. */
   readonly count = input(0);
   readonly clear = output<void>();

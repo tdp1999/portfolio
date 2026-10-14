@@ -70,3 +70,8 @@
 :host ::ng-deep .segmented-control .mat-button-toggle:not(.mat-button-toggle-checked) {
   background: transparent;
 }
+
+/* Icon-only segments: Material's 12px label padding is sized for text; an icon needs less. */
+:host ::ng-deep .segmented-control--icon .mat-button-toggle .mat-button-toggle-label-content {
+  padding-inline: 8px;
+}

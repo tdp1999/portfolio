@@ -20,7 +20,7 @@ import { keepFirstRow, pageSlots } from './paginator.util';
  * the current page, an ellipsis per hidden run that jumps five pages). Stateless: the list owns
  * `pageIndex` and `pageSize` and reloads on `page`. Narrow containers drop the strip for
  * "10 / 18" between the arrows; `compact` also drops the page-size select. Every change scrolls the console content back to the top, so a
- * new page always starts at its first row.
+ * new page always starts at its first row, unless `keepScroll` is set (a pager inside one section of a longer page).
  */
 @Component({
   selector: 'console-paginator',
@@ -41,6 +41,8 @@ export class Paginator {
   readonly disabled = input(false);
   /** For a narrow column (a split view's list): range and arrows only, no page-size select. */
   readonly compact = input(false, { transform: booleanAttribute });
+  /** For a list that is one section of a longer page: the page keeps its scroll on a page change. */
+  readonly keepScroll = input(false, { transform: booleanAttribute });
 
   readonly page = output<PaginatorChange>();
 
@@ -71,6 +73,6 @@ export class Paginator {
 
   private emit(change: PaginatorChange): void {
     this.page.emit(change);
-    this.host.nativeElement.closest('.console-content')?.scrollTo({ top: 0 });
+    if (!this.keepScroll()) this.host.nativeElement.closest('.console-content')?.scrollTo({ top: 0 });
   }
 }

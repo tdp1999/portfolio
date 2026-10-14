@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -47,5 +49,13 @@
   > * {
     position: relative;
     z-index: 2;
+  }
+}
+
+/* Phone: the (not yet wired) resource search would push the top bar past the screen edge, so it
+   waits for tablet; the bell and the theme toggle stay. */
+@include bp.respond-down('tablet') {
+  .console-search {
+    display: none;
   }
 }

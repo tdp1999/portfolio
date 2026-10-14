@@ -1,3 +1,5 @@
+@use 'base/breakpoints' as bp;
+
 /* ─── Shared page layout primitives ─────────────────────────────────────────
  * Boxed-centered layout standard (see console-cookbook "Max-Width Rules" + ADR-025).
  * Every console page is a horizontally-centred box so wide screens keep balanced
@@ -41,6 +43,11 @@
   align-items: flex-start;
   gap: 12px;
 
+  /* No subtitle on a phone: back, title and actions share one line, centered. */
+  @include bp.respond-down('tablet') {
+    align-items: center;
+  }
+
   /* The titles block (h1 + optional subtitle) takes the remaining space. */
   &__titles {
     flex: 1 1 auto;
@@ -51,6 +58,11 @@
     color: var(--color-text-secondary);
     font-size: var(--text-sm);
     margin-top: 4px;
+
+    /* A phone gives the height to the content: the page title says enough. */
+    @include bp.respond-down('tablet') {
+      display: none;
+    }
   }
 
   /* Right-aligned action cluster (buttons). */
