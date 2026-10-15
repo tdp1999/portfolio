@@ -97,6 +97,7 @@ inline; import the shared one.
 | `E` | Mark the open post Done (pressed again: back to the tab it was decided in, or Inbox on the Done tab) | `radar-item-triage.section` | same |
 | `S` | Save the open post to To try (pressed again: back to the tab it was decided in, or Inbox on the To try tab) | `radar-item-triage.section` | same |
 | `N` | Open the quick note for the open post (a note not tied to a decision) | `radar-item-triage.section` | same |
+| `O` | Open the open post's original on its platform, in a new tab | `radar-item-triage.section` | same |
 | `Escape` | Close the open post, back to the table | `radar-item-triage.section` | same (yields to Quick Look, which closes first) |
 | `Enter` / `Escape` / `↑` `↓` | In the quick note (opens under the pane header after E/S or N): save / skip / skip while empty and walk to the previous or next post | `radar-item-triage.section` · element-scoped on the note input | Quick note focused (the global keys above yield while it has focus) |
 | `Mod+Enter` | Save the note being written in the My notes panel | `radar-item-notes.section` · element-scoped on the textarea | Notes textarea focused |

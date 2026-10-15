@@ -302,7 +302,7 @@ export class RadarItemTriageSection {
   }
 
   /**
-   * J/K or arrows move, E/S decide (pressing again takes the decision back), N opens a note, Escape closes the pane. Yields while typing, to any
+   * J/K or arrows move, E/S decide (pressing again takes the decision back), N opens a note, O opens the original post, Escape closes the pane. Yields while typing, to any
    * chord with a modifier, and to overlays (Quick Look, dialogs) that own the keys while open.
    */
   @HostListener('document:keydown', ['$event'])
@@ -317,6 +317,7 @@ export class RadarItemTriageSection {
       e: () => this.onDone(),
       s: () => this.onSave(),
       n: () => this.openNote(null),
+      o: () => this.onOpenOriginal(),
       Escape: () => this.close.emit(),
     };
     const run = handlers[e.key.length === 1 ? e.key.toLowerCase() : e.key];
@@ -334,6 +335,12 @@ export class RadarItemTriageSection {
     // A decision asks why; taking one back (to the Inbox) does not.
     if (next === 'INBOX') this.closeNote();
     else this.openNote(next);
+  }
+
+  /** O: the original post in a new tab. */
+  onOpenOriginal(): void {
+    const url = this.selected()?.permalink;
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   /** The phone menu's way to the quick note (N on a keyboard). */
