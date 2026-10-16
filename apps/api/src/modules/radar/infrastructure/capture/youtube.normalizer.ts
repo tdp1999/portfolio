@@ -18,7 +18,7 @@ export const YOUTUBE_VIDEOS_FORMAT = 'youtube-videos';
 const VideoSchema = z.looseObject({
   id: z.string().min(1).max(64),
   snippet: z.looseObject({
-    publishedAt: z.iso.datetime(),
+    publishedAt: z.string().datetime(),
     title: z.string(),
   }),
 });

@@ -23,7 +23,7 @@ const ApifyPostSchema = z.looseObject({
   postId: z.string().min(1).max(64),
   // Column limits (radar_items.permalink is VARCHAR(1000)) fail the post here, not the whole transaction.
   url: z.url({ protocol: /^https?$/ }).max(1000),
-  time: z.iso.datetime(),
+  time: z.string().datetime(),
 });
 
 type Json = Record<string, unknown>;
