@@ -23,6 +23,8 @@ CHECKLIST_SYNC_TOKEN=<token> CHECKLIST_API_URL=https://dashboard-api.thunderphon
 # optional: CHECKLIST_WORKFLOW_DIR (default ~/Code/personal/learning/workflow)
 ```
 
+Prod shortcut: `pnpm checklist:push:prod` sets the prod URL and reads `CHECKLIST_SYNC_TOKEN` from `~/Code/personal/learning/.env.checklist.prod` (gitignored, `chmod 600`). A token already set in the shell wins over the file.
+
 One-time token setup (one token per environment):
 
 ```bash

@@ -12,6 +12,9 @@
  *   CHECKLIST_SYNC_TOKEN    required; its SHA-256 is CHECKLIST_SYNC_TOKEN_HASH on the API
  *   CHECKLIST_API_URL       default http://localhost:3000 (prod: https://dashboard-api.thunderphong.com)
  *   CHECKLIST_WORKFLOW_DIR  default ~/Code/personal/learning/workflow
+ *
+ * `pnpm checklist:push:prod` sets the prod URL and loads the token from
+ * ~/Code/personal/learning/.env.checklist.prod (node --env-file).
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
