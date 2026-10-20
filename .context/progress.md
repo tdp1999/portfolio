@@ -364,6 +364,7 @@ From: `epic-landing-checklist` (appetite 2 days). All tasks → `tasks-done/epic
 - [ ] 323-landing-llms-txt (S)
 - [ ] 328-landing-now-page (S) (standalone — **needs re-spec to console-managed per epic-portfolio-about C2.** No longer blocks any About task — task 336 dropped 2026-05-22.)
 - [ ] 398-localized-gallery-caption (XL) (standalone — unblocked 2026-08-09, the console/API changeset landed in `5e28b750..06fcc740`. Gallery captions reuse `ProjectImage.alt` and are English-only; interim CSS clamp already shipped. Raised L → XL: the `imageIds: string[]` write path through DTO/port/repository was missing from the original plan.)
+- [ ] 436-landing-markdown-reader (XL) (standalone — private `/reader` page for a pushed markdown folder, copies the checklist pipeline)
 - [~] 399-job-change-content-sweep (M) (standalone, **in-progress** — author đổi việc: Redoc kết thúc 2026-10-16, onboard WorkBuddy 2026-11-02. 8 field `Profile` + 3 record Experience. Chia hai wave vì hai mốc còn ở tương lai: Wave 1 làm ngay (nhóm availability đang sai + gỡ số năm + record Redoc/AppCore), Wave 2 publish đúng 2026-11-02. Định vị chốt **hướng C**: giữ danh tính Frontend Engineer, bỏ neo ngành khỏi `aboutHeading`, thêm ý sở hữu đầu cuối. Đóng luôn món "§01 Experience" của task 361.)
 
 ## Done — Portfolio About (epic COMPLETED 2026-07-27 → `plans-done/epic-portfolio-about.md`)
