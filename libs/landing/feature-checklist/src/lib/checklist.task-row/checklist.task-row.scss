@@ -119,8 +119,11 @@
   }
 }
 
+// Baseline, not the default stretch: the mono label has a shorter line box than the value,
+// so stretch pins it to the top. Baseline keeps it level with the value's first line when it wraps.
 .task-row__role {
   display: flex;
+  align-items: baseline;
   gap: 8px;
   min-width: 0;
 }
