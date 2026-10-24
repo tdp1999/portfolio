@@ -1,9 +1,12 @@
 import type { ChecklistPhase, ChecklistRunBody, ChecklistTask } from '@portfolio/shared/types';
 
 import {
+  findLookupSection,
+  inlineLines,
   inlineSegments,
   phaseProgress,
   roleTaskCounts,
+  rowLabel,
   taskMatchesRole,
   withMovedRow,
   withNewTask,
@@ -47,17 +50,89 @@ describe('inlineSegments', () => {
       { kind: 'text', text: ') và ' },
       { kind: 'code', text: 'WHEN' },
       { kind: 'text', text: ' · ' },
-      { kind: 'ref', ref: { kind: 'project', key: '3' }, label: '§3' },
-      { kind: 'ref', ref: { kind: 'project', key: '6' }, label: '§6' },
+      { kind: 'ref', ref: { kind: 'project', key: '3' }, label: '§3', icon: 'folder-open' },
+      { kind: 'ref', ref: { kind: 'project', key: '6' }, label: '§6', icon: 'folder-open' },
     ]);
   });
 
   it('should leave the verb "kiểm tra" and the placeholder "tra X" as text', () => {
     expect(inlineSegments('kiểm tra A rồi "tra X"').every((s) => s.kind === 'text')).toBe(true);
   });
+
+  it('should turn <br> into a line break, with or without the closing slash', () => {
+    expect(inlineSegments('**Tự phân tích**:<br>vấn đề<br/>giả định')).toEqual([
+      { kind: 'strong', text: 'Tự phân tích' },
+      { kind: 'text', text: ':' },
+      { kind: 'break' },
+      { kind: 'text', text: 'vấn đề' },
+      { kind: 'break' },
+      { kind: 'text', text: 'giả định' },
+    ]);
+  });
+
+  it('should turn a ⚙ marker into a lookup ref named after the procedure, with its icon', () => {
+    expect(inlineSegments('⚙ review: tìm edge case')).toEqual([
+      { kind: 'ref', ref: { kind: 'lookup', key: 'review' }, label: 'review', icon: 'users' },
+      { kind: 'text', text: ': tìm edge case' },
+    ]);
+  });
+
+  it('should give a marker with no icon of its own the cog', () => {
+    expect(inlineSegments('⚙ handoff')[0]).toMatchObject({ label: 'handoff', icon: 'settings' });
+  });
+});
+
+describe('inlineLines', () => {
+  it('should cut the segments into lines at each <br>, dropping the break itself', () => {
+    expect(inlineLines('**Đầu ra**:<br>vấn đề<br>giả định')).toEqual([
+      [
+        { kind: 'strong', text: 'Đầu ra' },
+        { kind: 'text', text: ':' },
+      ],
+      [{ kind: 'text', text: 'vấn đề' }],
+      [{ kind: 'text', text: 'giả định' }],
+    ]);
+  });
+
+  it('should keep a row with no <br> as one line', () => {
+    expect(inlineLines('một dòng')).toEqual([[{ kind: 'text', text: 'một dòng' }]]);
+  });
+});
+
+describe('findLookupSection', () => {
+  const sections = [
+    { key: 'F', title: 'Edge case' },
+    { key: 'Q', title: 'Review code ⚙ review-code' },
+    { key: 'R', title: 'Review độc lập ⚙\uFE0F review' },
+  ];
+
+  it('should find a section by its letter, and a marker by the ⚙ name in the title', () => {
+    expect(findLookupSection(sections, 'F')?.key).toBe('F');
+    expect(findLookupSection(sections, 'review')?.key).toBe('R');
+    expect(findLookupSection(sections, 'review-code')?.key).toBe('Q');
+  });
+
+  it('should return null when no section matches', () => {
+    expect(findLookupSection(sections, 'handoff')).toBeNull();
+  });
+});
+
+describe('rowLabel', () => {
+  it('should drop the markdown markers and read a line break as a space', () => {
+    expect(rowLabel(task('1.2', { text: '**Tự phân tích**:<br>vấn đề<br/>giả định' }))).toBe(
+      'Tự phân tích: vấn đề giả định'
+    );
+  });
 });
 
 describe('taskMatchesRole', () => {
+  it('should read ⚙ review as both reviewers and the Claude who merges their findings', () => {
+    const row = task('6.3b', { doer: '⚙ review', checker: 'Owner lọc finding' });
+
+    expect(['Claude, session mới', 'Codex', 'Claude', 'Owner'].every((role) => taskMatchesRole(row, role))).toBe(true);
+    expect(taskMatchesRole(row, 'Tester')).toBe(false);
+  });
+
   it('should match a role named in either the doer or the checker', () => {
     const row = task('r1', { doer: 'Claude soạn; Owner chọn', checker: 'Manager duyệt' });
 

@@ -42,12 +42,22 @@
   <dl class="task-row__roles">
     <div class="task-row__role">
       <dt class="task-row__role-label">Do</dt>
-      <dd class="task-row__role-value">{{ task().doer || '—' }}</dd>
+      <dd class="task-row__role-value">
+        <landing-checklist-inline
+          [text]="task().doer || '—'"
+          [activeRef]="activeRef()"
+          (openRef)="openRef.emit($event)"
+        />
+      </dd>
     </div>
     <div class="task-row__role">
       <dt class="task-row__role-label">Check</dt>
       <dd class="task-row__role-value" [class.task-row__role-value--none]="task().checker === '—'">
-        {{ task().checker || '—' }}
+        <landing-checklist-inline
+          [text]="task().checker || '—'"
+          [activeRef]="activeRef()"
+          (openRef)="openRef.emit($event)"
+        />
       </dd>
     </div>
   </dl>

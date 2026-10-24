@@ -8,6 +8,8 @@ const MAX_FILES = 100;
 const MAX_TEXT = 2_000;
 const MAX_NOTE = 5_000;
 const MAX_PROSE = 20_000;
+/** A ref key: a lookup letter, a profile section number, or a `⚙` marker name such as `review-design`. */
+export const MAX_REF_KEY = 40;
 
 export const SyncChecklistDocsSchema = z.object({
   files: z
@@ -39,7 +41,11 @@ export const UpdateChecklistRunSchema = z
   })
   .refine((data) => data.name !== undefined || data.status !== undefined, { message: 'Nothing to update' });
 
-const RefSchema = z.object({ kind: z.enum(['lookup', 'project']), key: z.string().min(1).max(10) });
+export const ChecklistRefSchema = z.object({
+  kind: z.enum(['lookup', 'project']),
+  key: z.string().min(1).max(MAX_REF_KEY),
+});
+const RefSchema = ChecklistRefSchema;
 const ProseSchema = z.object({ markdown: z.string().max(MAX_PROSE), refs: z.array(RefSchema) });
 const RowIdSchema = z.string().min(1).max(64);
 

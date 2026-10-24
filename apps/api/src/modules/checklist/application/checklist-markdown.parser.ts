@@ -11,6 +11,8 @@ import type {
   ChecklistTemplateContent,
 } from '@portfolio/shared/types';
 
+import { MAX_REF_KEY } from './checklist.dto';
+
 export interface ParsedTemplate {
   title: string;
   content: ChecklistTemplateContent;
@@ -43,6 +45,8 @@ export class ChecklistMarkdownParser {
   private static readonly LOOKUP_REF = /(?<!["\p{L}])(?<!kiểm )tra ([A-Z])(?![\p{L}\d])/gu;
   /** `📁 §6` or `📁 §3, §6`. */
   private static readonly PROJECT_REF = /📁\s*§\d+(?:\s*,\s*§\d+)*/gu;
+  /** `⚙ review`: a procedure the lookup table describes in the section titled with that marker. */
+  private static readonly MARKER_REF = new RegExp(`⚙\\uFE0F?\\s*([a-z][a-z-]{0,${MAX_REF_KEY - 1}})`, 'gu');
   private static readonly TASK_CELLS = 4;
 
   // --- Parsing ---
@@ -149,6 +153,9 @@ export class ChecklistMarkdownParser {
     const found: { at: number; ref: ChecklistRef }[] = [];
 
     for (const match of text.matchAll(ChecklistMarkdownParser.LOOKUP_REF)) {
+      found.push({ at: match.index, ref: { kind: 'lookup', key: match[1] } });
+    }
+    for (const match of text.matchAll(ChecklistMarkdownParser.MARKER_REF)) {
       found.push({ at: match.index, ref: { kind: 'lookup', key: match[1] } });
     }
     for (const match of text.matchAll(ChecklistMarkdownParser.PROJECT_REF)) {

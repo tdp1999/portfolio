@@ -5,7 +5,11 @@ export type ChecklistInlineSegment =
   | { kind: 'text'; text: string }
   | { kind: 'strong'; text: string }
   | { kind: 'code'; text: string }
-  | { kind: 'ref'; ref: ChecklistRef; label: string };
+  | { kind: 'break' }
+  | { kind: 'ref'; ref: ChecklistRef; label: string; icon?: string };
+
+/** A segment inside one line: `inlineLines` has already cut the text at every break. */
+export type ChecklistInlineLineSegment = Exclude<ChecklistInlineSegment, { kind: 'break' }>;
 
 /** How tightly the run page sets its rows: reading layouts use `comfortable`, dense ones `compact`. */
 export type ChecklistDensity = 'comfortable' | 'compact';

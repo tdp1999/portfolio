@@ -3,11 +3,12 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { Icon } from '@portfolio/landing/shared/ui';
 import type { ChecklistRef } from '@portfolio/shared/types';
 
-import { inlineSegments } from '../checklist.util';
+import { inlineLines } from '../checklist.util';
 
 /**
  * A row's, gate's or note's inline markdown: bold, code, and the refs as small buttons in place
- * (`tra B` opens lookup section B, `§6` opens section 6 of the run's project profile).
+ * (`tra B` opens lookup section B, `§6` opens section 6 of the run's project profile, `⚙ review`
+ * opens the lookup section that describes the review procedure).
  */
 @Component({
   selector: 'landing-checklist-inline',
@@ -23,5 +24,5 @@ export class ChecklistInline {
 
   readonly openRef = output<ChecklistRef>();
 
-  protected readonly segments = computed(() => inlineSegments(this.text()));
+  protected readonly lines = computed(() => inlineLines(this.text()));
 }

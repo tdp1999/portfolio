@@ -8,15 +8,20 @@ import type {
   ChecklistTask,
 } from '@portfolio/shared/types';
 
-import type { ChecklistInlineSegment } from './checklist.types';
+import type { ChecklistInlineLineSegment, ChecklistInlineSegment } from './checklist.types';
 
 /**
  * Inline markdown of a row, gate or note, cut into what the template renders: plain text, bold,
- * code, and the refs (`tra B`, `📁 §6`) as their own segments so they become buttons in place.
+ * code, line breaks (`<br>`, since a table cell holds one line), and the refs (`tra B`, `📁 §6`,
+ * and the `⚙ review` markers that name a procedure in the lookup table) as their own segments so
+ * they become buttons in place.
  * No HTML is produced, so nothing needs sanitizing.
  */
 const INLINE_TOKEN =
-  /\*\*(.+?)\*\*|`([^`]+)`|📁\s*(§\d+(?:\s*,\s*§\d+)*)|(?<!["\p{L}])(?<!kiểm )tra ([A-Z])(?![\p{L}\d])/gu;
+  /\*\*(.+?)\*\*|`([^`]+)`|📁\s*(§\d+(?:\s*,\s*§\d+)*)|(?<!["\p{L}])(?<!kiểm )tra ([A-Z])(?![\p{L}\d])|(<br\s*\/?>)|⚙\uFE0F?\s*([a-z][a-z-]{0,39})/gu;
+
+/** Each `⚙ <name>` marker's icon; a name not listed here shows the cog. Names stop at 40 characters, the API's ref-key limit. */
+const MARKER_ICONS: Record<string, string> = { review: 'users' };
 
 export function inlineSegments(text: string): ChecklistInlineSegment[] {
   const out: ChecklistInlineSegment[] = [];
@@ -24,21 +29,48 @@ export function inlineSegments(text: string): ChecklistInlineSegment[] {
   for (const match of text.matchAll(INLINE_TOKEN)) {
     const at = match.index ?? 0;
     if (at > last) out.push({ kind: 'text', text: text.slice(last, at) });
-    const [, strong, code, sections, lookup] = match;
-    if (strong !== undefined) out.push({ kind: 'strong', text: strong });
+    const [, strong, code, sections, lookup, lineBreak, marker] = match;
+    if (lineBreak !== undefined) out.push({ kind: 'break' });
+    else if (marker !== undefined)
+      out.push({
+        kind: 'ref',
+        ref: { kind: 'lookup', key: marker },
+        label: marker,
+        icon: MARKER_ICONS[marker] ?? 'settings',
+      });
+    else if (strong !== undefined) out.push({ kind: 'strong', text: strong });
     else if (code !== undefined) out.push({ kind: 'code', text: code });
     else if (lookup !== undefined)
       out.push({ kind: 'ref', ref: { kind: 'lookup', key: lookup }, label: `tra ${lookup}` });
     else if (sections !== undefined) {
       for (const section of sections.split(',')) {
         const key = section.trim().slice(1);
-        out.push({ kind: 'ref', ref: { kind: 'project', key }, label: `§${key}` });
+        out.push({ kind: 'ref', ref: { kind: 'project', key }, label: `§${key}`, icon: 'folder-open' });
       }
     }
     last = at + match[0].length;
   }
   if (last < text.length) out.push({ kind: 'text', text: text.slice(last) });
   return out;
+}
+
+/** The segments cut into lines at each `<br>`: the first line runs in the sentence, the rest stack under it. */
+export function inlineLines(text: string): ChecklistInlineLineSegment[][] {
+  const lines: ChecklistInlineLineSegment[][] = [[]];
+  for (const segment of inlineSegments(text)) {
+    if (segment.kind === 'break') lines.push([]);
+    else lines[lines.length - 1].push(segment);
+  }
+  return lines;
+}
+
+/** A lookup section a ref opens: `tra B` by its letter, a `⚙ review` marker by the title that ends with `⚙ review`. */
+export function findLookupSection<T extends { key: string; title: string }>(
+  sections: readonly T[],
+  key: string
+): T | null {
+  const marker = new RegExp(`⚙\\uFE0F?\\s*${key}$`, 'u');
+  return sections.find((s) => s.key === key) ?? sections.find((s) => marker.test(s.title)) ?? null;
 }
 
 /**
@@ -49,6 +81,7 @@ export const CHECKLIST_ROLES: readonly string[] = [
   'Owner',
   'Claude',
   'Claude, session mới',
+  'Codex',
   'Máy',
   'Người đưa vấn đề',
   'Manager',
@@ -57,9 +90,15 @@ export const CHECKLIST_ROLES: readonly string[] = [
 ];
 
 const FRESH_CLAUDE = 'Claude, session mới';
+/** Who a `⚙` marker stands for: `⚙ review` is both reviewers plus Claude, who merges their findings. */
+const MARKER_ROLES: Record<string, string> = { review: `${FRESH_CLAUDE} + Codex; Claude` };
 
 function cellNames(cell: string, role: string): boolean {
-  const haystack = role === 'Claude' ? cell.split(FRESH_CLAUDE).join('') : cell;
+  const expanded = cell.replace(
+    /⚙\uFE0F?\s*([a-z][a-z-]{0,39})/gu,
+    (marker, name: string) => MARKER_ROLES[name] ?? marker
+  );
+  const haystack = role === 'Claude' ? expanded.split(FRESH_CLAUDE).join('') : expanded;
   return new RegExp(`(?<!\\p{L})${role}(?!\\p{L})`, 'u').test(haystack);
 }
 
@@ -268,5 +307,5 @@ export function findRow(body: ChecklistRunBody, rowId: string): ChecklistRow | u
 
 /** A row's text as a plain label (no markdown markers), for names and confirm messages. */
 export function rowLabel(row: ChecklistRow): string {
-  return row.text.replace(/\*\*|`/g, '');
+  return row.text.replace(/\*\*|`/g, '').replace(/\s*<br\s*\/?>\s*/g, ' ');
 }

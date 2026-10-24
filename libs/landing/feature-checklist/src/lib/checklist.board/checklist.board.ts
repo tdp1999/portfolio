@@ -30,6 +30,7 @@ import type { ChecklistConfirm, ChecklistRowAction } from '../checklist.types';
 import {
   bodyProgress,
   CHECKLIST_ROLES,
+  findLookupSection,
   findRow,
   phaseProgress,
   roleTaskCounts,
@@ -144,9 +145,11 @@ export class ChecklistBoard {
     if (!ref) return null;
     const lookup = ref.kind === 'lookup';
     const doc = lookup ? this.lookup() : this.project();
+    const section = doc ? findLookupSection(doc.sections, ref.key) : null;
     return {
       ref,
-      section: doc?.sections.find((s) => s.key === ref.key) ?? null,
+      // The panel already names the marker; the `⚙ review` that tags the section title would repeat it.
+      section: section && { ...section, title: section.title.replace(/\s*⚙\uFE0F?\s*[a-z][a-z-]*$/u, '') },
       source: lookup
         ? `Lookup table · ${CHECKLIST_LOOKUP_SLUG}`
         : this.projectSlug()

@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import type { ChecklistGroup } from '@portfolio/shared/types';
 
 import { ChecklistMarkdownParser } from './checklist-markdown.parser';
+import { ChecklistRefSchema, MAX_REF_KEY } from './checklist.dto';
 
 const SIZE_L = readFileSync(join(__dirname, '__fixtures__/checklist-size-l.md'), 'utf8');
 
@@ -77,7 +78,23 @@ describe('ChecklistMarkdownParser', () => {
   });
 
   describe('extractRefs()', () => {
+    it('should extract a long marker name that still fits the saved ref schema', () => {
+      const longest = `r${'e'.repeat(MAX_REF_KEY - 1)}`;
+      const refs = ChecklistMarkdownParser.extractRefs(`⚙ review-design · ⚙ ${longest}x`);
+
+      expect(refs.map((r) => r.key)).toEqual(['review-design', longest]);
+      expect(refs.every((ref) => ChecklistRefSchema.safeParse(ref).success)).toBe(true);
+    });
+
     it.each([
+      [
+        'a ⚙ marker, as a lookup ref keyed by its name',
+        '⚙ review: tìm edge case (tra F)',
+        [
+          { kind: 'lookup', key: 'review' },
+          { kind: 'lookup', key: 'F' },
+        ],
+      ],
       [
         'a lookup and a project ref, in order',
         'quét danh mục chung (tra G) + câu hỏi hay phải hỏi · 📁 §4',

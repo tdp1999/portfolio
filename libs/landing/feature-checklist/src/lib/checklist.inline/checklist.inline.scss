@@ -2,6 +2,13 @@
   display: inline;
 }
 
+// A line after a <br>: its own block, indented under the first line, with air between lines.
+.checklist-inline__line {
+  display: block;
+  margin-top: 4px;
+  padding-left: 12px;
+}
+
 .checklist-inline__strong {
   color: var(--landing-text);
   font-weight: 600;

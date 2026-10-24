@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
 
 import { Select, type SelectOption } from '@portfolio/landing/shared/ui';
+import { BreakpointObserverService } from '@portfolio/shared/features/breakpoint-observer';
 
 /**
  * Pick one role to see your part of the run: rows that do not involve it dim, they never disappear.
@@ -15,6 +16,7 @@ import { Select, type SelectOption } from '@portfolio/landing/shared/ui';
       [options]="options()"
       [value]="active() ?? allRoles"
       (valueChange)="active.set($event || null)"
+      [align]="align()"
       triggerIconName="filter"
       sublabelAlign="end"
       ariaLabel="Filter by role"
@@ -28,6 +30,10 @@ export class ChecklistRoleFilter {
   /** Tasks per role, shown under each option; a role missing from the map shows no count. */
   readonly counts = input<ReadonlyMap<string, number>>(new Map());
   readonly active = model<string | null>(null);
+
+  private readonly breakpoints = inject(BreakpointObserverService);
+  /** On mobile the filter starts the row, so the menu opens rightward; a right-aligned one runs off-screen. */
+  protected readonly align = computed(() => (this.breakpoints.isMobile() ? 'left' : 'right'));
 
   /** The "no filter" option's value: `landing-select` needs a value for every option. */
   protected readonly allRoles = '';
