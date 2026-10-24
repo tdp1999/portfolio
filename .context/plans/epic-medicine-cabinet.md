@@ -4,7 +4,7 @@ Size: L · chạm dữ liệu sức khỏe của nhiều người (Owner, mẹ, 
 
 ## Status: draft
 
-Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) xong ngày 2026-10-23: Owner (ở vai Manager) duyệt E5. Phase 3 (Acceptance & Test Design) đang chạy. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
+Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) xong ngày 2026-10-23: Owner (ở vai Manager) duyệt E5. Ngày 2026-10-24 checklist đổi thứ tự: phase 3 giờ là Flow & Prototype, phase 4 là Acceptance & Test Design. Epic quay lại phase 3 để viết flow, danh sách màn hình và data dictionary; quy tắc ở E6 giữ làm bản nháp cho phase 4. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
 
 ## E1 · Problem *(logic)*
 
@@ -24,8 +24,7 @@ Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là ngườ
 
 | Measure | Baseline (today) | Target | How it is read |
 |---|---|---|---|
-| Thời gian từ lúc cần tới lúc biết thuốc nào + liều bao nhiêu | hỏi lại AI: 10–20 phút với thuốc mới, 2–3 phút với thuốc đã dùng (Owner ước, 2026-10-23) [Q-6] | dưới 1 phút trên điện thoại [Claude-proposed] | Owner tự bấm giờ ở 2–3 lần tra đầu tiên |
-| Số lần tra được trả lời bằng ghi chép, không phải hỏi lại AI | 0 (hôm nay không có ghi chép) [Q-6] | đa số lần tra [Claude-proposed] | Owner tự đếm trong 3 tháng đầu |
+| Thời gian từ lúc cần tới lúc biết thuốc nào + liều bao nhiêu | hỏi lại AI: 10–20 phút với thuốc mới, 2–3 phút với thuốc đã dùng (Owner ước, 2026-10-23) [Q-6] | dưới 1 phút trên điện thoại [Owner] | Owner tự bấm giờ ở 2–3 lần tra đầu tiên |
 
 Khi xong: Owner mở landing, tra ra thuốc đã dùng, đối chiếu với thuốc thật đang cầm trên tay, nhanh hơn và đáng tin hơn hỏi AI. [Owner]
 
@@ -64,9 +63,8 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 | Cùng một thuốc, liều của Owner khác liều của mẹ; lấy nhầm liều của người kia | in | mỗi người một profile thuốc [Owner] |
 | Thuốc từng dùng nhưng không hợp hoặc bị dị ứng | in | [Q-3] |
 | Thuốc dùng theo đợt (vài ngày) khác thuốc dùng lâu dài | in | có thuốc dùng lâu dài: thuốc mỡ máu [Q-5] |
-| Đang gấp, một tay, ở nhà thuốc hoặc trên đường | in | tra trên điện thoại phải nhanh [Claude-proposed] |
 | Mạng yếu hoặc mất mạng | out | mặc định mạng nhanh, không làm offline [Owner] |
-| Ghi chép sai liều, Owner tin ghi chép hơn dược sĩ nên dùng sai | in | ghi chép phải dễ sửa và cho thấy nguồn (bác sĩ kê, tự mua) [Claude-proposed] |
+| Ghi chép sai liều, Owner tin ghi chép hơn dược sĩ nên dùng sai | in | ghi chép phải dễ sửa; không ghi nguồn, mặc định tin dữ liệu Owner nhập [Owner] |
 
 **Affected indirectly:** mẹ và những người khác được ghi dữ liệu (dữ liệu sức khỏe của họ nằm trong hệ thống dù họ không dùng app). [Owner]
 
@@ -87,6 +85,7 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 | Q-11 | Xóa một người khi người đó còn món: chặn lại và báo còn bao nhiêu món, hay xóa luôn các món của họ? (mặc định: chặn lại) | Owner | Báo số món để Owner xác nhận; xác nhận thì xóa luôn các món | 2026-10-23 | yes |
 | Q-12 | Trường bắt buộc chỉ là người, loại, tên; còn lại để trống được, để nhập nhanh. Đúng không? | Owner | Bắt buộc: người (profile), tên, hàm lượng (ô riêng, không ghi chung với tên), loại (mặc định là Thuốc). Hàm lượng chỉ bắt buộc với thuốc, vì vật tư không có ô này [R2] | 2026-10-24 | yes |
 | Q-13 | Đổi một thuốc sang vật tư khi nó đã có liều, hoạt chất: xóa các trường đó khi lưu (có cảnh báo), hay không cho đổi loại sau khi tạo? (mặc định: không cho đổi loại) | Owner | Không cho đổi loại sau khi tạo; cần đổi thì xóa món đó và tạo món mới | 2026-10-24 | yes |
+| Q-14 | Danh sách tra cứu mặc định mở ở chế độ nào (mini card hay dòng), và có nhớ lựa chọn lần trước không? | Owner | Mặc định dòng (row/table); nhớ lựa chọn | 2026-10-24 | no |
 
 ## E5 · Design
 
@@ -103,7 +102,8 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 ### Data model [Claude-proposed]
 - **`HealthProfile`**: một người được ghi dữ liệu (tên, quan hệ với Owner). Không phải tài khoản đăng nhập.
 - **`MedicalItem`**: một món trong tủ, thuộc về một `HealthProfile`.
-  - Chung: `kind` (`MEDICINE` / `SUPPLY`), tên, mục đích hoặc triệu chứng, kết quả (`WORKED` / `DID_NOT_SUIT` / `UNKNOWN`), nguồn (`PRESCRIBED` / `SELF_BOUGHT`), ghi chú
+  - Chung: `kind` (`MEDICINE` / `SUPPLY`), tên, mục đích hoặc triệu chứng, ghi chú
+  - Không có trường kết quả và trường nguồn (YAGNI) [Owner]. Thuốc không hợp hoặc chưa rõ kết quả [Q-3] ghi vào ghi chú. Hệ quả đã chấp nhận: không có nhãn "Không hợp" nổi bật, và ghi chú không được tìm (R4.4); Owner tự quyết định ghi gì [Owner]
   - Chỉ `MEDICINE`: hoạt chất `activeIngredients String[]`, hàm lượng, liều, thời điểm uống (trước hay sau ăn), loại dùng (`LONG_TERM` / `COURSE`)
   - Ngày: `createdAt`, `updatedAt` do hệ thống ghi. Không có ô "ngày dùng gần nhất" [Q-7]
 - Cùng một thuốc mà hai người dùng thì là hai `MedicalItem`, vì liều có thể khác.
@@ -113,10 +113,10 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 
 ### Lookup [Claude-proposed]
 - Trang private trên landing tải toàn bộ món một lần (dữ liệu nhỏ), lọc ở trình duyệt.
-- Một page: ô tìm kiếm ở trên, chip lọc theo người, kết quả là danh sách card. Không dùng table (không hợp điện thoại), không dùng tab theo người (mâu thuẫn với xem tất cả) [Owner]
+- Một page: ô tìm kiếm ở trên, chip lọc theo người, kết quả có hai chế độ xem: mini card hoặc dòng (row/table), để ở nhà thuốc Owner thấy cả danh sách cùng lúc mà không phải lướt từng card [Owner]. Mặc định là dòng; trang nhớ chế độ Owner chọn lần trước [Q-14]. Không dùng tab theo người (mâu thuẫn với xem tất cả) [Owner]
 - Mặc định hiện mọi món của mọi người; lọc theo người.
 - Tìm theo tên, hoạt chất, mục đích; không phân biệt hoa thường và dấu ("thuoc da day" ra "thuốc dạ dày"). Chữ "đ" phải về "d": NFD không làm việc này, nên dùng lại cách xử lý dấu của `slug.value.ts` và có test riêng cho "đ".
-- Mỗi kết quả có link sang trang sửa ở console, để sửa liều sai ngay trên điện thoại (E3). Trang sửa đó phải dùng được ở bề rộng điện thoại. [Claude-proposed]
+- Mỗi kết quả có một icon nhỏ dẫn sang trang sửa món đó ở console (E3) [Owner]. Responsive của console để sau, không làm trong slice 1 [Owner]
 - Từ khóa không bao giờ nằm trên URL, để Umami không ghi tên thuốc.
 
 ### History
@@ -162,10 +162,10 @@ Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [C
 ### R1 · Tên hiển thị: đúng một hoạt chất thì hiện tên hoạt chất, còn lại hiện tên thuốc [Q-2]
 | Example | Given | When | Expected (incl. what the user sees next) | Source |
 |---|---|---|---|---|
-| R1.1 | Thuốc "Air-X", hoạt chất ["Simethicone"] | Mở trang tra cứu | Card ghi "Simethicone", dòng phụ "Air-X" | [Q-2] |
-| R1.2 | Thuốc "Panadol Extra", hoạt chất ["Paracetamol", "Caffeine"] | Mở trang tra cứu | Card ghi "Panadol Extra", dòng phụ "Paracetamol + Caffeine" | [Q-2] |
-| R1.3 | Thuốc "Men tiêu hóa X", chưa nhập hoạt chất | Mở trang tra cứu | Card ghi "Men tiêu hóa X" | [Claude-proposed] |
-| R1.4 | Vật tư "Nhiệt kế điện tử" | Mở trang tra cứu | Card ghi "Nhiệt kế điện tử", nhãn "Vật tư" | [Claude-proposed] |
+| R1.1 | Thuốc "Air-X", hoạt chất ["Simethicone"] | Mở trang tra cứu | Item ghi "Simethicone", dòng phụ "Air-X" | [Q-2] |
+| R1.2 | Thuốc "Panadol Extra", hoạt chất ["Paracetamol", "Caffeine"] | Mở trang tra cứu | Item ghi "Panadol Extra", dòng phụ "Paracetamol + Caffeine" | [Q-2] |
+| R1.3 | Thuốc "Men tiêu hóa X", chưa nhập hoạt chất | Mở trang tra cứu | Item ghi "Men tiêu hóa X" | [Claude-proposed] |
+| R1.4 | Vật tư "Nhiệt kế điện tử" | Mở trang tra cứu | Item ghi "Nhiệt kế điện tử", nhãn "Vật tư" | [Claude-proposed] |
 
 ### R2 · Vật tư không có các trường chỉ dành cho thuốc; API là nơi kiểm [E5]
 | Example | Given | When | Expected | Source |
@@ -177,7 +177,7 @@ Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [C
 ### R3 · Trường bắt buộc: người, tên, loại (mặc định Thuốc); thuốc bắt buộc thêm hàm lượng, ghi ở ô riêng [Q-12]
 | Example | Given | When | Expected | Source |
 |---|---|---|---|---|
-| R3.1 | Form có người "Mẹ", loại "Thuốc", tên "Atorvastatin", hàm lượng "10mg" | Lưu | Lưu được; card hiện các trường trống là "Chưa ghi" | [Q-12] |
+| R3.1 | Form có người "Mẹ", loại "Thuốc", tên "Atorvastatin", hàm lượng "10mg" | Lưu | Lưu được; item hiện các trường trống là "Chưa ghi" | [Q-12] |
 | R3.2 | Form để trống tên | Lưu | Ô tên báo lỗi bắt buộc; không gửi | [Q-12] |
 | R3.3 | Thuốc "Atorvastatin", để trống hàm lượng | Lưu | Ô hàm lượng báo lỗi bắt buộc; không gửi | [Q-12] |
 | R3.4 | Vật tư "Nhiệt kế điện tử", không có ô hàm lượng | Lưu | Lưu được | [Q-12], R2 |
@@ -196,17 +196,16 @@ Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [C
 ### R5 · Mặc định thấy mọi món của mọi người; chip lọc theo một người [Owner]
 | Example | Given | When | Expected | Source |
 |---|---|---|---|---|
-| R5.1 | Owner có 5 món, Mẹ có 3 món | Mở trang | Thấy 8 card, mỗi card ghi tên người | [Owner] |
-| R5.2 | Như R5.1 | Bấm chip "Mẹ" | Thấy 3 card của Mẹ | [Owner] |
+| R5.1 | Owner có 5 món, Mẹ có 3 món | Mở trang | Thấy 8 item, mỗi item ghi tên người | [Owner] |
+| R5.2 | Như R5.1 | Bấm chip "Mẹ" | Thấy 3 item của Mẹ | [Owner] |
 | R5.3 | Chip "Mẹ" đang chọn | Gõ "simethicone" | Chỉ thấy món của Mẹ có khớp | [Claude-proposed] |
-| R5.4 | Owner và Mẹ đều dùng Simethicone, liều khác nhau | Gõ "simethicone" | Hai card, mỗi card đúng liều và tên người | [E3] |
+| R5.4 | Owner và Mẹ đều dùng Simethicone, liều khác nhau | Gõ "simethicone" | Hai item, mỗi item đúng liều và tên người | [E3] |
 
-### R6 · Card cho thấy đủ để dùng lại: liều, thời điểm uống, kết quả, loại dùng, nguồn [E3]
+### R6 · Mỗi món cho thấy đủ để dùng lại: liều, thời điểm uống, loại dùng [E3]
 | Example | Given | When | Expected | Source |
 |---|---|---|---|---|
-| R6.1 | Thuốc kết quả "Không hợp" | Mở trang | Card có nhãn "Không hợp" nổi bật, để không dùng nhầm | [E3] |
-| R6.2 | Thuốc mỡ máu, loại dùng "Lâu dài" | Mở trang | Card có nhãn "Dùng lâu dài" | [Q-5] |
-| R6.3 | Bất kỳ card nào | Bấm "Sửa" | Mở trang sửa món đó ở console; trang dùng được ở bề rộng điện thoại | [E5] |
+| R6.2 | Thuốc mỡ máu, loại dùng "Lâu dài" | Mở trang | Item có nhãn "Dùng lâu dài" | [Q-5] |
+| R6.3 | Bất kỳ món nào | Bấm icon sửa | Mở trang sửa món đó ở console | [E5] |
 
 ### R7 · Xóa trên UI là xóa hẳn, có xác nhận; database soft delete [Q-9, Q-11]
 | Example | Given | When | Expected | Source |
@@ -223,6 +222,12 @@ Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [C
 | R8.2 | Chưa đăng nhập | Mở trang tra cứu trên landing | Chuyển sang trang Sign in, quay lại sau khi đăng nhập | [E5] |
 | R8.3 | Chưa có món nào | Mở trang tra cứu | "Chưa có món nào", kèm link sang console để thêm | [Claude-proposed] |
 
+### R9 · Chế độ xem: dòng (mặc định) hoặc mini card; trang nhớ lựa chọn [Q-14]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R9.1 | Lần đầu mở trang tra cứu | Nhìn danh sách | Item hiện dạng dòng (row/table) | [Q-14] |
+| R9.2 | Đang ở chế độ dòng | Chọn mini card, đóng trang, mở lại | Item hiện dạng mini card | [Q-14] |
+
 ### Edge case giá trị (EP + BVA) [Claude-proposed]
 | Trường | Hợp lệ | Ngay dưới | Tại ranh giới | Ngay trên | Expected khi vượt |
 |---|---|---|---|---|---|
@@ -237,7 +242,7 @@ Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [C
 - Performance: trang tra cứu hiện kết quả dưới 1 giây với 300 món; lọc trên trình duyệt không thấy độ trễ khi gõ.
 - Phân quyền: R8.
 - Bảo mật input: Zod ở API; chuỗi người dùng nhập luôn hiển thị dạng text, không qua `innerHTML`.
-- Responsive: trang tra cứu theo 4 breakpoint của landing; trang sửa ở console dùng được ở bề rộng điện thoại.
+- Responsive: trang tra cứu theo 4 breakpoint của landing. Console để sau [Owner].
 - Chuỗi giao diện landing (nhãn, thông báo) đi qua `LANDING_COPY` EN/VI; nội dung món là dữ liệu, không dịch.
 
 ### Acceptance criteria and test levels [Claude-proposed]
@@ -252,16 +257,25 @@ Feature mới, không có hành vi cũ cần giữ (3.3c bỏ qua). Test viết 
 | AC-5 | R4 | WHEN Owner gõ từ khóa THE SYSTEM SHALL lọc theo tên, hoạt chất, mục đích, bỏ qua hoa thường, dấu, đ/d | Unit (hàm chuẩn hóa + lọc) | R4.1–R4.5 |
 | AC-6 | R4 | WHEN Owner gõ từ khóa THE SYSTEM SHALL giữ nguyên URL | Component | R4.6 |
 | AC-7 | R5 | WHEN Owner chọn chip một người THE SYSTEM SHALL chỉ hiện món của người đó, kết hợp với từ khóa | Unit (lọc) | R5.1–R5.4 |
-| AC-8 | R6 | WHEN một món có kết quả "Không hợp" hoặc loại dùng "Lâu dài" THE SYSTEM SHALL hiện nhãn tương ứng trên card | Component | R6.1, R6.2 |
+| AC-8 | R6 | WHEN một món có loại dùng "Lâu dài" THE SYSTEM SHALL hiện nhãn "Dùng lâu dài" | Component | R6.2 |
 | AC-9 | R7 | WHEN Owner xác nhận xóa một món THE SYSTEM SHALL đặt `deletedAt` và ẩn món khỏi mọi danh sách | Unit (handler) + integration | R7.1, R7.2 |
 | AC-10 | R7 | WHEN Owner xóa một người còn N món THE SYSTEM SHALL hỏi kèm số N, và khi xác nhận thì soft delete người đó cùng N món | Unit (handler) + Component (hộp xác nhận) | R7.3, R7.4 |
 | AC-11 | R8 | WHEN request không có quyền ADMIN THE SYSTEM SHALL trả 401/403 cho mọi endpoint của module | E2E (API) | R8.1 |
 | AC-12 | R8 | WHEN chưa đăng nhập mà mở trang tra cứu THE SYSTEM SHALL chuyển sang Sign in rồi quay lại | E2E (landing), chạy tay một lần | R8.2 |
 | AC-13 | BVA | WHEN một trường vượt ranh giới ở bảng EP + BVA THE SYSTEM SHALL báo lỗi ở đúng trường đó | Unit (schema, mỗi ranh giới một case) | bảng BVA |
+| AC-14 | R9 | WHEN Owner mở trang tra cứu THE SYSTEM SHALL hiện chế độ xem đã chọn lần trước, mặc định là dòng | Component | R9.1, R9.2 |
 
-Kiểm tay trên điện thoại (không tự động): R4.3 ở nhà thuốc thật, R6.3 trang sửa ở bề rộng điện thoại, thước đo E2 (dưới 1 phút).
+Kiểm tay trên điện thoại (không tự động): R4.3 ở nhà thuốc thật, thước đo E2 (dưới 1 phút).
 
 ## Changelog
+
+### 2026-10-24 Owner chấp nhận rủi ro không có nhãn "Không hợp"; thêm Q-14 và R9
+- Updated: Data model ghi hệ quả đã chấp nhận; Lookup thêm chế độ mặc định; E4 thêm Q-14; E6 đổi "card" thành "item", thêm R9 và AC-14
+- Reason: [Owner], [Q-14]
+
+### 2026-10-24 Owner duyệt mục 1–5, 7, 8 của bảng [Claude-proposed]
+- Updated: E2 giữ một thước đo (thời gian tra, dưới 1 phút) và bỏ thước đo số lần tra; E3 bỏ edge case "đang gấp" (trùng E2) và bỏ ghi nguồn; E5 bỏ trường kết quả và nguồn, thêm hai chế độ xem mini card và dòng, link sửa thành icon nhỏ, responsive console để sau; R6, R6.1, R6.3, AC-8, non-functional sửa theo
+- Reason: [Owner], YAGNI
 
 ### 2026-10-24 Owner trả lời Q-12, Q-13
 - Updated: R2.3 (không đổi loại), R3 và R3.1 đến R3.5 (trường bắt buộc, hàm lượng ở ô riêng), AC-3, AC-4
