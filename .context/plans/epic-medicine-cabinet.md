@@ -4,7 +4,7 @@ Size: L · chạm dữ liệu sức khỏe của nhiều người (Owner, mẹ, 
 
 ## Status: draft
 
-Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) đang chạy. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
+Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) xong ngày 2026-10-23: Owner (ở vai Manager) duyệt E5. Phase 3 (Acceptance & Test Design) đang chạy. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
 
 ## E1 · Problem *(logic)*
 
@@ -25,7 +25,7 @@ Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là ngườ
 | Measure | Baseline (today) | Target | How it is read |
 |---|---|---|---|
 | Thời gian từ lúc cần tới lúc biết thuốc nào + liều bao nhiêu | hỏi lại AI: 10–20 phút với thuốc mới, 2–3 phút với thuốc đã dùng (Owner ước, 2026-10-23) [Q-6] | dưới 1 phút trên điện thoại [Claude-proposed] | Owner tự bấm giờ ở 2–3 lần tra đầu tiên |
-| Số lần tra được trả lời bằng ghi chép, không phải hỏi lại AI | 0 (hôm nay không có ghi chép) | đa số lần tra [Claude-proposed] | Owner tự đếm trong 3 tháng đầu |
+| Số lần tra được trả lời bằng ghi chép, không phải hỏi lại AI | 0 (hôm nay không có ghi chép) [Q-6] | đa số lần tra [Claude-proposed] | Owner tự đếm trong 3 tháng đầu |
 
 Khi xong: Owner mở landing, tra ra thuốc đã dùng, đối chiếu với thuốc thật đang cầm trên tay, nhanh hơn và đáng tin hơn hỏi AI. [Owner]
 
@@ -41,7 +41,7 @@ Khi xong: Owner mở landing, tra ra thuốc đã dùng, đối chiếu với th
 - Một view thấy mọi món của tất cả mọi người, lọc được theo người [Owner]
 - Ghi cả vật tư y tế (nhiệt kế, băng gạc), không chỉ thuốc [Owner]
 - Tra theo mục đích hoặc triệu chứng, khi Owner không biết tên thuốc cần tìm ("bệnh A thì dùng gì") [Owner]
-- Lát 1 nhập tay. Thông tin tối thiểu: tên thuốc, mục đích, liều/hàm lượng, thời điểm và cách uống (trước hay sau ăn) [Owner]
+- Slice 1 nhập tay. Thông tin tối thiểu: tên thuốc, mục đích, liều/hàm lượng, thời điểm và cách uống (trước hay sau ăn) [Owner]
 - Một danh sách, không có bản nháp [Owner]
 
 ### Out
@@ -85,6 +85,8 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 | Q-9 | Xóa một món: xóa hẳn, hay vào thùng rác khôi phục được (soft delete, dữ liệu còn mãi)? Xóa một người khi còn món: chặn lại, hay xóa luôn các món? | Owner | Database luôn soft delete theo khuôn chung; UI xóa hẳn, có xác nhận. Phần xóa người còn món chưa trả lời (→ Q-11) | 2026-10-23 | yes |
 | Q-10 | Lịch sử sửa sau này lưu nguyên văn những trường nào (ví dụ liều, kết quả), hay chỉ lưu tên trường đã đổi? Có thể để tới lúc làm audit trail | Owner | Lưu nguyên văn, chuẩn banking: trường nào sửa, ai sửa, lúc nào, lọc theo action. Làm ở slice sau | 2026-10-23 | no |
 | Q-11 | Xóa một người khi người đó còn món: chặn lại và báo còn bao nhiêu món, hay xóa luôn các món của họ? (mặc định: chặn lại) | Owner | Báo số món để Owner xác nhận; xác nhận thì xóa luôn các món | 2026-10-23 | yes |
+| Q-12 | Trường bắt buộc chỉ là người, loại, tên; còn lại để trống được, để nhập nhanh. Đúng không? | Owner | Bắt buộc: người (profile), tên, hàm lượng (ô riêng, không ghi chung với tên), loại (mặc định là Thuốc). Hàm lượng chỉ bắt buộc với thuốc, vì vật tư không có ô này [R2] | 2026-10-24 | yes |
+| Q-13 | Đổi một thuốc sang vật tư khi nó đã có liều, hoạt chất: xóa các trường đó khi lưu (có cảnh báo), hay không cho đổi loại sau khi tạo? (mặc định: không cho đổi loại) | Owner | Không cho đổi loại sau khi tạo; cần đổi thì xóa món đó và tạo món mới | 2026-10-24 | yes |
 
 ## E5 · Design
 
@@ -111,6 +113,7 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 
 ### Lookup [Claude-proposed]
 - Trang private trên landing tải toàn bộ món một lần (dữ liệu nhỏ), lọc ở trình duyệt.
+- Một page: ô tìm kiếm ở trên, chip lọc theo người, kết quả là danh sách card. Không dùng table (không hợp điện thoại), không dùng tab theo người (mâu thuẫn với xem tất cả) [Owner]
 - Mặc định hiện mọi món của mọi người; lọc theo người.
 - Tìm theo tên, hoạt chất, mục đích; không phân biệt hoa thường và dấu ("thuoc da day" ra "thuốc dạ dày"). Chữ "đ" phải về "d": NFD không làm việc này, nên dùng lại cách xử lý dấu của `slug.value.ts` và có test riêng cho "đ".
 - Mỗi kết quả có link sang trang sửa ở console, để sửa liều sai ngay trên điện thoại (E3). Trang sửa đó phải dùng được ở bề rộng điện thoại. [Claude-proposed]
@@ -151,3 +154,115 @@ Chỉ thêm bảng mới, không đụng dữ liệu cũ. Rollback: drop 2 bản
 2. **Slice 2:** nhập bằng AI (machine token như radar, hoặc MCP); phase 2 của slice 2 quyết định
 3. **Sau đó:** lịch sử sửa đến từ epic audit trail, không làm trong epic này
 
+
+## E6 · Rules and examples *(logic)*
+
+Mọi quy tắc dưới đây là bản nháp của Claude, rút từ E1–E5 [Claude-proposed]. Owner chốt từng quy tắc; dòng nào sai thì sửa hoặc xóa.
+
+### R1 · Tên hiển thị: đúng một hoạt chất thì hiện tên hoạt chất, còn lại hiện tên thuốc [Q-2]
+| Example | Given | When | Expected (incl. what the user sees next) | Source |
+|---|---|---|---|---|
+| R1.1 | Thuốc "Air-X", hoạt chất ["Simethicone"] | Mở trang tra cứu | Card ghi "Simethicone", dòng phụ "Air-X" | [Q-2] |
+| R1.2 | Thuốc "Panadol Extra", hoạt chất ["Paracetamol", "Caffeine"] | Mở trang tra cứu | Card ghi "Panadol Extra", dòng phụ "Paracetamol + Caffeine" | [Q-2] |
+| R1.3 | Thuốc "Men tiêu hóa X", chưa nhập hoạt chất | Mở trang tra cứu | Card ghi "Men tiêu hóa X" | [Claude-proposed] |
+| R1.4 | Vật tư "Nhiệt kế điện tử" | Mở trang tra cứu | Card ghi "Nhiệt kế điện tử", nhãn "Vật tư" | [Claude-proposed] |
+
+### R2 · Vật tư không có các trường chỉ dành cho thuốc; API là nơi kiểm [E5]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R2.1 | Form ở console, chọn loại "Vật tư" | Nhìn form | Không thấy ô hoạt chất, hàm lượng, liều, thời điểm uống, loại dùng | [E5] |
+| R2.2 | Gọi API tạo vật tư "Băng gạc" kèm `dosage: "1 miếng"` | Gửi | 400, lỗi ở trường `dosage`; không có gì được lưu | [E5] |
+| R2.3 | Đang sửa một thuốc có liều "2 viên" | Nhìn form sửa | Ô loại chỉ đọc, không đổi được; muốn thành vật tư thì xóa món rồi tạo món mới | [Q-13] |
+
+### R3 · Trường bắt buộc: người, tên, loại (mặc định Thuốc); thuốc bắt buộc thêm hàm lượng, ghi ở ô riêng [Q-12]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R3.1 | Form có người "Mẹ", loại "Thuốc", tên "Atorvastatin", hàm lượng "10mg" | Lưu | Lưu được; card hiện các trường trống là "Chưa ghi" | [Q-12] |
+| R3.2 | Form để trống tên | Lưu | Ô tên báo lỗi bắt buộc; không gửi | [Q-12] |
+| R3.3 | Thuốc "Atorvastatin", để trống hàm lượng | Lưu | Ô hàm lượng báo lỗi bắt buộc; không gửi | [Q-12] |
+| R3.4 | Vật tư "Nhiệt kế điện tử", không có ô hàm lượng | Lưu | Lưu được | [Q-12], R2 |
+| R3.5 | Mở form tạo món mới | Nhìn ô loại | Đã chọn sẵn "Thuốc" | [Q-12] |
+
+### R4 · Tìm theo tên, hoạt chất, mục đích; không phân biệt hoa thường và dấu, "đ" coi như "d" [E5]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R4.1 | Món có mục đích "Đau dạ dày" | Gõ "da day" | Món hiện trong kết quả | [E5] |
+| R4.2 | Thuốc "Air-X", hoạt chất "Simethicone" | Gõ "SIMETHICON" | Món hiện trong kết quả (khớp hoạt chất) | [E5] |
+| R4.3 | Ở nhà thuốc nơi khác, chỉ biết hoạt chất | Gõ "simethicone" | Thấy "Air-X" của mình; đưa hoạt chất cho dược sĩ | [E3] |
+| R4.4 | Ghi chú có chữ "uống sau ăn", không trường nào khác có | Gõ "sau an" | Không ra món đó (ghi chú không được tìm) | [Claude-proposed] |
+| R4.5 | Không món nào khớp "xyz" | Gõ "xyz" | Thông báo "Không tìm thấy món nào", gợi ý xóa từ khóa | [Claude-proposed] |
+| R4.6 | Gõ "simethicone" | Nhìn thanh địa chỉ và Umami | URL không đổi, không có `?q=` | [E5] |
+
+### R5 · Mặc định thấy mọi món của mọi người; chip lọc theo một người [Owner]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R5.1 | Owner có 5 món, Mẹ có 3 món | Mở trang | Thấy 8 card, mỗi card ghi tên người | [Owner] |
+| R5.2 | Như R5.1 | Bấm chip "Mẹ" | Thấy 3 card của Mẹ | [Owner] |
+| R5.3 | Chip "Mẹ" đang chọn | Gõ "simethicone" | Chỉ thấy món của Mẹ có khớp | [Claude-proposed] |
+| R5.4 | Owner và Mẹ đều dùng Simethicone, liều khác nhau | Gõ "simethicone" | Hai card, mỗi card đúng liều và tên người | [E3] |
+
+### R6 · Card cho thấy đủ để dùng lại: liều, thời điểm uống, kết quả, loại dùng, nguồn [E3]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R6.1 | Thuốc kết quả "Không hợp" | Mở trang | Card có nhãn "Không hợp" nổi bật, để không dùng nhầm | [E3] |
+| R6.2 | Thuốc mỡ máu, loại dùng "Lâu dài" | Mở trang | Card có nhãn "Dùng lâu dài" | [Q-5] |
+| R6.3 | Bất kỳ card nào | Bấm "Sửa" | Mở trang sửa món đó ở console; trang dùng được ở bề rộng điện thoại | [E5] |
+
+### R7 · Xóa trên UI là xóa hẳn, có xác nhận; database soft delete [Q-9, Q-11]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R7.1 | Món "Air-X" của Owner | Bấm Xóa, xác nhận | Món biến mất khỏi console và landing; database còn dòng với `deletedAt` | [Q-9] |
+| R7.2 | Như R7.1 | Bấm Xóa, hủy | Không có gì thay đổi | [Q-9] |
+| R7.3 | Người "Mẹ" còn 3 món | Bấm Xóa | Hộp xác nhận ghi "Mẹ còn 3 món, xóa luôn cả 3?" | [Q-11] |
+| R7.4 | Như R7.3 | Xác nhận | Mẹ và 3 món biến mất khỏi mọi trang; chip "Mẹ" không còn | [Q-11] |
+
+### R8 · Chỉ Owner (ADMIN đã đăng nhập) đọc và ghi được [E5]
+| Example | Given | When | Expected | Source |
+|---|---|---|---|---|
+| R8.1 | Chưa đăng nhập | Gọi `GET` danh sách món | 401, không có dữ liệu | [E5] |
+| R8.2 | Chưa đăng nhập | Mở trang tra cứu trên landing | Chuyển sang trang Sign in, quay lại sau khi đăng nhập | [E5] |
+| R8.3 | Chưa có món nào | Mở trang tra cứu | "Chưa có món nào", kèm link sang console để thêm | [Claude-proposed] |
+
+### Edge case giá trị (EP + BVA) [Claude-proposed]
+| Trường | Hợp lệ | Ngay dưới | Tại ranh giới | Ngay trên | Expected khi vượt |
+|---|---|---|---|---|---|
+| Tên | 1–200 ký tự | 0 (rỗng) | 1 và 200 | 201 | Lỗi ở ô tên |
+| Mỗi hoạt chất | 1–100 ký tự | 0 | 1 và 100 | 101 | Lỗi ở ô hoạt chất đó |
+| Số hoạt chất | 0–10 | — | 0 và 10 | 11 | Lỗi "tối đa 10 hoạt chất" |
+| Mục đích | 0–500 ký tự | — | 500 | 501 | Lỗi ở ô mục đích |
+| Ghi chú | 0–2000 ký tự | — | 2000 | 2001 | Lỗi ở ô ghi chú |
+| Tên người | 1–50 ký tự | 0 | 1 và 50 | 51 | Lỗi ở ô tên người |
+
+**Non-functional:** [Claude-proposed]
+- Performance: trang tra cứu hiện kết quả dưới 1 giây với 300 món; lọc trên trình duyệt không thấy độ trễ khi gõ.
+- Phân quyền: R8.
+- Bảo mật input: Zod ở API; chuỗi người dùng nhập luôn hiển thị dạng text, không qua `innerHTML`.
+- Responsive: trang tra cứu theo 4 breakpoint của landing; trang sửa ở console dùng được ở bề rộng điện thoại.
+- Chuỗi giao diện landing (nhãn, thông báo) đi qua `LANDING_COPY` EN/VI; nội dung món là dữ liệu, không dịch.
+
+### Acceptance criteria and test levels [Claude-proposed]
+Feature mới, không có hành vi cũ cần giữ (3.3c bỏ qua). Test viết trước code, mỗi test ghi ID của AC; expected lấy từ ví dụ ở trên, không đọc từ code.
+
+| AC | Rule | WHEN … THE SYSTEM SHALL … | Test level | Ví dụ phủ |
+|---|---|---|---|---|
+| AC-1 | R1 | WHEN một thuốc có đúng một hoạt chất THE SYSTEM SHALL hiện tên hoạt chất làm tên chính; còn lại hiện tên thuốc | Unit (policy tên hiển thị) | R1.1–R1.4 |
+| AC-2 | R2 | WHEN API nhận một vật tư có trường chỉ dành cho thuốc THE SYSTEM SHALL trả 400 và không lưu | Unit (Zod schema) + 1 integration | R2.2 |
+| AC-3 | R2 | WHEN form console chọn loại "Vật tư" THE SYSTEM SHALL ẩn các trường thuốc; WHEN sửa một món đã có THE SYSTEM SHALL không cho đổi loại | Component + Unit (schema cập nhật không nhận `kind`) | R2.1, R2.3 |
+| AC-4 | R3 | WHEN thiếu người hoặc tên, hoặc một thuốc thiếu hàm lượng, THE SYSTEM SHALL báo lỗi ở ô đó và không gửi | Unit (schema) + Component | R3.1–R3.5 |
+| AC-5 | R4 | WHEN Owner gõ từ khóa THE SYSTEM SHALL lọc theo tên, hoạt chất, mục đích, bỏ qua hoa thường, dấu, đ/d | Unit (hàm chuẩn hóa + lọc) | R4.1–R4.5 |
+| AC-6 | R4 | WHEN Owner gõ từ khóa THE SYSTEM SHALL giữ nguyên URL | Component | R4.6 |
+| AC-7 | R5 | WHEN Owner chọn chip một người THE SYSTEM SHALL chỉ hiện món của người đó, kết hợp với từ khóa | Unit (lọc) | R5.1–R5.4 |
+| AC-8 | R6 | WHEN một món có kết quả "Không hợp" hoặc loại dùng "Lâu dài" THE SYSTEM SHALL hiện nhãn tương ứng trên card | Component | R6.1, R6.2 |
+| AC-9 | R7 | WHEN Owner xác nhận xóa một món THE SYSTEM SHALL đặt `deletedAt` và ẩn món khỏi mọi danh sách | Unit (handler) + integration | R7.1, R7.2 |
+| AC-10 | R7 | WHEN Owner xóa một người còn N món THE SYSTEM SHALL hỏi kèm số N, và khi xác nhận thì soft delete người đó cùng N món | Unit (handler) + Component (hộp xác nhận) | R7.3, R7.4 |
+| AC-11 | R8 | WHEN request không có quyền ADMIN THE SYSTEM SHALL trả 401/403 cho mọi endpoint của module | E2E (API) | R8.1 |
+| AC-12 | R8 | WHEN chưa đăng nhập mà mở trang tra cứu THE SYSTEM SHALL chuyển sang Sign in rồi quay lại | E2E (landing), chạy tay một lần | R8.2 |
+| AC-13 | BVA | WHEN một trường vượt ranh giới ở bảng EP + BVA THE SYSTEM SHALL báo lỗi ở đúng trường đó | Unit (schema, mỗi ranh giới một case) | bảng BVA |
+
+Kiểm tay trên điện thoại (không tự động): R4.3 ở nhà thuốc thật, R6.3 trang sửa ở bề rộng điện thoại, thước đo E2 (dưới 1 phút).
+
+## Changelog
+
+### 2026-10-24 Owner trả lời Q-12, Q-13
+- Updated: R2.3 (không đổi loại), R3 và R3.1 đến R3.5 (trường bắt buộc, hàm lượng ở ô riêng), AC-3, AC-4
+- Reason: [Q-12], [Q-13]
