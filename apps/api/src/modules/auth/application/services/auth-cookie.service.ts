@@ -23,7 +23,11 @@ export class AuthCookieService {
     });
   }
 
-  setCsrfToken(res: Response): void {
+  /**
+   * `/refresh` needs this cookie too (`CsrfGuard`), so it must live as long as the refresh cookie:
+   * a session-only CSRF cookie next to a 30-day refresh cookie signs the user out on browser close.
+   */
+  setCsrfToken(res: Response, rememberMe: boolean): void {
     const token = randomBytes(32).toString('hex');
     res.cookie(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
@@ -31,6 +35,7 @@ export class AuthCookieService {
       sameSite: CROSS_ORIGIN ? 'none' : 'lax',
       path: '/',
       ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+      ...(rememberMe ? { maxAge: THIRTY_DAYS_MS } : {}),
     });
   }
 

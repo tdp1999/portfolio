@@ -33,7 +33,7 @@ export class AuthController {
   async login(@Body() body: unknown, @Res({ passthrough: true }) res: Response) {
     const result: LoginResult = await this.commandBus.execute(new LoginCommand(body));
     this.cookieService.setRefreshToken(res, result.refreshToken, result.rememberMe);
-    this.cookieService.setCsrfToken(res);
+    this.cookieService.setCsrfToken(res, result.rememberMe);
     return { accessToken: result.accessToken };
   }
 
@@ -47,7 +47,7 @@ export class AuthController {
     // rememberMe=true: if the user had a session-only cookie, it wouldn't survive
     // browser close, so reaching /refresh implies the cookie was persistent.
     this.cookieService.setRefreshToken(res, result.refreshToken, true);
-    this.cookieService.setCsrfToken(res);
+    this.cookieService.setCsrfToken(res, true);
     return { accessToken: result.accessToken };
   }
 
@@ -115,7 +115,7 @@ export class AuthController {
       const profile = req.user as { email: string; name: string; googleId: string };
       const result: GoogleLoginResult = await this.commandBus.execute(new GoogleLoginCommand(profile));
       this.cookieService.setRefreshToken(res, result.refreshToken, true);
-      this.cookieService.setCsrfToken(res);
+      this.cookieService.setCsrfToken(res, true);
       res.redirect(`${frontendUrl}/auth/callback#token=${result.accessToken}`);
     } catch (error) {
       Logger.warn(`Google OAuth failed: ${error instanceof Error ? error.message : error}`, 'AuthController');

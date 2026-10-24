@@ -83,6 +83,13 @@ function extractCookies(res: request.Response): Record<string, string> {
   return cookies;
 }
 
+/** The raw Set-Cookie line for one cookie, to read its attributes (`Max-Age`, `Path`). */
+function setCookieLine(res: request.Response, name: string): string {
+  const header = res.headers['set-cookie'];
+  const lines: string[] = Array.isArray(header) ? header : header ? [header] : [];
+  return lines.find((line) => line.startsWith(`${name}=`)) ?? '';
+}
+
 function buildCookieHeader(cookies: Record<string, string>): string {
   return Object.entries(cookies)
     .map(([k, v]) => `${k}=${v}`)
@@ -192,6 +199,47 @@ describe('Auth Integration Tests', () => {
       expect(refreshCookies).toHaveProperty('refresh_token');
       // Refresh token must rotate (new random value each time)
       expect(refreshCookies['refresh_token']).not.toBe(loginCookies['refresh_token']);
+    });
+
+    it('should keep the CSRF cookie as long as the refresh cookie: remembered logins and every refresh', async () => {
+      await createTestUser(userRepo);
+      const login = (rememberMe: boolean) =>
+        request(app.getHttpServer())
+          .post('/auth/login')
+          .send({ email: TEST_EMAIL, password: TEST_PASSWORD, rememberMe })
+          .expect(200);
+
+      const remembered = await login(true);
+      expect(setCookieLine(remembered, 'csrf_token')).toMatch(/Max-Age=\d+/);
+
+      const refreshed = await request(app.getHttpServer())
+        .post('/auth/refresh')
+        .set('Cookie', buildCookieHeader(extractCookies(remembered)))
+        .set('x-csrf-token', extractCookies(remembered)['csrf_token'])
+        .expect(200);
+      expect(setCookieLine(refreshed, 'csrf_token')).toMatch(/Max-Age=\d+/);
+
+      const sessionOnly = await login(false);
+      expect(setCookieLine(sessionOnly, 'csrf_token')).not.toMatch(/Max-Age/);
+    });
+
+    // Each page reload refreshes once; the second reload must work with the cookies the first one set.
+    it('should refresh again with the rotated cookies, as a second page reload does', async () => {
+      await createTestUser(userRepo);
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: TEST_EMAIL, password: TEST_PASSWORD, rememberMe: true })
+        .expect(200);
+      let cookies = extractCookies(loginRes);
+
+      for (let reload = 0; reload < 2; reload++) {
+        const res = await request(app.getHttpServer())
+          .post('/auth/refresh')
+          .set('Cookie', buildCookieHeader(cookies))
+          .set('x-csrf-token', cookies['csrf_token'])
+          .expect(200);
+        cookies = { ...cookies, ...extractCookies(res) };
+      }
     });
 
     it('should reject refresh without CSRF header', async () => {
