@@ -6,9 +6,8 @@ import type { ChecklistRef, ChecklistSection } from '@portfolio/shared/types';
 import { renderSectionMarkdown } from '../checklist-markdown.util';
 
 /**
- * Read-only side panel for a ref: lookup section B, or section 6 of the run's project profile.
- * Read-only: a footer names the file to edit. Only the content; where it sits (column, popup) is the
- * layout's call.
+ * Read-only panel for a ref: lookup section B, or section 6 of the run's project profile.
+ * Read-only: a footer names the file to edit. Only the content; the board shows it as a popup.
  */
 @Component({
   selector: 'landing-checklist-ref-panel',

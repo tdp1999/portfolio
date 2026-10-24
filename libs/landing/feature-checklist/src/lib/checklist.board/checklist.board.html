@@ -1,4 +1,4 @@
-<div class="cl" [class.cl--panel]="!!panel()" [class.cl--editing]="editing()">
+<div class="cl" [class.cl--editing]="editing()">
   <div class="cl-main" cdkDropListGroup [attr.inert]="locked() ? '' : null">
     <ng-content select="[checklistBoardLead]" />
 
@@ -196,9 +196,8 @@
     <p class="sr-only" [id]="uid + '-grip-help'">Press arrow up or down to move this row.</p>
   </div>
 
-  <!-- Reference: closed until a ref chip opens it. Wide frame: a panel taking the space right of
-       the run (the run keeps its left edge and gives up its right). Narrower: a popup over the
-       page; a click on the backdrop or Escape closes it. -->
+  <!-- Reference: closed until a ref chip opens it. A popup over the page at every width; a click
+       on the backdrop or Escape closes it. -->
   @if (panel(); as open) {
     <!-- Backdrop click closes the popup; Escape is the keyboard way (host listener). -->
     <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->

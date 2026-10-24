@@ -48,8 +48,7 @@ import {
 /**
  * A run worked on one page, in the Compact layout (task 432): the run as one wide column in the
  * middle, phases that fold, Do and Check as columns, a role filter that dims. A ref chip opens its
- * section beside the run on a wide frame (the run keeps its left edge and narrows from the right)
- * or as a popup on a narrower one.
+ * section as a popup over the page at every width.
  *
  * Working a run (tick, skip, notes) is always on and goes out through `body` at once. Changing its
  * structure (drag, edit text, add, delete) waits for edit mode, which works on a draft: every phase

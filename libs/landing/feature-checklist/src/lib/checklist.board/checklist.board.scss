@@ -3,9 +3,8 @@
 // ── Frame ────────────────────────────────────────────────────────────────
 // Blog-style: the run is one 72rem column in the middle, well past the blog's
 // 760px since a run is a table of task, Do and Check. The left gutter is what
-// centres it, and it stays put when a ref opens: on a frame of 1280px and up the
-// panel takes the space right of the run (30% of the frame, 400 to 640px) and
-// the run narrows from the right edge. Below 1280px the ref is a popup instead.
+// centres it. A ref opens as a popup over the page at every width, so the run
+// never narrows.
 // The board is a named container so a DDL stage and the real page behave alike.
 :host {
   display: block;
@@ -22,19 +21,11 @@
 
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  column-gap: 32px;
   padding: 8px var(--cl-gutter) 48px;
 }
 
 .cl--editing {
   --checklist-row-actions: 128px;
-}
-
-@container cl-frame (min-width: 1280px) {
-  .cl--panel {
-    grid-template-columns: minmax(0, 1fr) clamp(400px, 30cqw, 640px);
-    padding-right: var(--container-padding);
-  }
 }
 
 // The column is also the container the task rows query: Do/Check become
@@ -362,7 +353,7 @@
   line-height: var(--landing-body-sm-lh);
 }
 
-// ── Reference: popup (narrow frame) or right panel (wide frame) ─────────
+// ── Reference: popup over the page ──────────────────────────────────────
 .cl-side {
   position: fixed;
   inset: 0;
@@ -372,14 +363,6 @@
   justify-content: center;
   padding: var(--container-padding);
   background: rgb(0 0 0 / 48%);
-
-  @container cl-frame (min-width: 1280px) {
-    position: static;
-    z-index: auto;
-    display: block;
-    padding: 0;
-    background: none;
-  }
 }
 
 .cl-side__card {
@@ -387,15 +370,4 @@
   max-width: 720px;
   max-height: calc(var(--vh-full) * 0.8);
   box-shadow: 0 16px 48px rgb(0 0 0 / 32%);
-
-  // Panel: held at the vertical middle of the viewport (top 50% of the
-  // scrollport, pulled up by half its own height), level with what is read.
-  @container cl-frame (min-width: 1280px) {
-    position: sticky;
-    top: 50%;
-    max-width: none;
-    max-height: calc(var(--vh-full) - 128px);
-    box-shadow: none;
-    transform: translateY(-50%);
-  }
 }
