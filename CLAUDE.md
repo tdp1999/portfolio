@@ -67,7 +67,7 @@ Use these skills for specific workflows. More will be added over time.
 
 - Use `.scss` files only (never `.css`). Prefer Tailwind utility classes; custom SCSS only when necessary.
 - Use `playwright-skill` for UI validation. Test shared components/logic on `/ddl` route first.
-- **Never start the `landing` or `console` dev server yourself** (`pnpm dev:landing`, `pnpm dev:console`, or any `nx serve`). The user runs these. If a task needs a running server and none is up, **say so and ask the user to start it** — do not start or restart it. You MAY run `nx build` for type-checking/bundling, and you MAY use a server the user already has running. If a skill/you started a server for a one-off test, kill it when the test is done. New routes/lazy chunks require a fresh server start (HMR won't register them reliably) — flag that and let the user restart.
+- **Dev servers: start them only through `.claude/launch.json`** (`api`, `landing`, `console`) with the preview tools, never with `pnpm dev:*` or `nx serve` in Bash. Check RAM first (`memory_pressure | tail -1`); below 25% free, ask the user. Reuse a server that is already running, including one the user started. Restart it yourself when a lib edit or a new route/lazy chunk is not picked up (HMR keeps stale chunks). Stop every server you started when the task is done, unless the user asks to keep it. You MAY run `nx build` for type-checking/bundling.
 
 ### Component Domain Separation
 

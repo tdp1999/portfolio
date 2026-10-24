@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev:api"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "landing",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev:landing"
+      ],
+      "port": 4200
+    },
+    {
+      "name": "console",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev:console"
+      ],
+      "port": 4300
+    }
+  ]
+}
