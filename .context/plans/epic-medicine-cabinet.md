@@ -2,9 +2,11 @@
 
 Size: L · chạm dữ liệu sức khỏe của nhiều người (Owner, mẹ, có thể thêm người khác); ghi sai liều có thể gây hại khi dùng lại
 
-## Status: draft
+## Status: broken-down
 
-Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) xong ngày 2026-10-23: Owner (ở vai Manager) duyệt phần design (nay là E4). Ngày 2026-10-24 checklist đổi thứ tự: phase 3 giờ là Flow & Prototype, phase 4 là Acceptance & Test Design. Ngày 2026-10-24 Claude soạn phase 3 (Flows and screens: 7 flow, 9 màn hình, pattern chung, bảng lỗi API, data dictionary, ma trận phân quyền) và map quy tắc E6 vào flow và màn hình; Owner đã chốt flow, màn hình, data dictionary và ma trận phân quyền; bỏ qua mockup (3.6) [Owner]. Ngày 2026-10-27 áp dụng 17 phát hiện của review flow (3.1) và thêm số phase vào tiêu đề; cùng ngày đổi số section để mỗi section thuộc đúng một phase (E0 cho câu hỏi, 'E4 Design', 'E5 Flows and screens') và bỏ mã quy tắc khỏi E5. Owner chốt câu chữ theo trạng thái (3.7) ngày 2026-10-27. Phase 4 ('E6 Rules and examples') chốt ngày 2026-10-28; chỉ còn 4.3d (test viết trước code, ở session riêng) làm khi bắt đầu slice 1. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
+Breakdown ngày 2026-10-28: một slice, các bước nằm ở mục Tasks, không có file task. Slice 2 (nhập bằng AI) chưa có AC; slice 2 cần chạy phase 2 riêng trước khi breakdown.
+
+Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là người đưa vấn đề) đã trả lời vòng confirm. Phase 2 (Solution Design) xong ngày 2026-10-23: Owner (ở vai Manager) duyệt phần design (nay là E4). Ngày 2026-10-24 checklist đổi thứ tự: phase 3 giờ là Flow & Prototype, phase 4 là Acceptance & Test Design. Ngày 2026-10-24 Claude soạn phase 3 (Flows and screens: 7 flow, 9 màn hình, pattern chung, bảng lỗi API, data dictionary, ma trận phân quyền) và map quy tắc E6 vào flow và màn hình; Owner đã chốt flow, màn hình, data dictionary và ma trận phân quyền; bỏ qua mockup (3.6) [Owner]. Ngày 2026-10-27 áp dụng 17 phát hiện của review flow (3.1) và thêm số phase vào tiêu đề; cùng ngày đổi số section để mỗi section thuộc đúng một phase (E0 cho câu hỏi, 'E4 Design', 'E5 Flows and screens') và bỏ mã quy tắc khỏi E5. Owner chốt câu chữ theo trạng thái (3.7) ngày 2026-10-27. Phase 4 ('E6 Rules and examples') chốt ngày 2026-10-28. Checklist size L, run 1 (xem `learning/workflow/run-log.md`). Các bản phát hành gọi là **slice 1, slice 2** để không lẫn với phase của checklist.
 
 **Đọc theo phase** (checklist size L, `learning/workflow/checklist-size-l.md`):
 
@@ -13,8 +15,8 @@ Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là ngườ
 | 1 · Problem Discovery | E1, E2, E3 | xong |
 | 2 · Solution Design | E4 | xong |
 | 3 · Flow & Prototype | E5 | xong |
-| 4 · Acceptance & Test Design | E6 | xong; test viết trước code (4.3d) làm khi bắt đầu slice 1 |
-| 5, 6, 7 · Implementation, Testing, Release | mục Tasks (không đánh số; thêm khi breakdown, thay cho file task vì epic chỉ có 1–2 slice) | chưa |
+| 4 · Acceptance & Test Design | E6 | xong |
+| 5, 6, 7 · Implementation, Testing, Release | mục Tasks (không đánh số; thêm khi breakdown, thay cho file task vì epic chỉ có 1–2 slice) | đã breakdown; chưa code. Mỗi slice: cách làm (5.1a), test viết trước code (5.1b), rồi code (5.1c) |
 | 8 · Post-release Review | E7 (thêm sau khi phát hành) | chưa |
 
 Mỗi section có số thuộc đúng một phase. Section không có số dùng chung: E0 · Questions dùng ở mọi phase (câu hỏi mới nằm ở cuối bảng, cột Date cho biết hỏi ở phase nào); Status và Changelog ghi tiến độ. Section của phase trước không dẫn mã của phase sau: flow và màn hình (E5) không ghi mã quy tắc; quy tắc (E6) ghi ngược lại flow và màn hình mà nó phủ, ở dòng in nghiêng dưới tiêu đề.
@@ -961,7 +963,31 @@ Mọi lần chuyển trạng thái đều cập nhật URL bằng `replaceUrl` (
 | 'S2 Form sản phẩm' sửa | người bị xóa, sản phẩm bị xóa theo | bấm "Save" | 404; "This item no longer exists" | R13.10 |
 | 'S2 Form sản phẩm' sửa | chỉ sản phẩm bị xóa | bấm "Save" | 404; "This item no longer exists" | [Owner] |
 
+## Specialized Skills
+- **prisma-migrate**: migration cho `HealthProfile` và `MedicalItem` → slice 1
+- **be-test**: test cho module API (handler, schema, quy tắc xóa) → slice 1
+- **aqa-expert**: E2E của AC-10 và AC-17 → slice 1
+- **ng-lib**: tạo lib feature mới ở console và landing (nếu cần) → slice 1
+- **responsive-system**: kiểm tra 'S6 Trang tra cứu' và console theo 'P13 Responsive' → slice 1
+
+## Tasks
+- [ ] **Slice 1 · Tủ thuốc dùng được: API, console CRUD, trang tra cứu private** · covers F0, F1a, F1b, F2, F3, F4, F4a, F4b, F5, F6, F7 · S1–S11 · AC-1 đến AC-20 [Owner]
+  - **Approach:** [Claude đọc code rồi đề xuất khi slice bắt đầu (checklist 5.1a); Owner xác nhận trước khi code]
+  - **Progress:** 2026-10-28 breakdown xong. Bước tiếp theo: đề xuất cách làm (checklist 5.1a), rồi viết test từ example trước code trong session riêng (5.1b)
+  - **Test results:** [tầng · kết quả · người ghi; Owner ghi kết quả]
+- Slice 2 · Nhập bằng AI: chưa breakdown. Slice này chưa có rule và AC; slice 2 cần chạy phase 2 riêng (machine token như radar, hoặc MCP) [Owner]
+
 ## Changelog
+
+### 2026-10-28 Breakdown
+- Updated: Status từ `ready` sang `broken-down`; thêm mục Specialized Skills và Tasks
+- Updated: slice 1 nhận cả AC-1 đến AC-20; slice 2 chưa có AC nên chưa chia
+- Reason: Owner đồng ý một slice, các bước ở mục Tasks, không có file task; tách slice 1 theo console và landing sẽ cắt ngang AC-1, AC-10 và AC-17
+- Updated: phase 4 xong hẳn; viết test trước code chuyển từ checklist 4.3d sang 5.1b, theo checklist size L mới
+
+### 2026-10-28 Epic chuyển sang ready
+- Updated: Status từ `draft` sang `ready`
+- Reason: Owner đồng ý sau khi phase 4 qua cổng (không còn [Claude-proposed], expected `?` hay câu hỏi mở)
 
 ### 2026-10-28 ID theo registry chung; tham chiếu kèm tên ngắn
 - Updated: thêm Legend; "Hành vi kế thừa" đổi tiền tố H thành P (P1–P13, có cột tên ngắn); bảng màn hình có cột tên ngắn; mỗi rule, flow, DT, ST là một heading `ID · Tên ngắn`; trong câu văn ID đi kèm tên ngắn; "trường" đổi thành "field"; bảng "Đọc theo phase" cập nhật phase 3 xong, phase 4 xong (còn 4.3d khi bắt đầu slice 1). Changelog cũ vẫn giữ H1–H13

@@ -61,6 +61,9 @@
 | ChecklistRun | One working copy of a Template for one ticket, tied to one Project doc. Holds its own rows, so it is a snapshot of the Template at creation. Status: active, done, archived. | Aggregate |
 | ChecklistRow | One line of a ChecklistRun: a task, or a group with child tasks. Carries text, doer, checker, a plain-text note and a RowState. | Entity |
 | RowState | todo, done or skipped. Skipped means done without doing it, and counts as complete. | Value Object |
+| HealthProfile | One person whose medicine the Owner records (the Owner, the Owner's mother, others). Only a name, unique without regard to case among people not deleted. Not a login account. | Entity |
+| MedicalItem | One product in the medicine cabinet, owned by one HealthProfile. Its kind is MEDICINE or SUPPLY and never changes after creation. A medicine carries active ingredients, strength, dose, timing and usage type; a supply carries none of these. The same medicine used by two people is two MedicalItems, because the dose can differ. | Entity |
+| Pack for travel | A yes/no flag on a MedicalItem that marks it for the travel list. | Value Object |
 
 ## Flows
 
@@ -318,6 +321,30 @@
   - Save with a stale version (another tab saved first): rejected, Owner reloads
 - **End states:** Run progress saved; run marked done or archived when the ticket ends
 
+### Manage Medicine Cabinet
+- **Trigger:** Owner opens the medicine cabinet in the console
+- **Actors:** Owner (ADMIN)
+- **Happy path:**
+  1. Owner adds, renames or deletes people (HealthProfile) on their own page
+  2. Owner adds a MedicalItem for one person, picks the kind, fills the fields of that kind; a new person can be added from inside the form
+  3. Owner edits or deletes an item; deleting asks for confirmation
+- **Error paths:**
+  - Duplicate person name (case-insensitive): rejected at the name field
+  - Item or person deleted elsewhere: the screen says it no longer exists
+- **End states:** Items saved, latest edit first in the console list. Deleting a person deletes that person's items too
+
+### Look Up Medicine Cabinet
+- **Trigger:** Owner opens the private lookup page on the landing site
+- **Actors:** Owner (signed in with the console account)
+- **Happy path:**
+  1. System shows every item of every person, grouped by person
+  2. Owner searches by name, active ingredient or purpose, filters by one person or by "pack for travel", and switches between row and card view
+  3. Owner edits an item through the console and returns to the same lookup URL and scroll position
+- **Error paths:**
+  - Not signed in: sign-in form, no item data in the page
+  - Nothing matches: empty result with a clear-filter action
+- **End states:** Owner has read what to take; the view mode is remembered on that device
+
 ## Rules
 
 ### Post
@@ -424,8 +451,16 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 - CHK-004: Checklist data is Owner-only. Every checklist endpoint requires the Owner's session, except the docs sync, which requires the checklist machine token and nothing else
 - CHK-005: Moving a group row moves its child rows with it
 
+### Medicine Cabinet
+- MED-001: A medicine with exactly one active ingredient is shown by that ingredient; every other item is shown by its product name
+- MED-002: A MedicalItem's kind never changes after creation, and a SUPPLY never carries medicine-only fields
+- MED-003: Medicine cabinet data is Owner-only. Every endpoint requires the Owner's session and rejects machine tokens; the lookup page sends `noindex` and never renders item data on the server
+- MED-004: Deleting is a soft delete in the database and permanent in the UI (no restore). Deleting a HealthProfile deletes its MedicalItems
+- MED-005: HealthProfile names are unique without regard to case among people not deleted
+- MED-006: Search matches name, active ingredients and purpose, never the note
+
 ## Invariants
-- The Landing Page only displays content that has been saved and is in a public-visible state. The one exception is the Owner-only `/checklist` area, which requires sign-in and never renders its data on the server
+- The Landing Page only displays content that has been saved and is in a public-visible state. The exceptions are the Owner-only `/checklist` area and the medicine cabinet lookup page, which require sign-in and never render their data on the server
 - Visitor-facing content is read-only for visitors; the Owner is the only author
 - Most content is authored in Console. Two exceptions are authored in the codebase and ship with a release: the fixed interface wording, and the /uses and /colophon pages. Moving those into Console is open work, not a property of the system today
 - Contact form submission is the only public write operation (no auth required)
@@ -441,6 +476,7 @@ Facts about the Owner decay at different rates. These rules govern where a fact 
 
 
 ## Changelog
+- [2026-10-28] Added the Medicine Cabinet domain (HealthProfile, MedicalItem, Pack for travel), two flows and MED-001..006, from `epic-medicine-cabinet`. Amended the landing invariant: the lookup page is a second Owner-only area that never renders data on the server.
 - [2026-10-08] Added the Checklist domain (ChecklistDoc, ChecklistRun, ChecklistRow, RowState), two flows and CHK-001..005, from `epic-landing-checklist`. Amended the landing invariant: `/checklist` is the one authenticated, Owner-only area on the landing site.
 - [2026-10-08] Auto RunFlow is live: RunFlow no longer says planned; added the Analyze Radar Items (Auto) flow and RAD-009 (quick analysis for every item, deep analysis only when the Owner turns it on for the run, ADR-036, task 427).
 - [2026-10-07] Added YouTube as a RadarSource platform (task 422): a channel is captured through the YouTube Data API by Hybrid and Auto runs, one item per public video in the window (RAD-001). Manual runs and comment fetching stay Facebook only.
