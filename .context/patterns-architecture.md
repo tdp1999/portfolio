@@ -64,6 +64,42 @@ async execute(command: CreateCommand): Promise<string> {
 }
 ```
 
+#### Input Normalization — Trim Before Validation
+
+**Every string input is trimmed at both ends before any check runs.** A string that holds only whitespace counts as empty.
+
+- Trim lives in the Zod schema (the DTO layer), so every transport gets it.
+- Trim runs before `min`/`max`: use `z.string().trim().min(1).max(n)`. A `.transform(trim)` placed after `.min(1)` lets `"   "` pass as valid.
+- Length limits count the trimmed value.
+- An empty entry in an optional list (for example an ingredient list) is dropped after trim, not reported as an error.
+- The FE may trim for display, but the BE schema is the source of truth.
+
+```ts
+// ✅ trim first, then check
+const NameSchema = z.string().trim().min(1).max(LIMITS.NAME_MAX);
+
+// ❌ check first, trim after — "   " passes min(1) and becomes ""
+const NameSchema = z.string().min(1).max(LIMITS.NAME_MAX).transform((v) => v.trim());
+```
+
+#### Soft Delete and Uniqueness
+
+**A uniqueness rule applies only to rows that are not soft-deleted.** A user can create a record with the same name as one they deleted; the new record is a different entity and does not inherit the old one's children.
+
+- App-level check: every duplicate lookup filters `deletedAt: null`.
+- Database: enforce the rule with a partial unique index `WHERE "deletedAt" IS NULL` (written in the migration SQL, because Prisma `@@unique` cannot express a `WHERE`), never with a plain `@unique` on a soft-deletable column.
+- Case-insensitive uniqueness compares a normalized value (for example `lower(name)`) in both the check and the index.
+
+#### Search Matching
+
+**Every text search in the system is a partial match.** Typing `sime` finds `Simethicone`.
+
+- Match a substring anywhere in the field, not only whole words or a prefix.
+- Ignore case and Vietnamese diacritics, and treat `đ` as `d`. NFD alone does not map `đ`, and the slug normalizer in `slug.value.ts` deletes it, so it does not fit. Search uses one shared search normalizer in `@portfolio/shared/utils` (lowercase, NFD, strip combining marks, `đ`/`Đ` → `d`); the first feature that searches creates it.
+- Normalize the query and the field with the same function.
+- A client-side filter applies the normalizer to both sides and uses `includes`. A server-side search needs the same normalization in the database (for example a normalized column or the Postgres `unaccent` extension).
+- Typo tolerance (fuzzy search) is not part of this rule.
+
 #### Controller Rule — No Error Throwing
 
 **Controllers must NEVER throw errors.** Controllers are thin transport adapters that only:
@@ -165,6 +201,15 @@ return {
   - Shared components in packages/ui
   - Shared types in packages/types
 - **State Management:** React Context + hooks (or Zustand if complexity grows)
+
+#### List Filter State in the URL
+
+**A list's search keyword and filters live in URL query params.** Refresh, back/forward, bookmarks, and return links keep the user's place.
+
+- The URL is the source of truth: read `ActivatedRoute.queryParamMap`, write with `router.navigate([], { queryParams, queryParamsHandling: 'merge', replaceUrl: true })`. `replaceUrl` stops each keystroke from adding a history entry.
+- A link that must come back to the list (for example `returnTo`) carries the full list URL, query included.
+- Device preferences (view mode, density) stay in `localStorage`, not the URL. Scroll position is not URL state.
+- Analytics must not record query params that can carry personal data. Configure the tracker to drop the query part.
 
 ### Boundaries
 

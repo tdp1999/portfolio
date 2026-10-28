@@ -129,6 +129,7 @@ Run through this when you scaffold a new form *and* before you mark a form epic 
 - [ ] Date-range fields (`startDate`/`endDate`, `from`/`to`) have a cross-field validator enforcing `start ≤ end`.
 - [ ] Translatable required fields (`TranslatableSchema`) use `translatableRequiredValidator()` so FE blocks empty en or vi inline.
 - [ ] Array fields with a BE cap (`z.array(...).max(N)`) have a matching FE array-level `maxLength(N)` validator.
+- [ ] A mode or type switch (for example medicine vs supply) **shows the fields of the new mode and hides the fields of the old one**. Hidden fields are cleared immediately, with no warning; switching back shows them empty. The payload never carries a field that does not apply to the current mode, and the BE schema rejects it. Read views follow the same field set: a record shows only the fields of its own mode.
 
 ### Verification before merge
 
