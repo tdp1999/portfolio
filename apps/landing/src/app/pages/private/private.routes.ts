@@ -16,6 +16,10 @@ export const PRIVATE_ROUTES: Route[] = [
     path: 'checklist',
     loadChildren: () => import('@portfolio/landing/feature-checklist').then((m) => m.CHECKLIST_ROUTES),
   },
+  {
+    path: 'medicine-cabinet',
+    loadChildren: () => import('@portfolio/landing/feature-medicine-cabinet').then((m) => m.MEDICINE_CABINET_ROUTES),
+  },
 ];
 
 export const PRIVATE_PATHS: readonly string[] = PRIVATE_ROUTES.map((route) => route.path ?? '');

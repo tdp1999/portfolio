@@ -68,7 +68,8 @@
       "@portfolio/console/feature-ai": ["libs/console/feature-ai/src/index.ts"],
       "@portfolio/console/feature-radar": ["libs/console/feature-radar/src/index.ts"],
       "@portfolio/landing/feature-checklist": ["libs/landing/feature-checklist/src/index.ts"],
-      "@portfolio/console/feature-medicine-cabinet": ["libs/console/feature-medicine-cabinet/src/index.ts"]
+      "@portfolio/console/feature-medicine-cabinet": ["libs/console/feature-medicine-cabinet/src/index.ts"],
+      "@portfolio/landing/feature-medicine-cabinet": ["libs/landing/feature-medicine-cabinet/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

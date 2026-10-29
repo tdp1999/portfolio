@@ -5,4 +5,6 @@ export interface ViewToggleOption {
   readonly icon: string;
   /** Longer description shown in the hover/focus tooltip. Falls back to `label` if omitted. */
   readonly description?: string;
+  /** Optional `data-testid` for the option button. */
+  readonly testId?: string;
 }

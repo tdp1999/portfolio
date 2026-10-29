@@ -86,6 +86,12 @@ export function workspacePages(locale: Locale): readonly MegaMenuItem[] {
       href: '/checklist',
       iconName: 'list-checks',
     },
+    {
+      label: resolveCopy('common.page.medicineCabinet', locale),
+      hint: resolveCopy('nav.workspace.medicineCabinet.hint', locale),
+      href: '/medicine-cabinet',
+      iconName: 'pill',
+    },
   ];
 }
 

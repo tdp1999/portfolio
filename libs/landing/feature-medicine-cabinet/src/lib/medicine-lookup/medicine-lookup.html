@@ -1,0 +1,196 @@
+<landing-container size="wide">
+  <header class="lookup__head">
+    <h1 class="lookup__title">{{ 'common.page.medicineCabinet' | landingCopy: locale() }}</h1>
+  </header>
+
+  @switch (state()) {
+    @case ('loading') {
+      <landing-loading-spinner [message]="'common.loading' | landingCopy: locale()" />
+    }
+    @case ('forbidden') {
+      <landing-empty-state [message]="'medicineCabinet.error.forbidden' | landingCopy: locale()" />
+    }
+    @case ('failed') {
+      <landing-empty-state [message]="'medicineCabinet.error.load' | landingCopy: locale()">
+        <landing-button variant="ghost" size="sm" (buttonClick)="load()">{{
+          'medicineCabinet.error.retry' | landingCopy: locale()
+        }}</landing-button>
+      </landing-empty-state>
+    }
+    @default {
+      @if (!hasItems()) {
+        <landing-empty-state
+          [title]="'medicineCabinet.empty.none.title' | landingCopy: locale()"
+          [message]="'medicineCabinet.empty.none.message' | landingCopy: locale()"
+        >
+          <landing-link [href]="consoleUrl">{{ 'medicineCabinet.openConsole' | landingCopy: locale() }}</landing-link>
+        </landing-empty-state>
+      } @else {
+        <div class="lookup__toolbar">
+          <landing-input
+            class="lookup__search"
+            type="search"
+            [clearable]="true"
+            [formControl]="search"
+            [placeholder]="'medicineCabinet.search.label' | landingCopy: locale()"
+            [ariaLabel]="'medicineCabinet.search.label' | landingCopy: locale()"
+          />
+          <landing-view-toggle
+            [options]="viewOptions()"
+            [value]="view()"
+            [ariaLabel]="'medicineCabinet.view.label' | landingCopy: locale()"
+            (valueChange)="setView($event === 'cards' ? 'cards' : 'rows')"
+          />
+        </div>
+
+        <div
+          class="lookup__chips"
+          role="group"
+          [attr.aria-label]="'medicineCabinet.filter.label' | landingCopy: locale()"
+        >
+          @for (chip of chips(); track chip.id) {
+            <landing-filter-chip
+              [label]="chip.name"
+              [selected]="personId() === chip.id"
+              (selectionChange)="togglePerson(chip.id)"
+            />
+          }
+          <landing-filter-chip
+            [label]="'medicineCabinet.filter.travel' | landingCopy: locale()"
+            [selected]="travel()"
+            (selectionChange)="toggleTravel()"
+          />
+        </div>
+
+        @switch (empty()) {
+          @case ('travel') {
+            <landing-empty-state
+              [title]="'medicineCabinet.empty.travel.title' | landingCopy: locale()"
+              [message]="'medicineCabinet.empty.travel.message' | landingCopy: locale()"
+            >
+              <landing-link [href]="consoleUrl">{{
+                'medicineCabinet.openConsole' | landingCopy: locale()
+              }}</landing-link>
+            </landing-empty-state>
+          }
+          @case ('filtered') {
+            <landing-empty-state
+              [title]="'medicineCabinet.empty.filtered.title' | landingCopy: locale()"
+              [message]="'medicineCabinet.empty.filtered.message' | landingCopy: locale()"
+            >
+              <landing-button variant="ghost" size="sm" (buttonClick)="clearFilters()">{{
+                'medicineCabinet.filter.clear' | landingCopy: locale()
+              }}</landing-button>
+            </landing-empty-state>
+          }
+          @default {
+            <div class="lookup__results" data-testid="lookup-results" [attr.data-view]="view()">
+              @for (group of groups(); track group.personId) {
+                <section class="lookup-group" data-testid="person-group">
+                  <h2 class="lookup-group__heading">{{ group.heading }}</h2>
+
+                  @if (view() === 'rows') {
+                    @for (table of group.subtables; track table.testId) {
+                      <div class="lookup-subtable" [attr.data-testid]="table.testId">
+                        <h3 class="lookup-subtable__heading">{{ table.heading }}</h3>
+                        <div class="lookup-table__scroll">
+                          <table class="lookup-table">
+                            <thead>
+                              <tr>
+                                @for (column of table.columns; track column) {
+                                  <th scope="col">{{ column }}</th>
+                                }
+                                <th scope="col">
+                                  <span class="sr-only">{{
+                                    'medicineCabinet.field.actions' | landingCopy: locale()
+                                  }}</span>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (row of table.rows; track row.id) {
+                                <tr class="lookup-table__row" data-testid="lookup-item">
+                                  <td>
+                                    <landing-medicine-lookup-item-name
+                                      [row]="row"
+                                      [supplyBadge]="'medicineCabinet.supplyBadge' | landingCopy: locale()"
+                                    />
+                                  </td>
+                                  @for (field of row.fields; track field.testId) {
+                                    <td
+                                      [attr.data-testid]="field.testId"
+                                      [class.lookup__missing]="field.value === null"
+                                    >
+                                      {{ field.value ?? ('medicineCabinet.notRecorded' | landingCopy: locale()) }}
+                                    </td>
+                                  }
+                                  <td class="lookup-table__actions">
+                                    <landing-medicine-lookup-item-actions
+                                      [row]="row"
+                                      [showNoteLabel]="'medicineCabinet.note.show' | landingCopy: locale()"
+                                      [hideNoteLabel]="'medicineCabinet.note.hide' | landingCopy: locale()"
+                                      (noteToggle)="toggleNote(row.id)"
+                                      (editOpen)="saveScroll()"
+                                    />
+                                  </td>
+                                </tr>
+                                @if (row.noteOpen) {
+                                  <tr class="lookup-table__note-row">
+                                    <td
+                                      class="lookup__note"
+                                      data-testid="note"
+                                      [attr.colspan]="table.columns.length + 1"
+                                    >
+                                      {{ row.note }}
+                                    </td>
+                                  </tr>
+                                }
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    }
+                  } @else {
+                    <div class="lookup-cards">
+                      @for (row of group.items; track row.id) {
+                        <article class="lookup-card" data-testid="lookup-item">
+                          <div class="lookup-card__head">
+                            <landing-medicine-lookup-item-name
+                              [row]="row"
+                              [supplyBadge]="'medicineCabinet.supplyBadge' | landingCopy: locale()"
+                            />
+                            <landing-medicine-lookup-item-actions
+                              [row]="row"
+                              [showNoteLabel]="'medicineCabinet.note.show' | landingCopy: locale()"
+                              [hideNoteLabel]="'medicineCabinet.note.hide' | landingCopy: locale()"
+                              (noteToggle)="toggleNote(row.id)"
+                              (editOpen)="saveScroll()"
+                            />
+                          </div>
+                          <dl class="lookup-card__fields">
+                            @for (field of row.fields; track field.testId) {
+                              <div class="lookup-card__field">
+                                <dt>{{ field.label }}</dt>
+                                <dd [attr.data-testid]="field.testId" [class.lookup__missing]="field.value === null">
+                                  {{ field.value ?? ('medicineCabinet.notRecorded' | landingCopy: locale()) }}
+                                </dd>
+                              </div>
+                            }
+                          </dl>
+                          @if (row.noteOpen) {
+                            <p class="lookup__note" data-testid="note">{{ row.note }}</p>
+                          }
+                        </article>
+                      }
+                    </div>
+                  }
+                </section>
+              }
+            </div>
+          }
+        }
+      }
+    }
+  }
+</landing-container>

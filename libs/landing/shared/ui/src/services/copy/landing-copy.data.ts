@@ -46,6 +46,7 @@ export const LANDING_COPY = {
   'common.page.documentEngine': { en: 'Document Engine', vi: 'Document Engine' },
   'common.page.ddl': { en: 'DDL', vi: 'DDL' },
   'common.page.checklist': { en: 'Checklist', vi: 'Checklist' },
+  'common.page.medicineCabinet': { en: 'Medicine cabinet', vi: 'Tủ thuốc' },
 
   /** copy-to-clipboard button, shared by /contact and /document-engine */
   'common.copy': { en: 'Copy', vi: 'Sao chép' },
@@ -360,6 +361,7 @@ export const LANDING_COPY = {
   /** header item in place of "Sign in" once the Owner is signed in; also the workspace bar's eyebrow */
   'nav.workspace': { en: 'Workspace', vi: 'Workspace' },
   'nav.workspace.checklist.hint': { en: 'Ticket runs', vi: 'Theo ticket' },
+  'nav.workspace.medicineCabinet.hint': { en: 'Family medicines', vi: 'Thuốc của gia đình' },
   'nav.resume': { en: 'Resume', vi: 'CV' },
   'nav.product.documentEngine.desc': {
     en: 'A framework-agnostic rich-text engine for structured, versioned documents.',
@@ -1241,6 +1243,64 @@ export const LANDING_COPY = {
     en: 'Ship-and-forget by default. The case studies, /uses, and this page change when the work behind them changes, not on a calendar. If you spot something stale, the email at the bottom is mine, not a contact form.',
     vi: 'Mặc định là ship rồi để đó. Các case study, trang /uses, và trang này chỉ thay đổi khi công việc phía sau chúng thay đổi, chứ không thay đổi theo lịch. Nếu bạn thấy chỗ nào đã cũ, cái email ở dưới cùng là email thật của mình, không phải một form liên hệ.',
   },
+
+  // ── Medicine cabinet lookup (medicine-lookup.html, S6 copy table of the epic) ──
+  'medicineCabinet.search.label': {
+    en: 'Search by name, ingredient or purpose',
+    vi: 'Tìm theo tên, hoạt chất hoặc mục đích',
+  },
+  /** chip group: one chip per person, then the travel chip */
+  'medicineCabinet.filter.label': { en: 'Filters', vi: 'Bộ lọc' },
+  'medicineCabinet.filter.travel': { en: 'Travel', vi: 'Mang đi' },
+  'medicineCabinet.filter.clear': { en: 'Clear filters', vi: 'Xóa bộ lọc' },
+  'medicineCabinet.view.label': { en: 'View', vi: 'Chế độ xem' },
+  'medicineCabinet.view.rows': { en: 'Rows', vi: 'Dòng' },
+  'medicineCabinet.view.cards': { en: 'Cards', vi: 'Thẻ' },
+  'medicineCabinet.group.heading': { en: '{name} · {n} items', vi: '{name} · {n} sản phẩm' },
+  'medicineCabinet.group.headingOne': { en: '{name} · 1 item', vi: '{name} · 1 sản phẩm' },
+  'medicineCabinet.subtable.medicine': { en: 'Medicines', vi: 'Thuốc' },
+  'medicineCabinet.subtable.supply': { en: 'Supplies', vi: 'Vật tư' },
+  'medicineCabinet.supplyBadge': { en: 'Supply', vi: 'Vật tư' },
+  'medicineCabinet.field.name': { en: 'Name', vi: 'Tên' },
+  'medicineCabinet.field.strength': { en: 'Strength', vi: 'Hàm lượng' },
+  'medicineCabinet.field.dose': { en: 'Dose', vi: 'Liều' },
+  'medicineCabinet.field.timing': { en: 'Timing', vi: 'Thời điểm uống' },
+  'medicineCabinet.field.usage': { en: 'Usage', vi: 'Cách dùng' },
+  'medicineCabinet.field.purpose': { en: 'Purpose', vi: 'Mục đích' },
+  /** sr-only header of the column holding the note and edit icons */
+  'medicineCabinet.field.actions': { en: 'Actions', vi: 'Thao tác' },
+  /** a field that applies to the kind but was left empty */
+  'medicineCabinet.notRecorded': { en: 'Not recorded', vi: 'Chưa ghi' },
+  'medicineCabinet.timing.BEFORE_MEAL': { en: 'Before meals', vi: 'Trước ăn' },
+  'medicineCabinet.timing.AFTER_MEAL': { en: 'After meals', vi: 'Sau ăn' },
+  'medicineCabinet.timing.WITH_MEAL': { en: 'With meals', vi: 'Trong bữa ăn' },
+  'medicineCabinet.timing.ANY_TIME': { en: 'Any time', vi: 'Lúc nào cũng được' },
+  'medicineCabinet.usage.LONG_TERM': { en: 'Long-term', vi: 'Dùng lâu dài' },
+  'medicineCabinet.usage.COURSE': { en: 'Short course', vi: 'Dùng theo đợt' },
+  /** aria-label of the note icon, closed then open */
+  'medicineCabinet.note.show': { en: 'Show note', vi: 'Xem ghi chú' },
+  'medicineCabinet.note.hide': { en: 'Hide note', vi: 'Ẩn ghi chú' },
+  /** aria-label of the edit icon, which opens the item in the console */
+  'medicineCabinet.edit': { en: 'Edit {item}', vi: 'Sửa {item}' },
+  'medicineCabinet.empty.none.title': { en: 'No items yet', vi: 'Chưa có sản phẩm nào' },
+  'medicineCabinet.empty.none.message': { en: 'Add items in the console.', vi: 'Thêm sản phẩm ở console.' },
+  'medicineCabinet.empty.travel.title': { en: 'No travel items yet', vi: 'Chưa có sản phẩm mang đi' },
+  'medicineCabinet.empty.travel.message': {
+    en: 'Tag items as Travel in the console.',
+    vi: 'Gắn nhãn Mang đi cho sản phẩm ở console.',
+  },
+  'medicineCabinet.empty.filtered.title': { en: 'No matching items', vi: 'Không tìm thấy sản phẩm nào' },
+  'medicineCabinet.empty.filtered.message': {
+    en: 'Try another keyword or clear the filters.',
+    vi: 'Thử từ khóa khác hoặc bỏ chip lọc.',
+  },
+  'medicineCabinet.openConsole': { en: 'Open console', vi: 'Mở console' },
+  'medicineCabinet.error.forbidden': {
+    en: "This account can't view this page",
+    vi: 'Tài khoản này không xem được trang này',
+  },
+  'medicineCabinet.error.load': { en: "Couldn't load items", vi: 'Không tải được' },
+  'medicineCabinet.error.retry': { en: 'Retry', vi: 'Thử lại' },
 
   // ── Legal (/terms, /privacy) ──────────────────────────────────────────────
   // Locale here comes from `?lang=`, not the site-wide toggle — always resolve
