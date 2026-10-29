@@ -23,6 +23,7 @@ import { BlogPostModule } from '../modules/blog-post';
 import { DashboardModule } from '../modules/dashboard';
 import { RadarModule } from '../modules/radar';
 import { ChecklistModule } from '../modules/checklist';
+import { MedicineCabinetModule } from '../modules/medicine-cabinet';
 import { AiModule } from '../modules/ai';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -64,6 +65,7 @@ const throttleEnabled = process.env['NODE_ENV'] !== 'test' && process.env['NODE_
     DashboardModule,
     RadarModule,
     ChecklistModule,
+    MedicineCabinetModule,
     AiModule,
     ThrottlerModule.forRoot({
       skipIf: () => !throttleEnabled,
