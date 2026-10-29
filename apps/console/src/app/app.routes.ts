@@ -87,6 +87,11 @@ export const appRoutes: Route[] = [
             loadChildren: () => import('@portfolio/console/feature-blog').then((m) => m.blogRoutes),
           },
           {
+            path: 'medicine-cabinet',
+            loadChildren: () =>
+              import('@portfolio/console/feature-medicine-cabinet').then((m) => m.medicineCabinetRoutes),
+          },
+          {
             path: 'media',
             loadChildren: () => import('@portfolio/console/feature-media').then((m) => m.mediaRoutes),
           },

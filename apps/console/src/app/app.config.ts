@@ -26,7 +26,7 @@ import { MEDIA_PICKER_HOOK, RteTiptapEditor, type MediaResult } from '@portfolio
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
 import { provideErrorHandler } from './error-handler.provider';
-import { THIRD_PARTY_PROVIDER } from '@portfolio/console/shared/util';
+import { EXTERNAL_NAVIGATE, LANDING_URL, THIRD_PARTY_PROVIDER } from '@portfolio/console/shared/util';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -50,6 +50,10 @@ export const appConfig: ApplicationConfig = {
       urlPrefix: 'api',
       timeout: 30_000,
     }),
+
+    // Medicine cabinet: the item form goes back to the landing lookup page (`returnTo`).
+    { provide: LANDING_URL, useValue: environment.landingUrl },
+    { provide: EXTERNAL_NAVIGATE, useValue: (url: string) => window.location.assign(url) },
 
     // Rich-text editor: bind the contract token to the concrete Tiptap impl, and
     // supply the image-picker hook that opens the console's MediaPickerDialog.

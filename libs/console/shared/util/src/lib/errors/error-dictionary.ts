@@ -6,6 +6,8 @@ import {
   ContactMessageErrorCode,
   EmailTemplateErrorCode,
   ExperienceErrorCode,
+  HealthProfileErrorCode,
+  MedicalItemErrorCode,
   MediaErrorCode,
   ProfileErrorCode,
   ProjectErrorCode,
@@ -29,6 +31,8 @@ type AllErrorCodes =
   | `${ContactMessageErrorCode}`
   | `${EmailTemplateErrorCode}`
   | `${ExperienceErrorCode}`
+  | `${HealthProfileErrorCode}`
+  | `${MedicalItemErrorCode}`
   | `${MediaErrorCode}`
   | `${ProfileErrorCode}`
   | `${ProjectErrorCode}`
@@ -160,6 +164,13 @@ export const ERROR_DICTIONARY: Record<AllErrorCodes, string> = {
   [RadarErrorCode.BRIEF_ALREADY_WAITING]: 'A brief is already waiting to be written. Wait for it to finish first.',
   [RadarErrorCode.BRIEF_NOT_CLAIMED]: 'This brief is not claimed by the worker.',
   [RadarErrorCode.BRIEF_INVALID_LINKS]: 'The brief links to posts outside its window, or to none.',
+
+  // --- Medicine cabinet ---
+  [MedicalItemErrorCode.NOT_FOUND]: 'This item no longer exists.',
+  [MedicalItemErrorCode.INVALID_INPUT]: VALIDATION_FALLBACK,
+  [HealthProfileErrorCode.NOT_FOUND]: 'This person no longer exists.',
+  [HealthProfileErrorCode.INVALID_INPUT]: VALIDATION_FALLBACK,
+  [HealthProfileErrorCode.NAME_TAKEN]: 'A person with this name already exists.',
 
   // --- Tag ---
   [TagErrorCode.NOT_FOUND]: 'Tag not found.',
