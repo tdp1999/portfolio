@@ -10,3 +10,6 @@
  */
 export { getLocalized } from './lib/localize.util';
 export { isPlainObject, nonEmptyString, finiteNumber, stringArray } from './lib/guards.util';
+export { normalizeForSearch } from './lib/search-normalize.util';
+export { medicalItemDisplay } from './lib/medical-item-display.util';
+export type { MedicalItemDisplay, MedicalItemDisplayInput } from './lib/medical-item-display.util';

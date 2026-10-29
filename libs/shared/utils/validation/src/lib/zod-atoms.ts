@@ -5,8 +5,9 @@
  * never pulls Zod. **Do not import from this file inside FE code.**
  *
  * Conventions
- * - "Required" atoms use `.min(1)` and strip-then-trim string transforms.
- * - "Optional" / no-min atoms have only `.max(...)` and the transform.
+ * - Every string atom runs trim, then NFC, then strips HTML tags (SR-006), then `min`/`max`, so a
+ *   value of only spaces or only tags fails `min(1)` and a length is counted like `textLength` counts it.
+ * - "Required" atoms use `.min(1)`; "optional" / no-min atoms have only `.max(...)`.
  * - Numeric atoms enforce `int` and the appropriate `[min, max]` from `LIMITS`.
  *
  * Caps reflect the canonical values from the validation epic ADRs.
@@ -16,28 +17,32 @@ import { stripHtmlTags } from '@portfolio/shared/utils';
 import { LIMITS } from './limits';
 import { PATTERNS } from './patterns';
 
-const trimAndStrip = (v: string): string => stripHtmlTags(v.trim());
+/** Trimmed, NFC-normalized and stripped of HTML tags, then checked against `[min, max]`. */
+const text = (max: number, min?: number) => {
+  const base = z.string().trim().normalize('NFC').overwrite(stripHtmlTags).trim();
+  return min === undefined ? base.max(max) : base.min(min).max(max);
+};
 
 // --- Strings: required (with min(1)) ---
 
-export const TitleSchema = z.string().min(1).max(LIMITS.TITLE_MAX).transform(trimAndStrip);
-export const NameSchema = z.string().min(1).max(LIMITS.NAME_MAX).transform(trimAndStrip);
-export const TagNameSchema = z.string().min(1).max(LIMITS.TAG_NAME_MAX).transform(trimAndStrip);
-export const DescriptionShortSchema = z.string().min(1).max(LIMITS.DESCRIPTION_SHORT_MAX).transform(trimAndStrip);
-export const DescriptionLongSchema = z.string().min(1).max(LIMITS.DESCRIPTION_LONG_MAX).transform(trimAndStrip);
+export const TitleSchema = text(LIMITS.TITLE_MAX, 1);
+export const NameSchema = text(LIMITS.NAME_MAX, 1);
+export const TagNameSchema = text(LIMITS.TAG_NAME_MAX, 1);
+export const DescriptionShortSchema = text(LIMITS.DESCRIPTION_SHORT_MAX, 1);
+export const DescriptionLongSchema = text(LIMITS.DESCRIPTION_LONG_MAX, 1);
 
 /** Generic factory for required short text fields not covered by a named atom above. */
-export const requiredShortText = (max: number = LIMITS.TITLE_MAX) => z.string().min(1).max(max).transform(trimAndStrip);
+export const requiredShortText = (max: number = LIMITS.TITLE_MAX) => text(max, 1);
 
 // --- Strings: optional (no min) ---
 
-export const ExcerptSchema = z.string().max(LIMITS.DESCRIPTION_SHORT_MAX).transform(trimAndStrip);
-export const BioShortSchema = z.string().max(LIMITS.BIO_SHORT_MAX).transform(trimAndStrip);
-export const MetaTitleSchema = z.string().max(LIMITS.META_TITLE_MAX).transform(trimAndStrip);
-export const MetaDescriptionSchema = z.string().max(LIMITS.META_DESCRIPTION_MAX).transform(trimAndStrip);
+export const ExcerptSchema = text(LIMITS.DESCRIPTION_SHORT_MAX);
+export const BioShortSchema = text(LIMITS.BIO_SHORT_MAX);
+export const MetaTitleSchema = text(LIMITS.META_TITLE_MAX);
+export const MetaDescriptionSchema = text(LIMITS.META_DESCRIPTION_MAX);
 
-/** Optional generic short text — no min, strip+trim. */
-export const optionalShortText = (max: number) => z.string().max(max).transform(trimAndStrip);
+/** Optional generic short text — no min, trim + NFC + strip. */
+export const optionalShortText = (max: number) => text(max);
 
 // --- URL / Email / Phone ---
 
