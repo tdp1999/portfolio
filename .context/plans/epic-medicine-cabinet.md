@@ -21,6 +21,8 @@ Phase 1 (Problem Discovery) đã xong ngày 2026-10-23: Owner (cũng là ngườ
 
 Mỗi section có số thuộc đúng một phase. Section không có số dùng chung: E0 · Questions dùng ở mọi phase (câu hỏi mới nằm ở cuối bảng, cột Date cho biết hỏi ở phase nào); Status và Changelog ghi tiến độ. Section của phase trước không dẫn mã của phase sau: flow và màn hình (E5) không ghi mã quy tắc; quy tắc (E6) ghi ngược lại flow và màn hình mà nó phủ, ở dòng in nghiêng dưới tiêu đề.
 
+Trạng thái duyệt của một section nằm ở dòng "Trạng thái:" ngay dưới tiêu đề, ở mọi cấp tiêu đề. `[Owner]` nghĩa là Owner đã chốt; `[Claude-proposed]` nghĩa là Claude soạn và Owner chưa chốt. Nếu Owner chỉ cần duyệt một phần của section, dòng trạng thái ghi rõ phần đó. Nhãn trong ngoặc vuông ở cuối một câu hay ở cột Source là **nguồn** của nội dung (ví dụ `[Q-2]`, `[Owner]`), không phải trạng thái duyệt.
+
 ## Legend
 
 Tiền tố ID theo `ids-and-references.md` của ctx plugin, dùng chung cho mọi epic. Trong câu văn, ID luôn đi kèm tên ngắn, đặt trong dấu nháy đơn (ví dụ 'S6 Trang tra cứu'); dấu nháy kép dành cho câu chữ hiện trên giao diện; ID trơn chỉ nằm ở cột Source, Covers, Rule và trong `[...]`. Trong Obsidian, hover lên link để xem, `Cmd+Alt+←` để quay lại.
@@ -87,6 +89,11 @@ Tiền tố ID theo `ids-and-references.md` của ctx plugin, dùng chung cho m�
 | Q-41 | Ghi chú hiện thế nào ở 'S6 Trang tra cứu'? (mặc định: icon ghi chú chỉ hiện khi có ghi chú; bấm hoặc chạm icon, hoặc nhấn Enter khi icon đang focus, thì ghi chú mở ra ngay dưới dòng hoặc trong card; bấm lần nữa thì đóng. Phương án khác: tooltip khi hover; popover khi bấm) | Owner | Theo mặc định (thay cách xem ghi chú của Q-18) | 2026-10-27 | no |
 | Q-42 | Từ khóa và chip lọc có nằm trên URL không? (mặc định: có, `?q=`, `?person=`, `?travel=1`; cập nhật bằng `replaceUrl` để không tạo một mục lịch sử cho mỗi phím gõ; nếu bật lại Umami thì cấu hình để Umami không ghi phần query) | Owner | Theo mặc định; ghi thành SR-008 | 2026-10-27 | yes |
 | Q-43 | Trên điện thoại (dưới tablet), các màn hình console của module này hiện thế nào? (mặc định, theo trang Radar có sẵn: 'S1 Danh sách sản phẩm' và 'S4 Trang người' đổi bảng thành danh sách card một cột; các nút ở header gom vào một menu; 'S2 Form sản phẩm' một cột; 'S3 Hộp xóa sản phẩm', 'S5 Hộp xóa người', 'S10 Hộp tên người' rộng hết màn hình; sidebar giữ hành vi sẵn có của shell) | Owner | Theo mặc định | 2026-10-27 | no |
+| Q-44 | 'S1 Danh sách sản phẩm' có những cột nào, và cột tên dùng tên hiển thị (R1) hay tên in trên hộp? (mặc định: tên hiển thị kèm dòng phụ như S6, rồi cột Person, Type, Travel, Updated, và nút Delete ở cuối dòng; bấm dòng thì mở 'S2 Form sản phẩm') | Owner | Theo mặc định | 2026-10-28 | yes |
+| Q-45 | 'S1 Danh sách sản phẩm' có phân trang và ô tìm không? (mặc định: phân trang như trang Tags; không có ô tìm, vì tìm đã có ở 'S6 Trang tra cứu'; lọc theo người nằm trên URL `?person=` theo SR-008) | Owner | Theo mặc định | 2026-10-28 | no |
+| Q-46 | 'S4 Trang người' và ô Person của 'S2 Form sản phẩm' xếp người theo thứ tự nào? (mặc định: tên A→Z theo tiếng Việt, như Q-39) | Owner | Theo mặc định | 2026-10-28 | no |
+| Q-47 | Ở 'S4 Trang người', đổi tên hoặc xóa một người đã bị xóa ở tab khác thì sao? API trả 404, và console không có xử lý chung cho 404. (mặc định: xóa thì coi như xong, giống R13.9: toast "Person deleted", tải lại S4; đổi tên thì 'S10 Hộp tên người' đóng, toast "This person no longer exists", tải lại S4) | Owner | Theo mặc định | 2026-10-28 | no |
+| Q-48 | Sửa một vật tư đã lưu (PATCH) mà gửi kèm field chỉ thuốc mới có, ví dụ `dose`, thì sao? Chưa example nào phủ. (mặc định: API trả 400 `MEDICAL_ITEM_INVALID_INPUT` với lỗi tại `dose`, giống R2.2 lúc tạo; dữ liệu không đổi) | Owner | API trả 400 và không lưu. Đây là kiểm tra của API: UI không gặp trường hợp này, vì form vật tư đã ẩn ô liều dùng [Owner] | 2026-10-29 | no |
 
 ## E1 · Problem *(logic)* · Phase 1
 
@@ -171,7 +178,10 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 | **B. Console CRUD + landing tra cứu** | console có sẵn khuôn CRUD (feature-tag); landing chỉ đọc nên nhẹ | hai giao diện | được chọn |
 | C. File markdown trong repo learning, push lên như checklist | gần như không cần backend; git giữ lịch sử | không nhập được từ điện thoại; mỗi lần sửa phải push | không khớp cách Owner muốn quản lý |
 
-### Data model [Owner]
+### Data model
+
+Trạng thái: [Owner]
+
 - **`HealthProfile`**: một người được ghi dữ liệu (chỉ có tên; tên không trùng, không phân biệt hoa thường [Q-21]). Không phải tài khoản đăng nhập.
 - **`MedicalItem`**: một sản phẩm trong tủ, thuộc về một `HealthProfile`.
   - Chung: `kind` (`MEDICINE` / `SUPPLY`), tên, mục đích hoặc triệu chứng, ghi chú, nhãn "Mang đi" (`boolean`, mặc định `false`) [Owner]
@@ -183,7 +193,10 @@ Phép thử tờ giấy: nếu Owner ghi bằng một cuốn sổ giấy thì ed
 - **Xóa:** database luôn soft delete (`deletedAt`), theo khuôn chung của các entity nội dung (Tag, Skill, Project, …). UI là xóa hẳn: có hộp xác nhận, không có thùng rác để khôi phục [Q-9]. Hệ quả: dữ liệu sức khỏe còn trong database sau khi xóa trên UI.
 - **Xóa một người khi còn sản phẩm:** hộp xác nhận báo người đó còn bao nhiêu sản phẩm; Owner xác nhận thì xóa người và xóa luôn các sản phẩm của họ (cùng soft delete) [Q-11].
 
-### Lookup [Owner]
+### Lookup
+
+Trạng thái: [Owner]
+
 - Trang private trên landing tải toàn bộ sản phẩm một lần (dữ liệu nhỏ), lọc ở trình duyệt.
 - Một page: ô tìm kiếm ở trên, chip lọc theo người, kết quả có hai chế độ xem: mini card hoặc dòng (row/table), để ở nhà thuốc Owner thấy cả danh sách cùng lúc mà không phải lướt từng card [Owner]. Mặc định là dòng; trang nhớ chế độ Owner chọn lần trước [Q-14], nhớ theo từng thiết bị (localStorage) [Q-15]. Khi chưa gõ gì, sản phẩm xếp A→Z theo tên hiển thị [Q-16]. Ghi chú ẩn; dòng có ghi chú thì có icon ghi chú, bấm icon thì ghi chú mở ngay dưới dòng [Q-41]. Không dùng tab theo người (mâu thuẫn với xem tất cả) [Owner]
 - Mặc định hiện mọi sản phẩm của mọi người; lọc theo người và theo nhãn "Mang đi". Các chip kết hợp với nhau và với từ khóa [Owner]
@@ -198,11 +211,17 @@ Không làm trong slice 1 [Owner]. Chuẩn chung dự kiến là epic audit trai
 - Slice 2 (machine token) cần một actor riêng cho token, vì command của radar hiện không mang actor.
 - Yêu cầu cho audit trail, làm ở slice sau [Q-10]: chuẩn banking, lưu nguyên văn giá trị trước và sau; cho biết field nào đã sửa, ai sửa, lúc nào; lọc được theo action. Epic audit trail hiện mask PII, nên khi làm phải ghi một ADR cho ngoại lệ dữ liệu sức khỏe.
 
-### Security [Owner]
+### Security
+
+Trạng thái: [Owner]
+
 - Cả controller có `@UseGuards(JwtAccessGuard, RoleGuard)` + `@Roles(['ADMIN'])` như checklist, không như tag (tag để `GET` công khai). Một e2e test: gọi `GET` không đăng nhập thì nhận 401.
 - Trang landing đi trong private area: chỉ render ở trình duyệt, header `noindex`.
 
-### Observability [Owner]
+### Observability
+
+Trạng thái: [Owner]
+
 Không thêm gì trong slice 1: chỉ một người dùng, lỗi API đã có log sẵn. Không gửi sự kiện Umami nào chứa tên thuốc.
 
 ### Blast radius
@@ -227,7 +246,9 @@ Chỉ thêm bảng mới, không đụng dữ liệu cũ. Rollback: drop 2 bản
 2. **Slice 2:** nhập bằng AI (machine token như radar, hoặc MCP); phase 2 của slice 2 quyết định
 3. **Sau đó:** lịch sử sửa đến từ epic audit trail, không làm trong epic này
 
-## E5 · Flows and screens [Owner] · Phase 3
+## E5 · Flows and screens · Phase 3
+
+Trạng thái: [Owner]
 
 Loại ticket: tính năng mới (bảng tra J1). Owner chốt từng flow, màn hình và field; chỗ nào sai thì sửa hoặc xóa. Flow vẽ bằng Mermaid; trình đọc không vẽ Mermaid thì đọc khối code như danh sách bước.
 
@@ -499,7 +520,9 @@ flowchart TD
 
 Owner xem danh sách rồi tự đối chiếu với đồ đang có; trang không có ô tick hay đánh dấu đã gom [Owner].
 
-### Data dictionary [Owner]
+### Data dictionary
+
+Trạng thái: [Owner]
 
 | Field | Meaning | Type | Format, example | Required | Limits | Label |
 |---|---|---|---|---|---|---|
@@ -519,7 +542,9 @@ Owner xem danh sách rồi tự đối chiếu với đồ đang có; trang khô
 
 Hàm lượng và liều dễ nhầm: hàm lượng đi theo hộp thuốc ("500mg" mỗi viên), liều đi theo người ("2 viên" mỗi lần). Ở 'S6 Trang tra cứu', field áp dụng mà chưa ghi hiện "Chưa ghi"; vật tư nằm trong bảng con riêng, không có cột của thuốc [Q-40] (bảng câu chữ, S6).
 
-### Permission matrix [Owner]
+### Permission matrix
+
+Trạng thái: [Owner]
 
 Bảng tra J6.
 
@@ -536,7 +561,9 @@ Không áp dụng: sơ đồ trạng thái (sản phẩm chỉ có còn và đã
 
 Bỏ qua [Owner]. Bảng màn hình và bảng câu chữ dưới đây thay cho mockup; các cột của chế độ dòng trên điện thoại (phần còn lại của Q-18) chốt khi làm slice 1.
 
-### Câu chữ theo trạng thái [Owner]
+### Câu chữ theo trạng thái
+
+Trạng thái: [Owner]
 
 Mục 3.7 của checklist, bảng tra J4.
 
@@ -576,7 +603,7 @@ Console viết bằng tiếng Anh như phần còn lại của console. Landing 
 
 ## E6 · Rules and examples *(logic)* · Phase 4
 
-Mỗi quy tắc có một dòng in nghiêng ghi flow và màn hình nó phủ. Nhãn cuối tên quy tắc là nguồn của quy tắc; cột Source là nguồn của từng example. `[Claude-proposed]` là chỗ Claude tự suy ra, Owner chốt. Expected `?` chờ câu hỏi trong 'E0 Questions'. Không có R15: nhãn "Cần mua" đã bỏ. 'R16 Quay lại tra cứu' tách từ 'R6 Field ở tra cứu' sau review phase 4. Owner chốt từng quy tắc; dòng nào sai thì sửa hoặc xóa.
+Mỗi quy tắc có một dòng in nghiêng ghi flow và màn hình nó phủ. Nhãn cuối tên quy tắc là nguồn của quy tắc; cột Source là nguồn của từng example. Expected `?` chờ câu hỏi trong 'E0 Questions'. Không có R15: nhãn "Cần mua" đã bỏ. 'R16 Quay lại tra cứu' tách từ 'R6 Field ở tra cứu' sau review phase 4. Owner chốt từng quy tắc; dòng nào sai thì sửa hoặc xóa.
 
 Quy tắc ở đây chỉ ghi phần riêng của tủ thuốc. Hành vi đến từ pattern hoặc convention có sẵn nằm ở **Hành vi kế thừa** (P1–P13): mỗi pattern một dòng, không viết lại example. Số example đã bỏ không dùng lại, để các chỗ trích dẫn không đổi nghĩa.
 
@@ -631,7 +658,7 @@ Quy tắc ở đây chỉ ghi phần riêng của tủ thuốc. Hành vi đến 
 | R4.4 | Ghi chú có chữ "uống sau ăn", không field nào khác có | Gõ "sau an" | Không ra sản phẩm đó (ghi chú không được tìm) | [E5 data dictionary] |
 | R4.5 | Không sản phẩm nào khớp "xyz" | Gõ "xyz" | "Không tìm thấy sản phẩm nào" · "Thử từ khóa khác hoặc bỏ chip lọc." · nút "Xóa bộ lọc" | [E5 câu chữ S6] |
 | R4.9 | Thuốc "Air-X" | Gõ "AIR-X" | Sản phẩm hiện trong kết quả (khớp tên biệt dược) | [E3] |
-| R4.10 | Chỉ có sản phẩm mục đích "Đầy hơi"; Owner chỉ biết triệu chứng "nhức đầu" | Gõ "nhuc dau", rồi bấm "Xóa bộ lọc" | Trước: "Không tìm thấy sản phẩm nào". Sau khi bấm: ô tìm trống, không chip nào được chọn, danh sách đầy đủ xếp A→Z | [E5 câu chữ S6], [Q-16] |
+| R4.10 | Chỉ có sản phẩm mục đích "Đầy hơi"; Owner chỉ biết triệu chứng "nhức đầu" | Gõ "nhuc dau", rồi bấm "Xóa bộ lọc" | Trước: "Không tìm thấy sản phẩm nào". Sau khi bấm: ô tìm trống, không chip nào được chọn, danh sách đầy đủ, xếp A→Z trong từng bảng con | [E5 câu chữ S6], [Q-16], [R6.7], [Owner] |
 
 #### R5 · Nhóm theo người
 **Mặc định thấy mọi sản phẩm của mọi người, nhóm theo người; chip lọc theo một người [Owner]**
@@ -711,6 +738,9 @@ Quy tắc ở đây chỉ ghi phần riêng của tủ thuốc. Hành vi đến 
 | R10.3 | Lọc "Mẹ" đang chọn, Mẹ chưa có sản phẩm nào | Nhìn danh sách | "Mẹ has no items yet", nút "Clear filter" và nút "Add item" | [E5 câu chữ S1] |
 | R10.4 | 5 sản phẩm, "Atorvastatin" nằm cuối | Bấm "Atorvastatin", đổi liều, bấm "Save" | Toast "Item saved", về 'S1 Danh sách sản phẩm', "Atorvastatin" lên đầu danh sách | [Owner] |
 | R10.5 | "Air-X" đang mở ở hai thiết bị | Máy A lưu liều "1 viên", sau đó máy B lưu liều "2 viên" | Cả hai lần lưu đều được, không cảnh báo; 'S6 Trang tra cứu' hiện "2 viên" | [E5 F2] |
+| R10.6 | Owner có thuốc "Air-X" (hoạt chất "Simethicone"), có nhãn "Mang đi" | Mở 'S1 Danh sách sản phẩm' | Dòng có tên chính "Simethicone" và dòng phụ "Air-X", rồi các cột Person "Owner", Type "Medicine", Travel, Updated; nút Delete ở cuối dòng. Bấm dòng thì mở 'S2 Form sản phẩm' | [Q-44] |
+| R10.7 | Số sản phẩm nhiều hơn một trang | Mở 'S1 Danh sách sản phẩm' | Danh sách phân trang như trang Tags; trang không có ô tìm | [Q-45] |
+| R10.8 | Lọc "Mẹ" đang chọn | Tải lại trang | URL vẫn có `?person=` của Mẹ; danh sách vẫn chỉ có sản phẩm của Mẹ | [Q-45], SR-008 |
 
 #### R11 · Quản lý người
 **Người: quản lý ở 'S4 Trang người'; thêm và đổi tên qua 'S10 Hộp tên người', mở được từ S4 hoặc form sản phẩm; tên không trùng (không phân biệt hoa thường, bỏ qua người đã xóa theo 'P9 Trùng tên') [Q-8, Q-21, Owner]**
@@ -727,12 +757,13 @@ Quy tắc ở đây chỉ ghi phần riêng của tủ thuốc. Hành vi đến 
 | R11.9 | Form sản phẩm đã điền, mở 'S10 Hộp tên người' từ ô Person | Bấm "Cancel" ở S10 | Về 'S2 Form sản phẩm'; form còn nguyên, ô Person không đổi | [E5 F1b] |
 | R11.10 | Mở 'S10 Hộp tên người' từ 'S4 Trang người' | Bấm "Cancel" | Về S4; không có gì thay đổi | [E5 F4a] |
 | R11.11 | Ở form tạo, đã thêm "Bố" qua 'S10 Hộp tên người' | Bấm "Cancel" ở form sản phẩm, chọn bỏ thay đổi | Sản phẩm không được tạo; "Bố" vẫn còn ở 'S4 Trang người' | [Owner] |
+| R11.12 | Có "Owner", "Mẹ", "Bố" | Mở 'S4 Trang người', rồi mở ô Person của 'S2 Form sản phẩm' | Cả hai nơi xếp "Bố", "Mẹ", "Owner" (A→Z theo tiếng Việt) | [Q-46] |
 
 R12 không còn: đã gom vào 'P2 Trạng thái màn hình' (bảng câu chữ 3.7).
 
 #### R13 · Ghi ở console
 **Ghi ở console: nút gửi khóa trong lúc gửi; sản phẩm hoặc người đã bị xóa ở nơi khác thì feature tự xử lý, vì console không có xử lý chung cho 404. Lỗi API khác theo 'P3 Lỗi API', bỏ thay đổi theo 'P4 Hỏi bỏ thay đổi', phiên theo 'P6 Phiên đăng nhập' [E5 bảng lỗi API]**
-*'F1a Thêm sản phẩm', 'F1b Thêm người trong form', 'F2 Sửa sản phẩm', 'F3 Xóa sản phẩm', 'F4b Xóa người' · 'S1 Danh sách sản phẩm', 'S2 Form sản phẩm', 'S3 Hộp xóa sản phẩm', 'S5 Hộp xóa người', 'S10 Hộp tên người'*
+*'F1a Thêm sản phẩm', 'F1b Thêm người trong form', 'F2 Sửa sản phẩm', 'F3 Xóa sản phẩm', 'F4a Thêm hoặc đổi tên người', 'F4b Xóa người' · 'S1 Danh sách sản phẩm', 'S2 Form sản phẩm', 'S3 Hộp xóa sản phẩm', 'S4 Trang người', 'S5 Hộp xóa người', 'S10 Hộp tên người'*
 
 | Example | Given | When | Expected | Source |
 |---|---|---|---|---|
@@ -741,6 +772,8 @@ R12 không còn: đã gom vào 'P2 Trạng thái màn hình' (bảng câu chữ 
 | R13.8 | Form tạo sản phẩm, đã chọn "Bố"; ở tab khác "Bố" bị xóa | Bấm "Save" | API trả 400 ở field `profileId`; ô Person báo "This person no longer exists"; dữ liệu khác còn nguyên; Owner chọn người khác rồi bấm "Save" lại | [E5 câu chữ S2] |
 | R13.9 | Sản phẩm "Air-X" đã bị xóa ở thiết bị khác, 'S1 Danh sách sản phẩm' ở máy này chưa tải lại | Bấm Delete "Air-X", bấm "Delete" | API trả 404; coi như đã xóa xong: toast "Item deleted", danh sách tải lại | [E5 F3] |
 | R13.10 | Đang sửa sản phẩm của "Bố"; ở tab khác "Bố" bị xóa, nên sản phẩm này bị xóa theo | Bấm "Save" | API trả 404; 'S2 Form sản phẩm' hiện "This item no longer exists" · nút "Back to list" | [Q-11], [E5 bảng lỗi API] |
+| R13.11 | "Bố" đã bị xóa ở tab khác, 'S4 Trang người' ở tab này chưa tải lại | Bấm Delete ở "Bố", bấm "Delete" | API trả 404; coi như đã xóa xong: toast "Person deleted", S4 tải lại | [Q-47] |
+| R13.12 | Như R13.11 | Bấm đổi tên "Bố", sửa tên, bấm "Save" | API trả 404; 'S10 Hộp tên người' đóng, toast "This person no longer exists", S4 tải lại | [Q-47] |
 
 #### R14 · Nhãn Mang đi
 **Nhãn "Mang đi": lọc ra danh sách mang đi khi chuẩn bị đi xa [Owner]**
@@ -796,7 +829,9 @@ Mỗi dòng là một pattern hoặc convention có sẵn. Feature không viết
 | P12 | Lọc trên URL | SR-008: từ khóa và chip lọc nằm trên URL, cập nhật bằng `replaceUrl` | `patterns-architecture.md` | S6, F6 | Component: gõ từ khóa thì URL có `?q=`; tải lại trang vẫn giữ |
 | P13 | Responsive | Responsive foundation: 4 breakpoint (mobile, tablet, laptop, wide), mixins `respond-to`, `currentBp()`; module này là màn hình console đầu tiên dùng foundation này, shell console giữ hành vi sidebar sẵn có | `design/contracts/responsive-contract.md` | S1–S5, S10 | Chạy tay: 'S1 Danh sách sản phẩm', 'S2 Form sản phẩm', 'S10 Hộp tên người' ở 375px không cuộn ngang, nút bấm được |
 
-### Edge case giá trị (EP + BVA) [Owner]
+### Edge case giá trị (EP + BVA)
+
+Trạng thái: [Owner]
 
 Giới hạn lấy từ data dictionary ở 'E5 Flows and screens'. Trim theo 'P10 Trim'. Độ dài đếm sau khi trim và chuẩn hóa NFC; form và Zod dùng cùng một hàm đếm. Mỗi lỗi hiện ở đúng ô, form không gửi, dữ liệu ở các ô khác còn nguyên; Owner sửa ô đó rồi bấm "Save" lại. Câu chữ theo bảng câu chữ 'S2 Form sản phẩm' và 'S10 Hộp tên người' ở 'E5 Flows and screens'.
 
@@ -822,7 +857,9 @@ Lớp giá trị không hợp lệ gửi thẳng qua API (EP). Mỗi dòng trả
 | `profileId` | không tồn tại hoặc đã bị xóa (R13.8) | một id ngẫu nhiên |
 | `packForTravel` | không phải boolean | `"yes"` |
 
-### Non-functional [Owner]
+### Non-functional
+
+Trạng thái: [Owner]
 
 - Performance: theo ngưỡng chung của API system, đặt ở một epic riêng; epic này không đặt ngưỡng riêng [Q-36].
 - Phân quyền: 'P1 Phân quyền ADMIN', 'R8 Giữ dữ liệu trong phiên'.
@@ -853,10 +890,10 @@ Feature mới, không có hành vi cũ cần giữ (4.3c bỏ qua). Test viết 
 | AC-9 | R7 | WHEN Owner xóa một người THE SYSTEM SHALL hỏi kèm số sản phẩm còn lại, và khi xác nhận thì soft delete người đó cùng các sản phẩm | Unit (handler) + Component (S5) | state transition (còn sản phẩm, không còn, người cuối cùng) | R7.3–R7.6 |
 | AC-10 | R8 | WHEN request mang machine token THE SYSTEM SHALL trả 401; WHEN server trả 'S6 Trang tra cứu' THE SYSTEM SHALL gửi header `noindex` và không render dữ liệu sản phẩm ở server | E2E (API) + Integration (SSR response) | — | R8.5, R8.6 |
 | AC-11 | R9 | WHEN Owner mở 'S6 Trang tra cứu' THE SYSTEM SHALL hiện chế độ xem đã chọn lần trước trên thiết bị đó, mặc định là dòng | Component | — | R9.1–R9.3 |
-| AC-12 | R10 | WHEN 'S1 Danh sách sản phẩm' mở THE SYSTEM SHALL xếp sản phẩm sửa gần nhất lên đầu và lọc được theo người; WHEN hai thiết bị cùng lưu THE SYSTEM SHALL giữ lần lưu sau | Unit (query) + Component | — | R10.1–R10.5 |
-| AC-13 | R11 | WHEN Owner thêm hoặc đổi tên người qua 'S10 Hộp tên người' THE SYSTEM SHALL lưu khi tên không trùng (không phân biệt hoa thường) rồi hiện toast "Person saved"; nếu trùng THE SYSTEM SHALL giữ hộp mở với tên đã gõ và lỗi ở ô tên | Unit (handler) + Component (S10) | EP | R11.1–R11.3, R11.5, R11.6 |
+| AC-12 | R10 | WHEN 'S1 Danh sách sản phẩm' mở THE SYSTEM SHALL xếp sản phẩm sửa gần nhất lên đầu và lọc được theo người; WHEN hai thiết bị cùng lưu THE SYSTEM SHALL giữ lần lưu sau | Unit (query) + Component | — | R10.1–R10.8 |
+| AC-13 | R11 | WHEN Owner thêm hoặc đổi tên người qua 'S10 Hộp tên người' THE SYSTEM SHALL lưu khi tên không trùng (không phân biệt hoa thường) rồi hiện toast "Person saved"; nếu trùng THE SYSTEM SHALL giữ hộp mở với tên đã gõ và lỗi ở ô tên | Unit (handler) + Component (S10) | EP | R11.1–R11.3, R11.5, R11.6, R11.12 |
 | AC-14 | R11 | WHEN 'S10 Hộp tên người' mở từ form sản phẩm THE SYSTEM SHALL chọn sẵn người mới và giữ nguyên form; WHEN Owner hủy S10 THE SYSTEM SHALL về đúng nơi đã mở | Component | scenario | R11.4, R11.9–R11.11 |
-| AC-15 | R13 | WHEN một yêu cầu đang gửi THE SYSTEM SHALL khóa nút gửi; WHEN sản phẩm hoặc người đã bị xóa ở nơi khác THE SYSTEM SHALL xử lý như các example (404 thành "This item no longer exists", xóa lại thì coi như xong, người đã xóa báo ở ô Person) | Integration + Component | state transition | R13.3, R13.4, R13.8–R13.10 |
+| AC-15 | R13 | WHEN một yêu cầu đang gửi THE SYSTEM SHALL khóa nút gửi; WHEN sản phẩm hoặc người đã bị xóa ở nơi khác THE SYSTEM SHALL xử lý như các example (404 thành "This item no longer exists", xóa lại thì coi như xong, người đã xóa báo ở ô Person) | Integration + Component | state transition | R13.3, R13.4, R13.8–R13.12 |
 | AC-16 | R14 | WHEN Owner chọn chip "Mang đi" THE SYSTEM SHALL chỉ hiện sản phẩm có nhãn "Mang đi", kết hợp với chip người và từ khóa; sản phẩm mới chưa có nhãn | Unit (lọc) + Component | EP | R14.1–R14.7 |
 | AC-17 | R16 | WHEN Owner sửa từ 'S6 Trang tra cứu' THE SYSTEM SHALL đưa Owner về URL cũ của S6 và vị trí cuộn cũ sau khi lưu hoặc hủy, và chỉ chấp nhận `returnTo` thuộc landing | E2E (landing + console) + Unit (kiểm tra `returnTo`) | scenario | R16.1–R16.10 |
 | AC-18 | P1–P13 | WHEN feature gắn một pattern ở bảng Hành vi kế thừa THE SYSTEM SHALL qua smoke test của dòng đó | theo cột Smoke test | decision table cho P1 (role × endpoint) | P1–P13 |
@@ -971,113 +1008,421 @@ Mọi lần chuyển trạng thái đều cập nhật URL bằng `replaceUrl` (
 - **responsive-system**: kiểm tra 'S6 Trang tra cứu' và console theo 'P13 Responsive' → slice 1
 
 ## Tasks
-- [ ] **Slice 1 · Tủ thuốc dùng được: API, console CRUD, trang tra cứu private** · covers F0, F1a, F1b, F2, F3, F4, F4a, F4b, F5, F6, F7 · S1–S11 · AC-1 đến AC-20 [Owner]
-  - **Approach:** [Claude đọc code rồi đề xuất khi slice bắt đầu (checklist 5.1a); Owner xác nhận trước khi code]
-  - **Progress:** 2026-10-28 breakdown xong. Bước tiếp theo: đề xuất cách làm (checklist 5.1a), rồi viết test từ example trước code trong session riêng (5.1b)
+- [x] **Slice 1 · Tủ thuốc dùng được: API, console CRUD, trang tra cứu private** · covers F0, F1a, F1b, F2, F3, F4, F4a, F4b, F5, F6, F7 · S1–S11 · AC-1 đến AC-20 [Owner]
+  - **Approach:** API và console làm theo khuôn của tag; trang tra cứu làm theo khuôn trang private của checklist. Thứ tự làm là Prisma, shared, API, console, landing, rồi E2E. File theo từng layer, thứ tự làm và test case của từng AC nằm ở [[#Approach của slice 1]]. Owner duyệt đề xuất này trước khi chạy 5.1b.
+  - **Progress:** 2026-10-28 breakdown xong. 2026-10-28 Claude đề xuất cách làm (5.1a) và thêm Q-44 đến Q-47 vào E0. 2026-10-28 Owner duyệt Approach. 2026-10-29 5.1b xong phần viết test: mọi file test từ a đến t đã viết và đỏ đúng lý do (thiếu code). Test g, h và q đã chạy với database và dev server. Claude chạy vòng review đầu tiên (một subagent và Codex) và áp dụng các finding đã xác nhận. Owner trả lời D1 (debounce 300 ms có sẵn), Q-48 (API trả 400) và giữ `strictObject`; Claude sửa ghi chú schema trong Approach và thêm test cho Q-48. Owner xác nhận 5.1b xong ngày 2026-10-29. Bước tiếp theo: 5.1c, một session mới viết code cho tới khi mọi test xanh. 2026-10-29 5.1c xong phần code: mọi test của 5.1b xanh, gồm API, api-e2e, console, landing và landing-e2e. Owner duyệt hai lần sửa test: R4.10 xếp A→Z trong từng bảng con, và landing-e2e dùng chung phiên đăng nhập ở localhost với locale `vi-VN`. Claude chạy vòng review hai đợt (Shared và API, rồi Console, Landing và E2E) và sửa các finding đã xác nhận. Owner duyệt D1 (giữ hoạt chất trùng như đã nhập), D2 (S6 dùng component chung của landing) và D3 (thêm test R16.7 và test tên trùng đồng thời). Bước tiếp theo: Owner duyệt các commit theo từng layer trên nhánh `medicine-cabinet-s1`
   - **Test results:** [tầng · kết quả · người ghi; Owner ghi kết quả]
 - Slice 2 · Nhập bằng AI: chưa breakdown. Slice này chưa có rule và AC; slice 2 cần chạy phase 2 riêng (machine token như radar, hoặc MCP) [Owner]
 
+### Approach của slice 1
+
+Trạng thái: [Owner]. Owner duyệt cả 7 điểm của mục 'Điểm cần Owner duyệt' ngày 2026-10-28. Các mục còn lại là tài liệu cho session 5.1b và 5.1c; Claude dùng chúng để làm và tự kiểm tra bằng test.
+
+Claude soạn ngày 2026-10-28, sau khi đọc module `tag` của API, lib `feature-tag` của console, lib `feature-checklist` và private area của landing, và `patterns-architecture.md`.
+
+#### Điểm cần Owner duyệt
+
+1. Claude sửa các Zod atom dùng chung ở `zod-atoms.ts` cho đúng SR-006: trim chạy trước `min` và `max`. Việc này đổi hành vi của mọi module đang dùng atom (8 file): một field bắt buộc chỉ có khoảng trắng sẽ bị từ chối, thay vì được lưu thành chuỗi rỗng.
+2. Atom có thêm bước chuẩn hóa NFC trước khi đếm, để form và API đếm độ dài giống nhau (bảng EP + BVA). Bước này cũng áp dụng cho mọi module dùng atom. Nếu Owner không muốn đổi rộng như vậy, NFC chỉ áp dụng cho module tủ thuốc.
+3. Claude tách phần mở `UnsavedChangesDialog` của `unsavedChangesGuard` thành một hàm dùng chung ở `@portfolio/console/shared/ui`. Form cần hàm này khi Owner bấm "Cancel" để về trang tra cứu, vì lúc đó trình duyệt rời khỏi app console và guard không chạy. Guard cũ giữ nguyên hành vi.
+4. Mỗi app có thêm một giá trị cấu hình. Console nhận `landingUrl` để kiểm tra `returnTo`. Landing nhận địa chỉ console cho icon sửa và link "Mở console".
+5. API có hai endpoint đọc sản phẩm. `GET items` có phân trang và phục vụ console. `GET lookup` trả mọi sản phẩm một lần và phục vụ landing.
+6. Cả hai app dùng URL `/medicine-cabinet`.
+7. Hạ tầng test có hai thay đổi. api-e2e thêm một tài khoản `USER`. landing-e2e khởi động thêm console để chạy E2E của AC-17.
+
+#### Code có sẵn được dùng lại
+
+| Cần | Có sẵn ở | Ghi chú |
+|---|---|---|
+| Khuôn CRUD của API: command, query, Zod trong handler, presenter, repository soft delete | `apps/api/src/modules/tag/` | `findById` của tag đã lọc `deletedAt: null`. Vì vậy xóa lại một sản phẩm đã xóa trả 404 (R13.9), và sửa một sản phẩm đã bị xóa theo người cũng trả 404 (R13.10) |
+| Guard cho cả controller | `apps/api/src/modules/checklist/presentation/checklist.controller.ts` | `@UseGuards(JwtAccessGuard, RoleGuard)` và `@Roles(['ADMIN'])` đặt ở class |
+| `BaseCommand` có `userId` | `apps/api/src/shared/cqrs/base.command.ts` | Command của tag đã dùng; command của checklist thì không |
+| Khuôn của console: list, form, `unsavedChangesGuard`, `ServerErrorDirective`, `ConfirmDialogComponent`, `ToastService` | `libs/console/feature-tag/`, `@portfolio/console/shared/ui`, `@portfolio/console/shared/util` | |
+| Trang private của landing: chỉ render ở trình duyệt, header `noindex`, `HttpClient` mang token | `apps/landing/src/app/pages/private/private.routes.ts` | Chỉ cần thêm route vào `PRIVATE_ROUTES`; `NOINDEX_PATHS` và `app.routes.server.ts` tự nhận path mới |
+| Service của trang private được provide ở route | `libs/landing/feature-checklist/src/lib/checklist.routes.ts` | Service provide ở root sẽ nhận `HttpClient` không có token, nên mọi lần gọi trả 401 |
+| `authGuard` của console giữ URL đầy đủ trong `returnUrl` | `libs/console/shared/data-access/src/lib/guards/auth.guard.ts` | Nhờ vậy `returnTo` qua được trang đăng nhập (R16.7) |
+| Breakpoint mixin ở console | `libs/console/shared/ui/src/styles/patterns/_crud.scss` | Đã dùng `respond-down('tablet')` |
+
+Những thứ chưa có, slice này phải tạo hoặc lưu ý:
+- Hàm chuẩn hóa để tìm theo SR-007 chưa có trong `@portfolio/shared/utils`.
+- Console chưa có chỗ nào đọc tham số `returnTo`.
+- Landing chưa biết địa chỉ của console, và console chưa biết địa chỉ của landing. Slice này thêm một giá trị cấu hình cho mỗi app.
+- Các Zod atom có sẵn (`NameSchema`, `TagNameSchema`, `requiredShortText`, `optionalShortText` và các atom chuỗi khác) trim **sau** `min(1)`, nên chưa đúng SR-006. Slice này sửa các atom đó (điểm 1 và 2 ở trên).
+- api-e2e chỉ có tài khoản `ADMIN`. 'DT-3 Phân quyền' cần thêm một tài khoản `USER` trong `apps/api-e2e/src/support/global-setup.ts`.
+- landing-e2e chỉ khởi động API và landing. Test E2E của AC-17 cần thêm console vào `webServer` của `apps/landing-e2e/playwright.config.ts`.
+
+#### File theo layer
+
+**Prisma** (`apps/api/prisma/schema.prisma`; migration chạy qua skill `prisma-migrate`)
+- Thêm enum `MedicalItemKind` (`MEDICINE`, `SUPPLY`), `MedicineTiming` (4 giá trị của data dictionary) và `MedicineUsageType` (`LONG_TERM`, `COURSE`).
+- Thêm model `HealthProfile` (bảng `health_profiles`) và `MedicalItem` (bảng `medical_items`, khóa ngoại `profileId`). Hai model có đủ cột audit như `Tag` (`createdById`, `updatedById`, `deletedAt`, `deletedById`) và quan hệ ngược ở `User`.
+- `activeIngredients` là `String[]`; `packForTravel` là `Boolean @default(false)`.
+- Migration có SQL viết tay cho unique index một phần trên `lower(name)` với điều kiện `WHERE "deletedAt" IS NULL` ở `health_profiles` (SR-005, Q-21, Q-28).
+- Migration thêm index thường trên `medical_items (profileId, deletedAt)` và `medical_items (updatedAt)`.
+
+**Shared**
+- `libs/shared/utils/types/src/lib/medicine-cabinet.types.ts` chứa hằng `MEDICAL_ITEM_KINDS`, `MEDICINE_TIMINGS`, `MEDICINE_USAGE_TYPES` và type của response: `MedicalItemDto`, `HealthProfileDto` (có `itemCount`), `MedicineLookupItem` (có `profileName`). File này theo cách `checklist.types.ts` đang làm.
+- `libs/shared/utils/core/src/lib/search-normalize.util.ts` chứa `normalizeForSearch`: chữ thường, NFD, bỏ dấu, rồi đổi `đ` và `Đ` thành `d`. Hàm này export ở cả `index.ts` và `lite.ts`, vì landing không được kéo `hash.util` vào bundle.
+- `libs/shared/utils/core/src/lib/medical-item-display.util.ts` chứa `medicalItemDisplay(item)`. Hàm trả tên chính, dòng phụ và cờ vật tư theo 'DT-1 Tên hiển thị'. Hàm export ở `lite.ts`, vì console (S3) và landing (S6) cùng dùng.
+- `libs/shared/utils/validation/src/lib/limits.ts` nhận các giới hạn của data dictionary: tên người 50, tên sản phẩm 200, mỗi hoạt chất 100, tối đa 10 hoạt chất, hàm lượng 50, liều 100, mục đích 500, ghi chú 2000.
+- `libs/shared/utils/validation/src/lib/zod-atoms.ts`: mọi atom chuỗi chạy theo thứ tự trim, chuẩn hóa NFC, `min` và `max`, rồi `stripHtmlTags`. Test của các module đang dùng atom phải chạy lại. Nếu một test cũ chờ chuỗi chỉ có khoảng trắng được lưu, test đó được sửa theo SR-006.
+- Cùng lib validation có thêm hàm đếm `textLength`: trim, chuẩn hóa NFC, rồi đếm. Form console dùng hàm này, nên form và atom đếm giống nhau.
+- `libs/shared/utils/errors/src/lib/error-codes/medicine-cabinet.error-codes.ts` chứa `MedicalItemErrorCode` (`NOT_FOUND`, `INVALID_INPUT`) và `HealthProfileErrorCode` (`NOT_FOUND`, `INVALID_INPUT`, `NAME_TAKEN` với giá trị `HEALTH_PROFILE_NAME_TAKEN`).
+- `libs/console/shared/util/src/lib/errors/error-dictionary.ts` nhận câu chữ của các mã lỗi mới.
+- `libs/shared/utils/enum-labels/src/lib/enum-labels.ts` nhận nhãn tiếng Anh của 3 enum cho console. Nhãn tiếng Việt và tiếng Anh của landing nằm ở `LANDING_COPY`.
+
+**API** (`apps/api/src/modules/medicine-cabinet/`, đăng ký trong `apps/api/src/app/app.module.ts`)
+- `domain/entities/health-profile.entity.ts` và `domain/entities/medical-item.entity.ts` có `create`, `update`, `softDelete` theo khuôn `Tag`. `MedicalItem.update` không nhận `kind`.
+- `application/health-profile.dto.ts` và `application/medical-item.dto.ts` chứa schema Zod, ghép từ `requiredShortText` và `optionalShortText` đã sửa.
+  - Schema tạo sản phẩm là `discriminatedUnion` theo `kind`. Cả hai nhánh dùng `strictObject`, nên API trả 400 cho mọi key lạ thay vì lặng lẽ bỏ qua [Owner].
+  - `strictObject` báo key lạ ở path rỗng, không ghi tên field. Vì vậy nhánh `SUPPLY` khai báo rõ các field của thuốc là `z.undefined()`, để lỗi ghi đúng tên field, ví dụ `dose` (R2.2).
+  - Schema `PATCH` không có `kind`, cũng là `strictObject`, và khai báo `kind: z.undefined()`, nên lỗi ghi đúng tên `kind` (R2.4).
+  - Schema `PATCH` không biết loại đã lưu. Vì vậy handler sửa sản phẩm kiểm tra loại đã lưu: vật tư mà nhận field của thuốc thì trả 400 ở field đó (Q-48).
+  - Form console không gửi field của thuốc khi lưu vật tư, kể cả giá trị `null`.
+  - Hoạt chất rỗng sau khi trim bị bỏ trước khi đếm số hoạt chất (P10).
+- `application/commands/` có 6 command: `create-medical-item`, `update-medical-item`, `delete-medical-item`, `create-health-profile`, `rename-health-profile`, `delete-health-profile`. Mọi command kế thừa `BaseCommand`.
+  - Tạo và sửa sản phẩm kiểm tra `profileId` còn tồn tại. Nếu người không còn, handler trả 400 `MEDICAL_ITEM_INVALID_INPUT` ở field `profileId` với câu "This person no longer exists". Nhờ vậy `ServerErrorDirective` hiện lỗi ở ô Person (R13.8).
+  - Tạo và đổi tên người kiểm tra trùng tên, không phân biệt hoa thường. Khi đổi tên, handler bỏ qua chính người đang đổi (R11.5). Trùng thì trả 409 `HEALTH_PROFILE_NAME_TAKEN`.
+  - Xóa người soft delete người đó và mọi sản phẩm của họ trong cùng một `$transaction` (Q-11).
+- `application/queries/` có 4 query.
+  - `list-medical-items` phục vụ 'S1 Danh sách sản phẩm': lọc theo `profileId`, xếp `updatedAt` giảm dần, phân trang như tag.
+  - `get-medical-item` phục vụ 'S2 Form sản phẩm'.
+  - `list-lookup-items` phục vụ 'S6 Trang tra cứu': mọi sản phẩm chưa xóa kèm tên người, không phân trang.
+  - `list-health-profiles` trả người kèm `itemCount`, chỉ đếm sản phẩm chưa xóa. 'S5 Hộp xóa người' đọc số này.
+- `presentation/medicine-cabinet.controller.ts` dùng `@Controller('medicine-cabinet')` và guard ở class. Các route: `GET` và `POST items`; `GET`, `PATCH` và `DELETE items/:id`; `GET lookup`; `GET` và `POST profiles`; `PATCH` và `DELETE profiles/:id`.
+- `infrastructure/` có mapper và repository cho từng entity.
+
+**Console** (`libs/console/feature-medicine-cabinet`, tạo bằng skill `ng-lib`, prefix `console`)
+- `medicine-cabinet.routes.ts`: path `''` là 'S1 Danh sách sản phẩm'; `new` và `:id/edit` là 'S2 Form sản phẩm' có `unsavedChangesGuard`; `people` là 'S4 Trang người'.
+- `medicine-cabinet.service.ts` gọi các endpoint ở trên.
+- `medical-item.list/` là S1. Trang mở 'S3 Hộp xóa sản phẩm' bằng `ConfirmDialogComponent`. Lọc theo người nằm trên URL `?person=` theo SR-008.
+- `medical-item.form/` là S2, một form cho cả thuốc và vật tư.
+  - Đổi loại thì các field của thuốc bị xóa và ẩn (P8, Q-27).
+  - Ô loại chỉ đọc khi sửa.
+  - Ô Person có dòng "+ Add new person".
+  - Form đọc `returnTo` lúc mở.
+- `health-profile.list/` là S4. Trang mở 'S5 Hộp xóa người' bằng `ConfirmDialogComponent`, với câu chữ theo `itemCount`.
+- `health-profile.name-dialog/` là S10, một hộp cho cả thêm và đổi tên. Hộp đọc lỗi 409 và đặt lỗi lên ô tên.
+- `return-to.util.ts` chứa `safeReturnTo(raw, landingUrl)`. Hàm chỉ nhận URL có cùng origin với landing; giá trị khác trả `null`.
+- Về `returnTo` là chuyển trang ra khỏi app console, nên `unsavedChangesGuard` không chạy. Khi Owner bấm "Cancel" mà form có thay đổi, form tự mở `UnsavedChangesDialog` trước khi gọi `location.assign` (R16.5). Claude đề xuất tách phần mở hộp của guard thành một hàm dùng chung trong `@portfolio/console/shared/ui`. Đây là phần thêm vào, guard cũ không đổi hành vi.
+- `apps/console/src/environments/*.ts` thêm `landingUrl`. `apps/console/src/app/app.routes.ts` thêm path `medicine-cabinet` dưới `adminGuard`. `libs/console/shared/ui/src/components/main-layout/main-layout.html` thêm mục menu.
+- Responsive theo P13 và Q-43: dưới tablet, bảng đổi thành danh sách card bằng `currentBp()`, và SCSS dùng `respond-down('tablet')`.
+
+**Landing** (`libs/landing/feature-medicine-cabinet`, tạo bằng skill `ng-lib`, prefix `landing`)
+- `medicine-cabinet.routes.ts` provide `MedicineCabinetService` ở route, như checklist.
+- `medicine-cabinet.service.ts` gọi `GET /api/medicine-cabinet/lookup` một lần khi mở trang.
+- `medicine-lookup.util.ts` chứa các hàm thuần. Toàn bộ logic lọc nằm ở đây, để test ở mức Unit.
+  - `filterLookup` lọc theo từ khóa, chip người và chip "Mang đi".
+  - `groupByPerson` nhóm theo người A→Z và bỏ nhóm rỗng.
+  - Hai hàm trên sắp xếp bằng `localeCompare('vi')` (Q-37).
+  - `personChips` chỉ trả người có sản phẩm (Q-31).
+- `medicine-lookup.page/` là S6.
+  - Trang đọc và ghi `?q=`, `?person=`, `?travel=1` bằng `replaceUrl` (SR-008).
+  - Chế độ xem nằm trong `localStorage`; vị trí cuộn nằm trong `sessionStorage`.
+  - Trang hiện mọi trạng thái của bảng câu chữ. Lỗi 403 thành trạng thái "không có quyền".
+- `medical-item.lookup-table/` là chế độ dòng, có hai bảng con "Thuốc" và "Vật tư". `medical-item.lookup-card/` là chế độ mini card.
+  - Icon ghi chú là nút có `aria-expanded`.
+  - Icon sửa dẫn tới trang sửa của console, kèm `returnTo` là URL đầy đủ của S6.
+- `apps/landing/src/app/pages/private/private.routes.ts` thêm path `medicine-cabinet`. `libs/landing/shared/ui/src/components/header/header.data.ts` thêm trang vào `workspacePages`.
+- `landing-copy.data.ts` nhận mọi chuỗi của S6, đủ EN và VI.
+- Landing thêm một giá trị cấu hình cho địa chỉ console.
+
+#### Thứ tự làm
+
+1. Prisma: schema và migration.
+2. Shared: sửa Zod atoms; types, limits và `textLength`, error codes, `normalizeForSearch`, `medicalItemDisplay`.
+3. API: entity, DTO, command và query, repository, controller.
+4. Console: lib và service; S4 và S10; S1 và S3; rồi S2 và `returnTo`.
+5. Landing: lib và hàm lọc; S6; rồi icon sửa.
+6. E2E: api-e2e cho 'DT-3 Phân quyền'; landing-e2e cho R8.6 và R16; rồi Owner kiểm tay responsive (P13) và R4.3.
+
+Session 5.1b viết test theo cùng thứ tự. Session 5.1c làm cho test của một bước xanh rồi mới sang bước sau.
+
+#### Test case theo AC
+
+Mức test:
+- Unit là Jest chạy hàm, schema hoặc handler với repository giả.
+- Integration là repository với database thật, như `radar-item.repository.integration.spec.ts`. Riêng AC-2 có một case qua HTTP ở api-e2e.
+- Component là Angular TestBed với service giả.
+- E2E là api-e2e hoặc Playwright.
+
+Mã file dùng ở cột File của bảng test:
+
+| Mã | File |
+|---|---|
+| a | `libs/shared/utils/core/src/lib/medical-item-display.util.spec.ts` |
+| b | `libs/shared/utils/core/src/lib/search-normalize.util.spec.ts` |
+| c | `apps/api/src/modules/medicine-cabinet/application/medical-item.dto.spec.ts` |
+| d | `apps/api/src/modules/medicine-cabinet/application/health-profile.dto.spec.ts` |
+| e | `apps/api/src/modules/medicine-cabinet/application/commands/medicine-cabinet.commands.spec.ts` |
+| f | `apps/api/src/modules/medicine-cabinet/application/queries/medicine-cabinet.queries.spec.ts` |
+| g | `apps/api/src/modules/medicine-cabinet/infrastructure/repositories/medicine-cabinet.repository.integration.spec.ts` |
+| h | `apps/api-e2e/src/medicine-cabinet/medicine-cabinet.spec.ts` |
+| i | `libs/console/feature-medicine-cabinet/src/lib/medical-item.list/medical-item.list.spec.ts` |
+| j | `libs/console/feature-medicine-cabinet/src/lib/medical-item.form/medical-item.form.spec.ts` |
+| k | `libs/console/feature-medicine-cabinet/src/lib/health-profile.list/health-profile.list.spec.ts` |
+| l | `libs/console/feature-medicine-cabinet/src/lib/health-profile.name-dialog/health-profile.name-dialog.spec.ts` |
+| m | `libs/console/feature-medicine-cabinet/src/lib/return-to.util.spec.ts` |
+| n | `libs/console/feature-medicine-cabinet/src/lib/medicine-cabinet.routes.spec.ts` |
+| o | `libs/landing/feature-medicine-cabinet/src/lib/medicine-lookup.util.spec.ts` |
+| p | `libs/landing/feature-medicine-cabinet/src/lib/medicine-lookup.page/medicine-lookup.page.spec.ts` |
+| q | `apps/landing-e2e/src/medicine-cabinet.spec.ts` |
+| r | `apps/landing/src/app/pages/private/private.routes.spec.ts` |
+| s | `libs/shared/utils/validation/src/lib/limits.spec.ts` |
+| t | `libs/shared/utils/validation/src/lib/zod-atoms.spec.ts` |
+
+| AC | Test case | Example | Mức | File |
+|---|---|---|---|---|
+| AC-1 | Thuốc có đúng một hoạt chất: tên chính là hoạt chất, dòng phụ là tên sản phẩm | R1.1 | Unit | a |
+| AC-1 | Thuốc có hai hoạt chất: tên chính là tên sản phẩm, dòng phụ nối các hoạt chất bằng " + " | R1.2 | Unit | a |
+| AC-1 | Thuốc chưa có hoạt chất: tên chính là tên sản phẩm, không có dòng phụ | R1.3 | Unit | a |
+| AC-1 | Vật tư: tên chính là tên sản phẩm, có cờ vật tư, không có dòng phụ | R1.4 | Unit | a |
+| AC-1 | Vật tư kèm hoạt chất bị 400 ở `activeIngredients` | DT-1 dòng 5 | Unit | c |
+| AC-1 | 'S3 Hộp xóa sản phẩm' hiện "Delete Simethicone of Owner? This cannot be undone." | R1.6 | Component | i |
+| AC-1 | 'S6 Trang tra cứu' hiện đúng tên chính, dòng phụ và nhãn "Vật tư" ở cả hai chế độ xem | R1.1–R1.4 | Component | p |
+| AC-2 | Tạo vật tư kèm `dose` bị 400 ở field `dose` | R2.2 | Unit | c |
+| AC-2 | Handler tạo không gọi repository khi schema trả lỗi | R2.2 | Unit | e |
+| AC-2 | `POST` vật tư kèm `dose` qua HTTP trả 400, database không có dòng mới | R2.2 | Integration | h |
+| AC-2 | `PATCH` kèm `kind: "SUPPLY"` bị 400 ở field `kind` | R2.4 | Unit | c |
+| AC-2 | `PATCH` kèm `dose` trên vật tư đã lưu bị 400 ở field `dose`, không lưu | Q-48 | Unit | e |
+| AC-2 | Form sửa có ô loại chỉ đọc | R2.3 | Component | j |
+| AC-3 | Thuốc đủ người, tên, hàm lượng: Save gọi tạo, toast "Item saved", về S1 | R3.1 | Component | j |
+| AC-3 | Tên trống hoặc chỉ có khoảng trắng: ô Name báo "Name is required", không gọi service, ô khác còn nguyên | R3.2, P10 | Component + Unit | j, c |
+| AC-3 | Thuốc thiếu hàm lượng: ô Strength báo "Strength is required" | R3.3 | Component + Unit | j, c |
+| AC-3 | Vật tư không có hàm lượng: lưu được | R3.4 | Component + Unit | j, c |
+| AC-3 | Form tạo chọn sẵn loại "Thuốc" | R3.5 | Component | j |
+| AC-3 | Ghi chú "Không hợp: nổi mẩn sau 2 ngày" và "Đã dùng, chưa rõ kết quả" lưu nguyên văn | R3.6, R3.8 | Unit | c |
+| AC-3 | Cùng người có hai "Paracetamol" khác hàm lượng: handler không chặn, không cảnh báo | R3.7 | Unit | e |
+| AC-4 | `normalizeForSearch` đổi "Đường" thành "duong", "thuốc dạ dày" thành "thuoc da day", và bỏ hoa thường | P11 | Unit | b |
+| AC-4 | "da day" khớp mục đích "Đau dạ dày" | R4.1 | Unit | o |
+| AC-4 | "SIMETHICON" khớp hoạt chất "Simethicone" | R4.2 | Unit | o |
+| AC-4 | "simethicone" ra "Air-X" | R4.3 | Unit | o |
+| AC-4 | "sau an" không khớp sản phẩm chỉ có chữ đó trong ghi chú | R4.4 | Unit | o |
+| AC-4 | "AIR-X" khớp tên "Air-X" | R4.9 | Unit | o |
+| AC-4 | "sime" khớp một phần "Simethicone" | P11 | Unit | o |
+| AC-5 | "xyz" hiện "Không tìm thấy sản phẩm nào" kèm nút "Xóa bộ lọc" | R4.5 | Component | p |
+| AC-5 | "nhuc dau" rồi "Xóa bộ lọc": ô tìm trống, không chip nào chọn, danh sách đầy đủ A→Z | R4.10 | Component | p |
+| AC-5 | Chip "Mẹ" và "atorvastatin" rồi "Xóa bộ lọc": thấy lại hai nhóm với 8 sản phẩm | R5.7 | Component | p |
+| AC-5 | Đang không có kết quả, xóa bớt từ khóa đến khi khớp: có kết quả lại | ST-1 dòng 7 | Component | p |
+| AC-6 | Owner 5 và Mẹ 3: nhóm "Mẹ" rồi nhóm "Owner", số sản phẩm 3 và 5 | R5.1 | Unit + Component | o, p |
+| AC-6 | Chip "Mẹ": chỉ còn nhóm "Mẹ" | R5.2 | Unit | o |
+| AC-6 | Chip "Mẹ" và "simethicone": chỉ sản phẩm khớp của Mẹ | R5.3 | Unit | o |
+| AC-6 | Owner và Mẹ cùng có Simethicone: hai nhóm, mỗi nhóm giữ liều của người đó | R5.4 | Unit | o |
+| AC-6 | Trong nhóm xếp A→Z theo tên hiển thị, không theo `updatedAt` | R5.5 | Unit | o |
+| AC-6 | "Dầu gió Z", "Đường glucose", "Zinc" đúng thứ tự tiếng Việt | R5.6 | Unit | o |
+| AC-6 | Chip mới thay chip cũ; bấm lại chip đang chọn thì bỏ chọn | R5.8 | Component | p |
+| AC-6 | Người chưa có sản phẩm không có chip | R5.9 | Unit | o |
+| AC-6 | "atorvastatin": nhóm "Mẹ" không còn sản phẩm khớp thì ẩn | R5.10 | Unit | o |
+| AC-7 | Nhãn "Sau ăn", "Dùng lâu dài", "Dùng theo đợt" | R6.1, R6.2, R6.10 | Component | p |
+| AC-7 | Dòng thuốc hiện "10mg" và "1 viên x 1 lần/ngày" | R6.4 | Component | p |
+| AC-7 | Icon ghi chú: bấm mở ngay dưới dòng, bấm lại đóng, `aria-expanded` đổi theo | R6.5 | Component | p |
+| AC-7 | Thuốc chưa ghi liều: cột liều hiện "Chưa ghi" | R6.6 | Component | p |
+| AC-7 | Nhóm có thuốc và vật tư: bảng con "Thuốc" rồi "Vật tư"; người chỉ có thuốc thì không có bảng con "Vật tư" | R6.7 | Component | p |
+| AC-7 | Không có ghi chú thì không có icon ghi chú | R6.9 | Component | p |
+| AC-7 | 6 dòng của 'DT-2 Field ở tra cứu', mỗi dòng chạy ở chế độ dòng và chế độ mini card | R6.8, DT-2 | Component | p |
+| AC-8 | Handler xóa sản phẩm đặt `deletedAt` và `deletedById` | R7.1 | Unit | e |
+| AC-8 | Sau khi xóa, list và lookup không trả sản phẩm đó; database còn dòng có `deletedAt` | R7.1 | Integration | g |
+| AC-8 | S1: xác nhận ở S3 thì gọi xóa, toast "Item deleted", tải lại danh sách | R7.1 | Component | i |
+| AC-8 | S1: bấm "Cancel" ở S3 thì không gọi xóa | R7.2 | Component | i |
+| AC-9 | 'S5 Hộp xóa người' của người còn 3 sản phẩm: "Mẹ has 3 items. They will be deleted too.", nút "Delete all" | R7.3 | Component | k |
+| AC-9 | Handler xóa người soft delete người và 3 sản phẩm | R7.4 | Unit | e |
+| AC-9 | Xóa người chạy trong một transaction; `itemCount` chỉ đếm sản phẩm chưa xóa | R7.4 | Integration | g |
+| AC-9 | Người chưa có sản phẩm: "Bố has no items.", nút "Delete" | R7.5 | Component | k |
+| AC-9 | Bấm "Cancel" ở S5: S4 không đổi | ST-2 dòng 4 | Component | k |
+| AC-9 | Xóa người cuối cùng: S4 "No people yet", S1 "No items yet", S6 "Chưa có sản phẩm nào", ô Person chỉ còn "+ Add new person" | R7.6 | Component | k, i, p, j |
+| AC-10 | Bearer token không phải JWT gọi mọi endpoint: 401 | R8.5 | E2E | h |
+| AC-10 | `GET /medicine-cabinet` có header `X-Robots-Tag: noindex, nofollow`; HTML từ server không có tên sản phẩm đã seed | R8.6 | E2E | q |
+| AC-10 | `NOINDEX_PATHS` có `medicine-cabinet` | R8.6 | Unit | r |
+| AC-11 | Lần đầu mở: chế độ dòng | R9.1 | Component | p |
+| AC-11 | Chọn mini card, tạo lại trang: vẫn mini card | R9.2 | Component | p |
+| AC-11 | `localStorage` trống hoặc ném lỗi: chế độ dòng | R9.3 | Component | p |
+| AC-12 | List xếp `updatedAt` giảm dần: sản phẩm vừa tạo hoặc vừa sửa lên đầu | R10.1, R10.4 | Integration | g |
+| AC-12 | Lọc `profileId` chỉ trả sản phẩm của người đó | R10.2 | Integration | g |
+| AC-12 | S1 đọc `?person=` từ URL và gọi list với `profileId`; tải lại trang vẫn giữ bộ lọc | R10.2, R10.8 | Component | i |
+| AC-12 | Lọc người chưa có sản phẩm: "Mẹ has no items yet", nút "Clear filter" và "Add item" | R10.3 | Component | i |
+| AC-12 | Hai lần sửa liên tiếp đều được lưu, lần sau thắng | R10.5 | Unit | e |
+| AC-12 | Dòng của S1 có tên chính "Simethicone", dòng phụ "Air-X" và các cột Person, Type, Travel, Updated; bấm dòng thì mở S2 | R10.6 | Component | i |
+| AC-12 | S1 có phân trang và không có ô tìm | R10.7 | Component | i |
+| AC-13 | Tạo "Bố": handler lưu; S10 đóng, toast "Person saved" | R11.1 | Unit + Component | e, l |
+| AC-13 | Đã có "Mẹ", tạo "mẹ": 409 `HEALTH_PROFILE_NAME_TAKEN`; S10 vẫn mở, ô tên giữ "mẹ" và báo "A person with this name already exists" | R11.2 | Unit + Component | e, l |
+| AC-13 | Đổi tên: S10 có tiêu đề "Rename person", ô Name điền sẵn "Mẹ"; lưu "Má" thì toast "Person saved" | R11.3 | Component | l |
+| AC-13 | Đổi "Mẹ" thành "mẹ": lưu được | R11.5 | Unit | e |
+| AC-13 | Đổi "Bố" thành "mẹ": 409, S10 vẫn mở | R11.6 | Unit + Component | e, l |
+| AC-13 | Unique index của database chặn hai người cùng tên khác hoa thường | R11.2 | Integration | g |
+| AC-13 | `list-health-profiles` xếp "Bố", "Mẹ", "Owner"; S4 và ô Person của S2 giữ thứ tự đó | R11.12 | Unit + Component | f, k, j |
+| AC-14 | Thêm "Bố" từ ô Person: "Bố" được chọn sẵn, dữ liệu form còn nguyên | R11.4 | Component | j |
+| AC-14 | "Cancel" ở S10 mở từ form: form còn nguyên, ô Person không đổi | R11.9 | Component | j |
+| AC-14 | "Cancel" ở S10 mở từ S4: không gọi service | R11.10 | Component | k |
+| AC-14 | Hủy form sau khi đã thêm "Bố": không tạo sản phẩm, không xóa "Bố" | R11.11 | Component | j |
+| AC-15 | Bấm "Save" hai lần: chỉ gọi tạo một lần, nút khóa trong lúc gửi | R13.3 | Component | j |
+| AC-15 | Nút "Delete" ở S3, "Delete" và "Delete all" ở S5, "Add" và "Save" ở S10 khóa trong lúc gửi | R13.3 | Component | i, k, l |
+| AC-15 | Mở link sửa của sản phẩm đã xóa: "This item no longer exists" và nút "Back to list" | R13.4 | Component | j |
+| AC-15 | `profileId` của người đã xóa: handler trả 400 ở field `profileId` | R13.8 | Unit | e |
+| AC-15 | Form nhận lỗi đó: ô Person báo "This person no longer exists", ô khác còn nguyên | R13.8 | Component | j |
+| AC-15 | Xóa sản phẩm đã bị xóa ở nơi khác: handler trả 404; S1 coi như xong, toast "Item deleted", tải lại | R13.9 | Unit + Component | e, i |
+| AC-15 | Lưu sản phẩm đã bị xóa (theo người, hoặc riêng sản phẩm): handler trả 404; form hiện "This item no longer exists" | R13.10, ST-3 dòng 6 | Unit + Component | e, j |
+| AC-15 | Xóa người đã bị xóa ở tab khác: handler trả 404; S4 coi như xong, toast "Person deleted", tải lại | R13.11 | Unit + Component | e, k |
+| AC-15 | Đổi tên người đã bị xóa ở tab khác: handler trả 404; S10 đóng, toast "This person no longer exists", S4 tải lại | R13.12 | Unit + Component | e, l |
+| AC-16 | Chip "Mang đi": 3 sản phẩm | R14.1 | Unit | o |
+| AC-16 | Chip "Mang đi" và chip "Mẹ": 1 sản phẩm | R14.2 | Unit | o |
+| AC-16 | Chip "Mang đi" và "simethicone": 1 sản phẩm | R14.6 | Unit | o |
+| AC-16 | Chưa ai có nhãn: "Chưa có sản phẩm mang đi" kèm link "Mở console" | R14.3 | Component | p |
+| AC-16 | Owner có nhãn, Mẹ không có, chọn "Mang đi" và "Mẹ": "Không tìm thấy sản phẩm nào" | R14.7 | Component | p |
+| AC-16 | Form tạo có ô "Mang đi" chưa chọn | R14.4 | Component | j |
+| AC-16 | Bật "Mang đi" rồi Save: payload có `packForTravel: true` | R14.5 | Component | j |
+| AC-17 | `safeReturnTo` nhận URL của landing có query; từ chối `https://evil.example`, `//evil.example`, `javascript:`, một origin chỉ giống landing ở đầu tên miền, và giá trị rỗng | R16.6 | Unit | m |
+| AC-17 | Icon sửa có link tới trang sửa của console, `returnTo` là URL đầy đủ của S6 | R16.1 | Component | p |
+| AC-17 | Bấm icon sửa thì lưu vị trí cuộn vào `sessionStorage`; mở lại thì cuộn về chỗ cũ | R16.3 | Component | p |
+| AC-17 | Save với `returnTo` hợp lệ: về `returnTo`; với `returnTo` bị từ chối: về S1 | R16.3, R16.6 | Component | j |
+| AC-17 | "Cancel" khi chưa sửa: về `returnTo`, không có hộp | R16.4 | Component | j |
+| AC-17 | "Cancel" khi đã sửa: `UnsavedChangesDialog` hiện; "bỏ" về `returnTo`, "ở lại" giữ form, "lưu" lưu rồi về `returnTo` | R16.5 | Component | j |
+| AC-17 | Sản phẩm đã xóa, có `returnTo` hợp lệ: "Back to list" về `returnTo` | R16.9 | Component | j |
+| AC-17 | Đường đầy đủ: gõ, chọn chip, cuộn, sửa liều, Save, về S6 với URL cũ, vị trí cũ và liều mới | R16.3 | E2E | q |
+| AC-17 | Console chưa đăng nhập: qua trang đăng nhập rồi vẫn về S6 | R16.7 | E2E | q |
+| AC-17 | Xóa hoạt chất "Simethicone" rồi Save: S6 hiện "Không tìm thấy sản phẩm nào" | R16.10 | E2E | q |
+| AC-17 | Trên điện thoại và khi phiên hết hạn | R16.2, R16.8 | Kiểm tay | |
+| AC-18 | P1: mọi endpoint theo 'DT-3 Phân quyền': chưa đăng nhập 401, `USER` 403, Owner 2xx | DT-3 | E2E | h |
+| AC-18 | P1: chưa đăng nhập mở S6 thì chuyển sang 'S7 Sign in của landing' | DT-3 | E2E | q |
+| AC-18 | P1, P2: dữ liệu trả 403 thì S6 hiện "Tài khoản này không xem được trang này", không có nút "Thử lại" | DT-3 | Component | p |
+| AC-18 | P2: S6 lỗi 500 hiện "Không tải được" và nút "Thử lại"; bấm thì gọi lại | bảng câu chữ | Component | p |
+| AC-18 | P2: S1 "No items yet" kèm "Add item"; S4 "No people yet" kèm "Add person" | bảng câu chữ | Component | i, k |
+| AC-18 | P3: lỗi 400 `MEDICAL_ITEM_INVALID_INPUT` ở field `name` hiện ở ô Name | P3 | Component | j |
+| AC-18 | P3: từ điển lỗi có `HEALTH_PROFILE_NAME_TAKEN` | P3 | Unit | l |
+| AC-18 | P4: route `new` và `:id/edit` có `unsavedChangesGuard` | P4 | Unit | n |
+| AC-18 | P8: đổi Thuốc, Vật tư, rồi Thuốc: các ô của thuốc trống; lưu vật tư không gửi field của thuốc | P8 | Component | j |
+| AC-18 | P9: thêm lại tên của người đã xóa thì lưu được | P9, ST-2 dòng 6 | Unit + Integration | e, g |
+| AC-18 | P10: tên "   " bị từ chối; "Mẹ " trùng "Mẹ"; `["Simethicone", "  "]` thành `["Simethicone"]` | P10 | Unit | c, d |
+| AC-18 | P10: mọi atom bắt buộc từ chối "   "; atom đếm độ dài sau trim và NFC | P10 | Unit | t |
+| AC-18 | P12: gõ từ khóa thì URL có `?q=` với `replaceUrl`; tạo lại trang từ URL vẫn giữ từ khóa và chip | P12 | Component | p |
+| AC-18 | P5 không cần test; P6 và P13 Owner kiểm tay; P7 nằm ở AC-11; P11 nằm ở AC-4 | | | |
+| AC-19 | Mỗi ranh giới của bảng BVA một case: tên 0, 1, 200, 201; mỗi hoạt chất 0, 1, 100, 101; số hoạt chất 10, 11; mục đích 500, 501; ghi chú 2000, 2001; hàm lượng 0, 1, 50, 51; liều 100, 101 | bảng BVA | Unit | c |
+| AC-19 | Tên người 0, 1, 50, 51 | bảng BVA | Unit | d |
+| AC-19 | `textLength` đếm "ệ" viết dạng NFD là 1 ký tự, và đếm sau khi trim | bảng BVA | Unit | s |
+| AC-19 | Form console báo đúng câu "Maximum {max} characters" ở mỗi ô có giới hạn | bảng BVA | Component | j, l |
+| AC-20 | `kind: "FOOD"`, `timing: "MIDNIGHT"`, `usageType: "WEEKLY"`, `packForTravel: "yes"`: 400 ở đúng field | bảng EP | Unit | c |
+| AC-20 | `profileId` ngẫu nhiên: 400 ở field `profileId`, không lưu | bảng EP | Unit | e |
+
+Ngoài AC, Non-functional có một test: `CreateMedicalItemCommand` mang `userId` của Owner, và sản phẩm được tạo có `createdById` bằng `userId` đó (file e).
+
+Kiểm tay, không tự động: P6, P13 ở 375px cho 'S1 Danh sách sản phẩm', 'S2 Form sản phẩm', 'S10 Hộp tên người'; R16.2; R16.8; R4.3 ở nhà thuốc thật; thước đo 'E2 Done and measure'.
+
+
 ## Changelog
 
-### 2026-10-28 Breakdown
+**2026-10-29 Sửa example R4.10 cho khớp R6.7**
+- Updated: R4.10 ghi rõ thứ tự A→Z áp dụng trong từng bảng con, không phải cho cả danh sách
+- Reason: ở chế độ dòng, R6.7 tách vật tư sang bảng con "Vật tư", nên một danh sách A→Z chung không thể đúng. Owner chốt câu chữ mới
+
+**2026-10-28 Owner duyệt Approach của slice 1**
+- Updated: dòng trạng thái của 'Approach của slice 1' đổi từ [Claude-proposed] sang [Owner]; Owner duyệt cả 7 điểm
+- Reason: Owner đồng ý toàn bộ đề xuất của 5.1a
+
+**2026-10-28 Đề xuất cách làm cho slice 1 (5.1a)**
+- Added: mục 'Approach của slice 1' dưới Tasks, nhãn [Claude-proposed]: code dùng lại, file theo layer, thứ tự làm, test case cho AC-1 đến AC-20
+- Added: Q-44 đến Q-47 cho các hành vi của console mà epic chưa ghi (cột và phân trang của S1, thứ tự người, người bị xóa ở tab khác). Owner trả lời theo mặc định; thêm example R10.6–R10.8, R11.12, R13.11, R13.12 và test của chúng
+- Updated: trạng thái duyệt nằm ở dòng "Trạng thái:" dưới tiêu đề, thay cho nhãn `[Owner]` trên tiêu đề; mục Changelog không còn tiêu đề con, nên không hiện trong outline
+- Updated: Approach sửa Zod atoms dùng chung thay vì viết schema riêng; thêm mục 'Điểm cần Owner duyệt'
+- Reason: checklist 5.1a; Claude đọc code của tag, checklist và private area trước khi đề xuất
+
+**2026-10-28 Breakdown**
 - Updated: Status từ `ready` sang `broken-down`; thêm mục Specialized Skills và Tasks
 - Updated: slice 1 nhận cả AC-1 đến AC-20; slice 2 chưa có AC nên chưa chia
 - Reason: Owner đồng ý một slice, các bước ở mục Tasks, không có file task; tách slice 1 theo console và landing sẽ cắt ngang AC-1, AC-10 và AC-17
 - Updated: phase 4 xong hẳn; viết test trước code chuyển từ checklist 4.3d sang 5.1b, theo checklist size L mới
 
-### 2026-10-28 Epic chuyển sang ready
+**2026-10-28 Epic chuyển sang ready**
 - Updated: Status từ `draft` sang `ready`
 - Reason: Owner đồng ý sau khi phase 4 qua cổng (không còn [Claude-proposed], expected `?` hay câu hỏi mở)
 
-### 2026-10-28 ID theo registry chung; tham chiếu kèm tên ngắn
+**2026-10-28 ID theo registry chung; tham chiếu kèm tên ngắn**
 - Updated: thêm Legend; "Hành vi kế thừa" đổi tiền tố H thành P (P1–P13, có cột tên ngắn); bảng màn hình có cột tên ngắn; mỗi rule, flow, DT, ST là một heading `ID · Tên ngắn`; trong câu văn ID đi kèm tên ngắn; "trường" đổi thành "field"; bảng "Đọc theo phase" cập nhật phase 3 xong, phase 4 xong (còn 4.3d khi bắt đầu slice 1). Changelog cũ vẫn giữ H1–H13
 - Updated: tham chiếu 'ID tên ngắn' đặt trong dấu nháy đơn; Owner chốt test design (DT-1 đến DT-3, ST-1 đến ST-3 và 6 trường hợp mới)
 - Updated: example nhãn "Dùng theo đợt" đổi số từ R6.3 thành R6.10, vì R6.3 đã dùng cho "bấm icon sửa" (nay là R16.1) và số đã bỏ không dùng lại; bảng màn hình ghi F1a, F1b thay cho F1
 - Reason: Owner không nhớ được ID tự đặt và phải cuộn lên để tra (`ids-and-references.md` của ctx plugin)
 
-### 2026-10-27 Đồng bộ E5 với E6; thêm test design
+**2026-10-27 Đồng bộ E5 với E6; thêm test design**
 - Updated: E5 trạng thái "có dữ liệu" của S6 (nhóm theo người, bảng con), câu chữ tiêu đề nhóm, tiêu đề bảng con và nhãn icon ghi chú [Claude-proposed]; câu chữ "sản phẩm thiếu thông tin" bỏ ý "để trống hẳn" theo Q-40; thêm Q-43 (bố cục console trên điện thoại); E6 thêm **Test design** (mức rủi ro, DT-1 đến DT-3, ST-1 đến ST-3) [Claude-proposed]
 - Reason: checklist 4.4 (rule đổi màn hình thì sửa lại phase 3) và 4.3b
 - Updated: Owner chốt câu chữ "có dữ liệu" của S6, smoke test H13 và Q-43 (theo mặc định)
 - Updated: E5 chia thành các mục con (Màn hình, Pattern chung và lỗi API, Flows, Data dictionary, Permission matrix, Mockup, Câu chữ theo trạng thái); nội dung không đổi
 
-### 2026-10-27 Owner chốt E6; màn hình console của module responsive
+**2026-10-27 Owner chốt E6; màn hình console của module responsive**
 - Updated: Hành vi kế thừa, EP + BVA, Non-functional, AC đổi từ [Claude-proposed] sang [Owner]; S1–S5 và S10 responsive theo 4 breakpoint (E3 In, E4 Lookup, F6, R16.2, Non-functional, H13); blast radius ghi module là feature console đầu tiên dùng responsive foundation
 - Reason: Owner chốt E6 và muốn dùng console của module này trên điện thoại
 
-### 2026-10-27 Owner trả lời Q-39 đến Q-42; gom hành vi kế thừa thành bảng H1–H12
+**2026-10-27 Owner trả lời Q-39 đến Q-42; gom hành vi kế thừa thành bảng H1–H12**
 - Updated: nhóm theo người (Q-39), bảng con "Thuốc" và "Vật tư" (Q-40), icon ghi chú mở ngay dưới dòng (Q-41, thay Q-18), từ khóa và chip trên URL (Q-42, SR-008); F5, F6 và E4 sửa theo; thêm bảng **Hành vi kế thừa** H1–H12; bỏ các example chỉ lặp lại pattern hoặc convention (R1.5, R2.1, R2.5, R2.6, R3.9, R4.6–R4.8, R4.11, R4.12, R8.1–R8.4, R11.7, R11.8, R11.12–R11.14, toàn bộ R12, R13.1, R13.2, R13.5–R13.7, R13.11–R13.15); thêm R6.9; AC viết lại thành AC-1 đến AC-20
 - Reason: Owner: thứ gì đã thành pattern thì chỉ trích dẫn pattern, không viết lại
 
-### 2026-10-27 Owner review R2, R4, R5, R6; thêm Q-39 đến Q-42
+**2026-10-27 Owner review R2, R4, R5, R6; thêm Q-39 đến Q-42**
 - Updated: R2 đổi loại thì hiện bộ field của loại mới, ẩn và xóa bộ field cũ (SR-004 sửa theo); R4 khớp một phần, thêm R4.11, R4.12, thêm SR-007 vào `patterns-architecture.md`; R5 nhóm theo người, thêm R5.10; R6 vật tư chỉ hiện các field chung; E4 Lookup ghi nhóm theo người và khớp một phần; R4.6, R6.5, R6.7, R3.6 chờ Q-40 đến Q-42
 - Reason: Owner đọc E6; quy tắc "từ khóa không lên URL" dựa trên Umami, mà Umami server đã tắt; ghi chú chuyển sang dạng icon nên Q-18 cần xem lại
 
-### 2026-10-27 Owner trả lời Q-26 đến Q-37; thêm Q-38
+**2026-10-27 Owner trả lời Q-26 đến Q-37; thêm Q-38**
 - Updated: Owner chọn mặc định cho Q-38 (vật tư không có dòng phụ), R1.4 hết `?`; Q-27, Q-28, Q-29 ghi thành SR-004 đến SR-006 ở `style-review.md` và đưa vào `design/cookbook/forms.md`, `patterns-architecture.md`
 - Updated: điền câu trả lời Q-26 đến Q-37 và thay các expected `?` tương ứng ở R1, R2, R3, R5, R6, R11, R12, R14, R16, bảng BVA và Non-functional; Q-27, Q-28, Q-29 được Owner đánh dấu là pattern chung cho cả project; thêm Q-38 (dòng phụ của vật tư)
 - Reason: Owner trả lời câu hỏi mở của phase 4
 
-### 2026-10-27 Viết lại E6 sau review Claude + Codex; thêm Q-26 đến Q-37
+**2026-10-27 Viết lại E6 sau review Claude + Codex; thêm Q-26 đến Q-37**
 - Updated: sửa 4 finding CRITICAL, toàn bộ nhóm C và 6 finding mới của Codex; expected dùng đúng câu chữ ở bảng 3.7 kèm bước tiếp theo; R6 đánh số lại (thêm `COURSE`, hàm lượng và liều); R16 tách từ R6 cho flow sửa từ trang tra cứu (thêm hủy sau khi sửa, qua S9, phiên hết hạn, sản phẩm đã bị xóa); R8 phủ đủ ô "không" của ma trận phân quyền, machine token trả 401; R11 theo hộp S10; R12, R13, R14 thêm example; bảng BVA thêm điểm 0 và 1 cho field không bắt buộc, thêm bảng EP; AC đánh số lại AC-1 đến AC-28; E3 Covered by theo F1a, F1b, F4a, F4b và số quy tắc mới; expected chưa rõ để `?` và trỏ tới Q-26 đến Q-37
 - Reason: review phase 4 (bảng tra mục I) tìm ra example sai câu chữ, flow và màn hình chưa có quy tắc phủ, và hành vi Claude đã tự đoán
 
-### 2026-10-27 Gom R1–R14 vào một mục Rules
+**2026-10-27 Gom R1–R14 vào một mục Rules**
 - Updated: mỗi quy tắc ở E6 không còn là heading riêng; tất cả nằm dưới `### Rules`, tên quy tắc in đậm
 - Reason: Owner: 14 heading quy tắc làm mục lục quá dài
 
-### 2026-10-27 Owner chốt bảng câu chữ 3.7; field trống và field không áp dụng ở S6
+**2026-10-27 Owner chốt bảng câu chữ 3.7; field trống và field không áp dụng ở S6**
 - Updated: bảng câu chữ thành [Owner]; trạng thái "một phần" của S6 đổi tên thành "sản phẩm thiếu thông tin"; dòng vật tư để trống hẳn các cột chỉ dành cho thuốc; thêm R6.9, R6.10 [Owner]; "section trống hết thì hiện No data" là nguyên tắc chung cho trang chi tiết, thuộc module chi tiết sau này, không thuộc epic này; ba dòng "đang tải" không ghi loại chỉ báo cụ thể (theo component có sẵn của từng app)
 - Reason: Owner trả lời sau khi đọc 3.7; "Chưa ghi" ở dòng vật tư dễ hiểu nhầm là quên ghi
 
-### 2026-10-27 Danh sách màn hình lên đầu E5; hộp S10 dùng cho cả thêm và đổi tên người; "món" đổi thành "sản phẩm"
+**2026-10-27 Danh sách màn hình lên đầu E5; hộp S10 dùng cho cả thêm và đổi tên người; "món" đổi thành "sản phẩm"**
 - Updated: danh sách màn hình đặt đầu E5, trước bản đồ; bản đồ thêm đường S4 → S10; F4 tách thành F4a (thêm, đổi tên qua hộp S10) và F4b (xóa người); S4 không còn ô tên tại chỗ; hộp S10 có chế độ đổi tên, tên sai thì hộp vẫn mở; câu chữ S4, S10 và R11.2, R11.6 sửa theo; mã J1, J4, J6 ghi rõ là mục của bảng tra checklist; từ "món" đổi thành "sản phẩm" trong toàn epic (trừ changelog cũ)
 - Reason: Owner review flow sau khi sơ đồ vẽ lại; đổi tên sai mà ô sửa tại chỗ thì khó giữ lỗi, hộp thoại giữ được trạng thái
 
-### 2026-10-27 Viết lại sơ đồ Mermaid bằng skill `mermaid`
+**2026-10-27 Viết lại sơ đồ Mermaid bằng skill `mermaid`**
 - Updated: bản đồ màn hình đổi sang TD, cạnh S6 và S2 gộp thành `<-->`; câu giải thích cách đọc sơ đồ thay bằng một dòng chú thích; F0 và F5 bỏ self-loop, thay bằng node `Đang tải`; F1 tách thành F1a (luồng chính) và F1b (hộp thêm người S10), bảng S10 đổi tham chiếu sang F1b; F2 rút gọn nhãn vòng lặp; F3 gộp hai cạnh trùng; F4, F6 rút ngắn nhãn và tách node quay lại
 - Reason: [Owner] sơ đồ khó đọc trong Obsidian (nhãn chồng nhau, self-loop tách xa node, sơ đồ quá dài); chỉ đổi cách trình bày, không đổi ý nghĩa flow
 
-### 2026-10-27 Mỗi section có số thuộc đúng một phase; E5 không ghi mã quy tắc
+**2026-10-27 Mỗi section có số thuộc đúng một phase; E5 không ghi mã quy tắc**
 - Updated: Questions chuyển thành E0 (dùng ở mọi phase, đặt trước E1); E5 cũ tách thành E4 · Design (phase 2) và E5 · Flows and screens (phase 3); nguồn `[E5]` trong E6 đổi thành `[E4]`; bỏ mã quy tắc khỏi nhãn Mermaid, ghi chú flow, ma trận phân quyền và cột Rules của các bảng trong E5; bảng "Đọc theo phase" viết lại. Các entry cũ bên dưới giữ số section cũ (E4 là Questions, E5 là Design kèm Flows and screens)
 - Reason: [Owner] Owner đọc section theo phase; phase 3 không nên bắt đọc E6 trước
 
-### 2026-10-27 Áp dụng review flow (3.1); F6 quay về trang tra cứu; số phase trên tiêu đề
+**2026-10-27 Áp dụng review flow (3.1); F6 quay về trang tra cứu; số phase trên tiêu đề**
 - Updated: bảng lỗi API viết lại theo code (400 cần mã lỗi và `ServerErrorDirective`; 401 không nhớ trang; 403 bị `adminGuard` chặn trước; 404 và 409 do feature tự làm; thêm 429; 500 có hộp bỏ thay đổi); thêm F0 (mở S1), nhánh con S10 (hộp thêm người) trong F1, nhánh người đã bị xóa trong F2, nhánh món đã bị xóa trong F3, nhánh trùng tên trong F4; F6 lưu trạng thái tra cứu và quay về S6; thêm S10, S11; ma trận phân quyền sửa dòng `USER`; câu chữ cho S2 và S10; Q-25 trả lời; R10 [Owner]; thêm R6.6–R6.8, R11.5, R11.6, R13.8, R13.9; sửa R13.1, R13.3–R13.6; tiêu đề ghi số phase, thêm bảng "Đọc theo phase"
 - Reason: [Owner] (phát hiện 4: `adminGuard`; phát hiện 15: quay về landing; R10.1; Q-25); các phát hiện còn lại từ review 3.1, Owner đồng ý áp dụng tất cả
 
-### 2026-10-24 Owner chốt Flows and screens; bỏ mockup; câu chữ theo trạng thái; sửa E6
+**2026-10-24 Owner chốt Flows and screens; bỏ mockup; câu chữ theo trạng thái; sửa E6**
 - Updated: Flows and screens, ghi chú F2, data dictionary, ma trận phân quyền đổi sang [Owner]; mockup (3.6) bỏ qua; thêm bảng "Câu chữ theo trạng thái" (3.7); S1 gộp trạng thái "không có kết quả" vào "rỗng"; S6 thêm trạng thái "chưa có món mang đi" và tách "chưa đăng nhập" khỏi "không có quyền"; E6: R2.2 đổi `dosage` thành `dose`, thêm R6.1, R7.5, R12.5, R8.4 bỏ nút "Thử lại" cho lỗi 403, câu chữ console trong các ví dụ đổi sang tiếng Anh, AC-11 phủ R8.1, R8.4, R8.5, AC-15 chỉ phủ R14.1 đến R14.3
 - Reason: [Owner] chốt; còn lại là lỗi Claude tìm thấy khi viết câu chữ (console là giao diện tiếng Anh; thử lại không qua được lỗi 403)
 
-### 2026-10-24 Owner trả lời Q-15 đến Q-24; bỏ nhãn "Cần mua"; pattern chung và bảng lỗi API
+**2026-10-24 Owner trả lời Q-15 đến Q-24; bỏ nhãn "Cần mua"; pattern chung và bảng lỗi API**
 - Updated: E1, E2, E3 bỏ mục tiêu "danh sách cần mua", Out thêm tồn kho và cần mua, tick từng món, trang chi tiết [Q-23]; E4 ghi đáp án Q-15 đến Q-24, thêm Q-25; Data model, Lookup ghi đáp án; bỏ `toBuy`, F8, R15, AC-16; S2 không còn nút Xóa, F3 chỉ bắt đầu từ S1; thêm mục "Pattern chung của console" và "Bảng lỗi API" (400, 401, 403, 404, 500, mất mạng); mọi flow gọi API trỏ về bảng đó; cột Type của data dictionary ghi bằng tiếng Anh; nhãn Mermaid rút ngắn, quy tắc xuống dòng thứ hai; R3.7, R9.3, R13 viết lại (R13.5 đến R13.7), điền R5.5, R6.4, R6.5, R11.2; Non-functional thêm component chung
 - Reason: [Owner]; Q-25 do Claude thấy console mở trang lỗi 500 thay vì giữ form (`error-handler.provider.ts`)
 
-### 2026-10-24 Quản lý người: trang con của S1, thêm nhanh trong form món
+**2026-10-24 Quản lý người: trang con của S1, thêm nhanh trong form món**
 - Updated: bản đồ màn hình chỉ còn đường đi giữa các màn hình (thêm menu console và menu Workspace); S4 thành trang con mở từ link "Người" ở S1, giống Templates của checklist; F1 bỏ nhánh "chưa có người dẫn sang S4", thay bằng dòng "+ Thêm người mới" trong ô người; F4 bắt đầu từ S1; thêm R11.4, sửa R12.2
 - Reason: [Owner]
 
-### 2026-10-24 Owner duyệt Data model, Lookup, Security, Observability
+**2026-10-24 Owner duyệt Data model, Lookup, Security, Observability**
 - Updated: nhãn bốn mục này đổi từ [Claude-proposed] sang [Owner]. Q-15, Q-16, Q-21 vẫn mở dù nằm trong các mục đó
 - Reason: [Owner]
 
-### 2026-10-24 Thêm mục tiêu chuẩn bị: nhãn "Mang đi" và "Cần mua"; flow vẽ bằng Mermaid
+**2026-10-24 Thêm mục tiêu chuẩn bị: nhãn "Mang đi" và "Cần mua"; flow vẽ bằng Mermaid**
 - Updated: E1 ghi mục tiêu chuẩn bị (đi xa, kiểm tủ); E2 câu "khi xong"; E3 thêm 2 dòng In (nhãn Mang đi, nhãn Cần mua), Out thêm tồn kho, giá, tính số lượng theo số ngày; E4 thêm Q-24; E5 thêm 2 field, chip lọc theo nhãn, F7, F8, bản đồ màn hình, F1 đến F6 viết lại bằng Mermaid; E6 thêm R14, R15, AC-15, AC-16
 - Reason: [Owner]. Mục tiêu chuẩn bị đã có trong E1 (evidence "chuyến Hà Nội 3 ngày") nhưng bị rơi khi viết E2, E3
 
-### 2026-10-24 Phase 3 theo checklist mới: flow, màn hình, data dictionary, coverage
+**2026-10-24 Phase 3 theo checklist mới: flow, màn hình, data dictionary, coverage**
 - Updated: E3 In thành bảng có cột Covered by; E4 thêm Q-15 đến Q-23; E5 thêm Flows and screens (F1–F6, S1–S9, data dictionary, ma trận phân quyền), `HealthProfile` chỉ còn tên (chờ Q-21); E6 ghi flow và màn hình dưới mỗi quy tắc, thêm R3.6, R5.5, R6.4, R6.5, R8.4, R8.5, R10–R13, chuyển R8.3 thành R12.1, thêm hàm lượng và liều vào bảng BVA
 - Reason: checklist đổi thứ tự (flow và mockup trước quy tắc); cổng `ready` đòi mỗi dòng In, mỗi màn hình và mỗi ô "không" của ma trận phân quyền có quy tắc
 
-### 2026-10-24 Owner chấp nhận rủi ro không có nhãn "Không hợp"; thêm Q-14 và R9
+**2026-10-24 Owner chấp nhận rủi ro không có nhãn "Không hợp"; thêm Q-14 và R9**
 - Updated: Data model ghi hệ quả đã chấp nhận; Lookup thêm chế độ mặc định; E4 thêm Q-14; E6 đổi "card" thành "item", thêm R9 và AC-14
 - Reason: [Owner], [Q-14]
 
-### 2026-10-24 Owner duyệt mục 1–5, 7, 8 của bảng [Claude-proposed]
+**2026-10-24 Owner duyệt mục 1–5, 7, 8 của bảng [Claude-proposed]**
 - Updated: E2 giữ một thước đo (thời gian tra, dưới 1 phút) và bỏ thước đo số lần tra; E3 bỏ edge case "đang gấp" (trùng E2) và bỏ ghi nguồn; E5 bỏ field kết quả và nguồn, thêm hai chế độ xem mini card và dòng, link sửa thành icon nhỏ, responsive console để sau; R6, R6.1, R6.3, AC-8, non-functional sửa theo
 - Reason: [Owner], YAGNI
 
-### 2026-10-24 Owner trả lời Q-12, Q-13
+**2026-10-24 Owner trả lời Q-12, Q-13**
 - Updated: R2.3 (không đổi loại), R3 và R3.1 đến R3.5 (field bắt buộc, hàm lượng ở ô riêng), AC-3, AC-4
 - Reason: [Q-12], [Q-13]
